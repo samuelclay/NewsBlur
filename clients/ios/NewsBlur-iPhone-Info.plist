@@ -19,7 +19,7 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>6.1.1</string>
+	<string>7.0.0</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleURLTypes</key>
@@ -58,7 +58,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>68</string>
+	<string>72</string>
 	<key>FacebookAppID</key>
 	<string>230426707030569</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
@@ -94,6 +94,8 @@
 	<string>MainWindow</string>
 	<key>NSMainNibFile~ipad</key>
 	<string>MainWindow~ipad</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>NewsBlur can save photos to your camera roll by long pressing them.</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>WhitneySSm-MediumItalic-Bas.otf</string>

@@ -30,7 +30,6 @@ import com.newsblur.fragment.FeedIntelligenceSelectorFragment;
 import com.newsblur.fragment.FolderListFragment;
 import com.newsblur.fragment.LoginAsDialogFragment;
 import com.newsblur.fragment.LogoutDialogFragment;
-import com.newsblur.fragment.MarkAllReadDialogFragment.MarkAllReadDialogListener;
 import com.newsblur.fragment.TextSizeDialogFragment;
 import com.newsblur.service.BootReceiver;
 import com.newsblur.service.NBSyncService;
@@ -42,7 +41,7 @@ import com.newsblur.util.StateFilter;
 import com.newsblur.util.UIUtils;
 import com.newsblur.view.StateToggleButton.StateChangedListener;
 
-public class Main extends NbActivity implements StateChangedListener, SwipeRefreshLayout.OnRefreshListener, AbsListView.OnScrollListener, PopupMenu.OnMenuItemClickListener, MarkAllReadDialogListener, OnSeekBarChangeListener {
+public class Main extends NbActivity implements StateChangedListener, SwipeRefreshLayout.OnRefreshListener, AbsListView.OnScrollListener, PopupMenu.OnMenuItemClickListener, OnSeekBarChangeListener {
 
 	private FolderListFragment folderFeedList;
 	private FragmentManager fragmentManager;
@@ -149,7 +148,15 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         unreadCountNeutText.setText(Integer.toString(neutCount));
         unreadCountPosiText.setText(Integer.toString(posiCount));
 
-        if ((neutCount+posiCount) <= 0) {
+    }
+
+    /**
+     * A callback for the feed list fragment so it can tell us how many feeds (not folders)
+     * are being displayed based on mode, etc.  This lets us adjust our wrapper UI without
+     * having to expensively recalculate those totals from the DB.
+     */
+    public void updateFeedCount(int feedCount) {
+        if (feedCount < 1 ) {
             if (NBSyncService.isFeedCountSyncRunning() || (!folderFeedList.firstCursorSeenYet)) {
                 emptyViewImage.setVisibility(View.INVISIBLE);
                 emptyViewText.setVisibility(View.INVISIBLE);
@@ -157,6 +164,8 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
                 emptyViewImage.setVisibility(View.VISIBLE);
                 if (folderFeedList.currentState == StateFilter.BEST) {
                     emptyViewText.setText(R.string.empty_list_view_no_focus_stories);
+                } else if (folderFeedList.currentState == StateFilter.SAVED) {
+                    emptyViewText.setText(R.string.empty_list_view_no_saved_stories);
                 } else {
                     emptyViewText.setText(R.string.empty_list_view_no_unread_stories);
                 }
@@ -239,7 +248,10 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
             Intent settingsIntent = new Intent(this, Settings.class);
             startActivity(settingsIntent);
             return true;
-        } else if (item.getItemId() == R.id.menu_feedback) {
+        } else if (item.getItemId() == R.id.menu_feedback_email) {
+            PrefsUtils.sendLogEmail(this);
+            return true;
+        } else if (item.getItemId() == R.id.menu_feedback_post) {
             try {
                 Intent i = new Intent(Intent.ACTION_VIEW);
                 i.setData(Uri.parse(PrefsUtils.createFeedbackLink(this)));
@@ -289,11 +301,6 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
                 wasSwipeEnabled = enable;
             }
         }
-    }
-
-    @Override
-    public void onMarkAllRead(FeedSet feedSet) {
-        FeedUtils.markFeedsRead(feedSet, null, null, this);
     }
 
     // NB: this callback is for the text size slider

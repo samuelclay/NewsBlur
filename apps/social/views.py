@@ -70,7 +70,8 @@ def load_social_stories(request, user_id, username=None):
             stories = []
             message = "You must be a premium subscriber to search."
     elif socialsub and (read_filter == 'unread' or order == 'oldest'):
-        story_hashes = socialsub.get_stories(order=order, read_filter=read_filter, offset=offset, limit=limit, cutoff_date=user.profile.unread_cutoff)
+        cutoff_date = max(socialsub.mark_read_date, user.profile.unread_cutoff)
+        story_hashes = socialsub.get_stories(order=order, read_filter=read_filter, offset=offset, limit=limit, cutoff_date=cutoff_date)
         story_date_order = "%sshared_date" % ('' if order == 'oldest' else '-')
         if story_hashes:
             mstories = MSharedStory.objects(user_id=social_user.pk,
@@ -80,7 +81,7 @@ def load_social_stories(request, user_id, username=None):
         mstories = MSharedStory.objects(user_id=social_user.pk).order_by('-shared_date')[offset:offset+limit]
         stories = Feed.format_stories(mstories)
 
-    if not stories:
+    if not stories or False: # False is to force a recount even if 0 stories
         return dict(stories=[], message=message)
     
     stories, user_profiles = MSharedStory.stories_with_comments_and_profiles(stories, user.pk, check_all=True)
@@ -188,7 +189,8 @@ def load_river_blurblog(request):
     limit             = 10
     start             = time.time()
     user              = get_user(request)
-    social_user_ids   = [int(uid) for uid in request.REQUEST.getlist('social_user_ids') if uid]
+    social_user_ids   = request.REQUEST.getlist('social_user_ids') or request.REQUEST.getlist('social_user_ids[]')
+    social_user_ids   = [int(uid) for uid in social_user_ids if uid]
     original_user_ids = list(social_user_ids)
     page              = int(request.REQUEST.get('page', 1))
     order             = request.REQUEST.get('order', 'newest')
@@ -545,7 +547,7 @@ def mark_story_as_shared(request):
     comments = request.POST.get('comments', '')
     source_user_id = request.POST.get('source_user_id')
     relative_user_id = request.POST.get('relative_user_id') or request.user.pk
-    post_to_services = request.POST.getlist('post_to_services')
+    post_to_services = request.POST.getlist('post_to_services') or request.POST.getlist('post_to_services[]')
     format = request.REQUEST.get('format', 'json')    
     now = datetime.datetime.now()
     nowtz = localtime_for_timezone(now, request.user.profile.timezone)
@@ -567,11 +569,25 @@ def mark_story_as_shared(request):
             'message': 'You cannot share newsletters. Somebody could unsubscribe you!'
         })
         
-    if not request.user.profile.is_premium and MSharedStory.feed_quota(request.user.pk, feed_id, story.story_hash):
+    if not request.user.profile.is_premium and MSharedStory.feed_quota(request.user.pk, story.story_hash, feed_id=feed_id):
         return json.json_response(request, {
             'code': -1, 
             'message': 'Only premium users can share multiple stories per day from the same site.'
         })
+    
+    quota = 100
+    if not request.user.profile.is_premium:
+        quota = 3
+    if MSharedStory.feed_quota(request.user.pk, story.story_hash, quota=quota):
+        logging.user(request, "~FRNOT ~FCSharing ~FM%s~FC, over quota: ~SB~FB%s" % (story.story_title[:20], comments[:30]))
+        message = 'You can only share up to %s stories per day.' % quota
+        if not request.user.profile.is_premium:
+            message = 'You can only share up to %s stories per day as a free user. Upgrade to premium to share more.' % quota
+        return json.json_response(request, {
+            'code': -1, 
+            'message': message
+        })
+    
     shared_story = MSharedStory.objects.filter(user_id=request.user.pk, 
                                                story_feed_id=feed_id, 
                                                story_hash=story['story_hash'])\
@@ -894,7 +910,7 @@ def shared_stories_public(request, username):
 def profile(request):
     user = get_user(request.user)
     user_id = int(request.GET.get('user_id', user.pk))
-    categories = request.GET.getlist('category')
+    categories = request.GET.getlist('category') or request.GET.getlist('category[]')
     include_activities_html = request.REQUEST.get('include_activities_html', None)
 
     user_profile = MSocialProfile.get_user(user_id)
@@ -1407,7 +1423,7 @@ def load_social_settings(request, social_user_id, username=None):
 @ajax_login_required
 def load_interactions(request):
     user_id = request.REQUEST.get('user_id', None)
-    categories = request.GET.getlist('category')
+    categories = request.GET.getlist('category') or request.GET.getlist('category[]')
     if not user_id or 'null' in user_id:
         user_id = get_user(request).pk
     page = max(1, int(request.REQUEST.get('page', 1)))
@@ -1433,7 +1449,7 @@ def load_interactions(request):
 @ajax_login_required
 def load_activities(request):
     user_id = request.REQUEST.get('user_id', None)
-    categories = request.GET.getlist('category')
+    categories = request.GET.getlist('category') or request.GET.getlist('category[]')
     if user_id and 'null' not in user_id:
         user_id = int(user_id)
         user = User.objects.get(pk=user_id)

@@ -33,6 +33,7 @@ public abstract class SubService {
     }
 
     public void start(final int startId) {
+        if (parent.stopSync()) return;
         parent.incrementRunningChild();
         this.startId = startId;
         Runnable r = new Runnable() {
@@ -57,7 +58,7 @@ public abstract class SubService {
             //if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "SubService completed");
             cycleStartTime = 0;
         } catch (Exception e) {
-            Log.e(this.getClass().getName(), "Sync error.", e);
+            com.newsblur.util.Log.e(this.getClass().getName(), "Sync error.", e);
         } finally {
             if (isRunning()) {
                 setRunning(false);
@@ -115,7 +116,7 @@ public abstract class SubService {
         if (cooloffTimeMs > AppConstants.DUTY_CYCLE_BACKOFF_CAP_MILLIS) cooloffTimeMs = AppConstants.DUTY_CYCLE_BACKOFF_CAP_MILLIS;
 
         if (NbActivity.getActiveActivityCount() > 0 ) {
-            if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "Sleeping for : " + cooloffTimeMs + "ms to enforce max duty cycle.");
+            com.newsblur.util.Log.d(this.getClass().getName(), "Sleeping for : " + cooloffTimeMs + "ms to enforce max duty cycle.");
             try {
                 Thread.sleep(cooloffTimeMs);
             } catch (InterruptedException e) {

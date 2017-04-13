@@ -6,7 +6,6 @@
 //  Copyright 2010 NewsBlur. All rights reserved.
 //
 
-#import "NewsBlurAppDelegate.h"
 #import "NBContainerViewController.h"
 #import "OriginalStoryViewController.h"
 #import "NSString+HTML.h"

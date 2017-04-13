@@ -1,8 +1,8 @@
 import psutil
 import math
 
-GIGS_OF_MEMORY = psutil.TOTAL_PHYMEM/1024/1024/1024.
-NUM_CPUS = psutil.NUM_CPUS
+GIGS_OF_MEMORY = psutil.virtual_memory().total/1024/1024/1024.
+NUM_CPUS = psutil.cpu_count()
 
 bind = "0.0.0.0:8000"
 pidfile = "/srv/newsblur/logs/gunicorn.pid"

@@ -11,6 +11,13 @@
 
 @synthesize settingsStore = _settingsStore;
 
+- (id)initWithSettingsStore:(id<IASKSettingsStore>)settingsStore {
+    if ((self = [super init])) {
+        self.settingsStore = settingsStore;
+    }
+    return self;
+}
+
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self name:NSUserDefaultsDidChangeNotification object:nil];
 }
@@ -76,7 +83,7 @@
     [self.settingsStore setObject:[values objectAtIndex:indexPath.row] forKey:[_specifier key]];
     [self.settingsStore synchronize];
     [[NSNotificationCenter defaultCenter] postNotificationName:kIASKAppSettingChanged
-                                                        object:[_specifier key]
+                                                        object:self
                                                       userInfo:@{
                                                           _specifier.key: values[indexPath.row]
                                                       }];

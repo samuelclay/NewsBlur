@@ -32,7 +32,7 @@ const int COUNT_HEIGHT = 15;
     return [self drawInRect:r ps:psCount nt:ntCount listType:NBFeedListFolder];
 }
 
-- (void)drawInRect:(CGRect)r ps:(int)ps nt:(int)nt listType:(NBFeedListType)listType {
+- (void)drawInRect:(CGRect)r ps:(NSInteger)ps nt:(NSInteger)nt listType:(NBFeedListType)listType {
     rect = CGRectInset(r, 12, 12);
     rect.size.width -= 18; // Scrollbar padding
     
@@ -47,8 +47,8 @@ const int COUNT_HEIGHT = 15;
     }
     [self calculateOffsets:ps nt:nt];
     
-    int psOffset = ps == 0 ? 0 : psWidth - 20;
-    int ntOffset = nt == 0 ? 0 : ntWidth - 20;
+    NSInteger psOffset = ps == 0 ? 0 : psWidth - 20;
+    NSInteger ntOffset = nt == 0 ? 0 : ntWidth - 20;
     
     if (ps > 0 || blueCount) {
         CGRect rr;
@@ -81,7 +81,7 @@ const int COUNT_HEIGHT = 15;
         [UIView drawRoundRectangleInRect:rr withRadius:4];
         
         
-        NSString *psStr = [NSString stringWithFormat:@"%d", ps];
+        NSString *psStr = [NSString stringWithFormat:@"%ld", (long)ps];
         CGSize size = [psStr sizeWithAttributes:@{NSFontAttributeName: indicatorFont}];
         float x_pos = (rr.size.width - size.width) / 2;
         float y_pos = (rr.size.height - size.height) / 2;
@@ -125,7 +125,7 @@ const int COUNT_HEIGHT = 15;
         [UIColorFromLightDarkRGB(0xB3B6AD, 0xA3A69D) set];
         [UIView drawRoundRectangleInRect:rr withRadius:4];        
         
-        NSString *ntStr = [NSString stringWithFormat:@"%d", nt];
+        NSString *ntStr = [NSString stringWithFormat:@"%ld", (long)nt];
         CGSize size = [ntStr sizeWithAttributes:@{NSFontAttributeName: indicatorFont}];
         float x_pos = (rr.size.width - size.width) / 2;
         float y_pos = (rr.size.height - size.height) / 2;
@@ -142,7 +142,7 @@ const int COUNT_HEIGHT = 15;
     }
 }
 
-- (void)calculateOffsets:(int)ps nt:(int)nt {
+- (void)calculateOffsets:(NSInteger)ps nt:(NSInteger)nt {
     psWidth = ps == 0 ? 0 : ps < 10 ? 14 : ps < 100 ? 22 : ps < 1000 ? 28 : ps < 10000 ? 34 : 40;
     ntWidth = nt == 0 ? 0 : nt < 10 ? 14 : nt < 100 ? 22 : nt < 1000 ? 28 : nt < 10000 ? 34 : 40;
     
@@ -150,8 +150,8 @@ const int COUNT_HEIGHT = 15;
     ntPadding = nt == 0 ? 0 : 2;
 }
 
-- (int)offsetWidth {
-    int width = 0;
+- (NSInteger)offsetWidth {
+    NSInteger width = 0;
     if (self.psCount > 0) {
         width += psWidth + psPadding;
     }

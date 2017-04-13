@@ -242,7 +242,7 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
     
     make_feeds: function() {
         var feeds = this.model.feeds;
-        this.feed_count = _.unique(NEWSBLUR.assets.folders.feed_ids_in_folder(true)).length;
+        this.feed_count = _.unique(NEWSBLUR.assets.folders.feed_ids_in_folder({include_inactive: true})).length;
         
         this.feedlist = new NEWSBLUR.Views.FeedList({
             feed_chooser: true,
@@ -307,6 +307,8 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
     },
 
     update_counts: function(initial_load) {
+        if (this.options.premium_only) return;
+        
         var $count = $('.NB-feedchooser-info-counts');
         var approved = this.feedlist.folder_view.highlighted_count();
         var $submit = $('.NB-modal-submit-save', this.$modal);

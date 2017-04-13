@@ -9,7 +9,6 @@
 #import <UIKit/UIKit.h>
 
 @class NewsBlurAppDelegate;
-@class ASIHTTPRequest;
 
 @interface ProfileBadge : UITableViewCell {
     NewsBlurAppDelegate *appDelegate;
@@ -40,9 +39,6 @@
 - (void)refreshWithProfile:(NSDictionary *)profile showStats:(BOOL)showStats withWidth:(int)newWidth;
 
 - (IBAction)doFollowButton:(id)sender;
-- (void)finishFollowing:(ASIHTTPRequest *)request;
-- (void)finishUnfollowing:(ASIHTTPRequest *)request;
-- (void)requestFailed:(ASIHTTPRequest *)request;
 - (void)initProfile;
 
 @end

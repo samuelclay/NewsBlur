@@ -203,7 +203,7 @@ NSString * const ThemeStyleDark = @"dark";
         colors = [NSMutableSet set];
     }
     
-    [colors addObject:[NSString stringWithFormat:@"0x%06lX", rgbValue]];
+    [colors addObject:[NSString stringWithFormat:@"0x%06lX", (long)rgbValue]];
     
     NSLog(@"all unique colors: %@", [[colors allObjects] sortedArrayUsingSelector:@selector(compare:)]);  // log
 }

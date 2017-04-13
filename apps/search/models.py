@@ -267,11 +267,12 @@ class SearchStory:
         cls.ES.indices.delete_index_if_exists("%s-index" % cls.name)
         
     @classmethod
-    def query(cls, feed_ids, query, order, offset, limit):
+    def query(cls, feed_ids, query, order, offset, limit, strip=False):
         cls.create_elasticsearch_mapping()
         cls.ES.indices.refresh()
-
-        query    = re.sub(r'([^\s\w_\-])+', ' ', query) # Strip non-alphanumeric        
+        
+        if strip:
+            query    = re.sub(r'([^\s\w_\-])+', ' ', query) # Strip non-alphanumeric
         sort     = "date:desc" if order == "newest" else "date:asc"
         string_q = pyes.query.QueryStringQuery(query, default_operator="AND")
         feed_q   = pyes.query.TermsQuery('feed_id', feed_ids[:1000])
@@ -295,16 +296,16 @@ class SearchStory:
         return result_ids
     
     @classmethod
-    def global_query(cls, query, order, offset, limit):
+    def global_query(cls, query, order, offset, limit, strip=False):
         cls.create_elasticsearch_mapping()
         cls.ES.indices.refresh()
-
-        query    = re.sub(r'([^\s\w_\-])+', ' ', query) # Strip non-alphanumeric        
+        
+        if strip:
+            query    = re.sub(r'([^\s\w_\-])+', ' ', query) # Strip non-alphanumeric
         sort     = "date:desc" if order == "newest" else "date:asc"
         string_q = pyes.query.QueryStringQuery(query, default_operator="AND")
-        q        = pyes.query.BoolQuery(must=[string_q])
         try:
-            results  = cls.ES.search(q, indices=cls.index_name(), doc_types=[cls.type_name()],
+            results  = cls.ES.search(string_q, indices=cls.index_name(), doc_types=[cls.type_name()],
                                      partial_fields={}, sort=sort, start=offset, size=limit)
         except pyes.exceptions.NoServerAvailable:
             logging.debug(" ***> ~FRNo search server available.")
@@ -444,6 +445,7 @@ class SearchFeed:
     @classmethod
     def export_csv(cls):
         import djqscsv
+        from apps.rss_feeds.models import Feed
 
         qs = Feed.objects.filter(num_subscribers__gte=20).values('id', 'feed_title', 'feed_address', 'feed_link', 'num_subscribers')
         csv = djqscsv.render_to_csv_response(qs).content

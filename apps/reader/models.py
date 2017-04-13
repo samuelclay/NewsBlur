@@ -2,13 +2,13 @@ import datetime
 import time
 import re
 import redis
-from collections import defaultdict
+import pymongo
 from operator import itemgetter
 from pprint import pprint
 from utils import log as logging
 from utils import json_functions as json
 from django.db import models, IntegrityError
-from django.db.models import Q, F
+from django.db.models import Q
 from django.db.models import Count
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -125,7 +125,6 @@ class UserSubscription(models.Model):
         current_time = int(time.time() + 60*60*24)
         if not cutoff_date:
             cutoff_date = datetime.datetime.now() - datetime.timedelta(days=settings.DAYS_OF_STORY_HASHES)
-        unread_timestamp = int(time.mktime(cutoff_date.timetuple()))-1000
         feed_counter = 0
 
         read_dates = dict()
@@ -277,7 +276,7 @@ class UserSubscription(models.Model):
             feed_ids = []
         if not all_feed_ids:
             all_feed_ids = [f for f in feed_ids]
-        
+
         # feeds_string = ""
         feeds_string = ','.join(str(f) for f in sorted(all_feed_ids))[:30]
         ranked_stories_keys         = '%szU:%s:feeds:%s'  % (cache_prefix, user_id, feeds_string)
@@ -285,7 +284,7 @@ class UserSubscription(models.Model):
         stories_cached = rt.exists(ranked_stories_keys)
         unreads_cached = True if read_filter == "unread" else rt.exists(unread_ranked_stories_keys)
         if offset and stories_cached and unreads_cached:
-            story_hashes = range_func(ranked_stories_keys, offset, limit)
+            story_hashes = range_func(ranked_stories_keys, offset, offset+limit)
             if read_filter == "unread":
                 unread_story_hashes = story_hashes
             else:
@@ -329,6 +328,30 @@ class UserSubscription(models.Model):
         rt.expire(unread_ranked_stories_keys, 60*60)
         
         return story_hashes, unread_feed_story_hashes
+    
+    @classmethod
+    def truncate_river(cls, user_id, feed_ids, read_filter, cache_prefix=""):
+        rt = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_TEMP_POOL)
+        
+        feeds_string = ','.join(str(f) for f in sorted(feed_ids))[:30]
+        ranked_stories_keys         = '%szU:%s:feeds:%s'  % (cache_prefix, user_id, feeds_string)
+        unread_ranked_stories_keys  = '%szhU:%s:feeds:%s' % (cache_prefix, user_id, feeds_string)
+        stories_cached = rt.exists(ranked_stories_keys)
+        unreads_cached = rt.exists(unread_ranked_stories_keys)
+        truncated = 0
+        if stories_cached:
+            truncated += rt.zcard(ranked_stories_keys)
+            rt.delete(ranked_stories_keys)
+        else:
+            logging.debug(" ***> ~FRNo stories cached, can't truncate: %s / %s" % (User.objects.get(pk=user_id), feed_ids))
+            
+        if unreads_cached:
+            truncated += rt.zcard(unread_ranked_stories_keys)
+            rt.delete(unread_ranked_stories_keys)
+        else:
+            logging.debug(" ***> ~FRNo unread stories cached, can't truncate: %s / %s" % (User.objects.get(pk=user_id), feed_ids))
+        
+        return truncated
         
     @classmethod
     def add_subscription(cls, user, feed_address, folder=None, bookmarklet=False, auto_active=True,
@@ -384,6 +407,10 @@ class UserSubscription(models.Model):
                 
             feed.setup_feed_for_premium_subscribers()
             feed.count_subscribers()
+            
+            r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
+            r.publish(user.username, 'reload:feeds')
+            
         
         return code, message, us
     
@@ -393,7 +420,7 @@ class UserSubscription(models.Model):
         
         # Get subscriptions for user
         user_subs = cls.objects.select_related('feed').filter(user=user, active=True)
-        feed_ids = [f for f in feed_ids if f and not f.startswith('river')]
+        feed_ids = [f for f in feed_ids if f and not any(f.startswith(prefix) for prefix in ['river', 'saved'])]
         if feed_ids:
             user_subs = user_subs.filter(feed__in=feed_ids)
         
@@ -640,6 +667,7 @@ class UserSubscription(models.Model):
         
     def mark_story_ids_as_read(self, story_hashes, request=None, aggregated=False):
         data = dict(code=0, payload=story_hashes)
+        r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
         
         if not request:
             request = self.user
@@ -656,6 +684,9 @@ class UserSubscription(models.Model):
         
         for story_hash in set(story_hashes):
             RUserStory.mark_read(self.user_id, self.feed_id, story_hash, aggregated=aggregated)
+            r.publish(self.user.username, 'story:read:%s' % story_hash)
+
+        r.publish(self.user.username, 'feed:%s' % self.feed_id)
             
         return data
     
@@ -723,9 +754,13 @@ class UserSubscription(models.Model):
                                                     cutoff_date=self.user.profile.unread_cutoff)
         
             if not stories:
-                stories_db = MStory.objects(story_hash__in=unread_story_hashes)
-                stories = Feed.format_stories(stories_db, self.feed_id)
-        
+                try:
+                    stories_db = MStory.objects(story_hash__in=unread_story_hashes)
+                    stories = Feed.format_stories(stories_db, self.feed_id)
+                except pymongo.errors.OperationFailure, e:
+                    stories_db = MStory.objects(story_hash__in=unread_story_hashes)[:100]
+                    stories = Feed.format_stories(stories_db, self.feed_id)
+                    
             unread_stories = []
             for story in stories:
                 if story['story_date'] < date_delta:
@@ -932,13 +967,12 @@ class UserSubscription(models.Model):
             results_queued = p.execute()
         except:
             results_queued = map(lambda x: False, range(len(feed_ids)))
-        
 
         safety_net = []
         for f, feed_id in enumerate(feed_ids):
             scheduled_updates = results[f*2]
             error_feeds = results[f*2+1]
-            queued_feeds = results[f]
+            queued_feeds = results_queued[f]
             if not scheduled_updates and not queued_feeds and not error_feeds:
                 safety_net.append(feed_id)
 
@@ -993,11 +1027,14 @@ class UserSubscription(models.Model):
 class RUserStory:
     
     @classmethod
-    def mark_story_hashes_read(cls, user_id, story_hashes, r=None, s=None):
+    def mark_story_hashes_read(cls, user_id, story_hashes, username=None, r=None, s=None):
         if not r:
             r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         if not s:
             s = redis.Redis(connection_pool=settings.REDIS_POOL)
+        ps = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
+        if not username:
+            username = User.objects.get(pk=user_id).username
         # if not r2:
         #     r2 = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL2)
         
@@ -1023,7 +1060,7 @@ class RUserStory:
             share_key = "S:%s" % (story_hash)
             friends_with_shares = [int(f) for f in s.sinter(share_key, friend_key)]
             friend_ids.update(friends_with_shares)
-            cls.mark_read(user_id, feed_id, story_hash, social_user_ids=friends_with_shares, r=p)
+            cls.mark_read(user_id, feed_id, story_hash, social_user_ids=friends_with_shares, r=p, username=username, ps=ps)
         
         p.execute()
         # p2.execute()
@@ -1031,11 +1068,13 @@ class RUserStory:
         return list(feed_ids), list(friend_ids)
 
     @classmethod
-    def mark_story_hash_unread(cls, user_id, story_hash, r=None, s=None):
+    def mark_story_hash_unread(cls, user, story_hash, r=None, s=None, ps=None):
         if not r:
             r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         if not s:
             s = redis.Redis(connection_pool=settings.REDIS_POOL)
+        if not ps:
+            ps = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
         # if not r2:
         #     r2 = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL2)
         
@@ -1043,11 +1082,12 @@ class RUserStory:
         feed_id, _ = MStory.split_story_hash(story_hash)
 
         # Find other social feeds with this story to update their counts
-        friend_key = "F:%s:F" % (user_id)
+        friend_key = "F:%s:F" % (user.pk)
         share_key = "S:%s" % (story_hash)
         friends_with_shares = [int(f) for f in s.sinter(share_key, friend_key)]
         friend_ids.update(friends_with_shares)
-        cls.mark_unread(user_id, feed_id, story_hash, social_user_ids=friends_with_shares, r=r)
+        cls.mark_unread(user.pk, feed_id, story_hash, social_user_ids=friends_with_shares, r=r,
+                        username=user.username, ps=ps)
         
         return feed_id, list(friend_ids)
     
@@ -1066,7 +1106,7 @@ class RUserStory:
         
     @classmethod
     def mark_read(cls, user_id, story_feed_id, story_hash, social_user_ids=None, 
-                  aggregated=False, r=None):
+                  aggregated=False, r=None, username=None, ps=None):
         if not r:
             r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         # if not r2:
@@ -1088,6 +1128,9 @@ class RUserStory:
         read_story_key = 'RS:%s:%s' % (user_id, story_feed_id)
         redis_commands(read_story_key)
         
+        if ps and username:
+            ps.publish(username, 'story:read:%s' % story_hash)
+            
         if social_user_ids:
             for social_user_id in social_user_ids:
                 social_read_story_key = 'RS:%s:B:%s' % (user_id, social_user_id)
@@ -1115,7 +1158,7 @@ class RUserStory:
         return message
         
     @staticmethod
-    def mark_unread(user_id, story_feed_id, story_hash, social_user_ids=None, r=None):
+    def mark_unread(user_id, story_feed_id, story_hash, social_user_ids=None, r=None, username=None, ps=None):
         if not r:
             r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
             # r2 = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL2)
@@ -1139,6 +1182,9 @@ class RUserStory:
         read_stories_list_key = 'lRS:%s' % user_id
         r.lrem(read_stories_list_key, story_hash)
         
+        if ps and username:
+            ps.publish(username, 'story:unread:%s' % story_hash)
+            
         if social_user_ids:
             for social_user_id in social_user_ids:
                 social_read_story_key = 'RS:%s:B:%s' % (user_id, social_user_id)
@@ -1548,6 +1594,16 @@ class UserSubscriptionFolders(models.Model):
         for i, f in enumerate(usf):
             print "%s/%s: %s" % (i, total, f)
             f.add_missing_feeds()
+    
+    @classmethod
+    def add_missing_feeds_for_user(cls, user_id):
+        user = User.objects.get(pk=user_id)
+        try:
+            usf = UserSubscriptionFolders.objects.get(user=user)
+        except UserSubscriptionFolders.DoesNotExist:
+            return
+        
+        usf.add_missing_feeds()
         
     def add_missing_feeds(self):
         all_feeds = self.flat()

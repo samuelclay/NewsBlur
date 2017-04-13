@@ -63,7 +63,7 @@ class PageImporter(object):
         try:
             self.fetch_page_timeout(urllib_fallback=urllib_fallback, requests_exception=requests_exception)
         except TimeoutError:
-            logging.user(self.request, '   ***> [%-30s] ~FBPage fetch ~SN~FRfailed~FB due to timeout' % (self.feed))
+            logging.user(self.request, '   ***> [%-30s] ~FBPage fetch ~SN~FRfailed~FB due to timeout' % (self.feed.log_title[:30]))
             
     @timelimit(10)
     def fetch_page_timeout(self, urllib_fallback=False, requests_exception=None):
@@ -95,7 +95,7 @@ class PageImporter(object):
                     except requests.exceptions.TooManyRedirects:
                         response = requests.get(feed_link)
                     except (AttributeError, SocketError, OpenSSLError, PyAsn1Error, TypeError), e:
-                        logging.debug('   ***> [%-30s] Page fetch failed using requests: %s' % (self.feed, e))
+                        logging.debug('   ***> [%-30s] Page fetch failed using requests: %s' % (self.feed.log_title[:30], e))
                         self.save_no_page()
                         return
                     # try:
@@ -127,13 +127,14 @@ class PageImporter(object):
             fp = feedparser.parse(self.feed.feed_address)
             feed_link = fp.feed.get('link', "")
             self.feed.save()
+            logging.debug('   ***> [%-30s] Page fetch failed: %s' % (self.feed.log_title[:30], e))
         except (urllib2.HTTPError), e:
             self.feed.save_page_history(e.code, e.msg, e.fp.read())
         except (httplib.IncompleteRead), e:
             self.feed.save_page_history(500, "IncompleteRead", e)
         except (requests.exceptions.RequestException, 
                 requests.packages.urllib3.exceptions.HTTPError), e:
-            logging.debug('   ***> [%-30s] Page fetch failed using requests: %s' % (self.feed, e))
+            logging.debug('   ***> [%-30s] Page fetch failed using requests: %s' % (self.feed.log_title[:30], e))
             # mail_feed_error_to_admin(self.feed, e, local_vars=locals())
             return self.fetch_page(urllib_fallback=True, requests_exception=e)
         except Exception, e:
@@ -182,7 +183,7 @@ class PageImporter(object):
         except requests.exceptions.TooManyRedirects:
             response = requests.get(story_permalink)
         except (AttributeError, SocketError, OpenSSLError, PyAsn1Error, requests.exceptions.ConnectionError), e:
-            logging.debug('   ***> [%-30s] Original story fetch failed using requests: %s' % (self.feed, e))
+            logging.debug('   ***> [%-30s] Original story fetch failed using requests: %s' % (self.feed.log_title[:30], e))
             return
         try:
             data = response.text
@@ -192,10 +193,12 @@ class PageImporter(object):
         if response.encoding and response.encoding != 'utf-8':
             try:
                 data = data.encode(response.encoding)
-            except LookupError:
+            except (LookupError, UnicodeEncodeError):
                 pass
 
         if data:
+            data = data.replace("\xc2\xa0", " ") # Non-breaking space, is mangled when encoding is not utf-8
+            data = data.replace("\u00a0", " ") # Non-breaking space, is mangled when encoding is not utf-8
             html = self.rewrite_page(data)
             self.save_story(html)
         
@@ -210,7 +213,7 @@ class PageImporter(object):
 
         
     def save_no_page(self):
-        logging.debug('   ---> [%-30s] ~FYNo original page: %s' % (self.feed, self.feed.feed_link))
+        logging.debug('   ---> [%-30s] ~FYNo original page: %s' % (self.feed.log_title[:30], self.feed.feed_link))
         self.feed.has_page = False
         self.feed.save()
         self.feed.save_page_history(404, "Feed has no original page.")
@@ -272,7 +275,7 @@ class PageImporter(object):
                 feed_page = MFeedPage.objects.get(feed_id=self.feed.pk)
                 # feed_page.page_data = html.encode('utf-8')
                 if feed_page.page() == html:
-                    logging.debug('   ---> [%-30s] ~FYNo change in page data: %s' % (self.feed.title[:30], self.feed.feed_link))
+                    logging.debug('   ---> [%-30s] ~FYNo change in page data: %s' % (self.feed.log_title[:30], self.feed.feed_link))
                 else:
                     feed_page.page_data = html
                     feed_page.save()
@@ -287,12 +290,13 @@ class PageImporter(object):
         )
         response = requests.post(url, files={
             'original_page': compress_string(html),
+            # 'original_page': html,
         })
         if response.status_code == 200:
             return True
     
     def save_page_s3(self, html):
-        k = Key(settings.S3_PAGES_BUCKET)
+        k = Key(settings.S3_CONN.get_bucket(settings.S3_PAGES_BUCKET_NAME))
         k.key = self.feed.s3_pages_key
         k.set_metadata('Content-Encoding', 'gzip')
         k.set_metadata('Content-Type', 'text/html')
@@ -303,7 +307,7 @@ class PageImporter(object):
         try:
             feed_page = MFeedPage.objects.get(feed_id=self.feed.pk)
             feed_page.delete()
-            logging.debug('   ---> [%-30s] ~FYTransfering page data to S3...' % (self.feed))
+            logging.debug('   ---> [%-30s] ~FYTransfering page data to S3...' % (self.feed.log_title[:30]))
         except MFeedPage.DoesNotExist:
             pass
             
@@ -314,7 +318,7 @@ class PageImporter(object):
         return True
     
     def delete_page_s3(self):
-        k = Key(settings.S3_PAGES_BUCKET)
+        k = Key(settings.S3_CONN.get_bucket(settings.S3_PAGES_BUCKET_NAME))
         k.key = self.feed.s3_pages_key
         k.delete()
         

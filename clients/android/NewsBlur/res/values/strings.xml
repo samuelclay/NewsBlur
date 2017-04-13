@@ -6,7 +6,9 @@
     <string name="login_password_hint">password</string>
     <string name="login_registration_email_hint">email address</string>
     <string name="login_button_login">Log In</string>
-    <string name="forgot_password"><u>I forgot my password</u></string>
+    <string name="login_forgot_password"><u>I forgot my password</u></string>
+    <string name="login_custom_server"><u>I have a custom server</u></string>
+    <string name="login_custom_server_hint">https://www.newsblur.com</string>
     <string name="login_message_error">There was problem logging in to NewsBlur.</string>
     <string name="login_logging_in">Logging in…</string>
     <string name="login_logged_in">Logged in!</string>
@@ -147,6 +149,8 @@
     <string name="menu_mark_all_as_read">Mark all as read</string>
     <string name="menu_logout">Log out</string>
     <string name="menu_feedback">Send app feedback</string>
+    <string name="menu_feedback_post">Create a feedback post</string>
+    <string name="menu_feedback_email">Email a bug report</string>
     <string name="menu_loginas">Login as...</string>
 
     <string name="loginas_title">Login As User</string>
@@ -158,6 +162,7 @@
 
     <string name="empty_list_view_no_unread_stories">You have no unread stories.</string>
     <string name="empty_list_view_no_focus_stories">You have no unread stories in Focus mode.\n\nSwitch to All or Unread.</string>
+    <string name="empty_list_view_no_saved_stories">You have no saved stories.\n\nSwitch to All or Unread.</string>
     
     <string name="login_registration_register">Register</string>
     <string name="register_message_error">There was problem registering for NewsBlur.</string>
@@ -239,6 +244,14 @@
         <item>Mark all read</item>
         <item>Cancel</item>
     </string-array>
+    <string-array name="mark_older_read_options">
+        <item>Mark older stories read</item>
+        <item>Cancel</item>
+    </string-array>
+    <string-array name="mark_newer_read_options">
+        <item>Mark newer stories read</item>
+        <item>Cancel</item>
+    </string-array>
 
     <string name="settings_auto_open_first_unread">Auto-Open First Story</string>
     <string name="settings_auto_open_first_unread_sum">Automatically open first unread story from story list</string>
@@ -249,6 +262,8 @@
     <string name="settings_immersive_enter_single_tap">Immersive Mode Via Single Tap</string>
     <string name="settings_show_content_preview">Show Content Preview Text</string>
     <string name="settings_show_thumbnails">Show Image Preview Thumbnails</string>
+    <string name="settings_notifications">Notifications</string>
+    <string name="settings_enable_notifications">Enable Notifications</string>
 
     <string name="story">Story</string>
     <string name="text">Text</string>
@@ -310,6 +325,8 @@
         <item>NONE</item>
     </string-array>
     <string name="confirm_mark_all_read_value">FOLDER_ONLY</string>
+
+    <string name="settings_confirm_mark_range_read">Confirm Mark Older/Newer Read</string>
 
     <string name="settings_ltr_gesture_action">Rightward Swipe on Story Title</string>
     <string name="gest_action_none">No Action</string>

@@ -46,7 +46,6 @@ import com.newsblur.domain.SocialFeed;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
-import com.newsblur.util.MarkAllReadConfirmation;
 import com.newsblur.util.PrefConstants;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.StateFilter;
@@ -255,6 +254,8 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
             if (groupPosition == FolderListAdapter.ALL_SHARED_STORIES_GROUP_POSITION) {
                 menu.removeItem(R.id.menu_delete_feed);
                 menu.removeItem(R.id.menu_choose_folders);
+                menu.removeItem(R.id.menu_unmute_feed);
+                menu.removeItem(R.id.menu_mute_feed);
             } else {
                 menu.removeItem(R.id.menu_unfollow);
 
@@ -314,13 +315,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 	}
 
     private void markFeedsAsRead(FeedSet fs) {
-        MarkAllReadConfirmation confirmation = PrefsUtils.getMarkAllReadConfirmation(getActivity());
-        if (confirmation.feedSetRequiresConfirmation(fs)) {
-            MarkAllReadDialogFragment dialog = MarkAllReadDialogFragment.newInstance(fs);
-            dialog.show(getFragmentManager(), "dialog");
-        } else {
-            FeedUtils.markFeedsRead(fs, null, null, getActivity());
-        }
+        FeedUtils.markRead(getActivity(), fs, null, null, R.array.mark_all_read_options, false);
     }
 
 	public void changeState(StateFilter state) {
@@ -337,13 +332,20 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
      */
     public void pushUnreadCounts() {
         ((Main) getActivity()).updateUnreadCounts((adapter.totalNeutCount+adapter.totalSocialNeutCount), (adapter.totalPosCount+adapter.totalSocialPosiCount));
+        ((Main) getActivity()).updateFeedCount(adapter.lastFeedCount);
     }
 
 	@Override
     public boolean onGroupClick(ExpandableListView list, View group, int groupPosition, long id) {
         Intent i = null;
         if (adapter.isFolderRoot(groupPosition)) {
-			i = new Intent(getActivity(), AllStoriesItemsList.class);
+            if (currentState == StateFilter.SAVED) {
+                // the existence of this row in saved mode is something of a framework artifact and may
+                // confuse users. redirect them to the activity corresponding to what they will actually see
+                i = new Intent(getActivity(), SavedStoriesItemsList.class);
+            } else {
+			    i = new Intent(getActivity(), AllStoriesItemsList.class);
+            }
         } else if (groupPosition == FolderListAdapter.GLOBAL_SHARED_STORIES_GROUP_POSITION) {
             i = new Intent(getActivity(), GlobalSharedStoriesItemsList.class);
         } else if (groupPosition == FolderListAdapter.ALL_SHARED_STORIES_GROUP_POSITION) {

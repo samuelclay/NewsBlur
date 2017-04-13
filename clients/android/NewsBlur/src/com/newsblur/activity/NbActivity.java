@@ -59,7 +59,7 @@ public class NbActivity extends Activity {
 
 	@Override
 	protected void onResume() {
-        if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "onResume");
+        com.newsblur.util.Log.d(this.getClass().getName(), "onResume" + UIUtils.getMemoryUsageDebug(this));
 		super.onResume();
 		finishIfNotLoggedIn();
 
@@ -81,7 +81,7 @@ public class NbActivity extends Activity {
 	protected void finishIfNotLoggedIn() {
 		String currentLoginKey = PrefsUtils.getUniqueLoginKey(this);
 		if(currentLoginKey == null || !currentLoginKey.equals(uniqueLoginKey)) {
-			Log.d( this.getClass().getName(), "This activity was for a different login. finishing it.");
+			com.newsblur.util.Log.d( this.getClass().getName(), "This activity was for a different login. finishing it.");
 			finish();
 		}
 	}

@@ -56,7 +56,7 @@ public class BlurDatabaseHelper {
     private SQLiteDatabase dbRW;
 
     public BlurDatabaseHelper(Context context) {
-        if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "new DB conn requested");
+        com.newsblur.util.Log.d(this.getClass().getName(), "new DB conn requested");
         this.context = context;
         synchronized (RW_MUTEX) {
             dbWrapper = new BlurDatabase(context);
@@ -78,7 +78,9 @@ public class BlurDatabaseHelper {
     }
 
     public void dropAndRecreateTables() {
+        com.newsblur.util.Log.i(this.getClass().getName(), "dropping and recreating all tables . . .");
         synchronized (RW_MUTEX) {dbWrapper.dropAndRecreateTables();}
+        com.newsblur.util.Log.i(this.getClass().getName(), ". . . tables recreated.");
     }
 
     public String getEngineVersion() {
@@ -783,9 +785,26 @@ public class BlurDatabaseHelper {
         synchronized (RW_MUTEX) {dbRW.insertOrThrow(DatabaseConstants.ACTION_TABLE, null, ra.toContentValues());}
     }
 
-    public Cursor getActions(boolean includeDone) {
+    public Cursor getActions() {
         String q = "SELECT * FROM " + DatabaseConstants.ACTION_TABLE;
         return dbRO.rawQuery(q, null);
+    }
+
+    public void incrementActionTried(String actionId) {
+        synchronized (RW_MUTEX) {
+            String q = "UPDATE " + DatabaseConstants.ACTION_TABLE +
+                       " SET " + DatabaseConstants.ACTION_TRIED + " = " + DatabaseConstants.ACTION_TRIED + " + 1" +
+                       " WHERE " + DatabaseConstants.ACTION_ID + " = ?";
+            dbRW.execSQL(q, new String[]{actionId});
+        }
+    }
+
+    public int getUntriedActionCount() {
+        String q = "SELECT * FROM " + DatabaseConstants.ACTION_TABLE + " WHERE " + DatabaseConstants.ACTION_TRIED + " < 1";
+        Cursor c = dbRO.rawQuery(q, null);
+        int result = c.getCount();
+        c.close();
+        return result;
     }
 
     public void clearAction(String actionId) {
@@ -960,6 +979,30 @@ public class BlurDatabaseHelper {
         return c;
     }
 
+    public Cursor getNotifyFocusStoriesCursor() {
+        return rawQuery(DatabaseConstants.NOTIFY_FOCUS_STORY_QUERY, null, null);
+    }
+
+    public Cursor getNotifyUnreadStoriesCursor() {
+        return rawQuery(DatabaseConstants.NOTIFY_UNREAD_STORY_QUERY, null, null);
+    }
+
+    public Set<String> getNotifyFeeds() {
+        String q = "SELECT " + DatabaseConstants.FEED_ID + " FROM " + DatabaseConstants.FEED_TABLE +
+                   " WHERE " + DatabaseConstants.FEED_NOTIFICATION_FILTER + " = '" + Feed.NOTIFY_FILTER_FOCUS + "'" +
+                   " OR " + DatabaseConstants.FEED_NOTIFICATION_FILTER + " = '" + Feed.NOTIFY_FILTER_UNREAD + "'";
+        Cursor c = dbRO.rawQuery(q, null);
+        Set<String> feedIds = new HashSet<String>(c.getCount());
+        while (c.moveToNext()) {
+            String id = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.FEED_ID));
+            if (id != null) {
+                feedIds.add(id);
+            }
+        }
+        c.close();
+        return feedIds;
+    }
+
     public Loader<Cursor> getActiveStoriesLoader(final FeedSet fs) {
         final StoryOrder order = PrefsUtils.getStoryOrder(context, fs);
         return new QueryCursorLoader(context) {
@@ -986,7 +1029,7 @@ public class BlurDatabaseHelper {
         // stories aren't actually queried directly via the FeedSet and filters set in the UI. rather,
         // those filters are use to push live or cached story hashes into the reading session table, and
         // those hashes are used to pull story data from the story table
-        StringBuilder q = new StringBuilder(DatabaseConstants.STORY_QUERY_BASE);
+        StringBuilder q = new StringBuilder(DatabaseConstants.SESSION_STORY_QUERY_BASE);
         
         if (fs.isAllRead()) {
             q.append(" ORDER BY " + DatabaseConstants.READ_STORY_ORDER);
@@ -1225,6 +1268,33 @@ public class BlurDatabaseHelper {
         reply.date = new Date(replyCreateTime);
         reply.id = reply.constructId();
         synchronized (RW_MUTEX) {dbRW.insertWithOnConflict(DatabaseConstants.REPLY_TABLE, null, reply.getValues(), SQLiteDatabase.CONFLICT_REPLACE);}
+    }
+
+    public void putStoryDismissed(String storyHash) {
+        ContentValues values = new ContentValues();
+        values.put(DatabaseConstants.NOTIFY_DISMISS_STORY_HASH, storyHash);
+        values.put(DatabaseConstants.NOTIFY_DISMISS_TIME, Calendar.getInstance().getTime().getTime());
+        synchronized (RW_MUTEX) {dbRW.insertOrThrow(DatabaseConstants.NOTIFY_DISMISS_TABLE, null, values);}
+    }
+
+    public boolean isStoryDismissed(String storyHash) {
+        String[] selArgs = new String[] {storyHash};
+        String selection = DatabaseConstants.NOTIFY_DISMISS_STORY_HASH + " = ?";
+        Cursor c = dbRO.query(DatabaseConstants.NOTIFY_DISMISS_TABLE, null, selection, selArgs, null, null, null);
+        boolean result = (c.getCount() > 0);
+        closeQuietly(c);
+        return result;
+    }
+
+    public void cleanupDismissals() {
+        Calendar cutoffDate = Calendar.getInstance();
+        cutoffDate.add(Calendar.MONTH, -1);
+        synchronized (RW_MUTEX) {
+            int count = dbRW.delete(DatabaseConstants.NOTIFY_DISMISS_TABLE, 
+                        DatabaseConstants.NOTIFY_DISMISS_TIME + " < ?",
+                        new String[]{Long.toString(cutoffDate.getTime().getTime())});
+            com.newsblur.util.Log.d(this.getClass().getName(), "cleaned up dismissals: " + count);
+        }
     }
 
     public static void closeQuietly(Cursor c) {

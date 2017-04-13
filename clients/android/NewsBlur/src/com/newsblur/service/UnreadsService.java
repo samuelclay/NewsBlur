@@ -1,12 +1,16 @@
 package com.newsblur.service;
 
+import android.database.Cursor;
 import android.util.Log;
 
+import static com.newsblur.database.BlurDatabaseHelper.closeQuietly;
+import com.newsblur.domain.Feed;
 import com.newsblur.domain.Story;
 import com.newsblur.network.domain.StoriesResponse;
 import com.newsblur.network.domain.UnreadStoryHashesResponse;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.DefaultFeedView;
+import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.StoryOrder;
 
@@ -14,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -24,7 +29,7 @@ public class UnreadsService extends SubService {
     private static volatile boolean doMetadata = false;
 
     /** Unread story hashes the API listed that we do not appear to have locally yet. */
-    private static List<String> StoryHashQueue;
+    static List<String> StoryHashQueue;
     static { StoryHashQueue = new ArrayList<String>(); }
 
     public UnreadsService(NBSyncService parent) {
@@ -39,9 +44,11 @@ public class UnreadsService extends SubService {
             doMetadata = false;
         }
 
-        if (StoryHashQueue.size() < 1) return;
+        if (StoryHashQueue.size() > 0) {
+            getNewUnreadStories();
+            parent.pushNotifications();
+        }
 
-        getNewUnreadStories();
     }
 
     private void syncUnreadList() {
@@ -55,6 +62,7 @@ public class UnreadsService extends SubService {
         // the set of unreads from the API, we will mark them as read. note that this collection
         // will be searched many times for new unreads, so it should be a Set, not a List.
         Set<String> oldUnreadHashes = parent.dbHelper.getUnreadStoryHashesAsSet();
+        com.newsblur.util.Log.i(this.getClass().getName(), "starting unread count: " + oldUnreadHashes.size());
 
         // a place to store and then sort unread hashes we aim to fetch. note the member format
         // is made to match the format of the API response (a list of [hash, date] tuples). it
@@ -63,6 +71,7 @@ public class UnreadsService extends SubService {
 
         // process the api response, both bookkeeping no-longer-unread stories and populating
         // the sortation list we will use to create the fetch list for step two
+        int count = 0;
         feedloop: for (Entry<String, List<String[]>> entry : unreadHashes.unreadHashes.entrySet()) {
             // the API gives us a list of unreads, split up by feed ID. the unreads are tuples of
             // story hash and date
@@ -78,8 +87,21 @@ public class UnreadsService extends SubService {
                 } else {
                     oldUnreadHashes.remove(newUnread[0]);
                 }
+                count++;
             }
         }
+        com.newsblur.util.Log.i(this.getClass().getName(), "new unread count:      " + count);
+        com.newsblur.util.Log.i(this.getClass().getName(), "new unreads found:     " + sortationList.size());
+        com.newsblur.util.Log.i(this.getClass().getName(), "unreads to retire:     " + oldUnreadHashes.size());
+
+        if (parent.stopSync()) return;
+
+        // any stories that we previously thought to be unread but were not found in the
+        // list, mark them read now
+
+        parent.dbHelper.markStoryHashesRead(oldUnreadHashes);
+
+        if (parent.stopSync()) return;
 
         // now sort the unreads we need to fetch so they are fetched roughly in the order
         // the user is likely to read them.  if the user reads newest first, those come first.
@@ -108,24 +130,29 @@ public class UnreadsService extends SubService {
             StoryHashQueue.add(tuple[0]);
         }
 
-        if (parent.stopSync()) return;
-
-        // any stories that we previously thought to be unread but were not found in the
-        // list, mark them read now
-        parent.dbHelper.markStoryHashesRead(oldUnreadHashes);
     }
 
     private void getNewUnreadStories() {
-        int totalCount = StoryHashQueue.size();
+        Set<String> notifyFeeds = parent.dbHelper.getNotifyFeeds();
         unreadsyncloop: while (StoryHashQueue.size() > 0) {
             if (parent.stopSync()) return;
-            if(!PrefsUtils.isOfflineEnabled(parent)) return;
+
+            boolean isOfflineEnabled = PrefsUtils.isOfflineEnabled(parent);
+            boolean isEnableNotifications = PrefsUtils.isEnableNotifications(parent);
+            if (! (isOfflineEnabled || isEnableNotifications)) return;
+
             gotWork();
             startExpensiveCycle();
 
             List<String> hashBatch = new ArrayList(AppConstants.UNREAD_FETCH_BATCH_SIZE);
+            List<String> hashSkips = new ArrayList(AppConstants.UNREAD_FETCH_BATCH_SIZE);
             batchloop: for (String hash : StoryHashQueue) {
-                hashBatch.add(hash);
+                if( isOfflineEnabled ||
+                   (isEnableNotifications && notifyFeeds.contains(FeedUtils.inferFeedId(hash))) ) {
+                    hashBatch.add(hash);
+                } else {
+                    hashSkips.add(hash);
+                }
                 if (hashBatch.size() >= AppConstants.UNREAD_FETCH_BATCH_SIZE) break batchloop;
             }
             StoriesResponse response = parent.apiManager.getStoriesByHash(hashBatch);
@@ -133,8 +160,12 @@ public class UnreadsService extends SubService {
                 Log.e(this.getClass().getName(), "error fetching unreads batch, abandoning sync.");
                 break unreadsyncloop;
             }
+
             parent.insertStories(response);
             for (String hash : hashBatch) {
+                StoryHashQueue.remove(hash);
+            } 
+            for (String hash : hashSkips) {
                 StoryHashQueue.remove(hash);
             } 
 

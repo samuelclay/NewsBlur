@@ -8,6 +8,7 @@ import android.provider.BaseColumns;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import com.newsblur.domain.Feed;
 import com.newsblur.util.ReadFilter;
 import com.newsblur.util.StateFilter;
 import com.newsblur.util.StoryOrder;
@@ -41,6 +42,8 @@ public class DatabaseConstants {
 	public static final String FEED_POSITIVE_COUNT = "ps";
 	public static final String FEED_NEUTRAL_COUNT = "nt";
 	public static final String FEED_NEGATIVE_COUNT = "ng";
+    public static final String FEED_NOTIFICATION_TYPES = "notification_types";
+    public static final String FEED_NOTIFICATION_FILTER = "notification_filter";
 
 	public static final String SOCIALFEED_TABLE = "social_feeds";
 	public static final String SOCIAL_FEED_ID = BaseColumns._ID;
@@ -127,6 +130,7 @@ public class DatabaseConstants {
     public static final String ACTION_TABLE = "story_actions";
 	public static final String ACTION_ID = BaseColumns._ID;
     public static final String ACTION_TIME = "time";
+    public static final String ACTION_TRIED = "tried";
     public static final String ACTION_TYPE = "action_type";
     public static final String ACTION_COMMENT_TEXT = "comment_text";
     public static final String ACTION_STORY_HASH = "story_hash";
@@ -142,6 +146,11 @@ public class DatabaseConstants {
     public static final String STARREDCOUNTS_COUNT = "count";
     public static final String STARREDCOUNTS_TAG = "tag";
     public static final String STARREDCOUNTS_FEEDID = "feed_id";
+
+    public static final String NOTIFY_DISMISS_TABLE = "notify_dimiss";
+    public static final String NOTIFY_DISMISS_STORY_HASH = "story_hash";
+    public static final String NOTIFY_DISMISS_TIME = "time";
+
 
 	static final String FOLDER_SQL = "CREATE TABLE " + FOLDER_TABLE + " (" +
 		FOLDER_NAME + TEXT + " PRIMARY KEY, " +  
@@ -165,7 +174,9 @@ public class DatabaseConstants {
 		FEED_LINK + TEXT + ", " + 
 		FEED_SUBSCRIBERS + TEXT + ", " +
 		FEED_TITLE + TEXT + ", " + 
-		FEED_UPDATED_SECONDS +
+		FEED_UPDATED_SECONDS + INTEGER + ", " +
+        FEED_NOTIFICATION_TYPES + TEXT + ", " +
+        FEED_NOTIFICATION_FILTER + TEXT +
 		")";
 	
 	static final String USER_SQL = "CREATE TABLE " + USER_TABLE + " (" + 
@@ -263,6 +274,7 @@ public class DatabaseConstants {
     static final String ACTION_SQL = "CREATE TABLE " + ACTION_TABLE + " (" +
         ACTION_ID + INTEGER + " PRIMARY KEY AUTOINCREMENT, " +
         ACTION_TIME + INTEGER + " NOT NULL, " +
+        ACTION_TRIED + INTEGER + ", " +
         ACTION_TYPE + TEXT + ", " +
         ACTION_COMMENT_TEXT + TEXT + ", " +
         ACTION_STORY_HASH + TEXT + ", " +
@@ -281,14 +293,10 @@ public class DatabaseConstants {
 	    STARREDCOUNTS_FEEDID + TEXT +
         ")";
 
-	public static final String[] FEED_COLUMNS = {
-		FEED_TABLE + "." + FEED_ACTIVE, FEED_TABLE + "." + FEED_ID, FEED_TABLE + "." + FEED_FAVICON_URL, FEED_TABLE + "." + FEED_TITLE, FEED_TABLE + "." + FEED_LINK, FEED_TABLE + "." + FEED_ADDRESS, FEED_TABLE + "." + FEED_SUBSCRIBERS, FEED_TABLE + "." + FEED_UPDATED_SECONDS, FEED_TABLE + "." + FEED_FAVICON_FADE, FEED_TABLE + "." + FEED_FAVICON_COLOR, FEED_TABLE + "." + FEED_FAVICON_BORDER, FEED_TABLE + "." + FEED_FAVICON_TEXT,
-		FEED_TABLE + "." + FEED_POSITIVE_COUNT, FEED_TABLE + "." + FEED_NEUTRAL_COUNT, FEED_TABLE + "." + FEED_NEGATIVE_COUNT,
-	};
-
-	public static final String[] SOCIAL_FEED_COLUMNS = {
-		SOCIAL_FEED_ID, SOCIAL_FEED_USERNAME, SOCIAL_FEED_TITLE, SOCIAL_FEED_ICON, SOCIAL_FEED_POSITIVE_COUNT, SOCIAL_FEED_NEUTRAL_COUNT, SOCIAL_FEED_NEGATIVE_COUNT,
-	};
+    static final String NOTIFY_DISMISS_SQL = "CREATE TABLE " + NOTIFY_DISMISS_TABLE + " (" +
+        NOTIFY_DISMISS_STORY_HASH + TEXT + ", " +
+        NOTIFY_DISMISS_TIME + INTEGER + " NOT NULL " +
+        ")";
 
 	private static final String[] BASE_STORY_COLUMNS = {
 		STORY_AUTHORS, STORY_SHORT_CONTENT, STORY_TIMESTAMP, STORY_SHARED_DATE,
@@ -303,16 +311,37 @@ public class DatabaseConstants {
         TextUtils.join(",", BASE_STORY_COLUMNS) + ", " + 
         FEED_TITLE + ", " + FEED_FAVICON_URL + ", " + FEED_FAVICON_COLOR + ", " + FEED_FAVICON_BORDER + ", " + FEED_FAVICON_FADE + ", " + FEED_FAVICON_TEXT;
 
-    public static final String STORY_QUERY_BASE = 
+    public static final String STORY_QUERY_BASE_1 = 
         "SELECT " +
         STORY_COLUMNS +
         " FROM " + STORY_TABLE +
         " INNER JOIN " + FEED_TABLE + 
         " ON " + STORY_TABLE + "." + STORY_FEED_ID + " = " + FEED_TABLE + "." + FEED_ID +
-        " WHERE " + STORY_HASH + " IN (" +
-        " SELECT DISTINCT " + READING_SESSION_STORY_HASH +
-        " FROM " + READING_SESSION_TABLE + ")" + 
+        " WHERE ";
+    public static final String STORY_QUERY_BASE_2 =
         " GROUP BY " + STORY_HASH;
+
+    public static final String SESSION_STORY_QUERY_BASE = 
+        STORY_QUERY_BASE_1 +
+        STORY_HASH + " IN (" +
+        " SELECT DISTINCT " + READING_SESSION_STORY_HASH +
+        " FROM " + READING_SESSION_TABLE +
+        ")" + 
+        STORY_QUERY_BASE_2;
+
+    public static String NOTIFY_FOCUS_STORY_QUERY = 
+        STORY_QUERY_BASE_1 +
+        STORY_FEED_ID + " IN (SELECT " + FEED_ID + " FROM " + FEED_TABLE + " WHERE " + FEED_NOTIFICATION_FILTER + " = '" + Feed.NOTIFY_FILTER_FOCUS + "')" +
+        " AND " + STORY_INTELLIGENCE_TOTAL + " > 0 " +
+        STORY_QUERY_BASE_2 +
+        " ORDER BY " + STORY_TIMESTAMP + " DESC";
+
+    public static String NOTIFY_UNREAD_STORY_QUERY = 
+        STORY_QUERY_BASE_1 +
+        STORY_FEED_ID + " IN (SELECT " + FEED_ID + " FROM " + FEED_TABLE + " WHERE " + FEED_NOTIFICATION_FILTER + " = '" + Feed.NOTIFY_FILTER_UNREAD + "')" +
+        " AND " + STORY_INTELLIGENCE_TOTAL + " >= 0 " +
+        STORY_QUERY_BASE_2 +
+        " ORDER BY " + STORY_TIMESTAMP + " DESC";
 
     public static final String JOIN_STORIES_ON_SOCIALFEED_MAP = 
         " INNER JOIN " + STORY_TABLE + " ON " + STORY_TABLE + "." + STORY_ID + " = " + SOCIALFEED_STORY_MAP_TABLE + "." + SOCIALFEED_STORY_STORYID;

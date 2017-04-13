@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.newsblur"
-    android:versionCode="131"
-    android:versionName="5.0.0b2" >
+    android:versionCode="136"
+    android:versionName="5.2.0b1" >
 
     <uses-sdk
         android:minSdkVersion="16"
@@ -140,6 +140,10 @@
         </receiver>
 
         <receiver android:name=".service.ServiceScheduleReceiver" />
+        
+        <receiver android:name=".util.NotifyDismissReceiver" android:exported="false" />
+        <receiver android:name=".util.NotifySaveReceiver" android:exported="false" />
+        <receiver android:name=".util.NotifyMarkreadReceiver" android:exported="false" />
 
     </application>
 

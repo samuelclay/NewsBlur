@@ -58,7 +58,7 @@ public class ImageLoader {
         }
 
         if (url.startsWith("/")) {
-            url = APIConstants.NEWSBLUR_URL + url;
+            url = APIConstants.buildUrl(url);
         }
 
 		imageViewMappings.put(imageView, url);
@@ -75,7 +75,7 @@ public class ImageLoader {
 			imageView.setImageResource(emptyRID);
 		}
 	}
-	
+
 	private class PhotoToLoad {
 		public String url;
 		public ImageView imageView;
@@ -149,7 +149,7 @@ public class ImageLoader {
 		}
 	}
 
-    private Bitmap decodeBitmap(File f) {
+    private static Bitmap decodeBitmap(File f) {
         // is is perfectly normal for files not to exist on cache misses or low
         // device memory. this class will handle nulls with a queued action or
         // placeholder image.
@@ -159,6 +159,19 @@ public class ImageLoader {
         } catch (Exception e) {
             return null;
         }
+    }
+
+    /**
+     * Directly access a previously cached image's bitmap.  This method is *not* for use
+     * in foreground UI methods; it was designed for low-priority background use for
+     * creating notifications.
+     */
+    public static Bitmap getCachedImageSynchro(FileCache fileCache, String url) {
+        if (url.startsWith("/")) {
+            url = APIConstants.buildUrl(url);
+        }
+        File f = fileCache.getCachedFile(url);
+        return decodeBitmap(f);
     }
 
 }

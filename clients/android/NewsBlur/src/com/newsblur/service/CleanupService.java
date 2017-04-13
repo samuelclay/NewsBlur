@@ -20,24 +20,27 @@ public class CleanupService extends SubService {
 
         gotWork();
 
-        if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "cleaning up old stories");
+        com.newsblur.util.Log.d(this.getClass().getName(), "cleaning up old stories");
         parent.dbHelper.cleanupVeryOldStories();
         if (!PrefsUtils.isKeepOldStories(parent)) {
             parent.dbHelper.cleanupReadStories();
         }
 
-        if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "cleaning up old story texts");
+        com.newsblur.util.Log.d(this.getClass().getName(), "cleaning up old story texts");
         parent.dbHelper.cleanupStoryText();
 
-        if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "cleaning up story image cache");
+        com.newsblur.util.Log.d(this.getClass().getName(), "cleaning up notification dismissals");
+        parent.dbHelper.cleanupDismissals();
+
+        com.newsblur.util.Log.d(this.getClass().getName(), "cleaning up story image cache");
         FileCache imageCache = FileCache.asStoryImageCache(parent);
         imageCache.cleanupUnusedOrOld(parent.dbHelper.getAllStoryImages());
 
-        if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "cleaning up icon cache");
+        com.newsblur.util.Log.d(this.getClass().getName(), "cleaning up icon cache");
         FileCache iconCache = FileCache.asIconCache(parent);
         iconCache.cleanupOld();
 
-        if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "cleaning up thumbnail cache");
+        com.newsblur.util.Log.d(this.getClass().getName(), "cleaning up thumbnail cache");
         FileCache thumbCache = FileCache.asThumbnailCache(parent);
         thumbCache.cleanupUnusedOrOld(parent.dbHelper.getAllStoryThumbnails());
 

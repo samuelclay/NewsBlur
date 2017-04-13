@@ -1,6 +1,7 @@
 NEWSBLUR.Modal = function(options) {
     var defaults = {
-        width: 600
+        width: 600,
+        overlayClose: true
     };
     
     this.options = _.extend({}, defaults, options);
@@ -19,7 +20,7 @@ NEWSBLUR.Modal.prototype = {
         this.$modal.modal({
             'minWidth': this.options.width || 600,
             'maxWidth': this.options.width || 600,
-            'overlayClose': true,
+            'overlayClose': this.options.overlayClose,
             'onOpen': function (dialog) {
                 self.flags.open = true;
                 dialog.overlay.fadeIn(200, function () {

@@ -1,9 +1,6 @@
 import datetime
 import re
 import redis
-from cgi import escape
-from django.db import models
-from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
 from django.core.mail import EmailMultiAlternatives
 from django.core.urlresolvers import reverse
@@ -87,7 +84,7 @@ class EmailNewsletter:
         usersub.needs_unread_recalc = True
         usersub.save()
         
-        self._publish_to_subscribers(feed)
+        self._publish_to_subscribers(feed, story.story_hash)
         
         MFetchHistory.add(feed_id=feed.pk, fetch_type='push')
         logging.user(user, "~FCNewsletter feed story: ~SB%s~SN / ~SB%s" % (story.story_title, feed))
@@ -109,12 +106,12 @@ class EmailNewsletter:
         
         params = dict(receiver_user_id=user.pk, email_type='first_newsletter')
         try:
-            sent_email = MSentEmail.objects.get(**params)
+            MSentEmail.objects.get(**params)
             if not force:
                 # Return if email already sent
                 return
         except MSentEmail.DoesNotExist:
-            sent_email = MSentEmail.objects.create(**params)
+            MSentEmail.objects.create(**params)
                 
         text    = render_to_string('mail/email_first_newsletter.txt', {})
         html    = render_to_string('mail/email_first_newsletter.xhtml', {})
@@ -177,13 +174,13 @@ class EmailNewsletter:
         content = content.replace('!important', '')
         return content
         
-    def _publish_to_subscribers(self, feed):
+    def _publish_to_subscribers(self, feed, story_hash):
         try:
             r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
-            listeners_count = r.publish(str(feed.pk), 'story:new')
+            listeners_count = r.publish("%s:story" % feed.pk, 'story:new:%s' % story_hash)
             if listeners_count:
-                logging.debug("   ---> [%-30s] ~FMPublished to %s subscribers" % (feed.title[:30], listeners_count))
+                logging.debug("   ---> [%-30s] ~FMPublished to %s subscribers" % (feed.log_title[:30], listeners_count))
         except redis.ConnectionError:
-            logging.debug("   ***> [%-30s] ~BMRedis is unavailable for real-time." % (feed.title[:30],))
+            logging.debug("   ***> [%-30s] ~BMRedis is unavailable for real-time." % (feed.log_title[:30],))
         
     

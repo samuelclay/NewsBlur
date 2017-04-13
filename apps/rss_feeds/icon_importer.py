@@ -67,8 +67,8 @@ class IconImporter(object):
                  self.feed_icon.icon_url != icon_url or
                  self.feed_icon.not_found or
                  (settings.BACKED_BY_AWS.get('icons_on_s3') and not self.feed.s3_icon))):
-                logging.debug(" ---> [%-30s] ~SN~FBIcon difference:~FY color:%s (%s/%s) data:%s url:%s notfound:%s no-s3:%s" % (
-                    self.feed,
+                logging.debug("   ---> [%-30s] ~SN~FBIcon difference:~FY color:%s (%s/%s) data:%s url:%s notfound:%s no-s3:%s" % (
+                    self.feed.log_title[:30],
                     self.feed_icon.color != color, self.feed_icon.color, color,
                     self.feed_icon.data != image_str,
                     self.feed_icon.icon_url != icon_url,
@@ -97,7 +97,7 @@ class IconImporter(object):
     def save_to_s3(self, image_str):
         expires = datetime.datetime.now() + datetime.timedelta(days=60)
         expires = expires.strftime("%a, %d %b %Y %H:%M:%S GMT")
-        k = Key(settings.S3_ICONS_BUCKET)
+        k = Key(settings.S3_CONN.get_bucket(settings.S3_ICONS_BUCKET_NAME))
         k.key = self.feed.s3_icons_key
         k.set_metadata('Content-Type', 'image/png')
         k.set_metadata('Expires', expires)
@@ -195,7 +195,7 @@ class IconImporter(object):
         if self.page_data:
             content = self.page_data
         elif settings.BACKED_BY_AWS.get('pages_on_s3') and self.feed.s3_page:
-            key = settings.S3_PAGES_BUCKET.get_key(self.feed.s3_pages_key)
+            key = settings.S3_CONN.get_bucket(settings.S3_PAGES_BUCKET_NAME).get_key(self.feed.s3_pages_key)
             compressed_content = key.get_contents_as_string()
             stream = StringIO(compressed_content)
             gz = gzip.GzipFile(fileobj=stream)
@@ -217,7 +217,8 @@ class IconImporter(object):
                     requests.models.ChunkedEncodingError,
                     requests.models.ContentDecodingError,
                     httplib.IncompleteRead,
-                    LocationParseError, OpenSSLError, PyAsn1Error), e:
+                    LocationParseError, OpenSSLError, PyAsn1Error,
+                    ValueError), e:
                 logging.debug(" ---> ~SN~FRFailed~FY to fetch ~FGfeed icon~FY: %s" % e)
         if url:
             image, image_file = self.get_image_from_url(url)
@@ -236,7 +237,10 @@ class IconImporter(object):
         if not force:
             url = self.feed_icon.icon_url
         if not url and self.feed.feed_link and len(self.feed.feed_link) > 6:
-            url = urlparse.urljoin(self.feed.feed_link, 'favicon.ico')
+            try:
+                url = urlparse.urljoin(self.feed.feed_link, 'favicon.ico')
+            except ValueError:
+                url = None
         if not url:
             return None, None, None
 

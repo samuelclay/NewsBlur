@@ -15,7 +15,7 @@
         <p style="margin: 12px 0 12px;line-height: 16px;clear: both;">You follow {{ common_followers|length }} {{ common_followers|pluralize:"person,people" }} who follow{{ common_followers|pluralize:"s," }} {{ follower_profile.username }}:</p>
         {% for follower in common_followers %}
             <div style="margin: 0 12px 12px 0; float: left;">
-                <a href="{{ follower.blurblog_url }}"><img src="{{ follower.email_photo_url }}" style="float: left; border-radius: 3px;margin-right: 6px; width: 24px; height: 24px;border: none;"></a>
+                <a href="{{ follower.blurblog_url }}"><img src="{{ follower.email_photo_url }}" style="float: left; border-radius: 3px;margin: 0 6px 0 0; width: 24px; height: 24px;border: none;"></a>
                 <a href="{{ follower.blurblog_url }}" style="color: #404040;text-decoration: none">{{ follower.username }}</a>
             </div>
         {% endfor %}
@@ -27,7 +27,7 @@
         <p style="display: block; margin: 12px 0 12px;line-height: 16px;clear: both;">You and {{ follower_profile.username }} both follow {{ common_followings|length }} {{ common_followings|pluralize:"person,people" }}:</p>
         {% for following in common_followings %}
             <div style="margin: 0 12px 12px 0; float: left;">
-                <a href="{{ following.blurblog_url }}"><img src="{{ following.email_photo_url }}" style="float: left; border-radius: 3px;margin-right: 6px; width: 24px; height: 24px;border: none;"></a>
+                <a href="{{ following.blurblog_url }}"><img src="{{ following.email_photo_url }}" style="float: left; border-radius: 3px;margin: 0 6px 0 0; width: 24px; height: 24px;border: none;"></a>
                 <a href="{{ following.blurblog_url }}" style="color: #404040;text-decoration: none">{{ following.username }}</a>
             </div>
         {% endfor %}

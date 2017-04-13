@@ -96,7 +96,7 @@ public class Story implements Serializable {
 
     // non-API, though it probably could/should be. populated on first story ingest if thumbnails are turned on
     public String thumbnailUrl;
- 
+
 	public ContentValues getValues() {
 		final ContentValues values = new ContentValues();
 		values.put(DatabaseConstants.STORY_ID, id);
@@ -228,6 +228,7 @@ public class Story implements Serializable {
      */
     @Override
     public int hashCode() {
+        if (storyHash != null) return storyHash.hashCode();
         int result = 17;
         if (this.id == null) { result = 37*result; } else { result = 37*result + this.id.hashCode();}
         if (this.feedId == null) { result = 37*result; } else { result = 37*result + this.feedId.hashCode();}

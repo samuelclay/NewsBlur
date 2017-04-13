@@ -55,7 +55,7 @@ class MStatistics(mongo.Document):
             elif key in ('feeds_fetched', 'premium_users', 'standard_users', 'latest_sites_loaded',
                          'max_sites_loaded', 'max_stories_shared'):
                 values[key] = int(value)
-            elif key in ('latest_avg_time_taken', 'max_avg_time_taken'):
+            elif key in ('latest_avg_time_taken', 'max_avg_time_taken', 'last_5_min_time_taken'):
                 values[key] = float(value)
         
         values['total_sites_loaded'] = sum(values['sites_loaded']) if 'sites_loaded' in values else 0
@@ -111,6 +111,7 @@ class MStatistics(mongo.Document):
         now = round_time(datetime.datetime.now(), round_to=60)
         sites_loaded = []
         avg_time_taken = []
+        last_5_min_time_taken = 0
         r = redis.Redis(connection_pool=settings.REDIS_STATISTICS_POOL)
 
         for hour in range(24):
@@ -128,8 +129,11 @@ class MStatistics(mongo.Document):
             counts = [int(c) for c in times[::2] if c]
             avgs = [float(a) for a in times[1::2] if a]
             
+            if hour == 0:
+                last_5_min_time_taken = round(sum(avgs[:1]) / max(1, sum(counts[:1])), 2)
+                
             if counts and avgs:
-                count = sum(counts)
+                count = max(1, sum(counts))
                 avg = round(sum(avgs) / count, 3)
             else:
                 count = 0
@@ -148,6 +152,7 @@ class MStatistics(mongo.Document):
             ('latest_avg_time_taken',   avg_time_taken[-1]),
             ('max_sites_loaded',        max(sites_loaded)),
             ('max_avg_time_taken',      max(1, max(avg_time_taken))),
+            ('last_5_min_time_taken',   last_5_min_time_taken),
         )
         for key, value in values:
             cls.objects(key=key).update_one(upsert=True, set__key=key, set__value=value)
@@ -257,7 +262,10 @@ class MFeedback(mongo.Document):
         except (urllib2.HTTPError), e:
             logging.debug(" ***> Failed to collect feedback: %s" % e)
             return
-        data = json.decode(data[1:-1])
+        start = data.index('[')
+        end = data.rfind(']')+1
+        data = json.decode(data[start:end])
+        print data
         i    = 0
         if len(data):
             cls.objects.delete()

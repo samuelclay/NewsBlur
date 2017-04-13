@@ -95,13 +95,14 @@ class Feed(models.Model):
         if not self.feed_title:
             self.feed_title = "[Untitled]"
             self.save()
-        return "%s (%s - %s/%s/%s)%s" % (
-            self.feed_title, 
+        return "%s%s: %s - %s/%s/%s" % (
             self.pk, 
+            (" [B: %s]" % self.branch_from_feed.pk if self.branch_from_feed else ""),
+            self.feed_title, 
             self.num_subscribers,
             self.active_subscribers,
             self.active_premium_subscribers,
-            (" [B: %s]" % self.branch_from_feed.pk if self.branch_from_feed else ""))
+            )
     
     @property
     def title(self):
@@ -110,6 +111,10 @@ class Feed(models.Model):
             title = "%s*" % title[:29]
         return title
     
+    @property
+    def log_title(self):
+        return self.__unicode__()
+        
     @property
     def permalink(self):
         return "%s/site/%s/%s" % (settings.NEWSBLUR_URL, self.pk, slugify(self.feed_title.lower()[:50]))
@@ -246,7 +251,7 @@ class Feed(models.Model):
             if not duplicate_feeds:
                 # Feed has been deleted. Just ignore it.
                 logging.debug(" ***> Changed to: %s - %s: %s" % (self.feed_address, self.feed_link, duplicate_feeds))
-                logging.debug(' ***> [%-30s] Feed deleted (%s).' % (unicode(self)[:30], self.pk))
+                logging.debug(' ***> [%-30s] Feed deleted (%s).' % (self.log_title[:30], self.pk))
                 return
             
             for duplicate_feed in duplicate_feeds:
@@ -602,17 +607,18 @@ class Feed(models.Model):
         try:
             feed_address, feed = _1()
         except TimeoutError, e:
-            logging.debug('   ---> [%-30s] Feed address check timed out...' % (unicode(self)[:30]))
+            logging.debug('   ---> [%-30s] Feed address check timed out...' % (self.log_title[:30]))
             self.save_feed_history(505, 'Timeout', e)
             feed = self
             feed_address = None
                 
         return bool(feed_address), feed
 
-    def save_feed_history(self, status_code, message, exception=None):
+    def save_feed_history(self, status_code, message, exception=None, date=None):
         fetch_history = MFetchHistory.add(feed_id=self.pk, 
                                           fetch_type='feed',
                                           code=int(status_code),
+                                          date=date,
                                           message=message,
                                           exception=exception)
             
@@ -626,10 +632,11 @@ class Feed(models.Model):
             self.active = True
             self.save()
         
-    def save_page_history(self, status_code, message, exception=None):
+    def save_page_history(self, status_code, message, exception=None, date=None):
         fetch_history = MFetchHistory.add(feed_id=self.pk, 
                                           fetch_type='page',
                                           code=int(status_code),
+                                          date=date,
                                           message=message,
                                           exception=exception)
             
@@ -640,6 +647,13 @@ class Feed(models.Model):
             self.has_page = True
             self.active = True
             self.save()
+    
+    def save_raw_feed(self, raw_feed, fetch_date):
+        MFetchHistory.add(feed_id=self.pk, 
+                          fetch_type='raw_feed', 
+                          code=200,
+                          message=raw_feed,
+                          date=fetch_date)
         
     def count_errors_in_history(self, exception_type='feed', status_code=None, fetch_history=None):
         if not fetch_history:
@@ -667,12 +681,12 @@ class Feed(models.Model):
             self.save()
         
         logging.debug('   ---> [%-30s] ~FBCounting any errors in history: %s (%s non errors)' %
-                      (unicode(self)[:30], len(errors), len(non_errors)))
+                      (self.log_title[:30], len(errors), len(non_errors)))
         
         return errors, non_errors
 
     def count_redirects_in_history(self, fetch_type='feed', fetch_history=None):
-        logging.debug('   ---> [%-30s] Counting redirects in history...' % (unicode(self)[:30]))
+        logging.debug('   ---> [%-30s] Counting redirects in history...' % (self.log_title[:30]))
         if not fetch_history:
             fetch_history = MFetchHistory.feed(self.pk)
         fh = fetch_history[fetch_type+'_fetch_history']
@@ -703,7 +717,7 @@ class Feed(models.Model):
             return True
         elif last_recount:
             logging.info("   ---> [%-30s] ~SN~FBFeed has expired redis subscriber counts (%s < %s), clearing..." % (
-                         unicode(self)[:30], last_recount, subscriber_expire))
+                         self.log_title[:30], last_recount, subscriber_expire))
             r.delete(total_key, -1)
             r.delete(premium_key, -1)
             
@@ -753,7 +767,7 @@ class Feed(models.Model):
             original_premium_subscribers = self.premium_subscribers
             original_active_premium_subscribers = self.active_premium_subscribers
             logging.info("   ---> [%-30s] ~SN~FBCounting subscribers from ~FCredis~FB: ~FMt:~SB~FM%s~SN a:~SB%s~SN p:~SB%s~SN ap:~SB%s ~SN~FC%s" % 
-                          (self.title[:30], total, active, premium, active_premium, "(%s branches)" % (len(feed_ids)-1) if len(feed_ids)>1 else ""))
+                          (self.log_title[:30], total, active, premium, active_premium, "(%s branches)" % (len(feed_ids)-1) if len(feed_ids)>1 else ""))
         else:
             from apps.reader.models import UserSubscription
             
@@ -786,7 +800,7 @@ class Feed(models.Model):
             original_active_premium_subscribers = self.active_premium_subscribers
             active_premium = active_premium_subscribers.count()
             logging.debug("   ---> [%-30s] ~SN~FBCounting subscribers from ~FYpostgres~FB: ~FMt:~SB~FM%s~SN a:~SB%s~SN p:~SB%s~SN ap:~SB%s" % 
-                          (self.title[:30], total, active, premium, active_premium))
+                          (self.log_title[:30], total, active, premium, active_premium))
 
         # If any counts have changed, save them
         self.num_subscribers = total
@@ -1003,7 +1017,7 @@ class Feed(models.Model):
             for r in res:
                 facet_values = dict([(k, int(v)) for k,v in r.value.iteritems()])
                 facet_values[facet] = r.key
-                if facet_values['pos'] + facet_values['neg'] > 1:
+                if facet_values['pos'] + facet_values['neg'] >= 1:
                     scores.append(facet_values)
             scores = sorted(scores, key=lambda v: v['neg'] - v['pos'])
 
@@ -1025,6 +1039,36 @@ class Feed(models.Model):
             self.data.feed_classifier_counts = json.encode(scores)
             self.data.save()
         
+        return scores
+    
+    @property
+    def user_agent(self):
+        ua = ('NewsBlur Feed Fetcher - %s subscriber%s - %s '
+              '(Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_3) '
+              'AppleWebKit/537.36 (KHTML, like Gecko) '
+              'Chrome/56.0.2924.87 Safari/537.36)' % (
+                   self.num_subscribers,
+                   's' if self.num_subscribers != 1 else '',
+                   self.permalink,
+              ))
+
+        return ua
+    
+    @property
+    def fake_user_agent(self):
+        ua = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:49.0) Gecko/20100101 Firefox/49.0"
+        
+        return ua
+    
+    def fetch_headers(self, fake=False):
+        headers = {
+            'User-Agent': self.user_agent if not fake else self.fake_user_agent,
+            'Accept': 'application/atom+xml, application/rss+xml, application/xml;q=0.8, text/xml;q=0.6, */*;q=0.2',
+            'Accept-Encoding': 'gzip, deflate',
+        }
+        
+        return headers
+        
     def update(self, **kwargs):
         from utils import feed_fetcher
         r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
@@ -1044,6 +1088,7 @@ class Feed(models.Model):
             'timeout': 10,
             'single_threaded': kwargs.get('single_threaded', True),
             'force': kwargs.get('force'),
+            'force_fp': kwargs.get('force_fp'),
             'compute_scores': kwargs.get('compute_scores', True),
             'mongodb_replication_lag': kwargs.get('mongodb_replication_lag', None),
             'fake': kwargs.get('fake'),
@@ -1117,7 +1162,7 @@ class Feed(models.Model):
         
         if settings.DEBUG or verbose:
             logging.debug("   ---> [%-30s] ~FBChecking ~SB%s~SN new/updated against ~SB%s~SN stories" % (
-                          self.title[:30],
+                          self.log_title[:30],
                           len(stories),
                           len(existing_stories.keys())))
         @timelimit(2)
@@ -1129,7 +1174,7 @@ class Feed(models.Model):
         for story in stories:
             if verbose:
                 logging.debug("   ---> [%-30s] ~FBChecking ~SB%s~SN / ~SB%s" % (
-                              self.title[:30],
+                              self.log_title[:30],
                               story.get('title'),
                               story.get('guid')))
             if not story.get('title'):
@@ -1148,7 +1193,7 @@ class Feed(models.Model):
                 existing_story, story_has_changed = _1(story, story_content, 
                                                        existing_stories, new_story_hashes)
             except TimeoutError, e:
-                logging.debug('   ---> [%-30s] ~SB~FRExisting story check timed out...' % (unicode(self)[:30]))
+                logging.debug('   ---> [%-30s] ~SB~FRExisting story check timed out...' % (self.log_title[:30]))
                 existing_story = None
                 story_has_changed = False
                 
@@ -1169,6 +1214,7 @@ class Feed(models.Model):
                 try:
                     s.save()
                     ret_values['new'] += 1
+                    s.publish_to_subscribers()
                 except (IntegrityError, OperationError), e:
                     ret_values['error'] += 1
                     if settings.DEBUG:
@@ -1392,9 +1438,9 @@ class Feed(models.Model):
             original_cutoff = cutoff
             cutoff = min(cutoff, 10)
             try:
-                logging.debug("   ---> [%-30s] ~FBTrimming down to ~SB%s (instead of %s)~SN stories (~FM%s~FB)" % (self, cutoff, original_cutoff, self.last_story_date.strftime("%Y-%m-%d") if self.last_story_date else "No last story date"))
+                logging.debug("   ---> [%-30s] ~FBTrimming down to ~SB%s (instead of %s)~SN stories (~FM%s~FB)" % (self.log_title[:30], cutoff, original_cutoff, self.last_story_date.strftime("%Y-%m-%d") if self.last_story_date else "No last story date"))
             except ValueError, e:
-                logging.debug("   ***> [%-30s] Error trimming: %s" % (self, e))
+                logging.debug("   ***> [%-30s] Error trimming: %s" % (self.log_title[:30], e))
                 pass
         
         return cutoff
@@ -1468,6 +1514,8 @@ class Feed(models.Model):
                 feed_title_to_id[feed.feed_title] = feed_id
             seen_feeds.add(feed.feed_title)
             if feed_id not in popularity:
+                # feed.update_all_statistics()
+                # classifiers = feed.save_classifier_counts()
                 well_read_score = feed.well_read_score()
                 popularity[feed_id] = {
                     'feed_title': feed.feed_title,
@@ -1479,8 +1527,17 @@ class Feed(models.Model):
                     'read_pct': well_read_score['read_pct'],
                     'reader_count': well_read_score['reader_count'],
                     'story_count': well_read_score['story_count'],
-                    'reach_score': well_read_score['reach_score']
+                    'reach_score': well_read_score['reach_score'],
+                    'share_count': well_read_score['share_count'],
+                    'ps': 0,
+                    'ng': 0,
+                    'classifiers': json.decode(feed.data.feed_classifier_counts),
                 }
+                if popularity[feed_id]['classifiers']:
+                    for classifier in popularity[feed_id]['classifiers'].get('feed', []):
+                        if int(classifier['feed_id']) == int(feed_id):
+                            popularity[feed_id]['ps'] = classifier['pos']
+                            popularity[feed_id]['ng'] = -1 * classifier['neg']
             popularity[feed_id]['story_ids'].append(story_hash)
         
         sorted_popularity = sorted(popularity.values(), key=lambda x: x['reach_score'],
@@ -1497,27 +1554,42 @@ class Feed(models.Model):
                     feed['authors'][story['story_authors']] = {
                         'name': story['story_authors'],
                         'count': 0,
+                        'ps': 0,
+                        'ng': 0,
                         'tags': {},
                         'stories': [],
                     }
-                authors = feed['authors'][story['story_authors']]
+                author = feed['authors'][story['story_authors']]
                 seen = False
-                for seen_story in authors['stories']:
+                for seen_story in author['stories']:
                     if seen_story['url'] == story['story_permalink']:
                         seen = True
                         break
                 else:
-                    authors['stories'].append({
+                    author['stories'].append({
                         'title': story['story_title'],
                         'url': story['story_permalink'],
                         'date': story['story_date'],
                     })
-                    authors['count'] += 1
+                    author['count'] += 1
                 if seen: continue # Don't recount tags
+                
+                if feed['classifiers']:
+                    for classifier in feed['classifiers'].get('author', []):
+                        if classifier['author'] == author['name']:
+                            author['ps'] = classifier['pos']
+                            author['ng'] = -1 * classifier['neg']
+                                
                 for tag in story['story_tags']:
-                    if tag not in authors['tags']:
-                        authors['tags'][tag] = 0
-                    authors['tags'][tag] += 1
+                    if tag not in author['tags']:
+                        author['tags'][tag] = {'name': tag, 'count': 0, 'ps': 0, 'ng': 0}
+                    author['tags'][tag]['count'] += 1
+                    if feed['classifiers']:
+                        for classifier in feed['classifiers'].get('tag', []):
+                            if classifier['tag'] == tag:
+                                author['tags'][tag]['ps'] = classifier['pos']
+                                author['tags'][tag]['ng'] = -1 * classifier['neg']
+            
             sorted_authors = sorted(feed['authors'].values(), key=lambda x: x['count'])
             feed['authors'] = sorted_authors
                 
@@ -1526,10 +1598,13 @@ class Feed(models.Model):
             
     def well_read_score(self):
         from apps.reader.models import UserSubscription
-        
+        from apps.social.models import MSharedStory
+                
         # Average percentage of stories read vs published across recently active subscribers
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         p = r.pipeline()
+        
+        shared_stories = MSharedStory.objects(story_feed_id=self.pk).count()
         
         subscribing_users = UserSubscription.objects.filter(feed_id=self.pk).values('user_id')
         subscribing_user_ids = [sub['user_id'] for sub in subscribing_users]
@@ -1552,76 +1627,128 @@ class Feed(models.Model):
         reach_score = average_pct * reader_count * story_count
         
         return {'read_pct': average_pct, 'reader_count': reader_count, 
-                'reach_score': reach_score, 'story_count': story_count}
+                'reach_score': reach_score, 'story_count': story_count,
+                'share_count': shared_stories}
     
     @classmethod
     def xls_query_popularity(cls, queries, limit):
         import xlsxwriter
-        workbook = xlsxwriter.Workbook('NewsBlurPopularity.xlsx')
+        from xlsxwriter.utility import xl_rowcol_to_cell
+
+        if isinstance(queries, unicode):
+            queries = [q.strip() for q in queries.split(',')]
+        
+        title = 'NewsBlur-%s.xlsx' % slugify('-'.join(queries))
+        workbook = xlsxwriter.Workbook(title)
         bold = workbook.add_format({'bold': 1})
         date_format = workbook.add_format({'num_format': 'mmm d yyyy'})
         unread_format = workbook.add_format({'font_color': '#E0E0E0'})
-        if isinstance(queries, str):
-            queries = [q.strip() for q in queries.split(',')]
             
         for query in queries:
             worksheet = workbook.add_worksheet(query)
             row = 1
             col = 0
-            worksheet.write(0, col,   'Feed', bold)
-            worksheet.write(0, col+1, 'Feed URL', bold)
-            worksheet.write(0, col+2, '# Subs', bold)
-            worksheet.write(0, col+4, '# Readers', bold)
-            worksheet.write(0, col+3, 'Reach score', bold)
-            worksheet.write(0, col+5, 'Read %', bold)
-            worksheet.write(0, col+6, '# stories 30d', bold)
-            worksheet.write(0, col+7, 'Author', bold)
-            worksheet.write(0, col+8, 'Story Title', bold)
-            worksheet.write(0, col+9, 'Story URL', bold)
-            worksheet.write(0, col+10, 'Story Date', bold)
-            worksheet.write(0, col+11, 'Tag', bold)
-            worksheet.write(0, col+12, 'Tag Count', bold)
-            worksheet.set_column(col, col,   15)
-            worksheet.set_column(col+1, col+1, 20)
-            worksheet.set_column(col+2, col+2, 8)
-            worksheet.set_column(col+3, col+3, 8)
-            worksheet.set_column(col+4, col+4, 8)
-            worksheet.set_column(col+5, col+5, 8)
-            worksheet.set_column(col+6, col+6, 8)
-            worksheet.set_column(col+7, col+7, 15)
-            worksheet.set_column(col+8, col+8, 30)
-            worksheet.set_column(col+9, col+9, 20)
-            worksheet.set_column(col+10, col+10, 10)
-            worksheet.set_column(col+11, col+11, 15)
-            worksheet.set_column(col+12, col+12, 8)
+            worksheet.write(0, col, 'Publisher', bold)
+            worksheet.set_column(col, col, 15); col += 1
+            worksheet.write(0, col, 'Feed URL', bold)
+            worksheet.set_column(col, col, 20); col += 1
+            worksheet.write(0, col, 'Reach score', bold)
+            worksheet.write_comment(0, col, 'Feeds are sorted based on this score. It\'s simply the # of readers * # of stories in the past 30 days * the percentage of stories that are actually read.')
+            worksheet.set_column(col, col, 9); col += 1
+            worksheet.write(0, col, '# subs', bold)
+            worksheet.write_comment(0, col, 'Total number of subscribers on NewsBlur, not necessarily active')
+            worksheet.set_column(col, col, 5); col += 1
+            worksheet.write(0, col, '# readers', bold)
+            worksheet.write_comment(0, col, 'Total number of active subscribers who have read a story from the feed in the past 30 days.')
+            worksheet.set_column(col, col, 8); col += 1
+            worksheet.write(0, col, "read pct", bold)
+            worksheet.write_comment(0, col, "Of the active subscribers reading this feed in the past 30 days, this is the percentage of stories the average subscriber reads. Values over 100 pct signify that the feed has many shared stories, which throws off the number slightly but not significantly.")
+            worksheet.set_column(col, col, 8); col += 1
+            worksheet.write(0, col, '# stories 30d', bold)
+            worksheet.write_comment(0, col, "It's important to ignore feeds that haven't published anything in the last 30 days, which is why this is part of the Reach Score.")
+            worksheet.set_column(col, col, 10); col += 1
+            worksheet.write(0, col, '# shared', bold)
+            worksheet.write_comment(0, col, 'Number of stories from this feed that were shared on NewsBlur. This is a strong signal of interest although it is not included in the Reach Score.')
+            worksheet.set_column(col, col, 7); col += 1
+            worksheet.write(0, col, '# feed pos', bold)
+            worksheet.write_comment(0, col, 'Number of times this feed was trained with a thumbs up. Users use training to hide stories they don\'t want to see while highlighting those that they do.')
+            worksheet.set_column(col, col, 8); col += 1
+            worksheet.write(0, col, '# feed neg', bold)
+            worksheet.write_comment(0, col, 'Number of times this feed was trained with a thumbs down. Users use training to hide stories they don\'t want to see while highlighting those that they do.')
+            worksheet.set_column(col, col, 8); col += 1
+            worksheet.write(0, col, 'Author', bold)
+            worksheet.set_column(col, col, 15); col += 1
+            worksheet.write(0, col, '# author pos', bold)
+            worksheet.write_comment(0, col, 'Number of times this author was trained with a thumbs up. Users use training to hide stories they don\'t want to see while highlighting those that they do.')
+            worksheet.set_column(col, col, 10); col += 1
+            worksheet.write(0, col, '# author neg', bold)
+            worksheet.write_comment(0, col, 'Number of times this author was trained with a thumbs down. Users use training to hide stories they don\'t want to see while highlighting those that they do.')
+            worksheet.set_column(col, col, 10); col += 1
+            worksheet.write(0, col, 'Story title', bold)
+            worksheet.set_column(col, col, 30); col += 1
+            worksheet.write(0, col, 'Story URL', bold)
+            worksheet.set_column(col, col, 20); col += 1
+            worksheet.write(0, col, 'Story date', bold)
+            worksheet.set_column(col, col, 10); col += 1
+            worksheet.write(0, col, 'Tag', bold)
+            worksheet.set_column(col, col, 15); col += 1
+            worksheet.write(0, col, 'Tag count', bold)
+            worksheet.write_comment(0, col, 'Number of times this tag is used in other stories that also contain the search query.')
+            worksheet.set_column(col, col, 8); col += 1
+            worksheet.write(0, col, '# tag pos', bold)
+            worksheet.write_comment(0, col, 'Number of times this tag was trained with a thumbs up. Users use training to hide stories they don\'t want to see while highlighting those that they do.')
+            worksheet.set_column(col, col, 7); col += 1
+            worksheet.write(0, col, '# tag neg', bold)
+            worksheet.write_comment(0, col, 'Number of times this tag was trained with a thumbs down. Users use training to hide stories they don\'t want to see while highlighting those that they do.')
+            worksheet.set_column(col, col, 7); col += 1
             popularity = cls.query_popularity(query, limit=limit)
             
-            worksheet.write(row, col, query)
             for feed in popularity:
-                worksheet.write(row, col+0, feed['feed_title'])
-                worksheet.write_url(row, col+1, feed['feed_url'])
-                worksheet.write(row, col+2, feed['num_subscribers'])
-                worksheet.write(row, col+4, feed['reader_count'])
-                worksheet.write(row, col+3, feed['reach_score'])
-                worksheet.write(row, col+5, feed['read_pct'])
-                worksheet.write(row, col+6, feed['story_count'])
-                worksheet.conditional_format(row, col+3, row, col+6, {'type': 'cell',
+                col = 0
+                worksheet.write(row, col, feed['feed_title']); col += 1
+                worksheet.write_url(row, col, feed.get('feed_url') or ""); col += 1
+                worksheet.conditional_format(row, col, row, col+8, {'type': 'cell',
                                                                 'criteria': '==',
                                                                 'value': 0,
                                                                 'format': unread_format})
+                worksheet.write(row, col, "=%s*%s*%s" % (
+                    xl_rowcol_to_cell(row, col+2),
+                    xl_rowcol_to_cell(row, col+3),
+                    xl_rowcol_to_cell(row, col+4),
+                )); col += 1
+                worksheet.write(row, col, feed['num_subscribers']); col += 1
+                worksheet.write(row, col, feed['reader_count']); col += 1
+                worksheet.write(row, col, feed['read_pct']); col += 1
+                worksheet.write(row, col, feed['story_count']); col += 1
+                worksheet.write(row, col, feed['share_count']); col += 1
+                worksheet.write(row, col, feed['ps']); col += 1
+                worksheet.write(row, col, feed['ng']); col += 1
                 for author in feed['authors']:
-                    worksheet.write(row, col+7, author['name'])
+                    row += 1
+                    worksheet.conditional_format(row, col, row, col+2, {'type': 'cell',
+                                                                    'criteria': '==',
+                                                                    'value': 0,
+                                                                    'format': unread_format})
+                    worksheet.write(row, col, author['name'])
+                    worksheet.write(row, col+1, author['ps'])
+                    worksheet.write(row, col+2, author['ng'])
                     for story in author['stories']:
-                        worksheet.write(row, col+8, story['title'])
-                        worksheet.write_url(row, col+9, story['url'])
-                        worksheet.write_datetime(row, col+10, story['date'], date_format)
+                        worksheet.write(row, col+3, story['title'])
+                        worksheet.write_url(row, col+4, story['url'])
+                        worksheet.write_datetime(row, col+5, story['date'], date_format)
                         row += 1
-                    for tag, count in author['tags'].items():
-                        worksheet.write(row, col+11, tag)
-                        worksheet.write(row, col+12, count)
+                    for tag in author['tags'].values():
+                        worksheet.conditional_format(row, col+7, row, col+9, {'type': 'cell',
+                                                                        'criteria': '==',
+                                                                        'value': 0,
+                                                                        'format': unread_format})            
+                        worksheet.write(row, col+6, tag['name'])
+                        worksheet.write(row, col+7, tag['count'])
+                        worksheet.write(row, col+8, tag['ps'])
+                        worksheet.write(row, col+9, tag['ng'])
                         row += 1
-            
         workbook.close()
+        return title
         
     def find_stories(self, query, order="newest", offset=0, limit=25):
         story_ids = SearchStory.query(feed_ids=[self.pk], query=query, order=order,
@@ -1922,7 +2049,7 @@ class Feed(models.Model):
         
         if verbose:
             logging.debug("   ---> [%-30s] Fetched every %s min - Subs: %s/%s/%s Stories/day: %s" % (
-                                                unicode(self)[:30], total, 
+                                                self.log_title[:30], total, 
                                                 self.num_subscribers,
                                                 self.active_subscribers,
                                                 self.active_premium_subscribers,
@@ -1940,7 +2067,7 @@ class Feed(models.Model):
             if verbose:
                 logging.debug('   ---> [%-30s] ~FBScheduling feed fetch geometrically: '
                               '~SB%s errors. Time: %s min' % (
-                              unicode(self)[:30], self.errors_since_good, total))
+                              self.log_title[:30], self.errors_since_good, total))
         
         random_factor = random.randint(0, total) / 4
         next_scheduled_update = datetime.datetime.utcnow() + datetime.timedelta(
@@ -1972,11 +2099,11 @@ class Feed(models.Model):
     def schedule_feed_fetch_immediately(self, verbose=True):
         r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
         if not self.num_subscribers:
-            logging.debug('   ---> [%-30s] Not scheduling feed fetch immediately, no subs.' % (unicode(self)[:30]))
+            logging.debug('   ---> [%-30s] Not scheduling feed fetch immediately, no subs.' % (self.log_title[:30]))
             return
             
         if verbose:
-            logging.debug('   ---> [%-30s] Scheduling feed fetch immediately...' % (unicode(self)[:30]))
+            logging.debug('   ---> [%-30s] Scheduling feed fetch immediately...' % (self.log_title[:30]))
             
         self.next_scheduled_update = datetime.datetime.utcnow()
         r.zadd('scheduled_updates', self.pk, self.next_scheduled_update.strftime('%s'))
@@ -2003,7 +2130,7 @@ class Feed(models.Model):
         if queue_size > 1000:
             self.schedule_feed_fetch_immediately()
         else:
-            logging.debug('   ---> [%-30s] [%s] ~FB~SBQueuing pushed stories, last pushed %s...' % (unicode(self)[:30], self.pk, latest_push_date_delta))
+            logging.debug('   ---> [%-30s] [%s] ~FB~SBQueuing pushed stories, last pushed %s...' % (self.log_title[:30], self.pk, latest_push_date_delta))
             self.set_next_scheduled_update()
             PushFeeds.apply_async(args=(self.pk, xml), queue='push_feeds')
     
@@ -2113,7 +2240,7 @@ class MFeedPage(mongo.Document):
     
     def save(self, *args, **kwargs):
         if self.page_data:
-            self.page_data = zlib.compress(self.page_data).decode('utf-8')
+            self.page_data = zlib.compress(self.page_data)
         return super(MFeedPage, self).save(*args, **kwargs)
     
     def page(self):
@@ -2231,6 +2358,13 @@ class MStory(mongo.Document):
         self.remove_from_search_index()
         
         super(MStory, self).delete(*args, **kwargs)
+    
+    def publish_to_subscribers(self):
+        try:
+            r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
+            r.publish("%s:story" % (self.story_feed_id), '%s,%s' % (self.story_hash, self.story_date.strftime('%s')))
+        except redis.ConnectionError:
+            logging.debug("   ***> [%-30s] ~BMRedis is unavailable for real-time." % (Feed.get_by_id(self.story_feed_id).title[:30],))
     
     @classmethod
     def purge_feed_stories(cls, feed, cutoff, verbose=True):
@@ -2455,7 +2589,7 @@ class MStory(mongo.Document):
         r.delete('zF:%s' % story_feed_id)
         # r2.delete('zF:%s' % story_feed_id)
 
-        logging.info("   ---> [%-30s] ~FMSyncing ~SB%s~SN stories to redis" % (feed and feed.title[:30] or story_feed_id, stories.count()))
+        logging.info("   ---> [%-30s] ~FMSyncing ~SB%s~SN stories to redis" % (feed and feed.log_title[:30] or story_feed_id, stories.count()))
         p = r.pipeline()
         # p2 = r2.pipeline()
         for story in stories:
@@ -2477,24 +2611,35 @@ class MStory(mongo.Document):
         self.share_user_ids = [s['user_id'] for s in shares]
         self.save()
     
-    def extract_image_urls(self, force=False):
-        if self.image_urls and not force:
+    def extract_image_urls(self, force=False, text=False):
+        if self.image_urls and not force and not text:
             return self.image_urls
         
-        story_content = self.story_content
-        if not story_content and self.story_content_z:
-            story_content = zlib.decompress(self.story_content_z)
+        story_content = None
+        if not text:
+            story_content = self.story_content
+            if not story_content and self.story_content_z:
+                story_content = zlib.decompress(self.story_content_z)
+        elif text:
+            if self.original_text_z:
+                story_content = zlib.decompress(self.original_text_z)
         if not story_content:
             return
         
         try:
             soup = BeautifulSoup(story_content)
         except ValueError:
-            return
-        
+            if not text:
+                return self.extract_image_urls(force=force, text=True)
+            else:
+                return
+
         images = soup.findAll('img')
         if not images:
-            return
+            if not text:
+                return self.extract_image_urls(force=force, text=True)
+            else:
+                return
         
         image_urls = []
         for image in images:
@@ -2506,8 +2651,11 @@ class MStory(mongo.Document):
             image_urls.append(image_url)
 
         if not image_urls:
-            return
-            
+            if not text:
+                return self.extract_image_urls(force=force, text=True)
+            else:
+                return
+        
         self.image_urls = image_urls
         return self.image_urls
 
@@ -2518,6 +2666,8 @@ class MStory(mongo.Document):
             feed = Feed.get_by_id(self.story_feed_id)
             ti = TextImporter(self, feed=feed, request=request, debug=debug)
             original_text = ti.fetch()
+            self.extract_image_urls(force=force, text=True)
+            self.save()
         else:
             logging.user(request, "~FYFetching ~FGoriginal~FY story text, ~SBfound.")
             original_text = zlib.decompress(original_text_z)
@@ -2801,12 +2951,81 @@ class MStarredStoryCounts(mongo.Document):
         if story_count and story_count.count <= 0:
             story_count.delete()
 
+class MSavedSearch(mongo.Document):
+    user_id = mongo.IntField()
+    query = mongo.StringField(max_length=1024)
+    feed_id = mongo.StringField()
+    slug = mongo.StringField(max_length=128)
 
+    meta = {
+        'collection': 'saved_searches',
+        'indexes': ['user_id',
+                    {'fields': ['user_id', 'feed_id', 'query'], 
+                     'unique': True,
+                     'types': False, }],
+        'ordering': ['query'],
+        'allow_inheritance': False,
+    }
+
+    @property
+    def rss_url(self, secret_token=None):
+        if not secret_token:
+            user = User.objects.select_related('profile').get(pk=self.user_id)
+            secret_token = user.profile.secret_token
+        
+        slug = self.slug if self.slug else ""
+        return "%s/reader/saved_search/%s/%s/%s" % (settings.NEWSBLUR_URL, self.user_id, 
+                                                   secret_token, slug)
+    
+    @classmethod
+    def user_searches(cls, user_id):
+        searches = cls.objects.filter(user_id=user_id)
+        searches = sorted([{'query': s.query, 
+                            'feed_address': s.rss_url, 
+                            'feed_id': s.feed_id,
+                           } for s in searches],
+                          key=lambda x: (x.get('query', '') or '').lower())
+        return searches
+    
+    @classmethod
+    def save_search(cls, user_id, feed_id, query):
+        user = User.objects.get(pk=user_id)
+        params = dict(user_id=user_id, 
+                      feed_id=feed_id, 
+                      query=query, 
+                      slug=slugify(query))
+        try:
+            saved_search = cls.objects.get(**params)
+            logging.user(user, "~FRSaved search already exists: ~SB%s" % query)
+        except cls.DoesNotExist:
+            logging.user(user, "~FCCreating a saved search: ~SB%s~SN/~SB%s" % (feed_id, query))
+            saved_search = cls.objects.create(**params)
+        
+        return saved_search
+        
+    @classmethod
+    def delete_search(cls, user_id, feed_id, query):
+        user = User.objects.get(pk=user_id)
+        params = dict(user_id=user_id, 
+                      feed_id=feed_id, 
+                      query=query)
+        try:
+            saved_search = cls.objects.get(**params)
+            logging.user(user, "~FCDeleting saved search: ~SB%s" % query)
+            saved_search.delete()
+        except cls.DoesNotExist:
+            logging.user(user, "~FRCan't delete saved search, missing: ~SB%s~SN/~SB%s" % (feed_id, query))
+        except cls.MultipleObjectsReturned:
+            logging.user(user, "~FRFound multiple saved searches, deleting: ~SB%s~SN/~SB%s" % (feed_id, query))
+            cls.objects(**params).delete()
+        
+    
 class MFetchHistory(mongo.Document):
     feed_id = mongo.IntField(unique=True)
     feed_fetch_history = mongo.DynamicField()
     page_fetch_history = mongo.DynamicField()
     push_history = mongo.DynamicField()
+    raw_feed_history = mongo.DynamicField()
     
     meta = {
         'db_alias': 'nbanalytics',
@@ -2854,11 +3073,15 @@ class MFetchHistory(mongo.Document):
             history = fetch_history.page_fetch_history or []
         elif fetch_type == 'push':
             history = fetch_history.push_history or []
+        elif fetch_type == 'raw_feed':
+            history = fetch_history.raw_feed_history or []
 
         history = [[date, code, message]] + history
         any_exceptions = any([c for d, c, m in history if c not in [200, 304]])
         if any_exceptions:
             history = history[:25]
+        elif fetch_type == 'raw_feed':            
+            history = history[:10]
         else:
             history = history[:5]
 
@@ -2868,6 +3091,8 @@ class MFetchHistory(mongo.Document):
             fetch_history.page_fetch_history = history
         elif fetch_type == 'push':
             fetch_history.push_history = history
+        elif fetch_type == 'raw_feed':
+            fetch_history.raw_feed_history = history
         
         fetch_history.save()
         

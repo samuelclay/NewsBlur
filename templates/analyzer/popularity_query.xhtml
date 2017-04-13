@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% load typogrify_tags utils_tags %}
+
+{% block bodyclass %}NB-static{% endblock %}
+{% block extra_head_js %}
+  {% include_stylesheets "common" %}
+{% endblock %}
+
+{% block content %}
+
+<div class="NB-static-form-wrapper">
+    <div class="NB-delete-form NB-static-form">
+        
+        <h2>NewsBlur Publisher Keyword Popularity XLSX Creator for YC Founders</h2>
+        
+        <h5>Search for topics across millions of stories from millions of publishers</h5>
+        
+        {% if success %}
+            <h4 style="color: #1C6130; text-align: center">Got it!<br>Email should be sent within the hour.</h4>
+        {% else %}
+            <form action="" method="POST">{% csrf_token %}
+                <div class="NB-fields">
+                    {{ popularity_query_form.email.label_tag }}
+                    {{ popularity_query_form.email }}
+
+                    {{ popularity_query_form.query.label_tag }}
+                    {{ popularity_query_form.query }}
+                    <h6 class="NB-label-right">Example: <i>pebble watch, philips hue, alexa</i></h6>
+                </div>
+            
+                {% if popularity_query_form.errors %}
+                <div class="NB-errors">
+                    {% for field, error in popularity_query_form.errors.items %}
+                        {{ error|safe }}
+                    {% endfor %}
+                </div>
+                {% endif %}
+        
+                <input type="submit" class="submit-button NB-modal-submit-button NB-modal-submit-green" value="Email it to me"></button>
+            </form>
+        {% endif %}
+    </div>  
+</div>
+
+{% endblock %}

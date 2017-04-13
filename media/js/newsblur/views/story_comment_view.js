@@ -26,14 +26,14 @@ NEWSBLUR.Views.StoryComment = Backbone.View.extend({
         var reshare_class = this.model.get('source_user_id') ? 'NB-story-comment-reshare' : '';
         var has_likes = _.any(this.model.get('liking_users'));
         var liked = _.contains(this.model.get('liking_users'), NEWSBLUR.Globals.user_id);
-
+        var profile_thumb = NEWSBLUR.Views.ProfileThumb.create(this.model.get('source_user_id'));
         var $comment = $.make('div', { className: (this.options.friend_share ? "NB-story-comment-friend-share" : "") }, [
             $.make('div', { className: 'NB-story-comment-author-avatar NB-user-avatar ' + reshare_class }, [
                 $.make('img', { src: this.user.get('photo_url') })
             ]),
             $.make('div', { className: 'NB-story-comment-author-container' }, [
                 (this.model.get('source_user_id') && $.make('div', { className: 'NB-story-comment-reshares' }, [
-                    NEWSBLUR.Views.ProfileThumb.create(this.model.get('source_user_id')).render().el
+                    profile_thumb && profile_thumb.render().el
                 ])),
                 $.make('div', { className: 'NB-story-comment-username' }, this.user.get('username')),
                 $.make('div', { className: 'NB-story-comment-date' }, this.model.get('shared_date') + ' ago'),

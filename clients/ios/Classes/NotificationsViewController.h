@@ -13,6 +13,7 @@
 
 @interface NotificationsViewController : UIViewController <UITableViewDelegate, UITableViewDataSource> {
     NewsBlurAppDelegate *appDelegate;
+    NSArray *notificationFeedIds;
 }
 
 @property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;

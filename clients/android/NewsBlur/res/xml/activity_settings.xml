@@ -53,6 +53,10 @@
             android:defaultValue="@string/confirm_mark_all_read_value" />
         <CheckBoxPreference
             android:defaultValue="false"
+            android:key="pref_confirm_mark_range_read"
+             android:title="@string/settings_confirm_mark_range_read" />
+        <CheckBoxPreference
+            android:defaultValue="false"
             android:key="pref_auto_open_first_unread"
             android:title="@string/settings_auto_open_first_unread"
             android:summary="@string/settings_auto_open_first_unread_sum" />
@@ -119,6 +123,15 @@
             android:entries="@array/rtl_gesture_action_entries"
             android:entryValues="@array/rtl_gesture_action_values"
             android:defaultValue="@string/rtl_gesture_action_value" />
+    </PreferenceCategory>
+
+    <PreferenceCategory 
+        android:title="@string/settings_notifications">
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="enable_notifications"
+            android:title="@string/settings_enable_notifications" >
+        </CheckBoxPreference>
     </PreferenceCategory>
 
 </PreferenceScreen>

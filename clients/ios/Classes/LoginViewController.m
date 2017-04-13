@@ -7,7 +7,6 @@
 //
 
 #import "LoginViewController.h"
-#import "ASIFormDataRequest.h"
 #import "../Other Sources/OnePasswordExtension/OnePasswordExtension.h"
 //#import <QuartzCore/QuartzCore.h>
 
@@ -199,46 +198,35 @@
     
     NSString *urlString = [NSString stringWithFormat:@"%@/api/login",
                            self.appDelegate.url];
-    NSURL *url = [NSURL URLWithString:urlString];
     [[NSHTTPCookieStorage sharedHTTPCookieStorage]
      setCookieAcceptPolicy:NSHTTPCookieAcceptPolicyAlways];
-    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-    [request setPostValue:[usernameInput text] forKey:@"username"]; 
-    [request setPostValue:[passwordInput text] forKey:@"password"]; 
-    [request setPostValue:@"login" forKey:@"submit"]; 
-    [request setPostValue:@"1" forKey:@"api"]; 
-    [request setDelegate:self];
-    [request setDidFinishSelector:@selector(requestFinished:)];
-    [request setDidFailSelector:@selector(requestFailed:)];
-    [request startAsynchronous];
-}
-
-
-- (void)requestFinished:(ASIHTTPRequest *)request {
-    [MBProgressHUD hideHUDForView:self.view animated:YES];
-    NSString *responseString = [request responseString];
-    NSData *responseData=[responseString dataUsingEncoding:NSUTF8StringEncoding];    
-    NSError *error;
-    NSDictionary *results = [NSJSONSerialization 
-                             JSONObjectWithData:responseData
-                             options:kNilOptions 
-                             error:&error];
-    // int statusCode = [request responseStatusCode];
-    int code = [[results valueForKey:@"code"] intValue];
-    if (code == -1) {
-        NSDictionary *errors = [results valueForKey:@"errors"];
-        if ([errors valueForKey:@"username"]) {
-            [self showError:[[errors valueForKey:@"username"] firstObject]];
-        } else if ([errors valueForKey:@"__all__"]) {
-            [self showError:[[errors valueForKey:@"__all__"] firstObject]];
-        }
-    } else {
-        [self.passwordInput setText:@""];
-        [self.signUpPasswordInput setText:@""];
-        [appDelegate reloadFeedsView:YES];
-        [self dismissViewControllerAnimated:YES completion:nil];
-    }
     
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    [params setObject:[usernameInput text] forKey:@"username"];
+    [params setObject:[passwordInput text] forKey:@"password"];
+    [params setObject:@"login" forKey:@"submit"];
+    [params setObject:@"1" forKey:@"api"];
+
+    [appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        [MBProgressHUD hideHUDForView:self.view animated:YES];
+
+        int code = [[responseObject valueForKey:@"code"] intValue];
+        if (code == -1) {
+            NSDictionary *errors = [responseObject valueForKey:@"errors"];
+            if ([errors valueForKey:@"username"]) {
+                [self showError:[[errors valueForKey:@"username"] firstObject]];
+            } else if ([errors valueForKey:@"__all__"]) {
+                [self showError:[[errors valueForKey:@"__all__"] firstObject]];
+            }
+        } else {
+            [self.passwordInput setText:@""];
+            [self.signUpPasswordInput setText:@""];
+            [appDelegate reloadFeedsView:YES];
+            [self dismissViewControllerAnimated:YES completion:nil];
+        }
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        [self requestFailed:error];
+    }];
 }
 
 
@@ -249,59 +237,48 @@
     [self showError:nil];
     NSString *urlString = [NSString stringWithFormat:@"%@/api/signup",
                            self.appDelegate.url];
-    NSURL *url = [NSURL URLWithString:urlString];
     [[NSHTTPCookieStorage sharedHTTPCookieStorage]
      setCookieAcceptPolicy:NSHTTPCookieAcceptPolicyAlways];
-    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [request setPostValue:[signUpUsernameInput text] forKey:@"username"]; 
-        [request setPostValue:[signUpPasswordInput text] forKey:@"password"]; 
+        [params setObject:[signUpUsernameInput text] forKey:@"username"];
+        [params setObject:[signUpPasswordInput text] forKey:@"password"];
     } else {
-        [request setPostValue:[usernameInput text] forKey:@"username"]; 
-        [request setPostValue:[passwordInput text] forKey:@"password"]; 
+        [params setObject:[usernameInput text] forKey:@"username"];
+        [params setObject:[passwordInput text] forKey:@"password"];
     }
-    [request setPostValue:[emailInput text] forKey:@"email"]; 
-    [request setPostValue:@"login" forKey:@"submit"]; 
-    [request setPostValue:@"1" forKey:@"api"]; 
-    [request setDelegate:self];
-    [request setDidFinishSelector:@selector(finishRegistering:)];
-    [request setDidFailSelector:@selector(requestFailed:)];
-    [request startAsynchronous];
-}
-
-- (void)finishRegistering:(ASIHTTPRequest *)request {
-    [MBProgressHUD hideHUDForView:self.view animated:YES];
-    NSString *responseString = [request responseString];
-    NSData *responseData=[responseString dataUsingEncoding:NSUTF8StringEncoding];    
-    NSError *error;
-    NSDictionary *results = [NSJSONSerialization 
-                             JSONObjectWithData:responseData
-                             options:kNilOptions 
-                             error:&error];
-    // int statusCode = [request responseStatusCode];
+    [params setObject:[emailInput text] forKey:@"email"];
+    [params setObject:@"login" forKey:@"submit"];
+    [params setObject:@"1" forKey:@"api"];
     
-    int code = [[results valueForKey:@"code"] intValue];
-    if (code == -1) {
-        NSDictionary *errors = [results valueForKey:@"errors"];
-        if ([errors valueForKey:@"email"]) {
-            [self showError:[[errors valueForKey:@"email"] objectAtIndex:0]];
-        } else if ([errors valueForKey:@"username"]) {
-            [self showError:[[errors valueForKey:@"username"] objectAtIndex:0]];
-        } else if ([errors valueForKey:@"__all__"]) {
-            [self showError:[[errors valueForKey:@"__all__"] objectAtIndex:0]];
+    [appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        [MBProgressHUD hideHUDForView:self.view animated:YES];
+
+        int code = [[responseObject valueForKey:@"code"] intValue];
+        if (code == -1) {
+            NSDictionary *errors = [responseObject valueForKey:@"errors"];
+            if ([errors valueForKey:@"email"]) {
+                [self showError:[[errors valueForKey:@"email"] objectAtIndex:0]];
+            } else if ([errors valueForKey:@"username"]) {
+                [self showError:[[errors valueForKey:@"username"] objectAtIndex:0]];
+            } else if ([errors valueForKey:@"__all__"]) {
+                [self showError:[[errors valueForKey:@"__all__"] objectAtIndex:0]];
+            }
+        } else {
+            [self.passwordInput setText:@""];
+            [self.signUpPasswordInput setText:@""];
+            //        [appDelegate showFirstTimeUser];
+            [appDelegate reloadFeedsView:YES];
+            [self dismissViewControllerAnimated:YES completion:nil];
         }
-    } else {
-        [self.passwordInput setText:@""];
-        [self.signUpPasswordInput setText:@""];
-//        [appDelegate showFirstTimeUser];
-        [appDelegate reloadFeedsView:YES];
-        [self dismissViewControllerAnimated:YES completion:nil];
-    }
-    
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        [self requestFailed:error];
+    }];
+
 }
 
-- (void)requestFailed:(ASIHTTPRequest *)request {
-    NSError *error = [request error];
+- (void)requestFailed:(NSError *)error {
     NSLog(@"Error: %@", error);
     [appDelegate informError:error];
     

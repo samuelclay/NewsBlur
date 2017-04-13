@@ -10,9 +10,7 @@
 
 #import "NewsBlurAppDelegate.h"
 
-@class ASIHTTPRequest;
-
-@interface FirstTimeUserAddFriendsViewController  : UIViewController <ASIHTTPRequestDelegate, UIWebViewDelegate> {
+@interface FirstTimeUserAddFriendsViewController  : BaseViewController <UIWebViewDelegate> {
     NewsBlurAppDelegate *appDelegate;
 }
 
@@ -32,13 +30,9 @@
 - (IBAction)toggleAutoFollowFriends:(id)sender;
 
 - (void)connectToSocial;
-- (void)finishConnectFromSocial:(ASIHTTPRequest *)request;
 
 - (void)finishTwitterConnect;
 - (void)finishFacebookConnect;
-
-- (void)finishedWithError:(ASIHTTPRequest *)request;
-- (void)finishToggleAutoFollowFriends:(ASIHTTPRequest *)request;
 
 - (void)changeMessaging:(NSString *)msg;
 

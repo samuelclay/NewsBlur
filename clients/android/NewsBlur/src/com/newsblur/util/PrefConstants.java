@@ -7,6 +7,7 @@ public class PrefConstants {
 	public static final String PREFERENCES = "preferences";
 	public static final String PREF_COOKIE = "login_cookie";
 	public static final String PREF_UNIQUE_LOGIN = "login_unique";
+    public static final String PREF_CUSTOM_SERVER = "custom_server";
 	
 	public final static String USER_USERNAME = "username";
 	public final static String USER_WEBSITE = "website";
@@ -73,7 +74,10 @@ public class PrefConstants {
 
     public static final String VOLUME_KEY_NAVIGATION = "volume_key_navigation";
     public static final String MARK_ALL_READ_CONFIRMATION = "pref_confirm_mark_all_read";
+    public static final String MARK_RANGE_READ_CONFIRMATION = "pref_confirm_mark_range_read";
 
     public static final String LTR_GESTURE_ACTION = "ltr_gesture_action";
     public static final String RTL_GESTURE_ACTION = "rtl_gesture_action";
+
+    public static final String ENABLE_NOTIFICATIONS = "enable_notifications";
 }

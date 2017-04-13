@@ -251,15 +251,16 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
                 setupPager();
             }
 
-            // see if we are just starting and need to jump to a target story
-            skipPagerToStoryHash();
-
             try {
                 readingAdapter.notifyDataSetChanged();
             } catch (IllegalStateException ise) {
                 // sometimes the pager is already shutting down by the time the callback finishes
                 finish();
             }
+
+            // see if we are just starting and need to jump to a target story
+            skipPagerToStoryHash();
+
 
             if (unreadSearchActive) {
                 // if we left this flag high, we were looking for an unread, but didn't find one;
@@ -279,8 +280,9 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
         while (stories.moveToNext()) {
             if (stopLoading) return;
             Story story = Story.fromCursor(stories);
-            if ( ((storyHash.equals(FIND_FIRST_UNREAD)) && (!story.read)) ||
-                 (story.storyHash.equals(storyHash)) ) {
+            if ( (story.storyHash.equals(storyHash)) ||
+                 ((storyHash.equals(FIND_FIRST_UNREAD)) && (!story.read))
+                 ) {
                 // now that the pager is getting the right story, make it visible
                 pager.setVisibility(View.VISIBLE);
                 emptyViewText.setVisibility(View.INVISIBLE);
@@ -635,7 +637,8 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
         
 	private void triggerRefresh(int desiredStoryCount) {
 		if (!stopLoading) {
-            int currentCount = (stories == null) ? 0 : stories.getCount();
+            Integer currentCount = null;
+            if (stories != null) currentCount = stories.getCount();
             boolean gotSome = NBSyncService.requestMoreForFeed(fs, desiredStoryCount, currentCount);
             if (gotSome) triggerSync();
 		}

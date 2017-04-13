@@ -102,6 +102,8 @@ _.extend(NEWSBLUR.ReaderUserAdmin.prototype, {
                 $.make('dd', data.statistics.email),
                 $.make('dt', 'Stripe Id:'),
                 $.make('dd', $.make('a', { href: "https://manage.stripe.com/customers/" + data.statistics.stripe_id, className: 'NB-splash-link' }, data.statistics.stripe_id)),
+                $.make('dt', 'Paypal email:'),
+                $.make('dd', $.make('a', { href: "https://www.paypal.com/businessexp/transactions?nav=0.3.1&payer_email=" + data.statistics.paypal_email, className: 'NB-splash-link' }, data.statistics.paypal_email)),
                 $.make('dt', 'Feeds:'),
                 $.make('dd', Inflector.commas(data.statistics.feeds)),
                 $.make('dt', 'Feed opens:'),

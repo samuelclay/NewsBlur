@@ -71,7 +71,20 @@
         {% if not user_profile.hide_getting_started %}
             {% render_getting_started %}
         {% endif %}
-      
+          
+        <div class="NB-module NB-module-river">
+            <h5 class="NB-module-header">
+                <div class="NB-module-river-settings NB-javascript"></div>
+                All Site Stories
+            </h5>
+            
+            <div class="NB-view-river">
+                <div class="NB-module-item NB-story-pane-west">
+                    <div class="NB-story-titles"></div>
+                </div>
+            </div>
+        </div>
+        
         {% render_features_module %}
 
         {% if recommended_feeds %}
@@ -105,7 +118,7 @@
 
     </div>
 
-    <div class="NB-account">
+    <div class="NB-account">        
 		{% render_account_module %}
 		{% render_manage_module %}
 		{% render_statistics_graphs statistics %}

@@ -15,7 +15,7 @@
 #import "UIImageView+AFNetworking.h"
 #import "Utilities.h"
 #import "MCSwipeTableViewCell.h"
-#import "TMCache.h"
+#import "PINCache.h"
 
 static UIFont *textFont = nil;
 static UIFont *indicatorFont = nil;

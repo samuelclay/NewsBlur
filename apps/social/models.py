@@ -923,7 +923,7 @@ class MSocialSubscription(mongo.Document):
 
         read_dates = dict()
         for us in socialsubs:
-            read_dates[us.subscription_user_id] = int(max(us.mark_read_date, cutoff_date).strftime('%s'))            
+            read_dates[us.subscription_user_id] = int(max(us.mark_read_date, cutoff_date).strftime('%s'))
 
         for sub_user_id_group in chunks(subscription_user_ids, 20):
             pipeline = r.pipeline()
@@ -1277,7 +1277,7 @@ class MSocialSubscription(mongo.Document):
             self.mark_read_date = date_delta
 
         unread_story_hashes = self.get_stories(read_filter='unread', limit=500, hashes_only=True,
-                                               cutoff_date=user_profile.unread_cutoff)
+                                               cutoff_date=date_delta)
         stories_db = MSharedStory.objects(user_id=self.subscription_user_id,
                                           story_hash__in=unread_story_hashes)
         story_feed_ids = set()
@@ -1571,12 +1571,14 @@ class MSharedStory(mongo.DynamicDocument):
         self.delete()
     
     @classmethod
-    def feed_quota(cls, user_id, feed_id, story_hash, days=1, quota=1):
+    def feed_quota(cls, user_id, story_hash, feed_id=None, days=1, quota=1):
         day_ago = datetime.datetime.now()-datetime.timedelta(days=days)
-        shared_count = cls.objects.filter(user_id=user_id,
-                                          shared_date__gte=day_ago, 
-                                          story_feed_id=feed_id,
-                                          story_hash__nin=[story_hash]).count()
+        params = dict(user_id=user_id,
+                      shared_date__gte=day_ago, 
+                      story_hash__nin=[story_hash])
+        if feed_id:
+            params['story_feed_id'] = feed_id
+        shared_count = cls.objects.filter(**params).count()
 
         return shared_count >= quota
     
@@ -1863,7 +1865,7 @@ class MSharedStory(mongo.DynamicDocument):
         try:
             r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
             feed_id = "social:%s" % self.user_id
-            listeners_count = r.publish(feed_id, 'story:new')
+            listeners_count = r.publish("%s:story" % feed_id, 'story:new:%s' % self.story_hash)
             if listeners_count:
                 logging.debug("   ---> ~FMPublished to %s subscribers" % (listeners_count))
         except redis.ConnectionError:
