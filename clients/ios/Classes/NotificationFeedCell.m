@@ -70,17 +70,6 @@
         [self.notificationTypeControl setTitleTextAttributes:controlAttrs forState:UIControlStateNormal];
         self.notificationTypeControl.frame = CGRectMake(36, 76, CGRectGetWidth(self.frame), 28);
         [self.contentView addSubview:self.notificationTypeControl];
-        
-        self.textLabel.backgroundColor = [UIColor clearColor];
-        self.textLabel.textColor = UIColorFromRGB(0x303030);
-        self.textLabel.shadowColor = UIColorFromRGB(0xF0F0F0);
-        self.textLabel.shadowOffset = CGSizeMake(0, 1);
-        self.textLabel.highlightedTextColor = UIColorFromRGB(0x303030);
-        self.detailTextLabel.highlightedTextColor = UIColorFromRGB(0x505050);
-        self.detailTextLabel.textColor = UIColorFromRGB(0x505050);
-        self.backgroundColor = UIColorFromRGB(0xFFFFFF);
-        self.backgroundView.backgroundColor = UIColorFromRGB(0xFFFFFF);
-        self.selectedBackgroundView.backgroundColor = UIColorFromRGB(0xECEEEA);
     }
     
     return self;
@@ -88,6 +77,17 @@
 
 - (void)layoutSubviews {
     [super layoutSubviews];
+    
+    self.textLabel.backgroundColor = [UIColor clearColor];
+    self.textLabel.textColor = UIColorFromRGB(0x303030);
+    self.textLabel.shadowColor = UIColorFromRGB(0xF0F0F0);
+    self.textLabel.shadowOffset = CGSizeMake(0, 1);
+    self.textLabel.highlightedTextColor = UIColorFromRGB(0x303030);
+    self.detailTextLabel.highlightedTextColor = UIColorFromRGB(0x505050);
+    self.detailTextLabel.textColor = UIColorFromRGB(0x505050);
+    self.backgroundColor = UIColorFromRGB(0xFFFFFF);
+    self.backgroundView.backgroundColor = UIColorFromRGB(0xFFFFFF);
+    self.selectedBackgroundView.backgroundColor = UIColorFromRGB(0xECEEEA);
     
     self.imageView.frame = CGRectMake(10.0, 10.0, 16.0, 16.0);
     self.imageView.contentMode = UIViewContentModeScaleAspectFit;

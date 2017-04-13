@@ -964,6 +964,8 @@ static UIFont *userLabelFont;
     
     self.feedTitlesTable.backgroundColor = UIColorFromRGB(0xf4f4f4);
     [self.feedTitlesTable reloadData];
+    
+    [self resetupGestures];
 }
 
 - (void)updateThemeBrightness {
