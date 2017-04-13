@@ -8,4 +8,4 @@
 
 
 "Privacy" = "Privacy"; // iOS 8+ Privacy cell: title
-"Open in Settings app" = ""; // iOS 8+ Privacy cell: subtitle (TODO)
+"Open in Settings app" = "In “Instellingen” app openen"; // iOS 8+ Privacy cell: subtitle

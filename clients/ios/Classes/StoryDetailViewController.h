@@ -11,7 +11,6 @@
 #import "BaseViewController.h"
 
 @class NewsBlurAppDelegate;
-@class ASIHTTPRequest;
 
 @interface StoryDetailViewController : BaseViewController
 <UIScrollViewDelegate, UIGestureRecognizerDelegate,
@@ -28,9 +27,6 @@ UIActionSheetDelegate> {
     BOOL inDoubleTap;
     BOOL hasScrolled;
     NSURL *activeLongPressUrl;
-    NSInteger actionSheetViewImageIndex;
-    NSInteger actionSheetCopyImageIndex;
-    NSInteger actionSheetSaveImageIndex;
     CGSize preRotateSize;
     CGFloat scrollPct;
     
@@ -80,10 +76,7 @@ UIActionSheetDelegate> {
 - (void)openShareDialog;
 - (void)openTrainingDialog:(int)x yCoordinate:(int)y width:(int)width height:(int)height;
 - (void)openUserTagsDialog:(int)x yCoordinate:(int)y width:(int)width height:(int)height;
-- (void)finishLikeComment:(ASIHTTPRequest *)request;
 - (void)subscribeToBlurblog;
-- (void)finishSubscribeToBlurblog:(ASIHTTPRequest *)request;
-- (void)requestFailed:(ASIHTTPRequest *)request;
 - (void)setActiveStoryAtIndex:(NSInteger)activeStoryIndex;
 - (NSString *)getHeader;
 - (NSString *)getShareBar;
@@ -99,6 +92,5 @@ UIActionSheetDelegate> {
 - (void)showTextOrStoryView;
 - (void)showStoryView;
 - (void)fetchTextView;
-- (void)finishFetchTextView:(ASIHTTPRequest *)request;
 
 @end

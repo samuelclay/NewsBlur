@@ -11,7 +11,6 @@
 #import "InteractionCell.h"
 #import "SmallInteractionCell.h"
 #import <QuartzCore/QuartzCore.h>
-#import "ASIHTTPRequest.h"
 #import "UserProfileViewController.h"
 #import "DashboardViewController.h"
 
@@ -23,7 +22,6 @@
 @synthesize appDelegate;
 @synthesize interactionsTable;
 @synthesize interactionsArray;
-@synthesize popoverController;
 @synthesize pageFetching;
 @synthesize pageFinished;
 @synthesize interactionsPage;
@@ -32,7 +30,7 @@
 {
     self = [super initWithFrame:frame];
     if (self) {
-        
+        appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];
     }
     return self;
 }
@@ -75,8 +73,6 @@
 #pragma mark Get Interactions
 
 - (void)fetchInteractionsDetail:(int)page {
-    self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];
-    
     // if there is no social profile, we are DONE
 //    if ([[appDelegate.dictSocialProfile allKeys] count] == 0) {
 //        self.pageFinished = YES;
@@ -105,26 +101,16 @@
                                [appDelegate.dictSocialProfile objectForKey:@"user_id"],
                                page];
 
-        NSURL *url = [NSURL URLWithString:urlString];
-        ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
-        [request setValidatesSecureCertificate:NO];
-
-        [request setDidFinishSelector:@selector(finishLoadInteractions:)];
-        [request setDidFailSelector:@selector(requestFailed:)];
-        [request setDelegate:self];
-        [request startAsynchronous];
+        [appDelegate.networkManager GET:urlString parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+            [self finishLoadInteractions:responseObject];
+        } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+            [appDelegate informError:error];
+        }];
     }
 }
 
-- (void)finishLoadInteractions:(ASIHTTPRequest *)request {
+- (void)finishLoadInteractions:(NSDictionary *)results {
     self.pageFetching = NO;
-    NSString *responseString = [request responseString];
-    NSData *responseData=[responseString dataUsingEncoding:NSUTF8StringEncoding];    
-    NSError *error;
-    NSDictionary *results = [NSJSONSerialization 
-                             JSONObjectWithData:responseData
-                             options:kNilOptions 
-                             error:&error];
     
     NSArray *newInteractions = [results objectForKey:@"interactions"];
     
@@ -157,12 +143,6 @@
     
     [self refreshWithInteractions:appDelegate.userInteractionsArray];
 } 
-
-- (void)requestFailed:(ASIHTTPRequest *)request {
-    NSError *error = [request error];
-    NSLog(@"Error: %@", error);
-    [appDelegate informError:error];
-}
 
 #pragma mark -
 #pragma mark Table View - Interactions List

@@ -7,11 +7,11 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "NewsBlurAppDelegate.h"
 
 @class NewsBlurAppDelegate;
-@class ASIHTTPRequest;
 
-@interface FriendsListViewController : UIViewController <UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate> {
+@interface FriendsListViewController : BaseViewController <UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate> {
     NewsBlurAppDelegate *appDelegate;
     UISearchBar *friendSearchBar;
     UITableView *friendsTable;
@@ -29,9 +29,6 @@
 
 - (void)doCancelButton;
 - (void)loadFriendsList:(NSString *)query;
-- (void)requestFinished:(ASIHTTPRequest *)request;
-- (void)requestFailed:(ASIHTTPRequest *)request;
 - (void)loadSuggestedFriendsList;
-- (void)loadSuggestedFriendsListFinished:(ASIHTTPRequest *)request;
 - (void)hideUserProfileModal;
 @end

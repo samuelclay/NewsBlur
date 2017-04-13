@@ -40,10 +40,12 @@
 #define kIASKShortTitles                      @"ShortTitles"
 #define kIASKSupportedUserInterfaceIdioms     @"SupportedUserInterfaceIdioms"
 #define kIASKSubtitle                         @"IASKSubtitle"
+#define kIASKPlaceholder                      @"IASKPlaceholder"
 #define kIASKViewControllerClass              @"IASKViewControllerClass"
 #define kIASKViewControllerSelector           @"IASKViewControllerSelector"
 #define kIASKViewControllerStoryBoardFile     @"IASKViewControllerStoryBoardFile"
 #define kIASKViewControllerStoryBoardId       @"IASKViewControllerStoryBoardId"
+#define kIASKSegueIdentifier                  @"IASKSegueIdentifier"
 #define kIASKButtonClass                      @"IASKButtonClass"
 #define kIASKButtonAction                     @"IASKButtonAction"
 #define kIASKMailComposeToRecipents           @"IASKMailComposeToRecipents"
@@ -85,6 +87,7 @@
 #define kIASKPSTitleValueSpecifier            @"PSTitleValueSpecifier"
 #define kIASKPSTextFieldSpecifier             @"PSTextFieldSpecifier"
 #define kIASKPSChildPaneSpecifier             @"PSChildPaneSpecifier"
+#define kIASKTextViewSpecifier                @"IASKTextViewSpecifier"
 #define kIASKOpenURLSpecifier                 @"IASKOpenURLSpecifier"
 #define kIASKButtonSpecifier                  @"IASKButtonSpecifier"
 #define kIASKMailComposeSpecifier             @"IASKMailComposeSpecifier"
@@ -175,6 +178,20 @@ _Pragma("clang diagnostic pop")
 #endif
 
 #ifdef __IPHONE_8_0
+#define IASK_IF_PRE_IOS8(...) \
+_Pragma("clang diagnostic push") \
+_Pragma("clang diagnostic ignored \"-Wdeprecated-declarations\"") \
+if (kCFCoreFoundationVersionNumber < kCFCoreFoundationVersionNumber_iOS_8_0) \
+{ \
+__VA_ARGS__ \
+} \
+_Pragma("clang diagnostic pop")
+#else
+#define IASK_IF_PRE_IOS8(...)  __VA_ARGS__
+#endif
+
+
+#ifdef __IPHONE_8_0
 #define IASK_IF_IOS8_OR_GREATER(...) \
 if (kCFCoreFoundationVersionNumber >= kCFCoreFoundationVersionNumber_iOS_8_0) \
 { \
@@ -216,7 +233,7 @@ __VA_ARGS__ \
 - (NSString*)titleForSection:(NSInteger)section;
 - (NSString*)keyForSection:(NSInteger)section;
 - (NSString*)footerTextForSection:(NSInteger)section;
-- (NSString*)titleForStringId:(NSString*)stringId;
+- (NSString*)titleForId:(NSObject*)titleId;
 - (NSString*)pathForImageNamed:(NSString*)image;
 
 ///the main application bundle. most often [NSBundle mainBundle]

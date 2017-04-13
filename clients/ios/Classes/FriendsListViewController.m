@@ -9,7 +9,6 @@
 #import "FriendsListViewController.h"
 #import "NewsBlurAppDelegate.h"
 #import "UserProfileViewController.h"
-#import "ASIHTTPRequest.h"
 #import "ProfileBadge.h"
 #import "MBProgressHUD.h"
 #import "UISearchBar+Field.h"
@@ -119,57 +118,36 @@
     NSString *urlString = [NSString stringWithFormat:@"%@/social/find_friends?query=%@&limit=10",
                            self.appDelegate.url,
                            query];
-    NSURL *url = [NSURL URLWithString:urlString];
-    
-    ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
-    [request setValidatesSecureCertificate:NO];
-    [request setDelegate:self];
-    [request setDidFinishSelector:@selector(requestFinished:)];
-    [request setDidFailSelector:@selector(requestFailed:)];
-    [request startAsynchronous];
+    [appDelegate.networkManager GET:urlString parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        [self requestFinished:responseObject];
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        [self informError:error];
+    }];
 }
 
 - (void)loadSuggestedFriendsList {
     NSString *urlString = [NSString stringWithFormat:@"%@/social/load_user_friends",
                            self.appDelegate.url];
-    NSURL *url = [NSURL URLWithString:urlString];
-    
-    ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
-    [request setValidatesSecureCertificate:NO];
-    [request setDelegate:self];
-    [request setDidFinishSelector:@selector(loadSuggestedFriendsListFinished:)];
-    [request setDidFailSelector:@selector(requestFailed:)];
-    [request startAsynchronous];
+    [appDelegate.networkManager GET:urlString parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        [self loadSuggestedFriendsListFinished:responseObject];
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        [self informError:error];
+    }];
 }
 
-- (void)loadSuggestedFriendsListFinished:(ASIHTTPRequest *)request {
-    NSString *responseString = [request responseString];
-    NSData *responseData= [responseString dataUsingEncoding:NSUTF8StringEncoding];    
-    NSError *error;
-    NSDictionary *results = [NSJSONSerialization 
-                             JSONObjectWithData:responseData
-                             options:kNilOptions 
-                             error:&error];
-    // int statusCode = [request responseStatusCode];
+- (void)loadSuggestedFriendsListFinished:(NSDictionary *)results {
     int code = [[results valueForKey:@"code"] intValue];
     if (code == -1) {
         return;
     }
+    
     self.suggestedUserProfiles = [results objectForKey:@"recommended_users"];
     [self.friendsTable reloadData];
 }
 
-- (void)requestFinished:(ASIHTTPRequest *)request {
+- (void)requestFinished:(NSDictionary *)results {
     if (self.inSearch_) {
         [MBProgressHUD hideHUDForView:self.view animated:YES];
-        NSString *responseString = [request responseString];
-        NSData *responseData= [responseString dataUsingEncoding:NSUTF8StringEncoding];    
-        NSError *error;
-        NSDictionary *results = [NSJSONSerialization 
-                                 JSONObjectWithData:responseData
-                                 options:kNilOptions 
-                                 error:&error];
-        // int statusCode = [request responseStatusCode];
         int code = [[results valueForKey:@"code"] intValue];
         if (code == -1) {
             return;
@@ -177,16 +155,9 @@
         
         self.userProfiles = [results objectForKey:@"profiles"];
         
-        
         [self.friendsTable reloadData];
     }
     
-}
-
-- (void)requestFailed:(ASIHTTPRequest *)request {
-    NSError *error = [request error];
-    NSLog(@"Error: %@", error);
-    [appDelegate informError:error];
 }
 
 - (BOOL)disablesAutomaticKeyboardDismissal {

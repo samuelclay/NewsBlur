@@ -20,7 +20,7 @@
 @synthesize appDelegate;
 @synthesize menuOptions;
 @synthesize menuTableView;
-@synthesize loginAsAlert;
+
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -170,6 +170,12 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath 
 {
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        [self.appDelegate hidePopover];
+    } else {
+        [self.appDelegate hidePopoverAnimated:YES];
+    }
+
     switch (indexPath.row) {
         case 0:
             [appDelegate showPreferences];
@@ -203,11 +209,6 @@
             break;
     }
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [self.appDelegate hidePopover];
-    } else {
-        [self.appDelegate hidePopoverAnimated:YES];
-    }
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 
 }
@@ -216,46 +217,29 @@
 #pragma mark Menu Options
 
 - (void)showLoginAsDialog {
-    loginAsAlert = [[UIAlertView alloc] initWithTitle:@"Login as..." message:nil delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Login", nil];
-    loginAsAlert.alertViewStyle = UIAlertViewStylePlainTextInput;
-    UITextField * alertTextField = [loginAsAlert textFieldAtIndex:0];
-    alertTextField.keyboardType = UIKeyboardTypeAlphabet;
-    alertTextField.placeholder = @"Username";
-    [loginAsAlert show];
-}
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"Login as..." message:nil preferredStyle:UIAlertControllerStyleAlert];
+    [alertController addTextFieldWithConfigurationHandler:nil];
+    [alertController addAction:[UIAlertAction actionWithTitle: @"Login" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
+        [alertController dismissViewControllerAnimated:YES completion:nil];
+        NSString *username = alertController.textFields[0].text;
+        NSString *urlString = [NSString stringWithFormat:@"%@/reader/login_as?user=%@",
+                          self.appDelegate.url, username];
 
-- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
-    UITextField * alertTextField = [loginAsAlert textFieldAtIndex:0];
-    if ([alertTextField.text length] <= 0 || buttonIndex == 0){
-        return;
-    }
-    if (buttonIndex == 1) {
-        NSString *urlS = [NSString stringWithFormat:@"%@/reader/login_as?user=%@",
-                          self.appDelegate.url, alertTextField.text];
-        NSURL *url = [NSURL URLWithString:urlS];
-        
-        __block ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
-        [request setValidatesSecureCertificate:NO];
-        [request setDelegate:self];
-        [request setResponseEncoding:NSUTF8StringEncoding];
-        [request setDefaultResponseEncoding:NSUTF8StringEncoding];
-        [request setFailedBlock:^(void) {
-            [MBProgressHUD hideHUDForView:self.view animated:YES];
-        }];
-        [request setCompletionBlock:^(void) {
-            NSLog(@"Login as %@ successful", alertTextField.text);
+        [appDelegate.networkManager GET:urlString parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+            NSLog(@"Login as %@ successful", username);
             [MBProgressHUD hideHUDForView:self.view animated:YES];
             [appDelegate reloadFeedsView:YES];
+        } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+            [self informError:error];
         }];
-        [request setTimeOutSeconds:30];
-        [request startAsynchronous];
-        
-        [ASIHTTPRequest setSessionCookies:nil];
         
         [MBProgressHUD hideHUDForView:self.view animated:YES];
         MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:appDelegate.feedsViewController.view animated:YES];
-        HUD.labelText = [NSString stringWithFormat:@"Login: %@", alertTextField.text];
-    }
+        HUD.labelText = [NSString stringWithFormat:@"Login: %@", username];
+    }]];
+    [alertController addAction:[UIAlertAction actionWithTitle:@"Cancel"
+                                                        style:UIAlertActionStyleCancel handler:nil]];
+    [appDelegate.feedsViewController presentViewController:alertController animated:YES completion:nil];
 }
 
 #pragma mark - Theme Options
