@@ -197,7 +197,7 @@ class FetchFeed:
         elif 'youtube.com/feeds/videos.xml?channel_id=' in address:
             try:
                 channel_id = urlparse.parse_qs(urlparse.urlparse(address).query)['channel_id'][0]
-            except IndexError:
+            except (IndexError, KeyError):
                 return            
         elif 'youtube.com/playlist' in address:
             try:
@@ -372,6 +372,11 @@ class FetchFeed:
                               (self.feed.log_title[:30], address, e))
                 social_services.disconnect_twitter()
                 return
+            elif 'expired token' in message:
+                logging.debug(u'   ***> [%-30s] ~FRTwitter user expired, disconnecting twitter: %s: %s' % 
+                              (self.feed.log_title[:30], address, e))
+                social_services.disconnect_twitter()
+                return
             elif 'not found' in message:
                 logging.debug(u'   ***> [%-30s] ~FRTwitter user not found, disconnecting twitter: %s: %s' % 
                               (self.feed.log_title[:30], address, e))
@@ -382,7 +387,7 @@ class FetchFeed:
                               (self.feed.log_title[:30], address, e))
                 return
             else:
-                raise
+                raise e
         
         try:
             tweets = twitter_user.timeline()
@@ -396,6 +401,10 @@ class FetchFeed:
                 logging.debug(u'   ***> [%-30s] ~FRTwitter user not found, disconnecting twitter: %s: %s' % 
                               (self.feed.log_title[:30], address, e))
                 social_services.disconnect_twitter()
+                return
+            elif 'blocked from viewing' in e.args[0]:
+                logging.debug(u'   ***> [%-30s] ~FRTwitter user blocked, ignoring: %s' % 
+                              (self.feed.log_title[:30], e))
                 return
             else:
                 raise e
