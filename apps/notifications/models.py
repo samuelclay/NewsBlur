@@ -225,9 +225,9 @@ class MUserFeedNotification(mongo.Document):
     def send_ios(self, story, user, usersub):
         if not self.is_ios: return
 
-        apns = APNs(use_sandbox=True, 
-                    cert_file='/srv/newsblur/config/certificates/aps_development.pem',
-                    key_file='/srv/newsblur/config/certificates/aps_development.pem',
+        apns = APNs(use_sandbox=False, 
+                    cert_file='/srv/newsblur/config/certificates/aps.pem',
+                    key_file='/srv/newsblur/config/certificates/aps.pem',
                     enhanced=settings.DEBUG)
         
         tokens = MUserNotificationTokens.get_tokens_for_user(self.user_id)
