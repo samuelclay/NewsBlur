@@ -228,7 +228,7 @@ class MUserFeedNotification(mongo.Document):
         apns = APNs(use_sandbox=False, 
                     cert_file='/srv/newsblur/config/certificates/aps.pem',
                     key_file='/srv/newsblur/config/certificates/aps.pem',
-                    enhanced=settings.DEBUG)
+                    enhanced=True)
         
         tokens = MUserNotificationTokens.get_tokens_for_user(self.user_id)
         title, subtitle, body = self.title_and_body(story, usersub)
