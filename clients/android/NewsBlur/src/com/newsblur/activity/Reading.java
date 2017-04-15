@@ -262,7 +262,16 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
                 return;
             }
 
+            boolean lastCursorWasStale = (stories == null);
+
             stories = cursor;
+            
+            // if the pager previously showed a stale set of stories, it is *not* sufficent to just
+            // swap out the cursor and invalidate.  no number of calls to notifyDataSetChanged() or
+            // setCurrentItem() will ever a pager to refresh the currently displayed fragment.
+            // however, the pager can be tricked into wiping all fragments and recreating them from
+            // the adapter by setting the adapter again, even if it is the same one.
+            if (lastCursorWasStale) pager.setAdapter(readingAdapter);
 
             com.newsblur.util.Log.d(this.getClass().getName(), "loaded cursor with count: " + cursor.getCount());
             if (cursor.getCount() < 1) {
