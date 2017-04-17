@@ -11,18 +11,14 @@ public class Font {
     public static Font GOTHAM_NARROW = new Font("GothamNarrow-Book.otf");
     public static Font WHITNEY = new Font("WhitneySSm-Book-Bas.otf");
 
-    private String bookOtfFile;
+    private String bookFile;
 
-    private Font(String bookOtfFile) {
-        this.bookOtfFile = bookOtfFile;
+    private Font(String bookFile) {
+        this.bookFile = bookFile;
     }
 
-    public String getBookOtfFile() {
-        return bookOtfFile;
-    }
-
-    public boolean isDefaultFont() {
-        return bookOtfFile == null;
+    public boolean isUserSelected() {
+        return bookFile != null;
     }
 
     public static Font getFont(String preferenceValue) {
@@ -35,6 +31,18 @@ public class Font {
                 return WHITNEY;
             default:
                 return DEFAULT;
+        }
+    }
+
+    public String getFontFace() {
+        if (isUserSelected()) {
+            StringBuilder builder = new StringBuilder();
+            builder.append("@font-face { font-family: 'SelectedFont'; src: url(\"file:///android_asset/fonts/");
+            builder.append(bookFile);
+            builder.append("\") }\n");
+            return builder.toString();
+        } else {
+            return "";
         }
     }
 }

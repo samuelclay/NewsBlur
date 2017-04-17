@@ -548,13 +548,9 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
             StringBuilder builder = new StringBuilder();
             builder.append("<html><head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=0\" />");
             builder.append("<style style=\"text/css\">");
-            if (!font.isDefaultFont()) {
-                builder.append("@font-face { font-family: 'SelectedFont'; src: url(\"file:///android_asset/fonts/");
-                builder.append(font.getBookOtfFile());
-                builder.append("\") }");
-            }
+            builder.append(font.getFontFace());
             builder.append(String.format("body { font-size: %sem;", Float.toString(currentSize)));
-            if (!font.isDefaultFont()) {
+            if (font.isUserSelected()) {
                 builder.append("font-family: 'SelectedFont';");
             }
             builder.append("} </style>");
