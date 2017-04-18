@@ -268,10 +268,12 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
             
             // if the pager previously showed a stale set of stories, it is *not* sufficent to just
             // swap out the cursor and invalidate.  no number of calls to notifyDataSetChanged() or
-            // setCurrentItem() will ever a pager to refresh the currently displayed fragment.
+            // setCurrentItem() will ever get a pager to refresh the currently displayed fragment.
             // however, the pager can be tricked into wiping all fragments and recreating them from
             // the adapter by setting the adapter again, even if it is the same one.
-            if (lastCursorWasStale) pager.setAdapter(readingAdapter);
+            if (lastCursorWasStale) { 
+                pager.setAdapter(readingAdapter);
+            }
 
             com.newsblur.util.Log.d(this.getClass().getName(), "loaded cursor with count: " + cursor.getCount());
             if (cursor.getCount() < 1) {
@@ -280,7 +282,6 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 
             // see if we are just starting and need to jump to a target story
             skipPagerToStoryHash();
-
 
             if (unreadSearchActive) {
                 // if we left this flag high, we were looking for an unread, but didn't find one;
@@ -303,11 +304,13 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
             if ( (story.storyHash.equals(storyHash)) ||
                  ((storyHash.equals(FIND_FIRST_UNREAD)) && (!story.read))
                  ) {
+                // see above note about re-setting the adapter to force the pager to reload fragments
+                pager.setAdapter(readingAdapter);
+                pager.setCurrentItem(stories.getPosition(), false);
+                this.onPageSelected(stories.getPosition());
                 // now that the pager is getting the right story, make it visible
                 pager.setVisibility(View.VISIBLE);
                 emptyViewText.setVisibility(View.INVISIBLE);
-                pager.setCurrentItem(stories.getPosition(), false);
-                this.onPageSelected(stories.getPosition());
                 storyHash = null;
                 return;
             }
