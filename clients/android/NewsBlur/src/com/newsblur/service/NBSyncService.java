@@ -98,8 +98,11 @@ public class NBSyncService extends Service {
     private static FeedSet PendingFeed;
     private static Integer PendingFeedTarget = 0;
 
-    /** The lats feed set that was loaded/primed into the session table. */
+    /** The last feed set that was actually fetched from the API. */
     private static FeedSet LastFeedSet;
+
+    /** The last feed set that was loaded/primed into the session table. */
+    private static FeedSet PreppedFeedSet;
 
     /** Feed sets that the API has said to have no more pages left. */
     private static Set<FeedSet> ExhaustedFeeds;
@@ -645,17 +648,7 @@ public class NBSyncService extends Service {
                 return;
             }
 
-            if (! fs.equals(LastFeedSet)) {
-                // the next fetch will be the start of a new reading session; clear it so it
-                // will be re-primed
-                dbHelper.clearStorySession();
-                // don't just rely on the auto-prepare code when fetching stories, it might be called
-                // after we insert our first page and not trigger
-                dbHelper.prepareReadingSession(fs);
-                // note which feedset we are loading so we can trigger another reset when it changes
-                LastFeedSet = fs;
-                NbActivity.updateAllActivities(NbActivity.UPDATE_STORY | NbActivity.UPDATE_STATUS);
-            }
+            prepareReadingSession(dbHelper, fs);
 
             // see if we need to quickly reset fetch state for a feed. we
             // do this before the loop to prevent-mid loop state corruption
@@ -665,6 +658,8 @@ public class NBSyncService extends Service {
                 FeedPagesSeen.remove(ResetFeed);
                 ResetFeed = null;
             }
+
+            LastFeedSet = fs;
             
             if (ExhaustedFeeds.contains(fs)) {
                 com.newsblur.util.Log.i(this.getClass().getName(), "No more stories for feed set: " + fs);
@@ -902,7 +897,7 @@ public class NBSyncService extends Service {
     }
 
     public static boolean isFeedSetReady(FeedSet fs) {
-        return fs.equals(LastFeedSet);
+        return fs.equals(PreppedFeedSet);
     }
 
     public static boolean isFeedSetExhausted(FeedSet fs) {
@@ -988,6 +983,29 @@ public class NBSyncService extends Service {
             
         }
         return true;
+    }
+
+    /**
+     * Prepare the reading session table to display the given feedset. This is done here
+     * rather than in FeedUtils so we can track which FS is currently primed and not
+     * constantly reset.  This is called not only when the UI wants to change out a
+     * set but also when we sync a page of stories, since there are no guarantees which
+     * will happen first.
+     */
+    public static void prepareReadingSession(BlurDatabaseHelper dbHelper, FeedSet fs) {
+        synchronized (PENDING_FEED_MUTEX) {
+            if (! fs.equals(PreppedFeedSet)) {
+                // the next fetch will be the start of a new reading session; clear it so it
+                // will be re-primed
+                dbHelper.clearStorySession();
+                // don't just rely on the auto-prepare code when fetching stories, it might be called
+                // after we insert our first page and not trigger
+                dbHelper.prepareReadingSession(fs);
+                // note which feedset we are loading so we can trigger another reset when it changes
+                PreppedFeedSet = fs;
+                NbActivity.updateAllActivities(NbActivity.UPDATE_STORY | NbActivity.UPDATE_STATUS);
+            }
+        }
     }
 
     /**
