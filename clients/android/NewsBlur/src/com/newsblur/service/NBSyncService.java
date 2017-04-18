@@ -721,9 +721,7 @@ public class NBSyncService extends Service {
 
         } finally {
             StorySyncRunning = false;
-            // even if we didn't do much of a sync, a fragment might be waiting to even see if we
-            // tried, so still signal a status change and that story data (empty or not) are ready
-            NbActivity.updateAllActivities(NbActivity.UPDATE_STATUS | NbActivity.UPDATE_STORY);
+            NbActivity.updateAllActivities(NbActivity.UPDATE_STATUS);
             synchronized (PENDING_FEED_MUTEX) {
                 if (finished && fs.equals(PendingFeed)) PendingFeed = null;
             }
