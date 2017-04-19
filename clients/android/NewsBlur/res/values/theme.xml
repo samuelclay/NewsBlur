@@ -40,6 +40,7 @@
         <item name="selectorOverlayBackgroundStory">@style/selectorOverlayBackgroundStory</item>
         <item name="selectorOverlayBackgroundText">@style/selectorOverlayBackgroundText</item>
         <item name="muteicon">@style/muteicon</item>
+        <item name="android:contextPopupMenuStyle">@style/contextPopupStyle</item>
 	</style>
 
     <style name="NewsBlurDarkTheme" parent="@android:style/Theme.Holo" >
@@ -82,5 +83,6 @@
         <item name="selectorOverlayBackgroundStory">@style/selectorOverlayBackgroundStory.dark</item>
         <item name="selectorOverlayBackgroundText">@style/selectorOverlayBackgroundText.dark</item>
         <item name="muteicon">@style/muteicon.dark</item>
+        <item name="android:contextPopupMenuStyle">@style/contextPopupStyle.dark</item>
     </style>
 </resources>
