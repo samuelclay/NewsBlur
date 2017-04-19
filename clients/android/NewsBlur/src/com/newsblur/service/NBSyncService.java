@@ -83,7 +83,7 @@ public class NBSyncService extends Service {
     /** Informational flag only, as to whether we were offline last time we cycled. */
     public volatile static boolean OfflineNow = false;
 
-    public volatile static Boolean isAuth = null;
+    public volatile static int authFails = 0;
     public volatile static Boolean isPremium = null;
     public volatile static Boolean isStaff = null;
 
@@ -98,6 +98,12 @@ public class NBSyncService extends Service {
     private static FeedSet PendingFeed;
     private static Integer PendingFeedTarget = 0;
 
+    /** The last feed set that was actually fetched from the API. */
+    private static FeedSet LastFeedSet;
+
+    /** The last feed set that was loaded/primed into the session table. */
+    private static FeedSet PreppedFeedSet;
+
     /** Feed sets that the API has said to have no more pages left. */
     private static Set<FeedSet> ExhaustedFeeds;
     static { ExhaustedFeeds = new HashSet<FeedSet>(); }
@@ -110,9 +116,6 @@ public class NBSyncService extends Service {
 
     /** Feed to reset to zero-state, so it is fetched fresh, presumably with new filters. */
     private static FeedSet ResetFeed;
-
-    /** Flag to reset the reading session table. */
-    public static boolean ResetSession = false;
 
     /** Actions that may need to be double-checked locally due to overlapping API calls. */
     private static List<ReadingAction> FollowupActions;
@@ -442,13 +445,16 @@ public class NBSyncService extends Service {
             if (! feedResponse.isAuthenticated) {
                 // we should not have got this far without being logged in, so the server either
                 // expired or ignored out cookie. keep track of this.
-                isAuth = false;
+                authFails += 1;
                 com.newsblur.util.Log.w(this.getClass().getName(), "Server ignored or rejected auth cookie.");
+                if (authFails >= AppConstants.MAX_API_TRIES) {
+                    com.newsblur.util.Log.w(this.getClass().getName(), "too many auth fails, resetting cookie");
+                    PrefsUtils.logout(this);
+                }
                 DoFeedsFolders = true;
-                noteHardAPIFailure();
                 return;
             } else {
-                isAuth = true;
+                authFails = 0;
             }
 
             if (HaltNow) return;
@@ -642,8 +648,10 @@ public class NBSyncService extends Service {
                 return;
             }
 
-            // before anything else, see if we need to quickly reset fetch state for a feed. we
-            // do this as part of the loop to prevent-mid loop state corruption
+            prepareReadingSession(dbHelper, fs);
+
+            // see if we need to quickly reset fetch state for a feed. we
+            // do this before the loop to prevent-mid loop state corruption
             if (ResetFeed != null) {
                 ExhaustedFeeds.remove(ResetFeed);
                 FeedStoriesSeen.remove(ResetFeed);
@@ -651,23 +659,7 @@ public class NBSyncService extends Service {
                 ResetFeed = null;
             }
 
-            // now see if we need to reset the reading session table because the FeedSet was
-            // switched out
-            boolean doReset = false;
-            synchronized (PENDING_FEED_MUTEX) {
-                if (ResetSession) {
-                    doReset = true;
-                    ResetSession = false;
-                }
-            }
-            if (doReset) {
-                // the next fetch will be the start of a new reading session; clear it so it
-                // will be re-primed
-                dbHelper.clearStorySession();
-                // don't just rely on the auto-prepare code when fetching stories, it might be called
-                // after we insert our first page and not trigger
-                dbHelper.prepareReadingSession(fs);
-            }
+            LastFeedSet = fs;
             
             if (ExhaustedFeeds.contains(fs)) {
                 com.newsblur.util.Log.i(this.getClass().getName(), "No more stories for feed set: " + fs);
@@ -729,9 +721,7 @@ public class NBSyncService extends Service {
 
         } finally {
             StorySyncRunning = false;
-            // even if we didn't do much of a sync, a fragment might be waiting to even see if we
-            // tried, so still signal a status change and that story data (empty or not) are ready
-            NbActivity.updateAllActivities(NbActivity.UPDATE_STATUS | NbActivity.UPDATE_STORY);
+            NbActivity.updateAllActivities(NbActivity.UPDATE_STATUS);
             synchronized (PENDING_FEED_MUTEX) {
                 if (finished && fs.equals(PendingFeed)) PendingFeed = null;
             }
@@ -904,11 +894,16 @@ public class NBSyncService extends Service {
         return (fs.equals(PendingFeed) && (!stopSync(context)));
     }
 
+    public static boolean isFeedSetReady(FeedSet fs) {
+        return fs.equals(PreppedFeedSet);
+    }
+
     public static boolean isFeedSetExhausted(FeedSet fs) {
         return ExhaustedFeeds.contains(fs);
     }
 
     public static boolean isFeedSetStoriesFresh(FeedSet fs) {
+        if (! isFeedSetReady(fs)) return false;
         Integer count = FeedStoriesSeen.get(fs);
         if (count == null) return false;
         if (count < 1) return false;
@@ -953,7 +948,7 @@ public class NBSyncService extends Service {
      */
     public static boolean requestMoreForFeed(FeedSet fs, int desiredStoryCount, Integer callerSeen) {
         synchronized (PENDING_FEED_MUTEX) {
-            if (ExhaustedFeeds.contains(fs) && (!ResetSession)) {
+            if (ExhaustedFeeds.contains(fs) && (fs.equals(LastFeedSet))) {
                 com.newsblur.util.Log.d(NBSyncService.class.getName(), "rejecting request for feedset that is exhaused");
                 return false;
             }
@@ -973,6 +968,10 @@ public class NBSyncService extends Service {
             PendingFeedTarget = desiredStoryCount;
 
             if (AppConstants.VERBOSE_LOG) Log.d(NBSyncService.class.getName(), "callerhas: " + callerSeen + "  have:" + alreadySeen + "  want:" + desiredStoryCount + "  pending:" + alreadyPending);
+
+            if (!fs.equals(LastFeedSet)) {
+                return true;
+            }
             if (desiredStoryCount <= alreadySeen) {
                 return false;
             }
@@ -985,14 +984,35 @@ public class NBSyncService extends Service {
     }
 
     /**
-     * Gracefully stop the loading of the current FeedSet, and set a flag so that the reading
-     * session gets cleared before the next one is populated.
+     * Prepare the reading session table to display the given feedset. This is done here
+     * rather than in FeedUtils so we can track which FS is currently primed and not
+     * constantly reset.  This is called not only when the UI wants to change out a
+     * set but also when we sync a page of stories, since there are no guarantees which
+     * will happen first.
+     */
+    public static void prepareReadingSession(BlurDatabaseHelper dbHelper, FeedSet fs) {
+        synchronized (PENDING_FEED_MUTEX) {
+            if (! fs.equals(PreppedFeedSet)) {
+                // the next fetch will be the start of a new reading session; clear it so it
+                // will be re-primed
+                dbHelper.clearStorySession();
+                // don't just rely on the auto-prepare code when fetching stories, it might be called
+                // after we insert our first page and not trigger
+                dbHelper.prepareReadingSession(fs);
+                // note which feedset we are loading so we can trigger another reset when it changes
+                PreppedFeedSet = fs;
+                NbActivity.updateAllActivities(NbActivity.UPDATE_STORY | NbActivity.UPDATE_STATUS);
+            }
+        }
+    }
+
+    /**
+     * Gracefully stop the loading of the current FeedSet.
      */
     public static void resetReadingSession() {
         com.newsblur.util.Log.d(NBSyncService.class.getName(), "requesting reading session reset");
         synchronized (PENDING_FEED_MUTEX) {
             PendingFeed = null;
-            ResetSession = true;
         }
     }
 

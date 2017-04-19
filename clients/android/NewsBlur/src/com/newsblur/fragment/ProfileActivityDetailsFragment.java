@@ -139,9 +139,13 @@ public abstract class ProfileActivityDetailsFragment extends Fragment implements
             if (feed == null) {
                 Toast.makeText(context, R.string.profile_feed_not_available, Toast.LENGTH_SHORT).show();
             } else {
-                Intent intent = new Intent(context, FeedItemsList.class);
-                intent.putExtra(FeedItemsList.EXTRA_FEED, feed);
-                context.startActivity(intent);
+                /* TODO: starting the feed view activity also requires both a feedset and a folder name
+                   in order to properly function.  the latter, in particular, we could only guess at from
+                   the info we have here.  at best, we would launch a feed view with somewhat unpredictable
+                   delete behaviour. */
+                //Intent intent = new Intent(context, FeedItemsList.class);
+                //intent.putExtra(FeedItemsList.EXTRA_FEED, feed);
+                //context.startActivity(intent);
             }
         } else if (activity.category == Category.STAR) {
             UIUtils.startReadingActivity(FeedSet.allSaved(), activity.storyHash, context);

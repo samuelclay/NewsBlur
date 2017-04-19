@@ -97,12 +97,13 @@ public class PrefsUtils {
     public static void sendLogEmail(Context context) {
         File f = com.newsblur.util.Log.getLogfile();
         if (f == null) return;
+        String debugInfo = "Tell us a bit a about your problem:\n\n\n\n" + getDebugInfo(context);
         android.net.Uri localPath = android.net.Uri.fromFile(f);
         Intent i = new Intent(Intent.ACTION_SEND);
         i.setType("*/*");
         i.putExtra(Intent.EXTRA_EMAIL, new String[]{"android@newsblur.com"});
-        i.putExtra(Intent.EXTRA_SUBJECT, "Android logs");
-        i.putExtra(Intent.EXTRA_TEXT, getDebugInfo(context));
+        i.putExtra(Intent.EXTRA_SUBJECT, "Android logs (" + getUserDetails(context).username + ")");
+        i.putExtra(Intent.EXTRA_TEXT, debugInfo);
         i.putExtra(Intent.EXTRA_STREAM, localPath);
         if (i.resolveActivity(context.getPackageManager()) != null) {
             context.startActivity(i);
@@ -115,7 +116,7 @@ public class PrefsUtils {
         s.append("\n");
         s.append("android version: ").append(Build.VERSION.RELEASE).append(" (" + Build.DISPLAY + ")");
         s.append("\n");
-        s.append("device: ").append(Build.MANUFACTURER + "+" + Build.MODEL + "+(" + Build.BOARD + ")");
+        s.append("device: ").append(Build.MANUFACTURER + " " + Build.MODEL + " (" + Build.BOARD + ")");
         s.append("\n");
         s.append("sqlite version: ").append(FeedUtils.dbHelper.getEngineVersion());
         s.append("\n");

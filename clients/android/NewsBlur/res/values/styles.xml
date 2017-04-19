@@ -340,4 +340,14 @@
     <style name="muteicon.dark">
         <item name="android:src">@drawable/mute_black</item>
     </style>
+
+    <!-- these fix the Android framework bug that causes context menus to get badly
+         truncated when the Holo theme is used on a v7+ device:
+         https://issuetracker.google.com/issues/37118658  -->
+    <style name="contextPopupStyle" parent="@android:style/Widget.Holo.Light.PopupMenu">
+        <item name="android:overlapAnchor">true</item>
+    </style>
+    <style name="contextPopupStyle.dark" parent="@android:style/Widget.Holo.PopupMenu">
+        <item name="android:overlapAnchor">true</item>
+    </style>
 </resources>

@@ -51,6 +51,7 @@ public class StoryItemsAdapter extends SimpleCursorAdapter {
     private final static int READ_STORY_ALPHA_B255 = (int) (255f * READ_STORY_ALPHA);
 
 	protected Cursor cursor;
+    private boolean showNone = false;
 
     private final Context context;
     private boolean ignoreReadStatus;
@@ -76,6 +77,7 @@ public class StoryItemsAdapter extends SimpleCursorAdapter {
 
 	@Override
 	public int getCount() {
+        if (showNone) return 0;
 		return cursor.getCount();
 	}
 
@@ -84,6 +86,10 @@ public class StoryItemsAdapter extends SimpleCursorAdapter {
 		this.cursor = c;
 		return super.swapCursor(c);
 	}
+
+    public void setShowNone(boolean showNone) {
+        this.showNone = showNone;
+    }
 
 	public Story getStory(int position) {
         cursor.moveToPosition(position);
