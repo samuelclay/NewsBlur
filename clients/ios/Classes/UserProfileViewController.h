@@ -7,13 +7,13 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "ASIHTTPRequest.h"
+#import "NewsBlurAppDelegate.h"
 
 @class NewsBlurAppDelegate;
 @class ProfileBadge;
 
-@interface UserProfileViewController : UIViewController 
-<UITableViewDataSource, UITableViewDelegate, ASIHTTPRequestDelegate> {
+@interface UserProfileViewController : BaseViewController
+<UITableViewDataSource, UITableViewDelegate> {
     NewsBlurAppDelegate *appDelegate;
     
     UILabel *followingCount;
@@ -31,11 +31,8 @@
 @property (nonatomic) NSArray *activitiesArray;
 @property (nonatomic) NSString *activitiesUsername;
 @property (nonatomic) NSDictionary *userProfile;
-@property (nonatomic) ASIHTTPRequest *request;
 
 - (void)getUserProfile;
-- (void)requestFinished:(ASIHTTPRequest *)request;
-- (void)requestFailed:(ASIHTTPRequest *)request;
 - (void)doCancelButton;
     
 @end

@@ -24,7 +24,7 @@
 @interface IASKSpecifierValuesViewController()
 
 @property (nonatomic, strong, readonly) IASKMultipleValueSelection *selection;
-
+@property (nonatomic) BOOL didFirstLayout;
 @end
 
 @implementation IASKSpecifierValuesViewController
@@ -62,17 +62,28 @@
     
     if (_tableView) {
         [_tableView reloadData];
-
-		// Make sure the currently checked item is visible
-        [_tableView scrollToRowAtIndexPath:_selection.checkedItem
-                          atScrollPosition:UITableViewScrollPositionMiddle animated:NO];
+		_selection.tableView = _tableView;
     }
+	self.didFirstLayout = NO;
 	[super viewWillAppear:animated];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
-	[_tableView flashScrollIndicators];
 	[super viewDidAppear:animated];
+	[_tableView flashScrollIndicators];
+}
+
+- (void)viewDidLayoutSubviews {
+	[super viewDidLayoutSubviews];
+
+	if (!self.didFirstLayout) {
+		// Make sure the currently checked item is visible
+		// this needs to be done as early as possible when pushing the view but after the first layout
+		// otherwise scrolling to the first entry doesn't respect tableView.contentInset
+		[_tableView scrollToRowAtIndexPath:_selection.checkedItem
+						  atScrollPosition:UITableViewScrollPositionMiddle animated:NO];
+		self.didFirstLayout = YES;
+	}
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
@@ -113,7 +124,7 @@
     [_selection updateSelectionInCell:cell indexPath:indexPath];
 
     @try {
-		[[cell textLabel] setText:[self.settingsReader titleForStringId:[titles objectAtIndex:indexPath.row]]];
+		[[cell textLabel] setText:[self.settingsReader titleForId:[titles objectAtIndex:indexPath.row]]];
 	}
 	@catch (NSException * e) {}
     return cell;
@@ -123,7 +134,7 @@
     [_selection selectRowAtIndexPath:indexPath];
 }
 
-- (CGSize)contentSizeForViewInPopover {
+- (CGSize)preferredContentSize {
     return [[self view] sizeThatFits:CGSizeMake(320, 2000)];
 }
 

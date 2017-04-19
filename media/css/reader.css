@@ -4382,7 +4382,9 @@ body {
     border-top: 1px solid #B7BBAA;
 }
 .NB-feeds-header-read.NB-feeds-header,
-.NB-feeds-header-starred.NB-feeds-header {
+.NB-feeds-header-searches.NB-feeds-header,
+.NB-feeds-header-starred.NB-feeds-header,
+.NB-searches-folder {
     border-bottom: 1px solid #B7BBAA;
 }
 .NB-feeds-header-river-container .NB-feeds-header.NB-empty .NB-feeds-header-count {
@@ -4434,6 +4436,48 @@ body {
 
 .NB-feeds-header-read.NB-empty .NB-feeds-header-count {
   display: none;
+}
+
+
+/* =========================== */
+/* = Header - Saved Searches = */
+/* =========================== */
+
+.NB-feeds-header-searches {
+    cursor: default;
+    background-image: inherit;
+    background-color: #EAECE5;
+}
+.NB-feeds-header.NB-feeds-header-searches:hover {
+    background-image: inherit;
+    background-color: #EAECE5;
+}
+.NB-feeds-header-searches .NB-feeds-header-icon {
+    background: transparent url('/media/embed/icons/circular/g_icn_search_black.png') no-repeat 1px 1px;
+    background-size: 14px;
+}
+
+.NB-feeds-header-searches .NB-feeds-header-count {
+    background-color: #506B9A;
+    margin-top: 4px;
+    margin-right: 3px;
+    display: block;
+}
+
+.NB-searches-feeds .feed {
+    border-top: 1px solid #E9EBEE;
+    border-bottom: 1px solid #E9EBEE;
+    background-color: #E9EBEE;
+}
+.NB-searches-feeds .feed_title {
+    padding-right: 4px;
+}
+.NB-feeds-header-searches.NB-empty .NB-feeds-header-count {
+  display: none;
+}
+
+.NB-searches-folder .NB-searches-feeds.NB-feedlist .feed {
+    display: block;
 }
 
 /* ===================== */
@@ -7144,7 +7188,8 @@ form.opml_import_form input {
     background-size: 18px;
 }
 
-.NB-menu-manage .NB-menu-manage-delete .NB-menu-manage-image {
+.NB-menu-manage .NB-menu-manage-delete .NB-menu-manage-image,
+.NB-menu-manage .NB-menu-manage-delete-search .NB-menu-manage-image {
     background: transparent url('/media/embed/icons/circular/menu_icn_delete.png') no-repeat 0 0;
     background-size: 18px;
 }
@@ -11901,7 +11946,7 @@ form.opml_import_form input {
     font-weight: bold;
     background: transparent;
     width: 82%;
-    padding: 2px 18px 1px 18px;
+    padding: 2px 52px 1px 18px;
     margin: 0;
     display: block;
     font-size: 11px;
@@ -11943,10 +11988,12 @@ form.opml_import_form input {
     -ms-transition: all .22s ease-in-out;
 }
 
+
 .NB-search-close:hover {
     opacity: 1;
 }
-.NB-searching .NB-search-close {
+.NB-searching .NB-search-close,
+.NB-searching .NB-search-save {
     display: block;
 }
 .NB-search-container {
@@ -11967,7 +12014,56 @@ form.opml_import_form input {
     margin: 0;
 }
 .NB-searching .NB-story-title-search-input {
-    width: 174px;
+    width: 154px;
+}
+
+.NB-search-header {
+    overflow: hidden;
+    padding: 8px 8px 8px 36px;
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#FEFEFE), to(#F3F4EF));
+    background-image: -moz-linear-gradient(center top , #FEFEFE 0%, #F3F4EF 100%);
+    background-image: linear-gradient(top, #FEFEFE, #F3F4EF);
+    border-bottom: 1px solid #C2C5BE;
+    background-color: #F3F3EE;
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#F3F3EE), to(#E8EBE4));
+    background-image: -moz-linear-gradient(center top , #F3F3EE 0%, #E8EBE4 100%);
+    background-image: linear-gradient(top, #F3F3EE, #E8EBE4);
+}
+
+.NB-search-header .NB-search-header-save {
+    float: right;
+    font-size: 9px;
+    text-transform: uppercase;
+    cursor: pointer;
+    padding: 1px 8px;
+    font-weight: bold;
+    line-height: 14px;
+    border: 1px solid rgba(0, 0, 0, .1);
+    border-radius: 16px;
+    z-index: 1;
+    margin: 0 0 0 8px;
+    color: rgba(0, 0, 0, .5);
+        
+    background-color: #F0F1EC;
+}
+
+.NB-search-header .NB-search-header-save:hover,
+.NB-search-header .NB-search-header-save.NB-active {
+    background-color: rgba(0, 0, 0, .1);
+}
+
+.NB-search-header .NB-search-header-icon {
+    background: transparent url('/media/embed/reader/search_icon2.png') no-repeat 0 0;
+    background-size: 16px;
+    vertical-align: bottom;
+    width: 16px;
+    height: 16px;
+    position: absolute;
+    top: 8px;
+    left: 12px;
+}
+.NB-search-header .NB-search-header-title {
+    font-size: 12px;
 }
 
 /* ================== */

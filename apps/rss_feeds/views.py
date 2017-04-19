@@ -489,7 +489,6 @@ def status(request):
         'feeds': feeds
     }, context_instance=RequestContext(request))
 
-@required_params('story_id', feed_id=int)
 @json.json_view
 def original_text(request):
     story_id = request.REQUEST.get('story_id')
@@ -510,8 +509,9 @@ def original_text(request):
     original_text = story.fetch_original_text(force=force, request=request, debug=debug)
 
     return {
-        'feed_id': feed_id,
-        'story_id': story_id,
+        'feed_id': story.story_feed_id,
+        'story_hash': story.story_hash,
+        'story_id': story.story_guid,
         'original_text': original_text,
         'failed': not original_text or len(original_text) < 100,
     }

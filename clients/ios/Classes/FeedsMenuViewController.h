@@ -7,19 +7,18 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "NewsBlurAppDelegate.h"
 
 @class NewsBlurAppDelegate;
 
-@interface FeedsMenuViewController : UIViewController 
-<UITableViewDelegate, UITableViewDataSource, UIAlertViewDelegate> {
+@interface FeedsMenuViewController : BaseViewController
+<UITableViewDelegate, UITableViewDataSource> {
     NewsBlurAppDelegate *appDelegate;
-    UIAlertView *loginAsAlert;
 }
 
 @property (nonatomic, strong) NSArray *menuOptions;
 @property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property (nonatomic) IBOutlet UITableView *menuTableView;
-@property (nonatomic) IBOutlet UIAlertView *loginAsAlert;
 @property (nonatomic) IBOutlet UISegmentedControl *themeSegmentedControl;
 
 - (IBAction)changeTheme:(id)sender;

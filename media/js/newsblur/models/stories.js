@@ -353,7 +353,7 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
         if (!active_feed) {
             // River of News does not have an active feed.
             active_feed = story_feed;
-        } else if (active_feed && active_feed.is_social()) {
+        } else if (active_feed && active_feed.is_feed() && active_feed.is_social()) {
             friend_feeds = _.without(friend_feeds, active_feed);
         }
         

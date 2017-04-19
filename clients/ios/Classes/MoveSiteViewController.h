@@ -8,7 +8,6 @@
 
 #import <UIKit/UIKit.h>
 #import "NewsBlurAppDelegate.h"
-#import "ASIHTTPRequest.h"
 
 @class NewsBlurAppDelegate;
 
@@ -16,8 +15,8 @@
 
 @end
 
-@interface MoveSiteViewController : UIViewController 
-<UITextFieldDelegate, UIPickerViewDelegate, UIPickerViewDataSource, ASIHTTPRequestDelegate> {
+@interface MoveSiteViewController : BaseViewController
+<UITextFieldDelegate, UIPickerViewDelegate, UIPickerViewDataSource> {
     NewsBlurAppDelegate *appDelegate;
 }
 

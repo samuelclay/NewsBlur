@@ -343,28 +343,26 @@
 - (void)syncStoryAsRead:(NSDictionary *)story {
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_story_hashes_as_read",
                            self.appDelegate.url];
-    NSURL *url = [NSURL URLWithString:urlString];
-    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    [params setObject:[story objectForKey:@"story_hash"]
+               forKey:@"story_hash"];
+    [params setObject:[story objectForKey:@"story_feed_id"]
+               forKey:@"story_feed_id"];
     
-    [request setPostValue:[story objectForKey:@"story_hash"]
-                   forKey:@"story_hash"];
-    
-    [request setDidFinishSelector:@selector(finishMarkAsRead:)];
-    [request setDidFailSelector:@selector(failedMarkAsRead:)];
-    [request setDelegate:self];
-    [request setUserInfo:story];
-    [request startAsynchronous];
+    [appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        [self finishMarkAsRead:responseObject];
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        [self failedMarkAsRead:params];
+    }];
 }
 
-- (void)finishMarkAsRead:(ASIFormDataRequest *)request {
-    if ([request responseStatusCode] != 200) {
-        return [self failedMarkAsRead:request];
-    }
+- (void)finishMarkAsRead:(NSDictionary *)results {
+
 }
 
-- (void)failedMarkAsRead:(ASIFormDataRequest *)request {
-    NSString *storyFeedId = [request.userInfo objectForKey:@"story_feed_id"];
-    NSString *storyHash = [request.userInfo objectForKey:@"story_hash"];
+- (void)failedMarkAsRead:(NSDictionary *)params {
+    NSString *storyFeedId = [params objectForKey:@"story_feed_id"];
+    NSString *storyHash = [params objectForKey:@"story_hash"];
     
     [appDelegate queueReadStories:@{storyFeedId: @[storyHash]}];
 }
@@ -372,38 +370,27 @@
 - (void)syncStoryAsUnread:(NSDictionary *)story {
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_story_as_unread",
                            self.appDelegate.url];
-    NSURL *url = [NSURL URLWithString:urlString];
-    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
     
-    [request setPostValue:[story objectForKey:@"story_hash"]
+    [params setObject:[story objectForKey:@"story_hash"]
                    forKey:@"story_id"];
-    [request setPostValue:[story objectForKey:@"story_feed_id"]
+    [params setObject:[story objectForKey:@"story_feed_id"]
                    forKey:@"feed_id"];
     
-    [request setDidFinishSelector:@selector(finishMarkAsUnread:)];
-    [request setDidFailSelector:@selector(failedMarkAsUnread:)];
-    [request setDelegate:self];
-    [request setUserInfo:story];
-    [request startAsynchronous];
+    [appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        [self finishMarkAsUnread:responseObject];
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        [self failedMarkAsUnread:params];
+    }];
 }
 
-- (void)finishMarkAsUnread:(ASIFormDataRequest *)request {
-    NSString *responseString = [request responseString];
-    NSData *responseData = [responseString dataUsingEncoding:NSUTF8StringEncoding];
-    NSError *error;
-    NSDictionary *results = [NSJSONSerialization
-                             JSONObjectWithData:responseData
-                             options:kNilOptions
-                             error:&error];
+- (void)finishMarkAsUnread:(NSDictionary *)results {
     
-    if ([request responseStatusCode] != 200 || [[results objectForKey:@"code"] integerValue] < 0) {
-        return [self failedMarkAsUnread:request];
-    }
 }
 
-- (void)failedMarkAsUnread:(ASIFormDataRequest *)request {
-    NSString *storyFeedId = [request.userInfo objectForKey:@"story_feed_id"];
-    NSString *storyHash = [request.userInfo objectForKey:@"story_hash"];
+- (void)failedMarkAsUnread:(NSDictionary *)params {
+    NSString *storyFeedId = [params objectForKey:@"story_feed_id"];
+    NSString *storyHash = [params objectForKey:@"story_hash"];
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
                                              (unsigned long)NULL), ^(void) {
@@ -413,7 +400,7 @@
                 // Offline means can't unread a story unless it was read while offline.
                 [self markStoryRead:storyHash feedId:storyFeedId];
         //        [self.storyTitlesTable reloadData];
-                [appDelegate failedMarkAsUnread:request];
+                [appDelegate failedMarkAsUnread:params];
             } else {
                 // Offline but read story while offline, so it never touched the server.
                 [appDelegate.unreadStoryHashes setObject:[NSNumber numberWithBool:YES] forKey:storyHash];
@@ -723,93 +710,66 @@
 - (void)syncStoryAsSaved:(NSDictionary *)story {
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_story_as_starred",
                            self.appDelegate.url];
-    NSURL *url = [NSURL URLWithString:urlString];
-    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
     
-    [request setPostValue:[story objectForKey:@"story_hash"]
+    [params setObject:[story objectForKey:@"story_hash"]
                    forKey:@"story_id"];
-    [request setPostValue:[story objectForKey:@"story_feed_id"]
+    [params setObject:[story objectForKey:@"story_feed_id"]
                    forKey:@"feed_id"];
+    
+    NSMutableArray *tags = [NSMutableArray array];
     for (NSString *userTag in [story objectForKey:@"user_tags"]) {
-        [request addPostValue:userTag
-                       forKey:@"user_tags"];
+        [tags addObject:userTag];
     }
+    [params setObject:tags forKey:@"user_tags"];
     
-    [request setDidFinishSelector:@selector(finishMarkAsSaved:)];
-    [request setDidFailSelector:@selector(requestFailed:)];
-    [request setUserInfo:@{@"story_feed_id":[story
-                                             objectForKey:@"story_feed_id"],
-                           @"story_hash":[story
-                                          objectForKey:@"story_hash"]}];
-    [request setDelegate:self];
-    [request startAsynchronous];
+    [appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        [self finishMarkAsSaved:responseObject withParams:params];
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        [self markStory:params asSaved:NO];
+        [appDelegate failedMarkAsSaved:params];
+    }];
 }
 
-- (void)finishMarkAsSaved:(ASIFormDataRequest *)request {
-    if ([request responseStatusCode] != 200) {
-        return [self failedMarkAsSaved:request];
-    }
+- (void)finishMarkAsSaved:(NSDictionary *)results withParams:(NSDictionary *)params {
+    [self updateSavedStoryCounts:results withParams:params];
     
-    [self updateSavedStoryCounts:request];
-    
-    [appDelegate finishMarkAsSaved:request];
+    [appDelegate finishMarkAsSaved:params];
 }
 
-- (void)updateSavedStoryCounts:(ASIFormDataRequest *)request {
-    NSString *responseString = [request responseString];
-    NSData *responseData=[responseString dataUsingEncoding:NSUTF8StringEncoding];
-    NSError *error;
-    NSDictionary *results = [NSJSONSerialization
-                             JSONObjectWithData:responseData
-                             options:kNilOptions
-                             error:&error];
+- (void)updateSavedStoryCounts:(NSDictionary *)results withParams:(NSDictionary *)params {
     NSArray *savedStories = [appDelegate updateStarredStoryCounts:results];
     NSMutableDictionary *allFolders = [appDelegate.dictFolders mutableCopy];
     [allFolders setValue:savedStories forKey:@"saved_stories"];
     appDelegate.dictFolders = allFolders;
 }
 
-- (void)failedMarkAsSaved:(ASIFormDataRequest *)request {
-    [self markStory:request.userInfo asSaved:NO];
-    
-    [appDelegate failedMarkAsSaved:request];
-}
-
-- (void)syncStoryAsUnsaved:(NSDictionary *)story {    
+- (void)syncStoryAsUnsaved:(NSDictionary *)story {
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_story_as_unstarred",
                            self.appDelegate.url];
-    NSURL *url = [NSURL URLWithString:urlString];
-    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-    
-    [request setPostValue:[story
-                           objectForKey:@"story_hash"]
-                   forKey:@"story_id"];
-    [request setPostValue:[story
-                           objectForKey:@"story_feed_id"]
-                   forKey:@"feed_id"];
-    
-    [request setDidFinishSelector:@selector(finishMarkAsUnsaved:)];
-    [request setDidFailSelector:@selector(requestFailed:)];
-    [request setUserInfo:@{@"story_feed_id":[story
-                                             objectForKey:@"story_feed_id"],
-                           @"story_hash":[story
-                                          objectForKey:@"story_hash"]}];
-    [request setDelegate:self];
-    [request startAsynchronous];
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    [params setObject:[story
+                       objectForKey:@"story_hash"]
+               forKey:@"story_id"];
+    [params setObject:[story
+                       objectForKey:@"story_feed_id"]
+               forKey:@"feed_id"];
+    [appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        [self finishMarkAsUnsaved:responseObject withParams:params];
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        [self markStory:params asSaved:YES];
+        [appDelegate failedMarkAsUnsaved:params];
+    }];
 }
 
-- (void)finishMarkAsUnsaved:(ASIFormDataRequest *)request {
-    if ([request responseStatusCode] != 200) {
-        return [self failedMarkAsUnsaved:request];
-    }
-    
-    [self updateSavedStoryCounts:request];
-    [appDelegate finishMarkAsUnsaved:request];
+- (void)finishMarkAsUnsaved:(NSDictionary *)results withParams:(NSDictionary *)params {
+    [self updateSavedStoryCounts:results withParams:params];
+    [appDelegate finishMarkAsUnsaved:params];
 }
 
-- (void)failedMarkAsUnsaved:(ASIFormDataRequest *)request {
-    [self markStory:request.userInfo asSaved:YES];
-    [appDelegate failedMarkAsUnsaved:request];
+- (void)failedMarkAsUnsaved:(NSDictionary *)params {
+    [self markStory:params asSaved:YES];
+    [appDelegate failedMarkAsUnsaved:params];
 }
 
 @end

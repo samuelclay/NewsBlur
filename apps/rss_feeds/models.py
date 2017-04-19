@@ -95,13 +95,14 @@ class Feed(models.Model):
         if not self.feed_title:
             self.feed_title = "[Untitled]"
             self.save()
-        return "%s (%s - %s/%s/%s)%s" % (
-            self.feed_title, 
+        return "%s%s: %s - %s/%s/%s" % (
             self.pk, 
+            (" [B: %s]" % self.branch_from_feed.pk if self.branch_from_feed else ""),
+            self.feed_title, 
             self.num_subscribers,
             self.active_subscribers,
             self.active_premium_subscribers,
-            (" [B: %s]" % self.branch_from_feed.pk if self.branch_from_feed else ""))
+            )
     
     @property
     def title(self):
@@ -110,6 +111,10 @@ class Feed(models.Model):
             title = "%s*" % title[:29]
         return title
     
+    @property
+    def log_title(self):
+        return self.__unicode__()
+        
     @property
     def permalink(self):
         return "%s/site/%s/%s" % (settings.NEWSBLUR_URL, self.pk, slugify(self.feed_title.lower()[:50]))
@@ -246,7 +251,7 @@ class Feed(models.Model):
             if not duplicate_feeds:
                 # Feed has been deleted. Just ignore it.
                 logging.debug(" ***> Changed to: %s - %s: %s" % (self.feed_address, self.feed_link, duplicate_feeds))
-                logging.debug(' ***> [%-30s] Feed deleted (%s).' % (unicode(self)[:30], self.pk))
+                logging.debug(' ***> [%-30s] Feed deleted (%s).' % (self.log_title[:30], self.pk))
                 return
             
             for duplicate_feed in duplicate_feeds:
@@ -602,17 +607,18 @@ class Feed(models.Model):
         try:
             feed_address, feed = _1()
         except TimeoutError, e:
-            logging.debug('   ---> [%-30s] Feed address check timed out...' % (unicode(self)[:30]))
+            logging.debug('   ---> [%-30s] Feed address check timed out...' % (self.log_title[:30]))
             self.save_feed_history(505, 'Timeout', e)
             feed = self
             feed_address = None
                 
         return bool(feed_address), feed
 
-    def save_feed_history(self, status_code, message, exception=None):
+    def save_feed_history(self, status_code, message, exception=None, date=None):
         fetch_history = MFetchHistory.add(feed_id=self.pk, 
                                           fetch_type='feed',
                                           code=int(status_code),
+                                          date=date,
                                           message=message,
                                           exception=exception)
             
@@ -626,10 +632,11 @@ class Feed(models.Model):
             self.active = True
             self.save()
         
-    def save_page_history(self, status_code, message, exception=None):
+    def save_page_history(self, status_code, message, exception=None, date=None):
         fetch_history = MFetchHistory.add(feed_id=self.pk, 
                                           fetch_type='page',
                                           code=int(status_code),
+                                          date=date,
                                           message=message,
                                           exception=exception)
             
@@ -640,6 +647,13 @@ class Feed(models.Model):
             self.has_page = True
             self.active = True
             self.save()
+    
+    def save_raw_feed(self, raw_feed, fetch_date):
+        MFetchHistory.add(feed_id=self.pk, 
+                          fetch_type='raw_feed', 
+                          code=200,
+                          message=raw_feed,
+                          date=fetch_date)
         
     def count_errors_in_history(self, exception_type='feed', status_code=None, fetch_history=None):
         if not fetch_history:
@@ -667,12 +681,12 @@ class Feed(models.Model):
             self.save()
         
         logging.debug('   ---> [%-30s] ~FBCounting any errors in history: %s (%s non errors)' %
-                      (unicode(self)[:30], len(errors), len(non_errors)))
+                      (self.log_title[:30], len(errors), len(non_errors)))
         
         return errors, non_errors
 
     def count_redirects_in_history(self, fetch_type='feed', fetch_history=None):
-        logging.debug('   ---> [%-30s] Counting redirects in history...' % (unicode(self)[:30]))
+        logging.debug('   ---> [%-30s] Counting redirects in history...' % (self.log_title[:30]))
         if not fetch_history:
             fetch_history = MFetchHistory.feed(self.pk)
         fh = fetch_history[fetch_type+'_fetch_history']
@@ -703,7 +717,7 @@ class Feed(models.Model):
             return True
         elif last_recount:
             logging.info("   ---> [%-30s] ~SN~FBFeed has expired redis subscriber counts (%s < %s), clearing..." % (
-                         unicode(self)[:30], last_recount, subscriber_expire))
+                         self.log_title[:30], last_recount, subscriber_expire))
             r.delete(total_key, -1)
             r.delete(premium_key, -1)
             
@@ -753,7 +767,7 @@ class Feed(models.Model):
             original_premium_subscribers = self.premium_subscribers
             original_active_premium_subscribers = self.active_premium_subscribers
             logging.info("   ---> [%-30s] ~SN~FBCounting subscribers from ~FCredis~FB: ~FMt:~SB~FM%s~SN a:~SB%s~SN p:~SB%s~SN ap:~SB%s ~SN~FC%s" % 
-                          (self.title[:30], total, active, premium, active_premium, "(%s branches)" % (len(feed_ids)-1) if len(feed_ids)>1 else ""))
+                          (self.log_title[:30], total, active, premium, active_premium, "(%s branches)" % (len(feed_ids)-1) if len(feed_ids)>1 else ""))
         else:
             from apps.reader.models import UserSubscription
             
@@ -786,7 +800,7 @@ class Feed(models.Model):
             original_active_premium_subscribers = self.active_premium_subscribers
             active_premium = active_premium_subscribers.count()
             logging.debug("   ---> [%-30s] ~SN~FBCounting subscribers from ~FYpostgres~FB: ~FMt:~SB~FM%s~SN a:~SB%s~SN p:~SB%s~SN ap:~SB%s" % 
-                          (self.title[:30], total, active, premium, active_premium))
+                          (self.log_title[:30], total, active, premium, active_premium))
 
         # If any counts have changed, save them
         self.num_subscribers = total
@@ -1148,7 +1162,7 @@ class Feed(models.Model):
         
         if settings.DEBUG or verbose:
             logging.debug("   ---> [%-30s] ~FBChecking ~SB%s~SN new/updated against ~SB%s~SN stories" % (
-                          self.title[:30],
+                          self.log_title[:30],
                           len(stories),
                           len(existing_stories.keys())))
         @timelimit(2)
@@ -1160,7 +1174,7 @@ class Feed(models.Model):
         for story in stories:
             if verbose:
                 logging.debug("   ---> [%-30s] ~FBChecking ~SB%s~SN / ~SB%s" % (
-                              self.title[:30],
+                              self.log_title[:30],
                               story.get('title'),
                               story.get('guid')))
             if not story.get('title'):
@@ -1179,7 +1193,7 @@ class Feed(models.Model):
                 existing_story, story_has_changed = _1(story, story_content, 
                                                        existing_stories, new_story_hashes)
             except TimeoutError, e:
-                logging.debug('   ---> [%-30s] ~SB~FRExisting story check timed out...' % (unicode(self)[:30]))
+                logging.debug('   ---> [%-30s] ~SB~FRExisting story check timed out...' % (self.log_title[:30]))
                 existing_story = None
                 story_has_changed = False
                 
@@ -1424,9 +1438,9 @@ class Feed(models.Model):
             original_cutoff = cutoff
             cutoff = min(cutoff, 10)
             try:
-                logging.debug("   ---> [%-30s] ~FBTrimming down to ~SB%s (instead of %s)~SN stories (~FM%s~FB)" % (self, cutoff, original_cutoff, self.last_story_date.strftime("%Y-%m-%d") if self.last_story_date else "No last story date"))
+                logging.debug("   ---> [%-30s] ~FBTrimming down to ~SB%s (instead of %s)~SN stories (~FM%s~FB)" % (self.log_title[:30], cutoff, original_cutoff, self.last_story_date.strftime("%Y-%m-%d") if self.last_story_date else "No last story date"))
             except ValueError, e:
-                logging.debug("   ***> [%-30s] Error trimming: %s" % (self, e))
+                logging.debug("   ***> [%-30s] Error trimming: %s" % (self.log_title[:30], e))
                 pass
         
         return cutoff
@@ -2035,7 +2049,7 @@ class Feed(models.Model):
         
         if verbose:
             logging.debug("   ---> [%-30s] Fetched every %s min - Subs: %s/%s/%s Stories/day: %s" % (
-                                                unicode(self)[:30], total, 
+                                                self.log_title[:30], total, 
                                                 self.num_subscribers,
                                                 self.active_subscribers,
                                                 self.active_premium_subscribers,
@@ -2053,7 +2067,7 @@ class Feed(models.Model):
             if verbose:
                 logging.debug('   ---> [%-30s] ~FBScheduling feed fetch geometrically: '
                               '~SB%s errors. Time: %s min' % (
-                              unicode(self)[:30], self.errors_since_good, total))
+                              self.log_title[:30], self.errors_since_good, total))
         
         random_factor = random.randint(0, total) / 4
         next_scheduled_update = datetime.datetime.utcnow() + datetime.timedelta(
@@ -2085,11 +2099,11 @@ class Feed(models.Model):
     def schedule_feed_fetch_immediately(self, verbose=True):
         r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
         if not self.num_subscribers:
-            logging.debug('   ---> [%-30s] Not scheduling feed fetch immediately, no subs.' % (unicode(self)[:30]))
+            logging.debug('   ---> [%-30s] Not scheduling feed fetch immediately, no subs.' % (self.log_title[:30]))
             return
             
         if verbose:
-            logging.debug('   ---> [%-30s] Scheduling feed fetch immediately...' % (unicode(self)[:30]))
+            logging.debug('   ---> [%-30s] Scheduling feed fetch immediately...' % (self.log_title[:30]))
             
         self.next_scheduled_update = datetime.datetime.utcnow()
         r.zadd('scheduled_updates', self.pk, self.next_scheduled_update.strftime('%s'))
@@ -2116,7 +2130,7 @@ class Feed(models.Model):
         if queue_size > 1000:
             self.schedule_feed_fetch_immediately()
         else:
-            logging.debug('   ---> [%-30s] [%s] ~FB~SBQueuing pushed stories, last pushed %s...' % (unicode(self)[:30], self.pk, latest_push_date_delta))
+            logging.debug('   ---> [%-30s] [%s] ~FB~SBQueuing pushed stories, last pushed %s...' % (self.log_title[:30], self.pk, latest_push_date_delta))
             self.set_next_scheduled_update()
             PushFeeds.apply_async(args=(self.pk, xml), queue='push_feeds')
     
@@ -2575,7 +2589,7 @@ class MStory(mongo.Document):
         r.delete('zF:%s' % story_feed_id)
         # r2.delete('zF:%s' % story_feed_id)
 
-        logging.info("   ---> [%-30s] ~FMSyncing ~SB%s~SN stories to redis" % (feed and feed.title[:30] or story_feed_id, stories.count()))
+        logging.info("   ---> [%-30s] ~FMSyncing ~SB%s~SN stories to redis" % (feed and feed.log_title[:30] or story_feed_id, stories.count()))
         p = r.pipeline()
         # p2 = r2.pipeline()
         for story in stories:
@@ -2597,24 +2611,35 @@ class MStory(mongo.Document):
         self.share_user_ids = [s['user_id'] for s in shares]
         self.save()
     
-    def extract_image_urls(self, force=False):
-        if self.image_urls and not force:
+    def extract_image_urls(self, force=False, text=False):
+        if self.image_urls and not force and not text:
             return self.image_urls
         
-        story_content = self.story_content
-        if not story_content and self.story_content_z:
-            story_content = zlib.decompress(self.story_content_z)
+        story_content = None
+        if not text:
+            story_content = self.story_content
+            if not story_content and self.story_content_z:
+                story_content = zlib.decompress(self.story_content_z)
+        elif text:
+            if self.original_text_z:
+                story_content = zlib.decompress(self.original_text_z)
         if not story_content:
             return
         
         try:
             soup = BeautifulSoup(story_content)
         except ValueError:
-            return
-        
+            if not text:
+                return self.extract_image_urls(force=force, text=True)
+            else:
+                return
+
         images = soup.findAll('img')
         if not images:
-            return
+            if not text:
+                return self.extract_image_urls(force=force, text=True)
+            else:
+                return
         
         image_urls = []
         for image in images:
@@ -2626,8 +2651,11 @@ class MStory(mongo.Document):
             image_urls.append(image_url)
 
         if not image_urls:
-            return
-            
+            if not text:
+                return self.extract_image_urls(force=force, text=True)
+            else:
+                return
+        
         self.image_urls = image_urls
         return self.image_urls
 
@@ -2638,6 +2666,8 @@ class MStory(mongo.Document):
             feed = Feed.get_by_id(self.story_feed_id)
             ti = TextImporter(self, feed=feed, request=request, debug=debug)
             original_text = ti.fetch()
+            self.extract_image_urls(force=force, text=True)
+            self.save()
         else:
             logging.user(request, "~FYFetching ~FGoriginal~FY story text, ~SBfound.")
             original_text = zlib.decompress(original_text_z)
@@ -2921,12 +2951,81 @@ class MStarredStoryCounts(mongo.Document):
         if story_count and story_count.count <= 0:
             story_count.delete()
 
+class MSavedSearch(mongo.Document):
+    user_id = mongo.IntField()
+    query = mongo.StringField(max_length=1024)
+    feed_id = mongo.StringField()
+    slug = mongo.StringField(max_length=128)
 
+    meta = {
+        'collection': 'saved_searches',
+        'indexes': ['user_id',
+                    {'fields': ['user_id', 'feed_id', 'query'], 
+                     'unique': True,
+                     'types': False, }],
+        'ordering': ['query'],
+        'allow_inheritance': False,
+    }
+
+    @property
+    def rss_url(self, secret_token=None):
+        if not secret_token:
+            user = User.objects.select_related('profile').get(pk=self.user_id)
+            secret_token = user.profile.secret_token
+        
+        slug = self.slug if self.slug else ""
+        return "%s/reader/saved_search/%s/%s/%s" % (settings.NEWSBLUR_URL, self.user_id, 
+                                                   secret_token, slug)
+    
+    @classmethod
+    def user_searches(cls, user_id):
+        searches = cls.objects.filter(user_id=user_id)
+        searches = sorted([{'query': s.query, 
+                            'feed_address': s.rss_url, 
+                            'feed_id': s.feed_id,
+                           } for s in searches],
+                          key=lambda x: (x.get('query', '') or '').lower())
+        return searches
+    
+    @classmethod
+    def save_search(cls, user_id, feed_id, query):
+        user = User.objects.get(pk=user_id)
+        params = dict(user_id=user_id, 
+                      feed_id=feed_id, 
+                      query=query, 
+                      slug=slugify(query))
+        try:
+            saved_search = cls.objects.get(**params)
+            logging.user(user, "~FRSaved search already exists: ~SB%s" % query)
+        except cls.DoesNotExist:
+            logging.user(user, "~FCCreating a saved search: ~SB%s~SN/~SB%s" % (feed_id, query))
+            saved_search = cls.objects.create(**params)
+        
+        return saved_search
+        
+    @classmethod
+    def delete_search(cls, user_id, feed_id, query):
+        user = User.objects.get(pk=user_id)
+        params = dict(user_id=user_id, 
+                      feed_id=feed_id, 
+                      query=query)
+        try:
+            saved_search = cls.objects.get(**params)
+            logging.user(user, "~FCDeleting saved search: ~SB%s" % query)
+            saved_search.delete()
+        except cls.DoesNotExist:
+            logging.user(user, "~FRCan't delete saved search, missing: ~SB%s~SN/~SB%s" % (feed_id, query))
+        except cls.MultipleObjectsReturned:
+            logging.user(user, "~FRFound multiple saved searches, deleting: ~SB%s~SN/~SB%s" % (feed_id, query))
+            cls.objects(**params).delete()
+        
+    
 class MFetchHistory(mongo.Document):
     feed_id = mongo.IntField(unique=True)
     feed_fetch_history = mongo.DynamicField()
     page_fetch_history = mongo.DynamicField()
     push_history = mongo.DynamicField()
+    raw_feed_history = mongo.DynamicField()
     
     meta = {
         'db_alias': 'nbanalytics',
@@ -2974,11 +3073,15 @@ class MFetchHistory(mongo.Document):
             history = fetch_history.page_fetch_history or []
         elif fetch_type == 'push':
             history = fetch_history.push_history or []
+        elif fetch_type == 'raw_feed':
+            history = fetch_history.raw_feed_history or []
 
         history = [[date, code, message]] + history
         any_exceptions = any([c for d, c, m in history if c not in [200, 304]])
         if any_exceptions:
             history = history[:25]
+        elif fetch_type == 'raw_feed':            
+            history = history[:10]
         else:
             history = history[:5]
 
@@ -2988,6 +3091,8 @@ class MFetchHistory(mongo.Document):
             fetch_history.page_fetch_history = history
         elif fetch_type == 'push':
             fetch_history.push_history = history
+        elif fetch_type == 'raw_feed':
+            fetch_history.raw_feed_history = history
         
         fetch_history.save()
         

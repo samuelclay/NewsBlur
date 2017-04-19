@@ -276,7 +276,7 @@
     } else if (indexPath.row == 5) {
         NSString *fontStyle = [[NSUserDefaults standardUserDefaults] stringForKey:@"fontStyle"];
         if (!fontStyle) {
-            fontStyle = @"NB-helvetica";
+            fontStyle = @"GothamNarrow-Book";
         }
         NSUInteger idx = [self.fonts indexOfObjectPassingTest:^BOOL(NSDictionary *obj, NSUInteger idx, BOOL * _Nonnull stop) {
             return [obj[@"style"] isEqualToString:fontStyle];

@@ -100,13 +100,7 @@
             }];
         } else {
             [self.navigationController popViewControllerAnimated:YES];
-            if ([type isEqualToString:@"google"]) {
-                if (error.length) {
-                    [appDelegate.firstTimeUserAddSitesViewController importFromGoogleReaderFailed:error];
-                } else {
-                    [appDelegate.firstTimeUserAddSitesViewController importFromGoogleReader];
-                }
-            } else if ([type isEqualToString:@"facebook"]) {
+            if ([type isEqualToString:@"facebook"]) {
                 if (error.length) {
                     [self showError:error];
                 } else {

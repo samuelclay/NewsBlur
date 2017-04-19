@@ -9,7 +9,8 @@
 #import <UIKit/UIKit.h>
 #import "NewsBlurAppDelegate.h"
 
-@interface FirstTimeUserAddSitesViewController  : UIViewController <ASIHTTPRequestDelegate, UITableViewDataSource, UITableViewDelegate> {
+@interface FirstTimeUserAddSitesViewController  : BaseViewController
+<UITableViewDataSource, UITableViewDelegate> {
     NewsBlurAppDelegate *appDelegate;
 }
 
@@ -25,8 +26,6 @@
 - (void)tapGoogleReaderButton;
 
 - (void)addCategory:(id)sender;
-- (void)importFromGoogleReader;
-- (void)importFromGoogleReaderFailed:(NSString *)error;
 - (void)updateSites;
 
 - (CGFloat)tableViewHeight;

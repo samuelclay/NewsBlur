@@ -179,8 +179,8 @@ class EmailNewsletter:
             r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
             listeners_count = r.publish("%s:story" % feed.pk, 'story:new:%s' % story_hash)
             if listeners_count:
-                logging.debug("   ---> [%-30s] ~FMPublished to %s subscribers" % (feed.title[:30], listeners_count))
+                logging.debug("   ---> [%-30s] ~FMPublished to %s subscribers" % (feed.log_title[:30], listeners_count))
         except redis.ConnectionError:
-            logging.debug("   ***> [%-30s] ~BMRedis is unavailable for real-time." % (feed.title[:30],))
+            logging.debug("   ***> [%-30s] ~BMRedis is unavailable for real-time." % (feed.log_title[:30],))
         
     

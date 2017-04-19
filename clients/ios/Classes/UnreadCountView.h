@@ -21,17 +21,17 @@ typedef enum {
 } NBFeedListType;
 
 @property (nonatomic) NewsBlurAppDelegate *appDelegate;
-@property (assign, nonatomic) int psWidth;
-@property (assign, nonatomic) int psPadding;
-@property (assign, nonatomic) int ntWidth;
-@property (assign, nonatomic) int ntPadding;
-@property (assign, nonatomic) int psCount;
-@property (assign, nonatomic) int ntCount;
-@property (assign, nonatomic) int blueCount;
+@property (assign, nonatomic) NSInteger psWidth;
+@property (assign, nonatomic) NSInteger psPadding;
+@property (assign, nonatomic) NSInteger ntWidth;
+@property (assign, nonatomic) NSInteger ntPadding;
+@property (assign, nonatomic) NSInteger psCount;
+@property (assign, nonatomic) NSInteger ntCount;
+@property (assign, nonatomic) NSInteger blueCount;
 @property (assign, nonatomic) CGRect rect;
 
-- (void)drawInRect:(CGRect)r ps:(int)ps nt:(int)nt listType:(NBFeedListType)listType;
-- (void)calculateOffsets:(int)ps nt:(int)nt;
-- (int)offsetWidth;
+- (void)drawInRect:(CGRect)r ps:(NSInteger)ps nt:(NSInteger)nt listType:(NBFeedListType)listType;
+- (void)calculateOffsets:(NSInteger)ps nt:(NSInteger)nt;
+- (NSInteger)offsetWidth;
 
 @end

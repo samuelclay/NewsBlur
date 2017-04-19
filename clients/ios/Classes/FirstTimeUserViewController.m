@@ -8,7 +8,6 @@
 
 #import "FirstTimeUserViewController.h"
 #import "NewsBlurAppDelegate.h"
-#import "ASIHTTPRequest.h"
 #import "FirstTimeUserAddSitesViewController.h"
 #import <QuartzCore/QuartzCore.h>
 

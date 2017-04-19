@@ -47,7 +47,7 @@
     }
     NSString *collapseKey = [NSString stringWithFormat:@"folderCollapsed:%@", folderName];
     bool isFolderCollapsed = [userPreferences boolForKey:collapseKey];
-    int countWidth = 0;
+    NSInteger countWidth = 0;
     NSString *accessibilityCount = @"";
     
     if ([folderName isEqual:@"saved_stories"]) {

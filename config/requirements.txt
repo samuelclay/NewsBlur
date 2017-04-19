@@ -45,7 +45,7 @@ python-dateutil==2.6.0
 python-digitalocean==1.10.1
 python-gflags==3.1.0
 pytz==2016.7
-raven==5.32.0
+raven==6.0.0
 redis==2.10.5
 requests==2.12.3
 scipy==0.18.1

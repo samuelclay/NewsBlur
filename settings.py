@@ -158,6 +158,11 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'verbose'
         },
+        'vendor.apns':{
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose'
+        },
         'log_file':{
             'level': 'DEBUG',
             'class': 'logging.handlers.RotatingFileHandler',
@@ -655,7 +660,7 @@ BROKER_URL = "redis://%s:6379/%s" % (REDIS['host'], CELERY_REDIS_DB_NUM)
 CELERY_RESULT_BACKEND = BROKER_URL
 SESSION_REDIS_HOST = REDIS_SESSIONS['host']
 SESSION_REDIS_RETRY_ON_TIMEOUT = True
-SESSION_REDIS_SOCKET_TIMEOUT = 1
+SESSION_REDIS_SOCKET_TIMEOUT = 10
 
 CACHES = {
     'default': {
@@ -705,9 +710,9 @@ if DEBUG:
 S3_CONN = None
 if BACKED_BY_AWS.get('pages_on_s3') or BACKED_BY_AWS.get('icons_on_s3'):
     S3_CONN = S3Connection(S3_ACCESS_KEY, S3_SECRET, calling_format=OrdinaryCallingFormat())
-    if BACKED_BY_AWS.get('pages_on_s3'):
-        S3_PAGES_BUCKET = S3_CONN.get_bucket(S3_PAGES_BUCKET_NAME)
-    if BACKED_BY_AWS.get('icons_on_s3'):
-        S3_ICONS_BUCKET = S3_CONN.get_bucket(S3_ICONS_BUCKET_NAME)
+    # if BACKED_BY_AWS.get('pages_on_s3'):
+    #     S3_PAGES_BUCKET = S3_CONN.get_bucket(S3_PAGES_BUCKET_NAME)
+    # if BACKED_BY_AWS.get('icons_on_s3'):
+    #     S3_ICONS_BUCKET = S3_CONN.get_bucket(S3_ICONS_BUCKET_NAME)
 
 django.http.request.host_validation_re = re.compile(r"^([a-z0-9.-_\-]+|\[[a-f0-9]*:[a-f0-9:]+\])(:\d+)?$")

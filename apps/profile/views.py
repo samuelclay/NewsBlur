@@ -413,6 +413,7 @@ def payment_history(request):
         "last_seen_ip": user.profile.last_seen_ip,
         "timezone": unicode(user.profile.timezone),
         "stripe_id": user.profile.stripe_id,
+        "paypal_email": user.profile.latest_paypal_email,
         "profile": user.profile,
         "feeds": UserSubscription.objects.filter(user=user).count(),
         "email": user.email,
