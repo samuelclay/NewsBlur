@@ -316,7 +316,7 @@ def load_feeds(request):
 @json.json_view
 def load_feed_favicons(request):
     user = get_user(request)
-    feed_ids = request.REQUEST.getlist('feed_ids')
+    feed_ids = request.REQUEST.getlist('feed_ids') or request.REQUEST.getlist('feed_ids[]')
     
     if not feed_ids:
         user_subs = UserSubscription.objects.select_related('feed').filter(user=user, active=True)
@@ -439,9 +439,9 @@ def load_feeds_flat(request):
 def refresh_feeds(request):
     start = datetime.datetime.now()
     user = get_user(request)
-    feed_ids = request.REQUEST.getlist('feed_id')
+    feed_ids = request.REQUEST.getlist('feed_id') or request.REQUEST.getlist('feed_id[]')
     check_fetch_status = request.REQUEST.get('check_fetch_status')
-    favicons_fetching = request.REQUEST.getlist('favicons_fetching')
+    favicons_fetching = request.REQUEST.getlist('favicons_fetching') or request.REQUEST.getlist('favicons_fetching[]')
     social_feed_ids = [feed_id for feed_id in feed_ids if 'social:' in feed_id]
     feed_ids = list(set(feed_ids) - set(social_feed_ids))
     
@@ -519,7 +519,7 @@ def interactions_count(request):
 @json.json_view
 def feed_unread_count(request):
     user = request.user
-    feed_ids = request.REQUEST.getlist('feed_id')
+    feed_ids = request.REQUEST.getlist('feed_id') or request.REQUEST.getlist('feed_id[]')
     force = request.REQUEST.get('force', False)
     social_feed_ids = [feed_id for feed_id in feed_ids if 'social:' in feed_id]
     feed_ids = list(set(feed_ids) - set(social_feed_ids))
@@ -771,7 +771,7 @@ def load_single_feed(request, feed_id):
     # if page <= 3:
     #     import random
     #     # time.sleep(random.randint(2, 7) / 10.0)
-    #     time.sleep(random.randint(10, 14))
+    #     time.sleep(random.randint(1, 10))
     
     # if page == 2:
     #     assert False
@@ -837,7 +837,8 @@ def load_starred_stories(request):
     query        = request.REQUEST.get('query', '').strip()
     order        = request.REQUEST.get('order', 'newest')
     tag          = request.REQUEST.get('tag')
-    story_hashes = request.REQUEST.getlist('h')[:100]
+    story_hashes = request.REQUEST.getlist('h') or request.REQUEST.getlist('h[]')
+    story_hashes = story_hashes[:100]
     version      = int(request.REQUEST.get('v', 1))
     now          = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
     message      = None
@@ -1221,10 +1222,13 @@ def load_river_stories__redis(request):
     start             = time.time()
     user              = get_user(request)
     message           = None
-    feed_ids          = [int(feed_id) for feed_id in request.REQUEST.getlist('feeds') if feed_id]
+    feed_ids          = request.REQUEST.getlist('feeds') or request.REQUEST.getlist('feeds[]')
+    feed_ids          = [int(feed_id) for feed_id in feed_ids if feed_id]
     if not feed_ids:
+        feed_ids      = request.REQUEST.getlist('f') or request.REQUEST.getlist('f[]')
         feed_ids      = [int(feed_id) for feed_id in request.REQUEST.getlist('f') if feed_id]
-    story_hashes      = request.REQUEST.getlist('h')[:100]
+    story_hashes      = request.REQUEST.getlist('h') or request.REQUEST.getlist('h[]')
+    story_hashes      = story_hashes[:100]
     original_feed_ids = list(feed_ids)
     page              = int(request.REQUEST.get('page', 1))
     order             = request.REQUEST.get('order', 'newest')
@@ -1428,7 +1432,8 @@ def load_river_stories__redis(request):
 @json.json_view
 def complete_river(request):
     user              = get_user(request)
-    feed_ids          = [int(feed_id) for feed_id in request.POST.getlist('feeds') if feed_id]
+    feed_ids          = request.POST.getlist('feeds') or request.POST.getlist('feeds[]')
+    feed_ids          = [int(feed_id) for feed_id in feed_ids if feed_id]
     page              = int(request.POST.get('page', 1))
     read_filter       = request.POST.get('read_filter', 'unread')
     stories_truncated = 0
@@ -1446,7 +1451,8 @@ def complete_river(request):
 @json.json_view
 def unread_story_hashes__old(request):
     user              = get_user(request)
-    feed_ids          = [int(feed_id) for feed_id in request.REQUEST.getlist('feed_id') if feed_id]
+    feed_ids          = request.REQUEST.getlist('feed_id') or request.REQUEST.getlist('feed_id[]')
+    feed_ids          = [int(feed_id) for feed_id in feed_ids if feed_id]
     include_timestamps = is_true(request.REQUEST.get('include_timestamps', False))
     usersubs = {}
     
@@ -1485,7 +1491,8 @@ def unread_story_hashes__old(request):
 @json.json_view
 def unread_story_hashes(request):
     user               = get_user(request)
-    feed_ids           = [int(feed_id) for feed_id in request.REQUEST.getlist('feed_id') if feed_id]
+    feed_ids           = request.REQUEST.getlist('feed_id') or request.REQUEST.getlist('feed_id[]')
+    feed_ids           = [int(feed_id) for feed_id in feed_ids if feed_id]
     include_timestamps = is_true(request.REQUEST.get('include_timestamps', False))
     order              = request.REQUEST.get('order', 'newest')
     read_filter        = request.REQUEST.get('read_filter', 'unread')
@@ -1531,7 +1538,7 @@ def mark_all_as_read(request):
 @ajax_login_required
 @json.json_view
 def mark_story_as_read(request):
-    story_ids = request.REQUEST.getlist('story_id')
+    story_ids = request.REQUEST.getlist('story_id') or request.REQUEST.getlist('story_id[]')
     try:
         feed_id = int(get_argument_or_404(request, 'feed_id'))
     except ValueError:
@@ -1566,7 +1573,7 @@ def mark_story_as_read(request):
 def mark_story_hashes_as_read(request):
     r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
     try:
-        story_hashes = request.REQUEST.getlist('story_hash')
+        story_hashes = request.REQUEST.getlist('story_hash') or request.REQUEST.getlist('story_hash[]')
     except UnreadablePostError:
         return dict(code=-1, message="Missing `story_hash` list parameter.")
     
@@ -1771,7 +1778,7 @@ def mark_story_hash_as_unread(request):
 @json.json_view
 def mark_feed_as_read(request):
     r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
-    feed_ids = request.REQUEST.getlist('feed_id')
+    feed_ids = request.POST.getlist('feed_id') or request.POST.getlist('feed_id[]')
     cutoff_timestamp = int(request.REQUEST.get('cutoff_timestamp', 0))
     direction = request.REQUEST.get('direction', 'older')
     multiple = len(feed_ids) > 1
@@ -1964,7 +1971,8 @@ def delete_feed_by_url(request):
 def delete_folder(request):
     folder_to_delete = request.POST.get('folder_name') or request.POST.get('folder_to_delete')
     in_folder = request.POST.get('in_folder', None)
-    feed_ids_in_folder = [int(f) for f in request.REQUEST.getlist('feed_id') if f]
+    feed_ids_in_folder = request.REQUEST.getlist('feed_id') or request.REQUEST.getlist('feed_id[]')
+    feed_ids_in_folder = [int(f) for f in feed_ids_in_folder if f]
 
     request.user.profile.send_opml_export_email(reason="You have deleted an entire folder of feeds, so here's a backup of all of your subscriptions just in case.")
     
@@ -2038,8 +2046,8 @@ def rename_folder(request):
 @json.json_view
 def move_feed_to_folders(request):
     feed_id = int(request.POST['feed_id'])
-    in_folders = request.POST.getlist('in_folders', '')
-    to_folders = request.POST.getlist('to_folders', '')
+    in_folders = request.POST.getlist('in_folders', '') or request.POST.getlist('in_folders[]', '')
+    to_folders = request.POST.getlist('to_folders', '') or request.POST.getlist('to_folders[]', '')
 
     user_sub_folders = get_object_or_404(UserSubscriptionFolders, user=request.user)
     user_sub_folders = user_sub_folders.move_feed_to_folders(feed_id, in_folders=in_folders,
@@ -2181,7 +2189,8 @@ def feeds_trainer(request):
 @json.json_view
 def save_feed_chooser(request):
     is_premium = request.user.profile.is_premium
-    approved_feeds = [int(feed_id) for feed_id in request.POST.getlist('approved_feeds') if feed_id]
+    approved_feeds = request.POST.getlist('approved_feeds') or request.POST.getlist('approved_feeds[]')
+    approved_feeds = [int(feed_id) for feed_id in approved_feeds if feed_id]
     approve_all = False
     if not is_premium:
         approved_feeds = approved_feeds[:64]
@@ -2279,7 +2288,7 @@ def _mark_story_as_starred(request):
     feed_id    = int(request.REQUEST.get('feed_id', 0))
     story_id   = request.REQUEST.get('story_id', None)
     story_hash = request.REQUEST.get('story_hash', None)
-    user_tags  = request.REQUEST.getlist('user_tags')
+    user_tags  = request.REQUEST.getlist('user_tags') or request.REQUEST.getlist('user_tags[]')
     message    = ""
     if story_hash:
         story, _   = MStory.find_story(story_hash=story_hash)

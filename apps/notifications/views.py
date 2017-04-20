@@ -22,7 +22,7 @@ def notifications_by_feed(request):
 def set_notifications_for_feed(request):
     user = get_user(request)
     feed_id = request.POST['feed_id']
-    notification_types = request.POST.getlist('notification_types')
+    notification_types = request.POST.getlist('notification_types') or request.POST.getlist('notification_types[]')
     notification_filter = request.POST.get('notification_filter')
     
     try:

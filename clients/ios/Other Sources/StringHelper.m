@@ -66,13 +66,8 @@
 
 - (NSString *)urlEncode
 {
-	NSString* encodedString = (NSString *)CFURLCreateStringByAddingPercentEscapes(
-                                                                                  NULL,
-                                                                                  (CFStringRef) self,
-                                                                                  NULL,
-                                                                                  (CFStringRef)@"!*'();:@&=+$,/?%#[]",
-                                                                                  kCFStringEncodingUTF8 );
-	return [encodedString autorelease];
+    NSString *encodedString = [self stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+	return encodedString;
 }
 
 @end

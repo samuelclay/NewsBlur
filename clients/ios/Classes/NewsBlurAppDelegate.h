@@ -11,6 +11,7 @@
 #import "BaseViewController.h"
 #import "FMDatabaseQueue.h"
 #import "EventWindow.h"
+#import "AFNetworking.h"
 
 #define FEED_DETAIL_VIEW_TAG 1000001
 #define STORY_DETAIL_VIEW_TAG 1000002
@@ -49,10 +50,10 @@
 @class IASKAppSettingsViewController;
 @class UnreadCounts;
 @class StoriesCollection;
-@class TMCache;
+@class PINCache;
 
 @interface NewsBlurAppDelegate : BaseViewController
-<UIApplicationDelegate, UIAlertViewDelegate, UINavigationControllerDelegate, UIPopoverPresentationControllerDelegate,
+<UIApplicationDelegate, UINavigationControllerDelegate, UIPopoverPresentationControllerDelegate,
 SFSafariViewControllerDelegate>  {
     EventWindow *window;
     UINavigationController *ftuxNavigationController;
@@ -91,6 +92,8 @@ SFSafariViewControllerDelegate>  {
     UserProfileViewController *userProfileViewController;
     IASKAppSettingsViewController *preferencesViewController;
 
+    AFHTTPSessionManager *networkManager;
+
     NSString * activeUsername;
     NSString * activeUserProfileId;
     NSString * activeUserProfileName;
@@ -109,16 +112,16 @@ SFSafariViewControllerDelegate>  {
     NSURL * activeOriginalStoryURL;
     NSString * activeShareType;
     NSDictionary * activeComment;
-    int feedDetailPortraitYCoordinate;
-    int originalStoryCount;
+    NSInteger feedDetailPortraitYCoordinate;
+    NSInteger originalStoryCount;
     NSInteger selectedIntelligence;
-    int savedStoriesCount;
-    int totalUnfetchedStoryCount;
-    int remainingUnfetchedStoryCount;
-    int latestFetchedStoryDate;
-    int latestCachedImageDate;
-    int totalUncachedImagesCount;
-    int remainingUncachedImagesCount;
+    NSInteger savedStoriesCount;
+    NSInteger totalUnfetchedStoryCount;
+    NSInteger remainingUnfetchedStoryCount;
+    NSInteger latestFetchedStoryDate;
+    NSInteger latestCachedImageDate;
+    NSInteger totalUncachedImagesCount;
+    NSInteger remainingUncachedImagesCount;
     NSMutableDictionary * recentlyReadStories;
     NSMutableSet * recentlyReadFeeds;
     NSMutableArray * readStories;
@@ -149,8 +152,8 @@ SFSafariViewControllerDelegate>  {
     UIImageView *splashView;
     NSMutableDictionary *activeCachedImages;
     
-    TMCache *cachedFavicons;
-    TMCache *cachedStoryImages;
+    PINCache *cachedFavicons;
+    PINCache *cachedStoryImages;
 }
 
 @property (nonatomic) IBOutlet EventWindow *window;
@@ -192,9 +195,10 @@ SFSafariViewControllerDelegate>  {
 @property (nonatomic) IBOutlet FirstTimeUserAddFriendsViewController *firstTimeUserAddFriendsViewController;
 @property (nonatomic) IBOutlet FirstTimeUserAddNewsBlurViewController *firstTimeUserAddNewsBlurViewController;
 
+@property (nonatomic) AFHTTPSessionManager *networkManager;
 @property (nonatomic, readwrite) StoriesCollection *storiesCollection;
-@property (nonatomic, readwrite) TMCache *cachedFavicons;
-@property (nonatomic, readwrite) TMCache *cachedStoryImages;
+@property (nonatomic, readwrite) PINCache *cachedFavicons;
+@property (nonatomic, readwrite) PINCache *cachedStoryImages;
 
 @property (nonatomic, readonly) NSString *url;
 @property (nonatomic, readonly) NSString *host;
@@ -217,15 +221,15 @@ SFSafariViewControllerDelegate>  {
 @property (readwrite) NSURL * activeOriginalStoryURL;
 @property (readwrite) NSDictionary * activeComment;
 @property (readwrite) NSString * activeShareType;
-@property (readwrite) int feedDetailPortraitYCoordinate;
-@property (readwrite) int originalStoryCount;
-@property (readwrite) int savedStoriesCount;
-@property (readwrite) int totalUnfetchedStoryCount;
-@property (readwrite) int remainingUnfetchedStoryCount;
-@property (readwrite) int totalUncachedImagesCount;
-@property (readwrite) int remainingUncachedImagesCount;
-@property (readwrite) int latestFetchedStoryDate;
-@property (readwrite) int latestCachedImageDate;
+@property (readwrite) NSInteger feedDetailPortraitYCoordinate;
+@property (readwrite) NSInteger originalStoryCount;
+@property (readwrite) NSInteger savedStoriesCount;
+@property (readwrite) NSInteger totalUnfetchedStoryCount;
+@property (readwrite) NSInteger remainingUnfetchedStoryCount;
+@property (readwrite) NSInteger totalUncachedImagesCount;
+@property (readwrite) NSInteger remainingUncachedImagesCount;
+@property (readwrite) NSInteger latestFetchedStoryDate;
+@property (readwrite) NSInteger latestCachedImageDate;
 @property (readwrite) NSInteger selectedIntelligence;
 @property (readwrite) NSMutableDictionary * recentlyReadStories;
 @property (readwrite) NSMutableSet * recentlyReadFeeds;
@@ -297,6 +301,8 @@ SFSafariViewControllerDelegate>  {
 - (void)openTrainSite;
 - (void)openNotificationsWithFeed:(NSString *)feedId;
 - (void)openNotificationsWithFeed:(NSString *)feedId sender:(id)sender;
+- (void)updateNotifications:(NSDictionary *)params feed:(NSString *)feedId;
+- (void)checkForFeedNotifications;
 - (void)openTrainSiteWithFeedLoaded:(BOOL)feedLoaded from:(id)sender;
 - (void)openTrainStory:(id)sender;
 - (void)openUserTagsStory:(id)sender;
@@ -313,6 +319,7 @@ SFSafariViewControllerDelegate>  {
 - (void)adjustStoryDetailWebView;
 - (void)calibrateStoryTitles;
 - (void)recalculateIntelligenceScores:(id)feedId;
+- (void)cancelRequests;
 - (void)reloadFeedsView:(BOOL)showLoader;
 - (void)setTitle:(NSString *)title;
 - (void)showOriginalStory:(NSURL *)url;
@@ -331,6 +338,7 @@ SFSafariViewControllerDelegate>  {
 - (BOOL)isPortrait;
 - (void)confirmLogout;
 - (void)showConnectToService:(NSString *)serviceName;
+- (void)showAlert:(UIAlertController *)alert withViewController:(UIViewController *)vc;
 - (void)refreshUserProfile:(void(^)())callback;
 - (void)refreshFeedCount:(id)feedId;
 
@@ -354,15 +362,13 @@ SFSafariViewControllerDelegate>  {
 - (void)markFeedReadInCache:(NSArray *)feedIds cutoffTimestamp:(NSInteger)cutoff;
 - (void)markFeedReadInCache:(NSArray *)feedIds cutoffTimestamp:(NSInteger)cutoff older:(BOOL)older;
 - (void)markStoriesRead:(NSDictionary *)stories inFeeds:(NSArray *)feeds cutoffTimestamp:(NSInteger)cutoff;
-- (void)requestFailedMarkStoryRead:(ASIFormDataRequest *)request;
-- (void)finishMarkAllAsRead:(ASIHTTPRequest *)request;
 - (void)finishMarkAsRead:(NSDictionary *)story;
 - (void)finishMarkAsUnread:(NSDictionary *)story;
-- (void)failedMarkAsUnread:(ASIFormDataRequest *)request;
-- (void)finishMarkAsSaved:(ASIFormDataRequest *)request;
-- (void)failedMarkAsSaved:(ASIFormDataRequest *)request;
-- (void)finishMarkAsUnsaved:(ASIFormDataRequest *)request;
-- (void)failedMarkAsUnsaved:(ASIFormDataRequest *)request;
+- (void)failedMarkAsUnread:(NSDictionary *)params;
+- (void)finishMarkAsSaved:(NSDictionary *)params;
+- (void)failedMarkAsSaved:(NSDictionary *)params;
+- (void)finishMarkAsUnsaved:(NSDictionary *)params;
+- (void)failedMarkAsUnsaved:(NSDictionary *)params;
 - (NSInteger)adjustSavedStoryCount:(NSString *)tagName direction:(NSInteger)direction;
 - (NSArray *)updateStarredStoryCounts:(NSDictionary *)results;
 - (void)renameFeed:(NSString *)newTitle;
@@ -400,11 +406,10 @@ SFSafariViewControllerDelegate>  {
 - (void)toggleTagClassifier:(NSString *)tag feedId:(NSString *)feedId;
 - (void)toggleTitleClassifier:(NSString *)title feedId:(NSString *)feedId score:(NSInteger)score;
 - (void)toggleFeedClassifier:(NSString *)feedId;
-- (void)requestClassifierResponse:(ASIHTTPRequest *)request withFeed:(NSString *)feedId;
 
 - (NSInteger)databaseSchemaVersion:(FMDatabase *)db;
 - (void)createDatabaseConnection;
-- (void)setupDatabase:(FMDatabase *)db;
+- (void)setupDatabase:(FMDatabase *)db force:(BOOL)force;
 - (void)cancelOfflineQueue;
 - (void)startOfflineQueue;
 - (void)startOfflineFetchStories;

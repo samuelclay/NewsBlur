@@ -62,6 +62,11 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
 
 		fs = (FeedSet) getIntent().getSerializableExtra(EXTRA_FEED_SET);
 
+        // this is not strictly necessary, since our first refresh with the fs will swap in
+        // the correct session, but that can be delayed by sync backup, so we try here to
+        // reduce UI lag
+        FeedUtils.prepareReadingSession(fs);
+
 		intelState = PrefsUtils.getStateFilter(this);
 
         getWindow().setBackgroundDrawableResource(android.R.color.transparent);

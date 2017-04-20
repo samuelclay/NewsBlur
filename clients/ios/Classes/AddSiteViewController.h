@@ -8,16 +8,16 @@
 
 #import <UIKit/UIKit.h>
 #import "NewsBlurAppDelegate.h"
-#import "ASIHTTPRequest.h"
 
 @class NewsBlurAppDelegate;
 
-@interface AddSiteViewController : UIViewController 
-<UITextFieldDelegate, UITableViewDelegate, UITableViewDataSource, ASIHTTPRequestDelegate>
+@interface AddSiteViewController : BaseViewController
+<UITextFieldDelegate, UITableViewDelegate, UITableViewDataSource> {
+    NewsBlurAppDelegate *appDelegate;
+}
 
 - (void)reload;
 - (IBAction)addSite;
-- (void)autocompleteSite:(ASIHTTPRequest *)request;
 - (IBAction)doCancelButton;
 - (IBAction)doAddButton;
 - (NSString *)extractParentFolder;
@@ -26,7 +26,6 @@
 - (IBAction)toggleAddFolder:(id)sender;
 - (NSArray *)folders;
 
-@property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property (nonatomic) IBOutlet UITextField *inFolderInput;
 @property (nonatomic) IBOutlet UITextField *addFolderInput;
 @property (nonatomic) IBOutlet UITextField *siteAddressInput;

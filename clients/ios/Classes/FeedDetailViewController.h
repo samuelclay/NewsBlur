@@ -8,7 +8,6 @@
 
 #import <UIKit/UIKit.h>
 #import "NewsBlurAppDelegate.h"
-#import "ASIHTTPRequest.h"
 #import "BaseViewController.h"
 #import "Utilities.h"
 #import "NBNotifier.h"
@@ -19,8 +18,8 @@
 @class MCSwipeTableViewCell;
 
 @interface FeedDetailViewController : BaseViewController 
-<UITableViewDelegate, UITableViewDataSource, UIAlertViewDelegate,
- UIPopoverControllerDelegate, ASIHTTPRequestDelegate,
+<UITableViewDelegate, UITableViewDataSource,
+ UIPopoverControllerDelegate,
  MCSwipeTableViewCellDelegate,
  UIGestureRecognizerDelegate, UISearchBarDelegate> {
     NewsBlurAppDelegate *appDelegate;
@@ -72,7 +71,6 @@
 - (void)loadOfflineStories;
 - (void)fetchRiver;
 - (void)fetchRiverPage:(int)page withCallback:(void(^)())callback;
-- (void)finishedLoadingFeed:(ASIHTTPRequest *)request;
 - (void)testForTryFeed;
 - (void)cacheStoryImages:(NSArray *)storyImageUrls;
 - (void)showStoryImage:(NSString *)imageUrl;
@@ -106,12 +104,10 @@
 - (void)changeActiveStoryTitleCellLayout;
 - (void)loadFaviconsFromActiveFeed;
 - (void)markFeedsReadFromTimestamp:(NSInteger)cutoffTimestamp andOlder:(BOOL)older;
-- (void)saveAndDrawFavicons:(ASIHTTPRequest *)request;
-- (void)requestFailed:(ASIHTTPRequest *)request;
-- (void)finishMarkAsSaved:(ASIFormDataRequest *)request;
-- (void)failedMarkAsSaved:(ASIFormDataRequest *)request;
-- (void)finishMarkAsUnsaved:(ASIFormDataRequest *)request;
-- (void)failedMarkAsUnsaved:(ASIFormDataRequest *)request;
-- (void)failedMarkAsUnread:(ASIFormDataRequest *)request;
+- (void)finishMarkAsSaved:(NSDictionary *)params;
+- (void)failedMarkAsSaved:(NSDictionary *)params;
+- (void)finishMarkAsUnsaved:(NSDictionary *)params;
+- (void)failedMarkAsUnsaved:(NSDictionary *)params;
+- (void)failedMarkAsUnread:(NSDictionary *)params;
 
 @end

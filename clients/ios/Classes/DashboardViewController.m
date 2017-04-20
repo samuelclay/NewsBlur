@@ -12,7 +12,7 @@
 #import "InteractionsModule.h"
 #import "FeedDetailViewController.h"
 #import "UserProfileViewController.h"
-#import "TMCache.h"
+#import "PINCache.h"
 #import "StoriesCollection.h"
 #import "UISearchBar+Field.h"
 
@@ -170,7 +170,7 @@
 #pragma mark - Stories
 
 - (void)refreshStories {
-    [appDelegate.cachedStoryImages removeAllObjects:^(TMCache *cache) {
+    [appDelegate.cachedStoryImages removeAllObjects:^(PINCache * _Nonnull cache) {
         dispatch_async(dispatch_get_main_queue(), ^{
             [appDelegate loadRiverFeedDetailView:self.storiesModule withFolder:@"everything"];
             appDelegate.inFeedDetail = NO;

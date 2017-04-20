@@ -189,7 +189,8 @@ def load_river_blurblog(request):
     limit             = 10
     start             = time.time()
     user              = get_user(request)
-    social_user_ids   = [int(uid) for uid in request.REQUEST.getlist('social_user_ids') if uid]
+    social_user_ids   = request.REQUEST.getlist('social_user_ids') or request.REQUEST.getlist('social_user_ids[]')
+    social_user_ids   = [int(uid) for uid in social_user_ids if uid]
     original_user_ids = list(social_user_ids)
     page              = int(request.REQUEST.get('page', 1))
     order             = request.REQUEST.get('order', 'newest')
@@ -546,7 +547,7 @@ def mark_story_as_shared(request):
     comments = request.POST.get('comments', '')
     source_user_id = request.POST.get('source_user_id')
     relative_user_id = request.POST.get('relative_user_id') or request.user.pk
-    post_to_services = request.POST.getlist('post_to_services')
+    post_to_services = request.POST.getlist('post_to_services') or request.POST.getlist('post_to_services[]')
     format = request.REQUEST.get('format', 'json')    
     now = datetime.datetime.now()
     nowtz = localtime_for_timezone(now, request.user.profile.timezone)
@@ -909,7 +910,7 @@ def shared_stories_public(request, username):
 def profile(request):
     user = get_user(request.user)
     user_id = int(request.GET.get('user_id', user.pk))
-    categories = request.GET.getlist('category')
+    categories = request.GET.getlist('category') or request.GET.getlist('category[]')
     include_activities_html = request.REQUEST.get('include_activities_html', None)
 
     user_profile = MSocialProfile.get_user(user_id)
@@ -1422,7 +1423,7 @@ def load_social_settings(request, social_user_id, username=None):
 @ajax_login_required
 def load_interactions(request):
     user_id = request.REQUEST.get('user_id', None)
-    categories = request.GET.getlist('category')
+    categories = request.GET.getlist('category') or request.GET.getlist('category[]')
     if not user_id or 'null' in user_id:
         user_id = get_user(request).pk
     page = max(1, int(request.REQUEST.get('page', 1)))
@@ -1448,7 +1449,7 @@ def load_interactions(request):
 @ajax_login_required
 def load_activities(request):
     user_id = request.REQUEST.get('user_id', None)
-    categories = request.GET.getlist('category')
+    categories = request.GET.getlist('category') or request.GET.getlist('category[]')
     if user_id and 'null' not in user_id:
         user_id = int(user_id)
         user = User.objects.get(pk=user_id)

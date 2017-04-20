@@ -8,12 +8,10 @@
 
 #import <UIKit/UIKit.h>
 #import "NewsBlurAppDelegate.h"
-#import "ASIHTTPRequest.h"
 
 #define LANDSCAPE_MARGIN 128
 
-@interface LoginViewController : UIViewController 
-<ASIHTTPRequestDelegate> {
+@interface LoginViewController : BaseViewController {
     NewsBlurAppDelegate *appDelegate;
     
     BOOL isOnSignUpScreen;

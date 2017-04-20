@@ -22,7 +22,8 @@
 @synthesize activityTitle = _activityTitle;
 
 static NSString *encodeByAddingPercentEscapes(NSString *input) {
-    NSString *encodedValue = (NSString *)CFBridgingRelease(CFURLCreateStringByAddingPercentEscapes(kCFAllocatorDefault, (CFStringRef)input, NULL, (CFStringRef)@"!*'();:@&=+$,/?%#[]", kCFStringEncodingUTF8));
+    NSString *encodedValue = [input stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+
     return encodedValue;
 }
 
@@ -49,7 +50,11 @@ static NSString *encodeByAddingPercentEscapes(NSString *input) {
 }
 
 - (UIImage *)activityImage {
-    return [UIImage imageNamed:@"ARChromeActivity"];
+    if ([[UIImage class] respondsToSelector:@selector(imageNamed:inBundle:compatibleWithTraitCollection:)]) {
+        return [UIImage imageNamed:@"ARChromeActivity" inBundle:[NSBundle bundleForClass:self.class] compatibleWithTraitCollection:nil];
+    } else {
+        return [UIImage imageNamed:@"ARChromeActivity"];
+    }
 }
 
 - (NSString *)activityType {
@@ -57,24 +62,31 @@ static NSString *encodeByAddingPercentEscapes(NSString *input) {
 }
 
 - (BOOL)canPerformWithActivityItems:(NSArray *)activityItems {
-	if (![[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"googlechrome-x-callback://"]]) {
-		return NO;
-	}
-	for (id item in activityItems){
-		if ([item isKindOfClass:NSURL.class]){
-			return YES;
-		}
-	}
-	return NO;
+    if (_callbackURL && ![[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"googlechrome-x-callback://"]]) {
+        return NO;
+    }
+    for (id item in activityItems){
+        if ([item isKindOfClass:NSURL.class]){
+            NSURL *url = (NSURL *)item;
+            if ([url.scheme isEqualToString:@"http"] || [url.scheme isEqualToString:@"https"]) {
+                return YES;
+            }
+        }
+    }
+    return NO;
 }
 
 - (void)prepareWithActivityItems:(NSArray *)activityItems {
-	for (id item in activityItems) {
-		if ([item isKindOfClass:NSURL.class]) {
-			_activityURL = (NSURL *)item;
-			return;
-		}
-	}
+    for (id item in activityItems) {
+        if ([item isKindOfClass:NSURL.class]) {
+            NSURL *url = (NSURL *)item;
+            if ([url.scheme isEqualToString:@"http"] || [url.scheme isEqualToString:@"https"]) {
+                _activityURL = (NSURL *)item;
+                return;
+            }
+            
+        }
+    }
 }
 
 - (void)performActivity {
@@ -83,7 +95,7 @@ static NSString *encodeByAddingPercentEscapes(NSString *input) {
     NSString *sourceName = encodeByAddingPercentEscapes(self.callbackSource);
 
     NSURL *activityURL = [NSURL URLWithString:[NSString stringWithFormat:@"googlechrome-x-callback://x-callback-url/open/?url=%@&x-success=%@&x-source=%@", openingURL, callbackURL, sourceName]];
-    [[UIApplication sharedApplication] openURL:activityURL];
+    [[UIApplication sharedApplication] openURL:activityURL options:@{} completionHandler:nil];
     [self activityDidFinish:YES];
 }
 

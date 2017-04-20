@@ -7,10 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
-
 #import "NewsBlurAppDelegate.h"
 
-@interface FirstTimeUserAddNewsBlurViewController  : UIViewController <ASIHTTPRequestDelegate> {
+@interface FirstTimeUserAddNewsBlurViewController  : BaseViewController {
     NewsBlurAppDelegate *appDelegate;
 }
 
@@ -22,8 +21,6 @@
 - (IBAction)tapNewsBlurButton:(id)sender;
 - (IBAction)tapPopularButton:(id)sender;
 
-- (void)finishAddSite:(ASIHTTPRequest *)request;
-- (void)requestFailed:(ASIHTTPRequest *)request;
 - (void)addSite:(NSString *)siteUrl;
 - (void)addPopular;
 @end

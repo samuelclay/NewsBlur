@@ -11,12 +11,10 @@
 #import "NewsBlurViewController.h"
 #import "FMResultSet.h"
 #import "FMDatabase.h"
-#import "AFHTTPRequestOperation.h"
 
 @implementation OfflineSyncUnreads
 
 @synthesize appDelegate;
-@synthesize request;
 
 - (void)main {
     appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
@@ -27,27 +25,22 @@
     });
 
     __block NSCondition *lock = [NSCondition new];
-    __weak __typeof(&*self)weakSelf = self;
     [lock lock];
 
-    NSURL *url = [NSURL URLWithString:[NSString
-                                       stringWithFormat:@"%@/reader/unread_story_hashes?include_timestamps=true",
-                                       self.appDelegate.url]];
-    request = [[AFHTTPRequestOperation alloc] initWithRequest:[NSURLRequest requestWithURL:url]];
-    [request setResponseSerializer:[AFJSONResponseSerializer serializer]];
-    [request setCompletionBlockWithSuccess:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
-        __strong __typeof(&*weakSelf)strongSelf = weakSelf;
-        NSLog(@"Syncing stories success: %@-%@", weakSelf, strongSelf);
-        if (!strongSelf) return;
-        [strongSelf storeUnreadHashes:responseObject];
+    NSString *urlString = [NSString stringWithFormat:@"%@/reader/unread_story_hashes?include_timestamps=true",
+                           self.appDelegate.url];
+    AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
+    manager.responseSerializer = [AFJSONResponseSerializer serializer];
+    manager.completionQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0);
+    [manager GET:urlString parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        NSLog(@"Syncing stories success");
+        [self storeUnreadHashes:responseObject];
         [lock signal];
-    } failure:^(AFHTTPRequestOperation * _Nonnull operation, NSError * _Nonnull error) {
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         NSLog(@"Failed fetch all story hashes: %@", error);
         [lock signal];
     }];
-    [request setCompletionQueue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, (unsigned long)NULL)];
-    [request start];
-
+    
     [lock waitUntilDate:[NSDate dateWithTimeIntervalSinceNow:30]];
     [lock unlock];
 
@@ -57,14 +50,14 @@
 - (void)storeUnreadHashes:(NSDictionary *)results {
     if (self.isCancelled) {
 //        NSLog(@"Canceled storing unread hashes");
-        [request cancel];
+//        [request cancel];
         return;
     }
     
     [appDelegate.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
 //        NSLog(@"Storing unread story hashes...");
         [db executeUpdate:@"DROP TABLE unread_hashes"];
-        [appDelegate setupDatabase:db];
+        [appDelegate setupDatabase:db force:NO];
         NSDictionary *hashes = [results objectForKey:@"unread_feed_story_hashes"];
         for (NSString *feed in [hashes allKeys]) {
             NSArray *story_hashes = [hashes objectForKey:feed];

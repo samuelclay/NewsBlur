@@ -158,6 +158,11 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'verbose'
         },
+        'vendor.apns':{
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose'
+        },
         'log_file':{
             'level': 'DEBUG',
             'class': 'logging.handlers.RotatingFileHandler',
@@ -655,7 +660,7 @@ BROKER_URL = "redis://%s:6379/%s" % (REDIS['host'], CELERY_REDIS_DB_NUM)
 CELERY_RESULT_BACKEND = BROKER_URL
 SESSION_REDIS_HOST = REDIS_SESSIONS['host']
 SESSION_REDIS_RETRY_ON_TIMEOUT = True
-SESSION_REDIS_SOCKET_TIMEOUT = 1
+SESSION_REDIS_SOCKET_TIMEOUT = 10
 
 CACHES = {
     'default': {

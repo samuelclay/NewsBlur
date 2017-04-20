@@ -33,6 +33,7 @@
         [selectedBackground setBackgroundColor:UIColorFromRGB(0xECEEEA)];
         [self setSelectedBackgroundView:selectedBackground];
         
+        NSDictionary *controlAttrs = @{NSForegroundColorAttributeName: [UIColor lightGrayColor]};
         self.filterControl = [[UISegmentedControl alloc] initWithItems:@[@"Unread Stories",
                                                                          @"Focus Stories"]];
         self.filterControl.tintColor = UIColorFromRGB(0x8F918B);
@@ -44,6 +45,7 @@
         [self.filterControl setImage:[UIImage imageNamed:@"unread_green.png"] forSegmentAtIndex:1];
         [self.filterControl setWidth:CGRectGetWidth(self.frame)*0.46 forSegmentAtIndex:0];
         [self.filterControl setWidth:CGRectGetWidth(self.frame)*0.46 forSegmentAtIndex:1];
+        [self.filterControl setTitleTextAttributes:controlAttrs forState:UIControlStateNormal];
         self.filterControl.frame = CGRectMake(36, 38, CGRectGetWidth(self.frame), 28);
         [self.contentView addSubview:self.filterControl];
         
@@ -65,6 +67,7 @@
         [self.notificationTypeControl setWidth:CGRectGetWidth(self.frame)*0.23 forSegmentAtIndex:1];
         [self.notificationTypeControl setWidth:CGRectGetWidth(self.frame)*0.23 forSegmentAtIndex:2];
         [self.notificationTypeControl setWidth:CGRectGetWidth(self.frame)*0.23 forSegmentAtIndex:3];
+        [self.notificationTypeControl setTitleTextAttributes:controlAttrs forState:UIControlStateNormal];
         self.notificationTypeControl.frame = CGRectMake(36, 76, CGRectGetWidth(self.frame), 28);
         [self.contentView addSubview:self.notificationTypeControl];
     }
@@ -75,20 +78,26 @@
 - (void)layoutSubviews {
     [super layoutSubviews];
     
-    self.imageView.frame = CGRectMake(10.0, 10.0, 16.0, 16.0);
-    self.imageView.contentMode = UIViewContentModeScaleAspectFit;
-    
-    CGRect frame = self.textLabel.frame;
-    frame.origin.x = 35.0;
-    frame.size.width = self.detailTextLabel.frame.origin.x - self.textLabel.frame.origin.x;
-    self.textLabel.frame = frame;
-    
     self.textLabel.backgroundColor = [UIColor clearColor];
     self.textLabel.textColor = UIColorFromRGB(0x303030);
     self.textLabel.shadowColor = UIColorFromRGB(0xF0F0F0);
     self.textLabel.shadowOffset = CGSizeMake(0, 1);
+    self.textLabel.highlightedTextColor = UIColorFromRGB(0x303030);
+    self.detailTextLabel.highlightedTextColor = UIColorFromRGB(0x505050);
+    self.detailTextLabel.textColor = UIColorFromRGB(0x505050);
+    self.backgroundColor = UIColorFromRGB(0xFFFFFF);
+    self.backgroundView.backgroundColor = UIColorFromRGB(0xFFFFFF);
+    self.selectedBackgroundView.backgroundColor = UIColorFromRGB(0xECEEEA);
     
-    CGRect textFrame = self.textLabel.frame;
+    self.imageView.frame = CGRectMake(10.0, 10.0, 16.0, 16.0);
+    self.imageView.contentMode = UIViewContentModeScaleAspectFit;
+    
+    [self.textLabel sizeToFit];
+    CGRect frame = self.textLabel.frame;
+    frame.origin.x = 35.0;
+    frame.size.width = self.detailTextLabel.frame.origin.x - self.textLabel.frame.origin.x;
+    self.textLabel.frame = frame;
+        CGRect textFrame = self.textLabel.frame;
     textFrame.origin.y = 10;
     self.textLabel.frame = textFrame;
 
@@ -96,15 +105,6 @@
     detailFrame.origin.y = 10;
     self.detailTextLabel.frame = detailFrame;
 
-    self.textLabel.highlightedTextColor = UIColorFromRGB(0x303030);
-    self.detailTextLabel.highlightedTextColor = UIColorFromRGB(0x505050);
-    
-    self.detailTextLabel.textColor = UIColorFromRGB(0x505050);
-    
-    self.backgroundColor = UIColorFromRGB(0xFFFFFF);
-    self.backgroundView.backgroundColor = UIColorFromRGB(0xFFFFFF);
-    self.selectedBackgroundView.backgroundColor = UIColorFromRGB(0xECEEEA);
-    
     CGFloat detailTextLabelWidth = self.detailTextLabel.attributedText.size.width;
     CGRect detailTextLabelFrame = self.detailTextLabel.frame;
     CGFloat detailTextLabelExtraWidth = detailTextLabelWidth - detailTextLabelFrame.size.width;
@@ -114,7 +114,7 @@
         self.detailTextLabel.frame = detailTextLabelFrame;
         
         CGRect textLabelFrame = self.textLabel.frame;
-        textLabelFrame.size.width -= detailTextLabelExtraWidth;
+        textLabelFrame.size.width = self.detailTextLabel.frame.origin.x - self.textLabel.frame.origin.x;
         self.textLabel.frame = textLabelFrame;
     }
     
@@ -153,21 +153,23 @@
     
     NSString *urlString = [NSString stringWithFormat:@"%@/notifications/feed/",
                            appDelegate.url];
-    NSURL *url = [NSURL URLWithString:urlString];
-    __block ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-    [request setPostValue:self.feedId forKey:@"feed_id"];
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    [params setObject:self.feedId forKey:@"feed_id"];
+    NSMutableArray *notifications = [NSMutableArray array];
     for (NSString *notificationType in notificationTypes) {
-        [request addPostValue:notificationType forKey:@"notification_types"];
+        [notifications addObject:notificationType];
     }
-    [request setPostValue:notificationFilter forKey:@"notification_filter"];
-    [request setCompletionBlock:^{
+    [params setObject:notifications forKey:@"notification_types"];
+    [params setObject:notificationFilter forKey:@"notification_filter"];
+
+    [appDelegate updateNotifications:params feed:self.feedId];
+
+    [appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         NSLog(@"Saved notifications %@: %@ / %@", self.feedId, notificationTypes, notificationFilter);
-    }];
-    [request setFailedBlock:^{
+        [appDelegate checkForFeedNotifications];
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         NSLog(@"Failed to save notifications: %@ / %@", notificationTypes, notificationFilter);
     }];
-    [request setDelegate:self];
-    [request startAsynchronous];
 }
 
 @end

@@ -68,9 +68,21 @@ public class FeedUtils {
                 try {
                     dbHelper.clearStorySession();
                 } catch (Exception e) {
-                    ; // TODO: this can evade DB-ready gating and crash. figure out how to
-                      // defer this call until the DB-ready broadcast is received, as this
-                      // can mask important errors
+                    ; // this is a UI hinting call and might fail if the DB is being reset, but that is fine
+                }
+                return null;
+            }
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
+    public static void prepareReadingSession(final FeedSet fs) {
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... arg) {
+                try {
+                    NBSyncService.prepareReadingSession(dbHelper, fs);
+                } catch (Exception e) {
+                    ; // this is a UI hinting call and might fail if the DB is being reset, but that is fine
                 }
                 return null;
             }

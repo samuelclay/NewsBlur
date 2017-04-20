@@ -193,7 +193,7 @@ class MUserFeedNotification(mongo.Document):
         soup = BeautifulSoup(story['story_content'].strip())
         # print story['story_content']
         body = replace_with_newlines(soup)
-        body = truncate_chars(body.strip(), 1600)
+        body = truncate_chars(body.strip(), 1200)
         
         return title, subtitle, body
         
@@ -225,9 +225,10 @@ class MUserFeedNotification(mongo.Document):
     def send_ios(self, story, user, usersub):
         if not self.is_ios: return
 
-        apns = APNs(use_sandbox=True, 
-                    cert_file='/srv/newsblur/config/certificates/aps_development.pem',
-                    key_file='/srv/newsblur/config/certificates/aps_development.pem')
+        apns = APNs(use_sandbox=False, 
+                    cert_file='/srv/newsblur/config/certificates/aps.pem',
+                    key_file='/srv/newsblur/config/certificates/aps.pem',
+                    enhanced=True)
         
         tokens = MUserNotificationTokens.get_tokens_for_user(self.user_id)
         title, subtitle, body = self.title_and_body(story, usersub)

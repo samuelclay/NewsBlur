@@ -361,8 +361,7 @@
         FeedDetailTableCell *cell = (FeedDetailTableCell *)sender;
         [self.appDelegate showPopoverWithViewController:self.appDelegate.notificationsViewController contentSize:CGSizeMake(420, 382) sourceView:cell sourceRect:cell.bounds];
     } else {
-        CGRect frame = [sender CGRectValue];
-        [self.appDelegate showPopoverWithViewController:self.appDelegate.notificationsViewController contentSize:CGSizeMake(420, 382) sourceView:self.storyPageControl.view sourceRect:frame];
+        [self.appDelegate showPopoverWithViewController:self.appDelegate.notificationsViewController contentSize:CGSizeMake(420, 382) barButtonItem:appDelegate.feedsViewController.settingsBarButton];
     }
 }
 

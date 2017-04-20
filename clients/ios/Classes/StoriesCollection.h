@@ -104,10 +104,6 @@
 - (void)toggleStorySaved;
 - (BOOL)toggleStorySaved:(NSDictionary *)story;
 - (void)syncStoryAsSaved:(NSDictionary *)story;
-- (void)finishMarkAsSaved:(ASIFormDataRequest *)request;
-- (void)failedMarkAsSaved:(ASIFormDataRequest *)request;
 - (void)syncStoryAsUnsaved:(NSDictionary *)story;
-- (void)finishMarkAsUnsaved:(ASIFormDataRequest *)request;
-- (void)failedMarkAsUnsaved:(ASIFormDataRequest *)request;
 
 @end

@@ -9,17 +9,12 @@
 #import <Foundation/Foundation.h>
 #import "NewsBlurAppDelegate.h"
 #import "FMDatabaseQueue.h"
-#import "ASINetworkQueue.h"
 
 @interface OfflineFetchImages : NSOperation
 
 @property (nonatomic) NewsBlurAppDelegate *appDelegate;
-@property (readwrite) ASINetworkQueue *imageDownloadOperationQueue;
 
 - (BOOL)fetchImages;
 - (NSArray *)uncachedImageUrls;
-- (void)storeCachedImage:(ASIHTTPRequest *)request;
-- (void)storeFailedImage:(ASIHTTPRequest *)request;
-- (void)cachedImageQueueFinished:(ASINetworkQueue *)queue;
 
 @end

@@ -38,6 +38,7 @@
     notificationsTable.frame = CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height);;
     notificationsTable.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     notificationsTable.separatorStyle = UITableViewCellSeparatorStyleNone;
+
     [self.view addSubview:notificationsTable];
 }
 
@@ -53,7 +54,16 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
+    
+    notificationsTable.backgroundColor = UIColorFromRGB(0xECEEEA);
+    notificationsTable.separatorColor = UIColorFromRGB(0xF0F0F0);
+    notificationsTable.sectionIndexColor = UIColorFromRGB(0x303030);
+    notificationsTable.sectionIndexBackgroundColor = UIColorFromRGB(0xDCDFD6);
+    
+    notificationFeedIds = [appDelegate.notificationFeedIds copy];
     [notificationsTable reloadData];
+    
+    [notificationsTable setContentOffset:CGPointZero];
     
     self.view.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
 }
@@ -104,11 +114,11 @@ viewForHeaderInSection:(NSInteger)section {
     customView.opaque = NO;
     headerLabel.backgroundColor = [UIColor clearColor];
     headerLabel.opaque = NO;
-    headerLabel.textColor = [UIColor colorWithRed:0.3 green:0.3 blue:0.3 alpha:1.0];
+    headerLabel.textColor = UIColorFromRGB(0x4C4C4C);
     headerLabel.highlightedTextColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
     headerLabel.font = [UIFont boldSystemFontOfSize:11];
     headerLabel.frame = CGRectMake(36.0, 1.0, 286.0, headerLabelHeight);
-    headerLabel.shadowColor = [UIColor colorWithRed:.94 green:0.94 blue:0.97 alpha:1.0];
+    headerLabel.shadowColor = UIColorFromRGB(0xF0F0F7);
     headerLabel.shadowOffset = CGSizeMake(0.0, 1.0);
     if (self.feedId && section == 0) {
         headerLabel.text = @"SITE NOTIFICATIONS";
@@ -152,11 +162,31 @@ viewForHeaderInSection:(NSInteger)section {
     if (self.feedId && section == 0) {
         return 1;
     }
-    return MAX(appDelegate.notificationFeedIds.count, 1);
+    return MAX(notificationFeedIds.count, 1);
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    CGRect vb = self.view.bounds;
+    BOOL feedSection = NO;
+    if (self.feedId != nil && indexPath.section == 0) feedSection = YES;
+    if (notificationFeedIds.count == 0 && !feedSection) {
+        UITableViewCell *cell = [[UITableViewCell alloc] init];
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        cell.backgroundColor = [UIColor clearColor];
+        CGRect vb = self.view.bounds;
+        CGFloat height = [self tableView:tableView heightForRowAtIndexPath:indexPath];
+        UILabel *msg = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, vb.size.width, height)];
+        [cell.contentView addSubview:msg];
+        msg.text = @"No notifications yet.";
+        msg.textColor = UIColorFromRGB(0x7a7a7a);
+        if (vb.size.width > 320) {
+            msg.font = [UIFont fontWithName:@"Helvetica-Bold" size: 20.0];
+        } else {
+            msg.font = [UIFont fontWithName:@"Helvetica-Bold" size: 14.0];
+        }
+        msg.textAlignment = NSTextAlignmentCenter;
+        
+        return cell;
+    }
     
     static NSString *CellIdentifier = @"NotificationFeedCellIdentifier";
     NotificationFeedCell *cell = [tableView
@@ -167,36 +197,23 @@ viewForHeaderInSection:(NSInteger)section {
                 initWithStyle:UITableViewCellStyleValue1
                 reuseIdentifier:CellIdentifier];
     }
-    
-    if (appDelegate.notificationFeedIds.count == 0) {
-        UILabel *msg = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, vb.size.width, 140)];
-        [cell.contentView addSubview:msg];
-        msg.text = @"No results.";
-        msg.textColor = UIColorFromRGB(0x7a7a7a);
-        if (vb.size.width > 320) {
-            msg.font = [UIFont fontWithName:@"Helvetica-Bold" size: 20.0];
-        } else {
-            msg.font = [UIFont fontWithName:@"Helvetica-Bold" size: 14.0];
-        }
-        msg.textAlignment = NSTextAlignmentCenter;
-    } else {
-        NSDictionary *feed;
-        NSString *feedIdStr;
-        if (self.feedId && indexPath.section == 0) {
-            feedIdStr = feedId;
-            feed = [appDelegate.dictFeeds objectForKey:feedId];
-        } else {
-            feedIdStr = [NSString stringWithFormat:@"%@",
-                         appDelegate.notificationFeedIds[indexPath.row]];
-            feed = [appDelegate.dictFeeds objectForKey:feedIdStr];
-        }
-        cell.feedId = feedIdStr;
-        cell.textLabel.text = [feed objectForKey:@"feed_title"];
-        cell.imageView.image = [self.appDelegate getFavicon:feedIdStr isSocial:NO isSaved:NO];
-        cell.detailTextLabel.text = [NSString localizedStringWithFormat:NSLocalizedString(@"%@ stories/month", @"average stories per month"), feed[@"average_stories_per_month"]];
-    }
-    
+
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    
+    NSDictionary *feed;
+    NSString *feedIdStr;
+    if (self.feedId && indexPath.section == 0) {
+        feedIdStr = feedId;
+        feed = [appDelegate.dictFeeds objectForKey:feedId];
+    } else {
+        feedIdStr = [NSString stringWithFormat:@"%@",
+                     notificationFeedIds[indexPath.row]];
+        feed = [appDelegate.dictFeeds objectForKey:feedIdStr];
+    }
+    cell.feedId = feedIdStr;
+    cell.textLabel.text = [feed objectForKey:@"feed_title"];
+    cell.imageView.image = [self.appDelegate getFavicon:feedIdStr isSocial:NO isSaved:NO];
+    cell.detailTextLabel.text = [NSString localizedStringWithFormat:NSLocalizedString(@"%@ stories/month", @"average stories per month"), feed[@"average_stories_per_month"]];
     
     return cell;
 }

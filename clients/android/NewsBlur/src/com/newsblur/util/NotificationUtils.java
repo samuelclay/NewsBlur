@@ -36,6 +36,7 @@ public class NotificationUtils {
      * @param storiesUnread a cursor of unread, neutral stories to notify, ordered newest to oldest
      */
     public static synchronized void notifyStories(Cursor storiesFocus, Cursor storiesUnread, Context context, FileCache iconCache) {
+        FeedUtils.offerInitContext(context);
         NotificationManager nm = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
         int count = 0;

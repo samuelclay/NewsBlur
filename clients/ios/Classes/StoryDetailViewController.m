@@ -7,6 +7,7 @@
 //
 
 #import <AVFoundation/AVFoundation.h>
+#import <Photos/Photos.h>
 #import "StoryDetailViewController.h"
 #import "NewsBlurAppDelegate.h"
 #import "NewsBlurViewController.h"
@@ -15,9 +16,6 @@
 #import "UserProfileViewController.h"
 #import "ShareViewController.h"
 #import "StoryPageControl.h"
-#import "ASIHTTPRequest.h"
-#import "ASIFormDataRequest.h"
-#import "AFHTTPRequestOperation.h"
 #import "Base64.h"
 #import "Utilities.h"
 #import "NSString+HTML.h"
@@ -293,9 +291,11 @@
 - (void)viewWillLayoutSubviews {
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
     [super viewWillLayoutSubviews];
-    [appDelegate.storyPageControl layoutForInterfaceOrientation:orientation];
-    [self changeWebViewWidth];
-    [self drawFeedGradient];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [appDelegate.storyPageControl layoutForInterfaceOrientation:orientation];
+        [self changeWebViewWidth];
+        [self drawFeedGradient];
+    });
 
 //    NSLog(@"viewWillLayoutSubviews: %.2f", self.webView.scrollView.bounds.size.width);
 }
@@ -375,7 +375,7 @@
     
     fontStyleClass = [userPreferences stringForKey:@"fontStyle"];
     if (!fontStyleClass) {
-        fontStyleClass = @"NB-helvetica";
+        fontStyleClass = @"GothamNarrow-Book";
     }
     
     fontSizeClass = [fontSizeClass stringByAppendingString:[userPreferences stringForKey:@"story_font_size"]];
@@ -1537,7 +1537,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
             return NO; 
         }
     } else if ([url.host hasSuffix:@"itunes.apple.com"]) {
-        [[UIApplication sharedApplication] openURL:url];
+        [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
         return NO;
     }
     
@@ -1716,39 +1716,19 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
                                self.appDelegate.url];
     }
     
-    NSURL *url = [NSURL URLWithString:urlString];
-    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    [params setObject:[self.activeStory objectForKey:@"id"] forKey:@"story_id"];
+    [params setObject:[self.activeStory objectForKey:@"story_feed_id"] forKey:@"story_feed_id"];
+    [params setObject:[appDelegate.activeComment objectForKey:@"user_id"] forKey:@"comment_user_id"];
     
-    
-    [request setPostValue:[self.activeStory
-                   objectForKey:@"id"] 
-           forKey:@"story_id"];
-    [request setPostValue:[self.activeStory
-                           objectForKey:@"story_feed_id"] 
-                   forKey:@"story_feed_id"];
-    
-
-    [request setPostValue:[appDelegate.activeComment objectForKey:@"user_id"] forKey:@"comment_user_id"];
-    
-    [request setDidFinishSelector:@selector(finishLikeComment:)];
-    [request setDidFailSelector:@selector(requestFailed:)];
-    [request setDelegate:self];
-    [request startAsynchronous];
+    [appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        [self finishLikeComment:responseObject];
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        [self requestFailed:error];
+    }];
 }
 
-- (void)finishLikeComment:(ASIHTTPRequest *)request {
-    NSString *responseString = [request responseString];
-    NSData *responseData=[responseString dataUsingEncoding:NSUTF8StringEncoding];    
-    NSError *error;
-    NSDictionary *results = [NSJSONSerialization 
-                             JSONObjectWithData:responseData
-                             options:kNilOptions 
-                             error:&error];
-    
-    if (request.responseStatusCode != 200) {
-        return [self requestFailed:request];
-    }
-    
+- (void)finishLikeComment:(NSDictionary *)results {
     // add the comment into the activeStory dictionary
     NSDictionary *newStory = [DataUtilities updateComment:results for:appDelegate];
 
@@ -1776,17 +1756,11 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 } 
 
 
-- (void)requestFailed:(ASIHTTPRequest *)request {    
-    NSLog(@"Error in story detail: %@", [request error]);
-    NSString *error;
+- (void)requestFailed:(NSError *)error {
+    NSLog(@"Error in story detail: %@", error);
     
     [MBProgressHUD hideHUDForView:appDelegate.storyPageControl.view animated:NO];
-    
-    if ([request error]) {
-        error = [NSString stringWithFormat:@"%@", [request error]];
-    } else {
-        error = @"The server barfed!";
-    }
+
     [self informError:error];
 }
 
@@ -1909,17 +1883,28 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     title = title.length ? title : alt;
     activeLongPressUrl = [NSURL URLWithString:src];
     
-    UIActionSheet *actions = [[UIActionSheet alloc] initWithTitle:title.length ? title : nil
-                                                         delegate:self
-                                                cancelButtonTitle:@"Done"
-                                           destructiveButtonTitle:nil
-                                                otherButtonTitles:nil];
-    actionSheetViewImageIndex = [actions addButtonWithTitle:@"View and zoom"];
-    actionSheetCopyImageIndex = [actions addButtonWithTitle:@"Copy image"];
-    actionSheetSaveImageIndex = [actions addButtonWithTitle:@"Save to camera roll"];
-    [actions showFromRect:CGRectMake(pt.x, pt.y, 1, 1)
-                   inView:appDelegate.storyPageControl.view animated:YES];
-//    [actions showInView:appDelegate.storyPageControl.view];
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:title.length ? title : nil
+                                                                   message:nil
+                                                            preferredStyle:UIAlertControllerStyleActionSheet];
+    [alert addAction:[UIAlertAction actionWithTitle:@"View and zoom" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        [appDelegate showOriginalStory:activeLongPressUrl];
+    }]];
+    [alert addAction:[UIAlertAction actionWithTitle:@"Copy image" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        [self fetchImage:activeLongPressUrl copy:YES save:NO];
+    }]];
+    [alert addAction:[UIAlertAction actionWithTitle:@"Save to camera roll" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        [self fetchImage:activeLongPressUrl copy:NO save:YES];
+    }]];
+    [alert addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
+        
+    }]];
+    
+    [alert setModalPresentationStyle:UIModalPresentationPopover];
+    
+    UIPopoverPresentationController *popover = [alert popoverPresentationController];
+    popover.sourceRect = CGRectMake(pt.x, pt.y, 1, 1);
+    popover.sourceView = appDelegate.storyPageControl.view;
+    [self presentViewController:alert animated:YES completion:nil];
 }
 
 - (void)showLinkContextMenu:(CGPoint)pt {
@@ -1986,38 +1971,38 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     return pt;
 }
 
-- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
-    if (buttonIndex == actionSheetViewImageIndex) {
-        [appDelegate showOriginalStory:activeLongPressUrl];
-    } else if (buttonIndex == actionSheetCopyImageIndex ||
-               buttonIndex == actionSheetSaveImageIndex) {
-        [self fetchImage:activeLongPressUrl buttonIndex:buttonIndex];
-    }
-}
-
-- (void)fetchImage:(NSURL *)url buttonIndex:(NSInteger)buttonIndex {
+- (void)fetchImage:(NSURL *)url copy:(BOOL)copy save:(BOOL)save {
     [MBProgressHUD hideHUDForView:self.webView animated:YES];
-    [appDelegate.storyPageControl showShareHUD:buttonIndex == actionSheetCopyImageIndex ?
+    [appDelegate.storyPageControl showShareHUD:copy ?
                                                @"Copying..." : @"Saving..."];
     
-    NSURLRequest *urlRequest = [NSURLRequest requestWithURL:url];
-    AFHTTPRequestOperation *requestOperation = [[AFHTTPRequestOperation alloc]
-                                                initWithRequest:urlRequest];
-    [requestOperation setResponseSerializer:[AFImageResponseSerializer serializer]];
-    [requestOperation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
+    AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
+    [manager setResponseSerializer:[AFImageResponseSerializer serializer]];
+    [manager GET:url.absoluteString parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         UIImage *image = responseObject;
-        if (buttonIndex == actionSheetCopyImageIndex) {
+        if (copy) {
             [UIPasteboard generalPasteboard].image = image;
             [self flashCheckmarkHud:@"copied"];
-        } else if (buttonIndex == actionSheetSaveImageIndex) {
-            UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil);
-            [self flashCheckmarkHud:@"saved"];
         }
-    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+        if (save) {
+            [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
+                PHAssetChangeRequest *changeRequest = [PHAssetChangeRequest creationRequestForAssetFromImage:image];
+                changeRequest.creationDate = [NSDate date];
+            } completionHandler:^(BOOL success, NSError * _Nullable error) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    if (success) {
+                        [self flashCheckmarkHud:@"saved"];
+                    } else {
+                        [MBProgressHUD hideHUDForView:self.webView animated:NO];
+                        [self informError:error];
+                    }
+                });
+            }];
+        }
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         [MBProgressHUD hideHUDForView:self.webView animated:YES];
         [self informError:@"Could not fetch image"];
     }];
-    [requestOperation start];
 }
 
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender {
@@ -2033,21 +2018,19 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     [appDelegate.storyPageControl showShareHUD:@"Following"];
     NSString *urlString = [NSString stringWithFormat:@"%@/social/follow",
                      self.appDelegate.url];
-    
-    NSURL *url = [NSURL URLWithString:urlString];
-    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-    
-    [request setPostValue:[appDelegate.storiesCollection.activeFeed
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    [params setObject:[appDelegate.storiesCollection.activeFeed
                            objectForKey:@"user_id"] 
                    forKey:@"user_id"];
 
-    [request setDidFinishSelector:@selector(finishSubscribeToBlurblog:)];
-    [request setDidFailSelector:@selector(requestFailed:)];
-    [request setDelegate:self];
-    [request startAsynchronous];
-} 
+    [appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        [self finishSubscribeToBlurblog:responseObject];
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        [self requestFailed:error];
+    }];
+}
 
-- (void)finishSubscribeToBlurblog:(ASIHTTPRequest *)request {
+- (void)finishSubscribeToBlurblog:(NSDictionary *)results {
     [MBProgressHUD hideHUDForView:appDelegate.storyPageControl.view animated:NO];
     self.storyHUD = [MBProgressHUD showHUDAddedTo:self.webView animated:YES];
     self.storyHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"37x-Checkmark.png"]];
@@ -2293,17 +2276,18 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     
     NSString *urlString = [NSString stringWithFormat:@"%@/rss_feeds/original_text",
                            self.appDelegate.url];
-    ASIFormDataRequest *request = [self formRequestWithURL:urlString];
-    [request addPostValue:[self.activeStory objectForKey:@"id"] forKey:@"story_id"];
-    [request addPostValue:[self.activeStory objectForKey:@"story_feed_id"] forKey:@"feed_id"];
-    [request setUserInfo:@{@"storyId": [self.activeStory objectForKey:@"id"]}];
-    [request setDidFinishSelector:@selector(finishFetchTextView:)];
-    [request setDidFailSelector:@selector(failedFetchText:)];
-    [request setDelegate:self];
-    [request startAsynchronous];
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    [params setObject:[self.activeStory objectForKey:@"id"] forKey:@"story_id"];
+    [params setObject:[self.activeStory objectForKey:@"story_feed_id"] forKey:@"feed_id"];
+    NSString *storyId = [self.activeStory objectForKey:@"id"];
+    [appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        [self finishFetchTextView:responseObject storyId:storyId];
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        [self failedFetchText:error];
+    }];
 }
 
-- (void)failedFetchText:(ASIHTTPRequest *)request {
+- (void)failedFetchText:(NSError *)error {
     [self.appDelegate.storyPageControl hideNotifier];
     [MBProgressHUD hideHUDForView:self.webView animated:YES];
     if (self.activeStory == appDelegate.storyPageControl.currentPage.activeStory) {
@@ -2313,22 +2297,13 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     [appDelegate.storyPageControl setTextButton:self];
 }
 
-- (void)finishFetchTextView:(ASIHTTPRequest *)request {
-    NSString *responseString = [request responseString];
-    NSData *responseData = [responseString dataUsingEncoding:NSUTF8StringEncoding];
-    NSError *error;
-    NSDictionary *results = [NSJSONSerialization
-                             JSONObjectWithData:responseData
-                             options:kNilOptions
-                             error:&error];
-    
+- (void)finishFetchTextView:(NSDictionary *)results storyId:(NSString *)storyId {
     if ([[results objectForKey:@"failed"] boolValue]) {
-        [self failedFetchText:request];
+        [self failedFetchText:nil];
         return;
     }
     
-    if (![[request.userInfo objectForKey:@"storyId"]
-          isEqualToString:[self.activeStory objectForKey:@"id"]]) {
+    if (![storyId isEqualToString:[self.activeStory objectForKey:@"id"]]) {
         [self.appDelegate.storyPageControl hideNotifier];
         [MBProgressHUD hideHUDForView:self.webView animated:YES];
         self.inTextView = NO;
