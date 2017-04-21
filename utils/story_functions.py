@@ -133,7 +133,7 @@ def pre_process_story(entry, encoding):
                         'media_url': media_url, 
                         'media_type': media_type
                     }
-            elif 'image' in media_type and media_url:
+            elif 'image' in media_type and media_url and media_url not in entry['story_content']:
                 entry['story_content'] += """<br><br><img src="%s" />"""  % media_url
                 continue
             elif media_content.get('rel', '') == 'alternative' or 'text' in media_content.get('type', ''):
