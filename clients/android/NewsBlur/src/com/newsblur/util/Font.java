@@ -12,6 +12,7 @@ public class Font {
     public static Font WHITNEY = new Font(Type.OTF, "WhitneySSm-Book-Bas.otf", "'SelectedFont'");
     public static Font NOTO_SANS = new Font(Type.WEB, "https://fonts.googleapis.com/css?family=Noto+Sans", "'Noto Sans', sans-serif");
     public static Font NOTO_SERIF = new Font(Type.WEB, "https://fonts.googleapis.com/css?family=Noto+Serif", "'Noto Serif', serif");
+    public static Font OPEN_SANS_CONDENSED = new Font(Type.WEB, "https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300", "'Open Sans Condensed', sans-serif");
 
     private enum Type {
         OTF,
@@ -41,6 +42,8 @@ public class Font {
                 return NOTO_SANS;
             case "NOTO_SERIF":
                 return NOTO_SERIF;
+            case "OPEN_SANS_CONDENSED":
+                return OPEN_SANS_CONDENSED;
             default:
                 return DEFAULT;
         }
