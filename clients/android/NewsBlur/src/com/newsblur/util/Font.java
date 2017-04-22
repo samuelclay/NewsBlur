@@ -10,7 +10,8 @@ public class Font {
     public static Font DEFAULT = new Font(Type.DEFAULT, null, null);
     public static Font GOTHAM_NARROW = new Font(Type.OTF, "GothamNarrow-Book.otf", "'SelectedFont'");
     public static Font WHITNEY = new Font(Type.OTF, "WhitneySSm-Book-Bas.otf", "'SelectedFont'");
-    public static Font NOTO = new Font(Type.WEB, "https://fonts.googleapis.com/css?family=Noto+Sans", "'Noto Sans', sans-serif");
+    public static Font NOTO_SANS = new Font(Type.WEB, "https://fonts.googleapis.com/css?family=Noto+Sans", "'Noto Sans', sans-serif");
+    public static Font NOTO_SERIF = new Font(Type.WEB, "https://fonts.googleapis.com/css?family=Noto+Serif", "'Noto Serif', serif");
 
     private enum Type {
         OTF,
@@ -36,8 +37,10 @@ public class Font {
                 return GOTHAM_NARROW;
             case "WHITNEY":
                 return WHITNEY;
-            case "NOTO":
-                return NOTO;
+            case "NOTO_SANS":
+                return NOTO_SANS;
+            case "NOTO_SERIF":
+                return NOTO_SERIF;
             default:
                 return DEFAULT;
         }

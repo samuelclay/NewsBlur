@@ -372,19 +372,22 @@
     <string name="whitney_font">Whitney</string>
     <string name="gotham_narrow_font">Gotham Narrow</string>
     <string name="chronicle_font">Chronicle</string>
-    <string name="noto_font">Noto</string>
+    <string name="noto_sans_font">Noto Sans</string>
+    <string name="noto_serif_font">Noto Serif</string>
     <string-array name="default_font_entries">
         <item>@string/chronicle_font</item>
         <item>@string/default_font</item>
         <item>@string/gotham_narrow_font</item>
-        <item>@string/noto_font</item>
+        <item>@string/noto_sans_font</item>
+        <item>@string/noto_serif_font</item>
         <item>@string/whitney_font</item>
     </string-array>
     <string-array name="default_font_values">
         <item>CHRONICLE</item>
         <item>DEFAULT</item>
         <item>GOTHAM_NARROW</item>
-        <item>NOTO</item>
+        <item>NOTO_SANS</item>
+        <item>NOTO_SERIF</item>
         <item>WHITNEY</item>
     </string-array>
     <string name="default_font_value">DEFAULT</string>

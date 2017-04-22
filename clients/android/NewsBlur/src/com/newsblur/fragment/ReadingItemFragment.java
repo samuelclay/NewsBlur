@@ -543,7 +543,7 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
 
             float currentSize = PrefsUtils.getTextSize(getActivity());
             Font font = PrefsUtils.getFont(getActivity());
-            
+
             StringBuilder builder = new StringBuilder();
             builder.append("<html><head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=0\" />");
             builder.append(font.forWebView(currentSize));
