@@ -234,6 +234,7 @@ def setup_app(skip_common=False, node=False):
     config_monit_app()
     setup_usage_monitor()
     done()
+    sudo('reboot')
 
 def setup_app_image():
     copy_app_settings()

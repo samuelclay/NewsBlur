@@ -717,7 +717,7 @@ def load_single_feed(request, feed_id):
     
     if include_feeds:
         feeds = Feed.objects.filter(pk__in=set([story['story_feed_id'] for story in stories]))
-        feeds = [feed.canonical(include_favicon=False) for feed in feeds]
+        feeds = [f.canonical(include_favicon=False) for f in feeds]
     
     if usersub:
         usersub.feed_opens += 1
@@ -2315,7 +2315,12 @@ def _mark_story_as_starred(request):
         params.update(story_values)
         if params.has_key('story_latest_content_z'):
             params.pop('story_latest_content_z')
-        starred_story = MStarredStory.objects.create(**params)
+        try:
+            starred_story = MStarredStory.objects.create(**params)
+        except OperationError, e:
+            logging.user(request, "~FCStarring ~FRfailed~FC: ~SB%s (~FM~SB%s~FC~SN)" % (story.story_title[:32], e))        
+            return {'code': -1, 'message': "Could not save story due to: %s" % e}
+            
         created = True
         MActivity.new_starred_story(user_id=request.user.pk, 
                                     story_title=story.story_title, 
