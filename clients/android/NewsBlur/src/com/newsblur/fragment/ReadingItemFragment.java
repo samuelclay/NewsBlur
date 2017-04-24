@@ -43,7 +43,7 @@ import com.newsblur.domain.UserDetails;
 import com.newsblur.service.NBSyncService;
 import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.FeedUtils;
-import com.newsblur.util.FileCache;
+import com.newsblur.util.Font;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.StoryUtils;
 import com.newsblur.util.UIUtils;
@@ -542,12 +542,11 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
             storyText = swapInOfflineImages(storyText);
 
             float currentSize = PrefsUtils.getTextSize(getActivity());
+            Font font = PrefsUtils.getFont(getActivity());
 
             StringBuilder builder = new StringBuilder();
             builder.append("<html><head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=0\" />");
-            builder.append("<style style=\"text/css\">");
-            builder.append(String.format("body { font-size: %sem; } ", Float.toString(currentSize)));
-            builder.append("</style>");
+            builder.append(font.forWebView(currentSize));
             builder.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"reading.css\" />");
             if (PrefsUtils.isLightThemeSelected(getActivity())) {
                 builder.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"light_reading.css\" />");

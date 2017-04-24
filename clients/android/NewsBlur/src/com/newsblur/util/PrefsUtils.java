@@ -690,4 +690,9 @@ public class PrefsUtils {
     public static boolean isBackgroundNeeded(Context context) {
         return (isEnableNotifications(context) || isOfflineEnabled(context));
     }
+
+    public static Font getFont(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        return Font.getFont(prefs.getString(PrefConstants.READING_FONT, Font.DEFAULT.toString()));
+    }
 }

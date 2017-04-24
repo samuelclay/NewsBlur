@@ -366,4 +366,35 @@
         <item>GEST_ACTION_UNSAVE</item>
     </string-array>
     <string name="rtl_gesture_action_value">GEST_ACTION_MARKUNREAD</string>
+
+    <string name="font">Font</string>
+    <string name="default_font">Default</string>
+    <string name="whitney_font">Whitney</string>
+    <string name="gotham_narrow_font">Gotham Narrow</string>
+    <string name="chronicle_font">Chronicle</string>
+    <string name="noto_sans_font">Noto Sans</string>
+    <string name="noto_serif_font">Noto Serif</string>
+    <string name="open_sans_condensed_font">Open Sans Condensed</string>
+    <string name="anonymous_pro_font">Anonymous Pro</string>
+    <string-array name="default_font_entries">
+        <item>@string/anonymous_pro_font</item>
+        <item>@string/chronicle_font</item>
+        <item>@string/default_font</item>
+        <item>@string/gotham_narrow_font</item>
+        <item>@string/noto_sans_font</item>
+        <item>@string/noto_serif_font</item>
+        <item>@string/open_sans_condensed_font</item>
+        <item>@string/whitney_font</item>
+    </string-array>
+    <string-array name="default_font_values">
+        <item>ANONYMOUS_PRO</item>
+        <item>CHRONICLE</item>
+        <item>DEFAULT</item>
+        <item>GOTHAM_NARROW</item>
+        <item>NOTO_SANS</item>
+        <item>NOTO_SERIF</item>
+        <item>OPEN_SANS_CONDENSED</item>
+        <item>WHITNEY</item>
+    </string-array>
+    <string name="default_font_value">DEFAULT</string>
 </resources>

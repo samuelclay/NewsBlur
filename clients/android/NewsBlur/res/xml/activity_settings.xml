@@ -73,6 +73,13 @@
     <PreferenceCategory
         android:title="@string/settings_reading"
         android:key="reading">
+        <ListPreference
+            android:key="reading_font"
+            android:title="@string/font"
+            android:dialogTitle="@string/font"
+            android:entries="@array/default_font_entries"
+            android:entryValues="@array/default_font_values"
+            android:defaultValue="@string/default_font_value" />
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="immersive_enter_single_tap"
