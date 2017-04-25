@@ -3168,7 +3168,7 @@ body {
 /* =========================== */
 
 .NB-story-content-container {
-    overflow: hidden;
+    overflow-x: auto;
     position: relative;
     min-height: 192px;
 }
