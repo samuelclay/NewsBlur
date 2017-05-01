@@ -1,3 +1,4 @@
+import redis
 from utils import json_functions as json
 from django.test.client import Client
 from django.test import TestCase
@@ -14,6 +15,9 @@ class FeedTest(TestCase):
     def setUp(self):
         disconnect()
         settings.MONGODB = connect('test_newsblur')
+        settings.REDIS_STORY_HASH_POOL = redis.ConnectionPool(host=settings.REDIS_STORY['host'], port=6379, db=10)
+        settings.REDIS_FEED_READ_POOL = redis.ConnectionPool(host=settings.SESSION_REDIS_HOST, port=6379, db=10)
+
         self.client = Client()
 
     def tearDown(self):
@@ -166,8 +170,12 @@ class FeedTest(TestCase):
         self.assertEquals(content['feeds'][str(feed['feed_id'])]['nt'], 9)
 
     def test_load_feeds__google(self):
+        # Freezegun the date to 2017-04-30
+        r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+        r.delete('RS:1:766')
+        
         self.client.login(username='conesus', password='test')
-        old_story_guid = "http://www.blog.google:443/topics/inside-google/google-earths-incredible-3d-imagery-explained/"
+        old_story_guid = "blog.google:443/topics/inside-google/google-earths-incredible-3d-imagery-explained/"
 
         management.call_command('loaddata', 'google1.json', verbosity=1)
         print Feed.objects.all()
@@ -181,15 +189,16 @@ class FeedTest(TestCase):
         stories = MStory.objects(story_feed_id=feed.pk)
         self.assertEquals(stories.count(), 20)
 
-        response = self.client.get(reverse('load-feeds'))
+        response = self.client.get(reverse('load-feeds')+"?update_counts=true")
         content = json.decode(response.content)
-        self.assertEquals(content['feeds']['766']['nt'], 7)
+        self.assertEquals(content['feeds']['766']['nt'], 10)
 
-        self.client.post(reverse('mark-story-as-read'), {'story_id': old_story_guid, 'feed_id': 766})
+        old_story = MStory.objects.get(story_feed_id=feed.pk, story_guid__contains=old_story_guid)
+        self.client.post(reverse('mark-story-hashes-as-read'), {'story_hash': old_story.story_hash})
 
         response = self.client.get(reverse('refresh-feeds'))
         content = json.decode(response.content)
-        self.assertEquals(content['feeds']['766']['nt'], 6)
+        self.assertEquals(content['feeds']['766']['nt'], 9)
 
         management.call_command('loaddata', 'google2.json', verbosity=1)
         management.call_command('refresh_feed', force=False, feed=766, single_threaded=True, daemonize=False)
@@ -208,7 +217,7 @@ class FeedTest(TestCase):
 
         response = self.client.get(reverse('refresh-feeds'))
         content = json.decode(response.content)
-        self.assertEquals(content['feeds']['766']['nt'], 6)
+        self.assertEquals(content['feeds']['766']['nt'], 9)
         
     def test_load_feeds__brokelyn__invalid_xml(self):
         self.client.login(username='conesus', password='test')

@@ -417,6 +417,7 @@ class UserSubscription(models.Model):
     @classmethod
     def feeds_with_updated_counts(cls, user, feed_ids=None, check_fetch_status=False, force=False):
         feeds = {}
+        silent = not getattr(settings, "TEST_DEBUG", False)
         
         # Get subscriptions for user
         user_subs = cls.objects.select_related('feed').filter(user=user, active=True)
@@ -430,7 +431,7 @@ class UserSubscription(models.Model):
                 sub.needs_unread_recalc or 
                 sub.unread_count_updated < user.profile.unread_cutoff or 
                 sub.oldest_unread_story_date < user.profile.unread_cutoff):
-                sub = sub.calculate_feed_scores(silent=True, force=force)
+                sub = sub.calculate_feed_scores(silent=silent, force=force)
             if not sub: continue # TODO: Figure out the correct sub and give it a new feed_id
 
             feed_id = sub.feed_id
@@ -679,10 +680,11 @@ class UserSubscription(models.Model):
         if len(story_hashes) > 1:
             logging.user(request, "~FYRead %s stories in feed: %s" % (len(story_hashes), self.feed))
         else:
-            logging.user(request, "~FYRead story in feed: %s" % (self.feed))
+            logging.user(request, "~FYRead story (%s) in feed: %s" % (story_hashes, self.feed))
             RUserStory.aggregate_mark_read(self.feed_id)
         
-        for story_hash in set(story_hashes):
+        for story_hash in set(story_hashes):            
+            # logging.user(request, "~FYRead story: %s" % (story_hash))
             RUserStory.mark_read(self.user_id, self.feed_id, story_hash, aggregated=aggregated)
             r.publish(self.user.username, 'story:read:%s' % story_hash)
 
@@ -812,6 +814,7 @@ class UserSubscription(models.Model):
                     else:
                         feed_scores['neutral'] += 1
         else:
+            print " ---> Cutoff date: %s" % date_delta
             unread_story_hashes = self.story_hashes(user_id=self.user_id, feed_ids=[self.feed_id],
                                                     usersubs=[self],
                                                     read_filter='unread', group_by_feed=False,
@@ -1113,7 +1116,7 @@ class RUserStory:
         #     r2 = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL2)
         
         story_hash = MStory.ensure_story_hash(story_hash, story_feed_id=story_feed_id)
-        
+
         if not story_hash: return
         
         def redis_commands(key):
