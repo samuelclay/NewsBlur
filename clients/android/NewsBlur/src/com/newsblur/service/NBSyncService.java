@@ -1013,6 +1013,7 @@ public class NBSyncService extends Service {
         com.newsblur.util.Log.d(NBSyncService.class.getName(), "requesting reading session reset");
         synchronized (PENDING_FEED_MUTEX) {
             PendingFeed = null;
+            PreppedFeedSet = null;
         }
     }
 
