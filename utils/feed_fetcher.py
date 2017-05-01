@@ -674,7 +674,7 @@ class ProcessFeed:
             story_hashes.append(story.get('story_hash'))
         
         original_story_hash_count = len(story_hashes)
-        story_hashes_in_unread_cutoff = self.feed.story_hashes_in_unread_cutoff
+        story_hashes_in_unread_cutoff = self.feed.story_hashes_in_unread_cutoff[:original_story_hash_count]
         story_hashes.extend(story_hashes_in_unread_cutoff)
         story_hashes = list(set(story_hashes))
         if self.options['verbose'] or settings.DEBUG:
