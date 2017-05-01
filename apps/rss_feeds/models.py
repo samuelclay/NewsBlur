@@ -149,6 +149,15 @@ class Feed(models.Model):
 
         return datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD_FREE)
     
+    @property
+    def story_hashes_in_unread_cutoff(self):
+        r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+        current_time = int(time.time() + 60*60*24)
+        unread_cutoff = self.unread_cutoff.strftime('%s')
+        
+        story_hashes = r.zrevrange('zF:%s' % self.pk, current_time, unread_cutoff)
+        return story_hashes
+        
     @classmethod
     def generate_hash_address_and_link(cls, feed_address, feed_link):
         if not feed_address: feed_address = ""

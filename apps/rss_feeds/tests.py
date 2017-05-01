@@ -169,8 +169,8 @@ class FeedTest(TestCase):
         self.client.login(username='conesus', password='test')
         old_story_guid = "http://www.blog.google:443/topics/inside-google/google-earths-incredible-3d-imagery-explained/"
 
-        management.call_command('loaddata', 'google1.json', verbosity=0)
-
+        management.call_command('loaddata', 'google1.json', verbosity=1)
+        print Feed.objects.all()
         feed = Feed.objects.get(pk=766)
         print " Testing test_load_feeds__google: %s" % feed
         stories = MStory.objects(story_feed_id=feed.pk)
@@ -191,7 +191,7 @@ class FeedTest(TestCase):
         content = json.decode(response.content)
         self.assertEquals(content['feeds']['766']['nt'], 6)
 
-        management.call_command('loaddata', 'google2.json', verbosity=0)
+        management.call_command('loaddata', 'google2.json', verbosity=1)
         management.call_command('refresh_feed', force=False, feed=766, single_threaded=True, daemonize=False)
 
         stories = MStory.objects(story_feed_id=feed.pk)
