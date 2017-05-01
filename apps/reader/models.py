@@ -675,7 +675,7 @@ class UserSubscription(models.Model):
     
         if not self.needs_unread_recalc:
             self.needs_unread_recalc = True
-            self.save()
+            self.save(update_fields=['needs_unread_recalc'])
     
         if len(story_hashes) > 1:
             logging.user(request, "~FYRead %s stories in feed: %s" % (len(story_hashes), self.feed))
@@ -689,7 +689,10 @@ class UserSubscription(models.Model):
             r.publish(self.user.username, 'story:read:%s' % story_hash)
 
         r.publish(self.user.username, 'feed:%s' % self.feed_id)
-            
+        
+        self.last_read_date = datetime.datetime.now()
+        self.save(update_fields=['last_read_date'])
+        
         return data
     
     def invert_read_stories_after_unread_story(self, story, request=None):
@@ -1245,17 +1248,16 @@ class RUserStory:
             logging.info(" ---> %s read stories" % len(story_hashes))
         
     @classmethod
-    def switch_hash(cls, feed_id, old_hash, new_hash):
+    def switch_hash(cls, feed, old_hash, new_hash):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         # r2 = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL2)
         p = r.pipeline()
         # p2 = r2.pipeline()
-        UNREAD_CUTOFF = datetime.datetime.now() - datetime.timedelta(days=settings.DAYS_OF_STORY_HASHES)
         
-        usersubs = UserSubscription.objects.filter(feed_id=feed_id, last_read_date__gte=UNREAD_CUTOFF)
+        usersubs = UserSubscription.objects.filter(feed_id=feed.pk, last_read_date__gte=feed.unread_cutoff)
         logging.info(" ---> ~SB%s usersubs~SN to switch read story hashes..." % len(usersubs))
         for sub in usersubs:
-            rs_key = "RS:%s:%s" % (sub.user.pk, feed_id)
+            rs_key = "RS:%s:%s" % (sub.user.pk, feed.pk)
             read = r.sismember(rs_key, old_hash)
             if read:
                 p.sadd(rs_key, new_hash)

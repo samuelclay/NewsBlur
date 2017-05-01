@@ -18,6 +18,13 @@ class FeedTest(TestCase):
         settings.REDIS_STORY_HASH_POOL = redis.ConnectionPool(host=settings.REDIS_STORY['host'], port=6379, db=10)
         settings.REDIS_FEED_READ_POOL = redis.ConnectionPool(host=settings.SESSION_REDIS_HOST, port=6379, db=10)
 
+        r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+        r.delete('RS:1')
+        r.delete('lRS:1')
+        r.delete('RS:1:766')
+        r.delete('zF:766')
+        r.delete('F:766')
+        
         self.client = Client()
 
     def tearDown(self):
@@ -171,8 +178,6 @@ class FeedTest(TestCase):
 
     def test_load_feeds__google(self):
         # Freezegun the date to 2017-04-30
-        r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
-        r.delete('RS:1:766')
         
         self.client.login(username='conesus', password='test')
         old_story_guid = "blog.google:443/topics/inside-google/google-earths-incredible-3d-imagery-explained/"
@@ -191,14 +196,14 @@ class FeedTest(TestCase):
 
         response = self.client.get(reverse('load-feeds')+"?update_counts=true")
         content = json.decode(response.content)
-        self.assertEquals(content['feeds']['766']['nt'], 10)
+        self.assertEquals(content['feeds']['766']['nt'], 20)
 
         old_story = MStory.objects.get(story_feed_id=feed.pk, story_guid__contains=old_story_guid)
         self.client.post(reverse('mark-story-hashes-as-read'), {'story_hash': old_story.story_hash})
 
         response = self.client.get(reverse('refresh-feeds'))
         content = json.decode(response.content)
-        self.assertEquals(content['feeds']['766']['nt'], 9)
+        self.assertEquals(content['feeds']['766']['nt'], 19)
 
         management.call_command('loaddata', 'google2.json', verbosity=1)
         management.call_command('refresh_feed', force=False, feed=766, single_threaded=True, daemonize=False)
@@ -217,7 +222,7 @@ class FeedTest(TestCase):
 
         response = self.client.get(reverse('refresh-feeds'))
         content = json.decode(response.content)
-        self.assertEquals(content['feeds']['766']['nt'], 9)
+        self.assertEquals(content['feeds']['766']['nt'], 19)
         
     def test_load_feeds__brokelyn__invalid_xml(self):
         self.client.login(username='conesus', password='test')

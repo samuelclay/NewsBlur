@@ -678,9 +678,10 @@ class ProcessFeed:
         story_hashes.extend(story_hashes_in_unread_cutoff)
         story_hashes = list(set(story_hashes))
         if self.options['verbose'] or settings.DEBUG:
-            logging.debug(u'   ---> [%-30s] ~FBFound ~SB%s~SN guids, adding ~SB%s~SN guids from db' % (
+            logging.debug(u'   ---> [%-30s] ~FBFound ~SB%s~SN guids, adding ~SB%s~SN/%s guids from db' % (
                           self.feed.log_title[:30],
-                          original_story_hash_count, len(story_hashes)-original_story_hash_count))
+                          original_story_hash_count, len(story_hashes)-original_story_hash_count, 
+                          len(story_hashes_in_unread_cutoff)))
         
         
         existing_stories = dict((s.story_hash, s) for s in MStory.objects(
@@ -688,11 +689,11 @@ class ProcessFeed:
             # story_date__gte=start_date,
             # story_feed_id=self.feed.pk
         ))
-        if len(existing_stories) == 0:
-            existing_stories = dict((s.story_hash, s) for s in MStory.objects(
-                story_date__gte=start_date,
-                story_feed_id=self.feed.pk
-            ))
+        # if len(existing_stories) == 0:
+        #     existing_stories = dict((s.story_hash, s) for s in MStory.objects(
+        #         story_date__gte=start_date,
+        #         story_feed_id=self.feed.pk
+        #     ))
 
         ret_values = self.feed.add_update_stories(stories, existing_stories,
                                                   verbose=self.options['verbose'],

@@ -154,8 +154,8 @@ class Feed(models.Model):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         current_time = int(time.time() + 60*60*24)
         unread_cutoff = self.unread_cutoff.strftime('%s')
-        
-        story_hashes = r.zrevrange('zF:%s' % self.pk, current_time, unread_cutoff)
+        print " ---> zrevrangebyscore zF:%s %s %s" % (self.pk, current_time, unread_cutoff)
+        story_hashes = r.zrevrangebyscore('zF:%s' % self.pk, current_time, unread_cutoff)
         return story_hashes
         
     @classmethod
@@ -1323,7 +1323,7 @@ class Feed(models.Model):
         
         old_hash = existing_story.story_hash
         new_hash = MStory.ensure_story_hash(new_story_guid, self.pk)
-        RUserStory.switch_hash(feed_id=self.pk, old_hash=old_hash, new_hash=new_hash)
+        RUserStory.switch_hash(feed=self, old_hash=old_hash, new_hash=new_hash)
         
         shared_stories = MSharedStory.objects.filter(story_feed_id=self.pk,
                                                      story_hash=old_hash)

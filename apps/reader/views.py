@@ -1596,7 +1596,8 @@ def mark_story_hashes_as_read(request):
             usersub = usersubs[0]
             if not usersub.needs_unread_recalc:
                 usersub.needs_unread_recalc = True
-                usersub.save(update_fields=['needs_unread_recalc'])
+                usersub.last_read_date = datetime.datetime.now()
+                usersub.save(update_fields=['needs_unread_recalc', 'last_read_date'])
             r.publish(request.user.username, 'feed:%s' % feed_id)
     
     hash_count = len(story_hashes)
