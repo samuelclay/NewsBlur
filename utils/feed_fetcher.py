@@ -732,8 +732,9 @@ class ProcessFeed:
         self.feed.update_all_statistics(has_new_stories=bool(ret_values['new']), force=self.options['force'])
         fetch_date = datetime.datetime.now()
         if ret_values['new']:
-            self.feed.trim_feed()
-            self.feed.expire_redis()
+            if not getattr(settings, 'TEST_DEBUG', False):
+                self.feed.trim_feed()
+                self.feed.expire_redis()
             if MStatistics.get('raw_feed', None) == self.feed.pk:
                 self.feed.save_raw_feed(self.raw_feed, fetch_date)
         self.feed.save_feed_history(200, "OK", date=fetch_date)

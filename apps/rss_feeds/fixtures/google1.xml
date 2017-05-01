@@ -1,0 +1,3102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" media="screen" href="/~d/styles/rss2full.xsl"?>
+<?xml-stylesheet type="text/css" media="screen" href="http://feeds.feedburner.com/~d/styles/itemcontent.css"?>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/" xmlns:feedburner="http://rssnamespace.org/feedburner/ext/1.0" version="2.0">
+    <channel>
+        <title>The Official Google Blog</title>
+        <link>http://www.blog.google:443/</link>
+        <description>Insights from Googlers into our products, technology, and the Google culture.</description>
+        <language>en</language>
+        <lastBuildDate>Tue, 18 Apr 2017 18:00:00 +0000</lastBuildDate>
+        <image>
+            <url>https://storage.googleapis.com/gweb-uniblog-publish-prod/static/blog/images/google.a51985becaa6.png</url>
+            <title>The Keyword</title>
+            <link>http://www.blog.google:443/</link>
+        </image>
+        <atom10:link xmlns:atom10="http://www.w3.org/2005/Atom" rel="self" type="application/rss+xml" href="http://feeds.feedburner.com/blogspot/MKuf"/>
+        <feedburner:info uri="blogspot/mkuf"/>
+        <atom10:link xmlns:atom10="http://www.w3.org/2005/Atom" rel="hub" href="http://pubsubhubbub.appspot.com/"/>
+        <feedburner:emailServiceId>blogspot/MKuf</feedburner:emailServiceId>
+        <feedburner:feedburnerHostname>https://feedburner.google.com</feedburner:feedburnerHostname>
+        <feedburner:feedFlare href="https://add.my.yahoo.com/rss?url=http%3A%2F%2Ffeeds.feedburner.com%2Fblogspot%2FMKuf" src="http://us.i1.yimg.com/us.yimg.com/i/us/my/addtomyyahoo4.gif">Subscribe with My Yahoo!</feedburner:feedFlare>
+        <feedburner:feedFlare href="http://www.newsgator.com/ngs/subscriber/subext.aspx?url=http%3A%2F%2Ffeeds.feedburner.com%2Fblogspot%2FMKuf" src="http://www.newsgator.com/images/ngsub1.gif">Subscribe with NewsGator</feedburner:feedFlare>
+        <feedburner:feedFlare href="http://feeds.my.aol.com/add.jsp?url=http%3A%2F%2Ffeeds.feedburner.com%2Fblogspot%2FMKuf" src="http://o.aolcdn.com/favorites.my.aol.com/webmaster/ffclient/webroot/locale/en-US/images/myAOLButtonSmall.gif">Subscribe with My AOL</feedburner:feedFlare>
+        <feedburner:feedFlare href="http://www.bloglines.com/sub/http://feeds.feedburner.com/blogspot/MKuf" src="http://www.bloglines.com/images/sub_modern11.gif">Subscribe with Bloglines</feedburner:feedFlare>
+        <feedburner:feedFlare href="http://www.netvibes.com/subscribe.php?url=http%3A%2F%2Ffeeds.feedburner.com%2Fblogspot%2FMKuf" src="//www.netvibes.com/img/add2netvibes.gif">Subscribe with Netvibes</feedburner:feedFlare>
+        <feedburner:feedFlare href="http://fusion.google.com/add?feedurl=http%3A%2F%2Ffeeds.feedburner.com%2Fblogspot%2FMKuf" src="http://buttons.googlesyndication.com/fusion/add.gif">Subscribe with Google</feedburner:feedFlare>
+        <feedburner:feedFlare href="http://www.pageflakes.com/subscribe.aspx?url=http%3A%2F%2Ffeeds.feedburner.com%2Fblogspot%2FMKuf" src="http://www.pageflakes.com/ImageFile.ashx?instanceId=Static_4&amp;fileName=ATP_blu_91x17.gif">Subscribe with Pageflakes</feedburner:feedFlare>
+        <item>
+            <title>Google Earth’s incredible 3D imagery, explained</title>
+            <link>http://feedproxy.google.com/~r/blogspot/MKuf/~3/9MNeN034Wx0/</link>
+            <description>&lt;div class="block-paragraph"&gt;&lt;div class="rich-text"&gt;&lt;p&gt;Google Earth is an amazing tool that lets ordinary humans—sans wings or jetpack—zoom around the world. And, as you might know if you’ve checked out the new &lt;a href="https://www.google.com/earth/"&gt;Google Earth&lt;/a&gt;, the 3D imagery looks insane. (As in, mind-blowingly realistic insane.)&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;div class="block-image_carousel"&gt;
+
+&lt;div class="uni-full-width uni-carousel" uni-component="carousel"&gt;
+    &lt;div class="uni-carousel-container wrap"&gt;
+        
+            &lt;figure&gt;
+                &lt;div class="uni-carousel-slide-content"&gt;
+                    &lt;div class="uni-carousel-image"&gt;
+                        
+
+    
+        
+
+
+    
+
+    
+        &lt;source media="(max-width: 540px) and (max-resolution: 1.5dppx)"
+                sizes="540px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Earth_-_Grand_Canyon.2e16d0ba.fill-540x304.jpg 540w"&gt;
+    
+        &lt;source media="(max-width: 540px) and (min-resolution: 1.5dppx)"
+                sizes="1000px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Earth_-_Grand_Canyon.2e16d0ba.fill-1000x563.jpg 1000w"&gt;
+    
+        &lt;source media="(max-resolution: 1.5dppx)"
+                sizes="1000px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Earth_-_Grand_Canyon.2e16d0ba.fill-1000x563.jpg 1000w"&gt;
+    
+        &lt;source media="(min-resolution: 1.5dppx)"
+                sizes="1000px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Earth_-_Grand_Canyon.2e16d0ba.fill-1000x563.jpg 1000w"&gt;
+    
+
+    &lt;img src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Earth_-_Grand_Canyon.2e16d0ba.fill-1000x563.jpg"
+
+         
+            alt="Earth - Grand Canyon.jpg"
+         
+
+         sizes="(max-width: 540px) 540px, (max-width: 540px) 1000px,  1000px,  1000px"
+         srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Earth_-_Grand_Canyon.2e16d0ba.fill-540x304.jpg 540w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Earth_-_Grand_Canyon.2e16d0ba.fill-1000x563.jpg 1000w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Earth_-_Grand_Canyon.2e16d0ba.fill-1000x563.jpg 1000w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Earth_-_Grand_Canyon.2e16d0ba.fill-1000x563.jpg 1000w"&gt;
+
+    
+
+
+    
+
+
+                    &lt;/div&gt;
+                    
+                        &lt;figcaption&gt;&lt;div class="rich-text"&gt;Grand Canyon&lt;/div&gt;&lt;/figcaption&gt;
+                    
+                &lt;/div&gt;
+            &lt;/figure&gt;
+        
+            &lt;figure&gt;
+                &lt;div class="uni-carousel-slide-content"&gt;
+                    &lt;div class="uni-carousel-image"&gt;
+                        
+
+    
+        
+
+
+    
+
+    
+        &lt;source media="(max-width: 540px) and (max-resolution: 1.5dppx)"
+                sizes="540px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Earth_-_Hong_Kong.2e16d0ba.fill-540x304.png 540w"&gt;
+    
+        &lt;source media="(max-width: 540px) and (min-resolution: 1.5dppx)"
+                sizes="1080px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Earth_-_Hong_Kong.2e16d0ba.fill-1080x608.png 1080w"&gt;
+    
+        &lt;source media="(max-resolution: 1.5dppx)"
+                sizes="1000px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Earth_-_Hong_Kong.2e16d0ba.fill-1000x563.png 1000w"&gt;
+    
+        &lt;source media="(min-resolution: 1.5dppx)"
+                sizes="1200px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Earth_-_Hong_Kong.2e16d0ba.fill-1200x675.png 1200w"&gt;
+    
+
+    &lt;img src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Earth_-_Hong_Kong.2e16d0ba.fill-1200x675.png"
+
+         
+            alt="Earth - Hong Kong.png"
+         
+
+         sizes="(max-width: 540px) 540px, (max-width: 540px) 1080px,  1000px,  1200px"
+         srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Earth_-_Hong_Kong.2e16d0ba.fill-540x304.png 540w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Earth_-_Hong_Kong.2e16d0ba.fill-1080x608.png 1080w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Earth_-_Hong_Kong.2e16d0ba.fill-1000x563.png 1000w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Earth_-_Hong_Kong.2e16d0ba.fill-1200x675.png 1200w"&gt;
+
+    
+
+
+    
+
+
+                    &lt;/div&gt;
+                    
+                        &lt;figcaption&gt;&lt;div class="rich-text"&gt;Hong Kong&lt;/div&gt;&lt;/figcaption&gt;
+                    
+                &lt;/div&gt;
+            &lt;/figure&gt;
+        
+            &lt;figure&gt;
+                &lt;div class="uni-carousel-slide-content"&gt;
+                    &lt;div class="uni-carousel-image"&gt;
+                        
+
+    
+        
+
+
+    
+
+    
+        &lt;source media="(max-width: 540px) and (max-resolution: 1.5dppx)"
+                sizes="540px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Earth_-_Rome.2e16d0ba.fill-540x304.jpg 540w"&gt;
+    
+        &lt;source media="(max-width: 540px) and (min-resolution: 1.5dppx)"
+                sizes="1080px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Earth_-_Rome.2e16d0ba.fill-1080x608.jpg 1080w"&gt;
+    
+        &lt;source media="(max-resolution: 1.5dppx)"
+                sizes="1000px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Earth_-_Rome.2e16d0ba.fill-1000x563.jpg 1000w"&gt;
+    
+        &lt;source media="(min-resolution: 1.5dppx)"
+                sizes="1200px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Earth_-_Rome.2e16d0ba.fill-1200x675.jpg 1200w"&gt;
+    
+
+    &lt;img src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Earth_-_Rome.2e16d0ba.fill-1200x675.jpg"
+
+         
+            alt="Earth - Rome.jpg"
+         
+
+         sizes="(max-width: 540px) 540px, (max-width: 540px) 1080px,  1000px,  1200px"
+         srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Earth_-_Rome.2e16d0ba.fill-540x304.jpg 540w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Earth_-_Rome.2e16d0ba.fill-1080x608.jpg 1080w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Earth_-_Rome.2e16d0ba.fill-1000x563.jpg 1000w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Earth_-_Rome.2e16d0ba.fill-1200x675.jpg 1200w"&gt;
+
+    
+
+
+    
+
+
+                    &lt;/div&gt;
+                    
+                        &lt;figcaption&gt;&lt;div class="rich-text"&gt;Rome&lt;/div&gt;&lt;/figcaption&gt;
+                    
+                &lt;/div&gt;
+            &lt;/figure&gt;
+        
+            &lt;figure&gt;
+                &lt;div class="uni-carousel-slide-content"&gt;
+                    &lt;div class="uni-carousel-image"&gt;
+                        
+
+    
+        
+
+
+    
+
+    
+        &lt;source media="(max-width: 540px) and (max-resolution: 1.5dppx)"
+                sizes="540px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Earth_-_Tokyo.2e16d0ba.fill-540x304.jpg 540w"&gt;
+    
+        &lt;source media="(max-width: 540px) and (min-resolution: 1.5dppx)"
+                sizes="1080px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Earth_-_Tokyo.2e16d0ba.fill-1080x608.jpg 1080w"&gt;
+    
+        &lt;source media="(max-resolution: 1.5dppx)"
+                sizes="1000px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Earth_-_Tokyo.2e16d0ba.fill-1000x563.jpg 1000w"&gt;
+    
+        &lt;source media="(min-resolution: 1.5dppx)"
+                sizes="1200px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Earth_-_Tokyo.2e16d0ba.fill-1200x675.jpg 1200w"&gt;
+    
+
+    &lt;img src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Earth_-_Tokyo.2e16d0ba.fill-1200x675.jpg"
+
+         
+            alt="Earth - Tokyo.jpg"
+         
+
+         sizes="(max-width: 540px) 540px, (max-width: 540px) 1080px,  1000px,  1200px"
+         srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Earth_-_Tokyo.2e16d0ba.fill-540x304.jpg 540w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Earth_-_Tokyo.2e16d0ba.fill-1080x608.jpg 1080w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Earth_-_Tokyo.2e16d0ba.fill-1000x563.jpg 1000w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Earth_-_Tokyo.2e16d0ba.fill-1200x675.jpg 1200w"&gt;
+
+    
+
+
+    
+
+
+                    &lt;/div&gt;
+                    
+                        &lt;figcaption&gt;&lt;div class="rich-text"&gt;Tokyo&lt;/div&gt;&lt;/figcaption&gt;
+                    
+                &lt;/div&gt;
+            &lt;/figure&gt;
+        
+    &lt;/div&gt;
+
+    &lt;div class="uni-carousel-arrows-container hide-tablet hide-mobile"&gt;
+        &lt;button class="uni-carousel-left-arrow"
+                aria-label="left arrow"&gt;
+        &lt;/button&gt;
+        &lt;button class="uni-carousel-right-arrow"
+                aria-label="right arrow"&gt;
+        &lt;/button&gt;
+    &lt;/div&gt;
+
+    &lt;nav&gt;
+        
+            &lt;button aria-label="slide  1"&gt;&lt;/button&gt;
+        
+            &lt;button aria-label="slide  2"&gt;&lt;/button&gt;
+        
+            &lt;button aria-label="slide  3"&gt;&lt;/button&gt;
+        
+            &lt;button aria-label="slide  4"&gt;&lt;/button&gt;
+        
+    &lt;/nav&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="block-paragraph"&gt;&lt;div class="rich-text"&gt;&lt;p&gt;But how does it get that way? I talked with a couple people from the Earth team to find out. I can’t tell you everything I found out here (because I made &lt;a href="http://g.co/go/NFearth"&gt;this video&lt;/a&gt; that *hint hint* I’d love for you to watch) but I will say that building Google Earth includes billions of pixels, a love of spring, confetti-colored depth maps, small planes that fly in lawn mower-esque patterns, and much, much more.&lt;/p&gt;&lt;p&gt;Thanks for watching—and hope to see you soon on &lt;a href="http://youtube.com/natandfriends"&gt;Nat &amp;amp; Friends&lt;/a&gt;.&lt;br/&gt;&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;&lt;img src="http://feeds.feedburner.com/~r/blogspot/MKuf/~4/9MNeN034Wx0" height="1" width="1" alt=""/&gt;</description>
+            <pubDate>Tue, 18 Apr 2017 18:00:00 +0000</pubDate>
+            <guid isPermaLink="false">http://www.blog.google:443/topics/inside-google/google-earths-incredible-3d-imagery-explained/</guid>
+            <category>Inside Google</category>
+            <category>Google Earth</category>
+            <media:content url="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/natfriends_yosemite6k.2e16d0ba.fill-540x540.jpg" width="540" height="540"/>
+            <og xmlns:og="http://ogp.me/ns#">
+                <type>article</type>
+                <title>Google Earth’s incredible 3D imagery, explained</title>
+                <description>A behind the scenes look at the pixels, planes and people that create Google Earth’s 3D imagery.</description>
+                <image>https://storage.googleapis.com/gweb-uniblog-publish-prod/images/natfriends_yosemite6k.2e16d0ba.fill-540x540.jpg</image>
+                <site_name>Google</site_name>
+                <url>http://www.blog.google:443/topics/inside-google/google-earths-incredible-3d-imagery-explained/</url>
+            </og>
+            <author xmlns:author="http://www.w3.org/2005/Atom">
+                <name>Natalie Dennis (a.k.a. Nat)</name>
+                <title/>
+                <department>Google Creative Lab</department>
+                <company/>
+            </author>
+            <feedburner:origLink>http://www.blog.google:443/topics/inside-google/google-earths-incredible-3d-imagery-explained/</feedburner:origLink>
+        </item>
+        <item>
+            <title>Remember where you’ve been and what you’ve done with Your Timeline on iOS</title>
+            <link>http://feedproxy.google.com/~r/blogspot/MKuf/~3/NQ5TQzfkvdY/</link>
+            <description>&lt;div class="block-paragraph"&gt;&lt;div class="rich-text"&gt;&lt;p&gt;What was the name of that antique store I popped into the other day? Where was that coffee shop we discovered on our last vacation? Did I drop off the dry cleaning on Tuesday or Wednesday? Answering questions like these used to take some guesswork (and a great memory). But with Your &lt;a href="https://maps.googleblog.com/2015/07/your-timeline-revisiting-world-that.html"&gt;Timeline on Google Maps&lt;/a&gt;, Android and desktop users could quickly revisit the things they’ve done and places they’ve been. Starting today, Google Maps users on iOS can join in on the fun and see a daily snapshot of their life as well.&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;div class="block-image_carousel"&gt;
+
+&lt;div class="uni-full-width uni-carousel" uni-component="carousel"&gt;
+    &lt;div class="uni-carousel-container wrap"&gt;
+        
+            &lt;figure&gt;
+                &lt;div class="uni-carousel-slide-content"&gt;
+                    &lt;div class="uni-carousel-image"&gt;
+                        
+
+    
+        
+
+
+    
+
+    
+        &lt;source media="(max-width: 540px) and (max-resolution: 1.5dppx)"
+                sizes="540px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/timeline_ios_1_1.2e16d0ba.fill-540x304.png 540w"&gt;
+    
+        &lt;source media="(max-width: 540px) and (min-resolution: 1.5dppx)"
+                sizes="1080px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/timeline_ios_1_1.2e16d0ba.fill-1080x608.png 1080w"&gt;
+    
+        &lt;source media="(max-resolution: 1.5dppx)"
+                sizes="1000px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/timeline_ios_1_1.2e16d0ba.fill-1000x563.png 1000w"&gt;
+    
+        &lt;source media="(min-resolution: 1.5dppx)"
+                sizes="2000px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/timeline_ios_1_1.2e16d0ba.fill-2000x1126.png 2000w"&gt;
+    
+
+    &lt;img src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/timeline_ios_1_1.2e16d0ba.fill-2000x1126.png"
+
+         
+            alt="Timeline1"
+         
+
+         sizes="(max-width: 540px) 540px, (max-width: 540px) 1080px,  1000px,  2000px"
+         srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/timeline_ios_1_1.2e16d0ba.fill-540x304.png 540w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/timeline_ios_1_1.2e16d0ba.fill-1080x608.png 1080w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/timeline_ios_1_1.2e16d0ba.fill-1000x563.png 1000w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/timeline_ios_1_1.2e16d0ba.fill-2000x1126.png 2000w"&gt;
+
+    
+
+
+    
+
+
+                    &lt;/div&gt;
+                    
+                &lt;/div&gt;
+            &lt;/figure&gt;
+        
+            &lt;figure&gt;
+                &lt;div class="uni-carousel-slide-content"&gt;
+                    &lt;div class="uni-carousel-image"&gt;
+                        
+
+    
+        
+
+
+    
+
+    
+        &lt;source media="(max-width: 540px) and (max-resolution: 1.5dppx)"
+                sizes="540px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/timeline_ios_2_1.2e16d0ba.fill-540x304.png 540w"&gt;
+    
+        &lt;source media="(max-width: 540px) and (min-resolution: 1.5dppx)"
+                sizes="1080px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/timeline_ios_2_1.2e16d0ba.fill-1080x608.png 1080w"&gt;
+    
+        &lt;source media="(max-resolution: 1.5dppx)"
+                sizes="1000px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/timeline_ios_2_1.2e16d0ba.fill-1000x563.png 1000w"&gt;
+    
+        &lt;source media="(min-resolution: 1.5dppx)"
+                sizes="2000px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/timeline_ios_2_1.2e16d0ba.fill-2000x1126.png 2000w"&gt;
+    
+
+    &lt;img src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/timeline_ios_2_1.2e16d0ba.fill-2000x1126.png"
+
+         
+            alt="Timeline2"
+         
+
+         sizes="(max-width: 540px) 540px, (max-width: 540px) 1080px,  1000px,  2000px"
+         srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/timeline_ios_2_1.2e16d0ba.fill-540x304.png 540w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/timeline_ios_2_1.2e16d0ba.fill-1080x608.png 1080w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/timeline_ios_2_1.2e16d0ba.fill-1000x563.png 1000w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/timeline_ios_2_1.2e16d0ba.fill-2000x1126.png 2000w"&gt;
+
+    
+
+
+    
+
+
+                    &lt;/div&gt;
+                    
+                &lt;/div&gt;
+            &lt;/figure&gt;
+        
+            &lt;figure&gt;
+                &lt;div class="uni-carousel-slide-content"&gt;
+                    &lt;div class="uni-carousel-image"&gt;
+                        
+
+    
+        
+
+
+    
+
+    
+        &lt;source media="(max-width: 540px) and (max-resolution: 1.5dppx)"
+                sizes="540px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/timeline_ios_3.2e16d0ba.fill-540x304.png 540w"&gt;
+    
+        &lt;source media="(max-width: 540px) and (min-resolution: 1.5dppx)"
+                sizes="1080px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/timeline_ios_3.2e16d0ba.fill-1080x608.png 1080w"&gt;
+    
+        &lt;source media="(max-resolution: 1.5dppx)"
+                sizes="1000px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/timeline_ios_3.2e16d0ba.fill-1000x563.png 1000w"&gt;
+    
+        &lt;source media="(min-resolution: 1.5dppx)"
+                sizes="2000px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/timeline_ios_3.2e16d0ba.fill-2000x1126.png 2000w"&gt;
+    
+
+    &lt;img src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/timeline_ios_3.2e16d0ba.fill-2000x1126.png"
+
+         
+            alt="Timeline3"
+         
+
+         sizes="(max-width: 540px) 540px, (max-width: 540px) 1080px,  1000px,  2000px"
+         srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/timeline_ios_3.2e16d0ba.fill-540x304.png 540w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/timeline_ios_3.2e16d0ba.fill-1080x608.png 1080w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/timeline_ios_3.2e16d0ba.fill-1000x563.png 1000w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/timeline_ios_3.2e16d0ba.fill-2000x1126.png 2000w"&gt;
+
+    
+
+
+    
+
+
+                    &lt;/div&gt;
+                    
+                &lt;/div&gt;
+            &lt;/figure&gt;
+        
+    &lt;/div&gt;
+
+    &lt;div class="uni-carousel-arrows-container hide-tablet hide-mobile"&gt;
+        &lt;button class="uni-carousel-left-arrow"
+                aria-label="left arrow"&gt;
+        &lt;/button&gt;
+        &lt;button class="uni-carousel-right-arrow"
+                aria-label="right arrow"&gt;
+        &lt;/button&gt;
+    &lt;/div&gt;
+
+    &lt;nav&gt;
+        
+            &lt;button aria-label="slide  1"&gt;&lt;/button&gt;
+        
+            &lt;button aria-label="slide  2"&gt;&lt;/button&gt;
+        
+            &lt;button aria-label="slide  3"&gt;&lt;/button&gt;
+        
+    &lt;/nav&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="block-paragraph"&gt;&lt;div class="rich-text"&gt;&lt;p&gt;&lt;b&gt;More control and customization&lt;/b&gt;&lt;/p&gt;&lt;p&gt;We’ve added more ways for you to control the information that appears in Your Timeline. You can easily edit any location so you can ensure the info is as accurate as possible. You can also delete a day, a date range, or your full history at any time. In addition, we’ve added a variety of activity types so you can customize your modes of transportation and activities—from surfing to snowshoeing to horseback riding. &lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;div class="block-image_full_width"&gt;&lt;!--image full width--&gt;
+&lt;div class="uni-full-width"&gt;
+    &lt;figure&gt;
+        
+
+        
+
+    
+        
+
+
+    
+
+    
+        &lt;source media="(max-width: 540px) and (max-resolution: 1.5dppx)"
+                sizes="540px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/timeline_ios_custom.width-540.png 540w"&gt;
+    
+        &lt;source media="(max-width: 540px) and (min-resolution: 1.5dppx)"
+                sizes="1080px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/timeline_ios_custom.width-1080.png 1080w"&gt;
+    
+        &lt;source media="(max-resolution: 1.5dppx)"
+                sizes="1000px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/timeline_ios_custom.width-1000.png 1000w"&gt;
+    
+        &lt;source media="(min-resolution: 1.5dppx)"
+                sizes="2000px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/timeline_ios_custom.width-2000.png 2000w"&gt;
+    
+
+    &lt;img src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/timeline_ios_custom.width-2000.png"
+
+         
+            alt="TimelineCustom"
+         
+
+         sizes="(max-width: 540px) 540px, (max-width: 540px) 1080px,  1000px,  2000px"
+         srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/timeline_ios_custom.width-540.png 540w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/timeline_ios_custom.width-1080.png 1080w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/timeline_ios_custom.width-1000.png 1000w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/timeline_ios_custom.width-2000.png 2000w"&gt;
+
+    
+
+
+    
+
+
+
+        
+
+        
+    &lt;/figure&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="block-paragraph"&gt;&lt;div class="rich-text"&gt;&lt;p&gt;&lt;b&gt;Easier access to Your Timeline &lt;/b&gt;&lt;/p&gt;&lt;p&gt;You can now quickly access Your Timeline from the place cards of locations or businesses you’ve previously visited. So if you went to Point Reyes National Seashore a few days ago, the dates of your past visits will appear on the place card (only visible to you). From there you can tap directly into Your Timeline to get the dates and details of your visits and rediscover the experience. &lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;div class="block-image_full_width"&gt;&lt;!--image full width--&gt;
+&lt;div class="uni-full-width"&gt;
+    &lt;figure&gt;
+        
+
+        
+
+    
+        
+
+
+    
+
+    
+        &lt;source media="(max-width: 540px) and (max-resolution: 1.5dppx)"
+                sizes="540px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/timeline_ios_4.width-540.png 540w"&gt;
+    
+        &lt;source media="(max-width: 540px) and (min-resolution: 1.5dppx)"
+                sizes="1080px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/timeline_ios_4.width-1080.png 1080w"&gt;
+    
+        &lt;source media="(max-resolution: 1.5dppx)"
+                sizes="1000px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/timeline_ios_4.width-1000.png 1000w"&gt;
+    
+        &lt;source media="(min-resolution: 1.5dppx)"
+                sizes="2000px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/timeline_ios_4.width-2000.png 2000w"&gt;
+    
+
+    &lt;img src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/timeline_ios_4.width-2000.png"
+
+         
+            alt="Timeline4"
+         
+
+         sizes="(max-width: 540px) 540px, (max-width: 540px) 1080px,  1000px,  2000px"
+         srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/timeline_ios_4.width-540.png 540w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/timeline_ios_4.width-1080.png 1080w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/timeline_ios_4.width-1000.png 1000w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/timeline_ios_4.width-2000.png 2000w"&gt;
+
+    
+
+
+    
+
+
+
+        
+
+        
+    &lt;/figure&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="block-paragraph"&gt;&lt;div class="rich-text"&gt;&lt;p&gt;&lt;b&gt;A monthly recap of places and activities&lt;/b&gt;&lt;/p&gt;&lt;p&gt;Sometimes you need a reminder to stop and smell the roses. So you can now receive monthly emails summarizing the cities, countries, and places you’ve visited––all in one place. To manage these email settings, open the settings tab from Your Timeline, and toggle “Timeline emails” on or off. &lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;div class="block-image_full_width"&gt;&lt;!--image full width--&gt;
+&lt;div class="uni-full-width"&gt;
+    &lt;figure&gt;
+        
+
+        
+
+    
+        
+
+
+    
+
+    
+        &lt;source media="(max-width: 540px) and (max-resolution: 1.5dppx)"
+                sizes="540px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/timeline_ios_5.width-540.png 540w"&gt;
+    
+        &lt;source media="(max-width: 540px) and (min-resolution: 1.5dppx)"
+                sizes="1080px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/timeline_ios_5.width-1080.png 1080w"&gt;
+    
+        &lt;source media="(max-resolution: 1.5dppx)"
+                sizes="1000px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/timeline_ios_5.width-1000.png 1000w"&gt;
+    
+        &lt;source media="(min-resolution: 1.5dppx)"
+                sizes="2000px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/timeline_ios_5.width-2000.png 2000w"&gt;
+    
+
+    &lt;img src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/timeline_ios_5.width-2000.png"
+
+         
+            alt="Timeline5"
+         
+
+         sizes="(max-width: 540px) 540px, (max-width: 540px) 1080px,  1000px,  2000px"
+         srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/timeline_ios_5.width-540.png 540w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/timeline_ios_5.width-1080.png 1080w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/timeline_ios_5.width-1000.png 1000w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/timeline_ios_5.width-2000.png 2000w"&gt;
+
+    
+
+
+    
+
+
+
+        
+
+        
+    &lt;/figure&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="block-paragraph"&gt;&lt;div class="rich-text"&gt;&lt;p&gt;Whether you use Your Timeline to remember your last vacation or what you did last weekend, it’s a useful way to see your life on the map and recall the places you went and activities you enjoyed on any given day, month or year. &lt;/p&gt;&lt;/div&gt;&lt;/div&gt;&lt;img src="http://feeds.feedburner.com/~r/blogspot/MKuf/~4/NQ5TQzfkvdY" height="1" width="1" alt=""/&gt;</description>
+            <pubDate>Tue, 18 Apr 2017 15:00:00 +0000</pubDate>
+            <guid isPermaLink="false">http://www.blog.google:443/products/maps/remember-where-youve-been-and-what-youve-done-your-timeline-ios/</guid>
+            <category>Maps</category>
+            <media:content url="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/pexels-photo-185933.2e16d0ba.fill-540x540.jpg" width="540" height="540"/>
+            <og xmlns:og="http://ogp.me/ns#">
+                <type>article</type>
+                <title>Remember where you’ve been and what you’ve done with Your Timeline on iOS</title>
+                <description>Recall and view the places you went and activities you enjoyed on any given day, month or year. </description>
+                <image>https://storage.googleapis.com/gweb-uniblog-publish-prod/images/pexels-photo-185933.2e16d0ba.fill-540x540.jpg</image>
+                <site_name>Google</site_name>
+                <url>http://www.blog.google:443/products/maps/remember-where-youve-been-and-what-youve-done-your-timeline-ios/</url>
+            </og>
+            <author xmlns:author="http://www.w3.org/2005/Atom">
+                <name>Gerard  Sanz</name>
+                <title>Product Manager, Google Maps</title>
+                <department/>
+                <company/>
+            </author>
+            <feedburner:origLink>http://www.blog.google:443/products/maps/remember-where-youve-been-and-what-youve-done-your-timeline-ios/</feedburner:origLink>
+        </item>
+        <item>
+            <title>New ways to pay with Android Pay and PayPal</title>
+            <link>http://feedproxy.google.com/~r/blogspot/MKuf/~3/bsedXqY8ACg/</link>
+            <description>&lt;div class="block-image_half_width"&gt;&lt;div class="uni-half-width align-right"&gt;
+    &lt;figure&gt;
+
+        
+
+        
+
+    
+        
+
+
+    
+
+    
+        &lt;source media="(max-resolution: 1.5dppx)"
+                sizes="500px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/android-pay_paypal.width-1000.width-500.png 500w"&gt;
+    
+        &lt;source media="(min-resolution: 1.5dppx)"
+                sizes="1000px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/android-pay_paypal.width-1000.width-1000.png 1000w"&gt;
+    
+
+    &lt;img src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/android-pay_paypal.width-1000.width-1000.png"
+
+         
+            alt="Android Pay | PayPal"
+         
+
+         sizes=" 500px,  1000px"
+         srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/android-pay_paypal.width-1000.width-500.png 500w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/android-pay_paypal.width-1000.width-1000.png 1000w"&gt;
+
+    
+
+
+    
+
+
+
+        
+
+        
+    &lt;/figure&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="block-paragraph"&gt;&lt;div class="rich-text"&gt;&lt;p&gt;We're thrilled to bring you even more options at checkout, thanks to a new strategic &lt;a href="https://www.paypal.com/stories/us/enabling-more-mobile-payments-in-partnership-with-google"&gt;collaboration&lt;/a&gt; between Android Pay and PayPal, one of the world's leading online payment platforms.&lt;br/&gt;&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;div class="block-image_half_width"&gt;&lt;div class="uni-half-width align-right"&gt;
+    &lt;figure&gt;
+
+        
+
+        
+
+    
+        
+
+
+    
+
+    
+        &lt;source media="(max-resolution: 1.5dppx)"
+                sizes="500px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/androidpay-paypal.width-500.png 500w"&gt;
+    
+        &lt;source media="(min-resolution: 1.5dppx)"
+                sizes="1000px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/androidpay-paypal.width-1000.png 1000w"&gt;
+    
+
+    &lt;img src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/androidpay-paypal.width-1000.png"
+
+         
+            alt="Android Pay &amp;amp; PayPal"
+         
+
+         sizes=" 500px,  1000px"
+         srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/androidpay-paypal.width-500.png 500w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/androidpay-paypal.width-1000.png 1000w"&gt;
+
+    
+
+
+    
+
+
+
+        
+
+        
+    &lt;/figure&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="block-paragraph"&gt;&lt;div class="rich-text"&gt;&lt;p&gt;Millions of people already use their PayPal account to make online purchases, receive payments and send money to friends and family. Soon they can start using the same PayPal account to tap and pay with their phones in stores and speed through checkout in Android apps.&lt;br/&gt;&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;div class="block-paragraph"&gt;&lt;div class="rich-text"&gt;&lt;p&gt;People in the U.S. can simply link their PayPal account to use with Android Pay. You can expect to see this new feature in the Android Pay and PayPal apps within the next few weeks.&lt;br/&gt;&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;&lt;img src="http://feeds.feedburner.com/~r/blogspot/MKuf/~4/bsedXqY8ACg" height="1" width="1" alt=""/&gt;</description>
+            <pubDate>Tue, 18 Apr 2017 13:00:00 +0000</pubDate>
+            <guid isPermaLink="false">http://www.blog.google:443/topics/shopping-payments/new-ways-to-pay-android-pay-and-paypal/</guid>
+            <category>Shopping &amp; Payments</category>
+            <category>Android</category>
+            <media:content url="http://www.blog.google:443/images/Nnn08IvzKH0NF9mxCKJyK_2hPOA=/6318/fill-540x540/AndroidPay_PayPal_hero_new.png" width="540" height="540"/>
+            <og xmlns:og="http://ogp.me/ns#">
+                <type>article</type>
+                <title>New ways to pay with Android Pay and PayPal</title>
+                <description>We're thrilled to bring you even more options at checkout, thanks to a new strategic collaboration between Android Pay and PayPal, one of the world's leading online payment platforms.</description>
+                <image>http://www.blog.google:443/images/Nnn08IvzKH0NF9mxCKJyK_2hPOA=/6318/fill-540x540/AndroidPay_PayPal_hero_new.png</image>
+                <site_name>Google</site_name>
+                <url>http://www.blog.google:443/topics/shopping-payments/new-ways-to-pay-android-pay-and-paypal/</url>
+            </og>
+            <author xmlns:author="http://www.w3.org/2005/Atom">
+                <name>Pali Bhat</name>
+                <title>Global Head of Payment Products</title>
+                <department/>
+                <company/>
+            </author>
+            <feedburner:origLink>http://www.blog.google:443/topics/shopping-payments/new-ways-to-pay-android-pay-and-paypal/</feedburner:origLink>
+        </item>
+        <item>
+            <title>Search, explore, and more with Google Earth VR</title>
+            <link>http://feedproxy.google.com/~r/blogspot/MKuf/~3/G7__AlYGwZQ/</link>
+            <description>&lt;div class="block-paragraph"&gt;&lt;div class="rich-text"&gt;&lt;p&gt;When we first launched &lt;a href="https://vr.google.com/earth"&gt;Google Earth VR&lt;/a&gt;, we knew there was something powerful about being able to point anywhere in the world and start flying. You could soar over landscapes and cities, and discover locations you didn't even know existed. But we also know people want to quickly find and revisit the places that mean the most to them, whether it's a childhood home or favorite vacation spot.&lt;/p&gt;&lt;p&gt;So, today we’re launching an update to Earth VR that gives you the ability to search. Just type an address or location name, and you can quickly visit anywhere in the world.&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;div class="block-image_full_width"&gt;&lt;!--image full width--&gt;
+&lt;div class="uni-full-width"&gt;
+    &lt;figure&gt;
+        
+
+        
+
+    
+        &lt;img src="https://storage.googleapis.com/gweb-uniblog-publish-prod/original_images/EarthSearch800.gif" alt="Earth VR Search" /&gt;
+    
+
+
+
+        
+
+        
+            &lt;figcaption&gt;&lt;div class="rich-text"&gt;Now you can search for your favorite places in Earth VR&lt;/div&gt;&lt;/figcaption&gt;
+        
+    &lt;/figure&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="block-paragraph"&gt;&lt;div class="rich-text"&gt;&lt;p&gt;We’ve also added 27 new hand-picked locations to help you discover some of the world's most incredible places. You can check out Neuschwanstein Castle in Germany (the inspiration for Disneyland’s &lt;a href="https://en.wikipedia.org/wiki/Sleeping_Beauty_Castle"&gt;Sleeping Beauty Castle!&lt;/a&gt;), stand on the top of Table Mountain in South Africa, fly over Perito Moreno Glacier in Argentina, and much more.&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;div class="block-image_full_width"&gt;&lt;!--image full width--&gt;
+&lt;div class="uni-full-width"&gt;
+    &lt;figure&gt;
+        
+
+        
+
+    
+        &lt;img src="https://storage.googleapis.com/gweb-uniblog-publish-prod/original_images/EarthMontage800.gif" alt="Earth VR Montage" /&gt;
+    
+
+
+
+        
+
+        
+            &lt;figcaption&gt;&lt;div class="rich-text"&gt;Take a flight through 27 new locations including Neuschwanstein Castle&lt;/div&gt;&lt;/figcaption&gt;
+        
+    &lt;/figure&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="block-paragraph"&gt;&lt;div class="rich-text"&gt;&lt;p&gt;And today we're bringing Earth VR to Oculus Rift with support for Oculus Touch controllers. It’s available now for free on &lt;a href="https://www.oculus.com/experiences/rift/1513995308673845/"&gt;Oculus Store&lt;/a&gt; and &lt;a href="http://store.steampowered.com/app/348250/"&gt;Steam&lt;/a&gt;. Now, go explore!&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;&lt;img src="http://feeds.feedburner.com/~r/blogspot/MKuf/~4/G7__AlYGwZQ" height="1" width="1" alt=""/&gt;</description>
+            <pubDate>Tue, 18 Apr 2017 12:30:00 +0000</pubDate>
+            <guid isPermaLink="false">http://www.blog.google:443/products/google-vr/search-explore-and-more-google-earth-vr/</guid>
+            <category>Google VR</category>
+            <category>Google Earth</category>
+            <media:content url="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/earth-notext.2e16d0ba.fill-540x540.png" width="540" height="540"/>
+            <og xmlns:og="http://ogp.me/ns#">
+                <type>article</type>
+                <title>Search, explore, and more with Google Earth VR</title>
+                <description>Earth VR is updated with search, more places to explore, and support for Oculus Rift.</description>
+                <image>https://storage.googleapis.com/gweb-uniblog-publish-prod/images/earth-notext.2e16d0ba.fill-540x540.png</image>
+                <site_name>Google</site_name>
+                <url>http://www.blog.google:443/products/google-vr/search-explore-and-more-google-earth-vr/</url>
+            </og>
+            <author xmlns:author="http://www.w3.org/2005/Atom">
+                <name>Joanna Kim</name>
+                <title>Product Manager, Earth VR</title>
+                <department/>
+                <company/>
+            </author>
+            <feedburner:origLink>http://www.blog.google:443/products/google-vr/search-explore-and-more-google-earth-vr/</feedburner:origLink>
+        </item>
+        <item>
+            <title>Welcome home to the new Google Earth</title>
+            <link>http://feedproxy.google.com/~r/blogspot/MKuf/~3/cWZ1BM2ZWNo/</link>
+            <description>&lt;div class="block-paragraph"&gt;&lt;div class="rich-text"&gt;&lt;p&gt;Nearly everyone who's opened Google Earth in the last decade does the same thing first: they search for their home. Home is how we orient ourselves—it's where we start from. This might mean a one-story craftsman in a &lt;a href="https://earth.google.com/web/@43.05831898,-88.10585919,264.52434008a,716.43429081d,35y,57.87111177h,50.05148294t,-0r/data=Ck0aSxJFCiUweDg4MDUwNmRkNTEwYjViNmI6MHhmMzcwZTdkNjk0ODdjMTZiGVbbqKnAh0VAIR6OCYzQBlbAKgpCcm9va2ZpZWxkGAEgAQ"&gt;Wisconsin suburb&lt;/a&gt;. Or a &lt;a href="https://earth.google.com/web/data=CjISMBIgN2IyMzE5NzNlOGRmMTFlNmI5OWM2ZjgxOGQ2OWE2ZTcaDFRoaXMgaXMgSG9tZQ"&gt;house made of reeds&lt;/a&gt; on a floating village in Peru.&lt;/p&gt;&lt;p&gt;Then we zoom out. We see our neighborhood, then our city, our province, our country, our continent, and eventually: our blue marble. Out in space, our planet looks impossibly small. But improbably, it’s home to all of us. On the eve of Earth Day, I'm reminded of something I've learned watching people use Google Earth over the years: Home is not just how we understand our place in the world—it’s a means to connect to something bigger than ourselves.&lt;br/&gt;&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;div class="block-video"&gt;
+
+&lt;div class="uni-full-width "
+     uni-component="video"
+     uni-options="{'overlay': false}"
+     uni-video-id="O-XidwKsKAE"
+     uni-block-index=""
+     &gt;
+    &lt;div class="uni-video"&gt;
+        &lt;div id="uni-video-O-XidwKsKAE-"&gt;&lt;/div&gt;
+        
+    &lt;/div&gt;
+    
+        &lt;h2  class="show-small" &gt;Explore the new Google Earth&lt;/h2&gt;
+    
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="block-paragraph"&gt;&lt;div class="rich-text"&gt;&lt;p&gt;Today we’re introducing a brand-new version of &lt;a href="http://g.co/earth"&gt;Google Earth&lt;/a&gt;—on the web and Android—two years in the making. With the new Earth, we want to open up different lenses for you to see the world and learn a bit about how it all fits together; to open your mind with new stories while giving you a new perspective on the locations and experiences you cherish. It’s everything you love about Google Earth, plus new ways for you to explore, learn and share. Zoom in and see what adventures await you in the new Google Earth.&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;h3&gt;&lt;b&gt;Broaden your horizons with Voyager&lt;/b&gt;&lt;/h3&gt;We've joined up with some of the world's leading storytellers, scientists and nonprofits to bring the planet to life with Voyager, a showcase of interactive guided tours.&lt;br/&gt;&lt;p&gt;&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;div class="block-image_carousel"&gt;
+
+&lt;div class="uni-full-width uni-carousel" uni-component="carousel"&gt;
+    &lt;div class="uni-carousel-container wrap"&gt;
+        
+            &lt;figure&gt;
+                &lt;div class="uni-carousel-slide-content"&gt;
+                    &lt;div class="uni-carousel-image"&gt;
+                        
+
+    
+        
+
+
+    
+
+    
+        &lt;source media="(max-width: 540px) and (max-resolution: 1.5dppx)"
+                sizes="540px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/NaturalTreasures01.2e16d0ba.fill-540x304.png 540w"&gt;
+    
+        &lt;source media="(max-width: 540px) and (min-resolution: 1.5dppx)"
+                sizes="1080px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/NaturalTreasures01.2e16d0ba.fill-1080x608.png 1080w"&gt;
+    
+        &lt;source media="(max-resolution: 1.5dppx)"
+                sizes="1000px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/NaturalTreasures01.2e16d0ba.fill-1000x563.png 1000w"&gt;
+    
+        &lt;source media="(min-resolution: 1.5dppx)"
+                sizes="2000px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/NaturalTreasures01.2e16d0ba.fill-2000x1126.png 2000w"&gt;
+    
+
+    &lt;img src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/NaturalTreasures01.2e16d0ba.fill-2000x1126.png"
+
+         
+            alt="NaturalTreasures01.png"
+         
+
+         sizes="(max-width: 540px) 540px, (max-width: 540px) 1080px,  1000px,  2000px"
+         srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/NaturalTreasures01.2e16d0ba.fill-540x304.png 540w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/NaturalTreasures01.2e16d0ba.fill-1080x608.png 1080w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/NaturalTreasures01.2e16d0ba.fill-1000x563.png 1000w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/NaturalTreasures01.2e16d0ba.fill-2000x1126.png 2000w"&gt;
+
+    
+
+
+    
+
+
+                    &lt;/div&gt;
+                    
+                        &lt;figcaption&gt;&lt;div class="rich-text"&gt;&lt;br/&gt;&lt;/div&gt;&lt;/figcaption&gt;
+                    
+                &lt;/div&gt;
+            &lt;/figure&gt;
+        
+            &lt;figure&gt;
+                &lt;div class="uni-carousel-slide-content"&gt;
+                    &lt;div class="uni-carousel-image"&gt;
+                        
+
+    
+        
+
+
+    
+
+    
+        &lt;source media="(max-width: 540px) and (max-resolution: 1.5dppx)"
+                sizes="540px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/NaturalTreasures02.2e16d0ba.fill-540x304.png 540w"&gt;
+    
+        &lt;source media="(max-width: 540px) and (min-resolution: 1.5dppx)"
+                sizes="1080px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/NaturalTreasures02.2e16d0ba.fill-1080x608.png 1080w"&gt;
+    
+        &lt;source media="(max-resolution: 1.5dppx)"
+                sizes="1000px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/NaturalTreasures02.2e16d0ba.fill-1000x563.png 1000w"&gt;
+    
+        &lt;source media="(min-resolution: 1.5dppx)"
+                sizes="2000px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/NaturalTreasures02.2e16d0ba.fill-2000x1126.png 2000w"&gt;
+    
+
+    &lt;img src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/NaturalTreasures02.2e16d0ba.fill-2000x1126.png"
+
+         
+            alt="NaturalTreasures02.png"
+         
+
+         sizes="(max-width: 540px) 540px, (max-width: 540px) 1080px,  1000px,  2000px"
+         srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/NaturalTreasures02.2e16d0ba.fill-540x304.png 540w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/NaturalTreasures02.2e16d0ba.fill-1080x608.png 1080w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/NaturalTreasures02.2e16d0ba.fill-1000x563.png 1000w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/NaturalTreasures02.2e16d0ba.fill-2000x1126.png 2000w"&gt;
+
+    
+
+
+    
+
+
+                    &lt;/div&gt;
+                    
+                &lt;/div&gt;
+            &lt;/figure&gt;
+        
+            &lt;figure&gt;
+                &lt;div class="uni-carousel-slide-content"&gt;
+                    &lt;div class="uni-carousel-image"&gt;
+                        
+
+    
+        
+
+
+    
+
+    
+        &lt;source media="(max-width: 540px) and (max-resolution: 1.5dppx)"
+                sizes="540px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/NaturalTreasures03.2e16d0ba.fill-540x304.png 540w"&gt;
+    
+        &lt;source media="(max-width: 540px) and (min-resolution: 1.5dppx)"
+                sizes="1080px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/NaturalTreasures03.2e16d0ba.fill-1080x608.png 1080w"&gt;
+    
+        &lt;source media="(max-resolution: 1.5dppx)"
+                sizes="1000px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/NaturalTreasures03.2e16d0ba.fill-1000x563.png 1000w"&gt;
+    
+        &lt;source media="(min-resolution: 1.5dppx)"
+                sizes="2000px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/NaturalTreasures03.2e16d0ba.fill-2000x1126.png 2000w"&gt;
+    
+
+    &lt;img src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/NaturalTreasures03.2e16d0ba.fill-2000x1126.png"
+
+         
+            alt="NaturalTreasures03.png"
+         
+
+         sizes="(max-width: 540px) 540px, (max-width: 540px) 1080px,  1000px,  2000px"
+         srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/NaturalTreasures03.2e16d0ba.fill-540x304.png 540w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/NaturalTreasures03.2e16d0ba.fill-1080x608.png 1080w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/NaturalTreasures03.2e16d0ba.fill-1000x563.png 1000w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/NaturalTreasures03.2e16d0ba.fill-2000x1126.png 2000w"&gt;
+
+    
+
+
+    
+
+
+                    &lt;/div&gt;
+                    
+                        &lt;figcaption&gt;&lt;div class="rich-text"&gt;Walk alongside the elusive snow leopard in BBC's &lt;a href="https://earth.google.com/web/data=CjcSNRIgYmFlNzAyMjgwNTE4MTFlNzlmYmFhYjg0NThhYTgzNjQaEU5hdHVyYWwgVHJlYXN1cmVz"&gt;Natural Treasures&lt;/a&gt;.&lt;br/&gt;&lt;/div&gt;&lt;/figcaption&gt;
+                    
+                &lt;/div&gt;
+            &lt;/figure&gt;
+        
+            &lt;figure&gt;
+                &lt;div class="uni-carousel-slide-content"&gt;
+                    &lt;div class="uni-carousel-image"&gt;
+                        
+
+    
+        
+
+
+    
+
+    
+        &lt;source media="(max-width: 540px) and (max-resolution: 1.5dppx)"
+                sizes="540px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/NaturalTreasures04.2e16d0ba.fill-540x304.png 540w"&gt;
+    
+        &lt;source media="(max-width: 540px) and (min-resolution: 1.5dppx)"
+                sizes="1080px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/NaturalTreasures04.2e16d0ba.fill-1080x608.png 1080w"&gt;
+    
+        &lt;source media="(max-resolution: 1.5dppx)"
+                sizes="1000px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/NaturalTreasures04.2e16d0ba.fill-1000x563.png 1000w"&gt;
+    
+        &lt;source media="(min-resolution: 1.5dppx)"
+                sizes="2000px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/NaturalTreasures04.2e16d0ba.fill-2000x1126.png 2000w"&gt;
+    
+
+    &lt;img src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/NaturalTreasures04.2e16d0ba.fill-2000x1126.png"
+
+         
+            alt="NaturalTreasures04.png"
+         
+
+         sizes="(max-width: 540px) 540px, (max-width: 540px) 1080px,  1000px,  2000px"
+         srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/NaturalTreasures04.2e16d0ba.fill-540x304.png 540w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/NaturalTreasures04.2e16d0ba.fill-1080x608.png 1080w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/NaturalTreasures04.2e16d0ba.fill-1000x563.png 1000w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/NaturalTreasures04.2e16d0ba.fill-2000x1126.png 2000w"&gt;
+
+    
+
+
+    
+
+
+                    &lt;/div&gt;
+                    
+                &lt;/div&gt;
+            &lt;/figure&gt;
+        
+    &lt;/div&gt;
+
+    &lt;div class="uni-carousel-arrows-container hide-tablet hide-mobile"&gt;
+        &lt;button class="uni-carousel-left-arrow"
+                aria-label="left arrow"&gt;
+        &lt;/button&gt;
+        &lt;button class="uni-carousel-right-arrow"
+                aria-label="right arrow"&gt;
+        &lt;/button&gt;
+    &lt;/div&gt;
+
+    &lt;nav&gt;
+        
+            &lt;button aria-label="slide  1"&gt;&lt;/button&gt;
+        
+            &lt;button aria-label="slide  2"&gt;&lt;/button&gt;
+        
+            &lt;button aria-label="slide  3"&gt;&lt;/button&gt;
+        
+            &lt;button aria-label="slide  4"&gt;&lt;/button&gt;
+        
+    &lt;/nav&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="block-paragraph"&gt;&lt;div class="rich-text"&gt;&lt;p&gt;Start with &lt;a href="https://earth.google.com/web/data=CjcSNRIgYmFlNzAyMjgwNTE4MTFlNzlmYmFhYjg0NThhYTgzNjQaEU5hdHVyYWwgVHJlYXN1cmVz"&gt;Natural Treasures&lt;/a&gt; from BBC Earth, and journey to six habitats—from islands to mountains to jungles—and learn about the unique and thrilling wildlife in each. Then head to &lt;a href="https://earth.google.com/web/data=Cj8SPRIgMTA2NTQ0Mzg0ZWFmMTFlNmI2MTYxOWZkN2FmNGM1ZTAaGUdvb2RhbGwsIEdvbWJlIGFuZCBHb29nbGU"&gt;Gombe National Park&lt;/a&gt; in Tanzania and hear from Jane Goodall about her team’s chimpanzee research and conservation efforts. And make a stop in Mexico with Lola, one of 12 little monsters featured in Sesame Street's &lt;a href="https://earth.google.com/web/data=CkMSQRIgODYzY2ExYjg4NTUyMTFlNmJkNjM3ZmVjZTViYWQ3NzYaHUdpcmwgTXVwcGV0cyBBcm91bmQgdGhlIFdvcmxk"&gt;Girl Muppets Around the World&lt;/a&gt;, and learn about modern Mayan cultures. With more than 50 immersive stories in Voyager, and more added weekly, there are lots of adventures to choose from.&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;h3&gt;&lt;b&gt;Explore and learn about anywhere&lt;/b&gt;&lt;/h3&gt;Uncover hidden gems the world over with “I’m feeling lucky,” a new feature that takes you somewhere unexpected with the click of a button. You might discover the lush green &lt;a href="https://earth.google.com/web/@-5.15626425,39.7539442,12.67526276a,185223.51726783d,35y,0h,0t,0r/data=Ck8aTRJHCiUweDE4NDIxMzlmM2YwM2FlYTM6MHg2MTZkOWE1MzlmMTFkZTg1GWhd_p6zIBTAIR5XfnRF40NAKgxQZW1iYSBJc2xhbmQYAiAB"&gt;Pemba Island&lt;/a&gt; off the Swahili coast, the historic &lt;a href="https://earth.google.com/web/@45.4674021,9.1895512,136.49831601a,714.43679408d,35y,0h,45t,0r/data=ChAaDgoIL20vMDlyaGgYAiABKAI"&gt;La Scala&lt;/a&gt; opera house in Milan, Italy or the Zao Hot Spring in &lt;a href="https://earth.google.com/web/search/Hot+springs+Yamagata/@38.1665511,140.3952388,865.49863067a,146056.41407713d,35y,0h,0t,0r/data=CngaThJICiQweDVmOGE0YjBjZDI1ZGU2NmY6MHhiNjg1ZWFkNWJhM2UwMDcZcc7ji1EVQ0AhhwPXy6WMYUAqDlphbyBIb3QgU3ByaW5nGAIgASImCiQJAxC6Dj06Q0AR7LPn6_gEQ0AZb8r_m1yaYUAha2ydElx8YUA"&gt;Yamagata&lt;/a&gt;, Japan. We’ve curated 20,000 different places, so roll the dice and see where the world takes you.&lt;br/&gt;&lt;p&gt;&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;div class="block-image_full_width"&gt;&lt;!--image full width--&gt;
+&lt;div class="uni-full-width"&gt;
+    &lt;figure&gt;
+        
+
+        
+
+    
+        
+
+
+    
+
+    
+        &lt;source media="(max-width: 540px) and (max-resolution: 1.5dppx)"
+                sizes="540px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/CiudadArtes.width-540.png 540w"&gt;
+    
+        &lt;source media="(max-width: 540px) and (min-resolution: 1.5dppx)"
+                sizes="1080px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/CiudadArtes.width-1080.png 1080w"&gt;
+    
+        &lt;source media="(max-resolution: 1.5dppx)"
+                sizes="1000px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/CiudadArtes.width-1000.png 1000w"&gt;
+    
+        &lt;source media="(min-resolution: 1.5dppx)"
+                sizes="2000px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/CiudadArtes.width-2000.png 2000w"&gt;
+    
+
+    &lt;img src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/CiudadArtes.width-2000.png"
+
+         
+            alt="CiudadArtes.png"
+         
+
+         sizes="(max-width: 540px) 540px, (max-width: 540px) 1080px,  1000px,  2000px"
+         srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/CiudadArtes.width-540.png 540w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/CiudadArtes.width-1080.png 1080w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/CiudadArtes.width-1000.png 1000w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/CiudadArtes.width-2000.png 2000w"&gt;
+
+    
+
+
+    
+
+
+
+        
+
+        
+            &lt;figcaption&gt;&lt;div class="rich-text"&gt;Uncover hidden gems like &lt;a href="https://earth.google.com/web/@39.4548751,-0.3504904,3.9708083a,793.49720376d,35y,0h,45t,0r/data=ChEaDwoJL20vMDNxbGdtGAIgASgC"&gt;Ciudad de las Artes y Las Ciencias&lt;/a&gt; in Valencia, Spain.&lt;/div&gt;&lt;/figcaption&gt;
+        
+    &lt;/figure&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="block-paragraph"&gt;&lt;div class="rich-text"&gt;&lt;p&gt;Once you’ve landed on a point of interest, open a Knowledge Card to learn history and facts about that place and see more pictures of it. To add a dash of serendipity to your travels, flip through the stack of cards and discover related places. You might find yourself in &lt;a href="https://earth.google.com/web/@39.40778525,-0.3615113,0.42966184a,35923.48357233d,35y,0h,0t,0r/data=ChAaDgoIL20vMGgzdHYYAiAB"&gt;Valencia, Spain&lt;/a&gt; and stumble on the beautiful &lt;a href="https://earth.google.com/web/@39.4548751,-0.3504904,3.9708083a,793.49720376d,35y,0h,45t,0r/data=ChEaDwoJL20vMDNxbGdtGAIgASgC"&gt;Ciudad de las Artes y Las Ciencias&lt;/a&gt;.&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;h3&gt;&lt;b&gt;Share the beauty you find&lt;/b&gt;&lt;/h3&gt;Click the new 3D button to see any place from any angle. Swoop around the &lt;a href="https://earth.google.com/web/@36.10477006,-112.11768624,1067.60292826a,9257.66422945d,35y,64.84278795h,60t,0r/data=Cl0aWxJVCiUweDg3MzMxMmFlNzU5YjRkMTU6MHgxZjM4YTliZWM5OTEyMDI5GbHnIQmxDUJAIYiim1g7B1zAKhpHcmFuZCBDYW55b24gTmF0aW9uYWwgUGFyaxgCIAEoAg"&gt;Grand Canyon&lt;/a&gt; and see geological layers, or check out the majestic architecture and pristine grounds of the 500-year-old &lt;a href="https://earth.google.com/web/search/loire+valley+castles/@47.616126,1.517218,86.79092368a,684.38292873d,35y,0h,45t,0r/data=Cn8aVRJPCiUweDQ3ZTRhZGQzN2ViODI4MjE6MHg2ZDFmYjA3NTYxMGUyODcxGY8bfjfdzkdAIcFwrmGGRvg_KhRDaMOidGVhdSBkZSBDaGFtYm9yZBgCIAEiJgokCeDFZIYFF0JAESrZeNZxEUJAGTAau0jcDlzAITHP1GMhElzAKAI"&gt;Château de Chambord&lt;/a&gt; in the Loire Valley in France.&lt;br/&gt;&lt;p&gt;&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;div class="block-image_full_width"&gt;&lt;!--image full width--&gt;
+&lt;div class="uni-full-width"&gt;
+    &lt;figure&gt;
+        
+
+        
+
+    
+        
+
+
+    
+
+    
+        &lt;source media="(max-width: 540px) and (max-resolution: 1.5dppx)"
+                sizes="540px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Postcards.width-540.png 540w"&gt;
+    
+        &lt;source media="(max-width: 540px) and (min-resolution: 1.5dppx)"
+                sizes="1080px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Postcards.width-1080.png 1080w"&gt;
+    
+        &lt;source media="(max-resolution: 1.5dppx)"
+                sizes="1000px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Postcards.width-1000.png 1000w"&gt;
+    
+        &lt;source media="(min-resolution: 1.5dppx)"
+                sizes="2000px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Postcards.width-2000.png 2000w"&gt;
+    
+
+    &lt;img src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Postcards.width-2000.png"
+
+         
+            alt="Postcards.png"
+         
+
+         sizes="(max-width: 540px) 540px, (max-width: 540px) 1080px,  1000px,  2000px"
+         srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Postcards.width-540.png 540w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Postcards.width-1080.png 1080w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Postcards.width-1000.png 1000w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Postcards.width-2000.png 2000w"&gt;
+
+    
+
+
+    
+
+
+
+        
+
+        
+            &lt;figcaption&gt;&lt;div class="rich-text"&gt;Postcards from Earth: &lt;a href="https://earth.google.com/web/@36.10477006,-112.11768624,1067.60292826a,9257.66422945d,35y,64.84278795h,60t,0r/data=Cl0aWxJVCiUweDg3MzMxMmFlNzU5YjRkMTU6MHgxZjM4YTliZWM5OTEyMDI5GbHnIQmxDUJAIYiim1g7B1zAKhpHcmFuZCBDYW55b24gTmF0aW9uYWwgUGFyaxgCIAEoAg"&gt;Grand Canyon&lt;/a&gt;, &lt;a href="https://earth.google.com/web/search/loire+valley+castles/@47.616126,1.517218,86.79092368a,684.38292873d,35y,0h,45t,0r/data=Cn8aVRJPCiUweDQ3ZTRhZGQzN2ViODI4MjE6MHg2ZDFmYjA3NTYxMGUyODcxGY8bfjfdzkdAIcFwrmGGRvg_KhRDaMOidGVhdSBkZSBDaGFtYm9yZBgCIAEiJgokCeDFZIYFF0JAESrZeNZxEUJAGTAau0jcDlzAITHP1GMhElzAKAI"&gt;Château de Chambord&lt;/a&gt;, &lt;a href="https://earth.google.com/web/@40.786826,-119.20352594,1192.89018518a,6365.48402124d,35y,-0h,0t,0r"&gt;Burning Man&lt;/a&gt;&lt;/div&gt;&lt;/figcaption&gt;
+        
+    &lt;/figure&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="block-paragraph"&gt;&lt;div class="rich-text"&gt;&lt;p&gt;When you find a view that leaves you breathless or inspires a fond memory, share a Postcard of your exact view with your friends and family. They can click the link to jump right to where you were (virtually) standing.&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;h3&gt;&lt;b&gt;Bringing it all back home&lt;/b&gt;&lt;/h3&gt;We hope that after visiting your house in the new Google Earth, you'll be inspired to see someone else’s. Get started with a special Voyager story called &lt;a href="https://earth.google.com/web/data=CjISMBIgN2IyMzE5NzNlOGRmMTFlNmI5OWM2ZjgxOGQ2OWE2ZTcaDFRoaXMgaXMgSG9tZQ"&gt;This is Home&lt;/a&gt;, a journey into traditional homes from cultures around the world. You’re invited to step inside a Peruvian &lt;i&gt;chuclla&lt;/i&gt;, a Bedouin tent and a Greenlandic &lt;i&gt;IIoq&lt;/i&gt;, and meet the people who live there. Check back to visit more homes in the coming months.&lt;br/&gt;&lt;p&gt;&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;div class="block-image_full_width"&gt;&lt;!--image full width--&gt;
+&lt;div class="uni-full-width"&gt;
+    &lt;figure&gt;
+        
+
+        
+
+    
+        
+
+
+    
+
+    
+        &lt;source media="(max-width: 540px) and (max-resolution: 1.5dppx)"
+                sizes="540px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/ThisIsHome.width-540.png 540w"&gt;
+    
+        &lt;source media="(max-width: 540px) and (min-resolution: 1.5dppx)"
+                sizes="1080px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/ThisIsHome.width-1080.png 1080w"&gt;
+    
+        &lt;source media="(max-resolution: 1.5dppx)"
+                sizes="1000px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/ThisIsHome.width-1000.png 1000w"&gt;
+    
+        &lt;source media="(min-resolution: 1.5dppx)"
+                sizes="2000px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/ThisIsHome.width-2000.png 2000w"&gt;
+    
+
+    &lt;img src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/ThisIsHome.width-2000.png"
+
+         
+            alt="ThisIsHome.png"
+         
+
+         sizes="(max-width: 540px) 540px, (max-width: 540px) 1080px,  1000px,  2000px"
+         srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/ThisIsHome.width-540.png 540w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/ThisIsHome.width-1080.png 1080w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/ThisIsHome.width-1000.png 1000w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/ThisIsHome.width-2000.png 2000w"&gt;
+
+    
+
+
+    
+
+
+
+        
+
+        
+            &lt;figcaption&gt;&lt;div class="rich-text"&gt;&lt;a href="https://earth.google.com/web/data=CjISMBIgN2IyMzE5NzNlOGRmMTFlNmI5OWM2ZjgxOGQ2OWE2ZTcaDFRoaXMgaXMgSG9tZQ"&gt;This is Home&lt;/a&gt;&lt;/div&gt;&lt;/figcaption&gt;
+        
+    &lt;/figure&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="block-paragraph"&gt;&lt;div class="rich-text"&gt;&lt;p&gt;Get the new Google Earth now on the web in &lt;a href="http://earth.google.com/web"&gt;Chrome&lt;/a&gt;; on &lt;a href="https://play.google.com/store/apps/details?id=com.google.earth"&gt;Android&lt;/a&gt; as it rolls out this week; and on iOS and other browsers in the near future. (Of course, you can still access and download Google Earth 7 for desktop.) Hold it in your hand, pass it around a classroom, fly around the world and walk inside places thousands of miles away in incredible detail. Feel free to lose yourself a little—with Google Earth you can always find your way back home.&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;&lt;img src="http://feeds.feedburner.com/~r/blogspot/MKuf/~4/cWZ1BM2ZWNo" height="1" width="1" alt=""/&gt;</description>
+            <pubDate>Tue, 18 Apr 2017 10:00:00 +0000</pubDate>
+            <guid isPermaLink="false">http://www.blog.google:443/products/earth/welcome-home-new-google-earth/</guid>
+            <category>Google Earth</category>
+            <media:content url="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Blogimage.2e16d0ba.fill-540x540.png" width="540" height="540"/>
+            <og xmlns:og="http://ogp.me/ns#">
+                <type>article</type>
+                <title>Welcome home to the new Google Earth</title>
+                <description>Today we’re introducing a brand-new version of Google Earth—on the web and Android. Zoom in and see what adventures await.</description>
+                <image>https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Blogimage.2e16d0ba.fill-540x540.png</image>
+                <site_name>Google</site_name>
+                <url>http://www.blog.google:443/products/earth/welcome-home-new-google-earth/</url>
+            </og>
+            <author xmlns:author="http://www.w3.org/2005/Atom">
+                <name>Gopal Shah</name>
+                <title>Product Manager</title>
+                <department>Google Earth</department>
+                <company/>
+            </author>
+            <feedburner:origLink>http://www.blog.google:443/products/earth/welcome-home-new-google-earth/</feedburner:origLink>
+        </item>
+        <item>
+            <title>Want to score this playoff season? Shoot over to Search and Newsstand</title>
+            <link>http://feedproxy.google.com/~r/blogspot/MKuf/~3/Kmr0AwOKGZ4/</link>
+            <description>&lt;div class="block-paragraph"&gt;&lt;div class="rich-text"&gt;&lt;p&gt;Playoff season is in full swing. Whether your eyes are glued to the ice for the NHL Stanley Cup or geared up for a fastbreak during the NBA Finals, you can stay in the know with your favorite teams right in &lt;a href="http://newsstand.google.com"&gt;Play Newsstand&lt;/a&gt; and with &lt;a href="https://posts.withgoogle.com/us"&gt;posts in Google Search&lt;/a&gt;. &lt;/p&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;div class="block-paragraph"&gt;&lt;div class="rich-text"&gt;&lt;p&gt;Check out Play Newsstand this playoff season, where you can get a play-by-play of all the action. Starting today, Newsstand will feature special &lt;a href="http://google.com/newsstand/s/CBIwtuHh6DQ"&gt;NBA&lt;/a&gt; and &lt;a href="http://google.com/newsstand/s/CBIwp4nq6DQ"&gt;Stanley Cup Playoffs&lt;/a&gt; sections, which will bring you the latest updates from thousands of local and national news sources in one place. You’ll also catch real-time updates directly from the leagues and the teams. These new Playoff sections make it easy to catch the top headlines, then dive into the latest scores, analyses and videos about your favorite teams, including their own posts to Google. Make Play Newsstand your #1 pick at the &lt;a href="https://play.google.com/store/apps/details?id=com.google.android.apps.magazines&amp;amp;hl=en"&gt;Play&lt;/a&gt; and &lt;a href="https://itunes.apple.com/us/app/google-play-newsstand-news-magazines-for-you/id459182288?mt=8"&gt;App&lt;/a&gt; Stores, or pick it up on waiver at &lt;a href="http://newsstand.google.com"&gt;newsstand.google.com&lt;/a&gt;.&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;div class="block-image_full_width"&gt;&lt;!--image full width--&gt;
+&lt;div class="uni-full-width"&gt;
+    &lt;figure&gt;
+        
+
+        
+
+    
+        &lt;img src="https://storage.googleapis.com/gweb-uniblog-publish-prod/original_images/nhl-pixel-highres.gif" alt="nhl" /&gt;
+    
+
+
+
+        
+
+        
+    &lt;/figure&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="block-paragraph"&gt;&lt;div class="rich-text"&gt;&lt;p&gt;But that’s not all. Now you can get the latest updates, videos, photos and more right on the Knowledge Panels in Search directly from some of your favorite NHL and NBA teams. In those posts, you’ll see the highlights that your home team (or rivals!) share. Check back throughout the day and week to make sure you don’t miss a thing. (No need for you baseball fans to balk, we’ve completed the triple play with posts from the MLB and all its teams too.)&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;div class="block-paragraph"&gt;&lt;div class="rich-text"&gt;&lt;p&gt;Giddy for a GIF of that buzzer-beater? Look no further than Google Search. Whether you’re a citizen of #DubNation in the Bay or charging for the Bulls, you’ll have access to posts all across the court in the span of a 20-second timeout.&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;div class="block-image_full_width"&gt;&lt;!--image full width--&gt;
+&lt;div class="uni-full-width"&gt;
+    &lt;figure&gt;
+        
+
+        
+
+    
+        
+
+
+    
+
+    
+        &lt;source media="(max-width: 540px) and (max-resolution: 1.5dppx)"
+                sizes="540px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/bulls_1a.width-540.png 540w"&gt;
+    
+        &lt;source media="(max-width: 540px) and (min-resolution: 1.5dppx)"
+                sizes="1080px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/bulls_1a.width-1080.png 1080w"&gt;
+    
+        &lt;source media="(max-resolution: 1.5dppx)"
+                sizes="1000px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/bulls_1a.width-1000.png 1000w"&gt;
+    
+        &lt;source media="(min-resolution: 1.5dppx)"
+                sizes="1350px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/bulls_1a.width-1350.png 1350w"&gt;
+    
+
+    &lt;img src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/bulls_1a.width-1350.png"
+
+         
+            alt="bulls (1)a.png"
+         
+
+         sizes="(max-width: 540px) 540px, (max-width: 540px) 1080px,  1000px,  1350px"
+         srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/bulls_1a.width-540.png 540w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/bulls_1a.width-1080.png 1080w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/bulls_1a.width-1000.png 1000w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/bulls_1a.width-1350.png 1350w"&gt;
+
+    
+
+
+    
+
+
+
+        
+
+        
+    &lt;/figure&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="block-paragraph"&gt;&lt;div class="rich-text"&gt;&lt;p&gt;Want to see that puck hit the net? From assist to Zamboni, skating through updates from more than 30 teams across the NHL has never been smoother. A quick search on Google brings up an all-star lineup of content from the teams you care about across the U.S. and Canada—get the news before your buddies for a real power play. No need to drop your gloves, you can even do a voice search on your phone. &lt;/p&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;div class="block-image_full_width"&gt;&lt;!--image full width--&gt;
+&lt;div class="uni-full-width"&gt;
+    &lt;figure&gt;
+        
+
+        
+
+    
+        
+
+
+    
+
+    
+        &lt;source media="(max-width: 540px) and (max-resolution: 1.5dppx)"
+                sizes="540px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/nhl_1.width-540.png 540w"&gt;
+    
+        &lt;source media="(max-width: 540px) and (min-resolution: 1.5dppx)"
+                sizes="1080px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/nhl_1.width-1080.png 1080w"&gt;
+    
+        &lt;source media="(max-resolution: 1.5dppx)"
+                sizes="1000px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/nhl_1.width-1000.png 1000w"&gt;
+    
+        &lt;source media="(min-resolution: 1.5dppx)"
+                sizes="1350px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/nhl_1.width-1350.png 1350w"&gt;
+    
+
+    &lt;img src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/nhl_1.width-1350.png"
+
+         
+            alt="nhl (1).png"
+         
+
+         sizes="(max-width: 540px) 540px, (max-width: 540px) 1080px,  1000px,  1350px"
+         srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/nhl_1.width-540.png 540w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/nhl_1.width-1080.png 1080w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/nhl_1.width-1000.png 1000w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/nhl_1.width-1350.png 1350w"&gt;
+
+    
+
+
+    
+
+
+
+        
+
+        
+    &lt;/figure&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="block-paragraph"&gt;&lt;div class="rich-text"&gt;&lt;p&gt;Don’t score an own-goal: Take the ball or the puck and search for your team. The race to the Finals is on!!&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;&lt;img src="http://feeds.feedburner.com/~r/blogspot/MKuf/~4/Kmr0AwOKGZ4" height="1" width="1" alt=""/&gt;</description>
+            <pubDate>Mon, 17 Apr 2017 18:00:00 +0000</pubDate>
+            <guid isPermaLink="false">http://www.blog.google:443/products/search/want-score-playoff-season-shoot-over-search-and-newsstand/</guid>
+            <category>Search</category>
+            <category>Journalism &amp; News</category>
+            <media:content url="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/about_fallback_D_3.2e16d0ba.fill-540x540.png" width="540" height="540"/>
+            <og xmlns:og="http://ogp.me/ns#">
+                <type>article</type>
+                <title>Want to score this playoff season? Shoot over to Search and Newsstand</title>
+                <description>Now on Search and Play Newsstand, you can get the latest news, info, visuals and more during NBA and NHL playoff season. </description>
+                <image>https://storage.googleapis.com/gweb-uniblog-publish-prod/images/about_fallback_D_3.2e16d0ba.fill-540x540.png</image>
+                <site_name>Google</site_name>
+                <url>http://www.blog.google:443/products/search/want-score-playoff-season-shoot-over-search-and-newsstand/</url>
+            </og>
+            <author xmlns:author="http://www.w3.org/2005/Atom">
+                <name>Aditya Mahesh</name>
+                <title>Product Manager</title>
+                <department/>
+                <company/>
+            </author>
+            <feedburner:origLink>http://www.blog.google:443/products/search/want-score-playoff-season-shoot-over-search-and-newsstand/</feedburner:origLink>
+        </item>
+        <item>
+            <title>Chrome: secure by default, for everyone</title>
+            <link>http://feedproxy.google.com/~r/blogspot/MKuf/~3/wILTkp-A0E0/</link>
+            <description>&lt;div class="block-paragraph"&gt;&lt;div class="rich-text"&gt;&lt;p&gt;You shouldn’t need to be a security expert to browse the web, which is why we built Chrome to be secure by default, and easy to use safely by everyone. Chrome protects our users from malicious webpages by showing warnings more than 250 million times each month before users reach dangerous sites. We have also given more than $3.5 million to the security research community in rewards for helping us identify security bugs so we can fix them and strengthen Chrome. Here’s a refresher on how Chrome makes it easy for you to stay safe online.&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;div class="block-paragraph"&gt;&lt;div class="rich-text"&gt;&lt;h2&gt;Security by design&lt;/h2&gt;&lt;p&gt;Chrome has used &lt;a href="https://safebrowsing.google.com/"&gt;Google Safe Browsing&lt;/a&gt; for more than a decade to show you warnings before you visit a site that might be dangerous or deceptive. Safe Browsing launched in 2007 to protect people across the web from deceptive phishing sites, and has evolved to help protect against threats like dangerous malware across Chrome desktop and mobile. If you see a full-screen red warning, you’ll know that the page ahead might be dangerous.&lt;br/&gt;&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;div class="block-image_full_width"&gt;&lt;!--image full width--&gt;
+&lt;div class="uni-full-width"&gt;
+    &lt;figure&gt;
+        
+
+        
+
+    
+        
+
+
+    
+
+    
+        &lt;source media="(max-width: 540px) and (max-resolution: 1.5dppx)"
+                sizes="540px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/ChromeSecurity_alert800px.width-540.png 540w"&gt;
+    
+        &lt;source media="(max-width: 540px) and (min-resolution: 1.5dppx)"
+                sizes="800px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/ChromeSecurity_alert800px.width-800.png 800w"&gt;
+    
+        &lt;source media="(max-resolution: 1.5dppx)"
+                sizes="800px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/ChromeSecurity_alert800px.width-800.png 800w"&gt;
+    
+
+    &lt;img src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/ChromeSecurity_alert800px.width-800.png"
+
+         
+            alt="ChromeSecurity_alert800px.png"
+         
+
+         sizes="(max-width: 540px) 540px, (max-width: 540px) 800px,  800px"
+         srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/ChromeSecurity_alert800px.width-540.png 540w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/ChromeSecurity_alert800px.width-800.png 800w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/ChromeSecurity_alert800px.width-800.png 800w"&gt;
+
+    
+
+
+    
+
+
+
+        
+
+        
+    &lt;/figure&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="block-paragraph"&gt;&lt;div class="rich-text"&gt;&lt;p&gt;There are lots of different players—like your internet service provider or your Wi-Fi network—that help get you connected online. Chrome will let you know if you’re securely connected directly to a site by showing a green lock in the address bar:&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;div class="block-image_full_width"&gt;&lt;!--image full width--&gt;
+&lt;div class="uni-full-width"&gt;
+    &lt;figure&gt;
+        
+
+        
+
+    
+        
+
+
+    
+
+    
+        &lt;source media="(max-width: 540px) and (max-resolution: 1.5dppx)"
+                sizes="540px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/ChromeSecurity_bar.width-540.png 540w"&gt;
+    
+        &lt;source media="(max-width: 540px) and (min-resolution: 1.5dppx)"
+                sizes="750px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/ChromeSecurity_bar.width-750.png 750w"&gt;
+    
+        &lt;source media="(max-resolution: 1.5dppx)"
+                sizes="750px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/ChromeSecurity_bar.width-750.png 750w"&gt;
+    
+
+    &lt;img src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/ChromeSecurity_bar.width-750.png"
+
+         
+            alt="ChromeSecurity_bar.png"
+         
+
+         sizes="(max-width: 540px) 540px, (max-width: 540px) 750px,  750px"
+         srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/ChromeSecurity_bar.width-540.png 540w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/ChromeSecurity_bar.width-750.png 750w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/ChromeSecurity_bar.width-750.png 750w"&gt;
+
+    
+
+
+    
+
+
+
+        
+
+        
+    &lt;/figure&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="block-paragraph"&gt;&lt;div class="rich-text"&gt;&lt;p&gt;This means that you can be confident that you’re sending any information directly to that site, and it can’t be snooped on or tampered with by anyone else—even a curious person who also happens to be on the free coffee shop Wi-Fi!&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;div class="block-paragraph"&gt;&lt;div class="rich-text"&gt;&lt;h2&gt;Making security easy&lt;/h2&gt;&lt;p&gt;Using unique, strong passwords is one of the most important things you can do to stay safe on the web. Chrome’s password manager, called &lt;a href="https://get.google.com/smartlock/"&gt;Google Smart Lock&lt;/a&gt;, helps you remember your  passwords, so you’ll never have to reuse them. If you’re signed into Chrome, you can &lt;a href="https://passwords.google.com"&gt;keep track of your passwords&lt;/a&gt; and Chrome will automatically fill them in on the right sites, across devices.&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Finally, we know that you want to stay safe without the hassle of installing updates. Chrome automatically updates behind the scenes every six weeks to ensure that you always have the latest security features and fixes. And if we find an important security bug, we push out a fix within 24 hours—no update from you required.&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;div class="block-image_full_width"&gt;&lt;!--image full width--&gt;
+&lt;div class="uni-full-width"&gt;
+    &lt;figure&gt;
+        
+
+        
+
+    
+        
+
+
+    
+
+    
+        &lt;source media="(max-width: 540px) and (max-resolution: 1.5dppx)"
+                sizes="260px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/ChromeSecurity_update.width-260.png 260w"&gt;
+    
+        &lt;source media="(max-resolution: 1.5dppx)"
+                sizes="260px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/ChromeSecurity_update.width-260.png 260w"&gt;
+    
+
+    &lt;img src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/ChromeSecurity_update.width-260.png"
+
+         
+            alt="ChromeSecurity_update.png"
+         
+
+         sizes="(max-width: 540px) 260px,  260px"
+         srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/ChromeSecurity_update.width-260.png 260w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/ChromeSecurity_update.width-260.png 260w"&gt;
+
+    
+
+
+    
+
+
+
+        
+
+        
+    &lt;/figure&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="block-paragraph"&gt;&lt;div class="rich-text"&gt;&lt;p&gt;Our security team works hard behind the scenes, even (especially!) if you can’t see it happening. Check out our new &lt;a href="https://enterprise.google.com/chrome/chrome-browser-security"&gt;Chrome Security page&lt;/a&gt; for more details, and for more news on security at Google, check out our &lt;a href="https://security.googleblog.com/"&gt;Security Blog&lt;/a&gt;.&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;&lt;img src="http://feeds.feedburner.com/~r/blogspot/MKuf/~4/wILTkp-A0E0" height="1" width="1" alt=""/&gt;</description>
+            <pubDate>Mon, 17 Apr 2017 16:00:00 +0000</pubDate>
+            <guid isPermaLink="false">http://www.blog.google:443/products/chrome/chrome-secure-default-everyone/</guid>
+            <category>Chrome</category>
+            <category>Safety &amp; Security</category>
+            <media:content url="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/chromesecurity_apr12.2e16d0ba.fill-540x540.jpg" width="540" height="540"/>
+            <og xmlns:og="http://ogp.me/ns#">
+                <type>article</type>
+                <title>Chrome: secure by default, for everyone</title>
+                <description>You shouldn’t need to be a security expert to use the web safely, so we built Chrome to be secure by default. Here's a quick refresher on how Chrome keeps you safe.</description>
+                <image>https://storage.googleapis.com/gweb-uniblog-publish-prod/images/chromesecurity_apr12.2e16d0ba.fill-540x540.jpg</image>
+                <site_name>Google</site_name>
+                <url>http://www.blog.google:443/products/chrome/chrome-secure-default-everyone/</url>
+            </og>
+            <author xmlns:author="http://www.w3.org/2005/Atom">
+                <name>Emily Schechter</name>
+                <title>Product Manager and Chrome Security Sorceress</title>
+                <department/>
+                <company/>
+            </author>
+            <feedburner:origLink>http://www.blog.google:443/products/chrome/chrome-secure-default-everyone/</feedburner:origLink>
+        </item>
+        <item>
+            <title>Your Assistant for all seasons</title>
+            <link>http://feedproxy.google.com/~r/blogspot/MKuf/~3/97EBkstsXjE/</link>
+            <description>&lt;div class="block-paragraph"&gt;&lt;div class="rich-text"&gt;&lt;p&gt;We’re officially a few weeks into spring and your Google Assistant is ready to help you get the most out of the nicer weather, from finding the perfect hiking or biking spot to playing your spring cleaning motivation playlist.&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;div class="block-paragraph"&gt;&lt;div class="rich-text"&gt;&lt;p&gt;Here are some questions to ask:&lt;/p&gt;&lt;ul&gt;&lt;li&gt;How long does it take to bike to Prospect Park?&lt;br/&gt;&lt;/li&gt;&lt;li&gt;Play my spring cleaning playlist from Google Play Music.&lt;/li&gt;&lt;li&gt;When’s the first day of summer?&lt;/li&gt;&lt;li&gt;When does the Cherry Blossom Festival end?&lt;/li&gt;&lt;li&gt;How do you say “flower” in Japanese?&lt;/li&gt;&lt;li&gt;Show my photos from the Cherry Blossom Festival in April.&lt;br/&gt;&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;div class="block-paragraph"&gt;&lt;div class="rich-text"&gt;&lt;p&gt;So plan your spring adventure—or hunker down and finally clean out the kitchen drawers—with your Google Assistant by your side. &lt;/p&gt;&lt;/div&gt;&lt;/div&gt;&lt;img src="http://feeds.feedburner.com/~r/blogspot/MKuf/~4/97EBkstsXjE" height="1" width="1" alt=""/&gt;</description>
+            <pubDate>Fri, 14 Apr 2017 22:00:00 +0000</pubDate>
+            <guid isPermaLink="false">http://www.blog.google:443/products/assistant/your-assistant-for-all-seasons/</guid>
+            <category>Google Assistant</category>
+            <media:content url="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/cb5.2e16d0ba.fill-540x540.jpg" width="540" height="540"/>
+            <og xmlns:og="http://ogp.me/ns#">
+                <type>article</type>
+                <title>Your Assistant for all seasons</title>
+                <description>Your Google Assistant is ready to help you get the most out Spring, from finding the perfect hiking to playing your spring cleaning playlist. 
+</description>
+                <image>https://storage.googleapis.com/gweb-uniblog-publish-prod/images/cb5.2e16d0ba.fill-540x540.jpg</image>
+                <site_name>Google</site_name>
+                <url>http://www.blog.google:443/products/assistant/your-assistant-for-all-seasons/</url>
+            </og>
+            <author xmlns:author="http://www.w3.org/2005/Atom">
+                <name>Kara Stockton</name>
+                <title>The Google Assistant Team</title>
+                <department/>
+                <company/>
+            </author>
+            <feedburner:origLink>http://www.blog.google:443/products/assistant/your-assistant-for-all-seasons/</feedburner:origLink>
+        </item>
+        <item>
+            <title>The High Five: the least taxing thing you'll read all week</title>
+            <link>http://feedproxy.google.com/~r/blogspot/MKuf/~3/4VOlERdvlG8/</link>
+            <description>&lt;div class="block-paragraph"&gt;&lt;div class="rich-text"&gt;&lt;h3&gt;Flower crowns at the ready &lt;/h3&gt;&lt;p&gt;Coachella, the Southern California music festival, kicks off this weekend. Festival-goers are wondering, “What should I pack for Coachella?” and “When does Coachella release set times?” Non-festival goers are asking, “What is Coachella?” Whether you’re into crop tops or fringe, Radiohead or Lady Gaga, Valencia or Nashville Instagram filter … there’s something for everyone.&lt;/p&gt;&lt;h3&gt;United Airlines experiences some turbulence &lt;/h3&gt;&lt;p&gt;After a United Airlines passenger was forcibly removed from an overbooked flight to make room for a crew member, the public was outraged and didn’t hold back on social media. People turned to Google to ask "Why did United Airlines remove passengers?" But they were most interested in how it was affecting the airline's bottom line. Three of the top five related queries tried to assess "How much did United stock drop?"&lt;/p&gt;&lt;h3&gt;Hunting for Easter eggs and having a (matzah) ball&lt;/h3&gt;&lt;p&gt;Easter and Passover celebrations are happening this week. In addition to searching for instructions on how to dye Easter eggs, people are wondering “How do you say Happy Passover?” and “Is Easter Monday a holiday?” Not in the U.S., sadly—so go easy on those Cadbury eggs.&lt;/p&gt;&lt;h3&gt;Pics or it didn’t happen&lt;/h3&gt;&lt;p&gt;In honor of National Siblings Day, people dug up old family photos (whether adorable, awkward or filled with braces), and shared them on social media. Spurred by this frenzy, people searched for “national sibling day captions,” “funny national sibling day quotes,” and even “only child on national siblings day.”&lt;/p&gt;&lt;h3&gt;Nothing is certain, except … &lt;/h3&gt;&lt;p&gt;Your taxes are due. But procrastinators have been rewarded this year—people have three more days than usual to complete their taxes. So in addition to asking "when is tax day in 2017?" searchers are curious about the reason for this year's extended deadline. The answer? When April 15 falls on a weekend, the deadline is moved to the following Monday. But April 17 is Emancipation Day, a legal holiday in D.C., giving everyone an extra day to file.&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;div class="block-image_full_width"&gt;&lt;!--image full width--&gt;
+&lt;div class="uni-full-width"&gt;
+    &lt;figure&gt;
+        
+
+        
+
+    
+        &lt;img src="https://storage.googleapis.com/gweb-uniblog-publish-prod/original_images/Highfive_TaxDay.gif" alt="tax" /&gt;
+    
+
+
+
+        
+
+        
+    &lt;/figure&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;img src="http://feeds.feedburner.com/~r/blogspot/MKuf/~4/4VOlERdvlG8" height="1" width="1" alt=""/&gt;</description>
+            <pubDate>Fri, 14 Apr 2017 17:00:00 +0000</pubDate>
+            <guid isPermaLink="false">http://www.blog.google:443/topics/trends/high-five-least-taxing-thing-youll-read-all-week/</guid>
+            <category>Trends</category>
+            <category>Search</category>
+            <media:content url="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/TheHigh5_hero_yellow_jZRoQrm.2e16d0ba.fill-540x540.jpg" width="540" height="540"/>
+            <og xmlns:og="http://ogp.me/ns#">
+                <type>article</type>
+                <title>The High Five: the least taxing thing you'll read all week</title>
+                <description>Check out what’s trending on Google with a look at a few of the top searches from this week.</description>
+                <image>https://storage.googleapis.com/gweb-uniblog-publish-prod/images/TheHigh5_hero_yellow_jZRoQrm.2e16d0ba.fill-540x540.jpg</image>
+                <site_name>Google</site_name>
+                <url>http://www.blog.google:443/topics/trends/high-five-least-taxing-thing-youll-read-all-week/</url>
+            </og>
+            <author xmlns:author="http://www.w3.org/2005/Atom">
+                <name>Elisabeth Leoni</name>
+                <title>Managing Editor </title>
+                <department>The Keyword </department>
+                <company/>
+            </author>
+            <feedburner:origLink>http://www.blog.google:443/topics/trends/high-five-least-taxing-thing-youll-read-all-week/</feedburner:origLink>
+        </item>
+        <item>
+            <title>Now Image Search can jump-start your search for style</title>
+            <link>http://feedproxy.google.com/~r/blogspot/MKuf/~3/B3ARnlXLyfg/</link>
+            <description>&lt;div class="block-paragraph"&gt;&lt;div class="rich-text"&gt;&lt;p&gt;Image Search is full of pics to help you find inspiration—whether it’s places to travel, items to purchase or shots of your favorite celebs, art and memes. But when it comes to fashion, it’s hard to know where to start. That’s why today, we’re introducing a new feature called “style ideas” in the Google app for Android and mobile web, which will surely help boost your search style IQ. Now while perusing fashion product images, Image Search will surface a grid of inspirational lifestyle images and outfits that showcase how the product can be worn in real life.&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;div class="block-paragraph"&gt;&lt;div class="rich-text"&gt;&lt;p&gt;With style ideas, you can see real-life options of what bag and jeans look stellar with those red high heels you’ve been eyeing. Or if running gear is more your speed, no sweat—workout ensemble ideas are just a tap away.  &lt;/p&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;div class="block-image_full_width"&gt;&lt;!--image full width--&gt;
+&lt;div class="uni-full-width"&gt;
+    &lt;figure&gt;
+        
+
+        
+
+    
+        &lt;img src="https://storage.googleapis.com/gweb-uniblog-publish-prod/original_images/style-search-hts-handbag.gif" alt="style-search-hts-handbag.gif" /&gt;
+    
+
+
+
+        
+
+        
+    &lt;/figure&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="block-paragraph"&gt;&lt;div class="rich-text"&gt;&lt;p&gt;As an added bonus, you’ll also see an expanded carousel for “similar items” while searching for apparel products. That means whether you’re researching shorts and sneakers or checking out sunglasses and handbags, you’ll be able to find product offerings that may suit your tastes. Uncovering a bargain option without sacrificing style is now accessible right from Image Search. &lt;/p&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;div class="block-paragraph"&gt;&lt;div class="rich-text"&gt;&lt;p&gt;With these new features, Image Search may be your best new accessory. Or at least a useful tool to find apparel that suits your style and your wallet. &lt;/p&gt;&lt;/div&gt;&lt;/div&gt;&lt;img src="http://feeds.feedburner.com/~r/blogspot/MKuf/~4/B3ARnlXLyfg" height="1" width="1" alt=""/&gt;</description>
+            <pubDate>Thu, 13 Apr 2017 13:00:00 +0000</pubDate>
+            <guid isPermaLink="false">http://www.blog.google:443/products/search/now-image-search-can-jump-start-your-search-style/</guid>
+            <category>Search</category>
+            <media:content url="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Stylesearch-hero_2.2e16d0ba.fill-540x540.jpg" width="540" height="540"/>
+            <og xmlns:og="http://ogp.me/ns#">
+                <type>article</type>
+                <title>Now Image Search can jump-start your search for style</title>
+                <description>Now when people look at fashion product images, Google will show a grid of inspirational lifestyle images and outfits that showcase how the product can be styled in real life.</description>
+                <image>https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Stylesearch-hero_2.2e16d0ba.fill-540x540.jpg</image>
+                <site_name>Google</site_name>
+                <url>http://www.blog.google:443/products/search/now-image-search-can-jump-start-your-search-style/</url>
+            </og>
+            <author xmlns:author="http://www.w3.org/2005/Atom">
+                <name>Julia Enthoven</name>
+                <title>Associate Product Manager</title>
+                <department/>
+                <company/>
+            </author>
+            <feedburner:origLink>http://www.blog.google:443/products/search/now-image-search-can-jump-start-your-search-style/</feedburner:origLink>
+        </item>
+        <item>
+            <title>Promoting a safer Internet with consumer groups in Belgium, Italy and Spain</title>
+            <link>http://feedproxy.google.com/~r/blogspot/MKuf/~3/aE8Aw5wPvTg/</link>
+            <description>&lt;div class="block-paragraph"&gt;&lt;div class="rich-text"&gt;&lt;p&gt;The internet offers lots of opportunities to explore, create and collaborate. But the internet is in many ways a mirror of our real world, which isn’t always pretty, and to make the most of the web it’s vital to keep yourself safe and secure. It’s natural to be anxious about cyber criminality and security breaches—in fact, according to to &lt;a href="http://ec.europa.eu/public_opinion/archives/ebs/ebs_423_en.pdf"&gt;Commission research&lt;/a&gt;, 50 percent of EU citizens say they don’t feel informed about the risks. Some of you have maybe even been victims of internet scams or phishing attacks yourselves.&lt;/p&gt;&lt;p&gt;So what’s the solution? Certainly there are behaviors we use to keep ourselves safe in public places or city streets—what we call "common sense." But what are does common sense look like online? What is the equivalent of locking your front door—and where can you learn more about them?&lt;/p&gt;&lt;p&gt;To help everybody to navigate safely and securely through new technologies, gadgets, and services in an ever-changing online world, Google has partnered with local consumer groups to dispel myths about internet safety and to give concrete and easy to follow tips to stay safe online.&lt;/p&gt;&lt;p&gt;Last month we announced our latest partnership with the Belgian consumer group, &lt;a href="https://www.test-achats.be/"&gt;Test-Achats&lt;/a&gt;, focusing on internet safety. Online security is a particularly relevant topic in Belgium, because more than 60 percent of Belgians know little—or nothing at all—about the issues surrounding online safety (according to a survey conducted on September 2016 by GFK). Many people think the topic is too complex for them, but online security has become essential and ignoring the risks can be costly.&lt;/p&gt;&lt;p&gt;Building on local research, we developed an educational platform—&lt;a href="http://www.cybersimple.be/"&gt;www.cybersimple.be&lt;/a&gt;—where Belgians can learn from a series of 90 web-safety tips ranging from account and device protection to child safety and online transactions. The website, available in French, Dutch and English, also includes &lt;a href="https://www.cybersimple.be/en/ready-test-your-knowledge"&gt;a quiz&lt;/a&gt; to test and improve your web-safety knowledge.&lt;/p&gt;&lt;p&gt;The partnership with Test-Achats follows similar collaborations with consumer groups in Italy (with &lt;a href="http://www.altroconsumo.it/vivinternet/"&gt;Altroconsumo&lt;/a&gt;) and Spain (with &lt;a href="http://www.ocu.org/viveinternetseguro/"&gt;la Organización de Consumidores y Usuarios&lt;/a&gt;). The goal of these campaigns is to provide consumers with the knowledge they need to optimize and ensure their security when they go online. Whether you're a novice or an expert, we hope you'll find some of the advice and tools available helpful.&lt;/p&gt;&lt;p&gt;In Italy &lt;a href="https://www.blog.google/topics/google-europe/google-italys-safer-internet-tour/"&gt;we developed the initiative&lt;/a&gt; even further by bringing in-person advice to Italian citizens with a bus tour throughout Italy, connecting with thousands of citizens and giving advice on online safety.&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;div class="block-image_full_width"&gt;&lt;!--image full width--&gt;
+&lt;div class="uni-full-width"&gt;
+    &lt;figure&gt;
+        
+
+        
+
+    
+        
+
+
+    
+
+    
+        &lt;source media="(max-width: 540px) and (max-resolution: 1.5dppx)"
+                sizes="540px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Screen_Shot_2017-04-12_at_6.07.57_PM.width-540.png 540w"&gt;
+    
+        &lt;source media="(max-width: 540px) and (min-resolution: 1.5dppx)"
+                sizes="634px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Screen_Shot_2017-04-12_at_6.07.57_PM.width-634.png 634w"&gt;
+    
+        &lt;source media="(max-resolution: 1.5dppx)"
+                sizes="634px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Screen_Shot_2017-04-12_at_6.07.57_PM.width-634.png 634w"&gt;
+    
+
+    &lt;img src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Screen_Shot_2017-04-12_at_6.07.57_PM.width-634.png"
+
+         
+            alt="Safer Internet Tour Italy"
+         
+
+         sizes="(max-width: 540px) 540px, (max-width: 540px) 634px,  634px"
+         srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Screen_Shot_2017-04-12_at_6.07.57_PM.width-540.png 540w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Screen_Shot_2017-04-12_at_6.07.57_PM.width-634.png 634w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Screen_Shot_2017-04-12_at_6.07.57_PM.width-634.png 634w"&gt;
+
+    
+
+
+    
+
+
+
+        
+
+        
+            &lt;figcaption&gt;&lt;div class="rich-text"&gt;The Safer Internet team in tour across Italy&lt;/div&gt;&lt;/figcaption&gt;
+        
+    &lt;/figure&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="block-paragraph"&gt;&lt;div class="rich-text"&gt;&lt;p&gt;For more information about our long-term partnerships with national consumer associations in Italy, Spain and Belgium, please visit &lt;a href="http://www.altroconsumo.it/vivinternet/"&gt;altroconsumo.it/vivinternet/&lt;/a&gt;, &lt;a href="http://www.ocu.org/viveinternetseguro/"&gt;ocu.org/viveinternetseguro/&lt;/a&gt; and &lt;a href="http://www.cybersimple.be/"&gt;cybersimple.be&lt;/a&gt;. Together, we can help people to develop safe online behaviors and enjoy the benefits of the internet.&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;&lt;img src="http://feeds.feedburner.com/~r/blogspot/MKuf/~4/aE8Aw5wPvTg" height="1" width="1" alt=""/&gt;</description>
+            <pubDate>Thu, 13 Apr 2017 07:30:00 +0000</pubDate>
+            <guid isPermaLink="false">http://www.blog.google:443/topics/google-europe/promoting-safer-internet-belgium-italy-spain/</guid>
+            <category>Google in Europe</category>
+            <category>privacy, consumers, internet safety, </category>
+            <media:content url="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Google_facebook_share_generique_02.2e16d0ba.fill-540x540.jpg" width="540" height="540"/>
+            <og xmlns:og="http://ogp.me/ns#">
+                <type>article</type>
+                <title>Promoting a safer Internet with consumer groups in Belgium, Italy and Spain</title>
+                <description>To help everybody to navigate safely and securely through an ever-changing online world, we've partnered with local consumer groups to dispel myths about internet safety and give concrete and easy-to-follow tips to stay safe online.</description>
+                <image>https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Google_facebook_share_generique_02.2e16d0ba.fill-540x540.jpg</image>
+                <site_name>Google</site_name>
+                <url>http://www.blog.google:443/topics/google-europe/promoting-safer-internet-belgium-italy-spain/</url>
+            </og>
+            <author xmlns:author="http://www.w3.org/2005/Atom">
+                <name>Theo Bertram</name>
+                <title>Public Policy Manager, EMEA</title>
+                <department/>
+                <company/>
+            </author>
+            <feedburner:origLink>http://www.blog.google:443/topics/google-europe/promoting-safer-internet-belgium-italy-spain/</feedburner:origLink>
+        </item>
+        <item>
+            <title>Android Pay Integrates with Mobile Banking Apps</title>
+            <link>http://feedproxy.google.com/~r/blogspot/MKuf/~3/ZcI9e2uk720/</link>
+            <description>&lt;div class="block-paragraph"&gt;&lt;div class="rich-text"&gt;&lt;p&gt;Android Pay is joining with several banks around the world—including Bank of America, Bank of New Zealand, Discover, mBank and USAA—to make it even easier to use your cards with Android Pay.&lt;br/&gt;&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;div class="block-image_full_width"&gt;&lt;!--image full width--&gt;
+&lt;div class="uni-full-width"&gt;
+    &lt;figure&gt;
+        
+
+        
+
+    
+        
+
+
+    
+
+    
+        &lt;source media="(max-width: 540px) and (max-resolution: 1.5dppx)"
+                sizes="540px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/push-prov-logos.width-540.png 540w"&gt;
+    
+        &lt;source media="(max-width: 540px) and (min-resolution: 1.5dppx)"
+                sizes="1080px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/push-prov-logos.width-1080.png 1080w"&gt;
+    
+        &lt;source media="(max-resolution: 1.5dppx)"
+                sizes="1000px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/push-prov-logos.width-1000.png 1000w"&gt;
+    
+        &lt;source media="(min-resolution: 1.5dppx)"
+                sizes="1600px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/push-prov-logos.width-1600.png 1600w"&gt;
+    
+
+    &lt;img src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/push-prov-logos.width-1600.png"
+
+         
+            alt="Push Provisioning Bank Partners"
+         
+
+         sizes="(max-width: 540px) 540px, (max-width: 540px) 1080px,  1000px,  1600px"
+         srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/push-prov-logos.width-540.png 540w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/push-prov-logos.width-1080.png 1080w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/push-prov-logos.width-1000.png 1000w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/push-prov-logos.width-1600.png 1600w"&gt;
+
+    
+
+
+    
+
+
+
+        
+
+        
+    &lt;/figure&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="block-paragraph"&gt;&lt;div class="rich-text"&gt;&lt;p&gt;If you’re a customer of one of these banks, you can easily add cards to Android Pay from your mobile banking app with just the click of a button.&lt;br/&gt;&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;div class="block-image_full_width"&gt;&lt;!--image full width--&gt;
+&lt;div class="uni-full-width"&gt;
+    &lt;figure&gt;
+        
+
+        
+
+    
+        
+
+
+    
+
+    
+        &lt;source media="(max-width: 540px) and (max-resolution: 1.5dppx)"
+                sizes="540px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/mBank_ap_02.width-540.png 540w"&gt;
+    
+        &lt;source media="(max-width: 540px) and (min-resolution: 1.5dppx)"
+                sizes="1080px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/mBank_ap_02.width-1080.png 1080w"&gt;
+    
+        &lt;source media="(max-resolution: 1.5dppx)"
+                sizes="1000px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/mBank_ap_02.width-1000.png 1000w"&gt;
+    
+        &lt;source media="(min-resolution: 1.5dppx)"
+                sizes="1600px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/mBank_ap_02.width-1600.png 1600w"&gt;
+    
+
+    &lt;img src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/mBank_ap_02.width-1600.png"
+
+         
+            alt="Discover Push Provisioning"
+         
+
+         sizes="(max-width: 540px) 540px, (max-width: 540px) 1080px,  1000px,  1600px"
+         srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/mBank_ap_02.width-540.png 540w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/mBank_ap_02.width-1080.png 1080w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/mBank_ap_02.width-1000.png 1000w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/mBank_ap_02.width-1600.png 1600w"&gt;
+
+    
+
+
+    
+
+
+
+        
+
+        
+    &lt;/figure&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="block-paragraph"&gt;&lt;div class="rich-text"&gt;&lt;p&gt;After completing setup, you can use your phone to tap and pay at &lt;a href="https://www.android.com/pay/where-to-use/?utm_source=AP&amp;amp;utm_medium=Blogpost&amp;amp;utm_campaign=PushProv"&gt;millions of stores&lt;/a&gt; and wherever you see the Android Pay button in your favorite &lt;a href="https://play.google.com/store/apps/collection/promotion_30015d0_androidpay_featured_apps?hl=en&amp;amp;utm_source=AP&amp;amp;utm_medium=Blogpost&amp;amp;utm_campaign=PushProv"&gt;apps&lt;/a&gt; and on the mobile web. Android Pay will also send you a notification after each successful transaction.&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;div class="block-image_full_width"&gt;&lt;!--image full width--&gt;
+&lt;div class="uni-full-width"&gt;
+    &lt;figure&gt;
+        
+
+        
+
+    
+        &lt;img src="https://storage.googleapis.com/gweb-uniblog-publish-prod/original_images/mBank_anim_wide_PdTDwF9.gif" alt="mBank Full Width" /&gt;
+    
+
+
+
+        
+
+        
+    &lt;/figure&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="block-paragraph"&gt;&lt;div class="rich-text"&gt;&lt;p&gt;Don’t have the Android Pay app downloaded? No problem. Through select mobile banking apps, you can access and enjoy the capabilities of Android Pay. You can manage bank card choices, like selecting your default payment card or deactivating a card on your phone.&lt;/p&gt;&lt;p&gt;This latest collaboration with banks expands Android Pay’s capabilities as an open platform, and moves us closer toward our goal of empowering mobile payments everywhere. We’re continuing to integrate with additional mobile banking apps, so look for updates from your bank about this new feature.&lt;br/&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;&lt;img src="http://feeds.feedburner.com/~r/blogspot/MKuf/~4/ZcI9e2uk720" height="1" width="1" alt=""/&gt;</description>
+            <pubDate>Wed, 12 Apr 2017 17:00:00 +0000</pubDate>
+            <guid isPermaLink="false">http://www.blog.google:443/topics/shopping-payments/android-pay-integrates-mobile-banking-apps/</guid>
+            <category>Shopping &amp; Payments</category>
+            <category>Android</category>
+            <media:content url="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/androidpay_banking-hero.2e16d0ba.fill-540x540.jpg" width="540" height="540"/>
+            <og xmlns:og="http://ogp.me/ns#">
+                <type>article</type>
+                <title>Android Pay Integrates with Mobile Banking Apps</title>
+                <description>Android Pay is joining with several banks around the world to make it even easier to use your cards with Android Pay. </description>
+                <image>https://storage.googleapis.com/gweb-uniblog-publish-prod/images/androidpay_banking-hero.2e16d0ba.fill-540x540.jpg</image>
+                <site_name>Google</site_name>
+                <url>http://www.blog.google:443/topics/shopping-payments/android-pay-integrates-mobile-banking-apps/</url>
+            </og>
+            <author xmlns:author="http://www.w3.org/2005/Atom">
+                <name>Pali Bhat</name>
+                <title>GLOBAL HEAD OF PAYMENT PRODUCTS</title>
+                <department/>
+                <company/>
+            </author>
+            <feedburner:origLink>http://www.blog.google:443/topics/shopping-payments/android-pay-integrates-mobile-banking-apps/</feedburner:origLink>
+        </item>
+        <item>
+            <title>Come play with WebVR Experiments</title>
+            <link>http://feedproxy.google.com/~r/blogspot/MKuf/~3/M5UFMlNbxTQ/</link>
+            <description>&lt;div class="block-paragraph"&gt;&lt;div class="rich-text"&gt;&lt;p&gt;Everyone should be able to experience VR, and WebVR is a big step in that direction. It’s open to all browsers, making it easier for developers to create something quickly and share it with everyone, no matter what device they’re on.&lt;/p&gt;&lt;p&gt;&lt;a href="https://www.blog.google/products/chrome/experience-virtual-reality-web-chrome/"&gt;In February,&lt;/a&gt; we added WebVR to Chrome on Daydream-ready phones. Today, WebVR on Chrome now works with Google Cardboard, so that anyone with an Android phone and Cardboard can experience virtual worlds just by tapping a link.&lt;br/&gt;&lt;/p&gt;&lt;p&gt;To explore what’s possible with WebVR, we’re launching &lt;a href="https://www.webvrexperiments.com"&gt;WebVR Experiments&lt;/a&gt;, a showcase of the amazing experiences developers are already building.&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;div class="block-video"&gt;
+
+&lt;div class="uni-full-width "
+     uni-component="video"
+     uni-options="{'overlay': false}"
+     uni-video-id="Jzrqrji_2xk"
+     uni-block-index=""
+     &gt;
+    &lt;div class="uni-video"&gt;
+        &lt;div id="uni-video-Jzrqrji_2xk-"&gt;&lt;/div&gt;
+        
+    &lt;/div&gt;
+    
+        &lt;h2  class="show-small" &gt;WebVR Experiments: Virtual reality on the web for everyone&lt;/h2&gt;
+    
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="block-paragraph"&gt;&lt;div class="rich-text"&gt;&lt;p&gt;Each experiment shows shows something different you can try in WebVR. Play ping pong with a friend in &lt;a href="https://konterball.com/"&gt;Konterball&lt;/a&gt;.&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;div class="block-image_full_width"&gt;&lt;!--image full width--&gt;
+&lt;div class="uni-full-width"&gt;
+    &lt;figure&gt;
+        
+
+        
+
+    
+        &lt;img src="https://storage.googleapis.com/gweb-uniblog-publish-prod/original_images/Konterball_Gif_031517.gif" alt="Konterball_Gif_031517.gif" /&gt;
+    
+
+
+
+        
+
+        
+    &lt;/figure&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="block-paragraph"&gt;&lt;div class="rich-text"&gt;&lt;p&gt;Explore the world &lt;a href="https://speaktogo.withgoogle.com/"&gt;with your voice&lt;/a&gt;.&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;div class="block-image_full_width"&gt;&lt;!--image full width--&gt;
+&lt;div class="uni-full-width"&gt;
+    &lt;figure&gt;
+        
+
+        
+
+    
+        &lt;img src="https://storage.googleapis.com/gweb-uniblog-publish-prod/original_images/SpeakToGo_Gif_031517.gif" alt="SpeakToGo_Gif_031517.gif" /&gt;
+    
+
+
+
+        
+
+        
+    &lt;/figure&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="block-paragraph"&gt;&lt;div class="rich-text"&gt;&lt;p&gt;Hear what it sounds like &lt;a href="https://www.sonicumbrella.com/"&gt;when the sky rains dog toys, ping pong balls, and more&lt;/a&gt;.&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;div class="block-image_full_width"&gt;&lt;!--image full width--&gt;
+&lt;div class="uni-full-width"&gt;
+    &lt;figure&gt;
+        
+
+        
+
+    
+        &lt;img src="https://storage.googleapis.com/gweb-uniblog-publish-prod/original_images/SonicUmbrella_Gif_031517.gif" alt="SonicUmbrella_Gif_031517.gif" /&gt;
+    
+
+
+
+        
+
+        
+    &lt;/figure&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="block-paragraph"&gt;&lt;div class="rich-text"&gt;&lt;p&gt;Play &lt;a href="https://spot-the-bot.com/"&gt;Spot-the-Bot&lt;/a&gt;, where one player searches for bots in VR with the help of another player outside VR.&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;div class="block-image_full_width"&gt;&lt;!--image full width--&gt;
+&lt;div class="uni-full-width"&gt;
+    &lt;figure&gt;
+        
+
+        
+
+    
+        &lt;img src="https://storage.googleapis.com/gweb-uniblog-publish-prod/original_images/SpotTheBot_Gif_032017.gif" alt="SpotTheBot_Gif_032017.gif" /&gt;
+    
+
+
+
+        
+
+        
+    &lt;/figure&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="block-paragraph"&gt;&lt;div class="rich-text"&gt;&lt;p&gt;&lt;a href="https://www.mrnmnm.com"&gt;Become a donut&lt;/a&gt; and try to wrap your fashionable scarf around hungry enemies.&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;div class="block-image_full_width"&gt;&lt;!--image full width--&gt;
+&lt;div class="uni-full-width"&gt;
+    &lt;figure&gt;
+        
+
+        
+
+    
+        &lt;img src="https://storage.googleapis.com/gweb-uniblog-publish-prod/original_images/MrNomNom_Gif_031517.gif" alt="MrNomNom_Gif_031517.gif" /&gt;
+    
+
+
+
+        
+
+        
+    &lt;/figure&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="block-paragraph"&gt;&lt;div class="rich-text"&gt;&lt;p&gt;These are just a few of the experiments you can try. If you don’t have Cardboard or Daydream, you can still play on desktop or on any phone in 2D. WebVR support on Chrome for desktop headsets like Oculus Rift and HTC VIVE is coming soon.&lt;/p&gt;&lt;p&gt;In addition to the experiments, developers can find resources and open source code to help get started building in WebVR. If you build something cool, &lt;a href="https://webvrexperiments.com/submit"&gt;submit&lt;/a&gt; it to be featured in the gallery.&lt;br/&gt;&lt;/p&gt;&lt;p&gt;We hope these experiments make it easier for more people to experience VR, and inspire more developers to create new VR worlds on the web.&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Start playing at &lt;a href="http://g.co/webvrexp"&gt;g.co/webvrexp&lt;/a&gt;.&lt;br/&gt;&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;&lt;img src="http://feeds.feedburner.com/~r/blogspot/MKuf/~4/M5UFMlNbxTQ" height="1" width="1" alt=""/&gt;</description>
+            <pubDate>Wed, 12 Apr 2017 16:00:00 +0000</pubDate>
+            <guid isPermaLink="false">http://www.blog.google:443/products/google-vr/come-play-webvr-experiments/</guid>
+            <category>Google VR</category>
+            <category>Chrome</category>
+            <media:content url="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Blog_Post_Image.2e16d0ba.fill-540x540.jpg" width="540" height="540"/>
+            <og xmlns:og="http://ogp.me/ns#">
+                <type>article</type>
+                <title>Come play with WebVR Experiments</title>
+                <description>We’ve created a showcase of the amazing VR experiences developers are building on the web. To play with them, all you need is a browser.</description>
+                <image>https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Blog_Post_Image.2e16d0ba.fill-540x540.jpg</image>
+                <site_name>Google</site_name>
+                <url>http://www.blog.google:443/products/google-vr/come-play-webvr-experiments/</url>
+            </og>
+            <author xmlns:author="http://www.w3.org/2005/Atom">
+                <name>Jonas Jongejan</name>
+                <title>Creative Technologist</title>
+                <department>Google Creative Lab</department>
+                <company/>
+            </author>
+            <feedburner:origLink>http://www.blog.google:443/products/google-vr/come-play-webvr-experiments/</feedburner:origLink>
+        </item>
+        <item>
+            <title>Whoa, that’s one big tree … check it out in a new Street View collection</title>
+            <link>http://feedproxy.google.com/~r/blogspot/MKuf/~3/CGwOQY2zsos/</link>
+            <description>&lt;div class="block-paragraph"&gt;&lt;div class="rich-text"&gt;&lt;p&gt;Today, Google Maps is bringing you more Golden State beauty—we’ve added &lt;a href="https://www.google.com/streetview/#california-state-parks/"&gt;six destinations&lt;/a&gt; to our California State Parks Street View collection. In the &lt;a href="http://www.parks.ca.gov/?page_id=540"&gt;Big Basin Redwoods State Park&lt;/a&gt;, you can gaze up at California’s famous redwoods, take in the spectacular scenery, and learn about the history of the park. Check out these Street View snapshots, as well as behind-the-scenes photos of the &lt;a href="http://sempervirens.org"&gt;Sempervirens Fund&lt;/a&gt; using the Trekker and 360-degree cameras to collect this imagery. &lt;/p&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;div class="block-image_carousel"&gt;
+
+&lt;div class="uni-full-width uni-carousel" uni-component="carousel"&gt;
+    &lt;div class="uni-carousel-container wrap"&gt;
+        
+            &lt;figure&gt;
+                &lt;div class="uni-carousel-slide-content"&gt;
+                    &lt;div class="uni-carousel-image"&gt;
+                        
+
+    
+        
+
+
+    
+
+    
+        &lt;source media="(max-width: 540px) and (max-resolution: 1.5dppx)"
+                sizes="540px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/01_Castle_Rock_State_Park.2e16d0ba.fill-540x304.png 540w"&gt;
+    
+        &lt;source media="(max-width: 540px) and (min-resolution: 1.5dppx)"
+                sizes="984px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/01_Castle_Rock_State_Park.2e16d0ba.fill-984x554.png 984w"&gt;
+    
+        &lt;source media="(max-resolution: 1.5dppx)"
+                sizes="984px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/01_Castle_Rock_State_Park.2e16d0ba.fill-984x554.png 984w"&gt;
+    
+        &lt;source media="(min-resolution: 1.5dppx)"
+                sizes="984px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/01_Castle_Rock_State_Park.2e16d0ba.fill-984x554.png 984w"&gt;
+    
+
+    &lt;img src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/01_Castle_Rock_State_Park.2e16d0ba.fill-984x554.png"
+
+         
+            alt="01 Castle Rock State Park.png"
+         
+
+         sizes="(max-width: 540px) 540px, (max-width: 540px) 984px,  984px,  984px"
+         srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/01_Castle_Rock_State_Park.2e16d0ba.fill-540x304.png 540w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/01_Castle_Rock_State_Park.2e16d0ba.fill-984x554.png 984w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/01_Castle_Rock_State_Park.2e16d0ba.fill-984x554.png 984w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/01_Castle_Rock_State_Park.2e16d0ba.fill-984x554.png 984w"&gt;
+
+    
+
+
+    
+
+
+                    &lt;/div&gt;
+                    
+                        &lt;figcaption&gt;&lt;div class="rich-text"&gt;Frolic in the meadows, gaze up at the trees, or check out some cool rock formations. &lt;a href="https://www.google.com/streetview/#california-state-parks/castle-rock-state-park-on-the-skyline-to-the-sea-trail"&gt;Castle Rock State Park&lt;/a&gt; has something for every explorer. &lt;/div&gt;&lt;/figcaption&gt;
+                    
+                &lt;/div&gt;
+            &lt;/figure&gt;
+        
+            &lt;figure&gt;
+                &lt;div class="uni-carousel-slide-content"&gt;
+                    &lt;div class="uni-carousel-image"&gt;
+                        
+
+    
+        
+
+
+    
+
+    
+        &lt;source media="(max-width: 540px) and (max-resolution: 1.5dppx)"
+                sizes="540px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/02_Skyline_to_the_Sea_Trail.2e16d0ba.fill-540x304.jpg 540w"&gt;
+    
+        &lt;source media="(max-width: 540px) and (min-resolution: 1.5dppx)"
+                sizes="984px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/02_Skyline_to_the_Sea_Trail.2e16d0ba.fill-984x554.jpg 984w"&gt;
+    
+        &lt;source media="(max-resolution: 1.5dppx)"
+                sizes="984px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/02_Skyline_to_the_Sea_Trail.2e16d0ba.fill-984x554.jpg 984w"&gt;
+    
+        &lt;source media="(min-resolution: 1.5dppx)"
+                sizes="984px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/02_Skyline_to_the_Sea_Trail.2e16d0ba.fill-984x554.jpg 984w"&gt;
+    
+
+    &lt;img src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/02_Skyline_to_the_Sea_Trail.2e16d0ba.fill-984x554.jpg"
+
+         
+            alt="02 Skyline to the Sea Trail.jpg"
+         
+
+         sizes="(max-width: 540px) 540px, (max-width: 540px) 984px,  984px,  984px"
+         srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/02_Skyline_to_the_Sea_Trail.2e16d0ba.fill-540x304.jpg 540w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/02_Skyline_to_the_Sea_Trail.2e16d0ba.fill-984x554.jpg 984w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/02_Skyline_to_the_Sea_Trail.2e16d0ba.fill-984x554.jpg 984w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/02_Skyline_to_the_Sea_Trail.2e16d0ba.fill-984x554.jpg 984w"&gt;
+
+    
+
+
+    
+
+
+                    &lt;/div&gt;
+                    
+                        &lt;figcaption&gt;&lt;div class="rich-text"&gt;There’s not a light at the end of the tunnel, there’s a beach at the end of the hike. The 31-mile &lt;a href="https://www.google.com/streetview/#california-state-parks/looking-out-to-the-sea-at-waddell-beach-skyline-to-the-sea-trail-big-basin-redwoods-state-park"&gt;Waddell Beach Skyline to the Sea Trail&lt;/a&gt; starts in the Santa Cruz Mountains and ends at Waddell State Beach. &lt;/div&gt;&lt;/figcaption&gt;
+                    
+                &lt;/div&gt;
+            &lt;/figure&gt;
+        
+            &lt;figure&gt;
+                &lt;div class="uni-carousel-slide-content"&gt;
+                    &lt;div class="uni-carousel-image"&gt;
+                        
+
+    
+        
+
+
+    
+
+    
+        &lt;source media="(max-width: 540px) and (max-resolution: 1.5dppx)"
+                sizes="540px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/05_Sempervirens_Campground.2e16d0ba.fill-540x304.png 540w"&gt;
+    
+        &lt;source media="(max-width: 540px) and (min-resolution: 1.5dppx)"
+                sizes="980px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/05_Sempervirens_Campground.2e16d0ba.fill-980x552.png 980w"&gt;
+    
+        &lt;source media="(max-resolution: 1.5dppx)"
+                sizes="980px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/05_Sempervirens_Campground.2e16d0ba.fill-980x552.png 980w"&gt;
+    
+        &lt;source media="(min-resolution: 1.5dppx)"
+                sizes="979px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/05_Sempervirens_Campground.2e16d0ba.fill-979x552.png 979w"&gt;
+    
+
+    &lt;img src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/05_Sempervirens_Campground.2e16d0ba.fill-980x552.png"
+
+         
+            alt="05 Sempervirens Campground.png"
+         
+
+         sizes="(max-width: 540px) 540px, (max-width: 540px) 980px,  980px,  979px"
+         srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/05_Sempervirens_Campground.2e16d0ba.fill-540x304.png 540w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/05_Sempervirens_Campground.2e16d0ba.fill-980x552.png 980w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/05_Sempervirens_Campground.2e16d0ba.fill-980x552.png 980w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/05_Sempervirens_Campground.2e16d0ba.fill-979x552.png 979w"&gt;
+
+    
+
+
+    
+
+
+                    &lt;/div&gt;
+                    
+                        &lt;figcaption&gt;&lt;div class="rich-text"&gt;This 2,000-year-old Redwood tree is dubbed "&lt;a href="https://www.google.com/streetview/#california-state-parks/the-father-of-the-forest-redwood-loop-trail-big-basin-redwoods-state-park"&gt;&lt;/a&gt;&lt;a href="https://www.google.com/streetview/#california-state-parks/the-father-of-the-forest-redwood-loop-trail-big-basin-redwoods-state-park"&gt;Father of the Forest&lt;/a&gt;."&lt;/div&gt;&lt;/figcaption&gt;
+                    
+                &lt;/div&gt;
+            &lt;/figure&gt;
+        
+            &lt;figure&gt;
+                &lt;div class="uni-carousel-slide-content"&gt;
+                    &lt;div class="uni-carousel-image"&gt;
+                        
+
+    
+        
+
+
+    
+
+    
+        &lt;source media="(max-width: 540px) and (max-resolution: 1.5dppx)"
+                sizes="540px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/03_Big_Basin_Redwoods_State_Park.2e16d0ba.fill-540x304.png 540w"&gt;
+    
+        &lt;source media="(max-width: 540px) and (min-resolution: 1.5dppx)"
+                sizes="980px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/03_Big_Basin_Redwoods_State_Park.2e16d0ba.fill-980x552.png 980w"&gt;
+    
+        &lt;source media="(max-resolution: 1.5dppx)"
+                sizes="980px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/03_Big_Basin_Redwoods_State_Park.2e16d0ba.fill-980x552.png 980w"&gt;
+    
+        &lt;source media="(min-resolution: 1.5dppx)"
+                sizes="979px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/03_Big_Basin_Redwoods_State_Park.2e16d0ba.fill-979x552.png 979w"&gt;
+    
+
+    &lt;img src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/03_Big_Basin_Redwoods_State_Park.2e16d0ba.fill-980x552.png"
+
+         
+            alt="03 Big Basin Redwoods State Park.png"
+         
+
+         sizes="(max-width: 540px) 540px, (max-width: 540px) 980px,  980px,  979px"
+         srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/03_Big_Basin_Redwoods_State_Park.2e16d0ba.fill-540x304.png 540w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/03_Big_Basin_Redwoods_State_Park.2e16d0ba.fill-980x552.png 980w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/03_Big_Basin_Redwoods_State_Park.2e16d0ba.fill-980x552.png 980w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/03_Big_Basin_Redwoods_State_Park.2e16d0ba.fill-979x552.png 979w"&gt;
+
+    
+
+
+    
+
+
+                    &lt;/div&gt;
+                    
+                        &lt;figcaption&gt;&lt;div class="rich-text"&gt;&lt;a href="https://www.google.com/streetview/#california-state-parks/first-state-park-plaque-at-the-foot-of-slippery-rock-shadowbrook-trail-big-basin-redwoods-state-park"&gt;At this site&lt;/a&gt; on May 15, 1900, A.P. Hill and a group of others formed the Sempervirens Club. Their mission was to protect the coast redwoods, and they later created Big Basin Redwoods State Park. The club went on to protect more than 34,000 acres of redwood forest in the Santa Cruz Mountains. &lt;/div&gt;&lt;/figcaption&gt;
+                    
+                &lt;/div&gt;
+            &lt;/figure&gt;
+        
+            &lt;figure&gt;
+                &lt;div class="uni-carousel-slide-content"&gt;
+                    &lt;div class="uni-carousel-image"&gt;
+                        
+
+    
+        
+
+
+    
+
+    
+        &lt;source media="(max-width: 540px) and (max-resolution: 1.5dppx)"
+                sizes="540px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/04_Berry_Creek_Falls.2e16d0ba.fill-540x304.png 540w"&gt;
+    
+        &lt;source media="(max-width: 540px) and (min-resolution: 1.5dppx)"
+                sizes="982px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/04_Berry_Creek_Falls.2e16d0ba.fill-982x553.png 982w"&gt;
+    
+        &lt;source media="(max-resolution: 1.5dppx)"
+                sizes="982px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/04_Berry_Creek_Falls.2e16d0ba.fill-982x553.png 982w"&gt;
+    
+        &lt;source media="(min-resolution: 1.5dppx)"
+                sizes="982px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/04_Berry_Creek_Falls.2e16d0ba.fill-982x553.png 982w"&gt;
+    
+
+    &lt;img src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/04_Berry_Creek_Falls.2e16d0ba.fill-982x553.png"
+
+         
+            alt="04 Berry Creek Falls.png"
+         
+
+         sizes="(max-width: 540px) 540px, (max-width: 540px) 982px,  982px,  982px"
+         srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/04_Berry_Creek_Falls.2e16d0ba.fill-540x304.png 540w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/04_Berry_Creek_Falls.2e16d0ba.fill-982x553.png 982w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/04_Berry_Creek_Falls.2e16d0ba.fill-982x553.png 982w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/04_Berry_Creek_Falls.2e16d0ba.fill-982x553.png 982w"&gt;
+
+    
+
+
+    
+
+
+                    &lt;/div&gt;
+                    
+                        &lt;figcaption&gt;&lt;div class="rich-text"&gt;&lt;a href="https://www.google.com/streetview/#california-state-parks/berry-creek-falls-viewing-platform-skyline-to-the-sea-trail-big-basin-redwoods-state-park"&gt;Berry Creek Falls&lt;/a&gt; is located in an especially lush section of Big Basin Redwoods State Park. The area’s diverse habitat is comprised of coastal marsh, Monterey pine forest, oak woodland, riparian woodland, and, of course, redwood forest.&lt;/div&gt;&lt;/figcaption&gt;
+                    
+                &lt;/div&gt;
+            &lt;/figure&gt;
+        
+            &lt;figure&gt;
+                &lt;div class="uni-carousel-slide-content"&gt;
+                    &lt;div class="uni-carousel-image"&gt;
+                        
+
+    
+        
+
+
+    
+
+    
+        &lt;source media="(max-width: 540px) and (max-resolution: 1.5dppx)"
+                sizes="540px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/150827-DCoyro-Sentinel-Big-Basin-G.2e16d0ba.fill-540x304.jpg 540w"&gt;
+    
+        &lt;source media="(max-width: 540px) and (min-resolution: 1.5dppx)"
+                sizes="1080px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/150827-DCoyro-Sentinel-Big-Basin-.2e16d0ba.fill-1080x608.jpg 1080w"&gt;
+    
+        &lt;source media="(max-resolution: 1.5dppx)"
+                sizes="1000px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/150827-DCoyro-Sentinel-Big-Basin-.2e16d0ba.fill-1000x563.jpg 1000w"&gt;
+    
+        &lt;source media="(min-resolution: 1.5dppx)"
+                sizes="1667px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/150827-DCoyro-Sentinel-Big-Basin-.2e16d0ba.fill-1667x938.jpg 1667w"&gt;
+    
+
+    &lt;img src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/150827-DCoyro-Sentinel-Big-Basin-.2e16d0ba.fill-1667x938.jpg"
+
+         
+            alt="150827-DCoyro-Sentinel-Big-Basin-Google-Trekker-01.jpg"
+         
+
+         sizes="(max-width: 540px) 540px, (max-width: 540px) 1080px,  1000px,  1667px"
+         srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/150827-DCoyro-Sentinel-Big-Basin-G.2e16d0ba.fill-540x304.jpg 540w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/150827-DCoyro-Sentinel-Big-Basin-.2e16d0ba.fill-1080x608.jpg 1080w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/150827-DCoyro-Sentinel-Big-Basin-.2e16d0ba.fill-1000x563.jpg 1000w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/150827-DCoyro-Sentinel-Big-Basin-.2e16d0ba.fill-1667x938.jpg 1667w"&gt;
+
+    
+
+
+    
+
+
+                    &lt;/div&gt;
+                    
+                        &lt;figcaption&gt;&lt;div class="rich-text"&gt;A Sempervirens Fund volunteer maps the Sequoia Trail in Big Basin Redwoods State Park (photo courtesy of Sempervirens Fund).&lt;/div&gt;&lt;/figcaption&gt;
+                    
+                &lt;/div&gt;
+            &lt;/figure&gt;
+        
+            &lt;figure&gt;
+                &lt;div class="uni-carousel-slide-content"&gt;
+                    &lt;div class="uni-carousel-image"&gt;
+                        
+
+    
+        
+
+
+    
+
+    
+        &lt;source media="(max-width: 540px) and (max-resolution: 1.5dppx)"
+                sizes="540px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/150828-ABlanchard-Big-Basin-Google.2e16d0ba.fill-540x304.jpg 540w"&gt;
+    
+        &lt;source media="(max-width: 540px) and (min-resolution: 1.5dppx)"
+                sizes="1080px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/150828-ABlanchard-Big-Basin-Googl.2e16d0ba.fill-1080x608.jpg 1080w"&gt;
+    
+        &lt;source media="(max-resolution: 1.5dppx)"
+                sizes="1000px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/150828-ABlanchard-Big-Basin-Googl.2e16d0ba.fill-1000x563.jpg 1000w"&gt;
+    
+        &lt;source media="(min-resolution: 1.5dppx)"
+                sizes="2000px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/150828-ABlanchard-Big-Basin-Goog.2e16d0ba.fill-2000x1126.jpg 2000w"&gt;
+    
+
+    &lt;img src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/150828-ABlanchard-Big-Basin-Goog.2e16d0ba.fill-2000x1126.jpg"
+
+         
+            alt="150828-ABlanchard-Big-Basin-Google-Trekker-9399.jpg"
+         
+
+         sizes="(max-width: 540px) 540px, (max-width: 540px) 1080px,  1000px,  2000px"
+         srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/150828-ABlanchard-Big-Basin-Google.2e16d0ba.fill-540x304.jpg 540w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/150828-ABlanchard-Big-Basin-Googl.2e16d0ba.fill-1080x608.jpg 1080w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/150828-ABlanchard-Big-Basin-Googl.2e16d0ba.fill-1000x563.jpg 1000w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/150828-ABlanchard-Big-Basin-Goog.2e16d0ba.fill-2000x1126.jpg 2000w"&gt;
+
+    
+
+
+    
+
+
+                    &lt;/div&gt;
+                    
+                        &lt;figcaption&gt;&lt;div class="rich-text"&gt;This Sempervirens Fund volunteer is on top of the world! (Photo courtesy of  Sempervirens Fund.) &lt;/div&gt;&lt;/figcaption&gt;
+                    
+                &lt;/div&gt;
+            &lt;/figure&gt;
+        
+    &lt;/div&gt;
+
+    &lt;div class="uni-carousel-arrows-container hide-tablet hide-mobile"&gt;
+        &lt;button class="uni-carousel-left-arrow"
+                aria-label="left arrow"&gt;
+        &lt;/button&gt;
+        &lt;button class="uni-carousel-right-arrow"
+                aria-label="right arrow"&gt;
+        &lt;/button&gt;
+    &lt;/div&gt;
+
+    &lt;nav&gt;
+        
+            &lt;button aria-label="slide  1"&gt;&lt;/button&gt;
+        
+            &lt;button aria-label="slide  2"&gt;&lt;/button&gt;
+        
+            &lt;button aria-label="slide  3"&gt;&lt;/button&gt;
+        
+            &lt;button aria-label="slide  4"&gt;&lt;/button&gt;
+        
+            &lt;button aria-label="slide  5"&gt;&lt;/button&gt;
+        
+            &lt;button aria-label="slide  6"&gt;&lt;/button&gt;
+        
+            &lt;button aria-label="slide  7"&gt;&lt;/button&gt;
+        
+    &lt;/nav&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;img src="http://feeds.feedburner.com/~r/blogspot/MKuf/~4/CGwOQY2zsos" height="1" width="1" alt=""/&gt;</description>
+            <pubDate>Tue, 11 Apr 2017 20:00:00 +0000</pubDate>
+            <guid isPermaLink="false">http://www.blog.google:443/products/maps/whoa-s-one-big-tree-check-it-out-new-street-view-collection/</guid>
+            <category>Maps</category>
+            <category>Google Earth</category>
+            <media:content url="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Redwoods_NPW_hero_B.2e16d0ba.fill-540x540.png" width="540" height="540"/>
+            <og xmlns:og="http://ogp.me/ns#">
+                <type>article</type>
+                <title>Whoa, that’s one big tree … check it out in a new Street View collection</title>
+                <description>California’s Big Basin Redwoods State Park is now available on Street View. </description>
+                <image>https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Redwoods_NPW_hero_B.2e16d0ba.fill-540x540.png</image>
+                <site_name>Google</site_name>
+                <url>http://www.blog.google:443/products/maps/whoa-s-one-big-tree-check-it-out-new-street-view-collection/</url>
+            </og>
+            <author xmlns:author="http://www.w3.org/2005/Atom">
+                <name>Karin  Tuxen-Bettman</name>
+                <title>Program Manager</title>
+                <department>Google Earth Outreach </department>
+                <company/>
+            </author>
+            <feedburner:origLink>http://www.blog.google:443/products/maps/whoa-s-one-big-tree-check-it-out-new-street-view-collection/</feedburner:origLink>
+        </item>
+        <item>
+            <title>Fast Drawing for Everyone</title>
+            <link>http://feedproxy.google.com/~r/blogspot/MKuf/~3/rCxi_ZhNdT8/</link>
+            <description>&lt;div class="block-paragraph"&gt;&lt;div class="rich-text"&gt;&lt;p&gt;Drawing on your phone or computer can be slow and difficult—so we created &lt;a href="https://www.autodraw.com"&gt;AutoDraw&lt;/a&gt;, a new web-based tool that pairs machine learning with drawings created by talented artists to help you draw.&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;div class="block-image_full_width"&gt;&lt;!--image full width--&gt;
+&lt;div class="uni-full-width"&gt;
+    &lt;figure&gt;
+        
+
+        
+
+    
+        &lt;img src="https://storage.googleapis.com/gweb-uniblog-publish-prod/original_images/AutoDraw_1.gif" alt="AutoDraw_1.gif" /&gt;
+    
+
+
+
+        
+
+        
+    &lt;/figure&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="block-paragraph"&gt;&lt;div class="rich-text"&gt;&lt;p&gt;It works on your phone, computer, or tablet (and it’s free!). So the next time you want to make a birthday card, party invite or just doodle on your phone, it’ll be as easy and fast as everything else on the web.&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;div class="block-video"&gt;
+
+&lt;div class="uni-full-width "
+     uni-component="video"
+     uni-options="{'overlay': false}"
+     uni-video-id="VwRbvVrUXTc"
+     uni-block-index=""
+     &gt;
+    &lt;div class="uni-video"&gt;
+        &lt;div id="uni-video-VwRbvVrUXTc-"&gt;&lt;/div&gt;
+        
+    &lt;/div&gt;
+    
+        &lt;h2  class="show-small" &gt;Fast Drawing for Everyone&lt;/h2&gt;
+    
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="block-paragraph"&gt;&lt;div class="rich-text"&gt;&lt;p&gt;If you’re interested in learning more about the magic behind AutoDraw, check out &lt;a href="https://quickdraw.withgoogle.com/"&gt;“Quick, Draw!” &lt;/a&gt; (one of our A.I. Experiments). AutoDraw’s suggestion tool uses the same technology to guess what you’re trying to draw.&lt;/p&gt;&lt;p&gt;Big thanks to the artists, designers, illustrators and friends of Google who created original drawings for AutoDraw.&lt;br/&gt;&lt;/p&gt;&lt;p&gt;&lt;b&gt;HAWRAF&lt;/b&gt;, Design Studio&lt;br/&gt;&lt;b&gt;Erin Butner&lt;/b&gt;, Designer&lt;br/&gt;&lt;b&gt;Julia Melograna&lt;/b&gt;, Illustrator&lt;br/&gt;&lt;b&gt;Pei Liew&lt;/b&gt;, Designer&lt;br/&gt;&lt;b&gt;Simone Noronha&lt;/b&gt;, Designer&lt;br/&gt;&lt;b&gt;Tori Hinn&lt;/b&gt;, Designer&lt;br/&gt;&lt;b&gt;Selman Design&lt;/b&gt;, Creative Studio&lt;/p&gt;&lt;p&gt;If you are interested in submitting your own drawings, you &lt;a href="https://www.autodraw.com/artists"&gt;can do that here&lt;/a&gt;. We hope that &lt;a href="http://www.autodraw.com"&gt;AutoDraw&lt;/a&gt;, our latest A.I. Experiment, will make drawing more accessible and fun for everyone.&lt;br/&gt;&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;&lt;img src="http://feeds.feedburner.com/~r/blogspot/MKuf/~4/rCxi_ZhNdT8" height="1" width="1" alt=""/&gt;</description>
+            <pubDate>Tue, 11 Apr 2017 17:15:00 +0000</pubDate>
+            <guid isPermaLink="false">http://www.blog.google:443/topics/machine-learning/fast-drawing-everyone/</guid>
+            <category>Machine Learning</category>
+            <category>Chrome</category>
+            <media:content url="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Autodraw_Keyword-hero.2e16d0ba.fill-540x540.jpg" width="540" height="540"/>
+            <og xmlns:og="http://ogp.me/ns#">
+                <type>article</type>
+                <title>Fast Drawing for Everyone</title>
+                <description>AutoDraw is a new A.I. Experiment, built by Google Creative Lab, which uses machine learning and artists’ drawings, to help everyone create anything visual, fast.</description>
+                <image>https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Autodraw_Keyword-hero.2e16d0ba.fill-540x540.jpg</image>
+                <site_name>Google</site_name>
+                <url>http://www.blog.google:443/topics/machine-learning/fast-drawing-everyone/</url>
+            </og>
+            <author xmlns:author="http://www.w3.org/2005/Atom">
+                <name>Dan Motzenbecker</name>
+                <title>Creative Technologist</title>
+                <department>Google Creative Lab</department>
+                <company/>
+            </author>
+            <feedburner:origLink>http://www.blog.google:443/topics/machine-learning/fast-drawing-everyone/</feedburner:origLink>
+        </item>
+        <item>
+            <title>Taking aim at annoying page jumps in Chrome</title>
+            <link>http://feedproxy.google.com/~r/blogspot/MKuf/~3/_t5258lJ5-M/</link>
+            <description>&lt;div class="block-paragraph"&gt;&lt;div class="rich-text"&gt;&lt;p&gt;Have you ever opened a link shared by a friend to an article you were eager to read, scrolled to the second paragraph, and found yourself suddenly back near the top of the page, as if everything had shifted beneath you?&lt;/p&gt;These annoying page jumps typically happen when the website inserts an image or other content above the visible area, pushing down what’s on the screen. With the newest Chrome update, we’re introducing something called scroll anchoring, which locks the content you’re currently looking at to the screen, keeping you in the same spot so you can keep reading. Check out a side-by-side comparison, without and with scroll anchoring:&lt;/div&gt;&lt;/div&gt;
+&lt;div class="block-video"&gt;
+
+&lt;div class="uni-full-width "
+     uni-component="video"
+     uni-options="{'overlay': false}"
+     uni-video-id="-Fr-i4dicCQ"
+     uni-block-index=""
+     &gt;
+    &lt;div class="uni-video"&gt;
+        &lt;div id="uni-video--Fr-i4dicCQ-"&gt;&lt;/div&gt;
+        
+    &lt;/div&gt;
+    
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="block-paragraph"&gt;&lt;div class="rich-text"&gt;&lt;p&gt;Scroll anchoring is one of our favorite kinds of features—those that shine when no one notices them. Today we’re preventing an average of almost three “jumps” per pageview, and we’re still getting better. If you’re a web developer or you’d like to learn more, see our &lt;a href="https://blog.chromium.org/2017/04/scroll-anchoring-for-web-developers.html"&gt;technical guide&lt;/a&gt; to understand how it works and what it means for your website.&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;&lt;img src="http://feeds.feedburner.com/~r/blogspot/MKuf/~4/_t5258lJ5-M" height="1" width="1" alt=""/&gt;</description>
+            <pubDate>Tue, 11 Apr 2017 16:00:00 +0000</pubDate>
+            <guid isPermaLink="false">http://www.blog.google:443/products/chrome/taking-aim-annoying-page-jumps-chrome/</guid>
+            <category>Chrome</category>
+            <media:content url="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Chrome_anchorscroll_aim.2e16d0ba.fill-540x540.jpg" width="540" height="540"/>
+            <og xmlns:og="http://ogp.me/ns#">
+                <type>article</type>
+                <title>Taking aim at annoying page jumps in Chrome</title>
+                <description>The latest update to Chrome introduces scroll anchoring, which locks the content you’re currently looking at to the screen so you can keep reading easily.</description>
+                <image>https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Chrome_anchorscroll_aim.2e16d0ba.fill-540x540.jpg</image>
+                <site_name>Google</site_name>
+                <url>http://www.blog.google:443/products/chrome/taking-aim-annoying-page-jumps-chrome/</url>
+            </og>
+            <author xmlns:author="http://www.w3.org/2005/Atom">
+                <name>Steve  Kobes</name>
+                <title>“The Unbouncer”</title>
+                <department/>
+                <company/>
+            </author>
+            <feedburner:origLink>http://www.blog.google:443/products/chrome/taking-aim-annoying-page-jumps-chrome/</feedburner:origLink>
+        </item>
+        <item>
+            <title>Google Cloud expands Education Grants Program to 30 additional countries</title>
+            <link>http://feedproxy.google.com/~r/blogspot/MKuf/~3/2jHxuvL3od8/</link>
+            <description>&lt;div class="block-paragraph"&gt;&lt;div class="rich-text"&gt;&lt;p&gt;This month the Google Cloud team attended the Special Interest Group on Computer Science Education (SIGCSE), a conference that brings together 1,200 computer science (CS) professors from around the world. We had the chance to learn from professors who are leading CS innovation at more than 500 universities worldwide. At Google, we understand the critical role professors play in enabling students to build what’s next. Last summer we launched the Google Cloud Platform &lt;a href="http://google.com/edu/products/cloud-platform?utm_source=edublog&amp;amp;utm_medium=social&amp;amp;utm_campaign=2016-edu-gcp-na-grants-orgsocial-other-crossreg-cs_edu_social&amp;amp;utm_content="&gt;Education Grants for computer science&lt;/a&gt; for professors in the United States. We're excited to extend this program to 30 new countries across continental Europe, the UK, Israel, Switzerland and Canada. &lt;/p&gt;&lt;p&gt;University professors, who teach CS or related subjects and are from qualifying countries, can apply for grants to support their courses. Through the &lt;a href="https://cloud.google.com/"&gt;Google Cloud Platform&lt;/a&gt; (GCP) Education Grants program,  professors and their students can access GCP to use the same infrastructure, analytics and machine learning that we use across Google to power our innovation. Whether it’s launching an app seamlessly with &lt;a href="https://cloud.google.com/appengine/"&gt;Google App Engine&lt;/a&gt; or using our &lt;a href="https://cloud.google.com/products/machine-learning/"&gt;Cloud Machine Learning&lt;/a&gt; tools, including the popular &lt;a href="https://cloud.google.com/natural-language/"&gt;Cloud Natural Language API&lt;/a&gt; or &lt;a href="https://cloud.google.com/vision/"&gt;Cloud Vision API&lt;/a&gt;, you can incorporate Google’s state-of-the-art image recognition capabilities into web apps. &lt;/p&gt;&lt;p&gt;Computer science professors in certain European Union countries, the UK, Israel, Switzerland and Canada can &lt;a href="https://lp.google-mkto.com/CloudEduGrants?utm_source=edublog&amp;amp;utm_medium=social&amp;amp;utm_campaign=2016-edu-gcp-na-grants-orgsocial-other-crossreg-cs_edu_social&amp;amp;utm_content="&gt;apply here&lt;/a&gt; for Education Grants. Others interested in GCP for Higher Education should complete &lt;a href="https://lp.google-mkto.com/CloudEduGrants_Interest.html"&gt;this form&lt;/a&gt; to stay up to date with the latest from Google Cloud. &lt;/p&gt;&lt;p&gt;We look forward to seeing the new ways professors and students will use their GCP Education Grants. We'll share stories about cool projects on this blog and our social channels.&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;&lt;img src="http://feeds.feedburner.com/~r/blogspot/MKuf/~4/2jHxuvL3od8" height="1" width="1" alt=""/&gt;</description>
+            <pubDate>Tue, 11 Apr 2017 13:00:00 +0000</pubDate>
+            <guid isPermaLink="false">http://www.blog.google:443/topics/google-cloud/google-cloud-expands-education-grants-program-30-additional-countries/</guid>
+            <category>Google Cloud</category>
+            <category>Education</category>
+            <media:content url="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/about_fallback_B_1_xoOxFPq.2e16d0ba.fill-540x540.png" width="540" height="540"/>
+            <og xmlns:og="http://ogp.me/ns#">
+                <type>article</type>
+                <title>Google Cloud expands Education Grants Program to 30 additional countries</title>
+                <description>We're excited to extend the Google Cloud Platform Education Grants program to 30 new countries across continental Europe, the UK, Israel, Switzerland, and Canada.</description>
+                <image>https://storage.googleapis.com/gweb-uniblog-publish-prod/images/about_fallback_B_1_xoOxFPq.2e16d0ba.fill-540x540.png</image>
+                <site_name>Google</site_name>
+                <url>http://www.blog.google:443/topics/google-cloud/google-cloud-expands-education-grants-program-30-additional-countries/</url>
+            </og>
+            <author xmlns:author="http://www.w3.org/2005/Atom">
+                <name>Elizabeth Sproat</name>
+                <title>Head of Education, EMEA</title>
+                <department/>
+                <company/>
+            </author>
+            <feedburner:origLink>http://www.blog.google:443/topics/google-cloud/google-cloud-expands-education-grants-program-30-additional-countries/</feedburner:origLink>
+        </item>
+        <item>
+            <title>Our focus on pay equity</title>
+            <link>http://feedproxy.google.com/~r/blogspot/MKuf/~3/GXhuCNwOb8I/</link>
+            <description>&lt;div class="block-paragraph"&gt;&lt;div class="rich-text"&gt;&lt;p&gt;Pay equity is a huge issue, not just for Silicon Valley companies, but across every industry in every country.&lt;/p&gt;&lt;p&gt;It’s very important to us that men and women who join Google in the same role are compensated on a level playing field, when they start and throughout their careers here.&lt;br/&gt;&lt;/p&gt;&lt;p&gt;That’s why, in the hopes of encouraging a broader conversation around the pay gap - and how companies can fight it - we shared our &lt;a href="https://www.washingtonpost.com/news/on-leadership/wp/2016/04/29/how-the-whats-your-current-salary-question-hurts-the-gender-pay-gap/?utm_term=.21e44c19cda6"&gt;top-level analysis publicly in 2016&lt;/a&gt;. Google conducts rigorous, annual analyses so that our pay practices remain aligned with our commitment to equal pay practices.&lt;br/&gt;&lt;/p&gt;&lt;p&gt;So we were quite surprised when a representative of the Office of Federal Contract Compliance Programs at the U.S. Department of Labor (OFCCP) accused us of not compensating women fairly.  We were taken aback by this assertion, which came without any supporting data or methodology.  The OFCCP representative claimed to have reached this conclusion even as the OFCCP is seeking thousands of employee records, including contact details of our employees, in addition to the hundreds of thousands of documents we’ve already produced in response to 18 different document requests.&lt;br/&gt;&lt;/p&gt;&lt;p&gt;The fact is that our annual analysis is extremely scientific and robust. It relies on the same confidence interval that is used in medical testing (&amp;gt;95%).  And we have made the methodology &lt;a href="https://rework.withgoogle.com/guides/pay-equity/steps/introduction/"&gt;available to other businesses&lt;/a&gt; who want to test their own compensation practices for equal pay.&lt;br/&gt;&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;div class="block-paragraph"&gt;&lt;div class="rich-text"&gt;&lt;h3&gt;&lt;b&gt;So how does it work?&lt;/b&gt;&lt;/h3&gt;&lt;p&gt;In short, each year, we suggest an amount for every employee’s new compensation (consisting of base salary, bonus and equity) based on role, job level, job location as well as current and recent performance ratings.  This suggested amount is “blind” to gender; the analysts who calculate the suggested amounts do not have access to employees’ gender data. An employee’s manager has limited discretion to adjust the suggested amount, providing they cite a legitimate adjustment rationale.&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Our pay equity model then looks at employees in the same job categories, and analyzes their compensation to confirm that the adjusted amount shows no statistically significant differences between men’s and women’s compensation.&lt;br/&gt;&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;div class="block-image_full_width"&gt;&lt;!--image full width--&gt;
+&lt;div class="uni-full-width"&gt;
+    &lt;figure&gt;
+        
+
+        
+
+    
+        
+
+
+    
+
+    
+        &lt;source media="(max-width: 540px) and (max-resolution: 1.5dppx)"
+                sizes="540px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/equalpay_statement_keyword.width-540.jpg 540w"&gt;
+    
+        &lt;source media="(max-width: 540px) and (min-resolution: 1.5dppx)"
+                sizes="1080px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/equalpay_statement_keyword.width-1080.jpg 1080w"&gt;
+    
+        &lt;source media="(max-resolution: 1.5dppx)"
+                sizes="1000px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/equalpay_statement_keyword.width-1000.jpg 1000w"&gt;
+    
+        &lt;source media="(min-resolution: 1.5dppx)"
+                sizes="1927px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/equalpay_statement_keyword.width-1927.jpg 1927w"&gt;
+    
+
+    &lt;img src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/equalpay_statement_keyword.width-1927.jpg"
+
+         
+            alt="equalpay_action_keyword.jpg"
+         
+
+         sizes="(max-width: 540px) 540px, (max-width: 540px) 1080px,  1000px,  1927px"
+         srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/equalpay_statement_keyword.width-540.jpg 540w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/equalpay_statement_keyword.width-1080.jpg 1080w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/equalpay_statement_keyword.width-1000.jpg 1000w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/equalpay_statement_keyword.width-1927.jpg 1927w"&gt;
+
+    
+
+
+    
+
+
+
+        
+
+        
+    &lt;/figure&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="block-paragraph"&gt;&lt;div class="rich-text"&gt;&lt;p&gt;In late 2016, we performed our most recent analysis across 52 different, major job categories, and found no gender pay gap. Nevertheless, if individual employees are concerned, or think there are unique factors at play, or want a more individualized assessment, we dive deeper and make any appropriate corrections.&lt;/p&gt;&lt;p&gt;Our analysis gives us confidence that there is no gender pay gap at Google.  In fact, we recently expanded the analysis to cover &lt;a href="https://twitter.com/Google/status/849247401110097920"&gt;race&lt;/a&gt; in the US.&lt;br/&gt;&lt;/p&gt;&lt;p&gt;We hope to work with the OFCCP to resolve this issue, and to help in its mission to improve equal pay across federal contractors.  And we look forward to demonstrating the robustness of Google’s approach to equal pay.&lt;br/&gt;&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;&lt;img src="http://feeds.feedburner.com/~r/blogspot/MKuf/~4/GXhuCNwOb8I" height="1" width="1" alt=""/&gt;</description>
+            <pubDate>Tue, 11 Apr 2017 00:30:00 +0000</pubDate>
+            <guid isPermaLink="false">http://www.blog.google:443/topics/diversity/our-focus-pay-equity/</guid>
+            <category>Diversity</category>
+            <media:content url="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/about_fallback_A_3_W3zqR6s.2e16d0ba.fill-540x540.png" width="540" height="540"/>
+            <og xmlns:og="http://ogp.me/ns#">
+                <type>article</type>
+                <title>Our focus on pay equity</title>
+                <description/>
+                <image>https://storage.googleapis.com/gweb-uniblog-publish-prod/images/about_fallback_A_3_W3zqR6s.2e16d0ba.fill-540x540.png</image>
+                <site_name>Google</site_name>
+                <url>http://www.blog.google:443/topics/diversity/our-focus-pay-equity/</url>
+            </og>
+            <author xmlns:author="http://www.w3.org/2005/Atom">
+                <name>Eileen Naughton</name>
+                <title>Vice President</title>
+                <department>People Operations</department>
+                <company/>
+            </author>
+            <feedburner:origLink>http://www.blog.google:443/topics/diversity/our-focus-pay-equity/</feedburner:origLink>
+        </item>
+        <item>
+            <title>Say bees! The buzz about Cloud Vision API</title>
+            <link>http://feedproxy.google.com/~r/blogspot/MKuf/~3/xuTF-Q3-B6Q/</link>
+            <description>&lt;div class="block-paragraph"&gt;&lt;div class="rich-text"&gt;&lt;p&gt;What do declining bee populations and machine learning have in common? Natural personal care brand &lt;a href="http://www.burtsbees.com/"&gt;Burt’s Bees&lt;/a&gt; hopes to plant 2 billion bee-nourishing wildflowers through its latest Bring Back the Bees campaign, and has enlisted the &lt;a href="https://cloud.google.com/vision/"&gt;Cloud Vision API&lt;/a&gt; to help.&lt;/p&gt;&lt;p&gt;For every “selfless selfie” that bee lovers create, Burt’s Bees will plant 5,000 wildflower seeds in its home state of North Carolina, in hopes of restoring the furry pollinators’ habitat and food supply. The Burt’s Bees mobile-optimized site takes the selfie, overlays pictures of wildflowers onto it and encourages people to spread the word by sharing the image back to social media.  &lt;/p&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;div class="block-image_full_width"&gt;&lt;!--image full width--&gt;
+&lt;div class="uni-full-width"&gt;
+    &lt;figure&gt;
+        
+
+        
+
+    
+        
+
+
+    
+
+    
+        &lt;source media="(max-width: 540px) and (max-resolution: 1.5dppx)"
+                sizes="540px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/burtsbees-1.width-540.png 540w"&gt;
+    
+        &lt;source media="(max-width: 540px) and (min-resolution: 1.5dppx)"
+                sizes="651px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/burtsbees-1.width-651.png 651w"&gt;
+    
+        &lt;source media="(max-resolution: 1.5dppx)"
+                sizes="651px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/burtsbees-1.width-651.png 651w"&gt;
+    
+
+    &lt;img src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/burtsbees-1.width-651.png"
+
+         
+            alt="burtsbees-1"
+         
+
+         sizes="(max-width: 540px) 540px, (max-width: 540px) 651px,  651px"
+         srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/burtsbees-1.width-540.png 540w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/burtsbees-1.width-651.png 651w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/burtsbees-1.width-651.png 651w"&gt;
+
+    
+
+
+    
+
+
+
+        
+
+        
+    &lt;/figure&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="block-paragraph"&gt;&lt;div class="rich-text"&gt;&lt;p&gt;But before Burt’s Bees can apply the wildflower filter, Cloud Vision API first analyzes the image to make sure it's a good fit. Its image recognition capabilities detect whether the image is in fact of a single face, and whether the face is appropriately centered in the frame. It also determines where on the frame the filter can add wildflowers, so that no one’s face is covered.&lt;/p&gt;&lt;p&gt;When done correctly, planting wildflowers can be a simple way to help declining worldwide bee populations. Likewise, using the Cloud Vision API is a simple approach to the difficult task of machine-assisted image recognition. Cloud Vision API provides developers with a drop-dead easy way to access the state-of-the-art machine learning models that Google artificial intelligence researchers have developed over decades. Cloud Vision API can easily detect objects, people, landmarks, logos and text, and describes those attributes in a web-friendly JSON format. Burt’s Bees #SelflessSelfie is just one—albeit very sweet—example of what Cloud Vision API can do.&lt;/p&gt;&lt;p&gt;To upload your own selfless selfie, visit &lt;a href="http://selflessselfie.burtsbees.com"&gt;selflessselfie.burtsbees.com&lt;/a&gt;, and to learn more about Cloud Vision API and other services, visit our &lt;a href="https://cloud.google.com/products/machine-learning/"&gt;Cloud Machine Learning&lt;/a&gt; page.&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;&lt;img src="http://feeds.feedburner.com/~r/blogspot/MKuf/~4/xuTF-Q3-B6Q" height="1" width="1" alt=""/&gt;</description>
+            <pubDate>Mon, 10 Apr 2017 16:00:00 +0000</pubDate>
+            <guid isPermaLink="false">http://www.blog.google:443/topics/google-cloud/say-bees-buzz-about-cloud-vision-api/</guid>
+            <category>Google Cloud</category>
+            <media:content url="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/burtsbees-2_8IP7jST.2e16d0ba.fill-540x540.png" width="540" height="540"/>
+            <og xmlns:og="http://ogp.me/ns#">
+                <type>article</type>
+                <title>Say bees! The buzz about Cloud Vision API</title>
+                <description>Burt’s Bees strives to Bring Back the Bees by planting 5,000 wildflowers for every selfie created by a bee lover. See how the #SelflessSelfie campaign uses Cloud Vision API.
+</description>
+                <image>https://storage.googleapis.com/gweb-uniblog-publish-prod/images/burtsbees-2_8IP7jST.2e16d0ba.fill-540x540.png</image>
+                <site_name>Google</site_name>
+                <url>http://www.blog.google:443/topics/google-cloud/say-bees-buzz-about-cloud-vision-api/</url>
+            </og>
+            <author xmlns:author="http://www.w3.org/2005/Atom">
+                <name>Alex Barrett</name>
+                <title>Editor, Google Cloud Blog</title>
+                <department/>
+                <company/>
+            </author>
+            <feedburner:origLink>http://www.blog.google:443/topics/google-cloud/say-bees-buzz-about-cloud-vision-api/</feedburner:origLink>
+        </item>
+        <item>
+            <title>With these Pixel tips, your photos will bloom bright</title>
+            <link>http://feedproxy.google.com/~r/blogspot/MKuf/~3/yH0XFPLulsk/</link>
+            <description>&lt;div class="block-paragraph"&gt;&lt;div class="rich-text"&gt;&lt;p&gt;Spring has sprung, and so have desert wildflowers, daffodils along the highway, and even the tulips you picked up at your florist. Everything seems to be in bloom—and everyone is sharing photos of flowers on social media.&lt;/p&gt;&lt;p&gt;Your petal pics should be the best of the bunch. So with help from Brittany Asch of &lt;a href="https://www.instagram.com/brrch_floral/?hl=en"&gt;BRRCH Floral&lt;/a&gt;, we’ve gathered a few tips to help you take, store and share the prettiest photos of poppies, petunias, phlox or whatever blossoms you love best—with help from your Pixel, Phone by Google, of course!&lt;/p&gt;&lt;ol&gt;&lt;li&gt;&lt;b&gt;Lighting is key. &lt;/b&gt;Check your exposure to ensure you're giving your plants and flowers the right amount of light to see the details. On Pixel, you can easily brighten or darken your shot to get the perfect amount of exposure. Tap the camera, the slide your finger up or down to adjust the exposure depending on the lighting conditions.&lt;br/&gt;&lt;/li&gt;&lt;li&gt;&lt;b&gt;Consider your frame. &lt;/b&gt;Take note of the surrounding area (is it worthy of the ‘gram?). If it’s not, zoom in. If it is, capture a wider angle that shows the full view. On Pixel, you can use a compositional tool to help frame your shot. Look for the grid in the top right of the camera—your arrangement should be at the center of the grid. We recommend 3 x 3 as a ratio for flowers.&lt;/li&gt;&lt;li&gt;&lt;b&gt;That Lens Blur, tho. &lt;/b&gt;This Pixel feature will make your photos look professional. Start by clicking on the menu bar at the top left; you’ll see the Lens Blur option second from the bottom. Click on it, take your photo and slowly raise your phone to capture the perfect lens blur. After you snap a photo you can also edit the placement and degree of lens blur. This is a great for up-close shots!&lt;/li&gt;&lt;li&gt;&lt;b&gt;Grab a friend. &lt;/b&gt;Have him or her pose with your flowers to bring them to life and add depth to the photo.&lt;/li&gt;&lt;li&gt;&lt;b&gt;Take as many as you want! &lt;/b&gt;With Pixel, you get unlimited high-quality storage with Google Photos for free, so you can try out as many shots as you need without worrying about filling up your phone with dud buds.&lt;/li&gt;&lt;li&gt;&lt;b&gt;Find ‘em later. &lt;/b&gt;Just type “flowers” into the search bar in Google Photos for a bouquet of photos just waiting to be shared.&lt;/li&gt;&lt;/ol&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;div class="block-image_carousel"&gt;
+
+&lt;div class="uni-full-width uni-carousel" uni-component="carousel"&gt;
+    &lt;div class="uni-carousel-container wrap"&gt;
+        
+            &lt;figure&gt;
+                &lt;div class="uni-carousel-slide-content"&gt;
+                    &lt;div class="uni-carousel-image"&gt;
+                        
+
+    
+        
+
+
+    
+
+    
+        &lt;source media="(max-width: 540px) and (max-resolution: 1.5dppx)"
+                sizes="540px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/2017-04-05_Google_0756.2e16d0ba.fill-540x304.jpg 540w"&gt;
+    
+        &lt;source media="(max-width: 540px) and (min-resolution: 1.5dppx)"
+                sizes="1080px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/2017-04-05_Google_0756.2e16d0ba.fill-1080x608.jpg 1080w"&gt;
+    
+        &lt;source media="(max-resolution: 1.5dppx)"
+                sizes="1000px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/2017-04-05_Google_0756.2e16d0ba.fill-1000x563.jpg 1000w"&gt;
+    
+        &lt;source media="(min-resolution: 1.5dppx)"
+                sizes="2000px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/2017-04-05_Google_0756.2e16d0ba.fill-2000x1126.jpg 2000w"&gt;
+    
+
+    &lt;img src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/2017-04-05_Google_0756.2e16d0ba.fill-2000x1126.jpg"
+
+         
+            alt="2017-04-05_Google_0756.jpg"
+         
+
+         sizes="(max-width: 540px) 540px, (max-width: 540px) 1080px,  1000px,  2000px"
+         srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/2017-04-05_Google_0756.2e16d0ba.fill-540x304.jpg 540w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/2017-04-05_Google_0756.2e16d0ba.fill-1080x608.jpg 1080w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/2017-04-05_Google_0756.2e16d0ba.fill-1000x563.jpg 1000w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/2017-04-05_Google_0756.2e16d0ba.fill-2000x1126.jpg 2000w"&gt;
+
+    
+
+
+    
+
+
+                    &lt;/div&gt;
+                    
+                        &lt;figcaption&gt;&lt;div class="rich-text"&gt;Photo credit: Dorothy Hong&lt;/div&gt;&lt;/figcaption&gt;
+                    
+                &lt;/div&gt;
+            &lt;/figure&gt;
+        
+            &lt;figure&gt;
+                &lt;div class="uni-carousel-slide-content"&gt;
+                    &lt;div class="uni-carousel-image"&gt;
+                        
+
+    
+        
+
+
+    
+
+    
+        &lt;source media="(max-width: 540px) and (max-resolution: 1.5dppx)"
+                sizes="540px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/2017-04-05_Google_0392.2e16d0ba.fill-540x304.jpg 540w"&gt;
+    
+        &lt;source media="(max-width: 540px) and (min-resolution: 1.5dppx)"
+                sizes="1080px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/2017-04-05_Google_0392.2e16d0ba.fill-1080x608.jpg 1080w"&gt;
+    
+        &lt;source media="(max-resolution: 1.5dppx)"
+                sizes="1000px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/2017-04-05_Google_0392.2e16d0ba.fill-1000x563.jpg 1000w"&gt;
+    
+        &lt;source media="(min-resolution: 1.5dppx)"
+                sizes="2000px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/2017-04-05_Google_0392.2e16d0ba.fill-2000x1126.jpg 2000w"&gt;
+    
+
+    &lt;img src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/2017-04-05_Google_0392.2e16d0ba.fill-2000x1126.jpg"
+
+         
+            alt="2017-04-05_Google_0392.jpg"
+         
+
+         sizes="(max-width: 540px) 540px, (max-width: 540px) 1080px,  1000px,  2000px"
+         srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/2017-04-05_Google_0392.2e16d0ba.fill-540x304.jpg 540w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/2017-04-05_Google_0392.2e16d0ba.fill-1080x608.jpg 1080w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/2017-04-05_Google_0392.2e16d0ba.fill-1000x563.jpg 1000w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/2017-04-05_Google_0392.2e16d0ba.fill-2000x1126.jpg 2000w"&gt;
+
+    
+
+
+    
+
+
+                    &lt;/div&gt;
+                    
+                        &lt;figcaption&gt;&lt;div class="rich-text"&gt;Photo credit: Dorothy Hong&lt;/div&gt;&lt;/figcaption&gt;
+                    
+                &lt;/div&gt;
+            &lt;/figure&gt;
+        
+            &lt;figure&gt;
+                &lt;div class="uni-carousel-slide-content"&gt;
+                    &lt;div class="uni-carousel-image"&gt;
+                        
+
+    
+        
+
+
+    
+
+    
+        &lt;source media="(max-width: 540px) and (max-resolution: 1.5dppx)"
+                sizes="540px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/2017-04-05_Google_0690.2e16d0ba.fill-540x304.jpg 540w"&gt;
+    
+        &lt;source media="(max-width: 540px) and (min-resolution: 1.5dppx)"
+                sizes="1080px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/2017-04-05_Google_0690.2e16d0ba.fill-1080x608.jpg 1080w"&gt;
+    
+        &lt;source media="(max-resolution: 1.5dppx)"
+                sizes="1000px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/2017-04-05_Google_0690.2e16d0ba.fill-1000x563.jpg 1000w"&gt;
+    
+        &lt;source media="(min-resolution: 1.5dppx)"
+                sizes="2000px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/2017-04-05_Google_0690.2e16d0ba.fill-2000x1126.jpg 2000w"&gt;
+    
+
+    &lt;img src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/2017-04-05_Google_0690.2e16d0ba.fill-2000x1126.jpg"
+
+         
+            alt="2017-04-05_Google_0690.jpg"
+         
+
+         sizes="(max-width: 540px) 540px, (max-width: 540px) 1080px,  1000px,  2000px"
+         srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/2017-04-05_Google_0690.2e16d0ba.fill-540x304.jpg 540w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/2017-04-05_Google_0690.2e16d0ba.fill-1080x608.jpg 1080w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/2017-04-05_Google_0690.2e16d0ba.fill-1000x563.jpg 1000w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/2017-04-05_Google_0690.2e16d0ba.fill-2000x1126.jpg 2000w"&gt;
+
+    
+
+
+    
+
+
+                    &lt;/div&gt;
+                    
+                        &lt;figcaption&gt;&lt;div class="rich-text"&gt;Photo credit: Dorothy Hong&lt;/div&gt;&lt;/figcaption&gt;
+                    
+                &lt;/div&gt;
+            &lt;/figure&gt;
+        
+            &lt;figure&gt;
+                &lt;div class="uni-carousel-slide-content"&gt;
+                    &lt;div class="uni-carousel-image"&gt;
+                        
+
+    
+        
+
+
+    
+
+    
+        &lt;source media="(max-width: 540px) and (max-resolution: 1.5dppx)"
+                sizes="540px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/2017-04-05_Google_1151.2e16d0ba.fill-540x304.jpg 540w"&gt;
+    
+        &lt;source media="(max-width: 540px) and (min-resolution: 1.5dppx)"
+                sizes="1080px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/2017-04-05_Google_1151.2e16d0ba.fill-1080x608.jpg 1080w"&gt;
+    
+        &lt;source media="(max-resolution: 1.5dppx)"
+                sizes="1000px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/2017-04-05_Google_1151.2e16d0ba.fill-1000x563.jpg 1000w"&gt;
+    
+        &lt;source media="(min-resolution: 1.5dppx)"
+                sizes="2000px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/2017-04-05_Google_1151.2e16d0ba.fill-2000x1126.jpg 2000w"&gt;
+    
+
+    &lt;img src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/2017-04-05_Google_1151.2e16d0ba.fill-2000x1126.jpg"
+
+         
+            alt="2017-04-05_Google_1151.jpg"
+         
+
+         sizes="(max-width: 540px) 540px, (max-width: 540px) 1080px,  1000px,  2000px"
+         srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/2017-04-05_Google_1151.2e16d0ba.fill-540x304.jpg 540w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/2017-04-05_Google_1151.2e16d0ba.fill-1080x608.jpg 1080w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/2017-04-05_Google_1151.2e16d0ba.fill-1000x563.jpg 1000w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/2017-04-05_Google_1151.2e16d0ba.fill-2000x1126.jpg 2000w"&gt;
+
+    
+
+
+    
+
+
+                    &lt;/div&gt;
+                    
+                        &lt;figcaption&gt;&lt;div class="rich-text"&gt;Photo credit: Dorothy Hong&lt;/div&gt;&lt;/figcaption&gt;
+                    
+                &lt;/div&gt;
+            &lt;/figure&gt;
+        
+            &lt;figure&gt;
+                &lt;div class="uni-carousel-slide-content"&gt;
+                    &lt;div class="uni-carousel-image"&gt;
+                        
+
+    
+        
+
+
+    
+
+    
+        &lt;source media="(max-width: 540px) and (max-resolution: 1.5dppx)"
+                sizes="540px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/IMG_20170405_182457.2e16d0ba.fill-540x304.jpg 540w"&gt;
+    
+        &lt;source media="(max-width: 540px) and (min-resolution: 1.5dppx)"
+                sizes="1080px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/IMG_20170405_182457.2e16d0ba.fill-1080x608.jpg 1080w"&gt;
+    
+        &lt;source media="(max-resolution: 1.5dppx)"
+                sizes="1000px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/IMG_20170405_182457.2e16d0ba.fill-1000x563.jpg 1000w"&gt;
+    
+        &lt;source media="(min-resolution: 1.5dppx)"
+                sizes="1944px"
+                srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/IMG_20170405_182457.2e16d0ba.fill-1944x1094.jpg 1944w"&gt;
+    
+
+    &lt;img src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/IMG_20170405_182457.2e16d0ba.fill-1944x1094.jpg"
+
+         
+            alt="IMG_20170405_182457.jpg"
+         
+
+         sizes="(max-width: 540px) 540px, (max-width: 540px) 1080px,  1000px,  1944px"
+         srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/IMG_20170405_182457.2e16d0ba.fill-540x304.jpg 540w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/IMG_20170405_182457.2e16d0ba.fill-1080x608.jpg 1080w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/IMG_20170405_182457.2e16d0ba.fill-1000x563.jpg 1000w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/IMG_20170405_182457.2e16d0ba.fill-1944x1094.jpg 1944w"&gt;
+
+    
+
+
+    
+
+
+                    &lt;/div&gt;
+                    
+                &lt;/div&gt;
+            &lt;/figure&gt;
+        
+    &lt;/div&gt;
+
+    &lt;div class="uni-carousel-arrows-container hide-tablet hide-mobile"&gt;
+        &lt;button class="uni-carousel-left-arrow"
+                aria-label="left arrow"&gt;
+        &lt;/button&gt;
+        &lt;button class="uni-carousel-right-arrow"
+                aria-label="right arrow"&gt;
+        &lt;/button&gt;
+    &lt;/div&gt;
+
+    &lt;nav&gt;
+        
+            &lt;button aria-label="slide  1"&gt;&lt;/button&gt;
+        
+            &lt;button aria-label="slide  2"&gt;&lt;/button&gt;
+        
+            &lt;button aria-label="slide  3"&gt;&lt;/button&gt;
+        
+            &lt;button aria-label="slide  4"&gt;&lt;/button&gt;
+        
+            &lt;button aria-label="slide  5"&gt;&lt;/button&gt;
+        
+    &lt;/nav&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="block-paragraph"&gt;&lt;div class="rich-text"&gt;&lt;p&gt;Don’t forget to share your snapshots with #teampixel for a chance to be featured on our Instagram account!&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;&lt;img src="http://feeds.feedburner.com/~r/blogspot/MKuf/~4/yH0XFPLulsk" height="1" width="1" alt=""/&gt;</description>
+            <pubDate>Mon, 10 Apr 2017 16:00:00 +0000</pubDate>
+            <guid isPermaLink="false">http://www.blog.google:443/products/pixel/pixel-tips-your-photos-will-bloom-bright/</guid>
+            <category>Pixel</category>
+            <category>Photos</category>
+            <media:content url="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/2017-04-05_Google_0363.2e16d0ba.fill-540x540.jpg" width="540" height="540"/>
+            <og xmlns:og="http://ogp.me/ns#">
+                <type>article</type>
+                <title>With these Pixel tips, your photos will bloom bright</title>
+                <description>We’ve gathered a few tips to help your spring flower photos be the best of the bunch—with help from Pixel, Phone by Google.</description>
+                <image>https://storage.googleapis.com/gweb-uniblog-publish-prod/images/2017-04-05_Google_0363.2e16d0ba.fill-540x540.jpg</image>
+                <site_name>Google</site_name>
+                <url>http://www.blog.google:443/products/pixel/pixel-tips-your-photos-will-bloom-bright/</url>
+            </og>
+            <author xmlns:author="http://www.w3.org/2005/Atom">
+                <name>Emily Wood</name>
+                <title>Managing Editor</title>
+                <department/>
+                <company/>
+            </author>
+            <feedburner:origLink>http://www.blog.google:443/products/pixel/pixel-tips-your-photos-will-bloom-bright/</feedburner:origLink>
+        </item>
+    </channel>
+</rss>

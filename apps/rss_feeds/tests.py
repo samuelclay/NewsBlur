@@ -165,6 +165,51 @@ class FeedTest(TestCase):
         content = json.decode(response.content)
         self.assertEquals(content['feeds'][str(feed['feed_id'])]['nt'], 9)
 
+    def test_load_feeds__google(self):
+        self.client.login(username='conesus', password='test')
+        old_story_guid = "http://www.blog.google:443/topics/inside-google/google-earths-incredible-3d-imagery-explained/"
+
+        management.call_command('loaddata', 'google1.json', verbosity=0)
+
+        feed = Feed.objects.get(pk=766)
+        print " Testing test_load_feeds__google: %s" % feed
+        stories = MStory.objects(story_feed_id=feed.pk)
+        self.assertEquals(stories.count(), 0)
+
+        management.call_command('refresh_feed', force=False, feed=766, single_threaded=True, daemonize=False)
+
+        stories = MStory.objects(story_feed_id=feed.pk)
+        self.assertEquals(stories.count(), 20)
+
+        response = self.client.get(reverse('load-feeds'))
+        content = json.decode(response.content)
+        self.assertEquals(content['feeds']['766']['nt'], 7)
+
+        self.client.post(reverse('mark-story-as-read'), {'story_id': old_story_guid, 'feed_id': 766})
+
+        response = self.client.get(reverse('refresh-feeds'))
+        content = json.decode(response.content)
+        self.assertEquals(content['feeds']['766']['nt'], 6)
+
+        management.call_command('loaddata', 'google2.json', verbosity=0)
+        management.call_command('refresh_feed', force=False, feed=766, single_threaded=True, daemonize=False)
+
+        stories = MStory.objects(story_feed_id=feed.pk)
+        self.assertEquals(stories.count(), 20)
+
+        url = reverse('load-single-feed', kwargs=dict(feed_id=766))
+        response = self.client.get(url)
+
+        # pprint([c['story_title'] for c in json.decode(response.content)])
+        feed = json.decode(response.content)
+
+        # Test: 1 changed char in title
+        self.assertEquals(len(feed['stories']), 6)
+
+        response = self.client.get(reverse('refresh-feeds'))
+        content = json.decode(response.content)
+        self.assertEquals(content['feeds']['766']['nt'], 6)
+        
     def test_load_feeds__brokelyn__invalid_xml(self):
         self.client.login(username='conesus', password='test')
 

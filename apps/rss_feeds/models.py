@@ -1073,15 +1073,6 @@ class Feed(models.Model):
         from utils import feed_fetcher
         r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
         original_feed_id = int(self.pk)
-        
-        if getattr(settings, 'TEST_DEBUG', False):
-            original_feed_address = self.feed_address
-            original_feed_link = self.feed_link
-            self.feed_address = self.feed_address.replace("%(NEWSBLUR_DIR)s", settings.NEWSBLUR_DIR)
-            if self.feed_link:
-                self.feed_link = self.feed_link.replace("%(NEWSBLUR_DIR)s", settings.NEWSBLUR_DIR)
-            if self.feed_address != original_feed_address or self.feed_link != original_feed_link:
-                self.save(update_fields=['feed_address', 'feed_link'])
 
         options = {
             'verbose': kwargs.get('verbose'),
@@ -1099,6 +1090,19 @@ class Feed(models.Model):
             'feed_xml': kwargs.get('feed_xml'),
             'requesting_user_id': kwargs.get('requesting_user_id', None)
         }
+        
+        if getattr(settings, 'TEST_DEBUG', False):
+            print " ---> Testing feed fetch: %s" % self.log_title
+            options['force'] = False
+            options['force_fp'] = True
+            original_feed_address = self.feed_address
+            original_feed_link = self.feed_link
+            self.feed_address = self.feed_address.replace("%(NEWSBLUR_DIR)s", settings.NEWSBLUR_DIR)
+            if self.feed_link:
+                self.feed_link = self.feed_link.replace("%(NEWSBLUR_DIR)s", settings.NEWSBLUR_DIR)
+            if self.feed_address != original_feed_address or self.feed_link != original_feed_link:
+                self.save(update_fields=['feed_address', 'feed_link'])
+        
         if self.is_newsletter:
             feed = self.update_newsletter_icon()
         else:
