@@ -154,8 +154,8 @@ class Feed(models.Model):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         current_time = int(time.time() + 60*60*24)
         unread_cutoff = self.unread_cutoff.strftime('%s')
-        print " ---> zrangebyscore zF:%s %s %s" % (self.pk, unread_cutoff, current_time)
-        story_hashes = r.zrangebyscore('zF:%s' % self.pk, unread_cutoff, current_time)
+        print " ---> zrevrangebyscore zF:%s %s %s" % (self.pk, current_time, unread_cutoff)
+        story_hashes = r.zrevrangebyscore('zF:%s' % self.pk, current_time, unread_cutoff)
         return story_hashes
         
     @classmethod
