@@ -20,7 +20,7 @@ import butterknife.OnClick;
  * Created by mark on 02/05/2017.
  */
 
-public class StoryFontDialogFragment extends DialogFragment {
+public class ReadingFontDialogFragment extends DialogFragment {
 
     private static String SELECTED_FONT = "selectedFont";
 
@@ -34,8 +34,8 @@ public class StoryFontDialogFragment extends DialogFragment {
     @Bind(R.id.radio_noto_serif) RadioButton notoSerifButton;
     @Bind(R.id.radio_whitney) RadioButton whitneyButton;
 
-    public static StoryFontDialogFragment newInstance(String selectedFont) {
-        StoryFontDialogFragment dialog = new StoryFontDialogFragment();
+    public static ReadingFontDialogFragment newInstance(String selectedFont) {
+        ReadingFontDialogFragment dialog = new ReadingFontDialogFragment();
         Bundle args = new Bundle();
         args.putString(SELECTED_FONT, selectedFont);
         dialog.setArguments(args);
@@ -50,7 +50,7 @@ public class StoryFontDialogFragment extends DialogFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle bundle) {
         currentValue = getArguments().getString(SELECTED_FONT);
-        View v = inflater.inflate(R.layout.storyfont_dialog, null);
+        View v = inflater.inflate(R.layout.readingfont_dialog, null);
         ButterKnife.bind(this, v);
 
         anonymousButton.setChecked(currentValue.equals(getString(R.string.anonymous_pro_font_prefvalue)));

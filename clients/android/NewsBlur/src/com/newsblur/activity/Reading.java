@@ -35,7 +35,7 @@ import com.newsblur.R;
 import com.newsblur.domain.Story;
 import com.newsblur.fragment.ReadingItemFragment;
 import com.newsblur.fragment.ShareDialogFragment;
-import com.newsblur.fragment.StoryFontDialogFragment;
+import com.newsblur.fragment.ReadingFontDialogFragment;
 import com.newsblur.fragment.TextSizeDialogFragment;
 import com.newsblur.service.NBSyncService;
 import com.newsblur.util.AppConstants;
@@ -410,8 +410,8 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 			textSize.show(getFragmentManager(), TextSizeDialogFragment.class.getName());
 			return true;
 		} else if (item.getItemId() == R.id.menu_font) {
-            StoryFontDialogFragment storyFont = StoryFontDialogFragment.newInstance(PrefsUtils.getFontString(this));
-            storyFont.show(getFragmentManager(), StoryFontDialogFragment.class.getName());
+            ReadingFontDialogFragment storyFont = ReadingFontDialogFragment.newInstance(PrefsUtils.getFontString(this));
+            storyFont.show(getFragmentManager(), ReadingFontDialogFragment.class.getName());
             return true;
         } else if (item.getItemId() == R.id.menu_reading_save) {
             if (story.starred) {
