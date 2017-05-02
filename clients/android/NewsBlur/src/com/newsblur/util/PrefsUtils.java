@@ -699,4 +699,11 @@ public class PrefsUtils {
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
         return prefs.getString(PrefConstants.READING_FONT, Font.DEFAULT.toString());
     }
+
+    public static void setFontString(Context context, String newValue) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        Editor editor = prefs.edit();
+        editor.putString(PrefConstants.READING_FONT, newValue);
+        editor.commit();
+    }
 }

@@ -44,6 +44,7 @@ import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadFilter;
+import com.newsblur.util.ReadingFontChangedListener;
 import com.newsblur.util.StoryOrder;
 import com.newsblur.util.StateFilter;
 import com.newsblur.util.ThemeUtils;
@@ -52,7 +53,7 @@ import com.newsblur.util.ViewUtils;
 import com.newsblur.util.VolumeKeyNavigation;
 import com.newsblur.view.ReadingScrollView.ScrollChangeListener;
 
-public abstract class Reading extends NbActivity implements OnPageChangeListener, OnSeekBarChangeListener, ScrollChangeListener, LoaderManager.LoaderCallbacks<Cursor> {
+public abstract class Reading extends NbActivity implements OnPageChangeListener, OnSeekBarChangeListener, ScrollChangeListener, LoaderManager.LoaderCallbacks<Cursor>, ReadingFontChangedListener {
 
     public static final String EXTRA_FEEDSET = "feed_set";
 	public static final String EXTRA_POSITION = "feed_position";
@@ -698,6 +699,12 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 	@Override
 	public void onStopTrackingTouch(SeekBar seekBar) {
 	}
+
+	@Override
+    public void readingFontChanged(String newValue) {
+        PrefsUtils.setFontString(this, newValue);
+        sendBroadcast(new Intent(ReadingItemFragment.READING_FONT_CHANGED));
+    }
 
     /**
      * Click handler for the righthand overlay nav button.

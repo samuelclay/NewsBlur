@@ -10,6 +10,7 @@ import android.view.Window;
 import android.widget.RadioButton;
 
 import com.newsblur.R;
+import com.newsblur.util.ReadingFontChangedListener;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -68,49 +69,49 @@ public class StoryFontDialogFragment extends DialogFragment {
 
     @OnClick(R.id.radio_anonymous) void selectAnonymousPro() {
         if (!currentValue.equals(getString(R.string.anonymous_pro_font_prefvalue))) {
-
+            ((ReadingFontChangedListener)getActivity()).readingFontChanged(getString(R.string.anonymous_pro_font_prefvalue));
         }
         dismiss();
     }
 
     @OnClick(R.id.radio_chronicle) void selectChronicle() {
         if (!currentValue.equals(getString(R.string.chronicle_font_prefvalue))) {
-
+            ((ReadingFontChangedListener)getActivity()).readingFontChanged(getString(R.string.chronicle_font_prefvalue));
         }
         dismiss();
     }
 
     @OnClick(R.id.radio_default) void selectDefault() {
         if (!currentValue.equals(getString(R.string.default_font_prefvalue))) {
-
+            ((ReadingFontChangedListener)getActivity()).readingFontChanged(getString(R.string.default_font_prefvalue));
         }
         dismiss();
     }
 
     @OnClick(R.id.radio_gotham) void selectGotham() {
         if (!currentValue.equals(getString(R.string.gotham_narrow_font_prefvalue))) {
-
+            ((ReadingFontChangedListener)getActivity()).readingFontChanged(getString(R.string.gotham_narrow_font_prefvalue));
         }
         dismiss();
     }
 
     @OnClick(R.id.radio_noto_sans) void selectNotoSans() {
         if (!currentValue.equals(getString(R.string.noto_sans_font_prefvalue))) {
-
+            ((ReadingFontChangedListener)getActivity()).readingFontChanged(getString(R.string.noto_sans_font_prefvalue));
         }
         dismiss();
     }
 
     @OnClick(R.id.radio_noto_serif) void selectNotoSerif() {
         if (!currentValue.equals(getString(R.string.noto_serif_font_prefvalue))) {
-
+            ((ReadingFontChangedListener)getActivity()).readingFontChanged(getString(R.string.noto_serif_font_prefvalue));
         }
         dismiss();
     }
 
     @OnClick(R.id.radio_whitney) void selectWhitney() {
         if (!currentValue.equals(getString(R.string.whitney_font_prefvalue))) {
-
+            ((ReadingFontChangedListener)getActivity()).readingFontChanged(getString(R.string.whitney_font_prefvalue));
         }
         dismiss();
     }
