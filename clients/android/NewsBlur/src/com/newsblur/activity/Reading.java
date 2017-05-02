@@ -127,6 +127,11 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 
         fs = (FeedSet)getIntent().getSerializableExtra(EXTRA_FEEDSET);
 
+        // this is not strictly necessary, since our first refresh with the fs will swap in
+        // the correct session, but that can be delayed by sync backup, so we try here to
+        // reduce UI lag
+        FeedUtils.prepareReadingSession(fs);
+
         if ((savedInstanceBundle != null) && savedInstanceBundle.containsKey(BUNDLE_STARTING_UNREAD)) {
             startingUnreadCount = savedInstanceBundle.getInt(BUNDLE_STARTING_UNREAD);
         }
