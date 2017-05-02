@@ -122,6 +122,7 @@
     <string name="menu_mark_folder_as_read">Mark folder as read</string>
     <string name="menu_sharenewsblur">Share this story</string>
     <string name="menu_textsize">Adjust text size</string>
+    <string name="menu_font">Change font</string>
     <string name="menu_save_story">Save this story</string>
     <string name="menu_unsave_story">Unsave this story</string>
     <string name="menu_newest_mark_older_stories_as_read">\u21E3 Mark older as read</string>
@@ -376,6 +377,14 @@
     <string name="noto_serif_font">Noto Serif</string>
     <string name="open_sans_condensed_font">Open Sans Condensed</string>
     <string name="anonymous_pro_font">Anonymous Pro</string>
+    <string name="anonymous_pro_font_prefvalue">ANONYMOUS_PRO</string>
+    <string name="default_font_prefvalue">DEFAULT</string>
+    <string name="whitney_font_prefvalue">WHITNEY</string>
+    <string name="gotham_narrow_font_prefvalue">GOTHAM_NARROW</string>
+    <string name="chronicle_font_prefvalue">CHRONICLE</string>
+    <string name="noto_sans_font_prefvalue">NOTO_SANS</string>
+    <string name="noto_serif_font_prefvalue">NOTO_SERIF</string>
+    <string name="open_sans_condensed_font_prefvalue">OPEN_SANS_CONDENSED</string>
     <string-array name="default_font_entries">
         <item>@string/anonymous_pro_font</item>
         <item>@string/chronicle_font</item>
@@ -387,14 +396,14 @@
         <item>@string/whitney_font</item>
     </string-array>
     <string-array name="default_font_values">
-        <item>ANONYMOUS_PRO</item>
-        <item>CHRONICLE</item>
-        <item>DEFAULT</item>
-        <item>GOTHAM_NARROW</item>
-        <item>NOTO_SANS</item>
-        <item>NOTO_SERIF</item>
-        <item>OPEN_SANS_CONDENSED</item>
-        <item>WHITNEY</item>
+        <item>@string/anonymous_pro_font_prefvalue</item>
+        <item>@string/chronicle_font_prefvalue</item>
+        <item>@string/default_font_prefvalue</item>
+        <item>@string/gotham_narrow_font_prefvalue</item>
+        <item>@string/noto_sans_font_prefvalue</item>
+        <item>@string/noto_sans_font_prefvalue</item>
+        <item>@string/open_sans_condensed_font_prefvalue</item>
+        <item>@string/whitney_font_prefvalue</item>
     </string-array>
     <string name="default_font_value">DEFAULT</string>
 </resources>
