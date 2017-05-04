@@ -11,6 +11,8 @@ import com.newsblur.database.DatabaseConstants;
 import com.newsblur.network.domain.NewsBlurResponse;
 import com.newsblur.network.APIManager;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 @SuppressWarnings("serial")
@@ -28,7 +30,8 @@ public class ReadingAction implements Serializable {
         LIKE_COMMENT,
         UNLIKE_COMMENT,
         MUTE_FEEDS,
-        UNMUTE_FEEDS
+        UNMUTE_FEEDS,
+        SET_NOTIFY
     };
 
     private final long time;
@@ -43,6 +46,8 @@ public class ReadingAction implements Serializable {
     private String sourceUserId;
     private String commentReplyText; // used for both comments and replies
     private String commentUserId;
+    private String notifyFilter;
+    private List<String> notifyTypes;
 
     // For mute/unmute the API call is always the active feed IDs.
     // We need the feed Ids being modified for the local call.
@@ -156,6 +161,19 @@ public class ReadingAction implements Serializable {
         return ra;
     }
 
+    public static ReadingAction setNotify(String feedId, List<String> notifyTypes, String notifyFilter) {
+        ReadingAction ra = new ReadingAction();
+        ra.type = ActionType.SET_NOTIFY;
+        ra.feedId = feedId;
+        if (notifyTypes == null) {
+            ra.notifyTypes = new ArrayList<String>();
+        } else {
+            ra.notifyTypes = notifyTypes;
+        }
+        ra.notifyFilter = notifyFilter;
+        return ra;
+    }
+
 	public ContentValues toContentValues() {
 		ContentValues values = new ContentValues();
         values.put(DatabaseConstants.ACTION_TIME, time);
@@ -224,6 +242,12 @@ public class ReadingAction implements Serializable {
                 values.put(DatabaseConstants.ACTION_MODIFIED_FEED_IDS, DatabaseConstants.JsonHelper.toJson(modifiedFeedIds));
                 break;
 
+            case SET_NOTIFY:
+                values.put(DatabaseConstants.ACTION_FEED_ID, feedId);
+                values.put(DatabaseConstants.ACTION_NOTIFY_FILTER, notifyFilter);
+                values.put(DatabaseConstants.ACTION_NOTIFY_TYPES, DatabaseConstants.JsonHelper.toJson(notifyTypes));
+                break;
+
             default:
                 throw new IllegalStateException("cannot serialise uknown type of action.");
 
@@ -282,7 +306,11 @@ public class ReadingAction implements Serializable {
         } else if (ra.type == ActionType.UNMUTE_FEEDS) {
             ra.activeFeedIds = DatabaseConstants.JsonHelper.fromJson(c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_FEED_ID)), Set.class);
             ra.modifiedFeedIds = DatabaseConstants.JsonHelper.fromJson(c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_MODIFIED_FEED_IDS)), Set.class);
-        }else {
+        } else if (ra.type == ActionType.SET_NOTIFY) {
+            ra.feedId = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_FEED_ID));
+            ra.notifyFilter = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_NOTIFY_FILTER));
+            ra.notifyTypes = DatabaseConstants.JsonHelper.fromJson(c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_NOTIFY_TYPES)), List.class);
+        } else {
             throw new IllegalStateException("cannot deserialise uknown type of action.");
         }
 		return ra;
@@ -326,6 +354,9 @@ public class ReadingAction implements Serializable {
             case MUTE_FEEDS:
             case UNMUTE_FEEDS:
                 return apiManager.saveFeedChooser(activeFeedIds);
+
+            case SET_NOTIFY:
+                return apiManager.updateFeedNotifications(feedId, notifyTypes, notifyFilter);
 
             default:
 
@@ -393,6 +424,10 @@ public class ReadingAction implements Serializable {
             case MUTE_FEEDS:
             case UNMUTE_FEEDS:
                 dbHelper.setFeedsActive(modifiedFeedIds, type == ActionType.UNMUTE_FEEDS);
+                impact |= NbActivity.UPDATE_METADATA;
+                break;
+
+            case SET_NOTIFY:
                 impact |= NbActivity.UPDATE_METADATA;
                 break;
 

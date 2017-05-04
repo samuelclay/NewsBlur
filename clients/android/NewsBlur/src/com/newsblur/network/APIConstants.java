@@ -65,7 +65,7 @@ public class APIConstants {
     public static final String PATH_SAVE_FEED_CHOOSER = "/reader/save_feed_chooser";
     public static final String PATH_CONNECT_FACEBOOK = "/oauth/facebook_connect/";
     public static final String PATH_CONNECT_TWITTER = "/oauth/twitter_connect/";
-    public static final String PATH_SET_NOTIFICATIONS = "notifications/feed/";
+    public static final String PATH_SET_NOTIFICATIONS = "/notifications/feed/";
 
     public static String buildUrl(String path) {
         return CurrentUrlBase + path;

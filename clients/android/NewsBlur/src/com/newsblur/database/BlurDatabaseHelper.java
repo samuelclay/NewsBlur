@@ -200,6 +200,12 @@ public class BlurDatabaseHelper {
         return result;
     }
 
+    public void updateFeed(Feed feed) {
+        synchronized (RW_MUTEX) {
+            dbRW.insertWithOnConflict(DatabaseConstants.FEED_TABLE, null, feed.getValues(), SQLiteDatabase.CONFLICT_REPLACE);
+        }
+    }
+
     private void bulkInsertValues(String table, List<ContentValues> valuesList) {
         if (valuesList.size() < 1) return;
         synchronized (RW_MUTEX) {

@@ -583,6 +583,18 @@ public class APIManager {
         return response.getResponse(gson, NewsBlurResponse.class);
     }
 
+    public NewsBlurResponse updateFeedNotifications(String feedId, List<String> notifyTypes, String notifyFilter) {
+        ValueMultimap values = new ValueMultimap();
+        values.put(APIConstants.PARAMETER_FEEDID, feedId);
+        for (String type : notifyTypes) {
+            values.put(APIConstants.PARAMETER_NOTIFICATION_TYPES, type);
+        }
+        if (notifyFilter != null )
+            values.put(APIConstants.PARAMETER_NOTIFICATION_FILTER, notifyFilter);
+        APIResponse response = post(buildUrl(APIConstants.PATH_SET_NOTIFICATIONS), values);
+        return response.getResponse(gson, NewsBlurResponse.class);
+    }
+
     /* HTTP METHODS */
    
 	private APIResponse get(final String urlString) {

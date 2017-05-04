@@ -119,6 +119,10 @@
     <string name="menu_delete_feed">Delete feed</string>
     <string name="menu_unfollow">Unfollow user</string>
     <string name="menu_choose_folders">Choose folders</string>
+    <string name="menu_notifications_choose">Notifications…</string>
+    <string name="menu_notifications_disable">Disable notifications</string>
+    <string name="menu_notifications_focus">Notify on new focus stories</string>
+    <string name="menu_notifications_unread">Notify on all new stories</string>
     <string name="menu_mark_folder_as_read">Mark folder as read</string>
     <string name="menu_sharenewsblur">Share this story</string>
     <string name="menu_textsize">Adjust text size</string>
