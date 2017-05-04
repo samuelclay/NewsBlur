@@ -657,7 +657,8 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
     private class ReadingFontReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            // TODO switch font
+            contentHash = 0; // Force reload since content hasn't changed
+            reloadStoryContent();
         }
     }
 
