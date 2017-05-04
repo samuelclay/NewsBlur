@@ -59,7 +59,6 @@ public class Feed implements Comparable<Feed>, Serializable {
 	@SerializedName("updated_seconds_ago")
 	public int lastUpdated;
 
-    // NB: deserialized but not stored
     @SerializedName("notification_types")
     public List<String> notificationTypes;
 
@@ -84,6 +83,7 @@ public class Feed implements Comparable<Feed>, Serializable {
 		values.put(DatabaseConstants.FEED_SUBSCRIBERS, subscribers);
 		values.put(DatabaseConstants.FEED_TITLE, title);
 		values.put(DatabaseConstants.FEED_UPDATED_SECONDS, lastUpdated);
+        values.put(DatabaseConstants.FEED_NOTIFICATION_TYPES, DatabaseConstants.flattenStringList(notificationTypes));
         if (isNotifyAndroid()) {
             values.put(DatabaseConstants.FEED_NOTIFICATION_FILTER, notificationFilter);
         }
@@ -110,6 +110,7 @@ public class Feed implements Comparable<Feed>, Serializable {
 		feed.subscribers = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_SUBSCRIBERS));
 		feed.title = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_TITLE));
         feed.lastUpdated = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.FEED_UPDATED_SECONDS));
+        feed.notificationTypes = DatabaseConstants.unflattenStringList(cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_NOTIFICATION_TYPES)));
         feed.notificationFilter = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_NOTIFICATION_FILTER));
 		return feed;
 	}
