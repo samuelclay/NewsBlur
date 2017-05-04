@@ -32,6 +32,7 @@ public class ReadingFontDialogFragment extends DialogFragment {
     @Bind(R.id.radio_gotham) RadioButton gothamButton;
     @Bind(R.id.radio_noto_sans) RadioButton notoSansButton;
     @Bind(R.id.radio_noto_serif) RadioButton notoSerifButton;
+    @Bind(R.id.radio_open_sans_condensed) RadioButton openSansCondensedButton;
     @Bind(R.id.radio_whitney) RadioButton whitneyButton;
 
     public static ReadingFontDialogFragment newInstance(String selectedFont) {
@@ -59,6 +60,7 @@ public class ReadingFontDialogFragment extends DialogFragment {
         gothamButton.setChecked(currentValue.equals(getString(R.string.gotham_narrow_font_prefvalue)));
         notoSansButton.setChecked(currentValue.equals(getString(R.string.noto_sans_font_prefvalue)));
         notoSerifButton.setChecked(currentValue.equals(getString(R.string.noto_serif_font_prefvalue)));
+        openSansCondensedButton.setChecked(currentValue.equals(getString(R.string.open_sans_condensed_font_prefvalue)));
         whitneyButton.setChecked(currentValue.equals(getString(R.string.whitney_font_prefvalue)));
 
         getDialog().requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -105,6 +107,13 @@ public class ReadingFontDialogFragment extends DialogFragment {
     @OnClick(R.id.radio_noto_serif) void selectNotoSerif() {
         if (!currentValue.equals(getString(R.string.noto_serif_font_prefvalue))) {
             ((ReadingFontChangedListener)getActivity()).readingFontChanged(getString(R.string.noto_serif_font_prefvalue));
+        }
+        dismiss();
+    }
+
+    @OnClick(R.id.radio_open_sans_condensed) void selectOpenSansCondensed() {
+        if (!currentValue.equals(getString(R.string.open_sans_condensed_font_prefvalue))) {
+            ((ReadingFontChangedListener)getActivity()).readingFontChanged(getString(R.string.open_sans_condensed_font_prefvalue));
         }
         dismiss();
     }
