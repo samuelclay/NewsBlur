@@ -237,6 +237,11 @@ class MUserFeedNotification(mongo.Document):
             image_url = story['image_urls'][0]
             # print image_url
         
+        def response_listener(error_response):
+            logging.user(user, "~FRAPNS client get error-response: " + str(error_response))
+
+        apns.gateway_server.register_response_listener(response_listener)
+        
         for token in tokens.ios_tokens:
             logging.user(user, '~BMStory notification by iOS: ~FY~SB%s~SN~BM~FY/~SB%s' % 
                                        (story['story_title'][:50], usersub.feed.feed_title[:50]))
