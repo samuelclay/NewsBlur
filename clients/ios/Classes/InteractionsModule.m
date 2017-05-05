@@ -19,20 +19,15 @@
 
 @implementation InteractionsModule
 
-@synthesize appDelegate;
 @synthesize interactionsTable;
 @synthesize interactionsArray;
 @synthesize pageFetching;
 @synthesize pageFinished;
 @synthesize interactionsPage;
 
-- (id)initWithFrame:(CGRect)frame
-{
-    self = [super initWithFrame:frame];
-    if (self) {
-        appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];
-    }
-    return self;
+- (void)awakeFromNib {
+    [super awakeFromNib];
+    appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];
 }
 
 - (void)layoutSubviews {
@@ -97,7 +92,7 @@
         NSString *urlString = [NSString stringWithFormat:@
                                "%@/social/interactions?user_id=%@&page=%i&limit=10"
                                "&category=follow&category=comment_reply&category=comment_like&category=reply_reply&category=story_reshare",
-                               self.appDelegate.url,
+                               appDelegate.url,
                                [appDelegate.dictSocialProfile objectForKey:@"user_id"],
                                page];
 

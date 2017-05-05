@@ -25,13 +25,9 @@
 #define MINIMUM_ACTIVITY_HEIGHT_IPAD 78
 #define MINIMUM_ACTIVITY_HEIGHT_IPHONE 54
 
-- (id)initWithFrame:(CGRect)frame
-{
-    self = [super initWithFrame:frame];
-    if (self) {
-        self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];
-    }
-    return self;
+- (void)awakeFromNib {
+    [super awakeFromNib];
+    self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];
 }
 
 - (void)layoutSubviews {
