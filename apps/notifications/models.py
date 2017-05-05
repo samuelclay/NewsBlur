@@ -194,7 +194,7 @@ class MUserFeedNotification(mongo.Document):
         # print story['story_content']
         body = replace_with_newlines(soup)
         body = truncate_chars(body.strip(), 1200)
-        if not body or len(body):
+        if not body:
             body = " "
             
         return title, subtitle, body
