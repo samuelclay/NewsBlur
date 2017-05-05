@@ -993,6 +993,7 @@ public class NBSyncService extends Service {
     public static void prepareReadingSession(BlurDatabaseHelper dbHelper, FeedSet fs) {
         synchronized (PENDING_FEED_MUTEX) {
             if (! fs.equals(PreppedFeedSet)) {
+                com.newsblur.util.Log.d(NBSyncService.class.getName(), "preparing new reading session");
                 // the next fetch will be the start of a new reading session; clear it so it
                 // will be re-primed
                 dbHelper.clearStorySession();
@@ -1013,6 +1014,7 @@ public class NBSyncService extends Service {
         com.newsblur.util.Log.d(NBSyncService.class.getName(), "requesting reading session reset");
         synchronized (PENDING_FEED_MUTEX) {
             PendingFeed = null;
+            PreppedFeedSet = null;
         }
     }
 

@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.text.TextUtils;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.google.gson.annotations.SerializedName;
@@ -59,7 +60,6 @@ public class Feed implements Comparable<Feed>, Serializable {
 	@SerializedName("updated_seconds_ago")
 	public int lastUpdated;
 
-    // NB: deserialized but not stored
     @SerializedName("notification_types")
     public List<String> notificationTypes;
 
@@ -84,6 +84,7 @@ public class Feed implements Comparable<Feed>, Serializable {
 		values.put(DatabaseConstants.FEED_SUBSCRIBERS, subscribers);
 		values.put(DatabaseConstants.FEED_TITLE, title);
 		values.put(DatabaseConstants.FEED_UPDATED_SECONDS, lastUpdated);
+        values.put(DatabaseConstants.FEED_NOTIFICATION_TYPES, DatabaseConstants.flattenStringList(notificationTypes));
         if (isNotifyAndroid()) {
             values.put(DatabaseConstants.FEED_NOTIFICATION_FILTER, notificationFilter);
         }
@@ -110,6 +111,7 @@ public class Feed implements Comparable<Feed>, Serializable {
 		feed.subscribers = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_SUBSCRIBERS));
 		feed.title = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_TITLE));
         feed.lastUpdated = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.FEED_UPDATED_SECONDS));
+        feed.notificationTypes = DatabaseConstants.unflattenStringList(cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_NOTIFICATION_TYPES)));
         feed.notificationFilter = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_NOTIFICATION_FILTER));
 		return feed;
 	}
@@ -148,6 +150,35 @@ public class Feed implements Comparable<Feed>, Serializable {
             if (type.equals(NOTIFY_TYPE_ANDROID)) return true;
         }
         return false;
+    }
+
+    public void enableAndroidNotifications(boolean enable) {
+        if (notificationTypes == null) notificationTypes = new ArrayList<String>();
+        if (enable && (!notificationTypes.contains(NOTIFY_TYPE_ANDROID))) {
+            notificationTypes.add(NOTIFY_TYPE_ANDROID);
+        }
+        if (!enable) {
+            notificationTypes.remove(NOTIFY_TYPE_ANDROID);
+            notificationFilter = null;
+        }
+    }
+
+    public boolean isNotifyUnread() {
+        if (!isNotifyAndroid()) return false;
+        return NOTIFY_FILTER_UNREAD.equals(notificationFilter);
+    }
+
+    public boolean isNotifyFocus() {
+        if (!isNotifyAndroid()) return false;
+        return NOTIFY_FILTER_FOCUS.equals(notificationFilter);
+    }
+
+    public void setNotifyUnread() {
+        this.notificationFilter = NOTIFY_FILTER_UNREAD;
+    }
+
+    public void setNotifyFocus() {
+        this.notificationFilter = NOTIFY_FILTER_FOCUS;
     }
 
     private static final String NOTIFY_TYPE_ANDROID = "android";

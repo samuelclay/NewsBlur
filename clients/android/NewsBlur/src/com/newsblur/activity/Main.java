@@ -102,6 +102,11 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
     protected void onResume() {
         super.onResume();
 
+        // triggerSync() might not actually do enough to push a UI update if background sync has been
+        // behaving itself. because the system will re-use the activity, at least one update on resume
+        // will be required, however inefficient
+        folderFeedList.hasUpdated();
+
         NBSyncService.resetReadingSession();
         NBSyncService.flushRecounts();
 

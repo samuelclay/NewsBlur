@@ -253,6 +253,35 @@ public class FeedUtils {
             dialog.show(activity.getFragmentManager(), "dialog");
         }
     }
+
+    public static void disableNotifications(Context context, Feed feed) {
+        updateFeedNotifications(context, feed, false, false);
+    }
+
+    public static void enableUnreadNotifications(Context context, Feed feed) {
+        updateFeedNotifications(context, feed, true, false);
+    }
+    public static void enableFocusNotifications(Context context, Feed feed) {
+        updateFeedNotifications(context, feed, true, true);
+    }
+
+    private static void updateFeedNotifications(final Context context, final Feed feed, final boolean enable, final boolean focusOnly) {
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... arg) {
+                if (focusOnly) {
+                    feed.setNotifyFocus();
+                } else {
+                    feed.setNotifyUnread();
+                }
+                feed.enableAndroidNotifications(enable);
+                dbHelper.updateFeed(feed);
+                ReadingAction ra = ReadingAction.setNotify(feed.feedId, feed.notificationTypes, feed.notificationFilter);
+                doAction(ra, context);
+                return null;
+            }
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
         
     public static void doAction(final ReadingAction ra, final Context context) {
         new AsyncTask<Void, Void, Void>() {

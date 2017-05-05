@@ -62,11 +62,6 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
 
 		fs = (FeedSet) getIntent().getSerializableExtra(EXTRA_FEED_SET);
 
-        // this is not strictly necessary, since our first refresh with the fs will swap in
-        // the correct session, but that can be delayed by sync backup, so we try here to
-        // reduce UI lag
-        FeedUtils.prepareReadingSession(fs);
-
 		intelState = PrefsUtils.getStateFilter(this);
 
         getWindow().setBackgroundDrawableResource(android.R.color.transparent);
@@ -129,6 +124,10 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
         // Reading activities almost certainly changed the read/unread state of some stories. Ensure
         // we reflect those changes promptly.
         itemListFragment.hasUpdated();
+        // this is not strictly necessary, since our first refresh with the fs will swap in
+        // the correct session, but that can be delayed by sync backup, so we try here to
+        // reduce UI lag, or in case somehow we got redisplayed in a zero-story state
+        FeedUtils.prepareReadingSession(fs);
     }
 
     @Override

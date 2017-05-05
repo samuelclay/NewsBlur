@@ -214,6 +214,10 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
         // onCreate() in our subclass should have called createLoader(), but sometimes the callback never makes it.
         // this ensures that at least one callback happens after activity re-create.
         getLoaderManager().restartLoader(0, null, this);
+        // this is not strictly necessary, since our first refresh with the fs will swap in
+        // the correct session, but that can be delayed by sync backup, so we try here to
+        // reduce UI lag, or in case somehow we got redisplayed in a zero-story state
+        FeedUtils.prepareReadingSession(fs);
     }
 
     @Override

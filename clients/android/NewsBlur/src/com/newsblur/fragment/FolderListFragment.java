@@ -69,6 +69,10 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
     @Bind(R.id.folderfeed_list) ExpandableListView list;
     public boolean firstCursorSeenYet = false;
 
+    // the two-step context menu for feeds requires us to temp store the feed long-pressed so
+    // it can be accessed during the sub-menu tap
+    private Feed lastMenuFeed;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -256,6 +260,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
                 menu.removeItem(R.id.menu_choose_folders);
                 menu.removeItem(R.id.menu_unmute_feed);
                 menu.removeItem(R.id.menu_mute_feed);
+                menu.removeItem(R.id.menu_notifications);
             } else {
                 menu.removeItem(R.id.menu_unfollow);
 
@@ -265,6 +270,19 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
                 } else {
                     menu.removeItem(R.id.menu_mute_feed);
                 }
+                if (feed.isNotifyUnread()) {
+                    menu.findItem(R.id.menu_notifications_disable).setChecked(false);
+                    menu.findItem(R.id.menu_notifications_unread).setChecked(true);
+                    menu.findItem(R.id.menu_notifications_focus).setChecked(false);
+                } else if (feed.isNotifyFocus()) {
+                    menu.findItem(R.id.menu_notifications_disable).setChecked(false);
+                    menu.findItem(R.id.menu_notifications_unread).setChecked(false);
+                    menu.findItem(R.id.menu_notifications_focus).setChecked(true);
+                } else {
+                    menu.findItem(R.id.menu_notifications_disable).setChecked(true);
+                    menu.findItem(R.id.menu_notifications_unread).setChecked(false);
+                    menu.findItem(R.id.menu_notifications_focus).setChecked(false);
+                }
             }
 			break;
 		}
@@ -272,6 +290,27 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 
     @Override
 	public boolean onContextItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.menu_notifications) {
+            // this means the notifications menu has been opened, but this is our one chance to see the list position
+            // and get the ID of the feed for which the menu was opened. (no packed pos when the submenu is tapped)
+            ExpandableListView.ExpandableListContextMenuInfo info = (ExpandableListView.ExpandableListContextMenuInfo) item.getMenuInfo();
+            int childPosition = ExpandableListView.getPackedPositionChild(info.packedPosition);
+            int groupPosition = ExpandableListView.getPackedPositionGroup(info.packedPosition);
+            lastMenuFeed = adapter.getFeed(groupPosition, childPosition);
+            return true;
+        }
+        if (item.getItemId() == R.id.menu_notifications_disable) {
+            FeedUtils.disableNotifications(getActivity(), lastMenuFeed);
+            return true;
+        }
+        if (item.getItemId() == R.id.menu_notifications_focus) {
+            FeedUtils.enableFocusNotifications(getActivity(), lastMenuFeed);
+            return true;
+        }
+        if (item.getItemId() == R.id.menu_notifications_unread) {
+            FeedUtils.enableUnreadNotifications(getActivity(), lastMenuFeed);
+            return true;
+        }
 		ExpandableListView.ExpandableListContextMenuInfo info = (ExpandableListView.ExpandableListContextMenuInfo) item.getMenuInfo();
         int childPosition = ExpandableListView.getPackedPositionChild(info.packedPosition);
         int groupPosition = ExpandableListView.getPackedPositionGroup(info.packedPosition);

@@ -141,6 +141,8 @@ public class DatabaseConstants {
     public static final String ACTION_STORY_ID = "story_id";
     public static final String ACTION_SOURCE_USER_ID = "source_user_id";
     public static final String ACTION_COMMENT_ID = "comment_id";
+    public static final String ACTION_NOTIFY_FILTER = "notify_filter";
+    public static final String ACTION_NOTIFY_TYPES = "notify_types";
 
     public static final String STARREDCOUNTS_TABLE = "starred_counts";
     public static final String STARREDCOUNTS_COUNT = "count";
@@ -284,7 +286,9 @@ public class DatabaseConstants {
         ACTION_STORY_ID + TEXT + ", " +
         ACTION_SOURCE_USER_ID + TEXT + ", " +
         ACTION_COMMENT_ID + TEXT + ", " +
-        ACTION_MODIFIED_FEED_IDS + TEXT +
+        ACTION_MODIFIED_FEED_IDS + TEXT + ", " +
+        ACTION_NOTIFY_FILTER + TEXT + ", " +
+        ACTION_NOTIFY_TYPES + TEXT + 
         ")";
 
 	static final String STARREDCOUNTS_SQL = "CREATE TABLE " + STARREDCOUNTS_TABLE + " (" +
