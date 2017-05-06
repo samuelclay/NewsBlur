@@ -188,7 +188,7 @@ class MUserFeedNotification(mongo.Document):
         feed_title = usersub.user_title or usersub.feed.feed_title
         # title = "%s: %s" % (feed_title, story['story_title'])
         title = feed_title
-        subtitle = story['story_title']
+        subtitle = HTMLParser().unescape(story['story_title'])
         # body = HTMLParser().unescape(strip_tags(story['story_content']))
         soup = BeautifulSoup(story['story_content'].strip())
         # print story['story_content']
