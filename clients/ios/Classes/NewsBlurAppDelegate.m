@@ -1638,6 +1638,19 @@
 - (void)showOriginalStory:(NSURL *)url {
     NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
     
+    if (!url) {
+        UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Nowhere to go"
+                                                                       message:@"The story doesn't link anywhere."
+                                                                preferredStyle:UIAlertControllerStyleAlert];
+        
+        UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"Oh well" style:UIAlertActionStyleDefault
+                                                              handler:^(UIAlertAction * action) {}];
+        
+        [alert addAction:defaultAction];
+        [navigationController presentViewController:alert animated:YES completion:nil];
+        return;
+    }
+    
     NSString *storyBrowser = [preferences stringForKey:@"story_browser"];
     if ([storyBrowser isEqualToString:@"safari"]) {
         [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
