@@ -392,7 +392,7 @@ class FetchFeed:
                 raise e
         
         try:
-            tweets = twitter_user.timeline()
+            tweets = twitter_user.timeline(tweet_mode='extended')
         except tweepy.error.TweepError, e:
             message = str(e).lower()
             if 'not authorized' in message:
@@ -425,20 +425,31 @@ class FetchFeed:
 
         for tweet in tweets:
             categories = set()
-            entities = ""
-
-            for media in tweet.entities.get('media', []):
-                if 'media_url_https' not in media: continue
-                if media['type'] == 'photo':
-                    entities += "<img src=\"%s\"> " % media['media_url_https']
-                    if 'photo' not in categories:
-                        categories.add('photo')
-            
             content_tweet = tweet
+            entities = ""
             author_name = username
             if hasattr(tweet, 'retweeted_status'):
                 content_tweet = tweet.retweeted_status
                 author_name = content_tweet.user.screen_name
+            
+            tweet_title = tweet.full_text
+            tweet_text = linkify(linebreaks(content_tweet.full_text))                        
+            
+            for media in content_tweet.entities.get('media', []):
+                if 'media_url_https' not in media: continue
+                if media['type'] == 'photo':
+                    if media.get('url') and media['url'] in tweet_text:
+                        tweet_title = tweet_title.replace(media['url'], media['display_url'])
+                        tweet_text = tweet_text.replace(media['url'], media['display_url'])
+                    entities += "<img src=\"%s\"> " % media['media_url_https']
+                    if 'photo' not in categories:
+                        categories.add('photo')
+
+            for url in content_tweet.entities.get('urls', []):
+                if url['url'] in tweet_text:
+                    tweet_title = tweet_title.replace(url['url'], url['display_url'])
+                    tweet_text = tweet_text.replace(url['url'], url['display_url'])
+
             content = """<div class="NB-twitter-rss">
                              <div class="NB-twitter-rss-tweet">%s</div><hr />
                              <div class="NB-twitter-rss-entities">%s</div>
@@ -448,7 +459,7 @@ class FetchFeed:
                                 on %s.</div>
                              <div class="NB-twitter-rss-stats">%s %s%s %s</div>
                         </div>""" % (
-                linkify(linebreaks(content_tweet.text)),
+                tweet_text,
                 entities,
                 author_name,
                 content_tweet.user.profile_image_url_https,
@@ -460,23 +471,23 @@ class FetchFeed:
                 ("<b>%s</b> %s" % (content_tweet.retweet_count, "retweet" if content_tweet.retweet_count == 1 else "retweets")) if content_tweet.retweet_count else "",
             )
             
-            if tweet.text.startswith('RT @'):
+            if tweet.full_text.startswith('RT @'):
                 categories.add('retweet')
-            elif tweet.in_reply_to_status_id or tweet.text.startswith('@'):
+            elif tweet.in_reply_to_status_id or tweet.full_text.startswith('@'):
                 categories.add('reply')
             else:
                 categories.add('tweet')
-            if tweet.text.startswith('RT @'):
+            if tweet.full_text.startswith('RT @'):
                 categories.add('retweet')
             if tweet.favorite_count:
                 categories.add('liked')
             if tweet.retweet_count:
                 categories.add('retweeted')            
-            if 'http' in tweet.text:
+            if 'http' in tweet.full_text:
                 categories.add('link')
             
             story_data = {
-                'title': tweet.text,
+                'title': tweet_title,
                 'link': "https://twitter.com/%s/status/%s" % (username, tweet.id),
                 'description': content,
                 'author_name': author_name,
