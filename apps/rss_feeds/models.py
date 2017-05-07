@@ -2181,6 +2181,7 @@ class Feed(models.Model):
     #     
     #     return phrases
 
+
 # class FeedCollocations(models.Model):
 #     feed = models.ForeignKey(Feed)
 #     phrase = models.CharField(max_length=500)
