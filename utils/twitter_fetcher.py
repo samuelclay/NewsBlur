@@ -1,6 +1,7 @@
 import re
 import datetime
 import tweepy
+import dateutil.parser
 from django.conf import settings
 from django.utils import feedgenerator
 from django.utils.html import linebreaks
@@ -153,38 +154,49 @@ class TwitterFetcher:
                 
         return tweets
         
-    def tweet_story(self, tweet):
+    def tweet_story(self, user_tweet):
         categories = set()
         
-        if tweet['full_text'].startswith('RT @'):
+        if user_tweet['full_text'].startswith('RT @'):
             categories.add('retweet')
-        elif tweet['in_reply_to_status_id'] or tweet['full_text'].startswith('@'):
+        elif user_tweet['in_reply_to_status_id'] or user_tweet['full_text'].startswith('@'):
             categories.add('reply')
         else:
             categories.add('tweet')
-        if tweet['full_text'].startswith('RT @'):
+        if user_tweet['full_text'].startswith('RT @'):
             categories.add('retweet')
-        if tweet['favorite_count']:
+        if user_tweet['favorite_count']:
             categories.add('liked')
-        if tweet['retweet_count']:
+        if user_tweet['retweet_count']:
             categories.add('retweeted')            
-        if 'http' in tweet['full_text']:
+        if 'http' in user_tweet['full_text']:
             categories.add('link')
         
         story = {}
-        content_tweet = tweet
+        content_tweet = user_tweet
         entities = ""
-        author = tweet.get('author') or tweet.get('user')
+        author = user_tweet.get('author') or user_tweet.get('user')
         if not isinstance(author, dict): author = author.__dict__
         author_name = author['screen_name']
         original_author_name = author_name
-        if 'retweeted_status' in tweet:
-            content_tweet = tweet['retweeted_status'].__dict__
+        retweet_author = ""
+        if 'retweeted_status' in user_tweet:
+            retweet_author = """Retweeted by 
+                                 <a href="https://twitter.com/%s"><img src="%s" style="height: 20px" /></a>
+                                 <a href="https://twitter.com/%s">%s</a>
+                            on %s""" % (
+                author_name,
+                author['profile_image_url_https'],
+                author_name,
+                author_name,
+                user_tweet['created_at'].strftime("%c"),
+                )
+            content_tweet = user_tweet['retweeted_status'].__dict__
             author = content_tweet['author']
             if not isinstance(author, dict): author = author.__dict__
             author_name = author['screen_name']
         
-        tweet_title = tweet['full_text']
+        tweet_title = user_tweet['full_text']
         tweet_text = linebreaks(content_tweet['full_text'])
         replaced = {}
         for media in content_tweet['entities'].get('media', []):
@@ -196,7 +208,7 @@ class TwitterFetcher:
                 if not replaced.get(media['url']):
                     tweet_text = tweet_text.replace(media['url'], replacement)
                     replaced[media['url']] = True
-                entities += "<img src=\"%s\"> " % media['media_url_https']
+                entities += "<img src=\"%s\"> <hr>" % media['media_url_https']
                 if 'photo' not in categories:
                     categories.add('photo')
 
@@ -209,8 +221,13 @@ class TwitterFetcher:
                 tweet_title = tweet_title.replace(url['url'], url['display_url'])
         
         quote_tweet_content = ""
-        if 'quoted_status' in tweet:
-            quote_tweet_content = "<blockquote>"+self.tweet_story(tweet['quoted_status'])['description']+"</blockquote>"
+        if 'quoted_status' in content_tweet:
+            quote_tweet_content = "<blockquote>"+self.tweet_story(content_tweet['quoted_status'])['description']+"</blockquote>"
+        
+        
+        created_date = content_tweet['created_at']
+        if isinstance(created_date, unicode):
+            created_date = dateutil.parser.parse(created_date)
         
         content = """<div class="NB-twitter-rss">
                          <div class="NB-twitter-rss-tweet">%s</div>
@@ -219,8 +236,10 @@ class TwitterFetcher:
                          <div class="NB-twitter-rss-entities">%s</div>
                          <div class="NB-twitter-rss-author">
                              Posted by
-                                 <a href="https://twitter.com/%s"><img src="%s" style="height: 32px" /> %s</a>
-                            on %s.</div>
+                                 <a href="https://twitter.com/%s"><img src="%s" style="height: 32px" /></a>
+                                 <a href="https://twitter.com/%s">%s</a>
+                            on %s</div>
+                         <div class="NB-twitter-rss-retweet">%s</div>
                          <div class="NB-twitter-rss-stats">%s %s%s %s</div>
                     </div>""" % (
             tweet_text,
@@ -229,7 +248,9 @@ class TwitterFetcher:
             author_name,
             author['profile_image_url_https'],
             author_name,
-            content_tweet['created_at'],#.strftime("%c"),
+            author_name,
+            created_date.strftime("%c"),
+            retweet_author,
             ("<br /><br />" if content_tweet['favorite_count'] or content_tweet['retweet_count'] else ""),
             ("<b>%s</b> %s" % (content_tweet['favorite_count'], "like" if content_tweet['favorite_count'] == 1 else "likes")) if content_tweet['favorite_count'] else "",
             (", " if content_tweet['favorite_count'] and content_tweet['retweet_count'] else ""),
@@ -238,12 +259,12 @@ class TwitterFetcher:
         
         story = {
             'title': tweet_title,
-            'link': "https://twitter.com/%s/status/%s" % (original_author_name, tweet['id']),
+            'link': "https://twitter.com/%s/status/%s" % (original_author_name, user_tweet['id']),
             'description': content,
             'author_name': author_name,
             'categories': list(categories),
-            'unique_id': "tweet:%s" % tweet['id'],
-            'pubdate': tweet['created_at'],
+            'unique_id': "tweet:%s" % user_tweet['id'],
+            'pubdate': user_tweet['created_at'],
         }
         
         return story

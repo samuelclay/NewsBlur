@@ -817,7 +817,7 @@ class UserSubscription(models.Model):
                     else:
                         feed_scores['neutral'] += 1
         else:
-            print " ---> Cutoff date: %s" % date_delta
+            # print " ---> Cutoff date: %s" % date_delta
             unread_story_hashes = self.story_hashes(user_id=self.user_id, feed_ids=[self.feed_id],
                                                     usersubs=[self],
                                                     read_filter='unread', group_by_feed=False,
