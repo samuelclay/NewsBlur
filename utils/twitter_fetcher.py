@@ -7,7 +7,6 @@ from django.utils.html import linebreaks
 from apps.social.models import MSocialServices
 from apps.reader.models import UserSubscription
 from utils import log as logging
-from utils.story_functions import linkify
 
 class TwitterFetcher:
     
@@ -23,6 +22,7 @@ class TwitterFetcher:
         username = self.extract_username()
         if not username: return
         twitter_user = self.fetch_user(username)
+        if not twitter_user: return
         tweets = self.user_timeline(twitter_user)
         
         data = {}
