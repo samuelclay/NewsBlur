@@ -5,6 +5,7 @@ import dateutil.parser
 from django.conf import settings
 from django.utils import feedgenerator
 from django.utils.html import linebreaks
+from django.utils.dateformat import DateFormat
 from apps.social.models import MSocialServices
 from apps.reader.models import UserSubscription
 from utils import log as logging
@@ -189,7 +190,7 @@ class TwitterFetcher:
                 author['profile_image_url_https'],
                 author_name,
                 author_name,
-                user_tweet['created_at'].strftime("%c"),
+                DateFormat(user_tweet['created_at']).format('l, F jS, Y g:ia').replace('.',''),
                 )
             content_tweet = user_tweet['retweeted_status'].__dict__
             author = content_tweet['author']
@@ -249,7 +250,7 @@ class TwitterFetcher:
             author['profile_image_url_https'],
             author_name,
             author_name,
-            created_date.strftime("%c"),
+            DateFormat(created_date).format('l, F jS, Y g:ia').replace('.',''),
             retweet_author,
             ("<br /><br />" if content_tweet['favorite_count'] or content_tweet['retweet_count'] else ""),
             ("<b>%s</b> %s" % (content_tweet['favorite_count'], "like" if content_tweet['favorite_count'] == 1 else "likes")) if content_tweet['favorite_count'] else "",
