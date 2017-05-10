@@ -230,6 +230,8 @@
     [super viewDidDisappear:animated];
     
     if (!appDelegate.showingSafariViewController &&
+        appDelegate.navigationController.visibleViewController != (UIViewController *)appDelegate.shareViewController &&
+        appDelegate.navigationController.visibleViewController != (UIViewController *)appDelegate.trainerViewController &&
         appDelegate.navigationController.visibleViewController != (UIViewController *)appDelegate.originalStoryViewController) {
         [self clearStory];
     }
