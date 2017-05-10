@@ -31,13 +31,12 @@
 @synthesize currentType;
 @synthesize storyTitle;
 
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
+    
+    if ((self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil])) {
 
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
-{
-    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-    if (self) {
-        // Custom initialization
     }
+
     return self;
 }
 
@@ -64,7 +63,6 @@
                                action:@selector(doShareThisStory:)];
     self.submitButton = submit;
     self.navigationItem.rightBarButtonItem = submit;
-    
     
     // Do any additional setup after loading the view from its nib.
     commentField.layer.borderWidth = 1.0f;
@@ -98,12 +96,28 @@
     // e.g. self.myOutlet = nil;
 }
 
+- (bool)isHardwareKeyboardUsed:(NSNotification*)keyboardNotification {
+    NSDictionary* info = [keyboardNotification userInfo];
+    CGRect keyboardEndFrame;
+    [[info valueForKey:UIKeyboardFrameEndUserInfoKey] getValue:&keyboardEndFrame];
+    float height = [[UIScreen mainScreen] bounds].size.height - keyboardEndFrame.origin.y;
+    float gThresholdForHardwareKeyboardToolbar = 160.f;
+    return height < gThresholdForHardwareKeyboardToolbar;
+}
 
 - (void)keyboardWasShown:(NSNotification*)aNotification
 {
     NSDictionary* info = [aNotification userInfo];
-    CGSize kbSize = [[info objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue].size;
-        
+    
+    // Get the size of the keyboard.
+    NSValue* keyboardFrameValue     = [info objectForKey:UIKeyboardFrameEndUserInfoKey];
+    CGRect keyboardRectWrtScreen    = [keyboardFrameValue CGRectValue];
+    
+    CGFloat keyboardWidth = keyboardRectWrtScreen.size.width;
+    CGFloat keyboardHeight = [[[self view] window] frame].size.height - keyboardRectWrtScreen.origin.y;
+    NSLog(@"Keyboard height: %f %d", keyboardHeight, [self isHardwareKeyboardUsed:aNotification]);
+    CGSize kbSize = CGSizeMake(keyboardWidth, keyboardHeight);
+    
     [UIView animateWithDuration:0.2f animations:^{
         [self adjustCommentField:kbSize];
     }];
@@ -113,8 +127,16 @@
 - (void)keyboardWillBeHidden:(NSNotification*)aNotification
 {
     NSDictionary* info = [aNotification userInfo];
-    CGSize kbSize = [[info objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue].size;
     
+    // Get the size of the keyboard.
+    NSValue* keyboardFrameValue     = [info objectForKey:UIKeyboardFrameEndUserInfoKey];
+    CGRect keyboardRectWrtScreen    = [keyboardFrameValue CGRectValue];
+    
+    CGFloat keyboardWidth = keyboardRectWrtScreen.size.width;
+    CGFloat keyboardHeight = [[[self view] window] frame].size.height - keyboardRectWrtScreen.origin.y;
+    NSLog(@"Keyboard height on hide: %f %d", keyboardHeight, [self isHardwareKeyboardUsed:aNotification]);
+    CGSize kbSize = CGSizeMake(keyboardWidth, keyboardHeight);
+
     [UIView animateWithDuration:0.2f animations:^{
         [self adjustCommentField:kbSize];
     }];

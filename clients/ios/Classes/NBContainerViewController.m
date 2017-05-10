@@ -1024,6 +1024,15 @@
 
 }
 
+- (bool)isHardwareKeyboardUsed:(NSNotification*)keyboardNotification {
+    NSDictionary* info = [keyboardNotification userInfo];
+    CGRect keyboardEndFrame;
+    [[info valueForKey:UIKeyboardFrameEndUserInfoKey] getValue:&keyboardEndFrame];
+    float height = [[UIScreen mainScreen] bounds].size.height - keyboardEndFrame.origin.y;
+    float gThresholdForHardwareKeyboardToolbar = 160.f;
+    return height < gThresholdForHardwareKeyboardToolbar;
+}
+
 -(void)keyboardWillShowOrHide:(NSNotification*)notification {
     if (notification.name == UIKeyboardWillShowNotification) {
         self.keyboardIsShown = YES;
@@ -1034,7 +1043,7 @@
     if (self.keyboardIsShown && !self.isSharingStory) {
         return;
     }
-
+    
     NSDictionary *userInfo = notification.userInfo;
     NSTimeInterval duration = [[userInfo objectForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue];
     UIViewAnimationCurve curve = [[userInfo objectForKey:UIKeyboardAnimationCurveUserInfoKey] intValue];
@@ -1042,6 +1051,11 @@
     CGRect vb = [self.view bounds];
     CGRect keyboardFrame = [[userInfo objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
     CGRect storyNavigationFrame = self.storyNavigationController.view.frame;
+
+    if ([self isHardwareKeyboardUsed:notification] && self.keyboardIsShown) {
+        CGFloat keyboardHeight = [[[self view] window] frame].size.height - keyboardFrame.origin.y;
+        keyboardFrame.size.height = keyboardHeight;
+    }
 
     self.shareNavigationController.view.frame = CGRectMake(storyNavigationFrame.origin.x,
                                                            vb.size.height,
