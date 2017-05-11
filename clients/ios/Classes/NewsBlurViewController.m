@@ -2035,6 +2035,16 @@ heightForHeaderInSection:(NSInteger)section {
     positiveCount.frame = CGRectMake(greenIcon.frame.size.width + greenIcon.frame.origin.x + 2,
                                      greenIcon.frame.origin.y - 3, 100, 16);
     [positiveCount sizeToFit];
+    
+    NSUserDefaults *prefs = [NSUserDefaults standardUserDefaults];
+    NSString *appUnreadBadge = [prefs stringForKey:@"app_unread_badge"];
+    if ([appUnreadBadge isEqualToString:@"unread"]) {
+        [UIApplication sharedApplication].applicationIconBadgeNumber = counts.ps + counts.nt;
+    } else if ([appUnreadBadge isEqualToString:@"focus"]) {
+        [UIApplication sharedApplication].applicationIconBadgeNumber = counts.ps;
+    } else {
+        [UIApplication sharedApplication].applicationIconBadgeNumber = 0;
+    }
 }
 
 - (void)showRefreshNotifier {

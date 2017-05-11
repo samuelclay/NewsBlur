@@ -136,6 +136,22 @@
 		</dict>
 		<dict>
 			<key>Title</key>
+			<string>Feed list</string>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Show feeds after being read</string>
+			<key>Key</key>
+			<string>show_feeds_after_being_read</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>Title</key>
 			<string>Text Size</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
@@ -610,19 +626,31 @@
 		</dict>
 		<dict>
 			<key>Title</key>
-			<string>Feed list</string>
+			<string>App badge</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
 		<dict>
 			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
+			<string>PSMultiValueSpecifier</string>
 			<key>Title</key>
-			<string>Show feeds after being read</string>
-			<key>Key</key>
-			<string>show_feeds_after_being_read</string>
+			<string>Show unread count</string>
+			<key>Titles</key>
+			<array>
+				<string>Off</string>
+				<string>Unread + Focus</string>
+				<string>Focus only</string>
+			</array>
 			<key>DefaultValue</key>
-			<false/>
+			<string>off</string>
+			<key>Values</key>
+			<array>
+				<string>off</string>
+				<string>unread</string>
+				<string>focus</string>
+			</array>
+			<key>Key</key>
+			<string>app_unread_badge</string>
 		</dict>
 		<dict>
 			<key>Title</key>
