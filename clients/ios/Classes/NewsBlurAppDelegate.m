@@ -435,21 +435,6 @@
     }];
 }
 
-- clearNotification:(NSString *)notificationId {
-    UIApplication *app = [UIApplication sharedApplication];
-    NSArray *eventArray = [app scheduledLocalNotifications];
-    for (int i=0; i<[eventArray count]; i++) {
-        UILocalNotification* oneEvent = [eventArray objectAtIndex:i];
-        NSDictionary *userInfoCurrent = oneEvent.userInfo;
-        NSString *uid=[NSString stringWithFormat:@"%@",[userInfoCurrent valueForKey:@"uid"]];
-        if ([uid isEqualToString:notificationId]) {
-            //Cancelling local notification
-            [app cancelLocalNotification:oneEvent];
-            break;
-        }
-    }
-}
-
 - (BOOL)application:(UIApplication *)application
             openURL:(NSURL *)url
   sourceApplication:(NSString *)sourceApplication
