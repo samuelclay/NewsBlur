@@ -1868,7 +1868,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     }
     
     if ([tagName isEqualToString:@"A"]) {
-        [self showLinkContextMenu:pt];
+//        [self showLinkContextMenu:pt];
     }
 }
 
