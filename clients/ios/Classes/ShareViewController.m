@@ -358,6 +358,8 @@
             self.commentField.text = @"";
         }
     }
+    
+    [self onTextChange:nil];
 }
 
 - (void)clearComments {
@@ -523,7 +525,8 @@
             self.submitButton.title = @"Share with comments";
         } else {
             self.submitButton.title = @"Share this story";
-        }   
+        }
+        self.submitButton.enabled = YES;
     } else if ([self.currentType isEqualToString: @"reply"] ||
                [self.currentType isEqualToString:@"edit-reply"]) {
         self.submitButton.enabled = [self.commentField.text length] > 0;

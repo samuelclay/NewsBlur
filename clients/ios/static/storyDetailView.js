@@ -1,10 +1,12 @@
 var loadImages = function() {
     
     $('.NB-story img').each(function () {
+        if ($(this).closest('.NB-twitter-rss-author,.NB-twitter-rss-retweet').length) return;
         setImage(this);
     });
 
     $('.NB-story img').bind('load', function () {
+        if ($(this).closest('.NB-twitter-rss-author,.NB-twitter-rss-retweet').length) return;
         setImage(this);
     });
 
