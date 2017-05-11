@@ -1590,9 +1590,9 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     }
     
     NSIndexPath *indexPath = [self.storyTitlesTable indexPathForRowAtPoint:self.storyTitlesTable.contentOffset];
-    NSString *scrollPref = [[NSUserDefaults standardUserDefaults] stringForKey:@"default_scroll_read_filter"];
+    BOOL markReadOnScroll = [[NSUserDefaults standardUserDefaults] boolForKey:@"default_scroll_read_filter"];
     
-    if (indexPath && [scrollPref isEqualToString:@"mark_on_scroll"]) {
+    if (indexPath && markReadOnScroll) {
         NSUInteger topRow = indexPath.row;
         
         if (self.scrollingMarkReadRow == NSNotFound) {

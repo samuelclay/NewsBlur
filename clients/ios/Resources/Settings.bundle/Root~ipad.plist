@@ -96,21 +96,11 @@
 		</dict>
 		<dict>
 			<key>Type</key>
-			<string>PSMultiValueSpecifier</string>
+			<string>PSToggleSwitchSpecifier</string>
 			<key>Title</key>
 			<string>Mark stories read on scroll</string>
-			<key>Titles</key>
-			<array>
-				<string>Mark read when scrolling past</string>
-				<string>Don&apos;t automatically mark read</string>
-			</array>
 			<key>DefaultValue</key>
-			<string>nothing</string>
-			<key>Values</key>
-			<array>
-				<string>mark_on_scroll</string>
-				<string>nothing</string>
-			</array>
+			<string>YES</string>
 			<key>Key</key>
 			<string>default_scroll_read_filter</string>
 		</dict>
