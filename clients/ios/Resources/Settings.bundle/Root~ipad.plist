@@ -615,7 +615,7 @@
 				<string>Firefox</string>
 			</array>
 			<key>DefaultValue</key>
-			<string>inapp</string>
+			<string>inappsafari</string>
 			<key>Values</key>
 			<array>
 				<string>inapp</string>
