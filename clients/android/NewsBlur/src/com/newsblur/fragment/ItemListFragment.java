@@ -72,6 +72,9 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
     // flag indicating a gesture just occurred so we can ignore spurious story taps right after
     private boolean gestureDebounce = false;
 
+    // we have to de-dupe auto-mark-read-on-scroll actions
+    private String lastAutoMarkHash = null;
+
     @Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -255,6 +258,17 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
         // load an extra page or two worth of stories past the viewport
         int desiredStoryCount = firstVisible + (visibleCount*2) + 1;
         triggerRefresh(desiredStoryCount, storiesSeen);
+
+        if ((storiesSeen > 0) &&
+            (firstVisible > 0) && 
+            PrefsUtils.isMarkReadOnScroll(getActivity())) {
+            int topVisible = firstVisible - 1;
+            Story story = adapter.getStory(topVisible);
+            if (!story.storyHash.equals(lastAutoMarkHash)) {
+                lastAutoMarkHash = story.storyHash;
+                FeedUtils.markStoryAsRead(story, getActivity());
+            }
+        }
 	}
 
 	@Override

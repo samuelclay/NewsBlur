@@ -583,6 +583,11 @@ public class PrefsUtils {
         return prefs.getBoolean(PrefConstants.STORIES_AUTO_OPEN_FIRST, false);
     }
 
+    public static boolean isMarkReadOnScroll(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        return prefs.getBoolean(PrefConstants.STORIES_MARK_READ_ON_SCROLL, false);
+    }
+
     public static boolean isOfflineEnabled(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
         return prefs.getBoolean(PrefConstants.ENABLE_OFFLINE, false);

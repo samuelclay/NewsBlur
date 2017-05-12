@@ -52,6 +52,7 @@ public class PrefConstants {
     public static final String READING_ENTER_IMMERSIVE_SINGLE_TAP = "immersive_enter_single_tap";
 
     public static final String STORIES_AUTO_OPEN_FIRST = "pref_auto_open_first_unread";
+    public static final String STORIES_MARK_READ_ON_SCROLL = "pref_mark_read_on_scroll";
     public static final String STORIES_SHOW_PREVIEWS = "pref_show_content_preview";
     public static final String STORIES_SHOW_THUMBNAILS = "pref_show_thumbnails";
 
