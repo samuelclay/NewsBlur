@@ -125,12 +125,15 @@ public class StoryItemsAdapter extends SimpleCursorAdapter {
 		View borderTwo = v.findViewById(R.id.row_item_favicon_borderbar_2);
         String feedColor = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_FAVICON_COLOR));
         String feedFade = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_FAVICON_FADE));
-        if (!TextUtils.equals(feedColor, "#null") && !TextUtils.equals(feedFade, "#null")) {
-            borderOne.setBackgroundColor(Color.parseColor(feedColor));
-            borderTwo.setBackgroundColor(Color.parseColor(feedFade));
-        } else {
+        if ((feedColor == null) ||
+            (feedFade == null) ||
+            TextUtils.equals(feedColor, "null") ||
+            TextUtils.equals(feedFade, "null")) {
             borderOne.setBackgroundColor(Color.GRAY);
             borderTwo.setBackgroundColor(Color.LTGRAY);
+        } else {
+            borderOne.setBackgroundColor(Color.parseColor("#" + feedColor));
+            borderTwo.setBackgroundColor(Color.parseColor("#" + feedFade));
         }
 
         // dynamic text sizing

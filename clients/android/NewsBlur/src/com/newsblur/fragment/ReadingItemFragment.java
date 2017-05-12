@@ -300,19 +300,22 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
         TextView itemDate = (TextView) view.findViewById(R.id.reading_item_date);
         ImageView feedIcon = (ImageView) view.findViewById(R.id.reading_feed_icon);
 
-		if (TextUtils.equals(feedColor, "#null") || TextUtils.equals(feedFade, "#null")) {
-            feedColor = "#303030";
-            feedFade = "#505050";
-            feedBorder = "#202020";
+		if ((feedColor == null) ||
+            (feedFade == null) ||
+            TextUtils.equals(feedColor, "null") ||
+            TextUtils.equals(feedFade, "null")) {
+            feedColor = "303030";
+            feedFade = "505050";
+            feedBorder = "202020";
         }
 
         int[] colors = {
-            Color.parseColor(feedColor),
-            Color.parseColor(feedFade),
+            Color.parseColor("#" + feedColor),
+            Color.parseColor("#" + feedFade),
         };
         GradientDrawable gradient = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP, colors);
         UIUtils.setViewBackground(feedHeader, gradient);
-        feedHeaderBorder.setBackgroundColor(Color.parseColor(feedBorder));
+        feedHeaderBorder.setBackgroundColor(Color.parseColor("#" + feedBorder));
 
         if (TextUtils.equals(faviconText, "black")) {
             itemFeed.setTextColor(UIUtils.getColor(getActivity(), R.color.text));
