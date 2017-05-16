@@ -196,7 +196,10 @@ class MUserFeedNotification(mongo.Document):
         body = truncate_chars(body.strip(), 1200)
         if not body:
             body = " "
-            
+        
+        if not usersub.user.profile.is_premium:
+            body = "Please upgrade to a premium subscription to receive full push notifications."
+        
         return title, subtitle, body
         
     def push_story_notification(self, story, classifiers, usersub):
