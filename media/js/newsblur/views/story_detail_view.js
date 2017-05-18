@@ -310,11 +310,12 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     render_comments: function() {
         var $original_comments = this.$('.NB-feed-story-comments-container,.NB-feed-story-comments');
         var $original_shares = this.$('.NB-feed-story-shares-container,.NB-feed-story-shares');
+        
         if (this.model.get("comment_count") || this.model.get("share_count")) {
             var comments_view = new NEWSBLUR.Views.StoryCommentsView({model: this.model});
             this.comments_view = comments_view.render();
             var $comments = this.comments_view.el;
-            $original_comments.replaceWith($comments);
+            $original_comments.html($comments);
             var $shares = $('.NB-story-comments-shares-teaser-wrapper', $comments);
             $original_shares.replaceWith($shares);
         } else if ($original_comments.length) {
