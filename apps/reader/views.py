@@ -32,7 +32,7 @@ from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifie
 from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds
 from apps.analyzer.models import apply_classifier_authors, apply_classifier_tags
 from apps.analyzer.models import get_classifiers_for_user, sort_classifiers_by_feed
-from apps.profile.models import Profile
+from apps.profile.models import Profile, MCustomStyling
 from apps.reader.models import UserSubscription, UserSubscriptionFolders, RUserStory, Feature
 from apps.reader.forms import SignupForm, LoginForm, FeatureForm
 from apps.rss_feeds.models import MFeedIcon, MStarredStoryCounts, MSavedSearch
@@ -102,6 +102,7 @@ def dashboard(request, **kwargs):
                                                            ).select_related('feed')[:2]
     statistics        = MStatistics.all()
     social_profile    = MSocialProfile.get_user(user.pk)
+    custom_styling    = MCustomStyling.get_user(user.pk)
 
     start_import_from_google_reader = request.session.get('import_from_google_reader', False)
     if start_import_from_google_reader:
@@ -117,6 +118,7 @@ def dashboard(request, **kwargs):
     return {
         'user_profile'      : user.profile,
         'feed_count'        : feed_count,
+        'custom_styling'    : custom_styling,
         'account_images'    : range(1, 4),
         'recommended_feeds' : recommended_feeds,
         'unmoderated_feeds' : unmoderated_feeds,

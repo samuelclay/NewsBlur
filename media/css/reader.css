@@ -11249,12 +11249,14 @@ form.opml_import_form input {
     border: 4px solid #8F1F00;
     margin: 2px 3px;
 }
-.NB-modal-profile-editor .NB-profile-blurblog-css {
+.NB-modal-profile-editor .NB-profile-blurblog-css,
+.NB-modal-account .NB-account-custom-css,
+.NB-modal-account .NB-account-custom-javascript {
     width: 100%;
     font-family: Courier, monospace;
     font-size: 13px;
     padding: 6px;
-    height: 54px;
+    height: 94px;
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
