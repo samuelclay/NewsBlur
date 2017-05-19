@@ -155,6 +155,15 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
         super.onPause();
     }
 
+    @Override
+    public void onResume() {
+        if ((adapter != null) && adapter.isStale()) {
+            Log.e(this.getClass().getName(), "stale fragment loaded, falling back.");
+            getActivity().finish();
+        }
+        super.onResume();
+    }
+
     private void triggerRefresh(int desiredStoryCount, Integer totalSeen) {
         // ask the sync service for as many stories as we want
         boolean gotSome = NBSyncService.requestMoreForFeed(getFeedSet(), desiredStoryCount, totalSeen);

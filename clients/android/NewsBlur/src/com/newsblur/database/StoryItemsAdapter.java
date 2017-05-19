@@ -81,6 +81,10 @@ public class StoryItemsAdapter extends SimpleCursorAdapter {
 		return cursor.getCount();
 	}
 
+    public boolean isStale() {
+        return cursor.isClosed();
+    }
+
 	@Override
 	public Cursor swapCursor(Cursor c) {
 		this.cursor = c;
@@ -204,6 +208,9 @@ public class StoryItemsAdapter extends SimpleCursorAdapter {
 
         @Override
         public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
+            // some devices keep binding after the loadermanager swaps. fail fast.
+            if (cursor.isClosed()) return true;
+
             String columnName = cursor.getColumnName(columnIndex);
             if (TextUtils.equals(columnName, DatabaseConstants.STORY_AUTHORS)) {
                 if (TextUtils.isEmpty(cursor.getString(columnIndex))) {
