@@ -34,6 +34,7 @@ from django.utils.encoding import smart_unicode
 from utils import json_functions as json
 from celery.exceptions import SoftTimeLimitExceeded
 from utils.twitter_fetcher import TwitterFetcher
+from utils.json_fetcher import JSONFetcher
 # from utils.feed_functions import mail_feed_error_to_admin
 
 
@@ -63,7 +64,7 @@ class FetchFeed:
                                                             datetime.datetime.now() - self.feed.last_update)
         logging.debug(log_msg)
         
-        etag=self.feed.etag
+        etag = self.feed.etag
         modified = self.feed.last_modified.utctimetuple()[:7] if self.feed.last_modified else None
         address = self.feed.feed_address
         
@@ -126,7 +127,16 @@ class FetchFeed:
                 if raw_feed.status_code >= 400:
                     logging.debug("   ***> [%-30s] ~FRFeed fetch was %s status code, trying fake user agent: %s" % (self.feed.log_title[:30], raw_feed.status_code, raw_feed.headers))
                     raw_feed = requests.get(address, headers=self.feed.fetch_headers(fake=True))
-                if raw_feed.content and raw_feed.status_code < 400:
+                
+                if raw_feed.content and 'application/json' in raw_feed.headers.get('Content-Type', ""):
+                    # JSON Feed
+                    json_feed = self.fetch_json_feed(address, raw_feed)
+                    if not json_feed:
+                        logging.debug(u'   ***> [%-30s] ~FRJSON fetch failed: %s' % 
+                                      (self.feed.log_title[:30], address))
+                        return FEED_ERRHTTP, None
+                    self.fpf = feedparser.parse(json_feed)
+                elif raw_feed.content and raw_feed.status_code < 400:
                     response_headers = raw_feed.headers
                     response_headers['Content-Location'] = raw_feed.url
                     self.raw_feed = smart_unicode(raw_feed.content)
@@ -175,6 +185,10 @@ class FetchFeed:
     def fetch_twitter(self, address=None):
         twitter_fetcher = TwitterFetcher(self.feed, self.options)
         return twitter_fetcher.fetch(address)
+    
+    def fetch_json_feed(self, address, headers):
+        json_fetcher = JSONFetcher(self.feed, self.options)
+        return json_fetcher.fetch(address, headers)
     
     def fetch_youtube(self, address):
         username = None
@@ -380,7 +394,7 @@ class ProcessFeed:
             logging.debug("   ---> [%-30s] ~SB~FRFeed is Non-XML. No feedparser feed either!" % (self.feed.log_title[:30]))
             self.feed.save_feed_history(551, "Broken feed")
             return FEED_ERRHTTP, ret_values
-            
+
         if self.fpf and not self.fpf.entries:
             if self.fpf.bozo and isinstance(self.fpf.bozo_exception, feedparser.NonXMLContentType):
                 logging.debug("   ---> [%-30s] ~SB~FRFeed is Non-XML. %s entries. Checking address..." % (self.feed.log_title[:30], len(self.fpf.entries)))
@@ -659,6 +673,7 @@ class Dispatcher:
                     
                 ffeed = FetchFeed(feed_id, self.options)
                 ret_feed, fetched_feed = ffeed.fetch()
+
                 feed_fetch_duration = time.time() - start_duration
                 raw_feed = ffeed.raw_feed
                 

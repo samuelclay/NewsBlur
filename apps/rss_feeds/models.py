@@ -1,4 +1,5 @@
 import difflib
+import requests
 import datetime
 import time
 import random
@@ -462,6 +463,12 @@ class Feed(models.Model):
                 feed = cls.objects.create(feed_address=url)
                 feed = feed.update(requesting_user_id=user.pk if user else None)
                 
+        # Check for JSON feed
+        if not feed and fetch and create:
+            r = requests.get(url)
+            if 'application/json' in r.headers.get('Content-Type'):
+                feed = cls.objects.create(feed_address=url)
+                feed = feed.update()
         
         # Still nothing? Maybe the URL has some clues.
         if not feed and fetch and len(found_feed_urls):
@@ -1103,7 +1110,7 @@ class Feed(models.Model):
         if getattr(settings, 'TEST_DEBUG', False):
             print " ---> Testing feed fetch: %s" % self.log_title
             options['force'] = False
-            options['force_fp'] = True
+            # options['force_fp'] = True # No, why would this be needed?
             original_feed_address = self.feed_address
             original_feed_link = self.feed_link
             self.feed_address = self.feed_address.replace("%(NEWSBLUR_DIR)s", settings.NEWSBLUR_DIR)
