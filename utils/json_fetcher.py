@@ -45,7 +45,7 @@ class JSONFetcher:
             date_published = dateutil.parser.parse(pubdate)
         story = {
             'title': item.get('title', None),
-            'link': item.get('url', None),
+            'link': item.get('external_url', item.get('url', None)),
             'description': item.get('content_html', item.get('content_text', None)),
             'author_name': item.get('author', {}).get('name', None),
             'categories': item.get('tags', []),
