@@ -26,11 +26,7 @@ class TwitterFetcher:
         if not username: 
             return
         
-        while True:
-            twitter_user = self.fetch_user(username)
-            if twitter_user: 
-                break
-        
+        twitter_user = self.fetch_user(username)
         if not twitter_user:
             return
             
