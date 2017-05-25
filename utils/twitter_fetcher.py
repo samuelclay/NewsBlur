@@ -20,11 +20,20 @@ class TwitterFetcher:
         if not address:
             address = self.feed.feed_address
         self.address = address
-        
+        twitter_user = None
+
         username = self.extract_username()
-        if not username: return
-        twitter_user = self.fetch_user(username)
-        if not twitter_user: return
+        if not username: 
+            return
+        
+        while True:
+            twitter_user = self.fetch_user(username)
+            if twitter_user: 
+                break
+        
+        if not twitter_user:
+            return
+            
         tweets = self.user_timeline(twitter_user)
         
         data = {}
@@ -77,7 +86,10 @@ class TwitterFetcher:
                 if not social_services.twitter_uid: continue
                 try:
                     twitter_api = social_services.twitter_api()
-                    break
+                    if not twitter_api: 
+                        continue
+                    else:
+                        break
                 except tweepy.error.TweepError, e:
                     logging.debug(u'   ***> [%-30s] ~FRTwitter fetch failed: %s: %s' % 
                                   (self.feed.log_title[:30], self.address, e))
