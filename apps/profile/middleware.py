@@ -254,6 +254,10 @@ BANNED_USER_AGENTS = (
     'missing',
 )
 
+BANNED_USERNAMES = (
+    'ark4diusz',
+)
+
 class UserAgentBanMiddleware:
     def process_request(self, request):
         user_agent = request.environ.get('HTTP_USER_AGENT', 'missing').lower()
@@ -271,6 +275,15 @@ class UserAgentBanMiddleware:
                 'code': -1
             }
             logging.user(request, "~FB~SN~BBBanned UA: ~SB%s / %s (%s)" % (user_agent, request.path, request.META))
+            
+            return HttpResponse(json.encode(data), status=403, mimetype='text/json')
+
+        if request.user.is_authenticated() and any(username == request.user.username for username in BANNED_USERNAMES):
+            data = {
+                'error': 'User banned: %s' % request.user.username,
+                'code': -1
+            }
+            logging.user(request, "~FB~SN~BBBanned Username: ~SB%s / %s (%s)" % (request.user, request.path, request.META))
             
             return HttpResponse(json.encode(data), status=403, mimetype='text/json')
 
