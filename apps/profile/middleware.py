@@ -255,7 +255,6 @@ BANNED_USER_AGENTS = (
 )
 
 BANNED_USERNAMES = (
-    'ark4diusz',
 )
 
 class UserAgentBanMiddleware:
