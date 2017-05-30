@@ -122,11 +122,4 @@ public class FeedItemsList extends ItemsList {
         return PrefsUtils.getReadFilterForFeed(this, feed.feedId);
     }
 
-    @Override
-    public void defaultFeedViewChanged(DefaultFeedView value) {
-        PrefsUtils.setDefaultFeedViewForFeed(this, feed.feedId, value);
-        if (itemListFragment != null) {
-            itemListFragment.setDefaultFeedView(value);
-        }
-    }
 }

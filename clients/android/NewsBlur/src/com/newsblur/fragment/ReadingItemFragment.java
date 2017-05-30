@@ -98,7 +98,7 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
 
     private final Object WEBVIEW_CONTENT_MUTEX = new Object();
 
-	public static ReadingItemFragment newInstance(Story story, String feedTitle, String feedFaviconColor, String feedFaviconFade, String feedFaviconBorder, String faviconText, String faviconUrl, Classifier classifier, boolean displayFeedDetails, DefaultFeedView defaultFeedView, String sourceUserId) {
+	public static ReadingItemFragment newInstance(Story story, String feedTitle, String feedFaviconColor, String feedFaviconFade, String feedFaviconBorder, String faviconText, String faviconUrl, Classifier classifier, boolean displayFeedDetails, String sourceUserId) {
 		ReadingItemFragment readingFragment = new ReadingItemFragment();
 
 		Bundle args = new Bundle();
@@ -111,7 +111,6 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
 		args.putString("faviconUrl", faviconUrl);
 		args.putBoolean("displayFeedDetails", displayFeedDetails);
 		args.putSerializable("classifier", classifier);
-        args.putSerializable("defaultFeedView", defaultFeedView);
         args.putString("sourceUserId", sourceUserId);
 		readingFragment.setArguments(args);
 
@@ -137,8 +136,6 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
         faviconText = getArguments().getString("faviconText");
 
 		classifier = (Classifier) getArguments().getSerializable("classifier");
-
-        selectedFeedView = (DefaultFeedView)getArguments().getSerializable("defaultFeedView");
 
         sourceUserId = getArguments().getString("sourceUserId");
 
@@ -180,6 +177,8 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
         ButterKnife.bind(this, view);
 
         Reading activity = (Reading) getActivity();
+
+        selectedFeedView = PrefsUtils.getDefaultFeedView(activity, activity.getFeedSet());
 
         registerForContextMenu(web);
         web.setCustomViewLayout(webviewCustomViewLayout);
@@ -425,8 +424,15 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
             } else {
                 selectedFeedView = DefaultFeedView.TEXT;
             }
+            Reading activity = (Reading) getActivity();
+            activity.defaultFeedViewChanged(selectedFeedView);
             reloadStoryContent();
         }
+    }
+
+    public void setSelectedFeedView(DefaultFeedView newValue) {
+        selectedFeedView = newValue;
+        reloadStoryContent();
     }
 
     public DefaultFeedView getSelectedFeedView() {

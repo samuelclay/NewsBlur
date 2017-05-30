@@ -42,14 +42,6 @@ public class SavedStoriesItemsList extends ItemsList {
         return true;
 	}
 
-    @Override
-    public void defaultFeedViewChanged(DefaultFeedView value) {
-        PrefsUtils.setDefaultFeedViewForFolder(this, PrefConstants.SAVED_STORIES_FOLDER_NAME, value);
-        if (itemListFragment != null) {
-            itemListFragment.setDefaultFeedView(value);
-        }
-    }
-
     // Note: the following two methods are required by our parent spec but are not
     // relevant since saved stories have no read/unread status.
 

@@ -52,11 +52,4 @@ public class FolderItemsList extends ItemsList {
         return PrefsUtils.getReadFilterForFolder(this, folderName);
     }
 
-    @Override
-    public void defaultFeedViewChanged(DefaultFeedView value) {
-        PrefsUtils.setDefaultFeedViewForFolder(this, folderName, value);
-        if (itemListFragment != null) {
-            itemListFragment.setDefaultFeedView(value);
-        }
-    }
 }

@@ -39,14 +39,6 @@ public class ReadStoriesItemsList extends ItemsList {
 	}
 
     @Override
-    public void defaultFeedViewChanged(DefaultFeedView value) {
-        PrefsUtils.setDefaultFeedViewForFolder(this, PrefConstants.READ_STORIES_FOLDER_NAME, value);
-        if (itemListFragment != null) {
-            itemListFragment.setDefaultFeedView(value);
-        }
-    }
-
-    @Override
     protected void updateReadFilterPreference(ReadFilter newValue) {
         // dummy method.  read stories don't have an order option
     }

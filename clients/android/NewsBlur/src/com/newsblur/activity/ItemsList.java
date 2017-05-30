@@ -256,6 +256,15 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
         triggerSync();
     }
 
+    @Override
+    public void defaultFeedViewChanged(DefaultFeedView value) {
+        PrefsUtils.setDefaultFeedView(this, fs, value);
+        if (itemListFragment != null) {
+            itemListFragment.setDefaultFeedView(value);
+        }
+    }
+
+
     // NB: this callback is for the text size slider
 	@Override
 	public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {

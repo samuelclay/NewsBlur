@@ -39,14 +39,6 @@ public class GlobalSharedStoriesItemsList extends ItemsList {
 	}
 
     @Override
-    public void defaultFeedViewChanged(DefaultFeedView value) {
-        PrefsUtils.setDefaultFeedViewForFolder(this, PrefConstants.GLOBAL_SHARED_STORIES_FOLDER_NAME, value);
-        if (itemListFragment != null) {
-            itemListFragment.setDefaultFeedView(value);
-        }
-    }
-
-    @Override
     protected void updateReadFilterPreference(ReadFilter newValue) {
         // Not supported for global shared stories
     }

@@ -113,7 +113,6 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 
     private List<Story> pageHistory;
 
-    protected DefaultFeedView defaultFeedView;
     private VolumeKeyNavigation volumeKeyNavigation;
 
     @Override
@@ -143,12 +142,6 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
         storyOrder = PrefsUtils.getStoryOrder(this, fs);
         readFilter = PrefsUtils.getReadFilter(this, fs);
         volumeKeyNavigation = PrefsUtils.getVolumeKeyNavigation(this);
-
-        if ((savedInstanceBundle != null) && savedInstanceBundle.containsKey(BUNDLE_SELECTED_FEED_VIEW)) {
-            defaultFeedView = (DefaultFeedView)savedInstanceBundle.getSerializable(BUNDLE_SELECTED_FEED_VIEW);
-        } else {
-            defaultFeedView = PrefsUtils.getDefaultFeedView(this, fs);
-        }
 
         // were we fullscreen before rotation?
         if ((savedInstanceBundle != null) && savedInstanceBundle.containsKey(BUNDLE_IS_FULLSCREEN)) {
@@ -850,6 +843,21 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
     private ReadingItemFragment getReadingFragment() {
         if (readingAdapter == null || pager == null) { return null; }
         return readingAdapter.getExistingItem(pager.getCurrentItem());
+    }
+
+    public FeedSet getFeedSet() {
+        return this.fs;
+    }
+
+    public void defaultFeedViewChanged(DefaultFeedView value) {
+        PrefsUtils.setDefaultFeedView(this, fs, value);
+        ReadingItemFragment frag = readingAdapter.getExistingItem(pager.getCurrentItem());
+        frag.setSelectedFeedView(value);
+        // fragments to the left or the right may have already preloaded content and need to also switch
+        frag = readingAdapter.getExistingItem(pager.getCurrentItem()-1);
+        if (frag != null) frag.setSelectedFeedView(value);
+        frag = readingAdapter.getExistingItem(pager.getCurrentItem()+1);
+        if (frag != null) frag.setSelectedFeedView(value);
     }
 
     @Override

@@ -54,11 +54,4 @@ public class SocialFeedItemsList extends ItemsList {
         return PrefsUtils.getReadFilterForFeed(this, socialFeed.userId);
     }
 
-    @Override
-    public void defaultFeedViewChanged(DefaultFeedView value) {
-        PrefsUtils.setDefaultFeedViewForFeed(this, socialFeed.userId, value);
-        if (itemListFragment != null) {
-            itemListFragment.setDefaultFeedView(value);
-        }
-    }
 }
