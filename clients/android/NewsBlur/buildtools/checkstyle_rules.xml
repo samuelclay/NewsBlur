@@ -6,13 +6,14 @@
 <module name="Checker">
     <property name="fileExtensions" value="java, properties, xml" />
     <module name="TreeWalker">
+        <module name="ArrayTrailingComma"/>
+        <module name="ArrayTypeStyle"/>
+        <module name="EqualsHashCode"/>
+        <module name="HideUtilityClassConstructor"/>
+        <module name="NoFinalizer"/>
+        <module name="OuterTypeFilename"/>
+        <module name="OverloadMethodsDeclarationOrder"/>
         <module name="UnusedImports"/>
         <module name="UpperEll"/>
-        <module name="ArrayTypeStyle"/>
-        <module name="OuterTypeFilename"/>
-        <module name="ArrayTrailingComma"/>
-        <module name="EqualsHashCode"/>
-        <module name="NoFinalizer"/>
-        <module name="HideUtilityClassConstructor"/>
     </module>
 </module>
