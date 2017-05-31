@@ -11,11 +11,13 @@ NEWSBLUR.Models.SavedSearchFeed = Backbone.Model.extend({
     feed_title: function() {
         var feed_title;
         var feed_id = this.get('feed_id');
-
+        
         if (feed_id == 'river:') {
             feed_title = "All Site Stories";
         } else if (_.string.startsWith(feed_id, 'river:')) {
-            feed_title = NEWSBLUR.assets.get_feed(feed_id).get('folder_title');
+            var feed = NEWSBLUR.assets.get_feed(feed_id);
+            if (!feed) return;
+            feed_title = feed.get('folder_title');
         } else if (feed_id == "read") {
             feed_title = "Read Stories";
         } else if (_.string.startsWith(feed_id, 'starred')) {
@@ -28,9 +30,15 @@ NEWSBLUR.Models.SavedSearchFeed = Backbone.Model.extend({
                 feed_title = feed_title + " - " + model.get('tag');
             }
         } else if (_.string.startsWith(feed_id, 'feed:')){
-            feed_title = NEWSBLUR.assets.get_feed(parseInt(this.get('feed_id').replace('feed:', ''), 10)).get('feed_title');
+            var feed = NEWSBLUR.assets.get_feed(parseInt(this.get('feed_id').replace('feed:', ''), 10));
+            if (!feed) return;
+            
+            feed_title = feed.get('feed_title');
         } else if (_.string.startsWith(feed_id, 'social:')){
-            feed_title = NEWSBLUR.assets.get_feed(this.get('feed_id')).get('feed_title');
+            var feed = NEWSBLUR.assets.get_feed(this.get('feed_id'));
+            if (!feed) return;
+            
+            feed_title = feed.get('feed_title');
         }
 
         return feed_title;

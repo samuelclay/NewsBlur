@@ -61,6 +61,7 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
 
 	public static final String TEXT_SIZE_CHANGED = "textSizeChanged";
 	public static final String TEXT_SIZE_VALUE = "textSizeChangeValue";
+    public static final String READING_FONT_CHANGED = "readingFontChanged";
 	public Story story;
     private FeedSet fs;
 	private LayoutInflater inflater;
@@ -69,7 +70,7 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
 	@Bind(R.id.reading_webview) NewsblurWebview web;
     @Bind(R.id.custom_view_container) ViewGroup webviewCustomViewLayout;
     @Bind(R.id.reading_scrollview) View fragmentScrollview;
-	private BroadcastReceiver receiver;
+	private BroadcastReceiver textSizeReceiver, readingFontReceiver;
     @Bind(R.id.reading_item_authors) TextView itemAuthors;
 	@Bind(R.id.reading_feed_title) TextView itemFeed;
 	private boolean displayFeedDetails;
@@ -140,8 +141,10 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
 
         sourceUserId = getArguments().getString("sourceUserId");
 
-		receiver = new TextSizeReceiver();
-		getActivity().registerReceiver(receiver, new IntentFilter(TEXT_SIZE_CHANGED));
+		textSizeReceiver = new TextSizeReceiver();
+		getActivity().registerReceiver(textSizeReceiver, new IntentFilter(TEXT_SIZE_CHANGED));
+        readingFontReceiver = new ReadingFontReceiver();
+        getActivity().registerReceiver(readingFontReceiver, new IntentFilter(READING_FONT_CHANGED));
 	}
 
     @Override
@@ -151,7 +154,8 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
 
 	@Override
 	public void onDestroy() {
-		getActivity().unregisterReceiver(receiver);
+		getActivity().unregisterReceiver(textSizeReceiver);
+        getActivity().unregisterReceiver(readingFontReceiver);
         web.setOnTouchListener(null);
         view.setOnTouchListener(null);
         getActivity().getWindow().getDecorView().setOnSystemUiVisibilityChangeListener(null);
@@ -663,6 +667,14 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
 			web.setTextSize(intent.getFloatExtra(TEXT_SIZE_VALUE, 1.0f));
 		}   
 	}
+
+    private class ReadingFontReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            contentHash = 0; // Force reload since content hasn't changed
+            reloadStoryContent();
+        }
+    }
 
 	@Override
 	public void updateTagView(String key, int classifierType, int classifierAction) {

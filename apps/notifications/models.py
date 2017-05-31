@@ -188,12 +188,17 @@ class MUserFeedNotification(mongo.Document):
         feed_title = usersub.user_title or usersub.feed.feed_title
         # title = "%s: %s" % (feed_title, story['story_title'])
         title = feed_title
-        subtitle = story['story_title']
+        subtitle = HTMLParser().unescape(story['story_title'])
         # body = HTMLParser().unescape(strip_tags(story['story_content']))
         soup = BeautifulSoup(story['story_content'].strip())
         # print story['story_content']
         body = replace_with_newlines(soup)
         body = truncate_chars(body.strip(), 1200)
+        if not body:
+            body = " "
+        
+        if not usersub.user.profile.is_premium:
+            body = "Please upgrade to a premium subscription to receive full push notifications."
         
         return title, subtitle, body
         
@@ -236,6 +241,11 @@ class MUserFeedNotification(mongo.Document):
         if len(story['image_urls']):
             image_url = story['image_urls'][0]
             # print image_url
+        
+        def response_listener(error_response):
+            logging.user(user, "~FRAPNS client get error-response: " + str(error_response))
+
+        apns.gateway_server.register_response_listener(response_listener)
         
         for token in tokens.ios_tokens:
             logging.user(user, '~BMStory notification by iOS: ~FY~SB%s~SN~BM~FY/~SB%s' % 

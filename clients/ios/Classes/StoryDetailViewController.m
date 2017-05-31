@@ -230,6 +230,8 @@
     [super viewDidDisappear:animated];
     
     if (!appDelegate.showingSafariViewController &&
+        appDelegate.navigationController.visibleViewController != (UIViewController *)appDelegate.shareViewController &&
+        appDelegate.navigationController.visibleViewController != (UIViewController *)appDelegate.trainerViewController &&
         appDelegate.navigationController.visibleViewController != (UIViewController *)appDelegate.originalStoryViewController) {
         [self clearStory];
     }
@@ -1866,7 +1868,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     }
     
     if ([tagName isEqualToString:@"A"]) {
-        [self showLinkContextMenu:pt];
+//        [self showLinkContextMenu:pt];
     }
 }
 
@@ -2191,6 +2193,15 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         contentWidthClass = @"NB-iphone";
     }
     
+    NSString *alternateViewClass = @"";
+    if (!self.isPhoneOrCompact) {
+        if (appDelegate.masterContainerViewController.storyTitlesOnLeft) {
+            alternateViewClass = @"NB-titles-bottom";
+        } else {
+            alternateViewClass = @"NB-titles-left";
+        }
+    }
+    
     contentWidthClass = [NSString stringWithFormat:@"%@ NB-width-%d",
                          contentWidthClass, (int)floorf(CGRectGetWidth(webView.scrollView.bounds))];
     
@@ -2201,9 +2212,10 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
                             @"NB-river" : @"NB-non-river";
     
     NSString *jsString = [[NSString alloc] initWithFormat:
-                          @"$('body').attr('class', '%@ %@');"
+                          @"$('body').attr('class', '%@ %@ %@');"
                           "document.getElementById(\"viewport\").setAttribute(\"content\", \"width=%li;initial-scale=1; minimum-scale=1.0; maximum-scale=1.0; user-scalable=0;\");",
                           contentWidthClass,
+                          alternateViewClass,
                           riverClass,
                           (long)contentWidth];
     [self.webView stringByEvaluatingJavaScriptFromString:jsString];

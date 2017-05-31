@@ -722,7 +722,18 @@ public class PrefsUtils {
     }
 
     public static Font getFont(Context context) {
+        return Font.getFont(getFontString(context));
+    }
+
+    public static String getFontString(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
-        return Font.getFont(prefs.getString(PrefConstants.READING_FONT, Font.DEFAULT.toString()));
+        return prefs.getString(PrefConstants.READING_FONT, Font.DEFAULT.toString());
+    }
+
+    public static void setFontString(Context context, String newValue) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        Editor editor = prefs.edit();
+        editor.putString(PrefConstants.READING_FONT, newValue);
+        editor.commit();
     }
 }

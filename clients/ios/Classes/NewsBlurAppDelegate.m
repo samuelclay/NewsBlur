@@ -788,7 +788,7 @@
         // iOS 8+
         UIPopoverPresentationController *popPC = activityViewController.popoverPresentationController;
         popPC.permittedArrowDirections = UIPopoverArrowDirectionAny;
-        popPC.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
+        popPC.backgroundColor = UIColorFromLightDarkRGB(NEWSBLUR_WHITE_COLOR, 0x707070);
         
         if ([sender isKindOfClass:[UIBarButtonItem class]]) {
             popPC.barButtonItem = sender;
@@ -823,6 +823,7 @@
     [self.shareViewController setCommentType:type];
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [self.masterContainerViewController transitionToShareView];
+        [self.shareViewController setSiteInfo:type setUserId:userId setUsername:username setReplyId:replyId];
     } else {
         if (self.shareNavigationController == nil) {
             UINavigationController *shareNav = [[UINavigationController alloc]
@@ -830,11 +831,10 @@
             self.shareNavigationController = shareNav;
             self.shareNavigationController.navigationBar.translucent = NO;
         }
-        [self.shareViewController setSiteInfo:type setUserId:userId setUsername:username setReplyId:replyId];
-        [self.navigationController presentViewController:self.shareNavigationController animated:YES completion:nil];
+        [self.navigationController presentViewController:self.shareNavigationController animated:YES completion:^{
+            [self.shareViewController setSiteInfo:type setUserId:userId setUsername:username setReplyId:replyId];
+        }];
     }
-
-    [self.shareViewController setSiteInfo:type setUserId:userId setUsername:username setReplyId:replyId];
 }
 
 - (void)hideShareView:(BOOL)resetComment {
@@ -1637,6 +1637,19 @@
 
 - (void)showOriginalStory:(NSURL *)url {
     NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
+    
+    if (!url) {
+        UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Nowhere to go"
+                                                                       message:@"The story doesn't link anywhere."
+                                                                preferredStyle:UIAlertControllerStyleAlert];
+        
+        UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"Oh well" style:UIAlertActionStyleDefault
+                                                              handler:^(UIAlertAction * action) {}];
+        
+        [alert addAction:defaultAction];
+        [navigationController presentViewController:alert animated:YES completion:nil];
+        return;
+    }
     
     NSString *storyBrowser = [preferences stringForKey:@"story_browser"];
     if ([storyBrowser isEqualToString:@"safari"]) {

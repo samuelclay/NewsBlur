@@ -375,10 +375,10 @@ static UIFont *userLabelFont;
         [self.intelligenceControl setImage:[UIImage imageNamed:@"unread_green.png"] forSegmentAtIndex:2];
         [self.intelligenceControl setImage:[UIImage imageNamed:@"unread_blue.png"] forSegmentAtIndex:3];
         
-        [self.intelligenceControl setWidth:52 forSegmentAtIndex:0];
+        [self.intelligenceControl setWidth:40 forSegmentAtIndex:0];
         [self.intelligenceControl setWidth:68 forSegmentAtIndex:1];
         [self.intelligenceControl setWidth:62 forSegmentAtIndex:2];
-        [self.intelligenceControl setWidth:62 forSegmentAtIndex:3];
+        [self.intelligenceControl setWidth:60 forSegmentAtIndex:3];
     }
     
     [self.intelligenceControl sizeToFit];
@@ -2035,6 +2035,16 @@ heightForHeaderInSection:(NSInteger)section {
     positiveCount.frame = CGRectMake(greenIcon.frame.size.width + greenIcon.frame.origin.x + 2,
                                      greenIcon.frame.origin.y - 3, 100, 16);
     [positiveCount sizeToFit];
+    
+    NSUserDefaults *prefs = [NSUserDefaults standardUserDefaults];
+    NSString *appUnreadBadge = [prefs stringForKey:@"app_unread_badge"];
+    if ([appUnreadBadge isEqualToString:@"unread"]) {
+        [UIApplication sharedApplication].applicationIconBadgeNumber = counts.ps + counts.nt;
+    } else if ([appUnreadBadge isEqualToString:@"focus"]) {
+        [UIApplication sharedApplication].applicationIconBadgeNumber = counts.ps;
+    } else {
+        [UIApplication sharedApplication].applicationIconBadgeNumber = 0;
+    }
 }
 
 - (void)showRefreshNotifier {

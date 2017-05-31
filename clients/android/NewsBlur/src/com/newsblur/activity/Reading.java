@@ -35,6 +35,7 @@ import com.newsblur.R;
 import com.newsblur.domain.Story;
 import com.newsblur.fragment.ReadingItemFragment;
 import com.newsblur.fragment.ShareDialogFragment;
+import com.newsblur.fragment.ReadingFontDialogFragment;
 import com.newsblur.fragment.TextSizeDialogFragment;
 import com.newsblur.service.NBSyncService;
 import com.newsblur.util.AppConstants;
@@ -43,6 +44,7 @@ import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadFilter;
+import com.newsblur.util.ReadingFontChangedListener;
 import com.newsblur.util.StoryOrder;
 import com.newsblur.util.StateFilter;
 import com.newsblur.util.ThemeUtils;
@@ -51,7 +53,7 @@ import com.newsblur.util.ViewUtils;
 import com.newsblur.util.VolumeKeyNavigation;
 import com.newsblur.view.ReadingScrollView.ScrollChangeListener;
 
-public abstract class Reading extends NbActivity implements OnPageChangeListener, OnSeekBarChangeListener, ScrollChangeListener, LoaderManager.LoaderCallbacks<Cursor> {
+public abstract class Reading extends NbActivity implements OnPageChangeListener, OnSeekBarChangeListener, ScrollChangeListener, LoaderManager.LoaderCallbacks<Cursor>, ReadingFontChangedListener {
 
     public static final String EXTRA_FEEDSET = "feed_set";
 	public static final String EXTRA_POSITION = "feed_position";
@@ -404,7 +406,11 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 			TextSizeDialogFragment textSize = TextSizeDialogFragment.newInstance(PrefsUtils.getTextSize(this), TextSizeDialogFragment.TextSizeType.ReadingText);
 			textSize.show(getFragmentManager(), TextSizeDialogFragment.class.getName());
 			return true;
-		} else if (item.getItemId() == R.id.menu_reading_save) {
+		} else if (item.getItemId() == R.id.menu_font) {
+            ReadingFontDialogFragment storyFont = ReadingFontDialogFragment.newInstance(PrefsUtils.getFontString(this));
+            storyFont.show(getFragmentManager(), ReadingFontDialogFragment.class.getName());
+            return true;
+        } else if (item.getItemId() == R.id.menu_reading_save) {
             if (story.starred) {
 			    FeedUtils.setStorySaved(story, false, Reading.this);
             } else {
@@ -690,6 +696,12 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 	@Override
 	public void onStopTrackingTouch(SeekBar seekBar) {
 	}
+
+	@Override
+    public void readingFontChanged(String newValue) {
+        PrefsUtils.setFontString(this, newValue);
+        sendBroadcast(new Intent(ReadingItemFragment.READING_FONT_CHANGED));
+    }
 
     /**
      * Click handler for the righthand overlay nav button.

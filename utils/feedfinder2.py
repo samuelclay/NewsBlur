@@ -51,7 +51,7 @@ class FeedFinder(object):
         data = text.lower()
         if data and data[:100].count("<html"):
             return False
-        return data.count("<rss")+data.count("<rdf")+data.count("<feed")
+        return data.count("<rss")+data.count("<rdf")+data.count("<feed")+data.count("jsonfeed.org")
 
     def is_feed(self, url):
         text = self.get_feed(url)
@@ -61,11 +61,11 @@ class FeedFinder(object):
 
     def is_feed_url(self, url):
         return any(map(url.lower().endswith,
-                       [".rss", ".rdf", ".xml", ".atom"]))
+                       [".rss", ".rdf", ".xml", ".atom", ".json"]))
 
     def is_feedlike_url(self, url):
         return any(map(url.lower().count,
-                       ["rss", "rdf", "xml", "atom", "feed"]))
+                       ["rss", "rdf", "xml", "atom", "feed", "json"]))
 
 
 def find_feeds(url, check_all=False, user_agent=None):
@@ -92,7 +92,8 @@ def find_feeds(url, check_all=False, user_agent=None):
                                 "text/xml",
                                 "application/atom+xml",
                                 "application/x.atom+xml",
-                                "application/x-atom+xml"]:
+                                "application/x-atom+xml",
+                                "application/json"]:
             links.append(urlparse.urljoin(url, link.get("href", "")))
 
     # Check the detected links.
@@ -129,7 +130,7 @@ def find_feeds(url, check_all=False, user_agent=None):
 
     # Guessing potential URLs.
     fns = ["atom.xml", "index.atom", "index.rdf", "rss.xml", "index.xml",
-           "index.rss"]
+           "index.rss", "index.json"]
     urls += list(filter(finder.is_feed, [urlparse.urljoin(url, f)
                                          for f in fns]))
     return sort_urls(urls)
@@ -140,7 +141,7 @@ def url_feed_prob(url):
         return -2
     if "georss" in url:
         return -1
-    kw = ["atom", "rss", "rdf", ".xml", "feed"]
+    kw = ["atom", "rss", "rdf", ".xml", "feed", "json"]
     for p, t in zip(range(len(kw), 0, -1), kw):
         if t in url:
             return p

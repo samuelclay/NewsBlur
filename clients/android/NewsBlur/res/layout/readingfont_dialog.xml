@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RadioGroup xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|center_horizontal"
+            android:orientation="vertical"
+            android:layout_marginTop="10dp"
+            android:paddingLeft="25dip"
+            android:paddingRight="25dip"
+            android:paddingBottom="10dip"
+            android:paddingTop="10dip">
+
+    <RadioButton android:id="@+id/radio_anonymous"
+                 android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"
+                 android:text="@string/anonymous_pro_font"/>
+    <RadioButton android:id="@+id/radio_chronicle"
+                 android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"
+                 android:text="@string/chronicle_font"/>
+    <RadioButton android:id="@+id/radio_default"
+                 android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"
+                 android:text="@string/default_font"/>
+    <RadioButton android:id="@+id/radio_gotham"
+                 android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"
+                 android:text="@string/gotham_narrow_font"/>
+    <RadioButton android:id="@+id/radio_noto_sans"
+                 android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"
+                 android:text="@string/noto_sans_font"/>
+    <RadioButton android:id="@+id/radio_noto_serif"
+                 android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"
+                 android:text="@string/noto_serif_font"/>
+    <RadioButton android:id="@+id/radio_open_sans_condensed"
+                 android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"
+                 android:text="@string/open_sans_condensed_font"/>
+    <RadioButton android:id="@+id/radio_whitney"
+                 android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"
+                 android:text="@string/whitney_font"/>
+
+</RadioGroup>

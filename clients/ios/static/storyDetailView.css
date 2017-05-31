@@ -523,6 +523,12 @@ div + p {
     -webkit-user-select: none; /* Disable selection/copy in UIWebView */
 }
 
+.NB-story .NB-twitter-rss-author img,
+.NB-story .NB-twitter-rss-retweet img {
+    margin: 0;
+    display: inline;
+}
+
 .NB-story img.NB-large-image,
 .NB-story img.NB-medium-image {
     margin: 20px auto;
@@ -558,10 +564,19 @@ div + p {
     width: 500px !important;
 }
 
+.NB-ipad-narrow.NB-titles-bottom .NB-story img.NB-large-image {
+    max-width: 600px;
+    width: 600px !important;
+}
+
 .NB-ipad-pro-narrow .NB-story img.NB-large-image {
     max-width: 754px;
     margin-left: -30px !important;
     width: 754px !important;
+}
+.NB-ipad-pro-narrow.NB-width-1024 .NB-story img.NB-large-image {
+    max-width: 1024px;
+    width: 1024px !important;
 }
 
 .NB-ipad-wide .NB-story img.NB-large-image {

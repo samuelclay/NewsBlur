@@ -43,8 +43,8 @@
         [self.filterControl setTitle:@"Focus Stories" forSegmentAtIndex:1];
         [self.filterControl setImage:[UIImage imageNamed:@"unread_yellow.png"] forSegmentAtIndex:0];
         [self.filterControl setImage:[UIImage imageNamed:@"unread_green.png"] forSegmentAtIndex:1];
-        [self.filterControl setWidth:CGRectGetWidth(self.frame)*0.46 forSegmentAtIndex:0];
-        [self.filterControl setWidth:CGRectGetWidth(self.frame)*0.46 forSegmentAtIndex:1];
+        [self.filterControl setWidth:CGRectGetWidth(self.frame)*0.44 forSegmentAtIndex:0];
+        [self.filterControl setWidth:CGRectGetWidth(self.frame)*0.44 forSegmentAtIndex:1];
         [self.filterControl setTitleTextAttributes:controlAttrs forState:UIControlStateNormal];
         self.filterControl.frame = CGRectMake(36, 38, CGRectGetWidth(self.frame), 28);
         [self.contentView addSubview:self.filterControl];
@@ -63,10 +63,10 @@
         [self.notificationTypeControl setTitle:@"Web" forSegmentAtIndex:1];
         [self.notificationTypeControl setTitle:@"iOS" forSegmentAtIndex:2];
         [self.notificationTypeControl setTitle:@"Android" forSegmentAtIndex:3];
-        [self.notificationTypeControl setWidth:CGRectGetWidth(self.frame)*0.23 forSegmentAtIndex:0];
-        [self.notificationTypeControl setWidth:CGRectGetWidth(self.frame)*0.23 forSegmentAtIndex:1];
-        [self.notificationTypeControl setWidth:CGRectGetWidth(self.frame)*0.23 forSegmentAtIndex:2];
-        [self.notificationTypeControl setWidth:CGRectGetWidth(self.frame)*0.23 forSegmentAtIndex:3];
+        [self.notificationTypeControl setWidth:CGRectGetWidth(self.frame)*0.22 forSegmentAtIndex:0];
+        [self.notificationTypeControl setWidth:CGRectGetWidth(self.frame)*0.22 forSegmentAtIndex:1];
+        [self.notificationTypeControl setWidth:CGRectGetWidth(self.frame)*0.22 forSegmentAtIndex:2];
+        [self.notificationTypeControl setWidth:CGRectGetWidth(self.frame)*0.22 forSegmentAtIndex:3];
         [self.notificationTypeControl setTitleTextAttributes:controlAttrs forState:UIControlStateNormal];
         self.notificationTypeControl.frame = CGRectMake(36, 76, CGRectGetWidth(self.frame), 28);
         [self.contentView addSubview:self.notificationTypeControl];

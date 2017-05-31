@@ -22,6 +22,18 @@
             });
         </script>
     {% endif %}
+    
+    {% if custom_styling and custom_styling.custom_js %}
+    <script id="NB-custom-js">
+{{ custom_styling.custom_js|safe }}
+    </script>
+    {% endif %}
+
+    {% if custom_styling and custom_styling.custom_css %}
+    <style id="NB-custom-css">
+{{ custom_styling.custom_css|safe }}
+    </style>
+    {% endif %}
 {% endblock %}
 
 {% block bodyclass %}NB-body-main{% endblock %}
