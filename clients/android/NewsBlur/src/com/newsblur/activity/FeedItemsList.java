@@ -11,7 +11,6 @@ import com.newsblur.R;
 import com.newsblur.domain.Feed;
 import com.newsblur.fragment.DeleteFeedFragment;
 import com.newsblur.fragment.FeedItemListFragment;
-import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadFilter;

@@ -1,8 +1,6 @@
 package com.newsblur.util;
 
 import static android.graphics.Bitmap.Config.ARGB_8888;
-import static android.graphics.Color.WHITE;
-import static android.graphics.PorterDuff.Mode.DST_IN;
 
 import android.app.Activity;
 import android.app.ActionBar;
@@ -13,9 +11,6 @@ import android.graphics.BitmapShader;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.graphics.Paint;
-import android.graphics.Path;
-import android.graphics.PorterDuffXfermode;
-import android.graphics.RectF;
 import android.graphics.Shader;
 import android.os.Build;
 import android.os.Handler;

@@ -9,7 +9,6 @@ import android.view.MenuInflater;
 import com.newsblur.R;
 import com.newsblur.domain.SocialFeed;
 import com.newsblur.fragment.SocialFeedItemListFragment;
-import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadFilter;
 import com.newsblur.util.UIUtils;

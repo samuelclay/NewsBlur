@@ -16,7 +16,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.newsblur.R;
-import com.newsblur.activity.FeedItemsList;
 import com.newsblur.activity.Profile;
 import com.newsblur.domain.Feed;
 import com.newsblur.domain.SocialFeed;

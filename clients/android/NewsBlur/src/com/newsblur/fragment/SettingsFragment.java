@@ -1,8 +1,6 @@
 package com.newsblur.fragment;
 
-import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceCategory;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 
