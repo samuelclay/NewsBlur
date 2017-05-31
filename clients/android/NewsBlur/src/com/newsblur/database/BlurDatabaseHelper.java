@@ -254,32 +254,6 @@ public class BlurDatabaseHelper {
         }
     }
 
-    public void setStarredCounts(List<ContentValues> values) {
-        synchronized (RW_MUTEX) {
-            dbRW.beginTransaction();
-            try {
-                dbRW.delete(DatabaseConstants.STARREDCOUNTS_TABLE, null, null);
-                bulkInsertValuesExtSync(DatabaseConstants.STARREDCOUNTS_TABLE, values);
-                dbRW.setTransactionSuccessful();
-            } finally {
-                dbRW.endTransaction();
-            }
-        }
-    }
-
-    public List<String> getStoryHashesForFeed(String feedId) {
-        String q = "SELECT " + DatabaseConstants.STORY_HASH + 
-                   " FROM " + DatabaseConstants.STORY_TABLE +
-                   " WHERE " + DatabaseConstants.STORY_FEED_ID + " = ?";
-        Cursor c = dbRO.rawQuery(q, new String[]{feedId});
-        List<String> hashes = new ArrayList<String>(c.getCount());
-        while (c.moveToNext()) {
-           hashes.add(c.getString(c.getColumnIndexOrThrow(DatabaseConstants.STORY_HASH)));
-        }
-        c.close();
-        return hashes;
-    }
-
     // note method name: this gets a set rather than a list, in case the caller wants to
     // spend the up-front cost of hashing for better lookup speed rather than iteration!
     public Set<String> getUnreadStoryHashesAsSet() {

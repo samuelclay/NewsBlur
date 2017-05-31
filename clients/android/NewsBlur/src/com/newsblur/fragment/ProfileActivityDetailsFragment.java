@@ -185,10 +185,6 @@ public abstract class ProfileActivityDetailsFragment extends Fragment implements
         public EndlessScrollListener() {
         }
 
-        public EndlessScrollListener(int visibleThreshold) {
-            this.visibleThreshold = visibleThreshold;
-        }
-
         @Override
         public void onScroll(AbsListView view, int firstVisibleItem,
                              int visibleItemCount, int totalItemCount) {

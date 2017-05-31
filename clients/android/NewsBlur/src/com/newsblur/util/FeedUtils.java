@@ -60,20 +60,6 @@ public class FeedUtils {
         dbHelper.dropAndRecreateTables();
     }
 
-    public static void clearStorySession() {
-        new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... arg) {
-                try {
-                    dbHelper.clearStorySession();
-                } catch (Exception e) {
-                    ; // this is a UI hinting call and might fail if the DB is being reset, but that is fine
-                }
-                return null;
-            }
-        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-    }
-
     public static void prepareReadingSession(final FeedSet fs) {
         new AsyncTask<Void, Void, Void>() {
             @Override

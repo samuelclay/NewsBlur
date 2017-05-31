@@ -760,16 +760,6 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
         }
     }
 
-    private int sumIntRows(Cursor c, int columnIndex) {
-        if (c == null) return 0;
-        int i = 0;
-        c.moveToPosition(-1);
-        while (c.moveToNext()) {
-            i += c.getInt(columnIndex);
-        }
-        return i;
-    }
-
     /**
      * Utility method to filter out and carp about negative unread counts.  These tend to indicate
      * a problem in the app or API, but are very confusing to users.

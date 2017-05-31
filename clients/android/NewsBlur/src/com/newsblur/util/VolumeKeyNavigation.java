@@ -14,8 +14,4 @@ public enum VolumeKeyNavigation {
     VolumeKeyNavigation(String parameterValue) {
         this.parameterValue = parameterValue;
     }
-
-    public String getParameterValue() {
-        return parameterValue;
-    }
 }
