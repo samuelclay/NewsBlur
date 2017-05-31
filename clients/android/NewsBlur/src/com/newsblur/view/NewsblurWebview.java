@@ -48,6 +48,9 @@ public class NewsblurWebview extends WebView {
         // all devices.
         setWebViewClient(new WebViewClient() {
             @Override
+            // this was deprecated in API 24 but the replacement only added in the same release.
+            // the suppression can be removed when we move past 24
+            @SuppressWarnings("deprecation")
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 Uri uri = Uri.parse(url);
                 try {
