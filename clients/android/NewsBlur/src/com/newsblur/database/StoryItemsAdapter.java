@@ -4,7 +4,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.text.Html;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
@@ -19,6 +18,7 @@ import com.newsblur.domain.Story;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.StoryUtils;
+import com.newsblur.util.UIUtils;
 
 /**
  * Story list adapter. Uses SimpleCursorAdapter behaviour for text elements and custom
@@ -235,7 +235,7 @@ public class StoryItemsAdapter extends SimpleCursorAdapter {
                 }
                 return true;
             } else if (TextUtils.equals(columnName, DatabaseConstants.STORY_TITLE)) {
-                ((TextView) view).setText(Html.fromHtml(cursor.getString(columnIndex)));
+                ((TextView) view).setText(UIUtils.fromHtml(cursor.getString(columnIndex)));
                 return true;
             } else if (TextUtils.equals(columnName, DatabaseConstants.STORY_TIMESTAMP)) {
                 ((TextView) view).setText(StoryUtils.formatShortDate(context, new Date(cursor.getLong(columnIndex))));

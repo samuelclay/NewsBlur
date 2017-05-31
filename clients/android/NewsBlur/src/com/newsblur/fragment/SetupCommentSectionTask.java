@@ -12,7 +12,6 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.app.DialogFragment;
 import android.app.FragmentManager;
-import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -32,6 +31,7 @@ import com.newsblur.domain.UserProfile;
 import com.newsblur.fragment.ReplyDialogFragment;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
+import com.newsblur.util.UIUtils;
 import com.newsblur.util.ViewUtils;
 import com.newsblur.view.FlowLayout;
 
@@ -97,7 +97,7 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 
 			View commentView = inflater.inflate(R.layout.include_comment, null);
 			TextView commentText = (TextView) commentView.findViewById(R.id.comment_text);
-			commentText.setText(Html.fromHtml(comment.commentText));
+			commentText.setText(UIUtils.fromHtml(comment.commentText));
 			ImageView commentImage = (ImageView) commentView.findViewById(R.id.comment_user_image);
 
 			TextView commentSharedDate = (TextView) commentView.findViewById(R.id.comment_shareddate);
@@ -158,7 +158,7 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 			for (Reply reply : replies) {
 				View replyView = inflater.inflate(R.layout.include_reply, null);
 				TextView replyText = (TextView) replyView.findViewById(R.id.reply_text);
-				replyText.setText(Html.fromHtml(reply.text));
+				replyText.setText(UIUtils.fromHtml(reply.text));
 				ImageView replyImage = (ImageView) replyView.findViewById(R.id.reply_user_image);
 
                 final UserProfile replyUser = FeedUtils.dbHelper.getUserProfile(reply.userId);

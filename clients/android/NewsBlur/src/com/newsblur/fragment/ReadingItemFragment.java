@@ -15,7 +15,6 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.app.DialogFragment;
-import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -238,7 +237,7 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
             if (altText != null) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                 builder.setTitle(finalURL);
-                builder.setMessage(Html.fromHtml(altText).toString());
+                builder.setMessage(UIUtils.fromHtml(altText));
                 builder.setPositiveButton(R.string.alert_dialog_openimage, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         Intent i = new Intent(Intent.ACTION_VIEW);
@@ -335,7 +334,7 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
 			itemFeed.setText(feedTitle);
 		}
 
-        itemTitle.setText(Html.fromHtml(story.title));
+        itemTitle.setText(UIUtils.fromHtml(story.title));
         itemDate.setText(StoryUtils.formatLongDate(getActivity(), new Date(story.timestamp)));
 
         if (!TextUtils.isEmpty(story.authors)) {
