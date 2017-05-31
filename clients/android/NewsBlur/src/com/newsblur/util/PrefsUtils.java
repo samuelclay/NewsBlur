@@ -98,7 +98,7 @@ public class PrefsUtils {
     public static void sendLogEmail(Context context) {
         File f = com.newsblur.util.Log.getLogfile();
         if (f == null) return;
-        String debugInfo = "Tell us a bit a about your problem:\n\n\n\n" + getDebugInfo(context);
+        String debugInfo = "Tell us a bit about your problem:\n\n\n\n" + getDebugInfo(context);
         android.net.Uri localPath = FileProvider.getUriForFile(context, "com.newsblur.fileprovider", f);
         Intent i = new Intent(Intent.ACTION_SEND);
         i.setType("*/*");
