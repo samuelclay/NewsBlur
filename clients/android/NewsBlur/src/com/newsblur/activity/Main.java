@@ -63,8 +63,6 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
 
         isLightTheme = PrefsUtils.isLightThemeSelected(this);
 
-		requestWindowFeature(Window.FEATURE_PROGRESS);
-		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		super.onCreate(savedInstanceState);
         getWindow().setBackgroundDrawableResource(android.R.color.transparent);
 

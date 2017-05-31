@@ -28,6 +28,9 @@ import com.newsblur.fragment.AddFeedFragment;
 import com.newsblur.network.SearchAsyncTaskLoader;
 import com.newsblur.network.SearchLoaderResponse;
 
+// TODO: this activity's use of the inbuilt activity search facility as well as an improper use of a loader to
+//       make network requests makes it easily lose state, lack non-legacy progress indication, and generally
+//       buggy. a normal layout and a proper use of sync for search results should be implemented.
 public class SearchForFeeds extends NbActivity implements LoaderCallbacks<SearchLoaderResponse>, OnItemClickListener {
     
     private static final Set<String> SUPPORTED_URL_PROTOCOLS = new HashSet<String>();
@@ -42,8 +45,6 @@ public class SearchForFeeds extends NbActivity implements LoaderCallbacks<Search
 
 	@Override
 	protected void onCreate(Bundle arg0) {
-		requestWindowFeature(Window.FEATURE_PROGRESS);
-		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		super.onCreate(arg0);
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 		
@@ -80,8 +81,6 @@ public class SearchForFeeds extends NbActivity implements LoaderCallbacks<Search
 
             // test to see if a feed URL was passed rather than a search term
             if (tryAddByURL(query)) { return; }
-
-			setProgressBarIndeterminateVisibility(true);
 			
 			Bundle bundle = new Bundle();
 			bundle.putString(SearchAsyncTaskLoader.SEARCH_TERM, query);
@@ -131,7 +130,6 @@ public class SearchForFeeds extends NbActivity implements LoaderCallbacks<Search
 
 	@Override
 	public void onLoadFinished(Loader<SearchLoaderResponse> loader, SearchLoaderResponse results) {
-		setProgressBarIndeterminateVisibility(false);
 		if(!results.hasError()) {
 			adapter = new FeedSearchResultAdapter(this, 0, 0, results.getResults());
 			resultsList.setAdapter(adapter);
