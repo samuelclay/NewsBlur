@@ -76,7 +76,7 @@ public class StoryItemsAdapter extends SimpleCursorAdapter {
 	}
 
 	@Override
-	public int getCount() {
+	public synchronized int getCount() {
         if (showNone) return 0;
 		return cursor.getCount();
 	}
@@ -86,7 +86,7 @@ public class StoryItemsAdapter extends SimpleCursorAdapter {
     }
 
 	@Override
-	public Cursor swapCursor(Cursor c) {
+	public synchronized Cursor swapCursor(Cursor c) {
 		this.cursor = c;
 		return super.swapCursor(c);
 	}
@@ -105,7 +105,7 @@ public class StoryItemsAdapter extends SimpleCursorAdapter {
     }
 
 	@Override
-	public void bindView(View v, Context context, Cursor cursor) {
+	public synchronized void bindView(View v, Context context, Cursor cursor) {
         super.bindView(v, context, cursor);
 
         TextView itemTitle = (TextView) v.findViewById(R.id.row_item_title);
@@ -210,35 +210,39 @@ public class StoryItemsAdapter extends SimpleCursorAdapter {
         public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
             // some devices keep binding after the loadermanager swaps. fail fast.
             if (cursor.isClosed()) return true;
-
-            String columnName = cursor.getColumnName(columnIndex);
-            if (TextUtils.equals(columnName, DatabaseConstants.STORY_AUTHORS)) {
-                if (TextUtils.isEmpty(cursor.getString(columnIndex))) {
-                    view.setVisibility(View.GONE);
-                } else {
-                    view.setVisibility(View.VISIBLE);
-                    ((TextView) view).setText(cursor.getString(columnIndex).toUpperCase());
-                }
-                return true;
-            } else if (TextUtils.equals(columnName, DatabaseConstants.STORY_INTELLIGENCE_TOTAL)) {
-                if (! ignoreIntel) {
-                    int score = cursor.getInt(columnIndex);
-                    if (score > 0) {
-                        ((ImageView) view).setImageResource(R.drawable.g_icn_focus);
-                    } else if (score == 0) {
-                        ((ImageView) view).setImageResource(R.drawable.g_icn_unread);
+            try {
+                String columnName = cursor.getColumnName(columnIndex);
+                if (TextUtils.equals(columnName, DatabaseConstants.STORY_AUTHORS)) {
+                    if (TextUtils.isEmpty(cursor.getString(columnIndex))) {
+                        view.setVisibility(View.GONE);
                     } else {
-                        ((ImageView) view).setImageResource(R.drawable.g_icn_hidden);
+                        view.setVisibility(View.VISIBLE);
+                        ((TextView) view).setText(cursor.getString(columnIndex).toUpperCase());
                     }
-                } else {
-                    ((ImageView) view).setImageResource(android.R.color.transparent);
+                    return true;
+                } else if (TextUtils.equals(columnName, DatabaseConstants.STORY_INTELLIGENCE_TOTAL)) {
+                    if (! ignoreIntel) {
+                        int score = cursor.getInt(columnIndex);
+                        if (score > 0) {
+                            ((ImageView) view).setImageResource(R.drawable.g_icn_focus);
+                        } else if (score == 0) {
+                            ((ImageView) view).setImageResource(R.drawable.g_icn_unread);
+                        } else {
+                            ((ImageView) view).setImageResource(R.drawable.g_icn_hidden);
+                        }
+                    } else {
+                        ((ImageView) view).setImageResource(android.R.color.transparent);
+                    }
+                    return true;
+                } else if (TextUtils.equals(columnName, DatabaseConstants.STORY_TITLE)) {
+                    ((TextView) view).setText(UIUtils.fromHtml(cursor.getString(columnIndex)));
+                    return true;
+                } else if (TextUtils.equals(columnName, DatabaseConstants.STORY_TIMESTAMP)) {
+                    ((TextView) view).setText(StoryUtils.formatShortDate(context, new Date(cursor.getLong(columnIndex))));
+                    return true;
                 }
-                return true;
-            } else if (TextUtils.equals(columnName, DatabaseConstants.STORY_TITLE)) {
-                ((TextView) view).setText(UIUtils.fromHtml(cursor.getString(columnIndex)));
-                return true;
-            } else if (TextUtils.equals(columnName, DatabaseConstants.STORY_TIMESTAMP)) {
-                ((TextView) view).setText(StoryUtils.formatShortDate(context, new Date(cursor.getLong(columnIndex))));
+            } catch (android.database.StaleDataException sdex) {
+                com.newsblur.util.Log.d(getClass().getName(), "view bound after loader reset");
                 return true;
             }
             
