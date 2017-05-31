@@ -84,7 +84,7 @@ public class NotificationUtils {
         // force a new Reading activity, since if multiple notifications are tapped, any re-use or
         // stacking of the activity would almost certainly out-race the sync loop and cause stale
         // UI on some devices.
-        i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NO_HISTORY);
         // set the requestCode to the story hashcode to prevent the PI re-using the wrong Intent
         PendingIntent pendingIntent = PendingIntent.getActivity(context, story.hashCode(), i, 0);
 
