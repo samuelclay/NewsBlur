@@ -42,6 +42,7 @@ import com.newsblur.domain.Story;
 import com.newsblur.domain.UserDetails;
 import com.newsblur.service.NBSyncService;
 import com.newsblur.util.DefaultFeedView;
+import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.Font;
 import com.newsblur.util.PrefsUtils;
@@ -62,6 +63,7 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
 	public static final String TEXT_SIZE_CHANGED = "textSizeChanged";
 	public static final String TEXT_SIZE_VALUE = "textSizeChangeValue";
 	public Story story;
+    private FeedSet fs;
 	private LayoutInflater inflater;
 	private String feedColor, feedTitle, feedFade, feedBorder, feedIconUrl, faviconText;
 	private Classifier classifier;
@@ -177,8 +179,9 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
         ButterKnife.bind(this, view);
 
         Reading activity = (Reading) getActivity();
+        fs = activity.getFeedSet();
 
-        selectedFeedView = PrefsUtils.getDefaultFeedView(activity, activity.getFeedSet());
+        selectedFeedView = PrefsUtils.getDefaultFeedView(activity, fs);
 
         registerForContextMenu(web);
         web.setCustomViewLayout(webviewCustomViewLayout);
@@ -404,13 +407,16 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
                 }
             }
 
-            v.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    ClassifierDialogFragment classifierFragment = ClassifierDialogFragment.newInstance(ReadingItemFragment.this, story.feedId, classifier, tag, Classifier.TAG);
-                    classifierFragment.show(getFragmentManager(), "dialog");
-                }
-            });
+            // tapping tags in saved stories doesn't bring up training
+            if (!(fs.isAllSaved() || (fs.getSingleSavedTag() != null))) {
+                v.setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        ClassifierDialogFragment classifierFragment = ClassifierDialogFragment.newInstance(ReadingItemFragment.this, story.feedId, classifier, tag, Classifier.TAG);
+                        classifierFragment.show(getFragmentManager(), "dialog");
+                    }
+                });
+            }
 
 			tagContainer.addView(v);
 		}
