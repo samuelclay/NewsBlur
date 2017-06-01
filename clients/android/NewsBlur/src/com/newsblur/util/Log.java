@@ -33,6 +33,7 @@ public class Log {
     private static final String E = "ERROR ";
 
     private static final String LOG_NAME_INTERNAL = "logbuffer.txt";
+    private static final int MAX_QUEUE_SIZE = 10;
     private static final int MAX_LINE_SIZE = 4 * 1024;
     private static final int TRIM_LINES = 384;                 // trim the log down to 384 lines
     private static final long MAX_SIZE = 512L * MAX_LINE_SIZE; // when it is at least 512 lines long
@@ -46,7 +47,7 @@ public class Log {
     }
     private static DateFormat dateFormat = null;
     static {
-        dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'");
+        dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
         dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
     }
 
@@ -78,7 +79,7 @@ public class Log {
     }
 
     private static void add(String lvl, String tag, String m, Throwable t) {
-        if (q.size() > TRIM_LINES) return;
+        if (q.size() > MAX_QUEUE_SIZE) return;
         if (m != null && m.length() > MAX_LINE_SIZE) m = m.substring(0, MAX_LINE_SIZE);
         StringBuilder s = new StringBuilder();
         synchronized (dateFormat) {s.append(dateFormat.format(new Date()));}
@@ -107,35 +108,37 @@ public class Log {
     }
 
     private static void proc() {
-        synchronized (q) {
-            if (logloc == null) return; // not yet spun up
-            String line = q.poll();
-            if (line == null) return;
-            File f = new File(logloc, LOG_NAME_INTERNAL);
-            try (BufferedWriter w = new BufferedWriter(new FileWriter(f, true))) {
-                w.append(line);
-                w.newLine();
-            } catch (Throwable t) {
-                ; // explicitly do nothing, log nothing, and fail fast. this is a utility to
-                  // provice as much info as possible while having absolute minimal impact or
-                  // side effect on performance or app operation
-            }
-            if (f.length() < MAX_SIZE) return;
-            android.util.Log.i(Log.class.getName(), "trimming");
-            List<String> lines = new ArrayList<String>(TRIM_LINES * 2);
-            try (BufferedReader r = new BufferedReader(new FileReader(f))) {
-                for (String l = r.readLine(); l != null; l = r.readLine()) {
-                    lines.add(l);
-                }
-            } catch (Throwable t) {;}
-            int offset = lines.size() - TRIM_LINES;
-            try (BufferedWriter w = new BufferedWriter(new FileWriter(f, false))) {
-                for (int i = offset; i < lines.size(); i++) {
-                    w.append(lines.get(i));
-                    w.newLine();
-                }
-            } catch (Throwable t) {;}
+        if (logloc == null) return; // not yet spun up
+        for (String line = q.poll(); line != null; line = q.poll()) {
+            writeLine(line);
         }
+    }
+
+    private static void writeLine(String line) {
+        File f = new File(logloc, LOG_NAME_INTERNAL);
+        try (BufferedWriter w = new BufferedWriter(new FileWriter(f, true))) {
+            w.append(line);
+            w.newLine();
+        } catch (Throwable t) {
+            ; // explicitly do nothing, log nothing, and fail fast. this is a utility to
+              // provice as much info as possible while having absolute minimal impact or
+              // side effect on performance or app operation
+        }
+        if (f.length() < MAX_SIZE) return;
+        android.util.Log.i(Log.class.getName(), "trimming");
+        List<String> lines = new ArrayList<String>(TRIM_LINES * 2);
+        try (BufferedReader r = new BufferedReader(new FileReader(f))) {
+            for (String l = r.readLine(); l != null; l = r.readLine()) {
+                lines.add(l);
+            }
+        } catch (Throwable t) {;}
+        int offset = lines.size() - TRIM_LINES;
+        try (BufferedWriter w = new BufferedWriter(new FileWriter(f, false))) {
+            for (int i = offset; i < lines.size(); i++) {
+                w.append(lines.get(i));
+                w.newLine();
+            }
+        } catch (Throwable t) {;}
     }
 
     public static File getLogfile() {
