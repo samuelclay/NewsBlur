@@ -51,7 +51,7 @@ public class AppConstants {
     public static final long API_BACKGROUND_BACKOFF_MILLIS = 5L * 60L * 1000L;
 
     // timeouts for API calls, set to something more sane than the default of infinity
-    public static final long API_CONN_TIMEOUT_SECONDS = 60L;
+    public static final long API_CONN_TIMEOUT_SECONDS = 45L;
     public static final long API_READ_TIMEOUT_SECONDS = 120L;
 
     // timeouts for image prefetching, which are a bit tighter, since they are only for caching
@@ -83,8 +83,8 @@ public class AppConstants {
     public final static long SHUTDOWN_SLACK_SECONDS = 60L;
 
     // the maximum duty cycle for expensive background tasks. Tune to <1.0 to force sync loops
-    // to pause periodically and not peg the network/CPU
-    public final static double MAX_BG_DUTY_CYCLE = 0.9;
+    // to pause periodically and yield network/CPU to the foreground UI
+    public final static double MAX_BG_DUTY_CYCLE = 0.8;
 
     // cap duty cycle backoffs to prevent unnecessarily large backoffs
     public final static long DUTY_CYCLE_BACKOFF_CAP_MILLIS = 5L * 1000L;
