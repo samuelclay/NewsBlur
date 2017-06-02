@@ -443,6 +443,8 @@ static UIFont *userLabelFont;
 }
 
 - (void)finishedWithError:(NSError *)error statusCode:(NSInteger)statusCode {
+    [self finishRefresh];
+    
     if (statusCode == 403) {
         NSLog(@"Showing login");
         return [appDelegate showLogin];
@@ -468,7 +470,6 @@ static UIFont *userLabelFont;
     
     // User clicking on another link before the page loads is OK.
     [self informError:error];
-    [self finishRefresh];
     
     self.isOffline = YES;
 
@@ -1812,6 +1813,8 @@ heightForHeaderInSection:(NSInteger)section {
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)task.response;
 
+        [self finishRefresh];
+
         if ([httpResponse statusCode] == 403) {
             NSLog(@"Showing login after refresh");
             return [appDelegate showLogin];
@@ -1820,6 +1823,7 @@ heightForHeaderInSection:(NSInteger)section {
         } else if ([httpResponse statusCode] >= 500) {
             return [self informError:@"The server barfed!"];
         }
+
         [self requestFailed:error];
     }];
 
