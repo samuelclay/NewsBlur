@@ -1,10 +1,7 @@
 package com.newsblur.service;
 
-import android.database.Cursor;
 import android.util.Log;
 
-import static com.newsblur.database.BlurDatabaseHelper.closeQuietly;
-import com.newsblur.domain.Feed;
 import com.newsblur.domain.Story;
 import com.newsblur.network.domain.StoriesResponse;
 import com.newsblur.network.domain.UnreadStoryHashesResponse;
@@ -18,7 +15,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 

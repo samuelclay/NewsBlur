@@ -28,7 +28,6 @@ import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.DefaultFeedViewChangedListener;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
-import com.newsblur.util.MarkAllReadConfirmation;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadFilter;
 import com.newsblur.util.ReadFilterChangedListener;
@@ -255,6 +254,15 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
         NBSyncService.resetFetchState(fs);
         triggerSync();
     }
+
+    @Override
+    public void defaultFeedViewChanged(DefaultFeedView value) {
+        PrefsUtils.setDefaultFeedView(this, fs, value);
+        if (itemListFragment != null) {
+            itemListFragment.setDefaultFeedView(value);
+        }
+    }
+
 
     // NB: this callback is for the text size slider
 	@Override

@@ -8,7 +8,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.text.Html;
 import android.text.TextUtils;
 import android.widget.Toast;
 
@@ -59,20 +58,6 @@ public class FeedUtils {
 
     public static void dropAndRecreateTables() {
         dbHelper.dropAndRecreateTables();
-    }
-
-    public static void clearStorySession() {
-        new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... arg) {
-                try {
-                    dbHelper.clearStorySession();
-                } catch (Exception e) {
-                    ; // this is a UI hinting call and might fail if the DB is being reset, but that is fine
-                }
-                return null;
-            }
-        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     public static void prepareReadingSession(final FeedSet fs) {
@@ -324,7 +309,7 @@ public class FeedUtils {
         Intent intent = new Intent(android.content.Intent.ACTION_SEND);
         intent.setType("text/plain");
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.putExtra(Intent.EXTRA_TEXT, String.format(context.getResources().getString(R.string.send_brief), new Object[]{Html.fromHtml(story.title), story.permalink}));
+        intent.putExtra(Intent.EXTRA_TEXT, String.format(context.getResources().getString(R.string.send_brief), new Object[]{UIUtils.fromHtml(story.title), story.permalink}));
         context.startActivity(Intent.createChooser(intent, "Send using"));
     }
 
@@ -334,8 +319,8 @@ public class FeedUtils {
         Intent intent = new Intent(android.content.Intent.ACTION_SEND);
         intent.setType("text/plain");
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.putExtra(Intent.EXTRA_SUBJECT, Html.fromHtml(story.title).toString());
-        intent.putExtra(Intent.EXTRA_TEXT, String.format(context.getResources().getString(R.string.send_full), new Object[]{story.permalink, Html.fromHtml(story.title), Html.fromHtml(body)}));
+        intent.putExtra(Intent.EXTRA_SUBJECT, UIUtils.fromHtml(story.title));
+        intent.putExtra(Intent.EXTRA_TEXT, String.format(context.getResources().getString(R.string.send_full), new Object[]{story.permalink, UIUtils.fromHtml(story.title), UIUtils.fromHtml(body)}));
         context.startActivity(Intent.createChooser(intent, "Send using"));
     }
 

@@ -949,7 +949,7 @@ public class NBSyncService extends Service {
     public static boolean requestMoreForFeed(FeedSet fs, int desiredStoryCount, Integer callerSeen) {
         synchronized (PENDING_FEED_MUTEX) {
             if (ExhaustedFeeds.contains(fs) && (fs.equals(LastFeedSet))) {
-                com.newsblur.util.Log.d(NBSyncService.class.getName(), "rejecting request for feedset that is exhaused");
+                android.util.Log.d(NBSyncService.class.getName(), "rejecting request for feedset that is exhaused");
                 return false;
             }
             Integer alreadyPending = 0;

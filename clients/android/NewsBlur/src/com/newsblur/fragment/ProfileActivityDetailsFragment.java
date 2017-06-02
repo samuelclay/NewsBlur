@@ -16,7 +16,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.newsblur.R;
-import com.newsblur.activity.FeedItemsList;
 import com.newsblur.activity.Profile;
 import com.newsblur.domain.Feed;
 import com.newsblur.domain.SocialFeed;
@@ -184,10 +183,6 @@ public abstract class ProfileActivityDetailsFragment extends Fragment implements
         private boolean loading = true;
 
         public EndlessScrollListener() {
-        }
-
-        public EndlessScrollListener(int visibleThreshold) {
-            this.visibleThreshold = visibleThreshold;
         }
 
         @Override

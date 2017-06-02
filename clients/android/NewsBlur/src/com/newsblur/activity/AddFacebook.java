@@ -22,6 +22,9 @@ public class AddFacebook extends NbActivity {
 		webview.getSettings().setJavaScriptEnabled(true);
 		
 		webview.setWebViewClient(new WebViewClient() {
+            // this was deprecated in API 24 but the replacement only added in the same release.
+            // the suppression can be removed when we move past 24
+            @SuppressWarnings("deprecation")
 		    public boolean shouldOverrideUrlLoading(WebView view, String url){
 		    	if (TextUtils.equals(url, APIConstants.buildUrl("/"))) {
 		    		AddFacebook.this.setResult(FACEBOOK_AUTHED);

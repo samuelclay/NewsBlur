@@ -18,12 +18,12 @@ dependencies {
     compile 'com.android.support:support-v13:19.1.0'
     compile 'com.jakewharton:butterknife:7.0.1'
     compile 'com.squareup.okhttp3:okhttp:3.4.1'
-    compile 'com.google.code.gson:gson:2.6.2'
+    compile 'com.google.code.gson:gson:2.7'
 }
 
 android {
     compileSdkVersion 24
-    buildToolsVersion '25.0.0'
+    buildToolsVersion '25.0.2'
     compileOptions.with {
         sourceCompatibility = JavaVersion.VERSION_1_7
     }

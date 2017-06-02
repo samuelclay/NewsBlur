@@ -68,6 +68,11 @@
             android:defaultValue="true"
             android:key="pref_show_thumbnails"
             android:title="@string/settings_show_thumbnails" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="pref_mark_read_on_scroll"
+            android:title="@string/settings_mark_read_on_scroll"
+            android:summary="@string/settings_mark_read_on_scroll_sum" />
     </PreferenceCategory>
 
     <PreferenceCategory

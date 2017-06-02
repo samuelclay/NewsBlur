@@ -2,7 +2,6 @@ package com.newsblur.service;
 
 import android.util.Log;
 
-import com.newsblur.util.AppConstants;
 import com.newsblur.util.FileCache;
 import com.newsblur.util.PrefsUtils;
 

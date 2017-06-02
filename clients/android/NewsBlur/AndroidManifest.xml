@@ -2,10 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.newsblur"
     android:versionCode="138"
-    android:versionName="5.2.0b3" >
+    android:versionName="5.2.0b4" >
 
     <uses-sdk
-        android:minSdkVersion="16"
+        android:minSdkVersion="19"
         android:targetSdkVersion="24" />
 
     <uses-permission android:name="android.permission.INTERNET" />

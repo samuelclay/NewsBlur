@@ -72,12 +72,12 @@ public class Feed implements Comparable<Feed>, Serializable {
 		values.put(DatabaseConstants.FEED_ID, feedId);
 		values.put(DatabaseConstants.FEED_ACTIVE, active);
 		values.put(DatabaseConstants.FEED_ADDRESS, address);
-		values.put(DatabaseConstants.FEED_FAVICON_COLOR, "#" + faviconColor);
-		values.put(DatabaseConstants.FEED_FAVICON_BORDER, "#" + faviconBorder);
+		values.put(DatabaseConstants.FEED_FAVICON_COLOR, faviconColor);
+		values.put(DatabaseConstants.FEED_FAVICON_BORDER, faviconBorder);
 		values.put(DatabaseConstants.FEED_POSITIVE_COUNT, positiveCount);
 		values.put(DatabaseConstants.FEED_NEUTRAL_COUNT, neutralCount);
 		values.put(DatabaseConstants.FEED_NEGATIVE_COUNT, negativeCount);
-        values.put(DatabaseConstants.FEED_FAVICON_FADE, "#" + faviconFade);
+        values.put(DatabaseConstants.FEED_FAVICON_FADE, faviconFade);
         values.put(DatabaseConstants.FEED_FAVICON_TEXT, faviconText);
 		values.put(DatabaseConstants.FEED_FAVICON_URL, faviconUrl);
 		values.put(DatabaseConstants.FEED_LINK, feedLink);

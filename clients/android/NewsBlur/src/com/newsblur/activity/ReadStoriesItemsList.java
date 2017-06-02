@@ -7,9 +7,6 @@ import android.view.MenuInflater;
 
 import com.newsblur.R;
 import com.newsblur.fragment.ReadStoriesItemListFragment;
-import com.newsblur.util.DefaultFeedView;
-import com.newsblur.util.PrefConstants;
-import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadFilter;
 import com.newsblur.util.UIUtils;
 
@@ -37,14 +34,6 @@ public class ReadStoriesItemsList extends ItemsList {
         inflater.inflate(R.menu.readstories_itemslist, menu);
         return true;
 	}
-
-    @Override
-    public void defaultFeedViewChanged(DefaultFeedView value) {
-        PrefsUtils.setDefaultFeedViewForFolder(this, PrefConstants.READ_STORIES_FOLDER_NAME, value);
-        if (itemListFragment != null) {
-            itemListFragment.setDefaultFeedView(value);
-        }
-    }
 
     @Override
     protected void updateReadFilterPreference(ReadFilter newValue) {

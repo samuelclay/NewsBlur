@@ -43,9 +43,6 @@ public class ViewUtils {
 	}
 
     public static void showSystemUI(View view) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) return;
-        // Some layout/drawing artifacts as we don't use the FLAG_LAYOUT flags but otherwise the overlays wouldn't appear
-        // and the action bar would overlap the content
         view.setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
     }
 
@@ -60,7 +57,6 @@ public class ViewUtils {
     }
 
     public static boolean isSystemUIHidden(View view) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) return false;
         return (view.getSystemUiVisibility() & View.SYSTEM_UI_FLAG_IMMERSIVE) != 0;
     }
 

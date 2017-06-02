@@ -15,7 +15,6 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.app.DialogFragment;
-import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -42,6 +41,7 @@ import com.newsblur.domain.Story;
 import com.newsblur.domain.UserDetails;
 import com.newsblur.service.NBSyncService;
 import com.newsblur.util.DefaultFeedView;
+import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.Font;
 import com.newsblur.util.PrefsUtils;
@@ -63,6 +63,7 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
 	public static final String TEXT_SIZE_VALUE = "textSizeChangeValue";
     public static final String READING_FONT_CHANGED = "readingFontChanged";
 	public Story story;
+    private FeedSet fs;
 	private LayoutInflater inflater;
 	private String feedColor, feedTitle, feedFade, feedBorder, feedIconUrl, faviconText;
 	private Classifier classifier;
@@ -99,7 +100,7 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
 
     private final Object WEBVIEW_CONTENT_MUTEX = new Object();
 
-	public static ReadingItemFragment newInstance(Story story, String feedTitle, String feedFaviconColor, String feedFaviconFade, String feedFaviconBorder, String faviconText, String faviconUrl, Classifier classifier, boolean displayFeedDetails, DefaultFeedView defaultFeedView, String sourceUserId) {
+	public static ReadingItemFragment newInstance(Story story, String feedTitle, String feedFaviconColor, String feedFaviconFade, String feedFaviconBorder, String faviconText, String faviconUrl, Classifier classifier, boolean displayFeedDetails, String sourceUserId) {
 		ReadingItemFragment readingFragment = new ReadingItemFragment();
 
 		Bundle args = new Bundle();
@@ -112,7 +113,6 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
 		args.putString("faviconUrl", faviconUrl);
 		args.putBoolean("displayFeedDetails", displayFeedDetails);
 		args.putSerializable("classifier", classifier);
-        args.putSerializable("defaultFeedView", defaultFeedView);
         args.putString("sourceUserId", sourceUserId);
 		readingFragment.setArguments(args);
 
@@ -138,8 +138,6 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
         faviconText = getArguments().getString("faviconText");
 
 		classifier = (Classifier) getArguments().getSerializable("classifier");
-
-        selectedFeedView = (DefaultFeedView)getArguments().getSerializable("defaultFeedView");
 
         sourceUserId = getArguments().getString("sourceUserId");
 
@@ -184,6 +182,9 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
         ButterKnife.bind(this, view);
 
         Reading activity = (Reading) getActivity();
+        fs = activity.getFeedSet();
+
+        selectedFeedView = PrefsUtils.getDefaultFeedView(activity, fs);
 
         registerForContextMenu(web);
         web.setCustomViewLayout(webviewCustomViewLayout);
@@ -240,7 +241,7 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
             if (altText != null) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                 builder.setTitle(finalURL);
-                builder.setMessage(Html.fromHtml(altText).toString());
+                builder.setMessage(UIUtils.fromHtml(altText));
                 builder.setPositiveButton(R.string.alert_dialog_openimage, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         Intent i = new Intent(Intent.ACTION_VIEW);
@@ -304,19 +305,22 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
         TextView itemDate = (TextView) view.findViewById(R.id.reading_item_date);
         ImageView feedIcon = (ImageView) view.findViewById(R.id.reading_feed_icon);
 
-		if (TextUtils.equals(feedColor, "#null") || TextUtils.equals(feedFade, "#null")) {
-            feedColor = "#303030";
-            feedFade = "#505050";
-            feedBorder = "#202020";
+		if ((feedColor == null) ||
+            (feedFade == null) ||
+            TextUtils.equals(feedColor, "null") ||
+            TextUtils.equals(feedFade, "null")) {
+            feedColor = "303030";
+            feedFade = "505050";
+            feedBorder = "202020";
         }
 
         int[] colors = {
-            Color.parseColor(feedColor),
-            Color.parseColor(feedFade),
+            Color.parseColor("#" + feedColor),
+            Color.parseColor("#" + feedFade),
         };
         GradientDrawable gradient = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP, colors);
         UIUtils.setViewBackground(feedHeader, gradient);
-        feedHeaderBorder.setBackgroundColor(Color.parseColor(feedBorder));
+        feedHeaderBorder.setBackgroundColor(Color.parseColor("#" + feedBorder));
 
         if (TextUtils.equals(faviconText, "black")) {
             itemFeed.setTextColor(UIUtils.getColor(getActivity(), R.color.text));
@@ -334,7 +338,7 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
 			itemFeed.setText(feedTitle);
 		}
 
-        itemTitle.setText(Html.fromHtml(story.title));
+        itemTitle.setText(UIUtils.fromHtml(story.title));
         itemDate.setText(StoryUtils.formatLongDate(getActivity(), new Date(story.timestamp)));
 
         if (!TextUtils.isEmpty(story.authors)) {
@@ -406,13 +410,16 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
                 }
             }
 
-            v.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    ClassifierDialogFragment classifierFragment = ClassifierDialogFragment.newInstance(ReadingItemFragment.this, story.feedId, classifier, tag, Classifier.TAG);
-                    classifierFragment.show(getFragmentManager(), "dialog");
-                }
-            });
+            // tapping tags in saved stories doesn't bring up training
+            if (!(fs.isAllSaved() || (fs.getSingleSavedTag() != null))) {
+                v.setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        ClassifierDialogFragment classifierFragment = ClassifierDialogFragment.newInstance(ReadingItemFragment.this, story.feedId, classifier, tag, Classifier.TAG);
+                        classifierFragment.show(getFragmentManager(), "dialog");
+                    }
+                });
+            }
 
 			tagContainer.addView(v);
 		}
@@ -426,8 +433,15 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
             } else {
                 selectedFeedView = DefaultFeedView.TEXT;
             }
+            Reading activity = (Reading) getActivity();
+            activity.defaultFeedViewChanged(selectedFeedView);
             reloadStoryContent();
         }
+    }
+
+    public void setSelectedFeedView(DefaultFeedView newValue) {
+        selectedFeedView = newValue;
+        reloadStoryContent();
     }
 
     public DefaultFeedView getSelectedFeedView() {

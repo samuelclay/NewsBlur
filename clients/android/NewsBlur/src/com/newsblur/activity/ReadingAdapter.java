@@ -11,21 +11,18 @@ import android.view.ViewGroup;
 import com.newsblur.domain.Story;
 import com.newsblur.fragment.LoadingFragment;
 import com.newsblur.fragment.ReadingItemFragment;
-import com.newsblur.util.DefaultFeedView;
 
 import java.lang.ref.WeakReference;
 
 public abstract class ReadingAdapter extends FragmentStatePagerAdapter {
 
 	protected Cursor stories;
-    protected DefaultFeedView defaultFeedView;
     protected String sourceUserId;
     private SparseArray<WeakReference<ReadingItemFragment>> cachedFragments;
 	
-	public ReadingAdapter(FragmentManager fm, DefaultFeedView defaultFeedView, String sourceUserId) {
+	public ReadingAdapter(FragmentManager fm, String sourceUserId) {
 		super(fm);
         this.cachedFragments = new SparseArray<WeakReference<ReadingItemFragment>>();
-        this.defaultFeedView = defaultFeedView;
         this.sourceUserId = sourceUserId;
 	}
 	

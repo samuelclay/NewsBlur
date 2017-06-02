@@ -9,7 +9,6 @@ import android.view.MenuInflater;
 import com.newsblur.R;
 import com.newsblur.domain.SocialFeed;
 import com.newsblur.fragment.SocialFeedItemListFragment;
-import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadFilter;
 import com.newsblur.util.UIUtils;
@@ -54,11 +53,4 @@ public class SocialFeedItemsList extends ItemsList {
         return PrefsUtils.getReadFilterForFeed(this, socialFeed.userId);
     }
 
-    @Override
-    public void defaultFeedViewChanged(DefaultFeedView value) {
-        PrefsUtils.setDefaultFeedViewForFeed(this, socialFeed.userId, value);
-        if (itemListFragment != null) {
-            itemListFragment.setDefaultFeedView(value);
-        }
-    }
 }

@@ -11,7 +11,7 @@ import com.newsblur.R;
 import com.newsblur.domain.Feed;
 import com.newsblur.fragment.DeleteFeedFragment;
 import com.newsblur.fragment.FeedItemListFragment;
-import com.newsblur.util.DefaultFeedView;
+import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadFilter;
 import com.newsblur.util.UIUtils;
@@ -49,16 +49,26 @@ public class FeedItemsList extends ItemsList {
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		if (!super.onOptionsItemSelected(item)) {
-			if (item.getItemId() == R.id.menu_delete_feed) {
-				deleteFeed();
-				return true;
-			} else {
-				return false;
-			}
-		} else {
-			return true;
-		}
+		if (super.onOptionsItemSelected(item)) {
+            return true;
+        }
+        if (item.getItemId() == R.id.menu_delete_feed) {
+            deleteFeed();
+            return true;
+        }
+        if (item.getItemId() == R.id.menu_notifications_disable) {
+            FeedUtils.disableNotifications(this, feed);
+            return true;
+        }
+        if (item.getItemId() == R.id.menu_notifications_focus) {
+            FeedUtils.enableFocusNotifications(this, feed);
+            return true;
+        }
+        if (item.getItemId() == R.id.menu_notifications_unread) {
+            FeedUtils.enableUnreadNotifications(this, feed);
+            return true;
+        }
+        return false;
 	}
 	
 	@Override
@@ -66,6 +76,38 @@ public class FeedItemsList extends ItemsList {
 		super.onCreateOptionsMenu(menu);
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.feed_itemslist, menu);
+        if (feed.isNotifyUnread()) {
+            menu.findItem(R.id.menu_notifications_disable).setChecked(false);
+            menu.findItem(R.id.menu_notifications_unread).setChecked(true);
+            menu.findItem(R.id.menu_notifications_focus).setChecked(false);
+        } else if (feed.isNotifyFocus()) {
+            menu.findItem(R.id.menu_notifications_disable).setChecked(false);
+            menu.findItem(R.id.menu_notifications_unread).setChecked(false);
+            menu.findItem(R.id.menu_notifications_focus).setChecked(true);
+        } else {
+            menu.findItem(R.id.menu_notifications_disable).setChecked(true);
+            menu.findItem(R.id.menu_notifications_unread).setChecked(false);
+            menu.findItem(R.id.menu_notifications_focus).setChecked(false);
+        }
+		return true;
+	}
+
+	@Override
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		super.onPrepareOptionsMenu(menu);
+        if (feed.isNotifyUnread()) {
+            menu.findItem(R.id.menu_notifications_disable).setChecked(false);
+            menu.findItem(R.id.menu_notifications_unread).setChecked(true);
+            menu.findItem(R.id.menu_notifications_focus).setChecked(false);
+        } else if (feed.isNotifyFocus()) {
+            menu.findItem(R.id.menu_notifications_disable).setChecked(false);
+            menu.findItem(R.id.menu_notifications_unread).setChecked(false);
+            menu.findItem(R.id.menu_notifications_focus).setChecked(true);
+        } else {
+            menu.findItem(R.id.menu_notifications_disable).setChecked(true);
+            menu.findItem(R.id.menu_notifications_unread).setChecked(false);
+            menu.findItem(R.id.menu_notifications_focus).setChecked(false);
+        }
 		return true;
 	}
 
@@ -79,11 +121,4 @@ public class FeedItemsList extends ItemsList {
         return PrefsUtils.getReadFilterForFeed(this, feed.feedId);
     }
 
-    @Override
-    public void defaultFeedViewChanged(DefaultFeedView value) {
-        PrefsUtils.setDefaultFeedViewForFeed(this, feed.feedId, value);
-        if (itemListFragment != null) {
-            itemListFragment.setDefaultFeedView(value);
-        }
-    }
 }

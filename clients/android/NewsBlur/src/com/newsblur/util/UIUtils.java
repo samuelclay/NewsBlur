@@ -1,8 +1,6 @@
 package com.newsblur.util;
 
 import static android.graphics.Bitmap.Config.ARGB_8888;
-import static android.graphics.Color.WHITE;
-import static android.graphics.PorterDuff.Mode.DST_IN;
 
 import android.app.Activity;
 import android.app.ActionBar;
@@ -13,13 +11,11 @@ import android.graphics.BitmapShader;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.graphics.Paint;
-import android.graphics.Path;
-import android.graphics.PorterDuffXfermode;
-import android.graphics.RectF;
 import android.graphics.Shader;
 import android.os.Build;
 import android.os.Handler;
 import android.util.Log;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -263,5 +259,17 @@ public class UIUtils {
 
         v.setPadding(oldPadL, oldPadT, oldPadR, oldPadB);
     }
+
+    // API 24 introduced a more customizable impl of fromHtml but also *immediately* deprecated the
+    // default version in the same release, so it is necessary to wrap this is plat-specific helper
+    @SuppressWarnings("deprecation")
+    public static CharSequence fromHtml(String html) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            return Html.fromHtml(html, Html.FROM_HTML_MODE_LEGACY).toString();
+        } else {
+            return Html.fromHtml(html).toString();
+        }
+    }
+        
 
 }
