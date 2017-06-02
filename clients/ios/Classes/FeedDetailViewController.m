@@ -1589,7 +1589,9 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
         }
     }
     
-    NSIndexPath *indexPath = [self.storyTitlesTable indexPathForRowAtPoint:self.storyTitlesTable.contentOffset];
+    CGPoint topRowPoint = self.storyTitlesTable.contentOffset;
+    topRowPoint.y = topRowPoint.y + 80.f;
+    NSIndexPath *indexPath = [self.storyTitlesTable indexPathForRowAtPoint:topRowPoint];
     BOOL markReadOnScroll = [[NSUserDefaults standardUserDefaults] boolForKey:@"default_scroll_read_filter"];
     
     if (indexPath && markReadOnScroll) {
@@ -1605,6 +1607,8 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
                 if ([storiesCollection isStoryUnread:story]) {
                     [storiesCollection markStoryRead:story];
                     [storiesCollection syncStoryAsRead:story];
+                    [self.storyTitlesTable reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:thisRow inSection:0]]
+                                                 withRowAnimation:UITableViewRowAnimationFade];
                 }
             }
             
