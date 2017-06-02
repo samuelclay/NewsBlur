@@ -11,7 +11,7 @@
 
 @class NewsBlurAppDelegate;
 
-@interface NotificationsViewController : UIViewController <UITableViewDelegate, UITableViewDataSource> {
+@interface NotificationsViewController : BaseViewController <UITableViewDelegate, UITableViewDataSource> {
     NewsBlurAppDelegate *appDelegate;
     NSArray *notificationFeedIds;
 }

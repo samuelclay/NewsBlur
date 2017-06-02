@@ -1726,7 +1726,8 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     [appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self finishLikeComment:responseObject];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        [self requestFailed:error];
+        NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)task.response;
+        [self requestFailed:error statusCode:httpResponse.statusCode];
     }];
 }
 
@@ -1758,12 +1759,12 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 } 
 
 
-- (void)requestFailed:(NSError *)error {
+- (void)requestFailed:(NSError *)error statusCode:(NSInteger)statusCode {
     NSLog(@"Error in story detail: %@", error);
     
     [MBProgressHUD hideHUDForView:appDelegate.storyPageControl.view animated:NO];
 
-    [self informError:error];
+    [self informError:error statusCode:statusCode];
 }
 
 - (void)openShareDialog {
@@ -2028,7 +2029,8 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     [appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self finishSubscribeToBlurblog:responseObject];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        [self requestFailed:error];
+        NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)task.response;
+        [self requestFailed:error statusCode:httpResponse.statusCode];
     }];
 }
 

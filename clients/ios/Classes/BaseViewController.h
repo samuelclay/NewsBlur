@@ -5,7 +5,7 @@
 }
 
 - (void)informError:(id)error;
-- (void)informError:(id)error details:(NSString *)details;
+- (void)informError:(id)error statusCode:(NSInteger)statusCode;
 - (void)informMessage:(NSString *)message;
 - (void)informLoadingMessage:(NSString *)message;
 

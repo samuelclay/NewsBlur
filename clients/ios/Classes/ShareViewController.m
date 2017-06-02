@@ -415,7 +415,8 @@
     [appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self finishShareThisStory:responseObject];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        [self requestFailed:error];
+        NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)task.response;
+        [self requestFailed:error statusCode:httpResponse.statusCode];
     }];
 
     [appDelegate hideShareView:YES];
@@ -460,7 +461,8 @@
     [appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self finishAddReply:responseObject];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        [self requestFailed:error];
+        NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)task.response;
+        [self requestFailed:error statusCode:httpResponse.statusCode];
     }];
 
     [appDelegate hideShareView:NO];
@@ -474,11 +476,12 @@
     [self replaceStory:newStory withReplyId:[results objectForKey:@"reply_id"]];
 }
 
-- (void)requestFailed:(NSError *)error {    
+- (void)requestFailed:(NSError *)error statusCode:(NSInteger)statusCode {
     [MBProgressHUD hideHUDForView:appDelegate.storyPageControl.view animated:NO];
+    [MBProgressHUD hideHUDForView:appDelegate.storyPageControl.currentPage.view animated:NO];
 
     NSLog(@"Error: %@", error);
-    [appDelegate.storyPageControl.currentPage informError:error];
+    [appDelegate.storyPageControl.currentPage informError:error statusCode:statusCode];
 }
 
 - (void)replaceStory:(NSDictionary *)newStory withReplyId:(NSString *)replyId {
