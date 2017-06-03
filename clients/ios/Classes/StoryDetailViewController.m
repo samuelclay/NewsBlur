@@ -1755,6 +1755,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     appDelegate.storiesCollection.activeFeedStories = [NSArray arrayWithArray:newActiveFeedStories];
     
     [MBProgressHUD hideHUDForView:appDelegate.storyPageControl.view animated:NO];
+    [MBProgressHUD hideHUDForView:appDelegate.storyPageControl.currentPage.view animated:NO];
     [self refreshComments:@"like"];
 } 
 
@@ -1763,6 +1764,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     NSLog(@"Error in story detail: %@", error);
     
     [MBProgressHUD hideHUDForView:appDelegate.storyPageControl.view animated:NO];
+    [MBProgressHUD hideHUDForView:appDelegate.storyPageControl.currentPage.view animated:NO];
 
     [self informError:error statusCode:statusCode];
 }
