@@ -79,22 +79,23 @@ public class Log {
     }
 
     private static void add(String lvl, String tag, String m, Throwable t) {
-        if (q.size() > MAX_QUEUE_SIZE) return;
-        if (m != null && m.length() > MAX_LINE_SIZE) m = m.substring(0, MAX_LINE_SIZE);
-        StringBuilder s = new StringBuilder();
-        synchronized (dateFormat) {s.append(dateFormat.format(new Date()));}
-        s.append(" ")
-         .append(lvl)
-         .append(tag)
-         .append(" ");
-        s.append(m);
-        if (t != null) {
-            s.append(" ");
-            s.append(t.getMessage());
-            s.append(" ");
-            s.append(android.util.Log.getStackTraceString(t));
+        if (q.size() < MAX_QUEUE_SIZE) {
+            if (m != null && m.length() > MAX_LINE_SIZE) m = m.substring(0, MAX_LINE_SIZE);
+            StringBuilder s = new StringBuilder();
+            synchronized (dateFormat) {s.append(dateFormat.format(new Date()));}
+            s.append(" ")
+             .append(lvl)
+             .append(tag)
+             .append(" ");
+            s.append(m);
+            if (t != null) {
+                s.append(" ");
+                s.append(t.getMessage());
+                s.append(" ");
+                s.append(android.util.Log.getStackTraceString(t));
+            }
+            q.offer(s.toString());
         }
-        q.offer(s.toString());
         Runnable r = new Runnable() {
             public void run() {
                 proc();
