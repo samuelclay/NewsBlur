@@ -943,12 +943,13 @@ public class NBSyncService extends Service {
      * true if more will be fetched as a result of this request.
      *
      * @param desiredStoryCount the minimum number of stories to fetch.
-     * @param totalSeen the number of stories the caller thinks they have seen for the FeedSet
-     *        or a negative number if the caller trusts us to track for them
+     * @param callerSeen the number of stories the caller thinks they have seen for the FeedSet
+     *        or a negative number if the caller trusts us to track for them, or null if the caller
+     *        has ambiguous or no state about the FeedSet and wants us to refresh for them.
      */
     public static boolean requestMoreForFeed(FeedSet fs, int desiredStoryCount, Integer callerSeen) {
         synchronized (PENDING_FEED_MUTEX) {
-            if (ExhaustedFeeds.contains(fs) && (fs.equals(LastFeedSet))) {
+            if (ExhaustedFeeds.contains(fs) && (fs.equals(LastFeedSet) && (callerSeen != null))) {
                 android.util.Log.d(NBSyncService.class.getName(), "rejecting request for feedset that is exhaused");
                 return false;
             }
