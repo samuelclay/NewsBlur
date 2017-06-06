@@ -1354,6 +1354,8 @@ heightForHeaderInSection:(NSInteger)section {
         [self.feedTitlesTable reloadRowsAtIndexPaths:@[indexPath]
                                     withRowAnimation:UITableViewRowAnimationFade];
         [self.feedTitlesTable endUpdates];
+        
+        [self refreshHeaderCounts];
     }
 }
 

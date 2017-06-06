@@ -255,6 +255,18 @@
     }
 }
 
+- (void)applicationWillResignActive:(UIApplication *)application {
+    [self.feedsViewController refreshHeaderCounts];
+}
+
+- (void)applicationWillTerminate:(UIApplication *)application {
+    [self.feedsViewController refreshHeaderCounts];
+}
+
+- (void)applicationDidEnterBackground:(UIApplication *)application {
+    [self.feedsViewController refreshHeaderCounts];
+}
+
 - (void)application:(UIApplication *)application performActionForShortcutItem:(UIApplicationShortcutItem *)shortcutItem completionHandler:(void (^)(BOOL))completionHandler {
     completionHandler([self handleShortcutItem:shortcutItem]);
 }
