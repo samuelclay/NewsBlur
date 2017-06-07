@@ -671,6 +671,7 @@ public class NBSyncService extends Service {
                 FeedPagesSeen.put(fs, 0);
                 FeedStoriesSeen.put(fs, 0);
                 workaroundReadStoryTimestamp = (new Date()).getTime();
+                workaroundGloblaSharedStoryTimestamp = (new Date()).getTime();
             }
             int pageNumber = FeedPagesSeen.get(fs);
             int totalStoriesSeen = FeedStoriesSeen.get(fs);
@@ -741,6 +742,7 @@ public class NBSyncService extends Service {
     }
 
     private long workaroundReadStoryTimestamp;
+    private long workaroundGloblaSharedStoryTimestamp;
 
     private void insertStories(StoriesResponse apiResponse, FeedSet fs) {
         if (fs.isAllRead()) {
@@ -755,6 +757,19 @@ public class NBSyncService extends Service {
                 // we page through, so they append to the list as if most-recent-first.
                 workaroundReadStoryTimestamp --;
                 story.lastReadTimestamp = workaroundReadStoryTimestamp;
+            }
+        }
+
+        if (fs.isGlobalShared()) {
+            // Ugly Hack Warning: the API doesn't vend the sortation key necessary to display
+            // stories when in the "global shared stories" view. It does, however, return them
+            // in the expected order, so we can fudge a fake shared-timestamp so they can be
+            // selected from the DB in the same order.
+            for (Story story : apiResponse.stories) {
+                // this fake TS was set when we fetched the first page. have it decrease as
+                // we page through, so they append to the list as if most-recent-first.
+                workaroundGloblaSharedStoryTimestamp --;
+                story.sharedTimestamp = workaroundGloblaSharedStoryTimestamp;
             }
         }
 
@@ -943,12 +958,13 @@ public class NBSyncService extends Service {
      * true if more will be fetched as a result of this request.
      *
      * @param desiredStoryCount the minimum number of stories to fetch.
-     * @param totalSeen the number of stories the caller thinks they have seen for the FeedSet
-     *        or a negative number if the caller trusts us to track for them
+     * @param callerSeen the number of stories the caller thinks they have seen for the FeedSet
+     *        or a negative number if the caller trusts us to track for them, or null if the caller
+     *        has ambiguous or no state about the FeedSet and wants us to refresh for them.
      */
     public static boolean requestMoreForFeed(FeedSet fs, int desiredStoryCount, Integer callerSeen) {
         synchronized (PENDING_FEED_MUTEX) {
-            if (ExhaustedFeeds.contains(fs) && (fs.equals(LastFeedSet))) {
+            if (ExhaustedFeeds.contains(fs) && (fs.equals(LastFeedSet) && (callerSeen != null))) {
                 android.util.Log.d(NBSyncService.class.getName(), "rejecting request for feedset that is exhaused");
                 return false;
             }
