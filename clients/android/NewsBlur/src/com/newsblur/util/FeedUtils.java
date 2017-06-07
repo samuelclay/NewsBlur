@@ -209,7 +209,11 @@ public class FeedUtils {
                 ra = ReadingAction.markFeedRead(fs, olderThan, newerThan);
             }
         }
+        // is it okay to just do the mark? otherwise we will seek confirmation
         boolean doImmediate = true;
+        // if set, this message will be displayed instead of the options to actually mark read. used in
+        // situations where marking all read is almost certainly not what the user wants to do
+        String optionalOverrideMessage = null;
         if ((olderThan != null) || (newerThan != null)) {
             // if this is a range mark, check that option
             if (PrefsUtils.isConfirmMarkRangeRead(activity)) doImmediate = false;
@@ -217,6 +221,11 @@ public class FeedUtils {
             // if this is an all mark, check that option
             MarkAllReadConfirmation confirmation = PrefsUtils.getMarkAllReadConfirmation(activity);
             if (confirmation.feedSetRequiresConfirmation(fs)) doImmediate = false;
+        }
+        // marks hit all stories, even when filtering via search, so warn
+        if (fs.getSearchQuery() != null) {
+            doImmediate = false;
+            optionalOverrideMessage = activity.getResources().getString(R.string.search_mark_read_warning);
         }
         if (doImmediate) {
             doAction(ra, activity);
@@ -234,7 +243,7 @@ public class FeedUtils {
             } else {
                 title = FeedUtils.getFeed(fs.getSingleFeed()).title;
             }
-            ReadingActionConfirmationFragment dialog = ReadingActionConfirmationFragment.newInstance(ra, title, choicesRid, finishAfter);
+            ReadingActionConfirmationFragment dialog = ReadingActionConfirmationFragment.newInstance(ra, title, optionalOverrideMessage, choicesRid, finishAfter);
             dialog.show(activity.getFragmentManager(), "dialog");
         }
     }
