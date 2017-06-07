@@ -168,6 +168,7 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
                 searchQueryInput.requestFocus();
             } else {
                 searchQueryInput.setVisibility(View.GONE);
+                checkSearchQuery();
             }
         }
 	
