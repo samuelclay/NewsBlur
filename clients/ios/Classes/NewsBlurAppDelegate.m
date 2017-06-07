@@ -255,6 +255,18 @@
     }
 }
 
+- (void)applicationWillResignActive:(UIApplication *)application {
+    [self.feedsViewController refreshHeaderCounts];
+}
+
+- (void)applicationWillTerminate:(UIApplication *)application {
+    [self.feedsViewController refreshHeaderCounts];
+}
+
+- (void)applicationDidEnterBackground:(UIApplication *)application {
+    [self.feedsViewController refreshHeaderCounts];
+}
+
 - (void)application:(UIApplication *)application performActionForShortcutItem:(UIApplicationShortcutItem *)shortcutItem completionHandler:(void (^)(BOOL))completionHandler {
     completionHandler([self handleShortcutItem:shortcutItem]);
 }
@@ -1008,12 +1020,23 @@
 }
 
 - (void)updateNotifications:(NSDictionary *)params feed:(NSString *)feedId {
+    NSString *urlString = [NSString stringWithFormat:@"%@/notifications/feed/",
+                           self.url];
     NSMutableDictionary *feed = [[self.dictFeeds objectForKey:feedId] mutableCopy];
     
     [feed setObject:params[@"notification_types"] forKey:@"notification_types"];
     [feed setObject:params[@"notification_filter"] forKey:@"notification_filter"];
     
     [self.dictFeeds setObject:feed forKey:feedId];
+    
+    [self.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        NSLog(@"Saved notifications %@: %@", feedId, params);
+        [self checkForFeedNotifications];
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        NSLog(@"Failed to save notifications: %@", params);
+        NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)task.response;
+        [self.notificationsViewController informError:error statusCode:httpResponse.statusCode];
+    }];
 }
 
 - (void)checkForFeedNotifications {
@@ -2258,6 +2281,7 @@
     if (![storyPageControl failedMarkAsUnread:params]) {
         [feedDetailViewController failedMarkAsUnread:params];
         [dashboardViewController.storiesModule failedMarkAsUnread:params];
+        [storyPageControl failedMarkAsUnread:params];
     }
     [feedDetailViewController reloadData];
     [dashboardViewController.storiesModule reloadData];
@@ -2272,6 +2296,7 @@
     if (![storyPageControl failedMarkAsSaved:params]) {
         [feedDetailViewController failedMarkAsSaved:params];
         [dashboardViewController.storiesModule failedMarkAsSaved:params];
+        [storyPageControl failedMarkAsSaved:params];
     }
     [feedDetailViewController reloadData];
     [dashboardViewController.storiesModule reloadData];
@@ -2286,6 +2311,7 @@
     if (![storyPageControl failedMarkAsUnsaved:params]) {
         [feedDetailViewController failedMarkAsUnsaved:params];
         [dashboardViewController.storiesModule failedMarkAsUnsaved:params];
+        [storyPageControl failedMarkAsUnsaved:params];
     }
     [feedDetailViewController reloadData];
     [dashboardViewController.storiesModule reloadData];

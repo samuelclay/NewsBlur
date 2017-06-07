@@ -2402,6 +2402,19 @@
             var folder = folder || this.active_folder;
             var feeds = folder.feed_ids_in_folder({unreads_only: true});
             
+            if (direction) {
+                var order = NEWSBLUR.assets.view_setting(this.active_feed, 'order');
+                if ((direction == "newer" && order == "oldest") || (direction == "older" && order == "newest")) {
+                    var unread_counts = folder.unread_counts && folder.unread_counts() || folder.folders.unread_counts();
+                    var total = unread_counts['nt'] + unread_counts['ps'];
+                    if (total > 100) {
+                        if (!window.confirm("This will mark up to " + Inflector.commas(total) + " stories as read. Are you sure?")) {
+                            return;
+                        }
+                    }
+                }
+            }
+            
             this.mark_feeds_as_read(feeds, days_back, direction);
             
             if (!direction && NEWSBLUR.assets.preference('markread_nextfeed') == 'nextfeed' &&

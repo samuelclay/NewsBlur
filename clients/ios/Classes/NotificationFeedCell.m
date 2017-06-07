@@ -151,8 +151,6 @@
     if ([self.notificationTypeControl.selectedSegmentIndexes containsIndex:3])
         [notificationTypes addObject:@"android"];
     
-    NSString *urlString = [NSString stringWithFormat:@"%@/notifications/feed/",
-                           appDelegate.url];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
     [params setObject:self.feedId forKey:@"feed_id"];
     NSMutableArray *notifications = [NSMutableArray array];
@@ -163,13 +161,6 @@
     [params setObject:notificationFilter forKey:@"notification_filter"];
 
     [appDelegate updateNotifications:params feed:self.feedId];
-
-    [appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-        NSLog(@"Saved notifications %@: %@ / %@", self.feedId, notificationTypes, notificationFilter);
-        [appDelegate checkForFeedNotifications];
-    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        NSLog(@"Failed to save notifications: %@ / %@", notificationTypes, notificationFilter);
-    }];
 }
 
 @end

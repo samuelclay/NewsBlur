@@ -1048,12 +1048,13 @@
 }
 
 - (BOOL)failedMarkAsSaved:(NSDictionary *)params {
-    if (![[params objectForKey:@"story_hash"]
+    if (![[params objectForKey:@"story_id"]
           isEqualToString:[currentPage.activeStory objectForKey:@"story_hash"]]) {
         return NO;
     }
 
     [self informError:@"Failed to save story"];
+    [appDelegate hidePopover];
     return YES;
 }
 
@@ -1066,7 +1067,7 @@
 
 
 - (BOOL)failedMarkAsUnsaved:(NSDictionary *)params {
-    if (![[params objectForKey:@"story_hash"]
+    if (![[params objectForKey:@"story_id"]
           isEqualToString:[currentPage.activeStory objectForKey:@"story_hash"]]) {
         return NO;
     }
@@ -1076,7 +1077,7 @@
 }
 
 - (BOOL)failedMarkAsUnread:(NSDictionary *)params {
-    if (![[params objectForKey:@"story_hash"]
+    if (![[params objectForKey:@"story_id"]
           isEqualToString:[currentPage.activeStory objectForKey:@"story_hash"]]) {
         return NO;
     }
@@ -1195,7 +1196,7 @@
 
 - (void)showShareHUD:(NSString *)msg {
 //    [MBProgressHUD hideHUDForView:self.view animated:NO];
-    self.storyHUD = [MBProgressHUD showHUDAddedTo:currentPage.webView animated:YES];
+    self.storyHUD = [MBProgressHUD showHUDAddedTo:currentPage.view animated:YES];
     self.storyHUD.labelText = msg;
     self.storyHUD.margin = 20.0f;
     self.currentPage.noStoryMessage.hidden = YES;
