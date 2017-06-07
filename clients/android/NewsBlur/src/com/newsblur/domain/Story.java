@@ -97,6 +97,9 @@ public class Story implements Serializable {
     // non-API, though it probably could/should be. populated on first story ingest if thumbnails are turned on
     public String thumbnailUrl;
 
+    // non-API, but tracked locally and fudged (see SyncService) to implement ordering of gobal shared stories
+    public long sharedTimestamp = 0L;
+
 	public ContentValues getValues() {
 		final ContentValues values = new ContentValues();
 		values.put(DatabaseConstants.STORY_ID, id);
@@ -124,6 +127,7 @@ public class Story implements Serializable {
         values.put(DatabaseConstants.STORY_HASH, storyHash);
         values.put(DatabaseConstants.STORY_IMAGE_URLS, TextUtils.join(",", imageUrls));
         values.put(DatabaseConstants.STORY_LAST_READ_DATE, lastReadTimestamp);
+        values.put(DatabaseConstants.STORY_SHARED_DATE, sharedTimestamp);
 		values.put(DatabaseConstants.STORY_SEARCH_HIT, searchHit);
         values.put(DatabaseConstants.STORY_THUMBNAIL_URL, thumbnailUrl);
 		return values;
@@ -156,6 +160,7 @@ public class Story implements Serializable {
 		story.id = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_ID));
         story.storyHash = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_HASH));
         story.lastReadTimestamp = cursor.getLong(cursor.getColumnIndex(DatabaseConstants.STORY_LAST_READ_DATE));
+        story.sharedTimestamp = cursor.getLong(cursor.getColumnIndex(DatabaseConstants.STORY_SHARED_DATE));
 		story.thumbnailUrl = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_THUMBNAIL_URL));
 		return story;
 	}

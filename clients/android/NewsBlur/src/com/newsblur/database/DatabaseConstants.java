@@ -352,6 +352,8 @@ public class DatabaseConstants {
 
     public static final String READ_STORY_ORDER = STORY_LAST_READ_DATE + " DESC";
 
+    public static final String SHARED_STORY_ORDER = STORY_SHARED_DATE + " DESC";
+
     /**
      * Appends to the given story query any and all selection statements that are required to satisfy the specified
      * filtration parameters.

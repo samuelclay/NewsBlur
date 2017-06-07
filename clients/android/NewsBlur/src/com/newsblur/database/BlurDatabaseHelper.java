@@ -1013,6 +1013,8 @@ public class BlurDatabaseHelper {
         
         if (fs.isAllRead()) {
             q.append(" ORDER BY " + DatabaseConstants.READ_STORY_ORDER);
+        } else if (fs.isGlobalShared()) {
+            q.append(" ORDER BY " + DatabaseConstants.SHARED_STORY_ORDER);
         } else if (fs.isAllSaved()) {
             q.append(" ORDER BY " + DatabaseConstants.getSavedStoriesSortOrder(order));
         } else {
