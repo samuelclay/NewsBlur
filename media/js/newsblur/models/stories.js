@@ -121,7 +121,15 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
         var midnight = midnight_today();
         var time = date.format(dateformat == "24" ? "H:i" : "g:ia");
         if (date > midnight) {
-            return "Today, " + date.format("F jS ") + time;
+            if (date > midnight_tomorrow(midnight)) {
+                if (date < midnight_tomorrow(midnight, 2)) {
+                    return "Tomorrow, " + date.format("F jS ") + time;
+                } else {
+                    return date.format("d M Y, ") + time;
+                }
+            } else {
+                return "Today, " + date.format("F jS ") + time;
+            }
         } else if (date > midnight_yesterday(midnight)) {
             return "Yesterday, " + date.format("F jS ") + time;
         } else if (date > beginning_of_month()) {
