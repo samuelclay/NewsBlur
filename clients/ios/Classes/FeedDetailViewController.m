@@ -1427,6 +1427,8 @@
 }
 
 - (void)redrawUnreadStory {
+    [MBProgressHUD hideHUDForView:self.view animated:YES];
+
     NSInteger rowIndex = [storiesCollection locationOfActiveStory];
     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:rowIndex inSection:0];
     FeedDetailTableCell *cell = (FeedDetailTableCell*) [self.storyTitlesTable cellForRowAtIndexPath:indexPath];

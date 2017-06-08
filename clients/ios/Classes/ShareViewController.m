@@ -429,6 +429,9 @@
                                                             withNewUserProfiles:userProfiles];
     [self replaceStory:[results objectForKey:@"story"] withReplyId:nil];
     [appDelegate.feedDetailViewController redrawUnreadStory];
+
+    [MBProgressHUD hideHUDForView:appDelegate.storyPageControl.view animated:NO];
+    [MBProgressHUD hideHUDForView:appDelegate.storyPageControl.currentPage.view animated:NO];
 }
 
 # pragma mark
