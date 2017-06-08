@@ -125,7 +125,7 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
                 if (date < midnight_tomorrow(midnight, 2)) {
                     return "Tomorrow, " + date.format("F jS ") + time;
                 } else {
-                    return date.format("d M Y, ") + time;
+                    return date.format("l, F jS Y ") + time;
                 }
             } else {
                 return "Today, " + date.format("F jS ") + time;
