@@ -80,7 +80,6 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
         var time = date.format(dateformat == "24" ? "H:i" : "g:ia");
 
         if (date > midnight) {
-            console.log(['midnight', date, midnight_tomorrow(midnight), date > midnight_tomorrow(midnight)]);
             if (date > midnight_tomorrow(midnight)) {
                 if (date < midnight_tomorrow(midnight, 2)) {
                     return "Tomorrow, " + time;

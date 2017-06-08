@@ -1465,6 +1465,9 @@
                     var feed_title = feed.get('feed_title') || '';
                     var slug = _.string.words(_.string.clean(feed_title.replace(/[^a-z0-9\. ]/ig, ''))).join('-').toLowerCase();
                     var url = "site/" + feed.id + "/" + slug;
+                    if (window.location.search.length) {
+                        url = url + window.location.search;
+                    }
                     if (!_.string.include(window.location.pathname, url)) {
                         NEWSBLUR.log(["Navigating to url", url]);
                         NEWSBLUR.router.navigate(url);
