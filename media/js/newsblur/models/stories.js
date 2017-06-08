@@ -107,8 +107,12 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
             midnight.setSeconds(0);
             return midnight;
         };
+        var midnight_tomorrow = function(midnight, days) {
+            if (!days) days = 1;
+            return new Date(midnight + days*60*60*24*1000);
+        };
         var midnight_yesterday = function(midnight) {
-            return new Date(midnight - 60*60*24*1000);
+            return midnight_tomorrow(midnight, -1);
         };
         var beginning_of_month = function() {
             var month = new Date();
