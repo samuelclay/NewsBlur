@@ -71,7 +71,7 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
         };
         var midnight_tomorrow = function(midnight, days) {
             if (!days) days = 1;
-            return new Date(midnight + days*60*60*24*1000);
+            return new Date(midnight.getTime() + days*60*60*24*1000);
         };
         var midnight_yesterday = function(midnight) {
             return midnight_tomorrow(midnight, -1);
@@ -80,6 +80,7 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
         var time = date.format(dateformat == "24" ? "H:i" : "g:ia");
 
         if (date > midnight) {
+            console.log(['midnight', date, midnight_tomorrow(midnight), date > midnight_tomorrow(midnight)]);
             if (date > midnight_tomorrow(midnight)) {
                 if (date < midnight_tomorrow(midnight, 2)) {
                     return "Tomorrow, " + time;
@@ -109,7 +110,7 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
         };
         var midnight_tomorrow = function(midnight, days) {
             if (!days) days = 1;
-            return new Date(midnight + days*60*60*24*1000);
+            return new Date(midnight.getTime() + days*60*60*24*1000);
         };
         var midnight_yesterday = function(midnight) {
             return midnight_tomorrow(midnight, -1);
