@@ -81,7 +81,7 @@ public class StoryItemsAdapter extends SimpleCursorAdapter {
 		return cursor.getCount();
 	}
 
-    public boolean isStale() {
+    public synchronized boolean isStale() {
         return cursor.isClosed();
     }
 
@@ -91,17 +91,26 @@ public class StoryItemsAdapter extends SimpleCursorAdapter {
 		return super.swapCursor(c);
 	}
 
-    public void setShowNone(boolean showNone) {
+    public synchronized void setShowNone(boolean showNone) {
         this.showNone = showNone;
     }
 
-	public Story getStory(int position) {
-        cursor.moveToPosition(position);
-        return Story.fromCursor(cursor);
+	public synchronized Story getStory(int position) {
+		if (cursor == null || cursor.isClosed() || cursor.getColumnCount() == 0 || position >= cursor.getCount() || position < 0) {
+			return null;
+		} else {
+            cursor.moveToPosition(position);
+            return Story.fromCursor(cursor);
+        }
     }
 
     public void setTextSize(float textSize) {
         this.textSize = textSize;
+    }
+
+    @Override
+    public synchronized long getItemId(int position) {
+        return super.getItemId(position);
     }
 
 	@Override

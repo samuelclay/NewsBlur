@@ -487,6 +487,7 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
         }
         if (index <= -1) return;
         Story story = adapter.getStory(index-1);
+        if (story == null) return;
         switch (action) {
             case GEST_ACTION_MARKREAD:
                 FeedUtils.markStoryAsRead(story, getActivity());;
