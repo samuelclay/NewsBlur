@@ -95,9 +95,13 @@ public class StoryItemsAdapter extends SimpleCursorAdapter {
         this.showNone = showNone;
     }
 
-	public Story getStory(int position) {
-        cursor.moveToPosition(position);
-        return Story.fromCursor(cursor);
+	public synchronized Story getStory(int position) {
+		if (cursor == null || cursor.isClosed() || cursor.getColumnCount() == 0 || position >= cursor.getCount() || position < 0) {
+			return null;
+		} else {
+            cursor.moveToPosition(position);
+            return Story.fromCursor(cursor);
+        }
     }
 
     public void setTextSize(float textSize) {
