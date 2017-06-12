@@ -81,7 +81,7 @@ public class StoryItemsAdapter extends SimpleCursorAdapter {
 		return cursor.getCount();
 	}
 
-    public boolean isStale() {
+    public synchronized boolean isStale() {
         return cursor.isClosed();
     }
 
@@ -91,7 +91,7 @@ public class StoryItemsAdapter extends SimpleCursorAdapter {
 		return super.swapCursor(c);
 	}
 
-    public void setShowNone(boolean showNone) {
+    public synchronized void setShowNone(boolean showNone) {
         this.showNone = showNone;
     }
 
@@ -106,6 +106,11 @@ public class StoryItemsAdapter extends SimpleCursorAdapter {
 
     public void setTextSize(float textSize) {
         this.textSize = textSize;
+    }
+
+    @Override
+    public synchronized long getItemId(int position) {
+        return super.getItemId(position);
     }
 
 	@Override
