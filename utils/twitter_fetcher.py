@@ -208,7 +208,10 @@ class TwitterFetcher:
         tweet_title = user_tweet['full_text']
         tweet_text = linebreaks(content_tweet['full_text'])
         replaced = {}
-        for media in content_tweet['entities'].get('media', []):
+        entities_media = content_tweet['entities'].get('media', [])
+        if 'extended_entities' in content_tweet:
+            entities_media = content_tweet['extended_entities'].get('media', [])
+        for media in entities_media:
             if 'media_url_https' not in media: continue
             if media['type'] == 'photo':
                 if media.get('url') and media['url'] in tweet_text:
