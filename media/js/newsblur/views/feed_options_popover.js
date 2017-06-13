@@ -88,7 +88,7 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
                     $.make('div', { className: 'NB-stat' }, "Fetched every " + NEWSBLUR.utils.calculate_update_interval(feed.get('min_to_decay')))
                 ]))
             ])),
-            (feed && NEWSBLUR.Globals.is_staff && $.make('div', { className: 'NB-popover-section' }, [
+            (feed && $.make('div', { className: 'NB-popover-section' }, [
                 $.make('div', { className: 'NB-section-icon NB-filter-popover-notifications-icon' }),
                 $.make('div', { className: 'NB-popover-section-title' }, 'Notifications'),
                 $.make('div', { className: 'NB-feedbar-options-notifications' }, [
