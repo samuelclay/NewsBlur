@@ -658,7 +658,7 @@ public class BlurDatabaseHelper {
             return getFeedsUnreadCount(stateFilter, selection.toString(), null);
         } else if (fs.getMultipleSocialFeeds() != null) {
             StringBuilder selection = new StringBuilder(DatabaseConstants.SOCIAL_FEED_ID + " IN ( ");
-            selection.append(TextUtils.join(",", fs.getMultipleFeeds())).append(")");
+            selection.append(TextUtils.join(",", fs.getMultipleSocialFeeds().keySet())).append(")");
             return getSocialFeedsUnreadCount(stateFilter, selection.toString(), null);
         } else if (fs.getSingleFeed() != null) {
             return getFeedsUnreadCount(stateFilter, DatabaseConstants.FEED_ID + " = ?", new String[]{fs.getSingleFeed()});
