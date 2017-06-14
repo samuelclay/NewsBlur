@@ -1465,6 +1465,9 @@
                     var feed_title = feed.get('feed_title') || '';
                     var slug = _.string.words(_.string.clean(feed_title.replace(/[^a-z0-9\. ]/ig, ''))).join('-').toLowerCase();
                     var url = "site/" + feed.id + "/" + slug;
+                    if (window.location.search.length) {
+                        url = url + window.location.search;
+                    }
                     if (!_.string.include(window.location.pathname, url)) {
                         NEWSBLUR.log(["Navigating to url", url]);
                         NEWSBLUR.router.navigate(url);
@@ -3366,10 +3369,10 @@
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Goodies &amp; Mobile Apps')
                     ]),
-                    (NEWSBLUR.Globals.is_admin && $.make('li', { className: 'NB-menu-item NB-menu-manage-notifications' }, [
+                    $.make('li', { className: 'NB-menu-item NB-menu-manage-notifications' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Notifications')
-                    ])),
+                    ]),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-newsletters' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Email Newsletters')
@@ -3428,10 +3431,10 @@
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Site settings')
                     ]),
-                    (NEWSBLUR.Globals.is_admin && $.make('li', { className: 'NB-menu-item NB-menu-manage-feed-notifications' }, [
+                    $.make('li', { className: 'NB-menu-item NB-menu-manage-feed-notifications' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Notifications')
-                    ])),
+                    ]),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-feed-train' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Intelligence trainer'),

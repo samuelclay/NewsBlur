@@ -1479,7 +1479,7 @@ def role_for_host():
 @parallel
 def deploy(fast=False, reload=False):
     role = role_for_host()
-    if role in ['work', 'search']:
+    if role in ['work', 'search', 'debug']:
         deploy_code(copy_assets=False, fast=fast, reload=True)
     else:
         deploy_code(copy_assets=False, fast=fast, reload=reload)

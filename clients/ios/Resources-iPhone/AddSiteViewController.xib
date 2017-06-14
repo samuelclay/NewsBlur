@@ -69,7 +69,7 @@
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                     <color key="textColor" red="0.33333333333333331" green="0.33333333333333331" blue="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <fontDescription key="fontDescription" name="Helvetica" family="Helvetica" pointSize="12"/>
-                    <textInputTraits key="textInputTraits" autocorrectionType="no" keyboardType="emailAddress" returnKeyType="search" enablesReturnKeyAutomatically="YES"/>
+                    <textInputTraits key="textInputTraits" autocorrectionType="no" keyboardType="URL" returnKeyType="search" enablesReturnKeyAutomatically="YES"/>
                     <connections>
                         <action selector="checkSiteAddress" destination="-1" eventType="editingChanged" id="60"/>
                         <action selector="checkSiteAddress" destination="-1" eventType="editingDidBegin" id="70"/>
