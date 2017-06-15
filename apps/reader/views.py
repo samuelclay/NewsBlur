@@ -1447,7 +1447,7 @@ def complete_river(request):
                                                read_filter=read_filter)
     feed_ids = [sub.feed_id for sub in usersubs]
     if feed_ids:
-        stories_truncated = UserSubscription.truncate_river(user.pk, feed_ids, read_filter)
+        stories_truncated = UserSubscription.truncate_river(user.pk, feed_ids, read_filter, cache_prefix="dashboard")
     
     logging.user(request, "~FC~BBRiver complete on page ~SB%s~SN, truncating ~SB%s~SN stories from ~SB%s~SN feeds" % (page, stories_truncated, len(feed_ids)))
     
