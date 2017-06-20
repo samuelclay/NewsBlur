@@ -718,6 +718,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
             Intent i = new Intent(this, Main.class);
             i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(i);
+            finish();
         } else {
             // if there are unreads, go to the next one
             new AsyncTask<Void, Void, Void>() {
