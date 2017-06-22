@@ -95,7 +95,14 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
 
     @Override
     protected void onResume() {
-        super.onResume();
+        try {
+            // due to weird backstack operations coming from notified reading activities,
+            // sometimes we fail to reload. do everything in our power to log
+            super.onResume();
+        } catch (Exception e) {
+            com.newsblur.util.Log.e(getClass().getName(), "error resuming Main", e);
+            finish();
+        }
 
         // triggerSync() might not actually do enough to push a UI update if background sync has been
         // behaving itself. because the system will re-use the activity, at least one update on resume
