@@ -128,6 +128,12 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 
         fs = (FeedSet)getIntent().getSerializableExtra(EXTRA_FEEDSET);
 
+        if (fs == null) {
+            com.newsblur.util.Log.w(this.getClass().getName(), "reading view had no FeedSet");
+            finish();
+            return;
+        }
+
         if ((savedInstanceBundle != null) && savedInstanceBundle.containsKey(BUNDLE_STARTING_UNREAD)) {
             startingUnreadCount = savedInstanceBundle.getInt(BUNDLE_STARTING_UNREAD);
         }
@@ -712,6 +718,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
             Intent i = new Intent(this, Main.class);
             i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(i);
+            finish();
         } else {
             // if there are unreads, go to the next one
             new AsyncTask<Void, Void, Void>() {
