@@ -84,7 +84,8 @@
                                self.appDelegate.url, feedId];
         [appDelegate.networkManager GET:urlString parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
             [MBProgressHUD hideHUDForView:self.view animated:YES];
-            NSDictionary *results = responseObject;
+            NSArray *resultsArray = responseObject;
+            NSDictionary *results = resultsArray[0];
             NSMutableDictionary *newClassifiers = [[results objectForKey:@"classifiers"] mutableCopy];
             [appDelegate.storiesCollection.activeClassifiers setObject:newClassifiers
                                                                 forKey:feedId];
