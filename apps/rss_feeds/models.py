@@ -2451,6 +2451,9 @@ class MStory(mongo.Document):
                           (unicode(feed)[:30], stories.count(), cutoff))
             try:
                 story_trim_date = stories[cutoff].story_date
+                if story_trim_date == stories[0].story_date:
+                    # Handle case where every story is the same time
+                    story_trim_date = story_trim_date - datetime.timedelta(seconds=1)
             except IndexError, e:
                 logging.debug(' ***> [%-30s] ~BRError trimming feed: %s' % (unicode(feed)[:30], e))
                 return extra_stories_count
