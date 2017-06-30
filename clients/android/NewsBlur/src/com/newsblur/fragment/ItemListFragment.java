@@ -434,6 +434,7 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
 
         int truePosition = position - 1;
         Story story = adapter.getStory(truePosition);
+        if (story == null) return; // can happen on shrinking lists
         if (getActivity().isFinishing()) return;
         UIUtils.startReadingActivity(getFeedSet(), story.storyHash, getActivity());
     }
