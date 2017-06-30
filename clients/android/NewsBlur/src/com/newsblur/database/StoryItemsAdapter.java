@@ -110,6 +110,7 @@ public class StoryItemsAdapter extends SimpleCursorAdapter {
 
     @Override
     public synchronized long getItemId(int position) {
+        if (cursor == null || cursor.isClosed() || cursor.getColumnCount() == 0 || position >= cursor.getCount() || position < 0) return 0;
         return super.getItemId(position);
     }
 
