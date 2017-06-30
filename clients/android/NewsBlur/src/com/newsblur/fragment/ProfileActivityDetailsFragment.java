@@ -103,11 +103,18 @@ public abstract class ProfileActivityDetailsFragment extends Fragment implements
                 if (id == null) {
                     id = user.id;
                 }
+                if (id == null) {
+                    return null;
+                }
                 return loadActivityDetails(id, pageNumber);
             }
 
             @Override
             protected void onPostExecute(ActivityDetails[] result) {
+                if (result == null) {
+                    com.newsblur.util.Log.w(getClass().getName(), "couldn't load page from API");
+                    return;
+                }
                 if (pageNumber == 1 && result.length == 0) {
                     View emptyView = activityList.getEmptyView();
                     TextView textView = (TextView) emptyView.findViewById(R.id.empty_view_text);
