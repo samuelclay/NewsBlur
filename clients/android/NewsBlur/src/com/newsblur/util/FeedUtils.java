@@ -278,6 +278,7 @@ public class FeedUtils {
     }
         
     public static void doAction(final ReadingAction ra, final Context context) {
+        if (ra == null) throw new IllegalArgumentException("ReadingAction must not be null");
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... arg) {
