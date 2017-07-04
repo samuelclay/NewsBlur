@@ -898,14 +898,14 @@ public class BlurDatabaseHelper {
         synchronized (RW_MUTEX) {dbRW.insertOrThrow(DatabaseConstants.STORY_TEXT_TABLE, null, values);}
     }
 
-    public Loader<Cursor> getSocialFeedsLoader(final StateFilter stateFilter) {
+    public Loader<Cursor> getSocialFeedsLoader() {
         return new QueryCursorLoader(context) {
-            protected Cursor createCursor() {return getSocialFeedsCursor(stateFilter, cancellationSignal);}
+            protected Cursor createCursor() {return getSocialFeedsCursor(cancellationSignal);}
         };
     }
 
-    public Cursor getSocialFeedsCursor(StateFilter stateFilter, CancellationSignal cancellationSignal) {
-        return query(false, DatabaseConstants.SOCIALFEED_TABLE, null, DatabaseConstants.getBlogSelectionFromState(stateFilter), null, null, null, "UPPER(" + DatabaseConstants.SOCIAL_FEED_TITLE + ") ASC", null, cancellationSignal);
+    public Cursor getSocialFeedsCursor(CancellationSignal cancellationSignal) {
+        return query(false, DatabaseConstants.SOCIALFEED_TABLE, null, null, null, null, null, "UPPER(" + DatabaseConstants.SOCIAL_FEED_TITLE + ") ASC", null, cancellationSignal);
     }
 
     public SocialFeed getSocialFeed(String feedId) {
@@ -938,14 +938,14 @@ public class BlurDatabaseHelper {
         return query(false, DatabaseConstants.FOLDER_TABLE, null, null, null, null, null, null, null, cancellationSignal);
     }
 
-    public Loader<Cursor> getFeedsLoader(final StateFilter stateFilter) {
+    public Loader<Cursor> getFeedsLoader() {
         return new QueryCursorLoader(context) {
-            protected Cursor createCursor() {return getFeedsCursor(stateFilter, cancellationSignal);}
+            protected Cursor createCursor() {return getFeedsCursor(cancellationSignal);}
         };
     }
 
-    public Cursor getFeedsCursor(StateFilter stateFilter, CancellationSignal cancellationSignal) {
-        return query(false, DatabaseConstants.FEED_TABLE, null, DatabaseConstants.getFeedSelectionFromState(stateFilter), null, null, null, "UPPER(" + DatabaseConstants.FEED_TITLE + ") ASC", null, cancellationSignal);
+    public Cursor getFeedsCursor(CancellationSignal cancellationSignal) {
+        return query(false, DatabaseConstants.FEED_TABLE, null, null, null, null, null, "UPPER(" + DatabaseConstants.FEED_TITLE + ") ASC", null, cancellationSignal);
     }
 
     public Loader<Cursor> getSavedStoryCountsLoader() {

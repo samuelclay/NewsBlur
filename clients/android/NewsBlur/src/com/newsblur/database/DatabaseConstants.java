@@ -396,42 +396,6 @@ public class DatabaseConstants {
         }
     }
     
-    /**
-     * Selection args to filter feeds.
-     */
-    public static String getFeedSelectionFromState(StateFilter state) {
-        switch (state) {
-        case ALL:
-            return null; // don't filter
-        case SOME:
-            return FEED_ACTIVE + " = '1' AND ((" + FEED_NEUTRAL_COUNT + " + " + FEED_POSITIVE_COUNT + ") > 0)";
-        case BEST:
-            return FEED_ACTIVE + " = '1' AND (" + FEED_POSITIVE_COUNT + " > 0)";
-        case SAVED:
-            return FEED_ACTIVE + " = '1'"; // due to API structure, we can't filter for saveds, so the caller will have to sort that out
-        default:
-            return null;
-        }
-    }
-
-    /**
-     * Selection args to filter social feeds.
-     */
-    public static String getBlogSelectionFromState(StateFilter state) {
-        switch (state) {
-        case ALL:
-            return null;
-        case SOME:
-            return "((" + SOCIAL_FEED_NEUTRAL_COUNT + " + " + SOCIAL_FEED_POSITIVE_COUNT + ") > 0)";
-        case BEST:
-            return "(" + SOCIAL_FEED_POSITIVE_COUNT + " > 0)";
-        case SAVED:
-            return "0";
-        default:
-            return null;
-        }
-    }
-
     public static String getStorySortOrder(StoryOrder storyOrder) {
         // it is not uncommon for a feed to have multiple stories with exactly the same timestamp. we
         // arbitrarily pick a second sort column so sortation is stable.

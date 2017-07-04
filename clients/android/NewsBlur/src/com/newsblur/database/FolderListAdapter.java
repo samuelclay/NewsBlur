@@ -106,6 +106,11 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 
     private float textSize;
 
+    // in order to implement the laggy disappearance of marked-read feeds, preserve the ID of
+    // the last feed or folder viewed and force the DB to include it in the selection
+    public String lastFeedViewedId;
+    public String lastFolderViewed;
+
 	public FolderListAdapter(Context context, StateFilter currentState) {
 		this.context = context;
         this.currentState = currentState;
@@ -302,7 +307,6 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
             return FeedSet.allSaved();
         } else {
             String folderName = getGroupFolderName(groupPosition);
-            // TODO: technically we have the data this util method gives us, could we save a DB call?
             FeedSet fs = FeedUtils.feedSetFromFolderName(folderName);
             if (currentState == StateFilter.SAVED) fs.setFilterSaved(true);
             return fs;
@@ -437,10 +441,14 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
         totalSocialPosiCount = 0;
         while (cursor.moveToNext()) {
             SocialFeed f = SocialFeed.fromCursor(cursor);
-            socialFeedsOrdered.add(f);
-            socialFeeds.put(f.userId, f);
             totalSocialNeutCount += checkNegativeUnreads(f.neutralCount);
             totalSocialPosiCount += checkNegativeUnreads(f.positiveCount);
+            if ( (currentState == StateFilter.ALL) ||
+                 ((currentState == StateFilter.SOME) && (f.neutralCount > 0 || f.positiveCount > 0)) ||
+                 ((currentState == StateFilter.BEST) && (f.positiveCount > 0)) ) {
+                socialFeedsOrdered.add(f);
+                socialFeeds.put(f.userId, f);
+            }
         }
         recountChildren();
         notifyDataSetChanged();
@@ -531,11 +539,12 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
                 if ( (currentState == StateFilter.ALL) ||
                      ((currentState == StateFilter.SOME) && (feedNeutCounts.containsKey(feedId) || feedPosCounts.containsKey(feedId))) ||
                      ((currentState == StateFilter.BEST) && feedPosCounts.containsKey(feedId)) ||
-                     ((currentState == StateFilter.SAVED) && feedSavedCounts.containsKey(feedId)) ) {
+                     ((currentState == StateFilter.SAVED) && feedSavedCounts.containsKey(feedId)) ||
+                     f.feedId.equals(lastFeedViewedId) ) {
                     activeFeeds.add(f);
                 }
             }
-            if ((activeFeeds.size() > 0) || (folderName.equals(AppConstants.ROOT_FOLDER))) {
+            if ((activeFeeds.size() > 0) || (folderName.equals(AppConstants.ROOT_FOLDER)) || folder.name.equals(lastFolderViewed)) {
                 activeFolderNames.add(folderName);
                 Collections.sort(activeFeeds);
                 activeFolderChildren.add(activeFeeds);
@@ -661,6 +670,8 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 
 	public synchronized void changeState(StateFilter state) {
 		currentState = state;
+        lastFeedViewedId = null; // clear when changing modes
+        lastFolderViewed = null;
     }
 
     /**
