@@ -542,6 +542,27 @@ public class APIManager {
         return response.getResponse(gson, NewsBlurResponse.class);
 	}
 
+	public NewsBlurResponse editReply(String storyId, String storyFeedId, String commentUserId, String replyId, String reply) {
+		ContentValues values = new ContentValues();
+		values.put(APIConstants.PARAMETER_STORYID, storyId);
+		values.put(APIConstants.PARAMETER_STORY_FEEDID, storyFeedId);
+		values.put(APIConstants.PARAMETER_COMMENT_USERID, commentUserId);
+		values.put(APIConstants.PARAMETER_REPLY_ID, replyId);
+		values.put(APIConstants.PARAMETER_REPLY_TEXT, reply);
+		APIResponse response = post(buildUrl(APIConstants.PATH_EDIT_REPLY), values);
+        return response.getResponse(gson, NewsBlurResponse.class);
+	}
+
+	public NewsBlurResponse deleteReply(String storyId, String storyFeedId, String commentUserId, String replyId) {
+		ContentValues values = new ContentValues();
+		values.put(APIConstants.PARAMETER_STORYID, storyId);
+		values.put(APIConstants.PARAMETER_STORY_FEEDID, storyFeedId);
+		values.put(APIConstants.PARAMETER_COMMENT_USERID, commentUserId);
+		values.put(APIConstants.PARAMETER_REPLY_ID, replyId);
+		APIResponse response = post(buildUrl(APIConstants.PATH_DELETE_REPLY), values);
+        return response.getResponse(gson, NewsBlurResponse.class);
+	}
+
 	public boolean addFeed(String feedUrl, String folderName) {
 		ContentValues values = new ContentValues();
 		values.put(APIConstants.PARAMETER_URL, feedUrl);

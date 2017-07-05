@@ -369,6 +369,22 @@ public class FeedUtils {
         triggerSync(context);
     }
 
+    public static void updateReply(Context context, Story story, String commentUserId, String replyId, String replyText) {
+        ReadingAction ra = ReadingAction.updateReply(story.id, story.feedId, commentUserId, replyId, replyText);
+        dbHelper.enqueueAction(ra);
+        ra.doLocal(dbHelper);
+        NbActivity.updateAllActivities(NbActivity.UPDATE_SOCIAL);
+        triggerSync(context);
+    }
+
+    public static void deleteReply(Context context, Story story, String commentUserId, String replyId) {
+        ReadingAction ra = ReadingAction.deleteReply(story.id, story.feedId, commentUserId, replyId);
+        dbHelper.enqueueAction(ra);
+        ra.doLocal(dbHelper);
+        NbActivity.updateAllActivities(NbActivity.UPDATE_SOCIAL);
+        triggerSync(context);
+    }
+
     public static void moveFeedToFolders(final Context context, final String feedId, final Set<String> toFolders, final Set<String> inFolders) {
         if (toFolders.size() < 1) return;
         new AsyncTask<Void, Void, NewsBlurResponse>() {

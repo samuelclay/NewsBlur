@@ -7,7 +7,6 @@
     android:orientation="horizontal"
     android:paddingBottom="12dp"
     android:paddingLeft="60dp"
-    android:paddingRight="10dp"
     android:paddingTop="12dp" >
 
     <View
@@ -28,13 +27,24 @@
         android:contentDescription="@string/description_comment_user"
         android:scaleType="fitCenter" />
 
+    <ImageView
+        android:id="@+id/reply_edit_icon"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="3dp"
+        android:padding="2dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_edit_gray55" />
+
     <TextView
         android:id="@+id/reply_shareddate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_marginRight="26dp"
-        android:layout_marginTop="5dp"
+        android:layout_toLeftOf="@id/reply_edit_icon"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="8dp"
         style="?defaultText"
         android:textSize="12sp" />
 

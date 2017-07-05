@@ -51,7 +51,7 @@
             android:layout_alignParentRight="true"
             android:layout_marginRight="10dp"
             android:scaleType="fitCenter"
-            android:src="@drawable/reply" />
+            android:src="@drawable/ic_reply_gray55" />
 
         <TextView
             android:id="@+id/comment_shareddate"
@@ -71,7 +71,7 @@
             android:layout_marginRight="8dp"
             android:layout_toLeftOf="@id/comment_shareddate"
             android:scaleType="fitCenter"
-            android:src="@drawable/favourite" />
+            android:src="@drawable/ic_star_gray55" />
         
         <TextView
             android:id="@+id/comment_username"

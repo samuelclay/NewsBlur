@@ -133,6 +133,7 @@ public class DatabaseConstants {
     public static final String ACTION_TRIED = "tried";
     public static final String ACTION_TYPE = "action_type";
     public static final String ACTION_COMMENT_TEXT = "comment_text";
+    public static final String ACTION_REPLY_ID = "reply_id";
     public static final String ACTION_STORY_HASH = "story_hash";
     public static final String ACTION_FEED_ID = "feed_id";
     public static final String ACTION_MODIFIED_FEED_IDS = "modified_feed_ids";
@@ -286,6 +287,7 @@ public class DatabaseConstants {
         ACTION_STORY_ID + TEXT + ", " +
         ACTION_SOURCE_USER_ID + TEXT + ", " +
         ACTION_COMMENT_ID + TEXT + ", " +
+        ACTION_REPLY_ID + TEXT + ", " +
         ACTION_MODIFIED_FEED_IDS + TEXT + ", " +
         ACTION_NOTIFY_FILTER + TEXT + ", " +
         ACTION_NOTIFY_TYPES + TEXT + 
