@@ -150,7 +150,6 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
     public void updateUnreadCounts(int neutCount, int posiCount) {
         unreadCountNeutText.setText(Integer.toString(neutCount));
         unreadCountPosiText.setText(Integer.toString(posiCount));
-
     }
 
     /**
@@ -205,6 +204,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
     public void onRefresh() {
         NBSyncService.forceFeedsFolders();
         triggerSync();
+        folderFeedList.clearRecents();
     }
 
     @OnClick(R.id.main_menu_button) void onClickMenuButton() {
@@ -237,8 +237,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
 			startActivity(i);
 			return true;
 		} else if (item.getItemId() == R.id.menu_refresh) {
-            NBSyncService.forceFeedsFolders();
-			triggerSync();
+            onRefresh();
 			return true;
 		} else if (item.getItemId() == R.id.menu_add_feed) {
 			Intent i = new Intent(this, SearchForFeeds.class);

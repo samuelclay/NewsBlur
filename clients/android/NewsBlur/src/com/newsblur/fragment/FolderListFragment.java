@@ -102,11 +102,11 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         switch (id) {
             case SOCIALFEEDS_LOADER:
-                return FeedUtils.dbHelper.getSocialFeedsLoader(currentState);
+                return FeedUtils.dbHelper.getSocialFeedsLoader();
             case FOLDERS_LOADER:
                 return FeedUtils.dbHelper.getFoldersLoader();
             case FEEDS_LOADER:
-                return FeedUtils.dbHelper.getFeedsLoader(currentState);
+                return FeedUtils.dbHelper.getFeedsLoader();
             case SAVEDCOUNT_LOADER:
                 return FeedUtils.dbHelper.getSavedStoryCountsLoader();
             default:
@@ -355,6 +355,8 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 
     private void markFeedsAsRead(FeedSet fs) {
         FeedUtils.markRead(getActivity(), fs, null, null, R.array.mark_all_read_options, false);
+        adapter.lastFeedViewedId = fs.getSingleFeed();
+        adapter.lastFolderViewed = fs.getFolderName();
     }
 
 	public void changeState(StateFilter state) {
@@ -363,6 +365,11 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
         adapter.changeState(state);
 		hasUpdated();
 	}
+
+    public void clearRecents() {
+        adapter.lastFeedViewedId = null;
+        adapter.lastFolderViewed = null;
+    }
 
     /**
      * Every time unread counts are updated in the adapter, ping the Main activity with
@@ -397,6 +404,8 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
             i = new Intent(getActivity(), FolderItemsList.class);
             String canonicalFolderName = adapter.getGroupFolderName(groupPosition);
             i.putExtra(FolderItemsList.EXTRA_FOLDER_NAME, canonicalFolderName);
+            adapter.lastFeedViewedId = null;
+            adapter.lastFolderViewed = canonicalFolderName;
         }
         FeedSet fs = adapter.getGroup(groupPosition);
         i.putExtra(ItemsList.EXTRA_FEED_SET, fs);
@@ -467,6 +476,8 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 			intent.putExtra(FeedItemsList.EXTRA_FEED, feed);
 			intent.putExtra(FeedItemsList.EXTRA_FOLDER_NAME, folderName);
 			getActivity().startActivity(intent);
+            adapter.lastFeedViewedId = feed.feedId;
+            adapter.lastFolderViewed = null;
 		}
 		return true;
 	}

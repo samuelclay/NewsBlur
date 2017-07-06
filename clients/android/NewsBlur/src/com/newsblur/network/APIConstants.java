@@ -55,6 +55,8 @@ public class APIConstants {
 	public static final String PATH_LIKE_COMMENT = "/social/like_comment";
 	public static final String PATH_UNLIKE_COMMENT = "/social/remove_like_comment";
 	public static final String PATH_REPLY_TO = "/social/save_comment_reply";
+    public static final String PATH_EDIT_REPLY = "/social/save_comment_reply";
+    public static final String PATH_DELETE_REPLY = "/social/remove_comment_reply";
 	public static final String PATH_ADD_FEED = "/reader/add_url";
 	public static final String PATH_DELETE_FEED = "/reader/delete_feed";
 	public static final String PATH_CLASSIFIER_SAVE = "/classifier/save";
@@ -85,6 +87,7 @@ public class APIConstants {
 	public static final String PARAMETER_FEED_SEARCH_TERM = "term";
 	public static final String PARAMETER_FOLDER = "folder";
 	public static final String PARAMETER_IN_FOLDER = "in_folder";
+    public static final String PARAMETER_REPLY_ID = "reply_id";
 	public static final String PARAMETER_COMMENT_USERID = "comment_user_id";
 	public static final String PARAMETER_FEEDID = "feed_id";
 	public static final String PARAMETER_REPLY_TEXT = "reply_comments";

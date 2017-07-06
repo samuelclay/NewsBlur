@@ -112,7 +112,7 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 
 			if (comment.likingUsers != null) {
 				if (Arrays.asList(comment.likingUsers).contains(user.id)) {
-					favouriteIcon.setImageResource(R.drawable.have_favourite);
+					favouriteIcon.setImageResource(R.drawable.ic_star_active);
 				}
 
 				for (String id : comment.likingUsers) {
@@ -155,7 +155,7 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 			});
 
             List<Reply> replies = FeedUtils.dbHelper.getCommentReplies(comment.id);
-			for (Reply reply : replies) {
+			for (final Reply reply : replies) {
 				View replyView = inflater.inflate(R.layout.include_reply, null);
 				TextView replyText = (TextView) replyView.findViewById(R.id.reply_text);
 				replyText.setText(UIUtils.fromHtml(reply.text));
@@ -184,6 +184,18 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
                     TextView replySharedDate = (TextView) replyView.findViewById(R.id.reply_shareddate);
                     replySharedDate.setText(reply.shortDate + " ago");
                 }
+
+                ImageView editIcon = (ImageView) replyView.findViewById(R.id.reply_edit_icon);
+                editIcon.setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (story != null) {
+                            DialogFragment newFragment = EditReplyDialogFragment.newInstance(story, comment.userId, reply.id, reply.text);
+                            newFragment.show(manager, "dialog");
+                        }
+                    }
+                });
+
 
 				((LinearLayout) commentView.findViewById(R.id.comment_replies_container)).addView(replyView);
 			}

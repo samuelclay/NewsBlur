@@ -278,6 +278,7 @@ public class FeedUtils {
     }
         
     public static void doAction(final ReadingAction ra, final Context context) {
+        if (ra == null) throw new IllegalArgumentException("ReadingAction must not be null");
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... arg) {
@@ -362,6 +363,22 @@ public class FeedUtils {
     
     public static void replyToComment(String storyId, String feedId, String commentUserId, String replyText, Context context) {
         ReadingAction ra = ReadingAction.replyToComment(storyId, feedId, commentUserId, replyText);
+        dbHelper.enqueueAction(ra);
+        ra.doLocal(dbHelper);
+        NbActivity.updateAllActivities(NbActivity.UPDATE_SOCIAL);
+        triggerSync(context);
+    }
+
+    public static void updateReply(Context context, Story story, String commentUserId, String replyId, String replyText) {
+        ReadingAction ra = ReadingAction.updateReply(story.id, story.feedId, commentUserId, replyId, replyText);
+        dbHelper.enqueueAction(ra);
+        ra.doLocal(dbHelper);
+        NbActivity.updateAllActivities(NbActivity.UPDATE_SOCIAL);
+        triggerSync(context);
+    }
+
+    public static void deleteReply(Context context, Story story, String commentUserId, String replyId) {
+        ReadingAction ra = ReadingAction.deleteReply(story.id, story.feedId, commentUserId, replyId);
         dbHelper.enqueueAction(ra);
         ra.doLocal(dbHelper);
         NbActivity.updateAllActivities(NbActivity.UPDATE_SOCIAL);

@@ -133,6 +133,7 @@ public class DatabaseConstants {
     public static final String ACTION_TRIED = "tried";
     public static final String ACTION_TYPE = "action_type";
     public static final String ACTION_COMMENT_TEXT = "comment_text";
+    public static final String ACTION_REPLY_ID = "reply_id";
     public static final String ACTION_STORY_HASH = "story_hash";
     public static final String ACTION_FEED_ID = "feed_id";
     public static final String ACTION_MODIFIED_FEED_IDS = "modified_feed_ids";
@@ -286,6 +287,7 @@ public class DatabaseConstants {
         ACTION_STORY_ID + TEXT + ", " +
         ACTION_SOURCE_USER_ID + TEXT + ", " +
         ACTION_COMMENT_ID + TEXT + ", " +
+        ACTION_REPLY_ID + TEXT + ", " +
         ACTION_MODIFIED_FEED_IDS + TEXT + ", " +
         ACTION_NOTIFY_FILTER + TEXT + ", " +
         ACTION_NOTIFY_TYPES + TEXT + 
@@ -396,42 +398,6 @@ public class DatabaseConstants {
         }
     }
     
-    /**
-     * Selection args to filter feeds.
-     */
-    public static String getFeedSelectionFromState(StateFilter state) {
-        switch (state) {
-        case ALL:
-            return null; // don't filter
-        case SOME:
-            return FEED_ACTIVE + " = '1' AND ((" + FEED_NEUTRAL_COUNT + " + " + FEED_POSITIVE_COUNT + ") > 0)";
-        case BEST:
-            return FEED_ACTIVE + " = '1' AND (" + FEED_POSITIVE_COUNT + " > 0)";
-        case SAVED:
-            return FEED_ACTIVE + " = '1'"; // due to API structure, we can't filter for saveds, so the caller will have to sort that out
-        default:
-            return null;
-        }
-    }
-
-    /**
-     * Selection args to filter social feeds.
-     */
-    public static String getBlogSelectionFromState(StateFilter state) {
-        switch (state) {
-        case ALL:
-            return null;
-        case SOME:
-            return "((" + SOCIAL_FEED_NEUTRAL_COUNT + " + " + SOCIAL_FEED_POSITIVE_COUNT + ") > 0)";
-        case BEST:
-            return "(" + SOCIAL_FEED_POSITIVE_COUNT + " > 0)";
-        case SAVED:
-            return "0";
-        default:
-            return null;
-        }
-    }
-
     public static String getStorySortOrder(StoryOrder storyOrder) {
         // it is not uncommon for a feed to have multiple stories with exactly the same timestamp. we
         // arbitrarily pick a second sort column so sortation is stable.

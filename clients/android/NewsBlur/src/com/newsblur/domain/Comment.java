@@ -12,7 +12,7 @@ import com.newsblur.database.DatabaseConstants;
 public class Comment implements Serializable {
 	private static final long serialVersionUID = -2018705258520565390L;
 
-    // we almost always override API version with sensible PK constructed by concating story, feed, and user IDs
+	@SerializedName("id")
 	public String id;
 
 	@SerializedName("comments")
@@ -73,9 +73,5 @@ public class Comment implements Serializable {
 		comment.isPseudo = Boolean.parseBoolean(cursor.getString(cursor.getColumnIndex(DatabaseConstants.COMMENT_ISPSEUDO)));
 		return comment;
 	}
-
-    public static String constructId(String storyId, String feedId, String userId) {
-        return TextUtils.concat(feedId, storyId, userId).toString();
-    }
 
 }

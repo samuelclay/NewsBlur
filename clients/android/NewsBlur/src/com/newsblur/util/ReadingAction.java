@@ -27,6 +27,8 @@ public class ReadingAction implements Serializable {
         UNSAVE,
         SHARE,
         REPLY,
+        EDIT_REPLY,
+        DELETE_REPLY,
         LIKE_COMMENT,
         UNLIKE_COMMENT,
         MUTE_FEEDS,
@@ -46,6 +48,7 @@ public class ReadingAction implements Serializable {
     private String sourceUserId;
     private String commentReplyText; // used for both comments and replies
     private String commentUserId;
+    private String replyId;
     private String notifyFilter;
     private List<String> notifyTypes;
 
@@ -145,6 +148,27 @@ public class ReadingAction implements Serializable {
         return ra;
     }
 
+    public static ReadingAction updateReply(String storyId, String feedId, String commentUserId, String replyId, String commentReplyText) {
+        ReadingAction ra = new ReadingAction();
+        ra.type = ActionType.EDIT_REPLY;
+        ra.storyId = storyId;
+        ra.commentUserId = commentUserId;
+        ra.feedId = feedId;
+        ra.commentReplyText = commentReplyText;
+        ra.replyId = replyId;
+        return ra;
+    }
+
+    public static ReadingAction deleteReply(String storyId, String feedId, String commentUserId, String replyId) {
+        ReadingAction ra = new ReadingAction();
+        ra.type = ActionType.DELETE_REPLY;
+        ra.storyId = storyId;
+        ra.commentUserId = commentUserId;
+        ra.feedId = feedId;
+        ra.replyId = replyId;
+        return ra;
+    }
+
     public static ReadingAction muteFeeds(Set<String> activeFeedIds, Set<String> modifiedFeedIds) {
         ReadingAction ra = new ReadingAction();
         ra.type = ActionType.MUTE_FEEDS;
@@ -232,6 +256,21 @@ public class ReadingAction implements Serializable {
                 values.put(DatabaseConstants.ACTION_COMMENT_TEXT, commentReplyText);
                 break;
 
+            case EDIT_REPLY:
+                values.put(DatabaseConstants.ACTION_STORY_ID, storyId);
+                values.put(DatabaseConstants.ACTION_FEED_ID, feedId);
+                values.put(DatabaseConstants.ACTION_COMMENT_ID, commentUserId);
+                values.put(DatabaseConstants.ACTION_COMMENT_TEXT, commentReplyText);
+                values.put(DatabaseConstants.ACTION_REPLY_ID, replyId);
+                break;
+
+            case DELETE_REPLY:
+                values.put(DatabaseConstants.ACTION_STORY_ID, storyId);
+                values.put(DatabaseConstants.ACTION_FEED_ID, feedId);
+                values.put(DatabaseConstants.ACTION_COMMENT_ID, commentUserId);
+                values.put(DatabaseConstants.ACTION_REPLY_ID, replyId);
+                break;
+
             case MUTE_FEEDS:
                 values.put(DatabaseConstants.ACTION_FEED_ID, DatabaseConstants.JsonHelper.toJson(activeFeedIds));
                 values.put(DatabaseConstants.ACTION_MODIFIED_FEED_IDS, DatabaseConstants.JsonHelper.toJson(modifiedFeedIds));
@@ -300,6 +339,17 @@ public class ReadingAction implements Serializable {
             ra.feedId = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_FEED_ID));
             ra.commentUserId = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_COMMENT_ID));
             ra.commentReplyText = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_COMMENT_TEXT));
+        } else if (ra.type == ActionType.EDIT_REPLY) {
+            ra.storyId = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_STORY_ID));
+            ra.feedId = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_FEED_ID));
+            ra.commentUserId = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_COMMENT_ID));
+            ra.commentReplyText = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_COMMENT_TEXT));
+            ra.replyId = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_REPLY_ID));
+        } else if (ra.type == ActionType.DELETE_REPLY) {
+            ra.storyId = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_STORY_ID));
+            ra.feedId = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_FEED_ID));
+            ra.commentUserId = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_COMMENT_ID));
+            ra.replyId = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_REPLY_ID));
         } else if (ra.type == ActionType.MUTE_FEEDS) {
             ra.activeFeedIds = DatabaseConstants.JsonHelper.fromJson(c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_FEED_ID)), Set.class);
             ra.modifiedFeedIds = DatabaseConstants.JsonHelper.fromJson(c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_MODIFIED_FEED_IDS)), Set.class);
@@ -350,6 +400,12 @@ public class ReadingAction implements Serializable {
 
             case REPLY:
                 return apiManager.replyToComment(storyId, feedId, commentUserId, commentReplyText);
+
+            case EDIT_REPLY:
+                return apiManager.editReply(storyId, feedId, commentUserId, replyId, commentReplyText);
+
+            case DELETE_REPLY:
+                return apiManager.deleteReply(storyId, feedId, commentUserId, replyId);
 
             case MUTE_FEEDS:
             case UNMUTE_FEEDS:
@@ -402,25 +458,39 @@ public class ReadingAction implements Serializable {
 
             case SHARE:
                 dbHelper.setStoryShared(storyHash);
-                dbHelper.insertUpdateComment(storyId, feedId, commentReplyText);
+                // TODO not possible locally without server gen comment ID
+                //dbHelper.insertUpdateComment(storyId, feedId, commentReplyText);
                 impact |= NbActivity.UPDATE_SOCIAL;
                 break;
 
             case LIKE_COMMENT:
-                dbHelper.setCommentLiked(storyId, commentUserId, feedId, true);
+                // TODO need to use real comment ID
+                // dbHelper.setCommentLiked(storyId, commentUserId, feedId, true);
                 impact |= NbActivity.UPDATE_SOCIAL;
                 break;
 
             case UNLIKE_COMMENT:
-                dbHelper.setCommentLiked(storyId, commentUserId, feedId, false);
+                // TODO need to use real comment ID
+                // dbHelper.setCommentLiked(storyId, commentUserId, feedId, false);
                 impact |= NbActivity.UPDATE_SOCIAL;
                 break;
 
             case REPLY:
-                dbHelper.replyToComment(storyId, feedId, commentUserId, commentReplyText, time);
+                // not possible locally, since the server generates the reply ID
+                break;
+
+            case EDIT_REPLY:
+                // TODO
+                // dbHelper.editReply(storyId, feedId, commentUserId, replyId, commentReplyText);
                 impact |= NbActivity.UPDATE_SOCIAL;
                 break;
 
+            case DELETE_REPLY:
+                // TODO
+                // dbHelper.editReply(storyId, feedId, commentUserId, replyId);
+                impact |= NbActivity.UPDATE_SOCIAL;
+                break;
+                
             case MUTE_FEEDS:
             case UNMUTE_FEEDS:
                 dbHelper.setFeedsActive(modifiedFeedIds, type == ActionType.UNMUTE_FEEDS);

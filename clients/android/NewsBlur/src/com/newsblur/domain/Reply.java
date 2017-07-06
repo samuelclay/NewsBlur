@@ -50,8 +50,4 @@ public class Reply {
 		return reply;	
 	}
 
-    // construct a string we can internally use as a PK
-    public String constructId() {
-        return TextUtils.concat(commentId, "_", Long.toString(date.getTime())).toString();
-    }
 }
