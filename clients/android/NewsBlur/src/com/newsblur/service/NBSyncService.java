@@ -225,8 +225,13 @@ public class NBSyncService extends Service {
             Thread.currentThread().setName(this.getClass().getName());
 
             if (OfflineNow) {
-                OfflineNow = false;   
-                NbActivity.updateAllActivities(NbActivity.UPDATE_STATUS);
+                if (NetworkUtils.isOnline(this)) {
+                    OfflineNow = false;   
+                    NbActivity.updateAllActivities(NbActivity.UPDATE_STATUS);
+                } else {
+                    Log.d(this.getClass().getName(), "Abandoning sync: network still offline");
+                    return;
+                }
             }
 
             // do this even if background syncs aren't enabled, because it absolutely must happen
