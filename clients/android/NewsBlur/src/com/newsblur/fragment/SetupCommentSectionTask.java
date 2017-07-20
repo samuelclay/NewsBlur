@@ -186,15 +186,19 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
                 }
 
                 ImageView editIcon = (ImageView) replyView.findViewById(R.id.reply_edit_icon);
-                editIcon.setOnClickListener(new OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (story != null) {
-                            DialogFragment newFragment = EditReplyDialogFragment.newInstance(story, comment.userId, reply.id, reply.text);
-                            newFragment.show(manager, "dialog");
+                if (TextUtils.equals(reply.userId, user.id)) {
+                    editIcon.setOnClickListener(new OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if (story != null) {
+                                DialogFragment newFragment = EditReplyDialogFragment.newInstance(story, comment.userId, reply.id, reply.text);
+                                newFragment.show(manager, "dialog");
+                            }
                         }
-                    }
-                });
+                    });
+                } else {
+                    editIcon.setVisibility(View.INVISIBLE);
+                }
 
 
 				((LinearLayout) commentView.findViewById(R.id.comment_replies_container)).addView(replyView);
