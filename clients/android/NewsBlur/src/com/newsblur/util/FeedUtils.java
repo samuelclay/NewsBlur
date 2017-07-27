@@ -334,14 +334,22 @@ public class FeedUtils {
         context.startActivity(Intent.createChooser(intent, "Send using"));
     }
 
-	public static void shareStory(Story story, String comment, String sourceUserId, Context context) {
+    public static void shareStory(Story story, String comment, String sourceUserId, Context context) {
         if (story.sourceUserId != null) {
             sourceUserId = story.sourceUserId;
         }
         ReadingAction ra = ReadingAction.shareStory(story.storyHash, story.id, story.feedId, sourceUserId, comment);
         dbHelper.enqueueAction(ra);
         ra.doLocal(dbHelper);
-        NbActivity.updateAllActivities(NbActivity.UPDATE_SOCIAL);
+        NbActivity.updateAllActivities(NbActivity.UPDATE_SOCIAL | NbActivity.UPDATE_STORY);
+        triggerSync(context);
+    }
+
+    public static void unshareStory(Story story, Context context) {
+        ReadingAction ra = ReadingAction.unshareStory(story.storyHash, story.id, story.feedId);
+        dbHelper.enqueueAction(ra);
+        ra.doLocal(dbHelper);
+        NbActivity.updateAllActivities(NbActivity.UPDATE_SOCIAL | NbActivity.UPDATE_STORY);
         triggerSync(context);
     }
 

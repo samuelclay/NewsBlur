@@ -484,17 +484,20 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
         if (story == null) return;
         if (! TextUtils.equals(story.storyHash, this.story.storyHash)) return;
         this.story = story;
+        com.newsblur.util.Log.d(this.getClass().getName(), "got fresh story");
     }
 
     public void handleUpdate(int updateType) {
         if ((updateType & NbActivity.UPDATE_STORY) != 0) {
             updateSaveButton();
             updateShareButton();
+            setupItemCommentsAndShares();
         }
         if ((updateType & NbActivity.UPDATE_TEXT) != 0) {
             reloadStoryContent();
         }
         if ((updateType & NbActivity.UPDATE_SOCIAL) != 0) {
+            updateShareButton();
             setupItemCommentsAndShares();
         }
     }

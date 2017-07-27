@@ -27,6 +27,7 @@ public class ReadingAction implements Serializable {
         SAVE,
         UNSAVE,
         SHARE,
+        UNSHARE,
         REPLY,
         EDIT_REPLY,
         DELETE_REPLY,
@@ -118,6 +119,15 @@ public class ReadingAction implements Serializable {
         ra.feedId = feedId;
         ra.sourceUserId = sourceUserId;
         ra.commentReplyText = commentReplyText;
+        return ra;
+    }
+
+    public static ReadingAction unshareStory(String hash, String storyId, String feedId) {
+        ReadingAction ra = new ReadingAction();
+        ra.type = ActionType.UNSHARE;
+        ra.storyHash = hash;
+        ra.storyId = storyId;
+        ra.feedId = feedId;
         return ra;
     }
 
@@ -238,6 +248,12 @@ public class ReadingAction implements Serializable {
                 values.put(DatabaseConstants.ACTION_COMMENT_TEXT, commentReplyText);
                 break;
 
+            case UNSHARE:
+                values.put(DatabaseConstants.ACTION_STORY_HASH, storyHash);
+                values.put(DatabaseConstants.ACTION_STORY_ID, storyId);
+                values.put(DatabaseConstants.ACTION_FEED_ID, feedId);
+                break;
+
             case LIKE_COMMENT:
                 values.put(DatabaseConstants.ACTION_STORY_ID, storyId);
                 values.put(DatabaseConstants.ACTION_FEED_ID, feedId);
@@ -327,6 +343,10 @@ public class ReadingAction implements Serializable {
             ra.feedId = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_FEED_ID));
             ra.sourceUserId = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_SOURCE_USER_ID));
             ra.commentReplyText = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_COMMENT_TEXT));
+        } else if (ra.type == ActionType.UNSHARE) {
+            ra.storyHash = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_STORY_HASH));
+            ra.storyId = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_STORY_ID));
+            ra.feedId = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_FEED_ID));
         } else if (ra.type == ActionType.LIKE_COMMENT) {
             ra.storyId = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_STORY_ID));
             ra.feedId = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_FEED_ID));
@@ -404,6 +424,17 @@ public class ReadingAction implements Serializable {
                     com.newsblur.util.Log.i(this.getClass().getName(), "share failed to refresh story");
                 }
                 result = response;
+                break;
+
+            case UNSHARE:
+                StoriesResponse unshareResponse = apiManager.unshareStory(storyId, feedId);
+                if ((unshareResponse != null) && (unshareResponse.story != null)) {
+                    dbHelper.insertStories(unshareResponse, true);
+                    impact |= NbActivity.UPDATE_SOCIAL;
+                } else {
+                    com.newsblur.util.Log.i(this.getClass().getName(), "unshare failed to refresh story");
+                }
+                result = unshareResponse;
                 break;
 
             case LIKE_COMMENT:
@@ -487,9 +518,17 @@ public class ReadingAction implements Serializable {
 
             case SHARE:
                 if (isFollowup) break; // shares are only placeholders
-                dbHelper.setStoryShared(storyHash);
+                dbHelper.setStoryShared(storyHash, true);
                 dbHelper.insertCommentPlaceholder(storyId, feedId, commentReplyText);
                 impact |= NbActivity.UPDATE_SOCIAL;
+                impact |= NbActivity.UPDATE_STORY;
+                break;
+
+            case UNSHARE:
+                dbHelper.setStoryShared(storyHash, false);
+                dbHelper.clearSelfComments(storyId);
+                impact |= NbActivity.UPDATE_SOCIAL;
+                impact |= NbActivity.UPDATE_STORY;
                 break;
 
             case LIKE_COMMENT:

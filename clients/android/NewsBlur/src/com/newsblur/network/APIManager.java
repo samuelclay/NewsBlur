@@ -369,21 +369,31 @@ public class APIManager {
 		}
 	}
 
-	public StoriesResponse shareStory(final String storyId, final String feedId, final String comment, final String sourceUserId) {
-		final ContentValues values = new ContentValues();
-		if (!TextUtils.isEmpty(comment)) {
-			values.put(APIConstants.PARAMETER_SHARE_COMMENT, comment);
-		}
-		if (!TextUtils.isEmpty(sourceUserId)) {
-			values.put(APIConstants.PARAMETER_SHARE_SOURCEID, sourceUserId);
-		}
-		values.put(APIConstants.PARAMETER_FEEDID, feedId);
-		values.put(APIConstants.PARAMETER_STORYID, storyId);
+    public StoriesResponse shareStory(String storyId, String feedId, String comment, String sourceUserId) {
+        ContentValues values = new ContentValues();
+        if (!TextUtils.isEmpty(comment)) {
+            values.put(APIConstants.PARAMETER_SHARE_COMMENT, comment);
+        }
+        if (!TextUtils.isEmpty(sourceUserId)) {
+            values.put(APIConstants.PARAMETER_SHARE_SOURCEID, sourceUserId);
+        }
+        values.put(APIConstants.PARAMETER_FEEDID, feedId);
+        values.put(APIConstants.PARAMETER_STORYID, storyId);
 
-		APIResponse response = post(buildUrl(APIConstants.PATH_SHARE_STORY), values);
+        APIResponse response = post(buildUrl(APIConstants.PATH_SHARE_STORY), values);
         // this call returns a new copy of the story with all fields updated and some metadata
         return (StoriesResponse) response.getResponse(gson, StoriesResponse.class);
-	}
+    }
+
+    public StoriesResponse unshareStory(String storyId, String feedId) {
+        ContentValues values = new ContentValues();
+        values.put(APIConstants.PARAMETER_FEEDID, feedId);
+        values.put(APIConstants.PARAMETER_STORYID, storyId);
+
+        APIResponse response = post(buildUrl(APIConstants.PATH_UNSHARE_STORY), values);
+        // this call returns a new copy of the story with all fields updated and some metadata
+        return (StoriesResponse) response.getResponse(gson, StoriesResponse.class);
+    }
 
 	/**
      * Fetch the list of feeds/folders/socials from the backend.

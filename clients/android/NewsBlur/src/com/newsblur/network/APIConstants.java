@@ -46,6 +46,7 @@ public class APIConstants {
 	public static final String PATH_MARK_ALL_AS_READ = "/reader/mark_all_as_read/";
 	public static final String PATH_MARK_STORIES_READ = "/reader/mark_story_hashes_as_read/";
 	public static final String PATH_SHARE_STORY = "/social/share_story";
+	public static final String PATH_UNSHARE_STORY = "/social/unshare_story";
     public static final String PATH_MARK_STORY_AS_STARRED = "/reader/mark_story_hash_as_starred/";
     public static final String PATH_MARK_STORY_AS_UNSTARRED = "/reader/mark_story_hash_as_unstarred/";
     public static final String PATH_MARK_STORY_AS_UNREAD = "/reader/mark_story_as_unread/";

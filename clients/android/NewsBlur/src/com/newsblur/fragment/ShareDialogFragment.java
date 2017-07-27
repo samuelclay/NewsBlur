@@ -67,11 +67,13 @@ public class ShareDialogFragment extends DialogFragment {
         commentEditText = (EditText) replyView.findViewById(R.id.comment_field);
 
         int positiveButtonText = R.string.share_this_story;
+        int negativeButtonText = R.string.alert_dialog_cancel;
         if (hasBeenShared) {
             positiveButtonText = R.string.update_shared;
             if (previousComment != null ) {
                 commentEditText.setText(previousComment.commentText);
             }
+            negativeButtonText = R.string.unshare;
         }
 
         builder.setPositiveButton(positiveButtonText, new DialogInterface.OnClickListener() {
@@ -82,12 +84,24 @@ public class ShareDialogFragment extends DialogFragment {
                 ShareDialogFragment.this.dismiss();
             }
         });
-        builder.setNegativeButton(R.string.alert_dialog_cancel, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                ShareDialogFragment.this.dismiss();
-            }
-        });
+        if (hasBeenShared) {
+            // unshare
+            builder.setNegativeButton(negativeButtonText, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    FeedUtils.unshareStory(story, activity);
+                    ShareDialogFragment.this.dismiss();
+                }
+            });
+        } else {
+            // cancel
+            builder.setNegativeButton(negativeButtonText, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    ShareDialogFragment.this.dismiss();
+                }
+            });
+        }
         return builder.create();
     }
 

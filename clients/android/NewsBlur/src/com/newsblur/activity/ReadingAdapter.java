@@ -4,7 +4,6 @@ import android.database.Cursor;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.support.v13.app.FragmentStatePagerAdapter;
-import android.util.Log;
 import android.util.SparseArray;
 import android.view.ViewGroup;
 

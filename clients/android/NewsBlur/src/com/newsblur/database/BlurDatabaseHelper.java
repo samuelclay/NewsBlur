@@ -809,7 +809,7 @@ public class BlurDatabaseHelper {
         }
     }
 
-    public void setStoryShared(String hash) {
+    public void setStoryShared(String hash, boolean shared) {
         // get a fresh copy of the story from the DB so we can append to the shared ID set
         Cursor c = dbRO.query(DatabaseConstants.STORY_TABLE, 
                               new String[]{DatabaseConstants.STORY_SHARED_USER_IDS}, 
@@ -825,12 +825,16 @@ public class BlurDatabaseHelper {
 		String[] sharedUserIds = TextUtils.split(c.getString(c.getColumnIndex(DatabaseConstants.STORY_SHARED_USER_IDS)), ",");
         closeQuietly(c);
 
-        // the new id to append to the shared list (the current user)
+        // the id to append to or remove from the shared list (the current user)
         String currentUser = PrefsUtils.getUserDetails(context).id;
 
         // append to set and update DB
         Set<String> newIds = new HashSet<String>(Arrays.asList(sharedUserIds));
-        newIds.add(currentUser);
+        if (shared) {
+            newIds.add(currentUser);
+        } else {
+            newIds.remove(currentUser);
+        }
         ContentValues values = new ContentValues();
 		values.put(DatabaseConstants.STORY_SHARED_USER_IDS, TextUtils.join(",", newIds));
         synchronized (RW_MUTEX) {dbRW.update(DatabaseConstants.STORY_TABLE, values, DatabaseConstants.STORY_HASH + " = ?", new String[]{hash});}
@@ -1176,6 +1180,13 @@ public class BlurDatabaseHelper {
             }
             dbRW.insertWithOnConflict(DatabaseConstants.COMMENT_TABLE, null, comment.getValues(), SQLiteDatabase.CONFLICT_REPLACE);
         }
+    }
+
+    public void clearSelfComments(String storyId) {
+        String userId = PrefsUtils.getUserDetails(context).id;
+        synchronized (RW_MUTEX) {dbRW.delete(DatabaseConstants.COMMENT_TABLE, 
+                                             DatabaseConstants.COMMENT_STORYID + " = ? AND " + DatabaseConstants.COMMENT_USERID + " = ?", 
+                                             new String[]{storyId, userId});}
     }
 
     /* TODO: we cannot locally like comments without their proper ID
