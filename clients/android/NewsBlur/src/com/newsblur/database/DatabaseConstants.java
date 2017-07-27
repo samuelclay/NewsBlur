@@ -118,6 +118,7 @@ public class DatabaseConstants {
 	public static final String COMMENT_BYFRIEND = "comment_byfriend";
 	public static final String COMMENT_USERID = "comment_userid";
 	public static final String COMMENT_ISPSEUDO = "comment_ispseudo";
+	public static final String COMMENT_ISPLACEHOLDER = "comment_isplaceholder";
 
 	public static final String REPLY_TABLE = "comment_replies";
 	public static final String REPLY_ID = BaseColumns._ID;
@@ -209,7 +210,8 @@ public class DatabaseConstants {
 		COMMENT_STORYID + TEXT + ", " + 
 		COMMENT_TEXT + TEXT + ", " +
 		COMMENT_USERID + TEXT + ", " +
-        COMMENT_ISPSEUDO + TEXT +
+        COMMENT_ISPSEUDO + TEXT + ", " +
+        COMMENT_ISPLACEHOLDER + TEXT +
 		")";
 	
 	static final String REPLY_SQL = "CREATE TABLE " + REPLY_TABLE + " (" +

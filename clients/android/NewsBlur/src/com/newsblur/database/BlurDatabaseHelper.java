@@ -326,32 +326,21 @@ public class BlurDatabaseHelper {
                 }
 
                 // handle story content
-                List<ContentValues> socialStoryValues = new ArrayList<ContentValues>();
-                for (Story story : apiResponse.stories) {
-                    // pick a thumbnail for the story
-                    story.thumbnailUrl = Story.guessStoryThumbnailURL(story);
-                    // insert the story data
-                    ContentValues values = story.getValues();
-                    dbRW.insertWithOnConflict(DatabaseConstants.STORY_TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
-                    // if a story was shared by a user, also insert it into the social table under their userid, too
-                    for (String sharedUserId : story.sharedUserIds) {
-                        ContentValues socialValues = new ContentValues();
-                        socialValues.put(DatabaseConstants.SOCIALFEED_STORY_USER_ID, sharedUserId);
-                        socialValues.put(DatabaseConstants.SOCIALFEED_STORY_STORYID, values.getAsString(DatabaseConstants.STORY_ID));
-                        socialStoryValues.add(socialValues);
+                if (apiResponse.stories != null) {
+                    for (Story story : apiResponse.stories) {
+                        insertSingleStoryExtSync(story);
+                        // if the story is being fetched for the immediate session, also add the hash to the session table
+                        if (forImmediateReading && story.isStoryVisibileInState(intelState)) {
+                            ContentValues sessionHashValues = new ContentValues();
+                            sessionHashValues.put(DatabaseConstants.READING_SESSION_STORY_HASH, story.storyHash);
+                            dbRW.insert(DatabaseConstants.READING_SESSION_TABLE, null, sessionHashValues);
+                        }
+                        impliedFeedId = story.feedId;
                     }
-                    // if the story is being fetched for the immediate session, also add the hash to the session table
-                    if (forImmediateReading && story.isStoryVisibileInState(intelState)) {
-                        ContentValues sessionHashValues = new ContentValues();
-                        sessionHashValues.put(DatabaseConstants.READING_SESSION_STORY_HASH, story.storyHash);
-                        dbRW.insert(DatabaseConstants.READING_SESSION_TABLE, null, sessionHashValues);
-                    }
-                    impliedFeedId = story.feedId;
                 }
-                if (socialStoryValues.size() > 0) {
-                    for(ContentValues values: socialStoryValues) {
-                        dbRW.insertWithOnConflict(DatabaseConstants.SOCIALFEED_STORY_MAP_TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
-                    }
+                if (apiResponse.story != null) {
+                    insertSingleStoryExtSync(apiResponse.story);
+                    impliedFeedId = apiResponse.story.feedId;
                 }
 
                 // handle classifiers
@@ -371,56 +360,53 @@ public class BlurDatabaseHelper {
                     }
                 }
 
-                // handle comments
-                List<ContentValues> commentValues = new ArrayList<ContentValues>();
-                List<ContentValues> replyValues = new ArrayList<ContentValues>();
-                // track which comments were seen, so replies can be cleared before re-insertion. there isn't
-                // enough data to de-dupe them for an insert/update operation
-                List<String> freshCommentIds = new ArrayList<String>();
-                for (Story story : apiResponse.stories) {
-                    for (Comment comment : story.publicComments) {
-                        comment.storyId = story.id;
-                        commentValues.add(comment.getValues());
-                        for (Reply reply : comment.replies) {
-                            reply.commentId = comment.id;
-                            replyValues.add(reply.getValues());
-                        }
-                        freshCommentIds.add(comment.id);
-                    }
-                    for (Comment comment : story.friendsComments) {
-                        comment.storyId = story.id;
-                        comment.byFriend = true;
-                        commentValues.add(comment.getValues());
-                        for (Reply reply : comment.replies) {
-                            reply.commentId = comment.id;
-                            replyValues.add(reply.getValues());
-                        }
-                        freshCommentIds.add(comment.id);
-                    }
-                    for (Comment comment : story.friendsShares) {
-                        comment.isPseudo = true;
-                        comment.storyId = story.id;
-                        comment.byFriend = true;
-                        commentValues.add(comment.getValues());
-                        for (Reply reply : comment.replies) {
-                            reply.commentId = comment.id;
-                            replyValues.add(reply.getValues());
-                        }
-                        freshCommentIds.add(comment.id);
-                    }
-                }
-                // before inserting new replies, remove existing ones for the fetched comments
-                // NB: attempting to do this with a "WHERE col IN (vector)" for speed can cause errors on some versions of sqlite
-                for (String commentId : freshCommentIds) {
-                    dbRW.delete(DatabaseConstants.REPLY_TABLE, DatabaseConstants.REPLY_COMMENTID + " = ?", new String[]{commentId});
-                }
-                bulkInsertValuesExtSync(DatabaseConstants.COMMENT_TABLE, commentValues);
-                bulkInsertValuesExtSync(DatabaseConstants.REPLY_TABLE, replyValues);
-
                 dbRW.setTransactionSuccessful();
             } finally {
                 dbRW.endTransaction();
             }
+        }
+    }
+
+    private void insertSingleStoryExtSync(Story story) {
+        // pick a thumbnail for the story
+        story.thumbnailUrl = Story.guessStoryThumbnailURL(story);
+        // insert the story data
+        ContentValues values = story.getValues();
+        dbRW.insertWithOnConflict(DatabaseConstants.STORY_TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+        // if a story was shared by a user, also insert it into the social table under their userid, too
+        for (String sharedUserId : story.sharedUserIds) {
+            ContentValues socialValues = new ContentValues();
+            socialValues.put(DatabaseConstants.SOCIALFEED_STORY_USER_ID, sharedUserId);
+            socialValues.put(DatabaseConstants.SOCIALFEED_STORY_STORYID, values.getAsString(DatabaseConstants.STORY_ID));
+            dbRW.insertWithOnConflict(DatabaseConstants.SOCIALFEED_STORY_MAP_TABLE, null, socialValues, SQLiteDatabase.CONFLICT_REPLACE);
+        }
+        // handle comments
+        for (Comment comment : story.publicComments) {
+            comment.storyId = story.id;
+            insertSingleCommentExtSync(comment);
+        }
+        for (Comment comment : story.friendsComments) {
+            comment.storyId = story.id;
+            comment.byFriend = true;
+            insertSingleCommentExtSync(comment);
+        }
+        for (Comment comment : story.friendsShares) {
+            comment.isPseudo = true;
+            comment.storyId = story.id;
+            comment.byFriend = true;
+            insertSingleCommentExtSync(comment);
+        }
+    }
+
+    private void insertSingleCommentExtSync(Comment comment) {
+        // real comments replace placeholders
+        int count = dbRW.delete(DatabaseConstants.COMMENT_TABLE, DatabaseConstants.COMMENT_ISPLACEHOLDER + " = ?", new String[]{"true"});
+        // comments always come with an updated set of replies, so remove old ones first
+        dbRW.delete(DatabaseConstants.REPLY_TABLE, DatabaseConstants.REPLY_COMMENTID + " = ?", new String[]{comment.id});
+        dbRW.insertWithOnConflict(DatabaseConstants.COMMENT_TABLE, null, comment.getValues(), SQLiteDatabase.CONFLICT_REPLACE);
+        for (Reply reply : comment.replies) {
+            reply.commentId = comment.id;
+            dbRW.insertWithOnConflict(DatabaseConstants.REPLY_TABLE, null, reply.getValues(), SQLiteDatabase.CONFLICT_REPLACE);
         }
     }
 
@@ -1164,10 +1150,16 @@ public class BlurDatabaseHelper {
         return comment;
     }
 
-    /* TODO: we cannot locally insert comments without the ID generated by the server
-    public void insertUpdateComment(String storyId, String feedId, String commentText) {
+    /**
+     * Insert brand new comment for which we do not yet have a server-assigned ID.  This comment
+     * will show up in the UI with reduced functionality until the server gets back to us with
+     * an ID at which time the placeholder will be removed.
+     */
+    public void insertCommentPlaceholder(String storyId, String feedId, String commentText) {
+        String userId = PrefsUtils.getUserDetails(context).id;
         Comment comment = new Comment();
-        comment.id = Comment.constructId(storyId, feedId, userId);
+        comment.isPlaceholder = true;
+        comment.id = Comment.PLACEHOLDER_COMMENT_ID + storyId + userId;
         comment.storyId = storyId;
         comment.userId = userId;
         comment.commentText = commentText;
@@ -1175,9 +1167,16 @@ public class BlurDatabaseHelper {
         if (TextUtils.isEmpty(commentText)) {
             comment.isPseudo = true;
         }
-        synchronized (RW_MUTEX) {dbRW.insertWithOnConflict(DatabaseConstants.COMMENT_TABLE, null, comment.getValues(), SQLiteDatabase.CONFLICT_REPLACE);}
+        synchronized (RW_MUTEX) {
+            // in order to make this method idempotent (so it can be attempted before, during, or after
+            // the real comment is done, we have to check for a real one
+            if (getComment(storyId, userId) != null) {
+                com.newsblur.util.Log.w(this.getClass().getName(), "failing to insert placeholder comment over live one");
+                return;
+            }
+            dbRW.insertWithOnConflict(DatabaseConstants.COMMENT_TABLE, null, comment.getValues(), SQLiteDatabase.CONFLICT_REPLACE);
+        }
     }
-    */
 
     /* TODO: we cannot locally like comments without their proper ID
     public void setCommentLiked(String storyId, String userId, String feedId, boolean liked) {

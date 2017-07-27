@@ -9,6 +9,7 @@ import com.newsblur.activity.NbActivity;
 import com.newsblur.database.BlurDatabaseHelper;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.network.domain.NewsBlurResponse;
+import com.newsblur.network.domain.StoriesResponse;
 import com.newsblur.network.APIManager;
 
 import java.util.ArrayList;
@@ -369,64 +370,92 @@ public class ReadingAction implements Serializable {
     /**
      * Execute this action remotely via the API.
      */
-    public NewsBlurResponse doRemote(APIManager apiManager) {
+    public NewsBlurResponse doRemote(APIManager apiManager, BlurDatabaseHelper dbHelper) {
+        NewsBlurResponse result = null;
+        int impact = 0;
         switch (type) {
 
             case MARK_READ:
                 if (storyHash != null) {
-                    return apiManager.markStoryAsRead(storyHash);
+                    result = apiManager.markStoryAsRead(storyHash);
                 } else if (feedSet != null) {
-                    return apiManager.markFeedsAsRead(feedSet, olderThan, newerThan);
+                    result = apiManager.markFeedsAsRead(feedSet, olderThan, newerThan);
                 }
                 break;
                 
             case MARK_UNREAD:
-                return apiManager.markStoryHashUnread(storyHash);
+                result = apiManager.markStoryHashUnread(storyHash);
+                break;
 
             case SAVE:
-                return apiManager.markStoryAsStarred(storyHash);
+                result = apiManager.markStoryAsStarred(storyHash);
+                break;
 
             case UNSAVE:
-                return apiManager.markStoryAsUnstarred(storyHash);
+                result = apiManager.markStoryAsUnstarred(storyHash);
+                break;
 
             case SHARE:
-                return apiManager.shareStory(storyId, feedId, commentReplyText, sourceUserId);
+                StoriesResponse response = apiManager.shareStory(storyId, feedId, commentReplyText, sourceUserId);
+                if ((response != null) && (response.story != null)) {
+                    dbHelper.insertStories(response, true);
+                    impact |= NbActivity.UPDATE_SOCIAL;
+                } else {
+                    com.newsblur.util.Log.i(this.getClass().getName(), "share failed to refresh story");
+                }
+                result = response;
+                break;
 
             case LIKE_COMMENT:
-                return apiManager.favouriteComment(storyId, commentUserId, feedId);
+                result = apiManager.favouriteComment(storyId, commentUserId, feedId);
+                break;
 
             case UNLIKE_COMMENT:
-                return apiManager.unFavouriteComment(storyId, commentUserId, feedId);
+                result = apiManager.unFavouriteComment(storyId, commentUserId, feedId);
+                break;
 
             case REPLY:
-                return apiManager.replyToComment(storyId, feedId, commentUserId, commentReplyText);
+                result = apiManager.replyToComment(storyId, feedId, commentUserId, commentReplyText);
+                break;
 
             case EDIT_REPLY:
-                return apiManager.editReply(storyId, feedId, commentUserId, replyId, commentReplyText);
+                result = apiManager.editReply(storyId, feedId, commentUserId, replyId, commentReplyText);
+                break;
 
             case DELETE_REPLY:
-                return apiManager.deleteReply(storyId, feedId, commentUserId, replyId);
+                result = apiManager.deleteReply(storyId, feedId, commentUserId, replyId);
+                break;
 
             case MUTE_FEEDS:
             case UNMUTE_FEEDS:
-                return apiManager.saveFeedChooser(activeFeedIds);
+                result = apiManager.saveFeedChooser(activeFeedIds);
+                break;
 
             case SET_NOTIFY:
-                return apiManager.updateFeedNotifications(feedId, notifyTypes, notifyFilter);
+                result = apiManager.updateFeedNotifications(feedId, notifyTypes, notifyFilter);
+                break;
 
             default:
+                throw new IllegalStateException("cannot execute uknown type of action.");
 
         }
 
-        throw new IllegalStateException("cannot execute uknown type of action.");
+        NbActivity.updateAllActivities(impact);
+        return result;
+    }
+
+    public int doLocal(BlurDatabaseHelper dbHelper) {
+        return doLocal(dbHelper, false);
     }
 
     /**
      * Excecute this action on the local DB. These *must* be idempotent.
      *
+     * @param isFollowup flag that this is a double-check invocation and is noncritical
+     *
      * @return the union of update impact flags that resulted from this action.
      */
-    public int doLocal(BlurDatabaseHelper dbHelper) {
+    public int doLocal(BlurDatabaseHelper dbHelper, boolean isFollowup) {
         int impact = 0;
         switch (type) {
 
@@ -457,9 +486,9 @@ public class ReadingAction implements Serializable {
                 break;
 
             case SHARE:
+                if (isFollowup) break; // shares are only placeholders
                 dbHelper.setStoryShared(storyHash);
-                // TODO not possible locally without server gen comment ID
-                //dbHelper.insertUpdateComment(storyId, feedId, commentReplyText);
+                dbHelper.insertCommentPlaceholder(storyId, feedId, commentReplyText);
                 impact |= NbActivity.UPDATE_SOCIAL;
                 break;
 

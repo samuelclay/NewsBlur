@@ -12,8 +12,13 @@ import com.newsblur.domain.UserProfile;
 
 public class StoriesResponse extends NewsBlurResponse {
 	
+    // some APIs (rivers) return many stories
 	@SerializedName("stories")
 	public Story[] stories;
+
+    // other APIs (shares) return a single updated story
+    @SerializedName("story")
+    public Story story;
 	
 	@SerializedName("user_profiles")
 	public UserProfile[] users;

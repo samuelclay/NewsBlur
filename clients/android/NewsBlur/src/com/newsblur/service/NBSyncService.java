@@ -351,7 +351,7 @@ public class NBSyncService extends Service {
                 if ((ra.getTried() > 0) && (PendingFeed != null)) continue actionsloop;
                     
                 com.newsblur.util.Log.d(this.getClass().getName(), "attempting action: " + ra.toContentValues().toString());
-                NewsBlurResponse response = ra.doRemote(apiManager);
+                NewsBlurResponse response = ra.doRemote(apiManager, dbHelper);
 
                 if (response == null) {
                     com.newsblur.util.Log.e(this.getClass().getName(), "Discarding reading action with client-side error.");
@@ -392,7 +392,7 @@ public class NBSyncService extends Service {
         if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "double-checking " + FollowupActions.size() + " actions");
         int impactFlags = 0;
         for (ReadingAction ra : FollowupActions) {
-            int impact = ra.doLocal(dbHelper);
+            int impact = ra.doLocal(dbHelper, true);
             impactFlags |= impact;
         }
         NbActivity.updateAllActivities(impactFlags);

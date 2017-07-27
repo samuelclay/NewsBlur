@@ -369,7 +369,7 @@ public class APIManager {
 		}
 	}
 
-	public NewsBlurResponse shareStory(final String storyId, final String feedId, final String comment, final String sourceUserId) {
+	public StoriesResponse shareStory(final String storyId, final String feedId, final String comment, final String sourceUserId) {
 		final ContentValues values = new ContentValues();
 		if (!TextUtils.isEmpty(comment)) {
 			values.put(APIConstants.PARAMETER_SHARE_COMMENT, comment);
@@ -381,7 +381,8 @@ public class APIManager {
 		values.put(APIConstants.PARAMETER_STORYID, storyId);
 
 		APIResponse response = post(buildUrl(APIConstants.PATH_SHARE_STORY), values);
-        return response.getResponse(gson, NewsBlurResponse.class);
+        // this call returns a new copy of the story with all fields updated and some metadata
+        return (StoriesResponse) response.getResponse(gson, StoriesResponse.class);
 	}
 
 	/**

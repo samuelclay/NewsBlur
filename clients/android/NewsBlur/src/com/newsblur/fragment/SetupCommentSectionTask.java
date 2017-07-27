@@ -141,18 +141,22 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
                 }
 			}
 
-			replyIcon.setOnClickListener(new OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					if (story != null) {
-						UserProfile user = FeedUtils.dbHelper.getUserProfile(comment.userId);
-                        if (user != null) {
-                            DialogFragment newFragment = ReplyDialogFragment.newInstance(story, comment.userId, user.username);
-                            newFragment.show(manager, "dialog");
+            if (comment.isPlaceholder) {
+                replyIcon.setVisibility(View.INVISIBLE);
+            } else {
+                replyIcon.setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (story != null) {
+                            UserProfile user = FeedUtils.dbHelper.getUserProfile(comment.userId);
+                            if (user != null) {
+                                DialogFragment newFragment = ReplyDialogFragment.newInstance(story, comment.userId, user.username);
+                                newFragment.show(manager, "dialog");
+                            }
                         }
-					}
-				}
-			});
+                    }
+                });
+            }
 
             List<Reply> replies = FeedUtils.dbHelper.getCommentReplies(comment.id);
 			for (final Reply reply : replies) {
