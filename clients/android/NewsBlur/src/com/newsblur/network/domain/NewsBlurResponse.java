@@ -20,7 +20,8 @@ public class NewsBlurResponse {
     public boolean isError() {
         if (isProtocolError) return true;
         if ((message != null) && (!message.equals(""))) {
-            com.newsblur.util.Log.d(this.getClass().getName(), "Response interpreted as error due to 'message' field: " + message);
+            // NB: some valid POSTs use the message field for an error and some for a UX message, and we have no way of knowing the difference
+            com.newsblur.util.Log.d(this.getClass().getName(), "Response interpreted as fatal due to 'message' field: " + message);
             return true;
         }
         if ((errors != null) && (errors.length > 0) && (errors[0] != null)) {

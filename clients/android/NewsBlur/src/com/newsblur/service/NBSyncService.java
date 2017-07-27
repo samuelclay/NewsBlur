@@ -363,7 +363,9 @@ public class NBSyncService extends Service {
                     noteHardAPIFailure();
                     continue actionsloop;
                 } else if (response.isError()) {
-                    com.newsblur.util.Log.e(this.getClass().getName(), "Discarding reading action with user error.");
+                    // the API responds with a message either if the call was a client-side error or if it was handled in such a
+                    // way that we should inform the user. in either case, it is considered complete.
+                    com.newsblur.util.Log.i(this.getClass().getName(), "Discarding reading action with fatal message.");
                     dbHelper.clearAction(id);
                     String message = response.getErrorMessage(null);
                     if (message != null) NbActivity.toastError(message);
