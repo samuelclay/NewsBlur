@@ -218,6 +218,11 @@ class FetchFeed:
                 list_id = urlparse.parse_qs(urlparse.urlparse(address).query)['list'][0]
             except IndexError:
                 return            
+        elif 'youtube.com/feeds/videos.xml?playlist_id' in address:
+            try:
+                list_id = urlparse.parse_qs(urlparse.urlparse(address).query)['playlist_id'][0]
+            except IndexError:
+                return            
         
         if channel_id:
             video_ids_xml = requests.get("https://www.youtube.com/feeds/videos.xml?channel_id=%s" % channel_id)
