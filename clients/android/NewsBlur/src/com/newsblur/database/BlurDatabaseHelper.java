@@ -339,6 +339,8 @@ public class BlurDatabaseHelper {
                     }
                 }
                 if (apiResponse.story != null) {
+                    // TODO: there appears to be a bug where the API fails to set some fields when re-sending single,
+                    // updated stories. use this with care.
                     insertSingleStoryExtSync(apiResponse.story);
                     impliedFeedId = apiResponse.story.feedId;
                 }
@@ -408,6 +410,34 @@ public class BlurDatabaseHelper {
             reply.commentId = comment.id;
             dbRW.insertWithOnConflict(DatabaseConstants.REPLY_TABLE, null, reply.getValues(), SQLiteDatabase.CONFLICT_REPLACE);
         }
+    }
+
+    /**
+     * Update an existing story based upon a new copy received from a social API. This handles the fact
+     * that some social APIs helpfully vend updated copies of stories with social-related fields updated
+     * to reflect a social action, but that the new copy is missing some fields.  Attempt to merge the
+     * new story with the old one.
+     */
+    public void updateStory(StoriesResponse apiResponse, boolean forImmediateReading) {
+        if (apiResponse.story == null) {
+            com.newsblur.util.Log.e(this, "updateStory called on response with missing single story");
+            return;
+        }
+        Cursor c = dbRO.query(DatabaseConstants.STORY_TABLE, 
+                              null, 
+                              DatabaseConstants.STORY_HASH + " = ?", 
+                              new String[]{apiResponse.story.storyHash}, 
+                              null, null, null);
+        if (c.getCount() < 1) {
+            com.newsblur.util.Log.w(this, "updateStory can't find old copy; new story may be missing fields.");
+        } else {
+            Story oldStory = Story.fromCursor(c);
+            c.close();
+            apiResponse.story.starred = oldStory.starred;
+            apiResponse.story.starredTimestamp = oldStory.starredTimestamp;
+            apiResponse.story.read = oldStory.read;
+        }
+        insertStories(apiResponse, forImmediateReading);
     }
 
     public void fixMissingStoryFeeds(Story[] stories) {

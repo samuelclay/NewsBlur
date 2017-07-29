@@ -418,7 +418,7 @@ public class ReadingAction implements Serializable {
             case SHARE:
                 StoriesResponse response = apiManager.shareStory(storyId, feedId, commentReplyText, sourceUserId);
                 if ((response != null) && (response.story != null)) {
-                    dbHelper.insertStories(response, true);
+                    dbHelper.updateStory(response, true);
                     impact |= NbActivity.UPDATE_SOCIAL;
                 } else {
                     com.newsblur.util.Log.i(this.getClass().getName(), "share failed to refresh story");
@@ -429,7 +429,7 @@ public class ReadingAction implements Serializable {
             case UNSHARE:
                 StoriesResponse unshareResponse = apiManager.unshareStory(storyId, feedId);
                 if ((unshareResponse != null) && (unshareResponse.story != null)) {
-                    dbHelper.insertStories(unshareResponse, true);
+                    dbHelper.updateStory(unshareResponse, true);
                     impact |= NbActivity.UPDATE_SOCIAL;
                 } else {
                     com.newsblur.util.Log.i(this.getClass().getName(), "unshare failed to refresh story");
