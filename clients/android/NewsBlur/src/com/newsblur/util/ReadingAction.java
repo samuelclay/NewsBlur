@@ -532,14 +532,12 @@ public class ReadingAction implements Serializable {
                 break;
 
             case LIKE_COMMENT:
-                // TODO need to use real comment ID
-                // dbHelper.setCommentLiked(storyId, commentUserId, feedId, true);
+                dbHelper.setCommentLiked(storyId, commentUserId, feedId, true);
                 impact |= NbActivity.UPDATE_SOCIAL;
                 break;
 
             case UNLIKE_COMMENT:
-                // TODO need to use real comment ID
-                // dbHelper.setCommentLiked(storyId, commentUserId, feedId, false);
+                dbHelper.setCommentLiked(storyId, commentUserId, feedId, false);
                 impact |= NbActivity.UPDATE_SOCIAL;
                 break;
 

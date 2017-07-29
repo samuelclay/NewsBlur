@@ -1219,29 +1219,27 @@ public class BlurDatabaseHelper {
                                              new String[]{storyId, userId});}
     }
 
-    /* TODO: we cannot locally like comments without their proper ID
     public void setCommentLiked(String storyId, String userId, String feedId, boolean liked) {
-        String commentKey = Comment.constructId(storyId, feedId, userId);
         // get a fresh copy of the story from the DB so we can append to the shared ID set
         Cursor c = dbRO.query(DatabaseConstants.COMMENT_TABLE, 
-                              new String[]{DatabaseConstants.COMMENT_LIKING_USERS}, 
-                              DatabaseConstants.COMMENT_ID + " = ?", 
-                              new String[]{commentKey}, 
+                              null, 
+                              DatabaseConstants.COMMENT_STORYID + " = ? AND " + DatabaseConstants.COMMENT_USERID + " = ?", 
+                              new String[]{storyId, userId}, 
                               null, null, null);
         if ((c == null)||(c.getCount() < 1)) {
-            Log.w(this.getClass().getName(), "story removed before finishing mark-shared");
+            Log.w(this.getClass().getName(), "comment removed before finishing mark-liked");
             closeQuietly(c);
             return;
         }
         c.moveToFirst();
-		String[] likingUserIds = TextUtils.split(c.getString(c.getColumnIndex(DatabaseConstants.COMMENT_LIKING_USERS)), ",");
+        Comment comment = Comment.fromCursor(c);
         closeQuietly(c);
 
         // the new id to append/remove from the liking list (the current user)
         String currentUser = PrefsUtils.getUserDetails(context).id;
 
         // append to set and update DB
-        Set<String> newIds = new HashSet<String>(Arrays.asList(likingUserIds));
+        Set<String> newIds = new HashSet<String>(Arrays.asList(comment.likingUsers));
         if (liked) {
             newIds.add(currentUser);
         } else {
@@ -1249,9 +1247,8 @@ public class BlurDatabaseHelper {
         }
         ContentValues values = new ContentValues();
 		values.put(DatabaseConstants.COMMENT_LIKING_USERS, TextUtils.join(",", newIds));
-        synchronized (RW_MUTEX) {dbRW.update(DatabaseConstants.COMMENT_TABLE, values, DatabaseConstants.COMMENT_ID + " = ?", new String[]{commentKey});}
+        synchronized (RW_MUTEX) {dbRW.update(DatabaseConstants.COMMENT_TABLE, values, DatabaseConstants.COMMENT_ID + " = ?", new String[]{comment.id});}
     }
-    */
 
     public UserProfile getUserProfile(String userId) {
         String[] selArgs = new String[] {userId};
