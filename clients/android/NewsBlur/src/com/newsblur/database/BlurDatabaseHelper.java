@@ -19,6 +19,7 @@ import com.newsblur.domain.SocialFeed;
 import com.newsblur.domain.StarredCount;
 import com.newsblur.domain.Story;
 import com.newsblur.domain.UserProfile;
+import com.newsblur.network.domain.CommentResponse;
 import com.newsblur.network.domain.StoriesResponse;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.FeedSet;
@@ -438,6 +439,26 @@ public class BlurDatabaseHelper {
             apiResponse.story.read = oldStory.read;
         }
         insertStories(apiResponse, forImmediateReading);
+    }
+
+    /**
+     * Update an existing comment and associated replies based upon a new copy received from a social
+     * API.  Most social APIs vend an updated view that replaces any old or placeholder records.
+     */
+    public void updateComment(CommentResponse apiResponse, String storyId) {
+        synchronized (RW_MUTEX) {
+            // comments often contain enclosed replies, so batch them.
+            dbRW.beginTransaction();
+            try {
+                // we store all comments in the context of the associated story, but the social API doesn't
+                // reference the story when responding, so fix that from our context
+                apiResponse.comment.storyId = storyId;
+                insertSingleCommentExtSync(apiResponse.comment);
+                dbRW.setTransactionSuccessful();
+            } finally {
+                dbRW.endTransaction();
+            }
+        }
     }
 
     public void fixMissingStoryFeeds(Story[] stories) {
@@ -1271,17 +1292,30 @@ public class BlurDatabaseHelper {
         return replies;
     }
 
-    /* TODO: a local version of this is impossible, because the server dictates the ID.
-    public void replyToComment(String storyId, String feedId, String commentUserId, String replyText, long replyCreateTime) {
+    public void insertReplyPlaceholder(String storyId, String feedId, String commentUserId, String replyText) {
+        // get a fresh copy of the comment so we can discover the ID
+        Cursor c = dbRO.query(DatabaseConstants.COMMENT_TABLE, 
+                              null, 
+                              DatabaseConstants.COMMENT_STORYID + " = ? AND " + DatabaseConstants.COMMENT_USERID + " = ?", 
+                              new String[]{storyId, commentUserId}, 
+                              null, null, null);
+        if ((c == null)||(c.getCount() < 1)) {
+            com.newsblur.util.Log.w(this, "comment removed before reply could be processed");
+            closeQuietly(c);
+            return;
+        }
+        c.moveToFirst();
+        Comment comment = Comment.fromCursor(c);
+        closeQuietly(c);
+
         Reply reply = new Reply();
-        reply.commentId = Comment.constructId(storyId, feedId, commentUserId);
+        reply.commentId = comment.id;
         reply.text = replyText;
         reply.userId = PrefsUtils.getUserDetails(context).id;
-        reply.date = new Date(replyCreateTime);
-        reply.id = reply.constructId();
+        reply.date = new Date();
+        reply.id = Reply.PLACEHOLDER_COMMENT_ID + storyId + comment.id + reply.userId;
         synchronized (RW_MUTEX) {dbRW.insertWithOnConflict(DatabaseConstants.REPLY_TABLE, null, reply.getValues(), SQLiteDatabase.CONFLICT_REPLACE);}
     }
-    */
 
     public void putStoryDismissed(String storyHash) {
         ContentValues values = new ContentValues();

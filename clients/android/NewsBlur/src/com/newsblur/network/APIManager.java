@@ -28,6 +28,7 @@ import com.newsblur.domain.Story;
 import com.newsblur.domain.ValueMultimap;
 import static com.newsblur.network.APIConstants.buildUrl;
 import com.newsblur.network.domain.ActivitiesResponse;
+import com.newsblur.network.domain.CommentResponse;
 import com.newsblur.network.domain.FeedFolderResponse;
 import com.newsblur.network.domain.InteractionsResponse;
 import com.newsblur.network.domain.LoginResponse;
@@ -543,14 +544,15 @@ public class APIManager {
         return response.getResponse(gson, NewsBlurResponse.class);
 	}
 
-	public NewsBlurResponse replyToComment(String storyId, String storyFeedId, String commentUserId, String reply) {
+	public CommentResponse replyToComment(String storyId, String storyFeedId, String commentUserId, String reply) {
 		ContentValues values = new ContentValues();
 		values.put(APIConstants.PARAMETER_STORYID, storyId);
 		values.put(APIConstants.PARAMETER_STORY_FEEDID, storyFeedId);
 		values.put(APIConstants.PARAMETER_COMMENT_USERID, commentUserId);
 		values.put(APIConstants.PARAMETER_REPLY_TEXT, reply);
 		APIResponse response = post(buildUrl(APIConstants.PATH_REPLY_TO), values);
-        return response.getResponse(gson, NewsBlurResponse.class);
+        // this call returns a new copy of the comment with all fields updated
+        return (CommentResponse) response.getResponse(gson, CommentResponse.class);
 	}
 
 	public NewsBlurResponse editReply(String storyId, String storyFeedId, String commentUserId, String replyId, String reply) {

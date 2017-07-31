@@ -127,6 +127,7 @@ public class DatabaseConstants {
 	public static final String REPLY_USERID = "reply_userid";
 	public static final String REPLY_DATE = "reply_date";
 	public static final String REPLY_SHORTDATE = "reply_shortdate";
+	public static final String REPLY_ISPLACEHOLDER = "reply_isplaceholder";
 
     public static final String ACTION_TABLE = "story_actions";
 	public static final String ACTION_ID = BaseColumns._ID;
@@ -220,7 +221,8 @@ public class DatabaseConstants {
 		REPLY_ID + TEXT + " PRIMARY KEY, " +
 		REPLY_COMMENTID + TEXT + ", " + 
 		REPLY_TEXT + TEXT + ", " +
-		REPLY_USERID + TEXT +
+		REPLY_USERID + TEXT + ", " +
+        REPLY_ISPLACEHOLDER + TEXT +
 		")";
 	
 	static final String STORY_SQL = "CREATE TABLE " + STORY_TABLE + " (" + 

@@ -8,6 +8,7 @@ import java.io.Serializable;
 import com.newsblur.activity.NbActivity;
 import com.newsblur.database.BlurDatabaseHelper;
 import com.newsblur.database.DatabaseConstants;
+import com.newsblur.network.domain.CommentResponse;
 import com.newsblur.network.domain.NewsBlurResponse;
 import com.newsblur.network.domain.StoriesResponse;
 import com.newsblur.network.APIManager;
@@ -421,7 +422,7 @@ public class ReadingAction implements Serializable {
                     dbHelper.updateStory(response, true);
                     impact |= NbActivity.UPDATE_SOCIAL;
                 } else {
-                    com.newsblur.util.Log.i(this.getClass().getName(), "share failed to refresh story");
+                    com.newsblur.util.Log.w(this, "share failed to refresh story");
                 }
                 result = response;
                 break;
@@ -432,7 +433,7 @@ public class ReadingAction implements Serializable {
                     dbHelper.updateStory(unshareResponse, true);
                     impact |= NbActivity.UPDATE_SOCIAL;
                 } else {
-                    com.newsblur.util.Log.i(this.getClass().getName(), "unshare failed to refresh story");
+                    com.newsblur.util.Log.w(this, "unshare failed to refresh story");
                 }
                 result = unshareResponse;
                 break;
@@ -446,7 +447,13 @@ public class ReadingAction implements Serializable {
                 break;
 
             case REPLY:
-                result = apiManager.replyToComment(storyId, feedId, commentUserId, commentReplyText);
+                CommentResponse replyResponse = apiManager.replyToComment(storyId, feedId, commentUserId, commentReplyText);
+                if ((replyResponse != null) && (replyResponse.comment != null)) {
+                    dbHelper.updateComment(replyResponse, storyId);
+                    impact |= NbActivity.UPDATE_SOCIAL;
+                } else {
+                    com.newsblur.util.Log.w(this, "reply failed to refresh comment data");
+                }
                 break;
 
             case EDIT_REPLY:
@@ -542,7 +549,8 @@ public class ReadingAction implements Serializable {
                 break;
 
             case REPLY:
-                // not possible locally, since the server generates the reply ID
+                if (isFollowup) break; // replies are only placeholders
+                dbHelper.insertReplyPlaceholder(storyId, feedId, commentUserId, commentReplyText);
                 break;
 
             case EDIT_REPLY:
