@@ -450,6 +450,15 @@ public class BlurDatabaseHelper {
             // comments often contain enclosed replies, so batch them.
             dbRW.beginTransaction();
             try {
+                // the API might include new supplemental user metadata if new replies have shown up.
+                if (apiResponse.users != null) {
+                    List<ContentValues> userValues = new ArrayList<ContentValues>(apiResponse.users.length);
+                    for (UserProfile user : apiResponse.users) {
+                        userValues.add(user.getValues());
+                    }
+                    bulkInsertValuesExtSync(DatabaseConstants.USER_TABLE, userValues);
+                }
+
                 // we store all comments in the context of the associated story, but the social API doesn't
                 // reference the story when responding, so fix that from our context
                 apiResponse.comment.storyId = storyId;
