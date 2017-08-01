@@ -1233,6 +1233,16 @@ public class BlurDatabaseHelper {
         }
     }
 
+    public void editReply(String replyId, String replyText) {
+        ContentValues values = new ContentValues();
+        values.put(DatabaseConstants.REPLY_TEXT, replyText);
+        synchronized (RW_MUTEX) {dbRW.update(DatabaseConstants.REPLY_TABLE, values, DatabaseConstants.REPLY_ID + " = ?", new String[]{replyId});}
+    }
+
+    public void deleteReply(String replyId) {   
+        synchronized (RW_MUTEX) {dbRW.delete(DatabaseConstants.REPLY_TABLE, DatabaseConstants.REPLY_ID + " = ?", new String[]{replyId});}
+    }
+
     public void clearSelfComments(String storyId) {
         String userId = PrefsUtils.getUserDetails(context).id;
         synchronized (RW_MUTEX) {dbRW.delete(DatabaseConstants.COMMENT_TABLE, 

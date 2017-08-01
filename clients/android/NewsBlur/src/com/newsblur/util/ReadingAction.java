@@ -392,7 +392,11 @@ public class ReadingAction implements Serializable {
      * Execute this action remotely via the API.
      */
     public NewsBlurResponse doRemote(APIManager apiManager, BlurDatabaseHelper dbHelper) {
+        // generic response to return
         NewsBlurResponse result = null;
+        // optional specific responses that are locally actionable
+        StoriesResponse storiesResponse = null;
+        CommentResponse commentResponse = null;
         int impact = 0;
         switch (type) {
 
@@ -417,25 +421,11 @@ public class ReadingAction implements Serializable {
                 break;
 
             case SHARE:
-                StoriesResponse response = apiManager.shareStory(storyId, feedId, commentReplyText, sourceUserId);
-                if ((response != null) && (response.story != null)) {
-                    dbHelper.updateStory(response, true);
-                    impact |= NbActivity.UPDATE_SOCIAL;
-                } else {
-                    com.newsblur.util.Log.w(this, "share failed to refresh story");
-                }
-                result = response;
+                storiesResponse = apiManager.shareStory(storyId, feedId, commentReplyText, sourceUserId);
                 break;
 
             case UNSHARE:
-                StoriesResponse unshareResponse = apiManager.unshareStory(storyId, feedId);
-                if ((unshareResponse != null) && (unshareResponse.story != null)) {
-                    dbHelper.updateStory(unshareResponse, true);
-                    impact |= NbActivity.UPDATE_SOCIAL;
-                } else {
-                    com.newsblur.util.Log.w(this, "unshare failed to refresh story");
-                }
-                result = unshareResponse;
+                storiesResponse = apiManager.unshareStory(storyId, feedId);
                 break;
 
             case LIKE_COMMENT:
@@ -447,21 +437,15 @@ public class ReadingAction implements Serializable {
                 break;
 
             case REPLY:
-                CommentResponse replyResponse = apiManager.replyToComment(storyId, feedId, commentUserId, commentReplyText);
-                if ((replyResponse != null) && (replyResponse.comment != null)) {
-                    dbHelper.updateComment(replyResponse, storyId);
-                    impact |= NbActivity.UPDATE_SOCIAL;
-                } else {
-                    com.newsblur.util.Log.w(this, "reply failed to refresh comment data");
-                }
+                commentResponse = apiManager.replyToComment(storyId, feedId, commentUserId, commentReplyText);
                 break;
 
             case EDIT_REPLY:
-                result = apiManager.editReply(storyId, feedId, commentUserId, replyId, commentReplyText);
+                 commentResponse = apiManager.editReply(storyId, feedId, commentUserId, replyId, commentReplyText);
                 break;
 
             case DELETE_REPLY:
-                result = apiManager.deleteReply(storyId, feedId, commentUserId, replyId);
+                commentResponse = apiManager.deleteReply(storyId, feedId, commentUserId, replyId);
                 break;
 
             case MUTE_FEEDS:
@@ -476,6 +460,25 @@ public class ReadingAction implements Serializable {
             default:
                 throw new IllegalStateException("cannot execute uknown type of action.");
 
+        }
+        
+        if (storiesResponse != null) {
+            if (storiesResponse.story != null) {
+                result = storiesResponse;
+                dbHelper.updateStory(storiesResponse, true);
+                impact |= NbActivity.UPDATE_SOCIAL;
+            } else {
+                com.newsblur.util.Log.w(this, "failed to refresh story data after action");
+            }
+        }
+        if (commentResponse != null) {
+            if (commentResponse.comment != null) {
+                result = commentResponse;
+                dbHelper.updateComment(commentResponse, storyId);
+                impact |= NbActivity.UPDATE_SOCIAL;
+            } else {
+                com.newsblur.util.Log.w(this, "failed to refresh comment data after action");
+            }
         }
 
         NbActivity.updateAllActivities(impact);
@@ -554,14 +557,12 @@ public class ReadingAction implements Serializable {
                 break;
 
             case EDIT_REPLY:
-                // TODO
-                // dbHelper.editReply(storyId, feedId, commentUserId, replyId, commentReplyText);
+                dbHelper.editReply(replyId, commentReplyText);
                 impact |= NbActivity.UPDATE_SOCIAL;
                 break;
 
             case DELETE_REPLY:
-                // TODO
-                // dbHelper.editReply(storyId, feedId, commentUserId, replyId);
+                dbHelper.deleteReply(replyId);
                 impact |= NbActivity.UPDATE_SOCIAL;
                 break;
                 
