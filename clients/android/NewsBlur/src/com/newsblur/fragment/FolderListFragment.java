@@ -154,6 +154,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 
 	public void hasUpdated() {
         if (isAdded()) {
+            com.newsblur.util.Log.d(this, "loading feeds in mode: " + currentState);
             try {
                 getLoaderManager().restartLoader(SOCIALFEEDS_LOADER, null, this);
                 getLoaderManager().restartLoader(FOLDERS_LOADER, null, this);

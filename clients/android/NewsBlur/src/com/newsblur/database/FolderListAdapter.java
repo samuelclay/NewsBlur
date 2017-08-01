@@ -559,7 +559,11 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
         if (activeFolderChildren == null) return;
         int newFeedCount = 0;
         newFeedCount += socialFeedsOrdered.size();
-        newFeedCount += starredCountsByTag.size();
+        if (currentState == StateFilter.SAVED) {
+            // only count saved feeds if in saved mode, since the expectation is that we are
+            // counting to detect a zero-feeds-in-this-mode situation
+            newFeedCount += starredCountsByTag.size();
+        }
         for (List<Feed> folder : activeFolderChildren) {
             newFeedCount += folder.size();
         }
