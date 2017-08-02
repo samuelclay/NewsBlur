@@ -28,6 +28,7 @@ import android.webkit.WebView.HitTestResult;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import butterknife.ButterKnife;
 import butterknife.Bind;
@@ -40,6 +41,7 @@ import com.newsblur.domain.Classifier;
 import com.newsblur.domain.Story;
 import com.newsblur.domain.UserDetails;
 import com.newsblur.service.NBSyncService;
+import com.newsblur.service.OriginalTextService;
 import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
@@ -484,17 +486,20 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
         if (story == null) return;
         if (! TextUtils.equals(story.storyHash, this.story.storyHash)) return;
         this.story = story;
+        com.newsblur.util.Log.d(this.getClass().getName(), "got fresh story");
     }
 
     public void handleUpdate(int updateType) {
         if ((updateType & NbActivity.UPDATE_STORY) != 0) {
             updateSaveButton();
             updateShareButton();
+            setupItemCommentsAndShares();
         }
         if ((updateType & NbActivity.UPDATE_TEXT) != 0) {
             reloadStoryContent();
         }
         if ((updateType & NbActivity.UPDATE_SOCIAL) != 0) {
+            updateShareButton();
             setupItemCommentsAndShares();
         }
     }
@@ -509,7 +514,19 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
                 @Override
                 protected void onPostExecute(String result) {
                     if (result != null) {
-                        ReadingItemFragment.this.originalText = result;
+                        if (OriginalTextService.NULL_STORY_TEXT.equals(result)) {
+                            // the server reported that text mode is not available.  kick back to story mode
+                            UIUtils.safeToast(getActivity(), R.string.text_mode_unavailable, Toast.LENGTH_SHORT);
+                            synchronized (selectedFeedView) {
+                                selectedFeedView = DefaultFeedView.STORY;
+                                if (getActivity() != null) {
+                                    Reading activity = (Reading) getActivity();
+                                    activity.defaultFeedViewChanged(selectedFeedView);
+                                }
+                            }
+                        } else {
+                            ReadingItemFragment.this.originalText = result;
+                        }
                         reloadStoryContent();
                     } else {
                         if (getActivity() != null) setupWebview(getActivity().getResources().getString(R.string.orig_text_loading));

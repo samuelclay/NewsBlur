@@ -225,8 +225,13 @@ public class NBSyncService extends Service {
             Thread.currentThread().setName(this.getClass().getName());
 
             if (OfflineNow) {
-                OfflineNow = false;   
-                NbActivity.updateAllActivities(NbActivity.UPDATE_STATUS);
+                if (NetworkUtils.isOnline(this)) {
+                    OfflineNow = false;   
+                    NbActivity.updateAllActivities(NbActivity.UPDATE_STATUS);
+                } else {
+                    Log.d(this.getClass().getName(), "Abandoning sync: network still offline");
+                    return;
+                }
             }
 
             // do this even if background syncs aren't enabled, because it absolutely must happen
@@ -346,7 +351,7 @@ public class NBSyncService extends Service {
                 if ((ra.getTried() > 0) && (PendingFeed != null)) continue actionsloop;
                     
                 com.newsblur.util.Log.d(this.getClass().getName(), "attempting action: " + ra.toContentValues().toString());
-                NewsBlurResponse response = ra.doRemote(apiManager);
+                NewsBlurResponse response = ra.doRemote(apiManager, dbHelper);
 
                 if (response == null) {
                     com.newsblur.util.Log.e(this.getClass().getName(), "Discarding reading action with client-side error.");
@@ -358,7 +363,9 @@ public class NBSyncService extends Service {
                     noteHardAPIFailure();
                     continue actionsloop;
                 } else if (response.isError()) {
-                    com.newsblur.util.Log.e(this.getClass().getName(), "Discarding reading action with user error.");
+                    // the API responds with a message either if the call was a client-side error or if it was handled in such a
+                    // way that we should inform the user. in either case, it is considered complete.
+                    com.newsblur.util.Log.i(this.getClass().getName(), "Discarding reading action with fatal message.");
                     dbHelper.clearAction(id);
                     String message = response.getErrorMessage(null);
                     if (message != null) NbActivity.toastError(message);
@@ -387,7 +394,7 @@ public class NBSyncService extends Service {
         if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "double-checking " + FollowupActions.size() + " actions");
         int impactFlags = 0;
         for (ReadingAction ra : FollowupActions) {
-            int impact = ra.doLocal(dbHelper);
+            int impact = ra.doLocal(dbHelper, true);
             impactFlags |= impact;
         }
         NbActivity.updateAllActivities(impactFlags);
@@ -568,11 +575,16 @@ public class NBSyncService extends Service {
             RecountsRunning = true;
             NbActivity.updateAllActivities(NbActivity.UPDATE_STATUS);
 
-            // of all candidate feeds that were touched, now check to see if
-            // any of them have mismatched local and remote counts we need to reconcile
+            // of all candidate feeds that were touched, now check to see if any
+            // actually need their counts fetched
             Set<FeedSet> dirtySets = new HashSet<FeedSet>();
             for (FeedSet fs : RecountCandidates) {
+                // check for mismatched local and remote counts we need to reconcile
                 if (dbHelper.getUnreadCount(fs, StateFilter.SOME) != dbHelper.getLocalUnreadCount(fs, StateFilter.SOME)) {
+                    dirtySets.add(fs);
+                }
+                // check for feeds flagged for insta-fetch
+                if (dbHelper.isFeedSetFetchPending(fs)) {
                     dirtySets.add(fs);
                 }
             }
@@ -612,7 +624,7 @@ public class NBSyncService extends Service {
                 if (apiResponse.socialFeeds != null ) {
                     for (Map.Entry<String,UnreadCountResponse.UnreadMD> entry : apiResponse.socialFeeds.entrySet()) {
                         String feedId = entry.getKey().replaceAll(APIConstants.VALUE_PREFIX_SOCIAL, "");
-                        dbHelper.updateSocialFeedCounts(feedId, entry.getValue().getValues());
+                        dbHelper.updateSocialFeedCounts(feedId, entry.getValue().getValuesSocial());
                     }
                 }
                 RecountCandidates.clear();

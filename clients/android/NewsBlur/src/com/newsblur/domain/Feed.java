@@ -67,6 +67,9 @@ public class Feed implements Comparable<Feed>, Serializable {
     @SerializedName("notification_filter")
     public String notificationFilter;
 
+    // not vended by API, but used locally for UI
+    public boolean fetchPending;
+
 	public ContentValues getValues() {
 		ContentValues values = new ContentValues();
 		values.put(DatabaseConstants.FEED_ID, feedId);
@@ -88,6 +91,7 @@ public class Feed implements Comparable<Feed>, Serializable {
         if (isNotifyAndroid()) {
             values.put(DatabaseConstants.FEED_NOTIFICATION_FILTER, notificationFilter);
         }
+        values.put(DatabaseConstants.FEED_FETCH_PENDING, fetchPending);
 		return values;
 	}
 
@@ -113,6 +117,7 @@ public class Feed implements Comparable<Feed>, Serializable {
         feed.lastUpdated = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.FEED_UPDATED_SECONDS));
         feed.notificationTypes = DatabaseConstants.unflattenStringList(cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_NOTIFICATION_TYPES)));
         feed.notificationFilter = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_NOTIFICATION_FILTER));
+        feed.fetchPending = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_FETCH_PENDING)).equals("1");
 		return feed;
 	}
 

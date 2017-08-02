@@ -12,6 +12,9 @@ import java.util.Set;
 
 public class OriginalTextService extends SubService {
 
+    // special value for when the API responds that it could fatally could not fetch text
+    public static final String NULL_STORY_TEXT = "__NULL_STORY_TEXT__";
+
     private static volatile boolean Running = false;
 
     /** story hashes we need to fetch (from newly found stories) */
@@ -45,12 +48,19 @@ public class OriginalTextService extends SubService {
         try {
             fetchloop: for (String hash : batch) {
                 if (parent.stopSync()) return;
-                String result = "";
+                String result = null;
                 StoryTextResponse response = parent.apiManager.getStoryText(FeedUtils.inferFeedId(hash), hash);
-                if ((response != null) && (response.originalText != null)) {
-                    result = response.originalText;
+                if (response != null) {
+                    if (response.originalText != null) {
+                        result = response.originalText;
+                    } else {
+                        // a null value in an otherwise valid response to this call indicates a fatal
+                        // failure to extract text and should be recorded so the UI can inform the
+                        // user and switch them back to a valid view mode
+                        result = NULL_STORY_TEXT;
+                    }
                 }
-                parent.dbHelper.putStoryText(hash, result);
+                if (result != null) parent.dbHelper.putStoryText(hash, result);
                 fetchedHashes.add(hash);
             }
         } finally {

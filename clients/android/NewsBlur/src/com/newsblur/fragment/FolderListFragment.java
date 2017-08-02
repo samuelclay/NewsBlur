@@ -154,6 +154,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 
 	public void hasUpdated() {
         if (isAdded()) {
+            com.newsblur.util.Log.d(this, "loading feeds in mode: " + currentState);
             try {
                 getLoaderManager().restartLoader(SOCIALFEEDS_LOADER, null, this);
                 getLoaderManager().restartLoader(FOLDERS_LOADER, null, this);
@@ -261,6 +262,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
                 menu.removeItem(R.id.menu_unmute_feed);
                 menu.removeItem(R.id.menu_mute_feed);
                 menu.removeItem(R.id.menu_notifications);
+                menu.removeItem(R.id.menu_instafetch_feed);
             } else {
                 menu.removeItem(R.id.menu_unfollow);
 
@@ -348,6 +350,8 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
             FeedUtils.muteFeeds(getActivity(), adapter.getAllFeedsForFolder(groupPosition));
         } else if (item.getItemId() == R.id.menu_unmute_folder) {
             FeedUtils.unmuteFeeds(getActivity(), adapter.getAllFeedsForFolder(groupPosition));
+        } else if (item.getItemId() == R.id.menu_instafetch_feed) {
+            FeedUtils.instaFetchFeed(getActivity(), adapter.getFeed(groupPosition, childPosition).feedId);
         }
 
 		return super.onContextItemSelected(item);

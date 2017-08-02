@@ -97,7 +97,7 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 
 			View commentView = inflater.inflate(R.layout.include_comment, null);
 			TextView commentText = (TextView) commentView.findViewById(R.id.comment_text);
-			commentText.setText(UIUtils.fromHtml(comment.commentText));
+			commentText.setText(comment.commentText);
 			ImageView commentImage = (ImageView) commentView.findViewById(R.id.comment_user_image);
 
 			TextView commentSharedDate = (TextView) commentView.findViewById(R.id.comment_shareddate);
@@ -141,24 +141,28 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
                 }
 			}
 
-			replyIcon.setOnClickListener(new OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					if (story != null) {
-						UserProfile user = FeedUtils.dbHelper.getUserProfile(comment.userId);
-                        if (user != null) {
-                            DialogFragment newFragment = ReplyDialogFragment.newInstance(story, comment.userId, user.username);
-                            newFragment.show(manager, "dialog");
+            if (comment.isPlaceholder) {
+                replyIcon.setVisibility(View.INVISIBLE);
+            } else {
+                replyIcon.setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (story != null) {
+                            UserProfile user = FeedUtils.dbHelper.getUserProfile(comment.userId);
+                            if (user != null) {
+                                DialogFragment newFragment = ReplyDialogFragment.newInstance(story, comment.userId, user.username);
+                                newFragment.show(manager, "dialog");
+                            }
                         }
-					}
-				}
-			});
+                    }
+                });
+            }
 
             List<Reply> replies = FeedUtils.dbHelper.getCommentReplies(comment.id);
 			for (final Reply reply : replies) {
 				View replyView = inflater.inflate(R.layout.include_reply, null);
 				TextView replyText = (TextView) replyView.findViewById(R.id.reply_text);
-				replyText.setText(UIUtils.fromHtml(reply.text));
+				replyText.setText(reply.text);
 				ImageView replyImage = (ImageView) replyView.findViewById(R.id.reply_user_image);
 
                 final UserProfile replyUser = FeedUtils.dbHelper.getUserProfile(reply.userId);
@@ -186,15 +190,19 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
                 }
 
                 ImageView editIcon = (ImageView) replyView.findViewById(R.id.reply_edit_icon);
-                editIcon.setOnClickListener(new OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (story != null) {
-                            DialogFragment newFragment = EditReplyDialogFragment.newInstance(story, comment.userId, reply.id, reply.text);
-                            newFragment.show(manager, "dialog");
+                if (TextUtils.equals(reply.userId, user.id)) {
+                    editIcon.setOnClickListener(new OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if (story != null) {
+                                DialogFragment newFragment = EditReplyDialogFragment.newInstance(story, comment.userId, reply.id, reply.text);
+                                newFragment.show(manager, "dialog");
+                            }
                         }
-                    }
-                });
+                    });
+                } else {
+                    editIcon.setVisibility(View.INVISIBLE);
+                }
 
 
 				((LinearLayout) commentView.findViewById(R.id.comment_replies_container)).addView(replyView);

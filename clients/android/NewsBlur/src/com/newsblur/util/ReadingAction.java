@@ -8,8 +8,11 @@ import java.io.Serializable;
 import com.newsblur.activity.NbActivity;
 import com.newsblur.database.BlurDatabaseHelper;
 import com.newsblur.database.DatabaseConstants;
+import com.newsblur.network.domain.CommentResponse;
 import com.newsblur.network.domain.NewsBlurResponse;
+import com.newsblur.network.domain.StoriesResponse;
 import com.newsblur.network.APIManager;
+import com.newsblur.service.NBSyncService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +29,7 @@ public class ReadingAction implements Serializable {
         SAVE,
         UNSAVE,
         SHARE,
+        UNSHARE,
         REPLY,
         EDIT_REPLY,
         DELETE_REPLY,
@@ -33,7 +37,8 @@ public class ReadingAction implements Serializable {
         UNLIKE_COMMENT,
         MUTE_FEEDS,
         UNMUTE_FEEDS,
-        SET_NOTIFY
+        SET_NOTIFY,
+        INSTA_FETCH
     };
 
     private final long time;
@@ -120,6 +125,15 @@ public class ReadingAction implements Serializable {
         return ra;
     }
 
+    public static ReadingAction unshareStory(String hash, String storyId, String feedId) {
+        ReadingAction ra = new ReadingAction();
+        ra.type = ActionType.UNSHARE;
+        ra.storyHash = hash;
+        ra.storyId = storyId;
+        ra.feedId = feedId;
+        return ra;
+    }
+
     public static ReadingAction likeComment(String storyId, String commentUserId, String feedId) {
         ReadingAction ra = new ReadingAction();
         ra.type = ActionType.LIKE_COMMENT;
@@ -198,6 +212,13 @@ public class ReadingAction implements Serializable {
         return ra;
     }
 
+    public static ReadingAction instaFetch(String feedId) {
+        ReadingAction ra = new ReadingAction();
+        ra.type = ActionType.INSTA_FETCH;
+        ra.feedId = feedId;
+        return ra;
+    }
+
 	public ContentValues toContentValues() {
 		ContentValues values = new ContentValues();
         values.put(DatabaseConstants.ACTION_TIME, time);
@@ -235,6 +256,12 @@ public class ReadingAction implements Serializable {
                 values.put(DatabaseConstants.ACTION_FEED_ID, feedId);
                 values.put(DatabaseConstants.ACTION_SOURCE_USER_ID, sourceUserId);
                 values.put(DatabaseConstants.ACTION_COMMENT_TEXT, commentReplyText);
+                break;
+
+            case UNSHARE:
+                values.put(DatabaseConstants.ACTION_STORY_HASH, storyHash);
+                values.put(DatabaseConstants.ACTION_STORY_ID, storyId);
+                values.put(DatabaseConstants.ACTION_FEED_ID, feedId);
                 break;
 
             case LIKE_COMMENT:
@@ -287,6 +314,10 @@ public class ReadingAction implements Serializable {
                 values.put(DatabaseConstants.ACTION_NOTIFY_TYPES, DatabaseConstants.JsonHelper.toJson(notifyTypes));
                 break;
 
+            case INSTA_FETCH:
+                values.put(DatabaseConstants.ACTION_FEED_ID, feedId);
+                break;
+
             default:
                 throw new IllegalStateException("cannot serialise uknown type of action.");
 
@@ -326,6 +357,10 @@ public class ReadingAction implements Serializable {
             ra.feedId = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_FEED_ID));
             ra.sourceUserId = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_SOURCE_USER_ID));
             ra.commentReplyText = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_COMMENT_TEXT));
+        } else if (ra.type == ActionType.UNSHARE) {
+            ra.storyHash = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_STORY_HASH));
+            ra.storyId = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_STORY_ID));
+            ra.feedId = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_FEED_ID));
         } else if (ra.type == ActionType.LIKE_COMMENT) {
             ra.storyId = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_STORY_ID));
             ra.feedId = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_FEED_ID));
@@ -360,6 +395,8 @@ public class ReadingAction implements Serializable {
             ra.feedId = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_FEED_ID));
             ra.notifyFilter = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_NOTIFY_FILTER));
             ra.notifyTypes = DatabaseConstants.JsonHelper.fromJson(c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_NOTIFY_TYPES)), List.class);
+        } else if (ra.type == ActionType.INSTA_FETCH) {
+            ra.feedId = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_FEED_ID));
         } else {
             throw new IllegalStateException("cannot deserialise uknown type of action.");
         }
@@ -369,64 +406,119 @@ public class ReadingAction implements Serializable {
     /**
      * Execute this action remotely via the API.
      */
-    public NewsBlurResponse doRemote(APIManager apiManager) {
+    public NewsBlurResponse doRemote(APIManager apiManager, BlurDatabaseHelper dbHelper) {
+        // generic response to return
+        NewsBlurResponse result = null;
+        // optional specific responses that are locally actionable
+        StoriesResponse storiesResponse = null;
+        CommentResponse commentResponse = null;
+        int impact = 0;
         switch (type) {
 
             case MARK_READ:
                 if (storyHash != null) {
-                    return apiManager.markStoryAsRead(storyHash);
+                    result = apiManager.markStoryAsRead(storyHash);
                 } else if (feedSet != null) {
-                    return apiManager.markFeedsAsRead(feedSet, olderThan, newerThan);
+                    result = apiManager.markFeedsAsRead(feedSet, olderThan, newerThan);
                 }
                 break;
                 
             case MARK_UNREAD:
-                return apiManager.markStoryHashUnread(storyHash);
+                result = apiManager.markStoryHashUnread(storyHash);
+                break;
 
             case SAVE:
-                return apiManager.markStoryAsStarred(storyHash);
+                result = apiManager.markStoryAsStarred(storyHash);
+                break;
 
             case UNSAVE:
-                return apiManager.markStoryAsUnstarred(storyHash);
+                result = apiManager.markStoryAsUnstarred(storyHash);
+                break;
 
             case SHARE:
-                return apiManager.shareStory(storyId, feedId, commentReplyText, sourceUserId);
+                storiesResponse = apiManager.shareStory(storyId, feedId, commentReplyText, sourceUserId);
+                break;
+
+            case UNSHARE:
+                storiesResponse = apiManager.unshareStory(storyId, feedId);
+                break;
 
             case LIKE_COMMENT:
-                return apiManager.favouriteComment(storyId, commentUserId, feedId);
+                result = apiManager.favouriteComment(storyId, commentUserId, feedId);
+                break;
 
             case UNLIKE_COMMENT:
-                return apiManager.unFavouriteComment(storyId, commentUserId, feedId);
+                result = apiManager.unFavouriteComment(storyId, commentUserId, feedId);
+                break;
 
             case REPLY:
-                return apiManager.replyToComment(storyId, feedId, commentUserId, commentReplyText);
+                commentResponse = apiManager.replyToComment(storyId, feedId, commentUserId, commentReplyText);
+                break;
 
             case EDIT_REPLY:
-                return apiManager.editReply(storyId, feedId, commentUserId, replyId, commentReplyText);
+                 commentResponse = apiManager.editReply(storyId, feedId, commentUserId, replyId, commentReplyText);
+                break;
 
             case DELETE_REPLY:
-                return apiManager.deleteReply(storyId, feedId, commentUserId, replyId);
+                commentResponse = apiManager.deleteReply(storyId, feedId, commentUserId, replyId);
+                break;
 
             case MUTE_FEEDS:
             case UNMUTE_FEEDS:
-                return apiManager.saveFeedChooser(activeFeedIds);
+                result = apiManager.saveFeedChooser(activeFeedIds);
+                break;
 
             case SET_NOTIFY:
-                return apiManager.updateFeedNotifications(feedId, notifyTypes, notifyFilter);
+                result = apiManager.updateFeedNotifications(feedId, notifyTypes, notifyFilter);
+                break;
+
+            case INSTA_FETCH:
+                result = apiManager.instaFetch(feedId);
+                // also trigger a recount, which will unflag the feed as pending
+                NBSyncService.addRecountCandidates(FeedSet.singleFeed(feedId));
+                NBSyncService.flushRecounts();
+                break;
 
             default:
+                throw new IllegalStateException("cannot execute uknown type of action.");
 
         }
+        
+        if (storiesResponse != null) {
+            if (storiesResponse.story != null) {
+                result = storiesResponse;
+                dbHelper.updateStory(storiesResponse, true);
+                impact |= NbActivity.UPDATE_SOCIAL;
+            } else {
+                com.newsblur.util.Log.w(this, "failed to refresh story data after action");
+            }
+        }
+        if (commentResponse != null) {
+            if (commentResponse.comment != null) {
+                result = commentResponse;
+                dbHelper.updateComment(commentResponse, storyId);
+                impact |= NbActivity.UPDATE_SOCIAL;
+            } else {
+                com.newsblur.util.Log.w(this, "failed to refresh comment data after action");
+            }
+        }
 
-        throw new IllegalStateException("cannot execute uknown type of action.");
+        NbActivity.updateAllActivities(impact);
+        return result;
+    }
+
+    public int doLocal(BlurDatabaseHelper dbHelper) {
+        return doLocal(dbHelper, false);
     }
 
     /**
      * Excecute this action on the local DB. These *must* be idempotent.
      *
+     * @param isFollowup flag that this is a double-check invocation and is noncritical
+     *
      * @return the union of update impact flags that resulted from this action.
      */
-    public int doLocal(BlurDatabaseHelper dbHelper) {
+    public int doLocal(BlurDatabaseHelper dbHelper, boolean isFollowup) {
         int impact = 0;
         switch (type) {
 
@@ -457,37 +549,42 @@ public class ReadingAction implements Serializable {
                 break;
 
             case SHARE:
-                dbHelper.setStoryShared(storyHash);
-                // TODO not possible locally without server gen comment ID
-                //dbHelper.insertUpdateComment(storyId, feedId, commentReplyText);
+                if (isFollowup) break; // shares are only placeholders
+                dbHelper.setStoryShared(storyHash, true);
+                dbHelper.insertCommentPlaceholder(storyId, feedId, commentReplyText);
                 impact |= NbActivity.UPDATE_SOCIAL;
+                impact |= NbActivity.UPDATE_STORY;
+                break;
+
+            case UNSHARE:
+                dbHelper.setStoryShared(storyHash, false);
+                dbHelper.clearSelfComments(storyId);
+                impact |= NbActivity.UPDATE_SOCIAL;
+                impact |= NbActivity.UPDATE_STORY;
                 break;
 
             case LIKE_COMMENT:
-                // TODO need to use real comment ID
-                // dbHelper.setCommentLiked(storyId, commentUserId, feedId, true);
+                dbHelper.setCommentLiked(storyId, commentUserId, feedId, true);
                 impact |= NbActivity.UPDATE_SOCIAL;
                 break;
 
             case UNLIKE_COMMENT:
-                // TODO need to use real comment ID
-                // dbHelper.setCommentLiked(storyId, commentUserId, feedId, false);
+                dbHelper.setCommentLiked(storyId, commentUserId, feedId, false);
                 impact |= NbActivity.UPDATE_SOCIAL;
                 break;
 
             case REPLY:
-                // not possible locally, since the server generates the reply ID
+                if (isFollowup) break; // replies are only placeholders
+                dbHelper.insertReplyPlaceholder(storyId, feedId, commentUserId, commentReplyText);
                 break;
 
             case EDIT_REPLY:
-                // TODO
-                // dbHelper.editReply(storyId, feedId, commentUserId, replyId, commentReplyText);
+                dbHelper.editReply(replyId, commentReplyText);
                 impact |= NbActivity.UPDATE_SOCIAL;
                 break;
 
             case DELETE_REPLY:
-                // TODO
-                // dbHelper.editReply(storyId, feedId, commentUserId, replyId);
+                dbHelper.deleteReply(replyId);
                 impact |= NbActivity.UPDATE_SOCIAL;
                 break;
                 
@@ -499,6 +596,11 @@ public class ReadingAction implements Serializable {
 
             case SET_NOTIFY:
                 impact |= NbActivity.UPDATE_METADATA;
+                break;
+
+            case INSTA_FETCH:
+                if (isFollowup) break; // non-idempotent and purely graphical
+                dbHelper.setFeedFetchPending(feedId);
                 break;
 
             default:

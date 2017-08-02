@@ -34,6 +34,8 @@
             </group>
         </menu>
     </item>
+    <item android:id="@+id/menu_instafetch_feed"
+          android:title="@string/menu_instafetch_feed" />
     <item android:id="@+id/menu_search_stories"
           android:title="@string/menu_search_stories"
           android:showAsAction="ifRoom" android:icon="@drawable/ic_menu_search_gray55" />

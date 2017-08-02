@@ -44,6 +44,7 @@ public class DatabaseConstants {
 	public static final String FEED_NEGATIVE_COUNT = "ng";
     public static final String FEED_NOTIFICATION_TYPES = "notification_types";
     public static final String FEED_NOTIFICATION_FILTER = "notification_filter";
+    public static final String FEED_FETCH_PENDING = "fetch_pending";
 
 	public static final String SOCIALFEED_TABLE = "social_feeds";
 	public static final String SOCIAL_FEED_ID = BaseColumns._ID;
@@ -118,6 +119,7 @@ public class DatabaseConstants {
 	public static final String COMMENT_BYFRIEND = "comment_byfriend";
 	public static final String COMMENT_USERID = "comment_userid";
 	public static final String COMMENT_ISPSEUDO = "comment_ispseudo";
+	public static final String COMMENT_ISPLACEHOLDER = "comment_isplaceholder";
 
 	public static final String REPLY_TABLE = "comment_replies";
 	public static final String REPLY_ID = BaseColumns._ID;
@@ -126,6 +128,7 @@ public class DatabaseConstants {
 	public static final String REPLY_USERID = "reply_userid";
 	public static final String REPLY_DATE = "reply_date";
 	public static final String REPLY_SHORTDATE = "reply_shortdate";
+	public static final String REPLY_ISPLACEHOLDER = "reply_isplaceholder";
 
     public static final String ACTION_TABLE = "story_actions";
 	public static final String ACTION_ID = BaseColumns._ID;
@@ -179,7 +182,8 @@ public class DatabaseConstants {
 		FEED_TITLE + TEXT + ", " + 
 		FEED_UPDATED_SECONDS + INTEGER + ", " +
         FEED_NOTIFICATION_TYPES + TEXT + ", " +
-        FEED_NOTIFICATION_FILTER + TEXT +
+        FEED_NOTIFICATION_FILTER + TEXT + ", " +
+        FEED_FETCH_PENDING + TEXT +
 		")";
 	
 	static final String USER_SQL = "CREATE TABLE " + USER_TABLE + " (" + 
@@ -209,7 +213,8 @@ public class DatabaseConstants {
 		COMMENT_STORYID + TEXT + ", " + 
 		COMMENT_TEXT + TEXT + ", " +
 		COMMENT_USERID + TEXT + ", " +
-        COMMENT_ISPSEUDO + TEXT +
+        COMMENT_ISPSEUDO + TEXT + ", " +
+        COMMENT_ISPLACEHOLDER + TEXT +
 		")";
 	
 	static final String REPLY_SQL = "CREATE TABLE " + REPLY_TABLE + " (" +
@@ -218,7 +223,8 @@ public class DatabaseConstants {
 		REPLY_ID + TEXT + " PRIMARY KEY, " +
 		REPLY_COMMENTID + TEXT + ", " + 
 		REPLY_TEXT + TEXT + ", " +
-		REPLY_USERID + TEXT +
+		REPLY_USERID + TEXT + ", " +
+        REPLY_ISPLACEHOLDER + TEXT +
 		")";
 	
 	static final String STORY_SQL = "CREATE TABLE " + STORY_TABLE + " (" + 

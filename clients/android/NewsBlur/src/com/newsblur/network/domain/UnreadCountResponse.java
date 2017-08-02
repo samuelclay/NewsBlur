@@ -26,6 +26,15 @@ public class UnreadCountResponse extends NewsBlurResponse {
             values.put(DatabaseConstants.FEED_POSITIVE_COUNT, ps);
             values.put(DatabaseConstants.FEED_NEUTRAL_COUNT, nt);
             values.put(DatabaseConstants.FEED_NEGATIVE_COUNT, ng);
+            values.put(DatabaseConstants.FEED_FETCH_PENDING, false);
+            return values;
+        }
+
+        public ContentValues getValuesSocial() {
+            ContentValues values = new ContentValues();
+            values.put(DatabaseConstants.FEED_POSITIVE_COUNT, ps);
+            values.put(DatabaseConstants.FEED_NEUTRAL_COUNT, nt);
+            values.put(DatabaseConstants.FEED_NEGATIVE_COUNT, ng);
             return values;
         }
 

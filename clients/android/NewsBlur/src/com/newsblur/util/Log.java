@@ -53,6 +53,26 @@ public class Log {
 
     private Log() {} // util class - no instances
 
+    public static void d(Object src, String m) {
+        d(src.getClass().getName(), m);
+    }
+
+    public static void i(Object src, String m) {
+        i(src.getClass().getName(), m);
+    }
+
+    public static void w(Object src, String m) {
+        w(src.getClass().getName(), m);
+    }
+
+    public static void e(Object src, String m) {
+        e(src.getClass().getName(), m);
+    }
+
+    public static void e(Object src, String m, Throwable t) {
+        e(src.getClass().getName(), m, t);
+    }
+
     public static void d(String tag, String m) {
         if (AppConstants.VERBOSE_LOG) android.util.Log.d(tag, m);
         add(D, tag, m, null);

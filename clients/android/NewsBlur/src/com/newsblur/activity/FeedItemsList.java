@@ -68,6 +68,11 @@ public class FeedItemsList extends ItemsList {
             FeedUtils.enableUnreadNotifications(this, feed);
             return true;
         }
+        if (item.getItemId() == R.id.menu_instafetch_feed) {
+            FeedUtils.instaFetchFeed(this, feed.feedId);
+            this.finish();
+            return true;
+        }
         return false;
 	}
 	

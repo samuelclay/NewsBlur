@@ -21,6 +21,7 @@ import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.newsblur.R;
@@ -252,23 +253,37 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
             TextView posCounter = ((TextView) v.findViewById(R.id.row_feedpositive));
             TextView savedCounter = ((TextView) v.findViewById(R.id.row_feedsaved));
             ImageView muteIcon = ((ImageView) v.findViewById(R.id.row_feedmuteicon));
+            ProgressBar fetchingIcon = ((ProgressBar) v.findViewById(R.id.row_feedfetching));
             if (!f.active) {
                 muteIcon.setVisibility(View.VISIBLE);
                 neutCounter.setVisibility(View.GONE);
                 posCounter.setVisibility(View.GONE);
                 savedCounter.setVisibility(View.GONE);
+                fetchingIcon.setVisibility(View.GONE);
+                fetchingIcon.setProgress(100);
+            } else if (f.fetchPending) {
+                muteIcon.setVisibility(View.GONE);
+                neutCounter.setVisibility(View.GONE);
+                posCounter.setVisibility(View.GONE);
+                savedCounter.setVisibility(View.GONE);
+                fetchingIcon.setVisibility(View.VISIBLE);
+                fetchingIcon.setProgress(0);
             } else if (currentState == StateFilter.SAVED) {
                 muteIcon.setVisibility(View.GONE);
                 neutCounter.setVisibility(View.GONE);
                 posCounter.setVisibility(View.GONE);
                 savedCounter.setVisibility(View.VISIBLE);
                 savedCounter.setText(Integer.toString(zeroForNull(feedSavedCounts.get(f.feedId))));
+                fetchingIcon.setVisibility(View.GONE);
+                fetchingIcon.setProgress(100);
             } else if (currentState == StateFilter.BEST) {
                 muteIcon.setVisibility(View.GONE);
                 neutCounter.setVisibility(View.GONE);
                 savedCounter.setVisibility(View.GONE);
                 posCounter.setVisibility(View.VISIBLE);
                 posCounter.setText(Integer.toString(checkNegativeUnreads(f.positiveCount)));
+                fetchingIcon.setVisibility(View.GONE);
+                fetchingIcon.setProgress(100);
             } else {
                 muteIcon.setVisibility(View.GONE);
                 savedCounter.setVisibility(View.GONE);
@@ -284,6 +299,8 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
                 } else {
                     posCounter.setVisibility(View.GONE);
                 }
+                fetchingIcon.setVisibility(View.GONE);
+                fetchingIcon.setProgress(100);
             }
             neutCounter.setTextSize(textSize * defaultTextSize_count);
             posCounter.setTextSize(textSize * defaultTextSize_count);
@@ -559,7 +576,11 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
         if (activeFolderChildren == null) return;
         int newFeedCount = 0;
         newFeedCount += socialFeedsOrdered.size();
-        newFeedCount += starredCountsByTag.size();
+        if (currentState == StateFilter.SAVED) {
+            // only count saved feeds if in saved mode, since the expectation is that we are
+            // counting to detect a zero-feeds-in-this-mode situation
+            newFeedCount += starredCountsByTag.size();
+        }
         for (List<Feed> folder : activeFolderChildren) {
             newFeedCount += folder.size();
         }

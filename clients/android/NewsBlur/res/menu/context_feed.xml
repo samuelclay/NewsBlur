@@ -35,4 +35,7 @@
 
     <item android:id="@+id/menu_unmute_feed"
           android:title="@string/menu_unmute_feed" />
+
+    <item android:id="@+id/menu_instafetch_feed"
+          android:title="@string/menu_instafetch_feed" />
 </menu>
