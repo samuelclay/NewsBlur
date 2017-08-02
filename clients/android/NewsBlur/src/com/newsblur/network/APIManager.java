@@ -631,6 +631,15 @@ public class APIManager {
         return response.getResponse(gson, NewsBlurResponse.class);
     }
 
+    public NewsBlurResponse instaFetch(String feedId) {
+        ValueMultimap values = new ValueMultimap();
+        values.put(APIConstants.PARAMETER_FEEDID, feedId);
+        // this param appears fixed and mandatory for the call to succeed
+        values.put(APIConstants.PARAMETER_RESET_FETCH, APIConstants.VALUE_FALSE);
+        APIResponse response = post(buildUrl(APIConstants.PATH_INSTA_FETCH), values);
+        return response.getResponse(gson, NewsBlurResponse.class);
+    }
+
     /* HTTP METHODS */
    
 	private APIResponse get(final String urlString) {

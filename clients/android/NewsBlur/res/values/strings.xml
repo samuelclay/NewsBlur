@@ -146,6 +146,7 @@
     <string name="menu_unmute_feed">Unmute feed</string>
     <string name="menu_mute_folder">Mute folder</string>
     <string name="menu_unmute_folder">Unmute folder</string>
+    <string name="menu_instafetch_feed">Insta-fetch stories</string>
     
     <string name="toast_story_unread">Story marked as unread</string>
 

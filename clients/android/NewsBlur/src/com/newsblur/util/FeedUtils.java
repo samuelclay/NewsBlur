@@ -448,6 +448,14 @@ public class FeedUtils {
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
+    public static void instaFetchFeed(Context context, String feedId) {
+        ReadingAction ra = ReadingAction.instaFetch(feedId);
+        dbHelper.enqueueAction(ra);
+        ra.doLocal(dbHelper);
+        NbActivity.updateAllActivities(NbActivity.UPDATE_METADATA);
+        triggerSync(context);
+    }
+
     public static FeedSet feedSetFromFolderName(String folderName) {
         return FeedSet.folder(folderName, getFeedIdsRecursive(folderName));
     }

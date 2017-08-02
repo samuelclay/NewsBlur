@@ -575,11 +575,16 @@ public class NBSyncService extends Service {
             RecountsRunning = true;
             NbActivity.updateAllActivities(NbActivity.UPDATE_STATUS);
 
-            // of all candidate feeds that were touched, now check to see if
-            // any of them have mismatched local and remote counts we need to reconcile
+            // of all candidate feeds that were touched, now check to see if any
+            // actually need their counts fetched
             Set<FeedSet> dirtySets = new HashSet<FeedSet>();
             for (FeedSet fs : RecountCandidates) {
+                // check for mismatched local and remote counts we need to reconcile
                 if (dbHelper.getUnreadCount(fs, StateFilter.SOME) != dbHelper.getLocalUnreadCount(fs, StateFilter.SOME)) {
+                    dirtySets.add(fs);
+                }
+                // check for feeds flagged for insta-fetch
+                if (dbHelper.isFeedSetFetchPending(fs)) {
                     dirtySets.add(fs);
                 }
             }
@@ -619,7 +624,7 @@ public class NBSyncService extends Service {
                 if (apiResponse.socialFeeds != null ) {
                     for (Map.Entry<String,UnreadCountResponse.UnreadMD> entry : apiResponse.socialFeeds.entrySet()) {
                         String feedId = entry.getKey().replaceAll(APIConstants.VALUE_PREFIX_SOCIAL, "");
-                        dbHelper.updateSocialFeedCounts(feedId, entry.getValue().getValues());
+                        dbHelper.updateSocialFeedCounts(feedId, entry.getValue().getValuesSocial());
                     }
                 }
                 RecountCandidates.clear();

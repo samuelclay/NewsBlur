@@ -12,6 +12,7 @@ import com.newsblur.network.domain.CommentResponse;
 import com.newsblur.network.domain.NewsBlurResponse;
 import com.newsblur.network.domain.StoriesResponse;
 import com.newsblur.network.APIManager;
+import com.newsblur.service.NBSyncService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +37,8 @@ public class ReadingAction implements Serializable {
         UNLIKE_COMMENT,
         MUTE_FEEDS,
         UNMUTE_FEEDS,
-        SET_NOTIFY
+        SET_NOTIFY,
+        INSTA_FETCH
     };
 
     private final long time;
@@ -210,6 +212,13 @@ public class ReadingAction implements Serializable {
         return ra;
     }
 
+    public static ReadingAction instaFetch(String feedId) {
+        ReadingAction ra = new ReadingAction();
+        ra.type = ActionType.INSTA_FETCH;
+        ra.feedId = feedId;
+        return ra;
+    }
+
 	public ContentValues toContentValues() {
 		ContentValues values = new ContentValues();
         values.put(DatabaseConstants.ACTION_TIME, time);
@@ -305,6 +314,10 @@ public class ReadingAction implements Serializable {
                 values.put(DatabaseConstants.ACTION_NOTIFY_TYPES, DatabaseConstants.JsonHelper.toJson(notifyTypes));
                 break;
 
+            case INSTA_FETCH:
+                values.put(DatabaseConstants.ACTION_FEED_ID, feedId);
+                break;
+
             default:
                 throw new IllegalStateException("cannot serialise uknown type of action.");
 
@@ -382,6 +395,8 @@ public class ReadingAction implements Serializable {
             ra.feedId = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_FEED_ID));
             ra.notifyFilter = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_NOTIFY_FILTER));
             ra.notifyTypes = DatabaseConstants.JsonHelper.fromJson(c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_NOTIFY_TYPES)), List.class);
+        } else if (ra.type == ActionType.INSTA_FETCH) {
+            ra.feedId = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_FEED_ID));
         } else {
             throw new IllegalStateException("cannot deserialise uknown type of action.");
         }
@@ -455,6 +470,13 @@ public class ReadingAction implements Serializable {
 
             case SET_NOTIFY:
                 result = apiManager.updateFeedNotifications(feedId, notifyTypes, notifyFilter);
+                break;
+
+            case INSTA_FETCH:
+                result = apiManager.instaFetch(feedId);
+                // also trigger a recount, which will unflag the feed as pending
+                NBSyncService.addRecountCandidates(FeedSet.singleFeed(feedId));
+                NBSyncService.flushRecounts();
                 break;
 
             default:
@@ -574,6 +596,11 @@ public class ReadingAction implements Serializable {
 
             case SET_NOTIFY:
                 impact |= NbActivity.UPDATE_METADATA;
+                break;
+
+            case INSTA_FETCH:
+                if (isFollowup) break; // non-idempotent and purely graphical
+                dbHelper.setFeedFetchPending(feedId);
                 break;
 
             default:

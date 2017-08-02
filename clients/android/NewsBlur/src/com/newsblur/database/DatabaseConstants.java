@@ -44,6 +44,7 @@ public class DatabaseConstants {
 	public static final String FEED_NEGATIVE_COUNT = "ng";
     public static final String FEED_NOTIFICATION_TYPES = "notification_types";
     public static final String FEED_NOTIFICATION_FILTER = "notification_filter";
+    public static final String FEED_FETCH_PENDING = "fetch_pending";
 
 	public static final String SOCIALFEED_TABLE = "social_feeds";
 	public static final String SOCIAL_FEED_ID = BaseColumns._ID;
@@ -181,7 +182,8 @@ public class DatabaseConstants {
 		FEED_TITLE + TEXT + ", " + 
 		FEED_UPDATED_SECONDS + INTEGER + ", " +
         FEED_NOTIFICATION_TYPES + TEXT + ", " +
-        FEED_NOTIFICATION_FILTER + TEXT +
+        FEED_NOTIFICATION_FILTER + TEXT + ", " +
+        FEED_FETCH_PENDING + TEXT +
 		")";
 	
 	static final String USER_SQL = "CREATE TABLE " + USER_TABLE + " (" + 

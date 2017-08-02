@@ -557,6 +557,29 @@ public class BlurDatabaseHelper {
         }
     }
 
+    public void setFeedFetchPending(String feedId) {
+        ContentValues values = new ContentValues();
+        values.put(DatabaseConstants.FEED_FETCH_PENDING, true);
+        synchronized (RW_MUTEX) {dbRW.update(DatabaseConstants.FEED_TABLE, values, DatabaseConstants.FEED_ID + " = ?", new String[]{feedId});}
+    }
+
+    public boolean isFeedSetFetchPending(FeedSet fs) {
+        if (fs.getSingleFeed() != null) {
+            String feedId = fs.getSingleFeed();
+            Cursor c = dbRO.query(DatabaseConstants.FEED_TABLE, 
+                                  new String[]{DatabaseConstants.FEED_FETCH_PENDING}, 
+                                  DatabaseConstants.FEED_ID + " = ? AND " + DatabaseConstants.FEED_FETCH_PENDING + " = ?", 
+                                  new String[]{feedId, "1"}, 
+                                  null, null, null);
+            try {
+                if (c.getCount() > 0) return true;
+            } finally {
+                closeQuietly(c);
+            }
+        }
+        return false;
+    }
+
     /**
      * Marks a story (un)read but does not adjust counts. Must stay idempotent an time-insensitive.
      */
