@@ -66,6 +66,7 @@
     <string name="overlay_count_toast_1">1 unread story</string>
     <string name="overlay_text">TEXT</string>
     <string name="overlay_story">STORY</string>
+    <string name="text_mode_unavailable">Sorry, the story\'s text could not be extracted.</string>
 
     <string name="state_all">ALL</string>
     <string name="state_unread">UNREAD</string>

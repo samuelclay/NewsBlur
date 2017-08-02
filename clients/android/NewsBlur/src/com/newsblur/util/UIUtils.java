@@ -151,15 +151,19 @@ public class UIUtils {
      * before the task completes, resulting in a crash.  This prevents the crash at the 
      * cost of the toast not being shown.
      */
-    public static void safeToast(Context c, int rid, int duration) {
+    public static void safeToast(final Activity c, final int rid, final int duration) {
         if (c != null) {
-            Toast.makeText(c, rid, duration).show();
+            c.runOnUiThread(new Runnable() { public void run() {
+                Toast.makeText(c, rid, duration).show();
+            }});
         }
     }
 
-    public static void safeToast(Context c, String text, int duration) {
+    public static void safeToast(final Activity c, final String text, final int duration) {
         if ((c != null) && (text != null)) {
-            Toast.makeText(c, text, duration).show();
+            c.runOnUiThread(new Runnable() { public void run() {
+                Toast.makeText(c, text, duration).show();
+            }});
         }
     }
 
