@@ -2434,6 +2434,7 @@ def starred_counts(request):
 def send_story_email(request):
     code       = 1
     message    = 'OK'
+    user       = get_user(request)
     story_id   = request.POST['story_id']
     feed_id    = request.POST['feed_id']
     to_addresses = request.POST.get('to', '').replace(',', ' ').replace('  ', ' ').strip().split(' ')
@@ -2444,8 +2445,17 @@ def send_story_email(request):
     comments   = comments[:2048] # Separated due to PyLint
     from_address = 'share@newsblur.com'
     share_user_profile = MSocialProfile.get_user(request.user.pk)
-
-    if not to_addresses:
+    
+    quota = 20 if user.profile.is_premium else 1
+    if share_user_profile.over_story_email_quota(quota=quota):
+        code = -1
+        if user.profile.is_premium:
+            message = 'You can only send %s stories per day by email.' % quota
+        else:
+            message = 'Upgrade to a premium subscription to send more than one story per day by email.'
+        logging.user(request, '~BRNOT ~BMSharing story by email to %s recipient, over quota: %s/%s' % 
+                              (len(to_addresses), story_id, feed_id))
+    elif not to_addresses:
         code = -1
         message = 'Please provide at least one email address.'
     elif not all(email_re.match(to_address) for to_address in to_addresses if to_addresses):
@@ -2490,6 +2500,9 @@ def send_story_email(request):
         except boto.ses.connection.ResponseError, e:
             code = -1
             message = "Email error: %s" % str(e)
+        
+        share_user_profile.save_sent_email()
+        
         logging.user(request, '~BMSharing story by email to %s recipient%s: ~FY~SB%s~SN~BM~FY/~SB%s' % 
                               (len(to_addresses), '' if len(to_addresses) == 1 else 's', 
                                story['story_title'][:50], feed and feed.feed_title[:50]))
