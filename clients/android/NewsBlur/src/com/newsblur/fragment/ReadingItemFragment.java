@@ -42,6 +42,7 @@ import com.newsblur.domain.Story;
 import com.newsblur.domain.UserDetails;
 import com.newsblur.service.NBSyncService;
 import com.newsblur.service.OriginalTextService;
+import com.newsblur.util.AppConstants;
 import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
@@ -486,7 +487,7 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
         if (story == null) return;
         if (! TextUtils.equals(story.storyHash, this.story.storyHash)) return;
         this.story = story;
-        com.newsblur.util.Log.d(this.getClass().getName(), "got fresh story");
+        if (AppConstants.VERBOSE_LOG) com.newsblur.util.Log.d(this.getClass().getName(), "got fresh story");
     }
 
     public void handleUpdate(int updateType) {
