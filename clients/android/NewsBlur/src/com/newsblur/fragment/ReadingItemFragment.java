@@ -436,14 +436,16 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
             } else {
                 selectedFeedView = DefaultFeedView.TEXT;
             }
-            Reading activity = (Reading) getActivity();
-            activity.defaultFeedViewChanged(selectedFeedView);
-            reloadStoryContent();
         }
+        Reading activity = (Reading) getActivity();
+        activity.defaultFeedViewChanged(selectedFeedView);
+        // telling the activity to change modes will chain a call to setSelectedFeedView()
     }
 
     public void setSelectedFeedView(DefaultFeedView newValue) {
-        selectedFeedView = newValue;
+        synchronized (selectedFeedView) {
+            selectedFeedView = newValue;
+        }
         reloadStoryContent();
     }
 
@@ -487,7 +489,7 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
         if (story == null) return;
         if (! TextUtils.equals(story.storyHash, this.story.storyHash)) return;
         this.story = story;
-        if (AppConstants.VERBOSE_LOG) com.newsblur.util.Log.d(this.getClass().getName(), "got fresh story");
+        if (AppConstants.VERBOSE_LOG) com.newsblur.util.Log.d(this, "got fresh story");
     }
 
     public void handleUpdate(int updateType) {
@@ -517,19 +519,18 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
                     if (result != null) {
                         if (OriginalTextService.NULL_STORY_TEXT.equals(result)) {
                             // the server reported that text mode is not available.  kick back to story mode
+                            com.newsblur.util.Log.d(this, "orig text not avail for story: " + story.storyHash);
                             UIUtils.safeToast(getActivity(), R.string.text_mode_unavailable, Toast.LENGTH_SHORT);
-                            synchronized (selectedFeedView) {
-                                selectedFeedView = DefaultFeedView.STORY;
-                                if (getActivity() != null) {
-                                    Reading activity = (Reading) getActivity();
-                                    activity.defaultFeedViewChanged(selectedFeedView);
-                                }
+                            if (getActivity() != null) {
+                                Reading activity = (Reading) getActivity();
+                                activity.defaultFeedViewChanged(DefaultFeedView.STORY);
                             }
                         } else {
                             ReadingItemFragment.this.originalText = result;
                         }
                         reloadStoryContent();
                     } else {
+                        com.newsblur.util.Log.d(this, "orig text not yet cached for story: " + story.storyHash);
                         if (getActivity() != null) setupWebview(getActivity().getResources().getString(R.string.orig_text_loading));
                         NBSyncService.getOriginalText(story.storyHash);
                         triggerSync();
@@ -552,7 +553,7 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
                     ReadingItemFragment.this.storyContent = result;
                     reloadStoryContent();
                 } else {
-                    Log.w(this.getClass().getName(), "couldn't find story content for existing story.");
+                    com.newsblur.util.Log.w(this, "couldn't find story content for existing story.");
                     Activity act = getActivity();
                     if (act != null) act.finish();
                 }

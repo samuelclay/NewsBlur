@@ -293,7 +293,6 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
                 // now that we have more stories, look again.
                 nextUnread();
             }
-            checkStoryCount(pager.getCurrentItem());
             updateOverlayNav();
             updateOverlayText();
         }
@@ -856,7 +855,6 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
         ReadingItemFragment item = getReadingFragment();
         if (item == null) return;
         item.switchSelectedFeedView();
-        updateOverlayText();
     }
 
     private ReadingItemFragment getReadingFragment() {
@@ -877,6 +875,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
         if (frag != null) frag.setSelectedFeedView(value);
         frag = readingAdapter.getExistingItem(pager.getCurrentItem()+1);
         if (frag != null) frag.setSelectedFeedView(value);
+        updateOverlayText();
     }
 
     @Override
