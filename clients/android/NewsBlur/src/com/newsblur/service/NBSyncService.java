@@ -28,6 +28,7 @@ import com.newsblur.network.domain.NewsBlurResponse;
 import com.newsblur.network.domain.StoriesResponse;
 import com.newsblur.network.domain.UnreadCountResponse;
 import com.newsblur.util.AppConstants;
+import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FileCache;
 import com.newsblur.util.NetworkUtils;
@@ -255,7 +256,7 @@ public class NBSyncService extends Service {
             syncActions();
             
             // these requests are expressly enqueued by the UI/user, do them next
-            syncPendingFeedStories();
+            syncPendingFeedStories(startId);
 
             syncMetadata(startId);
 
@@ -648,7 +649,7 @@ public class NBSyncService extends Service {
     /**
      * Fetch stories needed because the user is actively viewing a feed or folder.
      */
-    private void syncPendingFeedStories() {
+    private void syncPendingFeedStories(int startId) {
         // track whether we actually tried to handle the feedset and found we had nothing
         // more to do, in which case we will clear it
         boolean finished = false;
@@ -717,6 +718,8 @@ public class NBSyncService extends Service {
                 // re-do any very recent actions that were incorrectly overwritten by this page
                 finishActions();
                 NbActivity.updateAllActivities(NbActivity.UPDATE_STORY | NbActivity.UPDATE_STATUS);
+
+                prefetchOriginalText(apiResponse, startId);
             
                 FeedPagesSeen.put(fs, pageNumber);
                 totalStoriesSeen += apiResponse.stories.length;
@@ -817,6 +820,40 @@ public class NBSyncService extends Service {
     void insertStories(StoriesResponse apiResponse) {
         com.newsblur.util.Log.d(NBSyncService.class.getName(), "got stories from sub sync: " + apiResponse.stories.length);
         dbHelper.insertStories(apiResponse, false);
+    }
+
+    void prefetchOriginalText(StoriesResponse apiResponse, int startId) {
+        storyloop: for (Story story : apiResponse.stories) {
+            // only prefetch for unreads, so we don't grind to cache when the user scrolls
+            // through old read stories
+            if (story.read) continue storyloop;
+            // if the feed is viewed in text mode by default, fetch that for offline reading
+            DefaultFeedView mode = PrefsUtils.getDefaultFeedViewForFeed(this, story.feedId);
+            if (mode == DefaultFeedView.TEXT) {
+                if (dbHelper.getStoryText(story.storyHash) == null) {
+                    originalTextService.addHash(story.storyHash);
+                }
+            }
+        }
+        originalTextService.startConditional(startId);
+    }
+
+    void prefetchImages(StoriesResponse apiResponse, int startId) {
+        storyloop: for (Story story : apiResponse.stories) {
+            // only prefetch for unreads, so we don't grind to cache when the user scrolls
+            // through old read stories
+            if (story.read) continue storyloop;
+            // if the story provides known images we'll need for it, fetch those for offline reading
+            if (story.imageUrls != null) {
+                for (String url : story.imageUrls) {
+                    imagePrefetchService.addUrl(url);
+                }
+            }
+            if (story.thumbnailUrl != null) {
+                imagePrefetchService.addThumbnailUrl(story.thumbnailUrl);
+            }
+        }
+        imagePrefetchService.startConditional(startId);
     }
 
     void pushNotifications() {
@@ -1052,10 +1089,6 @@ public class NBSyncService extends Service {
     public static void resetFetchState(FeedSet fs) {
         com.newsblur.util.Log.d(NBSyncService.class.getName(), "requesting feed fetch state reset");
         ResetFeed = fs;
-    }
-
-    public static void getOriginalText(String hash) {
-        OriginalTextService.addHash(hash);
     }
 
     public static void addRecountCandidates(FeedSet fs) {

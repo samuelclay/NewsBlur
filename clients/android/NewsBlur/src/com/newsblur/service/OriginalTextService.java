@@ -48,6 +48,7 @@ public class OriginalTextService extends SubService {
         try {
             fetchloop: for (String hash : batch) {
                 if (parent.stopSync()) return;
+                fetchedHashes.add(hash);
                 String result = null;
                 StoryTextResponse response = parent.apiManager.getStoryText(FeedUtils.inferFeedId(hash), hash);
                 if (response != null) {
@@ -61,7 +62,6 @@ public class OriginalTextService extends SubService {
                     }
                 }
                 if (result != null) parent.dbHelper.putStoryText(hash, result);
-                fetchedHashes.add(hash);
             }
         } finally {
             gotData(NbActivity.UPDATE_TEXT);
@@ -79,6 +79,11 @@ public class OriginalTextService extends SubService {
 
     public static int getPendingCount() {
         return (Hashes.size() + PriorityHashes.size());
+    }
+
+    @Override
+    public boolean haveWork() {
+        return (getPendingCount() > 0);
     }
 
     public static void clear() {

@@ -40,7 +40,6 @@ import com.newsblur.activity.Reading;
 import com.newsblur.domain.Classifier;
 import com.newsblur.domain.Story;
 import com.newsblur.domain.UserDetails;
-import com.newsblur.service.NBSyncService;
 import com.newsblur.service.OriginalTextService;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.DefaultFeedView;
@@ -532,7 +531,7 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
                     } else {
                         com.newsblur.util.Log.d(this, "orig text not yet cached for story: " + story.storyHash);
                         if (getActivity() != null) setupWebview(getActivity().getResources().getString(R.string.orig_text_loading));
-                        NBSyncService.getOriginalText(story.storyHash);
+                        OriginalTextService.addPriorityHash(story.storyHash);
                         triggerSync();
                     }
                 }
