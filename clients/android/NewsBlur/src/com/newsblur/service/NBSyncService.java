@@ -828,7 +828,7 @@ public class NBSyncService extends Service {
             // through old read stories
             if (story.read) continue storyloop;
             // if the feed is viewed in text mode by default, fetch that for offline reading
-            DefaultFeedView mode = PrefsUtils.getDefaultFeedViewForFeed(this, story.feedId);
+            DefaultFeedView mode = PrefsUtils.getDefaultViewModeForFeed(this, story.feedId);
             if (mode == DefaultFeedView.TEXT) {
                 if (dbHelper.getStoryText(story.storyHash) == null) {
                     originalTextService.addHash(story.storyHash);

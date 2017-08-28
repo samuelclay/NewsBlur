@@ -186,7 +186,7 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
         Reading activity = (Reading) getActivity();
         fs = activity.getFeedSet();
 
-        selectedFeedView = PrefsUtils.getDefaultFeedView(activity, fs);
+        selectedFeedView = PrefsUtils.getDefaultViewModeForFeed(activity, story.feedId);
 
         registerForContextMenu(web);
         web.setCustomViewLayout(webviewCustomViewLayout);
@@ -427,28 +427,33 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
 		}
 	}
 
-    public void switchSelectedFeedView() {
+    public void switchSelectedViewMode() {
         synchronized (selectedFeedView) {
             // if we were already in text mode, switch back to story mode
             if (selectedFeedView == DefaultFeedView.TEXT) {
-                selectedFeedView = DefaultFeedView.STORY;
+                setViewMode(DefaultFeedView.STORY);
             } else {
-                selectedFeedView = DefaultFeedView.TEXT;
+                setViewMode(DefaultFeedView.TEXT);
             }
         }
         Reading activity = (Reading) getActivity();
-        activity.defaultFeedViewChanged(selectedFeedView);
-        // telling the activity to change modes will chain a call to setSelectedFeedView()
+        activity.viewModeChanged();
+        // telling the activity to change modes will chain a call to viewModeChanged()
     }
 
-    public void setSelectedFeedView(DefaultFeedView newValue) {
+    private void setViewMode(DefaultFeedView newMode) {
+        selectedFeedView = newMode;
+        PrefsUtils.setDefaultViewModeForFeed(getActivity(), story.feedId, newMode);
+    }
+
+    public void viewModeChanged() {
         synchronized (selectedFeedView) {
-            selectedFeedView = newValue;
+            selectedFeedView = PrefsUtils.getDefaultViewModeForFeed(getActivity(), story.feedId);
         }
         reloadStoryContent();
     }
 
-    public DefaultFeedView getSelectedFeedView() {
+    public DefaultFeedView getSelectedViewMode() {
         return selectedFeedView;
     }
 
@@ -521,8 +526,9 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
                             com.newsblur.util.Log.d(this, "orig text not avail for story: " + story.storyHash);
                             UIUtils.safeToast(getActivity(), R.string.text_mode_unavailable, Toast.LENGTH_SHORT);
                             if (getActivity() != null) {
+                                setViewMode(DefaultFeedView.STORY);
                                 Reading activity = (Reading) getActivity();
-                                activity.defaultFeedViewChanged(DefaultFeedView.STORY);
+                                activity.viewModeChanged();
                             }
                         } else {
                             ReadingItemFragment.this.originalText = result;
@@ -560,7 +566,20 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
         }.execute();
     }
 
-	private void setupWebview(String storyText) {
+	private void setupWebview(final String storyText) {
+        if (getActivity() == null) {
+            // sometimes we get called before the activity is ready. abort, since we will get a refresh when
+            // the cursor loads
+            return;
+        }
+        getActivity().runOnUiThread(new Runnable() {
+            public void run() {
+                _setupWebview(storyText);
+            }
+        });
+    }
+
+    private void _setupWebview(String storyText) {
         if (getActivity() == null) {
             // this method gets called by async UI bits that might hold stale fragment references with no assigned
             // activity.  If this happens, just abort the call.

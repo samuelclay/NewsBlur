@@ -196,11 +196,6 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
             outState.putInt(BUNDLE_STARTING_UNREAD, startingUnreadCount);
         }
 
-        ReadingItemFragment item = getReadingFragment();
-        if (item != null) {
-            outState.putSerializable(BUNDLE_SELECTED_FEED_VIEW, item.getSelectedFeedView());
-        }
-
         if (ViewUtils.isSystemUIHidden(getWindow().getDecorView())) {
             outState.putBoolean(BUNDLE_IS_FULLSCREEN, true);
         }
@@ -603,7 +598,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
             public void run() {
                 ReadingItemFragment item = getReadingFragment();
                 if (item == null) return;
-                if (item.getSelectedFeedView() == DefaultFeedView.STORY) {
+                if (item.getSelectedViewMode() == DefaultFeedView.STORY) {
                     overlayText.setBackgroundResource(ThemeUtils.getSelectorOverlayBackgroundText(Reading.this));
                     overlayText.setText(R.string.overlay_text);
                 } else {
@@ -852,9 +847,15 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
     }
 
     public void overlayText(View v) {
-        ReadingItemFragment item = getReadingFragment();
+        final ReadingItemFragment item = getReadingFragment();
         if (item == null) return;
-        item.switchSelectedFeedView();
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... params) {
+                item.switchSelectedViewMode();
+                return null;
+            }
+        }.execute();
     }
 
     private ReadingItemFragment getReadingFragment() {
@@ -866,15 +867,14 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
         return this.fs;
     }
 
-    public void defaultFeedViewChanged(DefaultFeedView value) {
-        PrefsUtils.setDefaultFeedView(this, fs, value);
+    public void viewModeChanged() {
         ReadingItemFragment frag = readingAdapter.getExistingItem(pager.getCurrentItem());
-        frag.setSelectedFeedView(value);
+        frag.viewModeChanged();
         // fragments to the left or the right may have already preloaded content and need to also switch
         frag = readingAdapter.getExistingItem(pager.getCurrentItem()-1);
-        if (frag != null) frag.setSelectedFeedView(value);
+        if (frag != null) frag.viewModeChanged();
         frag = readingAdapter.getExistingItem(pager.getCurrentItem()+1);
-        if (frag != null) frag.setSelectedFeedView(value);
+        if (frag != null) frag.viewModeChanged();
         updateOverlayText();
     }
 

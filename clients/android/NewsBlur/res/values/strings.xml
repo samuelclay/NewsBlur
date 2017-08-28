@@ -195,8 +195,6 @@
     <string name="delete_feed_message">Delete feed \&quot;%s\&quot;?</string>
     <string name="unfollow_message">Unfollow \&quot;%s\&quot;?</string>
     
-    <string name="menu_default_view">Default View</string>
-    
     <string name="settings">Preferences</string>
 
     <string name="settings_cat_offline">Offline</string>

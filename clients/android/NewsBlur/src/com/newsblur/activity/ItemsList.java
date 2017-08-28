@@ -17,15 +17,12 @@ import butterknife.ButterKnife;
 import butterknife.Bind;
 
 import com.newsblur.R;
-import com.newsblur.fragment.DefaultFeedViewDialogFragment;
 import com.newsblur.fragment.ItemListFragment;
 import com.newsblur.fragment.ReadFilterDialogFragment;
 import com.newsblur.fragment.StoryOrderDialogFragment;
 import com.newsblur.fragment.TextSizeDialogFragment;
 import com.newsblur.service.NBSyncService;
 import com.newsblur.util.AppConstants;
-import com.newsblur.util.DefaultFeedView;
-import com.newsblur.util.DefaultFeedViewChangedListener;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
@@ -36,7 +33,7 @@ import com.newsblur.util.StoryOrder;
 import com.newsblur.util.StoryOrderChangedListener;
 import com.newsblur.util.UIUtils;
 
-public abstract class ItemsList extends NbActivity implements StoryOrderChangedListener, ReadFilterChangedListener, DefaultFeedViewChangedListener, OnSeekBarChangeListener {
+public abstract class ItemsList extends NbActivity implements StoryOrderChangedListener, ReadFilterChangedListener, OnSeekBarChangeListener {
 
     public static final String EXTRA_FEED_SET = "feed_set";
 
@@ -153,11 +150,6 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
             ReadFilterDialogFragment readFilter = ReadFilterDialogFragment.newInstance(currentValue);
             readFilter.show(getFragmentManager(), READ_FILTER);
             return true;
-        } else if (item.getItemId() == R.id.menu_default_view) {
-            DefaultFeedView currentValue = PrefsUtils.getDefaultFeedView(this, fs);
-            DefaultFeedViewDialogFragment readFilter = DefaultFeedViewDialogFragment.newInstance(currentValue);
-            readFilter.show(getFragmentManager(), DEFAULT_FEED_VIEW);
-            return true;
 		} else if (item.getItemId() == R.id.menu_textsize) {
 			TextSizeDialogFragment textSize = TextSizeDialogFragment.newInstance(PrefsUtils.getListTextSize(this), TextSizeDialogFragment.TextSizeType.ListText);
 			textSize.show(getFragmentManager(), TextSizeDialogFragment.class.getName());
@@ -255,15 +247,6 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
         NBSyncService.resetFetchState(fs);
         triggerSync();
     }
-
-    @Override
-    public void defaultFeedViewChanged(DefaultFeedView value) {
-        PrefsUtils.setDefaultFeedView(this, fs, value);
-        if (itemListFragment != null) {
-            itemListFragment.setDefaultFeedView(value);
-        }
-    }
-
 
     // NB: this callback is for the text size slider
 	@Override
