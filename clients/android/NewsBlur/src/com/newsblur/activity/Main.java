@@ -40,6 +40,8 @@ import com.newsblur.view.StateToggleButton.StateChangedListener;
 
 public class Main extends NbActivity implements StateChangedListener, SwipeRefreshLayout.OnRefreshListener, AbsListView.OnScrollListener, PopupMenu.OnMenuItemClickListener, OnSeekBarChangeListener {
 
+    public static final String EXTRA_FORCE_SHOW_FEED_ID = "force_show_feed_id";
+
 	private FolderListFragment folderFeedList;
 	private FragmentManager fragmentManager;
     private boolean isLightTheme;
@@ -94,6 +96,12 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
 	}
 
     @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+    }
+
+    @Override
     protected void onResume() {
         try {
             // due to weird backstack operations coming from notified reading activities,
@@ -102,6 +110,11 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         } catch (Exception e) {
             com.newsblur.util.Log.e(getClass().getName(), "error resuming Main", e);
             finish();
+        }
+
+        String forceShowFeedId = getIntent().getStringExtra(EXTRA_FORCE_SHOW_FEED_ID);
+        if (forceShowFeedId != null) {
+            folderFeedList.forceShowFeed(forceShowFeedId);
         }
 
         // triggerSync() might not actually do enough to push a UI update if background sync has been

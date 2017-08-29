@@ -28,6 +28,7 @@ import com.newsblur.domain.Story;
 import com.newsblur.domain.ValueMultimap;
 import static com.newsblur.network.APIConstants.buildUrl;
 import com.newsblur.network.domain.ActivitiesResponse;
+import com.newsblur.network.domain.AddFeedResponse;
 import com.newsblur.network.domain.CommentResponse;
 import com.newsblur.network.domain.FeedFolderResponse;
 import com.newsblur.network.domain.InteractionsResponse;
@@ -578,14 +579,11 @@ public class APIManager {
         return (CommentResponse) response.getResponse(gson, CommentResponse.class);
 	}
 
-	public boolean addFeed(String feedUrl, String folderName) {
+	public AddFeedResponse addFeed(String feedUrl) {
 		ContentValues values = new ContentValues();
 		values.put(APIConstants.PARAMETER_URL, feedUrl);
-		if (!TextUtils.isEmpty(folderName)) {
-			values.put(APIConstants.PARAMETER_FOLDER, folderName);
-		}
-		final APIResponse response = post(buildUrl(APIConstants.PATH_ADD_FEED), values);
-		return (!response.isError());
+		APIResponse response = post(buildUrl(APIConstants.PATH_ADD_FEED), values);
+		return (AddFeedResponse) response.getResponse(gson, AddFeedResponse.class);
 	}
 
 	public FeedResult[] searchForFeed(String searchTerm) {
