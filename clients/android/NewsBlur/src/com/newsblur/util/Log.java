@@ -34,9 +34,9 @@ public class Log {
 
     private static final String LOG_NAME_INTERNAL = "logbuffer.txt";
     private static final int MAX_QUEUE_SIZE = 10;
-    private static final int MAX_LINE_SIZE = 4 * 1024;
-    private static final int TRIM_LINES = 384;                 // trim the log down to 384 lines
-    private static final long MAX_SIZE = 512L * MAX_LINE_SIZE; // when it is at least 512 lines long
+    private static final int MAX_LINE_SIZE = 2 * 1024;
+    private static final int TRIM_LINES = 1000;                 // trim the log down to 1000 lines
+    private static final long MAX_SIZE = 2000L * MAX_LINE_SIZE; // when it is at least 2000 lines long
 
     private static Queue<String> q;
     private static ExecutorService executor;
