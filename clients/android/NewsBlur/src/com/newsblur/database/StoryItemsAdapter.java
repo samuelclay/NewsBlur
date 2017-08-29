@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.SimpleCursorAdapter;
@@ -111,11 +112,32 @@ public class StoryItemsAdapter extends SimpleCursorAdapter {
     @Override
     public synchronized long getItemId(int position) {
         if (cursor == null || cursor.isClosed() || cursor.getColumnCount() == 0 || position >= cursor.getCount() || position < 0) return 0;
-        return super.getItemId(position);
+        try {
+            return super.getItemId(position);
+        } catch (IllegalStateException ise) {
+            // despite all the checks above, this can still async fail if the curor is closed by the loader outside of our control
+            return 0;
+        }
+    }
+
+    @Override
+    public synchronized View getView(int position, View convertView, ViewGroup parent) {
+        if (cursor == null || cursor.isClosed() || cursor.getColumnCount() == 0 || position >= cursor.getCount() || position < 0) return new View(context);
+        try {
+            return super.getView(position, convertView, parent);
+        } catch (IllegalStateException ise) {
+            // despite all the checks above, this can still async fail if the curor is closed by the loader outside of our control
+            return new View(context);
+        }
     }
 
 	@Override
 	public synchronized void bindView(View v, Context context, Cursor cursor) {
+        // see if this is a valid view for us to bind
+        if (v.findViewById(R.id.row_item_title) == null) {
+            com.newsblur.util.Log.w(this, "asked to bind wrong type of view");
+            return;
+        }
         super.bindView(v, context, cursor);
 
         TextView itemTitle = (TextView) v.findViewById(R.id.row_item_title);
