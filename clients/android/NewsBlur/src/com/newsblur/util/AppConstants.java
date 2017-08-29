@@ -51,7 +51,7 @@ public class AppConstants {
     public static final long API_BACKGROUND_BACKOFF_MILLIS = 5L * 60L * 1000L;
 
     // timeouts for API calls, set to something more sane than the default of infinity
-    public static final long API_CONN_TIMEOUT_SECONDS = 45L;
+    public static final long API_CONN_TIMEOUT_SECONDS = 30L;
     public static final long API_READ_TIMEOUT_SECONDS = 120L;
 
     // timeouts for image prefetching, which are a bit tighter, since they are only for caching
