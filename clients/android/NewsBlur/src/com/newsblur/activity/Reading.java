@@ -74,8 +74,6 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
     private static final int OVERLAY_MIN_WIDTH_DP = 355;
 
 	protected StateFilter intelState;
-    protected StoryOrder storyOrder;
-    protected ReadFilter readFilter;
 
     // Activities navigate to a particular story by hash.
     // We can find it once we have the cursor.
@@ -111,7 +109,6 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
     private int lastVScrollPos = 0;
 
     private boolean unreadSearchActive = false;
-    private boolean unreadSearchStarted = false;
 
     private List<Story> pageHistory;
 
@@ -147,8 +144,6 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
         }
 
 		intelState = PrefsUtils.getStateFilter(this);
-        storyOrder = PrefsUtils.getStoryOrder(this, fs);
-        readFilter = PrefsUtils.getReadFilter(this, fs);
         volumeKeyNavigation = PrefsUtils.getVolumeKeyNavigation(this);
 
         // were we fullscreen before rotation?
@@ -730,7 +725,6 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
      */
     private void nextUnread() {
         unreadSearchActive = true;
-        unreadSearchStarted = true;
 
         // if we somehow got tapped before construction or are running during destruction, stop and
         // let either finish. search will happen when the cursor is pushed.

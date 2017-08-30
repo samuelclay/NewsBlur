@@ -23,7 +23,6 @@ public abstract class ActivityDetailsAdapter extends ArrayAdapter<ActivityDetail
     private LayoutInflater inflater;
     protected final String ago;
     protected ForegroundColorSpan linkColor, contentColor, quoteColor;
-    private String TAG = "ActivitiesAdapter";
     protected UserDetails currentUserDetails;
     protected final boolean userIsYou;
 

@@ -99,7 +99,6 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
     /** Flat names of folders explicity closed by the user. */
     private Set<String> closedFolders = new HashSet<String>();
 
-	private Context context;
 	private LayoutInflater inflater;
 	private StateFilter currentState;
     
@@ -116,7 +115,6 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
     public String lastFolderViewed;
 
 	public FolderListAdapter(Context context, StateFilter currentState) {
-		this.context = context;
         this.currentState = currentState;
 		this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 

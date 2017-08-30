@@ -17,8 +17,6 @@ public class FeedResult {
 	
 	public String label;
 	
-	public String id;
-	
 	public String favicon;
 	
 }

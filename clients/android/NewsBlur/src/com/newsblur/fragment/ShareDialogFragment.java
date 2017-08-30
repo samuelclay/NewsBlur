@@ -26,7 +26,6 @@ public class ShareDialogFragment extends DialogFragment {
 	private Story story;
 	private UserDetails user;
 	private Comment previousComment;
-	private boolean hasShared = false;
     private EditText commentEditText;
     private String sourceUserId;
 

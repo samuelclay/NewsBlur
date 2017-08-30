@@ -36,7 +36,6 @@ public class AddFeedExternal extends NbActivity implements AddFeedFragment.AddFe
                                UIUtils.getColor(this, R.color.refresh_4));
 
         Intent intent = getIntent();
-        String action = intent.getAction();
         Uri uri = intent.getData();
         
         com.newsblur.util.Log.d(this, "intent filter caught feed-like URI: " + uri);
