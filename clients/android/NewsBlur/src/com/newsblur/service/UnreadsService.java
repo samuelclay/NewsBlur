@@ -2,7 +2,6 @@ package com.newsblur.service;
 
 import android.util.Log;
 
-import com.newsblur.domain.Story;
 import com.newsblur.network.domain.StoriesResponse;
 import com.newsblur.network.domain.UnreadStoryHashesResponse;
 import com.newsblur.util.AppConstants;
