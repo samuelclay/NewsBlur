@@ -4,26 +4,28 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.DialogFragment;
 import android.widget.Toast;
 
 import com.newsblur.R;
+import com.newsblur.activity.Main;
 import com.newsblur.network.APIManager;
+import com.newsblur.network.domain.AddFeedResponse;
 import com.newsblur.service.NBSyncService;
+import com.newsblur.util.UIUtils;
 
 public class AddFeedFragment extends DialogFragment {
 
-	private static final String FEED_ID = "feed_url";
+	private static final String FEED_URI = "feed_url";
 	private static final String FEED_NAME = "feed_name";
-	private APIManager apiManager;
 
-
-	public static AddFeedFragment newInstance(final String feedId, final String feedName) {
+	public static AddFeedFragment newInstance(String feedUri, String feedName) {
 		AddFeedFragment frag = new AddFeedFragment();
 		Bundle args = new Bundle();
-		args.putString(FEED_ID, feedId);
+		args.putString(FEED_URI, feedUri);
 		args.putString(FEED_NAME, feedName);
 		frag.setArguments(args);
 		return frag;
@@ -33,7 +35,9 @@ public class AddFeedFragment extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         final String addFeedString = getResources().getString(R.string.add_feed_message);
         final Activity activity = getActivity();
-        apiManager = new APIManager(activity);
+        final APIManager apiManager = new APIManager(activity);
+        final Intent intent = new Intent(activity, Main.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setMessage(String.format(addFeedString, getArguments().getString(FEED_NAME)));
@@ -41,23 +45,25 @@ public class AddFeedFragment extends DialogFragment {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 
-                new AsyncTask<Void, Void, Boolean>() {
+                new AsyncTask<Void, Void, AddFeedResponse>() {
                     @Override
-                    protected Boolean doInBackground(Void... arg) {
-                        return apiManager.addFeed(getArguments().getString(FEED_ID), null);
+                    protected AddFeedResponse doInBackground(Void... arg) {
+                        ((AddFeedProgressListener) activity).addFeedStarted();
+                        return apiManager.addFeed(getArguments().getString(FEED_URI));
                     }
 
                     @Override
-                    protected void onPostExecute(Boolean result) {
-                        if (result) {
-                            activity.finish();
+                    protected void onPostExecute(AddFeedResponse result) {
+                        if (!result.isError()) {
                             // trigger a sync when we return to Main so that the new feed will show up
                             NBSyncService.forceFeedsFolders();
-                            AddFeedFragment.this.dismiss();
+                            intent.putExtra(Main.EXTRA_FORCE_SHOW_FEED_ID, result.feed.feedId);
                         } else {
-                            AddFeedFragment.this.dismiss();
-                            Toast.makeText(activity, "Error adding feed", Toast.LENGTH_SHORT).show();
+                            UIUtils.safeToast(activity, R.string.add_feed_error, Toast.LENGTH_SHORT);
                         }
+                        activity.startActivity(intent);
+                        activity.finish();
+                        AddFeedFragment.this.dismiss();
                     };
                 }.execute();
             }
@@ -66,8 +72,14 @@ public class AddFeedFragment extends DialogFragment {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 AddFeedFragment.this.dismiss();
+                activity.startActivity(intent);
+                activity.finish();
             }
         });
         return builder.create();
+    }
+
+    public interface AddFeedProgressListener {
+        public abstract void addFeedStarted();
     }
 }

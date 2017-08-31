@@ -31,7 +31,6 @@ import com.newsblur.domain.UserProfile;
 import com.newsblur.fragment.ReplyDialogFragment;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
-import com.newsblur.util.UIUtils;
 import com.newsblur.util.ViewUtils;
 import com.newsblur.view.FlowLayout;
 

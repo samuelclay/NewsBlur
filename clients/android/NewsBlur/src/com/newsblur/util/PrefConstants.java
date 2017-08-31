@@ -45,7 +45,6 @@ public class PrefConstants {
     public static final String SHOW_PUBLIC_COMMENTS = "show_public_comments";
 
     public static final String FEED_DEFAULT_FEED_VIEW_PREFIX = "feed_default_feed_view_";
-    public static final String FOLDER_DEFAULT_FEED_VIEW_PREFIX = "folder_default_feed_view_";
 
     public static final String READ_STORIES_FOLDER_NAME = "read_stories";
     public static final String SAVED_STORIES_FOLDER_NAME = "saved_stories";

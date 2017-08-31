@@ -50,6 +50,9 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
     private final static float defaultTextSize_groupName = 13;
     private final static float defaultTextSize_count = 14;
 
+    private final static float NONZERO_UNREADS_ALPHA = 0.87f;
+    private final static float ZERO_UNREADS_ALPHA = 0.70f;
+
     /** Social feeds, indexed by feed ID. */
     private Map<String,SocialFeed> socialFeeds = Collections.emptyMap();
     /** Social feed in display order. */
@@ -96,7 +99,6 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
     /** Flat names of folders explicity closed by the user. */
     private Set<String> closedFolders = new HashSet<String>();
 
-	private Context context;
 	private LayoutInflater inflater;
 	private StateFilter currentState;
     
@@ -113,7 +115,6 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
     public String lastFolderViewed;
 
 	public FolderListAdapter(Context context, StateFilter currentState) {
-		this.context = context;
         this.currentState = currentState;
 		this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
@@ -216,7 +217,8 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
             TextView nameView = ((TextView) v.findViewById(R.id.row_socialfeed_name));
             nameView.setText(f.feedTitle);
             nameView.setTextSize(textSize * defaultTextSize_childName);
-            FeedUtils.iconLoader.displayImage(f.photoUrl, ((ImageView) v.findViewById(R.id.row_socialfeed_icon)), 0, false);
+            ImageView iconView = (ImageView) v.findViewById(R.id.row_socialfeed_icon);
+            FeedUtils.iconLoader.displayImage(f.photoUrl, iconView, 0, false);
             TextView neutCounter = ((TextView) v.findViewById(R.id.row_socialsumneu));
             if (f.neutralCount > 0 && currentState != StateFilter.BEST) {
                 neutCounter.setVisibility(View.VISIBLE);
@@ -233,12 +235,20 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
             }
             neutCounter.setTextSize(textSize * defaultTextSize_count);
             posCounter.setTextSize(textSize * defaultTextSize_count);
+            if ((f.neutralCount <= 0) && (f.positiveCount <= 0)) {
+                nameView.setAlpha(ZERO_UNREADS_ALPHA);
+                iconView.setAlpha(ZERO_UNREADS_ALPHA);
+            } else {
+                nameView.setAlpha(NONZERO_UNREADS_ALPHA);
+                iconView.setAlpha(NONZERO_UNREADS_ALPHA);
+            }
         } else if (isRowSavedStories(groupPosition)) {
             if (v == null) v = inflater.inflate(R.layout.row_saved_tag, parent, false);
             StarredCount sc = starredCountsByTag.get(childPosition);
             TextView nameView =((TextView) v.findViewById(R.id.row_tag_name));
             nameView.setText(sc.tag);
             nameView.setTextSize(textSize * defaultTextSize_childName);
+            nameView.setAlpha(NONZERO_UNREADS_ALPHA);
             TextView savedCounter =((TextView) v.findViewById(R.id.row_saved_tag_sum));
             savedCounter.setText(Integer.toString(checkNegativeUnreads(sc.count)));
             savedCounter.setTextSize(textSize * defaultTextSize_count);
@@ -248,7 +258,8 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
             TextView nameView =((TextView) v.findViewById(R.id.row_feedname));
             nameView.setText(f.title);
             nameView.setTextSize(textSize * defaultTextSize_childName);
-            FeedUtils.iconLoader.displayImage(f.faviconUrl, ((ImageView) v.findViewById(R.id.row_feedfavicon)), 0, false);
+            ImageView iconView = (ImageView) v.findViewById(R.id.row_feedfavicon);
+            FeedUtils.iconLoader.displayImage(f.faviconUrl, iconView, 0, false);
             TextView neutCounter = ((TextView) v.findViewById(R.id.row_feedneutral));
             TextView posCounter = ((TextView) v.findViewById(R.id.row_feedpositive));
             TextView savedCounter = ((TextView) v.findViewById(R.id.row_feedsaved));
@@ -261,6 +272,8 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
                 savedCounter.setVisibility(View.GONE);
                 fetchingIcon.setVisibility(View.GONE);
                 fetchingIcon.setProgress(100);
+                nameView.setAlpha(ZERO_UNREADS_ALPHA);
+                iconView.setAlpha(ZERO_UNREADS_ALPHA);
             } else if (f.fetchPending) {
                 muteIcon.setVisibility(View.GONE);
                 neutCounter.setVisibility(View.GONE);
@@ -268,6 +281,8 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
                 savedCounter.setVisibility(View.GONE);
                 fetchingIcon.setVisibility(View.VISIBLE);
                 fetchingIcon.setProgress(0);
+                nameView.setAlpha(NONZERO_UNREADS_ALPHA);
+                iconView.setAlpha(NONZERO_UNREADS_ALPHA);
             } else if (currentState == StateFilter.SAVED) {
                 muteIcon.setVisibility(View.GONE);
                 neutCounter.setVisibility(View.GONE);
@@ -276,14 +291,24 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
                 savedCounter.setText(Integer.toString(zeroForNull(feedSavedCounts.get(f.feedId))));
                 fetchingIcon.setVisibility(View.GONE);
                 fetchingIcon.setProgress(100);
+                nameView.setAlpha(NONZERO_UNREADS_ALPHA);
+                iconView.setAlpha(NONZERO_UNREADS_ALPHA);
             } else if (currentState == StateFilter.BEST) {
                 muteIcon.setVisibility(View.GONE);
                 neutCounter.setVisibility(View.GONE);
                 savedCounter.setVisibility(View.GONE);
                 posCounter.setVisibility(View.VISIBLE);
-                posCounter.setText(Integer.toString(checkNegativeUnreads(f.positiveCount)));
                 fetchingIcon.setVisibility(View.GONE);
                 fetchingIcon.setProgress(100);
+                if (f.positiveCount <= 0) {
+                    posCounter.setVisibility(View.GONE);
+                    nameView.setAlpha(ZERO_UNREADS_ALPHA);
+                    iconView.setAlpha(ZERO_UNREADS_ALPHA);
+                } else {
+                    posCounter.setText(Integer.toString(checkNegativeUnreads(f.positiveCount)));
+                    nameView.setAlpha(NONZERO_UNREADS_ALPHA);
+                    iconView.setAlpha(NONZERO_UNREADS_ALPHA);
+                }
             } else {
                 muteIcon.setVisibility(View.GONE);
                 savedCounter.setVisibility(View.GONE);
@@ -301,6 +326,13 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
                 }
                 fetchingIcon.setVisibility(View.GONE);
                 fetchingIcon.setProgress(100);
+                if ((f.neutralCount <= 0) && (f.positiveCount <= 0)) {
+                    nameView.setAlpha(ZERO_UNREADS_ALPHA);
+                    iconView.setAlpha(ZERO_UNREADS_ALPHA);
+                } else {
+                    nameView.setAlpha(NONZERO_UNREADS_ALPHA);
+                    iconView.setAlpha(NONZERO_UNREADS_ALPHA);
+                }
             }
             neutCounter.setTextSize(textSize * defaultTextSize_count);
             posCounter.setTextSize(textSize * defaultTextSize_count);

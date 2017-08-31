@@ -112,6 +112,11 @@ public class ImagePrefetchService extends SubService {
         return (StoryImageQueue.size() + ThumbnailQueue.size());
     }
 
+    @Override
+    public boolean haveWork() {
+        return (getPendingCount() > 0);
+    }
+
     public static void clear() {
         StoryImageQueue.clear();
         ThumbnailQueue.clear();

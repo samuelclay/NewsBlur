@@ -32,7 +32,6 @@ public abstract class ReadingAdapter extends FragmentStatePagerAdapter {
         } else {
             stories.moveToPosition(position);
             Story story = Story.fromCursor(stories);
-            String tag = this.getClass().getName() + story.storyHash;
             ReadingItemFragment frag = getReadingItemFragment(story);
             return frag;
         }

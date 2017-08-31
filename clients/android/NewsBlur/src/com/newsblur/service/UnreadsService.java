@@ -2,11 +2,9 @@ package com.newsblur.service;
 
 import android.util.Log;
 
-import com.newsblur.domain.Story;
 import com.newsblur.network.domain.StoriesResponse;
 import com.newsblur.network.domain.UnreadStoryHashesResponse;
 import com.newsblur.util.AppConstants;
-import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.StoryOrder;
@@ -165,22 +163,8 @@ public class UnreadsService extends SubService {
                 StoryHashQueue.remove(hash);
             } 
 
-            for (Story story : response.stories) {
-                if (story.imageUrls != null) {
-                    for (String url : story.imageUrls) {
-                        parent.imagePrefetchService.addUrl(url);
-                    }
-                }
-                if (story.thumbnailUrl != null) {
-                    parent.imagePrefetchService.addThumbnailUrl(story.thumbnailUrl);
-                }
-                DefaultFeedView mode = PrefsUtils.getDefaultFeedViewForFeed(parent, story.feedId);
-                if (mode == DefaultFeedView.TEXT) {
-                    parent.originalTextService.addHash(story.storyHash);
-                }
-            }
-            parent.originalTextService.start(startId);
-            parent.imagePrefetchService.start(startId);
+            parent.prefetchOriginalText(response, startId);
+            parent.prefetchImages(response, startId);
         }
     }
 

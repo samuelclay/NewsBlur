@@ -6,7 +6,6 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.app.DialogFragment;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
@@ -14,8 +13,6 @@ import android.widget.EditText;
 import com.newsblur.R;
 import com.newsblur.domain.Story;
 import com.newsblur.util.FeedUtils;
-import com.newsblur.util.PrefsUtils;
-import com.newsblur.util.UIUtils;
 
 public class EditReplyDialogFragment extends DialogFragment {
 

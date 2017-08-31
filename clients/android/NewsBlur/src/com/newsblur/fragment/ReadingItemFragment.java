@@ -40,8 +40,8 @@ import com.newsblur.activity.Reading;
 import com.newsblur.domain.Classifier;
 import com.newsblur.domain.Story;
 import com.newsblur.domain.UserDetails;
-import com.newsblur.service.NBSyncService;
 import com.newsblur.service.OriginalTextService;
+import com.newsblur.util.AppConstants;
 import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
@@ -186,7 +186,7 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
         Reading activity = (Reading) getActivity();
         fs = activity.getFeedSet();
 
-        selectedFeedView = PrefsUtils.getDefaultFeedView(activity, fs);
+        selectedFeedView = PrefsUtils.getDefaultViewModeForFeed(activity, story.feedId);
 
         registerForContextMenu(web);
         web.setCustomViewLayout(webviewCustomViewLayout);
@@ -427,26 +427,33 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
 		}
 	}
 
-    public void switchSelectedFeedView() {
+    public void switchSelectedViewMode() {
         synchronized (selectedFeedView) {
             // if we were already in text mode, switch back to story mode
             if (selectedFeedView == DefaultFeedView.TEXT) {
-                selectedFeedView = DefaultFeedView.STORY;
+                setViewMode(DefaultFeedView.STORY);
             } else {
-                selectedFeedView = DefaultFeedView.TEXT;
+                setViewMode(DefaultFeedView.TEXT);
             }
-            Reading activity = (Reading) getActivity();
-            activity.defaultFeedViewChanged(selectedFeedView);
-            reloadStoryContent();
         }
+        Reading activity = (Reading) getActivity();
+        activity.viewModeChanged();
+        // telling the activity to change modes will chain a call to viewModeChanged()
     }
 
-    public void setSelectedFeedView(DefaultFeedView newValue) {
-        selectedFeedView = newValue;
+    private void setViewMode(DefaultFeedView newMode) {
+        selectedFeedView = newMode;
+        PrefsUtils.setDefaultViewModeForFeed(getActivity(), story.feedId, newMode);
+    }
+
+    public void viewModeChanged() {
+        synchronized (selectedFeedView) {
+            selectedFeedView = PrefsUtils.getDefaultViewModeForFeed(getActivity(), story.feedId);
+        }
         reloadStoryContent();
     }
 
-    public DefaultFeedView getSelectedFeedView() {
+    public DefaultFeedView getSelectedViewMode() {
         return selectedFeedView;
     }
 
@@ -486,7 +493,7 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
         if (story == null) return;
         if (! TextUtils.equals(story.storyHash, this.story.storyHash)) return;
         this.story = story;
-        com.newsblur.util.Log.d(this.getClass().getName(), "got fresh story");
+        if (AppConstants.VERBOSE_LOG) com.newsblur.util.Log.d(this, "got fresh story");
     }
 
     public void handleUpdate(int updateType) {
@@ -516,21 +523,21 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
                     if (result != null) {
                         if (OriginalTextService.NULL_STORY_TEXT.equals(result)) {
                             // the server reported that text mode is not available.  kick back to story mode
+                            com.newsblur.util.Log.d(this, "orig text not avail for story: " + story.storyHash);
                             UIUtils.safeToast(getActivity(), R.string.text_mode_unavailable, Toast.LENGTH_SHORT);
-                            synchronized (selectedFeedView) {
-                                selectedFeedView = DefaultFeedView.STORY;
-                                if (getActivity() != null) {
-                                    Reading activity = (Reading) getActivity();
-                                    activity.defaultFeedViewChanged(selectedFeedView);
-                                }
+                            if (getActivity() != null) {
+                                setViewMode(DefaultFeedView.STORY);
+                                Reading activity = (Reading) getActivity();
+                                activity.viewModeChanged();
                             }
                         } else {
                             ReadingItemFragment.this.originalText = result;
                         }
                         reloadStoryContent();
                     } else {
+                        com.newsblur.util.Log.d(this, "orig text not yet cached for story: " + story.storyHash);
                         if (getActivity() != null) setupWebview(getActivity().getResources().getString(R.string.orig_text_loading));
-                        NBSyncService.getOriginalText(story.storyHash);
+                        OriginalTextService.addPriorityHash(story.storyHash);
                         triggerSync();
                     }
                 }
@@ -551,7 +558,7 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
                     ReadingItemFragment.this.storyContent = result;
                     reloadStoryContent();
                 } else {
-                    Log.w(this.getClass().getName(), "couldn't find story content for existing story.");
+                    com.newsblur.util.Log.w(this, "couldn't find story content for existing story.");
                     Activity act = getActivity();
                     if (act != null) act.finish();
                 }
@@ -559,7 +566,20 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
         }.execute();
     }
 
-	private void setupWebview(String storyText) {
+	private void setupWebview(final String storyText) {
+        if (getActivity() == null) {
+            // sometimes we get called before the activity is ready. abort, since we will get a refresh when
+            // the cursor loads
+            return;
+        }
+        getActivity().runOnUiThread(new Runnable() {
+            public void run() {
+                _setupWebview(storyText);
+            }
+        });
+    }
+
+    private void _setupWebview(String storyText) {
         if (getActivity() == null) {
             // this method gets called by async UI bits that might hold stale fragment references with no assigned
             // activity.  If this happens, just abort the call.

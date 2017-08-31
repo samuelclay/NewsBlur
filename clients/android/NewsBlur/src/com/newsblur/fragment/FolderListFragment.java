@@ -375,6 +375,11 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
         adapter.lastFolderViewed = null;
     }
 
+    public void forceShowFeed(String feedId) {
+        adapter.lastFeedViewedId = feedId;
+        adapter.lastFolderViewed = null;
+    }
+
     /**
      * Every time unread counts are updated in the adapter, ping the Main activity with
      * the new data.  It is, unfortunately, quite expensive to compute given the current

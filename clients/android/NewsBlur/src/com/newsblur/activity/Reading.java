@@ -74,8 +74,6 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
     private static final int OVERLAY_MIN_WIDTH_DP = 355;
 
 	protected StateFilter intelState;
-    protected StoryOrder storyOrder;
-    protected ReadFilter readFilter;
 
     // Activities navigate to a particular story by hash.
     // We can find it once we have the cursor.
@@ -111,7 +109,6 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
     private int lastVScrollPos = 0;
 
     private boolean unreadSearchActive = false;
-    private boolean unreadSearchStarted = false;
 
     private List<Story> pageHistory;
 
@@ -147,8 +144,6 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
         }
 
 		intelState = PrefsUtils.getStateFilter(this);
-        storyOrder = PrefsUtils.getStoryOrder(this, fs);
-        readFilter = PrefsUtils.getReadFilter(this, fs);
         volumeKeyNavigation = PrefsUtils.getVolumeKeyNavigation(this);
 
         // were we fullscreen before rotation?
@@ -194,11 +189,6 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 
         if (startingUnreadCount != 0) {
             outState.putInt(BUNDLE_STARTING_UNREAD, startingUnreadCount);
-        }
-
-        ReadingItemFragment item = getReadingFragment();
-        if (item != null) {
-            outState.putSerializable(BUNDLE_SELECTED_FEED_VIEW, item.getSelectedFeedView());
         }
 
         if (ViewUtils.isSystemUIHidden(getWindow().getDecorView())) {
@@ -293,7 +283,6 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
                 // now that we have more stories, look again.
                 nextUnread();
             }
-            checkStoryCount(pager.getCurrentItem());
             updateOverlayNav();
             updateOverlayText();
         }
@@ -604,7 +593,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
             public void run() {
                 ReadingItemFragment item = getReadingFragment();
                 if (item == null) return;
-                if (item.getSelectedFeedView() == DefaultFeedView.STORY) {
+                if (item.getSelectedViewMode() == DefaultFeedView.STORY) {
                     overlayText.setBackgroundResource(ThemeUtils.getSelectorOverlayBackgroundText(Reading.this));
                     overlayText.setText(R.string.overlay_text);
                 } else {
@@ -736,7 +725,6 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
      */
     private void nextUnread() {
         unreadSearchActive = true;
-        unreadSearchStarted = true;
 
         // if we somehow got tapped before construction or are running during destruction, stop and
         // let either finish. search will happen when the cursor is pushed.
@@ -853,10 +841,15 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
     }
 
     public void overlayText(View v) {
-        ReadingItemFragment item = getReadingFragment();
+        final ReadingItemFragment item = getReadingFragment();
         if (item == null) return;
-        item.switchSelectedFeedView();
-        updateOverlayText();
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... params) {
+                item.switchSelectedViewMode();
+                return null;
+            }
+        }.execute();
     }
 
     private ReadingItemFragment getReadingFragment() {
@@ -868,15 +861,15 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
         return this.fs;
     }
 
-    public void defaultFeedViewChanged(DefaultFeedView value) {
-        PrefsUtils.setDefaultFeedView(this, fs, value);
+    public void viewModeChanged() {
         ReadingItemFragment frag = readingAdapter.getExistingItem(pager.getCurrentItem());
-        frag.setSelectedFeedView(value);
+        frag.viewModeChanged();
         // fragments to the left or the right may have already preloaded content and need to also switch
         frag = readingAdapter.getExistingItem(pager.getCurrentItem()-1);
-        if (frag != null) frag.setSelectedFeedView(value);
+        if (frag != null) frag.viewModeChanged();
         frag = readingAdapter.getExistingItem(pager.getCurrentItem()+1);
-        if (frag != null) frag.setSelectedFeedView(value);
+        if (frag != null) frag.viewModeChanged();
+        updateOverlayText();
     }
 
     @Override

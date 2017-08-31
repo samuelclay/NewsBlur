@@ -485,22 +485,22 @@ public class ReadingAction implements Serializable {
         }
         
         if (storiesResponse != null) {
+            result = storiesResponse;
             if (storiesResponse.story != null) {
-                result = storiesResponse;
                 dbHelper.updateStory(storiesResponse, true);
-                impact |= NbActivity.UPDATE_SOCIAL;
             } else {
                 com.newsblur.util.Log.w(this, "failed to refresh story data after action");
             }
+            impact |= NbActivity.UPDATE_SOCIAL;
         }
         if (commentResponse != null) {
+            result = commentResponse;
             if (commentResponse.comment != null) {
-                result = commentResponse;
                 dbHelper.updateComment(commentResponse, storyId);
-                impact |= NbActivity.UPDATE_SOCIAL;
             } else {
                 com.newsblur.util.Log.w(this, "failed to refresh comment data after action");
             }
+            impact |= NbActivity.UPDATE_SOCIAL;
         }
 
         NbActivity.updateAllActivities(impact);

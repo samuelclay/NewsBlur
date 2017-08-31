@@ -155,6 +155,51 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
+        <activity android:name=".activity.AddFeedExternal">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="http"/>
+                <data android:scheme="https"/>
+                <data android:host="*"/>
+                <data android:pathPattern=".*xml"/>
+                <data android:pathPattern=".*rss"/>
+                <data android:pathPattern=".*atom"/>
+                <data android:pathPattern=".*json"/>
+                <data android:pathPattern=".*/feed.*"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="feed" />
+                <data android:scheme="rss" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="http"/>
+                <data android:scheme="https"/>
+                <data android:host="feeds.feedburner.com"/>
+                <data android:host="feeds2.feedburner.com"/>
+                <data android:host="feedproxy.google.com"/>
+                <data android:host="feedsproxy.google.com"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:mimeType="text/xml"/>
+                <data android:mimeType="application/rss+xml"/>
+                <data android:mimeType="application/atom+xml"/>
+                <data android:mimeType="application/xml"/>
+                <data android:mimeType="application/json"/>
+                <data android:mimeType="application/feed+json"/>
+            </intent-filter>
+        </activity>
+
     </application>
 
 </manifest>

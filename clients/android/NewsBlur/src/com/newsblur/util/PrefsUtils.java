@@ -432,77 +432,19 @@ public class PrefsUtils {
         editor.commit();
     }
 
-    public static DefaultFeedView getDefaultFeedViewForFeed(Context context, String feedId) {
+    public static DefaultFeedView getDefaultViewModeForFeed(Context context, String feedId) {
+        if ((feedId == null) || (feedId.equals(0))) return DefaultFeedView.STORY;
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
         return DefaultFeedView.valueOf(prefs.getString(PrefConstants.FEED_DEFAULT_FEED_VIEW_PREFIX + feedId, getDefaultFeedView().toString()));
     }
 
-    private static DefaultFeedView getDefaultFeedViewForFolder(Context context, String folderName) {
-        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
-        return DefaultFeedView.valueOf(prefs.getString(PrefConstants.FOLDER_DEFAULT_FEED_VIEW_PREFIX + folderName, getDefaultFeedView().toString()));
-    }
-
-    private static void setDefaultFeedViewForFolder(Context context, String folderName, DefaultFeedView newValue) {
-        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
-        Editor editor = prefs.edit();
-        editor.putString(PrefConstants.FOLDER_DEFAULT_FEED_VIEW_PREFIX + folderName, newValue.toString());
-        editor.commit();
-    }
-
-    private static void setDefaultFeedViewForFeed(Context context, String feedId, DefaultFeedView newValue) {
+    public static void setDefaultViewModeForFeed(Context context, String feedId, DefaultFeedView newValue) {
+        if ((feedId == null) || (feedId.equals(0))) return;
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
         Editor editor = prefs.edit();
         editor.putString(PrefConstants.FEED_DEFAULT_FEED_VIEW_PREFIX + feedId, newValue.toString());
         editor.commit();
     }
-
-    public static void setDefaultFeedView(Context context, FeedSet fs, DefaultFeedView newValue) {
-        if (fs.isAllNormal()) {
-            setDefaultFeedViewForFolder(context, PrefConstants.ALL_STORIES_FOLDER_NAME, newValue);
-        } else if (fs.getSingleFeed() != null) {
-            setDefaultFeedViewForFeed(context, fs.getSingleFeed(), newValue);
-        } else if (fs.getMultipleFeeds() != null) {
-            setDefaultFeedViewForFolder(context, fs.getFolderName(), newValue);
-        } else if (fs.isAllSocial()) {
-            setDefaultFeedViewForFolder(context, PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME, newValue);
-        } else if (fs.getSingleSocialFeed() != null) {
-            setDefaultFeedViewForFeed(context, fs.getSingleSocialFeed().getKey(), newValue);
-        } else if (fs.isAllRead()) {
-            setDefaultFeedViewForFolder(context, PrefConstants.READ_STORIES_FOLDER_NAME, newValue);
-        } else if (fs.isAllSaved()) {
-            setDefaultFeedViewForFolder(context, PrefConstants.SAVED_STORIES_FOLDER_NAME, newValue);
-        } else if (fs.getSingleSavedTag() != null) {
-            setDefaultFeedViewForFolder(context, PrefConstants.SAVED_STORIES_FOLDER_NAME, newValue);
-        } else if (fs.isGlobalShared()) {
-            setDefaultFeedViewForFolder(context, PrefConstants.GLOBAL_SHARED_STORIES_FOLDER_NAME, newValue);
-        } else {
-            throw new IllegalArgumentException( "unknown type of feed set" );
-        }
-    }
-
-    public static DefaultFeedView getDefaultFeedView(Context context, FeedSet fs) {
-		if (fs.isAllSaved()) {
-            return getDefaultFeedViewForFolder(context, PrefConstants.SAVED_STORIES_FOLDER_NAME);
-        } else if (fs.getSingleSavedTag() != null) {
-            return getDefaultFeedViewForFolder(context, PrefConstants.SAVED_STORIES_FOLDER_NAME);
-        } else if (fs.isGlobalShared()) {
-            return getDefaultFeedViewForFolder(context, PrefConstants.GLOBAL_SHARED_STORIES_FOLDER_NAME);
-        } else if (fs.isAllSocial()) {
-            return getDefaultFeedViewForFolder(context, PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME);
-        } else if (fs.isAllNormal()) {
-            return getDefaultFeedViewForFolder(context, PrefConstants.ALL_STORIES_FOLDER_NAME);
-        } else if (fs.isFolder()) {
-            return getDefaultFeedViewForFolder(context, fs.getFolderName());
-        } else if (fs.getSingleFeed() != null) {
-            return getDefaultFeedViewForFeed(context, fs.getSingleFeed());
-        } else if (fs.getSingleSocialFeed() != null) {
-            return getDefaultFeedViewForFeed(context, fs.getSingleSocialFeed().getKey());
-        } else if (fs.isAllRead()) {
-            return getDefaultFeedViewForFolder(context, PrefConstants.READ_STORIES_FOLDER_NAME);
-        } else {
-            return DefaultFeedView.STORY;
-        }
-    } 
 
     public static StoryOrder getStoryOrder(Context context, FeedSet fs) {
         if (fs.isAllNormal()) {

@@ -153,11 +153,13 @@
     <string name="logout_warning">Are you sure you want to log out?</string>
     <string name="search_mark_read_warning">Look out! All stories in feed/folder would be marked read, not just search results.  If you realy want to mark all stories read, please clear your search query to confirm.</string>
     
-    <string name="feed_search_hint">Search for new feeds</string>
+    <string name="feed_search_hint">Search term or feed URL</string>
     <string name="story_search_hint">Search for stories</string>
     <string name="empty_search_notice">Type a search term to begin</string>
     <string name="menu_add_feed">Add new feed</string>
     <string name="menu_search">Search</string>
+    <string name="adding_feed_progress">Adding feed…</string>
+    <string name="add_feed_error">Could not add feed</string>
     <string name="menu_mark_all_as_read">Mark all as read</string>
     <string name="menu_logout">Log out</string>
     <string name="menu_feedback">Send app feedback</string>
@@ -194,8 +196,6 @@
     <string name="unknown_user">Unknown User</string>
     <string name="delete_feed_message">Delete feed \&quot;%s\&quot;?</string>
     <string name="unfollow_message">Unfollow \&quot;%s\&quot;?</string>
-    
-    <string name="menu_default_view">Default View</string>
     
     <string name="settings">Preferences</string>
 

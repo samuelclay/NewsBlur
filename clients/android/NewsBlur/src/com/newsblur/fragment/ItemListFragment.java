@@ -52,7 +52,6 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
     protected ItemsList activity;
 	@Bind(R.id.itemlistfragment_list) ListView itemList;
 	protected StoryItemsAdapter adapter;
-    protected DefaultFeedView defaultFeedView;
     private boolean cursorSeenYet = false;
     private boolean stopLoading = false;
     
@@ -78,7 +77,6 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
     @Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-        defaultFeedView = (DefaultFeedView)getArguments().getSerializable("defaultFeedView");
         activity = (ItemsList) getActivity();
 
         if (getFeedSet() == null) {
@@ -340,10 +338,6 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
 	public void onLoaderReset(Loader<Cursor> loader) {
         if (adapter != null) adapter.notifyDataSetInvalidated();
 	}
-
-    public void setDefaultFeedView(DefaultFeedView value) {
-        this.defaultFeedView = value;
-    }
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {

@@ -30,7 +30,7 @@ import com.newsblur.network.SearchLoaderResponse;
 // TODO: this activity's use of the inbuilt activity search facility as well as an improper use of a loader to
 //       make network requests makes it easily lose state, lack non-legacy progress indication, and generally
 //       buggy. a normal layout and a proper use of sync for search results should be implemented.
-public class SearchForFeeds extends NbActivity implements LoaderCallbacks<SearchLoaderResponse>, OnItemClickListener {
+public class SearchForFeeds extends NbActivity implements LoaderCallbacks<SearchLoaderResponse>, OnItemClickListener, AddFeedFragment.AddFeedProgressListener {
     
     private static final Set<String> SUPPORTED_URL_PROTOCOLS = new HashSet<String>();
     static {
@@ -149,5 +149,14 @@ public class SearchForFeeds extends NbActivity implements LoaderCallbacks<Search
 		DialogFragment addFeedFragment = AddFeedFragment.newInstance(result.url, result.label);
 		addFeedFragment.show(getFragmentManager(), "dialog");
 	}
+
+    @Override
+    public void addFeedStarted() {
+        runOnUiThread(new Runnable() {
+            public void run() {
+                // TODO: this UI should offer some progress indication, since the add API call can block for several seconds
+            }
+        });
+    }
 
 }
