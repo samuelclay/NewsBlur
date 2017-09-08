@@ -241,6 +241,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 		switch(type) {
 		case ExpandableListView.PACKED_POSITION_TYPE_GROUP:
             if (adapter.isRowSavedStories(groupPosition)) break;
+            if (currentState == StateFilter.SAVED) break;
             if (adapter.isRowReadStories(groupPosition)) break;
             if (groupPosition == FolderListAdapter.GLOBAL_SHARED_STORIES_GROUP_POSITION) break;
             if (groupPosition == FolderListAdapter.ALL_SHARED_STORIES_GROUP_POSITION) break;
@@ -255,6 +256,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 
 		case ExpandableListView.PACKED_POSITION_TYPE_CHILD: 
             if (adapter.isRowSavedStories(groupPosition)) break;
+            if (currentState == StateFilter.SAVED) break;
 			inflater.inflate(R.menu.context_feed, menu);
             if (groupPosition == FolderListAdapter.ALL_SHARED_STORIES_GROUP_POSITION) {
                 menu.removeItem(R.id.menu_delete_feed);
