@@ -5,6 +5,7 @@ import android.app.FragmentManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnKeyListener;
@@ -131,6 +132,15 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
         super.onPause();
         NBSyncService.addRecountCandidates(fs);
     }
+
+	@Override
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		super.onPrepareOptionsMenu(menu);
+        if (fs.isFilterSaved()) {
+            menu.findItem(R.id.menu_mark_all_as_read).setVisible(false);
+        }
+		return true;
+	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
