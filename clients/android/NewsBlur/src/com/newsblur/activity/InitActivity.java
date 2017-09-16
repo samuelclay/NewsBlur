@@ -34,6 +34,8 @@ public class InitActivity extends Activity {
             }
         }.execute();
 
+        com.newsblur.util.Log.i(this, "cold launching version " + PrefsUtils.getVersion(this));
+
     }
 
     private void start() {
