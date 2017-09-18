@@ -866,7 +866,7 @@ class Profile(models.Model):
         if self.grace_period_email_sent(force=force):
             return
             
-        if self.premium_expire < datetime.datetime.now():
+        if self.premium_expire and self.premium_expire < datetime.datetime.now():
             self.premium_expire = datetime.datetime.now()
         self.save()
         
