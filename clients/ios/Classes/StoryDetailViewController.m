@@ -1371,19 +1371,19 @@
                     // No scroll found
                     continue;
                 }
-                if (!scrollPct) scrollPct = [scroll floatValue] / 1000.f;
-                NSInteger position = floor(scrollPct * strongSelf.webView.scrollView.contentSize.height);
-                NSInteger maxPosition = (NSInteger)(floor(strongSelf.webView.scrollView.contentSize.height - strongSelf.webView.frame.size.height));
-                if (position > maxPosition) {
-                    NSLog(@"Position too far, scaling back to max position: %ld > %ld", (long)position, (long)maxPosition);
-                    position = maxPosition;
-                }
-                if (position > 0) {
-                    NSLog(@"Scrolling to %ld / %.1f%% (%.f+%.f) on %@-%@", (long)position, scrollPct*100, strongSelf.webView.scrollView.contentSize.height, strongSelf.webView.frame.size.height, [story objectForKey:@"story_hash"], [strongSelf.activeStory objectForKey:@"story_title"]);
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        [strongSelf.webView.scrollView setContentOffset:CGPointMake(0, position) animated:animated];
-                    });
-                }
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    if (!scrollPct) scrollPct = [scroll floatValue] / 1000.f;
+                    NSInteger position = floor(scrollPct * strongSelf.webView.scrollView.contentSize.height);
+                    NSInteger maxPosition = (NSInteger)(floor(strongSelf.webView.scrollView.contentSize.height - strongSelf.webView.frame.size.height));
+                    if (position > maxPosition) {
+                        NSLog(@"Position too far, scaling back to max position: %ld > %ld", (long)position, (long)maxPosition);
+                        position = maxPosition;
+                    }
+                    if (position > 0) {
+                        NSLog(@"Scrolling to %ld / %.1f%% (%.f+%.f) on %@-%@", (long)position, scrollPct*100, strongSelf.webView.scrollView.contentSize.height, strongSelf.webView.frame.size.height, [story objectForKey:@"story_hash"], [strongSelf.activeStory objectForKey:@"story_title"]);
+                            [strongSelf.webView.scrollView setContentOffset:CGPointMake(0, position) animated:animated];
+                    }
+                });
             }
             [cursor close];
             

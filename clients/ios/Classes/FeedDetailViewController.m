@@ -624,7 +624,7 @@
 #pragma mark -
 #pragma mark Regular and Social Feeds
 
-- (void)fetchNextPage:(void(^)())callback {
+- (void)fetchNextPage:(void(^)(void))callback {
     if (storiesCollection.isRiverView) {
         [self fetchRiverPage:storiesCollection.feedPage+1 withCallback:callback];
     } else {
@@ -632,7 +632,7 @@
     }
 }
 
-- (void)fetchFeedDetail:(int)page withCallback:(void(^)())callback {
+- (void)fetchFeedDetail:(int)page withCallback:(void(^)(void))callback {
     NSString *theFeedDetailURL;
 
     if (!storiesCollection.activeFeed) return;
@@ -830,7 +830,7 @@
     [self fetchRiverPage:storiesCollection.feedPage withCallback:nil];
 }
 
-- (void)fetchRiverPage:(int)page withCallback:(void(^)())callback {
+- (void)fetchRiverPage:(int)page withCallback:(void(^)(void))callback {
     if (self.pageFetching || self.pageFinished) return;
 //    NSLog(@"Fetching River in storiesCollection (pg. %ld): %@", (long)page, storiesCollection);
 

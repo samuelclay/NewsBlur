@@ -19,7 +19,9 @@
 @synthesize appDelegate;
 
 - (void)main {
-    appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
+    dispatch_sync(dispatch_get_main_queue(), ^{
+        self.appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
+    });
 
     while (YES) {
         BOOL fetched = [self fetchStories];
@@ -49,8 +51,9 @@
     
     if ([hashes count] == 0) {
 //        NSLog(@"Finished downloading unread stories. %d total", appDelegate.totalUnfetchedStoryCount);
-        [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
         dispatch_async(dispatch_get_main_queue(), ^{
+            [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+
             if (![[[NSUserDefaults standardUserDefaults]
                    objectForKey:@"offline_image_download"] boolValue]) {
                 [appDelegate.feedsViewController showDoneNotifier];
@@ -81,7 +84,9 @@
         [lock signal];
     }];
     
-    [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
+    });
     
     [lock waitUntilDate:[NSDate dateWithTimeIntervalSinceNow:30]];
     [lock unlock];

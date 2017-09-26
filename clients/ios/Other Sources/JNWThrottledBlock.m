@@ -12,7 +12,7 @@
     return mappings;
 }
 
-+ (void)runBlock:(void (^)())block withIdentifier:(NSString *)identifier throttle:(CFTimeInterval)bufferTime {
++ (void)runBlock:(void (^)(void))block withIdentifier:(NSString *)identifier throttle:(CFTimeInterval)bufferTime {
     if (block == NULL || identifier == nil) {
         NSAssert(NO, @"block or identifier must not be nil");
     }

@@ -357,7 +357,9 @@
     center.delegate = self;
     [center requestAuthorizationWithOptions:(UNAuthorizationOptionSound | UNAuthorizationOptionAlert | UNAuthorizationOptionBadge) completionHandler:^(BOOL granted, NSError * _Nullable error){
         if(!error){
-            [[UIApplication sharedApplication] registerForRemoteNotifications];
+            dispatch_async(dispatch_get_main_queue(), ^{            
+                [[UIApplication sharedApplication] registerForRemoteNotifications];
+            });
         }
     }];
     
@@ -387,13 +389,13 @@
 }
 
 //Called to let your app know which action was selected by the user for a given notification.
--(void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void(^)())completionHandler {
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)(void))completionHandler {
     [self processNotification:response.notification.request.content.userInfo
                        action:response.actionIdentifier
         withCompletionHandler:completionHandler];
 }
 
-- (void)processNotification:(NSDictionary *)content action:(NSString *)action withCompletionHandler:(void(^)())completionHandler {
+- (void)processNotification:(NSDictionary *)content action:(NSString *)action withCompletionHandler:(void(^)(void))completionHandler {
     NSLog(@"User Info : %@ / %@", content, action);
     NSString *storyHash = [content objectForKey:@"story_hash"];
     NSNumber *storyFeedId = [content objectForKey:@"story_feed_id"];
@@ -1371,7 +1373,7 @@
     }
 }
 
-- (void)refreshUserProfile:(void(^)())callback {
+- (void)refreshUserProfile:(void(^)(void))callback {
     NSString *urlString = [NSString stringWithFormat:@"%@/social/load_user_profile",
                            self.url];
     [networkManager GET:urlString parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
@@ -2170,7 +2172,7 @@
     }
 }
 
-- (void)markStoryAsRead:(NSString *)storyHash inFeed:(NSString *)feed withCallback:(void(^)())callback {
+- (void)markStoryAsRead:(NSString *)storyHash inFeed:(NSString *)feed withCallback:(void(^)(void))callback {
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_story_hashes_as_read",
                            self.url];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
@@ -2188,7 +2190,7 @@
     }];
 }
 
-- (void)markStoryAsStarred:(NSString *)storyHash withCallback:(void(^)())callback {
+- (void)markStoryAsStarred:(NSString *)storyHash withCallback:(void(^)(void))callback {
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_story_hash_as_starred",
                            self.url];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
@@ -3392,7 +3394,7 @@
     return storyQueued;
 }
 
-- (void)flushQueuedReadStories:(BOOL)forceCheck withCallback:(void(^)())callback {
+- (void)flushQueuedReadStories:(BOOL)forceCheck withCallback:(void(^)(void))callback {
     if (self.feedsViewController.isOffline) {
         if (callback) callback();
         return;
@@ -3427,7 +3429,7 @@
     }
 }
 
-- (void)syncQueuedReadStories:(FMDatabase *)db withStories:(NSDictionary *)hashes withCallback:(void(^)())callback {
+- (void)syncQueuedReadStories:(FMDatabase *)db withStories:(NSDictionary *)hashes withCallback:(void(^)(void))callback {
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_feed_stories_as_read",
                            self.url];
     NSMutableArray *completedHashes = [NSMutableArray array];
