@@ -85,7 +85,7 @@
     UIView* customView = [[UIView alloc] initWithFrame:rect];
 
     // Background
-    [NewsBlurAppDelegate fillGradient:rect
+    [NewsBlurAppDelegate fillGradient:self.bounds
                            startColor:UIColorFromLightSepiaMediumDarkRGB(0xEAECE5, 0xffffc6, 0x6A6A6A, 0x444444)
                              endColor:UIColorFromLightSepiaMediumDarkRGB(0xDCDFD6, 0xffffc0, 0x666666, 0x333333)];
 //    UIColor *backgroundColor = UIColorFromRGB(0xD7DDE6);

@@ -35,7 +35,6 @@ UIGestureRecognizerDelegate> {
     NSDate *lastUpdate;
     NSCache *imageCache;
     
-    UIView *innerView;
 	UITableView * feedTitlesTable;
 	UIToolbar * feedViewToolbar;
     UISlider * feedScoreSlider;

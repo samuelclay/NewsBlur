@@ -287,7 +287,7 @@
 
 - (IBAction)forgotPassword:(id)sender {
     NSURL *url = [NSURL URLWithString:@"http://www.newsblur.com/folder_rss/forgot_password"];
-    SFSafariViewController *safariViewController = [[SFSafariViewController alloc] initWithURL:url entersReaderIfAvailable:NO];
+    SFSafariViewController *safariViewController = [[SFSafariViewController alloc] initWithURL:url];
     [self presentViewController:safariViewController animated:YES completion:nil];
 }
 

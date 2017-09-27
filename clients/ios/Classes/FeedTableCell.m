@@ -154,9 +154,10 @@ static UIFont *textFont = nil;
                       cell.isSaved ? UIColorFromRGB(0xE9EBEE) :
                       UIColorFromRGB(0xF7F8F5);
 
-    [backgroundColor set];
-    CGContextFillRect(context, self.frame);
-    
+//    [backgroundColor set];
+    self.backgroundColor = backgroundColor;
+    cell.backgroundColor = backgroundColor;
+
     if (cell.highlighted || cell.selected) {
 //        [NewsBlurAppDelegate fillGradient:CGRectMake(r.origin.x, r.origin.y + 1, r.size.width, r.size.height - 1) startColor:UIColorFromRGB(0xFFFFD2) endColor:UIColorFromRGB(0xFDED8D)];
         

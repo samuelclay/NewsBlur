@@ -1715,8 +1715,7 @@
         NSString *firefoxURL = [NSString stringWithFormat:@"%@%@", @"firefox://open-url?url=", encodedURL];
         [[UIApplication sharedApplication] openURL:[NSURL URLWithString:firefoxURL] options:@{} completionHandler:nil];
     } else if ([storyBrowser isEqualToString:@"inappsafari"]) {
-        self.safariViewController = [[SFSafariViewController alloc] initWithURL:url
-                                                        entersReaderIfAvailable:NO];
+        self.safariViewController = [[SFSafariViewController alloc] initWithURL:url];
         self.safariViewController.delegate = self;
         [navigationController presentViewController:self.safariViewController animated:YES completion:nil];
     } else {

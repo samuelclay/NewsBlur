@@ -54,7 +54,6 @@ static UIFont *userLabelFont;
 @implementation NewsBlurViewController
 
 @synthesize appDelegate;
-@synthesize innerView;
 @synthesize feedTitlesTable;
 @synthesize feedViewToolbar;
 @synthesize feedScoreSlider;
@@ -98,7 +97,7 @@ static UIFont *userLabelFont;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
+        
     self.refreshControl = [UIRefreshControl new];
     self.refreshControl.tintColor = UIColorFromLightDarkRGB(0x0, 0xffffff);
     self.refreshControl.backgroundColor = UIColorFromRGB(0xE3E6E0);
@@ -155,7 +154,7 @@ static UIFont *userLabelFont;
                                            withOffset:CGPointMake(0, self.feedViewToolbar.frame.size.height)];
     [self.view insertSubview:self.notifier belowSubview:self.feedViewToolbar];
     
-    self.feedTitlesTable.backgroundColor = UIColorFromRGB(0xf4f4f4);
+//    self.feedTitlesTable.backgroundColor = UIColorFromRGB(0xf4f4f4);
     self.feedTitlesTable.separatorColor = [UIColor clearColor];
     
     userAvatarButton.customView.hidden = YES;
@@ -340,15 +339,15 @@ static UIFont *userLabelFont;
 }
 
 - (void)layoutForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-    CGSize toolbarSize = [self.feedViewToolbar sizeThatFits:self.view.frame.size];
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        self.feedViewToolbar.frame = CGRectMake(-10.0f,
-                                                CGRectGetHeight(self.view.frame) - toolbarSize.height,
-                                                toolbarSize.width + 20, toolbarSize.height);
-    } else {
-        self.feedViewToolbar.frame = (CGRect){CGPointMake(0.f, CGRectGetHeight(self.view.frame) - toolbarSize.height), toolbarSize};
-    }
-    self.innerView.frame = (CGRect){CGPointZero, CGSizeMake(CGRectGetWidth(self.view.frame), CGRectGetMinY(self.feedViewToolbar.frame))};
+//    CGSize toolbarSize = [self.feedViewToolbar sizeThatFits:self.view.frame.size];
+//    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+//        self.feedViewToolbar.frame = CGRectMake(-10.0f,
+//                                                CGRectGetHeight(self.view.frame) - toolbarSize.height,
+//                                                toolbarSize.width + 20, toolbarSize.height);
+//    } else {
+//        self.feedViewToolbar.frame = (CGRect){CGPointMake(0.f, CGRectGetHeight(self.view.frame) - toolbarSize.height), toolbarSize};
+//    }
+//    self.innerView.frame = (CGRect){CGPointZero, CGSizeMake(CGRectGetWidth(self.view.frame), CGRectGetMinY(self.feedViewToolbar.frame))};
     self.notifier.offset = CGPointMake(0, self.feedViewToolbar.frame.size.height);
     
     [self updateIntelligenceControlForOrientation:interfaceOrientation];
@@ -383,15 +382,15 @@ static UIFont *userLabelFont;
     
     [self.intelligenceControl sizeToFit];
     
-    NSInteger height = 16;
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone && UIInterfaceOrientationIsLandscape(orientation)) {
-        height = 8;
-    }
-    
-    CGRect intelFrame = self.intelligenceControl.frame;
-    intelFrame.origin.x = (self.feedViewToolbar.frame.size.width / 2) - (intelFrame.size.width / 2) + 20;
-    intelFrame.size.height = self.feedViewToolbar.frame.size.height - height;
-    self.intelligenceControl.frame = intelFrame;
+//    NSInteger height = 16;
+//    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone && UIInterfaceOrientationIsLandscape(orientation)) {
+//        height = 8;
+//    }
+//
+//    CGRect intelFrame = self.intelligenceControl.frame;
+//    intelFrame.origin.x = (self.feedViewToolbar.frame.size.width / 2) - (intelFrame.size.width / 2) + 20;
+//    intelFrame.size.height = self.feedViewToolbar.frame.size.height - height;
+//    self.intelligenceControl.frame = intelFrame;
 }
 
 // allow keyboard comands
@@ -540,37 +539,38 @@ static UIFont *userLabelFont;
     }
     
     // Bottom toolbar
-    UIImage *addImage = [UIImage imageNamed:@"nav_icn_add.png"];
-    UIImage *settingsImage = [UIImage imageNamed:@"nav_icn_settings.png"];
-    addBarButton.enabled = YES;
+//    UIImage *addImage = [UIImage imageNamed:@"nav_icn_add.png"];
+//    UIImage *settingsImage = [UIImage imageNamed:@"nav_icn_settings.png"];
+//    addBarButton.enabled = YES;
     addBarButton.accessibilityLabel = @"Add site";
-    settingsBarButton.enabled = YES;
+//    settingsBarButton.enabled = YES;
     settingsBarButton.accessibilityLabel = @"Settings";
-    NBBarButtonItem *addButton = [NBBarButtonItem buttonWithType:UIButtonTypeCustom];
-    [addButton setImage:[[ThemeManager themeManager] themedImage:addImage] forState:UIControlStateNormal];
-    [addButton sizeToFit];
-    [addButton addTarget:self action:@selector(tapAddSite:)
-        forControlEvents:UIControlEventTouchUpInside];
-    addButton.accessibilityLabel = @"Add feed";
-    [addBarButton setCustomView:addButton];
+//    NBBarButtonItem *addButton = [NBBarButtonItem buttonWithType:UIButtonTypeCustom];
+//    [addButton setImage:[[ThemeManager themeManager] themedImage:addImage] forState:UIControlStateNormal];
+//    [addButton sizeToFit];
+//    [addButton addTarget:self action:@selector(tapAddSite:)
+//        forControlEvents:UIControlEventTouchUpInside];
+//    addButton.accessibilityLabel = @"Add feed";
+//    [addBarButton setCustomView:addButton];
 
-    NBBarButtonItem *settingsButton = [NBBarButtonItem buttonWithType:UIButtonTypeCustom];
-    settingsButton.onRightSide = YES;
-    [settingsButton setImage:[[ThemeManager themeManager] themedImage:settingsImage] forState:UIControlStateNormal];
-    [settingsButton sizeToFit];
-    [settingsButton addTarget:self action:@selector(showSettingsPopover:)
-             forControlEvents:UIControlEventTouchUpInside];
-    settingsButton.accessibilityLabel = @"Settings";
-    [settingsBarButton setCustomView:settingsButton];
+//    NBBarButtonItem *settingsButton = [NBBarButtonItem buttonWithType:UIButtonTypeCustom];
+//    settingsButton.onRightSide = YES;
+//    [settingsButton setImage:[[ThemeManager themeManager] themedImage:settingsImage] forState:UIControlStateNormal];
+//    [settingsButton sizeToFit];
+//    [settingsButton addTarget:self action:@selector(showSettingsPopover:)
+//             forControlEvents:UIControlEventTouchUpInside];
+//    settingsButton.accessibilityLabel = @"Settings";
+//    [settingsBarButton setCustomView:settingsButton];
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         UIImage *activityImage = [UIImage imageNamed:@"nav_icn_activity_hover.png"];
         NBBarButtonItem *activityButton = [NBBarButtonItem buttonWithType:UIButtonTypeCustom];
+        activityButton.accessibilityLabel = @"Activities";
         [activityButton setImage:activityImage forState:UIControlStateNormal];
-        [activityButton sizeToFit];
-        [activityButton setContentEdgeInsets:UIEdgeInsetsMake(0, -6, -0, -6)];
-        [activityButton setFrame:CGRectInset(activityButton.frame, 0, -6)];
-        [activityButton setImageEdgeInsets:UIEdgeInsetsMake(12, 12, 12, 12)];
+//        [activityButton sizeToFit];
+//        [activityButton setContentEdgeInsets:UIEdgeInsetsMake(0, -6, -0, -6)];
+//        [activityButton setFrame:CGRectInset(activityButton.frame, 0, -6)];
+        [activityButton setImageEdgeInsets:UIEdgeInsetsMake(4, 4, 4, 4)];
         [activityButton addTarget:self
                            action:@selector(showInteractionsPopover:)
                  forControlEvents:UIControlEventTouchUpInside];
@@ -807,7 +807,8 @@ static UIFont *userLabelFont;
     [self.appDelegate.addSiteNavigationController popToRootViewControllerAnimated:NO];
     
 //    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [self.appDelegate showPopoverWithViewController:self.appDelegate.addSiteNavigationController contentSize:CGSizeMake(320, 96) sourceView:self.addBarButton.customView sourceRect:CGRectMake(35.0, 0.0, 0.0, 0.0) permittedArrowDirections:UIPopoverArrowDirectionDown];
+    [self.appDelegate showPopoverWithViewController:self.appDelegate.addSiteNavigationController contentSize:CGSizeMake(320, 96) barButtonItem:self.addBarButton];
+//        [self.appDelegate showPopoverWithViewController:self.appDelegate.addSiteNavigationController contentSize:CGSizeMake(320, 96) sourceView:self.addBarButton sourceRect:CGRectMake(35.0, 0.0, 0.0, 0.0) permittedArrowDirections:UIPopoverArrowDirectionDown];
 //    } else {
 //        [self.appDelegate showPopoverWithViewController:self.appDelegate.addSiteNavigationController contentSize:CGSizeMake(320, 96) barButtonItem:self.addBarButton];
 //    }
@@ -963,7 +964,7 @@ static UIFont *userLabelFont;
     [self layoutHeaderCounts:0];
     [self refreshHeaderCounts];
     
-    self.feedTitlesTable.backgroundColor = UIColorFromRGB(0xf4f4f4);
+//    self.feedTitlesTable.backgroundColor = UIColorFromRGB(0xf4f4f4);
     [self.feedTitlesTable reloadData];
     
     [self resetupGestures];
@@ -1504,7 +1505,7 @@ heightForHeaderInSection:(NSInteger)section {
     if (!firstFeedInFolderVisible) {
         CGRect headerRect = [self.feedTitlesTable rectForHeaderInSection:button.tag];
         CGPoint headerPoint = CGPointMake(headerRect.origin.x, headerRect.origin.y);
-        [self.feedTitlesTable setContentOffset:headerPoint animated:YES];
+//        [self.feedTitlesTable setContentOffset:headerPoint animated:YES];
     }
     
 }
@@ -1556,7 +1557,7 @@ heightForHeaderInSection:(NSInteger)section {
 
 - (IBAction)selectIntelligence {
     [MBProgressHUD hideHUDForView:self.feedTitlesTable animated:NO];
-    MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.innerView animated:YES];
+    MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
 	hud.mode = MBProgressHUDModeText;
 	hud.removeFromSuperViewOnHide = YES;
     
@@ -1935,7 +1936,12 @@ heightForHeaderInSection:(NSInteger)section {
     userAvatarButton = [UIBarButtonItem barItemWithImage:[UIImage alloc]
                                                   target:self
                                                   action:@selector(showUserProfile)];
-    userAvatarButton.customView.frame = CGRectMake(0, yOffset + 1, isShort ? 28 : 32, isShort ? 28 : 32);
+    userAvatarButton.customView.frame = CGRectMake(0, yOffset + 1, 32, 32);
+    if (@available(iOS 11.0, *)) {
+        userAvatarButton.customView.insetsLayoutMarginsFromSafeArea = NO;
+    } else {
+        // Fallback on earlier versions
+    }
     userAvatarButton.accessibilityLabel = @"User info";
     userAvatarButton.accessibilityHint = @"Double-tap for information about your account.";
 
