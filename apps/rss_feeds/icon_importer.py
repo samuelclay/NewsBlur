@@ -269,6 +269,7 @@ class IconImporter(object):
                                   self.feed.permalink
                               ),
                 'Connection': 'close',
+                'Accept': 'image/png,image/x-icon,image/*;q=0.9,*/*;q=0.8'
             }
             try:
                 request = urllib2.Request(url, headers=headers)

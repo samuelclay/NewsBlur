@@ -202,6 +202,11 @@
           optional: true
           default: "true"
           example: "false"
+        - key: query
+          desc: >
+            Search for a keyword or phrase in the feed. Note that only premium users can search feeds.
+          optional: true
+          example: "pizza"
       tips:
         - >
           The story score (red, neutral, green) can be computed by following 
@@ -231,6 +236,17 @@
           desc: "Pass up to 100 story_hashes. Use with starred_story_hashes."
           optional: true
           example: "h=a1b2c3&h=d4e5f6"
+        - key: tag
+          desc: >
+            Only load stories under a specific saved story tag.
+          optional: true
+          example: "pizza"
+        - key: query
+          desc: >
+            Search for a keyword or phrase in the starred story feed. 
+            Note that only premium users can search feeds.
+          optional: true
+          example: "pizza"
 
     - url: /reader/starred_story_hashes
       method: GET
@@ -278,6 +294,11 @@
           optional: true
           default: "false"
           example: "true"
+        - key: query
+          desc: >
+            Search for a keyword or phrase in the folder. Note that only premium users can search feeds.
+          optional: true
+          example: "pizza"
       tips:
         - > 
             Counts are broken into three. Add them up for a total, but you shouldn't show or count the hidden stories:

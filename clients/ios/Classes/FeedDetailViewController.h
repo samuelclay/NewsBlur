@@ -66,11 +66,11 @@
 - (void)reloadData;
 - (void)resetFeedDetail;
 - (void)reloadStories;
-- (void)fetchNextPage:(void(^)())callback;
-- (void)fetchFeedDetail:(int)page withCallback:(void(^)())callback;
+- (void)fetchNextPage:(void(^)(void))callback;
+- (void)fetchFeedDetail:(int)page withCallback:(void(^)(void))callback;
 - (void)loadOfflineStories;
 - (void)fetchRiver;
-- (void)fetchRiverPage:(int)page withCallback:(void(^)())callback;
+- (void)fetchRiverPage:(int)page withCallback:(void(^)(void))callback;
 - (void)testForTryFeed;
 - (void)cacheStoryImages:(NSArray *)storyImageUrls;
 - (void)showStoryImage:(NSString *)imageUrl;

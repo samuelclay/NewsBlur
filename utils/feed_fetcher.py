@@ -363,9 +363,9 @@ class ProcessFeed:
                 self.feed.save_feed_history(304, "Not modified")
                 return FEED_SAME, ret_values
             
-            # 302: Temporary redirect: ignore
-            # 301: Permanent redirect: save it (after 10 tries)
-            if self.fpf.status == 301:
+            # 302 and 307: Temporary redirect: ignore
+            # 301 and 308: Permanent redirect: save it (after 10 tries)
+            if self.fpf.status == 301 or self.fpf.status == 308:
                 if self.fpf.href.endswith('feedburner.com/atom.xml'):
                     return FEED_ERRHTTP, ret_values
                 redirects, non_redirects = self.feed.count_redirects_in_history('feed')

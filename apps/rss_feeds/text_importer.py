@@ -76,7 +76,7 @@ class TextImporter:
             text = text.replace("\u00a0", " ") # Non-breaking space, is mangled when encoding is not utf-8
 
         original_text_doc = readability.Document(text, url=resp.url,
-                                                 positive_keywords="postContent, postField")
+                                                 positive_keywords="post, entry, postProp, article, postContent, postField")
         try:
             content = original_text_doc.summary(html_partial=True)
         except (readability.Unparseable, ParserError), e:

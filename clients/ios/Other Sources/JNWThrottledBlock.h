@@ -7,6 +7,6 @@
 // The block will be run on the main queue.
 // 
 // Identifier and block must not be nil.
-+ (void)runBlock:(void (^)())block withIdentifier:(NSString *)identifier throttle:(CFTimeInterval)bufferTime;
++ (void)runBlock:(void (^)(void))block withIdentifier:(NSString *)identifier throttle:(CFTimeInterval)bufferTime;
 
 @end

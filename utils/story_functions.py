@@ -86,7 +86,9 @@ def pre_process_story(entry, encoding):
     if entry['published'] < datetime.datetime(2000, 1, 1):
         entry['published'] = datetime.datetime.utcnow()
     
-    if entry['published'] > datetime.datetime.now() + datetime.timedelta(days=1):
+    # Future dated stories get forced to current date
+    # if entry['published'] > datetime.datetime.now() + datetime.timedelta(days=1):
+    if entry['published'] > datetime.datetime.now():
         entry['published'] = datetime.datetime.now()
     
     # entry_link = entry.get('link') or ''
