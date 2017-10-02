@@ -328,7 +328,12 @@ public class BlurDatabaseHelper {
 
                 // handle story content
                 if (apiResponse.stories != null) {
-                    for (Story story : apiResponse.stories) {
+                    storiesloop: for (Story story : apiResponse.stories) {
+                        if ((story.storyHash == null) || (story.storyHash.length() < 1)) {
+                            // this is incredibly rare, but has been seen in crash reports at least twice.
+                            com.newsblur.util.Log.e(this, "story received without story hash: " + story.id);
+                            continue storiesloop;
+                        }
                         insertSingleStoryExtSync(story);
                         // if the story is being fetched for the immediate session, also add the hash to the session table
                         if (forImmediateReading && story.isStoryVisibileInState(intelState)) {
@@ -340,8 +345,10 @@ public class BlurDatabaseHelper {
                     }
                 }
                 if (apiResponse.story != null) {
-                    // TODO: there appears to be a bug where the API fails to set some fields when re-sending single,
-                    // updated stories. use this with care.
+                    if ((apiResponse.story.storyHash == null) || (apiResponse.story.storyHash.length() < 1)) {
+                        com.newsblur.util.Log.e(this, "story received without story hash: " + apiResponse.story.id);
+                        return;
+                    }
                     insertSingleStoryExtSync(apiResponse.story);
                     impliedFeedId = apiResponse.story.feedId;
                 }
