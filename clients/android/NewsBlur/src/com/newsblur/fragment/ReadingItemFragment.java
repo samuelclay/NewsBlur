@@ -430,14 +430,13 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
 	}
 
     public void switchSelectedViewMode() {
-        synchronized (selectedFeedView) {
-            // if we were already in text mode, switch back to story mode
-            if (selectedFeedView == DefaultFeedView.TEXT) {
-                setViewMode(DefaultFeedView.STORY);
-            } else {
-                setViewMode(DefaultFeedView.TEXT);
-            }
+        // if we were already in text mode, switch back to story mode
+        if (selectedFeedView == DefaultFeedView.TEXT) {
+            setViewMode(DefaultFeedView.STORY);
+        } else {
+            setViewMode(DefaultFeedView.TEXT);
         }
+
         Reading activity = (Reading) getActivity();
         activity.viewModeChanged();
         // telling the activity to change modes will chain a call to viewModeChanged()
