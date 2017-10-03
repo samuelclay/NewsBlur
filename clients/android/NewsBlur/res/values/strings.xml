@@ -152,7 +152,7 @@
     <string name="toast_story_unread">Story marked as unread</string>
 
     <string name="logout_warning">Are you sure you want to log out?</string>
-    <string name="search_mark_read_warning">Look out! All stories in feed/folder would be marked read, not just search results.  If you realy want to mark all stories read, please clear your search query to confirm.</string>
+    <string name="search_mark_read_warning">Look out! All stories in feed/folder would be marked read, not just search results.  If you really want to mark all stories read, please clear your search query to confirm.</string>
     
     <string name="your_feeds_search_hint">Search your feeds</string>
     <string name="feed_search_hint">Search term or feed URL</string>
