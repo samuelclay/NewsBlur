@@ -1,5 +1,7 @@
 package com.newsblur.util;
 
+import java.util.Map;
+
 import static android.graphics.Bitmap.Config.ARGB_8888;
 
 import android.app.Activity;
@@ -16,6 +18,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.util.Log;
 import android.text.Html;
+import android.text.Spanned;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -26,6 +29,7 @@ import android.widget.Toast;
 
 import com.newsblur.R;
 import com.newsblur.activity.*;
+import com.newsblur.domain.Classifier;
 
 public class UIUtils {
 
@@ -267,13 +271,32 @@ public class UIUtils {
     // API 24 introduced a more customizable impl of fromHtml but also *immediately* deprecated the
     // default version in the same release, so it is necessary to wrap this is plat-specific helper
     @SuppressWarnings("deprecation")
-    public static CharSequence fromHtml(String html) {
+    public static Spanned fromHtml(String html) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            return Html.fromHtml(html, Html.FROM_HTML_MODE_LEGACY).toString();
+            return Html.fromHtml(html, Html.FROM_HTML_MODE_LEGACY);
         } else {
-            return Html.fromHtml(html).toString();
+            return Html.fromHtml(html);
         }
     }
-        
+    
+    private static final String POSIT_HILITE_FORMAT = "<span style=\"color: #33AA33\">%s</span>";
+    private static final String NEGAT_HILITE_FORMAT = "<span style=\"color: #AA3333\">%s</span>";
+
+    /**
+     * Alter a story title string to highlight intel training hits as positive or negative based
+     * upon the associated classifier, using markup that can quickly be parsed by fromHtml.
+     */
+    public static String colourTitleFromClassifier(String title, Classifier c) {
+        String result = title;
+        for (Map.Entry<String, Integer> rule : c.title.entrySet()) {
+            if (rule.getValue() > 0) {
+                result = result.replaceAll(rule.getKey(), String.format(POSIT_HILITE_FORMAT, rule.getKey()));
+            }
+            if (rule.getValue() < 0) {
+                result = result.replaceAll(rule.getKey(), String.format(NEGAT_HILITE_FORMAT, rule.getKey()));
+            }
+        }
+        return result;
+    }
 
 }

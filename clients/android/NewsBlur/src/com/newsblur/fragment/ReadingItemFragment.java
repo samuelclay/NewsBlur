@@ -340,7 +340,9 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
 			itemFeed.setText(feedTitle);
 		}
 
-        itemTitle.setText(UIUtils.fromHtml(story.title));
+        String title = story.title;
+        title = UIUtils.colourTitleFromClassifier(title, classifier);
+        itemTitle.setText(UIUtils.fromHtml(title));
         itemDate.setText(StoryUtils.formatLongDate(getActivity(), new Date(story.timestamp)));
 
         if (!TextUtils.isEmpty(story.authors)) {
