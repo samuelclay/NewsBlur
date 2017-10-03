@@ -9,10 +9,6 @@
           android:title="@string/menu_search_feeds"
           android:showAsAction="never" />
     
-    <item android:id="@+id/menu_profile"
-          android:title="@string/menu_profile"
-          android:showAsAction="never" />
-    
     <item android:id="@+id/menu_add_feed"
           android:title="@string/menu_add_feed"
           android:showAsAction="never" />

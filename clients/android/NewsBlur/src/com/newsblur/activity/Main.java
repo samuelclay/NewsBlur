@@ -294,11 +294,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
 
     @Override
     public boolean onMenuItemClick(MenuItem item) {
-		if (item.getItemId() == R.id.menu_profile) {
-			Intent i = new Intent(this, Profile.class);
-			startActivity(i);
-			return true;
-		} else if (item.getItemId() == R.id.menu_refresh) {
+		if (item.getItemId() == R.id.menu_refresh) {
             onRefresh();
 			return true;
         } else if (item.getItemId() == R.id.menu_search_feeds) {
