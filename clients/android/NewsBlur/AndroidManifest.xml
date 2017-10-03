@@ -184,8 +184,6 @@
                 <data android:scheme="https"/>
                 <data android:host="feeds.feedburner.com"/>
                 <data android:host="feeds2.feedburner.com"/>
-                <data android:host="feedproxy.google.com"/>
-                <data android:host="feedsproxy.google.com"/>
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
