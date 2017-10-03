@@ -288,6 +288,12 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
             menu.findItem(R.id.menu_search_feeds).setVisible(false);
         }
 
+        if (PrefsUtils.isLightThemeSelected(this)) {
+            menu.findItem(R.id.menu_theme_light).setChecked(true);
+        } else {
+            menu.findItem(R.id.menu_theme_dark).setChecked(true);
+        }
+
         pm.setOnMenuItemClickListener(this);
         pm.show();
     }
@@ -337,6 +343,12 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
             DialogFragment newFragment = new LoginAsDialogFragment();
             newFragment.show(getFragmentManager(), "dialog");
             return true;
+        } else if (item.getItemId() == R.id.menu_theme_light) {
+            PrefsUtils.setLightThemeSelected(this, true);
+            UIUtils.restartActivity(this);
+        } else if (item.getItemId() == R.id.menu_theme_dark) {
+            PrefsUtils.setLightThemeSelected(this, false);
+            UIUtils.restartActivity(this);
         }
 		return false;
     }

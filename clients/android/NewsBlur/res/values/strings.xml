@@ -167,6 +167,8 @@
     <string name="menu_feedback">Send app feedback</string>
     <string name="menu_feedback_post">Create a feedback post</string>
     <string name="menu_feedback_email">Email a bug report</string>
+    <string name="menu_theme_choose">Theme…</string>
+
     <string name="menu_loginas">Login as...</string>
 
     <string name="loginas_title">Login As User</string>

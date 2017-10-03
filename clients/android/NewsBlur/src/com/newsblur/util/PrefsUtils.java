@@ -617,6 +617,13 @@ public class PrefsUtils {
         return theme.equals("light");
     }
 
+    public static void setLightThemeSelected(Context context, boolean lightThemeSelected) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        Editor editor = prefs.edit();
+        editor.putString(PrefConstants.THEME, (lightThemeSelected ? "light" : "dark"));
+        editor.commit();
+    }
+
     public static StateFilter getStateFilter(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
         return StateFilter.valueOf(prefs.getString(PrefConstants.STATE_FILTER, StateFilter.SOME.toString()));
