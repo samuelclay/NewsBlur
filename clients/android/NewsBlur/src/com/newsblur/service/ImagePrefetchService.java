@@ -42,6 +42,7 @@ public class ImagePrefetchService extends SubService {
             if (! PrefsUtils.isBackgroundNetworkAllowed(parent)) return;
 
             startExpensiveCycle();
+            com.newsblur.util.Log.d(this, "story images to prefetch: " + StoryImageQueue.size());
             // on each batch, re-query the DB for images associated with yet-unread stories
             // this is a bit expensive, but we are running totally async at a really low priority
             Set<String> unreadImages = parent.dbHelper.getAllStoryImages();
@@ -63,6 +64,7 @@ public class ImagePrefetchService extends SubService {
                 }
             } finally {
                 StoryImageQueue.removeAll(fetchedImages);
+                com.newsblur.util.Log.d(this, "story images fetched: " + fetchedImages.size());
                 gotWork();
             }
         }
@@ -73,6 +75,7 @@ public class ImagePrefetchService extends SubService {
             if (! PrefsUtils.isShowThumbnails(parent)) return;
 
             startExpensiveCycle();
+            com.newsblur.util.Log.d(this, "story thumbs to prefetch: " + StoryImageQueue.size());
             // on each batch, re-query the DB for images associated with yet-unread stories
             // this is a bit expensive, but we are running totally async at a really low priority
             Set<String> unreadImages = parent.dbHelper.getAllStoryThumbnails();
@@ -94,6 +97,7 @@ public class ImagePrefetchService extends SubService {
                 }
             } finally {
                 ThumbnailQueue.removeAll(fetchedImages);
+                com.newsblur.util.Log.d(this, "story thumbs fetched: " + fetchedImages.size());
                 gotWork();
             }
         }
