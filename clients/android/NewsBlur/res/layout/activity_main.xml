@@ -3,7 +3,8 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent"
+    android:animateLayoutChanges="true" >
 
     <RelativeLayout
         android:id="@+id/main_top_bar"
@@ -151,12 +152,26 @@
 
     </RelativeLayout>
 
+    <EditText
+        android:id="@+id/feedlist_search_query"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/main_top_bar"
+        android:textSize="16sp"
+        android:hint="@string/your_feeds_search_hint"
+        android:drawableLeft="@android:drawable/ic_menu_search"
+        android:inputType="textNoSuggestions"
+        android:imeOptions="actionSearch"
+        android:visibility="gone"
+        android:animateLayoutChanges="true"
+    />
+
     <!-- The scrollable and pull-able feed list.  -->
     <android.support.v4.widget.SwipeRefreshLayout
         android:id="@+id/swipe_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/main_top_bar"
+        android:layout_below="@id/feedlist_search_query"
         android:layout_above="@id/fragment_feedintelligenceselector" >
 
         <fragment

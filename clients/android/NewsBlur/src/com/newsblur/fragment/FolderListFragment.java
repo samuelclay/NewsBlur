@@ -386,6 +386,16 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
         adapter.lastFolderViewed = null;
     }
 
+    public void setSearchQuery(String q) {
+        adapter.activeSearchQuery = q;
+        adapter.forceRecount();
+        checkOpenFolderPreferences();
+    }
+
+    public String getSearchQuery() {
+        return adapter.activeSearchQuery;
+    }
+
     /**
      * Every time unread counts are updated in the adapter, ping the Main activity with
      * the new data.  It is, unfortunately, quite expensive to compute given the current
