@@ -81,6 +81,7 @@ static UIFont *userLabelFont;
 @synthesize positiveCount;
 @synthesize userLabel;
 @synthesize greenIcon;
+@synthesize yellowIcon;
 @synthesize notifier;
 @synthesize isOffline;
 @synthesize interactiveFeedDetailTransition;
@@ -1970,31 +1971,22 @@ heightForHeaderInSection:(NSInteger)section {
     [userInfoView addSubview:userLabel];
     
     [appDelegate.folderCountCache removeObjectForKey:@"everything"];
-    UIImageView *yellow = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"g_icn_unread"]];
-    yellow.frame = CGRectMake(8, userLabel.frame.origin.y + userLabel.frame.size.height + 4, 8, 8);
-    [userInfoView addSubview:yellow];
+    yellowIcon = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"g_icn_unread"]];
+    [userInfoView addSubview:yellowIcon];
     
     neutralCount = [[UILabel alloc] init];
-    neutralCount.frame = CGRectMake(yellow.frame.size.width + yellow.frame.origin.x + 2,
-                                    yellow.frame.origin.y - 3, 100, 16);
     neutralCount.font = [UIFont fontWithName:@"Helvetica" size:11];
     neutralCount.textColor = UIColorFromRGB(0x707070);
     neutralCount.backgroundColor = [UIColor clearColor];
-    [neutralCount sizeToFit];
     [userInfoView addSubview:neutralCount];
     
     greenIcon = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"g_icn_focus"]];
-    greenIcon.frame = CGRectMake(neutralCount.frame.origin.x + neutralCount.frame.size.width + 8,
-                             yellow.frame.origin.y, 8, 8);
     [userInfoView addSubview:greenIcon];
     
     positiveCount = [[UILabel alloc] init];
-    positiveCount.frame = CGRectMake(greenIcon.frame.size.width + greenIcon.frame.origin.x + 2,
-                                     greenIcon.frame.origin.y - 3, 100, 16);
     positiveCount.font = [UIFont fontWithName:@"Helvetica" size:11];
     positiveCount.textColor = UIColorFromRGB(0x707070);
     positiveCount.backgroundColor = [UIColor clearColor];
-    [positiveCount sizeToFit];
     [userInfoView addSubview:positiveCount];
     
     [userInfoView sizeToFit];
@@ -2030,17 +2022,19 @@ heightForHeaderInSection:(NSInteger)section {
     positiveCount.text = [formatter stringFromNumber:[NSNumber numberWithInt:counts.ps]];
     positiveCount.accessibilityLabel = [NSString stringWithFormat:@"%@ focused stories", positiveCount.text];
     
-    CGRect yellow = CGRectMake(0, userLabel.frame.origin.y + userLabel.frame.size.height + 4, 8, 8);
     neutralCount.text = [formatter stringFromNumber:[NSNumber numberWithInt:counts.nt]];
     neutralCount.accessibilityLabel = [NSString stringWithFormat:@"%@ unread stories", neutralCount.text];
-    neutralCount.frame = CGRectMake(yellow.size.width + yellow.origin.x + 2,
-                                    yellow.origin.y - 3, 100, 16);
+
+    yellowIcon.frame = CGRectMake(CGRectGetMinX(userLabel.frame), CGRectGetMaxY(userLabel.frame) + 4, 8, 8);
+
+    neutralCount.frame = CGRectMake(CGRectGetMaxX(yellowIcon.frame) + 2,
+                                    CGRectGetMinY(yellowIcon.frame) - 2, 100, 16);
     [neutralCount sizeToFit];
     
-    greenIcon.frame = CGRectMake(neutralCount.frame.origin.x + neutralCount.frame.size.width + 8,
-                                 yellow.origin.y, 8, 8);
-    positiveCount.frame = CGRectMake(greenIcon.frame.size.width + greenIcon.frame.origin.x + 2,
-                                     greenIcon.frame.origin.y - 3, 100, 16);
+    greenIcon.frame = CGRectMake(CGRectGetMaxX(neutralCount.frame) + 8,
+                                 CGRectGetMinY(yellowIcon.frame), 8, 8);
+    positiveCount.frame = CGRectMake(CGRectGetMaxX(greenIcon.frame) + 2,
+                                     CGRectGetMinY(greenIcon.frame) - 2, 100, 16);
     [positiveCount sizeToFit];
     
     NSUserDefaults *prefs = [NSUserDefaults standardUserDefaults];

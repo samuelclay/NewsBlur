@@ -70,7 +70,6 @@
     CGRect topToolbarFrame = self.topToolbar.frame;
     topToolbarFrame.size.height += 20;
     self.topToolbar.frame = topToolbarFrame;
-    [self.topToolbar layoutSubviews];
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         self.storiesModule = [FeedDetailViewController new];
