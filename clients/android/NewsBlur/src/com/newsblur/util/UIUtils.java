@@ -249,7 +249,7 @@ public class UIUtils {
      * Get a color defined by our particular way of using styles that are indirectly defined by themes.
      *
      * @param styleId the style that defines the attr, such as com.newsblur.R.attr.defaultText
-     * @param rId the resource attribute that defines the color desire, such as android.R.attr.textColor
+     * @param rId the resource attribute that defines the color desired, such as android.R.attr.textColor
      */
     public static int getThemedColor(Context context, int styleId, int rId) {
         int[] attrs = {styleId};
@@ -273,6 +273,38 @@ public class UIUtils {
             return Color.MAGENTA;
         }
         int result = val2.getColor(0, Color.MAGENTA);
+        val2.recycle();
+        return result;
+    }
+
+    /**
+     * Get a resource defined by our particular way of using styles that are indirectly defined by themes.
+     *
+     * @param styleId the style that defines the attr, such as com.newsblur.R.attr.defaultText
+     * @param rId the resource attribute that defines the resource desired, such as android.R.attr.background
+     */
+    public static int getThemedResource(Context context, int styleId, int rId) {
+        int[] attrs = {styleId};
+        TypedArray val = context.getTheme().obtainStyledAttributes(attrs);
+        if (val.peekValue(0).type != TypedValue.TYPE_REFERENCE) {
+            com.newsblur.util.Log.w(UIUtils.class.getName(), "styleId didn't resolve to a style");
+            val.recycle();
+            return 0;
+        }
+        int effectiveStyleId = val.getResourceId(0, -1);
+        val.recycle();
+        if (effectiveStyleId == -1) {
+            com.newsblur.util.Log.w(UIUtils.class.getName(), "styleId didn't resolve to a known style");
+            return 0;
+        }
+        int[] attrs2 = {rId};
+        TypedArray val2 = context.getTheme().obtainStyledAttributes(effectiveStyleId, attrs2);
+        int result = 0;
+        try {
+            result = val2.getResourceId(0, 0);
+        } catch (UnsupportedOperationException uoe) {
+            com.newsblur.util.Log.w(UIUtils.class.getName(), "rId didn't resolve to a drawable within given style");
+        }
         val2.recycle();
         return result;
     }

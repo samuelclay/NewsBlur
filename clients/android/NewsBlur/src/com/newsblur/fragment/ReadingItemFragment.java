@@ -48,7 +48,6 @@ import com.newsblur.util.FeedUtils;
 import com.newsblur.util.Font;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.StoryUtils;
-import com.newsblur.util.ThemeUtils;
 import com.newsblur.util.UIUtils;
 import com.newsblur.util.ViewUtils;
 import com.newsblur.view.FlowLayout;
