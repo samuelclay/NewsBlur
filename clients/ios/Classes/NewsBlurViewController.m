@@ -2040,8 +2040,10 @@ heightForHeaderInSection:(NSInteger)section {
     NSUserDefaults *prefs = [NSUserDefaults standardUserDefaults];
     NSString *appUnreadBadge = [prefs stringForKey:@"app_unread_badge"];
     if ([appUnreadBadge isEqualToString:@"unread"]) {
+        [appDelegate registerForBadgeNotifications];
         [UIApplication sharedApplication].applicationIconBadgeNumber = counts.ps + counts.nt;
     } else if ([appUnreadBadge isEqualToString:@"focus"]) {
+        [appDelegate registerForBadgeNotifications];
         [UIApplication sharedApplication].applicationIconBadgeNumber = counts.ps;
     } else {
         [UIApplication sharedApplication].applicationIconBadgeNumber = 0;

@@ -278,6 +278,7 @@ SFSafariViewControllerDelegate>  {
 - (void)showLogin;
 - (void)setupReachability;
 - (void)registerForRemoteNotifications;
+- (void)registerForBadgeNotifications;
 
 // social
 - (NSDictionary *)getUser:(NSInteger)userId;
