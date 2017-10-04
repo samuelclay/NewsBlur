@@ -36,11 +36,11 @@
 #import "NBBarButtonItem.h"
 #import "StoriesCollection.h"
 
-static const CGFloat kPhoneTableViewRowHeight = 31.0f;
-static const CGFloat kTableViewRowHeight = 31.0f;
-static const CGFloat kBlurblogTableViewRowHeight = 32.0f;
-static const CGFloat kPhoneBlurblogTableViewRowHeight = 32.0f;
-static const CGFloat kFolderTitleHeight = 28.0f;
+static const CGFloat kPhoneTableViewRowHeight = 6.0f;
+static const CGFloat kTableViewRowHeight = 6.0f;
+static const CGFloat kBlurblogTableViewRowHeight = 7.0f;
+static const CGFloat kPhoneBlurblogTableViewRowHeight = 7.0f;
+static const CGFloat kFolderTitleHeight = 10.0f;
 static UIFont *userLabelFont;
 
 @interface NewsBlurViewController () 
@@ -821,7 +821,7 @@ static UIFont *userLabelFont;
     [self.appDelegate.feedsMenuViewController view];
     NSInteger menuCount = [self.appDelegate.feedsMenuViewController.menuOptions count];
     
-    [self.appDelegate showPopoverWithViewController:self.appDelegate.feedsMenuViewController contentSize:CGSizeMake(220, 38 * (menuCount + 1)) barButtonItem:self.settingsBarButton];
+    [self.appDelegate showPopoverWithViewController:self.appDelegate.feedsMenuViewController contentSize:CGSizeMake(220, 38 * (menuCount + 2)) barButtonItem:self.settingsBarButton];
 }
 
 - (IBAction)showInteractionsPopover:(id)sender {
@@ -1220,25 +1220,58 @@ static UIFont *userLabelFont;
         return 0;
     }
     
+    NSInteger height;
+    
     if ([folderName isEqualToString:@"river_blurblogs"] ||
         [folderName isEqualToString:@"river_global"]) { // blurblogs
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-            return kBlurblogTableViewRowHeight;
+            height = kBlurblogTableViewRowHeight;
         } else {
-            return kPhoneBlurblogTableViewRowHeight;
+            height = kPhoneBlurblogTableViewRowHeight;
         }
     } else {
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-            return kTableViewRowHeight;            
+            height = kTableViewRowHeight;
         } else {
-            return kPhoneTableViewRowHeight;
+            height = kPhoneTableViewRowHeight;
         }
     }
+    
+    UIFontDescriptor *fontDescriptor = [self fontDescriptorUsingPreferredSize:UIFontTextStyleCaption1];
+    UIFont *font = [UIFont fontWithDescriptor:fontDescriptor size:0.0];
+    return height + font.pointSize*2;
+}
+
+- (UIFontDescriptor *)fontDescriptorUsingPreferredSize:(NSString *)textStyle {
+    UIFontDescriptor *fontDescriptor = appDelegate.fontDescriptorTitleSize;
+    if (fontDescriptor) return fontDescriptor;
+    
+    fontDescriptor = [UIFontDescriptor preferredFontDescriptorWithTextStyle:textStyle];
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+    
+    if (![userPreferences boolForKey:@"use_system_font_size"]) {
+        if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"xs"]) {
+            fontDescriptor = [fontDescriptor fontDescriptorWithSize:10.0f];
+        } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"small"]) {
+            fontDescriptor = [fontDescriptor fontDescriptorWithSize:11.0f];
+        } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"medium"]) {
+            fontDescriptor = [fontDescriptor fontDescriptorWithSize:12.0f];
+        } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"large"]) {
+            fontDescriptor = [fontDescriptor fontDescriptorWithSize:15.0f];
+        } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"xl"]) {
+            fontDescriptor = [fontDescriptor fontDescriptorWithSize:17.0f];
+        }
+    }
+    return fontDescriptor;
 }
 
 - (UIView *)tableView:(UITableView *)tableView 
             viewForHeaderInSection:(NSInteger)section {
-    CGRect rect = CGRectMake(0.0, 0.0, tableView.frame.size.width, kFolderTitleHeight);
+    UIFontDescriptor *fontDescriptor = [self fontDescriptorUsingPreferredSize:UIFontTextStyleCaption1];
+    UIFont *font = [UIFont fontWithDescriptor:fontDescriptor size:0.0];
+    NSInteger height = kFolderTitleHeight;
+    
+    CGRect rect = CGRectMake(0.0, 0.0, tableView.frame.size.width, height + font.pointSize*2);
     FolderTitleView *folderTitle = [[FolderTitleView alloc] initWithFrame:rect];
     folderTitle.section = (int)section;
     
@@ -1273,7 +1306,11 @@ heightForHeaderInSection:(NSInteger)section {
         return 0;
     }
     
-    return 36;
+    UIFontDescriptor *fontDescriptor = [self fontDescriptorUsingPreferredSize:UIFontTextStyleCaption1];
+    UIFont *font = [UIFont fontWithDescriptor:fontDescriptor size:0.0];
+    NSInteger height = kFolderTitleHeight;
+    
+    return height + font.pointSize*2;
 }
 
 - (void)didSelectSectionHeader:(UIButton *)button {
@@ -1506,7 +1543,7 @@ heightForHeaderInSection:(NSInteger)section {
     if (!firstFeedInFolderVisible) {
         CGRect headerRect = [self.feedTitlesTable rectForHeaderInSection:button.tag];
         CGPoint headerPoint = CGPointMake(headerRect.origin.x, headerRect.origin.y);
-//        [self.feedTitlesTable setContentOffset:headerPoint animated:YES];
+        [self.feedTitlesTable setContentOffset:headerPoint animated:YES];
     }
     
 }

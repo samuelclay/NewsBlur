@@ -297,6 +297,7 @@ SFSafariViewControllerDelegate>  {
 - (void)showMuteSites;
 - (void)showOrganizeSites;
 - (void)showPreferences;
+- (void)resizeFontSize;
 
 - (void)showMoveSite;
 - (void)openTrainSite;

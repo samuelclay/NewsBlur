@@ -59,7 +59,6 @@
     self.menuTableView.backgroundColor = UIColorFromRGB(0xECEEEA);
     self.menuTableView.separatorColor = UIColorFromRGB(0x909090);
     
-    
     [self.menuTableView reloadData];
 }
 
@@ -76,6 +75,23 @@
     [super viewWillAppear:animated];
     
     [self.menuTableView reloadData];
+    
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+    
+    if([userPreferences stringForKey:@"feed_list_font_size"]){
+        NSString *fontSize = [userPreferences stringForKey:@"feed_list_font_size"];
+        if ([fontSize isEqualToString:@"xs"]) {
+            [self.fontSizeSegment setSelectedSegmentIndex:0];
+        } else if ([fontSize isEqualToString:@"small"]) {
+            [self.fontSizeSegment setSelectedSegmentIndex:1];
+        } else if ([fontSize isEqualToString:@"medium"]) {
+            [self.fontSizeSegment setSelectedSegmentIndex:2];
+        } else if ([fontSize isEqualToString:@"large"]) {
+            [self.fontSizeSegment setSelectedSegmentIndex:3];
+        } else if ([fontSize isEqualToString:@"xl"]) {
+            [self.fontSizeSegment setSelectedSegmentIndex:4];
+        }
+    }
     
     NSString *theme = [ThemeManager themeManager].theme;
     if ([theme isEqualToString:@"sepia"]) {
@@ -103,7 +119,7 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section 
 {
-    return [self.menuOptions count] + 1;
+    return [self.menuOptions count] + 3;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -111,6 +127,10 @@
     static NSString *CellIndentifier = @"Cell";
     
     if (indexPath.row == [self.menuOptions count]) {
+        return [self makeFontSizeTableCell];
+    }
+    
+    if (indexPath.row == [self.menuOptions count] + 1) {
         return [self makeThemeTableCell];
     }
     
@@ -165,7 +185,7 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    return 38;
+    return kMenuOptionHeight;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath 
@@ -240,6 +260,51 @@
     [alertController addAction:[UIAlertAction actionWithTitle:@"Cancel"
                                                         style:UIAlertActionStyleCancel handler:nil]];
     [appDelegate.feedsViewController presentViewController:alertController animated:YES completion:nil];
+}
+
+- (UITableViewCell *)makeFontSizeTableCell {
+    UITableViewCell *cell = [[UITableViewCell alloc] init];
+    cell.frame = CGRectMake(0, 0, 240, kMenuOptionHeight);
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    cell.separatorInset = UIEdgeInsetsZero;
+    cell.backgroundColor = UIColorFromRGB(0xffffff);
+    
+    self.fontSizeSegment.frame = CGRectMake(8, 4, cell.frame.size.width - 8*2, kMenuOptionHeight - 4*2);
+    [self.fontSizeSegment setTitle:@"XS" forSegmentAtIndex:0];
+    [self.fontSizeSegment setTitle:@"S" forSegmentAtIndex:1];
+    [self.fontSizeSegment setTitle:@"M" forSegmentAtIndex:2];
+    [self.fontSizeSegment setTitle:@"L" forSegmentAtIndex:3];
+    [self.fontSizeSegment setTitle:@"XL" forSegmentAtIndex:4];
+    [self.fontSizeSegment setTintColor:UIColorFromRGB(0x738570)];
+    self.fontSizeSegment.backgroundColor = UIColorFromRGB(0xeeeeee);
+    [self.fontSizeSegment setTitleTextAttributes:@{NSFontAttributeName:[UIFont fontWithName:@"Helvetica-Bold" size:11.0f]} forState:UIControlStateNormal];
+    [self.fontSizeSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:0];
+    [self.fontSizeSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:1];
+    [self.fontSizeSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:2];
+    [self.fontSizeSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:3];
+    [self.fontSizeSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:4];
+    
+    [cell addSubview:self.fontSizeSegment];
+    
+    return cell;
+}
+
+- (IBAction)changeFontSize:(id)sender {
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+    if ([sender selectedSegmentIndex] == 0) {
+        [userPreferences setObject:@"xs" forKey:@"feed_list_font_size"];
+    } else if ([sender selectedSegmentIndex] == 1) {
+        [userPreferences setObject:@"small" forKey:@"feed_list_font_size"];
+    } else if ([sender selectedSegmentIndex] == 2) {
+        [userPreferences setObject:@"medium" forKey:@"feed_list_font_size"];
+    } else if ([sender selectedSegmentIndex] == 3) {
+        [userPreferences setObject:@"large" forKey:@"feed_list_font_size"];
+    } else if ([sender selectedSegmentIndex] == 4) {
+        [userPreferences setObject:@"xl" forKey:@"feed_list_font_size"];
+    }
+    [userPreferences synchronize];
+    
+    [appDelegate resizeFontSize];
 }
 
 #pragma mark - Theme Options

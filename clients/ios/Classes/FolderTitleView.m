@@ -64,7 +64,7 @@
         accessibilityCount = [NSString stringWithFormat:@", %@ stories", @(appDelegate.savedStoriesCount)];
     } else if (isFolderCollapsed) {
         UnreadCounts *counts = [appDelegate splitUnreadCountForFolder:folderName];
-        unreadCount = [[UnreadCountView alloc] initWithFrame:CGRectInset(rect, 0, 2)];
+        unreadCount = [[UnreadCountView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(rect), CGRectGetHeight(rect))];
         unreadCount.appDelegate = appDelegate;
         unreadCount.opaque = NO;
         unreadCount.psCount = counts.ps;
@@ -167,10 +167,11 @@
     [customView addSubview:invisibleHeaderButton];
     
     if (!appDelegate.hasNoSites) {
+        NSInteger disclosureHeight = 29;
         UIButton *disclosureButton = [UIButton buttonWithType:UIButtonTypeCustom];
         UIImage *disclosureImage = [UIImage imageNamed:@"disclosure.png"];
         [disclosureButton setImage:disclosureImage forState:UIControlStateNormal];
-        disclosureButton.frame = CGRectMake(customView.frame.size.width - 32, 3, 29, 29);
+        disclosureButton.frame = CGRectMake(customView.frame.size.width - 32, CGRectGetMidY(self.bounds)-disclosureHeight/2-1, disclosureHeight, disclosureHeight);
 
         // Add collapse button to all folders except Everything
         if (section != 0 && section != 2 && ![folderName isEqual:@"read_stories"]) {
@@ -191,7 +192,7 @@
             } else if ([[[ThemeManager themeManager] theme] isEqualToString:ThemeStyleDark]) {
                 disclosureBorder = [UIImage imageNamed:@"disclosure_border_dark"];
             }
-            [disclosureBorder drawInRect:CGRectMake(customView.frame.size.width - 32, 3, 29, 29)];
+            [disclosureBorder drawInRect:CGRectMake(customView.frame.size.width - 32, CGRectGetMidY(self.bounds)-disclosureHeight/2 - 1, disclosureHeight, disclosureHeight)];
         } else {
             // Everything/Saved folder doesn't get a button
             [disclosureButton setUserInteractionEnabled:NO];
@@ -253,7 +254,7 @@
         }
         allowLongPress = YES;
     }
-    [folderImage drawInRect:CGRectMake(folderImageViewX, 8, width, height)];
+    [folderImage drawInRect:CGRectMake(folderImageViewX, CGRectGetMidY(self.bounds)-height/2, width, height)];
     
     [customView setAutoresizingMask:UIViewAutoresizingNone];
     

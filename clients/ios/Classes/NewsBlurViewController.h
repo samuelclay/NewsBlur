@@ -116,6 +116,7 @@ UIGestureRecognizerDelegate> {
 - (void)layoutHeaderCounts:(UIInterfaceOrientation)orientation;
 - (void)refreshHeaderCounts;
 
+- (void)resizeFontSize;
 - (void)settingsViewControllerDidEnd:(IASKAppSettingsViewController*)sender;
 - (void)settingDidChange:(NSNotification*)notification;
 

@@ -617,6 +617,10 @@
     }
 }
 
+- (void)resizeFontSize {
+    [feedsViewController resizeFontSize];
+}
+
 - (void)showPreferences {
     if (!preferencesViewController) {
         preferencesViewController = [[IASKAppSettingsViewController alloc] init];

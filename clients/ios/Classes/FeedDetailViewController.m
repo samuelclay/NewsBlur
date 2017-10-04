@@ -1841,7 +1841,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     
     [self.appDelegate.feedDetailMenuViewController buildMenuOptions];
     [self.appDelegate.feedDetailMenuViewController view];
-    NSInteger menuCount = [self.appDelegate.feedDetailMenuViewController.menuOptions count] + 2;
+    NSInteger menuCount = [self.appDelegate.feedDetailMenuViewController.menuOptions count] + 4;
     
     [self.appDelegate.feedDetailMenuNavigationController popToRootViewControllerAnimated:NO];
     [self.appDelegate showPopoverWithViewController:self.appDelegate.feedDetailMenuNavigationController contentSize:CGSizeMake(260, 38 * menuCount) barButtonItem:self.settingsBarButton];
