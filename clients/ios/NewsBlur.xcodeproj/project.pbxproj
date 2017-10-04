@@ -550,6 +550,7 @@
 		FFF1E4C817750BDD00BF59D3 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = FFF1E4C717750BDD00BF59D3 /* Settings.bundle */; };
 		FFF1E4CB17750D2C00BF59D3 /* menu_icn_preferences.png in Resources */ = {isa = PBXBuildFile; fileRef = FFF1E4C917750D2C00BF59D3 /* menu_icn_preferences.png */; };
 		FFF1E4CC17750D2C00BF59D3 /* menu_icn_preferences@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FFF1E4CA17750D2C00BF59D3 /* menu_icn_preferences@2x.png */; };
+		FFF8B3AF1F847505001AB95E /* NBDashboardNavigationBar.m in Sources */ = {isa = PBXBuildFile; fileRef = FFF8B3AE1F847505001AB95E /* NBDashboardNavigationBar.m */; };
 		FFFF683D19D628000081904A /* NBURLCache.m in Sources */ = {isa = PBXBuildFile; fileRef = FFFF683C19D628000081904A /* NBURLCache.m */; };
 /* End PBXBuildFile section */
 
@@ -1315,6 +1316,8 @@
 		FFF1E4C717750BDD00BF59D3 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
 		FFF1E4C917750D2C00BF59D3 /* menu_icn_preferences.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = menu_icn_preferences.png; sourceTree = "<group>"; };
 		FFF1E4CA17750D2C00BF59D3 /* menu_icn_preferences@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "menu_icn_preferences@2x.png"; sourceTree = "<group>"; };
+		FFF8B3AD1F847505001AB95E /* NBDashboardNavigationBar.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NBDashboardNavigationBar.h; sourceTree = "<group>"; };
+		FFF8B3AE1F847505001AB95E /* NBDashboardNavigationBar.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NBDashboardNavigationBar.m; sourceTree = "<group>"; };
 		FFFF683B19D628000081904A /* NBURLCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NBURLCache.h; path = "Other Sources/NBURLCache.h"; sourceTree = "<group>"; };
 		FFFF683C19D628000081904A /* NBURLCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NBURLCache.m; path = "Other Sources/NBURLCache.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -2000,6 +2003,8 @@
 			children = (
 				437F974915ACA0ED0007136B /* DashboardViewController.h */,
 				437F974A15ACA0ED0007136B /* DashboardViewController.m */,
+				FFF8B3AD1F847505001AB95E /* NBDashboardNavigationBar.h */,
+				FFF8B3AE1F847505001AB95E /* NBDashboardNavigationBar.m */,
 				437F977015AE70E30007136B /* InteractionsModule.h */,
 				437F977115AE70E30007136B /* InteractionsModule.m */,
 				437F976D15AE21280007136B /* ActivityModule.h */,
@@ -3076,6 +3081,7 @@
 				FF34FD621E9D93CB0062F8ED /* IASKMultipleValueSelection.m in Sources */,
 				FF4130A3162E10CF00DDB6A7 /* MenuTableViewCell.m in Sources */,
 				17432C7F1C533FBC003F8FD6 /* MenuViewController.m in Sources */,
+				FFF8B3AF1F847505001AB95E /* NBDashboardNavigationBar.m in Sources */,
 				17E635AF1C548C580075338E /* FeedChooserItem.m in Sources */,
 				FF6A233216448E0700E15989 /* StoryPageControl.m in Sources */,
 				FF67D3B2168924C40057A7DA /* TrainerViewController.m in Sources */,
