@@ -259,6 +259,7 @@
             }
             
             UIImageView *titleImageView = [[UIImageView alloc] initWithImage:titleImage];
+            UIImageView *titleImageViewWrapper = [[UIImageView alloc] init];
             if (appDelegate.storiesCollection.isRiverView) {
                 titleImageView.frame = CGRectMake(0.0, 2.0, 22.0, 22.0);
             } else {
@@ -266,8 +267,10 @@
             }
             titleImageView.hidden = YES;
             titleImageView.contentMode = UIViewContentModeScaleAspectFit;
+            [titleImageViewWrapper addSubview:titleImageView];
+            [titleImageViewWrapper setFrame:titleImageView.frame];
             if (!self.navigationItem.titleView) {
-                self.navigationItem.titleView = titleImageView;
+                self.navigationItem.titleView = titleImageViewWrapper;
             }
             titleImageView.hidden = NO;
         } else {
@@ -276,11 +279,14 @@
             UIImage *titleImage  = [appDelegate getFavicon:feedIdStr];
             titleImage = [Utilities roundCorneredImage:titleImage radius:6];
             
-            UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectZero];
-            imageView.frame = CGRectMake(0.0, 0.0, 28.0, 28.0);
-            imageView.contentMode = UIViewContentModeScaleAspectFit;
-            [imageView setImage:titleImage];
-            self.navigationItem.titleView = imageView;
+            UIImageView *titleImageView = [[UIImageView alloc] initWithFrame:CGRectZero];
+            UIImageView *titleImageViewWrapper = [[UIImageView alloc] init];
+            titleImageView.frame = CGRectMake(0.0, 0.0, 28.0, 28.0);
+            titleImageView.contentMode = UIViewContentModeScaleAspectFit;
+            [titleImageView setImage:titleImage];
+            [titleImageViewWrapper addSubview:titleImageView];
+            [titleImageViewWrapper setFrame:titleImageView.frame];
+            self.navigationItem.titleView = titleImageViewWrapper;
         }
     }
     

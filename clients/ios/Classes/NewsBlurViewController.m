@@ -1937,11 +1937,6 @@ heightForHeaderInSection:(NSInteger)section {
                                                   target:self
                                                   action:@selector(showUserProfile)];
     userAvatarButton.customView.frame = CGRectMake(0, yOffset + 1, 32, 32);
-    if (@available(iOS 11.0, *)) {
-        userAvatarButton.customView.insetsLayoutMarginsFromSafeArea = NO;
-    } else {
-        // Fallback on earlier versions
-    }
     userAvatarButton.accessibilityLabel = @"User info";
     userAvatarButton.accessibilityHint = @"Double-tap for information about your account.";
 
@@ -1949,13 +1944,13 @@ heightForHeaderInSection:(NSInteger)section {
     [avatarRequest addValue:@"image/*" forHTTPHeaderField:@"Accept"];
     [avatarRequest setTimeoutInterval:30.0];
     avatarImageView = [[UIImageView alloc] initWithFrame:userAvatarButton.customView.frame];
-    CGSize avatarSize = avatarImageView.frame.size;
     typeof(self) __weak weakSelf = self;
     [avatarImageView setImageWithURLRequest:avatarRequest placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
         typeof(weakSelf) __strong strongSelf = weakSelf;
-        image = [Utilities imageWithImage:image convertToSize:CGSizeMake(avatarSize.width*2, avatarSize.height*2)];
+        image = [Utilities imageWithImage:image convertToSize:CGSizeMake(32, 32)];
         image = [Utilities roundCorneredImage:image radius:6];
         [(UIButton *)strongSelf.userAvatarButton.customView setImage:image forState:UIControlStateNormal];
+        
     } failure:^(NSURLRequest * _Nonnull request, NSHTTPURLResponse * _Nonnull response, NSError * _Nonnull error) {
         NSLog(@"Could not fetch user avatar: %@", error);
     }];
@@ -1965,7 +1960,7 @@ heightForHeaderInSection:(NSInteger)section {
     
     //    [userInfoView addSubview:userAvatarButton];
     
-    userLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, yOffset, userInfoView.frame.size.width, 16)];
+    userLabel = [[UILabel alloc] initWithFrame:CGRectMake(8, yOffset, userInfoView.frame.size.width, 16)];
     userLabel.text = appDelegate.activeUsername;
     userLabel.font = userLabelFont;
     userLabel.textColor = UIColorFromRGB(0x404040);
@@ -1976,7 +1971,7 @@ heightForHeaderInSection:(NSInteger)section {
     
     [appDelegate.folderCountCache removeObjectForKey:@"everything"];
     UIImageView *yellow = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"g_icn_unread"]];
-    yellow.frame = CGRectMake(0, userLabel.frame.origin.y + userLabel.frame.size.height + 4, 8, 8);
+    yellow.frame = CGRectMake(8, userLabel.frame.origin.y + userLabel.frame.size.height + 4, 8, 8);
     [userInfoView addSubview:yellow];
     
     neutralCount = [[UILabel alloc] init];
