@@ -48,6 +48,7 @@ import com.newsblur.util.FeedUtils;
 import com.newsblur.util.Font;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.StoryUtils;
+import com.newsblur.util.ThemeUtils;
 import com.newsblur.util.UIUtils;
 import com.newsblur.util.ViewUtils;
 import com.newsblur.view.FlowLayout;
@@ -726,10 +727,10 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
 				itemAuthors.setTextColor(UIUtils.getColor(getActivity(), R.color.negative));
 				break;
 			case Classifier.CLEAR_DISLIKE:
-				itemAuthors.setTextColor(UIUtils.getColor(getActivity(), R.color.half_darkgray));
+				itemAuthors.setTextColor(UIUtils.getThemedColor(getActivity(), R.attr.readingItemMetadata, android.R.attr.textColor));
 				break;
 			case Classifier.CLEAR_LIKE:
-				itemAuthors.setTextColor(UIUtils.getColor(getActivity(), R.color.half_darkgray));
+				itemAuthors.setTextColor(UIUtils.getThemedColor(getActivity(), R.attr.readingItemMetadata, android.R.attr.textColor));
 				break;	
 			}
 			break;

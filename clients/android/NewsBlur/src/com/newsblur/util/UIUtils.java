@@ -8,15 +8,18 @@ import android.app.Activity;
 import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapShader;
 import android.graphics.Canvas;
-import android.graphics.drawable.Drawable;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Shader;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Handler;
 import android.util.Log;
+import android.util.TypedValue;
 import android.text.Html;
 import android.text.Spanned;
 import android.view.LayoutInflater;
@@ -240,6 +243,38 @@ public class UIUtils {
         } else {
             return activity.getResources().getColor(rid);
         }
+    }
+
+    /**
+     * Get a color defined by our particular way of using styles that are indirectly defined by themes.
+     *
+     * @param styleId the style that defines the attr, such as com.newsblur.R.attr.defaultText
+     * @param rId the resource attribute that defines the color desire, such as android.R.attr.textColor
+     */
+    public static int getThemedColor(Context context, int styleId, int rId) {
+        int[] attrs = {styleId};
+        TypedArray val = context.getTheme().obtainStyledAttributes(attrs);
+        if (val.peekValue(0).type != TypedValue.TYPE_REFERENCE) {
+            com.newsblur.util.Log.w(UIUtils.class.getName(), "styleId didn't resolve to a style");
+            val.recycle();
+            return Color.MAGENTA;
+        }
+        int effectiveStyleId = val.getResourceId(0, -1);
+        val.recycle();
+        if (effectiveStyleId == -1) {
+            com.newsblur.util.Log.w(UIUtils.class.getName(), "styleId didn't resolve to a known style");
+            return Color.MAGENTA;
+        }
+        int[] attrs2 = {rId};
+        TypedArray val2 = context.getTheme().obtainStyledAttributes(effectiveStyleId, attrs2);
+        if ( (val2.peekValue(0).type < TypedValue.TYPE_FIRST_COLOR_INT) || (val2.peekValue(0).type > TypedValue.TYPE_LAST_COLOR_INT)) {
+            com.newsblur.util.Log.w(UIUtils.class.getName(), "rId didn't resolve to a color within given style");
+            val2.recycle();
+            return Color.MAGENTA;
+        }
+        int result = val2.getColor(0, Color.MAGENTA);
+        val2.recycle();
+        return result;
     }
 
     @SuppressWarnings("deprecation")
