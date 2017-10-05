@@ -17,7 +17,9 @@
 @synthesize appDelegate;
 
 - (void)main {
-    appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
+    dispatch_sync(dispatch_get_main_queue(), ^{
+        self.appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
+    });
 
     while (YES) {
         BOOL fetched = [self fetchImages];
