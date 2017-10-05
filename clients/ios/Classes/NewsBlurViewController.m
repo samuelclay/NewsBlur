@@ -867,7 +867,7 @@ static UIFont *userLabelFont;
 //                            [appDelegate.dictSocialFeeds objectForKey:feedIdStr] :
 //                            [appDelegate.dictFeeds objectForKey:feedIdStr];
         
-        [self.appDelegate showMarkReadMenuWithFeedIds:@[feedIdStr] collectionTitle:@"site" sourceView:self.view sourceRect:cell.frame completionHandler:^(BOOL marked){
+        [self.appDelegate showMarkReadMenuWithFeedIds:@[feedIdStr] collectionTitle:@"site" sourceView:self.feedTitlesTable sourceRect:cell.frame completionHandler:^(BOOL marked){
             for (FeedTableCell *cell in [self.feedTitlesTable visibleCells]) {
                 if (cell.highlighted) {
                     [self performSelector:@selector(unhighlightCell:) withObject:cell afterDelay:0.0];
