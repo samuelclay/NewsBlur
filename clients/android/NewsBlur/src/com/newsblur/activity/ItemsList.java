@@ -139,6 +139,11 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
         if (fs.isFilterSaved()) {
             menu.findItem(R.id.menu_mark_all_as_read).setVisible(false);
         }
+        if (PrefsUtils.isLightThemeSelected(this)) {
+            menu.findItem(R.id.menu_theme_light).setChecked(true);
+        } else {
+            menu.findItem(R.id.menu_theme_dark).setChecked(true);
+        }
 		return true;
 	}
 
@@ -172,6 +177,12 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
                 searchQueryInput.setVisibility(View.GONE);
                 checkSearchQuery();
             }
+        } else if (item.getItemId() == R.id.menu_theme_light) {
+            PrefsUtils.setLightThemeSelected(this, true);
+            UIUtils.restartActivity(this);
+        } else if (item.getItemId() == R.id.menu_theme_dark) {
+            PrefsUtils.setLightThemeSelected(this, false);
+            UIUtils.restartActivity(this);
         }
 	
 		return false;

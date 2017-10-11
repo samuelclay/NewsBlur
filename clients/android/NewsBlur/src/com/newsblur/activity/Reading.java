@@ -364,6 +364,11 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
         menu.findItem(R.id.menu_reading_save).setTitle(story.starred ? R.string.menu_unsave_story : R.string.menu_save_story);
         menu.findItem(R.id.menu_reading_fullscreen).setVisible(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT);
         if (fs.isFilterSaved() || fs.isAllSaved() || (fs.getSingleSavedTag() != null)) menu.findItem(R.id.menu_reading_markunread).setVisible(false);
+        if (PrefsUtils.isLightThemeSelected(this)) {
+            menu.findItem(R.id.menu_theme_light).setChecked(true);
+        } else {
+            menu.findItem(R.id.menu_theme_dark).setChecked(true);
+        }
         return true;
     }
 
@@ -416,6 +421,14 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
             return true;
 		} else if (item.getItemId() == R.id.menu_reading_fullscreen) {
             ViewUtils.hideSystemUI(getWindow().getDecorView());
+            return true;
+        } else if (item.getItemId() == R.id.menu_theme_light) {
+            PrefsUtils.setLightThemeSelected(this, true);
+            UIUtils.restartActivity(this);
+            return true;
+        } else if (item.getItemId() == R.id.menu_theme_dark) {
+            PrefsUtils.setLightThemeSelected(this, false);
+            UIUtils.restartActivity(this);
             return true;
         } else {
 			return super.onOptionsItemSelected(item);
