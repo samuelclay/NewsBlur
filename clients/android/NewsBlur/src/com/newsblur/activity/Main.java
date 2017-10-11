@@ -8,12 +8,17 @@ import android.app.DialogFragment;
 import android.app.FragmentManager;
 import android.net.Uri;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnKeyListener;
 import android.widget.AbsListView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.SeekBar;
@@ -55,6 +60,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
     @Bind(R.id.main_user_name) TextView userName;
     @Bind(R.id.main_unread_count_neut_text) TextView unreadCountNeutText;
     @Bind(R.id.main_unread_count_posi_text) TextView unreadCountPosiText;
+    @Bind(R.id.feedlist_search_query) EditText searchQueryInput;
 
     @Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -93,6 +99,28 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
             userImage.setImageBitmap(userPicture);
         }
         userName.setText(PrefsUtils.getUserDetails(this).username);
+        searchQueryInput.setOnKeyListener(new OnKeyListener() {
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if ((keyCode == KeyEvent.KEYCODE_BACK) && (event.getAction() == KeyEvent.ACTION_DOWN)) {
+                    searchQueryInput.setVisibility(View.GONE);
+                    searchQueryInput.setText("");
+                    checkSearchQuery();
+                    return true;
+                }
+                if ((keyCode == KeyEvent.KEYCODE_ENTER) && (event.getAction() == KeyEvent.ACTION_DOWN)) {
+                    checkSearchQuery();
+                    return true;
+                }   
+                return false;
+            }
+        });
+        searchQueryInput.addTextChangedListener(new TextWatcher() {
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                checkSearchQuery();
+            }
+            public void afterTextChanged(Editable s) {}
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+        });
 	}
 
     @Override
@@ -117,6 +145,11 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
             folderFeedList.forceShowFeed(forceShowFeedId);
         }
 
+        if (folderFeedList.getSearchQuery() != null) {
+            searchQueryInput.setText(folderFeedList.getSearchQuery());
+            searchQueryInput.setVisibility(View.VISIBLE);
+        }
+
         // triggerSync() might not actually do enough to push a UI update if background sync has been
         // behaving itself. because the system will re-use the activity, at least one update on resume
         // will be required, however inefficient
@@ -137,6 +170,14 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
 
 	@Override
 	public void changedState(StateFilter state) {
+        if ( !( (state == StateFilter.ALL) ||
+                (state == StateFilter.SOME) ||
+                (state == StateFilter.BEST) ) ) {
+            searchQueryInput.setText("");
+            searchQueryInput.setVisibility(View.GONE);
+            checkSearchQuery();
+        }
+
 		folderFeedList.changeState(state);
 	}
 	
@@ -239,19 +280,38 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
             feedbackItem.setVisible(false);
         }
 
+        if ( (folderFeedList.currentState == StateFilter.ALL) ||
+             (folderFeedList.currentState == StateFilter.SOME) ||
+             (folderFeedList.currentState == StateFilter.BEST) ) {
+            menu.findItem(R.id.menu_search_feeds).setVisible(true);
+        } else {
+            menu.findItem(R.id.menu_search_feeds).setVisible(false);
+        }
+
+        if (PrefsUtils.isLightThemeSelected(this)) {
+            menu.findItem(R.id.menu_theme_light).setChecked(true);
+        } else {
+            menu.findItem(R.id.menu_theme_dark).setChecked(true);
+        }
+
         pm.setOnMenuItemClickListener(this);
         pm.show();
     }
 
     @Override
     public boolean onMenuItemClick(MenuItem item) {
-		if (item.getItemId() == R.id.menu_profile) {
-			Intent i = new Intent(this, Profile.class);
-			startActivity(i);
-			return true;
-		} else if (item.getItemId() == R.id.menu_refresh) {
+		if (item.getItemId() == R.id.menu_refresh) {
             onRefresh();
 			return true;
+        } else if (item.getItemId() == R.id.menu_search_feeds) {
+            if (searchQueryInput.getVisibility() != View.VISIBLE) {
+                searchQueryInput.setVisibility(View.VISIBLE);
+                searchQueryInput.requestFocus();
+            } else {
+                searchQueryInput.setText("");
+                searchQueryInput.setVisibility(View.GONE);
+                checkSearchQuery();
+            }
 		} else if (item.getItemId() == R.id.menu_add_feed) {
 			Intent i = new Intent(this, SearchForFeeds.class);
             startActivity(i);
@@ -283,6 +343,12 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
             DialogFragment newFragment = new LoginAsDialogFragment();
             newFragment.show(getFragmentManager(), "dialog");
             return true;
+        } else if (item.getItemId() == R.id.menu_theme_light) {
+            PrefsUtils.setLightThemeSelected(this, true);
+            UIUtils.restartActivity(this);
+        } else if (item.getItemId() == R.id.menu_theme_dark) {
+            PrefsUtils.setLightThemeSelected(this, false);
+            UIUtils.restartActivity(this);
         }
 		return false;
     }
@@ -325,6 +391,14 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
 	    PrefsUtils.setListTextSize(this, size);
         if (folderFeedList != null) folderFeedList.setTextSize(size);
 	}
+
+    private void checkSearchQuery() {
+        String q = searchQueryInput.getText().toString().trim();
+        if (q.length() < 1) {
+            q = null;
+        }
+        folderFeedList.setSearchQuery(q);
+    }
 
     // unused OnSeekBarChangeListener method
 	@Override

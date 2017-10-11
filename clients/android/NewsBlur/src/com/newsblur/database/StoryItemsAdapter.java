@@ -16,6 +16,7 @@ import java.util.Date;
 import com.newsblur.R;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.domain.Story;
+import com.newsblur.domain.UserDetails;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.StoryUtils;
@@ -59,6 +60,7 @@ public class StoryItemsAdapter extends SimpleCursorAdapter {
     private boolean ignoreIntel;
     private boolean singleFeed;
     private float textSize;
+	private UserDetails user;
 
 	public StoryItemsAdapter(Context context, Cursor c, boolean ignoreReadStatus, boolean ignoreIntel, boolean singleFeed) {
 		super(context, R.layout.row_story, c, COL_NAME_MAPPINGS, RES_ID_MAPPINGS, 0);
@@ -72,6 +74,8 @@ public class StoryItemsAdapter extends SimpleCursorAdapter {
         this.singleFeed = singleFeed;
 
         textSize = PrefsUtils.getListTextSize(context);
+
+		user = PrefsUtils.getUserDetails(context);
 
         this.setViewBinder(new StoryItemViewBinder());
 	}
@@ -161,16 +165,23 @@ public class StoryItemsAdapter extends SimpleCursorAdapter {
 		View borderTwo = v.findViewById(R.id.row_item_favicon_borderbar_2);
         String feedColor = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_FAVICON_COLOR));
         String feedFade = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_FAVICON_FADE));
+        int feedColorVal = Color.GRAY;
+        int feedFadeVal = Color.LTGRAY;
         if ((feedColor == null) ||
             (feedFade == null) ||
             TextUtils.equals(feedColor, "null") ||
             TextUtils.equals(feedFade, "null")) {
-            borderOne.setBackgroundColor(Color.GRAY);
-            borderTwo.setBackgroundColor(Color.LTGRAY);
+            // feed didn't supply color info, leave at default grey
         } else {
-            borderOne.setBackgroundColor(Color.parseColor("#" + feedColor));
-            borderTwo.setBackgroundColor(Color.parseColor("#" + feedFade));
+            try {
+                feedColorVal = Color.parseColor("#" + feedColor);
+                feedFadeVal = Color.parseColor("#" + feedFade);
+            } catch (NumberFormatException nfe) {
+                com.newsblur.util.Log.e(this, "feed supplied bad color info: " + nfe.getMessage());
+            }
         }
+        borderOne.setBackgroundColor(feedColorVal);
+        borderTwo.setBackgroundColor(feedFadeVal);
 
         // dynamic text sizing
         itemTitle.setTextSize(textSize * defaultTextSize_row_item_title);
@@ -215,6 +226,19 @@ public class StoryItemsAdapter extends SimpleCursorAdapter {
             v.findViewById(R.id.row_item_saved_icon).setVisibility(View.VISIBLE);
         } else {
             v.findViewById(R.id.row_item_saved_icon).setVisibility(View.GONE);
+        }
+
+        boolean shared = false;
+		findshareloop: for (String userId : story.sharedUserIds) {
+			if (TextUtils.equals(userId, user.id)) {
+				shared = true;
+                break findshareloop;
+			}
+		}
+        if (shared) {
+            v.findViewById(R.id.row_item_shared_icon).setVisibility(View.VISIBLE);
+        } else {
+            v.findViewById(R.id.row_item_shared_icon).setVisibility(View.GONE);
         }
 
         if (!PrefsUtils.isShowContentPreviews(context)) {

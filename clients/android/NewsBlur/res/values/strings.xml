@@ -117,6 +117,7 @@
     
     <string name="menu_profile">Profile</string>
     <string name="menu_refresh">Refresh</string>
+    <string name="menu_search_feeds">Search your feeds</string>
     <string name="menu_original">View original</string>
     <string name="menu_send_story">Send link to…</string>
     <string name="menu_send_story_full">Send story to…</string>
@@ -151,8 +152,9 @@
     <string name="toast_story_unread">Story marked as unread</string>
 
     <string name="logout_warning">Are you sure you want to log out?</string>
-    <string name="search_mark_read_warning">Look out! All stories in feed/folder would be marked read, not just search results.  If you realy want to mark all stories read, please clear your search query to confirm.</string>
+    <string name="search_mark_read_warning">Look out! All stories in feed/folder would be marked read, not just search results.  If you really want to mark all stories read, please clear your search query to confirm.</string>
     
+    <string name="your_feeds_search_hint">Search your feeds</string>
     <string name="feed_search_hint">Search term or feed URL</string>
     <string name="story_search_hint">Search for stories</string>
     <string name="empty_search_notice">Type a search term to begin</string>
@@ -165,6 +167,8 @@
     <string name="menu_feedback">Send app feedback</string>
     <string name="menu_feedback_post">Create a feedback post</string>
     <string name="menu_feedback_email">Email a bug report</string>
+    <string name="menu_theme_choose">Theme…</string>
+
     <string name="menu_loginas">Login as...</string>
 
     <string name="loginas_title">Login As User</string>

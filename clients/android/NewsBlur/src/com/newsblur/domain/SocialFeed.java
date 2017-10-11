@@ -62,13 +62,14 @@ public class SocialFeed implements Serializable {
 	
 	@Override
 	public boolean equals(Object o) {
+        if (! (o instanceof SocialFeed)) return false;
 		SocialFeed otherFeed = (SocialFeed) o;
-		boolean equals = (TextUtils.equals(userId, otherFeed.userId) && 
-				positiveCount == otherFeed.positiveCount && 
-				neutralCount == otherFeed.neutralCount && 
-				negativeCount == otherFeed.negativeCount &&
-				TextUtils.equals(photoUrl, otherFeed.photoUrl));
-		return equals;
+		return (TextUtils.equals(userId, otherFeed.userId));
 	}
+
+    @Override
+    public int hashCode() {
+        return userId.hashCode();
+    }
 	
 }

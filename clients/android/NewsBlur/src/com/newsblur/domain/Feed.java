@@ -137,13 +137,15 @@ public class Feed implements Comparable<Feed>, Serializable {
 	
 	@Override
 	public boolean equals(Object o) {
+        if (! (o instanceof Feed)) return false;
 		Feed otherFeed = (Feed) o;
-		boolean isEquals = (TextUtils.equals(feedId, otherFeed.feedId) && 
-				negativeCount == otherFeed.negativeCount && 
-				neutralCount == otherFeed.neutralCount && 
-				positiveCount == otherFeed.positiveCount);
-		return isEquals;
+		return (TextUtils.equals(feedId, otherFeed.feedId));
 	}
+
+    @Override
+    public int hashCode() {
+        return feedId.hashCode();
+    }
 
     public int compareTo(Feed f) {
         return title.compareToIgnoreCase(f.title);

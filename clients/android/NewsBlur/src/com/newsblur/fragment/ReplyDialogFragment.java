@@ -20,7 +20,7 @@ public class ReplyDialogFragment extends DialogFragment {
 	private static final String COMMENT_USER_ID = "comment_user_id";
 	private static final String COMMENT_USERNAME = "comment_username";
 	
-	private String commentUserId, commentUsername;
+	private String commentUserId;
 	private Story story;
 	
 	public static ReplyDialogFragment newInstance(final Story story, final String commentUserId, final String commentUsername) {
@@ -37,7 +37,6 @@ public class ReplyDialogFragment extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         story = (Story) getArguments().getSerializable(STORY);
         commentUserId = getArguments().getString(COMMENT_USER_ID);
-        commentUsername = getArguments().getString(COMMENT_USERNAME);
 
         final Activity activity = getActivity();
 

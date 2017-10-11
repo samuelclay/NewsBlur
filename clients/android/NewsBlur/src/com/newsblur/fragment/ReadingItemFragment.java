@@ -340,7 +340,9 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
 			itemFeed.setText(feedTitle);
 		}
 
-        itemTitle.setText(UIUtils.fromHtml(story.title));
+        String title = story.title;
+        title = UIUtils.colourTitleFromClassifier(title, classifier);
+        itemTitle.setText(UIUtils.fromHtml(title));
         itemDate.setText(StoryUtils.formatLongDate(getActivity(), new Date(story.timestamp)));
 
         if (!TextUtils.isEmpty(story.authors)) {
@@ -428,14 +430,13 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
 	}
 
     public void switchSelectedViewMode() {
-        synchronized (selectedFeedView) {
-            // if we were already in text mode, switch back to story mode
-            if (selectedFeedView == DefaultFeedView.TEXT) {
-                setViewMode(DefaultFeedView.STORY);
-            } else {
-                setViewMode(DefaultFeedView.TEXT);
-            }
+        // if we were already in text mode, switch back to story mode
+        if (selectedFeedView == DefaultFeedView.TEXT) {
+            setViewMode(DefaultFeedView.STORY);
+        } else {
+            setViewMode(DefaultFeedView.TEXT);
         }
+
         Reading activity = (Reading) getActivity();
         activity.viewModeChanged();
         // telling the activity to change modes will chain a call to viewModeChanged()
@@ -725,10 +726,10 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
 				itemAuthors.setTextColor(UIUtils.getColor(getActivity(), R.color.negative));
 				break;
 			case Classifier.CLEAR_DISLIKE:
-				itemAuthors.setTextColor(UIUtils.getColor(getActivity(), R.color.half_darkgray));
+				itemAuthors.setTextColor(UIUtils.getThemedColor(getActivity(), R.attr.readingItemMetadata, android.R.attr.textColor));
 				break;
 			case Classifier.CLEAR_LIKE:
-				itemAuthors.setTextColor(UIUtils.getColor(getActivity(), R.color.half_darkgray));
+				itemAuthors.setTextColor(UIUtils.getThemedColor(getActivity(), R.attr.readingItemMetadata, android.R.attr.textColor));
 				break;	
 			}
 			break;

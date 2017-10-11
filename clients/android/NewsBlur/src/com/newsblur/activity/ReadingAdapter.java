@@ -112,7 +112,7 @@ public abstract class ReadingAdapter extends FragmentStatePagerAdapter {
     }
 
     @Override
-    public void notifyDataSetChanged() {
+    public synchronized void notifyDataSetChanged() {
         super.notifyDataSetChanged();
 
         // go one step further than the default pageradapter and also refresh the

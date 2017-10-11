@@ -79,6 +79,11 @@ public class FeedItemsList extends ItemsList {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
+        if (!feed.active) {
+            // there is currently no way for a feed to be un-muted while in this activity, so
+            // don't bother creating the menu, which contains no valid options for a muted feed
+            return false;
+        }
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.feed_itemslist, menu);
         if (feed.isNotifyUnread()) {

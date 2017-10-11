@@ -64,6 +64,7 @@ public class Folder {
 	
 	@Override
 	public boolean equals(Object otherFolder) {
+        if (! (otherFolder instanceof Folder)) return false;
 		return TextUtils.equals(((Folder) otherFolder).name, name);
 	}
 
