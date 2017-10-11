@@ -357,10 +357,10 @@ public class UIUtils {
         String result = title;
         for (Map.Entry<String, Integer> rule : c.title.entrySet()) {
             if (rule.getValue() > 0) {
-                result = result.replaceAll(rule.getKey(), String.format(POSIT_HILITE_FORMAT, rule.getKey()));
+                result = result.replace(rule.getKey(), String.format(POSIT_HILITE_FORMAT, rule.getKey()));
             }
             if (rule.getValue() < 0) {
-                result = result.replaceAll(rule.getKey(), String.format(NEGAT_HILITE_FORMAT, rule.getKey()));
+                result = result.replace(rule.getKey(), String.format(NEGAT_HILITE_FORMAT, rule.getKey()));
             }
         }
         return result;
