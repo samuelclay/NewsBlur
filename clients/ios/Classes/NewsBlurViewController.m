@@ -151,8 +151,8 @@ static UIFont *userLabelFont;
     [[ThemeManager themeManager] addThemeGestureRecognizerToView:self.feedTitlesTable];
     
     self.notifier = [[NBNotifier alloc] initWithTitle:@"Fetching stories..."
-                                               inView:self.view
-                                           withOffset:CGPointMake(0, self.feedViewToolbar.frame.size.height)];
+                                               inView:self.innerView
+                                           withOffset:CGPointMake(self.innerView.layoutMargins.left, 0)];
     [self.view insertSubview:self.notifier belowSubview:self.feedViewToolbar];
     
 //    self.feedTitlesTable.backgroundColor = UIColorFromRGB(0xf4f4f4);
@@ -349,7 +349,7 @@ static UIFont *userLabelFont;
 //        self.feedViewToolbar.frame = (CGRect){CGPointMake(0.f, CGRectGetHeight(self.view.frame) - toolbarSize.height), toolbarSize};
 //    }
 //    self.innerView.frame = (CGRect){CGPointZero, CGSizeMake(CGRectGetWidth(self.view.frame), CGRectGetMinY(self.feedViewToolbar.frame))};
-    self.notifier.offset = CGPointMake(0, self.feedViewToolbar.frame.size.height);
+    self.notifier.offset = CGPointMake(0, 0);
     
     [self updateIntelligenceControlForOrientation:interfaceOrientation];
     [self layoutHeaderCounts:interfaceOrientation];

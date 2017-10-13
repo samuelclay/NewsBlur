@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="13196" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="13196" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina3_5" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
+        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13173"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -25,39 +27,37 @@
             <rect key="frame" x="0.0" y="0.0" width="320" height="480"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <view contentMode="scaleToFill" id="85">
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="85">
                     <rect key="frame" x="0.0" y="0.0" width="320" height="436"/>
-                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                     <subviews>
-                        <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" bouncesZoom="NO" style="plain" separatorStyle="none" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="8" userLabel="Table View">
+                        <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" bouncesZoom="NO" style="plain" separatorStyle="none" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="8" userLabel="Table View">
                             <rect key="frame" x="0.0" y="0.0" width="320" height="436"/>
-                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <color key="backgroundColor" cocoaTouchSystemColor="lightTextColor"/>
                             <connections>
                                 <outlet property="dataSource" destination="-1" id="36"/>
                                 <outlet property="delegate" destination="-1" id="37"/>
                             </connections>
                         </tableView>
-                        <view hidden="YES" opaque="NO" contentMode="scaleToFill" id="122">
+                        <view hidden="YES" opaque="NO" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="122">
                             <rect key="frame" x="92" y="125" width="136" height="195"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                             <subviews>
-                                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="You have no unread stories in Focus mode." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="123">
+                                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" fixedFrame="YES" text="You have no unread stories in Focus mode." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="123">
                                     <rect key="frame" x="0.0" y="99" width="241" height="54"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                     <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
                                     <color key="textColor" red="0.75644385814666748" green="0.75644385814666748" blue="0.75644385814666748" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     <nil key="highlightedColor"/>
                                 </label>
-                                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Switch to All or Unread." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="124">
+                                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" fixedFrame="YES" text="Switch to All or Unread." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="124">
                                     <rect key="frame" x="0.0" y="153" width="241" height="42"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                     <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
                                     <color key="textColor" red="0.75644385814666748" green="0.75644385814666748" blue="0.75644385814666748" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     <nil key="highlightedColor"/>
                                 </label>
-                                <imageView userInteractionEnabled="NO" alpha="0.40000000596046448" contentMode="scaleToFill" image="big_world.png" id="125">
-                                    <rect key="frame" x="36.5" y="27" width="64" height="64"/>
+                                <imageView userInteractionEnabled="NO" alpha="0.40000000596046448" contentMode="scaleToFill" fixedFrame="YES" image="big_world.png" translatesAutoresizingMaskIntoConstraints="NO" id="125">
+                                    <rect key="frame" x="36" y="27" width="64" height="64"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 </imageView>
                             </subviews>
@@ -65,10 +65,15 @@
                         </view>
                     </subviews>
                     <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <constraints>
+                        <constraint firstItem="8" firstAttribute="leading" secondItem="85" secondAttribute="leading" id="KGk-35-9EN"/>
+                        <constraint firstItem="8" firstAttribute="top" secondItem="85" secondAttribute="top" id="dTL-fp-Y0u"/>
+                        <constraint firstAttribute="bottom" secondItem="8" secondAttribute="bottom" id="fV7-8n-6qW"/>
+                        <constraint firstAttribute="trailing" secondItem="8" secondAttribute="trailing" id="twA-4h-gsK"/>
+                    </constraints>
                 </view>
-                <toolbar clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translucent="NO" id="11">
+                <toolbar clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translucent="NO" translatesAutoresizingMaskIntoConstraints="NO" id="11">
                     <rect key="frame" x="0.0" y="436" width="320" height="44"/>
-                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <items>
                         <barButtonItem image="nav_icn_add.png" width="34" style="plain" id="106">
                             <connections>
@@ -104,7 +109,18 @@
                 </toolbar>
             </subviews>
             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <constraints>
+                <constraint firstItem="11" firstAttribute="top" secondItem="85" secondAttribute="bottom" id="5kv-Yh-mBh"/>
+                <constraint firstItem="85" firstAttribute="top" secondItem="6" secondAttribute="top" id="7pd-6w-Qal"/>
+                <constraint firstItem="11" firstAttribute="bottom" secondItem="JS5-vR-UMU" secondAttribute="bottom" id="AuL-nI-HN4"/>
+                <constraint firstItem="11" firstAttribute="leading" secondItem="6" secondAttribute="leading" id="JX8-Ds-9QN"/>
+                <constraint firstItem="85" firstAttribute="leading" secondItem="JS5-vR-UMU" secondAttribute="leading" id="QW7-Oq-EXa"/>
+                <constraint firstItem="85" firstAttribute="trailing" secondItem="JS5-vR-UMU" secondAttribute="trailing" id="Qkf-yY-IpF"/>
+                <constraint firstItem="11" firstAttribute="top" secondItem="85" secondAttribute="bottom" id="kjq-Yd-D4j"/>
+                <constraint firstItem="11" firstAttribute="trailing" secondItem="6" secondAttribute="trailing" id="qyT-XC-D2U"/>
+            </constraints>
             <nil key="simulatedStatusBarMetrics"/>
+            <viewLayoutGuide key="safeArea" id="JS5-vR-UMU"/>
         </view>
     </objects>
     <resources>

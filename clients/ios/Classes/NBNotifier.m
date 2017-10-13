@@ -189,9 +189,9 @@
     _view = view;
 
     if (self.showing) {
-        self.frame = CGRectMake(0, view.bounds.size.height - self.offset.y - self.frame.size.height, view.bounds.size.width, NOTIFIER_HEIGHT);
+        self.frame = CGRectMake(self.offset.x, view.bounds.size.height - self.offset.y - self.frame.size.height, view.bounds.size.width, NOTIFIER_HEIGHT);
     } else {
-        self.frame = CGRectMake(0, view.bounds.size.height - self.offset.y, view.bounds.size.width, NOTIFIER_HEIGHT);
+        self.frame = CGRectMake(self.offset.x, view.bounds.size.height - self.offset.y, view.bounds.size.width, NOTIFIER_HEIGHT);
     }
 }
 
@@ -202,13 +202,14 @@
 - (void)showIn:(float)time {
     showing = YES;
     CGRect frame = self.frame;
-    frame.size.width = self.view.bounds.size.width;
+    frame.size.width = self.view.frame.size.width;
     self.frame = frame;
     self.hidden = NO;
     
     [UIView animateWithDuration:time animations:^{
         CGRect move = self.frame;
-        move.origin.y = self.view.bounds.size.height - NOTIFIER_HEIGHT - self.offset.y;
+        move.origin.x = self.view.frame.origin.x + self.offset.x;
+        move.origin.y = self.view.frame.size.height - NOTIFIER_HEIGHT - self.offset.y;
         self.frame = move;
     } completion:nil];
 }
