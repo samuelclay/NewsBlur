@@ -152,7 +152,7 @@ static UIFont *userLabelFont;
     
     self.notifier = [[NBNotifier alloc] initWithTitle:@"Fetching stories..."
                                                inView:self.innerView
-                                           withOffset:CGPointMake(self.innerView.layoutMargins.left, 0)];
+                                           withOffset:CGPointMake(0, 0)];
     [self.view insertSubview:self.notifier belowSubview:self.feedViewToolbar];
     
 //    self.feedTitlesTable.backgroundColor = UIColorFromRGB(0xf4f4f4);
