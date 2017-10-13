@@ -78,6 +78,10 @@
 
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     
+    [self.fontSizeSegment
+     setTitleTextAttributes:@{NSFontAttributeName:
+                                  [UIFont fontWithName:@"Helvetica-Bold" size:11.0f]}
+     forState:UIControlStateNormal];
     if([userPreferences stringForKey:@"feed_list_font_size"]){
         NSString *fontSize = [userPreferences stringForKey:@"feed_list_font_size"];
         if ([fontSize isEqualToString:@"xs"]) {
@@ -314,13 +318,12 @@
     cell.separatorInset = UIEdgeInsetsZero;
     cell.backgroundColor = UIColorFromRGB(0xffffff);
     
-    self.fontSizeSegment.frame = CGRectMake(8, 4, cell.frame.size.width - 8*2, kMenuOptionHeight - 4*2);
+    self.fontSizeSegment.frame = CGRectMake(8, 7, cell.frame.size.width - 8*2, kMenuOptionHeight - 7*2);
     [self.fontSizeSegment setTitle:@"XS" forSegmentAtIndex:0];
     [self.fontSizeSegment setTitle:@"S" forSegmentAtIndex:1];
     [self.fontSizeSegment setTitle:@"M" forSegmentAtIndex:2];
     [self.fontSizeSegment setTitle:@"L" forSegmentAtIndex:3];
     [self.fontSizeSegment setTitle:@"XL" forSegmentAtIndex:4];
-    [self.fontSizeSegment setTintColor:UIColorFromRGB(0x738570)];
     self.fontSizeSegment.backgroundColor = UIColorFromRGB(0xeeeeee);
     [self.fontSizeSegment setTitleTextAttributes:@{NSFontAttributeName:[UIFont fontWithName:@"Helvetica-Bold" size:11.0f]} forState:UIControlStateNormal];
     [self.fontSizeSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:0];
