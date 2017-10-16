@@ -1963,6 +1963,7 @@
 
             this.hide_splash_page();
             if (options.infrequent) {
+                folder_title = "Infrequent";
                 this.active_feed = 'river:infrequent';
                 this.$s.$river_infrequent_header.addClass('NB-selected');
             } else if (!folder || folder.get('fake') || !folder.get('folder_title')) {
@@ -2825,7 +2826,7 @@
             var title = "All Site Stories";
             if (NEWSBLUR.reader.active_feed == "read") {
                 title = "Read Stories";
-            } else if (NEWSBLUR.reader.active_feed == "infrequent") {
+            } else if (NEWSBLUR.reader.active_feed == "river:infrequent") {
                 title = "Infrequent Site Stories";
             } else if (NEWSBLUR.reader.flags['starred_view']) {
                 title = "Saved Stories";
