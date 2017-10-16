@@ -65,11 +65,11 @@ class TextImporter:
         # if self.debug:
         #     logging.user(self.request, "~FBOriginal text's website: %s" % text)
         
-        if resp.encoding and resp.encoding != 'utf-8':
-            try:
-                text = text.encode(resp.encoding)
-            except (LookupError, UnicodeEncodeError):
-                pass
+        # if resp.encoding and resp.encoding != 'utf-8':
+        #     try:
+        #         text = text.encode(resp.encoding)
+        #     except (LookupError, UnicodeEncodeError):
+        #         pass
 
         if text:
             text = text.replace("\xc2\xa0", " ") # Non-breaking space, is mangled when encoding is not utf-8
