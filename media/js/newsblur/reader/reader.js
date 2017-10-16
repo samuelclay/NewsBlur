@@ -43,6 +43,7 @@
                 $feeds_progress: $('#NB-progress'),
                 $dashboard: $('.NB-feeds-header-dashboard'),
                 $river_sites_header: $('.NB-feeds-header-river-sites'),
+                $river_infrequent_header: $('.NB-feeds-header-river-infrequent'),
                 $river_blurblogs_header: $('.NB-feeds-header-river-blurblogs'),
                 $river_global_header: $('.NB-feeds-header-river-global'),
                 $starred_header: $('.NB-feeds-header-starred'),
@@ -1305,6 +1306,7 @@
             this.$s.$starred_header.removeClass('NB-selected');
             this.$s.$read_header.removeClass('NB-selected');
             this.$s.$river_sites_header.removeClass('NB-selected');
+            this.$s.$river_infrequent_header.removeClass('NB-selected');
             this.$s.$river_blurblogs_header.removeClass('NB-selected');
             this.$s.$river_global_header.removeClass('NB-selected');
             this.$s.$tryfeed_header.removeClass('NB-selected');
@@ -1960,7 +1962,10 @@
             }
 
             this.hide_splash_page();
-            if (!folder || folder.get('fake') || !folder.get('folder_title')) {
+            if (options.infrequent) {
+                this.active_feed = 'river:infrequent';
+                this.$s.$river_infrequent_header.addClass('NB-selected');
+            } else if (!folder || folder.get('fake') || !folder.get('folder_title')) {
                 this.active_feed = 'river:';
                 if (options.feed) {
                     options.feed.set('selected', true);
@@ -2035,10 +2040,10 @@
                 if (this.counts['select_story_in_feed'] || this.flags['select_story_in_feed']) {
                     this.select_story_in_feed();
                 }
-                this.model.fetch_river_stories(this.active_feed, feeds, 1, 
+                this.model.fetch_river_stories(this.active_feed, feeds, 1, {'infrequent': options.infrequent},
                     _.bind(this.post_open_river_stories, this), NEWSBLUR.app.taskbar_info.show_stories_error, false);
             } else {
-                this.model.fetch_river_stories(this.active_feed, feeds, 1, 
+                this.model.fetch_river_stories(this.active_feed, feeds, 1, {'infrequent': options.infrequent},
                     _.bind(this.post_open_river_stories, this), NEWSBLUR.app.taskbar_info.show_stories_error, true);
             }
         },
@@ -2768,6 +2773,8 @@
                 NEWSBLUR.app.story_titles.show_loading(options);
             }
             
+            if (this.active_feed == 'river:infrequent') options.infrequent = true;
+            
             if (this.flags['starred_view']) {
                 this.model.fetch_starred_stories(this.counts['page'], this.flags['starred_tag'], _.bind(this.post_open_starred_stories, this),
                                                  NEWSBLUR.app.taskbar_info.show_stories_error, false);
@@ -2786,7 +2793,8 @@
                                                 NEWSBLUR.app.taskbar_info.show_stories_error, false);
             } else if (this.flags['river_view']) {
                 this.model.fetch_river_stories(this.active_feed, this.cache['river_feeds_with_unreads'],
-                                               this.counts['page'], _.bind(this.post_open_river_stories, this),
+                                               this.counts['page'], {'infrequent': options.infrequent},
+                                               _.bind(this.post_open_river_stories, this),
                                                NEWSBLUR.app.taskbar_info.show_stories_error, false);
             } else {
                 this.model.load_feed(feed_id, this.counts['page'], false, 
@@ -2817,6 +2825,8 @@
             var title = "All Site Stories";
             if (NEWSBLUR.reader.active_feed == "read") {
                 title = "Read Stories";
+            } else if (NEWSBLUR.reader.active_feed == "infrequent") {
+                title = "Infrequent Site Stories";
             } else if (NEWSBLUR.reader.flags['starred_view']) {
                 title = "Saved Stories";
                 if (NEWSBLUR.reader.flags['starred_tag']) {

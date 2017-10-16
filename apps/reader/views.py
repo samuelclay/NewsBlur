@@ -1239,6 +1239,7 @@ def load_river_stories__redis(request):
     include_hidden    = is_true(request.REQUEST.get('include_hidden', False))
     include_feeds     = is_true(request.REQUEST.get('include_feeds', False))
     initial_dashboard = is_true(request.REQUEST.get('initial_dashboard', False))
+    infrequent        = is_true(request.REQUEST.get('infrequent', False))
     now               = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
     usersubs          = []
     code              = 1
@@ -1275,6 +1276,8 @@ def load_river_stories__redis(request):
         ).order_by('%sstarred_date' % ('-' if order == 'newest' else ''))[offset:offset+limit]
         stories = Feed.format_stories(mstories) 
     else:
+        if infrequent:
+            feed_ids = Feed.low_volume_feeds(feed_ids)
         usersubs = UserSubscription.subs_for_feeds(user.pk, feed_ids=feed_ids,
                                                    read_filter=read_filter)
         all_feed_ids = [f for f in feed_ids]
