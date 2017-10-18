@@ -1369,6 +1369,9 @@
             } else if (this.flags['social_view']) {
                 this.open_social_stories(this.active_feed, options);
             } else if (this.flags['river_view']) {
+                if (this.active_feed == 'river:infrequent') {
+                    options.infrequent = true;
+                }
                 this.open_river_stories(this.active_folder && 
                                         this.active_folder.folder_view &&
                                         this.active_folder.folder_view.$el,
