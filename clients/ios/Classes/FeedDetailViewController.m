@@ -86,7 +86,8 @@
 
     self.storyTitlesTable.backgroundColor = UIColorFromRGB(0xf4f4f4);
     self.storyTitlesTable.separatorColor = UIColorFromRGB(0xE9E8E4);
-    
+    self.view.backgroundColor = UIColorFromRGB(0xf4f4f4);
+
     spacerBarButton = [[UIBarButtonItem alloc]
                        initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
     spacerBarButton.width = 0;
@@ -1215,10 +1216,27 @@
             height = height - kTableViewShortRowDifference;
         }
 
-        fleuron.frame = CGRectMake(0, 0, self.view.frame.size.width, height);
+        fleuron.translatesAutoresizingMaskIntoConstraints = NO;
         fleuron.contentMode = UIViewContentModeCenter;
         fleuron.tag = 99;
         [cell.contentView addSubview:fleuron];
+        [cell.contentView addConstraint:[NSLayoutConstraint constraintWithItem:fleuron
+                                                                     attribute:NSLayoutAttributeHeight
+                                                                     relatedBy:NSLayoutRelationEqual toItem:nil
+                                                                     attribute:NSLayoutAttributeNotAnAttribute
+                                                                    multiplier:1.0 constant:height]];
+        [cell.contentView addConstraint:[NSLayoutConstraint constraintWithItem:fleuron
+                                                                     attribute:NSLayoutAttributeCenterX
+                                                                     relatedBy:NSLayoutRelationEqual
+                                                                        toItem:cell.contentView
+                                                                     attribute:NSLayoutAttributeCenterX
+                                                                    multiplier:1.0 constant:0]];
+        [cell.contentView addConstraint:[NSLayoutConstraint constraintWithItem:fleuron
+                                                                     attribute:NSLayoutAttributeCenterY
+                                                                     relatedBy:NSLayoutRelationEqual
+                                                                        toItem:cell.contentView
+                                                                     attribute:NSLayoutAttributeCenterY
+                                                                    multiplier:1.0 constant:0]];
         cell.backgroundColor = [UIColor clearColor];
         return cell;
     } else {//if ([appDelegate.storyLocationsCount]) {
@@ -2159,6 +2177,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         self.searchBar.keyboardAppearance = UIKeyboardAppearanceDefault;
     }
     
+    self.view.backgroundColor = UIColorFromRGB(0xf4f4f4);
     self.storyTitlesTable.backgroundColor = UIColorFromRGB(0xf4f4f4);
     self.storyTitlesTable.separatorColor = UIColorFromRGB(0xE9E8E4);
     [self.storyTitlesTable reloadData];

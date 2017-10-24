@@ -10,6 +10,7 @@ from utils.feed_functions import timelimit, TimeoutError
 from OpenSSL.SSL import Error as OpenSSLError
 from pyasn1.error import PyAsn1Error
 from django.utils.encoding import smart_str
+from django.conf import settings
 from BeautifulSoup import BeautifulSoup
 
 BROKEN_URLS = [
@@ -40,13 +41,43 @@ class TextImporter:
                           ),
         }
 
-    def fetch(self, skip_save=False, return_document=False):
+    def fetch(self, skip_save=False, return_document=False, use_mercury=True):
         if self.story_url and any(broken_url in self.story_url for broken_url in BROKEN_URLS):
             logging.user(self.request, "~SN~FRFailed~FY to fetch ~FGoriginal text~FY: banned")
             return
-
+        
+        if use_mercury:
+            results = self.fetch_mercury(skip_save=skip_save, return_document=return_document)
+        
+        if not use_mercury or not results:
+            logging.user(self.request, "~SN~FRFailed~FY to fetch ~FGoriginal text~FY with Mercury, trying readability...", warn_color=False)
+            results = self.fetch_manually(skip_save=skip_save, return_document=return_document)
+        
+        return results
+    
+    def fetch_mercury(self, skip_save=False, return_document=False):
         try:
-            resp = self.fetch_request()
+            resp = self.fetch_request(use_mercury=True)
+        except TimeoutError:
+            logging.user(self.request, "~SN~FRFailed~FY to fetch ~FGoriginal text~FY: timed out")
+            resp = None
+        except requests.exceptions.TooManyRedirects:
+            logging.user(self.request, "~SN~FRFailed~FY to fetch ~FGoriginal text~FY: too many redirects")
+            resp = None
+        
+        if not resp:
+            return
+        
+        doc = resp.json()
+        text = doc['content']
+        title = doc['title']
+        url = doc['url']
+        
+        return self.process_content(text, title, url, skip_save=skip_save, return_document=return_document)
+        
+    def fetch_manually(self, skip_save=False, return_document=False):
+        try:
+            resp = self.fetch_request(use_mercury=False)
         except TimeoutError:
             logging.user(self.request, "~SN~FRFailed~FY to fetch ~FGoriginal text~FY: timed out")
             resp = None
@@ -91,8 +122,15 @@ class TextImporter:
         
         if content:
             content = self.rewrite_content(content)
+    
+        return self.process_content(content, title, url, skip_save=skip_save, return_document=return_document,
+                                    original_text_doc=original_text_doc)
         
-        if content:
+    def process_content(self, content, title, url, skip_save=False, return_document=False, original_text_doc=None):
+        original_story_content = self.story and self.story.story_content_z and zlib.decompress(self.story.story_content_z)
+        if not original_story_content:
+            original_story_content = ""
+        if content and len(content) > len(original_story_content):
             if self.story and not skip_save:
                 self.story.original_text_z = zlib.compress(smart_str(content))
                 try:
@@ -102,12 +140,13 @@ class TextImporter:
                     pass
             logging.user(self.request, ("~SN~FYFetched ~FGoriginal text~FY: now ~SB%s bytes~SN vs. was ~SB%s bytes" % (
                 len(content),
-                self.story and self.story.story_content_z and len(zlib.decompress(self.story.story_content_z))
+                len(original_story_content)
             )), warn_color=False)
         else:
             logging.user(self.request, ("~SN~FRFailed~FY to fetch ~FGoriginal text~FY: was ~SB%s bytes" % (
-                self.story and self.story.story_content_z and len(zlib.decompress(self.story.story_content_z))
+                len(original_story_content)
             )), warn_color=False)
+            return
 
         if return_document:
             return dict(content=content, title=title, url=url, doc=original_text_doc)
@@ -124,12 +163,20 @@ class TextImporter:
         return unicode(soup)
     
     @timelimit(10)
-    def fetch_request(self):
+    def fetch_request(self, use_mercury=True):
+        headers = self.headers
         url = self.story_url
         if self.story and not url:
             url = self.story.story_permalink
+        
+        if use_mercury:
+            mercury_api_key = getattr(settings, 'MERCURY_PARSER_API_KEY', 'abc123')
+            headers["content-type"] = "application/json"
+            headers["x-api-key"] = mercury_api_key
+            url = "https://mercury.postlight.com/parser?url=%s" % url
+            
         try:
-            r = requests.get(url, headers=self.headers, verify=False)
+            r = requests.get(url, headers=headers, verify=False)
             r.connection.close()
         except (AttributeError, SocketError, requests.ConnectionError,
                 requests.models.MissingSchema, requests.sessions.InvalidSchema,

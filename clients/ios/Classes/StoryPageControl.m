@@ -602,7 +602,7 @@
 	BOOL outOfBounds = newIndex >= pageCount || newIndex < 0;
     
 	if (!outOfBounds) {
-		CGRect pageFrame = pageController.view.bounds;
+        CGRect pageFrame = pageController.view.bounds;
 		pageFrame.origin.y = 0;
 		pageFrame.origin.x = CGRectGetWidth(self.view.bounds) * newIndex;
         pageFrame.size.height = CGRectGetHeight(self.view.bounds) - self.bottomSizeHeightConstraint.constant;
