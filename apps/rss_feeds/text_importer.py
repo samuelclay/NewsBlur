@@ -128,6 +128,8 @@ class TextImporter:
         
     def process_content(self, content, title, url, skip_save=False, return_document=False, original_text_doc=None):
         original_story_content = self.story and self.story.story_content_z and zlib.decompress(self.story.story_content_z)
+        if not original_story_content:
+            original_story_content = ""
         if content and len(content) > len(original_story_content):
             if self.story and not skip_save:
                 self.story.original_text_z = zlib.compress(smart_str(content))
@@ -142,7 +144,7 @@ class TextImporter:
             )), warn_color=False)
         else:
             logging.user(self.request, ("~SN~FRFailed~FY to fetch ~FGoriginal text~FY: was ~SB%s bytes" % (
-                self.story and self.story.story_content_z and len(zlib.decompress(self.story.story_content_z))
+                len(original_story_content)
             )), warn_color=False)
             return
 
