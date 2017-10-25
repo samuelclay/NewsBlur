@@ -1393,10 +1393,11 @@ def load_river_stories__redis(request):
         #     stories = stories[:5]
     diff = time.time() - start
     timediff = round(float(diff), 2)
-    logging.user(request, "~FYLoading ~FCriver stories~FY: ~SBp%s~SN (%s/%s "
+    logging.user(request, "~FYLoading ~FC%sriver stories~FY: ~SBp%s~SN (%s/%s "
                                "stories, ~SN%s/%s/%s feeds, %s/%s)" % 
-                               (page, len(stories), len(mstories), len(found_feed_ids), 
-                               len(feed_ids), len(original_feed_ids), order, read_filter))
+                               ("~FB~SBinfrequent~SN~FC " if infrequent else "",
+                                page, len(stories), len(mstories), len(found_feed_ids), 
+                                len(feed_ids), len(original_feed_ids), order, read_filter))
 
 
     if not include_hidden:
