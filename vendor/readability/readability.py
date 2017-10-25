@@ -4,7 +4,6 @@ import logging
 import re
 import sys
 
-from collections import defaultdict
 from lxml.etree import tostring
 from lxml.etree import tounicode
 from lxml.html import document_fromstring
@@ -26,7 +25,7 @@ REGEXES = {
     'unlikelyCandidatesRe': re.compile('combx|comment|community|disqus|extra|foot|header|menu|remark|rss|shoutbox|sidebar|sponsor|ad-break|agegate|pagination|pager|popup|tweet|twitter', re.I),
     'okMaybeItsACandidateRe': re.compile('and|article|body|column|main|shadow', re.I),
     'positiveRe': re.compile('article|body|content|entry|hentry|main|page|pagination|post|text|blog|story', re.I),
-    'negativeRe': re.compile('combx|comment|com-|contact|foot|footer|footnote|masthead|media|meta|outbrain|promo|related|scroll|shoutbox|sidebar|sponsor|shopping|tags|tool|widget', re.I),
+    'negativeRe': re.compile('combx|comment|com-|contact|foot|footer|footnote|masthead|media|meta|outbrain|promo|related|scroll|shoutbox|sidebar|sponsor|shopping|tags|tool|widget|noscript', re.I),
     'divToPElementsRe': re.compile('<(a|blockquote|dl|div|img|ol|p|pre|table|ul)', re.I),
     #'replaceBrsRe': re.compile('(<br[^>]*>[ \n\r\t]*){2,}',re.I),
     #'replaceFontsRe': re.compile('<(\/?)font[^>]*>',re.I),
@@ -175,7 +174,7 @@ class Document:
             ruthless = True
             while True:
                 self._html(True)
-                for i in self.tags(self.html, 'script', 'style'):
+                for i in self.tags(self.html, 'script', 'style', 'noscript'):
                     i.drop_tree()
                 for i in self.tags(self.html, 'body'):
                     i.set('id', 'readabilityBody')
@@ -503,8 +502,8 @@ class Document:
                 to_remove = False
                 reason = ""
 
-                if el.tag == 'div' and counts["img"] >= 1:
-                   continue
+                #if el.tag == 'div' and counts["img"] >= 1:
+                #    continue
                 if counts["p"] and counts["img"] > 1+counts["p"]*1.3:
                     reason = "too many images (%s)" % counts["img"]
                     to_remove = True

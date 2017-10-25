@@ -1465,6 +1465,9 @@
                     var feed_title = feed.get('feed_title') || '';
                     var slug = _.string.words(_.string.clean(feed_title.replace(/[^a-z0-9\. ]/ig, ''))).join('-').toLowerCase();
                     var url = "site/" + feed.id + "/" + slug;
+                    if (window.location.search.length) {
+                        url = url + window.location.search;
+                    }
                     if (!_.string.include(window.location.pathname, url)) {
                         NEWSBLUR.log(["Navigating to url", url]);
                         NEWSBLUR.router.navigate(url);
@@ -2402,6 +2405,19 @@
             var folder = folder || this.active_folder;
             var feeds = folder.feed_ids_in_folder({unreads_only: true});
             
+            if (direction) {
+                var order = NEWSBLUR.assets.view_setting(this.active_feed, 'order');
+                if ((direction == "newer" && order == "oldest") || (direction == "older" && order == "newest")) {
+                    var unread_counts = folder.unread_counts && folder.unread_counts() || folder.folders.unread_counts();
+                    var total = unread_counts['nt'] + unread_counts['ps'];
+                    if (total > 100) {
+                        if (!window.confirm("This will mark up to " + Inflector.commas(total) + " stories as read. Are you sure?")) {
+                            return;
+                        }
+                    }
+                }
+            }
+            
             this.mark_feeds_as_read(feeds, days_back, direction);
             
             if (!direction && NEWSBLUR.assets.preference('markread_nextfeed') == 'nextfeed' &&
@@ -2530,20 +2546,6 @@
               encodeURIComponent(story.get('story_title'))
             ].join('');
             window.open(delicious_url, '_blank');
-            NEWSBLUR.assets.stories.mark_read(story, {skip_delay: true});
-        },
-        
-        send_story_to_readability: function(story_id) {
-            var story = this.model.get_story(story_id);
-            var url = 'http://www.readability.com/save';
-            var readability_url = [
-              url,
-              '?url=',
-              encodeURIComponent(story.get('story_permalink')),
-              '&title=',
-              encodeURIComponent(story.get('story_title'))
-            ].join('');
-            window.open(readability_url, '_blank');
             NEWSBLUR.assets.stories.mark_read(story, {skip_delay: true});
         },
         
@@ -3353,10 +3355,10 @@
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Goodies &amp; Mobile Apps')
                     ]),
-                    (NEWSBLUR.Globals.is_admin && $.make('li', { className: 'NB-menu-item NB-menu-manage-notifications' }, [
+                    $.make('li', { className: 'NB-menu-item NB-menu-manage-notifications' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Notifications')
-                    ])),
+                    ]),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-newsletters' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Email Newsletters')
@@ -3415,10 +3417,10 @@
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Site settings')
                     ]),
-                    (NEWSBLUR.Globals.is_admin && $.make('li', { className: 'NB-menu-item NB-menu-manage-feed-notifications' }, [
+                    $.make('li', { className: 'NB-menu-item NB-menu-manage-feed-notifications' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Notifications')
-                    ])),
+                    ]),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-feed-train' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Intelligence trainer'),
@@ -3700,11 +3702,6 @@
                         }, this)).bind('mouseleave', _.bind(function(e) {
                             $(e.target).siblings('.NB-menu-manage-title').text('Email story').parent().removeClass('NB-menu-manage-highlight-instapaper');
                         }, this))),
-                        (NEWSBLUR.Preferences['story_share_readability'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-readability'}).bind('mouseenter', _.bind(function(e) {
-                            $(e.target).siblings('.NB-menu-manage-title').text('Readability').parent().addClass('NB-menu-manage-highlight-readability');
-                        }, this)).bind('mouseleave', _.bind(function(e) {
-                            $(e.target).siblings('.NB-menu-manage-title').text('Email story').parent().removeClass('NB-menu-manage-highlight-readability');
-                        }, this))),
                         $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-email'}),
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Email story')
@@ -3724,8 +3721,6 @@
                           this.send_story_to_blogger(story.id);
                       } else if ($target.hasClass('NB-menu-manage-thirdparty-delicious')) {
                           this.send_story_to_delicious(story.id);
-                      } else if ($target.hasClass('NB-menu-manage-thirdparty-readability')) {
-                          this.send_story_to_readability(story.id);
                       } else if ($target.hasClass('NB-menu-manage-thirdparty-pinboard')) {
                           this.send_story_to_pinboard(story.id);
                       } else if ($target.hasClass('NB-menu-manage-thirdparty-pinterest')) {

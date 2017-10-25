@@ -40,9 +40,6 @@ public class Story implements Serializable {
 	@SerializedName("story_tags")
 	public String[] tags;
 
-    @SerializedName("user_tags")
-    public String[] userTags = new String[]{};
-
 	@SerializedName("social_user_id")
 	public String socialUserId;
 
@@ -97,6 +94,9 @@ public class Story implements Serializable {
     // non-API, though it probably could/should be. populated on first story ingest if thumbnails are turned on
     public String thumbnailUrl;
 
+    // non-API, but tracked locally and fudged (see SyncService) to implement ordering of gobal shared stories
+    public long sharedTimestamp = 0L;
+
 	public ContentValues getValues() {
 		final ContentValues values = new ContentValues();
 		values.put(DatabaseConstants.STORY_ID, id);
@@ -116,7 +116,6 @@ public class Story implements Serializable {
 		values.put(DatabaseConstants.STORY_INTELLIGENCE_TITLE, intelligence.intelligenceTitle);
         values.put(DatabaseConstants.STORY_INTELLIGENCE_TOTAL, intelligence.calcTotalIntel());
 		values.put(DatabaseConstants.STORY_TAGS, TextUtils.join(",", tags));
-		values.put(DatabaseConstants.STORY_USER_TAGS, TextUtils.join(",", userTags));
 		values.put(DatabaseConstants.STORY_READ, read);
 		values.put(DatabaseConstants.STORY_STARRED, starred);
 		values.put(DatabaseConstants.STORY_STARRED_DATE, starredTimestamp);
@@ -124,6 +123,7 @@ public class Story implements Serializable {
         values.put(DatabaseConstants.STORY_HASH, storyHash);
         values.put(DatabaseConstants.STORY_IMAGE_URLS, TextUtils.join(",", imageUrls));
         values.put(DatabaseConstants.STORY_LAST_READ_DATE, lastReadTimestamp);
+        values.put(DatabaseConstants.STORY_SHARED_DATE, sharedTimestamp);
 		values.put(DatabaseConstants.STORY_SEARCH_HIT, searchHit);
         values.put(DatabaseConstants.STORY_THUMBNAIL_URL, thumbnailUrl);
 		return values;
@@ -151,11 +151,11 @@ public class Story implements Serializable {
 		story.starred = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.STORY_STARRED)) > 0;
 		story.starredTimestamp = cursor.getLong(cursor.getColumnIndex(DatabaseConstants.STORY_STARRED_DATE));
 		story.tags = TextUtils.split(cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_TAGS)), ",");
-		story.userTags = TextUtils.split(cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_USER_TAGS)), ",");
 		story.feedId = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_FEED_ID));
 		story.id = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_ID));
         story.storyHash = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_HASH));
         story.lastReadTimestamp = cursor.getLong(cursor.getColumnIndex(DatabaseConstants.STORY_LAST_READ_DATE));
+        story.sharedTimestamp = cursor.getLong(cursor.getColumnIndex(DatabaseConstants.STORY_SHARED_DATE));
 		story.thumbnailUrl = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_THUMBNAIL_URL));
 		return story;
 	}

@@ -35,7 +35,6 @@ UIGestureRecognizerDelegate> {
     NSDate *lastUpdate;
     NSCache *imageCache;
     
-    UIView *innerView;
 	UITableView * feedTitlesTable;
 	UIToolbar * feedViewToolbar;
     UISlider * feedScoreSlider;
@@ -61,6 +60,7 @@ UIGestureRecognizerDelegate> {
 @property (nonatomic) IBOutlet UILabel *neutralCount;
 @property (nonatomic) IBOutlet UILabel *positiveCount;
 @property (nonatomic) IBOutlet UILabel *userLabel;
+@property (nonatomic) IBOutlet UIImageView *yellowIcon;
 @property (nonatomic) IBOutlet UIImageView *greenIcon;
 @property (nonatomic) NSMutableDictionary *activeFeedLocations;
 @property (nonatomic) NSMutableDictionary *stillVisibleFeeds;
@@ -116,6 +116,7 @@ UIGestureRecognizerDelegate> {
 - (void)layoutHeaderCounts:(UIInterfaceOrientation)orientation;
 - (void)refreshHeaderCounts;
 
+- (void)resizeFontSize;
 - (void)settingsViewControllerDidEnd:(IASKAppSettingsViewController*)sender;
 - (void)settingDidChange:(NSNotification*)notification;
 

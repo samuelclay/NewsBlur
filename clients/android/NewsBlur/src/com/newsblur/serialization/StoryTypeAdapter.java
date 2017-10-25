@@ -6,14 +6,15 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
+
 import com.newsblur.domain.Story;
+import com.newsblur.util.UIUtils;
 
 import java.lang.reflect.Type;
 import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import android.text.Html;
 import android.util.Log;
 
 /**
@@ -43,7 +44,7 @@ public class StoryTypeAdapter implements JsonDeserializer<Story> {
         
         // populate the shortContent field
         if (story.content != null) {
-            CharSequence parsed = Html.fromHtml(story.content).toString();
+            CharSequence parsed = UIUtils.fromHtml(story.content);
             int length = 200;
             if (parsed.length() < 200) { length = parsed.length(); }
             story.shortContent = parsed.subSequence(0, length).toString();

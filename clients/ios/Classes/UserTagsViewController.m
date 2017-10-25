@@ -319,18 +319,30 @@ const NSInteger kHeaderHeight = 24;
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar {
     [addTagBar resignFirstResponder];
     NSString *tagName = addTagBar.text;
-    NSMutableDictionary *story = [appDelegate.activeStory mutableCopy];
     
-    [story setObject:[[story objectForKey:@"user_tags"] arrayByAddingObject:tagName] forKey:@"user_tags"];
-    [appDelegate.storiesCollection markStory:story asSaved:YES forceUpdate:YES];
-    [appDelegate.storiesCollection syncStoryAsSaved:story];
-    [appDelegate adjustSavedStoryCount:tagName direction:1];
-    
-    NSInteger row = [[self arrayUserTags] indexOfObject:tagName];
-    [tagsTableView beginUpdates];
-    [tagsTableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:row inSection:0]]
-                         withRowAnimation:UITableViewRowAnimationTop];
-    [tagsTableView endUpdates];
+    if ([[self arrayStoryTags] containsObject:tagName]) {
+        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:[self.arrayStoryTags indexOfObject:tagName] inSection:1];
+        [self tableView:tagsTableView didSelectRowAtIndexPath:indexPath];
+    } else if ([[self arrayUserTags] containsObject:tagName]) {
+        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:[self.arrayUserTags indexOfObject:tagName] inSection:0];
+        [self tableView:tagsTableView didSelectRowAtIndexPath:indexPath];
+    } else if ([[self arrayUserTagsNotInStory] containsObject:tagName]) {
+        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:[self.arrayUserTagsNotInStory indexOfObject:tagName] inSection:2];
+        [self tableView:tagsTableView didSelectRowAtIndexPath:indexPath];
+    } else {
+        NSMutableDictionary *story = [appDelegate.activeStory mutableCopy];
+        
+        [story setObject:[[story objectForKey:@"user_tags"] arrayByAddingObject:tagName] forKey:@"user_tags"];
+        [appDelegate.storiesCollection markStory:story asSaved:YES forceUpdate:YES];
+        [appDelegate.storiesCollection syncStoryAsSaved:story];
+        [appDelegate adjustSavedStoryCount:tagName direction:1];
+        
+        NSInteger row = [[self arrayUserTags] indexOfObject:tagName];
+        [tagsTableView beginUpdates];
+        [tagsTableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:row inSection:0]]
+                             withRowAnimation:UITableViewRowAnimationTop];
+        [tagsTableView endUpdates];
+    }
     
     [addTagBar setText:@""];
 }

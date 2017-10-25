@@ -12,7 +12,6 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.app.DialogFragment;
 import android.app.FragmentManager;
-import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -97,7 +96,7 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 
 			View commentView = inflater.inflate(R.layout.include_comment, null);
 			TextView commentText = (TextView) commentView.findViewById(R.id.comment_text);
-			commentText.setText(Html.fromHtml(comment.commentText));
+			commentText.setText(comment.commentText);
 			ImageView commentImage = (ImageView) commentView.findViewById(R.id.comment_user_image);
 
 			TextView commentSharedDate = (TextView) commentView.findViewById(R.id.comment_shareddate);
@@ -112,7 +111,7 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 
 			if (comment.likingUsers != null) {
 				if (Arrays.asList(comment.likingUsers).contains(user.id)) {
-					favouriteIcon.setImageResource(R.drawable.have_favourite);
+					favouriteIcon.setImageResource(R.drawable.ic_star_active);
 				}
 
 				for (String id : comment.likingUsers) {
@@ -141,24 +140,28 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
                 }
 			}
 
-			replyIcon.setOnClickListener(new OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					if (story != null) {
-						UserProfile user = FeedUtils.dbHelper.getUserProfile(comment.userId);
-                        if (user != null) {
-                            DialogFragment newFragment = ReplyDialogFragment.newInstance(story, comment.userId, user.username);
-                            newFragment.show(manager, "dialog");
+            if (comment.isPlaceholder) {
+                replyIcon.setVisibility(View.INVISIBLE);
+            } else {
+                replyIcon.setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (story != null) {
+                            UserProfile user = FeedUtils.dbHelper.getUserProfile(comment.userId);
+                            if (user != null) {
+                                DialogFragment newFragment = ReplyDialogFragment.newInstance(story, comment.userId, user.username);
+                                newFragment.show(manager, "dialog");
+                            }
                         }
-					}
-				}
-			});
+                    }
+                });
+            }
 
             List<Reply> replies = FeedUtils.dbHelper.getCommentReplies(comment.id);
-			for (Reply reply : replies) {
+			for (final Reply reply : replies) {
 				View replyView = inflater.inflate(R.layout.include_reply, null);
 				TextView replyText = (TextView) replyView.findViewById(R.id.reply_text);
-				replyText.setText(Html.fromHtml(reply.text));
+				replyText.setText(reply.text);
 				ImageView replyImage = (ImageView) replyView.findViewById(R.id.reply_user_image);
 
                 final UserProfile replyUser = FeedUtils.dbHelper.getUserProfile(reply.userId);
@@ -184,6 +187,22 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
                     TextView replySharedDate = (TextView) replyView.findViewById(R.id.reply_shareddate);
                     replySharedDate.setText(reply.shortDate + " ago");
                 }
+
+                ImageView editIcon = (ImageView) replyView.findViewById(R.id.reply_edit_icon);
+                if (TextUtils.equals(reply.userId, user.id)) {
+                    editIcon.setOnClickListener(new OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if (story != null) {
+                                DialogFragment newFragment = EditReplyDialogFragment.newInstance(story, comment.userId, reply.id, reply.text);
+                                newFragment.show(manager, "dialog");
+                            }
+                        }
+                    });
+                } else {
+                    editIcon.setVisibility(View.INVISIBLE);
+                }
+
 
 				((LinearLayout) commentView.findViewById(R.id.comment_replies_container)).addView(replyView);
 			}

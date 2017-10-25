@@ -40,6 +40,7 @@ public class NbActivity extends Activity {
 	
 	@Override
 	protected void onCreate(Bundle bundle) {
+        com.newsblur.util.Log.offerContext(this);
         if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "onCreate");
 
         PrefsUtils.applyThemePreference(this);

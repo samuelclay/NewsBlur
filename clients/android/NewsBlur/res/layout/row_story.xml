@@ -76,11 +76,24 @@
         android:layout_marginRight="8dp"
         android:visibility="gone" />
 
+    <ImageView
+        android:id="@+id/row_item_shared_icon"
+        android:src="@drawable/ic_shared"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_below="@id/row_item_feedtitle"
+        android:layout_toLeftOf="@id/row_item_saved_icon"
+        android:layout_alignWithParentIfMissing="true"
+        android:layout_marginTop="2dp"
+        android:layout_marginLeft="2dp"
+        android:layout_marginRight="8dp"
+        android:visibility="gone" />
+
     <TextView
         android:id="@+id/row_item_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_toLeftOf="@id/row_item_saved_icon"
+        android:layout_toLeftOf="@id/row_item_shared_icon"
         android:layout_below="@id/row_item_feedicon"
         android:layout_marginLeft="33dp"
         android:paddingTop="6dp"

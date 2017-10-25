@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
+    style="?itemBackground" >
+
+    <com.newsblur.view.ProgressThrobber
+        android:id="@+id/loading_throb"
+        android:layout_width="fill_parent"
+        android:layout_alignParentTop="true"
+        android:layout_height="6dp" />
+
+    <TextView
+        android:id="@+id/progress_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="25dp"
+        android:gravity="center_horizontal"
+        style="?explainerText"
+        android:visibility="invisible"
+        android:textSize="16sp" />
+    
+</RelativeLayout>

@@ -21,7 +21,7 @@ public class FeedReading extends Reading {
 
         UIUtils.setCustomActionBar(this, feed.faviconUrl, feed.title);
 
-        readingAdapter = new FeedReadingAdapter(fragmentManager, feed, classifier, defaultFeedView);
+        readingAdapter = new FeedReadingAdapter(fragmentManager, feed, classifier);
 
         getLoaderManager().initLoader(0, null, this);
     }

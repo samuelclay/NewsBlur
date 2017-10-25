@@ -259,6 +259,7 @@
             }
             
             UIImageView *titleImageView = [[UIImageView alloc] initWithImage:titleImage];
+            UIImageView *titleImageViewWrapper = [[UIImageView alloc] init];
             if (appDelegate.storiesCollection.isRiverView) {
                 titleImageView.frame = CGRectMake(0.0, 2.0, 22.0, 22.0);
             } else {
@@ -266,8 +267,10 @@
             }
             titleImageView.hidden = YES;
             titleImageView.contentMode = UIViewContentModeScaleAspectFit;
+            [titleImageViewWrapper addSubview:titleImageView];
+            [titleImageViewWrapper setFrame:titleImageView.frame];
             if (!self.navigationItem.titleView) {
-                self.navigationItem.titleView = titleImageView;
+                self.navigationItem.titleView = titleImageViewWrapper;
             }
             titleImageView.hidden = NO;
         } else {
@@ -276,11 +279,14 @@
             UIImage *titleImage  = [appDelegate getFavicon:feedIdStr];
             titleImage = [Utilities roundCorneredImage:titleImage radius:6];
             
-            UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectZero];
-            imageView.frame = CGRectMake(0.0, 0.0, 28.0, 28.0);
-            imageView.contentMode = UIViewContentModeScaleAspectFit;
-            [imageView setImage:titleImage];
-            self.navigationItem.titleView = imageView;
+            UIImageView *titleImageView = [[UIImageView alloc] initWithFrame:CGRectZero];
+            UIImageView *titleImageViewWrapper = [[UIImageView alloc] init];
+            titleImageView.frame = CGRectMake(0.0, 0.0, 28.0, 28.0);
+            titleImageView.contentMode = UIViewContentModeScaleAspectFit;
+            [titleImageView setImage:titleImage];
+            [titleImageViewWrapper addSubview:titleImageView];
+            [titleImageViewWrapper setFrame:titleImageView.frame];
+            self.navigationItem.titleView = titleImageViewWrapper;
         }
     }
     
@@ -596,7 +602,7 @@
 	BOOL outOfBounds = newIndex >= pageCount || newIndex < 0;
     
 	if (!outOfBounds) {
-		CGRect pageFrame = pageController.view.bounds;
+        CGRect pageFrame = pageController.view.bounds;
 		pageFrame.origin.y = 0;
 		pageFrame.origin.x = CGRectGetWidth(self.view.bounds) * newIndex;
         pageFrame.size.height = CGRectGetHeight(self.view.bounds) - self.bottomSizeHeightConstraint.constant;
@@ -1048,12 +1054,13 @@
 }
 
 - (BOOL)failedMarkAsSaved:(NSDictionary *)params {
-    if (![[params objectForKey:@"story_hash"]
+    if (![[params objectForKey:@"story_id"]
           isEqualToString:[currentPage.activeStory objectForKey:@"story_hash"]]) {
         return NO;
     }
 
     [self informError:@"Failed to save story"];
+    [appDelegate hidePopover];
     return YES;
 }
 
@@ -1066,7 +1073,7 @@
 
 
 - (BOOL)failedMarkAsUnsaved:(NSDictionary *)params {
-    if (![[params objectForKey:@"story_hash"]
+    if (![[params objectForKey:@"story_id"]
           isEqualToString:[currentPage.activeStory objectForKey:@"story_hash"]]) {
         return NO;
     }
@@ -1076,7 +1083,7 @@
 }
 
 - (BOOL)failedMarkAsUnread:(NSDictionary *)params {
-    if (![[params objectForKey:@"story_hash"]
+    if (![[params objectForKey:@"story_id"]
           isEqualToString:[currentPage.activeStory objectForKey:@"story_hash"]]) {
         return NO;
     }
@@ -1195,7 +1202,7 @@
 
 - (void)showShareHUD:(NSString *)msg {
 //    [MBProgressHUD hideHUDForView:self.view animated:NO];
-    self.storyHUD = [MBProgressHUD showHUDAddedTo:currentPage.webView animated:YES];
+    self.storyHUD = [MBProgressHUD showHUDAddedTo:currentPage.view animated:YES];
     self.storyHUD.labelText = msg;
     self.storyHUD.margin = 20.0f;
     self.currentPage.noStoryMessage.hidden = YES;

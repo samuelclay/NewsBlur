@@ -86,7 +86,8 @@
 
     self.storyTitlesTable.backgroundColor = UIColorFromRGB(0xf4f4f4);
     self.storyTitlesTable.separatorColor = UIColorFromRGB(0xE9E8E4);
-    
+    self.view.backgroundColor = UIColorFromRGB(0xf4f4f4);
+
     spacerBarButton = [[UIBarButtonItem alloc]
                        initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
     spacerBarButton.width = 0;
@@ -624,7 +625,7 @@
 #pragma mark -
 #pragma mark Regular and Social Feeds
 
-- (void)fetchNextPage:(void(^)())callback {
+- (void)fetchNextPage:(void(^)(void))callback {
     if (storiesCollection.isRiverView) {
         [self fetchRiverPage:storiesCollection.feedPage+1 withCallback:callback];
     } else {
@@ -632,7 +633,7 @@
     }
 }
 
-- (void)fetchFeedDetail:(int)page withCallback:(void(^)())callback {
+- (void)fetchFeedDetail:(int)page withCallback:(void(^)(void))callback {
     NSString *theFeedDetailURL;
 
     if (!storiesCollection.activeFeed) return;
@@ -830,7 +831,7 @@
     [self fetchRiverPage:storiesCollection.feedPage withCallback:nil];
 }
 
-- (void)fetchRiverPage:(int)page withCallback:(void(^)())callback {
+- (void)fetchRiverPage:(int)page withCallback:(void(^)(void))callback {
     if (self.pageFetching || self.pageFinished) return;
 //    NSLog(@"Fetching River in storiesCollection (pg. %ld): %@", (long)page, storiesCollection);
 
@@ -1215,10 +1216,27 @@
             height = height - kTableViewShortRowDifference;
         }
 
-        fleuron.frame = CGRectMake(0, 0, self.view.frame.size.width, height);
+        fleuron.translatesAutoresizingMaskIntoConstraints = NO;
         fleuron.contentMode = UIViewContentModeCenter;
         fleuron.tag = 99;
         [cell.contentView addSubview:fleuron];
+        [cell.contentView addConstraint:[NSLayoutConstraint constraintWithItem:fleuron
+                                                                     attribute:NSLayoutAttributeHeight
+                                                                     relatedBy:NSLayoutRelationEqual toItem:nil
+                                                                     attribute:NSLayoutAttributeNotAnAttribute
+                                                                    multiplier:1.0 constant:height]];
+        [cell.contentView addConstraint:[NSLayoutConstraint constraintWithItem:fleuron
+                                                                     attribute:NSLayoutAttributeCenterX
+                                                                     relatedBy:NSLayoutRelationEqual
+                                                                        toItem:cell.contentView
+                                                                     attribute:NSLayoutAttributeCenterX
+                                                                    multiplier:1.0 constant:0]];
+        [cell.contentView addConstraint:[NSLayoutConstraint constraintWithItem:fleuron
+                                                                     attribute:NSLayoutAttributeCenterY
+                                                                     relatedBy:NSLayoutRelationEqual
+                                                                        toItem:cell.contentView
+                                                                     attribute:NSLayoutAttributeCenterY
+                                                                    multiplier:1.0 constant:0]];
         cell.backgroundColor = [UIColor clearColor];
         return cell;
     } else {//if ([appDelegate.storyLocationsCount]) {
@@ -1427,6 +1445,8 @@
 }
 
 - (void)redrawUnreadStory {
+    [MBProgressHUD hideHUDForView:self.view animated:YES];
+
     NSInteger rowIndex = [storiesCollection locationOfActiveStory];
     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:rowIndex inSection:0];
     FeedDetailTableCell *cell = (FeedDetailTableCell*) [self.storyTitlesTable cellForRowAtIndexPath:indexPath];
@@ -1589,10 +1609,12 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
         }
     }
     
-    NSIndexPath *indexPath = [self.storyTitlesTable indexPathForRowAtPoint:self.storyTitlesTable.contentOffset];
-    NSString *scrollPref = [[NSUserDefaults standardUserDefaults] stringForKey:@"default_scroll_read_filter"];
+    CGPoint topRowPoint = self.storyTitlesTable.contentOffset;
+    topRowPoint.y = topRowPoint.y + 80.f;
+    NSIndexPath *indexPath = [self.storyTitlesTable indexPathForRowAtPoint:topRowPoint];
+    BOOL markReadOnScroll = [[NSUserDefaults standardUserDefaults] boolForKey:@"default_scroll_read_filter"];
     
-    if (indexPath && [scrollPref isEqualToString:@"mark_on_scroll"]) {
+    if (indexPath && markReadOnScroll) {
         NSUInteger topRow = indexPath.row;
         
         if (self.scrollingMarkReadRow == NSNotFound) {
@@ -1605,6 +1627,8 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
                 if ([storiesCollection isStoryUnread:story]) {
                     [storiesCollection markStoryRead:story];
                     [storiesCollection syncStoryAsRead:story];
+                    [self.storyTitlesTable reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:thisRow inSection:0]]
+                                                 withRowAnimation:UITableViewRowAnimationFade];
                 }
             }
             
@@ -1835,7 +1859,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     
     [self.appDelegate.feedDetailMenuViewController buildMenuOptions];
     [self.appDelegate.feedDetailMenuViewController view];
-    NSInteger menuCount = [self.appDelegate.feedDetailMenuViewController.menuOptions count] + 2;
+    NSInteger menuCount = [self.appDelegate.feedDetailMenuViewController.menuOptions count] + 4;
     
     [self.appDelegate.feedDetailMenuNavigationController popToRootViewControllerAnimated:NO];
     [self.appDelegate showPopoverWithViewController:self.appDelegate.feedDetailMenuNavigationController contentSize:CGSizeMake(260, 38 * menuCount) barButtonItem:self.settingsBarButton];
@@ -2153,6 +2177,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         self.searchBar.keyboardAppearance = UIKeyboardAppearanceDefault;
     }
     
+    self.view.backgroundColor = UIColorFromRGB(0xf4f4f4);
     self.storyTitlesTable.backgroundColor = UIColorFromRGB(0xf4f4f4);
     self.storyTitlesTable.separatorColor = UIColorFromRGB(0xE9E8E4);
     [self.storyTitlesTable reloadData];

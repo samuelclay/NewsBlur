@@ -15,7 +15,7 @@ public class ReadStoriesReading extends Reading {
         super.onCreate(savedInstanceBundle);
 
         UIUtils.setCustomActionBar(this, R.drawable.g_icn_unread, getResources().getString(R.string.read_stories_title));
-        readingAdapter = new MixedFeedsReadingAdapter(getFragmentManager(), defaultFeedView, null);
+        readingAdapter = new MixedFeedsReadingAdapter(getFragmentManager(), null);
 
         getLoaderManager().initLoader(0, null, this);
     }

@@ -21,7 +21,6 @@
     int interactionsPage;
 }
 
-@property (nonatomic) NewsBlurAppDelegate *appDelegate;
 @property (nonatomic, strong) UITableView *interactionsTable;
 @property (nonatomic) NSArray *interactionsArray;
 

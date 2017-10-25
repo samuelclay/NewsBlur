@@ -10,7 +10,6 @@ NEWSBLUR.Views.StoryCommentsView = Backbone.View.extend({
     render: function() {
         var self = this;
         var $el = this.$el;
-        
         if (this.model.get('share_count')) {
             this.$el.html(this.template({
                 story: this.model

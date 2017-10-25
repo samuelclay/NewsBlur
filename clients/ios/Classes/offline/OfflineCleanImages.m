@@ -13,7 +13,9 @@
 @synthesize appDelegate;
 
 - (void)main {
-    appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
+    dispatch_sync(dispatch_get_main_queue(), ^{
+        appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
+    });
     
     NSLog(@"Cleaning stale offline images...");
     

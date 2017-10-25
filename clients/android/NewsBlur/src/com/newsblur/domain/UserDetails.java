@@ -61,21 +61,7 @@ public class UserDetails {
 	@SerializedName("following_you")
 	public boolean followsYou;
 
-	@SerializedName("popular_publishers")
-	public Publisher[] popularPublishers;
-
 	@SerializedName("photo_url")
 	public String photoUrl;	
 
-	public class Publisher {
-		
-		@SerializedName("story_count")
-		int storyCount;
-		
-		@SerializedName("feed_title")
-		String feedTitle;
-		
-		int id;
-	}
-	
 }

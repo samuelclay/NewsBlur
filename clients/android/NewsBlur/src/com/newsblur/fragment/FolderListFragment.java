@@ -69,6 +69,10 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
     @Bind(R.id.folderfeed_list) ExpandableListView list;
     public boolean firstCursorSeenYet = false;
 
+    // the two-step context menu for feeds requires us to temp store the feed long-pressed so
+    // it can be accessed during the sub-menu tap
+    private Feed lastMenuFeed;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -98,11 +102,11 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         switch (id) {
             case SOCIALFEEDS_LOADER:
-                return FeedUtils.dbHelper.getSocialFeedsLoader(currentState);
+                return FeedUtils.dbHelper.getSocialFeedsLoader();
             case FOLDERS_LOADER:
                 return FeedUtils.dbHelper.getFoldersLoader();
             case FEEDS_LOADER:
-                return FeedUtils.dbHelper.getFeedsLoader(currentState);
+                return FeedUtils.dbHelper.getFeedsLoader();
             case SAVEDCOUNT_LOADER:
                 return FeedUtils.dbHelper.getSavedStoryCountsLoader();
             default:
@@ -150,6 +154,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 
 	public void hasUpdated() {
         if (isAdded()) {
+            com.newsblur.util.Log.d(this, "loading feeds in mode: " + currentState);
             try {
                 getLoaderManager().restartLoader(SOCIALFEEDS_LOADER, null, this);
                 getLoaderManager().restartLoader(FOLDERS_LOADER, null, this);
@@ -236,6 +241,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 		switch(type) {
 		case ExpandableListView.PACKED_POSITION_TYPE_GROUP:
             if (adapter.isRowSavedStories(groupPosition)) break;
+            if (currentState == StateFilter.SAVED) break;
             if (adapter.isRowReadStories(groupPosition)) break;
             if (groupPosition == FolderListAdapter.GLOBAL_SHARED_STORIES_GROUP_POSITION) break;
             if (groupPosition == FolderListAdapter.ALL_SHARED_STORIES_GROUP_POSITION) break;
@@ -250,12 +256,15 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 
 		case ExpandableListView.PACKED_POSITION_TYPE_CHILD: 
             if (adapter.isRowSavedStories(groupPosition)) break;
+            if (currentState == StateFilter.SAVED) break;
 			inflater.inflate(R.menu.context_feed, menu);
             if (groupPosition == FolderListAdapter.ALL_SHARED_STORIES_GROUP_POSITION) {
                 menu.removeItem(R.id.menu_delete_feed);
                 menu.removeItem(R.id.menu_choose_folders);
                 menu.removeItem(R.id.menu_unmute_feed);
                 menu.removeItem(R.id.menu_mute_feed);
+                menu.removeItem(R.id.menu_notifications);
+                menu.removeItem(R.id.menu_instafetch_feed);
             } else {
                 menu.removeItem(R.id.menu_unfollow);
 
@@ -264,6 +273,23 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
                     menu.removeItem(R.id.menu_unmute_feed);
                 } else {
                     menu.removeItem(R.id.menu_mute_feed);
+                    menu.removeItem(R.id.menu_mark_feed_as_read);
+                    menu.removeItem(R.id.menu_notifications);
+                    menu.removeItem(R.id.menu_instafetch_feed);
+                    break;
+                }
+                if (feed.isNotifyUnread()) {
+                    menu.findItem(R.id.menu_notifications_disable).setChecked(false);
+                    menu.findItem(R.id.menu_notifications_unread).setChecked(true);
+                    menu.findItem(R.id.menu_notifications_focus).setChecked(false);
+                } else if (feed.isNotifyFocus()) {
+                    menu.findItem(R.id.menu_notifications_disable).setChecked(false);
+                    menu.findItem(R.id.menu_notifications_unread).setChecked(false);
+                    menu.findItem(R.id.menu_notifications_focus).setChecked(true);
+                } else {
+                    menu.findItem(R.id.menu_notifications_disable).setChecked(true);
+                    menu.findItem(R.id.menu_notifications_unread).setChecked(false);
+                    menu.findItem(R.id.menu_notifications_focus).setChecked(false);
                 }
             }
 			break;
@@ -272,6 +298,27 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 
     @Override
 	public boolean onContextItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.menu_notifications) {
+            // this means the notifications menu has been opened, but this is our one chance to see the list position
+            // and get the ID of the feed for which the menu was opened. (no packed pos when the submenu is tapped)
+            ExpandableListView.ExpandableListContextMenuInfo info = (ExpandableListView.ExpandableListContextMenuInfo) item.getMenuInfo();
+            int childPosition = ExpandableListView.getPackedPositionChild(info.packedPosition);
+            int groupPosition = ExpandableListView.getPackedPositionGroup(info.packedPosition);
+            lastMenuFeed = adapter.getFeed(groupPosition, childPosition);
+            return true;
+        }
+        if (item.getItemId() == R.id.menu_notifications_disable) {
+            FeedUtils.disableNotifications(getActivity(), lastMenuFeed);
+            return true;
+        }
+        if (item.getItemId() == R.id.menu_notifications_focus) {
+            FeedUtils.enableFocusNotifications(getActivity(), lastMenuFeed);
+            return true;
+        }
+        if (item.getItemId() == R.id.menu_notifications_unread) {
+            FeedUtils.enableUnreadNotifications(getActivity(), lastMenuFeed);
+            return true;
+        }
 		ExpandableListView.ExpandableListContextMenuInfo info = (ExpandableListView.ExpandableListContextMenuInfo) item.getMenuInfo();
         int childPosition = ExpandableListView.getPackedPositionChild(info.packedPosition);
         int groupPosition = ExpandableListView.getPackedPositionGroup(info.packedPosition);
@@ -309,6 +356,8 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
             FeedUtils.muteFeeds(getActivity(), adapter.getAllFeedsForFolder(groupPosition));
         } else if (item.getItemId() == R.id.menu_unmute_folder) {
             FeedUtils.unmuteFeeds(getActivity(), adapter.getAllFeedsForFolder(groupPosition));
+        } else if (item.getItemId() == R.id.menu_instafetch_feed) {
+            FeedUtils.instaFetchFeed(getActivity(), adapter.getFeed(groupPosition, childPosition).feedId);
         }
 
 		return super.onContextItemSelected(item);
@@ -316,6 +365,8 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 
     private void markFeedsAsRead(FeedSet fs) {
         FeedUtils.markRead(getActivity(), fs, null, null, R.array.mark_all_read_options, false);
+        adapter.lastFeedViewedId = fs.getSingleFeed();
+        adapter.lastFolderViewed = fs.getFolderName();
     }
 
 	public void changeState(StateFilter state) {
@@ -325,6 +376,26 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 		hasUpdated();
 	}
 
+    public void clearRecents() {
+        adapter.lastFeedViewedId = null;
+        adapter.lastFolderViewed = null;
+    }
+
+    public void forceShowFeed(String feedId) {
+        adapter.lastFeedViewedId = feedId;
+        adapter.lastFolderViewed = null;
+    }
+
+    public void setSearchQuery(String q) {
+        adapter.activeSearchQuery = q;
+        adapter.forceRecount();
+        checkOpenFolderPreferences();
+    }
+
+    public String getSearchQuery() {
+        return adapter.activeSearchQuery;
+    }
+
     /**
      * Every time unread counts are updated in the adapter, ping the Main activity with
      * the new data.  It is, unfortunately, quite expensive to compute given the current
@@ -333,6 +404,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
     public void pushUnreadCounts() {
         ((Main) getActivity()).updateUnreadCounts((adapter.totalNeutCount+adapter.totalSocialNeutCount), (adapter.totalPosCount+adapter.totalSocialPosiCount));
         ((Main) getActivity()).updateFeedCount(adapter.lastFeedCount);
+        com.newsblur.util.Log.d(this, "showing " + adapter.lastFeedCount + " feeds");
     }
 
 	@Override
@@ -358,6 +430,8 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
             i = new Intent(getActivity(), FolderItemsList.class);
             String canonicalFolderName = adapter.getGroupFolderName(groupPosition);
             i.putExtra(FolderItemsList.EXTRA_FOLDER_NAME, canonicalFolderName);
+            adapter.lastFeedViewedId = null;
+            adapter.lastFolderViewed = canonicalFolderName;
         }
         FeedSet fs = adapter.getGroup(groupPosition);
         i.putExtra(ItemsList.EXTRA_FEED_SET, fs);
@@ -428,6 +502,8 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 			intent.putExtra(FeedItemsList.EXTRA_FEED, feed);
 			intent.putExtra(FeedItemsList.EXTRA_FOLDER_NAME, folderName);
 			getActivity().startActivity(intent);
+            adapter.lastFeedViewedId = feed.feedId;
+            adapter.lastFolderViewed = null;
 		}
 		return true;
 	}

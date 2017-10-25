@@ -278,6 +278,7 @@ SFSafariViewControllerDelegate>  {
 - (void)showLogin;
 - (void)setupReachability;
 - (void)registerForRemoteNotifications;
+- (void)registerForBadgeNotifications;
 
 // social
 - (NSDictionary *)getUser:(NSInteger)userId;
@@ -296,6 +297,7 @@ SFSafariViewControllerDelegate>  {
 - (void)showMuteSites;
 - (void)showOrganizeSites;
 - (void)showPreferences;
+- (void)resizeFontSize;
 
 - (void)showMoveSite;
 - (void)openTrainSite;
@@ -339,7 +341,7 @@ SFSafariViewControllerDelegate>  {
 - (void)confirmLogout;
 - (void)showConnectToService:(NSString *)serviceName;
 - (void)showAlert:(UIAlertController *)alert withViewController:(UIViewController *)vc;
-- (void)refreshUserProfile:(void(^)())callback;
+- (void)refreshUserProfile:(void(^)(void))callback;
 - (void)refreshFeedCount:(id)feedId;
 
 - (void)populateDictTextFeeds;
@@ -419,8 +421,8 @@ SFSafariViewControllerDelegate>  {
 - (void)markScrollPosition:(NSInteger)position inStory:(NSDictionary *)story;
 - (void)queueReadStories:(NSDictionary *)feedsStories;
 - (BOOL)dequeueReadStoryHash:(NSString *)storyHash inFeed:(NSString *)storyFeedId;
-- (void)flushQueuedReadStories:(BOOL)forceCheck withCallback:(void(^)())callback;
-- (void)syncQueuedReadStories:(FMDatabase *)db withStories:(NSDictionary *)hashes withCallback:(void(^)())callback;
+- (void)flushQueuedReadStories:(BOOL)forceCheck withCallback:(void(^)(void))callback;
+- (void)syncQueuedReadStories:(FMDatabase *)db withStories:(NSDictionary *)hashes withCallback:(void(^)(void))callback;
 - (void)prepareActiveCachedImages:(FMDatabase *)db;
 - (void)cleanImageCache;
 - (void)deleteAllCachedImages;

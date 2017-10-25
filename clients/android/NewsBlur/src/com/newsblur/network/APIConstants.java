@@ -46,6 +46,7 @@ public class APIConstants {
 	public static final String PATH_MARK_ALL_AS_READ = "/reader/mark_all_as_read/";
 	public static final String PATH_MARK_STORIES_READ = "/reader/mark_story_hashes_as_read/";
 	public static final String PATH_SHARE_STORY = "/social/share_story";
+	public static final String PATH_UNSHARE_STORY = "/social/unshare_story";
     public static final String PATH_MARK_STORY_AS_STARRED = "/reader/mark_story_hash_as_starred/";
     public static final String PATH_MARK_STORY_AS_UNSTARRED = "/reader/mark_story_hash_as_unstarred/";
     public static final String PATH_MARK_STORY_AS_UNREAD = "/reader/mark_story_as_unread/";
@@ -55,6 +56,8 @@ public class APIConstants {
 	public static final String PATH_LIKE_COMMENT = "/social/like_comment";
 	public static final String PATH_UNLIKE_COMMENT = "/social/remove_like_comment";
 	public static final String PATH_REPLY_TO = "/social/save_comment_reply";
+    public static final String PATH_EDIT_REPLY = "/social/save_comment_reply";
+    public static final String PATH_DELETE_REPLY = "/social/remove_comment_reply";
 	public static final String PATH_ADD_FEED = "/reader/add_url";
 	public static final String PATH_DELETE_FEED = "/reader/delete_feed";
 	public static final String PATH_CLASSIFIER_SAVE = "/classifier/save";
@@ -65,6 +68,8 @@ public class APIConstants {
     public static final String PATH_SAVE_FEED_CHOOSER = "/reader/save_feed_chooser";
     public static final String PATH_CONNECT_FACEBOOK = "/oauth/facebook_connect/";
     public static final String PATH_CONNECT_TWITTER = "/oauth/twitter_connect/";
+    public static final String PATH_SET_NOTIFICATIONS = "/notifications/feed/";
+    public static final String PATH_INSTA_FETCH = "/rss_feeds/exception_retry";
 
     public static String buildUrl(String path) {
         return CurrentUrlBase + path;
@@ -84,6 +89,7 @@ public class APIConstants {
 	public static final String PARAMETER_FEED_SEARCH_TERM = "term";
 	public static final String PARAMETER_FOLDER = "folder";
 	public static final String PARAMETER_IN_FOLDER = "in_folder";
+    public static final String PARAMETER_REPLY_ID = "reply_id";
 	public static final String PARAMETER_COMMENT_USERID = "comment_user_id";
 	public static final String PARAMETER_FEEDID = "feed_id";
 	public static final String PARAMETER_REPLY_TEXT = "reply_comments";
@@ -108,12 +114,16 @@ public class APIConstants {
     public static final String PARAMETER_QUERY = "query";
     public static final String PARAMETER_TAG = "tag";
     public static final String PARAMETER_APPROVED_FEEDS = "approved_feeds";
+    public static final String PARAMETER_NOTIFICATION_TYPES = "notification_types";
+    public static final String PARAMETER_NOTIFICATION_FILTER = "notification_filter";
+    public static final String PARAMETER_RESET_FETCH = "reset_fetch";
 
     public static final String VALUE_PREFIX_SOCIAL = "social:";
     public static final String VALUE_ALLSOCIAL = "river:blurblogs"; // the magic value passed to the mark-read API for all social feeds
     public static final String VALUE_OLDER = "older";
     public static final String VALUE_NEWER = "newer";
     public static final String VALUE_TRUE = "true";
+    public static final String VALUE_FALSE = "false";
     public static final String VALUE_STARRED = "starred";
 	
 	public static final String S3_URL_FEED_ICONS = "https://s3.amazonaws.com/icons.newsblur.com/";

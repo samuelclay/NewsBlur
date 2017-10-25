@@ -1,8 +1,6 @@
 package com.newsblur.fragment;
 
-import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceCategory;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 
@@ -17,13 +15,6 @@ public class SettingsFragment extends PreferenceFragment {
         PreferenceManager preferenceManager = getPreferenceManager();
         preferenceManager.setSharedPreferencesName(PrefConstants.PREFERENCES);
         addPreferencesFromResource(R.xml.activity_settings);
-
-        // Remove the reading category of references on pre-4.4 devices as it only contains
-        // the single tap for immersive preference
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
-            PreferenceCategory readingCategory = (PreferenceCategory)findPreference("reading");
-            getPreferenceScreen().removePreference(readingCategory);
-        }
     }
 
 }

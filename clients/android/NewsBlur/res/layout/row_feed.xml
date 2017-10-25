@@ -66,12 +66,19 @@
             android:id="@+id/row_feedmuteicon"
             android:layout_width="19dp"
             android:layout_height="19dp"
-            android:layout_centerVertical="true"
             android:layout_marginRight="3dp"
             android:paddingLeft="3dp"
             android:paddingRight="3dp"
             style="?muteicon"
             android:background="@drawable/neutral_count_rect"/>
+
+        <ProgressBar
+            android:id="@+id/row_feedfetching"
+            android:layout_width="21dp"
+            android:layout_height="21dp"
+            android:layout_marginRight="3dp"
+            android:visibility="gone"
+            android:indeterminate="true" />
 
     </LinearLayout>
 

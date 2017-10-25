@@ -43,8 +43,8 @@
         [self.filterControl setTitle:@"Focus Stories" forSegmentAtIndex:1];
         [self.filterControl setImage:[UIImage imageNamed:@"unread_yellow.png"] forSegmentAtIndex:0];
         [self.filterControl setImage:[UIImage imageNamed:@"unread_green.png"] forSegmentAtIndex:1];
-        [self.filterControl setWidth:CGRectGetWidth(self.frame)*0.46 forSegmentAtIndex:0];
-        [self.filterControl setWidth:CGRectGetWidth(self.frame)*0.46 forSegmentAtIndex:1];
+        [self.filterControl setWidth:CGRectGetWidth(self.frame)*0.44 forSegmentAtIndex:0];
+        [self.filterControl setWidth:CGRectGetWidth(self.frame)*0.44 forSegmentAtIndex:1];
         [self.filterControl setTitleTextAttributes:controlAttrs forState:UIControlStateNormal];
         self.filterControl.frame = CGRectMake(36, 38, CGRectGetWidth(self.frame), 28);
         [self.contentView addSubview:self.filterControl];
@@ -63,24 +63,13 @@
         [self.notificationTypeControl setTitle:@"Web" forSegmentAtIndex:1];
         [self.notificationTypeControl setTitle:@"iOS" forSegmentAtIndex:2];
         [self.notificationTypeControl setTitle:@"Android" forSegmentAtIndex:3];
-        [self.notificationTypeControl setWidth:CGRectGetWidth(self.frame)*0.23 forSegmentAtIndex:0];
-        [self.notificationTypeControl setWidth:CGRectGetWidth(self.frame)*0.23 forSegmentAtIndex:1];
-        [self.notificationTypeControl setWidth:CGRectGetWidth(self.frame)*0.23 forSegmentAtIndex:2];
-        [self.notificationTypeControl setWidth:CGRectGetWidth(self.frame)*0.23 forSegmentAtIndex:3];
+        [self.notificationTypeControl setWidth:CGRectGetWidth(self.frame)*0.22 forSegmentAtIndex:0];
+        [self.notificationTypeControl setWidth:CGRectGetWidth(self.frame)*0.22 forSegmentAtIndex:1];
+        [self.notificationTypeControl setWidth:CGRectGetWidth(self.frame)*0.22 forSegmentAtIndex:2];
+        [self.notificationTypeControl setWidth:CGRectGetWidth(self.frame)*0.22 forSegmentAtIndex:3];
         [self.notificationTypeControl setTitleTextAttributes:controlAttrs forState:UIControlStateNormal];
         self.notificationTypeControl.frame = CGRectMake(36, 76, CGRectGetWidth(self.frame), 28);
         [self.contentView addSubview:self.notificationTypeControl];
-        
-        self.textLabel.backgroundColor = [UIColor clearColor];
-        self.textLabel.textColor = UIColorFromRGB(0x303030);
-        self.textLabel.shadowColor = UIColorFromRGB(0xF0F0F0);
-        self.textLabel.shadowOffset = CGSizeMake(0, 1);
-        self.textLabel.highlightedTextColor = UIColorFromRGB(0x303030);
-        self.detailTextLabel.highlightedTextColor = UIColorFromRGB(0x505050);
-        self.detailTextLabel.textColor = UIColorFromRGB(0x505050);
-        self.backgroundColor = UIColorFromRGB(0xFFFFFF);
-        self.backgroundView.backgroundColor = UIColorFromRGB(0xFFFFFF);
-        self.selectedBackgroundView.backgroundColor = UIColorFromRGB(0xECEEEA);
     }
     
     return self;
@@ -88,6 +77,17 @@
 
 - (void)layoutSubviews {
     [super layoutSubviews];
+    
+    self.textLabel.backgroundColor = [UIColor clearColor];
+    self.textLabel.textColor = UIColorFromRGB(0x303030);
+    self.textLabel.shadowColor = UIColorFromRGB(0xF0F0F0);
+    self.textLabel.shadowOffset = CGSizeMake(0, 1);
+    self.textLabel.highlightedTextColor = UIColorFromRGB(0x303030);
+    self.detailTextLabel.highlightedTextColor = UIColorFromRGB(0x505050);
+    self.detailTextLabel.textColor = UIColorFromRGB(0x505050);
+    self.backgroundColor = UIColorFromRGB(0xFFFFFF);
+    self.backgroundView.backgroundColor = UIColorFromRGB(0xFFFFFF);
+    self.selectedBackgroundView.backgroundColor = UIColorFromRGB(0xECEEEA);
     
     self.imageView.frame = CGRectMake(10.0, 10.0, 16.0, 16.0);
     self.imageView.contentMode = UIViewContentModeScaleAspectFit;
@@ -151,8 +151,6 @@
     if ([self.notificationTypeControl.selectedSegmentIndexes containsIndex:3])
         [notificationTypes addObject:@"android"];
     
-    NSString *urlString = [NSString stringWithFormat:@"%@/notifications/feed/",
-                           appDelegate.url];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
     [params setObject:self.feedId forKey:@"feed_id"];
     NSMutableArray *notifications = [NSMutableArray array];
@@ -163,13 +161,6 @@
     [params setObject:notificationFilter forKey:@"notification_filter"];
 
     [appDelegate updateNotifications:params feed:self.feedId];
-
-    [appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-        NSLog(@"Saved notifications %@: %@ / %@", self.feedId, notificationTypes, notificationFilter);
-        [appDelegate checkForFeedNotifications];
-    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        NSLog(@"Failed to save notifications: %@ / %@", notificationTypes, notificationFilter);
-    }];
 }
 
 @end

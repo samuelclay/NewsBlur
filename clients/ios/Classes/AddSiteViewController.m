@@ -116,6 +116,10 @@
         size.height += 215.0;
     }
     
+    if (!self.errorLabel.hidden) {
+        size.height += 140.0;
+    }
+    
     self.navigationController.preferredContentSize = size;
     
     return size;

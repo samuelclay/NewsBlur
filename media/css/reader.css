@@ -7505,9 +7505,6 @@ form.opml_import_form input {
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-googleplus {
     background: transparent url('/media/embed/reader/googleplus.png') no-repeat 0 0;
 }
-.NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-readability {
-    background: transparent url('/media/embed/reader/readability.png') no-repeat 0 0;
-}
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-email {
     background: transparent url('/media/embed/icons/circular/menu_icn_mail.png') no-repeat 0 0;
     background-size: 16px;
@@ -7539,8 +7536,7 @@ form.opml_import_form input {
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-kippt .NB-menu-manage-thirdparty-email,
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-evernote .NB-menu-manage-thirdparty-email,
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-googleplus .NB-menu-manage-thirdparty-email,
-.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-instapaper .NB-menu-manage-thirdparty-email,
-.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-readability .NB-menu-manage-thirdparty-email {
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-instapaper .NB-menu-manage-thirdparty-email {
   opacity: .2;
 }
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-twitter .NB-menu-manage-thirdparty-twitter {
@@ -7588,10 +7584,6 @@ form.opml_import_form input {
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-email .NB-menu-manage-thirdparty-email {
   opacity: 1;
 }
-.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-readability .NB-menu-manage-thirdparty-readability {
-  opacity: 1;
-}
-
 .NB-menu-manage .NB-menu-manage-story-unread .NB-menu-manage-image {
     background: transparent url('/media/embed/icons/circular/g_icn_unread.png') no-repeat 4px center;
     background-size: 8px;
@@ -10057,9 +10049,6 @@ form.opml_import_form input {
     background: transparent url('/media/embed/icons/circular/menu_icn_mail.png') no-repeat 0 0;
     background-size: 16px;
 }
-.NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-readability] {
-    background: transparent url('/media/embed/reader/readability.png') no-repeat 0 0;
-}
 .NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-instapaper] {
     background: transparent url('/media/embed/reader/instapaper.png') no-repeat 0 0;
 }
@@ -11249,12 +11238,14 @@ form.opml_import_form input {
     border: 4px solid #8F1F00;
     margin: 2px 3px;
 }
-.NB-modal-profile-editor .NB-profile-blurblog-css {
+.NB-modal-profile-editor .NB-profile-blurblog-css,
+.NB-modal-account .NB-account-custom-css,
+.NB-modal-account .NB-account-custom-javascript {
     width: 100%;
     font-family: Courier, monospace;
     font-size: 13px;
     padding: 6px;
-    height: 54px;
+    height: 94px;
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;

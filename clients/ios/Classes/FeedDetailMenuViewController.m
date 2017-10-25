@@ -75,7 +75,28 @@
     if ([appDelegate.storiesCollection.activeReadFilter isEqualToString:@"unread"]) {
         [readFilterSegmentedControl setSelectedSegmentIndex:1];
     }
+
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     
+    [self.fontSizeSegment
+     setTitleTextAttributes:@{NSFontAttributeName:
+                                  [UIFont fontWithName:@"Helvetica-Bold" size:11.0f]}
+     forState:UIControlStateNormal];
+    if([userPreferences stringForKey:@"feed_list_font_size"]){
+        NSString *fontSize = [userPreferences stringForKey:@"feed_list_font_size"];
+        if ([fontSize isEqualToString:@"xs"]) {
+            [self.fontSizeSegment setSelectedSegmentIndex:0];
+        } else if ([fontSize isEqualToString:@"small"]) {
+            [self.fontSizeSegment setSelectedSegmentIndex:1];
+        } else if ([fontSize isEqualToString:@"medium"]) {
+            [self.fontSizeSegment setSelectedSegmentIndex:2];
+        } else if ([fontSize isEqualToString:@"large"]) {
+            [self.fontSizeSegment setSelectedSegmentIndex:3];
+        } else if ([fontSize isEqualToString:@"xl"]) {
+            [self.fontSizeSegment setSelectedSegmentIndex:4];
+        }
+    }
+
     NSString *theme = [ThemeManager themeManager].theme;
     if ([theme isEqualToString:@"sepia"]) {
         self.themeSegmentedControl.selectedSegmentIndex = 1;
@@ -87,14 +108,14 @@
         self.themeSegmentedControl.selectedSegmentIndex = 0;
     }
     
-    NSInteger menuCount = self.menuOptions.count + ([self isRiver] ? 2 : 3);
+    NSInteger menuCount = self.menuOptions.count + ([self isRiver] ? 3 : 4);
     self.navigationController.preferredContentSize = CGSizeMake(260, 38 * menuCount);
 }
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     
-    NSInteger menuCount = self.menuOptions.count + ([self isRiver] ? 2 : 3);
+    NSInteger menuCount = self.menuOptions.count + ([self isRiver] ? 3 : 4);
     self.navigationController.preferredContentSize = CGSizeMake(260, 38 * menuCount);
     self.menuTableView.scrollEnabled = self.navigationController.preferredContentSize.height > self.view.frame.size.height;
 }
@@ -135,7 +156,7 @@
         [options addObject:[@"Notifications" uppercaseString]];
         [options addObject:[@"Insta-fetch stories" uppercaseString]];
     }
-    
+
     self.menuOptions = options;
 }
 
@@ -153,7 +174,7 @@
 {
     [self buildMenuOptions];
     
-    return [self.menuOptions count] + ([self isRiver] ? 2 : 3);
+    return [self.menuOptions count] + ([self isRiver] ? 3 : 4);
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -162,10 +183,20 @@
     
     if (indexPath.row == [self.menuOptions count]) {
         return [self makeOrderCell];
-    } else if (![self isRiver] && indexPath.row == [self.menuOptions count] + 1) {
-        return [self makeReadFilterCell];
-    } else if (indexPath.row == [self.menuOptions count] + 2 || ([self isRiver] && indexPath.row == [self.menuOptions count] + 1)) {
-        return [self makeThemeTableCell];
+    } else if (![self isRiver]) {
+        if (indexPath.row == [self.menuOptions count] + 1) {
+            return [self makeReadFilterCell];
+        } else if (indexPath.row == [self.menuOptions count] + 2) {
+            return [self makeFontSizeTableCell];
+        } else if (indexPath.row == [self.menuOptions count] + 3) {
+            return [self makeThemeTableCell];
+        }
+    } else if ([self isRiver]) {
+        if (indexPath.row == [self.menuOptions count] + 1) {
+            return [self makeFontSizeTableCell];
+        } else if (indexPath.row == [self.menuOptions count] + 2) {
+            return [self makeThemeTableCell];
+        }
     }
     
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIndentifier];
@@ -280,6 +311,32 @@
     return cell;
 }
 
+- (UITableViewCell *)makeFontSizeTableCell {
+    UITableViewCell *cell = [[UITableViewCell alloc] init];
+    cell.frame = CGRectMake(0, 0, 240, kMenuOptionHeight);
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    cell.separatorInset = UIEdgeInsetsZero;
+    cell.backgroundColor = UIColorFromRGB(0xffffff);
+    
+    self.fontSizeSegment.frame = CGRectMake(8, 7, cell.frame.size.width - 8*2, kMenuOptionHeight - 7*2);
+    [self.fontSizeSegment setTitle:@"XS" forSegmentAtIndex:0];
+    [self.fontSizeSegment setTitle:@"S" forSegmentAtIndex:1];
+    [self.fontSizeSegment setTitle:@"M" forSegmentAtIndex:2];
+    [self.fontSizeSegment setTitle:@"L" forSegmentAtIndex:3];
+    [self.fontSizeSegment setTitle:@"XL" forSegmentAtIndex:4];
+    self.fontSizeSegment.backgroundColor = UIColorFromRGB(0xeeeeee);
+    [self.fontSizeSegment setTitleTextAttributes:@{NSFontAttributeName:[UIFont fontWithName:@"Helvetica-Bold" size:11.0f]} forState:UIControlStateNormal];
+    [self.fontSizeSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:0];
+    [self.fontSizeSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:1];
+    [self.fontSizeSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:2];
+    [self.fontSizeSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:3];
+    [self.fontSizeSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:4];
+    
+    [cell addSubview:self.fontSizeSegment];
+    
+    return cell;
+}
+
 - (UITableViewCell *)makeThemeTableCell {
     UITableViewCell *cell = [[UITableViewCell alloc] init];
     cell.frame = CGRectMake(0, 0, 240, kMenuOptionHeight);
@@ -346,6 +403,24 @@
     
     [appDelegate.feedDetailViewController reloadStories];
     
+}
+
+- (IBAction)changeFontSize:(id)sender {
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+    if ([sender selectedSegmentIndex] == 0) {
+        [userPreferences setObject:@"xs" forKey:@"feed_list_font_size"];
+    } else if ([sender selectedSegmentIndex] == 1) {
+        [userPreferences setObject:@"small" forKey:@"feed_list_font_size"];
+    } else if ([sender selectedSegmentIndex] == 2) {
+        [userPreferences setObject:@"medium" forKey:@"feed_list_font_size"];
+    } else if ([sender selectedSegmentIndex] == 3) {
+        [userPreferences setObject:@"large" forKey:@"feed_list_font_size"];
+    } else if ([sender selectedSegmentIndex] == 4) {
+        [userPreferences setObject:@"xl" forKey:@"feed_list_font_size"];
+    }
+    [userPreferences synchronize];
+
+    [appDelegate resizeFontSize];
 }
 
 - (IBAction)changeTheme:(id)sender {

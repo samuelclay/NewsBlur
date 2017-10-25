@@ -32,7 +32,7 @@ from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifie
 from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds
 from apps.analyzer.models import apply_classifier_authors, apply_classifier_tags
 from apps.analyzer.models import get_classifiers_for_user, sort_classifiers_by_feed
-from apps.profile.models import Profile
+from apps.profile.models import Profile, MCustomStyling
 from apps.reader.models import UserSubscription, UserSubscriptionFolders, RUserStory, Feature
 from apps.reader.forms import SignupForm, LoginForm, FeatureForm
 from apps.rss_feeds.models import MFeedIcon, MStarredStoryCounts, MSavedSearch
@@ -102,6 +102,7 @@ def dashboard(request, **kwargs):
                                                            ).select_related('feed')[:2]
     statistics        = MStatistics.all()
     social_profile    = MSocialProfile.get_user(user.pk)
+    custom_styling    = MCustomStyling.get_user(user.pk)
 
     start_import_from_google_reader = request.session.get('import_from_google_reader', False)
     if start_import_from_google_reader:
@@ -117,6 +118,7 @@ def dashboard(request, **kwargs):
     return {
         'user_profile'      : user.profile,
         'feed_count'        : feed_count,
+        'custom_styling'    : custom_styling,
         'account_images'    : range(1, 4),
         'recommended_feeds' : recommended_feeds,
         'unmoderated_feeds' : unmoderated_feeds,
@@ -717,7 +719,7 @@ def load_single_feed(request, feed_id):
     
     if include_feeds:
         feeds = Feed.objects.filter(pk__in=set([story['story_feed_id'] for story in stories]))
-        feeds = [feed.canonical(include_favicon=False) for feed in feeds]
+        feeds = [f.canonical(include_favicon=False) for f in feeds]
     
     if usersub:
         usersub.feed_opens += 1
@@ -1288,6 +1290,7 @@ def load_river_stories__redis(request):
                 "read_filter": read_filter,
                 "usersubs": usersubs,
                 "cutoff_date": user.profile.unread_cutoff,
+                "cache_prefix": "dashboard:" if initial_dashboard else "",
             }
             story_hashes, unread_feed_story_hashes = UserSubscription.feed_stories(**params)
         else:
@@ -1406,9 +1409,11 @@ def load_river_stories__redis(request):
     # Clean stories to remove potentially old stories on dashboard
     if initial_dashboard:
         new_stories = []
-        month_ago = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
+        now = datetime.datetime.utcnow()
+        hour = now + datetime.timedelta(hours=1)
+        month_ago = now - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
         for story in stories:
-            if story['story_date'] >= month_ago:
+            if story['story_date'] >= month_ago and story['story_date'] < hour:
                 new_stories.append(story)
         stories = new_stories
         
@@ -1442,7 +1447,7 @@ def complete_river(request):
                                                read_filter=read_filter)
     feed_ids = [sub.feed_id for sub in usersubs]
     if feed_ids:
-        stories_truncated = UserSubscription.truncate_river(user.pk, feed_ids, read_filter)
+        stories_truncated = UserSubscription.truncate_river(user.pk, feed_ids, read_filter, cache_prefix="dashboard:")
     
     logging.user(request, "~FC~BBRiver complete on page ~SB%s~SN, truncating ~SB%s~SN stories from ~SB%s~SN feeds" % (page, stories_truncated, len(feed_ids)))
     
@@ -1594,9 +1599,12 @@ def mark_story_hashes_as_read(request):
         usersubs = UserSubscription.objects.filter(user=request.user.pk, feed=feed_id)
         if usersubs:
             usersub = usersubs[0]
+            usersub.last_read_date = datetime.datetime.now()
             if not usersub.needs_unread_recalc:
                 usersub.needs_unread_recalc = True
-                usersub.save(update_fields=['needs_unread_recalc'])
+                usersub.save(update_fields=['needs_unread_recalc', 'last_read_date'])
+            else:
+                usersub.save(update_fields=['last_read_date'])
             r.publish(request.user.username, 'feed:%s' % feed_id)
     
     hash_count = len(story_hashes)
@@ -2315,7 +2323,12 @@ def _mark_story_as_starred(request):
         params.update(story_values)
         if params.has_key('story_latest_content_z'):
             params.pop('story_latest_content_z')
-        starred_story = MStarredStory.objects.create(**params)
+        try:
+            starred_story = MStarredStory.objects.create(**params)
+        except OperationError, e:
+            logging.user(request, "~FCStarring ~FRfailed~FC: ~SB%s (~FM~SB%s~FC~SN)" % (story.story_title[:32], e))        
+            return {'code': -1, 'message': "Could not save story due to: %s" % e}
+            
         created = True
         MActivity.new_starred_story(user_id=request.user.pk, 
                                     story_title=story.story_title, 
@@ -2421,6 +2434,7 @@ def starred_counts(request):
 def send_story_email(request):
     code       = 1
     message    = 'OK'
+    user       = get_user(request)
     story_id   = request.POST['story_id']
     feed_id    = request.POST['feed_id']
     to_addresses = request.POST.get('to', '').replace(',', ' ').replace('  ', ' ').strip().split(' ')
@@ -2431,8 +2445,17 @@ def send_story_email(request):
     comments   = comments[:2048] # Separated due to PyLint
     from_address = 'share@newsblur.com'
     share_user_profile = MSocialProfile.get_user(request.user.pk)
-
-    if not to_addresses:
+    
+    quota = 20 if user.profile.is_premium else 1
+    if share_user_profile.over_story_email_quota(quota=quota):
+        code = -1
+        if user.profile.is_premium:
+            message = 'You can only send %s stories per day by email.' % quota
+        else:
+            message = 'Upgrade to a premium subscription to send more than one story per day by email.'
+        logging.user(request, '~BRNOT ~BMSharing story by email to %s recipient, over quota: %s/%s' % 
+                              (len(to_addresses), story_id, feed_id))
+    elif not to_addresses:
         code = -1
         message = 'Please provide at least one email address.'
     elif not all(email_re.match(to_address) for to_address in to_addresses if to_addresses):
@@ -2477,6 +2500,9 @@ def send_story_email(request):
         except boto.ses.connection.ResponseError, e:
             code = -1
             message = "Email error: %s" % str(e)
+        
+        share_user_profile.save_sent_email()
+        
         logging.user(request, '~BMSharing story by email to %s recipient%s: ~FY~SB%s~SN~BM~FY/~SB%s' % 
                               (len(to_addresses), '' if len(to_addresses) == 1 else 's', 
                                story['story_title'][:50], feed and feed.feed_title[:50]))

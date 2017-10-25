@@ -6,13 +6,12 @@ import com.newsblur.activity.ReadingAdapter;
 import com.newsblur.domain.Classifier;
 import com.newsblur.domain.Story;
 import com.newsblur.fragment.ReadingItemFragment;
-import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.FeedUtils;
 
 public class MixedFeedsReadingAdapter extends ReadingAdapter {
 
-	public MixedFeedsReadingAdapter(FragmentManager fragmentManager, DefaultFeedView defaultFeedView, String sourceUserId) {
-		super(fragmentManager, defaultFeedView, sourceUserId);
+	public MixedFeedsReadingAdapter(FragmentManager fragmentManager, String sourceUserId) {
+		super(fragmentManager, sourceUserId);
 	}
 
 	@Override
@@ -28,7 +27,7 @@ public class MixedFeedsReadingAdapter extends ReadingAdapter {
         // be loaded async by the fragment itself
         Classifier classifier = FeedUtils.dbHelper.getClassifierForFeed(story.feedId);
         
-        return ReadingItemFragment.newInstance(story, feedTitle, feedFaviconColor, feedFaviconFade, feedFaviconBorder, feedFaviconText, feedFaviconUrl, classifier, true, defaultFeedView, sourceUserId);
+        return ReadingItemFragment.newInstance(story, feedTitle, feedFaviconColor, feedFaviconFade, feedFaviconBorder, feedFaviconText, feedFaviconUrl, classifier, true, sourceUserId);
 	}
 	
 }

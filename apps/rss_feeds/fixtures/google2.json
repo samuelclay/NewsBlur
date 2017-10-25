@@ -1,0 +1,24 @@
+[
+    {
+        "pk": 766, 
+        "model": "rss_feeds.feed", 
+        "fields": {            
+            "feed_address": "%(NEWSBLUR_DIR)s/apps/rss_feeds/fixtures/google2.xml", 
+            "days_to_trim": 90, 
+            "feed_link": "%(NEWSBLUR_DIR)s/apps/rss_feeds/fixtures/google.html", 
+            "feed_link_locked": true,  
+            "fetched_once": true,
+            "num_subscribers": 1, 
+            "active_subscribers": 1, 
+            "creation": "2009-01-12", 
+            "feed_title": "The Official Google Blog", 
+            "last_update": "2009-07-06 22:30:03", 
+            "next_scheduled_update": "2009-07-06 22:30:03", 
+            "last_story_date": "2009-07-06 22:30:03", 
+            "min_to_decay": 1, 
+            "etag": "", 
+            "last_modified": "2009-07-06 22:30:03", 
+            "active": 1
+        }
+    }
+]

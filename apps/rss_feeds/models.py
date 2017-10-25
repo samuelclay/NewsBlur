@@ -1,4 +1,5 @@
 import difflib
+import requests
 import datetime
 import time
 import random
@@ -149,6 +150,15 @@ class Feed(models.Model):
 
         return datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD_FREE)
     
+    @property
+    def story_hashes_in_unread_cutoff(self):
+        r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+        current_time = int(time.time() + 60*60*24)
+        unread_cutoff = self.unread_cutoff.strftime('%s')
+        print " ---> zrevrangebyscore zF:%s %s %s" % (self.pk, current_time, unread_cutoff)
+        story_hashes = r.zrevrangebyscore('zF:%s' % self.pk, current_time, unread_cutoff)
+        return story_hashes
+        
     @classmethod
     def generate_hash_address_and_link(cls, feed_address, feed_link):
         if not feed_address: feed_address = ""
@@ -453,6 +463,12 @@ class Feed(models.Model):
                 feed = cls.objects.create(feed_address=url)
                 feed = feed.update(requesting_user_id=user.pk if user else None)
                 
+        # Check for JSON feed
+        if not feed and fetch and create:
+            r = requests.get(url)
+            if 'application/json' in r.headers.get('Content-Type'):
+                feed = cls.objects.create(feed_address=url)
+                feed = feed.update()
         
         # Still nothing? Maybe the URL has some clues.
         if not feed and fetch and len(found_feed_urls):
@@ -1073,15 +1089,6 @@ class Feed(models.Model):
         from utils import feed_fetcher
         r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
         original_feed_id = int(self.pk)
-        
-        if getattr(settings, 'TEST_DEBUG', False):
-            original_feed_address = self.feed_address
-            original_feed_link = self.feed_link
-            self.feed_address = self.feed_address.replace("%(NEWSBLUR_DIR)s", settings.NEWSBLUR_DIR)
-            if self.feed_link:
-                self.feed_link = self.feed_link.replace("%(NEWSBLUR_DIR)s", settings.NEWSBLUR_DIR)
-            if self.feed_address != original_feed_address or self.feed_link != original_feed_link:
-                self.save(update_fields=['feed_address', 'feed_link'])
 
         options = {
             'verbose': kwargs.get('verbose'),
@@ -1099,6 +1106,19 @@ class Feed(models.Model):
             'feed_xml': kwargs.get('feed_xml'),
             'requesting_user_id': kwargs.get('requesting_user_id', None)
         }
+        
+        if getattr(settings, 'TEST_DEBUG', False):
+            print " ---> Testing feed fetch: %s" % self.log_title
+            options['force'] = False
+            # options['force_fp'] = True # No, why would this be needed?
+            original_feed_address = self.feed_address
+            original_feed_link = self.feed_link
+            self.feed_address = self.feed_address.replace("%(NEWSBLUR_DIR)s", settings.NEWSBLUR_DIR)
+            if self.feed_link:
+                self.feed_link = self.feed_link.replace("%(NEWSBLUR_DIR)s", settings.NEWSBLUR_DIR)
+            if self.feed_address != original_feed_address or self.feed_link != original_feed_link:
+                self.save(update_fields=['feed_address', 'feed_link'])
+        
         if self.is_newsletter:
             feed = self.update_newsletter_icon()
         else:
@@ -1310,7 +1330,7 @@ class Feed(models.Model):
         
         old_hash = existing_story.story_hash
         new_hash = MStory.ensure_story_hash(new_story_guid, self.pk)
-        RUserStory.switch_hash(feed_id=self.pk, old_hash=old_hash, new_hash=new_hash)
+        RUserStory.switch_hash(feed=self, old_hash=old_hash, new_hash=new_hash)
         
         shared_stories = MSharedStory.objects.filter(story_feed_id=self.pk,
                                                      story_hash=old_hash)
@@ -2168,6 +2188,7 @@ class Feed(models.Model):
     #     
     #     return phrases
 
+
 # class FeedCollocations(models.Model):
 #     feed = models.ForeignKey(Feed)
 #     phrase = models.CharField(max_length=500)
@@ -2430,6 +2451,9 @@ class MStory(mongo.Document):
                           (unicode(feed)[:30], stories.count(), cutoff))
             try:
                 story_trim_date = stories[cutoff].story_date
+                if story_trim_date == stories[0].story_date:
+                    # Handle case where every story is the same time
+                    story_trim_date = story_trim_date - datetime.timedelta(seconds=1)
             except IndexError, e:
                 logging.debug(' ***> [%-30s] ~BRError trimming feed: %s' % (unicode(feed)[:30], e))
                 return extra_stories_count

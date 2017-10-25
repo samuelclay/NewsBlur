@@ -13,9 +13,29 @@
     <item android:id="@+id/menu_choose_folders"
           android:title="@string/menu_choose_folders" />
 
+    <item android:id="@+id/menu_notifications"
+          android:title="@string/menu_notifications_choose" >
+        <menu>
+            <group android:checkableBehavior="single">
+                <item android:id="@+id/menu_notifications_disable"
+                      android:title="@string/menu_notifications_disable"
+                      android:checkable="true" />
+                <item android:id="@+id/menu_notifications_focus"
+                      android:title="@string/menu_notifications_focus"
+                      android:checkable="true" />
+                <item android:id="@+id/menu_notifications_unread"
+                      android:title="@string/menu_notifications_unread"
+                      android:checkable="true" />
+            </group>
+        </menu>
+    </item>
+
     <item android:id="@+id/menu_mute_feed"
           android:title="@string/menu_mute_feed" />
 
     <item android:id="@+id/menu_unmute_feed"
           android:title="@string/menu_unmute_feed" />
+
+    <item android:id="@+id/menu_instafetch_feed"
+          android:title="@string/menu_instafetch_feed" />
 </menu>

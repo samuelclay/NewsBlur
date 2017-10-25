@@ -5,6 +5,7 @@ import android.app.FragmentManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnKeyListener;
@@ -17,18 +18,14 @@ import butterknife.ButterKnife;
 import butterknife.Bind;
 
 import com.newsblur.R;
-import com.newsblur.fragment.DefaultFeedViewDialogFragment;
 import com.newsblur.fragment.ItemListFragment;
 import com.newsblur.fragment.ReadFilterDialogFragment;
 import com.newsblur.fragment.StoryOrderDialogFragment;
 import com.newsblur.fragment.TextSizeDialogFragment;
 import com.newsblur.service.NBSyncService;
 import com.newsblur.util.AppConstants;
-import com.newsblur.util.DefaultFeedView;
-import com.newsblur.util.DefaultFeedViewChangedListener;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
-import com.newsblur.util.MarkAllReadConfirmation;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadFilter;
 import com.newsblur.util.ReadFilterChangedListener;
@@ -37,7 +34,7 @@ import com.newsblur.util.StoryOrder;
 import com.newsblur.util.StoryOrderChangedListener;
 import com.newsblur.util.UIUtils;
 
-public abstract class ItemsList extends NbActivity implements StoryOrderChangedListener, ReadFilterChangedListener, DefaultFeedViewChangedListener, OnSeekBarChangeListener {
+public abstract class ItemsList extends NbActivity implements StoryOrderChangedListener, ReadFilterChangedListener, OnSeekBarChangeListener {
 
     public static final String EXTRA_FEED_SET = "feed_set";
 
@@ -121,6 +118,10 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
         super.onResume();
         if (NBSyncService.isHousekeepingRunning()) finish();
         updateStatusIndicators();
+        // this is not strictly necessary, since our first refresh with the fs will swap in
+        // the correct session, but that can be delayed by sync backup, so we try here to
+        // reduce UI lag, or in case somehow we got redisplayed in a zero-story state
+        FeedUtils.prepareReadingSession(fs);
         // Reading activities almost certainly changed the read/unread state of some stories. Ensure
         // we reflect those changes promptly.
         itemListFragment.hasUpdated();
@@ -131,6 +132,15 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
         super.onPause();
         NBSyncService.addRecountCandidates(fs);
     }
+
+	@Override
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		super.onPrepareOptionsMenu(menu);
+        if (fs.isFilterSaved()) {
+            menu.findItem(R.id.menu_mark_all_as_read).setVisible(false);
+        }
+		return true;
+	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
@@ -150,11 +160,6 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
             ReadFilterDialogFragment readFilter = ReadFilterDialogFragment.newInstance(currentValue);
             readFilter.show(getFragmentManager(), READ_FILTER);
             return true;
-        } else if (item.getItemId() == R.id.menu_default_view) {
-            DefaultFeedView currentValue = PrefsUtils.getDefaultFeedView(this, fs);
-            DefaultFeedViewDialogFragment readFilter = DefaultFeedViewDialogFragment.newInstance(currentValue);
-            readFilter.show(getFragmentManager(), DEFAULT_FEED_VIEW);
-            return true;
 		} else if (item.getItemId() == R.id.menu_textsize) {
 			TextSizeDialogFragment textSize = TextSizeDialogFragment.newInstance(PrefsUtils.getListTextSize(this), TextSizeDialogFragment.TextSizeType.ListText);
 			textSize.show(getFragmentManager(), TextSizeDialogFragment.class.getName());
@@ -165,6 +170,7 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
                 searchQueryInput.requestFocus();
             } else {
                 searchQueryInput.setVisibility(View.GONE);
+                checkSearchQuery();
             }
         }
 	

@@ -17,7 +17,9 @@
 @synthesize appDelegate;
 
 - (void)main {
-    appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
+    dispatch_sync(dispatch_get_main_queue(), ^{
+        self.appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
+    });
 
     while (YES) {
         BOOL fetched = [self fetchImages];
@@ -84,12 +86,16 @@
         }];
     }
 
-    [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
+    dispatch_sync(dispatch_get_main_queue(), ^{
+        [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
+    });
     dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
     NSLog(@"Queue finished: %ld total (%ld remaining)", (long)appDelegate.totalUncachedImagesCount, (long)appDelegate.remainingUncachedImagesCount);
     [self updateProgress];
-    [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
-    
+    dispatch_sync(dispatch_get_main_queue(), ^{
+        [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
+    });
+
     //    dispatch_async(dispatch_get_main_queue(), ^{
     //        [appDelegate.feedsViewController hideNotifier];
     //    });

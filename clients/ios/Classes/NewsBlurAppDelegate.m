@@ -255,6 +255,18 @@
     }
 }
 
+- (void)applicationWillResignActive:(UIApplication *)application {
+    [self.feedsViewController refreshHeaderCounts];
+}
+
+- (void)applicationWillTerminate:(UIApplication *)application {
+    [self.feedsViewController refreshHeaderCounts];
+}
+
+- (void)applicationDidEnterBackground:(UIApplication *)application {
+    [self.feedsViewController refreshHeaderCounts];
+}
+
 - (void)application:(UIApplication *)application performActionForShortcutItem:(UIApplicationShortcutItem *)shortcutItem completionHandler:(void (^)(BOOL))completionHandler {
     completionHandler([self handleShortcutItem:shortcutItem]);
 }
@@ -345,7 +357,9 @@
     center.delegate = self;
     [center requestAuthorizationWithOptions:(UNAuthorizationOptionSound | UNAuthorizationOptionAlert | UNAuthorizationOptionBadge) completionHandler:^(BOOL granted, NSError * _Nullable error){
         if(!error){
-            [[UIApplication sharedApplication] registerForRemoteNotifications];
+            dispatch_async(dispatch_get_main_queue(), ^{            
+                [[UIApplication sharedApplication] registerForRemoteNotifications];
+            });
         }
     }];
     
@@ -368,6 +382,15 @@
     [center setNotificationCategories:[NSSet setWithObject:storyCategory]];
 }
 
+
+- (void)registerForBadgeNotifications {
+    UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+    center.delegate = self;
+    [center requestAuthorizationWithOptions:(UNAuthorizationOptionBadge) completionHandler:^(BOOL granted, NSError * _Nullable error){
+    
+    }];
+}
+
 //Called when a notification is delivered to a foreground app.
 -(void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler{
     NSLog(@"User Info : %@",notification.request.content.userInfo);
@@ -375,13 +398,13 @@
 }
 
 //Called to let your app know which action was selected by the user for a given notification.
--(void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void(^)())completionHandler {
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)(void))completionHandler {
     [self processNotification:response.notification.request.content.userInfo
                        action:response.actionIdentifier
         withCompletionHandler:completionHandler];
 }
 
-- (void)processNotification:(NSDictionary *)content action:(NSString *)action withCompletionHandler:(void(^)())completionHandler {
+- (void)processNotification:(NSDictionary *)content action:(NSString *)action withCompletionHandler:(void(^)(void))completionHandler {
     NSLog(@"User Info : %@ / %@", content, action);
     NSString *storyHash = [content objectForKey:@"story_hash"];
     NSNumber *storyFeedId = [content objectForKey:@"story_feed_id"];
@@ -594,6 +617,10 @@
     }
 }
 
+- (void)resizeFontSize {
+    [feedsViewController resizeFontSize];
+}
+
 - (void)showPreferences {
     if (!preferencesViewController) {
         preferencesViewController = [[IASKAppSettingsViewController alloc] init];
@@ -788,7 +815,7 @@
         // iOS 8+
         UIPopoverPresentationController *popPC = activityViewController.popoverPresentationController;
         popPC.permittedArrowDirections = UIPopoverArrowDirectionAny;
-        popPC.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
+        popPC.backgroundColor = UIColorFromLightDarkRGB(NEWSBLUR_WHITE_COLOR, 0x707070);
         
         if ([sender isKindOfClass:[UIBarButtonItem class]]) {
             popPC.barButtonItem = sender;
@@ -823,6 +850,7 @@
     [self.shareViewController setCommentType:type];
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [self.masterContainerViewController transitionToShareView];
+        [self.shareViewController setSiteInfo:type setUserId:userId setUsername:username setReplyId:replyId];
     } else {
         if (self.shareNavigationController == nil) {
             UINavigationController *shareNav = [[UINavigationController alloc]
@@ -830,11 +858,10 @@
             self.shareNavigationController = shareNav;
             self.shareNavigationController.navigationBar.translucent = NO;
         }
-        [self.shareViewController setSiteInfo:type setUserId:userId setUsername:username setReplyId:replyId];
-        [self.navigationController presentViewController:self.shareNavigationController animated:YES completion:nil];
+        [self.navigationController presentViewController:self.shareNavigationController animated:YES completion:^{
+            [self.shareViewController setSiteInfo:type setUserId:userId setUsername:username setReplyId:replyId];
+        }];
     }
-
-    [self.shareViewController setSiteInfo:type setUserId:userId setUsername:username setReplyId:replyId];
 }
 
 - (void)hideShareView:(BOOL)resetComment {
@@ -1008,12 +1035,23 @@
 }
 
 - (void)updateNotifications:(NSDictionary *)params feed:(NSString *)feedId {
+    NSString *urlString = [NSString stringWithFormat:@"%@/notifications/feed/",
+                           self.url];
     NSMutableDictionary *feed = [[self.dictFeeds objectForKey:feedId] mutableCopy];
     
     [feed setObject:params[@"notification_types"] forKey:@"notification_types"];
     [feed setObject:params[@"notification_filter"] forKey:@"notification_filter"];
     
     [self.dictFeeds setObject:feed forKey:feedId];
+    
+    [self.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        NSLog(@"Saved notifications %@: %@", feedId, params);
+        [self checkForFeedNotifications];
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        NSLog(@"Failed to save notifications: %@", params);
+        NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)task.response;
+        [self.notificationsViewController informError:error statusCode:httpResponse.statusCode];
+    }];
 }
 
 - (void)checkForFeedNotifications {
@@ -1348,7 +1386,7 @@
     }
 }
 
-- (void)refreshUserProfile:(void(^)())callback {
+- (void)refreshUserProfile:(void(^)(void))callback {
     NSString *urlString = [NSString stringWithFormat:@"%@/social/load_user_profile",
                            self.url];
     [networkManager GET:urlString parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
@@ -1638,6 +1676,19 @@
 - (void)showOriginalStory:(NSURL *)url {
     NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
     
+    if (!url) {
+        UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Nowhere to go"
+                                                                       message:@"The story doesn't link anywhere."
+                                                                preferredStyle:UIAlertControllerStyleAlert];
+        
+        UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"Oh well" style:UIAlertActionStyleDefault
+                                                              handler:^(UIAlertAction * action) {}];
+        
+        [alert addAction:defaultAction];
+        [navigationController presentViewController:alert animated:YES completion:nil];
+        return;
+    }
+    
     NSString *storyBrowser = [preferences stringForKey:@"story_browser"];
     if ([storyBrowser isEqualToString:@"safari"]) {
         [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
@@ -1674,11 +1725,10 @@
         return;
     } else if ([storyBrowser isEqualToString:@"firefox"]) {
         NSString *encodedURL = [url.absoluteString stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLHostAllowedCharacterSet]];
-        NSString *firefoxURL = [NSString stringWithFormat:@"%@%@", @"firefox://?url=", encodedURL];
+        NSString *firefoxURL = [NSString stringWithFormat:@"%@%@", @"firefox://open-url?url=", encodedURL];
         [[UIApplication sharedApplication] openURL:[NSURL URLWithString:firefoxURL] options:@{} completionHandler:nil];
     } else if ([storyBrowser isEqualToString:@"inappsafari"]) {
-        self.safariViewController = [[SFSafariViewController alloc] initWithURL:url
-                                                        entersReaderIfAvailable:NO];
+        self.safariViewController = [[SFSafariViewController alloc] initWithURL:url];
         self.safariViewController.delegate = self;
         [navigationController presentViewController:self.safariViewController animated:YES completion:nil];
     } else {
@@ -2134,7 +2184,7 @@
     }
 }
 
-- (void)markStoryAsRead:(NSString *)storyHash inFeed:(NSString *)feed withCallback:(void(^)())callback {
+- (void)markStoryAsRead:(NSString *)storyHash inFeed:(NSString *)feed withCallback:(void(^)(void))callback {
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_story_hashes_as_read",
                            self.url];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
@@ -2152,7 +2202,7 @@
     }];
 }
 
-- (void)markStoryAsStarred:(NSString *)storyHash withCallback:(void(^)())callback {
+- (void)markStoryAsStarred:(NSString *)storyHash withCallback:(void(^)(void))callback {
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_story_hash_as_starred",
                            self.url];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
@@ -2245,6 +2295,7 @@
     if (![storyPageControl failedMarkAsUnread:params]) {
         [feedDetailViewController failedMarkAsUnread:params];
         [dashboardViewController.storiesModule failedMarkAsUnread:params];
+        [storyPageControl failedMarkAsUnread:params];
     }
     [feedDetailViewController reloadData];
     [dashboardViewController.storiesModule reloadData];
@@ -2259,6 +2310,7 @@
     if (![storyPageControl failedMarkAsSaved:params]) {
         [feedDetailViewController failedMarkAsSaved:params];
         [dashboardViewController.storiesModule failedMarkAsSaved:params];
+        [storyPageControl failedMarkAsSaved:params];
     }
     [feedDetailViewController reloadData];
     [dashboardViewController.storiesModule reloadData];
@@ -2273,6 +2325,7 @@
     if (![storyPageControl failedMarkAsUnsaved:params]) {
         [feedDetailViewController failedMarkAsUnsaved:params];
         [dashboardViewController.storiesModule failedMarkAsUnsaved:params];
+        [storyPageControl failedMarkAsUnsaved:params];
     }
     [feedDetailViewController reloadData];
     [dashboardViewController.storiesModule reloadData];
@@ -3353,7 +3406,7 @@
     return storyQueued;
 }
 
-- (void)flushQueuedReadStories:(BOOL)forceCheck withCallback:(void(^)())callback {
+- (void)flushQueuedReadStories:(BOOL)forceCheck withCallback:(void(^)(void))callback {
     if (self.feedsViewController.isOffline) {
         if (callback) callback();
         return;
@@ -3388,7 +3441,7 @@
     }
 }
 
-- (void)syncQueuedReadStories:(FMDatabase *)db withStories:(NSDictionary *)hashes withCallback:(void(^)())callback {
+- (void)syncQueuedReadStories:(FMDatabase *)db withStories:(NSDictionary *)hashes withCallback:(void(^)(void))callback {
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_feed_stories_as_read",
                            self.url];
     NSMutableArray *completedHashes = [NSMutableArray array];

@@ -21,6 +21,7 @@ UITableViewDataSource> {
 @property (nonatomic) IBOutlet UITableView *menuTableView;
 @property (nonatomic) IBOutlet UISegmentedControl *orderSegmentedControl;
 @property (nonatomic) IBOutlet UISegmentedControl *readFilterSegmentedControl;
+@property (nonatomic) IBOutlet UISegmentedControl *fontSizeSegment;
 @property (nonatomic) IBOutlet UISegmentedControl *themeSegmentedControl;
 
 - (void)buildMenuOptions;
@@ -28,6 +29,7 @@ UITableViewDataSource> {
 - (UITableViewCell *)makeReadFilterCell;
 - (IBAction)changeOrder:(id)sender;
 - (IBAction)changeReadFilter:(id)sender;
+- (IBAction)changeFontSize:(id)sender;
 - (IBAction)changeTheme:(id)sender;
 
 @end

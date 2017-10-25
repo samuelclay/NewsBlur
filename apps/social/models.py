@@ -135,6 +135,7 @@ class MSocialProfile(mongo.Document):
     story_count_history  = mongo.ListField()
     story_days_history   = mongo.DictField()
     story_hours_history  = mongo.DictField()
+    story_email_history  = mongo.ListField()
     feed_classifier_counts = mongo.DictField()
     favicon_color        = mongo.StringField(max_length=6)
     protected            = mongo.BooleanField()
@@ -779,7 +780,33 @@ class MSocialProfile(mongo.Document):
         if scores:
             self.feed_classifier_counts = scores
             self.save()
+    
+    def save_sent_email(self, max_quota=20):
+        if not self.story_email_history:
+            self.story_email_history = []
+        
+        self.story_email_history.insert(0, datetime.datetime.now())
+        self.story_email_history = self.story_email_history[:max_quota]
+        
+        self.save()
+        
+    def over_story_email_quota(self, quota=1, hours=24):
+        counted = 0
+        day_ago = datetime.datetime.now() - datetime.timedelta(hours=hours)
+        sent_emails = self.story_email_history
 
+        if not sent_emails:
+            sent_emails = []
+
+        for sent_date in sent_emails:
+            if sent_date > day_ago:
+                counted += 1
+        
+        if counted >= quota:
+            return True
+        
+        return False
+        
 class MSocialSubscription(mongo.Document):
     UNREAD_CUTOFF = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
 

@@ -1,11 +1,5 @@
 package com.newsblur.util;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
-
-import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -17,10 +11,8 @@ import android.os.Build;
 
 import com.newsblur.R;
 import com.newsblur.activity.FeedReading;
-import com.newsblur.activity.Main;
 import com.newsblur.activity.Reading;
 import com.newsblur.database.DatabaseConstants;
-import com.newsblur.domain.Feed;
 import com.newsblur.domain.Story;
 import com.newsblur.util.FileCache;
 
@@ -36,6 +28,7 @@ public class NotificationUtils {
      * @param storiesUnread a cursor of unread, neutral stories to notify, ordered newest to oldest
      */
     public static synchronized void notifyStories(Cursor storiesFocus, Cursor storiesUnread, Context context, FileCache iconCache) {
+        FeedUtils.offerInitContext(context);
         NotificationManager nm = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
         int count = 0;
@@ -91,7 +84,7 @@ public class NotificationUtils {
         // force a new Reading activity, since if multiple notifications are tapped, any re-use or
         // stacking of the activity would almost certainly out-race the sync loop and cause stale
         // UI on some devices.
-        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         // set the requestCode to the story hashcode to prevent the PI re-using the wrong Intent
         PendingIntent pendingIntent = PendingIntent.getActivity(context, story.hashCode(), i, 0);
 

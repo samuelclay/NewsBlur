@@ -54,7 +54,8 @@
     <string name="share_this">SHARE</string>
     <string name="already_shared">SHARED</string>
     <string name="share_this_story">SHARE</string>
-    <string name="update_shared">Update comment</string>
+    <string name="unshare">DELETE SHARE</string>
+    <string name="update_shared">UPDATE COMMENT</string>
 
 	<string name="save_this">SAVE</string>
 	<string name="unsave_this">REMOVE FROM SAVED</string>
@@ -65,6 +66,7 @@
     <string name="overlay_count_toast_1">1 unread story</string>
     <string name="overlay_text">TEXT</string>
     <string name="overlay_story">STORY</string>
+    <string name="text_mode_unavailable">Sorry, the story\'s text could not be extracted.</string>
 
     <string name="state_all">ALL</string>
     <string name="state_unread">UNREAD</string>
@@ -72,6 +74,9 @@
     <string name="state_saved">SAVED</string>
 
 	<string name="reply_to">Reply to \"%s\"</string>
+    <string name="edit_reply">Edit reply</string>
+    <string name="edit_reply_update">UPDATE REPLY</string>
+    <string name="edit_reply_delete">DELTE REPLY</string>
 	
 	<string name="alert_dialog_ok">OKAY</string>
 	<string name="alert_dialog_cancel">CANCEL</string>
@@ -112,6 +117,7 @@
     
     <string name="menu_profile">Profile</string>
     <string name="menu_refresh">Refresh</string>
+    <string name="menu_search_feeds">Search your feeds</string>
     <string name="menu_original">View original</string>
     <string name="menu_send_story">Send link to…</string>
     <string name="menu_send_story_full">Send story to…</string>
@@ -119,9 +125,14 @@
     <string name="menu_delete_feed">Delete feed</string>
     <string name="menu_unfollow">Unfollow user</string>
     <string name="menu_choose_folders">Choose folders</string>
+    <string name="menu_notifications_choose">Notifications…</string>
+    <string name="menu_notifications_disable">Disable notifications</string>
+    <string name="menu_notifications_focus">Notify on new focus stories</string>
+    <string name="menu_notifications_unread">Notify on all new stories</string>
     <string name="menu_mark_folder_as_read">Mark folder as read</string>
     <string name="menu_sharenewsblur">Share this story</string>
     <string name="menu_textsize">Adjust text size</string>
+    <string name="menu_font">Change font</string>
     <string name="menu_save_story">Save this story</string>
     <string name="menu_unsave_story">Unsave this story</string>
     <string name="menu_newest_mark_older_stories_as_read">\u21E3 Mark older as read</string>
@@ -136,21 +147,28 @@
     <string name="menu_unmute_feed">Unmute feed</string>
     <string name="menu_mute_folder">Mute folder</string>
     <string name="menu_unmute_folder">Unmute folder</string>
+    <string name="menu_instafetch_feed">Insta-fetch stories</string>
     
     <string name="toast_story_unread">Story marked as unread</string>
 
     <string name="logout_warning">Are you sure you want to log out?</string>
+    <string name="search_mark_read_warning">Look out! All stories in feed/folder would be marked read, not just search results.  If you really want to mark all stories read, please clear your search query to confirm.</string>
     
-    <string name="feed_search_hint">Search for new feeds</string>
+    <string name="your_feeds_search_hint">Search your feeds</string>
+    <string name="feed_search_hint">Search term or feed URL</string>
     <string name="story_search_hint">Search for stories</string>
     <string name="empty_search_notice">Type a search term to begin</string>
     <string name="menu_add_feed">Add new feed</string>
     <string name="menu_search">Search</string>
+    <string name="adding_feed_progress">Adding feed…</string>
+    <string name="add_feed_error">Could not add feed</string>
     <string name="menu_mark_all_as_read">Mark all as read</string>
     <string name="menu_logout">Log out</string>
     <string name="menu_feedback">Send app feedback</string>
     <string name="menu_feedback_post">Create a feedback post</string>
     <string name="menu_feedback_email">Email a bug report</string>
+    <string name="menu_theme_choose">Theme…</string>
+
     <string name="menu_loginas">Login as...</string>
 
     <string name="loginas_title">Login As User</string>
@@ -182,8 +200,6 @@
     <string name="unknown_user">Unknown User</string>
     <string name="delete_feed_message">Delete feed \&quot;%s\&quot;?</string>
     <string name="unfollow_message">Unfollow \&quot;%s\&quot;?</string>
-    
-    <string name="menu_default_view">Default View</string>
     
     <string name="settings">Preferences</string>
 
@@ -255,6 +271,9 @@
 
     <string name="settings_auto_open_first_unread">Auto-Open First Story</string>
     <string name="settings_auto_open_first_unread_sum">Automatically open first unread story from story list</string>
+
+    <string name="settings_mark_read_on_scroll">Mark Stories Read On Scroll</string>
+    <string name="settings_mark_read_on_scroll_sum">Automatically mark stories as read when scrolled past</string>
 
     <string name="settings_social">Social</string>
     <string name="settings_show_public_comments">Show Public Comments</string>
@@ -366,4 +385,43 @@
         <item>GEST_ACTION_UNSAVE</item>
     </string-array>
     <string name="rtl_gesture_action_value">GEST_ACTION_MARKUNREAD</string>
+
+    <string name="font">Font</string>
+    <string name="default_font">Default</string>
+    <string name="whitney_font">Whitney</string>
+    <string name="gotham_narrow_font">Gotham Narrow</string>
+    <string name="chronicle_font">Chronicle</string>
+    <string name="noto_sans_font">Noto Sans</string>
+    <string name="noto_serif_font">Noto Serif</string>
+    <string name="open_sans_condensed_font">Open Sans Condensed</string>
+    <string name="anonymous_pro_font">Anonymous Pro</string>
+    <string name="anonymous_pro_font_prefvalue">ANONYMOUS_PRO</string>
+    <string name="default_font_prefvalue">DEFAULT</string>
+    <string name="whitney_font_prefvalue">WHITNEY</string>
+    <string name="gotham_narrow_font_prefvalue">GOTHAM_NARROW</string>
+    <string name="chronicle_font_prefvalue">CHRONICLE</string>
+    <string name="noto_sans_font_prefvalue">NOTO_SANS</string>
+    <string name="noto_serif_font_prefvalue">NOTO_SERIF</string>
+    <string name="open_sans_condensed_font_prefvalue">OPEN_SANS_CONDENSED</string>
+    <string-array name="default_font_entries">
+        <item>@string/anonymous_pro_font</item>
+        <item>@string/chronicle_font</item>
+        <item>@string/default_font</item>
+        <item>@string/gotham_narrow_font</item>
+        <item>@string/noto_sans_font</item>
+        <item>@string/noto_serif_font</item>
+        <item>@string/open_sans_condensed_font</item>
+        <item>@string/whitney_font</item>
+    </string-array>
+    <string-array name="default_font_values">
+        <item>@string/anonymous_pro_font_prefvalue</item>
+        <item>@string/chronicle_font_prefvalue</item>
+        <item>@string/default_font_prefvalue</item>
+        <item>@string/gotham_narrow_font_prefvalue</item>
+        <item>@string/noto_sans_font_prefvalue</item>
+        <item>@string/noto_sans_font_prefvalue</item>
+        <item>@string/open_sans_condensed_font_prefvalue</item>
+        <item>@string/whitney_font_prefvalue</item>
+    </string-array>
+    <string name="default_font_value">DEFAULT</string>
 </resources>

@@ -1,5 +1,6 @@
 package com.newsblur.fragment;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -87,7 +88,7 @@ public class LoginProgressFragment extends Fragment {
 
 		@Override
 		protected void onPostExecute(LoginResponse result) {
-            Context c = getActivity();
+            Activity c = getActivity();
             if (c == null) return; // we might have run past the lifecycle of the activity
 			if (!result.isError()) {
 				final Animation a = AnimationUtils.loadAnimation(c, R.anim.text_down);

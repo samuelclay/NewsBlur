@@ -24,7 +24,7 @@ public class ProfileInteractionsFragment extends ProfileActivityDetailsFragment 
         if (interactionsResponse != null) {
             return interactionsResponse.interactions;
         } else {
-            return new ActivityDetails[0];
+            return null;
         }
     }
 }

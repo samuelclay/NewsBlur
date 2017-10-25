@@ -69,14 +69,26 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
             midnight.setSeconds(0);
             return midnight;
         };
+        var midnight_tomorrow = function(midnight, days) {
+            if (!days) days = 1;
+            return new Date(midnight.getTime() + days*60*60*24*1000);
+        };
         var midnight_yesterday = function(midnight) {
-            return new Date(midnight - 60*60*24*1000);
+            return midnight_tomorrow(midnight, -1);
         };
         var midnight = midnight_today();
         var time = date.format(dateformat == "24" ? "H:i" : "g:ia");
 
         if (date > midnight) {
-            return time;
+            if (date > midnight_tomorrow(midnight)) {
+                if (date < midnight_tomorrow(midnight, 2)) {
+                    return "Tomorrow, " + time;
+                } else {
+                    return date.format("d M Y, ") + time;
+                }
+            } else {
+                return time;
+            }
         } else if (date > midnight_yesterday(midnight)) {
             return "Yesterday, " + time;
         } else {
@@ -95,8 +107,12 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
             midnight.setSeconds(0);
             return midnight;
         };
+        var midnight_tomorrow = function(midnight, days) {
+            if (!days) days = 1;
+            return new Date(midnight.getTime() + days*60*60*24*1000);
+        };
         var midnight_yesterday = function(midnight) {
-            return new Date(midnight - 60*60*24*1000);
+            return midnight_tomorrow(midnight, -1);
         };
         var beginning_of_month = function() {
             var month = new Date();
@@ -109,7 +125,15 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
         var midnight = midnight_today();
         var time = date.format(dateformat == "24" ? "H:i" : "g:ia");
         if (date > midnight) {
-            return "Today, " + date.format("F jS ") + time;
+            if (date > midnight_tomorrow(midnight)) {
+                if (date < midnight_tomorrow(midnight, 2)) {
+                    return "Tomorrow, " + date.format("F jS ") + time;
+                } else {
+                    return date.format("l, F jS Y ") + time;
+                }
+            } else {
+                return "Today, " + date.format("F jS ") + time;
+            }
         } else if (date > midnight_yesterday(midnight)) {
             return "Yesterday, " + date.format("F jS ") + time;
         } else if (date > beginning_of_month()) {

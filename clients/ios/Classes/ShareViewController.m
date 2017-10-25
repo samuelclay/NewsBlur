@@ -31,13 +31,12 @@
 @synthesize currentType;
 @synthesize storyTitle;
 
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
+    
+    if ((self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil])) {
 
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
-{
-    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-    if (self) {
-        // Custom initialization
     }
+
     return self;
 }
 
@@ -64,7 +63,6 @@
                                action:@selector(doShareThisStory:)];
     self.submitButton = submit;
     self.navigationItem.rightBarButtonItem = submit;
-    
     
     // Do any additional setup after loading the view from its nib.
     commentField.layer.borderWidth = 1.0f;
@@ -98,12 +96,28 @@
     // e.g. self.myOutlet = nil;
 }
 
+- (bool)isHardwareKeyboardUsed:(NSNotification*)keyboardNotification {
+    NSDictionary* info = [keyboardNotification userInfo];
+    CGRect keyboardEndFrame;
+    [[info valueForKey:UIKeyboardFrameEndUserInfoKey] getValue:&keyboardEndFrame];
+    float height = [[UIScreen mainScreen] bounds].size.height - keyboardEndFrame.origin.y;
+    float gThresholdForHardwareKeyboardToolbar = 160.f;
+    return height < gThresholdForHardwareKeyboardToolbar;
+}
 
 - (void)keyboardWasShown:(NSNotification*)aNotification
 {
     NSDictionary* info = [aNotification userInfo];
-    CGSize kbSize = [[info objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue].size;
-        
+    
+    // Get the size of the keyboard.
+    NSValue* keyboardFrameValue     = [info objectForKey:UIKeyboardFrameEndUserInfoKey];
+    CGRect keyboardRectWrtScreen    = [keyboardFrameValue CGRectValue];
+    
+    CGFloat keyboardWidth = keyboardRectWrtScreen.size.width;
+    CGFloat keyboardHeight = [[[self view] window] frame].size.height - keyboardRectWrtScreen.origin.y;
+    NSLog(@"Keyboard height: %f %d", keyboardHeight, [self isHardwareKeyboardUsed:aNotification]);
+    CGSize kbSize = CGSizeMake(keyboardWidth, keyboardHeight);
+    
     [UIView animateWithDuration:0.2f animations:^{
         [self adjustCommentField:kbSize];
     }];
@@ -113,8 +127,16 @@
 - (void)keyboardWillBeHidden:(NSNotification*)aNotification
 {
     NSDictionary* info = [aNotification userInfo];
-    CGSize kbSize = [[info objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue].size;
     
+    // Get the size of the keyboard.
+    NSValue* keyboardFrameValue     = [info objectForKey:UIKeyboardFrameEndUserInfoKey];
+    CGRect keyboardRectWrtScreen    = [keyboardFrameValue CGRectValue];
+    
+    CGFloat keyboardWidth = keyboardRectWrtScreen.size.width;
+    CGFloat keyboardHeight = [[[self view] window] frame].size.height - keyboardRectWrtScreen.origin.y;
+    NSLog(@"Keyboard height on hide: %f %d", keyboardHeight, [self isHardwareKeyboardUsed:aNotification]);
+    CGSize kbSize = CGSizeMake(keyboardWidth, keyboardHeight);
+
     [UIView animateWithDuration:0.2f animations:^{
         [self adjustCommentField:kbSize];
     }];
@@ -336,6 +358,8 @@
             self.commentField.text = @"";
         }
     }
+    
+    [self onTextChange:nil];
 }
 
 - (void)clearComments {
@@ -391,7 +415,8 @@
     [appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self finishShareThisStory:responseObject];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        [self requestFailed:error];
+        NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)task.response;
+        [self requestFailed:error statusCode:httpResponse.statusCode];
     }];
 
     [appDelegate hideShareView:YES];
@@ -404,6 +429,9 @@
                                                             withNewUserProfiles:userProfiles];
     [self replaceStory:[results objectForKey:@"story"] withReplyId:nil];
     [appDelegate.feedDetailViewController redrawUnreadStory];
+
+    [MBProgressHUD hideHUDForView:appDelegate.storyPageControl.view animated:NO];
+    [MBProgressHUD hideHUDForView:appDelegate.storyPageControl.currentPage.view animated:NO];
 }
 
 # pragma mark
@@ -436,7 +464,8 @@
     [appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self finishAddReply:responseObject];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        [self requestFailed:error];
+        NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)task.response;
+        [self requestFailed:error statusCode:httpResponse.statusCode];
     }];
 
     [appDelegate hideShareView:NO];
@@ -450,11 +479,12 @@
     [self replaceStory:newStory withReplyId:[results objectForKey:@"reply_id"]];
 }
 
-- (void)requestFailed:(NSError *)error {    
+- (void)requestFailed:(NSError *)error statusCode:(NSInteger)statusCode {
     [MBProgressHUD hideHUDForView:appDelegate.storyPageControl.view animated:NO];
+    [MBProgressHUD hideHUDForView:appDelegate.storyPageControl.currentPage.view animated:NO];
 
     NSLog(@"Error: %@", error);
-    [appDelegate.storyPageControl.currentPage informError:error];
+    [appDelegate.storyPageControl.currentPage informError:error statusCode:statusCode];
 }
 
 - (void)replaceStory:(NSDictionary *)newStory withReplyId:(NSString *)replyId {
@@ -501,7 +531,8 @@
             self.submitButton.title = @"Share with comments";
         } else {
             self.submitButton.title = @"Share this story";
-        }   
+        }
+        self.submitButton.enabled = YES;
     } else if ([self.currentType isEqualToString: @"reply"] ||
                [self.currentType isEqualToString:@"edit-reply"]) {
         self.submitButton.enabled = [self.commentField.text length] > 0;

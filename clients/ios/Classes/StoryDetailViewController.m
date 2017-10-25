@@ -230,6 +230,8 @@
     [super viewDidDisappear:animated];
     
     if (!appDelegate.showingSafariViewController &&
+        appDelegate.navigationController.visibleViewController != (UIViewController *)appDelegate.shareViewController &&
+        appDelegate.navigationController.visibleViewController != (UIViewController *)appDelegate.trainerViewController &&
         appDelegate.navigationController.visibleViewController != (UIViewController *)appDelegate.originalStoryViewController) {
         [self clearStory];
     }
@@ -1369,19 +1371,19 @@
                     // No scroll found
                     continue;
                 }
-                if (!scrollPct) scrollPct = [scroll floatValue] / 1000.f;
-                NSInteger position = floor(scrollPct * strongSelf.webView.scrollView.contentSize.height);
-                NSInteger maxPosition = (NSInteger)(floor(strongSelf.webView.scrollView.contentSize.height - strongSelf.webView.frame.size.height));
-                if (position > maxPosition) {
-                    NSLog(@"Position too far, scaling back to max position: %ld > %ld", (long)position, (long)maxPosition);
-                    position = maxPosition;
-                }
-                if (position > 0) {
-                    NSLog(@"Scrolling to %ld / %.1f%% (%.f+%.f) on %@-%@", (long)position, scrollPct*100, strongSelf.webView.scrollView.contentSize.height, strongSelf.webView.frame.size.height, [story objectForKey:@"story_hash"], [strongSelf.activeStory objectForKey:@"story_title"]);
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        [strongSelf.webView.scrollView setContentOffset:CGPointMake(0, position) animated:animated];
-                    });
-                }
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    if (!scrollPct) scrollPct = [scroll floatValue] / 1000.f;
+                    NSInteger position = floor(scrollPct * strongSelf.webView.scrollView.contentSize.height);
+                    NSInteger maxPosition = (NSInteger)(floor(strongSelf.webView.scrollView.contentSize.height - strongSelf.webView.frame.size.height));
+                    if (position > maxPosition) {
+                        NSLog(@"Position too far, scaling back to max position: %ld > %ld", (long)position, (long)maxPosition);
+                        position = maxPosition;
+                    }
+                    if (position > 0) {
+                        NSLog(@"Scrolling to %ld / %.1f%% (%.f+%.f) on %@-%@", (long)position, scrollPct*100, strongSelf.webView.scrollView.contentSize.height, strongSelf.webView.frame.size.height, [story objectForKey:@"story_hash"], [strongSelf.activeStory objectForKey:@"story_title"]);
+                            [strongSelf.webView.scrollView setContentOffset:CGPointMake(0, position) animated:animated];
+                    }
+                });
             }
             [cursor close];
             
@@ -1724,7 +1726,8 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     [appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self finishLikeComment:responseObject];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        [self requestFailed:error];
+        NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)task.response;
+        [self requestFailed:error statusCode:httpResponse.statusCode];
     }];
 }
 
@@ -1752,16 +1755,18 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     appDelegate.storiesCollection.activeFeedStories = [NSArray arrayWithArray:newActiveFeedStories];
     
     [MBProgressHUD hideHUDForView:appDelegate.storyPageControl.view animated:NO];
+    [MBProgressHUD hideHUDForView:appDelegate.storyPageControl.currentPage.view animated:NO];
     [self refreshComments:@"like"];
 } 
 
 
-- (void)requestFailed:(NSError *)error {
+- (void)requestFailed:(NSError *)error statusCode:(NSInteger)statusCode {
     NSLog(@"Error in story detail: %@", error);
     
     [MBProgressHUD hideHUDForView:appDelegate.storyPageControl.view animated:NO];
+    [MBProgressHUD hideHUDForView:appDelegate.storyPageControl.currentPage.view animated:NO];
 
-    [self informError:error];
+    [self informError:error statusCode:statusCode];
 }
 
 - (void)openShareDialog {
@@ -1866,7 +1871,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     }
     
     if ([tagName isEqualToString:@"A"]) {
-        [self showLinkContextMenu:pt];
+//        [self showLinkContextMenu:pt];
     }
 }
 
@@ -2026,7 +2031,8 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     [appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self finishSubscribeToBlurblog:responseObject];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        [self requestFailed:error];
+        NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)task.response;
+        [self requestFailed:error statusCode:httpResponse.statusCode];
     }];
 }
 
@@ -2191,6 +2197,15 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         contentWidthClass = @"NB-iphone";
     }
     
+    NSString *alternateViewClass = @"";
+    if (!self.isPhoneOrCompact) {
+        if (appDelegate.masterContainerViewController.storyTitlesOnLeft) {
+            alternateViewClass = @"NB-titles-bottom";
+        } else {
+            alternateViewClass = @"NB-titles-left";
+        }
+    }
+    
     contentWidthClass = [NSString stringWithFormat:@"%@ NB-width-%d",
                          contentWidthClass, (int)floorf(CGRectGetWidth(webView.scrollView.bounds))];
     
@@ -2201,9 +2216,10 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
                             @"NB-river" : @"NB-non-river";
     
     NSString *jsString = [[NSString alloc] initWithFormat:
-                          @"$('body').attr('class', '%@ %@');"
+                          @"$('body').attr('class', '%@ %@ %@');"
                           "document.getElementById(\"viewport\").setAttribute(\"content\", \"width=%li;initial-scale=1; minimum-scale=1.0; maximum-scale=1.0; user-scalable=0;\");",
                           contentWidthClass,
+                          alternateViewClass,
                           riverClass,
                           (long)contentWidth];
     [self.webView stringByEvaluatingJavaScriptFromString:jsString];

@@ -43,7 +43,8 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
                 $.make('div', { className: 'NB-modal-loading' }),
                 $.make('div', { className: 'NB-modal-tab NB-active NB-modal-tab-account' }, 'Account'),
                 $.make('div', { className: 'NB-modal-tab NB-modal-tab-premium' }, 'Payments'),
-                $.make('div', { className: 'NB-modal-tab NB-modal-tab-emails' }, 'Emails')
+                $.make('div', { className: 'NB-modal-tab NB-modal-tab-emails' }, 'Emails'),
+                $.make('div', { className: 'NB-modal-tab NB-modal-tab-custom' }, 'Custom CSS/JavaScript')
             ]),
             $.make('h2', { className: 'NB-modal-title' }, [
                 $.make('div', { className: 'NB-icon' }),
@@ -204,6 +205,20 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
                         ]),
                         $.make('div', { className: 'NB-preference-label'}, [
                             'Emails'
+                        ])
+                    ])
+                ]),
+                $.make('div', { className: 'NB-tab NB-tab-custom' }, [
+                    $.make('fieldset', [
+                        $.make('legend', 'Custom CSS'),
+                        $.make('div', { className: 'NB-modal-section NB-profile-editor-blurblog-custom-css'}, [
+                            $.make('textarea', { 'className': 'NB-account-custom-css', name: 'custom_css' }, _.string.trim($("#NB-custom-css").text()))
+                        ])
+                    ]),
+                    $.make('fieldset', [
+                        $.make('legend', 'Custom JavaScript'),
+                        $.make('div', { className: 'NB-modal-section NB-profile-editor-blurblog-custom-js'}, [
+                            $.make('textarea', { 'className': 'NB-account-custom-javascript', name: 'custom_js' }, _.string.trim($("#NB-custom-js").text()))
                         ])
                     ])
                 ]),
@@ -387,7 +402,7 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
     serialize_preferences: function() {
         var preferences = {};
 
-        $('input[type=radio]:checked, select, input[type=text], input[type=password]', this.$modal).each(function() {
+        $('input[type=radio]:checked, select, textarea, input[type=text], input[type=password]', this.$modal).each(function() {
             var name       = $(this).attr('name');
             var preference = preferences[name] = $(this).val();
             if (preference == 'true')       preferences[name] = true;
@@ -464,6 +479,8 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
                 newtab = 'premium';
             } else if ($t.hasClass('NB-modal-tab-emails')) {
                 newtab = 'emails';
+            } else if ($t.hasClass('NB-modal-tab-custom')) {
+                newtab = 'custom';
             }
             self.switch_tab(newtab);
         });        
@@ -502,6 +519,8 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
     handle_change: function() {
         $('input[type=radio],input[type=checkbox],select,input', this.$modal).bind('change', _.bind(this.enable_save, this));
         $('input', this.$modal).bind('keydown', _.bind(this.enable_save, this));
+        $('.NB-tab-custom', this.$modal).delegate('input[type=text],textarea', 'keydown', _.bind(this.enable_save, this));
+        $('.NB-tab-custom', this.$modal).delegate('input,textarea', 'change', _.bind(this.enable_save, this));
     },
     
     enable_save: function() {

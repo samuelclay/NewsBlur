@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "NBDashboardNavigationBar.h"
 
 @class NewsBlurAppDelegate;
 @class InteractionsModule;
@@ -21,7 +22,7 @@
     FeedDetailViewController *storiesModule;
     UIWebView *feedbackWebView;
     UIToolbar *toolbar;
-    UINavigationBar *topToolbar;
+    NBDashboardNavigationBar *topToolbar;
     UISegmentedControl *segmentedButton;
 }
 
@@ -31,7 +32,7 @@
 @property (nonatomic) IBOutlet FeedDetailViewController *storiesModule;
 @property (nonatomic) IBOutlet UIWebView *feedbackWebView;
 
-@property (nonatomic) IBOutlet UINavigationBar *topToolbar;
+@property (nonatomic) IBOutlet NBDashboardNavigationBar *topToolbar;
 @property (nonatomic) IBOutlet UIToolbar *toolbar;
 @property (nonatomic) IBOutlet UISegmentedControl *segmentedButton;
 @property (nonatomic) IBOutlet UIImageView *logoImageView;

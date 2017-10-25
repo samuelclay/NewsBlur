@@ -35,6 +35,7 @@ import com.newsblur.R;
 import com.newsblur.domain.Story;
 import com.newsblur.fragment.ReadingItemFragment;
 import com.newsblur.fragment.ShareDialogFragment;
+import com.newsblur.fragment.ReadingFontDialogFragment;
 import com.newsblur.fragment.TextSizeDialogFragment;
 import com.newsblur.service.NBSyncService;
 import com.newsblur.util.AppConstants;
@@ -43,15 +44,15 @@ import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadFilter;
+import com.newsblur.util.ReadingFontChangedListener;
 import com.newsblur.util.StoryOrder;
 import com.newsblur.util.StateFilter;
-import com.newsblur.util.ThemeUtils;
 import com.newsblur.util.UIUtils;
 import com.newsblur.util.ViewUtils;
 import com.newsblur.util.VolumeKeyNavigation;
 import com.newsblur.view.ReadingScrollView.ScrollChangeListener;
 
-public abstract class Reading extends NbActivity implements OnPageChangeListener, OnSeekBarChangeListener, ScrollChangeListener, LoaderManager.LoaderCallbacks<Cursor> {
+public abstract class Reading extends NbActivity implements OnPageChangeListener, OnSeekBarChangeListener, ScrollChangeListener, LoaderManager.LoaderCallbacks<Cursor>, ReadingFontChangedListener {
 
     public static final String EXTRA_FEEDSET = "feed_set";
 	public static final String EXTRA_POSITION = "feed_position";
@@ -72,8 +73,6 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
     private static final int OVERLAY_MIN_WIDTH_DP = 355;
 
 	protected StateFilter intelState;
-    protected StoryOrder storyOrder;
-    protected ReadFilter readFilter;
 
     // Activities navigate to a particular story by hash.
     // We can find it once we have the cursor.
@@ -109,11 +108,9 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
     private int lastVScrollPos = 0;
 
     private boolean unreadSearchActive = false;
-    private boolean unreadSearchStarted = false;
 
     private List<Story> pageHistory;
 
-    protected DefaultFeedView defaultFeedView;
     private VolumeKeyNavigation volumeKeyNavigation;
 
     @Override
@@ -126,6 +123,12 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 		fragmentManager = getFragmentManager();
 
         fs = (FeedSet)getIntent().getSerializableExtra(EXTRA_FEEDSET);
+
+        if (fs == null) {
+            com.newsblur.util.Log.w(this.getClass().getName(), "reading view had no FeedSet");
+            finish();
+            return;
+        }
 
         if ((savedInstanceBundle != null) && savedInstanceBundle.containsKey(BUNDLE_STARTING_UNREAD)) {
             startingUnreadCount = savedInstanceBundle.getInt(BUNDLE_STARTING_UNREAD);
@@ -140,15 +143,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
         }
 
 		intelState = PrefsUtils.getStateFilter(this);
-        storyOrder = PrefsUtils.getStoryOrder(this, fs);
-        readFilter = PrefsUtils.getReadFilter(this, fs);
         volumeKeyNavigation = PrefsUtils.getVolumeKeyNavigation(this);
-
-        if ((savedInstanceBundle != null) && savedInstanceBundle.containsKey(BUNDLE_SELECTED_FEED_VIEW)) {
-            defaultFeedView = (DefaultFeedView)savedInstanceBundle.getSerializable(BUNDLE_SELECTED_FEED_VIEW);
-        } else {
-            defaultFeedView = PrefsUtils.getDefaultFeedView(this, fs);
-        }
 
         // were we fullscreen before rotation?
         if ((savedInstanceBundle != null) && savedInstanceBundle.containsKey(BUNDLE_IS_FULLSCREEN)) {
@@ -195,11 +190,6 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
             outState.putInt(BUNDLE_STARTING_UNREAD, startingUnreadCount);
         }
 
-        ReadingItemFragment item = getReadingFragment();
-        if (item != null) {
-            outState.putSerializable(BUNDLE_SELECTED_FEED_VIEW, item.getSelectedFeedView());
-        }
-
         if (ViewUtils.isSystemUIHidden(getWindow().getDecorView())) {
             outState.putBoolean(BUNDLE_IS_FULLSCREEN, true);
         }
@@ -214,6 +204,10 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
         // onCreate() in our subclass should have called createLoader(), but sometimes the callback never makes it.
         // this ensures that at least one callback happens after activity re-create.
         getLoaderManager().restartLoader(0, null, this);
+        // this is not strictly necessary, since our first refresh with the fs will swap in
+        // the correct session, but that can be delayed by sync backup, so we try here to
+        // reduce UI lag, or in case somehow we got redisplayed in a zero-story state
+        FeedUtils.prepareReadingSession(fs);
     }
 
     @Override
@@ -243,31 +237,51 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
         synchronized (STORIES_MUTEX) {
             if (cursor == null) return;
 
+            //NB: this implicitly calls readingAdapter.notifyDataSetChanged();
             readingAdapter.swapCursor(cursor);
-            stories = cursor;
 
             // if this is the first time we've found a cursor, we know the onCreate chain is done
             if (this.pager == null) {
                 setupPager();
             }
 
-            try {
-                readingAdapter.notifyDataSetChanged();
-            } catch (IllegalStateException ise) {
-                // sometimes the pager is already shutting down by the time the callback finishes
-                finish();
+            if (! NBSyncService.isFeedSetReady(fs)) {
+                // not only is the session table stale, our fragment is being re-used by the system
+                // to show a totally different feedset. trash anything that might have stale story
+                // data and let them get recreated when a good cursor comes in
+                com.newsblur.util.Log.i(this.getClass().getName(), "stale load");
+                pager.setVisibility(View.INVISIBLE);
+                stories = null;
+                triggerRefresh(AppConstants.READING_STORY_PRELOAD);
+                return;
+            }
+
+            boolean lastCursorWasStale = (stories == null);
+
+            stories = cursor;
+            
+            // if the pager previously showed a stale set of stories, it is *not* sufficent to just
+            // swap out the cursor and invalidate.  no number of calls to notifyDataSetChanged() or
+            // setCurrentItem() will ever get a pager to refresh the currently displayed fragment.
+            // however, the pager can be tricked into wiping all fragments and recreating them from
+            // the adapter by setting the adapter again, even if it is the same one.
+            if (lastCursorWasStale) { 
+                pager.setAdapter(readingAdapter);
+            }
+
+            com.newsblur.util.Log.d(this.getClass().getName(), "loaded cursor with count: " + cursor.getCount());
+            if (cursor.getCount() < 1) {
+                triggerRefresh(AppConstants.READING_STORY_PRELOAD);
             }
 
             // see if we are just starting and need to jump to a target story
             skipPagerToStoryHash();
-
 
             if (unreadSearchActive) {
                 // if we left this flag high, we were looking for an unread, but didn't find one;
                 // now that we have more stories, look again.
                 nextUnread();
             }
-            checkStoryCount(pager.getCurrentItem());
             updateOverlayNav();
             updateOverlayText();
         }
@@ -283,11 +297,13 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
             if ( (story.storyHash.equals(storyHash)) ||
                  ((storyHash.equals(FIND_FIRST_UNREAD)) && (!story.read))
                  ) {
+                // see above note about re-setting the adapter to force the pager to reload fragments
+                pager.setAdapter(readingAdapter);
+                pager.setCurrentItem(stories.getPosition(), false);
+                this.onPageSelected(stories.getPosition());
                 // now that the pager is getting the right story, make it visible
                 pager.setVisibility(View.VISIBLE);
                 emptyViewText.setVisibility(View.INVISIBLE);
-                pager.setCurrentItem(stories.getPosition(), false);
-                this.onPageSelected(stories.getPosition());
                 storyHash = null;
                 return;
             }
@@ -384,7 +400,11 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 			TextSizeDialogFragment textSize = TextSizeDialogFragment.newInstance(PrefsUtils.getTextSize(this), TextSizeDialogFragment.TextSizeType.ReadingText);
 			textSize.show(getFragmentManager(), TextSizeDialogFragment.class.getName());
 			return true;
-		} else if (item.getItemId() == R.id.menu_reading_save) {
+		} else if (item.getItemId() == R.id.menu_font) {
+            ReadingFontDialogFragment storyFont = ReadingFontDialogFragment.newInstance(PrefsUtils.getFontString(this));
+            storyFont.show(getFragmentManager(), ReadingFontDialogFragment.class.getName());
+            return true;
+        } else if (item.getItemId() == R.id.menu_reading_save) {
             if (story.starred) {
 			    FeedUtils.setStorySaved(story, false, Reading.this);
             } else {
@@ -550,7 +570,11 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
         }
         this.overlayLeft.setEnabled(this.getLastReadPosition(false) != -1);
         this.overlayRight.setText((currentUnreadCount > 0) ? R.string.overlay_next : R.string.overlay_done);
-        this.overlayRight.setBackgroundResource((currentUnreadCount > 0) ? ThemeUtils.getSelectorOverlayBackgroundRight(this) : ThemeUtils.getSelectorOverlayBackgroundRightDone(this));
+        if (currentUnreadCount > 0) {
+            this.overlayRight.setBackgroundResource(UIUtils.getThemedResource(this, R.attr.selectorOverlayBackgroundRight, android.R.attr.background));
+        } else {
+            this.overlayRight.setBackgroundResource(UIUtils.getThemedResource(this, R.attr.selectorOverlayBackgroundRightDone, android.R.attr.background));
+        }
 
         if (this.startingUnreadCount == 0 ) {
             // sessions with no unreads just show a full progress bar
@@ -572,11 +596,11 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
             public void run() {
                 ReadingItemFragment item = getReadingFragment();
                 if (item == null) return;
-                if (item.getSelectedFeedView() == DefaultFeedView.STORY) {
-                    overlayText.setBackgroundResource(ThemeUtils.getSelectorOverlayBackgroundText(Reading.this));
+                if (item.getSelectedViewMode() == DefaultFeedView.STORY) {
+                    overlayText.setBackgroundResource(UIUtils.getThemedResource(Reading.this, R.attr.selectorOverlayBackgroundText, android.R.attr.background));
                     overlayText.setText(R.string.overlay_text);
                 } else {
-                    overlayText.setBackgroundResource(ThemeUtils.getSelectorOverlayBackgroundStory(Reading.this));
+                    overlayText.setBackgroundResource(UIUtils.getThemedResource(Reading.this, R.attr.selectorOverlayBackgroundStory, android.R.attr.background));
                     overlayText.setText(R.string.overlay_story);
                 }
             }
@@ -671,6 +695,12 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 	public void onStopTrackingTouch(SeekBar seekBar) {
 	}
 
+	@Override
+    public void readingFontChanged(String newValue) {
+        PrefsUtils.setFontString(this, newValue);
+        sendBroadcast(new Intent(ReadingItemFragment.READING_FONT_CHANGED));
+    }
+
     /**
      * Click handler for the righthand overlay nav button.
      */
@@ -680,6 +710,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
             Intent i = new Intent(this, Main.class);
             i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(i);
+            finish();
         } else {
             // if there are unreads, go to the next one
             new AsyncTask<Void, Void, Void>() {
@@ -697,7 +728,6 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
      */
     private void nextUnread() {
         unreadSearchActive = true;
-        unreadSearchStarted = true;
 
         // if we somehow got tapped before construction or are running during destruction, stop and
         // let either finish. search will happen when the cursor is pushed.
@@ -814,15 +844,35 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
     }
 
     public void overlayText(View v) {
-        ReadingItemFragment item = getReadingFragment();
+        final ReadingItemFragment item = getReadingFragment();
         if (item == null) return;
-        item.switchSelectedFeedView();
-        updateOverlayText();
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... params) {
+                item.switchSelectedViewMode();
+                return null;
+            }
+        }.execute();
     }
 
     private ReadingItemFragment getReadingFragment() {
         if (readingAdapter == null || pager == null) { return null; }
         return readingAdapter.getExistingItem(pager.getCurrentItem());
+    }
+
+    public FeedSet getFeedSet() {
+        return this.fs;
+    }
+
+    public void viewModeChanged() {
+        ReadingItemFragment frag = readingAdapter.getExistingItem(pager.getCurrentItem());
+        frag.viewModeChanged();
+        // fragments to the left or the right may have already preloaded content and need to also switch
+        frag = readingAdapter.getExistingItem(pager.getCurrentItem()-1);
+        if (frag != null) frag.viewModeChanged();
+        frag = readingAdapter.getExistingItem(pager.getCurrentItem()+1);
+        if (frag != null) frag.viewModeChanged();
+        updateOverlayText();
     }
 
     @Override

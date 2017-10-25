@@ -5,7 +5,7 @@ from vendor.zebra.forms import StripePaymentForm
 from django.utils.safestring import mark_safe
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
-from apps.profile.models import change_password, blank_authenticate, MGiftCode
+from apps.profile.models import change_password, blank_authenticate, MGiftCode, MCustomStyling
 from apps.social.models import MSocialProfile
 
 PLANS = [
@@ -113,7 +113,12 @@ class AccountSettingsForm(forms.Form):
     old_password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'NB-input'}),
                                    label='password',
                                    required=False)
-                                   # error_messages={'required': 'Please enter a password.'})
+    custom_js = forms.CharField(widget=forms.TextInput(attrs={'class': 'NB-input'}),
+                                   label='custom_js',
+                                   required=False)
+    custom_css = forms.CharField(widget=forms.TextInput(attrs={'class': 'NB-input'}),
+                                   label='custom_css',
+                                   required=False)
     
     def __init__(self, user, *args, **kwargs):
         self.user = user
@@ -161,6 +166,8 @@ class AccountSettingsForm(forms.Form):
         new_password = self.cleaned_data.get('new_password', None)
         old_password = self.cleaned_data.get('old_password', None)
         email = self.cleaned_data.get('email', None)
+        custom_css = self.cleaned_data.get('custom_css', None)
+        custom_js = self.cleaned_data.get('custom_js', None)
         
         if username and self.user.username != username:
             change_password(self.user, self.user.username, username)
@@ -177,6 +184,8 @@ class AccountSettingsForm(forms.Form):
         
         if old_password or new_password:
             change_password(self.user, old_password, new_password)
+        
+        MCustomStyling.save_user(self.user.pk, custom_css, custom_js)
         
 class RedeemCodeForm(forms.Form):
     gift_code = forms.CharField(widget=forms.TextInput(),

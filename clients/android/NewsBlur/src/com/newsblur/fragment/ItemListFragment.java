@@ -52,7 +52,6 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
     protected ItemsList activity;
 	@Bind(R.id.itemlistfragment_list) ListView itemList;
 	protected StoryItemsAdapter adapter;
-    protected DefaultFeedView defaultFeedView;
     private boolean cursorSeenYet = false;
     private boolean stopLoading = false;
     
@@ -72,13 +71,22 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
     // flag indicating a gesture just occurred so we can ignore spurious story taps right after
     private boolean gestureDebounce = false;
 
+    // we have to de-dupe auto-mark-read-on-scroll actions
+    private String lastAutoMarkHash = null;
+
     @Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-        defaultFeedView = (DefaultFeedView)getArguments().getSerializable("defaultFeedView");
         activity = (ItemsList) getActivity();
-        // tell the sync service to discard the reading session at the start of the next sync, just in case
-        NBSyncService.resetReadingSession();
+
+        if (getFeedSet() == null) {
+            com.newsblur.util.Log.w(this.getClass().getName(), "item list started without FeedSet.");
+            activity.finish();
+            return;
+        }
+
+        // warm up the sync service as soon as possible since it will init the story session DB
+        triggerRefresh(1, null);
     }
 
 	@Override
@@ -145,6 +153,15 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
         super.onPause();
     }
 
+    @Override
+    public void onResume() {
+        if ((adapter != null) && adapter.isStale()) {
+            Log.e(this.getClass().getName(), "stale fragment loaded, falling back.");
+            getActivity().finish();
+        }
+        super.onResume();
+    }
+
     private void triggerRefresh(int desiredStoryCount, Integer totalSeen) {
         // ask the sync service for as many stories as we want
         boolean gotSome = NBSyncService.requestMoreForFeed(getFeedSet(), desiredStoryCount, totalSeen);
@@ -163,11 +180,7 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
      * Indicate that the DB was cleared.
      */
     public void resetEmptyState() {
-        // this is going to cause us to lose access to any previous cursor and the next one might be
-        // stale, so wipe the listview. the adapter will be recreated in onLoadFinished as usual
         if (adapter != null) adapter.notifyDataSetInvalidated();
-        if (itemList != null) itemList.setAdapter(null);
-        adapter = null;
         cursorSeenYet = false;
         FeedUtils.dbHelper.clearStorySession();
     }
@@ -252,6 +265,17 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
         // load an extra page or two worth of stories past the viewport
         int desiredStoryCount = firstVisible + (visibleCount*2) + 1;
         triggerRefresh(desiredStoryCount, storiesSeen);
+
+        if ((storiesSeen > 0) &&
+            (firstVisible > 0) && 
+            PrefsUtils.isMarkReadOnScroll(getActivity())) {
+            int topVisible = firstVisible - 1;
+            Story story = adapter.getStory(topVisible);
+            if (!story.storyHash.equals(lastAutoMarkHash)) {
+                lastAutoMarkHash = story.storyHash;
+                FeedUtils.markStoryAsRead(story, getActivity());
+            }
+        }
 	}
 
 	@Override
@@ -291,16 +315,19 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
 	public synchronized void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         if (stopLoading) return;
 		if (cursor != null) {
-            if (NBSyncService.ResetSession) {
+            if (! NBSyncService.isFeedSetReady(getFeedSet())) {
                 // the DB hasn't caught up yet from the last story list; don't display stale stories.
-                com.newsblur.util.Log.i(this.getClass().getName(), "discarding stale load");
+                com.newsblur.util.Log.i(this.getClass().getName(), "stale load");
+                adapter.setShowNone(true);
+                setLoading(true);
                 triggerRefresh(1, null);
-                return;
-            }
-            cursorSeenYet = true;
-            com.newsblur.util.Log.d(this.getClass().getName(), "loaded cursor with count: " + cursor.getCount());
-            if (cursor.getCount() < 1) {
-                triggerRefresh(1, 0);
+            } else {
+                cursorSeenYet = true;
+                com.newsblur.util.Log.d(this.getClass().getName(), "loaded cursor with count: " + cursor.getCount());
+                if (cursor.getCount() < 1) {
+                    triggerRefresh(1, 0);
+                }
+                adapter.setShowNone(false);
             }
             adapter.swapCursor(cursor);
 		}
@@ -311,10 +338,6 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
 	public void onLoaderReset(Loader<Cursor> loader) {
         if (adapter != null) adapter.notifyDataSetInvalidated();
 	}
-
-    public void setDefaultFeedView(DefaultFeedView value) {
-        this.defaultFeedView = value;
-    }
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
@@ -405,6 +428,7 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
 
         int truePosition = position - 1;
         Story story = adapter.getStory(truePosition);
+        if (story == null) return; // can happen on shrinking lists
         if (getActivity().isFinishing()) return;
         UIUtils.startReadingActivity(getFeedSet(), story.storyHash, getActivity());
     }
@@ -458,6 +482,7 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
         }
         if (index <= -1) return;
         Story story = adapter.getStory(index-1);
+        if (story == null) return;
         switch (action) {
             case GEST_ACTION_MARKREAD:
                 FeedUtils.markStoryAsRead(story, getActivity());;

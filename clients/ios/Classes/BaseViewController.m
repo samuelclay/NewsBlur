@@ -18,14 +18,22 @@
 #pragma mark View methods
 
 - (void)informError:(id)error {
-    [self informError:error details:nil];
+    [self informError:error details:nil statusCode:0];
 }
 
-- (void)informError:(id)error details:(NSString *)details {
+- (void)informError:(id)error statusCode:(NSInteger)statusCode {
+    [self informError:error details:nil statusCode:statusCode];
+}
+
+- (void)informError:(id)error details:(NSString *)details statusCode:(NSInteger)statusCode {
     NSLog(@"informError: %@", error);
     NSString *errorMessage;
     if ([error isKindOfClass:[NSString class]]) {
         errorMessage = error;
+    } else if (statusCode == 503) {
+        return [self informError:@"In maintenance mode"];
+    } else if (statusCode >= 400) {
+        return [self informError:@"The server barfed!"];
     } else {
         errorMessage = [error localizedDescription];
         if ([error code] == 4 && 

@@ -30,11 +30,10 @@
 
 #define NB_DEFAULT_MASTER_WIDTH 270
 #define NB_DEFAULT_MASTER_WIDTH_LANDSCAPE 370
-#define NB_DEFAULT_STORY_TITLE_HEIGHT 1004
 #define NB_DEFAULT_SLIDER_INTERVAL 0.3
 #define NB_DEFAULT_SLIDER_INTERVAL_OUT 0.3
 #define NB_DEFAULT_SHARE_HEIGHT 144
-#define NB_DEFAULT_STORY_TITLE_SNAP_THRESHOLD 60
+#define NB_STORY_TITLES_BOTTOM_MIN_HEIGHT 80
 
 @interface NBContainerViewController ()
 
@@ -379,17 +378,18 @@
 
 - (void)setupStoryTitlesPosition {
     // set default y coordinate for feedDetailY from saved preferences
+    CGRect vb = [self.view bounds];
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     int savedStoryTitlesYCoordinate = (int)[userPreferences integerForKey:@"storyTitlesYCoordinate"];
     NSString *storyTitlesPosition = [userPreferences stringForKey:@"story_titles_position"];
     if ([storyTitlesPosition isEqualToString:@"titles_on_bottom"]) {
-        if (!savedStoryTitlesYCoordinate || savedStoryTitlesYCoordinate > 920) {
-            savedStoryTitlesYCoordinate = 920;
+        if (!savedStoryTitlesYCoordinate || savedStoryTitlesYCoordinate > CGRectGetHeight(vb) - NB_STORY_TITLES_BOTTOM_MIN_HEIGHT) {
+            savedStoryTitlesYCoordinate = CGRectGetHeight(vb) - NB_STORY_TITLES_BOTTOM_MIN_HEIGHT;
         }
         self.storyTitlesYCoordinate = savedStoryTitlesYCoordinate;
         self.storyTitlesOnLeft = NO;
     } else {
-        self.storyTitlesYCoordinate = NB_DEFAULT_STORY_TITLE_HEIGHT;
+        self.storyTitlesYCoordinate = CGRectGetHeight(vb);
         self.storyTitlesOnLeft = YES;
     }
 }
@@ -450,15 +450,16 @@
 
 - (void)adjustFeedDetailScreenForStoryTitles {
     CGRect vb = [self.view bounds];
+    CGFloat bottomMargin = 80.f;
     
     if (!self.storyTitlesOnLeft) {
-        if (self.storyTitlesYCoordinate > 920) {
+        if (self.storyTitlesYCoordinate > CGRectGetHeight(vb) - bottomMargin) {
             NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];   
             // save coordinate
-            [userPreferences setInteger:1004 forKey:@"storyTitlesYCoordinate"];
+            [userPreferences setInteger:CGRectGetHeight(vb) - bottomMargin forKey:@"storyTitlesYCoordinate"];
             [userPreferences setValue:@"titles_on_left" forKey:@"story_titles_position"];
             [userPreferences synchronize];
-            self.storyTitlesYCoordinate = 1004;
+            self.storyTitlesYCoordinate = CGRectGetHeight(vb) - bottomMargin;
             // slide to the left
             
             self.storyTitlesOnLeft = YES;
@@ -490,13 +491,13 @@
     } else if (self.storyTitlesOnLeft) {
         NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
 
-        if (self.storyTitlesYCoordinate == 1004) {
+        if (self.storyTitlesYCoordinate == CGRectGetHeight(vb)) {
             return;
-        } else if (self.storyTitlesYCoordinate > 920) {
+        } else if (self.storyTitlesYCoordinate > (CGRectGetHeight(vb)-bottomMargin)) {
             // save coordinate
-            [userPreferences setInteger:920 forKey:@"storyTitlesYCoordinate"];
+            [userPreferences setInteger:CGRectGetHeight(vb)-bottomMargin forKey:@"storyTitlesYCoordinate"];
             [userPreferences synchronize];
-            self.storyTitlesYCoordinate = 920;
+            self.storyTitlesYCoordinate = CGRectGetHeight(vb)-bottomMargin;
         }
 
         [userPreferences setValue:@"titles_on_bottom" forKey:@"story_titles_position"];
@@ -990,9 +991,9 @@
             [self.feedDetailViewController checkScroll];
         }
     } else if (yCoordinate >= (vb.size.height)){
-        [userPreferences setInteger:1004 forKey:@"storyTitlesYCoordinate"];
+        [userPreferences setInteger:CGRectGetHeight(vb) forKey:@"storyTitlesYCoordinate"];
         [userPreferences synchronize];
-        self.storyTitlesYCoordinate = 1004;
+        self.storyTitlesYCoordinate = CGRectGetHeight(vb);
         self.storyNavigationController.view.frame = CGRectMake(self.storyNavigationController.view.frame.origin.x, 
                                                                0, 
                                                                self.storyNavigationController.view.frame.size.width, 
@@ -1024,6 +1025,15 @@
 
 }
 
+- (bool)isHardwareKeyboardUsed:(NSNotification*)keyboardNotification {
+    NSDictionary* info = [keyboardNotification userInfo];
+    CGRect keyboardEndFrame;
+    [[info valueForKey:UIKeyboardFrameEndUserInfoKey] getValue:&keyboardEndFrame];
+    float height = [[UIScreen mainScreen] bounds].size.height - keyboardEndFrame.origin.y;
+    float gThresholdForHardwareKeyboardToolbar = 160.f;
+    return height < gThresholdForHardwareKeyboardToolbar;
+}
+
 -(void)keyboardWillShowOrHide:(NSNotification*)notification {
     if (notification.name == UIKeyboardWillShowNotification) {
         self.keyboardIsShown = YES;
@@ -1034,7 +1044,7 @@
     if (self.keyboardIsShown && !self.isSharingStory) {
         return;
     }
-
+    
     NSDictionary *userInfo = notification.userInfo;
     NSTimeInterval duration = [[userInfo objectForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue];
     UIViewAnimationCurve curve = [[userInfo objectForKey:UIKeyboardAnimationCurveUserInfoKey] intValue];
@@ -1042,6 +1052,11 @@
     CGRect vb = [self.view bounds];
     CGRect keyboardFrame = [[userInfo objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
     CGRect storyNavigationFrame = self.storyNavigationController.view.frame;
+
+    if ([self isHardwareKeyboardUsed:notification] && self.keyboardIsShown) {
+        CGFloat keyboardHeight = [[[self view] window] frame].size.height - keyboardFrame.origin.y;
+        keyboardFrame.size.height = keyboardHeight;
+    }
 
     self.shareNavigationController.view.frame = CGRectMake(storyNavigationFrame.origin.x,
                                                            vb.size.height,

@@ -234,6 +234,7 @@ def setup_app(skip_common=False, node=False):
     config_monit_app()
     setup_usage_monitor()
     done()
+    sudo('reboot')
 
 def setup_app_image():
     copy_app_settings()
@@ -1478,7 +1479,7 @@ def role_for_host():
 @parallel
 def deploy(fast=False, reload=False):
     role = role_for_host()
-    if role in ['work', 'search']:
+    if role in ['work', 'search', 'debug']:
         deploy_code(copy_assets=False, fast=fast, reload=True)
     else:
         deploy_code(copy_assets=False, fast=fast, reload=reload)

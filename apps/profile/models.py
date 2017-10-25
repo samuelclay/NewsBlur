@@ -7,7 +7,6 @@ import re
 import redis
 import uuid
 import mongoengine as mongo
-from pprint import pprint
 from django.db import models
 from django.db import IntegrityError
 from django.db.utils import DatabaseError
@@ -16,7 +15,6 @@ from django.db.models import Sum, Avg, Count
 from django.conf import settings
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
-from django.core.mail import mail_admins
 from django.core.mail import EmailMultiAlternatives
 from django.core.urlresolvers import reverse
 from django.template.loader import render_to_string
@@ -515,7 +513,6 @@ class Profile(models.Model):
 
     @classmethod
     def count_all_feed_subscribers_for_user(self, user):
-        SUBSCRIBER_EXPIRE = datetime.datetime.now() - datetime.timedelta(days=settings.SUBSCRIBER_EXPIRE)
         r = redis.Redis(connection_pool=settings.REDIS_FEED_SUB_POOL)
         if not isinstance(user, User):
             user = User.objects.get(pk=user)
@@ -604,12 +601,12 @@ class Profile(models.Model):
         
         params = dict(receiver_user_id=self.user.pk, email_type='first_share')
         try:
-            sent_email = MSentEmail.objects.get(**params)
+            MSentEmail.objects.get(**params)
             if not force:
                 # Return if email already sent
                 return
         except MSentEmail.DoesNotExist:
-            sent_email = MSentEmail.objects.create(**params)
+            MSentEmail.objects.create(**params)
                 
         social_profile = MSocialProfile.objects.get(user_id=self.user.pk)
         params = {
@@ -630,14 +627,14 @@ class Profile(models.Model):
         logging.user(self.user, "~BB~FM~SBSending first share to blurblog email to: %s" % self.user.email)
     
     def send_new_premium_email(self, force=False):
-        subs = UserSubscription.objects.filter(user=self.user)
-        message = """Woohoo!
-        
-User: %(user)s
-Feeds: %(feeds)s
-
-Sincerely,
-NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
+        # subs = UserSubscription.objects.filter(user=self.user)
+#         message = """Woohoo!
+#
+# User: %(user)s
+# Feeds: %(feeds)s
+#
+# Sincerely,
+# NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
         # mail_admins('New premium account', message, fail_silently=True)
         
         if not self.user.email or not self.send_emails:
@@ -645,12 +642,12 @@ NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
         
         params = dict(receiver_user_id=self.user.pk, email_type='new_premium')
         try:
-            sent_email = MSentEmail.objects.get(**params)
+            MSentEmail.objects.get(**params)
             if not force:
                 # Return if email already sent
                 return
         except MSentEmail.DoesNotExist:
-            sent_email = MSentEmail.objects.create(**params)
+            MSentEmail.objects.create(**params)
 
         user    = self.user
         text    = render_to_string('mail/email_new_premium.txt', locals())
@@ -692,12 +689,12 @@ NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
         
         params = dict(receiver_user_id=self.user.pk, email_type='new_user_queue')
         try:
-            sent_email = MSentEmail.objects.get(**params)
+            MSentEmail.objects.get(**params)
             if not force:
                 # Return if email already sent
                 return
         except MSentEmail.DoesNotExist:
-            sent_email = MSentEmail.objects.create(**params)
+            MSentEmail.objects.create(**params)
 
         user    = self.user
         text    = render_to_string('mail/email_new_user_queue.txt', locals())
@@ -769,13 +766,13 @@ NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
         
         params = dict(receiver_user_id=self.user.pk, email_type='launch_social')
         try:
-            sent_email = MSentEmail.objects.get(**params)
+            MSentEmail.objects.get(**params)
             if not force:
                 # Return if email already sent
                 logging.user(self.user, "~FM~SB~FRNot~FM sending launch social email for user, sent already: %s" % self.user.email)
                 return
         except MSentEmail.DoesNotExist:
-            sent_email = MSentEmail.objects.create(**params)
+            MSentEmail.objects.create(**params)
         
         delta      = datetime.datetime.now() - self.last_seen_on
         months_ago = delta.days / 30
@@ -799,13 +796,13 @@ NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
         
         params = dict(receiver_user_id=self.user.pk, email_type='launch_turntouch')
         try:
-            sent_email = MSentEmail.objects.get(**params)
+            MSentEmail.objects.get(**params)
             if not force:
                 # Return if email already sent
                 logging.user(self.user, "~FM~SB~FRNot~FM sending launch social email for user, sent already: %s" % self.user.email)
                 return
         except MSentEmail.DoesNotExist:
-            sent_email = MSentEmail.objects.create(**params)
+            MSentEmail.objects.create(**params)
         
         delta      = datetime.datetime.now() - self.last_seen_on
         months_ago = delta.days / 30
@@ -829,13 +826,13 @@ NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
         
         params = dict(receiver_user_id=self.user.pk, email_type='launch_turntouch_end')
         try:
-            sent_email = MSentEmail.objects.get(**params)
+            MSentEmail.objects.get(**params)
             if not force:
                 # Return if email already sent
                 logging.user(self.user, "~FM~SB~FRNot~FM sending launch TT end email for user, sent already: %s" % self.user.email)
                 return
         except MSentEmail.DoesNotExist:
-            sent_email = MSentEmail.objects.create(**params)
+            MSentEmail.objects.create(**params)
         
         delta      = datetime.datetime.now() - self.last_seen_on
         months_ago = delta.days / 30
@@ -869,7 +866,7 @@ NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
         if self.grace_period_email_sent(force=force):
             return
             
-        if self.premium_expire < datetime.datetime.now():
+        if self.premium_expire and self.premium_expire < datetime.datetime.now():
             self.premium_expire = datetime.datetime.now()
         self.save()
         
@@ -1278,6 +1275,52 @@ class MRedeemedCode(mongo.Document):
         logging.user(user, "~FG~BBRedeeming gift code: %s~FW" % gift_code)
         
 
+class MCustomStyling(mongo.Document):
+    user_id = mongo.IntField(unique=True)
+    custom_css = mongo.StringField()
+    custom_js = mongo.StringField()
+    updated_date = mongo.DateTimeField(default=datetime.datetime.now)
+    
+    meta = {
+        'collection': 'custom_styling',
+        'allow_inheritance': False,
+        'indexes': ['user_id'],
+    }
+    
+    def __unicode__(self):
+        return "%s custom style %s/%s %s" % (self.user_id, len(self.custom_css) if self.custom_css else "-", 
+                                             len(self.custom_js) if self.custom_js else "-", self.updated_date)
+    
+    def canonical(self):
+        return {
+            'css': self.custom_css,
+            'js': self.custom_js,
+        }
+    
+    @classmethod
+    def get_user(cls, user_id):
+        try:
+            styling = cls.objects.get(user_id=user_id)
+        except cls.DoesNotExist:
+            return None
+        
+        return styling
+    
+    @classmethod
+    def save_user(cls, user_id, css, js):
+        styling = cls.get_user(user_id)
+        if not css and not js:
+            if styling:
+                styling.delete()
+            return
+
+        if not styling:
+            styling = cls.objects.create(user_id=user_id)
+
+        styling.custom_css = css
+        styling.custom_js = js
+        styling.save()
+        
 class RNewUserQueue:
     
     KEY = "new_user_queue"

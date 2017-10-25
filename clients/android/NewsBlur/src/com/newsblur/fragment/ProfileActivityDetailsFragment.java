@@ -16,7 +16,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.newsblur.R;
-import com.newsblur.activity.FeedItemsList;
 import com.newsblur.activity.Profile;
 import com.newsblur.domain.Feed;
 import com.newsblur.domain.SocialFeed;
@@ -104,11 +103,18 @@ public abstract class ProfileActivityDetailsFragment extends Fragment implements
                 if (id == null) {
                     id = user.id;
                 }
+                if (id == null) {
+                    return null;
+                }
                 return loadActivityDetails(id, pageNumber);
             }
 
             @Override
             protected void onPostExecute(ActivityDetails[] result) {
+                if (result == null) {
+                    com.newsblur.util.Log.w(getClass().getName(), "couldn't load page from API");
+                    return;
+                }
                 if (pageNumber == 1 && result.length == 0) {
                     View emptyView = activityList.getEmptyView();
                     TextView textView = (TextView) emptyView.findViewById(R.id.empty_view_text);
@@ -139,9 +145,13 @@ public abstract class ProfileActivityDetailsFragment extends Fragment implements
             if (feed == null) {
                 Toast.makeText(context, R.string.profile_feed_not_available, Toast.LENGTH_SHORT).show();
             } else {
-                Intent intent = new Intent(context, FeedItemsList.class);
-                intent.putExtra(FeedItemsList.EXTRA_FEED, feed);
-                context.startActivity(intent);
+                /* TODO: starting the feed view activity also requires both a feedset and a folder name
+                   in order to properly function.  the latter, in particular, we could only guess at from
+                   the info we have here.  at best, we would launch a feed view with somewhat unpredictable
+                   delete behaviour. */
+                //Intent intent = new Intent(context, FeedItemsList.class);
+                //intent.putExtra(FeedItemsList.EXTRA_FEED, feed);
+                //context.startActivity(intent);
             }
         } else if (activity.category == Category.STAR) {
             UIUtils.startReadingActivity(FeedSet.allSaved(), activity.storyHash, context);
@@ -180,10 +190,6 @@ public abstract class ProfileActivityDetailsFragment extends Fragment implements
         private boolean loading = true;
 
         public EndlessScrollListener() {
-        }
-
-        public EndlessScrollListener(int visibleThreshold) {
-            this.visibleThreshold = visibleThreshold;
         }
 
         @Override

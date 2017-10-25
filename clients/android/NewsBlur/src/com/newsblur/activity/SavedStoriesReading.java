@@ -17,7 +17,7 @@ public class SavedStoriesReading extends Reading {
             title = title + " - " + fs.getSingleSavedTag();
         }
         UIUtils.setCustomActionBar(this, R.drawable.clock, title);
-        readingAdapter = new MixedFeedsReadingAdapter(getFragmentManager(), defaultFeedView, null);
+        readingAdapter = new MixedFeedsReadingAdapter(getFragmentManager(), null);
 
         getLoaderManager().initLoader(0, null, this);
     }

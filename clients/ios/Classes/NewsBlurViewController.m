@@ -36,11 +36,11 @@
 #import "NBBarButtonItem.h"
 #import "StoriesCollection.h"
 
-static const CGFloat kPhoneTableViewRowHeight = 31.0f;
-static const CGFloat kTableViewRowHeight = 31.0f;
-static const CGFloat kBlurblogTableViewRowHeight = 32.0f;
-static const CGFloat kPhoneBlurblogTableViewRowHeight = 32.0f;
-static const CGFloat kFolderTitleHeight = 28.0f;
+static const CGFloat kPhoneTableViewRowHeight = 6.0f;
+static const CGFloat kTableViewRowHeight = 6.0f;
+static const CGFloat kBlurblogTableViewRowHeight = 7.0f;
+static const CGFloat kPhoneBlurblogTableViewRowHeight = 7.0f;
+static const CGFloat kFolderTitleHeight = 10.0f;
 static UIFont *userLabelFont;
 
 @interface NewsBlurViewController () 
@@ -54,7 +54,6 @@ static UIFont *userLabelFont;
 @implementation NewsBlurViewController
 
 @synthesize appDelegate;
-@synthesize innerView;
 @synthesize feedTitlesTable;
 @synthesize feedViewToolbar;
 @synthesize feedScoreSlider;
@@ -82,6 +81,7 @@ static UIFont *userLabelFont;
 @synthesize positiveCount;
 @synthesize userLabel;
 @synthesize greenIcon;
+@synthesize yellowIcon;
 @synthesize notifier;
 @synthesize isOffline;
 @synthesize interactiveFeedDetailTransition;
@@ -98,7 +98,7 @@ static UIFont *userLabelFont;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
+        
     self.refreshControl = [UIRefreshControl new];
     self.refreshControl.tintColor = UIColorFromLightDarkRGB(0x0, 0xffffff);
     self.refreshControl.backgroundColor = UIColorFromRGB(0xE3E6E0);
@@ -137,6 +137,7 @@ static UIFont *userLabelFont;
     [[UIBarButtonItem appearance] setTitleTextAttributes:@{NSForegroundColorAttributeName:
                                                                UIColorFromFixedRGB(0x4C4D4A)}
                                                 forState:UIControlStateHighlighted];
+    self.view.backgroundColor = UIColorFromRGB(0xf4f4f4);
     self.navigationController.navigationBar.tintColor = UIColorFromRGB(0x8F918B);
     self.navigationController.navigationBar.translucent = NO;
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
@@ -151,11 +152,11 @@ static UIFont *userLabelFont;
     [[ThemeManager themeManager] addThemeGestureRecognizerToView:self.feedTitlesTable];
     
     self.notifier = [[NBNotifier alloc] initWithTitle:@"Fetching stories..."
-                                               inView:self.view
-                                           withOffset:CGPointMake(0, self.feedViewToolbar.frame.size.height)];
+                                               inView:self.innerView
+                                           withOffset:CGPointMake(0, 0)];
     [self.view insertSubview:self.notifier belowSubview:self.feedViewToolbar];
     
-    self.feedTitlesTable.backgroundColor = UIColorFromRGB(0xf4f4f4);
+//    self.feedTitlesTable.backgroundColor = UIColorFromRGB(0xf4f4f4);
     self.feedTitlesTable.separatorColor = [UIColor clearColor];
     
     userAvatarButton.customView.hidden = YES;
@@ -340,16 +341,16 @@ static UIFont *userLabelFont;
 }
 
 - (void)layoutForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-    CGSize toolbarSize = [self.feedViewToolbar sizeThatFits:self.view.frame.size];
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        self.feedViewToolbar.frame = CGRectMake(-10.0f,
-                                                CGRectGetHeight(self.view.frame) - toolbarSize.height,
-                                                toolbarSize.width + 20, toolbarSize.height);
-    } else {
-        self.feedViewToolbar.frame = (CGRect){CGPointMake(0.f, CGRectGetHeight(self.view.frame) - toolbarSize.height), toolbarSize};
-    }
-    self.innerView.frame = (CGRect){CGPointZero, CGSizeMake(CGRectGetWidth(self.view.frame), CGRectGetMinY(self.feedViewToolbar.frame))};
-    self.notifier.offset = CGPointMake(0, self.feedViewToolbar.frame.size.height);
+//    CGSize toolbarSize = [self.feedViewToolbar sizeThatFits:self.view.frame.size];
+//    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+//        self.feedViewToolbar.frame = CGRectMake(-10.0f,
+//                                                CGRectGetHeight(self.view.frame) - toolbarSize.height,
+//                                                toolbarSize.width + 20, toolbarSize.height);
+//    } else {
+//        self.feedViewToolbar.frame = (CGRect){CGPointMake(0.f, CGRectGetHeight(self.view.frame) - toolbarSize.height), toolbarSize};
+//    }
+//    self.innerView.frame = (CGRect){CGPointZero, CGSizeMake(CGRectGetWidth(self.view.frame), CGRectGetMinY(self.feedViewToolbar.frame))};
+    self.notifier.offset = CGPointMake(0, 0);
     
     [self updateIntelligenceControlForOrientation:interfaceOrientation];
     [self layoutHeaderCounts:interfaceOrientation];
@@ -375,23 +376,23 @@ static UIFont *userLabelFont;
         [self.intelligenceControl setImage:[UIImage imageNamed:@"unread_green.png"] forSegmentAtIndex:2];
         [self.intelligenceControl setImage:[UIImage imageNamed:@"unread_blue.png"] forSegmentAtIndex:3];
         
-        [self.intelligenceControl setWidth:52 forSegmentAtIndex:0];
+        [self.intelligenceControl setWidth:40 forSegmentAtIndex:0];
         [self.intelligenceControl setWidth:68 forSegmentAtIndex:1];
         [self.intelligenceControl setWidth:62 forSegmentAtIndex:2];
-        [self.intelligenceControl setWidth:62 forSegmentAtIndex:3];
+        [self.intelligenceControl setWidth:60 forSegmentAtIndex:3];
     }
     
     [self.intelligenceControl sizeToFit];
     
-    NSInteger height = 16;
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone && UIInterfaceOrientationIsLandscape(orientation)) {
-        height = 8;
-    }
-    
-    CGRect intelFrame = self.intelligenceControl.frame;
-    intelFrame.origin.x = (self.feedViewToolbar.frame.size.width / 2) - (intelFrame.size.width / 2) + 20;
-    intelFrame.size.height = self.feedViewToolbar.frame.size.height - height;
-    self.intelligenceControl.frame = intelFrame;
+//    NSInteger height = 16;
+//    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone && UIInterfaceOrientationIsLandscape(orientation)) {
+//        height = 8;
+//    }
+//
+//    CGRect intelFrame = self.intelligenceControl.frame;
+//    intelFrame.origin.x = (self.feedViewToolbar.frame.size.width / 2) - (intelFrame.size.width / 2) + 20;
+//    intelFrame.size.height = self.feedViewToolbar.frame.size.height - height;
+//    self.intelligenceControl.frame = intelFrame;
 }
 
 // allow keyboard comands
@@ -443,6 +444,8 @@ static UIFont *userLabelFont;
 }
 
 - (void)finishedWithError:(NSError *)error statusCode:(NSInteger)statusCode {
+    [self finishRefresh];
+    
     if (statusCode == 403) {
         NSLog(@"Showing login");
         return [appDelegate showLogin];
@@ -468,7 +471,6 @@ static UIFont *userLabelFont;
     
     // User clicking on another link before the page loads is OK.
     [self informError:error];
-    [self finishRefresh];
     
     self.isOffline = YES;
 
@@ -544,37 +546,38 @@ static UIFont *userLabelFont;
     }
     
     // Bottom toolbar
-    UIImage *addImage = [UIImage imageNamed:@"nav_icn_add.png"];
-    UIImage *settingsImage = [UIImage imageNamed:@"nav_icn_settings.png"];
-    addBarButton.enabled = YES;
+//    UIImage *addImage = [UIImage imageNamed:@"nav_icn_add.png"];
+//    UIImage *settingsImage = [UIImage imageNamed:@"nav_icn_settings.png"];
+//    addBarButton.enabled = YES;
     addBarButton.accessibilityLabel = @"Add site";
-    settingsBarButton.enabled = YES;
+//    settingsBarButton.enabled = YES;
     settingsBarButton.accessibilityLabel = @"Settings";
-    NBBarButtonItem *addButton = [NBBarButtonItem buttonWithType:UIButtonTypeCustom];
-    [addButton setImage:[[ThemeManager themeManager] themedImage:addImage] forState:UIControlStateNormal];
-    [addButton sizeToFit];
-    [addButton addTarget:self action:@selector(tapAddSite:)
-        forControlEvents:UIControlEventTouchUpInside];
-    addButton.accessibilityLabel = @"Add feed";
-    [addBarButton setCustomView:addButton];
+//    NBBarButtonItem *addButton = [NBBarButtonItem buttonWithType:UIButtonTypeCustom];
+//    [addButton setImage:[[ThemeManager themeManager] themedImage:addImage] forState:UIControlStateNormal];
+//    [addButton sizeToFit];
+//    [addButton addTarget:self action:@selector(tapAddSite:)
+//        forControlEvents:UIControlEventTouchUpInside];
+//    addButton.accessibilityLabel = @"Add feed";
+//    [addBarButton setCustomView:addButton];
 
-    NBBarButtonItem *settingsButton = [NBBarButtonItem buttonWithType:UIButtonTypeCustom];
-    settingsButton.onRightSide = YES;
-    [settingsButton setImage:[[ThemeManager themeManager] themedImage:settingsImage] forState:UIControlStateNormal];
-    [settingsButton sizeToFit];
-    [settingsButton addTarget:self action:@selector(showSettingsPopover:)
-             forControlEvents:UIControlEventTouchUpInside];
-    settingsButton.accessibilityLabel = @"Settings";
-    [settingsBarButton setCustomView:settingsButton];
+//    NBBarButtonItem *settingsButton = [NBBarButtonItem buttonWithType:UIButtonTypeCustom];
+//    settingsButton.onRightSide = YES;
+//    [settingsButton setImage:[[ThemeManager themeManager] themedImage:settingsImage] forState:UIControlStateNormal];
+//    [settingsButton sizeToFit];
+//    [settingsButton addTarget:self action:@selector(showSettingsPopover:)
+//             forControlEvents:UIControlEventTouchUpInside];
+//    settingsButton.accessibilityLabel = @"Settings";
+//    [settingsBarButton setCustomView:settingsButton];
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         UIImage *activityImage = [UIImage imageNamed:@"nav_icn_activity_hover.png"];
         NBBarButtonItem *activityButton = [NBBarButtonItem buttonWithType:UIButtonTypeCustom];
+        activityButton.accessibilityLabel = @"Activities";
         [activityButton setImage:activityImage forState:UIControlStateNormal];
-        [activityButton sizeToFit];
-        [activityButton setContentEdgeInsets:UIEdgeInsetsMake(0, -6, -0, -6)];
-        [activityButton setFrame:CGRectInset(activityButton.frame, 0, -6)];
-        [activityButton setImageEdgeInsets:UIEdgeInsetsMake(12, 12, 12, 12)];
+//        [activityButton sizeToFit];
+//        [activityButton setContentEdgeInsets:UIEdgeInsetsMake(0, -6, -0, -6)];
+//        [activityButton setFrame:CGRectInset(activityButton.frame, 0, -6)];
+        [activityButton setImageEdgeInsets:UIEdgeInsetsMake(4, 4, 4, 4)];
         [activityButton addTarget:self
                            action:@selector(showInteractionsPopover:)
                  forControlEvents:UIControlEventTouchUpInside];
@@ -811,7 +814,8 @@ static UIFont *userLabelFont;
     [self.appDelegate.addSiteNavigationController popToRootViewControllerAnimated:NO];
     
 //    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [self.appDelegate showPopoverWithViewController:self.appDelegate.addSiteNavigationController contentSize:CGSizeMake(320, 96) sourceView:self.addBarButton.customView sourceRect:CGRectMake(35.0, 0.0, 0.0, 0.0) permittedArrowDirections:UIPopoverArrowDirectionDown];
+    [self.appDelegate showPopoverWithViewController:self.appDelegate.addSiteNavigationController contentSize:CGSizeMake(320, 96) barButtonItem:self.addBarButton];
+//        [self.appDelegate showPopoverWithViewController:self.appDelegate.addSiteNavigationController contentSize:CGSizeMake(320, 96) sourceView:self.addBarButton sourceRect:CGRectMake(35.0, 0.0, 0.0, 0.0) permittedArrowDirections:UIPopoverArrowDirectionDown];
 //    } else {
 //        [self.appDelegate showPopoverWithViewController:self.appDelegate.addSiteNavigationController contentSize:CGSizeMake(320, 96) barButtonItem:self.addBarButton];
 //    }
@@ -823,7 +827,7 @@ static UIFont *userLabelFont;
     [self.appDelegate.feedsMenuViewController view];
     NSInteger menuCount = [self.appDelegate.feedsMenuViewController.menuOptions count];
     
-    [self.appDelegate showPopoverWithViewController:self.appDelegate.feedsMenuViewController contentSize:CGSizeMake(220, 38 * (menuCount + 1)) barButtonItem:self.settingsBarButton];
+    [self.appDelegate showPopoverWithViewController:self.appDelegate.feedsMenuViewController contentSize:CGSizeMake(250, 38 * (menuCount + 2)) barButtonItem:self.settingsBarButton];
 }
 
 - (IBAction)showInteractionsPopover:(id)sender {
@@ -869,7 +873,7 @@ static UIFont *userLabelFont;
 //                            [appDelegate.dictSocialFeeds objectForKey:feedIdStr] :
 //                            [appDelegate.dictFeeds objectForKey:feedIdStr];
         
-        [self.appDelegate showMarkReadMenuWithFeedIds:@[feedIdStr] collectionTitle:@"site" sourceView:self.view sourceRect:cell.frame completionHandler:^(BOOL marked){
+        [self.appDelegate showMarkReadMenuWithFeedIds:@[feedIdStr] collectionTitle:@"site" sourceView:self.feedTitlesTable sourceRect:cell.frame completionHandler:^(BOOL marked){
             for (FeedTableCell *cell in [self.feedTitlesTable visibleCells]) {
                 if (cell.highlighted) {
                     [self performSelector:@selector(unhighlightCell:) withObject:cell afterDelay:0.0];
@@ -957,6 +961,7 @@ static UIFont *userLabelFont;
     self.settingsBarButton.tintColor = UIColorFromRGB(0x8F918B);
     self.refreshControl.tintColor = UIColorFromLightDarkRGB(0x0, 0xffffff);
     self.refreshControl.backgroundColor = UIColorFromRGB(0xE3E6E0);
+    self.view.backgroundColor = UIColorFromRGB(0xf4f4f4);
     
     NBBarButtonItem *barButton = self.addBarButton.customView;
     [barButton setImage:[[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"nav_icn_add.png"]] forState:UIControlStateNormal];
@@ -967,8 +972,10 @@ static UIFont *userLabelFont;
     [self layoutHeaderCounts:0];
     [self refreshHeaderCounts];
     
-    self.feedTitlesTable.backgroundColor = UIColorFromRGB(0xf4f4f4);
+//    self.feedTitlesTable.backgroundColor = UIColorFromRGB(0xf4f4f4);
     [self.feedTitlesTable reloadData];
+    
+    [self resetupGestures];
 }
 
 - (void)updateThemeBrightness {
@@ -1220,25 +1227,58 @@ static UIFont *userLabelFont;
         return 0;
     }
     
+    NSInteger height;
+    
     if ([folderName isEqualToString:@"river_blurblogs"] ||
         [folderName isEqualToString:@"river_global"]) { // blurblogs
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-            return kBlurblogTableViewRowHeight;
+            height = kBlurblogTableViewRowHeight;
         } else {
-            return kPhoneBlurblogTableViewRowHeight;
+            height = kPhoneBlurblogTableViewRowHeight;
         }
     } else {
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-            return kTableViewRowHeight;            
+            height = kTableViewRowHeight;
         } else {
-            return kPhoneTableViewRowHeight;
+            height = kPhoneTableViewRowHeight;
         }
     }
+    
+    UIFontDescriptor *fontDescriptor = [self fontDescriptorUsingPreferredSize:UIFontTextStyleCaption1];
+    UIFont *font = [UIFont fontWithDescriptor:fontDescriptor size:0.0];
+    return height + font.pointSize*2;
+}
+
+- (UIFontDescriptor *)fontDescriptorUsingPreferredSize:(NSString *)textStyle {
+    UIFontDescriptor *fontDescriptor = appDelegate.fontDescriptorTitleSize;
+    if (fontDescriptor) return fontDescriptor;
+    
+    fontDescriptor = [UIFontDescriptor preferredFontDescriptorWithTextStyle:textStyle];
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+    
+    if (![userPreferences boolForKey:@"use_system_font_size"]) {
+        if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"xs"]) {
+            fontDescriptor = [fontDescriptor fontDescriptorWithSize:10.0f];
+        } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"small"]) {
+            fontDescriptor = [fontDescriptor fontDescriptorWithSize:11.0f];
+        } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"medium"]) {
+            fontDescriptor = [fontDescriptor fontDescriptorWithSize:12.0f];
+        } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"large"]) {
+            fontDescriptor = [fontDescriptor fontDescriptorWithSize:15.0f];
+        } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"xl"]) {
+            fontDescriptor = [fontDescriptor fontDescriptorWithSize:17.0f];
+        }
+    }
+    return fontDescriptor;
 }
 
 - (UIView *)tableView:(UITableView *)tableView 
             viewForHeaderInSection:(NSInteger)section {
-    CGRect rect = CGRectMake(0.0, 0.0, tableView.frame.size.width, kFolderTitleHeight);
+    UIFontDescriptor *fontDescriptor = [self fontDescriptorUsingPreferredSize:UIFontTextStyleCaption1];
+    UIFont *font = [UIFont fontWithDescriptor:fontDescriptor size:0.0];
+    NSInteger height = kFolderTitleHeight;
+    
+    CGRect rect = CGRectMake(0.0, 0.0, tableView.frame.size.width, height + font.pointSize*2);
     FolderTitleView *folderTitle = [[FolderTitleView alloc] initWithFrame:rect];
     folderTitle.section = (int)section;
     
@@ -1273,7 +1313,11 @@ heightForHeaderInSection:(NSInteger)section {
         return 0;
     }
     
-    return 36;
+    UIFontDescriptor *fontDescriptor = [self fontDescriptorUsingPreferredSize:UIFontTextStyleCaption1];
+    UIFont *font = [UIFont fontWithDescriptor:fontDescriptor size:0.0];
+    NSInteger height = kFolderTitleHeight;
+    
+    return height + font.pointSize*2;
 }
 
 - (void)didSelectSectionHeader:(UIButton *)button {
@@ -1356,6 +1400,8 @@ heightForHeaderInSection:(NSInteger)section {
         [self.feedTitlesTable reloadRowsAtIndexPaths:@[indexPath]
                                     withRowAnimation:UITableViewRowAnimationFade];
         [self.feedTitlesTable endUpdates];
+        
+        [self refreshHeaderCounts];
     }
 }
 
@@ -1556,7 +1602,7 @@ heightForHeaderInSection:(NSInteger)section {
 
 - (IBAction)selectIntelligence {
     [MBProgressHUD hideHUDForView:self.feedTitlesTable animated:NO];
-    MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.innerView animated:YES];
+    MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
 	hud.mode = MBProgressHUDModeText;
 	hud.removeFromSuperViewOnHide = YES;
     
@@ -1815,6 +1861,8 @@ heightForHeaderInSection:(NSInteger)section {
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)task.response;
 
+        [self finishRefresh];
+
         if ([httpResponse statusCode] == 403) {
             NSLog(@"Showing login after refresh");
             return [appDelegate showLogin];
@@ -1823,6 +1871,7 @@ heightForHeaderInSection:(NSInteger)section {
         } else if ([httpResponse statusCode] >= 500) {
             return [self informError:@"The server barfed!"];
         }
+
         [self requestFailed:error];
     }];
 
@@ -1932,7 +1981,7 @@ heightForHeaderInSection:(NSInteger)section {
     userAvatarButton = [UIBarButtonItem barItemWithImage:[UIImage alloc]
                                                   target:self
                                                   action:@selector(showUserProfile)];
-    userAvatarButton.customView.frame = CGRectMake(0, yOffset + 1, isShort ? 28 : 32, isShort ? 28 : 32);
+    userAvatarButton.customView.frame = CGRectMake(0, yOffset + 1, 32, 32);
     userAvatarButton.accessibilityLabel = @"User info";
     userAvatarButton.accessibilityHint = @"Double-tap for information about your account.";
 
@@ -1940,13 +1989,13 @@ heightForHeaderInSection:(NSInteger)section {
     [avatarRequest addValue:@"image/*" forHTTPHeaderField:@"Accept"];
     [avatarRequest setTimeoutInterval:30.0];
     avatarImageView = [[UIImageView alloc] initWithFrame:userAvatarButton.customView.frame];
-    CGSize avatarSize = avatarImageView.frame.size;
     typeof(self) __weak weakSelf = self;
     [avatarImageView setImageWithURLRequest:avatarRequest placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
         typeof(weakSelf) __strong strongSelf = weakSelf;
-        image = [Utilities imageWithImage:image convertToSize:CGSizeMake(avatarSize.width*2, avatarSize.height*2)];
+        image = [Utilities imageWithImage:image convertToSize:CGSizeMake(32, 32)];
         image = [Utilities roundCorneredImage:image radius:6];
         [(UIButton *)strongSelf.userAvatarButton.customView setImage:image forState:UIControlStateNormal];
+        
     } failure:^(NSURLRequest * _Nonnull request, NSHTTPURLResponse * _Nonnull response, NSError * _Nonnull error) {
         NSLog(@"Could not fetch user avatar: %@", error);
     }];
@@ -1956,7 +2005,7 @@ heightForHeaderInSection:(NSInteger)section {
     
     //    [userInfoView addSubview:userAvatarButton];
     
-    userLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, yOffset, userInfoView.frame.size.width, 16)];
+    userLabel = [[UILabel alloc] initWithFrame:CGRectMake(8, yOffset, userInfoView.frame.size.width, 16)];
     userLabel.text = appDelegate.activeUsername;
     userLabel.font = userLabelFont;
     userLabel.textColor = UIColorFromRGB(0x404040);
@@ -1966,31 +2015,22 @@ heightForHeaderInSection:(NSInteger)section {
     [userInfoView addSubview:userLabel];
     
     [appDelegate.folderCountCache removeObjectForKey:@"everything"];
-    UIImageView *yellow = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"g_icn_unread"]];
-    yellow.frame = CGRectMake(0, userLabel.frame.origin.y + userLabel.frame.size.height + 4, 8, 8);
-    [userInfoView addSubview:yellow];
+    yellowIcon = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"g_icn_unread"]];
+    [userInfoView addSubview:yellowIcon];
     
     neutralCount = [[UILabel alloc] init];
-    neutralCount.frame = CGRectMake(yellow.frame.size.width + yellow.frame.origin.x + 2,
-                                    yellow.frame.origin.y - 3, 100, 16);
     neutralCount.font = [UIFont fontWithName:@"Helvetica" size:11];
     neutralCount.textColor = UIColorFromRGB(0x707070);
     neutralCount.backgroundColor = [UIColor clearColor];
-    [neutralCount sizeToFit];
     [userInfoView addSubview:neutralCount];
     
     greenIcon = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"g_icn_focus"]];
-    greenIcon.frame = CGRectMake(neutralCount.frame.origin.x + neutralCount.frame.size.width + 8,
-                             yellow.frame.origin.y, 8, 8);
     [userInfoView addSubview:greenIcon];
     
     positiveCount = [[UILabel alloc] init];
-    positiveCount.frame = CGRectMake(greenIcon.frame.size.width + greenIcon.frame.origin.x + 2,
-                                     greenIcon.frame.origin.y - 3, 100, 16);
     positiveCount.font = [UIFont fontWithName:@"Helvetica" size:11];
     positiveCount.textColor = UIColorFromRGB(0x707070);
     positiveCount.backgroundColor = [UIColor clearColor];
-    [positiveCount sizeToFit];
     [userInfoView addSubview:positiveCount];
     
     [userInfoView sizeToFit];
@@ -2026,18 +2066,32 @@ heightForHeaderInSection:(NSInteger)section {
     positiveCount.text = [formatter stringFromNumber:[NSNumber numberWithInt:counts.ps]];
     positiveCount.accessibilityLabel = [NSString stringWithFormat:@"%@ focused stories", positiveCount.text];
     
-    CGRect yellow = CGRectMake(0, userLabel.frame.origin.y + userLabel.frame.size.height + 4, 8, 8);
     neutralCount.text = [formatter stringFromNumber:[NSNumber numberWithInt:counts.nt]];
     neutralCount.accessibilityLabel = [NSString stringWithFormat:@"%@ unread stories", neutralCount.text];
-    neutralCount.frame = CGRectMake(yellow.size.width + yellow.origin.x + 2,
-                                    yellow.origin.y - 3, 100, 16);
+
+    yellowIcon.frame = CGRectMake(CGRectGetMinX(userLabel.frame), CGRectGetMaxY(userLabel.frame) + 4, 8, 8);
+
+    neutralCount.frame = CGRectMake(CGRectGetMaxX(yellowIcon.frame) + 2,
+                                    CGRectGetMinY(yellowIcon.frame) - 2, 100, 16);
     [neutralCount sizeToFit];
     
-    greenIcon.frame = CGRectMake(neutralCount.frame.origin.x + neutralCount.frame.size.width + 8,
-                                 yellow.origin.y, 8, 8);
-    positiveCount.frame = CGRectMake(greenIcon.frame.size.width + greenIcon.frame.origin.x + 2,
-                                     greenIcon.frame.origin.y - 3, 100, 16);
+    greenIcon.frame = CGRectMake(CGRectGetMaxX(neutralCount.frame) + 8,
+                                 CGRectGetMinY(yellowIcon.frame), 8, 8);
+    positiveCount.frame = CGRectMake(CGRectGetMaxX(greenIcon.frame) + 2,
+                                     CGRectGetMinY(greenIcon.frame) - 2, 100, 16);
     [positiveCount sizeToFit];
+    
+    NSUserDefaults *prefs = [NSUserDefaults standardUserDefaults];
+    NSString *appUnreadBadge = [prefs stringForKey:@"app_unread_badge"];
+    if ([appUnreadBadge isEqualToString:@"unread"]) {
+        [appDelegate registerForBadgeNotifications];
+        [UIApplication sharedApplication].applicationIconBadgeNumber = counts.ps + counts.nt;
+    } else if ([appUnreadBadge isEqualToString:@"focus"]) {
+        [appDelegate registerForBadgeNotifications];
+        [UIApplication sharedApplication].applicationIconBadgeNumber = counts.ps;
+    } else {
+        [UIApplication sharedApplication].applicationIconBadgeNumber = 0;
+    }
 }
 
 - (void)showRefreshNotifier {

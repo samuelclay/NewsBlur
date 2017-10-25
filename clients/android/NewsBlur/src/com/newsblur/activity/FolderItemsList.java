@@ -7,7 +7,6 @@ import android.view.MenuInflater;
 
 import com.newsblur.R;
 import com.newsblur.fragment.FolderItemListFragment;
-import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadFilter;
 import com.newsblur.util.UIUtils;
@@ -52,11 +51,4 @@ public class FolderItemsList extends ItemsList {
         return PrefsUtils.getReadFilterForFolder(this, folderName);
     }
 
-    @Override
-    public void defaultFeedViewChanged(DefaultFeedView value) {
-        PrefsUtils.setDefaultFeedViewForFolder(this, folderName, value);
-        if (itemListFragment != null) {
-            itemListFragment.setDefaultFeedView(value);
-        }
-    }
 }

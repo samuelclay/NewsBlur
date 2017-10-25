@@ -45,13 +45,13 @@ public class PrefConstants {
     public static final String SHOW_PUBLIC_COMMENTS = "show_public_comments";
 
     public static final String FEED_DEFAULT_FEED_VIEW_PREFIX = "feed_default_feed_view_";
-    public static final String FOLDER_DEFAULT_FEED_VIEW_PREFIX = "folder_default_feed_view_";
 
     public static final String READ_STORIES_FOLDER_NAME = "read_stories";
     public static final String SAVED_STORIES_FOLDER_NAME = "saved_stories";
     public static final String READING_ENTER_IMMERSIVE_SINGLE_TAP = "immersive_enter_single_tap";
 
     public static final String STORIES_AUTO_OPEN_FIRST = "pref_auto_open_first_unread";
+    public static final String STORIES_MARK_READ_ON_SCROLL = "pref_mark_read_on_scroll";
     public static final String STORIES_SHOW_PREVIEWS = "pref_show_content_preview";
     public static final String STORIES_SHOW_THUMBNAILS = "pref_show_thumbnails";
 
@@ -80,4 +80,6 @@ public class PrefConstants {
     public static final String RTL_GESTURE_ACTION = "rtl_gesture_action";
 
     public static final String ENABLE_NOTIFICATIONS = "enable_notifications";
+
+    public static final String READING_FONT = "reading_font";
 }

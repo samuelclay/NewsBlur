@@ -1,9 +1,19 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="9532" systemVersion="15D21" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="13196" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina5_9" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9530"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13173"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
+    <customFonts key="customFonts">
+        <array key="Helvetica.ttc">
+            <string>Helvetica-Bold</string>
+        </array>
+    </customFonts>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="StoryPageControl">
             <connections>
@@ -24,21 +34,21 @@
         </placeholder>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
         <view multipleTouchEnabled="YES" contentMode="scaleToFill" id="3">
-            <rect key="frame" x="0.0" y="44" width="414" height="692"/>
+            <rect key="frame" x="0.0" y="0.0" width="375" height="724"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" verticalHuggingPriority="750" alwaysBounceHorizontal="YES" pagingEnabled="YES" delaysContentTouches="NO" bouncesZoom="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5">
-                    <rect key="frame" x="0.0" y="0.0" width="414" height="680"/>
-                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                    <rect key="frame" x="0.0" y="0.0" width="375" height="724"/>
+                    <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
                     <connections>
                         <outlet property="delegate" destination="-1" id="27"/>
                     </connections>
                 </scrollView>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="75">
-                    <rect key="frame" x="0.0" y="629" width="414" height="51"/>
+                    <rect key="frame" x="16" y="627" width="343" height="51"/>
                     <subviews>
                         <imageView userInteractionEnabled="NO" contentMode="scaleToFill" image="traverse_background.png" translatesAutoresizingMaskIntoConstraints="NO" id="71">
-                            <rect key="frame" x="248" y="4" width="160" height="44"/>
+                            <rect key="frame" x="177" y="4" width="160" height="44"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="44" id="IFH-LS-Jje"/>
                                 <constraint firstAttribute="width" constant="160" id="kwh-gV-kd6"/>
@@ -52,7 +62,7 @@
                             </constraints>
                         </imageView>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="64">
-                            <rect key="frame" x="254" y="9" width="43" height="34"/>
+                            <rect key="frame" x="183" y="9" width="43" height="34"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="34" id="FnC-xb-r8x"/>
                                 <constraint firstAttribute="width" constant="43" id="Z6I-Ot-2Bv"/>
@@ -60,11 +70,11 @@
                             <fontDescription key="fontDescription" type="boldSystem" pointSize="13"/>
                             <inset key="contentEdgeInsets" minX="0.0" minY="0.0" maxX="20" maxY="0.0"/>
                             <state key="normal" backgroundImage="traverse_previous.png">
-                                <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                                <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             </state>
                             <state key="disabled" backgroundImage="traverse_previous_off.png"/>
                             <state key="highlighted">
-                                <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             </state>
                             <connections>
                                 <action selector="beginTouchDown:" destination="-1" eventType="touchDown" id="RJl-ZC-yBr"/>
@@ -72,7 +82,7 @@
                             </connections>
                         </button>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="62">
-                            <rect key="frame" x="298" y="9" width="104" height="34"/>
+                            <rect key="frame" x="227" y="9" width="104" height="34"/>
                             <constraints>
                                 <constraint firstAttribute="width" constant="104" id="HmV-1Q-KBz"/>
                                 <constraint firstAttribute="height" constant="34" id="aS7-gc-RoE"/>
@@ -80,14 +90,14 @@
                             <fontDescription key="fontDescription" name="Helvetica-Bold" family="Helvetica" pointSize="13"/>
                             <inset key="titleEdgeInsets" minX="2" minY="0.0" maxX="0.0" maxY="0.0"/>
                             <state key="normal" title="NEXT" backgroundImage="traverse_next.png">
-                                <color key="titleColor" red="0.58823531870000001" green="0.59607845540000004" blue="0.57254904510000004" alpha="1" colorSpace="deviceRGB"/>
-                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                <color key="titleColor" red="0.51726847887039185" green="0.52641934156417847" blue="0.50032174587249756" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             </state>
                             <state key="selected">
-                                <color key="titleColor" white="0.19699475359999999" alpha="1" colorSpace="calibratedWhite"/>
+                                <color key="titleColor" red="0.19699475169181824" green="0.19699475169181824" blue="0.19699475169181824" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             </state>
                             <state key="highlighted">
-                                <color key="titleColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                                <color key="titleColor" red="0.3333333432674408" green="0.3333333432674408" blue="0.3333333432674408" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             </state>
                             <connections>
                                 <action selector="beginTouchDown:" destination="-1" eventType="touchDown" id="3p1-tq-Hxk"/>
@@ -103,14 +113,14 @@
                             <fontDescription key="fontDescription" name="Helvetica-Bold" family="Helvetica" pointSize="13"/>
                             <inset key="titleEdgeInsets" minX="16" minY="0.0" maxX="0.0" maxY="0.0"/>
                             <state key="normal" title="TEXT" backgroundImage="traverse_text.png">
-                                <color key="titleColor" red="0.58823531870000001" green="0.59607845540000004" blue="0.57254904510000004" alpha="1" colorSpace="deviceRGB"/>
-                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                <color key="titleColor" red="0.51726847887039185" green="0.52641934156417847" blue="0.50032174587249756" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             </state>
                             <state key="selected">
-                                <color key="titleColor" white="0.19699475359999999" alpha="1" colorSpace="calibratedWhite"/>
+                                <color key="titleColor" red="0.19699475169181824" green="0.19699475169181824" blue="0.19699475169181824" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             </state>
                             <state key="highlighted">
-                                <color key="titleColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                                <color key="titleColor" red="0.3333333432674408" green="0.3333333432674408" blue="0.3333333432674408" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             </state>
                             <connections>
                                 <action selector="beginTouchDown:" destination="-1" eventType="touchDown" id="FZm-dS-Naz"/>
@@ -126,14 +136,14 @@
                             <fontDescription key="fontDescription" name="Helvetica-Bold" family="Helvetica" pointSize="13"/>
                             <inset key="contentEdgeInsets" minX="0.0" minY="0.0" maxX="20" maxY="0.0"/>
                             <state key="normal" backgroundImage="traverse_send.png">
-                                <color key="titleColor" red="0.58823531870000001" green="0.59607845540000004" blue="0.57254904510000004" alpha="1" colorSpace="deviceRGB"/>
-                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                <color key="titleColor" red="0.51726847887039185" green="0.52641934156417847" blue="0.50032174587249756" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             </state>
                             <state key="selected">
-                                <color key="titleColor" white="0.19699475359999999" alpha="1" colorSpace="calibratedWhite"/>
+                                <color key="titleColor" red="0.19699475169181824" green="0.19699475169181824" blue="0.19699475169181824" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             </state>
                             <state key="highlighted">
-                                <color key="titleColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                                <color key="titleColor" red="0.3333333432674408" green="0.3333333432674408" blue="0.3333333432674408" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             </state>
                             <connections>
                                 <action selector="beginTouchDown:" destination="-1" eventType="touchDown" id="mUs-yN-RKc"/>
@@ -141,15 +151,15 @@
                             </connections>
                         </button>
                         <activityIndicatorView opaque="NO" contentMode="scaleToFill" hidesWhenStopped="YES" animating="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="73">
-                            <rect key="frame" x="304" y="16" width="20" height="20"/>
+                            <rect key="frame" x="233" y="16" width="20" height="20"/>
                             <constraints>
                                 <constraint firstAttribute="width" constant="20" id="GOD-rV-vW8"/>
                                 <constraint firstAttribute="height" constant="20" id="Ksw-lV-QhR"/>
                             </constraints>
-                            <color key="color" red="0.60784316059999999" green="0.61568629740000003" blue="0.58823531870000001" alpha="1" colorSpace="deviceRGB"/>
+                            <color key="color" red="0.53839904069900513" green="0.54777079820632935" blue="0.51707810163497925" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         </activityIndicatorView>
                     </subviews>
-                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                    <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
                     <constraints>
                         <constraint firstItem="85" firstAttribute="top" secondItem="75" secondAttribute="top" constant="9" id="5Cq-8q-Cx5"/>
                         <constraint firstAttribute="trailing" secondItem="71" secondAttribute="trailing" constant="6" id="5ET-pu-V3i"/>
@@ -178,31 +188,31 @@
                     </constraints>
                 </view>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="YKz-PZ-s0t">
-                    <rect key="frame" x="0.0" y="680" width="414" height="12"/>
+                    <rect key="frame" x="0.0" y="678" width="375" height="12"/>
                     <subviews>
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="MK4-IV-OSa">
-                            <rect key="frame" x="0.0" y="-1" width="414" height="1"/>
-                            <color key="backgroundColor" white="0.75644388689999997" alpha="1" colorSpace="calibratedWhite"/>
+                            <rect key="frame" x="0.0" y="-1" width="375" height="1"/>
+                            <color key="backgroundColor" red="0.75644385814666748" green="0.75644385814666748" blue="0.75644385814666748" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="1" id="TSL-hY-u15"/>
                             </constraints>
                         </view>
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="62E-7z-9mB">
-                            <rect key="frame" x="0.0" y="12" width="414" height="1"/>
-                            <color key="backgroundColor" white="0.75644388689999997" alpha="1" colorSpace="calibratedWhite"/>
+                            <rect key="frame" x="0.0" y="12" width="375" height="1"/>
+                            <color key="backgroundColor" red="0.75644385814666748" green="0.75644385814666748" blue="0.75644385814666748" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="1" id="eNC-Bd-hu0"/>
                             </constraints>
                         </view>
                         <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="drag_icon.png" translatesAutoresizingMaskIntoConstraints="NO" id="kYw-ba-fFD">
-                            <rect key="frame" x="190" y="2" width="34" height="9"/>
+                            <rect key="frame" x="170.66666666666666" y="2" width="34" height="9"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="9" id="Pta-oX-r3A"/>
                                 <constraint firstAttribute="width" constant="34" id="oVQ-MZ-nUk"/>
                             </constraints>
                         </imageView>
                     </subviews>
-                    <color key="backgroundColor" red="0.90980398650000005" green="0.91764712329999998" blue="0.89411771299999998" alpha="1" colorSpace="deviceRGB"/>
+                    <color key="backgroundColor" red="0.8879733681678772" green="0.89844107627868652" blue="0.86854457855224609" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <constraints>
                         <constraint firstAttribute="trailing" secondItem="MK4-IV-OSa" secondAttribute="trailing" id="1j6-sD-Ude"/>
                         <constraint firstItem="kYw-ba-fFD" firstAttribute="leading" secondItem="YKz-PZ-s0t" secondAttribute="leading" id="5XI-X3-78Q"/>
@@ -224,30 +234,28 @@
                     </variation>
                 </view>
             </subviews>
-            <color key="backgroundColor" red="0.43529411759999997" green="0.4431372549" blue="0.47450980390000003" alpha="1" colorSpace="calibratedRGB"/>
+            <color key="backgroundColor" red="0.43529411759999997" green="0.4431372549" blue="0.47450980390000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <constraints>
-                <constraint firstAttribute="trailing" secondItem="5" secondAttribute="trailing" id="A4p-mh-u6O"/>
-                <constraint firstItem="5" firstAttribute="bottom" secondItem="YKz-PZ-s0t" secondAttribute="top" id="AOS-qV-fjZ"/>
+                <constraint firstItem="5" firstAttribute="trailing" secondItem="3" secondAttribute="trailingMargin" constant="16" id="A4p-mh-u6O"/>
+                <constraint firstItem="5" firstAttribute="bottom" secondItem="3" secondAttribute="bottom" id="AOS-qV-fjZ"/>
                 <constraint firstItem="YKz-PZ-s0t" firstAttribute="leading" secondItem="3" secondAttribute="leading" id="G7a-2g-nwC"/>
-                <constraint firstItem="5" firstAttribute="leading" secondItem="3" secondAttribute="leading" id="Pnz-qi-mdZ"/>
-                <constraint firstAttribute="bottom" secondItem="YKz-PZ-s0t" secondAttribute="bottom" id="VJX-b2-ors"/>
-                <constraint firstItem="75" firstAttribute="leading" secondItem="3" secondAttribute="leading" id="htz-P9-PfM"/>
-                <constraint firstAttribute="trailing" secondItem="75" secondAttribute="trailing" id="k4E-iI-ANK"/>
+                <constraint firstItem="5" firstAttribute="leading" secondItem="3" secondAttribute="leadingMargin" constant="-16" id="Pnz-qi-mdZ"/>
+                <constraint firstAttribute="bottomMargin" secondItem="YKz-PZ-s0t" secondAttribute="bottom" id="VJX-b2-ors"/>
+                <constraint firstItem="75" firstAttribute="leading" secondItem="3" secondAttribute="leadingMargin" id="htz-P9-PfM"/>
+                <constraint firstItem="75" firstAttribute="trailing" secondItem="3" secondAttribute="trailingMargin" id="k4E-iI-ANK"/>
                 <constraint firstAttribute="trailing" secondItem="YKz-PZ-s0t" secondAttribute="trailing" id="oHo-v4-1KC"/>
                 <constraint firstItem="YKz-PZ-s0t" firstAttribute="top" secondItem="75" secondAttribute="bottom" id="rgF-mh-lia"/>
                 <constraint firstItem="5" firstAttribute="top" secondItem="3" secondAttribute="top" id="sgh-qa-2V3"/>
             </constraints>
             <nil key="simulatedStatusBarMetrics"/>
             <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" translucent="NO" prompted="NO"/>
-            <simulatedOrientationMetrics key="simulatedOrientationMetrics"/>
-            <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina55"/>
             <point key="canvasLocation" x="301" y="481"/>
         </view>
     </objects>
     <resources>
         <image name="drag_icon.png" width="96" height="24"/>
         <image name="traverse_background.png" width="113" height="46"/>
-        <image name="traverse_next.png" width="208" height="68"/>
+        <image name="traverse_next.png" width="104" height="34"/>
         <image name="traverse_previous.png" width="43" height="34"/>
         <image name="traverse_previous_off.png" width="43" height="34"/>
         <image name="traverse_send.png" width="44" height="34"/>

@@ -8,7 +8,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.text.Html;
 import android.text.TextUtils;
 import android.widget.Toast;
 
@@ -61,16 +60,14 @@ public class FeedUtils {
         dbHelper.dropAndRecreateTables();
     }
 
-    public static void clearStorySession() {
+    public static void prepareReadingSession(final FeedSet fs) {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... arg) {
                 try {
-                    dbHelper.clearStorySession();
+                    NBSyncService.prepareReadingSession(dbHelper, fs);
                 } catch (Exception e) {
-                    ; // TODO: this can evade DB-ready gating and crash. figure out how to
-                      // defer this call until the DB-ready broadcast is received, as this
-                      // can mask important errors
+                    ; // this is a UI hinting call and might fail if the DB is being reset, but that is fine
                 }
                 return null;
             }
@@ -212,7 +209,11 @@ public class FeedUtils {
                 ra = ReadingAction.markFeedRead(fs, olderThan, newerThan);
             }
         }
+        // is it okay to just do the mark? otherwise we will seek confirmation
         boolean doImmediate = true;
+        // if set, this message will be displayed instead of the options to actually mark read. used in
+        // situations where marking all read is almost certainly not what the user wants to do
+        String optionalOverrideMessage = null;
         if ((olderThan != null) || (newerThan != null)) {
             // if this is a range mark, check that option
             if (PrefsUtils.isConfirmMarkRangeRead(activity)) doImmediate = false;
@@ -220,6 +221,11 @@ public class FeedUtils {
             // if this is an all mark, check that option
             MarkAllReadConfirmation confirmation = PrefsUtils.getMarkAllReadConfirmation(activity);
             if (confirmation.feedSetRequiresConfirmation(fs)) doImmediate = false;
+        }
+        // marks hit all stories, even when filtering via search, so warn
+        if (fs.getSearchQuery() != null) {
+            doImmediate = false;
+            optionalOverrideMessage = activity.getResources().getString(R.string.search_mark_read_warning);
         }
         if (doImmediate) {
             doAction(ra, activity);
@@ -237,12 +243,42 @@ public class FeedUtils {
             } else {
                 title = FeedUtils.getFeed(fs.getSingleFeed()).title;
             }
-            ReadingActionConfirmationFragment dialog = ReadingActionConfirmationFragment.newInstance(ra, title, choicesRid, finishAfter);
+            ReadingActionConfirmationFragment dialog = ReadingActionConfirmationFragment.newInstance(ra, title, optionalOverrideMessage, choicesRid, finishAfter);
             dialog.show(activity.getFragmentManager(), "dialog");
         }
     }
+
+    public static void disableNotifications(Context context, Feed feed) {
+        updateFeedNotifications(context, feed, false, false);
+    }
+
+    public static void enableUnreadNotifications(Context context, Feed feed) {
+        updateFeedNotifications(context, feed, true, false);
+    }
+    public static void enableFocusNotifications(Context context, Feed feed) {
+        updateFeedNotifications(context, feed, true, true);
+    }
+
+    private static void updateFeedNotifications(final Context context, final Feed feed, final boolean enable, final boolean focusOnly) {
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... arg) {
+                if (focusOnly) {
+                    feed.setNotifyFocus();
+                } else {
+                    feed.setNotifyUnread();
+                }
+                feed.enableAndroidNotifications(enable);
+                dbHelper.updateFeed(feed);
+                ReadingAction ra = ReadingAction.setNotify(feed.feedId, feed.notificationTypes, feed.notificationFilter);
+                doAction(ra, context);
+                return null;
+            }
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
         
     public static void doAction(final ReadingAction ra, final Context context) {
+        if (ra == null) throw new IllegalArgumentException("ReadingAction must not be null");
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... arg) {
@@ -283,7 +319,7 @@ public class FeedUtils {
         Intent intent = new Intent(android.content.Intent.ACTION_SEND);
         intent.setType("text/plain");
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.putExtra(Intent.EXTRA_TEXT, String.format(context.getResources().getString(R.string.send_brief), new Object[]{Html.fromHtml(story.title), story.permalink}));
+        intent.putExtra(Intent.EXTRA_TEXT, String.format(context.getResources().getString(R.string.send_brief), new Object[]{UIUtils.fromHtml(story.title), story.permalink}));
         context.startActivity(Intent.createChooser(intent, "Send using"));
     }
 
@@ -293,19 +329,27 @@ public class FeedUtils {
         Intent intent = new Intent(android.content.Intent.ACTION_SEND);
         intent.setType("text/plain");
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.putExtra(Intent.EXTRA_SUBJECT, Html.fromHtml(story.title).toString());
-        intent.putExtra(Intent.EXTRA_TEXT, String.format(context.getResources().getString(R.string.send_full), new Object[]{story.permalink, Html.fromHtml(story.title), Html.fromHtml(body)}));
+        intent.putExtra(Intent.EXTRA_SUBJECT, UIUtils.fromHtml(story.title));
+        intent.putExtra(Intent.EXTRA_TEXT, String.format(context.getResources().getString(R.string.send_full), new Object[]{story.permalink, UIUtils.fromHtml(story.title), UIUtils.fromHtml(body)}));
         context.startActivity(Intent.createChooser(intent, "Send using"));
     }
 
-	public static void shareStory(Story story, String comment, String sourceUserId, Context context) {
+    public static void shareStory(Story story, String comment, String sourceUserId, Context context) {
         if (story.sourceUserId != null) {
             sourceUserId = story.sourceUserId;
         }
         ReadingAction ra = ReadingAction.shareStory(story.storyHash, story.id, story.feedId, sourceUserId, comment);
         dbHelper.enqueueAction(ra);
         ra.doLocal(dbHelper);
-        NbActivity.updateAllActivities(NbActivity.UPDATE_SOCIAL);
+        NbActivity.updateAllActivities(NbActivity.UPDATE_SOCIAL | NbActivity.UPDATE_STORY);
+        triggerSync(context);
+    }
+
+    public static void unshareStory(Story story, Context context) {
+        ReadingAction ra = ReadingAction.unshareStory(story.storyHash, story.id, story.feedId);
+        dbHelper.enqueueAction(ra);
+        ra.doLocal(dbHelper);
+        NbActivity.updateAllActivities(NbActivity.UPDATE_SOCIAL | NbActivity.UPDATE_STORY);
         triggerSync(context);
     }
 
@@ -327,6 +371,22 @@ public class FeedUtils {
     
     public static void replyToComment(String storyId, String feedId, String commentUserId, String replyText, Context context) {
         ReadingAction ra = ReadingAction.replyToComment(storyId, feedId, commentUserId, replyText);
+        dbHelper.enqueueAction(ra);
+        ra.doLocal(dbHelper);
+        NbActivity.updateAllActivities(NbActivity.UPDATE_SOCIAL);
+        triggerSync(context);
+    }
+
+    public static void updateReply(Context context, Story story, String commentUserId, String replyId, String replyText) {
+        ReadingAction ra = ReadingAction.updateReply(story.id, story.feedId, commentUserId, replyId, replyText);
+        dbHelper.enqueueAction(ra);
+        ra.doLocal(dbHelper);
+        NbActivity.updateAllActivities(NbActivity.UPDATE_SOCIAL);
+        triggerSync(context);
+    }
+
+    public static void deleteReply(Context context, Story story, String commentUserId, String replyId) {
+        ReadingAction ra = ReadingAction.deleteReply(story.id, story.feedId, commentUserId, replyId);
         dbHelper.enqueueAction(ra);
         ra.doLocal(dbHelper);
         NbActivity.updateAllActivities(NbActivity.UPDATE_SOCIAL);
@@ -386,6 +446,14 @@ public class FeedUtils {
                 return null;
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
+    public static void instaFetchFeed(Context context, String feedId) {
+        ReadingAction ra = ReadingAction.instaFetch(feedId);
+        dbHelper.enqueueAction(ra);
+        ra.doLocal(dbHelper);
+        NbActivity.updateAllActivities(NbActivity.UPDATE_METADATA);
+        triggerSync(context);
     }
 
     public static FeedSet feedSetFromFolderName(String folderName) {

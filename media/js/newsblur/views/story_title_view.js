@@ -131,31 +131,25 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
     '),
     
     render_inline_story_detail: function(temporary_text) {
-        // console.log(['render_inline_story_detail', temporary_text, this.story_detail]);
+        // console.log(['render_inline_story_detail', this.model.get('story_title')]);
         if (NEWSBLUR.reader.story_view == 'text' || temporary_text) {
-            if (!this.text_view) {
-                this.text_view = new NEWSBLUR.Views.TextTabView({
-                    el: null,
-                    inline_story_title: true,
-                    temporary: !!temporary_text
-                });
-                this.text_view.fetch_and_render(this.model, temporary_text);
-            }
+            this.text_view = new NEWSBLUR.Views.TextTabView({
+                el: null,
+                inline_story_title: true,
+                temporary: !!temporary_text
+            });
+            this.text_view.fetch_and_render(this.model, temporary_text);
             this.$(".NB-story-detail").html(this.text_view.$el);
-            this.text_view.story_detail.render_starred_tags();
             this.text_view.story_detail.attach_handlers();
             this.text_view.setElement(this.text_view.$el);
             this.text_view.story_detail.setElement(this.text_view.story_detail.$el);
         } else {
-            if (!this.story_detail) {
-                this.story_detail = new NEWSBLUR.Views.StoryDetailView({
-                    model: this.model,
-                    collection: this.model.collection,
-                    tagName: 'div',
-                    inline_story_title: true
-                }).render();
-            }
-            // console.log(['render_inline_story_detail', this.$(".NB-story-detail")]);
+            this.story_detail = new NEWSBLUR.Views.StoryDetailView({
+                model: this.model,
+                collection: this.model.collection,
+                tagName: 'div',
+                inline_story_title: true
+            }).render();
             this.$(".NB-story-detail").html(this.story_detail.$el);
             this.story_detail.attach_handlers();
             this.story_detail.setElement(this.story_detail.$el);

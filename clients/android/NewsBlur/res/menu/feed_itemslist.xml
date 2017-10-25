@@ -12,13 +12,27 @@
     <item android:id="@+id/menu_read_filter"
           android:title="@string/menu_read_filter"
           android:showAsAction="never" />
-    <item android:id="@+id/menu_default_view"
-          android:title="@string/menu_default_view"
-          android:showAsAction="never" />
-    <item
-        android:id="@+id/menu_textsize"
-        android:showAsAction="never"
-        android:title="@string/menu_textsize"/>
+    <item android:id="@+id/menu_textsize"
+          android:showAsAction="never"
+          android:title="@string/menu_textsize"/>
+    <item android:id="@+id/menu_notifications"
+          android:title="@string/menu_notifications_choose" >
+        <menu>
+            <group android:checkableBehavior="single">
+                <item android:id="@+id/menu_notifications_disable"
+                      android:title="@string/menu_notifications_disable"
+                      android:checkable="true" />
+                <item android:id="@+id/menu_notifications_focus"
+                      android:title="@string/menu_notifications_focus"
+                      android:checkable="true" />
+                <item android:id="@+id/menu_notifications_unread"
+                      android:title="@string/menu_notifications_unread"
+                      android:checkable="true" />
+            </group>
+        </menu>
+    </item>
+    <item android:id="@+id/menu_instafetch_feed"
+          android:title="@string/menu_instafetch_feed" />
     <item android:id="@+id/menu_search_stories"
           android:title="@string/menu_search_stories"
           android:showAsAction="ifRoom" android:icon="@drawable/ic_menu_search_gray55" />

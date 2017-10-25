@@ -51,6 +51,18 @@ public abstract class SubService {
         executor.execute(r);
     }
 
+    public void startConditional(int startId) {
+        if (haveWork()) start(startId);
+    }
+
+    /**
+     * Stub - children should implement a queue check or ready check so that startConditional()
+     * can more efficiently allocate threads.
+     */
+    protected boolean haveWork() {
+        return true;
+    }
+
     private synchronized void exec_() {
         try {
             //if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "SubService started");

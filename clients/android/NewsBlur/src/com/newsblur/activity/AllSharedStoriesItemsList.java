@@ -7,7 +7,6 @@ import android.view.MenuInflater;
 
 import com.newsblur.R;
 import com.newsblur.fragment.AllSharedStoriesItemListFragment;
-import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.PrefConstants;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadFilter;
@@ -46,14 +45,6 @@ public class AllSharedStoriesItemsList extends ItemsList {
     @Override
     protected ReadFilter getReadFilter() {
         return PrefsUtils.getReadFilterForFolder(this, PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME);
-    }
-
-    @Override
-    public void defaultFeedViewChanged(DefaultFeedView value) {
-        PrefsUtils.setDefaultFeedViewForFolder(this, PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME, value);
-        if (itemListFragment != null) {
-            itemListFragment.setDefaultFeedView(value);
-        }
     }
 
 }

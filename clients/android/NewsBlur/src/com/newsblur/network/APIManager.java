@@ -28,6 +28,8 @@ import com.newsblur.domain.Story;
 import com.newsblur.domain.ValueMultimap;
 import static com.newsblur.network.APIConstants.buildUrl;
 import com.newsblur.network.domain.ActivitiesResponse;
+import com.newsblur.network.domain.AddFeedResponse;
+import com.newsblur.network.domain.CommentResponse;
 import com.newsblur.network.domain.FeedFolderResponse;
 import com.newsblur.network.domain.InteractionsResponse;
 import com.newsblur.network.domain.LoginResponse;
@@ -369,20 +371,31 @@ public class APIManager {
 		}
 	}
 
-	public NewsBlurResponse shareStory(final String storyId, final String feedId, final String comment, final String sourceUserId) {
-		final ContentValues values = new ContentValues();
-		if (!TextUtils.isEmpty(comment)) {
-			values.put(APIConstants.PARAMETER_SHARE_COMMENT, comment);
-		}
-		if (!TextUtils.isEmpty(sourceUserId)) {
-			values.put(APIConstants.PARAMETER_SHARE_SOURCEID, sourceUserId);
-		}
-		values.put(APIConstants.PARAMETER_FEEDID, feedId);
-		values.put(APIConstants.PARAMETER_STORYID, storyId);
+    public StoriesResponse shareStory(String storyId, String feedId, String comment, String sourceUserId) {
+        ContentValues values = new ContentValues();
+        if (!TextUtils.isEmpty(comment)) {
+            values.put(APIConstants.PARAMETER_SHARE_COMMENT, comment);
+        }
+        if (!TextUtils.isEmpty(sourceUserId)) {
+            values.put(APIConstants.PARAMETER_SHARE_SOURCEID, sourceUserId);
+        }
+        values.put(APIConstants.PARAMETER_FEEDID, feedId);
+        values.put(APIConstants.PARAMETER_STORYID, storyId);
 
-		APIResponse response = post(buildUrl(APIConstants.PATH_SHARE_STORY), values);
-        return response.getResponse(gson, NewsBlurResponse.class);
-	}
+        APIResponse response = post(buildUrl(APIConstants.PATH_SHARE_STORY), values);
+        // this call returns a new copy of the story with all fields updated and some metadata
+        return (StoriesResponse) response.getResponse(gson, StoriesResponse.class);
+    }
+
+    public StoriesResponse unshareStory(String storyId, String feedId) {
+        ContentValues values = new ContentValues();
+        values.put(APIConstants.PARAMETER_FEEDID, feedId);
+        values.put(APIConstants.PARAMETER_STORYID, storyId);
+
+        APIResponse response = post(buildUrl(APIConstants.PATH_UNSHARE_STORY), values);
+        // this call returns a new copy of the story with all fields updated and some metadata
+        return (StoriesResponse) response.getResponse(gson, StoriesResponse.class);
+    }
 
 	/**
      * Fetch the list of feeds/folders/socials from the backend.
@@ -532,24 +545,45 @@ public class APIManager {
         return response.getResponse(gson, NewsBlurResponse.class);
 	}
 
-	public NewsBlurResponse replyToComment(String storyId, String storyFeedId, String commentUserId, String reply) {
+	public CommentResponse replyToComment(String storyId, String storyFeedId, String commentUserId, String reply) {
 		ContentValues values = new ContentValues();
 		values.put(APIConstants.PARAMETER_STORYID, storyId);
 		values.put(APIConstants.PARAMETER_STORY_FEEDID, storyFeedId);
 		values.put(APIConstants.PARAMETER_COMMENT_USERID, commentUserId);
 		values.put(APIConstants.PARAMETER_REPLY_TEXT, reply);
 		APIResponse response = post(buildUrl(APIConstants.PATH_REPLY_TO), values);
-        return response.getResponse(gson, NewsBlurResponse.class);
+        // this call returns a new copy of the comment with all fields updated
+        return (CommentResponse) response.getResponse(gson, CommentResponse.class);
 	}
 
-	public boolean addFeed(String feedUrl, String folderName) {
+	public CommentResponse editReply(String storyId, String storyFeedId, String commentUserId, String replyId, String reply) {
+		ContentValues values = new ContentValues();
+		values.put(APIConstants.PARAMETER_STORYID, storyId);
+		values.put(APIConstants.PARAMETER_STORY_FEEDID, storyFeedId);
+		values.put(APIConstants.PARAMETER_COMMENT_USERID, commentUserId);
+		values.put(APIConstants.PARAMETER_REPLY_ID, replyId);
+		values.put(APIConstants.PARAMETER_REPLY_TEXT, reply);
+		APIResponse response = post(buildUrl(APIConstants.PATH_EDIT_REPLY), values);
+        // this call returns a new copy of the comment with all fields updated
+        return (CommentResponse) response.getResponse(gson, CommentResponse.class);
+	}
+
+	public CommentResponse deleteReply(String storyId, String storyFeedId, String commentUserId, String replyId) {
+		ContentValues values = new ContentValues();
+		values.put(APIConstants.PARAMETER_STORYID, storyId);
+		values.put(APIConstants.PARAMETER_STORY_FEEDID, storyFeedId);
+		values.put(APIConstants.PARAMETER_COMMENT_USERID, commentUserId);
+		values.put(APIConstants.PARAMETER_REPLY_ID, replyId);
+		APIResponse response = post(buildUrl(APIConstants.PATH_DELETE_REPLY), values);
+        // this call returns a new copy of the comment with all fields updated
+        return (CommentResponse) response.getResponse(gson, CommentResponse.class);
+	}
+
+	public AddFeedResponse addFeed(String feedUrl) {
 		ContentValues values = new ContentValues();
 		values.put(APIConstants.PARAMETER_URL, feedUrl);
-		if (!TextUtils.isEmpty(folderName)) {
-			values.put(APIConstants.PARAMETER_FOLDER, folderName);
-		}
-		final APIResponse response = post(buildUrl(APIConstants.PATH_ADD_FEED), values);
-		return (!response.isError());
+		APIResponse response = post(buildUrl(APIConstants.PATH_ADD_FEED), values);
+		return (AddFeedResponse) response.getResponse(gson, AddFeedResponse.class);
 	}
 
 	public FeedResult[] searchForFeed(String searchTerm) {
@@ -580,6 +614,27 @@ public class APIManager {
             values.put(APIConstants.PARAMETER_APPROVED_FEEDS, feed);
         }
         APIResponse response = post(buildUrl(APIConstants.PATH_SAVE_FEED_CHOOSER), values);
+        return response.getResponse(gson, NewsBlurResponse.class);
+    }
+
+    public NewsBlurResponse updateFeedNotifications(String feedId, List<String> notifyTypes, String notifyFilter) {
+        ValueMultimap values = new ValueMultimap();
+        values.put(APIConstants.PARAMETER_FEEDID, feedId);
+        for (String type : notifyTypes) {
+            values.put(APIConstants.PARAMETER_NOTIFICATION_TYPES, type);
+        }
+        if (notifyFilter != null )
+            values.put(APIConstants.PARAMETER_NOTIFICATION_FILTER, notifyFilter);
+        APIResponse response = post(buildUrl(APIConstants.PATH_SET_NOTIFICATIONS), values);
+        return response.getResponse(gson, NewsBlurResponse.class);
+    }
+
+    public NewsBlurResponse instaFetch(String feedId) {
+        ValueMultimap values = new ValueMultimap();
+        values.put(APIConstants.PARAMETER_FEEDID, feedId);
+        // this param appears fixed and mandatory for the call to succeed
+        values.put(APIConstants.PARAMETER_RESET_FETCH, APIConstants.VALUE_FALSE);
+        APIResponse response = post(buildUrl(APIConstants.PATH_INSTA_FETCH), values);
         return response.getResponse(gson, NewsBlurResponse.class);
     }
 
