@@ -1246,6 +1246,9 @@ def load_river_stories__redis(request):
     user_search       = None
     offset            = (page-1) * limit
     story_date_order  = "%sstory_date" % ('' if order == 'oldest' else '-')
+
+    if infrequent:
+        feed_ids = Feed.low_volume_feeds(feed_ids)
     
     if story_hashes:
         unread_feed_story_hashes = None
@@ -1276,8 +1279,6 @@ def load_river_stories__redis(request):
         ).order_by('%sstarred_date' % ('-' if order == 'newest' else ''))[offset:offset+limit]
         stories = Feed.format_stories(mstories) 
     else:
-        if infrequent:
-            feed_ids = Feed.low_volume_feeds(feed_ids)
         usersubs = UserSubscription.subs_for_feeds(user.pk, feed_ids=feed_ids,
                                                    read_filter=read_filter)
         all_feed_ids = [f for f in feed_ids]
