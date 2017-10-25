@@ -3244,7 +3244,6 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
-<<<<<<< HEAD
 		174939151C251BFE003D98AA /* MainInterface.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -3253,10 +3252,7 @@
 			name = MainInterface.storyboard;
 			sourceTree = "<group>";
 		};
-		FF2EB7951AA65504002549A7 /* IASKLocalizable.strings */ = {
-=======
 		FF34FD411E9D93CB0062F8ED /* IASKLocalizable.strings */ = {
->>>>>>> master
 			isa = PBXVariantGroup;
 			children = (
 				FF34FD421E9D93CB0062F8ED /* Base */,
