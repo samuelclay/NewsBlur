@@ -2,7 +2,10 @@
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="9531" systemVersion="15C50" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9529"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13174"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="StoryDetailViewController">
@@ -35,7 +38,7 @@
                 <constraint firstItem="LBH-6T-jFu" firstAttribute="centerY" secondItem="1" secondAttribute="centerY" id="T4x-f0-Y9g"/>
                 <constraint firstAttribute="trailing" secondItem="39" secondAttribute="trailing" id="UNS-0C-ycK"/>
                 <constraint firstItem="39" firstAttribute="top" secondItem="1" secondAttribute="top" id="eYc-te-DnY"/>
-                <constraint firstAttribute="bottom" secondItem="39" secondAttribute="bottom" id="nHf-0B-3lN"/>
+                <constraint firstAttribute="bottom" secondItem="39" secondAttribute="bottomMargin" constant="8" id="nHf-0B-3lN"/>
             </constraints>
             <nil key="simulatedStatusBarMetrics"/>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>

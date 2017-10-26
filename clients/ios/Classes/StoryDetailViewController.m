@@ -1245,7 +1245,6 @@
         }
         
         if (appDelegate.storyPageControl.currentPage != self) return;
-        if (!hasScrolled) hasScrolled = YES;
 
         int webpageHeight = self.webView.scrollView.contentSize.height;
         int viewportHeight = self.webView.scrollView.frame.size.height;
@@ -1254,6 +1253,11 @@
         BOOL singlePage = webpageHeight - 200 <= viewportHeight;
         BOOL atBottom = bottomPosition < 150;
         BOOL atTop = topPosition < 10;
+        
+        if (!hasScrolled && topPosition != 0) {
+            hasScrolled = YES;
+        }
+
         if (!atTop && !atBottom && !singlePage) {
             // Hide
             [UIView animateWithDuration:.3 delay:0
@@ -1329,6 +1333,7 @@
     __weak __typeof(&*self)weakSelf = self;
 
     if (position < 0) return;
+    if (!hasScrolled) return;
     
     NSString *storyIdentifier = [NSString stringWithFormat:@"markScrollPosition:%@", [story objectForKey:@"story_hash"]];
     if (queue) {
@@ -1366,8 +1371,8 @@
             while ([cursor next]) {
                 NSDictionary *story = [cursor resultDictionary];
                 id scroll = [story objectForKey:@"scroll"];
-                if ([scroll isKindOfClass:[NSNull class]] && !scrollPct) {
-                    NSLog(@"No scroll found for story: %@", [strongSelf.activeStory objectForKey:@"story_title"]);
+                if (([scroll isKindOfClass:[NSNull class]] || [scroll integerValue] == 0) && !scrollPct) {
+                    NSLog(@" ---> No scroll found for story: %@", [strongSelf.activeStory objectForKey:@"story_title"]);
                     // No scroll found
                     continue;
                 }
@@ -1537,6 +1542,8 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
                             width:[[urlComponents objectAtIndex:5] intValue] 
                            height:[[urlComponents objectAtIndex:6] intValue]];
             return NO; 
+        } else if ([action isEqualToString:@"notify-loaded"]) {
+            [self webViewNotifyLoaded];
         }
     } else if ([url.host hasSuffix:@"itunes.apple.com"]) {
         [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
@@ -1637,10 +1644,12 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         });
     }
 
-    [self scrollToLastPosition:YES];
-
     self.webView.hidden = NO;
     [self.webView setNeedsDisplay];
+}
+
+- (void)webViewNotifyLoaded {
+    [self scrollToLastPosition:YES];
 }
 
 - (void)checkTryFeedStory {
