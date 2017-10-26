@@ -25,15 +25,15 @@
 		1740C6A11C1110BA005EA453 /* theme_color_medium-sel@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1740C6991C1110BA005EA453 /* theme_color_medium-sel@2x.png */; };
 		1740C6A21C1110BA005EA453 /* theme_color_sepia-sel.png in Resources */ = {isa = PBXBuildFile; fileRef = 1740C69A1C1110BA005EA453 /* theme_color_sepia-sel.png */; };
 		1740C6A31C1110BA005EA453 /* theme_color_sepia-sel@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1740C69B1C1110BA005EA453 /* theme_color_sepia-sel@2x.png */; };
-		174939141C251BFE003D98AA /* ShareViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 174939131C251BFE003D98AA /* ShareViewController.m */; };
-		174939171C251BFE003D98AA /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 174939151C251BFE003D98AA /* MainInterface.storyboard */; };
-		1749391B1C251BFE003D98AA /* Share Extension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 174939101C251BFE003D98AA /* Share Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		17432C7A1C533DCC003F8FD6 /* FeedChooserViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 17432C791C533DCC003F8FD6 /* FeedChooserViewController.xib */; };
 		17432C7C1C533E89003F8FD6 /* MenuViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 17432C7B1C533E89003F8FD6 /* MenuViewController.xib */; };
 		17432C7F1C533FBC003F8FD6 /* MenuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 17432C7E1C533FBC003F8FD6 /* MenuViewController.m */; };
 		17432C831C53438D003F8FD6 /* FeedChooserViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 17432C821C53438D003F8FD6 /* FeedChooserViewController.m */; };
 		17432C861C5343C0003F8FD6 /* FeedChooserTitleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 17432C851C5343C0003F8FD6 /* FeedChooserTitleView.m */; };
 		17432C891C534BC6003F8FD6 /* FeedChooserViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 17432C881C534BC6003F8FD6 /* FeedChooserViewCell.m */; };
+		174939141C251BFE003D98AA /* ShareViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 174939131C251BFE003D98AA /* ShareViewController.m */; };
+		174939171C251BFE003D98AA /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 174939151C251BFE003D98AA /* MainInterface.storyboard */; };
+		1749391B1C251BFE003D98AA /* Share Extension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 174939101C251BFE003D98AA /* Share Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		1750658F1C5730FB00072BF5 /* barbutton_selection_off.png in Resources */ = {isa = PBXBuildFile; fileRef = 1750658C1C5730FB00072BF5 /* barbutton_selection_off.png */; };
 		175065901C5730FB00072BF5 /* barbutton_selection_off@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1750658D1C5730FB00072BF5 /* barbutton_selection_off@2x.png */; };
 		175065911C5730FB00072BF5 /* barbutton_selection_off@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1750658E1C5730FB00072BF5 /* barbutton_selection_off@3x.png */; };
@@ -564,7 +564,7 @@
 			proxyType = 1;
 			remoteGlobalIDString = 1749390F1C251BFE003D98AA;
 			remoteInfo = "Share Extension";
-        };
+		};
 		FF8A949D1DE3BB77000A4C31 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
@@ -575,17 +575,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		FF8C49911BBC893B0010D894 /* Embed App Extensions */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 13;
-			files = (
-				1749391B1C251BFE003D98AA /* Share Extension.appex in Embed App Extensions */,
-			);
-			name = "Embed App Extensions";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		FF8A94A31DE3BB77000A4C31 /* Embed App Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -593,6 +582,17 @@
 			dstSubfolderSpec = 13;
 			files = (
 				FF8A949F1DE3BB77000A4C31 /* Story Notification Service Extension.appex in Embed App Extensions */,
+			);
+			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FF8C49911BBC893B0010D894 /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				1749391B1C251BFE003D98AA /* Share Extension.appex in Embed App Extensions */,
 			);
 			name = "Embed App Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -619,12 +619,6 @@
 		1740C6991C1110BA005EA453 /* theme_color_medium-sel@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "theme_color_medium-sel@2x.png"; sourceTree = "<group>"; };
 		1740C69A1C1110BA005EA453 /* theme_color_sepia-sel.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "theme_color_sepia-sel.png"; sourceTree = "<group>"; };
 		1740C69B1C1110BA005EA453 /* theme_color_sepia-sel@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "theme_color_sepia-sel@2x.png"; sourceTree = "<group>"; };
-		174939101C251BFE003D98AA /* Share Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Share Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
-		174939121C251BFE003D98AA /* ShareViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShareViewController.h; sourceTree = "<group>"; };
-		174939131C251BFE003D98AA /* ShareViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ShareViewController.m; sourceTree = "<group>"; };
-		174939161C251BFE003D98AA /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
-		174939181C251BFE003D98AA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		174939211C251E43003D98AA /* Share Extension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "Share Extension.entitlements"; sourceTree = "<group>"; };
 		17432C791C533DCC003F8FD6 /* FeedChooserViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = FeedChooserViewController.xib; path = Classes/FeedChooserViewController.xib; sourceTree = SOURCE_ROOT; };
 		17432C7B1C533E89003F8FD6 /* MenuViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = MenuViewController.xib; path = Classes/MenuViewController.xib; sourceTree = SOURCE_ROOT; };
 		17432C7D1C533FBC003F8FD6 /* MenuViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MenuViewController.h; sourceTree = "<group>"; };
@@ -635,6 +629,12 @@
 		17432C851C5343C0003F8FD6 /* FeedChooserTitleView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FeedChooserTitleView.m; sourceTree = "<group>"; };
 		17432C871C534BC6003F8FD6 /* FeedChooserViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FeedChooserViewCell.h; sourceTree = "<group>"; };
 		17432C881C534BC6003F8FD6 /* FeedChooserViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FeedChooserViewCell.m; sourceTree = "<group>"; };
+		174939101C251BFE003D98AA /* Share Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Share Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		174939121C251BFE003D98AA /* ShareViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShareViewController.h; sourceTree = "<group>"; };
+		174939131C251BFE003D98AA /* ShareViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ShareViewController.m; sourceTree = "<group>"; };
+		174939161C251BFE003D98AA /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
+		174939181C251BFE003D98AA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		174939211C251E43003D98AA /* Share Extension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "Share Extension.entitlements"; sourceTree = "<group>"; };
 		1750658C1C5730FB00072BF5 /* barbutton_selection_off.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = barbutton_selection_off.png; sourceTree = "<group>"; };
 		1750658D1C5730FB00072BF5 /* barbutton_selection_off@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "barbutton_selection_off@2x.png"; sourceTree = "<group>"; };
 		1750658E1C5730FB00072BF5 /* barbutton_selection_off@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "barbutton_selection_off@3x.png"; sourceTree = "<group>"; };
@@ -1126,7 +1126,6 @@
 		FF753CCB175858FC00344EC9 /* fmdb.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = fmdb.m; sourceTree = "<group>"; };
 		FF753CCC175858FC00344EC9 /* FMResultSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMResultSet.h; sourceTree = "<group>"; };
 		FF753CCD175858FC00344EC9 /* FMResultSet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FMResultSet.m; sourceTree = "<group>"; };
-		FF81FB1C1DDE9BF9003FA6B8 /* NewsBlur.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = NewsBlur.entitlements; path = NewsBlur/NewsBlur.entitlements; sourceTree = "<group>"; };
 		FF8364B91755759A008F5C58 /* traverse_text.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = traverse_text.png; sourceTree = "<group>"; };
 		FF8364BA1755759A008F5C58 /* traverse_text@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "traverse_text@2x.png"; sourceTree = "<group>"; };
 		FF8364BD1756949E008F5C58 /* traverse_text_on.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = traverse_text_on.png; sourceTree = "<group>"; };
@@ -1150,12 +1149,12 @@
 		FF877CD21C6541F2007940C3 /* menu_icn_organize@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "menu_icn_organize@2x.png"; sourceTree = "<group>"; };
 		FF88F10B1811BAEC007FEE78 /* unread_green@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "unread_green@2x.png"; sourceTree = "<group>"; };
 		FF88F10C1811BAEC007FEE78 /* unread_green.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = unread_green.png; sourceTree = "<group>"; };
-		FF8C49921BBC9D140010D894 /* NewsBlur.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = NewsBlur.entitlements; path = NewsBlur/NewsBlur.entitlements; sourceTree = "<group>"; };
 		FF8A94971DE3BB77000A4C31 /* Story Notification Service Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Story Notification Service Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		FF8A94991DE3BB77000A4C31 /* NotificationService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NotificationService.h; sourceTree = "<group>"; };
 		FF8A949A1DE3BB77000A4C31 /* NotificationService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NotificationService.m; sourceTree = "<group>"; };
 		FF8A949C1DE3BB77000A4C31 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		FF8AFE561CAC73C9005D9B40 /* unread_blue@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "unread_blue@3x.png"; sourceTree = "<group>"; };
+		FF8C49921BBC9D140010D894 /* NewsBlur.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = NewsBlur.entitlements; path = NewsBlur/NewsBlur.entitlements; sourceTree = "<group>"; };
 		FF8D1EA51BAA304E00725D8A /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
 		FF8D1EA61BAA304E00725D8A /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
 		FF8D1EBD1BAA311000725D8A /* SBJson4.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SBJson4.h; sourceTree = "<group>"; };
@@ -1426,18 +1425,6 @@
 			path = Classes;
 			sourceTree = "<group>";
 		};
-		174939111C251BFE003D98AA /* Share Extension */ = {
-			isa = PBXGroup;
-			children = (
-				174939121C251BFE003D98AA /* ShareViewController.h */,
-				174939131C251BFE003D98AA /* ShareViewController.m */,
-				174939151C251BFE003D98AA /* MainInterface.storyboard */,
-				174939211C251E43003D98AA /* Share Extension.entitlements */,
-				174939181C251BFE003D98AA /* Info.plist */,
-			);
-			path = "Share Extension";
-			sourceTree = "<group>";
-		};
 		17432C801C53425C003F8FD6 /* FeedChooser */ = {
 			isa = PBXGroup;
 			children = (
@@ -1451,6 +1438,18 @@
 				17E635AE1C548C580075338E /* FeedChooserItem.m */,
 			);
 			name = FeedChooser;
+			sourceTree = "<group>";
+		};
+		174939111C251BFE003D98AA /* Share Extension */ = {
+			isa = PBXGroup;
+			children = (
+				174939121C251BFE003D98AA /* ShareViewController.h */,
+				174939131C251BFE003D98AA /* ShareViewController.m */,
+				174939151C251BFE003D98AA /* MainInterface.storyboard */,
+				174939211C251E43003D98AA /* Share Extension.entitlements */,
+				174939181C251BFE003D98AA /* Info.plist */,
+			);
+			path = "Share Extension";
 			sourceTree = "<group>";
 		};
 		1753696F1BE535CF00904D00 /* fonts */ = {
@@ -1501,7 +1500,6 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
-				FF81FB1C1DDE9BF9003FA6B8 /* NewsBlur.entitlements */,
 				080E96DDFE201D6D7F000001 /* Classes */,
 				4307BE511565EDF8007A932A /* Resources */,
 				43D0451C1565BC090085F811 /* Resources-iPad */,
@@ -3619,6 +3617,7 @@
 				1749391D1C251BFE003D98AA /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		1D6058960D05DD3E006BFB54 /* Build configuration list for PBXNativeTarget "NewsBlur" */ = {
 			isa = XCConfigurationList;

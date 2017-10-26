@@ -494,7 +494,7 @@ static UIFont *userLabelFont;
     
     NSUserDefaults *defaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.com.newsblur.NewsBlur-Group"];
     [defaults setObject:[results objectForKey:@"share_ext_token"] forKey:@"share:token"];
-    [defaults setObject:NEWSBLUR_HOST forKey:@"share:host"];
+    [defaults setObject:DEFAULT_NEWSBLUR_URL forKey:@"share:host"];
     [defaults synchronize];
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
