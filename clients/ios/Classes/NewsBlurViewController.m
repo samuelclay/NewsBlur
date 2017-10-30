@@ -152,9 +152,13 @@ static UIFont *userLabelFont;
     [[ThemeManager themeManager] addThemeGestureRecognizerToView:self.feedTitlesTable];
     
     self.notifier = [[NBNotifier alloc] initWithTitle:@"Fetching stories..."
-                                               inView:self.innerView
                                            withOffset:CGPointMake(0, 0)];
     [self.view insertSubview:self.notifier belowSubview:self.feedViewToolbar];
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.notifier attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeWidth multiplier:1.0 constant:0]];
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.notifier attribute:NSLayoutAttributeLeading relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeLeading multiplier:1.0 constant:0]];
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.notifier attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:NOTIFIER_HEIGHT]];
+    self.notifier.topOffsetConstraint = [NSLayoutConstraint constraintWithItem:self.notifier attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.feedViewToolbar attribute:NSLayoutAttributeTop multiplier:1.0 constant:-20];
+    [self.view addConstraint:self.notifier.topOffsetConstraint];
     
 //    self.feedTitlesTable.backgroundColor = UIColorFromRGB(0xf4f4f4);
     self.feedTitlesTable.separatorColor = [UIColor clearColor];
