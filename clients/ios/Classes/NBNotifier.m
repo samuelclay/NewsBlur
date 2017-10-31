@@ -98,7 +98,7 @@
         [self addConstraint:[NSLayoutConstraint constraintWithItem:_txtLabel attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:20]];
         txtLabelLeadingConstraint = [NSLayoutConstraint constraintWithItem:_txtLabel attribute:NSLayoutAttributeLeading relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeLeading multiplier:1.0 constant:32];
         [self addConstraint:txtLabelLeadingConstraint];
-        [self addConstraint:[NSLayoutConstraint constraintWithItem:_txtLabel attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0]];
+        [self addConstraint:[NSLayoutConstraint constraintWithItem:_txtLabel attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:2]];
         
         self.title = title;        
         
@@ -111,7 +111,7 @@
         [self addSubview:self.progressBar];
         [self addConstraint:[NSLayoutConstraint constraintWithItem:self.progressBar attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeTop multiplier:1.0 constant:4]];
         [self addConstraint:[NSLayoutConstraint constraintWithItem:self.progressBar attribute:NSLayoutAttributeLeading relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeLeading multiplier:1.0 constant:0]];
-        [self addConstraint:[NSLayoutConstraint constraintWithItem:self.progressBar attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeHeight multiplier:1.0 constant:1]];
+        [self addConstraint:[NSLayoutConstraint constraintWithItem:self.progressBar attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem: nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:1]];
         progressBarWidthConstraint = [NSLayoutConstraint constraintWithItem:self.progressBar attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:0];
         [self addConstraint:progressBarWidthConstraint];
 
@@ -141,6 +141,12 @@
 
 - (void)setAccessoryView:(UIView *)accessoryView {
     if (_accessoryView) {
+        for (NSLayoutConstraint *constraint in [self constraints]) {
+            if (constraint.firstItem == _accessoryView) {
+                [self removeConstraint:constraint];
+            }
+        }
+
         [_accessoryView removeFromSuperview];
     }
     _accessoryView = accessoryView;
@@ -167,12 +173,17 @@
     
     [self addConstraint:[NSLayoutConstraint constraintWithItem:accessoryView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:32]];
     [self addConstraint:[NSLayoutConstraint constraintWithItem:accessoryView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:20]];
-    [self addConstraint:[NSLayoutConstraint constraintWithItem:accessoryView attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0]];
+    [self addConstraint:[NSLayoutConstraint constraintWithItem:accessoryView attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:2]];
     [self addConstraint:[NSLayoutConstraint constraintWithItem:accessoryView attribute:NSLayoutAttributeLeading relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeLeading multiplier:1.0 constant:offset]];
 }
 
 - (void)setProgress:(float)value {
+    if (progressBarWidthConstraint.constant == value) return;
+    
     progressBarWidthConstraint.constant = value * CGRectGetWidth(self.frame);
+    [UIView animateWithDuration:30.5 animations:^{
+        [self.progressBar layoutIfNeeded];
+    } completion:nil];
 //    self.progressBar.frame = CGRectMake(0, 4, value * self.frame.size.width, 1);
 }
 
@@ -212,8 +223,6 @@
         imageView.contentMode = UIViewContentModeScaleAspectFit;
         self.accessoryView = imageView;
     }
-    
-    [self setNeedsDisplay];
 }
 
 - (void)show {
@@ -227,13 +236,14 @@
 //    self.frame = frame;
     self.hidden = NO;
     
-    [UIView animateWithDuration:time animations:^{
+    topOffsetConstraint.constant = -1 * NOTIFIER_HEIGHT;
+    
+    [UIView animateWithDuration:time*15 animations:^{
 //        CGRect move = self.frame;
 //        move.origin.x = self.view.frame.origin.x + self.offset.x;
 //        move.origin.y = self.view.frame.size.height - NOTIFIER_HEIGHT - self.offset.y;
 //        self.frame = move;
-        topOffsetConstraint.constant = -1 * NOTIFIER_HEIGHT * 2;
-        [self layoutIfNeeded];
+        [self.superview layoutIfNeeded];
     } completion:nil];
 }
 
@@ -248,13 +258,13 @@
 - (void)hideIn:(float)seconds {
     
 //    if (!showing) return;
+    topOffsetConstraint.constant = 0;
     
     [UIView animateWithDuration:seconds animations:^{
 //        CGRect move = self.frame;
 //        move.origin.y = self.view.bounds.size.height - self.offset.y;
 //        self.frame = move;
-        topOffsetConstraint.constant = - 14;
-        [self layoutIfNeeded];
+        [self.superview layoutIfNeeded];
     } completion:^(BOOL finished) {
 //        self.hidden = YES;
     }];

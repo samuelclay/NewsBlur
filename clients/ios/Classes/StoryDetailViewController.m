@@ -1544,6 +1544,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
             return NO; 
         } else if ([action isEqualToString:@"notify-loaded"]) {
             [self webViewNotifyLoaded];
+            return NO;
         }
     } else if ([url.host hasSuffix:@"itunes.apple.com"]) {
         [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
