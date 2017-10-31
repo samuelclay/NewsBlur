@@ -44,7 +44,7 @@ typedef enum {
 - (id)initWithTitle:(NSString *)title style:(NBNotifierStyle)style withOffset:(CGPoint)offset;
 
 - (void) didChangedOrientation:(NSNotification *)sender;
-- (void)setProgress:(float)value;
+- (void)setProgress:(CGFloat)value;
 
 - (void)show;
 - (void)showIn:(float)time;

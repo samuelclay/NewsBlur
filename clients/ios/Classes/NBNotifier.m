@@ -112,7 +112,7 @@
         [self addConstraint:[NSLayoutConstraint constraintWithItem:self.progressBar attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeTop multiplier:1.0 constant:4]];
         [self addConstraint:[NSLayoutConstraint constraintWithItem:self.progressBar attribute:NSLayoutAttributeLeading relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeLeading multiplier:1.0 constant:0]];
         [self addConstraint:[NSLayoutConstraint constraintWithItem:self.progressBar attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem: nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:1]];
-        progressBarWidthConstraint = [NSLayoutConstraint constraintWithItem:self.progressBar attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:0];
+        progressBarWidthConstraint = [NSLayoutConstraint constraintWithItem:self.progressBar attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeWidth multiplier:0.0 constant:0];
         [self addConstraint:progressBarWidthConstraint];
 
         
@@ -124,20 +124,6 @@
     
     return self;
 }
-
-- (void) setNeedsLayout {
-    [super setNeedsLayout];
-    [self didChangedOrientation:nil];
-}
-
-- (void) didChangedOrientation:(NSNotification *)sender {
-//    UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
-//    NSLog(@"Notifier changed orieintation to: %ld (%@/%@)", (long)orientation, NSStringFromCGRect(self.frame), NSStringFromCGRect(self.view.frame));
-//    [self setView:self.view];
-    progressBarWidthConstraint.constant = 0;
-//    self.progressBar.frame = CGRectMake(0, 4, 0, 1);
-}
-
 
 - (void)setAccessoryView:(UIView *)accessoryView {
     if (_accessoryView) {
@@ -175,14 +161,17 @@
     [self addConstraint:[NSLayoutConstraint constraintWithItem:accessoryView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:20]];
     [self addConstraint:[NSLayoutConstraint constraintWithItem:accessoryView attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:2]];
     [self addConstraint:[NSLayoutConstraint constraintWithItem:accessoryView attribute:NSLayoutAttributeLeading relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeLeading multiplier:1.0 constant:offset]];
+    
+    [self layoutIfNeeded];
 }
 
-- (void)setProgress:(float)value {
-    if (progressBarWidthConstraint.constant == value) return;
+- (void)setProgress:(CGFloat)value {
+    [self removeConstraint:progressBarWidthConstraint];
+    progressBarWidthConstraint = [NSLayoutConstraint constraintWithItem:self.progressBar attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeWidth multiplier:value constant:0];
+    [self addConstraint:progressBarWidthConstraint];
     
-    progressBarWidthConstraint.constant = value * CGRectGetWidth(self.frame);
-    [UIView animateWithDuration:30.5 animations:^{
-        [self.progressBar layoutIfNeeded];
+    [UIView animateWithDuration:0.5 animations:^{
+        [self layoutIfNeeded];
     } completion:nil];
 //    self.progressBar.frame = CGRectMake(0, 4, value * self.frame.size.width, 1);
 }
@@ -238,7 +227,7 @@
     
     topOffsetConstraint.constant = -1 * NOTIFIER_HEIGHT;
     
-    [UIView animateWithDuration:time*15 animations:^{
+    [UIView animateWithDuration:time animations:^{
 //        CGRect move = self.frame;
 //        move.origin.x = self.view.frame.origin.x + self.offset.x;
 //        move.origin.y = self.view.frame.size.height - NOTIFIER_HEIGHT - self.offset.y;
