@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="13196" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="13196" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina5_9" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13173"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13174"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <customFonts key="customFonts">
@@ -45,10 +46,10 @@
                     </connections>
                 </scrollView>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="75">
-                    <rect key="frame" x="16" y="627" width="343" height="51"/>
+                    <rect key="frame" x="0.0" y="627" width="375" height="51"/>
                     <subviews>
                         <imageView userInteractionEnabled="NO" contentMode="scaleToFill" image="traverse_background.png" translatesAutoresizingMaskIntoConstraints="NO" id="71">
-                            <rect key="frame" x="177" y="4" width="160" height="44"/>
+                            <rect key="frame" x="209" y="4" width="160" height="44"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="44" id="IFH-LS-Jje"/>
                                 <constraint firstAttribute="width" constant="160" id="kwh-gV-kd6"/>
@@ -62,7 +63,7 @@
                             </constraints>
                         </imageView>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="64">
-                            <rect key="frame" x="183" y="9" width="43" height="34"/>
+                            <rect key="frame" x="215" y="9" width="43" height="34"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="34" id="FnC-xb-r8x"/>
                                 <constraint firstAttribute="width" constant="43" id="Z6I-Ot-2Bv"/>
@@ -82,7 +83,7 @@
                             </connections>
                         </button>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="62">
-                            <rect key="frame" x="227" y="9" width="104" height="34"/>
+                            <rect key="frame" x="259" y="9" width="104" height="34"/>
                             <constraints>
                                 <constraint firstAttribute="width" constant="104" id="HmV-1Q-KBz"/>
                                 <constraint firstAttribute="height" constant="34" id="aS7-gc-RoE"/>
@@ -151,7 +152,7 @@
                             </connections>
                         </button>
                         <activityIndicatorView opaque="NO" contentMode="scaleToFill" hidesWhenStopped="YES" animating="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="73">
-                            <rect key="frame" x="233" y="16" width="20" height="20"/>
+                            <rect key="frame" x="265" y="16" width="20" height="20"/>
                             <constraints>
                                 <constraint firstAttribute="width" constant="20" id="GOD-rV-vW8"/>
                                 <constraint firstAttribute="height" constant="20" id="Ksw-lV-QhR"/>
@@ -236,19 +237,20 @@
             </subviews>
             <color key="backgroundColor" red="0.43529411759999997" green="0.4431372549" blue="0.47450980390000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <constraints>
-                <constraint firstItem="5" firstAttribute="trailing" secondItem="3" secondAttribute="trailingMargin" constant="16" id="A4p-mh-u6O"/>
+                <constraint firstItem="5" firstAttribute="trailing" secondItem="ir3-jV-2M5" secondAttribute="trailing" id="A4p-mh-u6O"/>
                 <constraint firstItem="5" firstAttribute="bottom" secondItem="3" secondAttribute="bottom" id="AOS-qV-fjZ"/>
                 <constraint firstItem="YKz-PZ-s0t" firstAttribute="leading" secondItem="3" secondAttribute="leading" id="G7a-2g-nwC"/>
-                <constraint firstItem="5" firstAttribute="leading" secondItem="3" secondAttribute="leadingMargin" constant="-16" id="Pnz-qi-mdZ"/>
+                <constraint firstItem="5" firstAttribute="leading" secondItem="ir3-jV-2M5" secondAttribute="leading" id="Pnz-qi-mdZ"/>
                 <constraint firstAttribute="bottomMargin" secondItem="YKz-PZ-s0t" secondAttribute="bottom" id="VJX-b2-ors"/>
-                <constraint firstItem="75" firstAttribute="leading" secondItem="3" secondAttribute="leadingMargin" id="htz-P9-PfM"/>
-                <constraint firstItem="75" firstAttribute="trailing" secondItem="3" secondAttribute="trailingMargin" id="k4E-iI-ANK"/>
+                <constraint firstItem="75" firstAttribute="leading" secondItem="5" secondAttribute="leading" id="htz-P9-PfM"/>
+                <constraint firstItem="75" firstAttribute="trailingMargin" secondItem="5" secondAttribute="trailingMargin" id="k4E-iI-ANK"/>
                 <constraint firstAttribute="trailing" secondItem="YKz-PZ-s0t" secondAttribute="trailing" id="oHo-v4-1KC"/>
                 <constraint firstItem="YKz-PZ-s0t" firstAttribute="top" secondItem="75" secondAttribute="bottom" id="rgF-mh-lia"/>
                 <constraint firstItem="5" firstAttribute="top" secondItem="3" secondAttribute="top" id="sgh-qa-2V3"/>
             </constraints>
             <nil key="simulatedStatusBarMetrics"/>
             <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" translucent="NO" prompted="NO"/>
+            <viewLayoutGuide key="safeArea" id="ir3-jV-2M5"/>
             <point key="canvasLocation" x="301" y="481"/>
         </view>
     </objects>
