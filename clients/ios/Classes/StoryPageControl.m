@@ -162,7 +162,19 @@
                                                      target:self
                                                      action:@selector(showOriginalSubview:)];
     originalStoryButton.accessibilityLabel = @"Show original story";
+
+    separatorBarButton2 = [UIBarButtonItem barItemWithImage:separatorImage
+                                                                      target:nil
+                                                                      action:nil];
+    [separatorBarButton2 setEnabled:NO];
+    separatorBarButton2.isAccessibilityElement = NO;
     
+    UIImage *markReadImage = [UIImage imageNamed:@"markread.png"];
+    markReadBarButton = [UIBarButtonItem barItemWithImage:markReadImage
+                                                                    target:self
+                                                                    action:@selector(markAllRead:)];
+    markReadBarButton.accessibilityLabel = @"Mark all as read";
+
     UIBarButtonItem *subscribeBtn = [[UIBarButtonItem alloc]
                                      initWithTitle:@"Follow User"
                                      style:UIBarButtonItemStylePlain
@@ -939,10 +951,19 @@
 //    [self.view setNeedsLayout];
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        self.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects:
-                                                   originalStoryButton,
-                                                   separatorBarButton,
-                                                   fontSettingsButton, nil];
+        if (appDelegate.masterContainerViewController.storyTitlesOnLeft) {
+            self.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects:
+                                                       originalStoryButton,
+                                                       separatorBarButton,
+                                                       fontSettingsButton, nil];
+        } else {
+            self.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects:
+                                                       originalStoryButton,
+                                                       separatorBarButton,
+                                                       fontSettingsButton,
+                                                       separatorBarButton2,
+                                                       markReadBarButton, nil];
+        }
     }
     
     [self setNextPreviousButtons];
@@ -970,6 +991,10 @@
 
 #pragma mark -
 #pragma mark Actions
+
+- (IBAction)markAllRead:(id)sender {
+    [appDelegate.feedDetailViewController doOpenMarkReadMenu:markReadBarButton];
+}
 
 - (void)setNextPreviousButtons {
     // setting up the PREV BUTTON

@@ -19,6 +19,8 @@
     UIButton *buttonPrevious;
     UIButton *buttonNext;
     UIButton *buttonText;
+    UIBarButtonItem *markReadBarButton;
+    UIBarButtonItem *separatorBarButton2;
     UIActivityIndicatorView *loadingIndicator;
     UIBarButtonItem *buttonBack;
     UIView *traverseView;

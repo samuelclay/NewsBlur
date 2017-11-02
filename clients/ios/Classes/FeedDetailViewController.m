@@ -1849,7 +1849,10 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         visibleUnreadCount = 0;
     }
     
-    [self.appDelegate showMarkReadMenuWithFeedIds:feedIds collectionTitle:collectionTitle visibleUnreadCount:visibleUnreadCount barButtonItem:self.feedMarkReadButton completionHandler:^(BOOL marked){
+    UIBarButtonItem *barButton = self.feedMarkReadButton;
+    if (sender && [sender isKindOfClass:[UIBarButtonItem class]]) barButton = sender;
+    
+    [self.appDelegate showMarkReadMenuWithFeedIds:feedIds collectionTitle:collectionTitle visibleUnreadCount:visibleUnreadCount barButtonItem:barButton completionHandler:^(BOOL marked){
         if (marked) {
             pop();
         }
