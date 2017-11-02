@@ -129,7 +129,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                     return;
                 }
                 if (errorThrown == "timeout") textStatus = "NewsBlur timed out trying<br />to connect. Just try again.";
-                if (error_callback) {
+                if (error_callback && _.isFunction(error_callback)) {
                     error_callback(e, textStatus, errorThrown);
                 } else if ($.isFunction(callback)) {
                     var message = "Please create an account. Not much<br />to do without an account.";
@@ -714,7 +714,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         };
         
         this.feed_id = feed_id;
-        
+
         this.make_request('/reader/river_stories', options, pre_callback, error_callback, {
             'ajax_group': (page ? 'feed_page' : 'feed'),
             'request_type': 'GET'

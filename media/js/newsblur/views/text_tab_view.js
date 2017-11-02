@@ -160,8 +160,8 @@ NEWSBLUR.Views.TextTabView = Backbone.View.extend({
     
     select_story: function(story, selected) {
         if (!selected) return;
-        
-        this.hide_loading();
+
+        // this.hide_loading(); // Not sure why this is here?
         
         if ((NEWSBLUR.reader.story_view == 'text' &&
              _.contains(['split', 'full'], NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout')))) {
