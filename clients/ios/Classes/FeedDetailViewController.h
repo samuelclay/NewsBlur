@@ -88,6 +88,7 @@
 - (void)loadStory:(FeedDetailTableCell *)cell atRow:(NSInteger)row;
 - (void)redrawUnreadStory;
 - (IBAction)doOpenMarkReadMenu:(id)sender;
+- (IBAction)doOpenMarkReadMenu:(id)sender;
 - (IBAction)doOpenSettingsMenu:(id)sender;
 - (void)confirmDeleteSite;
 - (void)confirmMuteSite;

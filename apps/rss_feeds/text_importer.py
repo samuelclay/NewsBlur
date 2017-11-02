@@ -69,6 +69,10 @@ class TextImporter:
             return
         
         doc = resp.json()
+        if doc.get('error', False):
+            logging.user(self.request, "~SN~FRFailed~FY to fetch ~FGoriginal text~FY: %s" % doc.get('messages', "[unknown merucry error]"))
+            return
+        
         text = doc['content']
         title = doc['title']
         url = doc['url']

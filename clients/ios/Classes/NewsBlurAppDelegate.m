@@ -3354,16 +3354,18 @@
 
 - (void)markScrollPosition:(NSInteger)position inStory:(NSDictionary *)story {
     if (position < 0) return;
+    __block NSNumber *positionNum = @(position);
+    __block NSDictionary *storyDict = story;
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW,
                                              (unsigned long)NULL), ^(void) {
         [self.database inDatabase:^(FMDatabase *db) {
-//            NSLog(@"Saving scroll %ld in %@-%@", position, [story objectForKey:@"story_hash"], [story objectForKey:@"story_title"]);
+            NSLog(@"Saving scroll %ld in %@-%@", [positionNum integerValue], [storyDict objectForKey:@"story_hash"], [storyDict objectForKey:@"story_title"]);
             [db executeUpdate:@"INSERT INTO story_scrolls (story_feed_id, story_hash, story_timestamp, scroll) VALUES (?, ?, ?, ?)",
-             [story objectForKey:@"story_feed_id"],
-             [story objectForKey:@"story_hash"],
-             [story objectForKey:@"story_timestamp"],
-             [NSNumber numberWithInteger:position]];
+             [storyDict objectForKey:@"story_feed_id"],
+             [storyDict objectForKey:@"story_hash"],
+             [storyDict objectForKey:@"story_timestamp"],
+             positionNum];
         }];
     });
 }

@@ -162,7 +162,19 @@
                                                      target:self
                                                      action:@selector(showOriginalSubview:)];
     originalStoryButton.accessibilityLabel = @"Show original story";
+
+    separatorBarButton2 = [UIBarButtonItem barItemWithImage:separatorImage
+                                                                      target:nil
+                                                                      action:nil];
+    [separatorBarButton2 setEnabled:NO];
+    separatorBarButton2.isAccessibilityElement = NO;
     
+    UIImage *markReadImage = [UIImage imageNamed:@"markread.png"];
+    markReadBarButton = [UIBarButtonItem barItemWithImage:markReadImage
+                                                                    target:self
+                                                                    action:@selector(markAllRead:)];
+    markReadBarButton.accessibilityLabel = @"Mark all as read";
+
     UIBarButtonItem *subscribeBtn = [[UIBarButtonItem alloc]
                                      initWithTitle:@"Follow User"
                                      style:UIBarButtonItemStylePlain
@@ -181,9 +193,13 @@
     self.buttonBack = backButton;
     
     self.notifier = [[NBNotifier alloc] initWithTitle:@"Fetching text..."
-                                               inView:self.view
                                            withOffset:CGPointMake(0.0, 0.0 /*self.bottomSize.frame.size.height*/)];
     [self.view addSubview:self.notifier];
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.notifier attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeWidth multiplier:1.0 constant:0]];
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.notifier attribute:NSLayoutAttributeLeading relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeLeading multiplier:1.0 constant:0]];
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.notifier attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:NOTIFIER_HEIGHT]];
+    self.notifier.topOffsetConstraint = [NSLayoutConstraint constraintWithItem:self.notifier attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0];
+    [self.view addConstraint:self.notifier.topOffsetConstraint];
     [self.notifier hideNow];
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
@@ -935,10 +951,19 @@
 //    [self.view setNeedsLayout];
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        self.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects:
-                                                   originalStoryButton,
-                                                   separatorBarButton,
-                                                   fontSettingsButton, nil];
+        if (appDelegate.masterContainerViewController.storyTitlesOnLeft) {
+            self.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects:
+                                                       originalStoryButton,
+                                                       separatorBarButton,
+                                                       fontSettingsButton, nil];
+        } else {
+            self.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects:
+                                                       originalStoryButton,
+                                                       separatorBarButton,
+                                                       fontSettingsButton,
+                                                       separatorBarButton2,
+                                                       markReadBarButton, nil];
+        }
     }
     
     [self setNextPreviousButtons];
@@ -966,6 +991,10 @@
 
 #pragma mark -
 #pragma mark Actions
+
+- (IBAction)markAllRead:(id)sender {
+    [appDelegate.feedDetailViewController doOpenMarkReadMenu:markReadBarButton];
+}
 
 - (void)setNextPreviousButtons {
     // setting up the PREV BUTTON

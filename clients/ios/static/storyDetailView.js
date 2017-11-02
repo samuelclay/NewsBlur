@@ -211,9 +211,15 @@ function attachFastClick() {
     }
 }
 
+function notifyLoaded() {
+    var url = "http://ios.newsblur.com/notify-loaded";
+    window.location = url;
+}
+
 loadImages();
 fitVideos();
 
 Zepto(function($) {
       attachFastClick();
+      notifyLoaded();
 });

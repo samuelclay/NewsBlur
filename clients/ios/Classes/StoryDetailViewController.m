@@ -29,7 +29,8 @@
 #import "UIView+ViewController.h"
 #import "JNWThrottledBlock.h"
 
-#define iPadPro ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad && ([UIScreen mainScreen].bounds.size.height == 1366 || [UIScreen mainScreen].bounds.size.width == 1366))
+#define iPadPro12 ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad && ([UIScreen mainScreen].bounds.size.height == 1366 || [UIScreen mainScreen].bounds.size.width == 1366))
+#define iPadPro10 ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad && ([UIScreen mainScreen].bounds.size.height == 1112 || [UIScreen mainScreen].bounds.size.width == 1112))
 
 @interface StoryDetailViewController ()
 
@@ -397,14 +398,18 @@
 //    NSLog(@"Drawing story: %@ / %d", [self.activeStory objectForKey:@"story_title"], contentWidth);
     
     if (UIInterfaceOrientationIsLandscape(orientation) && !self.isPhoneOrCompact) {
-        if (iPadPro) {
-            contentWidthClass = @"NB-ipad-wide NB-ipad-pro-wide";
+        if (iPadPro12) {
+            contentWidthClass = @"NB-ipad-wide NB-ipad-pro-12-wide";
+        } else if (iPadPro10) {
+            contentWidthClass = @"NB-ipad-wide NB-ipad-pro-10-wide";
         } else {
             contentWidthClass = @"NB-ipad-wide";
         }
     } else if (!UIInterfaceOrientationIsLandscape(orientation) && !self.isPhoneOrCompact) {
-        if (iPadPro) {
-            contentWidthClass = @"NB-ipad-narrow NB-ipad-pro-narrow";
+        if (iPadPro12) {
+            contentWidthClass = @"NB-ipad-narrow NB-ipad-pro-12-narrow";
+        } else if (iPadPro10) {
+            contentWidthClass = @"NB-ipad-narrow NB-ipad-pro-10-narrow";
         } else {
             contentWidthClass = @"NB-ipad-narrow";
         }
@@ -1245,7 +1250,6 @@
         }
         
         if (appDelegate.storyPageControl.currentPage != self) return;
-        if (!hasScrolled) hasScrolled = YES;
 
         int webpageHeight = self.webView.scrollView.contentSize.height;
         int viewportHeight = self.webView.scrollView.frame.size.height;
@@ -1254,6 +1258,11 @@
         BOOL singlePage = webpageHeight - 200 <= viewportHeight;
         BOOL atBottom = bottomPosition < 150;
         BOOL atTop = topPosition < 10;
+        
+        if (!hasScrolled && topPosition != 0) {
+            hasScrolled = YES;
+        }
+
         if (!atTop && !atBottom && !singlePage) {
             // Hide
             [UIView animateWithDuration:.3 delay:0
@@ -1329,6 +1338,7 @@
     __weak __typeof(&*self)weakSelf = self;
 
     if (position < 0) return;
+    if (!hasScrolled) return;
     
     NSString *storyIdentifier = [NSString stringWithFormat:@"markScrollPosition:%@", [story objectForKey:@"story_hash"]];
     if (queue) {
@@ -1366,8 +1376,8 @@
             while ([cursor next]) {
                 NSDictionary *story = [cursor resultDictionary];
                 id scroll = [story objectForKey:@"scroll"];
-                if ([scroll isKindOfClass:[NSNull class]] && !scrollPct) {
-                    NSLog(@"No scroll found for story: %@", [strongSelf.activeStory objectForKey:@"story_title"]);
+                if (([scroll isKindOfClass:[NSNull class]] || [scroll integerValue] == 0) && !scrollPct) {
+                    NSLog(@" ---> No scroll found for story: %@", [strongSelf.activeStory objectForKey:@"story_title"]);
                     // No scroll found
                     continue;
                 }
@@ -1537,6 +1547,9 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
                             width:[[urlComponents objectAtIndex:5] intValue] 
                            height:[[urlComponents objectAtIndex:6] intValue]];
             return NO; 
+        } else if ([action isEqualToString:@"notify-loaded"]) {
+            [self webViewNotifyLoaded];
+            return NO;
         }
     } else if ([url.host hasSuffix:@"itunes.apple.com"]) {
         [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
@@ -1637,10 +1650,12 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         });
     }
 
-    [self scrollToLastPosition:YES];
-
     self.webView.hidden = NO;
     [self.webView setNeedsDisplay];
+}
+
+- (void)webViewNotifyLoaded {
+    [self scrollToLastPosition:YES];
 }
 
 - (void)checkTryFeedStory {
@@ -2180,14 +2195,18 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     NSString *contentWidthClass;
 
     if (UIInterfaceOrientationIsLandscape(orientation) && !self.isPhoneOrCompact) {
-        if (iPadPro) {
-            contentWidthClass = @"NB-ipad-wide NB-ipad-pro-wide";
+        if (iPadPro12) {
+            contentWidthClass = @"NB-ipad-wide NB-ipad-pro-12-wide";
+        } else if (iPadPro10) {
+            contentWidthClass = @"NB-ipad-wide NB-ipad-pro-10-wide";
         } else {
             contentWidthClass = @"NB-ipad-wide";
         }
     } else if (!UIInterfaceOrientationIsLandscape(orientation) && !self.isPhoneOrCompact) {
-        if (iPadPro) {
-            contentWidthClass = @"NB-ipad-narrow NB-ipad-pro-narrow";
+        if (iPadPro12) {
+            contentWidthClass = @"NB-ipad-narrow NB-ipad-pro-12-narrow";
+        } else if (iPadPro10) {
+            contentWidthClass = @"NB-ipad-narrow NB-ipad-pro-10-narrow";
         } else {
             contentWidthClass = @"NB-ipad-narrow";
         }
