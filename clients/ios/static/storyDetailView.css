@@ -569,14 +569,24 @@ div + p {
     width: 600px !important;
 }
 
-.NB-ipad-pro-narrow .NB-story img.NB-large-image {
-    max-width: 754px;
+.NB-ipad-pro-12-narrow .NB-story img.NB-large-image {
+    max-width: 755px;
     margin-left: -30px !important;
-    width: 754px !important;
+    width: 755px !important;
 }
-.NB-ipad-pro-narrow.NB-width-1024 .NB-story img.NB-large-image {
+.NB-ipad-pro-12-narrow.NB-width-1024 .NB-story img.NB-large-image {
     max-width: 1024px;
     width: 1024px !important;
+}
+
+.NB-ipad-pro-10-narrow .NB-story img.NB-large-image {
+    max-width: 565px;
+    margin-left: -30px !important;
+    width: 565px !important;
+}
+.NB-ipad-pro-10-narrow.NB-width-834 .NB-story img.NB-large-image {
+    max-width: 834px;
+    width: 834px !important;
 }
 
 .NB-ipad-wide .NB-story img.NB-large-image {
@@ -585,10 +595,16 @@ div + p {
     width: 656px !important;
 }
 
-.NB-ipad-pro-wide .NB-story img.NB-large-image {
-    max-width: 996px;
+.NB-ipad-pro-12-wide .NB-story img.NB-large-image {
+    max-width: 997px;
     margin-left: -90px !important;
-    width: 996px !important;
+    width: 997px !important;
+}
+
+.NB-ipad-pro-10-wide .NB-story img.NB-large-image {
+    max-width: 743px;
+    margin-left: -90px !important;
+    width: 743px !important;
 }
 
 .NB-iphone-wide .NB-story img.NB-large-image {

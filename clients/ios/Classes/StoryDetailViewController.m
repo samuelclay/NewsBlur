@@ -29,7 +29,8 @@
 #import "UIView+ViewController.h"
 #import "JNWThrottledBlock.h"
 
-#define iPadPro ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad && ([UIScreen mainScreen].bounds.size.height == 1366 || [UIScreen mainScreen].bounds.size.width == 1366))
+#define iPadPro12 ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad && ([UIScreen mainScreen].bounds.size.height == 1366 || [UIScreen mainScreen].bounds.size.width == 1366))
+#define iPadPro10 ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad && ([UIScreen mainScreen].bounds.size.height == 1112 || [UIScreen mainScreen].bounds.size.width == 1112))
 
 @interface StoryDetailViewController ()
 
@@ -397,14 +398,18 @@
 //    NSLog(@"Drawing story: %@ / %d", [self.activeStory objectForKey:@"story_title"], contentWidth);
     
     if (UIInterfaceOrientationIsLandscape(orientation) && !self.isPhoneOrCompact) {
-        if (iPadPro) {
-            contentWidthClass = @"NB-ipad-wide NB-ipad-pro-wide";
+        if (iPadPro12) {
+            contentWidthClass = @"NB-ipad-wide NB-ipad-pro-12-wide";
+        } else if (iPadPro10) {
+            contentWidthClass = @"NB-ipad-wide NB-ipad-pro-10-wide";
         } else {
             contentWidthClass = @"NB-ipad-wide";
         }
     } else if (!UIInterfaceOrientationIsLandscape(orientation) && !self.isPhoneOrCompact) {
-        if (iPadPro) {
-            contentWidthClass = @"NB-ipad-narrow NB-ipad-pro-narrow";
+        if (iPadPro12) {
+            contentWidthClass = @"NB-ipad-narrow NB-ipad-pro-12-narrow";
+        } else if (iPadPro10) {
+            contentWidthClass = @"NB-ipad-narrow NB-ipad-pro-10-narrow";
         } else {
             contentWidthClass = @"NB-ipad-narrow";
         }
@@ -2190,14 +2195,18 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     NSString *contentWidthClass;
 
     if (UIInterfaceOrientationIsLandscape(orientation) && !self.isPhoneOrCompact) {
-        if (iPadPro) {
-            contentWidthClass = @"NB-ipad-wide NB-ipad-pro-wide";
+        if (iPadPro12) {
+            contentWidthClass = @"NB-ipad-wide NB-ipad-pro-12-wide";
+        } else if (iPadPro10) {
+            contentWidthClass = @"NB-ipad-wide NB-ipad-pro-10-wide";
         } else {
             contentWidthClass = @"NB-ipad-wide";
         }
     } else if (!UIInterfaceOrientationIsLandscape(orientation) && !self.isPhoneOrCompact) {
-        if (iPadPro) {
-            contentWidthClass = @"NB-ipad-narrow NB-ipad-pro-narrow";
+        if (iPadPro12) {
+            contentWidthClass = @"NB-ipad-narrow NB-ipad-pro-12-narrow";
+        } else if (iPadPro10) {
+            contentWidthClass = @"NB-ipad-narrow NB-ipad-pro-10-narrow";
         } else {
             contentWidthClass = @"NB-ipad-narrow";
         }
