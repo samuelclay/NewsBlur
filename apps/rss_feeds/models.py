@@ -2690,7 +2690,7 @@ class MStory(mongo.Document):
             feed = Feed.get_by_id(self.story_feed_id)
             ti = TextImporter(self, feed=feed, request=request, debug=debug)
             original_doc = ti.fetch(return_document=True)
-            original_text = original_doc.get('content')
+            original_text = original_doc.get('content') if original_doc else None
             if original_doc and original_doc.get('image', False):
                 self.image_urls = [original_doc['image']]
             else:
