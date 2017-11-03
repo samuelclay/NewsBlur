@@ -76,8 +76,9 @@ class TextImporter:
         text = doc['content']
         title = doc['title']
         url = doc['url']
+        image = doc['lead_image_url']
         
-        return self.process_content(text, title, url, skip_save=skip_save, return_document=return_document)
+        return self.process_content(text, title, url, image, skip_save=skip_save, return_document=return_document)
         
     def fetch_manually(self, skip_save=False, return_document=False):
         try:
@@ -122,15 +123,16 @@ class TextImporter:
             title = original_text_doc.title()
         except TypeError:
             title = ""
+
         url = resp.url
         
         if content:
             content = self.rewrite_content(content)
     
-        return self.process_content(content, title, url, skip_save=skip_save, return_document=return_document,
+        return self.process_content(content, title, url, image=None, skip_save=skip_save, return_document=return_document,
                                     original_text_doc=original_text_doc)
         
-    def process_content(self, content, title, url, skip_save=False, return_document=False, original_text_doc=None):
+    def process_content(self, content, title, url, image, skip_save=False, return_document=False, original_text_doc=None):
         original_story_content = self.story and self.story.story_content_z and zlib.decompress(self.story.story_content_z)
         if not original_story_content:
             original_story_content = ""
@@ -151,9 +153,9 @@ class TextImporter:
                 len(original_story_content)
             )), warn_color=False)
             return
-
+        
         if return_document:
-            return dict(content=content, title=title, url=url, doc=original_text_doc)
+            return dict(content=content, title=title, url=url, doc=original_text_doc, image=image)
 
         return content
 
