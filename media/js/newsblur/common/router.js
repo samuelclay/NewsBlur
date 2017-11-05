@@ -93,6 +93,9 @@ NEWSBLUR.Router = Backbone.Router.extend({
 
         if (folder_name == "everything") {
             NEWSBLUR.reader.open_river_stories(null, null, options);
+        } else if (folder_name == "infrequent") {
+            options.infrequent = NEWSBLUR.assets.preference('infrequent_stories_per_month');
+            NEWSBLUR.reader.open_river_stories(null, null, options);
         } else if (folder_name == "blurblogs") {
             NEWSBLUR.reader.open_river_blurblogs_stories(options);
         } else if (folder_name == "global blurblogs") {

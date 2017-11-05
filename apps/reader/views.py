@@ -1239,12 +1239,18 @@ def load_river_stories__redis(request):
     include_hidden    = is_true(request.REQUEST.get('include_hidden', False))
     include_feeds     = is_true(request.REQUEST.get('include_feeds', False))
     initial_dashboard = is_true(request.REQUEST.get('initial_dashboard', False))
+    infrequent        = is_true(request.REQUEST.get('infrequent', False))
+    if infrequent:
+        infrequent = request.REQUEST.get('infrequent')
     now               = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
     usersubs          = []
     code              = 1
     user_search       = None
     offset            = (page-1) * limit
     story_date_order  = "%sstory_date" % ('' if order == 'oldest' else '-')
+
+    if infrequent:
+        feed_ids = Feed.low_volume_feeds(feed_ids, stories_per_month=infrequent)
     
     if story_hashes:
         unread_feed_story_hashes = None
@@ -1390,10 +1396,11 @@ def load_river_stories__redis(request):
         #     stories = stories[:5]
     diff = time.time() - start
     timediff = round(float(diff), 2)
-    logging.user(request, "~FYLoading ~FCriver stories~FY: ~SBp%s~SN (%s/%s "
+    logging.user(request, "~FYLoading ~FC%sriver stories~FY: ~SBp%s~SN (%s/%s "
                                "stories, ~SN%s/%s/%s feeds, %s/%s)" % 
-                               (page, len(stories), len(mstories), len(found_feed_ids), 
-                               len(feed_ids), len(original_feed_ids), order, read_filter))
+                               ("~FB~SBinfrequent~SN~FC " if infrequent else "",
+                                page, len(stories), len(mstories), len(found_feed_ids), 
+                                len(feed_ids), len(original_feed_ids), order, read_filter))
 
 
     if not include_hidden:

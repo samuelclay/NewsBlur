@@ -325,6 +325,16 @@ class Feed(models.Model):
         # r2.expire('zF:%s' % self.pk, settings.DAYS_OF_STORY_HASHES*24*60*60)
     
     @classmethod
+    def low_volume_feeds(cls, feed_ids, stories_per_month=30):
+        try:
+            stories_per_month = int(stories_per_month)
+        except ValueError:
+            stories_per_month = 30
+        feeds = Feed.objects.filter(pk__in=feed_ids, average_stories_per_month__lte=stories_per_month).only('pk')
+        
+        return [f.pk for f in feeds]
+        
+    @classmethod
     def autocomplete(self, prefix, limit=5):
         results = SearchFeed.query(prefix)
         feed_ids = [result.feed_id for result in results[:5]]

@@ -12204,6 +12204,11 @@ form.opml_import_form input {
 .NB-filter-popover .segmented-control.NB-feed-notification-types li {
     width: 44px;
 }
+.NB-filter-popover .segmented-control.NB-menu-manage-view-setting-infrequent li {
+    width: auto;
+    padding-left: 10px;
+    padding-right: 10px;
+}
 .NB-filter-popover .segmented-control .NB-unread-icon,
 .NB-filter-popover .segmented-control .NB-focus-icon {
     height: 17px;
@@ -12261,6 +12266,14 @@ form.opml_import_form input {
 .NB-filter-popover-notifications-icon {
     background: transparent url("/media/embed/icons/circular/menu_icn_notifications.png") no-repeat center center;
     background-size: 32px;
+}
+.NB-feedbar-notifications-icon {
+    background: transparent url("/media/embed/icons/circular/menu_icn_notifications.png") no-repeat center center;
+    background-size: 12px;
+    width: 12px;
+    height: 12px;
+    display: inline-block;
+    margin: 0px 0 -2px 0;
 }
 
 /* =========== */

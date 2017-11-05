@@ -129,7 +129,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                     return;
                 }
                 if (errorThrown == "timeout") textStatus = "NewsBlur timed out trying<br />to connect. Just try again.";
-                if (error_callback) {
+                if (error_callback && _.isFunction(error_callback)) {
                     error_callback(e, textStatus, errorThrown);
                 } else if ($.isFunction(callback)) {
                     var message = "Please create an account. Not much<br />to do without an account.";
@@ -688,8 +688,17 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         });
     },
     
-    fetch_river_stories: function(feed_id, feeds, page, callback, error_callback, first_load) {
+    fetch_river_stories: function(feed_id, feeds, page, options, callback, error_callback, first_load) {
         var self = this;
+        options = $.extend({
+            feeds: feeds,
+            page: page,
+            order: this.view_setting(feed_id, 'order'),
+            read_filter: this.view_setting(feed_id, 'read_filter'),
+            query: NEWSBLUR.reader.flags.search,
+            include_hidden: true,
+            infrequent: false
+        }, options);
         
         var pre_callback = function(data) {
             if (!NEWSBLUR.Globals.is_premium && NEWSBLUR.Globals.is_authenticated) {
@@ -706,14 +715,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         
         this.feed_id = feed_id;
 
-        this.make_request('/reader/river_stories', {
-            feeds: feeds,
-            page: page,
-            order: this.view_setting(feed_id, 'order'),
-            read_filter: this.view_setting(feed_id, 'read_filter'),
-            query: NEWSBLUR.reader.flags.search,
-            include_hidden: true
-        }, pre_callback, error_callback, {
+        this.make_request('/reader/river_stories', options, pre_callback, error_callback, {
             'ajax_group': (page ? 'feed_page' : 'feed'),
             'request_type': 'GET'
         });

@@ -79,6 +79,18 @@
                     </div>
                 </div>
 
+                {% if user.is_staff %}
+                <div class="NB-feeds-header-container NB-feeds-header-river-container NB-feeds-header-river-infrequent-container">
+                    <div class="NB-feeds-header NB-feeds-header-river-infrequent NB-empty">
+                        <div class="NB-feeds-header-count unread_count"></div>
+                        <div class="NB-feeds-header-icon"></div>
+                        <div class="NB-feeds-header-title">
+                            Infrequent Site Stories
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                
                 <ul class="folder NB-feedlist" id="feed_list"></ul>
                 
                 <div class="NB-feeds-header-container NB-feeds-header-read-container NB-hidden">
