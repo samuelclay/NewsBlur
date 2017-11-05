@@ -1743,6 +1743,9 @@
             
             if (feed_id == 'river:') {
                 this.open_river_stories(options.$feed, feed_model, options);
+            } else if (feed_id == 'river:infrequent') {
+                options.infrequent = NEWSBLUR.assets.preference('infrequent_stories_per_month');
+                this.open_river_stories(options.$feed, feed_model, options);
             } else if (_.string.startsWith(feed_id, 'river:')) {
                 this.open_river_stories(options.$feed, feed_model, options);
             } else if (feed_id == "read") {
@@ -1968,7 +1971,11 @@
             if (options.infrequent) {
                 folder_title = "Infrequent";
                 this.active_feed = 'river:infrequent';
-                this.$s.$river_infrequent_header.addClass('NB-selected');
+                if (options.feed) {
+                    options.feed.set('selected', true);
+                } else {
+                    this.$s.$river_infrequent_header.addClass('NB-selected');
+                }
             } else if (!folder || folder.get('fake') || !folder.get('folder_title')) {
                 this.active_feed = 'river:';
                 if (options.feed) {
