@@ -1240,6 +1240,8 @@ def load_river_stories__redis(request):
     include_feeds     = is_true(request.REQUEST.get('include_feeds', False))
     initial_dashboard = is_true(request.REQUEST.get('initial_dashboard', False))
     infrequent        = is_true(request.REQUEST.get('infrequent', False))
+    if infrequent:
+        infrequent = request.REQUEST.get('infrequent')
     now               = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
     usersubs          = []
     code              = 1
@@ -1248,7 +1250,7 @@ def load_river_stories__redis(request):
     story_date_order  = "%sstory_date" % ('' if order == 'oldest' else '-')
 
     if infrequent:
-        feed_ids = Feed.low_volume_feeds(feed_ids)
+        feed_ids = Feed.low_volume_feeds(feed_ids, stories_per_month=infrequent)
     
     if story_hashes:
         unread_feed_story_hashes = None

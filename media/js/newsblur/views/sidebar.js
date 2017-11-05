@@ -176,7 +176,7 @@ NEWSBLUR.Views.Sidebar = Backbone.View.extend({
     },
     
     open_river_infrequent_stories: function() {
-        return NEWSBLUR.reader.open_river_stories(null, null, {'infrequent': true});
+        return NEWSBLUR.reader.open_river_stories(null, null, {'infrequent': NEWSBLUR.assets.preference('infrequent_stories_per_month')});
     },
     
     collapse_river_blurblog: function(e, options) {

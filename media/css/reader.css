@@ -12204,6 +12204,11 @@ form.opml_import_form input {
 .NB-filter-popover .segmented-control.NB-feed-notification-types li {
     width: 44px;
 }
+.NB-filter-popover .segmented-control.NB-menu-manage-view-setting-infrequent li {
+    width: auto;
+    padding-left: 10px;
+    padding-right: 10px;
+}
 .NB-filter-popover .segmented-control .NB-unread-icon,
 .NB-filter-popover .segmented-control .NB-focus-icon {
     height: 17px;

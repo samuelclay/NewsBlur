@@ -1370,7 +1370,7 @@
                 this.open_social_stories(this.active_feed, options);
             } else if (this.flags['river_view']) {
                 if (this.active_feed == 'river:infrequent') {
-                    options.infrequent = true;
+                    options.infrequent = NEWSBLUR.assets.preference('infrequent_stories_per_month');
                 }
                 this.open_river_stories(this.active_folder && 
                                         this.active_folder.folder_view &&
@@ -2777,7 +2777,7 @@
                 NEWSBLUR.app.story_titles.show_loading(options);
             }
             
-            if (this.active_feed == 'river:infrequent') options.infrequent = true;
+            if (this.active_feed == 'river:infrequent') options.infrequent = NEWSBLUR.assets.preference('infrequent_stories_per_month');
             
             if (this.flags['starred_view']) {
                 this.model.fetch_starred_stories(this.counts['page'], this.flags['starred_tag'], _.bind(this.post_open_starred_stories, this),
