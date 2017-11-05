@@ -51,12 +51,13 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
     render: function() {
         var self = this;
         var feed = NEWSBLUR.assets.active_feed;
+        var is_feed = feed && feed.is_feed();
         
         NEWSBLUR.ReaderPopover.prototype.render.call(this);
         
         this.$el.html($.make('div', [
             $.make('div', { className: 'NB-popover-section' }, [
-                (feed && $.make('div', { className: 'NB-section-icon NB-filter-popover-filter-icon' })),
+                (is_feed && $.make('div', { className: 'NB-section-icon NB-filter-popover-filter-icon' })),
                 $.make('div', { className: 'NB-popover-section-title' }, 'Filter Options'),
                 (this.options.show_readfilter && $.make('ul', { className: 'segmented-control NB-menu-manage-view-setting-readfilter' }, [
                     $.make('li', { className: 'NB-view-setting-option NB-view-setting-readfilter-all  NB-active' }, 'All stories'),
@@ -75,7 +76,7 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
                     $.make('li', { className: 'NB-view-setting-option NB-view-setting-infrequent-90' }, '90')
                 ]))
             ]),
-            (feed && $.make('div', { className: 'NB-popover-section' }, [
+            (is_feed && $.make('div', { className: 'NB-popover-section' }, [
                 $.make('div', { className: 'NB-section-icon NB-filter-popover-stats-icon' }),
                 $.make('div', { className: 'NB-popover-section-title' }, 'Site Stats'),
                 $.make('div', { className: 'NB-feedbar-options-stat NB-stat-subscribers' }, [
@@ -99,7 +100,7 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
                     $.make('div', { className: 'NB-stat' }, "Fetched every " + NEWSBLUR.utils.calculate_update_interval(feed.get('min_to_decay')))
                 ]))
             ])),
-            (feed && $.make('div', { className: 'NB-popover-section' }, [
+            (is_feed && $.make('div', { className: 'NB-popover-section' }, [
                 $.make('div', { className: 'NB-section-icon NB-filter-popover-notifications-icon' }),
                 $.make('div', { className: 'NB-popover-section-title' }, 'Notifications'),
                 $.make('div', { className: 'NB-feedbar-options-notifications' }, [
