@@ -96,6 +96,10 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
                       <%= NEWSBLUR.assets.view_setting(feed.id, "read_filter") %>\
                       &middot;\
                       <%= NEWSBLUR.assets.view_setting(feed.id, "order") %>\
+                      <% if (has_notifications && has_notifications.length) { %>\
+                          &middot;\
+                          <div class="NB-feedbar-notifications-icon"></div>\
+                      <% } %>\
                   </span>\
               </div>\
               <div class="NB-feedbar-mark-feed-read-container">\
@@ -145,7 +149,8 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
           highlighted         : this.options.feed_chooser &&
                                 this.model.highlighted_in_folder(this.options.folder_title),
           organizer           : this.options.organizer,
-          pluralize           : Inflector.pluralize
+          pluralize           : Inflector.pluralize,
+          has_notifications   : this.model.get('notification_types') || []
         }));
         
         if (this.options.type == 'story') {

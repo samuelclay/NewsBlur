@@ -12267,6 +12267,14 @@ form.opml_import_form input {
     background: transparent url("/media/embed/icons/circular/menu_icn_notifications.png") no-repeat center center;
     background-size: 32px;
 }
+.NB-feedbar-notifications-icon {
+    background: transparent url("/media/embed/icons/circular/menu_icn_notifications.png") no-repeat center center;
+    background-size: 12px;
+    width: 12px;
+    height: 12px;
+    display: inline-block;
+    margin: 0px 0 -2px 0;
+}
 
 /* =========== */
 /* = Popover = */

@@ -139,7 +139,7 @@ NEWSBLUR.Views.FeedNotificationView = Backbone.View.extend({
     
     save: function() {
         NEWSBLUR.assets.set_notifications_for_feed(this.model, function() {
-            
+            NEWSBLUR.reader.make_feed_title_in_stories();
         });
     }
     
