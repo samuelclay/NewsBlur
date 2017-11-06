@@ -759,7 +759,7 @@
 //                         self.traverseView.frame = CGRectMake(tvf.origin.x,
 //                                                              self.view.bounds.size.height - tvf.size.height - bottomSizeHeightConstraint.constant - (self.view.safeAreaInsets.bottom - 20),
 //                                                              tvf.size.width, tvf.size.height);
-                         self.traverseBottomConstraint.constant = -32;
+                         self.traverseBottomConstraint.constant = -1 * self.view.safeAreaInsets.bottom;
                          self.traverseView.alpha = 1;
                          self.traversePinned = YES;
                      } completion:^(BOOL finished) {
