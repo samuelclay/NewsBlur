@@ -1731,6 +1731,10 @@
         self.safariViewController = [[SFSafariViewController alloc] initWithURL:url];
         self.safariViewController.delegate = self;
         [navigationController presentViewController:self.safariViewController animated:YES completion:nil];
+    } else if ([storyBrowser isEqualToString:@"inappsafarireader"]) {
+        self.safariViewController = [[SFSafariViewController alloc] initWithURL:url entersReaderIfAvailable:YES];
+        self.safariViewController.delegate = self;
+        [navigationController presentViewController:self.safariViewController animated:YES completion:nil];
     } else {
         if (!originalStoryViewController) {
             originalStoryViewController = [[OriginalStoryViewController alloc] init];

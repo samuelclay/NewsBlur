@@ -19,7 +19,6 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="StoryPageControl">
             <connections>
                 <outlet property="bottomSize" destination="YKz-PZ-s0t" id="P3I-Wx-dLN"/>
-                <outlet property="bottomSizeHeightConstraint" destination="Ugq-XC-pFz" id="N4h-uD-Xai"/>
                 <outlet property="buttonNext" destination="62" id="72"/>
                 <outlet property="buttonPrevious" destination="64" id="67"/>
                 <outlet property="buttonSend" destination="85" id="88"/>
@@ -29,6 +28,7 @@
                 <outlet property="prevNextBackgroundImageView" destination="71" id="S3e-tC-Pbu"/>
                 <outlet property="scrollView" destination="5" id="15"/>
                 <outlet property="textStorySendBackgroundImageView" destination="80" id="1hz-Zr-85e"/>
+                <outlet property="traverseBottomConstraint" destination="rgF-mh-lia" id="ucW-KZ-fN6"/>
                 <outlet property="traverseView" destination="75" id="76"/>
                 <outlet property="view" destination="3" id="22"/>
             </connections>

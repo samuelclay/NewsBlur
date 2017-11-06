@@ -615,6 +615,7 @@
 			<array>
 				<string>In-app browser</string>
 				<string>In-app Safari</string>
+				<string>In-app Safari Reader Mode</string>
 				<string>Safari</string>
 				<string>Chrome</string>
 				<string>Opera Mini</string>
@@ -626,6 +627,7 @@
 			<array>
 				<string>inapp</string>
 				<string>inappsafari</string>
+				<string>inappsafarireader</string>
 				<string>safari</string>
 				<string>chrome</string>
 				<string>opera_mini</string>

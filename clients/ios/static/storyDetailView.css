@@ -45,6 +45,9 @@
 .NB-palatino {
     font-family: "Palatino";
 }
+.NB-sanfrancisco {
+    font-family: "-apple-system";
+}
 .NB-helvetica {
     font-family: "Helvetica";
 }

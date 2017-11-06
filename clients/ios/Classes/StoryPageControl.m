@@ -52,6 +52,7 @@
 @synthesize isAnimatedIntoPlace;
 @synthesize progressView, progressViewContainer;
 @synthesize traversePinned, traverseFloating;
+@synthesize traverseBottomConstraint;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
@@ -750,15 +751,15 @@
 //    }
     
     // Stick to bottom
-    CGRect tvf = self.traverseView.frame;
     traversePinned = YES;
     [UIView animateWithDuration:.24 delay:0
                         options:UIViewAnimationOptionCurveEaseInOut
                      animations:^{
                          [self.traverseView setNeedsLayout];
-                         self.traverseView.frame = CGRectMake(tvf.origin.x,
-                                                              self.view.bounds.size.height - tvf.size.height - bottomSizeHeightConstraint.constant,
-                                                              tvf.size.width, tvf.size.height);
+//                         self.traverseView.frame = CGRectMake(tvf.origin.x,
+//                                                              self.view.bounds.size.height - tvf.size.height - bottomSizeHeightConstraint.constant - (self.view.safeAreaInsets.bottom - 20),
+//                                                              tvf.size.width, tvf.size.height);
+                         self.traverseBottomConstraint.constant = -32;
                          self.traverseView.alpha = 1;
                          self.traversePinned = YES;
                      } completion:^(BOOL finished) {
