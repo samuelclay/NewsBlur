@@ -173,10 +173,13 @@
                                [appDelegate.activeStory objectForKey:@"story_feed_id"]];
         UIImage *titleImage  = [appDelegate getFavicon:feedIdStr];
         UIImageView *titleImageView = [[UIImageView alloc] initWithImage:titleImage];
+        UIImageView *titleImageViewWrapper = [[UIImageView alloc] init];
         titleImageView.frame = CGRectMake(0.0, 2.0, 16.0, 16.0);
         titleImageView.hidden = YES;
         titleImageView.contentMode = UIViewContentModeScaleAspectFit;
-        self.navigationItem.titleView = titleImageView;
+        [titleImageViewWrapper addSubview:titleImageView];
+        [titleImageViewWrapper setFrame:titleImageView.frame];
+        self.navigationItem.titleView = titleImageViewWrapper;
         titleImageView.hidden = NO;
     }
 }
