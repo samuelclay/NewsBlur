@@ -638,7 +638,7 @@ static UIFont *userLabelFont;
         NSArray *folder = [appDelegate.dictFolders objectForKey:f];
         NSString *folderTitle;
         if ([f isEqualToString:@" "]) {
-            folderTitle = @"everything";
+            folderTitle = @"infrequent";
         } else {
             folderTitle = f;
         }
@@ -679,10 +679,9 @@ static UIFont *userLabelFont;
         [appDelegate.dictFoldersArray removeObject:@"river_blurblogs"];
         [appDelegate.dictFoldersArray insertObject:@"river_blurblogs" atIndex:1];
     }
-    if ([appDelegate.dictFoldersArray containsObject:@"everything"]) {
-        [appDelegate.dictFoldersArray removeObject:@"everything"];
-        [appDelegate.dictFoldersArray insertObject:@"everything" atIndex:2];
-    }
+
+    [appDelegate.dictFoldersArray removeObject:@"everything"];
+    [appDelegate.dictFoldersArray insertObject:@"everything" atIndex:2];
 
     // Add Infrequent folder
     [appDelegate.dictFoldersArray removeObject:@"infrequent"];
