@@ -41,6 +41,9 @@ class EmailNewsletter:
             r.publish(user.username, 'reload:%s' % feed.pk)
             self._check_if_first_newsletter(user)
         
+        feed.last_update = datetime.datetime.now()
+        feed.save()
+        
         if feed.feed_title != sender_name:
             feed.feed_title = sender_name
             feed.save()
@@ -74,7 +77,7 @@ class EmailNewsletter:
                                             kwargs={'story_hash': story_hash})),
             "story_guid": params['signature'],
         }
-        print story_params
+
         try:
             story = MStory.objects.get(story_hash=story_hash)
         except MStory.DoesNotExist:
