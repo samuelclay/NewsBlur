@@ -1254,9 +1254,9 @@
         int webpageHeight = self.webView.scrollView.contentSize.height;
         int viewportHeight = self.view.frame.size.height;
         int topPosition = self.webView.scrollView.contentOffset.y;
-        int safeBottomMargin = 0;
+        int safeBottomMargin = -8;
         if (@available(iOS 11.0, *)) {
-            safeBottomMargin = -1 * appDelegate.storyPageControl.view.safeAreaInsets.bottom;
+            safeBottomMargin = MIN(-8, -1 * appDelegate.storyPageControl.view.safeAreaInsets.bottom);
         }
         
         int bottomPosition = webpageHeight - topPosition - viewportHeight;

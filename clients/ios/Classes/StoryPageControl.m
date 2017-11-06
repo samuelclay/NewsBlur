@@ -760,9 +760,9 @@
 //                                                              self.view.bounds.size.height - tvf.size.height - bottomSizeHeightConstraint.constant - (self.view.safeAreaInsets.bottom - 20),
 //                                                              tvf.size.width, tvf.size.height);
                          if (@available(iOS 11.0, *)) {
-                             self.traverseBottomConstraint.constant = -1 * self.view.safeAreaInsets.bottom;
+                             self.traverseBottomConstraint.constant = MIN(-8, -1 * self.view.safeAreaInsets.bottom);
                          } else {
-                             self.traverseBottomConstraint.constant = 0;
+                             self.traverseBottomConstraint.constant = -8;
                          }
                          self.traverseView.alpha = 1;
                          self.traversePinned = YES;
