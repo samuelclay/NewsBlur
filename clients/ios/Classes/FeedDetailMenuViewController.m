@@ -128,6 +128,8 @@
 - (void)buildMenuOptions {
     BOOL everything = appDelegate.storiesCollection.isRiverView &&
                       [appDelegate.storiesCollection.activeFolder isEqualToString:@"everything"];
+    BOOL infrequent = appDelegate.storiesCollection.isRiverView &&
+                      [appDelegate.storiesCollection.activeFolder isEqualToString:@"infrequent"];
     BOOL read = appDelegate.storiesCollection.isReadView;
     BOOL saved = appDelegate.storiesCollection.isSavedView;
 
@@ -137,7 +139,7 @@
     //                        appDelegate.storiesCollection.activeFolder :
     //                        [appDelegate.storiesCollection.activeFeed objectForKey:@"feed_title"];
     
-    if (!everything && !read && !saved) {
+    if (!everything && !infrequent && !read && !saved) {
         NSString *deleteText = [NSString stringWithFormat:@"Delete %@",
                                 appDelegate.storiesCollection.isRiverView ?
                                 @"this entire folder" :
@@ -149,7 +151,7 @@
         }
     }
     
-    if (!appDelegate.storiesCollection.isRiverView && !saved && !read) {
+    if (!appDelegate.storiesCollection.isRiverView && !infrequent && !saved && !read) {
         [options addObject:[@"Rename this site" uppercaseString]];
         [options addObject:[@"Mute this site" uppercaseString]];
         [options addObject:[@"Train this site" uppercaseString]];

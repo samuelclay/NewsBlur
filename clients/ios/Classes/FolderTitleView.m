@@ -121,6 +121,8 @@
             folderTitle = [@"All Shared Stories" uppercaseString];
     } else if (section == 2) {
         folderTitle = [@"All Stories" uppercaseString];
+    } else if (section == 3) {
+        folderTitle = [@"Infrequent Site Stories" uppercaseString];
     } else if ([folderName isEqual:@"read_stories"]) {
         folderTitle = [@"Read Stories" uppercaseString];
     } else if ([folderName isEqual:@"saved_stories"]) {
@@ -174,7 +176,7 @@
         disclosureButton.frame = CGRectMake(customView.frame.size.width - 32, CGRectGetMidY(self.bounds)-disclosureHeight/2-1, disclosureHeight, disclosureHeight);
 
         // Add collapse button to all folders except Everything
-        if (section != 0 && section != 2 && ![folderName isEqual:@"read_stories"]) {
+        if (section != 0 && section != 2 && section != 3 && ![folderName isEqual:@"read_stories"]) {
             if (!isFolderCollapsed) {
                 UIImage *disclosureImage = [UIImage imageNamed:@"disclosure_down.png"];
                 [disclosureButton setImage:disclosureImage forState:UIControlStateNormal];
@@ -228,6 +230,14 @@
             folderImageViewX = 7;
         }
         allowLongPress = YES;
+    } else if (section == 3) {
+        folderImage = [UIImage imageNamed:@"ak-icon-allstories.png"];
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+            folderImageViewX = 10;
+        } else {
+            folderImageViewX = 7;
+        }
+        allowLongPress = NO;
     } else if ([folderName isEqual:@"saved_stories"]) {
         folderImage = [UIImage imageNamed:@"clock.png"];
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {

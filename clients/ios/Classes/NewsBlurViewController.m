@@ -683,7 +683,11 @@ static UIFont *userLabelFont;
         [appDelegate.dictFoldersArray removeObject:@"everything"];
         [appDelegate.dictFoldersArray insertObject:@"everything" atIndex:2];
     }
-    
+
+    // Add Infrequent folder
+    [appDelegate.dictFoldersArray removeObject:@"infrequent"];
+    [appDelegate.dictFoldersArray insertObject:@"infrequent" atIndex:3];
+
     // Add Read Stories folder
     [appDelegate.dictFoldersArray removeObject:@"read_stories"];
     [appDelegate.dictFoldersArray insertObject:@"read_stories" atIndex:appDelegate.dictFoldersArray.count];
@@ -1159,6 +1163,8 @@ static UIFont *userLabelFont;
         folderName = @"river_blurblogs";
     } else if (indexPath.section == 2) {
         folderName = @"everything";
+    } else if (indexPath.section == 3) {
+        folderName = @"infrequent";
     } else {
         folderName = [appDelegate.dictFoldersArray objectAtIndex:indexPath.section];
     }
@@ -1306,7 +1312,7 @@ heightForHeaderInSection:(NSInteger)section {
     NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:section];
     
     BOOL visibleFeeds = [[self.visibleFolders objectForKey:folderName] boolValue];
-    if (!visibleFeeds && section != 2 && section != 0 &&
+    if (!visibleFeeds && section != 2 && section != 3 && section != 0 &&
         ![folderName isEqualToString:@"saved_stories"] &&
         ![folderName isEqualToString:@"read_stories"]) {
         return 0;
@@ -1339,6 +1345,8 @@ heightForHeaderInSection:(NSInteger)section {
         folder = @"river_blurblogs";
     } else if (tag == 2) {
         folder = @"everything";
+    } else if (tag == 3) {
+        folder = @"infrequent";
     } else {
         folder = [NSString stringWithFormat:@"%ld", (long)tag];
     }
@@ -1412,7 +1420,7 @@ heightForHeaderInSection:(NSInteger)section {
 }
 
 - (void)markFeedsRead:(NSArray *)feedIds cutoffDays:(NSInteger)days {
-    if (feedIds.count == 1 && [feedIds.firstObject isEqual:@"everything"]) {
+    if (feedIds.count == 1 && ([feedIds.firstObject isEqual:@"everything"] || [feedIds.firstObject isEqual:@"infrequent"])) {
         [self markEverythingReadWithDays:days];
         return;
     }

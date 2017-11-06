@@ -1316,7 +1316,7 @@
 }
 
 - (NSArray *)feedIdsForFolderTitle:(NSString *)folderTitle {
-    if ([folderTitle isEqualToString:@"everything"]) {
+    if ([folderTitle isEqualToString:@"everything"] || [folderTitle isEqualToString:@"infrequent"]) {
         return @[folderTitle];
     } else {
         return self.dictFolders[folderTitle];
@@ -1443,10 +1443,10 @@
                     }
                 }
             }
-        } else if ([folder isEqualToString:@"everything"]) {
+        } else if ([folder isEqualToString:@"everything"] || [folder isEqualToString:@"infrequent"]) {
             feedDetailView.storiesCollection.isRiverView = YES;
             // add all the feeds from every NON blurblog folder
-            [feedDetailView.storiesCollection setActiveFolder:@"everything"];
+            [feedDetailView.storiesCollection setActiveFolder:folder];
             for (NSString *folderName in self.feedsViewController.activeFeedLocations) {
                 if ([folderName isEqualToString:@"river_blurblogs"]) continue;
                 if ([folderName isEqualToString:@"read_stories"]) continue;
@@ -1949,7 +1949,9 @@
                (!folderName && [storiesCollection.activeFolder isEqual:@"river_global"])) {
         total = 0;
     } else if ([folderName isEqual:@"everything"] ||
-               (!folderName && [storiesCollection.activeFolder isEqual:@"everything"])) {
+               [folderName isEqual:@"infrequent"] ||
+               (!folderName && ([storiesCollection.activeFolder isEqual:@"everything"] ||
+                                [storiesCollection.activeFolder isEqual:@"infrequent"]))) {
         // TODO: Fix race condition where self.dictUnreadCounts can be changed while being updated.
         for (id feedId in self.dictUnreadCounts) {
             total += [self unreadCountForFeed:feedId];
@@ -2007,7 +2009,9 @@
             (!folderName && [storiesCollection.activeFolder isEqual:@"river_global"])) {
         // Nothing for global
     } else if ([folderName isEqual:@"everything"] ||
-               (!folderName && [storiesCollection.activeFolder isEqual:@"everything"])) {
+               [folderName isEqual:@"infrequent"] ||
+               (!folderName && ([storiesCollection.activeFolder isEqual:@"everything"] ||
+                                [storiesCollection.activeFolder isEqual:@"infrequent"]))) {
         for (NSArray *folder in [self.dictFolders allValues]) {
             for (id feedId in folder) {
                 if ([feedId isKindOfClass:[NSString class]] && [feedId startsWith:@"saved:"]) {
@@ -2079,7 +2083,7 @@
 #pragma mark Mark as read
 
 - (void)markActiveFolderAllRead {
-    if ([storiesCollection.activeFolder isEqual:@"everything"]) {
+    if ([storiesCollection.activeFolder isEqual:@"everything"] || [storiesCollection.activeFolder isEqual:@"infrequent"]) {
         for (NSString *folderName in self.dictFoldersArray) {
             for (id feedId in [self.dictFolders objectForKey:folderName]) {
                 [self markFeedAllRead:feedId];
@@ -2560,7 +2564,8 @@
 
 - (NSString *)extractParentFolderName:(NSString *)folderName {
     if ([folderName containsString:@"Top Level"] ||
-        [folderName isEqual:@"everything"]) {
+        [folderName isEqual:@"everything"] ||
+        [folderName isEqual:@"infrequent"]) {
         folderName = @"";
     }
     
@@ -2577,7 +2582,8 @@
 
 - (NSString *)extractFolderName:(NSString *)folderName {
     if ([folderName containsString:@"Top Level"] ||
-        [folderName isEqual:@"everything"]) {
+        [folderName isEqual:@"everything"] ||
+        [folderName isEqual:@"infrequent"]) {
         folderName = @"";
     }
     if ([folderName containsString:@" - "]) {
@@ -2788,6 +2794,9 @@
     } else if (storiesCollection.isRiverView &&
                [storiesCollection.activeFolder isEqualToString:@"everything"]) {
         titleLabel.text = [NSString stringWithFormat:@"     All Stories"];
+    } else if (storiesCollection.isRiverView &&
+               [storiesCollection.activeFolder isEqualToString:@"infrequent"]) {
+        titleLabel.text = [NSString stringWithFormat:@"     Infrequent Site Stories"];
     } else if (storiesCollection.isSavedView && storiesCollection.activeSavedStoryTag) {
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
             titleLabel.text = [NSString stringWithFormat:@"     %@", storiesCollection.activeSavedStoryTag];
@@ -2826,6 +2835,9 @@
             titleImage = [UIImage imageNamed:@"ak-icon-blurblogs.png"];
         } else if (storiesCollection.isRiverView &&
                    [storiesCollection.activeFolder isEqualToString:@"everything"]) {
+            titleImage = [UIImage imageNamed:@"ak-icon-allstories.png"];
+        } else if (storiesCollection.isRiverView &&
+                   [storiesCollection.activeFolder isEqualToString:@"infrequent"]) {
             titleImage = [UIImage imageNamed:@"ak-icon-allstories.png"];
         } else if (storiesCollection.isSavedView && storiesCollection.activeSavedStoryTag) {
             titleImage = [UIImage imageNamed:@"tag.png"];

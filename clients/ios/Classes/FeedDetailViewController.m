@@ -901,11 +901,16 @@
                       subarrayWithRange:NSMakeRange(0, MIN(storiesCollection.activeFolderFeeds.count, 800))]
                      componentsJoinedByString:@"&f="];
         }
+        NSString *infrequent = @"false";
+        if ([storiesCollection.activeFolder isEqualToString:@"infrequent"]) {
+            infrequent = @"30";
+        }
         theFeedDetailURL = [NSString stringWithFormat:
-                            @"%@/reader/river_stories/?include_hidden=true&f=%@&page=%d",
+                            @"%@/reader/river_stories/?include_hidden=true&f=%@&page=%d&infrequent=%@",
                             self.appDelegate.url,
                             feeds,
-                            storiesCollection.feedPage];
+                            storiesCollection.feedPage,
+                            infrequent];
     }
     
     
@@ -1428,6 +1433,8 @@
                 feedTitle = @"Global Shared Stories";
             } else if ([storiesCollection.activeFolder isEqualToString:@"everything"]) {
                 feedTitle = @"All Stories";
+            } else if ([storiesCollection.activeFolder isEqualToString:@"infrequent"]) {
+                feedTitle = @"Infrequent Site Stories";
             } else if (storiesCollection.isSavedView && storiesCollection.activeSavedStoryTag) {
                 feedTitle = storiesCollection.activeSavedStoryTag;
             } else if ([storiesCollection.activeFolder isEqualToString:@"read_stories"]) {
@@ -1784,7 +1791,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
     
     if (storiesCollection.isRiverView) {
-        if ([storiesCollection.activeFolder isEqual:@"everything"]) {
+        if ([storiesCollection.activeFolder isEqual:@"everything"] || [storiesCollection.activeFolder isEqual:@"infrequent"]) {
             for (NSString *folderName in appDelegate.dictFoldersArray) {
                 for (id feedId in [appDelegate.dictFolders objectForKey:folderName]) {
                     if (![feedId isKindOfClass:[NSString class]] || ![feedId startsWith:@"saved:"]) {
