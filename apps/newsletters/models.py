@@ -42,6 +42,7 @@ class EmailNewsletter:
             self._check_if_first_newsletter(user)
         
         feed.last_update = datetime.datetime.now()
+        feed.last_story_date = datetime.datetime.now()
         feed.save()
         
         if feed.feed_title != sender_name:
