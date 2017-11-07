@@ -345,7 +345,6 @@ public class PrefsUtils {
     
     public static ReadFilter getReadFilterForFolder(Context context, String folderName) {
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
-        com.newsblur.util.Log.d(context, "   GET " + PrefConstants.FOLDER_READ_FILTER_PREFIX + folderName + " AS " + prefs.getString(PrefConstants.FOLDER_READ_FILTER_PREFIX + folderName, getDefaultReadFilter(prefs).toString()));
         return ReadFilter.valueOf(prefs.getString(PrefConstants.FOLDER_READ_FILTER_PREFIX + folderName, getDefaultReadFilter(prefs).toString()));
     }
 
@@ -367,7 +366,6 @@ public class PrefsUtils {
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
         Editor editor = prefs.edit();
         editor.putString(PrefConstants.FOLDER_READ_FILTER_PREFIX + folderName, newValue.toString());
-        com.newsblur.util.Log.d(context, "   SET " + PrefConstants.FOLDER_READ_FILTER_PREFIX + folderName + " TO " + newValue.toString());
         editor.commit();
     }
     
