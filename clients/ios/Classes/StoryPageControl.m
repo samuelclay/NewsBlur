@@ -705,7 +705,7 @@
 - (void)scrollViewDidScroll:(UIScrollView *)sender {
 //    [sender setContentOffset:CGPointMake(sender.contentOffset.x, 0)];
     if (inRotation) return;
-    CGFloat pageWidth = CGRectGetWidth(self.currentPage.view.frame);
+    CGFloat pageWidth = self.scrollView.frame.size.width;
     float fractionalPage = self.scrollView.contentOffset.x / pageWidth;
 	
 	NSInteger lowerNumber = floor(fractionalPage);
@@ -791,7 +791,7 @@
 - (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)newScrollView
 {
     self.isDraggingScrollview = NO;
-    CGFloat pageWidth = CGRectGetWidth(self.currentPage.view.frame);
+    CGFloat pageWidth = self.scrollView.frame.size.width;
     float fractionalPage = self.scrollView.contentOffset.x / pageWidth;
 	NSInteger nearestNumber = lround(fractionalPage);
     self.scrollingToPage = nearestNumber;
@@ -805,7 +805,7 @@
     if (!self.isPhoneOrCompact &&
         [keyPath isEqual:@"contentOffset"] &&
         self.isDraggingScrollview) {
-        CGFloat pageWidth = CGRectGetWidth(self.currentPage.view.frame);
+        CGFloat pageWidth = self.scrollView.frame.size.width;
         float fractionalPage = self.scrollView.contentOffset.x / pageWidth;
         NSInteger nearestNumber = lround(fractionalPage);
         
@@ -825,7 +825,7 @@
     if (!self.isPhoneOrCompact &&
         !self.isAnimatedIntoPlace) {
         CGRect frame = self.scrollView.frame;
-        frame.origin.x = CGRectGetWidth(self.currentPage.view.frame);
+        frame.origin.x = frame.size.width;
         self.scrollView.frame = frame;
         [UIView animateWithDuration:(animated ? .22 : 0) delay:0
                             options:UIViewAnimationOptionCurveEaseInOut
@@ -849,7 +849,7 @@
 	// update the scroll view to the appropriate page
     [self resizeScrollView];
     CGRect frame = self.scrollView.frame;
-    frame.origin.x = CGRectGetWidth(self.currentPage.view.frame) * pageIndex;
+    frame.origin.x = frame.size.width * pageIndex;
     frame.origin.y = 0;
 
     self.scrollingToPage = pageIndex;
