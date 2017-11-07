@@ -478,6 +478,13 @@ public class APIManager {
 		return response.getResponse(gson, NewsBlurResponse.class);
 	}
 
+    public NewsBlurResponse updateFeedIntel(String feedId, Classifier classifier) {
+        ContentValues values = classifier.getAPITuples();
+        values.put(APIConstants.PARAMETER_FEEDID, feedId);
+		APIResponse response = post(buildUrl(APIConstants.PATH_CLASSIFIER_SAVE), values);
+		return response.getResponse(gson, NewsBlurResponse.class);
+	}
+
 	public ProfileResponse getUser(String userId) {
 		final ContentValues values = new ContentValues();
 		values.put(APIConstants.PARAMETER_USER_ID, userId);
