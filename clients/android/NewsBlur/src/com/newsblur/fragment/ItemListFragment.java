@@ -353,6 +353,7 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
 
         int truePosition = ((AdapterView.AdapterContextMenuInfo) menuInfo).position - 1;
         Story story = adapter.getStory(truePosition);
+        if (story == null) return;
         if (getFeedSet().isFilterSaved()) {
             menu.removeItem(R.id.menu_mark_story_as_read);
             menu.removeItem(R.id.menu_mark_story_as_unread);
