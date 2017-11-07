@@ -114,15 +114,29 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
     private VolumeKeyNavigation volumeKeyNavigation;
 
     @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+    }
+
+    @Override
 	protected void onCreate(Bundle savedInstanceBundle) {
-		super.onCreate(savedInstanceBundle);
+        super.onCreate(savedInstanceBundle);
 
 		setContentView(R.layout.activity_reading);
         ButterKnife.bind(this);
 
 		fragmentManager = getFragmentManager();
 
-        fs = (FeedSet)getIntent().getSerializableExtra(EXTRA_FEEDSET);
+        try {
+            fs = (FeedSet)getIntent().getSerializableExtra(EXTRA_FEEDSET);
+        } catch (RuntimeException re) {
+            // in the wild, the notification system likes to pass us an Intent that has missing or very stale
+            // Serializable extras.
+            com.newsblur.util.Log.e(this, "failed to unfreeze required extras", re);
+            finish();
+            return;
+        }
 
         if (fs == null) {
             com.newsblur.util.Log.w(this.getClass().getName(), "reading view had no FeedSet");

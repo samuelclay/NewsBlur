@@ -86,7 +86,7 @@ public class NotificationUtils {
         // UI on some devices.
         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         // set the requestCode to the story hashcode to prevent the PI re-using the wrong Intent
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, story.hashCode(), i, 0);
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, story.hashCode(), i, PendingIntent.FLAG_UPDATE_CURRENT);
 
         Intent dismissIntent = new Intent(context, NotifyDismissReceiver.class);
         dismissIntent.putExtra(Reading.EXTRA_STORY_HASH, story.storyHash);
