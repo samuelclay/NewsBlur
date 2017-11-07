@@ -7,9 +7,6 @@ import android.view.MenuInflater;
 
 import com.newsblur.R;
 import com.newsblur.fragment.SavedStoriesItemListFragment;
-import com.newsblur.util.PrefConstants;
-import com.newsblur.util.PrefsUtils;
-import com.newsblur.util.ReadFilter;
 import com.newsblur.util.UIUtils;
 
 public class SavedStoriesItemsList extends ItemsList {
@@ -40,19 +37,5 @@ public class SavedStoriesItemsList extends ItemsList {
         inflater.inflate(R.menu.savedstories_itemslist, menu);
         return true;
 	}
-
-    // Note: the following two methods are required by our parent spec but are not
-    // relevant since saved stories have no read/unread status.
-
-    @Override
-    protected void updateReadFilterPreference(ReadFilter newValue) {
-        PrefsUtils.setReadFilterForFolder(this, PrefConstants.ALL_STORIES_FOLDER_NAME, newValue);
-    }
-    
-    @Override
-    protected ReadFilter getReadFilter() {
-        return PrefsUtils.getReadFilterForFolder(this, PrefConstants.ALL_STORIES_FOLDER_NAME);
-    }
-
 
 }

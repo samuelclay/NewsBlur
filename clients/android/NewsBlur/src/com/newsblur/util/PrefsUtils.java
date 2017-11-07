@@ -345,6 +345,7 @@ public class PrefsUtils {
     
     public static ReadFilter getReadFilterForFolder(Context context, String folderName) {
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        com.newsblur.util.Log.d(context, "   GET " + PrefConstants.FOLDER_READ_FILTER_PREFIX + folderName + " AS " + prefs.getString(PrefConstants.FOLDER_READ_FILTER_PREFIX + folderName, getDefaultReadFilter(prefs).toString()));
         return ReadFilter.valueOf(prefs.getString(PrefConstants.FOLDER_READ_FILTER_PREFIX + folderName, getDefaultReadFilter(prefs).toString()));
     }
 
@@ -366,6 +367,7 @@ public class PrefsUtils {
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
         Editor editor = prefs.edit();
         editor.putString(PrefConstants.FOLDER_READ_FILTER_PREFIX + folderName, newValue.toString());
+        com.newsblur.util.Log.d(context, "   SET " + PrefConstants.FOLDER_READ_FILTER_PREFIX + folderName + " TO " + newValue.toString());
         editor.commit();
     }
     
@@ -468,6 +470,8 @@ public class PrefsUtils {
             return getStoryOrderForFolder(context, PrefConstants.SAVED_STORIES_FOLDER_NAME);
         } else if (fs.isGlobalShared()) {
             return StoryOrder.NEWEST;
+        } else if (fs.isInfrequent()) {
+            return getStoryOrderForFolder(context, PrefConstants.INFREQUENT_FOLDER_NAME);
         } else {
             throw new IllegalArgumentException( "unknown type of feed set" );
         }
@@ -494,6 +498,8 @@ public class PrefsUtils {
             setStoryOrderForFolder(context, PrefConstants.SAVED_STORIES_FOLDER_NAME, newOrder);
         } else if (fs.isGlobalShared()) {
             throw new IllegalArgumentException( "GlobalShared FeedSet type has fixed ordering" );
+        } else if (fs.isInfrequent()) {
+            setStoryOrderForFolder(context, PrefConstants.INFREQUENT_FOLDER_NAME, newOrder);
         } else {
             throw new IllegalArgumentException( "unknown type of feed set" );
         }
@@ -513,17 +519,49 @@ public class PrefsUtils {
         } else if (fs.getMultipleSocialFeeds() != null) {
             throw new IllegalArgumentException( "requests for multiple social feeds not supported" );
         } else if (fs.isAllRead()) {
-            // dummy value, not really used
+            // it would make no sense to look for read stories in unread-only
             return ReadFilter.ALL;
         } else if (fs.isAllSaved()) {
-            return getReadFilterForFolder(context, PrefConstants.SAVED_STORIES_FOLDER_NAME);
+            // saved stories view doesn't track read status
+            return ReadFilter.ALL;
         } else if (fs.getSingleSavedTag() != null) {
-            return getReadFilterForFolder(context, PrefConstants.SAVED_STORIES_FOLDER_NAME);
+            // saved stories view doesn't track read status
+            return ReadFilter.ALL;
         } else if (fs.isGlobalShared()) {
-            return ReadFilter.UNREAD;
+            return getReadFilterForFolder(context, PrefConstants.GLOBAL_SHARED_STORIES_FOLDER_NAME);
+        } else if (fs.isInfrequent()) {
+            return getReadFilterForFolder(context, PrefConstants.INFREQUENT_FOLDER_NAME);
         }
         throw new IllegalArgumentException( "unknown type of feed set" );
     }
+
+    public static void updateReadFilter(Context context, FeedSet fs, ReadFilter newFilter) {
+        if (fs.isAllNormal()) {
+            setReadFilterForFolder(context, PrefConstants.ALL_STORIES_FOLDER_NAME, newFilter);
+        } else if (fs.getSingleFeed() != null) {
+            setReadFilterForFeed(context, fs.getSingleFeed(), newFilter);
+        } else if (fs.getMultipleFeeds() != null) {
+            setReadFilterForFolder(context, fs.getFolderName(), newFilter);
+        } else if (fs.isAllSocial()) {
+            setReadFilterForFolder(context, PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME, newFilter);
+        } else if (fs.getSingleSocialFeed() != null) {
+            setReadFilterForFeed(context, fs.getSingleSocialFeed().getKey(), newFilter);
+        } else if (fs.getMultipleSocialFeeds() != null) {
+            setReadFilterForFolder(context, fs.getFolderName(), newFilter);
+        } else if (fs.isAllRead()) {
+            throw new IllegalArgumentException( "read filter not applicable to this type of feedset");
+        } else if (fs.isAllSaved()) {
+            throw new IllegalArgumentException( "read filter not applicable to this type of feedset");
+        } else if (fs.getSingleSavedTag() != null) {
+            throw new IllegalArgumentException( "read filter not applicable to this type of feedset");
+        } else if (fs.isGlobalShared()) {
+            setReadFilterForFolder(context, PrefConstants.GLOBAL_SHARED_STORIES_FOLDER_NAME, newFilter);
+        } else if (fs.isInfrequent()) {
+            setReadFilterForFolder(context, PrefConstants.INFREQUENT_FOLDER_NAME, newFilter);
+        } else {
+            throw new IllegalArgumentException( "unknown type of feed set" );
+        }
+    } 
 
     private static DefaultFeedView getDefaultFeedView() {
         return DefaultFeedView.STORY;

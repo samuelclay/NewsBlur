@@ -1182,6 +1182,12 @@ public class BlurDatabaseHelper {
             sel.append(" WHERE (" + DatabaseConstants.STORY_STARRED + " = 1)");
             DatabaseConstants.appendStorySelection(sel, selArgs, ReadFilter.ALL, StateFilter.ALL, fs.getSearchQuery());
 
+        } else if (fs.isInfrequent()) {
+
+            sel.append(" FROM " + DatabaseConstants.STORY_TABLE);
+            sel.append(" WHERE (" + DatabaseConstants.STORY_INFREQUENT + " = 1)");
+            DatabaseConstants.appendStorySelection(sel, selArgs, readFilter, stateFilter, fs.getSearchQuery());
+
         } else if (fs.getSingleSavedTag() != null) {
 
             sel.append(" FROM " + DatabaseConstants.STORY_TABLE);

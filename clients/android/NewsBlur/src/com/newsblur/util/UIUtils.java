@@ -215,6 +215,8 @@ public class UIUtils {
             activityClass = SocialFeedReading.class;
         } else if (fs.isAllRead()) {
             activityClass = ReadStoriesReading.class;
+        } else if (fs.isInfrequent()) {
+            activityClass = InfrequentReading.class;
         } else {
             Log.e(UIUtils.class.getName(), "can't launch reading activity for unknown feedset type");
             return;

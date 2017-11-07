@@ -314,6 +314,10 @@ public class APIManager {
             for (Map.Entry<String,String> entry : fs.getMultipleSocialFeeds().entrySet()) {
                 values.put(APIConstants.PARAMETER_FEEDS, entry.getKey());
             }
+        } else if (fs.isInfrequent()) {
+            uri = Uri.parse(buildUrl(APIConstants.PATH_RIVER_STORIES));
+            values.put(APIConstants.PARAMETER_INCLUDE_HIDDEN, APIConstants.VALUE_TRUE);
+            values.put(APIConstants.PARAMETER_INFREQUENT, APIConstants.VALUE_30);
         } else if (fs.isAllNormal()) {
             uri = Uri.parse(buildUrl(APIConstants.PATH_RIVER_STORIES));
             values.put(APIConstants.PARAMETER_INCLUDE_HIDDEN, APIConstants.VALUE_TRUE);

@@ -192,11 +192,17 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
         return PrefsUtils.getStoryOrder(this, fs);
     }
     
-	protected void updateStoryOrderPreference(StoryOrder newOrder) {
+	private void updateStoryOrderPreference(StoryOrder newOrder) {
         PrefsUtils.updateStoryOrder(this, fs, newOrder);
     }
 	
-	protected abstract ReadFilter getReadFilter();
+	private ReadFilter getReadFilter() {
+        return PrefsUtils.getReadFilter(this, fs);
+    }
+
+    private void updateReadFilterPreference(ReadFilter newValue) {
+        PrefsUtils.updateReadFilter(this, fs, newValue);
+    }
 
     @Override
 	public void handleUpdate(int updateType) {
@@ -286,8 +292,6 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
 	@Override
 	public void onStopTrackingTouch(SeekBar seekBar) {
 	}
-
-    protected abstract void updateReadFilterPreference(ReadFilter newValue);
 
     @Override
     public void finish() {

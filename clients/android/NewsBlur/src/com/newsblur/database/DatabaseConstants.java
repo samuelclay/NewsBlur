@@ -100,6 +100,7 @@ public class DatabaseConstants {
     public static final String STORY_LAST_READ_DATE = "last_read_date";
     public static final String STORY_SEARCH_HIT = "search_hit";
     public static final String STORY_THUMBNAIL_URL = "thumbnail_url";
+    public static final String STORY_INFREQUENT = "infrequent";
 
     public static final String READING_SESSION_TABLE = "reading_session";
     public static final String READING_SESSION_STORY_HASH = "session_story_hash";
@@ -251,6 +252,7 @@ public class DatabaseConstants {
 		STORY_READ + INTEGER + ", " +
 		STORY_STARRED + INTEGER + ", " +
 		STORY_STARRED_DATE + INTEGER + ", " +
+        STORY_INFREQUENT + INTEGER + ", " +
 		STORY_TITLE + TEXT + ", " +
         STORY_IMAGE_URLS + TEXT + ", " +
         STORY_LAST_READ_DATE + INTEGER + ", " +

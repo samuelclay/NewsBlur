@@ -10,10 +10,10 @@ import android.view.View;
 import com.newsblur.R;
 import com.newsblur.database.StoryItemsAdapter;
 
-public class GlobalSharedStoriesItemListFragment extends ItemListFragment {
+public class InfrequentItemListFragment extends ItemListFragment {
 
 	public static ItemListFragment newInstance() {
-		ItemListFragment fragment = new GlobalSharedStoriesItemListFragment();
+		ItemListFragment fragment = new InfrequentItemListFragment();
         Bundle args = new Bundle();
         fragment.setArguments(args);
 		return fragment;
@@ -31,8 +31,6 @@ public class GlobalSharedStoriesItemListFragment extends ItemListFragment {
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
-        menu.removeItem(R.id.menu_mark_story_as_read);
-        menu.removeItem(R.id.menu_mark_story_as_unread);
         menu.removeItem(R.id.menu_mark_newer_stories_as_read);
         menu.removeItem(R.id.menu_mark_older_stories_as_read);
     }

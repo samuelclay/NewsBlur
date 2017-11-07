@@ -34,7 +34,6 @@ import com.newsblur.activity.ItemsList;
 import com.newsblur.database.StoryItemsAdapter;
 import com.newsblur.domain.Story;
 import com.newsblur.service.NBSyncService;
-import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.GestureAction;

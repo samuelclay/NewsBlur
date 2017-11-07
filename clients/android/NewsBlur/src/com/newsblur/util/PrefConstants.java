@@ -38,6 +38,7 @@ public class PrefConstants {
 	public static final String ALL_STORIES_FOLDER_NAME = "all_stories";
     public static final String ALL_SHARED_STORIES_FOLDER_NAME = "all_shared_stories";
     public static final String GLOBAL_SHARED_STORIES_FOLDER_NAME = "global_shared_stories";
+    public static final String INFREQUENT_FOLDER_NAME = "infrequent_stories";
 
     public static final String DEFAULT_STORY_ORDER = "default_story_order";
     public static final String DEFAULT_READ_FILTER = "default_read_filter";
