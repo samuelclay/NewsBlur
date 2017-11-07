@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="13196" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="13529" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina5_9" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13174"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13527"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -19,6 +19,7 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="StoryPageControl">
             <connections>
                 <outlet property="bottomSize" destination="YKz-PZ-s0t" id="P3I-Wx-dLN"/>
+                <outlet property="bottomSizeHeightConstraint" destination="Ugq-XC-pFz" id="A98-YF-eby"/>
                 <outlet property="buttonNext" destination="62" id="72"/>
                 <outlet property="buttonPrevious" destination="64" id="67"/>
                 <outlet property="buttonSend" destination="85" id="88"/>
@@ -26,6 +27,7 @@
                 <outlet property="dragBarImageView" destination="kYw-ba-fFD" id="3C2-Je-cht"/>
                 <outlet property="loadingIndicator" destination="73" id="74"/>
                 <outlet property="prevNextBackgroundImageView" destination="71" id="S3e-tC-Pbu"/>
+                <outlet property="scrollBottomConstraint" destination="AOS-qV-fjZ" id="JD4-zE-OTv"/>
                 <outlet property="scrollView" destination="5" id="15"/>
                 <outlet property="textStorySendBackgroundImageView" destination="80" id="1hz-Zr-85e"/>
                 <outlet property="traverseBottomConstraint" destination="rgF-mh-lia" id="ucW-KZ-fN6"/>

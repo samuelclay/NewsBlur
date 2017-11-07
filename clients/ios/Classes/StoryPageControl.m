@@ -53,6 +53,7 @@
 @synthesize progressView, progressViewContainer;
 @synthesize traversePinned, traverseFloating;
 @synthesize traverseBottomConstraint;
+@synthesize scrollBottomConstraint;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
@@ -430,11 +431,13 @@
 //        scrollViewFrame.size.height = self.view.bounds.size.height;
 //        self.bottomSize.hidden = YES;
         [self.bottomSizeHeightConstraint setConstant:0];
+        [self.scrollBottomConstraint setConstant:0];
         [bottomSize setHidden:YES];
     } else {
 //        scrollViewFrame.size.height = self.view.bounds.size.height - 12;
 //        self.bottomSize.hidden = NO;
         [self.bottomSizeHeightConstraint setConstant:12];
+        [self.scrollBottomConstraint setConstant:-12];
         [bottomSize setHidden:NO];
     }
     
@@ -702,7 +705,7 @@
 - (void)scrollViewDidScroll:(UIScrollView *)sender {
 //    [sender setContentOffset:CGPointMake(sender.contentOffset.x, 0)];
     if (inRotation) return;
-    CGFloat pageWidth = self.scrollView.frame.size.width;
+    CGFloat pageWidth = CGRectGetWidth(self.currentPage.view.frame);
     float fractionalPage = self.scrollView.contentOffset.x / pageWidth;
 	
 	NSInteger lowerNumber = floor(fractionalPage);
@@ -755,6 +758,12 @@
     
     // Stick to bottom
     traversePinned = YES;
+    if (@available(iOS 11.0, *)) {
+        self.traverseBottomConstraint.constant = -1 * self.view.safeAreaInsets.bottom/2;
+    } else {
+        self.traverseBottomConstraint.constant = 0;
+    }
+
     [UIView animateWithDuration:.24 delay:0
                         options:UIViewAnimationOptionCurveEaseInOut
                      animations:^{
@@ -762,13 +771,9 @@
 //                         self.traverseView.frame = CGRectMake(tvf.origin.x,
 //                                                              self.view.bounds.size.height - tvf.size.height - bottomSizeHeightConstraint.constant - (self.view.safeAreaInsets.bottom - 20),
 //                                                              tvf.size.width, tvf.size.height);
-                         if (@available(iOS 11.0, *)) {
-                             self.traverseBottomConstraint.constant = MIN(-8, -1 * self.view.safeAreaInsets.bottom);
-                         } else {
-                             self.traverseBottomConstraint.constant = -8;
-                         }
                          self.traverseView.alpha = 1;
                          self.traversePinned = YES;
+                         [self.view layoutIfNeeded];
                      } completion:^(BOOL finished) {
                          
                      }];
@@ -786,7 +791,7 @@
 - (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)newScrollView
 {
     self.isDraggingScrollview = NO;
-    CGFloat pageWidth = self.scrollView.frame.size.width;
+    CGFloat pageWidth = CGRectGetWidth(self.currentPage.view.frame);
     float fractionalPage = self.scrollView.contentOffset.x / pageWidth;
 	NSInteger nearestNumber = lround(fractionalPage);
     self.scrollingToPage = nearestNumber;
@@ -800,7 +805,7 @@
     if (!self.isPhoneOrCompact &&
         [keyPath isEqual:@"contentOffset"] &&
         self.isDraggingScrollview) {
-        CGFloat pageWidth = self.scrollView.frame.size.width;
+        CGFloat pageWidth = CGRectGetWidth(self.currentPage.view.frame);
         float fractionalPage = self.scrollView.contentOffset.x / pageWidth;
         NSInteger nearestNumber = lround(fractionalPage);
         
@@ -820,7 +825,7 @@
     if (!self.isPhoneOrCompact &&
         !self.isAnimatedIntoPlace) {
         CGRect frame = self.scrollView.frame;
-        frame.origin.x = frame.size.width;
+        frame.origin.x = CGRectGetWidth(self.currentPage.view.frame);
         self.scrollView.frame = frame;
         [UIView animateWithDuration:(animated ? .22 : 0) delay:0
                             options:UIViewAnimationOptionCurveEaseInOut
@@ -844,7 +849,7 @@
 	// update the scroll view to the appropriate page
     [self resizeScrollView];
     CGRect frame = self.scrollView.frame;
-    frame.origin.x = frame.size.width * pageIndex;
+    frame.origin.x = CGRectGetWidth(self.currentPage.view.frame) * pageIndex;
     frame.origin.y = 0;
 
     self.scrollingToPage = pageIndex;

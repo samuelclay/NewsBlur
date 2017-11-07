@@ -65,6 +65,7 @@
 @property (nonatomic, strong) IBOutlet UIBarButtonItem *subscribeButton;
 @property (nonatomic) IBOutlet UIImageView *dragBarImageView;
 @property (nonatomic) IBOutlet NSLayoutConstraint *traverseBottomConstraint;
+@property (nonatomic) IBOutlet NSLayoutConstraint *scrollBottomConstraint;
 @property (readwrite) BOOL traversePinned;
 @property (readwrite) BOOL traverseFloating;
 @property (readwrite) CGFloat inTouchMove;
