@@ -1264,6 +1264,8 @@ def load_river_stories__redis(request):
             usersubs = UserSubscription.subs_for_feeds(user.pk, feed_ids=feed_ids,
                                                        read_filter='all')
             feed_ids = [sub.feed_id for sub in usersubs]
+            if infrequent:
+                feed_ids = Feed.low_volume_feeds(feed_ids, stories_per_month=infrequent)
             stories = Feed.find_feed_stories(feed_ids, query, order=order, offset=offset, limit=limit)
             mstories = stories
             unread_feed_story_hashes = UserSubscription.story_hashes(user.pk, feed_ids=feed_ids, 
@@ -1285,6 +1287,8 @@ def load_river_stories__redis(request):
                                                    read_filter=read_filter)
         all_feed_ids = [f for f in feed_ids]
         feed_ids = [sub.feed_id for sub in usersubs]
+        if infrequent:
+            feed_ids = Feed.low_volume_feeds(feed_ids, stories_per_month=infrequent)
         if feed_ids:
             params = {
                 "user_id": user.pk, 
