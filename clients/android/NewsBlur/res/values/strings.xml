@@ -149,6 +149,7 @@
     <string name="menu_mute_folder">Mute folder</string>
     <string name="menu_unmute_folder">Unmute folder</string>
     <string name="menu_instafetch_feed">Insta-fetch stories</string>
+    <string name="menu_infrequent_cutoff">Infrequent stories per month</string>
     
     <string name="toast_story_unread">Story marked as unread</string>
 
@@ -287,6 +288,13 @@
 
     <string name="story">Story</string>
     <string name="text">Text</string>
+
+    <string name="infrequent_choice_title">Stories from sites with</string>
+    <string name="infrequent_5">&lt; 5 STORIES/MONTH</string>
+    <string name="infrequent_15">&lt; 15 STORIES/MONTH</string>
+    <string name="infrequent_30">&lt; 30 STORIES/MONTH</string>
+    <string name="infrequent_60">&lt; 60 STORIES/MONTH</string>
+    <string name="infrequent_90">&lt; 90 STORIES/MONTH</string>
 
     <string name="theme">Theme</string>
     <string name="light">Light</string>

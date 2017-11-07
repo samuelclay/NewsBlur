@@ -30,6 +30,8 @@ public class PrefConstants {
 	public static final String PREFERENCE_LIST_TEXT_SIZE = "list_text_size";
 	
 	public static final String PREFERENCE_REGISTRATION_STATE = "registration_stage";
+
+    public static final String PREFERENCE_INFREQUENT_CUTOFF = "infrequent cutoff";
 	
     public static final String FEED_STORY_ORDER_PREFIX = "feed_order_";
     public static final String FEED_READ_FILTER_PREFIX = "feed_read_filter_";

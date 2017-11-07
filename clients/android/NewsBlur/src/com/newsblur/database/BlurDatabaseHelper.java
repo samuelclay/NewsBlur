@@ -828,6 +828,12 @@ public class BlurDatabaseHelper {
         return count;
     }
 
+    public void clearInfrequentSession() {
+        ContentValues values = new ContentValues();
+        values.put(DatabaseConstants.STORY_INFREQUENT, false);
+        synchronized (RW_MUTEX) {dbRW.update(DatabaseConstants.STORY_TABLE, values, null, null);}
+    }
+
     public void enqueueAction(ReadingAction ra) {
         synchronized (RW_MUTEX) {dbRW.insertOrThrow(DatabaseConstants.ACTION_TABLE, null, ra.toContentValues());}
     }

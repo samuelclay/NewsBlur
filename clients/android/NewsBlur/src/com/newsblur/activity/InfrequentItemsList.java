@@ -4,12 +4,18 @@ import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 
 import com.newsblur.R;
+import com.newsblur.fragment.InfrequentCutoffDialogFragment;
+import com.newsblur.fragment.InfrequentCutoffDialogFragment.InfrequentCutoffChangedListener;
 import com.newsblur.fragment.InfrequentItemListFragment;
+import com.newsblur.service.NBSyncService;
+import com.newsblur.util.FeedUtils;
+import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.UIUtils;
 
-public class InfrequentItemsList extends ItemsList {
+public class InfrequentItemsList extends ItemsList implements InfrequentCutoffChangedListener {
 
 	@Override
 	protected void onCreate(Bundle bundle) {
@@ -33,5 +39,28 @@ public class InfrequentItemsList extends ItemsList {
         inflater.inflate(R.menu.infrequent_itemslist, menu);
         return true;
 	}
+
+    @Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.menu_infrequent_cutoff) {
+			InfrequentCutoffDialogFragment dialog = InfrequentCutoffDialogFragment.newInstance(PrefsUtils.getInfrequentCutoff(this));
+			dialog.show(getFragmentManager(), InfrequentCutoffDialogFragment.class.getName());
+			return true;
+        } else {
+            return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    public void infrequentCutoffChanged(int newValue) {
+        PrefsUtils.setInfrequentCutoff(this, newValue);
+        itemListFragment.resetEmptyState();
+        itemListFragment.hasUpdated();
+        itemListFragment.scrollToTop();
+        FeedUtils.dbHelper.clearInfrequentSession();
+        NBSyncService.resetReadingSession();
+        NBSyncService.resetFetchState(fs);
+        triggerSync();
+    }
 
 }

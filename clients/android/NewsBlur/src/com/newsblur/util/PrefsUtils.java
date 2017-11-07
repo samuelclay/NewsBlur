@@ -432,6 +432,18 @@ public class PrefsUtils {
         editor.commit();
     }
 
+    public static int getInfrequentCutoff(Context context) {
+        SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        return preferences.getInt(PrefConstants.PREFERENCE_INFREQUENT_CUTOFF, 30);
+    }
+
+    public static void setInfrequentCutoff(Context context, int newValue) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        Editor editor = prefs.edit();
+        editor.putInt(PrefConstants.PREFERENCE_INFREQUENT_CUTOFF, newValue);
+        editor.commit();
+    }
+
     public static DefaultFeedView getDefaultViewModeForFeed(Context context, String feedId) {
         if ((feedId == null) || (feedId.equals(0))) return DefaultFeedView.STORY;
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
