@@ -383,16 +383,19 @@
 
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
     [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
-
+    inRotation = YES;
+    
     [coordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
-//        NSLog(@"---> Story page control is re-orienting: %@ / %@", NSStringFromCGSize(self.view.bounds.size), NSStringFromCGSize(size));
+//        NSLog(@"---> Story page control is re-orienting: %@ / %@", NSStringFromCGSize(self.scrollView.bounds.size), NSStringFromCGSize(size));
         UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
         _orientation = [UIApplication sharedApplication].statusBarOrientation;
         [self layoutForInterfaceOrientation:orientation];
         [self adjustDragBar:orientation];
         [self reorientPages];
     } completion:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
-//        NSLog(@"---> Story page control did re-orient: %@ / %@", NSStringFromCGSize(self.view.bounds.size), NSStringFromCGSize(size));
+//        NSLog(@"---> Story page control did re-orient: %@ / %@", NSStringFromCGSize(self.scrollView.bounds.size), NSStringFromCGSize(size));
+        inRotation = NO;
+
         [self.view setNeedsLayout];
         [self.view layoutIfNeeded];
         
@@ -428,13 +431,13 @@
 
     if (self.isPhoneOrCompact ||
         UIInterfaceOrientationIsLandscape(orientation)) {
-//        scrollViewFrame.size.height = self.view.bounds.size.height;
+//        scrollViewFrame.size.height = self.scrollView.bounds.size.height;
 //        self.bottomSize.hidden = YES;
         [self.bottomSizeHeightConstraint setConstant:0];
         [self.scrollBottomConstraint setConstant:0];
         [bottomSize setHidden:YES];
     } else {
-//        scrollViewFrame.size.height = self.view.bounds.size.height - 12;
+//        scrollViewFrame.size.height = self.scrollView.bounds.size.height - 12;
 //        self.bottomSize.hidden = NO;
         [self.bottomSizeHeightConstraint setConstant:12];
         [self.scrollBottomConstraint setConstant:-12];
@@ -516,7 +519,7 @@
     // Scroll back to preserved index
     CGRect frame = self.scrollView.bounds;
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        frame = self.view.bounds;
+        frame = self.scrollView.bounds;
     }
     frame.origin.x = frame.size.width * currentIndex;
     frame.origin.y = 0;
@@ -627,20 +630,20 @@
 	if (!outOfBounds) {
         CGRect pageFrame = pageController.view.bounds;
 		pageFrame.origin.y = 0;
-		pageFrame.origin.x = CGRectGetWidth(self.view.bounds) * newIndex;
-        pageFrame.size.height = CGRectGetHeight(self.view.bounds) - self.bottomSizeHeightConstraint.constant;
+		pageFrame.origin.x = CGRectGetWidth(self.scrollView.bounds) * newIndex;
+        pageFrame.size.height = CGRectGetHeight(self.scrollView.bounds) - self.bottomSizeHeightConstraint.constant;
         pageController.view.hidden = NO;
 		pageController.view.frame = pageFrame;
 	} else {
 //        NSLog(@"Out of bounds: was %d, now %d", pageController.pageIndex, newIndex);
 		CGRect pageFrame = pageController.view.bounds;
-		pageFrame.origin.x = CGRectGetWidth(self.view.bounds) * newIndex;
-		pageFrame.origin.y = CGRectGetHeight(self.view.bounds);
-        pageFrame.size.height = CGRectGetHeight(self.view.bounds) - self.bottomSizeHeightConstraint.constant;
+		pageFrame.origin.x = CGRectGetWidth(self.scrollView.bounds) * newIndex;
+		pageFrame.origin.y = CGRectGetHeight(self.scrollView.bounds);
+        pageFrame.size.height = CGRectGetHeight(self.scrollView.bounds) - self.bottomSizeHeightConstraint.constant;
         pageController.view.hidden = YES;
 		pageController.view.frame = pageFrame;
 	}
-//    NSLog(@"---> Story page control orient page: %@ (%d-%d)", NSStringFromCGRect(self.view.bounds), pageController.pageIndex, suppressRedraw);
+//    NSLog(@"---> Story page control orient page: %@ (%d-%d)", NSStringFromCGRect(self.scrollView.bounds), pageController.pageIndex, suppressRedraw);
 
     if (suppressRedraw) return;
     
@@ -769,7 +772,7 @@
                      animations:^{
                          [self.traverseView setNeedsLayout];
 //                         self.traverseView.frame = CGRectMake(tvf.origin.x,
-//                                                              self.view.bounds.size.height - tvf.size.height - bottomSizeHeightConstraint.constant - (self.view.safeAreaInsets.bottom - 20),
+//                                                              self.scrollView.bounds.size.height - tvf.size.height - bottomSizeHeightConstraint.constant - (self.view.safeAreaInsets.bottom - 20),
 //                                                              tvf.size.width, tvf.size.height);
                          self.traverseView.alpha = 1;
                          self.traversePinned = YES;
@@ -895,7 +898,7 @@
 }
 
 - (void)setStoryFromScroll:(BOOL)force {
-    CGFloat pageWidth = self.view.bounds.size.width;
+    CGFloat pageWidth = self.scrollView.bounds.size.width;
     float fractionalPage = self.scrollView.contentOffset.x / pageWidth;
 	NSInteger nearestNumber = lround(fractionalPage);
     
