@@ -1057,7 +1057,7 @@
     self.pageFinished = NO;
     [self renderStories:confirmedNewStories];
     
-    if (!self.isPhoneOrCompact) {
+    if (!self.isPhoneOrCompact && !self.isDashboardModule) {
         [appDelegate.storyPageControl resizeScrollView];
         [appDelegate.storyPageControl setStoryFromScroll:YES];
     }

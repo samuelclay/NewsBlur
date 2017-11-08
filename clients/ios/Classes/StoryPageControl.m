@@ -631,7 +631,8 @@
         CGRect pageFrame = pageController.view.bounds;
 		pageFrame.origin.y = 0;
 		pageFrame.origin.x = CGRectGetWidth(self.scrollView.bounds) * newIndex;
-        pageFrame.size.height = CGRectGetHeight(self.scrollView.bounds) - self.bottomSizeHeightConstraint.constant;
+        pageFrame.size.height = CGRectGetHeight(self.scrollView.bounds);
+        pageFrame.size.width = CGRectGetWidth(self.scrollView.bounds);
         pageController.view.hidden = NO;
 		pageController.view.frame = pageFrame;
 	} else {
@@ -639,7 +640,8 @@
 		CGRect pageFrame = pageController.view.bounds;
 		pageFrame.origin.x = CGRectGetWidth(self.scrollView.bounds) * newIndex;
 		pageFrame.origin.y = CGRectGetHeight(self.scrollView.bounds);
-        pageFrame.size.height = CGRectGetHeight(self.scrollView.bounds) - self.bottomSizeHeightConstraint.constant;
+        pageFrame.size.height = CGRectGetHeight(self.scrollView.bounds);
+        pageFrame.size.width = CGRectGetWidth(self.scrollView.bounds);
         pageController.view.hidden = YES;
 		pageController.view.frame = pageFrame;
 	}
