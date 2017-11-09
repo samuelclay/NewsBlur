@@ -74,6 +74,7 @@
 - (void)testForTryFeed;
 - (void)cacheStoryImages:(NSArray *)storyImageUrls;
 - (void)showStoryImage:(NSString *)imageUrl;
+- (void)flashInfrequentStories;
 
 - (void)renderStories:(NSArray *)newStories;
 - (void)scrollViewDidScroll:(UIScrollView *)scroll;

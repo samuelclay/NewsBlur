@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="13196" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="13529" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13173"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13527"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="FeedDetailMenuViewController">
             <connections>
                 <outlet property="fontSizeSegment" destination="bWr-qv-pDn" id="fcF-wf-yty"/>
+                <outlet property="infrequentSegmentedControl" destination="wTg-kB-yYa" id="9s1-Eu-iT5"/>
                 <outlet property="menuTableView" destination="3" id="15"/>
                 <outlet property="orderSegmentedControl" destination="18" id="20"/>
                 <outlet property="readFilterSegmentedControl" destination="19" id="21"/>
@@ -80,6 +81,20 @@
                     </segments>
                     <connections>
                         <action selector="changeFontSize:" destination="-1" eventType="valueChanged" id="Aix-Az-zOq"/>
+                    </connections>
+                </segmentedControl>
+                <segmentedControl opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="bar" selectedSegmentIndex="2" id="wTg-kB-yYa">
+                    <rect key="frame" x="86" y="360" width="159" height="29"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <segments>
+                        <segment title="5"/>
+                        <segment title="15"/>
+                        <segment title="30"/>
+                        <segment title="60"/>
+                        <segment title="90"/>
+                    </segments>
+                    <connections>
+                        <action selector="changeInfrequent:" destination="-1" eventType="valueChanged" id="zX1-WK-yLB"/>
                     </connections>
                 </segmentedControl>
             </subviews>

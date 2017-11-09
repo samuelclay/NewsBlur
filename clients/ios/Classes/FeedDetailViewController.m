@@ -627,6 +627,19 @@
     });
 }
 
+- (void)flashInfrequentStories {
+    NSUserDefaults *prefs = [NSUserDefaults standardUserDefaults];
+    NSInteger infrequent = [prefs integerForKey:@"infrequent_stories_per_month"];
+    [MBProgressHUD hideHUDForView:self.storyTitlesTable animated:NO];
+    MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    hud.mode = MBProgressHUDModeText;
+    hud.removeFromSuperViewOnHide = YES;
+    
+    hud.labelText = [NSString stringWithFormat:@"< %ld stories/month", (long)infrequent];;
+    
+    [hud hide:YES afterDelay:0.5];
+}
+
 #pragma mark -
 #pragma mark Regular and Social Feeds
 
@@ -903,7 +916,8 @@
         }
         NSString *infrequent = @"false";
         if ([storiesCollection.activeFolder isEqualToString:@"infrequent"]) {
-            infrequent = @"30";
+            NSUserDefaults *prefs = [NSUserDefaults standardUserDefaults];
+            infrequent = [NSString stringWithFormat:@"%ld", (long)[prefs integerForKey:@"infrequent_stories_per_month"]];
         }
         theFeedDetailURL = [NSString stringWithFormat:
                             @"%@/reader/river_stories/?include_hidden=true&f=%@&page=%d&infrequent=%@",
