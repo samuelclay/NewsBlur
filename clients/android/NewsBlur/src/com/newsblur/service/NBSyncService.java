@@ -788,6 +788,15 @@ public class NBSyncService extends Service {
             }
         }
 
+        if (fs.isInfrequent()) {
+            // the API vends a river of stories from sites that publish infrequently, but the
+            // list of which feeds qualify is not vended. as a workaround, stories received
+            // from this API are specially tagged so they can be displayed
+            for (Story story : apiResponse.stories) {
+                story.infrequent = true;
+            }
+        }
+
         if (fs.isAllSaved() || fs.isAllRead()) {
             // Note: for reasons relating to the impl. of the web UI, the API returns incorrect
             // intel values for stories from these two APIs.  Fix them so they don't show green

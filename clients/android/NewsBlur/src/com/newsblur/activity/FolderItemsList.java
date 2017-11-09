@@ -7,8 +7,6 @@ import android.view.MenuInflater;
 
 import com.newsblur.R;
 import com.newsblur.fragment.FolderItemListFragment;
-import com.newsblur.util.PrefsUtils;
-import com.newsblur.util.ReadFilter;
 import com.newsblur.util.UIUtils;
 
 public class FolderItemsList extends ItemsList {
@@ -40,15 +38,5 @@ public class FolderItemsList extends ItemsList {
 		inflater.inflate(R.menu.itemslist, menu);
 		return true;
 	}
-
-    @Override
-    protected void updateReadFilterPreference(ReadFilter newValue) {
-        PrefsUtils.setReadFilterForFolder(this, folderName, newValue);
-    }
-
-    @Override
-    protected ReadFilter getReadFilter() {
-        return PrefsUtils.getReadFilterForFolder(this, folderName);
-    }
 
 }

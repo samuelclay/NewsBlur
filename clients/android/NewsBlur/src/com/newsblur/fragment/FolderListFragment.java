@@ -35,6 +35,7 @@ import com.newsblur.activity.AllStoriesItemsList;
 import com.newsblur.activity.FeedItemsList;
 import com.newsblur.activity.FolderItemsList;
 import com.newsblur.activity.GlobalSharedStoriesItemsList;
+import com.newsblur.activity.InfrequentItemsList;
 import com.newsblur.activity.ItemsList;
 import com.newsblur.activity.Main;
 import com.newsblur.activity.ReadStoriesItemsList;
@@ -245,9 +246,10 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
             if (adapter.isRowReadStories(groupPosition)) break;
             if (groupPosition == FolderListAdapter.GLOBAL_SHARED_STORIES_GROUP_POSITION) break;
             if (groupPosition == FolderListAdapter.ALL_SHARED_STORIES_GROUP_POSITION) break;
+            if (groupPosition == FolderListAdapter.INFREQUENT_SITE_STORIES_GROUP_POSITION) break;
             inflater.inflate(R.menu.context_folder, menu);
 
-            if (adapter.isFolderRoot(groupPosition)) {
+            if (groupPosition == FolderListAdapter.ALL_STORIES_GROUP_POSITION) {
                 menu.removeItem(R.id.menu_mute_folder);
                 menu.removeItem(R.id.menu_unmute_folder);
             }
@@ -410,7 +412,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 	@Override
     public boolean onGroupClick(ExpandableListView list, View group, int groupPosition, long id) {
         Intent i = null;
-        if (adapter.isFolderRoot(groupPosition)) {
+        if (groupPosition == FolderListAdapter.ALL_STORIES_GROUP_POSITION) {
             if (currentState == StateFilter.SAVED) {
                 // the existence of this row in saved mode is something of a framework artifact and may
                 // confuse users. redirect them to the activity corresponding to what they will actually see
@@ -422,6 +424,8 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
             i = new Intent(getActivity(), GlobalSharedStoriesItemsList.class);
         } else if (groupPosition == FolderListAdapter.ALL_SHARED_STORIES_GROUP_POSITION) {
             i = new Intent(getActivity(), AllSharedStoriesItemsList.class);
+        } else if (groupPosition == FolderListAdapter.INFREQUENT_SITE_STORIES_GROUP_POSITION) {
+            i = new Intent(getActivity(), InfrequentItemsList.class);
         } else if (adapter.isRowReadStories(groupPosition)) {
             i = new Intent(getActivity(), ReadStoriesItemsList.class);
         } else if (adapter.isRowSavedStories(groupPosition)) {

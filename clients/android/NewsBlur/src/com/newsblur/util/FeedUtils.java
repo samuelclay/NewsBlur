@@ -196,6 +196,10 @@ public class FeedUtils {
             if (fs.getSingleFeed() != null) {
                 if (!fs.isMuted()) {
                     ra = ReadingAction.markFeedRead(fs, olderThan, newerThan);
+                } else {
+                    // this should not be possible if appropriate menus have been altered. 
+                    com.newsblur.util.Log.w(activity, "disregarding mark-read for muted feed.");
+                    return;
                 }
             } else if (fs.isFolder()) {
                 Set<String> feedIds = fs.getMultipleFeeds();

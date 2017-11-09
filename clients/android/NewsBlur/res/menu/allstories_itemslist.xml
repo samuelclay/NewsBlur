@@ -15,4 +15,15 @@
     <item android:id="@+id/menu_search_stories"
           android:title="@string/menu_search_stories"
           android:showAsAction="ifRoom" android:icon="@drawable/ic_menu_search_gray55" />
+    <item android:id="@+id/menu_theme"
+          android:title="@string/menu_theme_choose" >
+        <menu>
+            <group android:checkableBehavior="single">
+                <item android:id="@+id/menu_theme_light"
+                      android:title="@string/light" />
+                <item android:id="@+id/menu_theme_dark"
+                      android:title="@string/dark" />
+            </group>
+        </menu>
+    </item>
 </menu>

@@ -30,6 +30,8 @@ public class PrefConstants {
 	public static final String PREFERENCE_LIST_TEXT_SIZE = "list_text_size";
 	
 	public static final String PREFERENCE_REGISTRATION_STATE = "registration_stage";
+
+    public static final String PREFERENCE_INFREQUENT_CUTOFF = "infrequent cutoff";
 	
     public static final String FEED_STORY_ORDER_PREFIX = "feed_order_";
     public static final String FEED_READ_FILTER_PREFIX = "feed_read_filter_";
@@ -38,6 +40,7 @@ public class PrefConstants {
 	public static final String ALL_STORIES_FOLDER_NAME = "all_stories";
     public static final String ALL_SHARED_STORIES_FOLDER_NAME = "all_shared_stories";
     public static final String GLOBAL_SHARED_STORIES_FOLDER_NAME = "global_shared_stories";
+    public static final String INFREQUENT_FOLDER_NAME = "infrequent_stories";
 
     public static final String DEFAULT_STORY_ORDER = "default_story_order";
     public static final String DEFAULT_READ_FILTER = "default_read_filter";

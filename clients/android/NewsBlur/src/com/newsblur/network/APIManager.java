@@ -314,6 +314,10 @@ public class APIManager {
             for (Map.Entry<String,String> entry : fs.getMultipleSocialFeeds().entrySet()) {
                 values.put(APIConstants.PARAMETER_FEEDS, entry.getKey());
             }
+        } else if (fs.isInfrequent()) {
+            uri = Uri.parse(buildUrl(APIConstants.PATH_RIVER_STORIES));
+            values.put(APIConstants.PARAMETER_INCLUDE_HIDDEN, APIConstants.VALUE_TRUE);
+            values.put(APIConstants.PARAMETER_INFREQUENT, Integer.toString(PrefsUtils.getInfrequentCutoff(context)));
         } else if (fs.isAllNormal()) {
             uri = Uri.parse(buildUrl(APIConstants.PATH_RIVER_STORIES));
             values.put(APIConstants.PARAMETER_INCLUDE_HIDDEN, APIConstants.VALUE_TRUE);
@@ -471,6 +475,13 @@ public class APIManager {
 		values.put(APIConstants.PARAMETER_FEEDID, feedId);
 
 		final APIResponse response = post(buildUrl(APIConstants.PATH_CLASSIFIER_SAVE), values);
+		return response.getResponse(gson, NewsBlurResponse.class);
+	}
+
+    public NewsBlurResponse updateFeedIntel(String feedId, Classifier classifier) {
+        ContentValues values = classifier.getAPITuples();
+        values.put(APIConstants.PARAMETER_FEEDID, feedId);
+		APIResponse response = post(buildUrl(APIConstants.PATH_CLASSIFIER_SAVE), values);
 		return response.getResponse(gson, NewsBlurResponse.class);
 	}
 

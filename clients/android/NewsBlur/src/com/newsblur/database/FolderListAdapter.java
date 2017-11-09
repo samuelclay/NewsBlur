@@ -42,8 +42,10 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 
     public static final int GLOBAL_SHARED_STORIES_GROUP_POSITION = 0;
     public static final int ALL_SHARED_STORIES_GROUP_POSITION = 1;
+    public static final int ALL_STORIES_GROUP_POSITION = 2;
+    public static final int INFREQUENT_SITE_STORIES_GROUP_POSITION = 3;
 
-    private enum GroupType { GLOBAL_SHARED_STORIES, ALL_SHARED_STORIES, ALL_STORIES, FOLDER, READ_STORIES, SAVED_STORIES }
+    private enum GroupType { GLOBAL_SHARED_STORIES, ALL_SHARED_STORIES, INFREQUENT_STORIES, ALL_STORIES, FOLDER, READ_STORIES, SAVED_STORIES }
     private enum ChildType { SOCIAL_FEED, FEED, SAVED_BY_TAG }
 
     private final static float defaultTextSize_childName = 14;
@@ -143,8 +145,10 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
                 ((TextView) v.findViewById(R.id.row_foldersumpos)).setText(Integer.toString(totalSocialPosiCount));
             }
             v.findViewById(R.id.row_foldersums).setVisibility(isExpanded ? View.INVISIBLE : View.VISIBLE);
-		} else if (isFolderRoot(groupPosition)) {
+		} else if (groupPosition == ALL_STORIES_GROUP_POSITION) {
 			if (v == null) v =  inflater.inflate(R.layout.row_all_stories, null, false);
+		} else if (groupPosition == INFREQUENT_SITE_STORIES_GROUP_POSITION) {
+			if (v == null) v =  inflater.inflate(R.layout.row_infrequent_stories, null, false);
         } else if (isRowReadStories(groupPosition)) {
             if (v == null) v = inflater.inflate(R.layout.row_read_stories, null, false);
         } else if (isRowSavedStories(groupPosition)) {
@@ -349,9 +353,11 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
             return FeedSet.globalShared();
         } else if (groupPosition == ALL_SHARED_STORIES_GROUP_POSITION) {
             return FeedSet.allSocialFeeds();
-        } else if (isFolderRoot(groupPosition)) {
+        } else if (groupPosition == ALL_STORIES_GROUP_POSITION) {
             if (currentState == StateFilter.SAVED) return FeedSet.allSaved();
             return FeedSet.allFeeds();
+        } else if (groupPosition == INFREQUENT_SITE_STORIES_GROUP_POSITION) {
+            return FeedSet.infrequentFeeds();
         } else if (isRowReadStories(groupPosition)) {
             return FeedSet.allRead();
         } else if (isRowSavedStories(groupPosition)) {
@@ -378,7 +384,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
     private int convertGroupPositionToActiveFolderIndex(int groupPosition) {
         // Global and social feeds are shown above the named folders so the groupPosition
         // needs to be adjusted to index into the active folders lists.
-        return groupPosition - 2;
+        return groupPosition - 3;
     }
 
 	@Override
@@ -398,6 +404,10 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
             return Long.MAX_VALUE;
         } else if (groupPosition == ALL_SHARED_STORIES_GROUP_POSITION) {
             return Long.MAX_VALUE-1;
+        } else if (groupPosition == INFREQUENT_SITE_STORIES_GROUP_POSITION) {
+            return Long.MAX_VALUE-4;
+        } else if (groupPosition == ALL_STORIES_GROUP_POSITION) {
+            return Long.MAX_VALUE-5;
         } else if (isRowReadStories(groupPosition)) {
             return Long.MAX_VALUE-2;
         } else if (isRowSavedStories(groupPosition)) {
@@ -413,7 +423,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 			return socialFeedsActive.size();
         } else if (isRowSavedStories(groupPosition)) {
             return starredCountsByTag.size();
-        } else if (isRowReadStories(groupPosition) || groupPosition == GLOBAL_SHARED_STORIES_GROUP_POSITION) {
+        } else if (isRowReadStories(groupPosition) || groupPosition == GLOBAL_SHARED_STORIES_GROUP_POSITION || groupPosition == ALL_STORIES_GROUP_POSITION) {
             return 0; // these rows never have children
 		} else {
             return activeFolderChildren.get(convertGroupPositionToActiveFolderIndex(groupPosition)).size();
@@ -448,6 +458,10 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 			return "[ALL_SHARED_STORIES]";
 		} else if (groupPosition == GLOBAL_SHARED_STORIES_GROUP_POSITION) {
             return "[GLOBAL_SHARED_STORIES]";
+		} else if (groupPosition == ALL_STORIES_GROUP_POSITION) {
+            return "[ALL_STORIES]";
+		} else if (groupPosition == INFREQUENT_SITE_STORIES_GROUP_POSITION) {
+            return "[INFREQUENT_SITE_STORIES]";
         } else if (isRowReadStories(groupPosition)) {
             return "[READ_STORIES]";
         } else if (isRowSavedStories(groupPosition)) {
@@ -460,10 +474,11 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
     /**
      * Determines if the folder at the specified position is the special "root" folder.  This
      * folder is returned by the API in a special way and the APIManager ensures it gets a
-     * specific name in the DB so we can find it.
+     * specific name in the DB so we can find it. However, to match web UI conventions, feeds
+     * within it are rendered in the Infrequent folder.
      */
     public boolean isFolderRoot(int groupPosition) {
-        return ( getGroupUniqueName(groupPosition).equals(AppConstants.ROOT_FOLDER) );
+        return (groupPosition == INFREQUENT_SITE_STORIES_GROUP_POSITION);
     }
 
     /**
@@ -472,7 +487,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
      * it is located at the bottom of the set rather than the top.
      */
     public boolean isRowReadStories(int groupPosition) {
-        return ( groupPosition == (activeFolderNames.size() + 2) );
+        return ( groupPosition == (activeFolderNames.size() + 3) );
     }
 
     /**
@@ -481,7 +496,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
      * it is located at the bottom of the set rather than the top.
      */
     public boolean isRowSavedStories(int groupPosition) {
-        return ( groupPosition == (activeFolderNames.size() + 3) );
+        return ( groupPosition == (activeFolderNames.size() + 4) );
     }
 
 	public synchronized void setSocialFeedCursor(Cursor cursor) {
@@ -778,8 +793,10 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 			return GroupType.GLOBAL_SHARED_STORIES.ordinal();
 		} else if (groupPosition == ALL_SHARED_STORIES_GROUP_POSITION) {
             return GroupType.ALL_SHARED_STORIES.ordinal();
-        } else if (isFolderRoot(groupPosition)) {
+        } else if (groupPosition == ALL_STORIES_GROUP_POSITION) {
             return GroupType.ALL_STORIES.ordinal();
+        } else if (groupPosition == INFREQUENT_SITE_STORIES_GROUP_POSITION) {
+            return GroupType.INFREQUENT_STORIES.ordinal();
         } else if (isRowReadStories(groupPosition)) {
             return GroupType.READ_STORIES.ordinal();
         } else if (isRowSavedStories(groupPosition)) {

@@ -100,6 +100,7 @@ public class DatabaseConstants {
     public static final String STORY_LAST_READ_DATE = "last_read_date";
     public static final String STORY_SEARCH_HIT = "search_hit";
     public static final String STORY_THUMBNAIL_URL = "thumbnail_url";
+    public static final String STORY_INFREQUENT = "infrequent";
 
     public static final String READING_SESSION_TABLE = "reading_session";
     public static final String READING_SESSION_STORY_HASH = "session_story_hash";
@@ -147,6 +148,7 @@ public class DatabaseConstants {
     public static final String ACTION_COMMENT_ID = "comment_id";
     public static final String ACTION_NOTIFY_FILTER = "notify_filter";
     public static final String ACTION_NOTIFY_TYPES = "notify_types";
+    public static final String ACTION_CLASSIFIER = "classifier";
 
     public static final String STARREDCOUNTS_TABLE = "starred_counts";
     public static final String STARREDCOUNTS_COUNT = "count";
@@ -251,6 +253,7 @@ public class DatabaseConstants {
 		STORY_READ + INTEGER + ", " +
 		STORY_STARRED + INTEGER + ", " +
 		STORY_STARRED_DATE + INTEGER + ", " +
+        STORY_INFREQUENT + INTEGER + ", " +
 		STORY_TITLE + TEXT + ", " +
         STORY_IMAGE_URLS + TEXT + ", " +
         STORY_LAST_READ_DATE + INTEGER + ", " +
@@ -296,7 +299,8 @@ public class DatabaseConstants {
         ACTION_REPLY_ID + TEXT + ", " +
         ACTION_MODIFIED_FEED_IDS + TEXT + ", " +
         ACTION_NOTIFY_FILTER + TEXT + ", " +
-        ACTION_NOTIFY_TYPES + TEXT + 
+        ACTION_NOTIFY_TYPES + TEXT + ", " +
+        ACTION_CLASSIFIER + TEXT +
         ")";
 
 	static final String STARREDCOUNTS_SQL = "CREATE TABLE " + STARREDCOUNTS_TABLE + " (" +
