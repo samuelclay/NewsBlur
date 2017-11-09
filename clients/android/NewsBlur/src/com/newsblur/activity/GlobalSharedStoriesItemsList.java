@@ -7,7 +7,6 @@ import android.view.MenuInflater;
 
 import com.newsblur.R;
 import com.newsblur.fragment.GlobalSharedStoriesItemListFragment;
-import com.newsblur.util.ReadFilter;
 import com.newsblur.util.UIUtils;
 
 public class GlobalSharedStoriesItemsList extends ItemsList {
@@ -34,15 +33,5 @@ public class GlobalSharedStoriesItemsList extends ItemsList {
         inflater.inflate(R.menu.allsocialstories_itemslist, menu);
         return true;
 	}
-
-    @Override
-    protected void updateReadFilterPreference(ReadFilter newValue) {
-        // Not supported for global shared stories
-    }
-    
-    @Override
-    protected ReadFilter getReadFilter() {
-        return ReadFilter.UNREAD;
-    }
 
 }

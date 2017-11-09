@@ -43,9 +43,7 @@ import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
-import com.newsblur.util.ReadFilter;
 import com.newsblur.util.ReadingFontChangedListener;
-import com.newsblur.util.StoryOrder;
 import com.newsblur.util.StateFilter;
 import com.newsblur.util.UIUtils;
 import com.newsblur.util.ViewUtils;
@@ -114,15 +112,29 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
     private VolumeKeyNavigation volumeKeyNavigation;
 
     @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+    }
+
+    @Override
 	protected void onCreate(Bundle savedInstanceBundle) {
-		super.onCreate(savedInstanceBundle);
+        super.onCreate(savedInstanceBundle);
 
 		setContentView(R.layout.activity_reading);
         ButterKnife.bind(this);
 
 		fragmentManager = getFragmentManager();
 
-        fs = (FeedSet)getIntent().getSerializableExtra(EXTRA_FEEDSET);
+        try {
+            fs = (FeedSet)getIntent().getSerializableExtra(EXTRA_FEEDSET);
+        } catch (RuntimeException re) {
+            // in the wild, the notification system likes to pass us an Intent that has missing or very stale
+            // Serializable extras.
+            com.newsblur.util.Log.e(this, "failed to unfreeze required extras", re);
+            finish();
+            return;
+        }
 
         if (fs == null) {
             com.newsblur.util.Log.w(this.getClass().getName(), "reading view had no FeedSet");
@@ -364,6 +376,11 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
         menu.findItem(R.id.menu_reading_save).setTitle(story.starred ? R.string.menu_unsave_story : R.string.menu_save_story);
         menu.findItem(R.id.menu_reading_fullscreen).setVisible(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT);
         if (fs.isFilterSaved() || fs.isAllSaved() || (fs.getSingleSavedTag() != null)) menu.findItem(R.id.menu_reading_markunread).setVisible(false);
+        if (PrefsUtils.isLightThemeSelected(this)) {
+            menu.findItem(R.id.menu_theme_light).setChecked(true);
+        } else {
+            menu.findItem(R.id.menu_theme_dark).setChecked(true);
+        }
         return true;
     }
 
@@ -416,6 +433,14 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
             return true;
 		} else if (item.getItemId() == R.id.menu_reading_fullscreen) {
             ViewUtils.hideSystemUI(getWindow().getDecorView());
+            return true;
+        } else if (item.getItemId() == R.id.menu_theme_light) {
+            PrefsUtils.setLightThemeSelected(this, true);
+            UIUtils.restartActivity(this);
+            return true;
+        } else if (item.getItemId() == R.id.menu_theme_dark) {
+            PrefsUtils.setLightThemeSelected(this, false);
+            UIUtils.restartActivity(this);
             return true;
         } else {
 			return super.onOptionsItemSelected(item);

@@ -12,8 +12,6 @@ import com.newsblur.domain.Feed;
 import com.newsblur.fragment.DeleteFeedFragment;
 import com.newsblur.fragment.FeedItemListFragment;
 import com.newsblur.util.FeedUtils;
-import com.newsblur.util.PrefsUtils;
-import com.newsblur.util.ReadFilter;
 import com.newsblur.util.UIUtils;
 
 public class FeedItemsList extends ItemsList {
@@ -120,15 +118,5 @@ public class FeedItemsList extends ItemsList {
         }
 		return true;
 	}
-
-    @Override
-    protected void updateReadFilterPreference(ReadFilter newValue) {
-        PrefsUtils.setReadFilterForFeed(this, feed.feedId, newValue);
-    }
-    
-    @Override
-    protected ReadFilter getReadFilter() {
-        return PrefsUtils.getReadFilterForFeed(this, feed.feedId);
-    }
 
 }

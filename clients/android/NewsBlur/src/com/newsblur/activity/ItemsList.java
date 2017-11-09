@@ -139,6 +139,11 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
         if (fs.isFilterSaved()) {
             menu.findItem(R.id.menu_mark_all_as_read).setVisible(false);
         }
+        if (PrefsUtils.isLightThemeSelected(this)) {
+            menu.findItem(R.id.menu_theme_light).setChecked(true);
+        } else {
+            menu.findItem(R.id.menu_theme_dark).setChecked(true);
+        }
 		return true;
 	}
 
@@ -172,6 +177,12 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
                 searchQueryInput.setVisibility(View.GONE);
                 checkSearchQuery();
             }
+        } else if (item.getItemId() == R.id.menu_theme_light) {
+            PrefsUtils.setLightThemeSelected(this, true);
+            UIUtils.restartActivity(this);
+        } else if (item.getItemId() == R.id.menu_theme_dark) {
+            PrefsUtils.setLightThemeSelected(this, false);
+            UIUtils.restartActivity(this);
         }
 	
 		return false;
@@ -181,11 +192,17 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
         return PrefsUtils.getStoryOrder(this, fs);
     }
     
-	protected void updateStoryOrderPreference(StoryOrder newOrder) {
+	private void updateStoryOrderPreference(StoryOrder newOrder) {
         PrefsUtils.updateStoryOrder(this, fs, newOrder);
     }
 	
-	protected abstract ReadFilter getReadFilter();
+	private ReadFilter getReadFilter() {
+        return PrefsUtils.getReadFilter(this, fs);
+    }
+
+    private void updateReadFilterPreference(ReadFilter newValue) {
+        PrefsUtils.updateReadFilter(this, fs, newValue);
+    }
 
     @Override
 	public void handleUpdate(int updateType) {
@@ -275,8 +292,6 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
 	@Override
 	public void onStopTrackingTouch(SeekBar seekBar) {
 	}
-
-    protected abstract void updateReadFilterPreference(ReadFilter newValue);
 
     @Override
     public void finish() {

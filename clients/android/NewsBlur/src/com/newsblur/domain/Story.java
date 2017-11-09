@@ -97,6 +97,9 @@ public class Story implements Serializable {
     // non-API, but tracked locally and fudged (see SyncService) to implement ordering of gobal shared stories
     public long sharedTimestamp = 0L;
 
+    // non-API, but indicates that the story came from the infrequent-feeds river
+    public boolean infrequent;
+
 	public ContentValues getValues() {
 		final ContentValues values = new ContentValues();
 		values.put(DatabaseConstants.STORY_ID, id);
@@ -126,6 +129,7 @@ public class Story implements Serializable {
         values.put(DatabaseConstants.STORY_SHARED_DATE, sharedTimestamp);
 		values.put(DatabaseConstants.STORY_SEARCH_HIT, searchHit);
         values.put(DatabaseConstants.STORY_THUMBNAIL_URL, thumbnailUrl);
+        values.put(DatabaseConstants.STORY_INFREQUENT, infrequent);
 		return values;
 	}
 

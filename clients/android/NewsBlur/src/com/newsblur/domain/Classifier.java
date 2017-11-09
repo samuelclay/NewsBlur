@@ -16,8 +16,20 @@ import com.newsblur.database.DatabaseConstants;
 public class Classifier implements Serializable {
 	
 	private static final long serialVersionUID = 8958319817246110753L;
+
 	public static final int AUTHOR = 0, FEED = 1, TITLE = 2, TAG = 3;
 	public static final int LIKE = 1, DISLIKE = -1, CLEAR_DISLIKE = 3, CLEAR_LIKE = 4;
+
+    // these pre/post constants are used to build the 16 possible parameter names accepted by the API
+    // when updating intel
+    private static final String AUTHOR_POSTFIX = "author";
+    private static final String FEED_POSTFIX = "feed";
+    private static final String TITLE_POSTFIX = "title";
+    private static final String TAG_POSTFIX = "tag";
+    private static final String LIKE_PREFIX = "like_";
+    private static final String DISLIKE_PREFIX = "dislike_";
+    private static final String CLEAR_LIKE_PREFIX = "remove_like_";
+    private static final String CLEAR_DISLIKE_PREFIX = "remove_dislike_";
 	
 	@SerializedName("authors")
 	public HashMap<String, Integer> authors = new HashMap<String, Integer>();
@@ -30,9 +42,9 @@ public class Classifier implements Serializable {
 	
 	@SerializedName("feeds")
 	public HashMap<String, Integer> feeds = new HashMap<String, Integer>();
-	
-	public String feedId;
 
+    public String feedId;
+	
     public Map<String,Integer> getMapForType(int classifierType) {
 		switch (classifierType) {
             case Classifier.TAG:
@@ -45,6 +57,38 @@ public class Classifier implements Serializable {
                 Log.wtf(this.getClass().getName(), "Unknown classifier type requested.");
                 return null;
 		}
+    }
+
+    public ContentValues getAPITuples() {
+        ContentValues values = new ContentValues();
+        for (Map.Entry<String,Integer> entry : authors.entrySet()) {
+            values.put(buildAPITupleKey(entry.getValue(), AUTHOR_POSTFIX), entry.getKey());
+        }
+        for (Map.Entry<String,Integer> entry : title.entrySet()) {
+            values.put(buildAPITupleKey(entry.getValue(), TITLE_POSTFIX), entry.getKey());
+        }
+        for (Map.Entry<String,Integer> entry : tags.entrySet()) {
+            values.put(buildAPITupleKey(entry.getValue(), TAG_POSTFIX), entry.getKey());
+        }
+        for (Map.Entry<String,Integer> entry : feeds.entrySet()) {
+            values.put(buildAPITupleKey(entry.getValue(), FEED_POSTFIX), entry.getKey());
+        }
+        return values;
+    }
+
+    private String buildAPITupleKey(int action, String postfix) {
+        switch (action) {
+            case LIKE:
+                return (LIKE_PREFIX + postfix);
+            case DISLIKE:
+                return (DISLIKE_PREFIX + postfix);
+            case CLEAR_LIKE:
+                return (CLEAR_LIKE_PREFIX + postfix);
+            case CLEAR_DISLIKE:
+                return (CLEAR_DISLIKE_PREFIX + postfix);
+            default:
+                throw new IllegalArgumentException("invalid classifier action type");
+        }
     }
 	
 	public List<ContentValues> getContentValues() {

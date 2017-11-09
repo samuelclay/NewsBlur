@@ -34,7 +34,6 @@ import com.newsblur.activity.ItemsList;
 import com.newsblur.database.StoryItemsAdapter;
 import com.newsblur.domain.Story;
 import com.newsblur.service.NBSyncService;
-import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.GestureAction;
@@ -354,6 +353,7 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
 
         int truePosition = ((AdapterView.AdapterContextMenuInfo) menuInfo).position - 1;
         Story story = adapter.getStory(truePosition);
+        if (story == null) return;
         if (getFeedSet().isFilterSaved()) {
             menu.removeItem(R.id.menu_mark_story_as_read);
             menu.removeItem(R.id.menu_mark_story_as_unread);

@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
+    <item android:id="@+id/menu_infrequent_cutoff"
+          android:title="@string/menu_infrequent_cutoff"
+          android:showAsAction="never" />
     <item android:id="@+id/menu_story_order"
           android:title="@string/menu_story_order"
+          android:showAsAction="never" />
+    <item android:id="@+id/menu_read_filter"
+          android:title="@string/menu_read_filter"
           android:showAsAction="never" />
     <item android:id="@+id/menu_textsize"
           android:showAsAction="never"

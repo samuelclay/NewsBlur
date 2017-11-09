@@ -828,6 +828,12 @@ public class BlurDatabaseHelper {
         return count;
     }
 
+    public void clearInfrequentSession() {
+        ContentValues values = new ContentValues();
+        values.put(DatabaseConstants.STORY_INFREQUENT, false);
+        synchronized (RW_MUTEX) {dbRW.update(DatabaseConstants.STORY_TABLE, values, null, null);}
+    }
+
     public void enqueueAction(ReadingAction ra) {
         synchronized (RW_MUTEX) {dbRW.insertOrThrow(DatabaseConstants.ACTION_TABLE, null, ra.toContentValues());}
     }
@@ -1181,6 +1187,12 @@ public class BlurDatabaseHelper {
             sel.append(" FROM " + DatabaseConstants.STORY_TABLE);
             sel.append(" WHERE (" + DatabaseConstants.STORY_STARRED + " = 1)");
             DatabaseConstants.appendStorySelection(sel, selArgs, ReadFilter.ALL, StateFilter.ALL, fs.getSearchQuery());
+
+        } else if (fs.isInfrequent()) {
+
+            sel.append(" FROM " + DatabaseConstants.STORY_TABLE);
+            sel.append(" WHERE (" + DatabaseConstants.STORY_INFREQUENT + " = 1)");
+            DatabaseConstants.appendStorySelection(sel, selArgs, readFilter, stateFilter, fs.getSearchQuery());
 
         } else if (fs.getSingleSavedTag() != null) {
 

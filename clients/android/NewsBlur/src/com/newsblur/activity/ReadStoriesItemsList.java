@@ -7,7 +7,6 @@ import android.view.MenuInflater;
 
 import com.newsblur.R;
 import com.newsblur.fragment.ReadStoriesItemListFragment;
-import com.newsblur.util.ReadFilter;
 import com.newsblur.util.UIUtils;
 
 public class ReadStoriesItemsList extends ItemsList {
@@ -34,16 +33,5 @@ public class ReadStoriesItemsList extends ItemsList {
         inflater.inflate(R.menu.readstories_itemslist, menu);
         return true;
 	}
-
-    @Override
-    protected void updateReadFilterPreference(ReadFilter newValue) {
-        // dummy method.  read stories don't have an order option
-    }
-    
-    @Override
-    protected ReadFilter getReadFilter() {
-        // dummy method. read stories always show reads and unreads
-        return ReadFilter.ALL;
-    }
 
 }
