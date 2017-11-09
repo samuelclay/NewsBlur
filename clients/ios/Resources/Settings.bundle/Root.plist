@@ -95,6 +95,34 @@
 			<string>default_confirm_read_filter</string>
 		</dict>
 		<dict>
+			<key>FooterText</key>
+			<string>You can change this setting in the Infrequent Site Stories view.</string>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Infrequent stories per month</string>
+			<key>Titles</key>
+			<array>
+				<string>&lt; 5 stories/month</string>
+				<string>&lt; 15 stories/month</string>
+				<string>&lt; 30 stories/month</string>
+				<string>&lt; 60 stories/month</string>
+				<string>&lt; 90 stories/month</string>
+			</array>
+			<key>DefaultValue</key>
+			<integer>30</integer>
+			<key>Values</key>
+			<array>
+				<integer>5</integer>
+				<integer>15</integer>
+				<integer>30</integer>
+				<integer>60</integer>
+				<integer>90</integer>
+			</array>
+			<key>Key</key>
+			<string>infrequent_stories_per_month</string>
+		</dict>
+		<dict>
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 			<key>Title</key>
