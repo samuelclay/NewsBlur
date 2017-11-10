@@ -133,22 +133,22 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
                 ])
               ]),
               $.make('div', { className: 'NB-modal-submit NB-modal-submit-paypal' }, [
-                  $.make('div', { className: 'NB-feedchooser-payextra' }, [
-                    $.make('input', { type: 'checkbox', name: 'payextra', id: 'NB-feedchooser-payextra-checkbox' }),
-                    $.make('label', { 'for': 'NB-feedchooser-payextra-checkbox' }, 'I\'m feeling generous')
-                  ]),
+                  // $.make('div', { className: 'NB-feedchooser-payextra' }, [
+                  //   $.make('input', { type: 'checkbox', name: 'payextra', id: 'NB-feedchooser-payextra-checkbox' }),
+                  //   $.make('label', { 'for': 'NB-feedchooser-payextra-checkbox' }, 'I\'m feeling generous')
+                  // ]),
                   $.make('div', { className: 'NB-feedchooser-dollar' }, [
-                      $.make('div', { className: 'NB-feedchooser-dollar-value NB-2' }, [
-                          $.make('div', { className: 'NB-feedchooser-dollar-month' }, [
-                            $.make('div', { className: 'NB-feedchooser-dollar-image' }, [
-                                $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/circular/g_icn_coffeecup_gold16.png', style: "position: absolute; left: -56px;top: 15px;width: 16px;" }),
-                                $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/circular/g_icn_coffeecup_gold24.png', style: "position: absolute; left: -31px;top: 10px; width: 24px;" }),
-                                $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/circular/g_icn_coffeecup_gold32.png', style: "position: absolute; left: 0; top: 6px; width: 32px" })
-                            ]),
-                            '$24/year'
-                          ]),
-                          $.make('div', { className: 'NB-feedchooser-dollar-year' }, '($2/month)')
-                      ]),
+                      // $.make('div', { className: 'NB-feedchooser-dollar-value NB-2' }, [
+                      //     $.make('div', { className: 'NB-feedchooser-dollar-month' }, [
+                      //       $.make('div', { className: 'NB-feedchooser-dollar-image' }, [
+                      //           $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/circular/g_icn_coffeecup_gold16.png', style: "position: absolute; left: -56px;top: 15px;width: 16px;" }),
+                      //           $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/circular/g_icn_coffeecup_gold24.png', style: "position: absolute; left: -31px;top: 10px; width: 24px;" }),
+                      //           $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/circular/g_icn_coffeecup_gold32.png', style: "position: absolute; left: 0; top: 6px; width: 32px" })
+                      //       ]),
+                      //       '$24/year'
+                      //     ]),
+                      //     $.make('div', { className: 'NB-feedchooser-dollar-year' }, '($2/month)')
+                      // ]),
                       $.make('div', { className: 'NB-feedchooser-dollar-value NB-3' }, [
                           $.make('div', { className: 'NB-feedchooser-dollar-month' }, [
                             $.make('div', { className: 'NB-feedchooser-dollar-image' }, [
@@ -230,7 +230,7 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
         var $paypal = $('.NB-feedchooser-paypal-form', this.$modal);
         $.get('/profile/paypal_form', function(response) {
           $paypal.html(response);
-          self.choose_dollar_amount(2);
+          self.choose_dollar_amount(3);
         });
     },
     

@@ -111,16 +111,17 @@ float: right;">
                 {{ zebra_form.email }}
             </div>
             
-            <div style="overflow: hidden">
+            <div style="overflow: hidden;">
                 <style>
-                .NB-stripe-plan-choice label:first-child {
+                .NB-stripe-plan-choice label:first-child,
+                .NB-stripe-plan-choice label:nth-child(2) {
                     display: none;
                 }
                 </style>
                 {{ zebra_form.plan.label_tag }}
                 <label for="payextra" class="payextra-label">
-                    <input type="checkbox" id="payextra" name="payextra" />
-                    I'm feeling generous
+                    <!-- <input type="checkbox" id="payextra" name="payextra" />
+                    I'm feeling generous -->
                     {{ zebra_form.plan|safe }}
                 </label>
             </div>
