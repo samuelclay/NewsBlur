@@ -75,6 +75,7 @@ class Profile(models.Model):
     def canonical(self):
         return {
             'is_premium': self.is_premium,
+            'premium_expire': self.premium_expire,
             'preferences': json.decode(self.preferences),
             'tutorial_finished': self.tutorial_finished,
             'hide_getting_started': self.hide_getting_started,
@@ -413,6 +414,14 @@ class Profile(models.Model):
             return
         
         return ipn[0].payer_email
+    
+    def activate_ios_premium(self, amount):
+        PaymentHistory.objects.create(user=self.user,
+                                      payment_date=datetime.datetime.now(),
+                                      payment_amount=amount,
+                                      payment_provider='ios-subscription')
+        self.activate_premium()
+        logging.user(self.user, "~FG~BBNew iOS premium subscription: $%s~FW" % amount)
         
     @classmethod
     def clear_dead_spammers(self, days=30, confirm=False):

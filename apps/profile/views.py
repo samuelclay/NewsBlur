@@ -310,6 +310,20 @@ def profile_is_premium(request):
         'total_subs': total_subs,
     }
 
+@ajax_login_required
+@json.json_view
+def save_ios_receipt(request):
+    request.user.profile.activate_ios_premium()
+    
+    subject = "iOS Premium: %s" % (request.user.profile)
+    message = """User: %s (%s) -- Email: %s""" % (request.user.username, request.user.pk, request.user.email)
+    mail_admins(subject, message, fail_silently=True)
+    
+    return {
+        'is_premium': request.user.profile.is_premium,
+        'premium_expire': request.user.profile.premium_expire,
+    }
+    
 @login_required
 def stripe_form(request):
     user = request.user
