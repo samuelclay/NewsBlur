@@ -149,7 +149,7 @@
 .NB-static-form .NB-stripe-plan-choice {
     float: left;
     width: 200px;
-    margin-top: 4px;
+    margin-top: 0px;
     padding: 0 2px;
     font-weight: bold;
 }
@@ -157,6 +157,7 @@
     width: auto;
     float: left;
     margin-top: 0;
+    padding-top: 0;
 }
 .NB-static-form .NB-stripe-plan-choice input {
     width: auto;
