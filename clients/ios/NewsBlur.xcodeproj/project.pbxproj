@@ -394,6 +394,19 @@
 		FF8364C01756949E008F5C58 /* traverse_text_on@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF8364BE1756949E008F5C58 /* traverse_text_on@2x.png */; };
 		FF8364C61757EC0B008F5C58 /* traverse_background_left.png in Resources */ = {isa = PBXBuildFile; fileRef = FF8364C41757EC0B008F5C58 /* traverse_background_left.png */; };
 		FF8364C71757EC0B008F5C58 /* traverse_background_left@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF8364C51757EC0B008F5C58 /* traverse_background_left@2x.png */; };
+		FF83FF011FB51628008DAC0F /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FF83FF001FB51628008DAC0F /* StoreKit.framework */; };
+		FF83FF051FB52565008DAC0F /* PremiumViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FF83FF031FB52565008DAC0F /* PremiumViewController.m */; };
+		FF83FF061FB52565008DAC0F /* PremiumViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = FF83FF041FB52565008DAC0F /* PremiumViewController.xib */; };
+		FF83FF081FB53374008DAC0F /* g_icn_greensun.png in Resources */ = {isa = PBXBuildFile; fileRef = FF83FF071FB53373008DAC0F /* g_icn_greensun.png */; };
+		FF83FF0C1FB5371E008DAC0F /* g_icn_greensun@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF83FF0A1FB5371E008DAC0F /* g_icn_greensun@2x.png */; };
+		FF83FF151FB54693008DAC0F /* g_icn_lightning.png in Resources */ = {isa = PBXBuildFile; fileRef = FF83FF0D1FB54690008DAC0F /* g_icn_lightning.png */; };
+		FF83FF161FB54693008DAC0F /* g_icn_eating.png in Resources */ = {isa = PBXBuildFile; fileRef = FF83FF0E1FB54691008DAC0F /* g_icn_eating.png */; };
+		FF83FF171FB54693008DAC0F /* g_icn_textview_black.png in Resources */ = {isa = PBXBuildFile; fileRef = FF83FF0F1FB54691008DAC0F /* g_icn_textview_black.png */; };
+		FF83FF181FB54693008DAC0F /* g_icn_search_black.png in Resources */ = {isa = PBXBuildFile; fileRef = FF83FF101FB54692008DAC0F /* g_icn_search_black.png */; };
+		FF83FF191FB54693008DAC0F /* g_icn_tag_black.png in Resources */ = {isa = PBXBuildFile; fileRef = FF83FF111FB54692008DAC0F /* g_icn_tag_black.png */; };
+		FF83FF1A1FB54693008DAC0F /* g_icn_buffer.png in Resources */ = {isa = PBXBuildFile; fileRef = FF83FF121FB54692008DAC0F /* g_icn_buffer.png */; };
+		FF83FF1B1FB54693008DAC0F /* g_icn_privacy.png in Resources */ = {isa = PBXBuildFile; fileRef = FF83FF131FB54692008DAC0F /* g_icn_privacy.png */; };
+		FF83FF1C1FB54693008DAC0F /* g_icn_folder_black.png in Resources */ = {isa = PBXBuildFile; fileRef = FF83FF141FB54693008DAC0F /* g_icn_folder_black.png */; };
 		FF855B561794A53A0098D48A /* checkmark.png in Resources */ = {isa = PBXBuildFile; fileRef = FF855B541794A53A0098D48A /* checkmark.png */; };
 		FF855B571794A53A0098D48A /* checkmark@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF855B551794A53A0098D48A /* checkmark@2x.png */; };
 		FF855B5B1794B0670098D48A /* OfflineSyncUnreads.m in Sources */ = {isa = PBXBuildFile; fileRef = FF855B5A1794B0670098D48A /* OfflineSyncUnreads.m */; };
@@ -1106,6 +1119,20 @@
 		FF8364BE1756949E008F5C58 /* traverse_text_on@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "traverse_text_on@2x.png"; sourceTree = "<group>"; };
 		FF8364C41757EC0B008F5C58 /* traverse_background_left.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = traverse_background_left.png; sourceTree = "<group>"; };
 		FF8364C51757EC0B008F5C58 /* traverse_background_left@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "traverse_background_left@2x.png"; sourceTree = "<group>"; };
+		FF83FF001FB51628008DAC0F /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
+		FF83FF021FB52565008DAC0F /* PremiumViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PremiumViewController.h; sourceTree = "<group>"; };
+		FF83FF031FB52565008DAC0F /* PremiumViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PremiumViewController.m; sourceTree = "<group>"; };
+		FF83FF041FB52565008DAC0F /* PremiumViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PremiumViewController.xib; sourceTree = "<group>"; };
+		FF83FF071FB53373008DAC0F /* g_icn_greensun.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = g_icn_greensun.png; sourceTree = "<group>"; };
+		FF83FF0A1FB5371E008DAC0F /* g_icn_greensun@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "g_icn_greensun@2x.png"; sourceTree = "<group>"; };
+		FF83FF0D1FB54690008DAC0F /* g_icn_lightning.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = g_icn_lightning.png; sourceTree = "<group>"; };
+		FF83FF0E1FB54691008DAC0F /* g_icn_eating.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = g_icn_eating.png; sourceTree = "<group>"; };
+		FF83FF0F1FB54691008DAC0F /* g_icn_textview_black.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = g_icn_textview_black.png; sourceTree = "<group>"; };
+		FF83FF101FB54692008DAC0F /* g_icn_search_black.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = g_icn_search_black.png; sourceTree = "<group>"; };
+		FF83FF111FB54692008DAC0F /* g_icn_tag_black.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = g_icn_tag_black.png; sourceTree = "<group>"; };
+		FF83FF121FB54692008DAC0F /* g_icn_buffer.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = g_icn_buffer.png; sourceTree = "<group>"; };
+		FF83FF131FB54692008DAC0F /* g_icn_privacy.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = g_icn_privacy.png; sourceTree = "<group>"; };
+		FF83FF141FB54693008DAC0F /* g_icn_folder_black.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = g_icn_folder_black.png; sourceTree = "<group>"; };
 		FF855B541794A53A0098D48A /* checkmark.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = checkmark.png; sourceTree = "<group>"; };
 		FF855B551794A53A0098D48A /* checkmark@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "checkmark@2x.png"; sourceTree = "<group>"; };
 		FF855B591794B0670098D48A /* OfflineSyncUnreads.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OfflineSyncUnreads.h; path = offline/OfflineSyncUnreads.h; sourceTree = "<group>"; };
@@ -1330,6 +1357,7 @@
 				17CF7DD41C5C6AE40067BC5B /* WebKit.framework in Frameworks */,
 				FF308A8118C01043009F986A /* MediaPlayer.framework in Frameworks */,
 				FF308A7F18C01037009F986A /* CoreLocation.framework in Frameworks */,
+				FF83FF011FB51628008DAC0F /* StoreKit.framework in Frameworks */,
 				FF308A7D18C01025009F986A /* CoreMotion.framework in Frameworks */,
 				FF308A7B18C01014009F986A /* AssetsLibrary.framework in Frameworks */,
 				FF26125418C00FEC0055FF4D /* AddressBook.framework in Frameworks */,
@@ -1528,6 +1556,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				FF83FF001FB51628008DAC0F /* StoreKit.framework */,
 				17CF7DD31C5C6AE40067BC5B /* WebKit.framework */,
 				FF308A8018C01043009F986A /* MediaPlayer.framework */,
 				FF308A7E18C01037009F986A /* CoreLocation.framework */,
@@ -1624,6 +1653,9 @@
 				43B232BF15D5F61700D035B4 /* AuthorizeServicesViewController.xib */,
 				43CE0F5D15DADB7E00608ED8 /* SiteCell.h */,
 				43CE0F5E15DADB7F00608ED8 /* SiteCell.m */,
+				FF83FF021FB52565008DAC0F /* PremiumViewController.h */,
+				FF83FF031FB52565008DAC0F /* PremiumViewController.m */,
+				FF83FF041FB52565008DAC0F /* PremiumViewController.xib */,
 			);
 			name = FTUX;
 			sourceTree = "<group>";
@@ -1693,6 +1725,16 @@
 			isa = PBXGroup;
 			children = (
 				FF3FA8941BB26B6A001F7C32 /* copy_link@2x.png */,
+				FF83FF121FB54692008DAC0F /* g_icn_buffer.png */,
+				FF83FF0E1FB54691008DAC0F /* g_icn_eating.png */,
+				FF83FF141FB54693008DAC0F /* g_icn_folder_black.png */,
+				FF83FF0D1FB54690008DAC0F /* g_icn_lightning.png */,
+				FF83FF131FB54692008DAC0F /* g_icn_privacy.png */,
+				FF83FF101FB54692008DAC0F /* g_icn_search_black.png */,
+				FF83FF111FB54692008DAC0F /* g_icn_tag_black.png */,
+				FF83FF0F1FB54691008DAC0F /* g_icn_textview_black.png */,
+				FF83FF071FB53373008DAC0F /* g_icn_greensun.png */,
+				FF83FF0A1FB5371E008DAC0F /* g_icn_greensun@2x.png */,
 				FF03AFE219F87A770063002A /* g_icn_folder_read.png */,
 				FF03AFE319F87A770063002A /* g_icn_folder_read@2x.png */,
 				FF3964BB192BED0A004BEE1A /* tag.png */,
@@ -2521,6 +2563,9 @@
 						DevelopmentTeam = HR7P97SD72;
 						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
+							com.apple.InAppPurchase = {
+								enabled = 1;
+							};
 							com.apple.Push = {
 								enabled = 1;
 							};
@@ -2626,6 +2671,7 @@
 				433323B8158901A40025064D /* fountain_pen.png in Resources */,
 				433323B9158901A40025064D /* fountain_pen@2x.png in Resources */,
 				433323BB158901C10025064D /* login_background.png in Resources */,
+				FF83FF151FB54693008DAC0F /* g_icn_lightning.png in Resources */,
 				17BE5A761C5DDA8C0075F92C /* barbutton_sort_desc@2x.png in Resources */,
 				433323BE1589022C0025064D /* user.png in Resources */,
 				433323BF1589022C0025064D /* user@2x.png in Resources */,
@@ -2705,6 +2751,7 @@
 				432EBD0F15D1A2B00000729D /* fountain_pen_on@2x.png in Resources */,
 				432EBD1615D1A7800000729D /* user_on.png in Resources */,
 				FFB9BE4C17F4B65B00FE0A36 /* logo_76.png in Resources */,
+				FF83FF191FB54693008DAC0F /* g_icn_tag_black.png in Resources */,
 				432EBD1715D1A7800000729D /* user_on@2x.png in Resources */,
 				43C3D40415D44EA30066D36D /* user_light.png in Resources */,
 				43C3D40515D44EA30066D36D /* user_light@2x.png in Resources */,
@@ -2735,6 +2782,7 @@
 				FF546DF9160298E500948020 /* fleuron@2x.png in Resources */,
 				FFDE35D2161B9E600034BFDE /* disclosure_border.png in Resources */,
 				FFDE35ED1627A1C40034BFDE /* FeedDetailMenuViewController.xib in Resources */,
+				FF83FF181FB54693008DAC0F /* g_icn_search_black.png in Resources */,
 				FF03B00219F881380063002A /* ARChromeActivity@3x~ipad.png in Resources */,
 				17C5BA6E1CA39EA400F5961C /* unread_yellow_icn.png in Resources */,
 				FF5F3A82162B82B5008DBE3E /* rainbow.png in Resources */,
@@ -2757,6 +2805,7 @@
 				17BE5A721C5DDA8C0075F92C /* barbutton_sort_asc.png in Resources */,
 				FF85BF6016D5A587002D334D /* nav_icn_activity_hover.png in Resources */,
 				FF85BF6116D5A587002D334D /* nav_icn_settings.png in Resources */,
+				FF83FF0C1FB5371E008DAC0F /* g_icn_greensun@2x.png in Resources */,
 				FF85BF6316D5A5A8002D334D /* nav_icn_add.png in Resources */,
 				FF85BF7116D6A90D002D334D /* ak-icon-global.png in Resources */,
 				FFC486AD19CA410000F4758F /* logo_100.png in Resources */,
@@ -2837,6 +2886,7 @@
 				FF22FE7216E554FD0046165A /* barbutton_sendto.png in Resources */,
 				FFB9BE4D17F4B65B00FE0A36 /* logo_120@2x.png in Resources */,
 				FF03AFFF19F881380063002A /* ARChromeActivity@2x.png in Resources */,
+				FF83FF1B1FB54693008DAC0F /* g_icn_privacy.png in Resources */,
 				FF22FE7316E554FD0046165A /* barbutton_sendto@2x.png in Resources */,
 				FF22FE7616E557D80046165A /* toolbar_tall_background.png in Resources */,
 				FF22FE7716E557D80046165A /* toolbar_tall_background@2x.png in Resources */,
@@ -2854,6 +2904,7 @@
 				1740C68B1C10FD75005EA453 /* theme_color_sepia.png in Resources */,
 				FFDD845C16E8871A000AA0A2 /* menu_icn_delete.png in Resources */,
 				FFDD845D16E8871A000AA0A2 /* menu_icn_delete@2x.png in Resources */,
+				FF83FF061FB52565008DAC0F /* PremiumViewController.xib in Resources */,
 				FF03AFE419F87A770063002A /* g_icn_folder_read.png in Resources */,
 				FFDD845E16E8871A000AA0A2 /* menu_icn_fetch_subscribers.png in Resources */,
 				FF5ACC211DE5ED7500FBD044 /* menu_icn_notifications.png in Resources */,
@@ -2865,8 +2916,10 @@
 				FFDD846216E8871A000AA0A2 /* menu_icn_followers.png in Resources */,
 				FFDD846316E8871A000AA0A2 /* menu_icn_followers@2x.png in Resources */,
 				17876BA11C9911D40055DD15 /* g_icn_folder_sm@2x.png in Resources */,
+				FF83FF081FB53374008DAC0F /* g_icn_greensun.png in Resources */,
 				FFDD846416E8871A000AA0A2 /* menu_icn_move.png in Resources */,
 				FFDD846516E8871A000AA0A2 /* menu_icn_move@2x.png in Resources */,
+				FF83FF1C1FB54693008DAC0F /* g_icn_folder_black.png in Resources */,
 				FFDD846616E8871A000AA0A2 /* menu_icn_train.png in Resources */,
 				FFDD846716E8871A000AA0A2 /* menu_icn_train@2x.png in Resources */,
 				17E635A71C5432220075338E /* barbutton_selection.png in Resources */,
@@ -2888,6 +2941,7 @@
 				FFDD847D16E887D3000AA0A2 /* g_icn_folder_rss@2x.png in Resources */,
 				FF03B00119F881380063002A /* ARChromeActivity@3x.png in Resources */,
 				FFDD847E16E887D3000AA0A2 /* g_icn_folder.png in Resources */,
+				FF83FF1A1FB54693008DAC0F /* g_icn_buffer.png in Resources */,
 				17432C7A1C533DCC003F8FD6 /* FeedChooserViewController.xib in Resources */,
 				FFDD847F16E887D3000AA0A2 /* g_icn_folder@2x.png in Resources */,
 				1740C6881C10FD75005EA453 /* theme_color_dark.png in Resources */,
@@ -2908,6 +2962,7 @@
 				FFB9BE4A17F4B65B00FE0A36 /* logo_40.png in Resources */,
 				FFDD848E16E8ED75000AA0A2 /* menu_icn_share.png in Resources */,
 				FF03AFF019F87F2E0063002A /* safari@3x.png in Resources */,
+				FF83FF161FB54693008DAC0F /* g_icn_eating.png in Resources */,
 				FFDD848F16E8ED75000AA0A2 /* menu_icn_share@2x.png in Resources */,
 				FFB5F50B17187B6F00C8B432 /* big_world.png in Resources */,
 				FFB757FE1727098D001D132F /* menu_icn_mail.png in Resources */,
@@ -2933,6 +2988,7 @@
 				FF8364C71757EC0B008F5C58 /* traverse_background_left@2x.png in Resources */,
 				FFC518B91768E59F00542719 /* g_icn_offline.png in Resources */,
 				FF1104611769695A00502C29 /* g_icn_offline@2x.png in Resources */,
+				FF83FF171FB54693008DAC0F /* g_icn_textview_black.png in Resources */,
 				FF322235185BC1AA004078AA /* logo_58.png in Resources */,
 				FFC486A719CA40B700F4758F /* logo_144.png in Resources */,
 				FFF1E4C817750BDD00BF59D3 /* Settings.bundle in Resources */,
@@ -3106,6 +3162,7 @@
 				FF753CD3175858FC00344EC9 /* FMResultSet.m in Sources */,
 				FF6618C8176184560039913B /* NBNotifier.m in Sources */,
 				FF03AFF319F87F2E0063002A /* TUSafariActivity.m in Sources */,
+				FF83FF051FB52565008DAC0F /* PremiumViewController.m in Sources */,
 				FF03B00A19F987E00063002A /* NJKWebViewProgressView.m in Sources */,
 				FF11045F176950F900502C29 /* NBLoadingCell.m in Sources */,
 				FFA0484119CA5F5B00618DC4 /* UIWebView+Offsets.m in Sources */,

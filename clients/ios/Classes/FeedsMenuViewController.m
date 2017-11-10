@@ -43,6 +43,7 @@
                                             [@"Organize Sites" uppercaseString],
                                             [@"Notifications" uppercaseString],
                                             [@"Find Friends" uppercaseString],
+                                            [appDelegate.isPremium ? @"Premium Account": @"Upgrade to Premium" uppercaseString],
                                             [@"Logout" uppercaseString],
                                             [@"Login as..." uppercaseString],
                                             nil];
@@ -53,6 +54,7 @@
                                             [@"Organize Sites" uppercaseString],
                                             [@"Notifications" uppercaseString],
                                             [@"Find Friends" uppercaseString],
+                                            [appDelegate.isPremium ? @"Premium Account": @"Upgrade to Premium" uppercaseString],
                                             [@"Logout" uppercaseString], nil];
     }
     
@@ -173,10 +175,14 @@
             break;
             
         case 5:
+            image = [UIImage imageNamed:@"g_icn_greensun.png"];
+            break;
+        
+        case 6:
             image = [UIImage imageNamed:@"menu_icn_fetch_subscribers.png"];
             break;
             
-        case 6:
+        case 7:
             image = [UIImage imageNamed:@"barbutton_sendto.png"];
             break;
             
@@ -223,10 +229,14 @@
             break;
             
         case 5:
-            [appDelegate confirmLogout];
+            [appDelegate showPremiumDialog];
             break;
             
         case 6:
+            [appDelegate confirmLogout];
+            break;
+            
+        case 7:
             [self showLoginAsDialog];
             break;
             

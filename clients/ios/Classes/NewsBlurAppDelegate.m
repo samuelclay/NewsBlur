@@ -87,6 +87,7 @@
 @synthesize shareNavigationController;
 @synthesize trainNavigationController;
 @synthesize notificationsNavigationController;
+@synthesize premiumNavigationController;
 @synthesize userProfileNavigationController;
 @synthesize masterContainerViewController;
 @synthesize dashboardViewController;
@@ -109,6 +110,7 @@
 @synthesize originalStoryViewNavController;
 @synthesize userProfileViewController;
 @synthesize preferencesViewController;
+@synthesize premiumViewController;
 
 @synthesize firstTimeUserViewController;
 @synthesize firstTimeUserAddSitesViewController;
@@ -162,6 +164,7 @@
 @synthesize dictSocialServices;
 @synthesize dictUnreadCounts;
 @synthesize dictTextFeeds;
+@synthesize isPremium;
 @synthesize userInteractionsArray;
 @synthesize userActivitiesArray;
 @synthesize dictFoldersArray;
@@ -227,6 +230,7 @@
     
     cachedFavicons = [[PINCache alloc] initWithName:@"NBFavicons"];
     cachedStoryImages = [[PINCache alloc] initWithName:@"NBStoryImages"];
+    isPremium = NO;
     
     NBURLCache *urlCache = [[NBURLCache alloc] init];
     [NSURLCache setSharedURLCache:urlCache];
@@ -621,6 +625,23 @@
     [feedsViewController resizeFontSize];
 }
 
+- (void)showPremiumDialog {
+    UINavigationController *navController = self.navigationController;
+    if (self.premiumNavigationController == nil) {
+        self.premiumNavigationController = [[UINavigationController alloc]
+                                            initWithRootViewController:self.premiumViewController];
+    }
+    self.premiumNavigationController.navigationBar.translucent = NO;
+
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        [masterContainerViewController dismissViewControllerAnimated:NO completion:nil];
+        self.modalNavigationController.modalPresentationStyle = UIModalPresentationPageSheet;
+        [masterContainerViewController presentViewController:premiumNavigationController animated:YES completion:nil];
+    } else {
+        [navController presentViewController:self.premiumNavigationController animated:YES completion:nil];
+    }
+}
+
 - (void)showPreferences {
     if (!preferencesViewController) {
         preferencesViewController = [[IASKAppSettingsViewController alloc] init];
@@ -660,7 +681,7 @@
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [masterContainerViewController dismissViewControllerAnimated:NO completion:nil];
-        self.modalNavigationController.modalPresentationStyle = UIModalPresentationFormSheet;
+        self.modalNavigationController.modalPresentationStyle = UIModalPresentationPageSheet;
         [masterContainerViewController presentViewController:modalNavigationController animated:YES completion:nil];
     } else {
         [navigationController presentViewController:modalNavigationController animated:YES completion:nil];
