@@ -9,7 +9,8 @@
 #import <UIKit/UIKit.h>
 #import <StoreKit/StoreKit.h>
 #import "NewsBlurAppDelegate.h"
-#import "NewsBlur-Swift.h"
+
+@class SAConfettiView;
 
 @interface PremiumViewController : BaseViewController <UITableViewDelegate, UITableViewDataSource, SKProductsRequestDelegate, SKPaymentTransactionObserver> {
     NewsBlurAppDelegate *appDelegate;

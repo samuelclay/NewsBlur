@@ -7,6 +7,7 @@
 //
 
 #import "PremiumViewController.h"
+#import "NewsBlur-Swift.h"
 
 #define kPremium24ProductIdentifier @"newsblur_premium_auto_renew_24"
 #define kPremium36ProductIdentifier @"newsblur_premium_auto_renew_36"
@@ -167,6 +168,8 @@
                 //called when the transaction does not finish
                 if (transaction.error.code == SKErrorPaymentCancelled) {
                     NSLog(@"Transaction state -> Cancelled");
+                    productsTable.hidden = NO;
+                    spinner.hidden = YES;
                     //the user cancelled the payment ;(
                 }
                 [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
@@ -203,6 +206,8 @@
         if (![premiumExpire isKindOfClass:[NSNull class]]) {
             appDelegate.premiumExpire = [premiumExpire stringValue];
         }
+
+        [self loadProducts];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         NSLog(@"Failed to send receipt: %@", params);
         productsTable.hidden = NO;
@@ -210,6 +215,8 @@
 
         NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)task.response;
         [self informError:error statusCode:httpResponse.statusCode];
+        
+        [self loadProducts];
     }];
 
 }

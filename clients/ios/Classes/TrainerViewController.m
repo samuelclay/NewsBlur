@@ -85,12 +85,14 @@
         [appDelegate.networkManager GET:urlString parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
             [MBProgressHUD hideHUDForView:self.view animated:YES];
             NSArray *resultsArray = responseObject;
-            NSDictionary *results = resultsArray[0];
-            NSMutableDictionary *newClassifiers = [[results objectForKey:@"classifiers"] mutableCopy];
-            [appDelegate.storiesCollection.activeClassifiers setObject:newClassifiers
-                                                                forKey:feedId];
-            appDelegate.storiesCollection.activePopularAuthors = [results objectForKey:@"feed_authors"];
-            appDelegate.storiesCollection.activePopularTags = [results objectForKey:@"feed_tags"];
+            if (resultsArray.count) {
+                NSDictionary *results = resultsArray[0];
+                NSMutableDictionary *newClassifiers = [[results objectForKey:@"classifiers"] mutableCopy];
+                [appDelegate.storiesCollection.activeClassifiers setObject:newClassifiers
+                                                                    forKey:feedId];
+                appDelegate.storiesCollection.activePopularAuthors = [results objectForKey:@"feed_authors"];
+                appDelegate.storiesCollection.activePopularTags = [results objectForKey:@"feed_tags"];
+            }
             [self renderTrainer];
         } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
             NSLog(@"Failed fetch trainer: %@", error);
