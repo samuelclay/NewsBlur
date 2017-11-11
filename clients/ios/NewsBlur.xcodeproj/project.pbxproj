@@ -485,6 +485,11 @@
 		FFC486B319CA416D00F4758F /* logo_114.png in Resources */ = {isa = PBXBuildFile; fileRef = FFC486B119CA416D00F4758F /* logo_114.png */; };
 		FFC486B519CA41AE00F4758F /* logo_87.png in Resources */ = {isa = PBXBuildFile; fileRef = FFC486B419CA41AE00F4758F /* logo_87.png */; };
 		FFC518B91768E59F00542719 /* g_icn_offline.png in Resources */ = {isa = PBXBuildFile; fileRef = FFC518B81768E59F00542719 /* g_icn_offline.png */; };
+		FFC5798E1FB67752004677F1 /* confetti.png in Resources */ = {isa = PBXBuildFile; fileRef = FFC579861FB67752004677F1 /* confetti.png */; };
+		FFC5798F1FB67752004677F1 /* diamond.png in Resources */ = {isa = PBXBuildFile; fileRef = FFC579871FB67752004677F1 /* diamond.png */; };
+		FFC579901FB67752004677F1 /* star.png in Resources */ = {isa = PBXBuildFile; fileRef = FFC579881FB67752004677F1 /* star.png */; };
+		FFC579911FB67752004677F1 /* triangle.png in Resources */ = {isa = PBXBuildFile; fileRef = FFC579891FB67752004677F1 /* triangle.png */; };
+		FFC579931FB67752004677F1 /* SAConfettiView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFC5798C1FB67752004677F1 /* SAConfettiView.swift */; };
 		FFC5F30B16E2D2C2007AC72C /* story_share_appnet_active.png in Resources */ = {isa = PBXBuildFile; fileRef = FFC5F2FF16E2D2C2007AC72C /* story_share_appnet_active.png */; };
 		FFC5F30C16E2D2C2007AC72C /* story_share_appnet_active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FFC5F30016E2D2C2007AC72C /* story_share_appnet_active@2x.png */; };
 		FFC5F30D16E2D2C2007AC72C /* story_share_appnet.png in Resources */ = {isa = PBXBuildFile; fileRef = FFC5F30116E2D2C2007AC72C /* story_share_appnet.png */; };
@@ -1253,6 +1258,11 @@
 		FFC486B119CA416D00F4758F /* logo_114.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logo_114.png; sourceTree = "<group>"; };
 		FFC486B419CA41AE00F4758F /* logo_87.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logo_87.png; sourceTree = "<group>"; };
 		FFC518B81768E59F00542719 /* g_icn_offline.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = g_icn_offline.png; sourceTree = "<group>"; };
+		FFC579861FB67752004677F1 /* confetti.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = confetti.png; sourceTree = "<group>"; };
+		FFC579871FB67752004677F1 /* diamond.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = diamond.png; sourceTree = "<group>"; };
+		FFC579881FB67752004677F1 /* star.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = star.png; sourceTree = "<group>"; };
+		FFC579891FB67752004677F1 /* triangle.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = triangle.png; sourceTree = "<group>"; };
+		FFC5798C1FB67752004677F1 /* SAConfettiView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SAConfettiView.swift; sourceTree = "<group>"; };
 		FFC5F2FF16E2D2C2007AC72C /* story_share_appnet_active.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = story_share_appnet_active.png; sourceTree = "<group>"; };
 		FFC5F30016E2D2C2007AC72C /* story_share_appnet_active@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "story_share_appnet_active@2x.png"; sourceTree = "<group>"; };
 		FFC5F30116E2D2C2007AC72C /* story_share_appnet.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = story_share_appnet.png; sourceTree = "<group>"; };
@@ -1498,6 +1508,7 @@
 		29B97315FDCFA39411CA2CEA /* Other Sources */ = {
 			isa = PBXGroup;
 			children = (
+				FFC579831FB67752004677F1 /* SAConfettiView */,
 				010EDEF41B238635003B79DE /* OnePasswordExtension */,
 				FF03B00419F987E00063002A /* NJKWebViewProgress */,
 				FF03AFF419F881380063002A /* ARChromeActivity */,
@@ -2489,6 +2500,35 @@
 			path = "Other Sources/AFNetworking";
 			sourceTree = "<group>";
 		};
+		FFC579831FB67752004677F1 /* SAConfettiView */ = {
+			isa = PBXGroup;
+			children = (
+				FFC579841FB67752004677F1 /* Assets */,
+				FFC5798A1FB67752004677F1 /* Classes */,
+			);
+			name = SAConfettiView;
+			path = "Other Sources/SAConfettiView";
+			sourceTree = "<group>";
+		};
+		FFC579841FB67752004677F1 /* Assets */ = {
+			isa = PBXGroup;
+			children = (
+				FFC579861FB67752004677F1 /* confetti.png */,
+				FFC579871FB67752004677F1 /* diamond.png */,
+				FFC579881FB67752004677F1 /* star.png */,
+				FFC579891FB67752004677F1 /* triangle.png */,
+			);
+			path = Assets;
+			sourceTree = "<group>";
+		};
+		FFC5798A1FB67752004677F1 /* Classes */ = {
+			isa = PBXGroup;
+			children = (
+				FFC5798C1FB67752004677F1 /* SAConfettiView.swift */,
+			);
+			path = Classes;
+			sourceTree = "<group>";
+		};
 		FFCDD8FB17F6368F000C6483 /* MCSwipeTableViewCell */ = {
 			isa = PBXGroup;
 			children = (
@@ -2556,7 +2596,7 @@
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0900;
+				LastUpgradeCheck = 0910;
 				ORGANIZATIONNAME = NewsBlur;
 				TargetAttributes = {
 					1D6058900D05DD3D006BFB54 = {
@@ -2813,6 +2853,7 @@
 				FF85BF7416D6A972002D334D /* ak-icon-allstories.png in Resources */,
 				FF85BF7516D6A972002D334D /* ak-icon-blurblogs.png in Resources */,
 				FF1660C816D6E9A700AF8541 /* DashboardViewController.xib in Resources */,
+				FFC5798F1FB67752004677F1 /* diamond.png in Resources */,
 				17876B9E1C9911D40055DD15 /* g_icn_folder_rss_sm.png in Resources */,
 				FF1660CA16D6E9B400AF8541 /* DashboardViewController~ipad.xib in Resources */,
 				FF3964BC192BED0A004BEE1A /* tag.png in Resources */,
@@ -2964,6 +3005,7 @@
 				FF03AFF019F87F2E0063002A /* safari@3x.png in Resources */,
 				FF83FF161FB54693008DAC0F /* g_icn_eating.png in Resources */,
 				FFDD848F16E8ED75000AA0A2 /* menu_icn_share@2x.png in Resources */,
+				FFC579901FB67752004677F1 /* star.png in Resources */,
 				FFB5F50B17187B6F00C8B432 /* big_world.png in Resources */,
 				FFB757FE1727098D001D132F /* menu_icn_mail.png in Resources */,
 				FFB757FF1727098D001D132F /* menu_icn_mail@2x.png in Resources */,
@@ -2973,6 +3015,7 @@
 				FFB9BE4917F4B65B00FE0A36 /* logo_29.png in Resources */,
 				17CBD3C31BF6ED2C003FCCAE /* menu_icn_markread@2x.png in Resources */,
 				FF8364BB1755759A008F5C58 /* traverse_text.png in Resources */,
+				FFC5798E1FB67752004677F1 /* confetti.png in Resources */,
 				1740C69D1C1110BA005EA453 /* theme_color_dark-sel@2x.png in Resources */,
 				FF8364BC1755759A008F5C58 /* traverse_text@2x.png in Resources */,
 				FF8364BF1756949E008F5C58 /* traverse_text_on.png in Resources */,
@@ -2987,6 +3030,7 @@
 				1740C69C1C1110BA005EA453 /* theme_color_dark-sel.png in Resources */,
 				FF8364C71757EC0B008F5C58 /* traverse_background_left@2x.png in Resources */,
 				FFC518B91768E59F00542719 /* g_icn_offline.png in Resources */,
+				FFC579911FB67752004677F1 /* triangle.png in Resources */,
 				FF1104611769695A00502C29 /* g_icn_offline@2x.png in Resources */,
 				FF83FF171FB54693008DAC0F /* g_icn_textview_black.png in Resources */,
 				FF322235185BC1AA004078AA /* logo_58.png in Resources */,
@@ -3155,6 +3199,7 @@
 				FF22FE6116E53ADC0046165A /* USDictionaryWrapper.m in Sources */,
 				FFDCA0BB16E80877000D8E0C /* GCOAuth.m in Sources */,
 				FFDCA0BC16E80877000D8E0C /* NSData+Base64.m in Sources */,
+				FFC579931FB67752004677F1 /* SAConfettiView.swift in Sources */,
 				FF753CCE175858FC00344EC9 /* FMDatabase.m in Sources */,
 				FF753CCF175858FC00344EC9 /* FMDatabaseAdditions.m in Sources */,
 				FF753CD0175858FC00344EC9 /* FMDatabasePool.m in Sources */,
@@ -3247,6 +3292,7 @@
 				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_FILE = "NewsBlur-iPhone-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)\"",
@@ -3263,6 +3309,8 @@
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_PRECOMPILE_BRIDGING_HEADER = NO;
+				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				"WARNING_CFLAGS[arch=*]" = "-Wall";
 			};
@@ -3291,6 +3339,7 @@
 				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_FILE = "NewsBlur-iPhone-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)\"",
@@ -3305,6 +3354,8 @@
 				PRODUCT_NAME = NewsBlur;
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_PRECOMPILE_BRIDGING_HEADER = NO;
+				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
@@ -3313,6 +3364,7 @@
 		C01FCF4F08A954540054247B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
@@ -3358,6 +3410,7 @@
 		C01FCF5008A954540054247B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
@@ -3395,6 +3448,7 @@
 				PROVISIONING_PROFILE = "";
 				SDKROOT = iphoneos;
 				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				VALID_ARCHS = "armv7s armv7 arm64";
 			};
 			name = Release;
