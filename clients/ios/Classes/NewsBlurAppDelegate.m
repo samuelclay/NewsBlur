@@ -29,6 +29,7 @@
 #import "FontSettingsViewController.h"
 #import "FeedChooserViewController.h"
 #import "UserProfileViewController.h"
+#import "PremiumViewController.h"
 #import "InteractionsModule.h"
 #import "ActivityModule.h"
 #import "FirstTimeUserViewController.h"
@@ -165,6 +166,7 @@
 @synthesize dictUnreadCounts;
 @synthesize dictTextFeeds;
 @synthesize isPremium;
+@synthesize premiumExpire;
 @synthesize userInteractionsArray;
 @synthesize userActivitiesArray;
 @synthesize dictFoldersArray;
@@ -231,6 +233,7 @@
     cachedFavicons = [[PINCache alloc] initWithName:@"NBFavicons"];
     cachedStoryImages = [[PINCache alloc] initWithName:@"NBStoryImages"];
     isPremium = NO;
+    premiumExpire = nil;
     
     NBURLCache *urlCache = [[NBURLCache alloc] init];
     [NSURLCache setSharedURLCache:urlCache];

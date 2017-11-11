@@ -9,12 +9,14 @@
 #import <UIKit/UIKit.h>
 #import <StoreKit/StoreKit.h>
 #import "NewsBlurAppDelegate.h"
+#import "NewsBlur-Swift.h"
 
 @interface PremiumViewController : BaseViewController <UITableViewDelegate, UITableViewDataSource, SKProductsRequestDelegate, SKPaymentTransactionObserver> {
     NewsBlurAppDelegate *appDelegate;
     NSArray<SKProduct *> *products;
     
     NSArray *reasons;
+    SKProductsRequest *request;
 }
 
 @property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
@@ -24,6 +26,9 @@
 @property (nonatomic) IBOutlet UINavigationBar *navigationBar;
 @property (nonatomic) IBOutlet UIBarButtonItem *doneButton;
 @property (nonatomic) IBOutlet UIBarButtonItem *restoreButton;
+@property (nonatomic) IBOutlet UIView *freeView;
+@property (nonatomic) IBOutlet UIView *premiumView;
+@property (nonatomic) IBOutlet SAConfettiView *confettiView;
 
 
 - (IBAction)closeDialog:(id)sender;

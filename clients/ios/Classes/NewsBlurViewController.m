@@ -596,7 +596,11 @@ static UIFont *userLabelFont;
     appDelegate.userActivitiesArray = [results objectForKey:@"activities"];
     
     appDelegate.isPremium = [[appDelegate.dictUserProfile objectForKey:@"is_premium"] integerValue] == 1;
-    
+    id premiumExpire = [appDelegate.dictUserProfile objectForKey:@"premium_expire"];
+    if (premiumExpire && ![premiumExpire isKindOfClass:[NSNull class]]) {
+        appDelegate.premiumExpire = [premiumExpire stringValue];
+    }
+
     // Set up dictSocialFeeds
     NSArray *socialFeedsArray = [results objectForKey:@"social_feeds"];
     NSMutableArray *socialFolder = [[NSMutableArray alloc] init];
@@ -673,14 +677,11 @@ static UIFont *userLabelFont;
     
     
     // Move River Blurblog and Everything to the top
-    if ([appDelegate.dictFoldersArray containsObject:@"river_global"]) {
-        [appDelegate.dictFoldersArray removeObject:@"river_global"];
-        [appDelegate.dictFoldersArray insertObject:@"river_global" atIndex:0];
-    }
-    if ([appDelegate.dictFoldersArray containsObject:@"river_blurblogs"]) {
-        [appDelegate.dictFoldersArray removeObject:@"river_blurblogs"];
-        [appDelegate.dictFoldersArray insertObject:@"river_blurblogs" atIndex:1];
-    }
+    [appDelegate.dictFoldersArray removeObject:@"river_global"];
+    [appDelegate.dictFoldersArray insertObject:@"river_global" atIndex:0];
+
+    [appDelegate.dictFoldersArray removeObject:@"river_blurblogs"];
+    [appDelegate.dictFoldersArray insertObject:@"river_blurblogs" atIndex:1];
 
     [appDelegate.dictFoldersArray removeObject:@"everything"];
     [appDelegate.dictFoldersArray insertObject:@"everything" atIndex:2];
