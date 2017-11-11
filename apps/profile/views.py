@@ -313,10 +313,10 @@ def profile_is_premium(request):
 @ajax_login_required
 @json.json_view
 def save_ios_receipt(request):
-    request.user.profile.activate_ios_premium()
+    request.user.profile.activate_ios_premium(36)
     
     subject = "iOS Premium: %s" % (request.user.profile)
-    message = """User: %s (%s) -- Email: %s""" % (request.user.username, request.user.pk, request.user.email)
+    message = """User: %s (%s) -- Email: %s, receipt: %s""" % (request.user.username, request.user.pk, request.user.email, request.REQUEST.get('receipt', None))
     mail_admins(subject, message, fail_silently=True)
     
     return {
