@@ -75,7 +75,7 @@ class Profile(models.Model):
     def canonical(self):
         return {
             'is_premium': self.is_premium,
-            'premium_expire': self.premium_expire,
+            'premium_expire': int(self.premium_expire.strftime('%s')) if self.premium_expire else 0,
             'preferences': json.decode(self.preferences),
             'tutorial_finished': self.tutorial_finished,
             'hide_getting_started': self.hide_getting_started,
