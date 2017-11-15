@@ -31,6 +31,7 @@
 @synthesize productsHeight;
 @synthesize labelTitle;
 @synthesize labelSubtitle;
+@synthesize labelPremiumExpire;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -110,6 +111,12 @@
         premiumView.hidden = NO;
         [confettiView stopConfetti];
         [confettiView startConfetti];
+        
+        if (appDelegate.premiumExpire != nil) {
+            labelPremiumExpire.text = [NSString stringWithFormat:@"Your premium subscription will renew on %@", appDelegate.premiumExpire];
+        } else {
+            labelPremiumExpire.text = @"Your premium subscription is set to never expire. Whoa!";
+        }
     } else {
         freeView.hidden = NO;
         premiumView.hidden = YES;
@@ -295,8 +302,8 @@
         SKProduct *product = products[indexPath.row];
         cell.selectionStyle = UITableViewCellSelectionStyleBlue;
         cell.backgroundColor = UIColorFromRGB(0xf4f4f4);
-        cell.textLabel.numberOfLines = 2;
         cell.textLabel.textColor = UIColorFromRGB(0x203070);
+        cell.textLabel.numberOfLines = 2;
         cell.detailTextLabel.textColor = UIColorFromRGB(0x0c0c0c);
         NSNumberFormatter *formatter = [[NSNumberFormatter alloc] init];
         [formatter setFormatterBehavior:NSNumberFormatterBehavior10_4];

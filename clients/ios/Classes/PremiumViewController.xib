@@ -18,6 +18,7 @@
             <connections>
                 <outlet property="confettiView" destination="TFM-k9-HJ2" id="Xqn-VR-200"/>
                 <outlet property="freeView" destination="vys-ne-LmS" id="EUB-JT-1vy"/>
+                <outlet property="labelPremiumExpire" destination="kSd-jt-UJ6" id="E6q-in-P1o"/>
                 <outlet property="labelSubtitle" destination="wHV-Eo-ith" id="BeK-G5-G9j"/>
                 <outlet property="labelTitle" destination="bVF-I1-nis" id="0Eg-04-NaQ"/>
                 <outlet property="premiumView" destination="rCC-u8-EID" id="SRr-a7-DrJ"/>
@@ -33,57 +34,6 @@
             <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="rCC-u8-EID">
-                    <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
-                    <subviews>
-                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="TFM-k9-HJ2" customClass="SAConfettiView" customModule="NewsBlur" customModuleProvider="target">
-                            <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
-                            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        </view>
-                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="mVi-67-VUL">
-                            <rect key="frame" x="24" y="182" width="327" height="304"/>
-                            <subviews>
-                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Thank you for going premium!" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ueU-QC-PqI">
-                                    <rect key="frame" x="0.0" y="0.0" width="327" height="101.5"/>
-                                    <fontDescription key="fontDescription" type="boldSystem" pointSize="42"/>
-                                    <nil key="textColor"/>
-                                    <nil key="highlightedColor"/>
-                                    <color key="shadowColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                    <size key="shadowOffset" width="0.0" height="1"/>
-                                </label>
-                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Your premium subscription will renew on December 31st, 2018" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="5" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="kSd-jt-UJ6">
-                                    <rect key="frame" x="0.0" y="245.5" width="327" height="58.5"/>
-                                    <fontDescription key="fontDescription" type="system" pointSize="24"/>
-                                    <nil key="textColor"/>
-                                    <nil key="highlightedColor"/>
-                                    <color key="shadowColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                    <size key="shadowOffset" width="0.0" height="1"/>
-                                </label>
-                            </subviews>
-                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                            <constraints>
-                                <constraint firstAttribute="bottom" secondItem="kSd-jt-UJ6" secondAttribute="bottom" id="4iu-RE-mE5"/>
-                                <constraint firstItem="ueU-QC-PqI" firstAttribute="top" secondItem="mVi-67-VUL" secondAttribute="top" id="gdD-lC-uWV"/>
-                                <constraint firstAttribute="trailing" secondItem="ueU-QC-PqI" secondAttribute="trailing" id="ifU-kO-RyW"/>
-                                <constraint firstItem="kSd-jt-UJ6" firstAttribute="top" secondItem="ueU-QC-PqI" secondAttribute="bottom" constant="144" id="j2C-UQ-5Fa"/>
-                                <constraint firstAttribute="trailing" secondItem="kSd-jt-UJ6" secondAttribute="trailing" id="uKx-wN-L60"/>
-                                <constraint firstItem="kSd-jt-UJ6" firstAttribute="leading" secondItem="mVi-67-VUL" secondAttribute="leading" id="ub5-Bd-N6e"/>
-                                <constraint firstItem="ueU-QC-PqI" firstAttribute="leading" secondItem="mVi-67-VUL" secondAttribute="leading" id="zYX-Kk-LtM"/>
-                            </constraints>
-                        </view>
-                    </subviews>
-                    <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                    <constraints>
-                        <constraint firstItem="mVi-67-VUL" firstAttribute="centerY" secondItem="rCC-u8-EID" secondAttribute="centerY" id="Amv-DQ-A35"/>
-                        <constraint firstAttribute="bottom" secondItem="TFM-k9-HJ2" secondAttribute="bottom" id="JlI-5W-WNC"/>
-                        <constraint firstItem="mVi-67-VUL" firstAttribute="leading" secondItem="rCC-u8-EID" secondAttribute="leading" constant="24" id="MHv-fA-I6f"/>
-                        <constraint firstAttribute="trailing" secondItem="TFM-k9-HJ2" secondAttribute="trailing" id="ahF-PY-wDI"/>
-                        <constraint firstAttribute="trailing" secondItem="mVi-67-VUL" secondAttribute="trailing" constant="24" id="b44-pf-TL4"/>
-                        <constraint firstItem="TFM-k9-HJ2" firstAttribute="leading" secondItem="rCC-u8-EID" secondAttribute="leading" id="f4J-In-Lgr"/>
-                        <constraint firstItem="TFM-k9-HJ2" firstAttribute="top" secondItem="rCC-u8-EID" secondAttribute="top" id="kG9-70-2gb"/>
-                        <constraint firstItem="mVi-67-VUL" firstAttribute="centerX" secondItem="rCC-u8-EID" secondAttribute="centerX" id="voU-b3-P9x"/>
-                    </constraints>
-                </view>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="vys-ne-LmS">
                     <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                     <subviews>
@@ -139,6 +89,57 @@
                         <constraint firstItem="bVF-I1-nis" firstAttribute="leading" secondItem="vys-ne-LmS" secondAttribute="leading" constant="24" id="s7o-bi-uQo"/>
                         <constraint firstItem="wHV-Eo-ith" firstAttribute="leading" secondItem="vys-ne-LmS" secondAttribute="leading" constant="24" id="v8a-ek-NUU"/>
                         <constraint firstItem="fn0-sC-cuM" firstAttribute="leading" secondItem="vys-ne-LmS" secondAttribute="leading" id="x3Z-Fi-aVJ"/>
+                    </constraints>
+                </view>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="rCC-u8-EID">
+                    <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                    <subviews>
+                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="TFM-k9-HJ2" customClass="SAConfettiView" customModule="NewsBlur" customModuleProvider="target">
+                            <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        </view>
+                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="mVi-67-VUL">
+                            <rect key="frame" x="24" y="182" width="327" height="304"/>
+                            <subviews>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Thank you for going premium!" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ueU-QC-PqI">
+                                    <rect key="frame" x="0.0" y="0.0" width="327" height="101.5"/>
+                                    <fontDescription key="fontDescription" type="boldSystem" pointSize="42"/>
+                                    <nil key="textColor"/>
+                                    <nil key="highlightedColor"/>
+                                    <color key="shadowColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    <size key="shadowOffset" width="0.0" height="1"/>
+                                </label>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Your premium subscription will renew on December 31st, 2018" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="5" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="kSd-jt-UJ6">
+                                    <rect key="frame" x="0.0" y="245.5" width="327" height="58.5"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="24"/>
+                                    <nil key="textColor"/>
+                                    <nil key="highlightedColor"/>
+                                    <color key="shadowColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    <size key="shadowOffset" width="0.0" height="1"/>
+                                </label>
+                            </subviews>
+                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            <constraints>
+                                <constraint firstAttribute="bottom" secondItem="kSd-jt-UJ6" secondAttribute="bottom" id="4iu-RE-mE5"/>
+                                <constraint firstItem="ueU-QC-PqI" firstAttribute="top" secondItem="mVi-67-VUL" secondAttribute="top" id="gdD-lC-uWV"/>
+                                <constraint firstAttribute="trailing" secondItem="ueU-QC-PqI" secondAttribute="trailing" id="ifU-kO-RyW"/>
+                                <constraint firstItem="kSd-jt-UJ6" firstAttribute="top" secondItem="ueU-QC-PqI" secondAttribute="bottom" constant="144" id="j2C-UQ-5Fa"/>
+                                <constraint firstAttribute="trailing" secondItem="kSd-jt-UJ6" secondAttribute="trailing" id="uKx-wN-L60"/>
+                                <constraint firstItem="kSd-jt-UJ6" firstAttribute="leading" secondItem="mVi-67-VUL" secondAttribute="leading" id="ub5-Bd-N6e"/>
+                                <constraint firstItem="ueU-QC-PqI" firstAttribute="leading" secondItem="mVi-67-VUL" secondAttribute="leading" id="zYX-Kk-LtM"/>
+                            </constraints>
+                        </view>
+                    </subviews>
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <constraints>
+                        <constraint firstItem="mVi-67-VUL" firstAttribute="centerY" secondItem="rCC-u8-EID" secondAttribute="centerY" id="Amv-DQ-A35"/>
+                        <constraint firstAttribute="bottom" secondItem="TFM-k9-HJ2" secondAttribute="bottom" id="JlI-5W-WNC"/>
+                        <constraint firstItem="mVi-67-VUL" firstAttribute="leading" secondItem="rCC-u8-EID" secondAttribute="leading" constant="24" id="MHv-fA-I6f"/>
+                        <constraint firstAttribute="trailing" secondItem="TFM-k9-HJ2" secondAttribute="trailing" id="ahF-PY-wDI"/>
+                        <constraint firstAttribute="trailing" secondItem="mVi-67-VUL" secondAttribute="trailing" constant="24" id="b44-pf-TL4"/>
+                        <constraint firstItem="TFM-k9-HJ2" firstAttribute="leading" secondItem="rCC-u8-EID" secondAttribute="leading" id="f4J-In-Lgr"/>
+                        <constraint firstItem="TFM-k9-HJ2" firstAttribute="top" secondItem="rCC-u8-EID" secondAttribute="top" id="kG9-70-2gb"/>
+                        <constraint firstItem="mVi-67-VUL" firstAttribute="centerX" secondItem="rCC-u8-EID" secondAttribute="centerX" id="voU-b3-P9x"/>
                     </constraints>
                 </view>
             </subviews>
