@@ -36,6 +36,10 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
     
+    [self rebuildOptions];
+}
+
+- (void)rebuildOptions {
     if ([appDelegate.activeUsername isEqualToString:@"samuel"]) {
         self.menuOptions = [[NSArray alloc]
                             initWithObjects:[@"Preferences" uppercaseString],
