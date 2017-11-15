@@ -598,8 +598,8 @@ static UIFont *userLabelFont;
     
     appDelegate.isPremium = [[appDelegate.dictUserProfile objectForKey:@"is_premium"] integerValue] == 1;
     id premiumExpire = [appDelegate.dictUserProfile objectForKey:@"premium_expire"];
-    if (premiumExpire && ![premiumExpire isKindOfClass:[NSNull class]]) {
-        appDelegate.premiumExpire = [premiumExpire stringValue];
+    if (premiumExpire && ![premiumExpire isKindOfClass:[NSNull class]] && premiumExpire != 0) {
+        appDelegate.premiumExpire = [premiumExpire integerValue];
     }
 
     // Set up dictSocialFeeds
