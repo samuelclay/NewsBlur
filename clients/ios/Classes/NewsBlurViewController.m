@@ -829,6 +829,8 @@ static UIFont *userLabelFont;
 }
 
 - (IBAction)showSettingsPopover:(id)sender {
+    [self.appDelegate.feedsMenuViewController rebuildOptions];
+
     [self.appDelegate.feedsMenuViewController view];
     NSInteger menuCount = [self.appDelegate.feedsMenuViewController.menuOptions count];
     

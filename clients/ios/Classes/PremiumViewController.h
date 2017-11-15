@@ -30,6 +30,7 @@
 @property (nonatomic) IBOutlet UIView *freeView;
 @property (nonatomic) IBOutlet UIView *premiumView;
 @property (nonatomic) IBOutlet SAConfettiView *confettiView;
+@property (nonatomic) IBOutlet NSLayoutConstraint *productsHeight;
 
 
 - (IBAction)closeDialog:(id)sender;

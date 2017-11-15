@@ -22,6 +22,7 @@
 @property (nonatomic) IBOutlet UISegmentedControl *fontSizeSegment;
 @property (nonatomic) IBOutlet UISegmentedControl *themeSegmentedControl;
 
+- (void)rebuildOptions;
 - (IBAction)changeFontSize:(id)sender;
 - (IBAction)changeTheme:(id)sender;
 

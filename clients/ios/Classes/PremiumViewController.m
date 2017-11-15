@@ -28,6 +28,7 @@
 @synthesize freeView;
 @synthesize premiumView;
 @synthesize confettiView;
+@synthesize productsHeight;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -41,7 +42,8 @@
                          @[@"Privacy options for your blurblog", @"g_icn_privacy"],
                          @[@"Custom RSS feeds for folders and saved stories", @"g_icn_folder_black"],
                          @[@"Text view conveniently extracts the story", @"g_icn_textview_black"],
-                         @[@"You feed Shiloh, my poor, hungry dog, for 12 days", @"g_icn_eating"],
+                         @[@"You feed Shiloh, my poor, hungry dog, for a month", @"g_icn_eating"],
+                         @[@"shiloh", @"g_icn_eating"],
                          ];
 
     UIBarButtonItem *cancelButton = [[UIBarButtonItem alloc] initWithTitle: @"Done"
@@ -54,6 +56,10 @@
                                                                     target: self
                                                                     action: @selector(restorePurchase:)];
     [self.navigationItem setRightBarButtonItem:restoreButton];
+    
+    self.productsTable.tableFooterView = [UIView new];
+    self.reasonsTable.tableFooterView = [UIView new];
+    self.productsTable.separatorColor = [UIColor clearColor];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -64,6 +70,12 @@
 
 - (void)closeDialog:(id)sender {
     [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+-(void)viewDidLayoutSubviews
+{
+    productsHeight.constant = self.productsTable.contentSize.height;
+    [self.view layoutIfNeeded];
 }
 
 #pragma mark - StoreKit
@@ -168,10 +180,10 @@
                 //called when the transaction does not finish
                 if (transaction.error.code == SKErrorPaymentCancelled) {
                     NSLog(@"Transaction state -> Cancelled");
-                    productsTable.hidden = NO;
-                    spinner.hidden = YES;
                     //the user cancelled the payment ;(
                 }
+                productsTable.hidden = NO;
+                spinner.hidden = YES;
                 [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
                 break;
         }
@@ -237,30 +249,91 @@
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    static NSString *CellIndentifier = @"PremiumCell";
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIndentifier];
+    UITableViewCell *cell;
     
-    if (!cell) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIndentifier];
-    }
-
     if (tableView == reasonsTable) {
+        if ([reasons[indexPath.row][0] isEqualToString:@"shiloh"]) {
+            return [self makeShilohCell];
+        }
+        static NSString *ReasonsCellIndentifier = @"PremiumReasonsCell";
+        cell = [tableView dequeueReusableCellWithIdentifier:ReasonsCellIndentifier];
+        
+        if (!cell) {
+            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:ReasonsCellIndentifier];
+        }
+
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         cell.textLabel.text = reasons[indexPath.row][0];
         cell.textLabel.font = [UIFont systemFontOfSize:14.f weight:UIFontWeightLight];
         cell.textLabel.numberOfLines = 2;
-        CGSize itemSize = CGSizeMake(16, 16);
+        CGSize itemSize = CGSizeMake(18, 18);
         cell.imageView.image = [UIImage imageNamed:reasons[indexPath.row][1]];
+        cell.imageView.contentMode = UIViewContentModeScaleAspectFill;
+        cell.imageView.clipsToBounds = NO;
         UIGraphicsBeginImageContextWithOptions(itemSize, NO, UIScreen.mainScreen.scale);
         CGRect imageRect = CGRectMake(0.0, 0.0, itemSize.width, itemSize.height);
         [cell.imageView.image drawInRect:imageRect];
         cell.imageView.image = UIGraphicsGetImageFromCurrentImageContext();
         UIGraphicsEndImageContext();
-    } else if (tableView == productsTable) {
+    } else { //} if (tableView == productsTable) {
+        static NSString *CellIndentifier = @"PremiumCell";
+        cell = [tableView dequeueReusableCellWithIdentifier:CellIndentifier];
+        
+        if (!cell) {
+            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIndentifier];
+        }
+
+        SKProduct *product = products[indexPath.row];
         cell.selectionStyle = UITableViewCellSelectionStyleBlue;
-        cell.textLabel.text = products[indexPath.row].localizedTitle;
-        cell.imageView.image = [UIImage imageNamed:reasons[indexPath.row][1]];
+        cell.textLabel.numberOfLines = 2;
+        cell.textLabel.textColor = UIColorFromRGB(0x203090);
+        NSNumberFormatter *formatter = [[NSNumberFormatter alloc] init];
+        [formatter setFormatterBehavior:NSNumberFormatterBehavior10_4];
+        [formatter setNumberStyle:NSNumberFormatterCurrencyStyle];
+        [formatter setLocale:product.priceLocale];
+        
+        cell.textLabel.text = [NSString stringWithFormat:@"%@", product.localizedTitle];
+        cell.detailTextLabel.text = [NSString stringWithFormat:@"%@/year (%@/month)", [formatter stringFromNumber:product.price], [formatter stringFromNumber:@(round([product.price doubleValue] / 12.f))]];;
+        
+        UILabel *label = [[UILabel alloc] init];
+        label.text = @"👉🏽";
+        label.opaque = NO;
+        label.backgroundColor = UIColor.clearColor;
+        label.font = [UIFont systemFontOfSize:18];
+        CGSize measuredSize = [label.text sizeWithAttributes:@{NSFontAttributeName: label.font}];
+        label.frame = CGRectMake(0, 0, measuredSize.width, measuredSize.height);
+        UIGraphicsBeginImageContextWithOptions(label.bounds.size, label.opaque, 0.0);
+        [label.layer renderInContext:UIGraphicsGetCurrentContext()];
+        cell.imageView.image = UIGraphicsGetImageFromCurrentImageContext();
     }
+    
+    return cell;
+}
+
+- (UITableViewCell *)makeShilohCell {
+    static NSString *CellIndentifier = @"ShilohCell";
+    UITableViewCell *cell = [reasonsTable dequeueReusableCellWithIdentifier:CellIndentifier];
+    
+    if (!cell) {
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIndentifier];
+        cell.translatesAutoresizingMaskIntoConstraints = NO;
+        UIImageView *imgView = [[UIImageView alloc] init];
+        imgView.translatesAutoresizingMaskIntoConstraints = NO;
+        imgView.tag = 1;
+        imgView.contentMode = UIViewContentModeScaleAspectFit;
+        [cell.contentView addSubview:imgView];
+        
+        [cell.contentView addConstraint:[NSLayoutConstraint constraintWithItem:imgView attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:cell.contentView attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0]];
+        [cell.contentView addConstraint:[NSLayoutConstraint constraintWithItem:imgView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:96]];
+        [cell.contentView addConstraint:[NSLayoutConstraint constraintWithItem:imgView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:cell.contentView attribute:NSLayoutAttributeTop multiplier:1.0 constant:12]];
+        [cell.contentView addConstraint:[NSLayoutConstraint constraintWithItem:imgView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:cell.contentView attribute:NSLayoutAttributeBottom multiplier:1.0 constant:12]];
+
+    }
+    
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    
+    UIImageView *_imgView = (UIImageView *)[cell.contentView viewWithTag:1];
+    _imgView.image = [UIImage imageNamed:@"Shiloh.jpg"];
     
     return cell;
 }

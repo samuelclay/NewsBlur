@@ -435,6 +435,7 @@
 		FF8D1ED81BAA33BA00725D8A /* NSObject+SBJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = FF8D1ED71BAA33BA00725D8A /* NSObject+SBJSON.m */; };
 		FF8D1EDB1BAA3CCD00725D8A /* JNWThrottledBlock.m in Sources */ = {isa = PBXBuildFile; fileRef = FF8D1EDA1BAA3CCD00725D8A /* JNWThrottledBlock.m */; };
 		FF9B8BB217F2351A0036A41C /* NBBarButtonItem.m in Sources */ = {isa = PBXBuildFile; fileRef = FF9B8BB117F2351A0036A41C /* NBBarButtonItem.m */; };
+		FF9D59341FBC08DC00823C10 /* Shiloh.jpg in Resources */ = {isa = PBXBuildFile; fileRef = FF9D59331FBC08DB00823C10 /* Shiloh.jpg */; };
 		FF9DC9E91C85FC3E006097E1 /* bar_separator_dark@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF9DC9E81C85FC3E006097E1 /* bar_separator_dark@2x.png */; };
 		FF9DC9EB1C860944006097E1 /* bar_separator_dark.png in Resources */ = {isa = PBXBuildFile; fileRef = FF9DC9EA1C860944006097E1 /* bar_separator_dark.png */; };
 		FF9F171618DCF3E000B75FC7 /* ios7_back_button@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF9F171518DCF3E000B75FC7 /* ios7_back_button@2x.png */; };
@@ -1183,6 +1184,7 @@
 		FF8D1EDA1BAA3CCD00725D8A /* JNWThrottledBlock.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JNWThrottledBlock.m; path = "Other Sources/JNWThrottledBlock.m"; sourceTree = "<group>"; };
 		FF9B8BB017F2351A0036A41C /* NBBarButtonItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NBBarButtonItem.h; sourceTree = "<group>"; };
 		FF9B8BB117F2351A0036A41C /* NBBarButtonItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NBBarButtonItem.m; sourceTree = "<group>"; };
+		FF9D59331FBC08DB00823C10 /* Shiloh.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = Shiloh.jpg; sourceTree = "<group>"; };
 		FF9DC9E81C85FC3E006097E1 /* bar_separator_dark@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "bar_separator_dark@2x.png"; sourceTree = "<group>"; };
 		FF9DC9EA1C860944006097E1 /* bar_separator_dark.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bar_separator_dark.png; sourceTree = "<group>"; };
 		FF9F171518DCF3E000B75FC7 /* ios7_back_button@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ios7_back_button@2x.png"; sourceTree = "<group>"; };
@@ -1735,6 +1737,7 @@
 		431B857615A132B600DCE497 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				FF9D59331FBC08DB00823C10 /* Shiloh.jpg */,
 				FF3FA8941BB26B6A001F7C32 /* copy_link@2x.png */,
 				FF83FF121FB54692008DAC0F /* g_icn_buffer.png */,
 				FF83FF0E1FB54691008DAC0F /* g_icn_eating.png */,
@@ -2756,6 +2759,7 @@
 				43E8381F15BC73EB000553BE /* FirstTimeUserAddFriendsViewController.xib in Resources */,
 				43E8382115BC73EB000553BE /* FirstTimeUserAddNewsBlurViewController.xib in Resources */,
 				43E8382315BC73EB000553BE /* FirstTimeUserAddSitesViewController.xib in Resources */,
+				FF9D59341FBC08DC00823C10 /* Shiloh.jpg in Resources */,
 				43AF417715C30B1600758366 /* 37x-Checkmark.png in Resources */,
 				43AF417815C30B1600758366 /* 37x-Checkmark@2x.png in Resources */,
 				43A4BADB15C866FA00F3B8D4 /* popoverArrowDown.png in Resources */,
