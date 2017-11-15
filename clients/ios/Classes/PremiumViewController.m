@@ -73,7 +73,7 @@
 
 -(void)viewDidLayoutSubviews
 {
-    productsHeight.constant = self.productsTable.contentSize.height;
+//    productsHeight.constant = self.productsTable.contentSize.height;
     [self.view layoutIfNeeded];
 }
 
@@ -98,6 +98,7 @@
     if (appDelegate.isPremium) {
         freeView.hidden = YES;
         premiumView.hidden = NO;
+        [confettiView stopConfetti];
         [confettiView startConfetti];
     } else {
         freeView.hidden = NO;
@@ -318,13 +319,10 @@
     imgView.contentMode = UIViewContentModeScaleAspectFit;
     [view addSubview:imgView];
     
-    [view addConstraint:[NSLayoutConstraint constraintWithItem:imgView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:96]];
     [view addConstraint:[NSLayoutConstraint constraintWithItem:imgView attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:view attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0]];
     [view addConstraint:[NSLayoutConstraint constraintWithItem:imgView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:view attribute:NSLayoutAttributeTop multiplier:1.0 constant:12]];
-    [view addConstraint:[NSLayoutConstraint constraintWithItem:imgView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:view attribute:NSLayoutAttributeBottom multiplier:1.0 constant:12]];
+    [imgView addConstraint:[NSLayoutConstraint constraintWithItem:imgView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:96]];
 
-    [view addConstraint:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:96]];
-    
     UIImageView *_imgView = (UIImageView *)[view viewWithTag:1];
     _imgView.image = [UIImage imageNamed:@"Shiloh.jpg"];
     

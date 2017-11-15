@@ -68,6 +68,10 @@ public class SAConfettiView: UIView, CAAnimationDelegate {
         emitter.add(animation, forKey: "confettis")
     }
     
+    @objc public func stopConfetti() {
+        emitter?.birthRate = 0
+    }
+    
     func imageForType(type: ConfettiType) -> UIImage? {
         
         var fileName: String!
