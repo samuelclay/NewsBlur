@@ -68,6 +68,7 @@ static UIFont *userLabelFont;
 @synthesize currentRowAtIndexPath;
 @synthesize currentSection;
 @synthesize noFocusMessage;
+@synthesize noFocusLabel;
 @synthesize toolbarLeftMargin;
 @synthesize updatedDictFeeds_;
 @synthesize updatedDictSocialFeeds_;
@@ -1712,6 +1713,12 @@ heightForHeaderInSection:(NSInteger)section {
         }
     } else {
         self.noFocusMessage.hidden = YES;
+    }
+    
+    if (appDelegate.isSavedStoriesIntelligenceMode) {
+        self.noFocusLabel.text = @"You have no saved stories.";
+    } else {
+        self.noFocusLabel.text = @"You have no unread stories in Focus mode.";
     }
 }
 
