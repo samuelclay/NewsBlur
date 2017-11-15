@@ -19,6 +19,7 @@
                 <outlet property="confettiView" destination="TFM-k9-HJ2" id="Xqn-VR-200"/>
                 <outlet property="freeView" destination="vys-ne-LmS" id="EUB-JT-1vy"/>
                 <outlet property="labelPremiumExpire" destination="kSd-jt-UJ6" id="E6q-in-P1o"/>
+                <outlet property="labelPremiumTitle" destination="ueU-QC-PqI" id="cmx-VI-DAg"/>
                 <outlet property="labelSubtitle" destination="wHV-Eo-ith" id="BeK-G5-G9j"/>
                 <outlet property="labelTitle" destination="bVF-I1-nis" id="0Eg-04-NaQ"/>
                 <outlet property="premiumView" destination="rCC-u8-EID" id="SRr-a7-DrJ"/>
@@ -96,7 +97,6 @@
                     <subviews>
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="TFM-k9-HJ2" customClass="SAConfettiView" customModule="NewsBlur" customModuleProvider="target">
                             <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
-                            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         </view>
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="mVi-67-VUL">
                             <rect key="frame" x="24" y="182" width="327" height="304"/>
@@ -130,7 +130,6 @@
                             </constraints>
                         </view>
                     </subviews>
-                    <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <constraints>
                         <constraint firstItem="mVi-67-VUL" firstAttribute="centerY" secondItem="rCC-u8-EID" secondAttribute="centerY" id="Amv-DQ-A35"/>
                         <constraint firstAttribute="bottom" secondItem="TFM-k9-HJ2" secondAttribute="bottom" id="JlI-5W-WNC"/>

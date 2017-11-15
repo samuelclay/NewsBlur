@@ -34,6 +34,7 @@
 @property (nonatomic) IBOutlet NSLayoutConstraint *productsHeight;
 @property (nonatomic) IBOutlet UILabel *labelTitle;
 @property (nonatomic) IBOutlet UILabel *labelSubtitle;
+@property (nonatomic) IBOutlet UILabel *labelPremiumTitle;
 @property (nonatomic) IBOutlet UILabel *labelPremiumExpire;
 
 
