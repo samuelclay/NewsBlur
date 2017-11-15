@@ -31,6 +31,7 @@
 @synthesize productsHeight;
 @synthesize labelTitle;
 @synthesize labelSubtitle;
+@synthesize labelPremiumTitle;
 @synthesize labelPremiumExpire;
 
 - (void)viewDidLoad {
@@ -83,7 +84,11 @@
     self.view.backgroundColor = UIColorFromRGB(0xf4f4f4);
     self.labelTitle.textColor = UIColorFromRGB(0x0c0c0c);
     self.labelSubtitle.textColor = UIColorFromRGB(0x0c0c0c);
-    
+    self.labelPremiumExpire.textColor = UIColorFromRGB(0x0c0c0c);
+    self.labelPremiumTitle.textColor = UIColorFromRGB(0x0c0c0c);
+    self.labelPremiumExpire.shadowColor = UIColorFromRGB(0xf4f4f4);
+    self.labelPremiumTitle.shadowColor = UIColorFromRGB(0xf4f4f4);
+
     [self.productsTable reloadData];
     [self.reasonsTable reloadData];
 }
