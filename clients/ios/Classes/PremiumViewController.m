@@ -112,8 +112,11 @@
         [confettiView stopConfetti];
         [confettiView startConfetti];
         
-        if (appDelegate.premiumExpire != nil) {
-            labelPremiumExpire.text = [NSString stringWithFormat:@"Your premium subscription will renew on %@", appDelegate.premiumExpire];
+        if (appDelegate.premiumExpire != 0) {
+            NSDate *date = [NSDate dateWithTimeIntervalSince1970:appDelegate.premiumExpire];
+            NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+            [dateFormatter setDateFormat:@"MMMM d, yyyy"];
+            labelPremiumExpire.text = [NSString stringWithFormat:@"Your premium subscription will renew on %@", [dateFormatter stringFromDate:date]];
         } else {
             labelPremiumExpire.text = @"Your premium subscription is set to never expire. Whoa!";
         }
@@ -231,9 +234,9 @@
         spinner.hidden = YES;
         NSDictionary *results = (NSDictionary *)responseObject;
         appDelegate.isPremium = [[results objectForKey:@"is_premium"] integerValue] == 1;
-        id premiumExpire = [appDelegate.dictUserProfile objectForKey:@"premium_expire"];
-        if (![premiumExpire isKindOfClass:[NSNull class]]) {
-            appDelegate.premiumExpire = [premiumExpire stringValue];
+        id premiumExpire = [results objectForKey:@"premium_expire"];
+        if (premiumExpire && ![premiumExpire isKindOfClass:[NSNull class]] && premiumExpire != 0) {
+            appDelegate.premiumExpire = [premiumExpire integerValue];
         }
 
         [self loadProducts];

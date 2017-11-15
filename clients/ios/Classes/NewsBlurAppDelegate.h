@@ -255,7 +255,7 @@ SFSafariViewControllerDelegate>  {
 @property (nonatomic) NSDictionary *dictUserProfile;
 @property (nonatomic) NSDictionary *dictSocialServices;
 @property (nonatomic) BOOL isPremium;
-@property (nonatomic) NSString *premiumExpire;
+@property (nonatomic) NSInteger premiumExpire;
 @property (nonatomic, strong) NSMutableDictionary *dictUnreadCounts;
 @property (nonatomic, strong) NSMutableDictionary *dictTextFeeds;
 @property (nonatomic) NSArray *userInteractionsArray;

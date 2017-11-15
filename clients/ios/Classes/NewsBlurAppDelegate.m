@@ -233,7 +233,7 @@
     cachedFavicons = [[PINCache alloc] initWithName:@"NBFavicons"];
     cachedStoryImages = [[PINCache alloc] initWithName:@"NBStoryImages"];
     isPremium = NO;
-    premiumExpire = nil;
+    premiumExpire = 0;
     
     NBURLCache *urlCache = [[NBURLCache alloc] init];
     [NSURLCache setSharedURLCache:urlCache];
