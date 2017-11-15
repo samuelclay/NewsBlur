@@ -43,7 +43,6 @@
                          @[@"Custom RSS feeds for folders and saved stories", @"g_icn_folder_black"],
                          @[@"Text view conveniently extracts the story", @"g_icn_textview_black"],
                          @[@"You feed Shiloh, my poor, hungry dog, for a month", @"g_icn_eating"],
-                         @[@"shiloh", @"g_icn_eating"],
                          ];
 
     UIBarButtonItem *cancelButton = [[UIBarButtonItem alloc] initWithTitle: @"Done"
@@ -58,7 +57,7 @@
     [self.navigationItem setRightBarButtonItem:restoreButton];
     
     self.productsTable.tableFooterView = [UIView new];
-    self.reasonsTable.tableFooterView = [UIView new];
+    self.reasonsTable.tableFooterView = [self makeShilohCell];
     self.productsTable.separatorColor = [UIColor clearColor];
 }
 
@@ -252,9 +251,6 @@
     UITableViewCell *cell;
     
     if (tableView == reasonsTable) {
-        if ([reasons[indexPath.row][0] isEqualToString:@"shiloh"]) {
-            return [self makeShilohCell];
-        }
         static NSString *ReasonsCellIndentifier = @"PremiumReasonsCell";
         cell = [tableView dequeueReusableCellWithIdentifier:ReasonsCellIndentifier];
         
@@ -310,32 +306,29 @@
     return cell;
 }
 
-- (UITableViewCell *)makeShilohCell {
-    static NSString *CellIndentifier = @"ShilohCell";
-    UITableViewCell *cell = [reasonsTable dequeueReusableCellWithIdentifier:CellIndentifier];
-    
-    if (!cell) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIndentifier];
-        cell.translatesAutoresizingMaskIntoConstraints = NO;
-        UIImageView *imgView = [[UIImageView alloc] init];
-        imgView.translatesAutoresizingMaskIntoConstraints = NO;
-        imgView.tag = 1;
-        imgView.contentMode = UIViewContentModeScaleAspectFit;
-        [cell.contentView addSubview:imgView];
-        
-        [cell.contentView addConstraint:[NSLayoutConstraint constraintWithItem:imgView attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:cell.contentView attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0]];
-        [cell.contentView addConstraint:[NSLayoutConstraint constraintWithItem:imgView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:96]];
-        [cell.contentView addConstraint:[NSLayoutConstraint constraintWithItem:imgView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:cell.contentView attribute:NSLayoutAttributeTop multiplier:1.0 constant:12]];
-        [cell.contentView addConstraint:[NSLayoutConstraint constraintWithItem:imgView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:cell.contentView attribute:NSLayoutAttributeBottom multiplier:1.0 constant:12]];
+- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section {
+    return 0;
+}
 
-    }
+- (UIView *)makeShilohCell {
+    UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 96+12+12)];
+    UIImageView *imgView = [[UIImageView alloc] init];
+    imgView.translatesAutoresizingMaskIntoConstraints = NO;
+    imgView.tag = 1;
+    imgView.contentMode = UIViewContentModeScaleAspectFit;
+    [view addSubview:imgView];
     
-    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    [view addConstraint:[NSLayoutConstraint constraintWithItem:imgView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:96]];
+    [view addConstraint:[NSLayoutConstraint constraintWithItem:imgView attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:view attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0]];
+    [view addConstraint:[NSLayoutConstraint constraintWithItem:imgView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:view attribute:NSLayoutAttributeTop multiplier:1.0 constant:12]];
+    [view addConstraint:[NSLayoutConstraint constraintWithItem:imgView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:view attribute:NSLayoutAttributeBottom multiplier:1.0 constant:12]];
+
+    [view addConstraint:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:96]];
     
-    UIImageView *_imgView = (UIImageView *)[cell.contentView viewWithTag:1];
+    UIImageView *_imgView = (UIImageView *)[view viewWithTag:1];
     _imgView.image = [UIImage imageNamed:@"Shiloh.jpg"];
     
-    return cell;
+    return view;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
