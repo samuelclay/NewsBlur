@@ -18,6 +18,7 @@
     
     NSArray *reasons;
     SKProductsRequest *request;
+    
 }
 
 @property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
@@ -31,6 +32,8 @@
 @property (nonatomic) IBOutlet UIView *premiumView;
 @property (nonatomic) IBOutlet SAConfettiView *confettiView;
 @property (nonatomic) IBOutlet NSLayoutConstraint *productsHeight;
+@property (nonatomic) IBOutlet UILabel *labelTitle;
+@property (nonatomic) IBOutlet UILabel *labelSubtitle;
 
 
 - (IBAction)closeDialog:(id)sender;

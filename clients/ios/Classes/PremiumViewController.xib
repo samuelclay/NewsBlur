@@ -18,6 +18,8 @@
             <connections>
                 <outlet property="confettiView" destination="TFM-k9-HJ2" id="Xqn-VR-200"/>
                 <outlet property="freeView" destination="vys-ne-LmS" id="EUB-JT-1vy"/>
+                <outlet property="labelSubtitle" destination="wHV-Eo-ith" id="BeK-G5-G9j"/>
+                <outlet property="labelTitle" destination="bVF-I1-nis" id="0Eg-04-NaQ"/>
                 <outlet property="premiumView" destination="rCC-u8-EID" id="SRr-a7-DrJ"/>
                 <outlet property="productsHeight" destination="Gta-B6-eUD" id="nYZ-wi-Pfc"/>
                 <outlet property="productsTable" destination="0Bc-Oc-gNV" id="9R5-FZ-rK7"/>
@@ -120,7 +122,6 @@
                             <nil key="highlightedColor"/>
                         </label>
                     </subviews>
-                    <color key="backgroundColor" red="0.96769907994923854" green="0.96769907994923854" blue="0.96769907994923854" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                     <constraints>
                         <constraint firstAttribute="bottom" secondItem="fn0-sC-cuM" secondAttribute="bottom" id="2Bj-WY-sdY"/>
                         <constraint firstItem="yBE-Kx-Lyj" firstAttribute="centerY" secondItem="0Bc-Oc-gNV" secondAttribute="centerY" id="A3t-Kf-7rY"/>
