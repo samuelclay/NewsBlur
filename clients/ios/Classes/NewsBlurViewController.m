@@ -160,7 +160,7 @@ static UIFont *userLabelFont;
     self.notifier.topOffsetConstraint = [NSLayoutConstraint constraintWithItem:self.notifier attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.feedViewToolbar attribute:NSLayoutAttributeTop multiplier:1.0 constant:0];
     [self.view addConstraint:self.notifier.topOffsetConstraint];
     
-//    self.feedTitlesTable.backgroundColor = UIColorFromRGB(0xf4f4f4);
+    self.feedTitlesTable.backgroundColor = UIColorFromRGB(0xf4f4f4);
     self.feedTitlesTable.separatorColor = [UIColor clearColor];
     
     userAvatarButton.customView.hidden = YES;
@@ -979,7 +979,7 @@ static UIFont *userLabelFont;
     [self layoutHeaderCounts:0];
     [self refreshHeaderCounts];
     
-//    self.feedTitlesTable.backgroundColor = UIColorFromRGB(0xf4f4f4);
+    self.feedTitlesTable.backgroundColor = UIColorFromRGB(0xf4f4f4);
     [self.feedTitlesTable reloadData];
     
     [self resetupGestures];

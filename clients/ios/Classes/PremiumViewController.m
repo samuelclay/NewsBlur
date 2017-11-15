@@ -29,6 +29,8 @@
 @synthesize premiumView;
 @synthesize confettiView;
 @synthesize productsHeight;
+@synthesize labelTitle;
+@synthesize labelSubtitle;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -65,16 +67,24 @@
     [super viewWillAppear:animated];
     self.navigationItem.title = appDelegate.isPremium ? @"Premium Account" : @"Upgrade to Premium";
     [self loadProducts];
+    [self updateTheme];
 }
 
 - (void)closeDialog:(id)sender {
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
--(void)viewDidLayoutSubviews
-{
-//    productsHeight.constant = self.productsTable.contentSize.height;
-    [self.view layoutIfNeeded];
+- (void)updateTheme {
+    [super updateTheme];
+    
+    self.productsTable.backgroundColor = UIColorFromRGB(0xf4f4f4);
+    self.reasonsTable.backgroundColor = UIColorFromRGB(0xf4f4f4);
+    self.view.backgroundColor = UIColorFromRGB(0xf4f4f4);
+    self.labelTitle.textColor = UIColorFromRGB(0x0c0c0c);
+    self.labelSubtitle.textColor = UIColorFromRGB(0x0c0c0c);
+    
+    [self.productsTable reloadData];
+    [self.reasonsTable reloadData];
 }
 
 #pragma mark - StoreKit
@@ -258,10 +268,12 @@
         if (!cell) {
             cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:ReasonsCellIndentifier];
         }
-
+        
+        cell.backgroundColor = UIColorFromRGB(0xf4f4f4);
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         cell.textLabel.text = reasons[indexPath.row][0];
         cell.textLabel.font = [UIFont systemFontOfSize:14.f weight:UIFontWeightLight];
+        cell.textLabel.textColor = UIColorFromRGB(0x0c0c0c);
         cell.textLabel.numberOfLines = 2;
         CGSize itemSize = CGSizeMake(18, 18);
         cell.imageView.image = [UIImage imageNamed:reasons[indexPath.row][1]];
@@ -282,8 +294,10 @@
 
         SKProduct *product = products[indexPath.row];
         cell.selectionStyle = UITableViewCellSelectionStyleBlue;
+        cell.backgroundColor = UIColorFromRGB(0xf4f4f4);
         cell.textLabel.numberOfLines = 2;
-        cell.textLabel.textColor = UIColorFromRGB(0x203090);
+        cell.textLabel.textColor = UIColorFromRGB(0x203070);
+        cell.detailTextLabel.textColor = UIColorFromRGB(0x0c0c0c);
         NSNumberFormatter *formatter = [[NSNumberFormatter alloc] init];
         [formatter setFormatterBehavior:NSNumberFormatterBehavior10_4];
         [formatter setNumberStyle:NSNumberFormatterCurrencyStyle];
