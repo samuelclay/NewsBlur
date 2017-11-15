@@ -86,10 +86,10 @@
                     <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                     <subviews>
                         <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" animating="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="yBE-Kx-Lyj">
-                            <rect key="frame" x="177.5" y="125" width="20" height="20"/>
+                            <rect key="frame" x="177.5" y="113" width="20" height="20"/>
                         </activityIndicatorView>
                         <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="fn0-sC-cuM">
-                            <rect key="frame" x="0.0" y="187" width="375" height="480"/>
+                            <rect key="frame" x="0.0" y="175" width="375" height="492"/>
                             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <connections>
                                 <outlet property="dataSource" destination="-1" id="Hc6-OJ-jhm"/>
@@ -97,7 +97,7 @@
                             </connections>
                         </tableView>
                         <tableView clipsSubviews="YES" contentMode="scaleToFill" verticalCompressionResistancePriority="1000" alwaysBounceVertical="YES" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="0Bc-Oc-gNV">
-                            <rect key="frame" x="0.0" y="107" width="375" height="56"/>
+                            <rect key="frame" x="0.0" y="95" width="375" height="56"/>
                             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="56" id="Gta-B6-eUD"/>
@@ -108,13 +108,13 @@
                             </connections>
                         </tableView>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="1000" text="Thank you so much for going premium!" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bVF-I1-nis">
-                            <rect key="frame" x="24" y="24" width="327" height="23"/>
+                            <rect key="frame" x="24" y="18" width="327" height="23"/>
                             <fontDescription key="fontDescription" name="GothamNarrow-Medium" family="Gotham Narrow" pointSize="19"/>
                             <nil key="textColor"/>
                             <nil key="highlightedColor"/>
                         </label>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="1000" text="Your contribution helps keep NewsBlur humming." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wHV-Eo-ith">
-                            <rect key="frame" x="24" y="65" width="327" height="18"/>
+                            <rect key="frame" x="24" y="53" width="327" height="18"/>
                             <fontDescription key="fontDescription" name="GothamNarrow-Medium" family="Gotham Narrow" pointSize="15"/>
                             <nil key="textColor"/>
                             <nil key="highlightedColor"/>
@@ -131,10 +131,10 @@
                         <constraint firstItem="0Bc-Oc-gNV" firstAttribute="top" secondItem="wHV-Eo-ith" secondAttribute="bottom" constant="24" id="Opl-bA-k6v"/>
                         <constraint firstItem="bVF-I1-nis" firstAttribute="centerX" secondItem="vys-ne-LmS" secondAttribute="centerX" id="Ruc-wE-XRY"/>
                         <constraint firstItem="0Bc-Oc-gNV" firstAttribute="leading" secondItem="vys-ne-LmS" secondAttribute="leading" id="S26-YV-Bgu"/>
-                        <constraint firstItem="bVF-I1-nis" firstAttribute="top" secondItem="vys-ne-LmS" secondAttribute="top" constant="24" id="XFJ-7c-wws"/>
+                        <constraint firstItem="bVF-I1-nis" firstAttribute="top" secondItem="vys-ne-LmS" secondAttribute="top" constant="18" id="XFJ-7c-wws"/>
                         <constraint firstAttribute="trailing" secondItem="0Bc-Oc-gNV" secondAttribute="trailing" id="ef4-Av-ZlG"/>
                         <constraint firstItem="yBE-Kx-Lyj" firstAttribute="centerX" secondItem="0Bc-Oc-gNV" secondAttribute="centerX" id="l0s-HJ-wPi"/>
-                        <constraint firstItem="wHV-Eo-ith" firstAttribute="top" secondItem="bVF-I1-nis" secondAttribute="bottom" constant="18" id="qx3-55-Vki"/>
+                        <constraint firstItem="wHV-Eo-ith" firstAttribute="top" secondItem="bVF-I1-nis" secondAttribute="bottom" constant="12" id="qx3-55-Vki"/>
                         <constraint firstItem="bVF-I1-nis" firstAttribute="leading" secondItem="vys-ne-LmS" secondAttribute="leading" constant="24" id="s7o-bi-uQo"/>
                         <constraint firstItem="wHV-Eo-ith" firstAttribute="leading" secondItem="vys-ne-LmS" secondAttribute="leading" constant="24" id="v8a-ek-NUU"/>
                         <constraint firstItem="fn0-sC-cuM" firstAttribute="leading" secondItem="vys-ne-LmS" secondAttribute="leading" id="x3Z-Fi-aVJ"/>
