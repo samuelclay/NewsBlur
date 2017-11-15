@@ -1120,12 +1120,24 @@
 
 - (void)renderStories:(NSArray *)newStories {
     NSInteger newStoriesCount = [newStories count];
+    BOOL premiumRestriction = !appDelegate.isPremium &&
+                                storiesCollection.isRiverView &&
+                                !storiesCollection.isReadView &&
+                                !storiesCollection.isSocialView &&
+                                !storiesCollection.isSavedView;
     
     if (newStoriesCount > 0) {
         if (storiesCollection.feedPage == 1) {
+            if (premiumRestriction) {
+                newStories = [newStories subarrayWithRange:NSMakeRange(0, MIN(newStoriesCount, 3))];
+            }
             [storiesCollection setStories:newStories];
         } else {
-            [storiesCollection addStories:newStories];
+            if (premiumRestriction) {
+                self.pageFinished = YES;
+            } else {
+                [storiesCollection addStories:newStories];
+            }
         }
     } else {
         self.pageFinished = YES;
@@ -1230,6 +1242,12 @@
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     
     if (self.pageFinished) {
+        BOOL premiumRestriction = !appDelegate.isPremium &&
+        storiesCollection.isRiverView &&
+        !storiesCollection.isReadView &&
+        !storiesCollection.isSocialView &&
+        !storiesCollection.isSavedView;
+        
         UIImage *img = [UIImage imageNamed:@"fleuron.png"];
         UIImageView *fleuron = [[UIImageView alloc] initWithImage:img];
         
@@ -1256,12 +1274,60 @@
                                                                      attribute:NSLayoutAttributeCenterX
                                                                     multiplier:1.0 constant:0]];
         [cell.contentView addConstraint:[NSLayoutConstraint constraintWithItem:fleuron
-                                                                     attribute:NSLayoutAttributeCenterY
+                                                                     attribute:NSLayoutAttributeTop
                                                                      relatedBy:NSLayoutRelationEqual
                                                                         toItem:cell.contentView
-                                                                     attribute:NSLayoutAttributeCenterY
-                                                                    multiplier:1.0 constant:0]];
+                                                                     attribute:NSLayoutAttributeTop
+                                                                    multiplier:1.0 constant:height/2]];
         cell.backgroundColor = [UIColor clearColor];
+        
+        if (premiumRestriction) {
+            UILabel *premiumLabel = [[UILabel alloc] init];
+            premiumLabel.translatesAutoresizingMaskIntoConstraints = NO;
+            NSString *premiumText = @"Reading by folder is only available to\npremium subscribers.";
+            NSDictionary *attribs = @{NSForegroundColorAttributeName: UIColorFromRGB(0x0c0c0c),
+                                      NSFontAttributeName: [UIFont systemFontOfSize:14],
+                                      };
+            NSMutableAttributedString *attributedText = [[NSMutableAttributedString alloc]
+                                                         initWithString:premiumText attributes:attribs];
+            
+            NSRange blueRange = [premiumText rangeOfString:@"premium subscribers"];
+            [attributedText setAttributes:@{NSForegroundColorAttributeName: UIColorFromRGB(0x203070),
+                                            NSFontAttributeName: [UIFont systemFontOfSize:14],
+                                            }
+                                    range:blueRange];
+            
+            premiumLabel.attributedText = attributedText;
+            premiumLabel.numberOfLines = 2;
+            premiumLabel.textAlignment = NSTextAlignmentCenter;
+            
+            [cell.contentView addSubview:premiumLabel];
+            [cell.contentView addConstraint:[NSLayoutConstraint constraintWithItem:premiumLabel
+                                                                         attribute:NSLayoutAttributeCenterX
+                                                                         relatedBy:NSLayoutRelationEqual
+                                                                            toItem:cell.contentView
+                                                                         attribute:NSLayoutAttributeCenterX
+                                                                        multiplier:1.0 constant:0]];
+            [cell.contentView addConstraint:[NSLayoutConstraint constraintWithItem:premiumLabel
+                                                                         attribute:NSLayoutAttributeLeading
+                                                                         relatedBy:NSLayoutRelationEqual
+                                                                            toItem:cell.contentView
+                                                                         attribute:NSLayoutAttributeLeading
+                                                                        multiplier:1.0 constant:24]];
+            [cell.contentView addConstraint:[NSLayoutConstraint constraintWithItem:premiumLabel
+                                                                         attribute:NSLayoutAttributeTrailing
+                                                                         relatedBy:NSLayoutRelationEqual
+                                                                            toItem:cell.contentView
+                                                                         attribute:NSLayoutAttributeTrailing
+                                                                        multiplier:1.0 constant:-24]];
+            [cell.contentView addConstraint:[NSLayoutConstraint constraintWithItem:premiumLabel
+                                                                         attribute:NSLayoutAttributeTop
+                                                                         relatedBy:NSLayoutRelationEqual
+                                                                            toItem:fleuron
+                                                                         attribute:NSLayoutAttributeBottom
+                                                                        multiplier:1.0 constant:height/2]];
+        }
+        
         return cell;
     } else {//if ([appDelegate.storyLocationsCount]) {
         NBLoadingCell *loadingCell = [[NBLoadingCell alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, height)];
@@ -1516,6 +1582,10 @@
         if (!self.isPhoneOrCompact) {
             [appDelegate.dashboardViewController.storiesModule.view endEditing:YES];
         }
+    } else if (indexPath.row == storiesCollection.storyLocationsCount) {
+        if (!appDelegate.isPremium && storiesCollection.isRiverView) {
+            [appDelegate showPremiumDialog];
+        }
     }
 }
 
@@ -1542,7 +1612,13 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     NSInteger storyCount = storiesCollection.storyLocationsCount;
     
     if (storyCount && indexPath.row == storyCount) {
-        return 40;
+        if (!self.pageFinished) return 40;
+        
+        BOOL markReadOnScroll = [[NSUserDefaults standardUserDefaults] boolForKey:@"default_scroll_read_filter"];
+        if (markReadOnScroll) {
+            return CGRectGetHeight(self.view.frame) - 40;
+        }
+        return 120;
     } else if (storiesCollection.isRiverView ||
                storiesCollection.isSavedView ||
                storiesCollection.isReadView ||
