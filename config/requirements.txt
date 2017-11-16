@@ -13,7 +13,7 @@ django-oauth-toolkit==0.7.2
 django-qurl==0.1.1
 django-redis-cache==1.5.5
 django-redis-sessions==0.5.6
-django-ses==0.8.1
+django-ses==0.7.1
 django-subdomains==2.1.0
 django-timezone-field==2.0
 Django>=1.5,<1.6
