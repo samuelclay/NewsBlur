@@ -245,4 +245,10 @@ a:active {
     -webkit-box-shadow: inset 0px 2px 1px #818181;
 }
 
+.NB-text-view-premium-only {
+    background-color: gray;
+}
 
+.NB-text-view-premium-only .NB-feed-story-premium-only-divider {
+    filter: invert(100%);
+}

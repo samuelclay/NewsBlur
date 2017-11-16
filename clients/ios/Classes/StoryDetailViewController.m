@@ -378,7 +378,7 @@
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     
     NSString *premiumTextString = [NSString stringWithFormat:@"<div class=\"NB-feed-story-premium-only-divider\"></div>"
-                                   "<div class=\"NB-feed-story-premium-only-text\">The full Text view is a <a href=\"http://ios.newsblur.com/premium\">premium feature</a>.</div>"];
+                                   "<div class=\"NB-feed-story-premium-only-text\">The full Text view is a <a href=\"http://ios.newsblur.com/premium\">premium feature</a></div>"];
     
     fontStyleClass = [userPreferences stringForKey:@"fontStyle"];
     if (!fontStyleClass) {
