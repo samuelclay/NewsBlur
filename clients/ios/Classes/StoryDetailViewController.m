@@ -369,12 +369,16 @@
     NSString *customStyle = @"";
     NSString *fontSizeClass = @"NB-";
     NSString *lineSpacingClass = @"NB-line-spacing-";
+    NSString *premiumOnlyClass = (self.inTextView && !appDelegate.isPremium) ? @"NB-premium-only" : @"";
     NSString *storyContent = [self.activeStory objectForKey:@"story_content"];
     if (self.inTextView && [self.activeStory objectForKey:@"original_text"]) {
         storyContent = [self.activeStory objectForKey:@"original_text"];
     }
     
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+    
+    NSString *premiumTextString = [NSString stringWithFormat:@"<div class=\"NB-feed-story-premium-only-divider\"></div>"
+                                   "<div class=\"NB-feed-story-premium-only-text\">The full Text view is a <a href=\"http://ios.newsblur.com/premium\">premium feature</a>.</div>"];
     
     fontStyleClass = [userPreferences stringForKey:@"fontStyle"];
     if (!fontStyleClass) {
@@ -470,6 +474,7 @@
                             "<html>"
                             "<head>%@</head>" // header string
                             "<body id=\"story_pane\" class=\"%@ %@\">"
+                            "    <div class=\"%@\" id=\"NB-premium-check\">"
                             "    <div class=\"%@\" id=\"NB-font-style\"%@>"
                             "    <div class=\"%@\" id=\"NB-font-size\">"
                             "    <div class=\"%@\" id=\"NB-line-spacing\">"
@@ -478,6 +483,7 @@
                             headerString,
                             contentWidthClass,
                             riverClass,
+                            premiumOnlyClass,
                             fontStyleClass,
                             customStyle,
                             fontSizeClass,
@@ -490,6 +496,7 @@
                             "    </div>" // line-spacing
                             "    </div>" // font-size
                             "    </div>" // font-style
+                            "    </div>" // premium check
                             "</body>"
                             "</html>"
                             ];
@@ -497,6 +504,7 @@
     NSString *htmlContent = [NSString stringWithFormat:@
                              "%@" // header
                              "        <div id=\"NB-story\" class=\"NB-story\">%@</div>"
+                             "        <div class=\"NB-text-view-premium-only\">%@</div>"
                              "        <div id=\"NB-sideoptions-container\">%@</div>"
                              "        <div id=\"NB-comments-wrapper\">"
                              "            %@" // friends comments
@@ -505,6 +513,7 @@
                              "%@", // footer
                              htmlTop,
                              storyContent,
+                             premiumTextString,
                              sharingHtmlString,
                              commentString,
                              footerString,
@@ -1542,6 +1551,9 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         } else if ([action isEqualToString:@"classify-tag"]) {
             NSString *tag = [NSString stringWithFormat:@"%@", [urlComponents objectAtIndex:2]];
             [self.appDelegate toggleTagClassifier:tag feedId:feedId];
+            return NO;
+        } else if ([action isEqualToString:@"premium"]) {
+            [self.appDelegate showPremiumDialog];
             return NO;
         } else if ([action isEqualToString:@"show-profile"] && [urlComponents count] > 6) {
             appDelegate.activeUserProfileId = [NSString stringWithFormat:@"%@", [urlComponents objectAtIndex:2]];

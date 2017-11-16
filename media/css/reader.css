@@ -3247,11 +3247,13 @@ body {
 /* = Text View = */
 /* ============= */
 
-#story_pane .NB-text-view-detail .NB-feed-story-content {
+#story_pane .NB-text-view-detail .NB-feed-story-content,
+#story_titles .NB-text-view-detail .NB-feed-story-content {
     min-height: 120px;
 }
 
-#story_pane .NB-premium-only .NB-text-view-detail .NB-feed-story-content {
+#story_pane .NB-premium-only .NB-feed-story-content,
+#story_titles .NB-premium-only .NB-feed-story-content {
     max-height: 300px;
     overflow: hidden;
 }
