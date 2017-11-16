@@ -170,7 +170,7 @@
             //NSString *productID = transaction.payment.productIdentifier;
             [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
 
-            [self finishTransaction];
+            [self finishTransaction:transaction];
             break;
         }
     }
@@ -189,7 +189,7 @@
                 [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
                 NSLog(@"Transaction state -> Purchased");
                 
-                [self finishTransaction];
+                [self finishTransaction:transaction];
                 break;
             
             case SKPaymentTransactionStateRestored:
@@ -197,7 +197,7 @@
                 //add the same code as you did from SKPaymentTransactionStatePurchased here
                 [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
 
-                [self finishTransaction];
+                [self finishTransaction:transaction];
                 break;
             
             case SKPaymentTransactionStateFailed:
@@ -215,7 +215,7 @@
     }
 }
 
-- (void)finishTransaction {
+- (void)finishTransaction:(SKPaymentTransaction *)transaction {
     productsTable.hidden = YES;
     spinner.hidden = NO;
 
@@ -231,6 +231,8 @@
                            appDelegate.url];
     NSDictionary *params = @{
                              @"receipt": [receipt base64EncodedStringWithOptions:0],
+                             @"transaction_identifier": transaction.transactionIdentifier,
+                             @"product_identifier": transaction.payment.productIdentifier,
                              };
     
     [appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {

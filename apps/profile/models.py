@@ -415,13 +415,24 @@ class Profile(models.Model):
         
         return ipn[0].payer_email
     
-    def activate_ios_premium(self, amount):
+    def activate_ios_premium(self, product_identifier, transaction_identifier, amount=36):
+        payments = PaymentHistory.objects.filter(user=self.user,
+                                                 payment_identifier=transaction_identifier)
+        if len(payments):
+            # Already paid
+            return False
+
         PaymentHistory.objects.create(user=self.user,
                                       payment_date=datetime.datetime.now(),
                                       payment_amount=amount,
-                                      payment_provider='ios-subscription')
-        self.activate_premium()
-        logging.user(self.user, "~FG~BBNew iOS premium subscription: $%s~FW" % amount)
+                                      payment_provider='ios-subscription',
+                                      payment_identifier=transaction_identifier)
+                                      
+        if not self.is_premium:
+            self.activate_premium()
+        
+        logging.user(self.user, "~FG~BBNew iOS premium subscription: $%s~FW" % product_identifier)
+        return True
         
     @classmethod
     def clear_dead_spammers(self, days=30, confirm=False):
@@ -1124,6 +1135,7 @@ class PaymentHistory(models.Model):
     payment_date = models.DateTimeField()
     payment_amount = models.IntegerField()
     payment_provider = models.CharField(max_length=20)
+    payment_identifier = models.CharField(max_length=100)
     
     def __unicode__(self):
         return "[%s] $%s/%s" % (self.payment_date.strftime("%Y-%m-%d"), self.payment_amount,

@@ -313,16 +313,17 @@ def profile_is_premium(request):
 @ajax_login_required
 @json.json_view
 def save_ios_receipt(request):
-    request.user.profile.activate_ios_premium(36)
+    receipt = request.REQUEST.get('receipt')
+    product_identifier = request.POST.get('product_identifier')
+    transaction_identifier = request.POST.get('transaction_identifier')
     
-    subject = "iOS Premium: %s" % (request.user.profile)
-    message = """User: %s (%s) -- Email: %s, receipt: %s""" % (request.user.username, request.user.pk, request.user.email, request.REQUEST.get('receipt', None))
-    mail_admins(subject, message, fail_silently=True)
+    paid = request.user.profile.activate_ios_premium(product_identifier, transaction_identifier)
+    if paid:
+        subject = "iOS Premium: %s (%s)" % (request.user.profile, product_identifier)
+        message = """User: %s (%s) -- Email: %s, product: %s, txn: %s, receipt: %s""" % (request.user.username, request.user.pk, request.user.email, product_identifier, transaction_identifier, receipt)
+        mail_admins(subject, message, fail_silently=True)
     
-    return {
-        'is_premium': request.user.profile.is_premium,
-        'premium_expire': request.user.profile.premium_expire,
-    }
+    return request.user.profile
     
 @login_required
 def stripe_form(request):
