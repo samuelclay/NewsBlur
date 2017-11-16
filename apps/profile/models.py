@@ -427,6 +427,8 @@ class Profile(models.Model):
                                       payment_amount=amount,
                                       payment_provider='ios-subscription',
                                       payment_identifier=transaction_identifier)
+        
+        self.setup_premium_history(check_premium=True)
                                       
         if not self.is_premium:
             self.activate_premium()
