@@ -447,6 +447,7 @@
 		FFA0484419CA73B700618DC4 /* UIView+ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FFA0484319CA73B700618DC4 /* UIView+ViewController.m */; };
 		FFAD4971144A386100BA6919 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FFAD4970144A386100BA6919 /* libz.dylib */; };
 		FFAD89C218AC45A100D68567 /* StoriesCollection.m in Sources */ = {isa = PBXBuildFile; fileRef = FFAD89C118AC45A100D68567 /* StoriesCollection.m */; };
+		FFB1F69D1FBD1B2D001DA171 /* white_fade.png in Resources */ = {isa = PBXBuildFile; fileRef = FFB1F69C1FBD1B2D001DA171 /* white_fade.png */; };
 		FFB5F50B17187B6F00C8B432 /* big_world.png in Resources */ = {isa = PBXBuildFile; fileRef = FFB5F50A17187B6F00C8B432 /* big_world.png */; };
 		FFB7050A1925921F0052101C /* line_spacing_l.png in Resources */ = {isa = PBXBuildFile; fileRef = FFB705051925921F0052101C /* line_spacing_l.png */; };
 		FFB7050B1925921F0052101C /* line_spacing_m.png in Resources */ = {isa = PBXBuildFile; fileRef = FFB705061925921F0052101C /* line_spacing_m.png */; };
@@ -1203,6 +1204,7 @@
 		FFAD4970144A386100BA6919 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		FFAD89C018AC45A100D68567 /* StoriesCollection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StoriesCollection.h; sourceTree = "<group>"; };
 		FFAD89C118AC45A100D68567 /* StoriesCollection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StoriesCollection.m; sourceTree = "<group>"; };
+		FFB1F69C1FBD1B2D001DA171 /* white_fade.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = white_fade.png; sourceTree = "<group>"; };
 		FFB5F50A17187B6F00C8B432 /* big_world.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = big_world.png; sourceTree = "<group>"; };
 		FFB705051925921F0052101C /* line_spacing_l.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = line_spacing_l.png; sourceTree = "<group>"; };
 		FFB705061925921F0052101C /* line_spacing_m.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = line_spacing_m.png; sourceTree = "<group>"; };
@@ -1737,6 +1739,7 @@
 		431B857615A132B600DCE497 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				FFB1F69C1FBD1B2D001DA171 /* white_fade.png */,
 				FF9D59331FBC08DB00823C10 /* Shiloh.jpg */,
 				FF3FA8941BB26B6A001F7C32 /* copy_link@2x.png */,
 				FF83FF121FB54692008DAC0F /* g_icn_buffer.png */,
@@ -2843,6 +2846,7 @@
 				FF3FA8951BB26B6A001F7C32 /* copy_link@2x.png in Resources */,
 				17C5BA6D1CA39EA400F5961C /* unread_green_icn@3x.png in Resources */,
 				FFC486B519CA41AE00F4758F /* logo_87.png in Resources */,
+				FFB1F69D1FBD1B2D001DA171 /* white_fade.png in Resources */,
 				FFCDD8F617F4BCB4000C6483 /* Default-portrait.png in Resources */,
 				FF67D3C1168A708D0057A7DA /* storyDetailView.css in Resources */,
 				FFCDD8F317F4BCB4000C6483 /* Default-568h@2x.png in Resources */,
