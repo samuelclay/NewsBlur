@@ -1135,7 +1135,7 @@ class PaymentHistory(models.Model):
     payment_date = models.DateTimeField()
     payment_amount = models.IntegerField()
     payment_provider = models.CharField(max_length=20)
-    payment_identifier = models.CharField(max_length=100)
+    payment_identifier = models.CharField(max_length=100, null=True)
     
     def __unicode__(self):
         return "[%s] $%s/%s" % (self.payment_date.strftime("%Y-%m-%d"), self.payment_amount,

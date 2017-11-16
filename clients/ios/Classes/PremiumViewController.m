@@ -200,8 +200,10 @@
                 [self finishTransaction:transaction];
                 break;
             
-            case SKPaymentTransactionStateFailed:
             case SKPaymentTransactionStateDeferred:
+                NSLog(@"Transaction state -> Deferred");
+            case SKPaymentTransactionStateFailed:
+                NSLog(@"Transaction state -> Failed");
                 //called when the transaction does not finish
                 if (transaction.error.code == SKErrorPaymentCancelled) {
                     NSLog(@"Transaction state -> Cancelled");
