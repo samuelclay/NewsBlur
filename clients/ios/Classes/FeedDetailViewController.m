@@ -1079,7 +1079,33 @@
     
     if (!storiesCollection.storyCount) {
         if ([results objectForKey:@"message"] && ![[results objectForKey:@"message"] isKindOfClass:[NSNull class]]) {
-            self.messageLabel.text = [results objectForKey:@"message"];
+            if (!appDelegate.isPremium && storiesCollection.searchQuery != nil) {
+                NSString *premiumText = @"Search is only available to\npremium subscribers";
+                NSDictionary *attribs = @{NSForegroundColorAttributeName: UIColorFromRGB(0x808080),
+                                          NSFontAttributeName: [UIFont systemFontOfSize:18],
+                                          };
+                NSMutableAttributedString *attributedText = [[NSMutableAttributedString alloc]
+                                                             initWithString:premiumText attributes:attribs];
+                
+                NSRange blueRange = [premiumText rangeOfString:@"premium subscribers"];
+                [attributedText setAttributes:@{NSForegroundColorAttributeName: UIColorFromRGB(0x2030C0),
+                                                NSFontAttributeName: [UIFont systemFontOfSize:18],
+                                                }
+                                        range:blueRange];
+                
+                self.messageLabel.attributedText = attributedText;
+                
+                UITapGestureRecognizer *tapGestureRecognizer = [[UITapGestureRecognizer alloc]
+                                                                initWithTarget:self action:@selector(openPremiumDialog:)];
+                tapGestureRecognizer.numberOfTapsRequired = 1;
+                for (UIGestureRecognizer *recognizer in self.messageLabel.gestureRecognizers) {
+                    [self.messageLabel removeGestureRecognizer:recognizer];
+                }
+                [self.messageLabel addGestureRecognizer:tapGestureRecognizer];
+                self.messageLabel.userInteractionEnabled = YES;
+            } else {
+                self.messageLabel.text = [results objectForKey:@"message"];
+            }
             self.messageView.hidden = NO;
         } else {
             self.messageView.hidden = YES;
@@ -1113,6 +1139,10 @@
 
     [self.notifier hide];
 
+}
+
+- (IBAction)openPremiumDialog:(id)sender {
+    [appDelegate showPremiumDialog];
 }
 
 #pragma mark -
@@ -1284,7 +1314,7 @@
         if (premiumRestriction) {
             UILabel *premiumLabel = [[UILabel alloc] init];
             premiumLabel.translatesAutoresizingMaskIntoConstraints = NO;
-            NSString *premiumText = @"Reading by folder is only available to\npremium subscribers.";
+            NSString *premiumText = @"Reading by folder is only available to\npremium subscribers";
             NSDictionary *attribs = @{NSForegroundColorAttributeName: UIColorFromRGB(0x0c0c0c),
                                       NSFontAttributeName: [UIFont systemFontOfSize:14],
                                       };
@@ -1292,7 +1322,7 @@
                                                          initWithString:premiumText attributes:attribs];
             
             NSRange blueRange = [premiumText rangeOfString:@"premium subscribers"];
-            [attributedText setAttributes:@{NSForegroundColorAttributeName: UIColorFromRGB(0x203070),
+            [attributedText setAttributes:@{NSForegroundColorAttributeName: UIColorFromRGB(0x2030C0),
                                             NSFontAttributeName: [UIFont systemFontOfSize:14],
                                             }
                                     range:blueRange];
