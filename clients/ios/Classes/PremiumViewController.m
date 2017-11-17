@@ -54,11 +54,6 @@
                                                                     target: self
                                                                     action: @selector(closeDialog:)];
     [self.navigationItem setLeftBarButtonItem:cancelButton];
-    UIBarButtonItem *restoreButton = [[UIBarButtonItem alloc] initWithTitle: @"Restore"
-                                                                     style: UIBarButtonItemStylePlain
-                                                                    target: self
-                                                                    action: @selector(restorePurchase:)];
-    [self.navigationItem setRightBarButtonItem:restoreButton];
     
     self.productsTable.tableFooterView = [UIView new];
     self.reasonsTable.tableFooterView = [self makeShilohCell];
@@ -67,9 +62,29 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
+
+    UIBarButtonItem *restoreButton = [[UIBarButtonItem alloc] initWithTitle: @"Restore"
+                                                                      style: UIBarButtonItemStylePlain
+                                                                     target: self
+                                                                     action: @selector(restorePurchase:)];
+    [self.navigationItem setRightBarButtonItem:restoreButton];
+
     self.navigationItem.title = appDelegate.isPremium ? @"Premium Account" : @"Upgrade to Premium";
     [self loadProducts];
     [self updateTheme];
+    [confettiView setNeedsLayout];
+    [confettiView startConfetti];
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    [confettiView setNeedsLayout];
+}
+
+- (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+    
+    [confettiView stopConfetti];
 }
 
 - (void)closeDialog:(id)sender {
@@ -114,8 +129,7 @@
     if (appDelegate.isPremium) {
         freeView.hidden = YES;
         premiumView.hidden = NO;
-        [confettiView stopConfetti];
-        [confettiView startConfetti];
+        self.navigationItem.rightBarButtonItem = nil;
         
         if (appDelegate.premiumExpire != 0) {
             NSDate *date = [NSDate dateWithTimeIntervalSince1970:appDelegate.premiumExpire];
@@ -157,6 +171,9 @@
 }
 
 - (IBAction)restorePurchase:(id)sender {
+    productsTable.hidden = YES;
+    spinner.hidden = NO;
+    
     [[SKPaymentQueue defaultQueue] addTransactionObserver:self];
     [[SKPaymentQueue defaultQueue] restoreCompletedTransactions];
 }
@@ -171,9 +188,11 @@
             [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
 
             [self finishTransaction:transaction];
-            break;
+            return;
         }
     }
+    
+    
 }
 
 - (void)paymentQueue:(SKPaymentQueue *)queue updatedTransactions:(NSArray *)transactions {
@@ -209,6 +228,8 @@
                     NSLog(@"Transaction state -> Cancelled");
                     //the user cancelled the payment ;(
                 }
+                
+                [self informError:@"Transaction failed!"];
                 productsTable.hidden = NO;
                 spinner.hidden = YES;
                 [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
@@ -233,7 +254,7 @@
                            appDelegate.url];
     NSDictionary *params = @{
                              @"receipt": [receipt base64EncodedStringWithOptions:0],
-                             @"transaction_identifier": transaction.transactionIdentifier,
+                             @"transaction_identifier": transaction.originalTransaction.transactionIdentifier,
                              @"product_identifier": transaction.payment.productIdentifier,
                              };
     
@@ -249,6 +270,7 @@
         }
 
         [self loadProducts];
+        [appDelegate reloadFeedsView:YES];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         NSLog(@"Failed to send receipt: %@", params);
         productsTable.hidden = NO;

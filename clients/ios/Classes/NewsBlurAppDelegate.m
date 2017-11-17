@@ -638,8 +638,9 @@
 
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [masterContainerViewController dismissViewControllerAnimated:NO completion:nil];
-        self.modalNavigationController.modalPresentationStyle = UIModalPresentationPageSheet;
+        premiumNavigationController.modalPresentationStyle = UIModalPresentationFormSheet;
         [masterContainerViewController presentViewController:premiumNavigationController animated:YES completion:nil];
+        [self.premiumViewController.view setNeedsLayout];
     } else {
         [navController presentViewController:self.premiumNavigationController animated:YES completion:nil];
     }
