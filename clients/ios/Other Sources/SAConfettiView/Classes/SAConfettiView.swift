@@ -47,7 +47,7 @@ public class SAConfettiView: UIView, CAAnimationDelegate {
     @objc public func startConfetti() -> Void {
         emitter = CAEmitterLayer()
         
-        emitter.emitterPosition = CGPoint(x: frame.size.width / 2.0, y: 0)
+        emitter.emitterPosition = CGPoint(x: self.center.x, y: 0)
         emitter.emitterShape = kCAEmitterLayerLine
         emitter.emitterSize = CGSize(width: 40.0, height: 1)
         
@@ -66,6 +66,12 @@ public class SAConfettiView: UIView, CAAnimationDelegate {
         animation.repeatCount = MAXFLOAT
         animation.delegate = self
         emitter.add(animation, forKey: "confettis")
+    }
+    
+    override public func layoutSubviews() {
+        super.layoutSubviews()
+        
+        emitter.emitterPosition = CGPoint(x: self.center.x, y: 0)
     }
     
     @objc public func stopConfetti() {
