@@ -34,7 +34,10 @@ def privacy(request):
     return render_to_response('static/privacy.xhtml', {}, 
                               context_instance=RequestContext(request))
                         
-                              
+def apple_app_site_assoc(request):
+    return render_to_response('static/apple_app_site_assoc.xhtml', {}, 
+                              context_instance=RequestContext(request))
+                                                      
 def feedback(request):
     return render_to_response('static/feedback.xhtml', {}, 
                               context_instance=RequestContext(request))

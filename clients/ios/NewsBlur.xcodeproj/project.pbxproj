@@ -2615,6 +2615,9 @@
 							com.apple.Push = {
 								enabled = 1;
 							};
+							com.apple.SafariKeychain = {
+								enabled = 1;
+							};
 						};
 					};
 					FF8A94961DE3BB77000A4C31 = {
