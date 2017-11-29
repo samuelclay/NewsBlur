@@ -29,6 +29,11 @@ def api(request):
 def press(request):
     return render_to_response('static/press.xhtml', {}, 
                               context_instance=RequestContext(request))
+
+def privacy(request):
+    return render_to_response('static/privacy.xhtml', {}, 
+                              context_instance=RequestContext(request))
+                        
                               
 def feedback(request):
     return render_to_response('static/feedback.xhtml', {}, 

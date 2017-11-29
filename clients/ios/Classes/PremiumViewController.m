@@ -69,7 +69,7 @@
                                                                      action: @selector(restorePurchase:)];
     [self.navigationItem setRightBarButtonItem:restoreButton];
 
-    self.navigationItem.title = appDelegate.isPremium ? @"Premium Account" : @"Upgrade to Premium";
+    self.navigationItem.title = @"NewsBlur Premium";
     [self loadProducts];
     [self updateTheme];
     [confettiView setNeedsLayout];
@@ -345,7 +345,7 @@
         [formatter setLocale:product.priceLocale];
         
         cell.textLabel.text = [NSString stringWithFormat:@"%@", product.localizedTitle];
-        cell.detailTextLabel.text = [NSString stringWithFormat:@"%@/year (%@/month)", [formatter stringFromNumber:product.price], [formatter stringFromNumber:@(round([product.price doubleValue] / 12.f))]];;
+        cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ per year (%@/month)", [formatter stringFromNumber:product.price], [formatter stringFromNumber:@(round([product.price doubleValue] / 12.f))]];;
         
         UILabel *label = [[UILabel alloc] init];
         label.text = @"👉🏽";
