@@ -344,7 +344,11 @@
         [formatter setNumberStyle:NSNumberFormatterCurrencyStyle];
         [formatter setLocale:product.priceLocale];
         
-        cell.textLabel.text = [NSString stringWithFormat:@"%@", product.localizedTitle];
+        if (!product.localizedTitle) {
+            cell.textLabel.text = [NSString stringWithFormat:@"NewsBlur Premium Subscription"];
+        } else {
+            cell.textLabel.text = [NSString stringWithFormat:@"%@", product.localizedTitle];
+        }
         cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ per year (%@/month)", [formatter stringFromNumber:product.price], [formatter stringFromNumber:@(round([product.price doubleValue] / 12.f))]];;
         
         UILabel *label = [[UILabel alloc] init];
