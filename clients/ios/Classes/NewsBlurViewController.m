@@ -166,7 +166,8 @@ static UIFont *userLabelFont;
     
     userAvatarButton.customView.hidden = YES;
     userInfoBarButton.customView.hidden = YES;
-    
+    self.noFocusMessage.hidden = YES;
+
     [self.navigationController.interactivePopGestureRecognizer addTarget:self action:@selector(handleGesture:)];
     
     [self addKeyCommandWithInput:@"e" modifierFlags:UIKeyModifierShift action:@selector(selectEverything:) discoverabilityTitle:@"Open All Stories"];
