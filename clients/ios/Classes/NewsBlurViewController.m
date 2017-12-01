@@ -105,6 +105,7 @@ static UIFont *userLabelFont;
     self.refreshControl.backgroundColor = UIColorFromRGB(0xE3E6E0);
     [self.refreshControl addTarget:self action:@selector(refresh:) forControlEvents:UIControlEventValueChanged];
     [self.feedTitlesTable addSubview:self.refreshControl];
+    self.feedViewToolbar.translatesAutoresizingMaskIntoConstraints = NO;
     
     userLabelFont = [UIFont fontWithName:@"Helvetica-Bold" size:14.0];
     
@@ -163,6 +164,7 @@ static UIFont *userLabelFont;
     
     self.feedTitlesTable.backgroundColor = UIColorFromRGB(0xf4f4f4);
     self.feedTitlesTable.separatorColor = [UIColor clearColor];
+    self.feedTitlesTable.translatesAutoresizingMaskIntoConstraints = NO;
     
     userAvatarButton.customView.hidden = YES;
     userInfoBarButton.customView.hidden = YES;
