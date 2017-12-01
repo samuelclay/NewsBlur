@@ -17,7 +17,6 @@
 #import "StoryPageControl.h"
 #import "NSString+HTML.h"
 #import "MBProgressHUD.h"
-#import "Base64.h"
 #import "SBJson4.h"
 #import "NSObject+SBJSON.h"
 #import "StringHelper.h"
@@ -2414,7 +2413,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
             
             NSString *favicon = [feed objectForKey:@"favicon"];
             if ((NSNull *)favicon != [NSNull null] && [favicon length] > 0) {
-                NSData *imageData = [NSData dataWithBase64EncodedString:favicon];
+                NSData *imageData = [[NSData alloc] initWithBase64EncodedString:favicon options:NSDataBase64DecodingIgnoreUnknownCharacters];
                 UIImage *faviconImage = [UIImage imageWithData:imageData];
                 [appDelegate saveFavicon:faviconImage feedId:feed_id];
             }

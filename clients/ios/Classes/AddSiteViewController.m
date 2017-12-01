@@ -13,7 +13,6 @@
 #import "NBContainerViewController.h"
 #import "MenuViewController.h"
 #import "SBJson4.h"
-#import "Base64.h"
 
 @interface AddSiteViewController()
 
@@ -413,7 +412,7 @@
     NSString *favicon = [result objectForKey:@"favicon"];
     UIImage *faviconImage;
     if ((NSNull *)favicon != [NSNull null] && [favicon length] > 0) {
-        NSData *imageData = [NSData dataWithBase64EncodedString:favicon];
+        NSData *imageData = [[NSData alloc] initWithBase64EncodedString:favicon options:NSDataBase64DecodingIgnoreUnknownCharacters];
         faviconImage = [UIImage imageWithData:imageData];
     } else {
         faviconImage = [UIImage imageNamed:@"world.png"];
