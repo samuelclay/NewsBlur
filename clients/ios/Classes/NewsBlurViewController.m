@@ -21,7 +21,6 @@
 #import "StoryDetailViewController.h"
 #import "StoryPageControl.h"
 #import "MBProgressHUD.h"
-#import "Base64.h"
 #import "SBJson4.h"
 #import "NSObject+SBJSON.h"
 #import "NBNotifier.h"
@@ -1826,7 +1825,8 @@ heightForHeaderInSection:(NSInteger)section {
             if (![appDelegate.dictFeeds objectForKey:feed_id]) continue;
             NSString *favicon = [results objectForKey:feed_id];
             if ((NSNull *)favicon != [NSNull null] && [favicon length] > 0) {
-                NSData *imageData = [NSData dataWithBase64EncodedString:favicon];
+                NSData *imageData = [[NSData alloc] initWithBase64EncodedString:favicon options:NSDataBase64DecodingIgnoreUnknownCharacters];
+//                NSData *imageData = [NSData dataWithBase64EncodedString:favicon];
                 UIImage *faviconImage = [UIImage imageWithData:imageData];
                 [appDelegate saveFavicon:faviconImage feedId:feed_id];
             }
