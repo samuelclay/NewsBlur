@@ -7,22 +7,27 @@
         android:showAsAction="always"
         android:title="@string/menu_fullscreen"
         android:visible="false"/>
+
     <item
         android:id="@+id/menu_reading_sharenewsblur"
         android:showAsAction="never"
         android:title="@string/menu_sharenewsblur"/>
+
     <item
         android:id="@+id/menu_reading_original"
         android:showAsAction="never"
         android:title="@string/menu_original"/>
+
     <item
         android:id="@+id/menu_send_story"
         android:showAsAction="never"
         android:title="@string/menu_send_story"/>
+
     <item
         android:id="@+id/menu_send_story_full"
         android:showAsAction="never"
         android:title="@string/menu_send_story_full"/>
+
     <item
         android:id="@+id/menu_textsize"
         android:showAsAction="never"
@@ -42,6 +47,11 @@
         android:id="@+id/menu_reading_markunread"
         android:showAsAction="never"
         android:title="@string/menu_mark_unread"/>
+
+    <item
+        android:id="@+id/menu_intel"
+        android:showAsAction="never"
+        android:title="@string/menu_intel"/>
 
     <item android:id="@+id/menu_theme"
           android:title="@string/menu_theme_choose" >
