@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="bottom|center_horizontal" >
+
+    <TextView
+        android:id="@+id/intel_title_header"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="4dp"
+        android:layout_alignParentTop="true"
+        android:textSize="15sp"
+        android:singleLine="true"
+        android:text="@string/intel_title_header"
+    />
+
+    <Button
+        android:id="@+id/intel_title_clear"
+        android:layout_below="@id/intel_title_header"
+        android:layout_alignParentRight="true"
+        android:layout_margin="4dp"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:background="@drawable/ic_clear_gray55"
+    />
+
+    <Button
+        android:id="@+id/intel_title_dislike"
+        android:layout_below="@id/intel_title_header"
+        android:layout_toLeftOf="@id/intel_title_clear"
+        android:layout_margin="4dp"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:background="@drawable/ic_dislike_gray55"
+    />
+
+    <Button
+        android:id="@+id/intel_title_like"
+        android:layout_below="@id/intel_title_header"
+        android:layout_toLeftOf="@id/intel_title_dislike"
+        android:layout_margin="4dp"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:background="@drawable/ic_like_gray55"
+    />
+        
+
+    <com.newsblur.view.SelectOnlyEditText
+        android:id="@+id/intel_title_selection"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/intel_title_header"
+        android:layout_toLeftOf="@id/intel_title_like"
+        android:layout_marginLeft="8dp"
+        android:textSize="16sp"
+        android:inputType="none"
+        android:textIsSelectable="true"
+        android:singleLine="true"
+    /> <!-- note that inputType="none" is insufficient to make this readonly.  see fragment code. -->
+
+    <LinearLayout
+        android:id="@+id/existing_title_intel_container"
+        android:layout_below="@id/intel_title_selection"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:orientation="vertical"/>
+    
+    <TextView
+        android:id="@+id/intel_tag_header"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/existing_title_intel_container"
+        android:layout_marginLeft="4dp"
+        android:textSize="15sp"
+        android:singleLine="true"
+        android:text="@string/intel_tag_header"
+    />
+
+    <LinearLayout
+        android:id="@+id/existing_tag_intel_container"
+        android:layout_below="@id/intel_tag_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:orientation="vertical"/>
+
+</RelativeLayout>

@@ -35,6 +35,7 @@ import com.newsblur.R;
 import com.newsblur.domain.Story;
 import com.newsblur.fragment.ReadingItemFragment;
 import com.newsblur.fragment.ShareDialogFragment;
+import com.newsblur.fragment.StoryIntelTrainerFragment;
 import com.newsblur.fragment.ReadingFontDialogFragment;
 import com.newsblur.fragment.TextSizeDialogFragment;
 import com.newsblur.service.NBSyncService;
@@ -441,6 +442,10 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
         } else if (item.getItemId() == R.id.menu_theme_dark) {
             PrefsUtils.setLightThemeSelected(this, false);
             UIUtils.restartActivity(this);
+            return true;
+        } else if (item.getItemId() == R.id.menu_intel) {
+            StoryIntelTrainerFragment intelFrag = StoryIntelTrainerFragment.newInstance(story);
+            intelFrag.show(getFragmentManager(), StoryIntelTrainerFragment.class.getName());
             return true;
         } else {
 			return super.onOptionsItemSelected(item);
