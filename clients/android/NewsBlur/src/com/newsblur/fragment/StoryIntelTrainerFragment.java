@@ -29,6 +29,7 @@ import butterknife.Bind;
 import com.newsblur.R;
 import com.newsblur.domain.Classifier;
 import com.newsblur.domain.Story;
+import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.UIUtils;
 import com.newsblur.view.SelectOnlyEditText;
@@ -36,6 +37,7 @@ import com.newsblur.view.SelectOnlyEditText;
 public class StoryIntelTrainerFragment extends DialogFragment {
 
     private Story story;
+    private FeedSet fs;
     private Classifier classifier;
     private Integer newTitleTraining;
 
@@ -48,10 +50,11 @@ public class StoryIntelTrainerFragment extends DialogFragment {
     @Bind(R.id.existing_author_intel_container) LinearLayout authorRowsContainer;
     @Bind(R.id.existing_feed_intel_container) LinearLayout feedRowsContainer;
 
-    public static StoryIntelTrainerFragment newInstance(Story story) {
+    public static StoryIntelTrainerFragment newInstance(Story story, FeedSet fs) {
         StoryIntelTrainerFragment fragment = new StoryIntelTrainerFragment();
         Bundle args = new Bundle();
         args.putSerializable("story", story);
+        args.putSerializable("feedset", fs);
         fragment.setArguments(args);
         return fragment;
     }
@@ -60,6 +63,7 @@ public class StoryIntelTrainerFragment extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         story = (Story) getArguments().getSerializable("story");
+        fs = (FeedSet) getArguments().getSerializable("feedset");
         classifier = FeedUtils.dbHelper.getClassifierForFeed(story.feedId);
 
         final Activity activity = getActivity();
@@ -157,7 +161,7 @@ public class StoryIntelTrainerFragment extends DialogFragment {
                 if ((newTitleTraining != null) && (!TextUtils.isEmpty(titleSelection.getSelection()))) {
                     classifier.title.put(titleSelection.getSelection(), newTitleTraining);
                 }
-                FeedUtils.updateClassifier(story.feedId, classifier, activity);
+                FeedUtils.updateClassifier(story.feedId, classifier, fs, activity);
                 StoryIntelTrainerFragment.this.dismiss();
             }
         });

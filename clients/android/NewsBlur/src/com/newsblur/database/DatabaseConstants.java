@@ -140,6 +140,7 @@ public class DatabaseConstants {
     public static final String ACTION_REPLY_ID = "reply_id";
     public static final String ACTION_STORY_HASH = "story_hash";
     public static final String ACTION_FEED_ID = "feed_id";
+    public static final String ACTION_FEED_SET = "feed_set";
     public static final String ACTION_MODIFIED_FEED_IDS = "modified_feed_ids";
     public static final String ACTION_INCLUDE_OLDER = "include_older";
     public static final String ACTION_INCLUDE_NEWER = "include_newer";
@@ -291,6 +292,7 @@ public class DatabaseConstants {
         ACTION_COMMENT_TEXT + TEXT + ", " +
         ACTION_STORY_HASH + TEXT + ", " +
         ACTION_FEED_ID + TEXT + ", " +
+        ACTION_FEED_SET + TEXT + ", " +
         ACTION_INCLUDE_OLDER + INTEGER + ", " +
         ACTION_INCLUDE_NEWER + INTEGER + ", " +
         ACTION_STORY_ID + TEXT + ", " +
