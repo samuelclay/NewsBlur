@@ -1441,7 +1441,6 @@ public class BlurDatabaseHelper {
             valuesList.add(values);
         }
         bulkInsertValuesExtSync(DatabaseConstants.FEED_TAGS_TABLE, valuesList);
-        com.newsblur.util.Log.d(this, "inserted " + valuesList.size() + " tags for feed: " + feedId);
     }
 
     public List<String> getTagsForFeed(String feedId) {
@@ -1474,7 +1473,6 @@ public class BlurDatabaseHelper {
             valuesList.add(values);
         }
         bulkInsertValuesExtSync(DatabaseConstants.FEED_AUTHORS_TABLE, valuesList);
-        com.newsblur.util.Log.d(this, "inserted " + valuesList.size() + " authors for feed: " + feedId);
     }
 
     public List<String> getAuthorsForFeed(String feedId) {
