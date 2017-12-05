@@ -47,22 +47,8 @@ public class Classifier implements Serializable {
     // be set manually when unfrozen.
     public String feedId;
 	
-    public Map<String,Integer> getMapForType(int classifierType) {
-		switch (classifierType) {
-            case Classifier.TAG:
-                return this.tags;
-            case Classifier.AUTHOR:
-                return this.authors;
-            case Classifier.FEED:
-                return this.feeds;
-            default:
-                Log.wtf(this.getClass().getName(), "Unknown classifier type requested.");
-                return null;
-		}
-    }
-
-    public ContentValues getAPITuples() {
-        ContentValues values = new ContentValues();
+    public ValueMultimap getAPITuples() {
+        ValueMultimap values = new ValueMultimap();
         for (Map.Entry<String,Integer> entry : authors.entrySet()) {
             values.put(buildAPITupleKey(entry.getValue(), AUTHOR_POSTFIX), entry.getKey());
         }
