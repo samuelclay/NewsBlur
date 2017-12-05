@@ -153,7 +153,7 @@ public class StoryIntelTrainerFragment extends DialogFragment {
         feedRowsContainer.addView(rowFeed);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-        builder.setTitle(R.string.intel_dialog_title);
+        builder.setTitle(R.string.story_intel_dialog_title);
         builder.setView(v);
 
         builder.setNegativeButton(R.string.alert_dialog_cancel, new DialogInterface.OnClickListener() {

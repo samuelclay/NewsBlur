@@ -299,10 +299,14 @@
     <string name="infrequent_60">&lt; 60 STORIES/MONTH</string>
     <string name="infrequent_90">&lt; 90 STORIES/MONTH</string>
 
-    <string name="intel_dialog_title">What do you like and dislike about this story?</string>
+    <string name="story_intel_dialog_title">What do you like and dislike about this story?</string>
+    <string name="feed_intel_dialog_title">What do you like and dislike about this site?</string>
     <string name="intel_title_header">STORY TITLE</string>
+    <string name="feed_intel_title_header">TITLES</string>
     <string name="intel_tag_header">STORY TAGS</string>
+    <string name="feed_intel_tag_header">TAGS</string>
     <string name="intel_author_header">STORY AUTHOR</string>
+    <string name="feed_intel_author_header">AUTHORS</string>
     <string name="intel_feed_header">EVERYTHING BY PUBLISHER</string>
 
     <string name="theme">Theme</string>

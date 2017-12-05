@@ -160,6 +160,14 @@ public class DatabaseConstants {
     public static final String NOTIFY_DISMISS_STORY_HASH = "story_hash";
     public static final String NOTIFY_DISMISS_TIME = "time";
 
+    public static final String FEED_TAGS_TABLE = "feed_tags";
+    public static final String FEED_TAGS_FEEDID = "feed_id";
+    public static final String FEED_TAGS_TAG = "tag";
+
+    public static final String FEED_AUTHORS_TABLE = "feed_authors";
+    public static final String FEED_AUTHORS_FEEDID = "feed_id";
+    public static final String FEED_AUTHORS_AUTHOR = "author";
+
 
 	static final String FOLDER_SQL = "CREATE TABLE " + FOLDER_TABLE + " (" +
 		FOLDER_NAME + TEXT + " PRIMARY KEY, " +  
@@ -314,6 +322,16 @@ public class DatabaseConstants {
     static final String NOTIFY_DISMISS_SQL = "CREATE TABLE " + NOTIFY_DISMISS_TABLE + " (" +
         NOTIFY_DISMISS_STORY_HASH + TEXT + ", " +
         NOTIFY_DISMISS_TIME + INTEGER + " NOT NULL " +
+        ")";
+
+    static final String FEED_TAGS_SQL = "CREATE TABLE " + FEED_TAGS_TABLE + " (" +
+        FEED_TAGS_FEEDID + TEXT + ", " +
+        FEED_TAGS_TAG + TEXT +
+        ")";
+
+    static final String FEED_AUTHORS_SQL = "CREATE TABLE " + FEED_AUTHORS_TABLE + " (" +
+        FEED_AUTHORS_FEEDID + TEXT + ", " +
+        FEED_AUTHORS_AUTHOR + TEXT +
         ")";
 
 	private static final String[] BASE_STORY_COLUMNS = {
