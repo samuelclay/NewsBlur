@@ -21,7 +21,6 @@
 #import "StoryDetailViewController.h"
 #import "StoryPageControl.h"
 #import "MBProgressHUD.h"
-#import "Base64.h"
 #import "SBJson4.h"
 #import "NSObject+SBJSON.h"
 #import "NBNotifier.h"
@@ -105,6 +104,7 @@ static UIFont *userLabelFont;
     self.refreshControl.backgroundColor = UIColorFromRGB(0xE3E6E0);
     [self.refreshControl addTarget:self action:@selector(refresh:) forControlEvents:UIControlEventValueChanged];
     [self.feedTitlesTable addSubview:self.refreshControl];
+    self.feedViewToolbar.translatesAutoresizingMaskIntoConstraints = NO;
     
     userLabelFont = [UIFont fontWithName:@"Helvetica-Bold" size:14.0];
     
@@ -163,10 +163,12 @@ static UIFont *userLabelFont;
     
     self.feedTitlesTable.backgroundColor = UIColorFromRGB(0xf4f4f4);
     self.feedTitlesTable.separatorColor = [UIColor clearColor];
+    self.feedTitlesTable.translatesAutoresizingMaskIntoConstraints = NO;
     
     userAvatarButton.customView.hidden = YES;
     userInfoBarButton.customView.hidden = YES;
-    
+    self.noFocusMessage.hidden = YES;
+
     [self.navigationController.interactivePopGestureRecognizer addTarget:self action:@selector(handleGesture:)];
     
     [self addKeyCommandWithInput:@"e" modifierFlags:UIKeyModifierShift action:@selector(selectEverything:) discoverabilityTitle:@"Open All Stories"];
@@ -1823,7 +1825,8 @@ heightForHeaderInSection:(NSInteger)section {
             if (![appDelegate.dictFeeds objectForKey:feed_id]) continue;
             NSString *favicon = [results objectForKey:feed_id];
             if ((NSNull *)favicon != [NSNull null] && [favicon length] > 0) {
-                NSData *imageData = [NSData dataWithBase64EncodedString:favicon];
+                NSData *imageData = [[NSData alloc] initWithBase64EncodedString:favicon options:NSDataBase64DecodingIgnoreUnknownCharacters];
+//                NSData *imageData = [NSData dataWithBase64EncodedString:favicon];
                 UIImage *faviconImage = [UIImage imageWithData:imageData];
                 [appDelegate saveFavicon:faviconImage feedId:feed_id];
             }

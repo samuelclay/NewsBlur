@@ -690,7 +690,7 @@ a img {
     text-overflow: ellipsis;
     -webkit-line-clamp: 1;
     -webkit-box-orient: vertical;
-    display: -webkit-box;
+    white-space: nowrap;
 }
 
 .NB-feedlist .feed .NB-feedlist-manage-icon,
