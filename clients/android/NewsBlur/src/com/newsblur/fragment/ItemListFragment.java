@@ -357,6 +357,7 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
         if (getFeedSet().isFilterSaved()) {
             menu.removeItem(R.id.menu_mark_story_as_read);
             menu.removeItem(R.id.menu_mark_story_as_unread);
+            menu.removeItem(R.id.menu_intel);
         } else if (story.read) {
             menu.removeItem(R.id.menu_mark_story_as_read);
         } else {
@@ -408,7 +409,11 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
 
         case R.id.menu_unsave_story:
             FeedUtils.setStorySaved(story, false, activity);
+            return true;
 
+        case R.id.menu_intel:
+            StoryIntelTrainerFragment intelFrag = StoryIntelTrainerFragment.newInstance(story, getFeedSet());
+            intelFrag.show(getFragmentManager(), StoryIntelTrainerFragment.class.getName());
             return true;
 
         default:

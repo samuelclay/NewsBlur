@@ -100,9 +100,6 @@ public class Story implements Serializable {
     // non-API, but indicates that the story came from the infrequent-feeds river
     public boolean infrequent;
 
-    // non-API and not frozen. thawed via join or context by ReadingAdapter. may be unset otherwise
-    public String feedTitle;
-
 	public ContentValues getValues() {
 		final ContentValues values = new ContentValues();
 		values.put(DatabaseConstants.STORY_ID, id);

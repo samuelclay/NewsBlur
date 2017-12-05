@@ -76,14 +76,9 @@ public abstract class ReadingAdapter extends FragmentStatePagerAdapter {
 		} else {
 			stories.moveToPosition(position);
 			Story story = Story.fromCursor(stories);
-            // story objects only have a feedId, but the feed title is often needed. the feed metadata might be joinable
-            // but it might not.  out subclass will have to provide a way to get the title so we can "join" it in
-            story.feedTitle = getFeedTitle();
             return story;
 		}
 	}
-
-    protected abstract String getFeedTitle();
 
     public synchronized int getPosition(Story story) {
         if (stories == null) return -1;
