@@ -45,7 +45,8 @@ public class SelectOnlyEditText extends EditText {
             public void onDestroyActionMode(ActionMode mode) {                  
             }
             public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-                menu.clear();
+                // note: calling menu.clear() here to ensure an empty menu totally breaks selection
+                // on pre-N devices.
                 return true;
             }
             public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
@@ -68,6 +69,8 @@ public class SelectOnlyEditText extends EditText {
         }
         if (end > start) {
             this.selection = getText().toString().substring(start, end);
+        } else {
+            this.selection = null;
         }
     }
 
