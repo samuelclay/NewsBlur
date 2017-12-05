@@ -716,6 +716,56 @@
 			<key>Key</key>
 			<string>custom_domain</string>
 		</dict>
+		<dict>
+			<key>Title</key>
+			<string>About NewsBlur</string>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSTitleValueSpecifier</string>
+			<key>Title</key>
+			<string>Version</string>
+			<key>Key</key>
+			<string>version</string>
+			<key>DefaultValue</key>
+			<string>$(CURRENT_PROJECT_VERSION)</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSTitleValueSpecifier</string>
+			<key>Title</key>
+			<string>Copyright</string>
+			<key>DefaultValue</key>
+			<string>NewsBlur, Inc.</string>
+			<key>Key</key>
+			<string>copyright</string>
+		</dict>
+		<dict>
+			<key>DefaultValue</key>
+			<string>www.newsblur.com/privacy</string>
+			<key>File</key>
+			<string>http://www.newsblur.com/privacy</string>
+			<key>Title</key>
+			<string>Privacy Policy</string>
+			<key>Type</key>
+			<string>IASKOpenURLSpecifier</string>
+			<key>IASKTextAlignment</key>
+			<string>IASKUITextAlignmentCenter</string>
+		</dict>
+		<dict>
+			<key>DefaultValue</key>
+			<string>www.newsblur.com/tos</string>
+			<key>File</key>
+			<string>http://www.newsblur.com/tos</string>
+			<key>Title</key>
+			<string>Terms of Use</string>
+			<key>Type</key>
+			<string>IASKOpenURLSpecifier</string>
+			<key>IASKTextAlignment</key>
+			<string>IASKUITextAlignmentCenter</string>
+		</dict>
 	</array>
 	<key>StringsTable</key>
 	<string>Root</string>

@@ -50,6 +50,14 @@
     self.signUpPasswordInput.borderStyle = UITextBorderStyleRoundedRect;
     self.signUpUsernameInput.borderStyle = UITextBorderStyleRoundedRect;
     
+    if (@available(iOS 11.0, *)) {
+        self.usernameInput.textContentType = UITextContentTypeUsername;
+        self.passwordInput.textContentType = UITextContentTypePassword;
+        self.emailInput.textContentType = UITextContentTypeEmailAddress;
+    } else {
+        // Fallback on earlier versions
+    }
+    
     [self.loginControl
      setTitleTextAttributes:@{NSFontAttributeName:
                                   [UIFont fontWithName:@"Helvetica-Bold" size:11.0f]}
