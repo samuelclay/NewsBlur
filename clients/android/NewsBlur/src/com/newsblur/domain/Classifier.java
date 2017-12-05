@@ -43,6 +43,8 @@ public class Classifier implements Serializable {
 	@SerializedName("feeds")
 	public HashMap<String, Integer> feeds = new HashMap<String, Integer>();
 
+    // not vended by API, but all classifiers are received in the context of a feed, where this is set. needs to
+    // be set manually when unfrozen.
     public String feedId;
 	
     public Map<String,Integer> getMapForType(int classifierType) {

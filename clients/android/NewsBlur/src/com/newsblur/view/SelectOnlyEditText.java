@@ -60,7 +60,6 @@ public class SelectOnlyEditText extends EditText {
 
     @Override
     protected void onSelectionChanged(int start, int end) {
-        com.newsblur.util.Log.d(this, "selStart: " + start + "  selEnd: " + end);
         if (forceSelection && (start == end)) {
             selectAll();
             if (context != null) {
@@ -69,7 +68,10 @@ public class SelectOnlyEditText extends EditText {
         }
         if (end > start) {
             this.selection = getText().toString().substring(start, end);
-            com.newsblur.util.Log.d(this, "sel: " + selection);
         }
+    }
+
+    public String getSelection() {
+        return this.selection;
     }
 }

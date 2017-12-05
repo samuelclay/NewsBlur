@@ -626,6 +626,16 @@ public class ReadingAction implements Serializable {
                 dbHelper.setFeedFetchPending(feedId);
                 break;
 
+            case UPDATE_INTEL:
+                // TODO: because intel is always calculated on the server, we can change the disposition of
+                // individual tags and authors etc in the UI, but story scores won't be updated until a refresh.
+                // for best offline operation, we could try to duplicate that business logic locally
+                dbHelper.clearClassifiersForFeed(feedId);
+                classifier.feedId = feedId; 
+                dbHelper.insertClassifier(classifier);
+                impact |= NbActivity.UPDATE_INTEL;
+                break;
+
             default:
                 // not all actions have these, which is fine
         }
