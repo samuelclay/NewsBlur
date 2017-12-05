@@ -41,6 +41,8 @@ public class StoryIntelTrainerFragment extends DialogFragment {
     private Classifier classifier;
     private Integer newTitleTraining;
 
+    @Bind(R.id.intel_tag_header) TextView headerTags;
+    @Bind(R.id.intel_author_header) TextView headerAuthor;
     @Bind(R.id.intel_title_selection) SelectOnlyEditText titleSelection;
     @Bind(R.id.intel_title_like) Button titleLikeButton;
     @Bind(R.id.intel_title_dislike) Button titleDislikeButton;
@@ -129,13 +131,18 @@ public class StoryIntelTrainerFragment extends DialogFragment {
             UIUtils.setupIntelDialogRow(row, classifier.tags, tag);
             tagRowsContainer.addView(row);
         }
+        if (story.tags.length < 1) headerTags.setVisibility(View.GONE);
 
         // there is a single author per story
-        View rowAuthor = inflater.inflate(R.layout.include_intel_row, null);
-        TextView labelAuthor = (TextView) rowAuthor.findViewById(R.id.intel_row_label);
-        labelAuthor.setText(story.authors);
-        UIUtils.setupIntelDialogRow(rowAuthor, classifier.authors, story.authors);
-        authorRowsContainer.addView(rowAuthor);
+        if (!TextUtils.isEmpty(story.authors)) {
+            View rowAuthor = inflater.inflate(R.layout.include_intel_row, null);
+            TextView labelAuthor = (TextView) rowAuthor.findViewById(R.id.intel_row_label);
+            labelAuthor.setText(story.authors);
+            UIUtils.setupIntelDialogRow(rowAuthor, classifier.authors, story.authors);
+            authorRowsContainer.addView(rowAuthor);
+        } else {
+            headerAuthor.setVisibility(View.GONE);
+        }
 
         // there is a single feed to be trained, but it is a bit odd in that the label is the title and
         // the intel identifier is the feed ID
