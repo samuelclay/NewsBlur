@@ -2436,18 +2436,26 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 
 - (NSArray<UIDragItem *> *)tableView:(UITableView *)tableView itemsForBeginningDragSession:(id<UIDragSession>)session atIndexPath:(NSIndexPath *)indexPath API_AVAILABLE(ios(11.0)) {
     NSDictionary *story = [self getStoryAtRow:indexPath.row];
-    NSItemProvider *itemProvider = [[NSItemProvider alloc] init];
-    [itemProvider registerDataRepresentationForTypeIdentifier:(NSString *)kUTTypeURL visibility:NSItemProviderRepresentationVisibilityAll loadHandler:^NSProgress * _Nullable(void (^ _Nonnull completionHandler)(NSData * _Nullable, NSError * _Nullable)) {
-        completionHandler(story[@"story_permalink"], nil);
-        return nil;
-    }];
+    NSItemProvider *itemProviderUrl = [[NSItemProvider alloc] initWithObject:story[@"story_permalink"]];
+    UIDragItem *dragUrl = [[UIDragItem alloc] initWithItemProvider:itemProviderUrl];
+    dragUrl.localObject = story[@"story_permalink"];
     
-    [itemProvider registerDataRepresentationForTypeIdentifier:(NSString *)kUTTypeUTF8PlainText visibility:NSItemProviderRepresentationVisibilityAll loadHandler:^NSProgress * _Nullable(void (^ _Nonnull completionHandler)(NSData * _Nullable, NSError * _Nullable)) {
-        completionHandler(story[@"story_title"], nil);
-        return nil;
-    }];
+    NSItemProvider *itemProviderTitle = [[NSItemProvider alloc] initWithObject:story[@"story_title"]];
+    UIDragItem *dragTitle = [[UIDragItem alloc] initWithItemProvider:itemProviderTitle];
+    dragTitle.localObject = story[@"story_title"];
     
-    return [NSArray arrayWithObjects:[[UIDragItem alloc] initWithItemProvider:itemProvider], nil];
+    UIDragItem *dragImage = nil;
+    FeedDetailTableCell *cell = [tableView cellForRowAtIndexPath:indexPath];
+    if (cell.storyImageUrl) {
+        UIImage *cachedImage = (UIImage *)[appDelegate.cachedStoryImages objectForKey:cell.storyImageUrl];
+        if (cachedImage && ![cachedImage isKindOfClass:[NSNull class]]) {
+            NSItemProvider *itemProviderImage = [[NSItemProvider alloc] initWithObject:cachedImage];
+            dragImage = [[UIDragItem alloc] initWithItemProvider:itemProviderImage];
+            dragImage.localObject = cachedImage;
+        }
+    }
+    
+    return [NSArray arrayWithObjects:dragTitle, dragUrl, dragImage, nil];
 }
 
 - (void)tableView:(UITableView *)tableView dragSessionWillBegin:(id<UIDragSession>)session API_AVAILABLE(ios(11.0)) {
