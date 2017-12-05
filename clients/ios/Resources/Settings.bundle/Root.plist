@@ -734,6 +734,18 @@
 			<key>IASKTextAlignment</key>
 			<string>IASKUITextAlignmentCenter</string>
 		</dict>
+		<dict>
+			<key>DefaultValue</key>
+			<string>www.newsblur.com/tos</string>
+			<key>File</key>
+			<string>http://www.newsblur.com/tos</string>
+			<key>Title</key>
+			<string>Terms of Use</string>
+			<key>Type</key>
+			<string>IASKOpenURLSpecifier</string>
+			<key>IASKTextAlignment</key>
+			<string>IASKUITextAlignmentCenter</string>
+		</dict>
 	</array>
 	<key>StringsTable</key>
 	<string>Root</string>

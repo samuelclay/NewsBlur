@@ -33,6 +33,10 @@ def press(request):
 def privacy(request):
     return render_to_response('static/privacy.xhtml', {}, 
                               context_instance=RequestContext(request))
+
+def tos(request):
+    return render_to_response('static/tos.xhtml', {}, 
+                              context_instance=RequestContext(request))
                         
 def apple_app_site_assoc(request):
     return render_to_response('static/apple_app_site_assoc.xhtml', {}, 
