@@ -381,7 +381,6 @@ public class ReadingItemFragment extends NbFragment {
 	}
 
 	private void setupTagsAndIntel() {
-        com.newsblur.util.Log.d(this, "refreshing intel");
         int tag_green_text = UIUtils.getColor(getActivity(), R.color.tag_green_text);
         int tag_red_text = UIUtils.getColor(getActivity(), R.color.tag_red_text);
         Drawable tag_green_background = UIUtils.getDrawable(getActivity(), R.drawable.tag_background_positive);
