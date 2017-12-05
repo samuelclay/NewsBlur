@@ -475,6 +475,15 @@ public class FeedUtils {
         return parts[0];
     }
 
+    /**
+     * Because story objects have to join on the feeds table to get feed metadata, there are times
+     * where standalone stories are missing this info and it must be re-fetched.  This is costly
+     * and should be avoided where possible.
+     */
+    public static String getFeedTitle(String feedId) {
+        return getFeed(feedId).title;
+    }
+
     public static Feed getFeed(String feedId) {
         return dbHelper.getFeed(feedId);
     }

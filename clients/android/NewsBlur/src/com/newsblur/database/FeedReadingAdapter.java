@@ -25,8 +25,4 @@ public class FeedReadingAdapter extends ReadingAdapter {
         return ReadingItemFragment.newInstance(story, feed.title, feed.faviconColor, feed.faviconFade, feed.faviconBorder, feed.faviconText, feed.faviconUrl, classifier, false, sourceUserId);
 	}
 
-    protected String getFeedTitle() {
-        return feed.title;
-    }
-
 }

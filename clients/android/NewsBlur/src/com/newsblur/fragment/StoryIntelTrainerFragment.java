@@ -141,7 +141,7 @@ public class StoryIntelTrainerFragment extends DialogFragment {
         // the intel identifier is the feed ID
         View rowFeed = inflater.inflate(R.layout.include_intel_row, null);
         TextView labelFeed = (TextView) rowFeed.findViewById(R.id.intel_row_label);
-        labelFeed.setText(story.feedTitle);
+        labelFeed.setText(FeedUtils.getFeedTitle(story.feedId));
         UIUtils.setupIntelDialogRow(rowFeed, classifier.feeds, story.feedId);
         feedRowsContainer.addView(rowFeed);
 
