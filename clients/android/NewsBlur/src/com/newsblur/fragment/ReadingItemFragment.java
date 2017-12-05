@@ -59,7 +59,7 @@ import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class ReadingItemFragment extends NbFragment implements ClassifierDialogFragment.TagUpdateCallback {
+public class ReadingItemFragment extends NbFragment {
 
 	public static final String TEXT_SIZE_CHANGED = "textSizeChanged";
 	public static final String TEXT_SIZE_VALUE = "textSizeChangeValue";
@@ -73,6 +73,7 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
     @Bind(R.id.custom_view_container) ViewGroup webviewCustomViewLayout;
     @Bind(R.id.reading_scrollview) View fragmentScrollview;
 	private BroadcastReceiver textSizeReceiver, readingFontReceiver;
+    @Bind(R.id.reading_item_title) TextView itemTitle;
     @Bind(R.id.reading_item_authors) TextView itemAuthors;
 	@Bind(R.id.reading_feed_title) TextView itemFeed;
 	private boolean displayFeedDetails;
@@ -303,7 +304,6 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
 	private void setupItemMetadata() {
         View feedHeader = view.findViewById(R.id.row_item_feed_header);
         View feedHeaderBorder = view.findViewById(R.id.item_feed_border);
-        TextView itemTitle = (TextView) view.findViewById(R.id.reading_item_title);
         TextView itemDate = (TextView) view.findViewById(R.id.reading_item_date);
         ImageView feedIcon = (ImageView) view.findViewById(R.id.reading_feed_icon);
 
@@ -340,17 +340,7 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
 			itemFeed.setText(feedTitle);
 		}
 
-        String title = story.title;
-        title = UIUtils.colourTitleFromClassifier(title, classifier);
-        itemTitle.setText(UIUtils.fromHtml(title));
         itemDate.setText(StoryUtils.formatLongDate(getActivity(), new Date(story.timestamp)));
-
-        if (!TextUtils.isEmpty(story.authors)) {
-            itemAuthors.setText("•   " + story.authors);
-            if (classifier != null && classifier.authors.containsKey(story.authors)) {
-                updateTagView(story.authors, Classifier.AUTHOR, classifier.authors.get(story.authors));
-            }
-        }
 
         if (story.tags.length <= 0) {
             tagContainer.setVisibility(View.GONE);
@@ -359,16 +349,16 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
 		itemAuthors.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				ClassifierDialogFragment classifierFragment = ClassifierDialogFragment.newInstance(ReadingItemFragment.this, story.feedId, classifier, story.authors, Classifier.AUTHOR);
-				classifierFragment.show(getFragmentManager(), "dialog");		
+                StoryIntelTrainerFragment intelFrag = StoryIntelTrainerFragment.newInstance(story, fs);
+                intelFrag.show(getFragmentManager(), StoryIntelTrainerFragment.class.getName());
 			}	
 		});
 
 		itemFeed.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				ClassifierDialogFragment classifierFragment = ClassifierDialogFragment.newInstance(ReadingItemFragment.this, story.feedId, classifier, feedTitle, Classifier.FEED);
-				classifierFragment.show(getFragmentManager(), "dialog");
+                StoryIntelTrainerFragment intelFrag = StoryIntelTrainerFragment.newInstance(story, fs);
+                intelFrag.show(getFragmentManager(), StoryIntelTrainerFragment.class.getName());
 			}
 		});
 
@@ -387,14 +377,16 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
 			}
 		});
 
-		setupTags();
+		setupTagsAndIntel();
 	}
 
-	private void setupTags() {
+	private void setupTagsAndIntel() {
         int tag_green_text = UIUtils.getColor(getActivity(), R.color.tag_green_text);
         int tag_red_text = UIUtils.getColor(getActivity(), R.color.tag_red_text);
         Drawable tag_green_background = UIUtils.getDrawable(getActivity(), R.drawable.tag_background_positive);
         Drawable tag_red_background = UIUtils.getDrawable(getActivity(), R.drawable.tag_background_negative);
+
+        tagContainer.removeAllViews();
 		for (final String tag : story.tags) {
             View v = inflater.inflate(R.layout.tag_view, null);
 
@@ -419,14 +411,35 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
                 v.setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        ClassifierDialogFragment classifierFragment = ClassifierDialogFragment.newInstance(ReadingItemFragment.this, story.feedId, classifier, tag, Classifier.TAG);
-                        classifierFragment.show(getFragmentManager(), "dialog");
+                        StoryIntelTrainerFragment intelFrag = StoryIntelTrainerFragment.newInstance(story, fs);
+                        intelFrag.show(getFragmentManager(), StoryIntelTrainerFragment.class.getName());
                     }
                 });
             }
 
 			tagContainer.addView(v);
 		}
+
+        if (!TextUtils.isEmpty(story.authors)) {
+            itemAuthors.setText("•   " + story.authors);
+            if (classifier != null && classifier.authors.containsKey(story.authors)) {
+                switch (classifier.authors.get(story.authors)) {
+                    case Classifier.LIKE:
+                        itemAuthors.setTextColor(UIUtils.getColor(getActivity(), R.color.positive));
+                        break;
+                    case Classifier.DISLIKE:
+                        itemAuthors.setTextColor(UIUtils.getColor(getActivity(), R.color.negative));
+                        break;
+                    default:
+                        itemAuthors.setTextColor(UIUtils.getThemedColor(getActivity(), R.attr.readingItemMetadata, android.R.attr.textColor));
+                        break;
+                }
+            }
+        }
+
+        String title = story.title;
+        title = UIUtils.colourTitleFromClassifier(title, classifier);
+        itemTitle.setText(UIUtils.fromHtml(title));
 	}
 
     public void switchSelectedViewMode() {
@@ -509,6 +522,10 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
         if ((updateType & NbActivity.UPDATE_SOCIAL) != 0) {
             updateShareButton();
             setupItemCommentsAndShares();
+        }
+        if ((updateType & NbActivity.UPDATE_INTEL) != 0) {
+            classifier = FeedUtils.dbHelper.getClassifierForFeed(story.feedId);
+            setupTagsAndIntel();
         }
     }
 
@@ -714,48 +731,6 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
         }
     }
 
-	@Override
-	public void updateTagView(String key, int classifierType, int classifierAction) {
-		switch (classifierType) {
-		case Classifier.AUTHOR:
-			switch (classifierAction) {
-			case Classifier.LIKE:
-				itemAuthors.setTextColor(UIUtils.getColor(getActivity(), R.color.positive));
-				break;
-			case Classifier.DISLIKE:
-				itemAuthors.setTextColor(UIUtils.getColor(getActivity(), R.color.negative));
-				break;
-			case Classifier.CLEAR_DISLIKE:
-				itemAuthors.setTextColor(UIUtils.getThemedColor(getActivity(), R.attr.readingItemMetadata, android.R.attr.textColor));
-				break;
-			case Classifier.CLEAR_LIKE:
-				itemAuthors.setTextColor(UIUtils.getThemedColor(getActivity(), R.attr.readingItemMetadata, android.R.attr.textColor));
-				break;	
-			}
-			break;
-		case Classifier.FEED:
-			switch (classifierAction) {
-			case Classifier.LIKE:
-				itemFeed.setTextColor(UIUtils.getColor(getActivity(), R.color.positive));
-				break;
-			case Classifier.DISLIKE:
-				itemFeed.setTextColor(UIUtils.getColor(getActivity(), R.color.negative));
-				break;
-			case Classifier.CLEAR_DISLIKE:
-				itemFeed.setTextColor(UIUtils.getColor(getActivity(), R.color.text));
-				break;
-			case Classifier.CLEAR_LIKE:
-				itemFeed.setTextColor(UIUtils.getColor(getActivity(), R.color.text));
-				break;
-			}
-			break;
-		case Classifier.TAG:
-			classifier.tags.put(key, classifierAction);
-			tagContainer.removeAllViews();
-			setupTags();
-			break;	
-		}
-	}
     private class ImmersiveViewHandler extends GestureDetector.SimpleOnGestureListener implements View.OnSystemUiVisibilityChangeListener {
         private View view;
 

@@ -25,4 +25,7 @@
     <item android:id="@+id/menu_unsave_story"
         android:title="@string/menu_unsave_story" />
 
+    <item android:id="@+id/menu_intel"
+        android:title="@string/menu_intel" />
+
 </menu>
