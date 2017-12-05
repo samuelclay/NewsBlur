@@ -1222,6 +1222,7 @@ public class BlurDatabaseHelper {
     }
 
     public void insertClassifier(Classifier classifier) {
+        com.newsblur.util.Log.d(this, "updating classifier for feed: " + classifier.feedId);
         bulkInsertValues(DatabaseConstants.CLASSIFIER_TABLE, classifier.getContentValues());
     }
 
@@ -1230,6 +1231,7 @@ public class BlurDatabaseHelper {
         Cursor c = dbRO.query(DatabaseConstants.CLASSIFIER_TABLE, null, DatabaseConstants.CLASSIFIER_ID + " = ?", selArgs, null, null, null);
         Classifier classifier = Classifier.fromCursor(c);
         closeQuietly(c);
+        classifier.feedId = feedId;
         return classifier;
     }
 

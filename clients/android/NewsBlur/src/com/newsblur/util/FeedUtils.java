@@ -295,27 +295,9 @@ public class FeedUtils {
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
-    public static void updateClassifier(final String feedId, final String key, final Classifier classifier, final int classifierType, final int classifierAction, final Context context) {
-        // first, update the server
-        new AsyncTask<Void, Void, NewsBlurResponse>() {
-            @Override
-            protected NewsBlurResponse doInBackground(Void... arg) {
-                APIManager apiManager = new APIManager(context);
-                return apiManager.trainClassifier(feedId, key, classifierType, classifierAction);
-            }
-            @Override
-            protected void onPostExecute(NewsBlurResponse result) {
-                if (result.isError()) {
-                    Toast.makeText(context, result.getErrorMessage(context.getString(R.string.error_saving_classifier)), Toast.LENGTH_LONG).show();
-                }
-            }
-        }.execute();
-
-        // next, update the local DB
-        classifier.getMapForType(classifierType).put(key, classifierAction);
-        classifier.feedId = feedId;
-        dbHelper.clearClassifiersForFeed(feedId);
-        dbHelper.insertClassifier(classifier);
+    public static void updateClassifier(String feedId, Classifier classifier, Context context) {
+        ReadingAction ra = ReadingAction.updateIntel(feedId, classifier);
+        doAction(ra, context);
     }
 
     public static void sendStoryBrief(Story story, Context context) {

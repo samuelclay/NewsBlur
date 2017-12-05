@@ -84,6 +84,7 @@
 	<string name="alert_dialog_done">DONE</string>
 	<string name="alert_dialog_openimage">OPEN IMAGE</string>
     <string name="dialog_folders_save">SAVE FOLDERS</string>
+    <string name="dialog_story_intel_save">SAVE TRAINING</string>
 	
     <string name="profile">Profile</string>
     <string name="profile_location_icon">Location icon</string>
@@ -298,8 +299,11 @@
     <string name="infrequent_60">&lt; 60 STORIES/MONTH</string>
     <string name="infrequent_90">&lt; 90 STORIES/MONTH</string>
 
+    <string name="intel_dialog_title">What do you like and dislike about this story?</string>
     <string name="intel_title_header">STORY TITLE</string>
-    <string name="intel_tag_header">TAGS</string>
+    <string name="intel_tag_header">STORY TAGS</string>
+    <string name="intel_author_header">STORY AUTHOR</string>
+    <string name="intel_feed_header">EVERYTHING BY PUBLISHER</string>
 
     <string name="theme">Theme</string>
     <string name="light">Light</string>

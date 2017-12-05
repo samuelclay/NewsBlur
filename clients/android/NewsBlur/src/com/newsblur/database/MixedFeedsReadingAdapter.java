@@ -29,5 +29,9 @@ public class MixedFeedsReadingAdapter extends ReadingAdapter {
         
         return ReadingItemFragment.newInstance(story, feedTitle, feedFaviconColor, feedFaviconFade, feedFaviconBorder, feedFaviconText, feedFaviconUrl, classifier, true, sourceUserId);
 	}
+
+    protected String getFeedTitle() {
+        return stories.getString(stories.getColumnIndex(DatabaseConstants.FEED_TITLE));
+    }
 	
 }

@@ -2,7 +2,6 @@ package com.newsblur.fragment;
 
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -13,23 +12,15 @@ import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.InputType;
-import android.text.Selection;
-import android.text.Spannable;
-import android.text.Spanned;
-import android.text.SpanWatcher;
+import android.text.TextUtils;
 import android.view.Gravity;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.View.OnKeyListener;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.ListAdapter;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import butterknife.ButterKnife;
@@ -46,10 +37,16 @@ public class StoryIntelTrainerFragment extends DialogFragment {
 
     private Story story;
     private Classifier classifier;
+    private Integer newTitleTraining;
 
     @Bind(R.id.intel_title_selection) SelectOnlyEditText titleSelection;
+    @Bind(R.id.intel_title_like) Button titleLikeButton;
+    @Bind(R.id.intel_title_dislike) Button titleDislikeButton;
+    @Bind(R.id.intel_title_clear) Button titleClearButton;
     @Bind(R.id.existing_title_intel_container) LinearLayout titleRowsContainer;
     @Bind(R.id.existing_tag_intel_container) LinearLayout tagRowsContainer;
+    @Bind(R.id.existing_author_intel_container) LinearLayout authorRowsContainer;
+    @Bind(R.id.existing_feed_intel_container) LinearLayout feedRowsContainer;
 
     public static StoryIntelTrainerFragment newInstance(Story story) {
         StoryIntelTrainerFragment fragment = new StoryIntelTrainerFragment();
@@ -65,14 +62,49 @@ public class StoryIntelTrainerFragment extends DialogFragment {
         story = (Story) getArguments().getSerializable("story");
         classifier = FeedUtils.dbHelper.getClassifierForFeed(story.feedId);
 
-        // author classifier
-        // tag classifiers
-        // scrollview for whole set
-
         final Activity activity = getActivity();
         LayoutInflater inflater = LayoutInflater.from(activity);
         View v = inflater.inflate(R.layout.dialog_trainstory, null);
         ButterKnife.bind(this, v);
+
+        // set up the special title training box for the title from this story and the associated buttons
+        titleSelection.setText(story.title);
+        // the layout sets inputType="none" on this EditText, but a widespread platform bug requires us
+        // to also set this programmatically to make the field read-only for selection.
+        titleSelection.setInputType(InputType.TYPE_NULL);
+        // the user is selecting for our custom widget, not to copy/paste
+        titleSelection.disableActionMenu();
+        // pre-select the whole title to make it easier for the user to manipulate the selection handles
+        titleSelection.selectAll();
+        // do this after init and selection to prevent toast spam
+        titleSelection.setForceSelection(true);
+        // the disposition buttons for a new title training don't immediately impact the classifier object,
+        // lest the user want to change selection substring after choosing the disposition.  so just store
+        // the training factor in a variable that can be pulled on completion
+        titleLikeButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                newTitleTraining = Classifier.LIKE;
+                titleLikeButton.setBackgroundResource(R.drawable.ic_like_active);
+                titleDislikeButton.setBackgroundResource(R.drawable.ic_dislike_gray55);
+            }
+        });
+        titleDislikeButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                newTitleTraining = Classifier.DISLIKE;
+                titleLikeButton.setBackgroundResource(R.drawable.ic_like_gray55);
+                titleDislikeButton.setBackgroundResource(R.drawable.ic_dislike_active);
+            }
+        });
+        titleClearButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                newTitleTraining = null;
+                titleLikeButton.setBackgroundResource(R.drawable.ic_like_gray55);
+                titleDislikeButton.setBackgroundResource(R.drawable.ic_dislike_gray55);
+            }
+        });
 
         // scan trained title fragments for this feed and see if any apply to this story
         for (Map.Entry<String, Integer> rule : classifier.title.entrySet()) {
@@ -94,8 +126,23 @@ public class StoryIntelTrainerFragment extends DialogFragment {
             tagRowsContainer.addView(row);
         }
 
+        // there is a single author per story
+        View rowAuthor = inflater.inflate(R.layout.include_intel_row, null);
+        TextView labelAuthor = (TextView) rowAuthor.findViewById(R.id.intel_row_label);
+        labelAuthor.setText(story.authors);
+        UIUtils.setupIntelDialogRow(rowAuthor, classifier.authors, story.authors);
+        authorRowsContainer.addView(rowAuthor);
+
+        // there is a single feed to be trained, but it is a bit odd in that the label is the title and
+        // the intel identifier is the feed ID
+        View rowFeed = inflater.inflate(R.layout.include_intel_row, null);
+        TextView labelFeed = (TextView) rowFeed.findViewById(R.id.intel_row_label);
+        labelFeed.setText(story.feedTitle);
+        UIUtils.setupIntelDialogRow(rowFeed, classifier.feeds, story.feedId);
+        feedRowsContainer.addView(rowFeed);
+
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-        //builder.setTitle(String.format(getResources().getString(R.string.title_train_story), feed.title));
+        builder.setTitle(R.string.intel_dialog_title);
         builder.setView(v);
 
         builder.setNegativeButton(R.string.alert_dialog_cancel, new DialogInterface.OnClickListener() {
@@ -104,55 +151,16 @@ public class StoryIntelTrainerFragment extends DialogFragment {
                 StoryIntelTrainerFragment.this.dismiss();
             }
         });
-        builder.setPositiveButton(R.string.dialog_folders_save, new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(R.string.dialog_story_intel_save, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                //FeedUtils.moveFeedToFolders(activity, feed.feedId, newFolders, oldFolders);
+                if ((newTitleTraining != null) && (!TextUtils.isEmpty(titleSelection.getSelection()))) {
+                    classifier.title.put(titleSelection.getSelection(), newTitleTraining);
+                }
+                FeedUtils.updateClassifier(story.feedId, classifier, activity);
                 StoryIntelTrainerFragment.this.dismiss();
             }
         });
-
-        titleSelection.setText(story.title);
-        // the layout sets inputType="none" on this EditText, but a widespread platform bug requires us
-        // to also set this programmatically to make the field read-only for selection.
-        titleSelection.setInputType(InputType.TYPE_NULL);
-        // the user is selecting for our custom widget, not to copy/paste
-        titleSelection.disableActionMenu();
-        // pre-select the whole title to make it easier for the user to manipulate the selection handles
-        //titleSelection.setSelectAllOnFocus(true);
-        titleSelection.selectAll();
-        //titleSelection.requestFocus();
-        // do this after init and selection to prevent toast spam
-        titleSelection.setForceSelection(true);
-
-        /*
-        ListAdapter adapter = new ArrayAdapter<Folder>(getActivity(), R.layout.row_choosefolders, R.id.choosefolders_foldername, folders) {
-            @Override
-            public View getView(final int position, View convertView, ViewGroup parent) {
-                View v = super.getView(position, convertView, parent);
-                CheckBox row = (CheckBox) v.findViewById(R.id.choosefolders_foldername);
-                if (position == 0) {
-                    row.setText(R.string.top_level);
-                }
-                row.setChecked(folders.get(position).feedIds.contains(feed.feedId));
-                row.setOnClickListener(new OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        CheckBox row = (CheckBox) v;
-                        if (row.isChecked()) {
-                            folders.get(position).feedIds.add(feed.feedId);
-                            newFolders.add(folders.get(position).name);
-                        } else {
-                            folders.get(position).feedIds.remove(feed.feedId);
-                            newFolders.remove(folders.get(position).name);
-                        }
-                    }
-                });
-                return v;
-            }
-        };
-        listView.setAdapter(adapter);
-        */
 
         Dialog dialog = builder.create();
         dialog.getWindow().getAttributes().gravity = Gravity.BOTTOM;
