@@ -29,6 +29,8 @@ public class BlurDatabase extends SQLiteOpenHelper {
         db.execSQL(DatabaseConstants.STARREDCOUNTS_SQL);
         db.execSQL(DatabaseConstants.ACTION_SQL);
         db.execSQL(DatabaseConstants.NOTIFY_DISMISS_SQL);
+        db.execSQL(DatabaseConstants.FEED_TAGS_SQL);
+        db.execSQL(DatabaseConstants.FEED_AUTHORS_SQL);
 	}
 	
 	void dropAndRecreateTables() {
@@ -48,6 +50,8 @@ public class BlurDatabase extends SQLiteOpenHelper {
 		db.execSQL(drop + DatabaseConstants.STARREDCOUNTS_TABLE);
 		db.execSQL(drop + DatabaseConstants.ACTION_TABLE);
         db.execSQL(drop + DatabaseConstants.NOTIFY_DISMISS_TABLE);
+        db.execSQL(drop + DatabaseConstants.FEED_TAGS_TABLE);
+        db.execSQL(drop + DatabaseConstants.FEED_AUTHORS_TABLE);
 		
 		onCreate(db);
 	}
