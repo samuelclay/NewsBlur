@@ -1222,7 +1222,6 @@ public class BlurDatabaseHelper {
     }
 
     public void insertClassifier(Classifier classifier) {
-        com.newsblur.util.Log.d(this, "updating classifier for feed: " + classifier.feedId);
         bulkInsertValues(DatabaseConstants.CLASSIFIER_TABLE, classifier.getContentValues());
     }
 
