@@ -358,10 +358,10 @@ public class UIUtils {
     public static String colourTitleFromClassifier(String title, Classifier c) {
         String result = title;
         for (Map.Entry<String, Integer> rule : c.title.entrySet()) {
-            if (rule.getValue() > 0) {
+            if (rule.getValue() == Classifier.LIKE) {
                 result = result.replace(rule.getKey(), String.format(POSIT_HILITE_FORMAT, rule.getKey()));
             }
-            if (rule.getValue() < 0) {
+            if (rule.getValue() == Classifier.DISLIKE) {
                 result = result.replace(rule.getKey(), String.format(NEGAT_HILITE_FORMAT, rule.getKey()));
             }
         }
