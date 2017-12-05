@@ -295,8 +295,8 @@ public class FeedUtils {
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
-    public static void updateClassifier(String feedId, Classifier classifier, Context context) {
-        ReadingAction ra = ReadingAction.updateIntel(feedId, classifier);
+    public static void updateClassifier(String feedId, Classifier classifier, FeedSet fs, Context context) {
+        ReadingAction ra = ReadingAction.updateIntel(feedId, classifier, fs);
         doAction(ra, context);
     }
 

@@ -349,7 +349,7 @@ public class ReadingItemFragment extends NbFragment {
 		itemAuthors.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-                StoryIntelTrainerFragment intelFrag = StoryIntelTrainerFragment.newInstance(story);
+                StoryIntelTrainerFragment intelFrag = StoryIntelTrainerFragment.newInstance(story, fs);
                 intelFrag.show(getFragmentManager(), StoryIntelTrainerFragment.class.getName());
 			}	
 		});
@@ -357,7 +357,7 @@ public class ReadingItemFragment extends NbFragment {
 		itemFeed.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-                StoryIntelTrainerFragment intelFrag = StoryIntelTrainerFragment.newInstance(story);
+                StoryIntelTrainerFragment intelFrag = StoryIntelTrainerFragment.newInstance(story, fs);
                 intelFrag.show(getFragmentManager(), StoryIntelTrainerFragment.class.getName());
 			}
 		});
@@ -412,7 +412,7 @@ public class ReadingItemFragment extends NbFragment {
                 v.setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        StoryIntelTrainerFragment intelFrag = StoryIntelTrainerFragment.newInstance(story);
+                        StoryIntelTrainerFragment intelFrag = StoryIntelTrainerFragment.newInstance(story, fs);
                         intelFrag.show(getFragmentManager(), StoryIntelTrainerFragment.class.getName());
                     }
                 });
