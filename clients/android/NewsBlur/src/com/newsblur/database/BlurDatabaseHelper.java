@@ -370,6 +370,28 @@ public class BlurDatabaseHelper {
                     }
                 }
 
+                if (apiResponse.feedTags != null ) {
+                    Set<String> feedTags = new HashSet<String>(apiResponse.feedTags.length);
+                    for (String[] tuple : apiResponse.feedTags) {
+                        // the API returns a list of lists, but all we care about is the tag name/id which is the first item in the tuple
+                        if (tuple.length > 0) {
+                            feedTags.add(tuple[0]);
+                        }
+                    }
+                    putFeedTagsExtSync(impliedFeedId, feedTags);
+                }
+
+                if (apiResponse.feedAuthors != null ) {
+                    Set<String> feedAuthors = new HashSet<String>(apiResponse.feedAuthors.length);
+                    for (String[] tuple : apiResponse.feedAuthors) {
+                        // the API returns a list of lists, but all we care about is the author name/id which is the first item in the tuple
+                        if (tuple.length > 0) {
+                            feedAuthors.add(tuple[0]);
+                        }
+                    }
+                    putFeedAuthorsExtSync(impliedFeedId, feedAuthors);
+                }
+
                 dbRW.setTransactionSuccessful();
             } finally {
                 dbRW.endTransaction();
@@ -1230,6 +1252,7 @@ public class BlurDatabaseHelper {
         Cursor c = dbRO.query(DatabaseConstants.CLASSIFIER_TABLE, null, DatabaseConstants.CLASSIFIER_ID + " = ?", selArgs, null, null, null);
         Classifier classifier = Classifier.fromCursor(c);
         closeQuietly(c);
+        classifier.feedId = feedId;
         return classifier;
     }
 
@@ -1403,6 +1426,70 @@ public class BlurDatabaseHelper {
                         new String[]{Long.toString(cutoffDate.getTime().getTime())});
             com.newsblur.util.Log.d(this.getClass().getName(), "cleaned up dismissals: " + count);
         }
+    }
+
+    private void putFeedTagsExtSync(String feedId, Set<String> tags) {
+        dbRW.delete(DatabaseConstants.FEED_TAGS_TABLE,
+                    DatabaseConstants.FEED_TAGS_FEEDID + " = ?",
+                    new String[]{feedId}
+                   );
+        List<ContentValues> valuesList = new ArrayList<ContentValues>(tags.size());
+        for (String tag : tags) {
+            ContentValues values = new ContentValues();
+            values.put(DatabaseConstants.FEED_TAGS_FEEDID, feedId);
+            values.put(DatabaseConstants.FEED_TAGS_TAG, tag);
+            valuesList.add(values);
+        }
+        bulkInsertValuesExtSync(DatabaseConstants.FEED_TAGS_TABLE, valuesList);
+    }
+
+    public List<String> getTagsForFeed(String feedId) {
+        Cursor c = dbRO.query(DatabaseConstants.FEED_TAGS_TABLE, 
+                              new String[]{DatabaseConstants.FEED_TAGS_TAG}, 
+                              DatabaseConstants.FEED_TAGS_FEEDID + " = ?", 
+                              new String[]{feedId}, 
+                              null, 
+                              null, 
+                              DatabaseConstants.FEED_TAGS_TAG + " ASC"
+                             );
+        List<String> result = new ArrayList<String>(c.getCount());
+        while (c.moveToNext()) {
+            result.add(c.getString(c.getColumnIndexOrThrow(DatabaseConstants.FEED_TAGS_TAG)));
+        }
+        closeQuietly(c);
+        return result;
+    }
+        
+    private void putFeedAuthorsExtSync(String feedId, Set<String> authors) {
+        dbRW.delete(DatabaseConstants.FEED_AUTHORS_TABLE,
+                    DatabaseConstants.FEED_AUTHORS_FEEDID + " = ?",
+                    new String[]{feedId}
+                   );
+        List<ContentValues> valuesList = new ArrayList<ContentValues>(authors.size());
+        for (String author : authors) {
+            ContentValues values = new ContentValues();
+            values.put(DatabaseConstants.FEED_AUTHORS_FEEDID, feedId);
+            values.put(DatabaseConstants.FEED_AUTHORS_AUTHOR, author);
+            valuesList.add(values);
+        }
+        bulkInsertValuesExtSync(DatabaseConstants.FEED_AUTHORS_TABLE, valuesList);
+    }
+
+    public List<String> getAuthorsForFeed(String feedId) {
+        Cursor c = dbRO.query(DatabaseConstants.FEED_AUTHORS_TABLE, 
+                              new String[]{DatabaseConstants.FEED_AUTHORS_AUTHOR}, 
+                              DatabaseConstants.FEED_AUTHORS_FEEDID + " = ?", 
+                              new String[]{feedId}, 
+                              null, 
+                              null, 
+                              DatabaseConstants.FEED_AUTHORS_AUTHOR + " ASC"
+                             );
+        List<String> result = new ArrayList<String>(c.getCount());
+        while (c.moveToNext()) {
+            result.add(c.getString(c.getColumnIndexOrThrow(DatabaseConstants.FEED_AUTHORS_AUTHOR)));
+        }
+        closeQuietly(c);
+        return result;
     }
 
     public static void closeQuietly(Cursor c) {

@@ -24,6 +24,7 @@ public class NbActivity extends Activity {
     public static final int UPDATE_METADATA = (1<<1);
     public static final int UPDATE_STORY    = (1<<2);
     public static final int UPDATE_SOCIAL   = (1<<3);
+    public static final int UPDATE_INTEL    = (1<<4);
     public static final int UPDATE_STATUS   = (1<<5);
     public static final int UPDATE_TEXT     = (1<<6);
     public static final int UPDATE_REBUILD  = (1<<7);

@@ -358,14 +358,61 @@ public class UIUtils {
     public static String colourTitleFromClassifier(String title, Classifier c) {
         String result = title;
         for (Map.Entry<String, Integer> rule : c.title.entrySet()) {
-            if (rule.getValue() > 0) {
+            if (rule.getValue() == Classifier.LIKE) {
                 result = result.replace(rule.getKey(), String.format(POSIT_HILITE_FORMAT, rule.getKey()));
             }
-            if (rule.getValue() < 0) {
+            if (rule.getValue() == Classifier.DISLIKE) {
                 result = result.replace(rule.getKey(), String.format(NEGAT_HILITE_FORMAT, rule.getKey()));
             }
         }
         return result;
     }
+
+    /**
+     * Takes an inflated R.layout.include_intel_row and activates the like/dislike buttons based
+     * upon the provided classifier sub-type map while also setting up handlers to alter said
+     * map if the buttons are pressed.
+     */
+    public static void setupIntelDialogRow(final View row, final Map<String,Integer> classifier, final String key) {
+        colourIntelDialogRow(row, classifier, key);
+        row.findViewById(R.id.intel_row_like).setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                classifier.put(key, Classifier.LIKE);
+                colourIntelDialogRow(row, classifier, key);
+            }
+        });
+        row.findViewById(R.id.intel_row_dislike).setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                classifier.put(key, Classifier.DISLIKE);
+                colourIntelDialogRow(row, classifier, key);
+            }
+        });
+        row.findViewById(R.id.intel_row_clear).setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                classifier.put(key, Classifier.CLEAR_LIKE);
+                colourIntelDialogRow(row, classifier, key);
+            }
+        });
+    }
+
+    private static void colourIntelDialogRow(View row, Map<String,Integer> classifier, String key) {
+        if (Integer.valueOf(Classifier.LIKE).equals(classifier.get(key))) {
+            row.findViewById(R.id.intel_row_like).setBackgroundResource(R.drawable.ic_like_active);
+            row.findViewById(R.id.intel_row_dislike).setBackgroundResource(R.drawable.ic_dislike_gray55);
+            row.findViewById(R.id.intel_row_clear).setBackgroundResource(R.drawable.ic_clear_gray55);
+        } else 
+        if (Integer.valueOf(Classifier.DISLIKE).equals(classifier.get(key))) {
+            row.findViewById(R.id.intel_row_like).setBackgroundResource(R.drawable.ic_like_gray55);
+            row.findViewById(R.id.intel_row_dislike).setBackgroundResource(R.drawable.ic_dislike_active);
+            row.findViewById(R.id.intel_row_clear).setBackgroundResource(R.drawable.ic_clear_gray55);
+        } else {
+            row.findViewById(R.id.intel_row_like).setBackgroundResource(R.drawable.ic_like_gray55);
+            row.findViewById(R.id.intel_row_dislike).setBackgroundResource(R.drawable.ic_dislike_gray55);
+            row.findViewById(R.id.intel_row_clear).setBackgroundResource(R.drawable.ic_clear_gray55);
+        }
+    }   
 
 }

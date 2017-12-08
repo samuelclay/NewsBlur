@@ -75,7 +75,8 @@ public abstract class ReadingAdapter extends FragmentStatePagerAdapter {
 			return null;
 		} else {
 			stories.moveToPosition(position);
-			return Story.fromCursor(stories);
+			Story story = Story.fromCursor(stories);
+            return story;
 		}
 	}
 

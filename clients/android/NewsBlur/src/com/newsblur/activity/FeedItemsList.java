@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import com.newsblur.R;
 import com.newsblur.domain.Feed;
 import com.newsblur.fragment.DeleteFeedFragment;
+import com.newsblur.fragment.FeedIntelTrainerFragment;
 import com.newsblur.fragment.FeedItemListFragment;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.UIUtils;
@@ -69,6 +70,11 @@ public class FeedItemsList extends ItemsList {
         if (item.getItemId() == R.id.menu_instafetch_feed) {
             FeedUtils.instaFetchFeed(this, feed.feedId);
             this.finish();
+            return true;
+        }
+        if (item.getItemId() == R.id.menu_intel) {
+            FeedIntelTrainerFragment intelFrag = FeedIntelTrainerFragment.newInstance(feed, fs);
+            intelFrag.show(getFragmentManager(), FeedIntelTrainerFragment.class.getName());
             return true;
         }
         return false;

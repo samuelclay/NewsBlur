@@ -14,7 +14,6 @@
 #import "FontSettingsViewController.h"
 #import "UserProfileViewController.h"
 #import "ShareViewController.h"
-#import "Base64.h"
 #import "Utilities.h"
 #import "NSString+HTML.h"
 #import "NBContainerViewController.h"

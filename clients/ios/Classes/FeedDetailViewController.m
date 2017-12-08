@@ -17,7 +17,6 @@
 #import "StoryPageControl.h"
 #import "NSString+HTML.h"
 #import "MBProgressHUD.h"
-#import "Base64.h"
 #import "SBJson4.h"
 #import "NSObject+SBJSON.h"
 #import "StringHelper.h"
@@ -86,6 +85,10 @@
 
     self.storyTitlesTable.backgroundColor = UIColorFromRGB(0xf4f4f4);
     self.storyTitlesTable.separatorColor = UIColorFromRGB(0xE9E8E4);
+    if (@available(iOS 11.0, *)) {
+        self.storyTitlesTable.dragDelegate = self;
+        self.storyTitlesTable.dragInteractionEnabled = YES;
+    }
     self.view.backgroundColor = UIColorFromRGB(0xf4f4f4);
 
     spacerBarButton = [[UIBarButtonItem alloc]
@@ -106,6 +109,9 @@
     [self.searchBar setAutocapitalizationType:UITextAutocapitalizationTypeNone];
     self.storyTitlesTable.tableHeaderView = self.searchBar;
     self.storyTitlesTable.keyboardDismissMode = UIScrollViewKeyboardDismissModeOnDrag;
+    self.storyTitlesTable.translatesAutoresizingMaskIntoConstraints = NO;
+    self.messageView.translatesAutoresizingMaskIntoConstraints = NO;
+//    self.view.translatesAutoresizingMaskIntoConstraints = NO; // No autolayout until UISplitViewController is built
     
     UIImage *separatorImage = [UIImage imageNamed:@"bar-separator.png"];
     if ([ThemeManager themeManager].isDarkTheme) {
@@ -2407,7 +2413,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
             
             NSString *favicon = [feed objectForKey:@"favicon"];
             if ((NSNull *)favicon != [NSNull null] && [favicon length] > 0) {
-                NSData *imageData = [NSData dataWithBase64EncodedString:favicon];
+                NSData *imageData = [[NSData alloc] initWithBase64EncodedString:favicon options:NSDataBase64DecodingIgnoreUnknownCharacters];
                 UIImage *faviconImage = [UIImage imageWithData:imageData];
                 [appDelegate saveFavicon:faviconImage feedId:feed_id];
             }
@@ -2424,6 +2430,40 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     NSLog(@"Error: %@", error);
     [appDelegate informError:error];
+}
+
+#pragma mark - Drag Delegate
+
+- (NSArray<UIDragItem *> *)tableView:(UITableView *)tableView itemsForBeginningDragSession:(id<UIDragSession>)session atIndexPath:(NSIndexPath *)indexPath API_AVAILABLE(ios(11.0)) {
+    NSDictionary *story = [self getStoryAtRow:indexPath.row];
+    NSItemProvider *itemProviderUrl = [[NSItemProvider alloc] initWithObject:story[@"story_permalink"]];
+    UIDragItem *dragUrl = [[UIDragItem alloc] initWithItemProvider:itemProviderUrl];
+    dragUrl.localObject = story[@"story_permalink"];
+    
+    NSItemProvider *itemProviderTitle = [[NSItemProvider alloc] initWithObject:story[@"story_title"]];
+    UIDragItem *dragTitle = [[UIDragItem alloc] initWithItemProvider:itemProviderTitle];
+    dragTitle.localObject = story[@"story_title"];
+    
+    UIDragItem *dragImage = nil;
+    FeedDetailTableCell *cell = [tableView cellForRowAtIndexPath:indexPath];
+    if (cell.storyImageUrl) {
+        UIImage *cachedImage = (UIImage *)[appDelegate.cachedStoryImages objectForKey:cell.storyImageUrl];
+        if (cachedImage && ![cachedImage isKindOfClass:[NSNull class]]) {
+            NSItemProvider *itemProviderImage = [[NSItemProvider alloc] initWithObject:cachedImage];
+            dragImage = [[UIDragItem alloc] initWithItemProvider:itemProviderImage];
+            dragImage.localObject = cachedImage;
+        }
+    }
+    
+    return [NSArray arrayWithObjects:dragTitle, dragUrl, dragImage, nil];
+}
+
+- (void)tableView:(UITableView *)tableView dragSessionWillBegin:(id<UIDragSession>)session API_AVAILABLE(ios(11.0)) {
+    
+}
+
+- (void)tableView:(UITableView *)tableView dragSessionDidEnd:(id<UIDragSession>)session API_AVAILABLE(ios(11.0)) {
+    
 }
 
 @end

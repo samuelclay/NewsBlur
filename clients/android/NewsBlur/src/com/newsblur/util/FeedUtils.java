@@ -9,7 +9,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.text.TextUtils;
-import android.widget.Toast;
 
 import com.newsblur.R;
 import com.newsblur.activity.NbActivity;
@@ -295,27 +294,9 @@ public class FeedUtils {
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
-    public static void updateClassifier(final String feedId, final String key, final Classifier classifier, final int classifierType, final int classifierAction, final Context context) {
-        // first, update the server
-        new AsyncTask<Void, Void, NewsBlurResponse>() {
-            @Override
-            protected NewsBlurResponse doInBackground(Void... arg) {
-                APIManager apiManager = new APIManager(context);
-                return apiManager.trainClassifier(feedId, key, classifierType, classifierAction);
-            }
-            @Override
-            protected void onPostExecute(NewsBlurResponse result) {
-                if (result.isError()) {
-                    Toast.makeText(context, result.getErrorMessage(context.getString(R.string.error_saving_classifier)), Toast.LENGTH_LONG).show();
-                }
-            }
-        }.execute();
-
-        // next, update the local DB
-        classifier.getMapForType(classifierType).put(key, classifierAction);
-        classifier.feedId = feedId;
-        dbHelper.clearClassifiersForFeed(feedId);
-        dbHelper.insertClassifier(classifier);
+    public static void updateClassifier(String feedId, Classifier classifier, FeedSet fs, Context context) {
+        ReadingAction ra = ReadingAction.updateIntel(feedId, classifier, fs);
+        doAction(ra, context);
     }
 
     public static void sendStoryBrief(Story story, Context context) {
@@ -491,6 +472,15 @@ public class FeedUtils {
         String[] parts = TextUtils.split(storyHash, ":");
         if (parts.length != 2) return null;
         return parts[0];
+    }
+
+    /**
+     * Because story objects have to join on the feeds table to get feed metadata, there are times
+     * where standalone stories are missing this info and it must be re-fetched.  This is costly
+     * and should be avoided where possible.
+     */
+    public static String getFeedTitle(String feedId) {
+        return getFeed(feedId).title;
     }
 
     public static Feed getFeed(String feedId) {
