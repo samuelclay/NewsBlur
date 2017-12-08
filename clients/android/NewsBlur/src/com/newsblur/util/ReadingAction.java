@@ -222,11 +222,12 @@ public class ReadingAction implements Serializable {
         return ra;
     }
 
-    public static ReadingAction updateIntel(String feedId, Classifier classifier) {
+    public static ReadingAction updateIntel(String feedId, Classifier classifier, FeedSet fs) {
         ReadingAction ra = new ReadingAction();
         ra.type = ActionType.UPDATE_INTEL;
         ra.feedId = feedId;
         ra.classifier = classifier;
+        ra.feedSet = fs;
         return ra;
     }
 
@@ -332,6 +333,7 @@ public class ReadingAction implements Serializable {
             case UPDATE_INTEL:
                 values.put(DatabaseConstants.ACTION_FEED_ID, feedId);
                 values.put(DatabaseConstants.ACTION_CLASSIFIER, DatabaseConstants.JsonHelper.toJson(classifier));
+                values.put(DatabaseConstants.ACTION_FEED_SET, feedSet.toCompactSerial());
                 break;
 
             default:
@@ -416,6 +418,8 @@ public class ReadingAction implements Serializable {
         } else if (ra.type == ActionType.UPDATE_INTEL) {
             ra.feedId = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_FEED_ID));
             ra.classifier = DatabaseConstants.JsonHelper.fromJson(c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_CLASSIFIER)), Classifier.class);
+            String feedIds = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_FEED_SET));
+            ra.feedSet = FeedSet.fromCompactSerial(feedIds);
         } else {
             throw new IllegalStateException("cannot deserialise uknown type of action.");
         }
@@ -500,6 +504,10 @@ public class ReadingAction implements Serializable {
 
             case UPDATE_INTEL:
                 result = apiManager.updateFeedIntel(feedId, classifier);
+                // also reset stories for the calling view so they get new scores
+                NBSyncService.resetFetchState(feedSet);
+                // and recount unreads to get new focus counts
+                NBSyncService.addRecountCandidates(feedSet);
                 break;
 
             default:
@@ -624,6 +632,16 @@ public class ReadingAction implements Serializable {
             case INSTA_FETCH:
                 if (isFollowup) break; // non-idempotent and purely graphical
                 dbHelper.setFeedFetchPending(feedId);
+                break;
+
+            case UPDATE_INTEL:
+                // TODO: because intel is always calculated on the server, we can change the disposition of
+                // individual tags and authors etc in the UI, but story scores won't be updated until a refresh.
+                // for best offline operation, we could try to duplicate that business logic locally
+                dbHelper.clearClassifiersForFeed(feedId);
+                classifier.feedId = feedId; 
+                dbHelper.insertClassifier(classifier);
+                impact |= NbActivity.UPDATE_INTEL;
                 break;
 
             default:

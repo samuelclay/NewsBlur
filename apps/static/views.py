@@ -29,7 +29,19 @@ def api(request):
 def press(request):
     return render_to_response('static/press.xhtml', {}, 
                               context_instance=RequestContext(request))
-                              
+
+def privacy(request):
+    return render_to_response('static/privacy.xhtml', {}, 
+                              context_instance=RequestContext(request))
+
+def tos(request):
+    return render_to_response('static/tos.xhtml', {}, 
+                              context_instance=RequestContext(request))
+                        
+def apple_app_site_assoc(request):
+    return render_to_response('static/apple_app_site_assoc.xhtml', {}, 
+                              context_instance=RequestContext(request))
+                                                      
 def feedback(request):
     return render_to_response('static/feedback.xhtml', {}, 
                               context_instance=RequestContext(request))

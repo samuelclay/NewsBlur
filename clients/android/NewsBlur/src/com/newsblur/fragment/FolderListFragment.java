@@ -267,6 +267,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
                 menu.removeItem(R.id.menu_mute_feed);
                 menu.removeItem(R.id.menu_notifications);
                 menu.removeItem(R.id.menu_instafetch_feed);
+                menu.removeItem(R.id.menu_intel);
             } else {
                 menu.removeItem(R.id.menu_unfollow);
 
@@ -278,6 +279,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
                     menu.removeItem(R.id.menu_mark_feed_as_read);
                     menu.removeItem(R.id.menu_notifications);
                     menu.removeItem(R.id.menu_instafetch_feed);
+                    menu.removeItem(R.id.menu_intel);
                     break;
                 }
                 if (feed.isNotifyUnread()) {
@@ -360,6 +362,9 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
             FeedUtils.unmuteFeeds(getActivity(), adapter.getAllFeedsForFolder(groupPosition));
         } else if (item.getItemId() == R.id.menu_instafetch_feed) {
             FeedUtils.instaFetchFeed(getActivity(), adapter.getFeed(groupPosition, childPosition).feedId);
+        } else if (item.getItemId() == R.id.menu_intel) {
+            FeedIntelTrainerFragment intelFrag = FeedIntelTrainerFragment.newInstance(adapter.getFeed(groupPosition, childPosition), adapter.getChild(groupPosition, childPosition));
+            intelFrag.show(getFragmentManager(), FeedIntelTrainerFragment.class.getName());
         }
 
 		return super.onContextItemSelected(item);

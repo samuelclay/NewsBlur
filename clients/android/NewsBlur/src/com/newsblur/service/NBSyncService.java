@@ -127,8 +127,8 @@ public class NBSyncService extends Service {
     static { RecountCandidates = new HashSet<FeedSet>(); }
     private volatile static boolean FlushRecounts = false;
 
-    Set<String> orphanFeedIds;
-    Set<String> disabledFeedIds;
+    Set<String> orphanFeedIds = new HashSet<String>();
+    Set<String> disabledFeedIds = new HashSet<String>();
 
     private ExecutorService primaryExecutor;
     CleanupService cleanupService;

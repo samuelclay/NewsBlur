@@ -21,7 +21,8 @@
 <UITableViewDelegate, UITableViewDataSource,
  UIPopoverControllerDelegate,
  MCSwipeTableViewCellDelegate,
- UIGestureRecognizerDelegate, UISearchBarDelegate> {
+ UIGestureRecognizerDelegate, UISearchBarDelegate,
+ UITableViewDragDelegate> {
     NewsBlurAppDelegate *appDelegate;
     
     BOOL pageFetching;

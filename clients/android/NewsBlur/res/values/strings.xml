@@ -46,8 +46,6 @@
 	<string name="saved_stories_title">Saved Stories</string>
     <string name="top_level">TOP LEVEL</string>
 	
-	<string name="error_saving_classifier">There was an error. Check your internet connection.</string>
-	
 	<string name="send_brief">%1$s %2$s</string>
 	<string name="send_full">%1$s \n\n\"%2$s\" \n\n%3$s \n\n--\nShared with NewsBlur.com</string>
 	<string name="share_comment_hint">Comment (Optional)</string>
@@ -84,6 +82,7 @@
 	<string name="alert_dialog_done">DONE</string>
 	<string name="alert_dialog_openimage">OPEN IMAGE</string>
     <string name="dialog_folders_save">SAVE FOLDERS</string>
+    <string name="dialog_story_intel_save">SAVE TRAINING</string>
 	
     <string name="profile">Profile</string>
     <string name="profile_location_icon">Location icon</string>
@@ -150,8 +149,10 @@
     <string name="menu_unmute_folder">Unmute folder</string>
     <string name="menu_instafetch_feed">Insta-fetch stories</string>
     <string name="menu_infrequent_cutoff">Infrequent stories per month</string>
+    <string name="menu_intel">Intellegence trainer</string>
     
     <string name="toast_story_unread">Story marked as unread</string>
+    <string name="toast_hold_to_select">Press and hold to select text</string>
 
     <string name="logout_warning">Are you sure you want to log out?</string>
     <string name="search_mark_read_warning">Look out! All stories in feed/folder would be marked read, not just search results.  If you really want to mark all stories read, please clear your search query to confirm.</string>
@@ -286,15 +287,22 @@
     <string name="settings_notifications">Notifications</string>
     <string name="settings_enable_notifications">Enable Notifications</string>
 
-    <string name="story">Story</string>
-    <string name="text">Text</string>
-
     <string name="infrequent_choice_title">Stories from sites with</string>
     <string name="infrequent_5">&lt; 5 STORIES/MONTH</string>
     <string name="infrequent_15">&lt; 15 STORIES/MONTH</string>
     <string name="infrequent_30">&lt; 30 STORIES/MONTH</string>
     <string name="infrequent_60">&lt; 60 STORIES/MONTH</string>
     <string name="infrequent_90">&lt; 90 STORIES/MONTH</string>
+
+    <string name="story_intel_dialog_title">What do you like and dislike about this story?</string>
+    <string name="feed_intel_dialog_title">What do you like and dislike about this site?</string>
+    <string name="intel_title_header">STORY TITLE</string>
+    <string name="feed_intel_title_header">TITLES</string>
+    <string name="intel_tag_header">STORY TAGS</string>
+    <string name="feed_intel_tag_header">TAGS</string>
+    <string name="intel_author_header">STORY AUTHOR</string>
+    <string name="feed_intel_author_header">AUTHORS</string>
+    <string name="intel_feed_header">EVERYTHING BY PUBLISHER</string>
 
     <string name="theme">Theme</string>
     <string name="light">Light</string>

@@ -140,6 +140,7 @@ public class DatabaseConstants {
     public static final String ACTION_REPLY_ID = "reply_id";
     public static final String ACTION_STORY_HASH = "story_hash";
     public static final String ACTION_FEED_ID = "feed_id";
+    public static final String ACTION_FEED_SET = "feed_set";
     public static final String ACTION_MODIFIED_FEED_IDS = "modified_feed_ids";
     public static final String ACTION_INCLUDE_OLDER = "include_older";
     public static final String ACTION_INCLUDE_NEWER = "include_newer";
@@ -158,6 +159,14 @@ public class DatabaseConstants {
     public static final String NOTIFY_DISMISS_TABLE = "notify_dimiss";
     public static final String NOTIFY_DISMISS_STORY_HASH = "story_hash";
     public static final String NOTIFY_DISMISS_TIME = "time";
+
+    public static final String FEED_TAGS_TABLE = "feed_tags";
+    public static final String FEED_TAGS_FEEDID = "feed_id";
+    public static final String FEED_TAGS_TAG = "tag";
+
+    public static final String FEED_AUTHORS_TABLE = "feed_authors";
+    public static final String FEED_AUTHORS_FEEDID = "feed_id";
+    public static final String FEED_AUTHORS_AUTHOR = "author";
 
 
 	static final String FOLDER_SQL = "CREATE TABLE " + FOLDER_TABLE + " (" +
@@ -291,6 +300,7 @@ public class DatabaseConstants {
         ACTION_COMMENT_TEXT + TEXT + ", " +
         ACTION_STORY_HASH + TEXT + ", " +
         ACTION_FEED_ID + TEXT + ", " +
+        ACTION_FEED_SET + TEXT + ", " +
         ACTION_INCLUDE_OLDER + INTEGER + ", " +
         ACTION_INCLUDE_NEWER + INTEGER + ", " +
         ACTION_STORY_ID + TEXT + ", " +
@@ -312,6 +322,16 @@ public class DatabaseConstants {
     static final String NOTIFY_DISMISS_SQL = "CREATE TABLE " + NOTIFY_DISMISS_TABLE + " (" +
         NOTIFY_DISMISS_STORY_HASH + TEXT + ", " +
         NOTIFY_DISMISS_TIME + INTEGER + " NOT NULL " +
+        ")";
+
+    static final String FEED_TAGS_SQL = "CREATE TABLE " + FEED_TAGS_TABLE + " (" +
+        FEED_TAGS_FEEDID + TEXT + ", " +
+        FEED_TAGS_TAG + TEXT +
+        ")";
+
+    static final String FEED_AUTHORS_SQL = "CREATE TABLE " + FEED_AUTHORS_TABLE + " (" +
+        FEED_AUTHORS_FEEDID + TEXT + ", " +
+        FEED_AUTHORS_AUTHOR + TEXT +
         ")";
 
 	private static final String[] BASE_STORY_COLUMNS = {
