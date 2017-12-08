@@ -24,6 +24,8 @@
     Create an Account
 </div>
 
+<script src='https://www.google.com/recaptcha/api.js'></script>
+
 <div class="NB-static-form-wrapper" style="overflow:hidden">
     <form method="post" class="NB-static-form" action="{% url "signup" %}">
         {% if form.errors %}
@@ -45,6 +47,8 @@
         <div class="NB-static-form-input">{{ form.password }}</div>
         <div class="NB-static-form-label">{{ form.email.label_tag }}</div>
         <div class="NB-static-form-input">{{ form.email }}</div>
+
+        <div class="g-recaptcha" data-sitekey="6LchVzcUAAAAAJH4uoEEhvoqgseZnEZC7LToC92E"></div>
 
         <input type="submit" value="Sign Up" class="NB-modal-submit-button NB-modal-submit-green NB-static-form-submit" />
         <input type="hidden" name="next" value="{{ next }}" />

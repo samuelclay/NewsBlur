@@ -53,7 +53,6 @@
 .NB-static-form {
     margin: 0 auto;
     width: 360px;
-    overflow: hidden;
 }
 
 .NB-static-form input,
@@ -187,4 +186,8 @@
 }
 .NB-static-form input[name=plan] {
     display: none;
+}
+
+.NB-static-form .g-recaptcha {
+    padding-left: 120px;
 }
