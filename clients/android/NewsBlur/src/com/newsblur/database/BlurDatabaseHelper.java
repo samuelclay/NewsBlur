@@ -371,7 +371,7 @@ public class BlurDatabaseHelper {
                 }
 
                 if (apiResponse.feedTags != null ) {
-                    Set<String> feedTags = new HashSet<String>(apiResponse.feedTags.length);
+                    List<String> feedTags = new ArrayList<String>(apiResponse.feedTags.length);
                     for (String[] tuple : apiResponse.feedTags) {
                         // the API returns a list of lists, but all we care about is the tag name/id which is the first item in the tuple
                         if (tuple.length > 0) {
@@ -382,7 +382,7 @@ public class BlurDatabaseHelper {
                 }
 
                 if (apiResponse.feedAuthors != null ) {
-                    Set<String> feedAuthors = new HashSet<String>(apiResponse.feedAuthors.length);
+                    List<String> feedAuthors = new ArrayList<String>(apiResponse.feedAuthors.length);
                     for (String[] tuple : apiResponse.feedAuthors) {
                         // the API returns a list of lists, but all we care about is the author name/id which is the first item in the tuple
                         if (tuple.length > 0) {
@@ -1428,7 +1428,7 @@ public class BlurDatabaseHelper {
         }
     }
 
-    private void putFeedTagsExtSync(String feedId, Set<String> tags) {
+    private void putFeedTagsExtSync(String feedId, Collection<String> tags) {
         dbRW.delete(DatabaseConstants.FEED_TAGS_TABLE,
                     DatabaseConstants.FEED_TAGS_FEEDID + " = ?",
                     new String[]{feedId}
@@ -1460,7 +1460,7 @@ public class BlurDatabaseHelper {
         return result;
     }
         
-    private void putFeedAuthorsExtSync(String feedId, Set<String> authors) {
+    private void putFeedAuthorsExtSync(String feedId, Collection<String> authors) {
         dbRW.delete(DatabaseConstants.FEED_AUTHORS_TABLE,
                     DatabaseConstants.FEED_AUTHORS_FEEDID + " = ?",
                     new String[]{feedId}

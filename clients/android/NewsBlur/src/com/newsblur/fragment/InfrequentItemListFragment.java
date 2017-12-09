@@ -22,7 +22,7 @@ public class InfrequentItemListFragment extends ItemListFragment {
     @Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         if ((adapter == null) && (cursor != null)) {
-            adapter = new StoryItemsAdapter(getActivity(), cursor, false, true, false);
+            adapter = new StoryItemsAdapter(getActivity(), cursor, false, false, false);
             itemList.setAdapter(adapter);
        }
        super.onLoadFinished(loader, cursor);
