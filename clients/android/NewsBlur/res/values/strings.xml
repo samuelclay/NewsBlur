@@ -37,13 +37,18 @@
     <string name="title_choose_folders">Choose Folders for Feed %s</string>
 	
 	<string name="all_stories_row_title">ALL STORIES</string>
+	<string name="all_stories_title">All Stories</string>
 	<string name="infrequent_row_title">INFREQUENT SITE STORIES</string>
-	<string name="all_shared_stories">ALL SHARED STORIES</string>
-    <string name="global_shared_stories">GLOBAL SHARED STORIES</string>
+	<string name="infrequent_title">Infrequent Site Stories</string>
+	<string name="all_shared_stories_row_title">ALL SHARED STORIES</string>
+	<string name="all_shared_stories_title">All Shared Stories</string>
+    <string name="global_shared_stories_row_title">GLOBAL SHARED STORIES</string>
+    <string name="global_shared_stories_title">Global Shared Stories</string>
 	<string name="read_stories_row_title">READ STORIES</string>
-	<string name="saved_stories_row_title">SAVED STORIES</string>
 	<string name="read_stories_title">Read Stories</string>
+	<string name="saved_stories_row_title">SAVED STORIES</string>
 	<string name="saved_stories_title">Saved Stories</string>
+
     <string name="top_level">TOP LEVEL</string>
 	
 	<string name="send_brief">%1$s %2$s</string>
