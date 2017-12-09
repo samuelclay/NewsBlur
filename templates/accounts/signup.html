@@ -38,7 +38,9 @@
             {% endif %}{% endif %}
         {% else %}{% if next %}
         <p class="NB-error error">Please create an account to continue.</p>
-        {% endif %}{% endif %}
+        {% else %}{% if recaptcha_error %}
+        <p class="NB-error error">{{ recaptcha_error }}</p>        
+        {% endif %}{% endif %}{% endif %}
 
         {% csrf_token %}
         <div class="NB-static-form-label">{{ form.username.label_tag }}</div>
