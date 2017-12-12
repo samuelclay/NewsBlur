@@ -579,10 +579,10 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
         folderNeutCounts = new ArrayList<Integer>();
         folderPosCounts = new ArrayList<Integer>();
         // add the always-present (if enabled) special rows/folders that got at the top of the list
-        if (PrefsUtils.isEnableRowGlobalShared(context)) addSpecialRow(GLOBAL_SHARED_STORIES_GROUP_KEY);
-        addSpecialRow(ALL_SHARED_STORIES_GROUP_KEY);
+        if (PrefsUtils.isEnableRowGlobalShared(context) && (currentState != StateFilter.SAVED)) addSpecialRow(GLOBAL_SHARED_STORIES_GROUP_KEY);
+        if ((currentState != StateFilter.SAVED)) addSpecialRow(ALL_SHARED_STORIES_GROUP_KEY);
         addSpecialRow(ALL_STORIES_GROUP_KEY);
-        if (PrefsUtils.isEnableRowInfrequent(context)) addSpecialRow(INFREQUENT_SITE_STORIES_GROUP_KEY);
+        if (PrefsUtils.isEnableRowInfrequent(context) && (currentState != StateFilter.SAVED)) addSpecialRow(INFREQUENT_SITE_STORIES_GROUP_KEY);
         // create a sorted list of folder display names
         List<String> sortedFolderNames = new ArrayList<String>(flatFolders.keySet());
         Collections.sort(sortedFolderNames, Folder.FolderNameComparator);
