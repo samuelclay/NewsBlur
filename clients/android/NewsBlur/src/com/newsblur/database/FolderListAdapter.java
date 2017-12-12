@@ -385,6 +385,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
      * Supports normal folders only, not special all-type meta-folders.
      */
     public String getGroupFolderName(int groupPosition) {
+        if (isRowRootFolder(groupPosition)) return AppConstants.ROOT_FOLDER;
         String flatFolderName = activeFolderNames.get(groupPosition);
         Folder folder = flatFolders.get(flatFolderName);
         return folder.name;
