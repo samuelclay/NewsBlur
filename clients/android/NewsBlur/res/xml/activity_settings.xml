@@ -28,6 +28,22 @@
             android:summary="@string/settings_keep_old_stories_sum" />
     </PreferenceCategory>
 
+    <PreferenceCategory
+        android:title="@string/settings_cat_feed_list">
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="enable_row_global_shared"
+            android:title="@string/settings_enable_row_global_shared" 
+            android:summary="@string/settings_enable_row_global_shared_sum"
+            />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="enable_row_infrequent_stories"
+            android:title="@string/settings_enable_row_infrequent_stories" 
+            android:summary="@string/settings_enable_row_infrequent_stories_sum"
+            />
+    </PreferenceCategory>
+
     <PreferenceCategory 
         android:title="@string/settings_cat_story_list">
         <ListPreference

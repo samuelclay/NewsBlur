@@ -244,12 +244,12 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
             if (adapter.isRowSavedStories(groupPosition)) break;
             if (currentState == StateFilter.SAVED) break;
             if (adapter.isRowReadStories(groupPosition)) break;
-            if (groupPosition == FolderListAdapter.GLOBAL_SHARED_STORIES_GROUP_POSITION) break;
-            if (groupPosition == FolderListAdapter.ALL_SHARED_STORIES_GROUP_POSITION) break;
-            if (groupPosition == FolderListAdapter.INFREQUENT_SITE_STORIES_GROUP_POSITION) break;
+            if (adapter.isRowGlobalSharedStories(groupPosition)) break;
+            if (adapter.isRowAllSharedStories(groupPosition)) break;
+            if (adapter.isRowInfrequentStories(groupPosition)) break;
             inflater.inflate(R.menu.context_folder, menu);
 
-            if (groupPosition == FolderListAdapter.ALL_STORIES_GROUP_POSITION) {
+            if (adapter.isRowAllStories(groupPosition)) {
                 menu.removeItem(R.id.menu_mute_folder);
                 menu.removeItem(R.id.menu_unmute_folder);
             }
@@ -260,7 +260,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
             if (adapter.isRowSavedStories(groupPosition)) break;
             if (currentState == StateFilter.SAVED) break;
 			inflater.inflate(R.menu.context_feed, menu);
-            if (groupPosition == FolderListAdapter.ALL_SHARED_STORIES_GROUP_POSITION) {
+            if (adapter.isRowAllSharedStories(groupPosition)) {
                 menu.removeItem(R.id.menu_delete_feed);
                 menu.removeItem(R.id.menu_choose_folders);
                 menu.removeItem(R.id.menu_unmute_feed);
@@ -329,7 +329,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 
 		if (item.getItemId() == R.id.menu_delete_feed || item.getItemId() == R.id.menu_unfollow) {
 			DialogFragment deleteFeedFragment;
-            if (groupPosition == FolderListAdapter.ALL_SHARED_STORIES_GROUP_POSITION) {
+            if (adapter.isRowAllSharedStories(groupPosition)) {
                 deleteFeedFragment = DeleteFeedFragment.newInstance(adapter.getSocialFeed(groupPosition, childPosition));
             } else {
                 String folderName = adapter.getGroupFolderName(groupPosition);
@@ -417,7 +417,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 	@Override
     public boolean onGroupClick(ExpandableListView list, View group, int groupPosition, long id) {
         Intent i = null;
-        if (groupPosition == FolderListAdapter.ALL_STORIES_GROUP_POSITION) {
+        if (adapter.isRowAllStories(groupPosition)) {
             if (currentState == StateFilter.SAVED) {
                 // the existence of this row in saved mode is something of a framework artifact and may
                 // confuse users. redirect them to the activity corresponding to what they will actually see
@@ -425,11 +425,11 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
             } else {
 			    i = new Intent(getActivity(), AllStoriesItemsList.class);
             }
-        } else if (groupPosition == FolderListAdapter.GLOBAL_SHARED_STORIES_GROUP_POSITION) {
+        } else if (adapter.isRowGlobalSharedStories(groupPosition)) {
             i = new Intent(getActivity(), GlobalSharedStoriesItemsList.class);
-        } else if (groupPosition == FolderListAdapter.ALL_SHARED_STORIES_GROUP_POSITION) {
+        } else if (adapter.isRowAllSharedStories(groupPosition)) {
             i = new Intent(getActivity(), AllSharedStoriesItemsList.class);
-        } else if (groupPosition == FolderListAdapter.INFREQUENT_SITE_STORIES_GROUP_POSITION) {
+        } else if (adapter.isRowInfrequentStories(groupPosition)) {
             i = new Intent(getActivity(), InfrequentItemsList.class);
         } else if (adapter.isRowReadStories(groupPosition)) {
             i = new Intent(getActivity(), ReadStoriesItemsList.class);
@@ -456,7 +456,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
     @Override
     public void onGroupExpand(int groupPosition) {
         // these shouldn't ever be collapsible
-        if (adapter.isFolderRoot(groupPosition)) return;
+        if (adapter.isRowRootFolder(groupPosition)) return;
         if (adapter.isRowReadStories(groupPosition)) return;
 
         String flatGroupName = adapter.getGroupUniqueName(groupPosition);
@@ -474,7 +474,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
     @Override
     public void onGroupCollapse(int groupPosition) {
         // these shouldn't ever be collapsible
-        if (adapter.isFolderRoot(groupPosition)) return;
+        if (adapter.isRowRootFolder(groupPosition)) return;
         if (adapter.isRowReadStories(groupPosition)) return;
 
         String flatGroupName = adapter.getGroupUniqueName(groupPosition);
@@ -490,7 +490,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 	@Override
     public boolean onChildClick(ExpandableListView list, View childView, int groupPosition, int childPosition, long id) {
         FeedSet fs = adapter.getChild(groupPosition, childPosition);
-		if (groupPosition == FolderListAdapter.ALL_SHARED_STORIES_GROUP_POSITION) {
+		if (adapter.isRowAllSharedStories(groupPosition)) {
             SocialFeed socialFeed = adapter.getSocialFeed(groupPosition, childPosition);
 			Intent intent = new Intent(getActivity(), SocialFeedItemsList.class);
             intent.putExtra(ItemsList.EXTRA_FEED_SET, fs);
