@@ -67,6 +67,9 @@ public class PrefConstants {
     public static final String NETWORK_SELECT_NOMO = "NOMO";
     public static final String NETWORK_SELECT_NOMONONME = "NOMONONME";
 
+    public static final String ENABLE_ROW_GLOBAL_SHARED = "enable_row_global_shared";
+    public static final String ENABLE_ROW_INFREQUENT_STORIES = "enable_row_infrequent_stories";
+
     public static final String THEME = "theme";
 
     public static final String STATE_FILTER = "state_filter";

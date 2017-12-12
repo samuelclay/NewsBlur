@@ -236,6 +236,13 @@
     </string-array>
     <string name="default_network_select_value">NOMONONME</string>
 
+    <string name="settings_cat_feed_list">Feed List</string>
+
+    <string name="settings_enable_row_global_shared">Show Global Shared Stories</string>
+    <string name="settings_enable_row_global_shared_sum">Show the Global Shared Stories folder</string>
+    <string name="settings_enable_row_infrequent_stories">Show Infrequent Stories Stories</string>
+    <string name="settings_enable_row_infrequent_stories_sum">Show the Infrequent Site Stories Stories folder</string>
+
     <string name="settings_cat_story_list">Story List</string>
 
     <string name="oldest">Oldest</string>
