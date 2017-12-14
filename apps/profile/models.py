@@ -1179,6 +1179,8 @@ class PaymentHistory(models.Model):
         print "\nMTD Totals:"
         month_totals = {}
         years = datetime.datetime.now().year - 2009
+        this_mtd_avg = 0
+        last_mtd_avg = 0
         last_mtd_sum = 0
         this_mtd_sum = 0
         last_mtd_count = 0
@@ -1191,15 +1193,18 @@ class PaymentHistory(models.Model):
             count = _counter(start_date, end_date)
             month_totals[start_date.strftime("%Y-%m")] = count['sum']
             if end_date.year != now.year:
+                last_mtd_avg = count['avg']
                 last_mtd_sum = count['sum']
                 last_mtd_count = count['count']
             else:
+                this_mtd_avg = count['avg']
                 this_mtd_sum = count['sum']
                 this_mtd_count = count['count']
 
         print "\nCurrent Month Totals:"
         month_totals = {}
         years = datetime.datetime.now().year - 2009
+        last_month_avg = 0
         last_month_sum = 0
         last_month_count = 0
         for y in reversed(range(years)):
@@ -1208,12 +1213,14 @@ class PaymentHistory(models.Model):
             end_time = start_date + datetime.timedelta(days=31)
             end_date = datetime.datetime(end_time.year, end_time.month, 1) - datetime.timedelta(seconds=1)
             if end_date > now:
-                payments = {'avg': 0, 'sum': int(round(this_mtd_sum / (max(1, last_mtd_sum) / float(max(1, last_month_sum))))), 
+                payments = {'avg': this_mtd_avg / (max(1, last_mtd_avg) / float(max(1, last_month_avg))), 
+                            'sum': int(round(this_mtd_sum / (max(1, last_mtd_sum) / float(max(1, last_month_sum))))), 
                             'count': int(round(this_mtd_count / (max(1, last_mtd_count) / float(max(1, last_month_count)))))}
                 _counter(start_date, end_date, payments=payments)
             else:
                 count = _counter(start_date, end_date)
                 month_totals[start_date.strftime("%Y-%m")] = count['sum']
+                last_month_avg = count['avg']
                 last_month_sum = count['sum']
                 last_month_count = count['count']
 
