@@ -389,6 +389,16 @@ public class PrefsUtils {
         return ReadFilter.valueOf(prefs.getString(PrefConstants.DEFAULT_READ_FILTER, ReadFilter.ALL.toString()));
     }
 
+    public static boolean isEnableRowGlobalShared(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        return prefs.getBoolean(PrefConstants.ENABLE_ROW_GLOBAL_SHARED, true);
+    }
+
+    public static boolean isEnableRowInfrequent(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        return prefs.getBoolean(PrefConstants.ENABLE_ROW_INFREQUENT_STORIES, true);
+    }
+
     public static boolean showPublicComments(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
         return prefs.getBoolean(PrefConstants.SHOW_PUBLIC_COMMENTS, true);
