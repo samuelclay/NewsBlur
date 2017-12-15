@@ -1224,25 +1224,52 @@ class PaymentHistory(models.Model):
                 last_month_sum = count['sum']
                 last_month_count = count['count']
 
-        print "\nYearly Totals:"
-        year_totals = {}
-        years = datetime.datetime.now().year - 2009
-        for y in reversed(range(years)):
-            now = datetime.datetime.now()
-            start_date = datetime.datetime(now.year, 1, 1) - dateutil.relativedelta.relativedelta(years=y)
-            end_date = datetime.datetime(now.year, 1, 1) - dateutil.relativedelta.relativedelta(years=y-1) - datetime.timedelta(seconds=1)
-            if end_date > now: end_date = now
-            year_totals[now.year - y] = _counter(start_date, end_date)['sum']
-
         print "\nYTD Totals:"
         year_totals = {}
         years = datetime.datetime.now().year - 2009
+        this_ytd_avg = 0
+        last_ytd_avg = 0
+        this_ytd_sum = 0
+        last_ytd_sum = 0
+        this_ytd_count = 0
+        last_ytd_count = 0
         for y in reversed(range(years)):
             now = datetime.datetime.now()
             start_date = datetime.datetime(now.year, 1, 1) - dateutil.relativedelta.relativedelta(years=y)
             end_date = now - dateutil.relativedelta.relativedelta(years=y)
-            if end_date > now: end_date = now
-            year_totals[now.year - y] = _counter(start_date, end_date)['sum']
+            count = _counter(start_date, end_date)
+            year_totals[now.year - y] = count['sum']
+            if end_date != now.year:
+                last_ytd_avg = count['avg']
+                last_ytd_sum = count['sum']
+                last_ytd_count = count['count']
+            else:
+                this_mtd_avg = count['avg']
+                this_mtd_sum = count['sum']
+                this_mtd_count = count['count']
+
+        print "\nYearly Totals:"
+        year_totals = {}
+        years = datetime.datetime.now().year - 2009
+        last_year_avg = 0
+        last_year_sum = 0
+        last_year_count = 0
+        for y in reversed(range(years)):
+            now = datetime.datetime.now()
+            start_date = datetime.datetime(now.year, 1, 1) - dateutil.relativedelta.relativedelta(years=y)
+            end_date = datetime.datetime(now.year, 1, 1) - dateutil.relativedelta.relativedelta(years=y-1) - datetime.timedelta(seconds=1)
+            if end_date > now:
+                payments = {'avg': this_ytd_avg / (max(1, last_ytd_avg) / float(max(1, last_year_avg))), 
+                            'sum': int(round(this_ytd_sum / (max(1, last_ytd_sum) / float(max(1, last_year_sum))))), 
+                            'count': int(round(this_ytd_count / (max(1, last_ytd_count) / float(max(1, last_year_count)))))}
+                _counter(start_date, end_date, payments=payments)
+            else:
+                count = _counter(start_date, end_date)
+                year_totals[now.year - y] = count['sum']
+                last_month_avg = count['avg']
+                last_month_sum = count['sum']
+                last_month_count = count['count']
+                
 
         total = cls.objects.all().aggregate(sum=Sum('payment_amount'))
         print "\nTotal: $%s" % total['sum']
