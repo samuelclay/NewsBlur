@@ -1244,9 +1244,9 @@ class PaymentHistory(models.Model):
                 last_ytd_sum = count['sum']
                 last_ytd_count = count['count']
             else:
-                this_mtd_avg = count['avg']
-                this_mtd_sum = count['sum']
-                this_mtd_count = count['count']
+                this_ytd_avg = count['avg']
+                this_ytd_sum = count['sum']
+                this_ytd_count = count['count']
 
         print "\nYearly Totals:"
         year_totals = {}
@@ -1266,9 +1266,9 @@ class PaymentHistory(models.Model):
             else:
                 count = _counter(start_date, end_date)
                 year_totals[now.year - y] = count['sum']
-                last_month_avg = count['avg']
-                last_month_sum = count['sum']
-                last_month_count = count['count']
+                last_year_avg = count['avg']
+                last_year_sum = count['sum']
+                last_year_count = count['count']
                 
 
         total = cls.objects.all().aggregate(sum=Sum('payment_amount'))
