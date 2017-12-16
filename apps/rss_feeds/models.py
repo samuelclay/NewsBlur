@@ -1001,7 +1001,8 @@ class Feed(models.Model):
                         start = True
                         months.append((key, dates.get(key, 0)))
                         total += dates.get(key, 0)
-                        month_count += 1
+                        if dates.get(key, 0) > 0:
+                            month_count += 1 # Only count months that have stories for the average
         original_story_count_history = self.data.story_count_history
         self.data.story_count_history = json.encode({'months': months, 'hours': hours, 'days': days})
         if self.data.story_count_history != original_story_count_history:
