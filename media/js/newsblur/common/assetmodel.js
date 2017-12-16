@@ -285,7 +285,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         this.make_request('/reader/starred_counts', {}, pre_callback, pre_callback, {request_type: 'GET'});
     },
     
-    mark_feed_as_read: function(feed_id, cutoff_timestamp, direction, callback) {
+    mark_feed_as_read: function(feed_id, cutoff_timestamp, direction, options, callback) {
         var self = this;
         var feed_ids = _.isArray(feed_id) 
                        ? _.select(feed_id, function(f) { return f; })
@@ -325,12 +325,15 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                 feed.set({'ps': 0, 'nt': 0, 'ng': 0});
             });
         }
-
-        this.make_request('/reader/mark_feed_as_read', {
+        
+        options = $.extend({
             feed_id: feed_ids,
             cutoff_timestamp: cutoff_timestamp,
             direction: direction
-        }, callback);
+        }, options);
+        
+        
+        this.make_request('/reader/mark_feed_as_read', options, callback);
     },
     
     mark_story_as_shared: function(params, callback, error_callback) {
