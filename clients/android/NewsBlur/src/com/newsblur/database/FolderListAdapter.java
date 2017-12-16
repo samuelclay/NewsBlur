@@ -479,9 +479,6 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
     }
 
     private int getRootFolderIndex() {
-        if (activeFolderNames.contains(INFREQUENT_SITE_STORIES_GROUP_KEY)) {
-            return activeFolderNames.indexOf(INFREQUENT_SITE_STORIES_GROUP_KEY);
-        }
         return activeFolderNames.indexOf(ALL_STORIES_GROUP_KEY);
     }
 
@@ -582,8 +579,8 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
         // add the always-present (if enabled) special rows/folders that got at the top of the list
         if (PrefsUtils.isEnableRowGlobalShared(context) && (currentState != StateFilter.SAVED)) addSpecialRow(GLOBAL_SHARED_STORIES_GROUP_KEY);
         if ((currentState != StateFilter.SAVED)) addSpecialRow(ALL_SHARED_STORIES_GROUP_KEY);
-        addSpecialRow(ALL_STORIES_GROUP_KEY);
         if (PrefsUtils.isEnableRowInfrequent(context) && (currentState != StateFilter.SAVED)) addSpecialRow(INFREQUENT_SITE_STORIES_GROUP_KEY);
+        addSpecialRow(ALL_STORIES_GROUP_KEY);
         // create a sorted list of folder display names
         List<String> sortedFolderNames = new ArrayList<String>(flatFolders.keySet());
         Collections.sort(sortedFolderNames, Folder.FolderNameComparator);
