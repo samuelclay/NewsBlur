@@ -314,18 +314,15 @@ static UIFont *userLabelFont;
     NSString *feedIdStr = [NSString stringWithFormat:@"%@", feedId];
     [self.feedTitlesTable deselectRowAtIndexPath:[self.feedTitlesTable indexPathForSelectedRow]
                                         animated:YES];
-    NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
-    if (![preferences boolForKey:@"show_feeds_after_being_read"]) {
-        for (NSIndexPath *indexPath in [self.feedTitlesTable indexPathsForVisibleRows]) {
-            NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:indexPath.section];
-            id cellFeedId = [[appDelegate.dictFolders objectForKey:folderName] objectAtIndex:indexPath.row];
-            if ([feedIdStr isEqualToString:[NSString stringWithFormat:@"%@", cellFeedId]]) {
-                [self.feedTitlesTable beginUpdates];
-                [self.feedTitlesTable reloadRowsAtIndexPaths:@[indexPath]
-                                            withRowAnimation:UITableViewRowAnimationFade];
-                [self.feedTitlesTable endUpdates];
-                break;
-            }
+    for (NSIndexPath *indexPath in [self.feedTitlesTable indexPathsForVisibleRows]) {
+        NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:indexPath.section];
+        id cellFeedId = [[appDelegate.dictFolders objectForKey:folderName] objectAtIndex:indexPath.row];
+        if ([feedIdStr isEqualToString:[NSString stringWithFormat:@"%@", cellFeedId]]) {
+            [self.feedTitlesTable beginUpdates];
+            [self.feedTitlesTable reloadRowsAtIndexPaths:@[indexPath]
+                                        withRowAnimation:UITableViewRowAnimationFade];
+            [self.feedTitlesTable endUpdates];
+            break;
         }
     }
 }
@@ -749,10 +746,27 @@ static UIFont *userLabelFont;
 
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad && finished) {
         [appDelegate.dashboardViewController refreshStories];
+        [self cacheFeedRowLocations];
     }
     [self loadNotificationStory];
 
     [[NSNotificationCenter defaultCenter] postNotificationName:@"FinishedLoadingFeedsNotification" object:nil];
+}
+
+- (void)cacheFeedRowLocations {
+    indexPathsForFeedIds = [NSMutableDictionary dictionary];
+    dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul);
+
+    dispatch_async(queue, ^{
+        for (NSString *folderName in appDelegate.dictFoldersArray) {
+            NSInteger section = [appDelegate.dictFoldersArray indexOfObject:folderName];
+            NSArray *folder = [appDelegate.dictFolders objectForKey:folderName];
+            for (NSInteger row=0; row < folder.count; row++) {
+                NSIndexPath *indexPath = [NSIndexPath indexPathForRow:row inSection:section];
+                [indexPathsForFeedIds setObject:indexPath forKey:[folder objectAtIndex:row]];
+            }
+        }
+    });
 }
 
 - (void)loadOfflineFeeds:(BOOL)failed {
@@ -1211,7 +1225,6 @@ static UIFont *userLabelFont;
 
 - (CGFloat)tableView:(UITableView *)tableView
            heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    NSUserDefaults *prefs = [NSUserDefaults standardUserDefaults];
     if (appDelegate.hasNoSites) {
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
             return kBlurblogTableViewRowHeight;            
@@ -2125,6 +2138,27 @@ heightForHeaderInSection:(NSInteger)section {
     } else {
         [UIApplication sharedApplication].applicationIconBadgeNumber = 0;
     }
+}
+
+- (void)redrawFeedCounts:(id)feedId {
+    NSIndexPath *indexPath = [indexPathsForFeedIds objectForKey:feedId];
+    NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:indexPath.section];
+    BOOL isFolderCollapsed = [appDelegate isFolderCollapsed:folderName];
+
+    if (indexPath) {
+        [self.feedTitlesTable beginUpdates];
+        if (isFolderCollapsed) {
+            [appDelegate.folderCountCache removeObjectForKey:folderName];
+            NSIndexSet *indexSet = [[NSIndexSet alloc] initWithIndex:indexPath.section];
+            [self.feedTitlesTable reloadSections:indexSet withRowAnimation:UITableViewRowAnimationNone];
+        } else {
+            [self.feedTitlesTable reloadRowsAtIndexPaths:@[indexPath]
+                                        withRowAnimation:UITableViewRowAnimationNone];
+        }
+        [self.feedTitlesTable endUpdates];
+    }
+    
+    [self refreshHeaderCounts];
 }
 
 - (void)showRefreshNotifier {
