@@ -128,6 +128,12 @@
         self.themeSegmentedControl.selectedSegmentIndex = 0;
     }
     
+    if ([self isInfrequent]) {
+        self.infrequentSegmentedControl.hidden = NO;
+    } else {
+        self.infrequentSegmentedControl.hidden = YES;
+    }
+    
     NSInteger menuCount = self.menuOptions.count + ([self isRiver] ? 3 : 4) + ([self isInfrequent] ? 1 : 0);
     self.navigationController.preferredContentSize = CGSizeMake(260, 38 * menuCount);
 }
