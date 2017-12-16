@@ -120,9 +120,9 @@
     } else if (section == 1) {
             folderTitle = [@"All Shared Stories" uppercaseString];
     } else if (section == 2) {
-        folderTitle = [@"All Stories" uppercaseString];
-    } else if (section == 3) {
         folderTitle = [@"Infrequent Site Stories" uppercaseString];
+    } else if (section == 3) {
+        folderTitle = [@"All Stories" uppercaseString];
     } else if ([folderName isEqual:@"read_stories"]) {
         folderTitle = [@"Read Stories" uppercaseString];
     } else if ([folderName isEqual:@"saved_stories"]) {
