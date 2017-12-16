@@ -647,7 +647,7 @@ static UIFont *userLabelFont;
         NSArray *folder = [appDelegate.dictFolders objectForKey:f];
         NSString *folderTitle;
         if ([f isEqualToString:@" "]) {
-            folderTitle = @"infrequent";
+            folderTitle = @"everything";
         } else {
             folderTitle = f;
         }
@@ -678,7 +678,6 @@ static UIFont *userLabelFont;
     appDelegate.dictFolders = sortedFolders;
     [appDelegate.dictFoldersArray sortUsingSelector:@selector(caseInsensitiveCompare:)];
     
-    
     // Move River Blurblog and Everything to the top
     [appDelegate.dictFoldersArray removeObject:@"river_global"];
     [appDelegate.dictFoldersArray insertObject:@"river_global" atIndex:0];
@@ -686,12 +685,12 @@ static UIFont *userLabelFont;
     [appDelegate.dictFoldersArray removeObject:@"river_blurblogs"];
     [appDelegate.dictFoldersArray insertObject:@"river_blurblogs" atIndex:1];
 
-    [appDelegate.dictFoldersArray removeObject:@"everything"];
-    [appDelegate.dictFoldersArray insertObject:@"everything" atIndex:2];
-
     // Add Infrequent folder
     [appDelegate.dictFoldersArray removeObject:@"infrequent"];
-    [appDelegate.dictFoldersArray insertObject:@"infrequent" atIndex:3];
+    [appDelegate.dictFoldersArray insertObject:@"infrequent" atIndex:2];
+
+    [appDelegate.dictFoldersArray removeObject:@"everything"];
+    [appDelegate.dictFoldersArray insertObject:@"everything" atIndex:3];
 
     // Add Read Stories folder
     [appDelegate.dictFoldersArray removeObject:@"read_stories"];
@@ -1169,9 +1168,9 @@ static UIFont *userLabelFont;
     } else if (indexPath.section == 1) {
         folderName = @"river_blurblogs";
     } else if (indexPath.section == 2) {
-        folderName = @"everything";
-    } else if (indexPath.section == 3) {
         folderName = @"infrequent";
+    } else if (indexPath.section == 3) {
+        folderName = @"everything";
     } else {
         folderName = [appDelegate.dictFoldersArray objectAtIndex:indexPath.section];
     }
@@ -1212,6 +1211,7 @@ static UIFont *userLabelFont;
 
 - (CGFloat)tableView:(UITableView *)tableView
            heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    NSUserDefaults *prefs = [NSUserDefaults standardUserDefaults];
     if (appDelegate.hasNoSites) {
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
             return kBlurblogTableViewRowHeight;            
@@ -1228,7 +1228,7 @@ static UIFont *userLabelFont;
     } else {
         folderName = [appDelegate.dictFoldersArray objectAtIndex:indexPath.section];
     }
-
+    
     bool isFolderCollapsed = [appDelegate isFolderCollapsed:folderName];
     if (isFolderCollapsed) {
         return 0;
@@ -1314,6 +1314,8 @@ static UIFont *userLabelFont;
 
 - (CGFloat)tableView:(UITableView *)tableView
 heightForHeaderInSection:(NSInteger)section {
+    NSUserDefaults *prefs = [NSUserDefaults standardUserDefaults];
+    
     if ([appDelegate.dictFoldersArray count] == 0) return 0;
     
     NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:section];
@@ -1325,6 +1327,16 @@ heightForHeaderInSection:(NSInteger)section {
         return 0;
     }
     
+    if ([folderName isEqualToString:@"infrequent"] &&
+        ![prefs boolForKey:@"show_infrequent_site_stories"]) {
+        return 0;
+    }
+
+    if ([folderName isEqualToString:@"river_global"] &&
+        ![prefs boolForKey:@"show_global_shared_stories"]) {
+        return 0;
+    }
+
     UIFontDescriptor *fontDescriptor = [self fontDescriptorUsingPreferredSize:UIFontTextStyleCaption1];
     UIFont *font = [UIFont fontWithDescriptor:fontDescriptor size:0.0];
     NSInteger height = kFolderTitleHeight;
@@ -1351,9 +1363,9 @@ heightForHeaderInSection:(NSInteger)section {
     } else if (tag == 1) {
         folder = @"river_blurblogs";
     } else if (tag == 2) {
-        folder = @"everything";
-    } else if (tag == 3) {
         folder = @"infrequent";
+    } else if (tag == 3) {
+        folder = @"everything";
     } else {
         folder = [NSString stringWithFormat:@"%ld", (long)tag];
     }
