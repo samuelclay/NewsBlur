@@ -479,9 +479,6 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
     }
 
     private int getRootFolderIndex() {
-        if (activeFolderNames.contains(INFREQUENT_SITE_STORIES_GROUP_KEY)) {
-            return activeFolderNames.indexOf(INFREQUENT_SITE_STORIES_GROUP_KEY);
-        }
         return activeFolderNames.indexOf(ALL_STORIES_GROUP_KEY);
     }
 
