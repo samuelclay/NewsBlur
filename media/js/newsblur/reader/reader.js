@@ -2443,6 +2443,7 @@
         },
         
         mark_feeds_as_read: function(feeds, days_back, direction) {
+            var options = {};
             var order = NEWSBLUR.assets.view_setting(this.active_feed, 'order');
             var stories_not_visible = true;
             var cutoff_timestamp = parseInt(NEWSBLUR.utils.days_back_to_timestamp(days_back) || 0, 10);
@@ -2460,7 +2461,9 @@
                 feeds = _.unique(_.map(stories, function(story) { return story.get('story_feed_id'); }));
             }
 
-            this.model.mark_feed_as_read(feeds, cutoff_timestamp, direction, 
+            if (this.active_feed == 'river:infrequent') options.infrequent = NEWSBLUR.assets.preference('infrequent_stories_per_month');
+
+            this.model.mark_feed_as_read(feeds, cutoff_timestamp, direction, options,
                                          _.bind(function() {
                 if (feeds.length == 1) {
                     this.feed_unread_count(feeds[0]);
