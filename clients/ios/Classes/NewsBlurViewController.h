@@ -28,6 +28,7 @@ UIGestureRecognizerDelegate> {
     NSMutableDictionary * activeFeedLocations;
     NSMutableDictionary *stillVisibleFeeds;
     NSMutableDictionary *visibleFolders;
+    NSMutableDictionary *indexPathsForFeedIds;
     
     BOOL isOffline;
     BOOL viewShowingAllFeeds;
@@ -116,6 +117,7 @@ UIGestureRecognizerDelegate> {
 - (void)resetToolbar;
 - (void)layoutHeaderCounts:(UIInterfaceOrientation)orientation;
 - (void)refreshHeaderCounts;
+- (void)redrawFeedCounts:(id)feedId;
 
 - (void)resizeFontSize;
 - (void)settingsViewControllerDidEnd:(IASKAppSettingsViewController*)sender;

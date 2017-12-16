@@ -1767,6 +1767,11 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
                     [storiesCollection syncStoryAsRead:story];
                     [self.storyTitlesTable reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:thisRow inSection:0]]
                                                  withRowAnimation:UITableViewRowAnimationFade];
+                    
+                    if (self.isDashboardModule) {
+                        id feedId = [story objectForKey:@"story_feed_id"];
+                        [appDelegate refreshFeedCount:feedId];
+                    }
                 }
             }
             
