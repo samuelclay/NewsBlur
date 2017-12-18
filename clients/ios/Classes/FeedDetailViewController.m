@@ -1859,6 +1859,8 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     
     NSDictionary *story = [self getStoryAtRow:indexPath.row];
     
+    if (!story) return;
+
     NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
     NSString *longPressStoryTitle = [preferences stringForKey:@"long_press_story_title"];
     
@@ -1944,6 +1946,12 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     NSString *direction = older ? @"older" : @"newest";
     [params setObject:direction forKey:@"direction"];
     
+    if ([storiesCollection.activeFolder isEqualToString:@"infrequent"]) {
+        NSUserDefaults *prefs = [NSUserDefaults standardUserDefaults];
+        NSString *infrequent = [NSString stringWithFormat:@"%ld", (long)[prefs integerForKey:@"infrequent_stories_per_month"]];
+        [params setObject:infrequent forKey:@"infrequent"];
+    }
+
     [appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionTask *task, id responseObject) {
         [appDelegate markFeedReadInCache:feedIds cutoffTimestamp:cutoffTimestamp older:older];
         // is there a better way to refresh the detail view?
@@ -2441,6 +2449,9 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 
 - (NSArray<UIDragItem *> *)tableView:(UITableView *)tableView itemsForBeginningDragSession:(id<UIDragSession>)session atIndexPath:(NSIndexPath *)indexPath API_AVAILABLE(ios(11.0)) {
     NSDictionary *story = [self getStoryAtRow:indexPath.row];
+    
+    if (!story) return nil;
+    
     NSItemProvider *itemProviderUrl = [[NSItemProvider alloc] initWithObject:story[@"story_permalink"]];
     UIDragItem *dragUrl = [[UIDragItem alloc] initWithItemProvider:itemProviderUrl];
     dragUrl.localObject = story[@"story_permalink"];
