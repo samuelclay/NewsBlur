@@ -2783,7 +2783,7 @@ class MSocialServices(mongo.Document):
         self.set_photo('twitter')
         
     def post_to_twitter(self, shared_story):
-        message = shared_story.generate_post_to_service_message(truncate=140)
+        message = shared_story.generate_post_to_service_message(truncate=280)
         shared_story.calculate_image_sizes()
         
         try:
