@@ -4299,7 +4299,7 @@
                 $.make('div', { className: 'NB-icon' }),
                 $.make('input', { className: 'NB-input', placeholder: "New folder name..." }),
                 $.make('div', { className: 'NB-menu-manage-add-folder-save NB-modal-submit-green NB-modal-submit-button' }, 'Add')
-            ]).data('in_folder', $folder.data('folder'));
+            ]).data('in_folder', $folder.data('folder')).data('feed_id', feed_id);
             $add.css('paddingLeft', parseInt($folder.css('paddingLeft'), 10) + 12);
             $folder.after($add);
             
@@ -4308,7 +4308,7 @@
             }).bind('keyup', 'esc', function(e) {
                 var feed       = self.model.get_feed(feed_id);
                 var in_folders = feed.get('menu_folders');
-                self.render_change_folders(feed, in_folders);                
+                self.render_change_folders(feed, in_folders);
             });
         },
         
@@ -4326,7 +4326,8 @@
                 NEWSBLUR.assets.folders.reset(_.compact(data.folders), {parse: true});
             }
             
-            var feed_id    = $('.NB-menu-manage').data('feed_id');
+            var $form = $('.NB-add-folder-form');
+            var feed_id    = $form.data('feed_id');
             var feed       = this.model.get_feed(feed_id);
             var in_folders = feed.get('menu_folders');
 
