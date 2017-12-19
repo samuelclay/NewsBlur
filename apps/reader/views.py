@@ -1534,6 +1534,13 @@ def mark_all_as_read(request):
     read_date = datetime.datetime.utcnow() - datetime.timedelta(days=days)
     
     feeds = UserSubscription.objects.filter(user=request.user)
+
+    infrequent        = is_true(request.REQUEST.get('infrequent', False))
+    if infrequent:
+        infrequent = request.REQUEST.get('infrequent')
+        feed_ids = Feed.low_volume_feeds([usersub.feed.pk for usersub in feeds], stories_per_month=infrequent)
+        feeds = UserSubscription.objects.filter(user=request.user, feed_id__in=feed_ids)
+    
     socialsubs = MSocialSubscription.objects.filter(user_id=request.user.pk)
     for subtype in [feeds, socialsubs]:
         for sub in subtype:
@@ -1548,7 +1555,7 @@ def mark_all_as_read(request):
     r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
     r.publish(request.user.username, 'reload:feeds')
     
-    logging.user(request, "~FMMarking all as read: ~SB%s days" % (days,))
+    logging.user(request, "~FMMarking %s as read: ~SB%s days" % (("all" if not infrequent else "infrequent stories"), days,))
     return dict(code=code)
     
 @ajax_login_required
