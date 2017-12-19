@@ -470,11 +470,6 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
      * but the UI convention is that they appear below special rows and above folders.
      */
     public boolean isRowRootFolder(int groupPosition) {
-        // if this is enabled, it is the lowest special folder
-        if (activeFolderNames.contains(INFREQUENT_SITE_STORIES_GROUP_KEY)) {
-            return isRowInfrequentStories(groupPosition);
-        }
-        // if that row does not exist, then this is the lowest
         return isRowAllStories(groupPosition);
     }
 
