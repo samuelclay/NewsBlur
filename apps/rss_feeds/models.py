@@ -404,6 +404,7 @@ class Feed(models.Model):
     def get_feed_from_url(cls, url, create=True, aggressive=False, fetch=True, offset=0, user=None):
         feed = None
         without_rss = False
+        original_url = url
         
         if url and url.startswith('newsletter:'):
             return cls.objects.get(feed_address=url)
@@ -469,8 +470,8 @@ class Feed(models.Model):
                     feed = cls.objects.create(feed_address=feed_finder_url)
                     feed = feed.update()
             elif without_rss:
-                logging.debug(" ---> Found without_rss feed: %s" % (url))
-                feed = cls.objects.create(feed_address=url)
+                logging.debug(" ---> Found without_rss feed: %s / %s" % (url, original_url))
+                feed = cls.objects.create(feed_address=url, feed_link=original_url)
                 feed = feed.update(requesting_user_id=user.pk if user else None)
                 
         # Check for JSON feed
