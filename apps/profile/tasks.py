@@ -72,3 +72,11 @@ class CleanupUser(Task):
             return
         ss.sync_twitter_photo()
 
+class CleanSpam(Task):
+    name = 'clean-spam'
+
+    def run(self, **kwargs):
+        logging.debug(" ---> Finding spammers...")
+        Profile.clear_dead_spammers(confirm=True)
+            
+

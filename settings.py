@@ -474,7 +474,12 @@ CELERYBEAT_SCHEDULE = {
     },
     'clean-spam': {
         'task': 'clean-spam',
-        'schedule': datetime.timedelta(hours=12),
+        'schedule': datetime.timedelta(hours=6),
+        'options': {'queue': 'beat_tasks'},
+    },
+    'clean-social-spam': {
+        'task': 'clean-social-spam',
+        'schedule': datetime.timedelta(hours=6),
         'options': {'queue': 'beat_tasks'},
     },
     'premium-expire': {
