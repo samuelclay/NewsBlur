@@ -26,6 +26,7 @@ import com.newsblur.service.NBSyncService;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
+import com.newsblur.util.PrefConstants.ThemeValue;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadFilter;
 import com.newsblur.util.ReadFilterChangedListener;
@@ -139,10 +140,13 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
         if (fs.isFilterSaved()) {
             menu.findItem(R.id.menu_mark_all_as_read).setVisible(false);
         }
-        if (PrefsUtils.isLightThemeSelected(this)) {
+        ThemeValue themeValue = PrefsUtils.getSelectedTheme(this);
+        if (themeValue == ThemeValue.LIGHT) {
             menu.findItem(R.id.menu_theme_light).setChecked(true);
-        } else {
+        } else if (themeValue == ThemeValue.DARK) {
             menu.findItem(R.id.menu_theme_dark).setChecked(true);
+        } else if (themeValue == ThemeValue.BLACK) {
+            menu.findItem(R.id.menu_theme_black).setChecked(true);
         }
 		return true;
 	}
@@ -178,10 +182,13 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
                 checkSearchQuery();
             }
         } else if (item.getItemId() == R.id.menu_theme_light) {
-            PrefsUtils.setLightThemeSelected(this, true);
+            PrefsUtils.setSelectedTheme(this, ThemeValue.LIGHT);
             UIUtils.restartActivity(this);
         } else if (item.getItemId() == R.id.menu_theme_dark) {
-            PrefsUtils.setLightThemeSelected(this, false);
+            PrefsUtils.setSelectedTheme(this, ThemeValue.DARK);
+            UIUtils.restartActivity(this);
+        } else if (item.getItemId() == R.id.menu_theme_black) {
+            PrefsUtils.setSelectedTheme(this, ThemeValue.BLACK);
             UIUtils.restartActivity(this);
         }
 	

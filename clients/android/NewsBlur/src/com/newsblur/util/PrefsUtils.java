@@ -28,6 +28,7 @@ import com.newsblur.R;
 import com.newsblur.activity.Login;
 import com.newsblur.domain.UserDetails;
 import com.newsblur.network.APIConstants;
+import com.newsblur.util.PrefConstants.ThemeValue;
 import com.newsblur.service.NBSyncService;
 
 public class PrefsUtils {
@@ -660,25 +661,35 @@ public class PrefsUtils {
     }
 
     public static void applyThemePreference(Activity activity) {
-        SharedPreferences prefs = activity.getSharedPreferences(PrefConstants.PREFERENCES, 0);
-        String theme = prefs.getString(PrefConstants.THEME, "light");
-        if (theme.equals("light")) {
+        ThemeValue value = getSelectedTheme(activity);
+        if (value == ThemeValue.LIGHT) {
             activity.setTheme(R.style.NewsBlurTheme);
-        } else {
+        } else if (value == ThemeValue.DARK) {
             activity.setTheme(R.style.NewsBlurDarkTheme);
+        } else if (value == ThemeValue.BLACK) {
+            activity.setTheme(R.style.NewsBlurBlackTheme);
         }
     }
 
-    public static boolean isLightThemeSelected(Context context) {
+    public static ThemeValue getSelectedTheme(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
-        String theme = prefs.getString(PrefConstants.THEME, "light");
-        return theme.equals("light");
+        String value = prefs.getString(PrefConstants.THEME, ThemeValue.LIGHT.name());
+        // check for legacy hard-coded values. this can go away once installs of v152 or earlier are minimized
+        if (value.equals("light")) {    
+            setSelectedTheme(context, ThemeValue.LIGHT);
+            return ThemeValue.LIGHT;
+        }
+        if (value.equals("dark")) {    
+            setSelectedTheme(context, ThemeValue.DARK);
+            return ThemeValue.LIGHT;
+        }
+        return ThemeValue.valueOf(value);
     }
 
-    public static void setLightThemeSelected(Context context, boolean lightThemeSelected) {
+    public static void setSelectedTheme(Context context, ThemeValue value) {
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
         Editor editor = prefs.edit();
-        editor.putString(PrefConstants.THEME, (lightThemeSelected ? "light" : "dark"));
+        editor.putString(PrefConstants.THEME, value.name());
         editor.commit();
     }
 

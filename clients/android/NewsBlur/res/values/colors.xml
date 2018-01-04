@@ -37,6 +37,8 @@
     <color name="folder_background_start">#DDE0D7</color>
     <color name="dark_folder_background_end">@color/gray07</color>
     <color name="dark_folder_background_start">@color/gray13</color>
+    <color name="black_folder_background_end">@color/black</color>
+    <color name="black_folder_background_start">@color/gray07</color>
     <color name="folder_background_selected_end">#D9DBD4</color>
     <color name="folder_background_selected_start">#CDD0C7</color>
     <color name="dark_folder_background_selected_end">#4C4C4C</color>
@@ -45,6 +47,8 @@
     <color name="row_border_bottom">@color/gray80</color>
     <color name="dark_row_border_top">@color/gray20</color>
     <color name="dark_row_border_bottom">@color/gray13</color>
+    <color name="black_row_border_top">@color/gray10</color>
+    <color name="black_row_border_bottom">@color/gray07</color>
     <color name="feed_background_selected_end">#FFFFD2</color>
     <color name="feed_background_selected_start">#E3D0AE</color>
     <color name="dark_feed_background_selected_end">#4C4C4C</color>
@@ -72,6 +76,8 @@
     <color name="item_header_background_end">#F3F4EF</color>
     <color name="dark_item_header_background_start">#505050</color>
     <color name="dark_item_header_background_end">#303030</color>
+    <color name="black_item_header_background_start">@color/gray07</color>
+    <color name="black_item_header_background_end">@color/black</color>
     <color name="item_header_border">#C2C5BE</color>
     <color name="dark_item_header_border">#42453E</color>
     <color name="item_background">#F4F4F4</color>

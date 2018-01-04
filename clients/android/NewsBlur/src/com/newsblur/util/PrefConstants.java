@@ -71,6 +71,11 @@ public class PrefConstants {
     public static final String ENABLE_ROW_INFREQUENT_STORIES = "enable_row_infrequent_stories";
 
     public static final String THEME = "theme";
+    public enum ThemeValue {
+        LIGHT,
+        DARK,
+        BLACK;
+    }
 
     public static final String STATE_FILTER = "state_filter";
 
