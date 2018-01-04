@@ -9,11 +9,15 @@ import com.newsblur.util.FeedUtils;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class OriginalTextService extends SubService {
 
     // special value for when the API responds that it could fatally could not fetch text
     public static final String NULL_STORY_TEXT = "__NULL_STORY_TEXT__";
+
+    private static final Pattern imgSniff = Pattern.compile("<img[^>]*src=(['\"])((?:(?!\\1).)*)\\1[^>]*>", Pattern.CASE_INSENSITIVE);
 
     private static volatile boolean Running = false;
 
@@ -61,7 +65,15 @@ public class OriginalTextService extends SubService {
                         result = NULL_STORY_TEXT;
                     }
                 }
-                if (result != null) parent.dbHelper.putStoryText(hash, result);
+                if (result != null) {   
+                    // store the fetched text in the DB
+                    parent.dbHelper.putStoryText(hash, result);
+                    // scan for potentially cache-able images in the extracted 'text'
+                    Matcher imgTagMatcher = imgSniff.matcher(result);
+                    while (imgTagMatcher.find()) {
+                        parent.imagePrefetchService.addUrl(imgTagMatcher.group(2));
+                    }
+                }
             }
         } finally {
             gotData(NbActivity.UPDATE_TEXT);

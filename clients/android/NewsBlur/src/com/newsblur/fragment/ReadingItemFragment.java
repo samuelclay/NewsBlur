@@ -672,8 +672,10 @@ public class ReadingItemFragment extends NbFragment {
         imageUrlRemaps = new HashMap<String,String>();
     }
 
+    private static final Pattern imgSniff = Pattern.compile("<img[^>]*(src\\s*=\\s*)\"([^\"]*)\"[^>]*>", Pattern.CASE_INSENSITIVE);
+
     private String swapInOfflineImages(String html) {
-        Matcher imageTagMatcher = Pattern.compile("<img[^>]*(src\\s*=\\s*)\"([^\"]*)\"[^>]*>", Pattern.CASE_INSENSITIVE).matcher(html);
+        Matcher imageTagMatcher = imgSniff.matcher(html);
         while (imageTagMatcher.find()) {
             String url = imageTagMatcher.group(2);
             String localPath = FeedUtils.storyImageCache.getCachedLocation(url);
