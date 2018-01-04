@@ -46,6 +46,7 @@ import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.Font;
+import com.newsblur.util.PrefConstants.ThemeValue;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.StoryUtils;
 import com.newsblur.util.UIUtils;
@@ -616,15 +617,18 @@ public class ReadingItemFragment extends NbFragment {
 
             float currentSize = PrefsUtils.getTextSize(getActivity());
             Font font = PrefsUtils.getFont(getActivity());
+            ThemeValue themeValue = PrefsUtils.getSelectedTheme(getActivity());
 
             StringBuilder builder = new StringBuilder();
             builder.append("<html><head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=0\" />");
             builder.append(font.forWebView(currentSize));
             builder.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"reading.css\" />");
-            if (PrefsUtils.isLightThemeSelected(getActivity())) {
+            if (themeValue == ThemeValue.LIGHT) {
                 builder.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"light_reading.css\" />");
-            } else {
+            } else if (themeValue == ThemeValue.DARK) {
                 builder.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"dark_reading.css\" />");
+            } else if (themeValue == ThemeValue.BLACK) {
+                builder.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"black_reading.css\" />");
             }
             builder.append("</head><body><div class=\"NB-story\">");
             builder.append(storyText);

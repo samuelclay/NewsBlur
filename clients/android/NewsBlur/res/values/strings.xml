@@ -319,15 +319,7 @@
     <string name="theme">Theme</string>
     <string name="light">Light</string>
     <string name="dark">Dark</string>
-    <string-array name="default_theme_entries">
-        <item>@string/light</item>
-        <item>@string/dark</item>
-    </string-array>
-    <string-array name="default_theme_values">
-        <item>light</item>
-        <item>dark</item>
-    </string-array>
-    <string name="default_theme_value">light</string>
+    <string name="black">Black</string>
 
     <string name="settings_gestures">Gestures</string>
 
