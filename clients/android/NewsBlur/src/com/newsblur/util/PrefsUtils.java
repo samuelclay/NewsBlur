@@ -681,7 +681,7 @@ public class PrefsUtils {
         }
         if (value.equals("dark")) {    
             setSelectedTheme(context, ThemeValue.DARK);
-            return ThemeValue.LIGHT;
+            return ThemeValue.DARK;
         }
         return ThemeValue.valueOf(value);
     }
