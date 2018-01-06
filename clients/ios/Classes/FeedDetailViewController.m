@@ -86,8 +86,10 @@
     self.storyTitlesTable.backgroundColor = UIColorFromRGB(0xf4f4f4);
     self.storyTitlesTable.separatorColor = UIColorFromRGB(0xE9E8E4);
     if (@available(iOS 11.0, *)) {
-        self.storyTitlesTable.dragDelegate = self;
-        self.storyTitlesTable.dragInteractionEnabled = YES;
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+            self.storyTitlesTable.dragDelegate = self;
+            self.storyTitlesTable.dragInteractionEnabled = YES;
+        }
     }
     self.view.backgroundColor = UIColorFromRGB(0xf4f4f4);
 
