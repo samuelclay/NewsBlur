@@ -216,6 +216,7 @@
 		787A0CDB11CE65330056422D /* FeedDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 787A0CD911CE65330056422D /* FeedDetailViewController.m */; };
 		788EF356127E5BC80088EDC5 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 788EF355127E5BC80088EDC5 /* QuartzCore.framework */; };
 		E160F0571C9DAC2C00CB96DF /* UIViewController+HidePopover.m in Sources */ = {isa = PBXBuildFile; fileRef = E160F0561C9DAC2C00CB96DF /* UIViewController+HidePopover.m */; };
+		E1C44B0B200147ED002128AD /* StoryTitleAttributedString.m in Sources */ = {isa = PBXBuildFile; fileRef = E1C44B0A200147ED002128AD /* StoryTitleAttributedString.m */; };
 		E1D123FE1C66753D00434F40 /* Localizable.stringsdict in Resources */ = {isa = PBXBuildFile; fileRef = E1D123FD1C66753D00434F40 /* Localizable.stringsdict */; };
 		FF03AFE419F87A770063002A /* g_icn_folder_read.png in Resources */ = {isa = PBXBuildFile; fileRef = FF03AFE219F87A770063002A /* g_icn_folder_read.png */; };
 		FF03AFE519F87A770063002A /* g_icn_folder_read@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF03AFE319F87A770063002A /* g_icn_folder_read@2x.png */; };
@@ -859,6 +860,8 @@
 		8D1107310486CEB800E47090 /* NewsBlur-iPhone-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "NewsBlur-iPhone-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
 		E160F0551C9DAC2C00CB96DF /* UIViewController+HidePopover.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIViewController+HidePopover.h"; path = "Other Sources/UIViewController+HidePopover.h"; sourceTree = "<group>"; };
 		E160F0561C9DAC2C00CB96DF /* UIViewController+HidePopover.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UIViewController+HidePopover.m"; path = "Other Sources/UIViewController+HidePopover.m"; sourceTree = "<group>"; };
+		E1C44B09200147ED002128AD /* StoryTitleAttributedString.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = StoryTitleAttributedString.h; sourceTree = "<group>"; };
+		E1C44B0A200147ED002128AD /* StoryTitleAttributedString.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = StoryTitleAttributedString.m; sourceTree = "<group>"; };
 		E1D123FD1C66753D00434F40 /* Localizable.stringsdict */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.stringsdict; path = Localizable.stringsdict; sourceTree = "<group>"; };
 		FF03AFE219F87A770063002A /* g_icn_folder_read.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = g_icn_folder_read.png; sourceTree = "<group>"; };
 		FF03AFE319F87A770063002A /* g_icn_folder_read@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "g_icn_folder_read@2x.png"; sourceTree = "<group>"; };
@@ -1727,6 +1730,8 @@
 				FF67D3B1168924C40057A7DA /* TrainerViewController.m */,
 				FF6282131A11613900271FDB /* UserTagsViewController.h */,
 				FF6282141A11613900271FDB /* UserTagsViewController.m */,
+				E1C44B09200147ED002128AD /* StoryTitleAttributedString.h */,
+				E1C44B0A200147ED002128AD /* StoryTitleAttributedString.m */,
 			);
 			name = Story;
 			sourceTree = "<group>";
@@ -3181,6 +3186,7 @@
 				FFA045B419CA49D700618DC4 /* SloppySwiper.m in Sources */,
 				E160F0571C9DAC2C00CB96DF /* UIViewController+HidePopover.m in Sources */,
 				FFDE35CC161B8F870034BFDE /* FolderTitleView.m in Sources */,
+				E1C44B0B200147ED002128AD /* StoryTitleAttributedString.m in Sources */,
 				FFDE35DA161D12250034BFDE /* UnreadCountView.m in Sources */,
 				FFDE35EA162799B90034BFDE /* FeedDetailMenuViewController.m in Sources */,
 				FF34FD621E9D93CB0062F8ED /* IASKMultipleValueSelection.m in Sources */,
