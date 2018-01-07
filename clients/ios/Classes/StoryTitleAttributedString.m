@@ -26,7 +26,7 @@
 
 - (nullable NSProgress *)loadDataWithTypeIdentifier:(nonnull NSString *)typeIdentifier forItemProviderCompletionHandler:(nonnull void (^)(NSData * _Nullable, NSError * _Nullable))completionHandler {
 
-    NSLog(@"requested: %@", typeIdentifier);
+    // NSLog(@"drag type identifier requested: %@", typeIdentifier);
 
     if ([typeIdentifier isEqualToString:(NSString *)kUTTypeUTF8PlainText])
         return [plainString loadDataWithTypeIdentifier:typeIdentifier forItemProviderCompletionHandler:completionHandler];
