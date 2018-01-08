@@ -10,6 +10,7 @@ import com.newsblur.service.NBSyncService;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
+import com.newsblur.util.PrefConstants.ThemeValue;
 import com.newsblur.util.UIUtils;
 
 import java.util.ArrayList;
@@ -32,6 +33,8 @@ public class NbActivity extends Activity {
 	private final static String UNIQUE_LOGIN_KEY = "uniqueLoginKey";
 	private String uniqueLoginKey;
 
+    private ThemeValue lastTheme = null;
+
     /**
      * Keep track of all activie activities so they can be notified when the sync service
      * has updated the DB. This is essentially an ultra-lightweight implementation of a
@@ -44,7 +47,10 @@ public class NbActivity extends Activity {
         com.newsblur.util.Log.offerContext(this);
         if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "onCreate");
 
+        // this is not redundant to the applyThemePreference() call in onResume. the theme needs to be set
+        // before onCreate() in order to work
         PrefsUtils.applyThemePreference(this);
+        lastTheme = PrefsUtils.getSelectedTheme(this);
 
 		super.onCreate(bundle);
 
@@ -64,6 +70,13 @@ public class NbActivity extends Activity {
         com.newsblur.util.Log.d(this.getClass().getName(), "onResume" + UIUtils.getMemoryUsageDebug(this));
 		super.onResume();
 		finishIfNotLoggedIn();
+
+        // is is possible that another activity changed the theme while we were on the backstack
+        if (lastTheme != PrefsUtils.getSelectedTheme(this)) {
+            lastTheme = PrefsUtils.getSelectedTheme(this);
+            PrefsUtils.applyThemePreference(this);
+            UIUtils.restartActivity(this);
+        }
 
         synchronized (AllActivities) {
             AllActivities.add(this);

@@ -49,7 +49,14 @@ public abstract class ReadingAdapter extends FragmentStatePagerAdapter {
     @Override
     public void destroyItem(ViewGroup container, int position, Object object) {
         cachedFragments.remove(position);
-        super.destroyItem(container, position, object);
+        try {
+            super.destroyItem(container, position, object);
+        } catch (IllegalStateException ise) {
+            // it appears that sometimes the pager impatiently deletes stale fragments befre
+            // even calling it's own destroyItem method.  we're just passing up the stack
+            // after evicting our cache, so don't expose this internal bug from our call stack
+            com.newsblur.util.Log.w(this, "ViewPager adapter rejected own destruction call.");
+        }
     }
 
     public synchronized void swapCursor(Cursor cursor) {
