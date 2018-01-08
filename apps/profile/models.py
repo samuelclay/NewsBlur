@@ -420,6 +420,7 @@ class Profile(models.Model):
                                                  payment_identifier=transaction_identifier)
         if len(payments):
             # Already paid
+            logging.user(self.user, "~FG~BBAlready paid iOS premium subscription: $%s~FW" % transaction_identifier)
             return False
 
         PaymentHistory.objects.create(user=self.user,
