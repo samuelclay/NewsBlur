@@ -35,6 +35,7 @@
 #import "NSNull+JSON.h"
 #import "UISearchBar+Field.h"
 #import "MenuViewController.h"
+#import "StoryTitleAttributedString.h"
 
 #define kTableViewRowHeight 46;
 #define kTableViewRiverRowHeight 68;
@@ -86,8 +87,10 @@
     self.storyTitlesTable.backgroundColor = UIColorFromRGB(0xf4f4f4);
     self.storyTitlesTable.separatorColor = UIColorFromRGB(0xE9E8E4);
     if (@available(iOS 11.0, *)) {
-        self.storyTitlesTable.dragDelegate = self;
-        self.storyTitlesTable.dragInteractionEnabled = YES;
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+            self.storyTitlesTable.dragDelegate = self;
+            self.storyTitlesTable.dragInteractionEnabled = YES;
+        }
     }
     self.view.backgroundColor = UIColorFromRGB(0xf4f4f4);
 
@@ -2450,28 +2453,33 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 - (NSArray<UIDragItem *> *)tableView:(UITableView *)tableView itemsForBeginningDragSession:(id<UIDragSession>)session atIndexPath:(NSIndexPath *)indexPath API_AVAILABLE(ios(11.0)) {
     NSDictionary *story = [self getStoryAtRow:indexPath.row];
     
-    if (!story) return nil;
-    
-    NSItemProvider *itemProviderUrl = [[NSItemProvider alloc] initWithObject:story[@"story_permalink"]];
-    UIDragItem *dragUrl = [[UIDragItem alloc] initWithItemProvider:itemProviderUrl];
-    dragUrl.localObject = story[@"story_permalink"];
-    
-    NSItemProvider *itemProviderTitle = [[NSItemProvider alloc] initWithObject:story[@"story_title"]];
-    UIDragItem *dragTitle = [[UIDragItem alloc] initWithItemProvider:itemProviderTitle];
-    dragTitle.localObject = story[@"story_title"];
-    
-    UIDragItem *dragImage = nil;
+    if (!story) return @[];
+
+    NSString *storyTitle = story[@"story_title"];
+    NSString *storyPermalink = story[@"story_permalink"];
+    UIImage *storyImage = nil;
+
     FeedDetailTableCell *cell = [tableView cellForRowAtIndexPath:indexPath];
     if (cell.storyImageUrl) {
-        UIImage *cachedImage = (UIImage *)[appDelegate.cachedStoryImages objectForKey:cell.storyImageUrl];
-        if (cachedImage && ![cachedImage isKindOfClass:[NSNull class]]) {
-            NSItemProvider *itemProviderImage = [[NSItemProvider alloc] initWithObject:cachedImage];
-            dragImage = [[UIDragItem alloc] initWithItemProvider:itemProviderImage];
-            dragImage.localObject = cachedImage;
-        }
+        id cachedImage = appDelegate.cachedStoryImages[cell.storyImageUrl];
+        if (cachedImage && cachedImage != [NSNull null])
+            storyImage = cachedImage;
     }
-    
-    return [NSArray arrayWithObjects:dragTitle, dragUrl, dragImage, nil];
+
+    NSMutableAttributedString *attributedTitle = [[NSMutableAttributedString alloc] initWithString:storyTitle
+                                                                                        attributes:@{NSLinkAttributeName: storyPermalink}];
+    if (storyImage) {
+        NSTextAttachment *imageAttachment = [[NSTextAttachment alloc] init];
+        imageAttachment.image = storyImage;
+        NSAttributedString *imageString = [NSAttributedString attributedStringWithAttachment:imageAttachment];
+        [attributedTitle insertAttributedString:imageString atIndex:0];
+    }
+    NSString *titleURLString = [NSString stringWithFormat:@"%@ <%@>", storyTitle, storyPermalink];
+    NSItemProvider *itemProviderStory = [[NSItemProvider alloc] initWithObject:
+                                         [[StoryTitleAttributedString alloc] initWithAttributedString:attributedTitle plainString:titleURLString]];
+    [itemProviderStory registerObject:[NSURL URLWithString:storyPermalink] visibility:NSItemProviderRepresentationVisibilityAll];
+
+    return @[[[UIDragItem alloc] initWithItemProvider:itemProviderStory]];
 }
 
 - (void)tableView:(UITableView *)tableView dragSessionWillBegin:(id<UIDragSession>)session API_AVAILABLE(ios(11.0)) {
