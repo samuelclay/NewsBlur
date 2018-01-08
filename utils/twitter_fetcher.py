@@ -188,6 +188,8 @@ class TwitterFetcher:
         if not isinstance(author, dict): author = author.__dict__
         author_name = author['screen_name']
         original_author_name = author_name
+        if user_tweet['in_reply_to_user_id'] == author['id']:
+            categories.add('reply-to-self')        
         retweet_author = ""
         if 'retweeted_status' in user_tweet:
             retweet_author = """Retweeted by 
