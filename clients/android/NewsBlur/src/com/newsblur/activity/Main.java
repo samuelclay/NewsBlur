@@ -38,6 +38,7 @@ import com.newsblur.fragment.TextSizeDialogFragment;
 import com.newsblur.service.BootReceiver;
 import com.newsblur.service.NBSyncService;
 import com.newsblur.util.AppConstants;
+import com.newsblur.util.PrefConstants.ThemeValue;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.StateFilter;
 import com.newsblur.util.UIUtils;
@@ -49,7 +50,6 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
 
 	private FolderListFragment folderFeedList;
 	private FragmentManager fragmentManager;
-    private boolean isLightTheme;
     private SwipeRefreshLayout swipeLayout;
     private boolean wasSwipeEnabled = false;
     @Bind(R.id.main_sync_status) TextView overlayStatusText;
@@ -65,8 +65,6 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
     @Override
 	public void onCreate(Bundle savedInstanceState) {
         PreferenceManager.setDefaultValues(this, R.xml.activity_settings, false);
-
-        isLightTheme = PrefsUtils.isLightThemeSelected(this);
 
 		super.onCreate(savedInstanceState);
         getWindow().setBackgroundDrawableResource(android.R.color.transparent);
@@ -162,10 +160,6 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         folderFeedList.pushUnreadCounts();
         folderFeedList.checkOpenFolderPreferences();
         triggerSync();
-
-        if (PrefsUtils.isLightThemeSelected(this) != isLightTheme) {
-            UIUtils.restartActivity(this);
-        }
     }
 
 	@Override
@@ -288,10 +282,13 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
             menu.findItem(R.id.menu_search_feeds).setVisible(false);
         }
 
-        if (PrefsUtils.isLightThemeSelected(this)) {
+        ThemeValue themeValue = PrefsUtils.getSelectedTheme(this);
+        if (themeValue == ThemeValue.LIGHT) {
             menu.findItem(R.id.menu_theme_light).setChecked(true);
-        } else {
+        } else if (themeValue == ThemeValue.DARK) {
             menu.findItem(R.id.menu_theme_dark).setChecked(true);
+        } else if (themeValue == ThemeValue.BLACK) {
+            menu.findItem(R.id.menu_theme_black).setChecked(true);
         }
 
         pm.setOnMenuItemClickListener(this);
@@ -344,10 +341,13 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
             newFragment.show(getFragmentManager(), "dialog");
             return true;
         } else if (item.getItemId() == R.id.menu_theme_light) {
-            PrefsUtils.setLightThemeSelected(this, true);
+            PrefsUtils.setSelectedTheme(this, ThemeValue.LIGHT);
             UIUtils.restartActivity(this);
         } else if (item.getItemId() == R.id.menu_theme_dark) {
-            PrefsUtils.setLightThemeSelected(this, false);
+            PrefsUtils.setSelectedTheme(this, ThemeValue.DARK);
+            UIUtils.restartActivity(this);
+        } else if (item.getItemId() == R.id.menu_theme_black) {
+            PrefsUtils.setSelectedTheme(this, ThemeValue.BLACK);
             UIUtils.restartActivity(this);
         }
 		return false;

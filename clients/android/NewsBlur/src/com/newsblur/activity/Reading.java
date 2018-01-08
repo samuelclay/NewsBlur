@@ -43,6 +43,7 @@ import com.newsblur.util.AppConstants;
 import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
+import com.newsblur.util.PrefConstants.ThemeValue;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadingFontChangedListener;
 import com.newsblur.util.StateFilter;
@@ -330,9 +331,11 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
         // since it might start on the wrong story, create the pager as invisible
         pager.setVisibility(View.INVISIBLE);
 		pager.setPageMargin(UIUtils.dp2px(getApplicationContext(), 1));
-        if (PrefsUtils.isLightThemeSelected(this)) {
+
+        ThemeValue themeValue = PrefsUtils.getSelectedTheme(this);
+        if (themeValue == ThemeValue.LIGHT) {
             pager.setPageMarginDrawable(R.drawable.divider_light);
-        } else {
+        } else if (themeValue == ThemeValue.DARK) {
             pager.setPageMarginDrawable(R.drawable.divider_dark);
         }
 
@@ -377,11 +380,16 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
         menu.findItem(R.id.menu_reading_save).setTitle(story.starred ? R.string.menu_unsave_story : R.string.menu_save_story);
         menu.findItem(R.id.menu_reading_fullscreen).setVisible(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT);
         if (fs.isFilterSaved() || fs.isAllSaved() || (fs.getSingleSavedTag() != null)) menu.findItem(R.id.menu_reading_markunread).setVisible(false);
-        if (PrefsUtils.isLightThemeSelected(this)) {
+
+        ThemeValue themeValue = PrefsUtils.getSelectedTheme(this);
+        if (themeValue == ThemeValue.LIGHT) {
             menu.findItem(R.id.menu_theme_light).setChecked(true);
-        } else {
+        } else if (themeValue == ThemeValue.DARK) {
             menu.findItem(R.id.menu_theme_dark).setChecked(true);
+        } else if (themeValue == ThemeValue.BLACK) {
+            menu.findItem(R.id.menu_theme_black).setChecked(true);
         }
+
         return true;
     }
 
@@ -436,11 +444,15 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
             ViewUtils.hideSystemUI(getWindow().getDecorView());
             return true;
         } else if (item.getItemId() == R.id.menu_theme_light) {
-            PrefsUtils.setLightThemeSelected(this, true);
+            PrefsUtils.setSelectedTheme(this, ThemeValue.LIGHT);
             UIUtils.restartActivity(this);
             return true;
         } else if (item.getItemId() == R.id.menu_theme_dark) {
-            PrefsUtils.setLightThemeSelected(this, false);
+            PrefsUtils.setSelectedTheme(this, ThemeValue.DARK);
+            UIUtils.restartActivity(this);
+            return true;
+        } else if (item.getItemId() == R.id.menu_theme_black) {
+            PrefsUtils.setSelectedTheme(this, ThemeValue.BLACK);
             UIUtils.restartActivity(this);
             return true;
         } else if (item.getItemId() == R.id.menu_intel) {

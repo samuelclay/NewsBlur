@@ -12,6 +12,8 @@
                       android:title="@string/light" />
                 <item android:id="@+id/menu_theme_dark"
                       android:title="@string/dark" />
+                <item android:id="@+id/menu_theme_black"
+                      android:title="@string/black" />
             </group>
         </menu>
     </item>

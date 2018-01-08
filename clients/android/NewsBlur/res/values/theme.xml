@@ -85,4 +85,47 @@
         <item name="muteicon">@style/muteicon.dark</item>
         <item name="android:contextPopupMenuStyle">@style/contextPopupStyle.dark</item>
     </style>
+
+    <style name="NewsBlurBlackTheme" parent="@android:style/Theme.Holo" >
+        <item name="android:actionBarStyle">@style/actionbar.black</item>
+        <item name="android:expandableListViewStyle">@style/expandableListView.dark</item>
+        <item name="selectorFolderBackground">@style/selectorFolderBackground.black</item>
+        <item name="selectorFeedBackground">@style/selectorFeedBackground.dark</item>
+        <item name="feedRowNeutCountText">@style/feedRowNeutCountText.dark</item>
+        <item name="actionbarBackground">@style/actionbarBackground.black</item>
+        <item name="listBackground">@style/listBackground.dark</item>
+        <item name="itemBackground">@style/itemBackground.black</item>
+        <item name="readingBackground">@style/readingBackground.black</item>
+        <item name="defaultText">@style/defaultText.dark</item>
+        <item name="linkText">@style/linkText.dark</item>
+        <item name="storySnippetText">@style/storySnippetText.dark</item>
+        <item name="storyDateText">@style/storyDateText.dark</item>
+        <item name="storyFeedTitleText">@style/storyFeedTitleText.dark</item>
+        <item name="selectorStoryBackground">@style/selectorStoryBackground.black</item>
+        <item name="rowItemHeaderBackground">@style/rowItemHeaderBackground.black</item>
+        <item name="readingItemMetadata">@style/readingItemMetadata.dark</item>
+        <item name="tag">@style/tag.dark</item>
+        <item name="actionButtons">@style/actionButtons.dark</item>
+        <item name="storyButtons">@style/storyButtons.dark</item>
+        <item name="shareBarBackground">@style/shareBarBackground.black</item>
+        <item name="shareBarText">@style/shareBarText.dark</item>
+        <item name="commentsHeader">@style/commentsHeader.black</item>
+        <item name="rowBorderTop">@style/rowBorderTop.black</item>
+        <item name="rowBorderBottom">@style/rowBorderBottom.black</item>
+        <item name="profileCount">@style/profileCount.black</item>
+        <item name="profileActivityList">@style/profileActivityList.black</item>
+        <item name="itemHeaderDivider">@style/itemHeaderDivider.black</item>
+        <item name="storyCommentDivider">@style/storyCommentDivider.black</item>
+        <item name="activityDetailsPager">@style/activityDetailsPager.black</item>
+        <item name="explainerText">@style/explainerText.dark</item>
+        <item name="toggleText">@style/toggleText.dark</item>
+        <item name="selectorOverlayBackgroundLeft">@style/selectorOverlayBackgroundLeft.dark</item>
+        <item name="selectorOverlayBackgroundRight">@style/selectorOverlayBackgroundRight.dark</item>
+        <item name="selectorOverlayBackgroundRightDone">@style/selectorOverlayBackgroundRightDone.dark</item>
+        <item name="selectorOverlayBackgroundSend">@style/selectorOverlayBackgroundSend.dark</item>
+        <item name="selectorOverlayBackgroundStory">@style/selectorOverlayBackgroundStory.dark</item>
+        <item name="selectorOverlayBackgroundText">@style/selectorOverlayBackgroundText.dark</item>
+        <item name="muteicon">@style/muteicon.dark</item>
+        <item name="android:contextPopupMenuStyle">@style/contextPopupStyle.dark</item>
+    </style>
 </resources>

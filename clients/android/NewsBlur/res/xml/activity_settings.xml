@@ -125,17 +125,6 @@
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:title="@string/theme">
-        <ListPreference
-            android:key="theme"
-            android:title="@string/theme"
-            android:dialogTitle="@string/theme"
-            android:entries="@array/default_theme_entries"
-            android:entryValues="@array/default_theme_values"
-            android:defaultValue="@string/default_theme_value" />
-    </PreferenceCategory>
-
-    <PreferenceCategory
         android:title="@string/settings_gestures">
         <ListPreference
             android:key="ltr_gesture_action"
