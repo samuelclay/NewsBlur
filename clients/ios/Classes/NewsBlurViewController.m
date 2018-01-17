@@ -1453,7 +1453,7 @@ heightForHeaderInSection:(NSInteger)section {
 
 - (void)markFeedsRead:(NSArray *)feedIds cutoffDays:(NSInteger)days {
     if (feedIds.count == 1 && ([feedIds.firstObject isEqual:@"everything"] || [feedIds.firstObject isEqual:@"infrequent"])) {
-        [self markEverythingReadWithDays:days];
+        [self markEverythingReadWithDays:days infrequent:[feedIds.firstObject isEqual:@"infrequent"]];
         return;
     }
     
@@ -1485,6 +1485,10 @@ heightForHeaderInSection:(NSInteger)section {
 }
 
 - (void)markEverythingReadWithDays:(NSInteger)days {
+    [self markEverythingReadWithDays:days infrequent:NO];
+}
+
+- (void)markEverythingReadWithDays:(NSInteger)days infrequent:(BOOL)infrequent {
     NSArray *feedIds = [appDelegate allFeedIds];
     
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_all_as_read",
@@ -1493,8 +1497,8 @@ heightForHeaderInSection:(NSInteger)section {
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
     [params setObject:[NSNumber numberWithInteger:days]
                forKey:@"days"];
-    
-    if ([appDelegate.storiesCollection.activeFolder isEqualToString:@"infrequent"]) {
+
+    if (infrequent || [appDelegate.storiesCollection.activeFolder isEqualToString:@"infrequent"]) {
         NSUserDefaults *prefs = [NSUserDefaults standardUserDefaults];
         NSString *infrequent = [NSString stringWithFormat:@"%ld", (long)[prefs integerForKey:@"infrequent_stories_per_month"]];
         [params setObject:infrequent forKey:@"infrequent"];
@@ -1510,6 +1514,7 @@ heightForHeaderInSection:(NSInteger)section {
         for (NSString *feedId in feedIds) {
             [appDelegate markFeedAllRead:feedId];
         }
+        [feedTitlesTable reloadData];
     } else {
         //        [self showRefreshNotifier];
     }
