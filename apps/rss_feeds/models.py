@@ -2692,7 +2692,17 @@ class MStory(mongo.Document):
             else:
                 return
         
-        self.image_urls = image_urls
+        if text:
+            urls = []
+            for url in image_urls:
+                if 'http://' in url[1:] or 'https://' in url[1:]:
+                    continue
+                urls.append(url)
+            image_urls = urls
+        
+        if len(image_urls):
+            self.image_urls = image_urls
+        
         return self.image_urls
 
     def fetch_original_text(self, force=False, request=None, debug=False):
@@ -2704,6 +2714,7 @@ class MStory(mongo.Document):
             original_doc = ti.fetch(return_document=True)
             original_text = original_doc.get('content') if original_doc else None
             if original_doc and original_doc.get('image', False):
+                logging.user(request, "~FBReplacing ~FGoriginal (%s) ~FYimage url: %s" % (self.image_urls, original_doc['image']))
                 self.image_urls = [original_doc['image']]
             else:
                 self.extract_image_urls(force=force, text=True)
