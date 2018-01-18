@@ -78,7 +78,7 @@ class TextImporter:
         url = doc['url']
         image = doc['lead_image_url']
         
-        if 'http://' in image[1:] or 'https://' in image[1:]:
+        if image and ('http://' in image[1:] or 'https://' in image[1:]):
             logging.user(self.request, "~SN~FRRemoving broken image from text: %s" % image)
             image = None
         
