@@ -78,6 +78,10 @@ class TextImporter:
         url = doc['url']
         image = doc['lead_image_url']
         
+        if 'http://' in image[1:] or 'https://' in image[1:]:
+            logging.user(self.request, "~SN~FRRemoving broken image from text: %s" % image)
+            image = None
+        
         return self.process_content(text, title, url, image, skip_save=skip_save, return_document=return_document)
         
     def fetch_manually(self, skip_save=False, return_document=False):
