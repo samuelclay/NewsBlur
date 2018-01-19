@@ -31,6 +31,8 @@ class TwitterFetcher:
             return
             
         tweets = self.user_timeline(twitter_user)
+        if not tweets:
+            tweets = []
         
         data = {}
         data['title'] = "%s on Twitter" % username
@@ -41,7 +43,7 @@ class TwitterFetcher:
         data['docs'] = None
         data['feed_url'] = address
         rss = feedgenerator.Atom1Feed(**data)
-
+        
         for tweet in tweets:
             story_data = self.tweet_story(tweet.__dict__)
             rss.add_item(**story_data)
