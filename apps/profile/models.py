@@ -446,10 +446,18 @@ class Profile(models.Model):
             opens = UserSubscription.objects.filter(user=user).aggregate(sum=Sum('feed_opens'))['sum']
             reads = RUserStory.read_story_count(user.pk)
             has_numbers = numerics.search(user.username)
+
+            try:
+                has_profile = user.profile.last_seen_ip
+            except Profile.DoesNotExist:
+                usernames.add(user.username)
+                print " ---> Missing profile: %-20s %-30s %-6s %-6s" % (user.username, user.email, opens, reads)
+                continue
+
             if opens is None and not reads and has_numbers:
                 usernames.add(user.username)
                 print " ---> Numerics: %-20s %-30s %-6s %-6s" % (user.username, user.email, opens, reads)
-            elif not user.profile.last_seen_ip:
+            elif not has_profile:
                 usernames.add(user.username)
                 print " ---> No IP: %-20s %-30s %-6s %-6s" % (user.username, user.email, opens, reads)
         
