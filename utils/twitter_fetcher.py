@@ -31,8 +31,6 @@ class TwitterFetcher:
             return
             
         tweets = self.user_timeline(twitter_user)
-        if not tweets:
-            tweets = []
         
         data = {}
         data['title'] = "%s on Twitter" % username
@@ -149,20 +147,22 @@ class TwitterFetcher:
                 logging.debug(u'   ***> [%-30s] ~FRTwitter timeline failed, disconnecting twitter: %s: %s' % 
                               (self.feed.log_title[:30], self.address, e))
                 self.feed.save_feed_history(560, "Twitter Error: Not authorized")
-                return
+                return []
             elif 'user not found' in message:
                 logging.debug(u'   ***> [%-30s] ~FRTwitter user not found, disconnecting twitter: %s: %s' % 
                               (self.feed.log_title[:30], self.address, e))
                 self.feed.save_feed_history(560, "Twitter Error: User not found")
-                return
+                return []
             elif 'blocked from viewing' in message:
                 logging.debug(u'   ***> [%-30s] ~FRTwitter user blocked, ignoring: %s' % 
                               (self.feed.log_title[:30], e))
                 self.feed.save_feed_history(560, "Twitter Error: Blocked from viewing")
-                return
+                return []
             else:
                 raise e
-                
+        
+        if not tweets:
+            return []
         return tweets
         
     def tweet_story(self, user_tweet):
