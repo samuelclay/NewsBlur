@@ -476,8 +476,11 @@ class Feed(models.Model):
                 
         # Check for JSON feed
         if not feed and fetch and create:
-            r = requests.get(url)
-            if 'application/json' in r.headers.get('Content-Type'):
+            try:
+                r = requests.get(url)
+            except requests.ConnectionError:
+                r = None
+            if r and 'application/json' in r.headers.get('Content-Type'):
                 feed = cls.objects.create(feed_address=url)
                 feed = feed.update()
         
