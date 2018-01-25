@@ -456,6 +456,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
             UIUtils.restartActivity(this);
             return true;
         } else if (item.getItemId() == R.id.menu_intel) {
+            if (story.feedId.equals("0")) return true; // cannot train on feedless stories
             StoryIntelTrainerFragment intelFrag = StoryIntelTrainerFragment.newInstance(story, fs);
             intelFrag.show(getFragmentManager(), StoryIntelTrainerFragment.class.getName());
             return true;

@@ -412,6 +412,7 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
             return true;
 
         case R.id.menu_intel:
+            if (story.feedId.equals("0")) return true; // cannot train on feedless stories
             StoryIntelTrainerFragment intelFrag = StoryIntelTrainerFragment.newInstance(story, getFeedSet());
             intelFrag.show(getFragmentManager(), StoryIntelTrainerFragment.class.getName());
             return true;
