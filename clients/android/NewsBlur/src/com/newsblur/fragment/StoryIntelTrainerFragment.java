@@ -48,6 +48,9 @@ public class StoryIntelTrainerFragment extends DialogFragment {
     @Bind(R.id.existing_feed_intel_container) LinearLayout feedRowsContainer;
 
     public static StoryIntelTrainerFragment newInstance(Story story, FeedSet fs) {
+        if (story.feedId.equals("0")) {
+            throw new IllegalArgumentException("cannot intel train stories with a null/zero feed");
+        }
         StoryIntelTrainerFragment fragment = new StoryIntelTrainerFragment();
         Bundle args = new Bundle();
         args.putSerializable("story", story);
