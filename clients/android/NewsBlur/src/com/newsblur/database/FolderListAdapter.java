@@ -735,7 +735,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
     }
 
     /** Get the cached Feed object for the feed at the given list location. */
-    public Feed getFeed(int groupPosition, int childPosition) {
+    public synchronized Feed getFeed(int groupPosition, int childPosition) {
         return activeFolderChildren.get(groupPosition).get(childPosition);
     }
 
