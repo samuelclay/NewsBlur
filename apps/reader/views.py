@@ -799,8 +799,8 @@ def load_feed_page(request, feed_id):
                 response['Last-Modified'] = page_response.headers.get('Last-modified')
                 response['Etag'] = page_response.headers.get('Etag')
                 response['Content-Length'] = str(len(page_response.content))
-                logging.user(request, "~FYLoading original page, proxied from node: ~SB%s bytes" %
-                             (len(page_response.content)))
+                logging.user(request, "~FYLoading original page (%d), proxied from node: ~SB%s bytes" %
+                             (feed_id, len(page_response.content)))
                 return response
         
         if settings.BACKED_BY_AWS['pages_on_s3'] and feed.s3_page:
