@@ -37,14 +37,7 @@
         [subview removeFromSuperview];
     }
     
-    NSString *folderName;
-    if (section == 0) {
-        folderName = @"river_global";
-    } else if (section == 1) {
-        folderName = @"river_blurblogs";
-    } else {
-        folderName = [appDelegate.dictFoldersArray objectAtIndex:section];
-    }
+    NSString *folderName = appDelegate.dictFoldersArray[section];
     NSString *collapseKey = [NSString stringWithFormat:@"folderCollapsed:%@", folderName];
     bool isFolderCollapsed = [userPreferences boolForKey:collapseKey];
     NSInteger countWidth = 0;
@@ -115,13 +108,13 @@
     UIFont *font = [UIFont fontWithDescriptor: boldFontDescriptor size:0.0];
     NSInteger titleOffsetY = ((rect.size.height - font.pointSize) / 2) - 1;
     NSString *folderTitle;
-    if (section == 0) {
+    if (section == NewsBlurTopSectionGlobalSharedStories) {
         folderTitle = [@"Global Shared Stories" uppercaseString];
-    } else if (section == 1) {
-            folderTitle = [@"All Shared Stories" uppercaseString];
-    } else if (section == 2) {
+    } else if (section == NewsBlurTopSectionAllSharedStories) {
+        folderTitle = [@"All Shared Stories" uppercaseString];
+    } else if (section == NewsBlurTopSectionInfrequentSiteStories) {
         folderTitle = [@"Infrequent Site Stories" uppercaseString];
-    } else if (section == 3) {
+    } else if (section == NewsBlurTopSectionAllStories) {
         folderTitle = [@"All Stories" uppercaseString];
     } else if ([folderName isEqual:@"read_stories"]) {
         folderTitle = [@"Read Stories" uppercaseString];
