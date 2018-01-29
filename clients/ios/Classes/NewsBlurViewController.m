@@ -42,6 +42,8 @@ static const CGFloat kPhoneBlurblogTableViewRowHeight = 7.0f;
 static const CGFloat kFolderTitleHeight = 10.0f;
 static UIFont *userLabelFont;
 
+static NSArray<NSString *> *NewsBlurTopSectionNames;
+
 @interface NewsBlurViewController () 
 
 @property (nonatomic, strong) NSMutableDictionary *updatedDictSocialFeeds_;
@@ -94,6 +96,14 @@ static UIFont *userLabelFont;
     if (self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil]) {
     }
     return self;
+}
+
++ (void)initialize {
+    // keep in sync with NewsBlurTopSections
+    NewsBlurTopSectionNames = @[/* 0 */ @"river_global",
+                                /* 1 */ @"river_blurblogs",
+                                /* 2 */ @"infrequent",
+                                /* 3 */ @"everything"];
 }
 
 - (void)viewDidLoad {
@@ -674,26 +684,18 @@ static UIFont *userLabelFont;
     }
     appDelegate.dictFolders = sortedFolders;
     [appDelegate.dictFoldersArray sortUsingSelector:@selector(caseInsensitiveCompare:)];
-    
-    // Move River Blurblog and Everything to the top
-    [appDelegate.dictFoldersArray removeObject:@"river_global"];
-    [appDelegate.dictFoldersArray insertObject:@"river_global" atIndex:0];
 
-    [appDelegate.dictFoldersArray removeObject:@"river_blurblogs"];
-    [appDelegate.dictFoldersArray insertObject:@"river_blurblogs" atIndex:1];
+    // Add global shared stories, etc. to top
+    [NewsBlurTopSectionNames enumerateObjectsUsingBlock:^(NSString * _Nonnull sectionName, NSUInteger sectionIndex, BOOL * _Nonnull stop) {
+        [appDelegate.dictFoldersArray removeObject:sectionName];
+        [appDelegate.dictFoldersArray insertObject:sectionName atIndex:sectionIndex];
+    }];
 
-    // Add Infrequent folder
-    [appDelegate.dictFoldersArray removeObject:@"infrequent"];
-    [appDelegate.dictFoldersArray insertObject:@"infrequent" atIndex:2];
-
-    [appDelegate.dictFoldersArray removeObject:@"everything"];
-    [appDelegate.dictFoldersArray insertObject:@"everything" atIndex:3];
-
-    // Add Read Stories folder
+    // Add Read Stories folder to bottom
     [appDelegate.dictFoldersArray removeObject:@"read_stories"];
     [appDelegate.dictFoldersArray insertObject:@"read_stories" atIndex:appDelegate.dictFoldersArray.count];
 
-    // Add Saved Stories folder
+    // Add Saved Stories folder to bottom
     [appDelegate.dictFoldersArray removeObject:@"saved_stories"];
     if (appDelegate.savedStoriesCount) {
         [appDelegate.dictFoldersArray insertObject:@"saved_stories" atIndex:appDelegate.dictFoldersArray.count];
@@ -1176,18 +1178,7 @@ static UIFont *userLabelFont;
     self.currentRowAtIndexPath = indexPath;
     self.currentSection = 0;
     
-    NSString *folderName;
-    if (indexPath.section == 0) {
-        folderName = @"river_global";
-    } else if (indexPath.section == 1) {
-        folderName = @"river_blurblogs";
-    } else if (indexPath.section == 2) {
-        folderName = @"infrequent";
-    } else if (indexPath.section == 3) {
-        folderName = @"everything";
-    } else {
-        folderName = [appDelegate.dictFoldersArray objectAtIndex:indexPath.section];
-    }
+    NSString *folderName = appDelegate.dictFoldersArray[indexPath.section];
     id feedId = [[appDelegate.dictFolders objectForKey:folderName] objectAtIndex:indexPath.row];
     NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
     NSDictionary *feed;
@@ -1233,15 +1224,8 @@ static UIFont *userLabelFont;
         }
     }
     
-    NSString *folderName;
-    if (indexPath.section == 0) {
-        folderName = @"river_global";
-    } else if (indexPath.section == 1) {
-            folderName = @"river_blurblogs";
-    } else {
-        folderName = [appDelegate.dictFoldersArray objectAtIndex:indexPath.section];
-    }
-    
+    NSString *folderName = appDelegate.dictFoldersArray[indexPath.section];
+
     bool isFolderCollapsed = [appDelegate isFolderCollapsed:folderName];
     if (isFolderCollapsed) {
         return 0;
@@ -1334,18 +1318,18 @@ heightForHeaderInSection:(NSInteger)section {
     NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:section];
     
     BOOL visibleFeeds = [[self.visibleFolders objectForKey:folderName] boolValue];
-    if (!visibleFeeds && section != 2 && section != 3 && section != 0 &&
+    if (!visibleFeeds && section != NewsBlurTopSectionInfrequentSiteStories && section != NewsBlurTopSectionAllStories && section != NewsBlurTopSectionGlobalSharedStories &&
         ![folderName isEqualToString:@"saved_stories"] &&
         ![folderName isEqualToString:@"read_stories"]) {
         return 0;
     }
     
-    if ([folderName isEqualToString:@"infrequent"] &&
+    if (section == NewsBlurTopSectionInfrequentSiteStories &&
         ![prefs boolForKey:@"show_infrequent_site_stories"]) {
         return 0;
     }
 
-    if ([folderName isEqualToString:@"river_global"] &&
+    if (section == NewsBlurTopSectionGlobalSharedStories &&
         ![prefs boolForKey:@"show_global_shared_stories"]) {
         return 0;
     }
@@ -1371,14 +1355,8 @@ heightForHeaderInSection:(NSInteger)section {
     self.currentSection = tag;
     
     NSString *folder;
-    if (tag == 0) {
-        folder = @"river_global";
-    } else if (tag == 1) {
-        folder = @"river_blurblogs";
-    } else if (tag == 2) {
-        folder = @"infrequent";
-    } else if (tag == 3) {
-        folder = @"everything";
+    if (tag >= 0 && tag < [NewsBlurTopSectionNames count]) {
+        folder = NewsBlurTopSectionNames[tag];
     } else {
         folder = [NSString stringWithFormat:@"%ld", (long)tag];
     }
@@ -1391,7 +1369,7 @@ heightForHeaderInSection:(NSInteger)section {
 }
 
 - (void)selectEverything:(id)sender {
-    [self didSelectSectionHeaderWithTag:2];
+    [self didSelectSectionHeaderWithTag:NewsBlurTopSectionAllStories];
 }
 
 #pragma mark - MCSwipeTableViewCellDelegate
@@ -1561,17 +1539,9 @@ heightForHeaderInSection:(NSInteger)section {
 #pragma mark - Table Actions
 
 - (void)didCollapseFolder:(UIButton *)button {
-    NSString *folderName;
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
-    
-    if (button.tag == 0) {
-        folderName = @"river_global";
-    } else if (button.tag == 1) {
-        folderName = @"river_blurblogs";
-    } else {
-        folderName = [appDelegate.dictFoldersArray objectAtIndex:button.tag];
-    }
-    
+
+    NSString *folderName = appDelegate.dictFoldersArray[button.tag];
     NSString *collapseKey = [NSString stringWithFormat:@"folderCollapsed:%@", folderName];
     bool isFolderCollapsed = [userPreferences boolForKey:collapseKey];
     

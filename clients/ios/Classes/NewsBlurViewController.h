@@ -14,6 +14,15 @@
 #import "IASKAppSettingsViewController.h"
 #import "MCSwipeTableViewCell.h"
 
+// indices in appDelegate.dictFoldersArray and button tags
+// keep in sync with NewsBlurTopSectionNames
+static enum {
+    NewsBlurTopSectionGlobalSharedStories = 0,
+    NewsBlurTopSectionAllSharedStories = 1,
+    NewsBlurTopSectionInfrequentSiteStories = 2,
+    NewsBlurTopSectionAllStories = 3
+} NewsBlurTopSection;
+
 @class NewsBlurAppDelegate;
 
 @interface NewsBlurViewController : BaseViewController
