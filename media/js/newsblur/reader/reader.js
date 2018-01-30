@@ -2443,6 +2443,7 @@
         },
         
         mark_feeds_as_read: function(feeds, days_back, direction) {
+            var options = {};
             var order = NEWSBLUR.assets.view_setting(this.active_feed, 'order');
             var stories_not_visible = true;
             var cutoff_timestamp = parseInt(NEWSBLUR.utils.days_back_to_timestamp(days_back) || 0, 10);
@@ -2460,7 +2461,9 @@
                 feeds = _.unique(_.map(stories, function(story) { return story.get('story_feed_id'); }));
             }
 
-            this.model.mark_feed_as_read(feeds, cutoff_timestamp, direction, 
+            if (this.active_feed == 'river:infrequent') options.infrequent = NEWSBLUR.assets.preference('infrequent_stories_per_month');
+
+            this.model.mark_feed_as_read(feeds, cutoff_timestamp, direction, options,
                                          _.bind(function() {
                 if (feeds.length == 1) {
                     this.feed_unread_count(feeds[0]);
@@ -3416,11 +3419,11 @@
                 var muted = !feed.get('active');
                 $manage_menu = $.make('ul', { className: 'NB-menu-manage NB-menu-manage-feed' }, [
                     $.make('li', { className: 'NB-menu-separator-inverse' }),
-                    (feed.get('has_exception') && $.make('li', { className: 'NB-menu-item NB-menu-manage-feed-exception' }, [
+                    (feed.get('has_exception') && feed.get('exception_type') == 'feed' && $.make('li', { className: 'NB-menu-item NB-menu-manage-feed-exception' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Fix this misbehaving site')
                     ])),
-                    (feed.get('has_exception') && $.make('li', { className: 'NB-menu-separator-inverse' })),
+                    (feed.get('has_exception') && feed.get('exception_type') == 'feed' && $.make('li', { className: 'NB-menu-separator-inverse' })),
                     (feed.get('exception_type') != 'feed' && $.make('li', { className: 'NB-menu-item NB-menu-manage-mark-read NB-menu-manage-feed-mark-read' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Mark as read')
@@ -3503,11 +3506,11 @@
                 var tab_unread_count = Math.min(25, unread_count);
                 $manage_menu = $.make('ul', { className: 'NB-menu-manage NB-menu-manage-feed' }, [
                     $.make('li', { className: 'NB-menu-separator-inverse' }),
-                    (feed.get('has_exception') && $.make('li', { className: 'NB-menu-item NB-menu-manage-feed-exception' }, [
+                    (feed.get('has_exception') && feed.get('exception_type') == 'feed' && $.make('li', { className: 'NB-menu-item NB-menu-manage-feed-exception' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Fix this misbehaving site')
                     ])),
-                    (feed.get('has_exception') && $.make('li', { className: 'NB-menu-separator-inverse' })),
+                    (feed.get('has_exception') && feed.get('exception_type') == 'feed' && $.make('li', { className: 'NB-menu-separator-inverse' })),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-social-profile' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'View profile')
@@ -4296,7 +4299,7 @@
                 $.make('div', { className: 'NB-icon' }),
                 $.make('input', { className: 'NB-input', placeholder: "New folder name..." }),
                 $.make('div', { className: 'NB-menu-manage-add-folder-save NB-modal-submit-green NB-modal-submit-button' }, 'Add')
-            ]).data('in_folder', $folder.data('folder'));
+            ]).data('in_folder', $folder.data('folder')).data('feed_id', feed_id);
             $add.css('paddingLeft', parseInt($folder.css('paddingLeft'), 10) + 12);
             $folder.after($add);
             
@@ -4305,7 +4308,7 @@
             }).bind('keyup', 'esc', function(e) {
                 var feed       = self.model.get_feed(feed_id);
                 var in_folders = feed.get('menu_folders');
-                self.render_change_folders(feed, in_folders);                
+                self.render_change_folders(feed, in_folders);
             });
         },
         
@@ -4323,7 +4326,8 @@
                 NEWSBLUR.assets.folders.reset(_.compact(data.folders), {parse: true});
             }
             
-            var feed_id    = $('.NB-menu-manage').data('feed_id');
+            var $form = $('.NB-add-folder-form');
+            var feed_id    = $form.data('feed_id');
             var feed       = this.model.get_feed(feed_id);
             var in_folders = feed.get('menu_folders');
 

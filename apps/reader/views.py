@@ -799,8 +799,8 @@ def load_feed_page(request, feed_id):
                 response['Last-Modified'] = page_response.headers.get('Last-modified')
                 response['Etag'] = page_response.headers.get('Etag')
                 response['Content-Length'] = str(len(page_response.content))
-                logging.user(request, "~FYLoading original page, proxied from node: ~SB%s bytes" %
-                             (len(page_response.content)))
+                logging.user(request, "~FYLoading original page (%s), proxied from node: ~SB%s bytes" %
+                             (feed_id, len(page_response.content)))
                 return response
         
         if settings.BACKED_BY_AWS['pages_on_s3'] and feed.s3_page:
@@ -1534,6 +1534,13 @@ def mark_all_as_read(request):
     read_date = datetime.datetime.utcnow() - datetime.timedelta(days=days)
     
     feeds = UserSubscription.objects.filter(user=request.user)
+
+    infrequent        = is_true(request.REQUEST.get('infrequent', False))
+    if infrequent:
+        infrequent = request.REQUEST.get('infrequent')
+        feed_ids = Feed.low_volume_feeds([usersub.feed.pk for usersub in feeds], stories_per_month=infrequent)
+        feeds = UserSubscription.objects.filter(user=request.user, feed_id__in=feed_ids)
+    
     socialsubs = MSocialSubscription.objects.filter(user_id=request.user.pk)
     for subtype in [feeds, socialsubs]:
         for sub in subtype:
@@ -1548,7 +1555,7 @@ def mark_all_as_read(request):
     r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
     r.publish(request.user.username, 'reload:feeds')
     
-    logging.user(request, "~FMMarking all as read: ~SB%s days" % (days,))
+    logging.user(request, "~FMMarking %s as read: ~SB%s days" % (("all" if not infrequent else "infrequent stories"), days,))
     return dict(code=code)
     
 @ajax_login_required
@@ -1800,10 +1807,17 @@ def mark_feed_as_read(request):
     feed_ids = request.POST.getlist('feed_id') or request.POST.getlist('feed_id[]')
     cutoff_timestamp = int(request.REQUEST.get('cutoff_timestamp', 0))
     direction = request.REQUEST.get('direction', 'older')
+    infrequent        = is_true(request.REQUEST.get('infrequent', False))
+    if infrequent:
+        infrequent = request.REQUEST.get('infrequent')
     multiple = len(feed_ids) > 1
     code = 1
     errors = []
     cutoff_date = datetime.datetime.fromtimestamp(cutoff_timestamp) if cutoff_timestamp else None
+    
+    if infrequent:
+        feed_ids = Feed.low_volume_feeds(feed_ids, stories_per_month=infrequent)
+        feed_ids = [unicode(f) for f in feed_ids] # This method expects strings
     
     if cutoff_date:
         logging.user(request, "~FMMark %s feeds read, %s - cutoff: %s/%s" % 

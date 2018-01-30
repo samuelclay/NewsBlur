@@ -688,7 +688,7 @@
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [masterContainerViewController dismissViewControllerAnimated:NO completion:nil];
-        self.modalNavigationController.modalPresentationStyle = UIModalPresentationPageSheet;
+        self.modalNavigationController.modalPresentationStyle = UIModalPresentationFormSheet;
         [masterContainerViewController presentViewController:modalNavigationController animated:YES completion:nil];
     } else {
         [navigationController presentViewController:modalNavigationController animated:YES completion:nil];
@@ -1428,7 +1428,9 @@
 }
 
 - (void)refreshFeedCount:(id)feedId {
-    [feedsViewController fadeFeed:feedId];
+//    [feedsViewController fadeFeed:feedId];
+    [feedsViewController redrawFeedCounts:feedId];
+    [feedsViewController refreshHeaderCounts];
 }
 
 - (void)loadRiverFeedDetailView:(FeedDetailViewController *)feedDetailView withFolder:(NSString *)folder {

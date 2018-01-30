@@ -193,7 +193,7 @@ class MUserFeedNotification(mongo.Document):
         soup = BeautifulSoup(story['story_content'].strip())
         # print story['story_content']
         body = replace_with_newlines(soup)
-        body = truncate_chars(body.strip(), 1200)
+        body = truncate_chars(body.strip(), 600)
         if not body:
             body = " "
         

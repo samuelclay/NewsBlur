@@ -404,6 +404,7 @@ class Feed(models.Model):
     def get_feed_from_url(cls, url, create=True, aggressive=False, fetch=True, offset=0, user=None):
         feed = None
         without_rss = False
+        original_url = url
         
         if url and url.startswith('newsletter:'):
             return cls.objects.get(feed_address=url)
@@ -469,14 +470,17 @@ class Feed(models.Model):
                     feed = cls.objects.create(feed_address=feed_finder_url)
                     feed = feed.update()
             elif without_rss:
-                logging.debug(" ---> Found without_rss feed: %s" % (url))
-                feed = cls.objects.create(feed_address=url)
+                logging.debug(" ---> Found without_rss feed: %s / %s" % (url, original_url))
+                feed = cls.objects.create(feed_address=url, feed_link=original_url)
                 feed = feed.update(requesting_user_id=user.pk if user else None)
                 
         # Check for JSON feed
         if not feed and fetch and create:
-            r = requests.get(url)
-            if 'application/json' in r.headers.get('Content-Type'):
+            try:
+                r = requests.get(url)
+            except requests.ConnectionError:
+                r = None
+            if r and 'application/json' in r.headers.get('Content-Type'):
                 feed = cls.objects.create(feed_address=url)
                 feed = feed.update()
         
@@ -1001,7 +1005,8 @@ class Feed(models.Model):
                         start = True
                         months.append((key, dates.get(key, 0)))
                         total += dates.get(key, 0)
-                        month_count += 1
+                        if dates.get(key, 0) > 0:
+                            month_count += 1 # Only count months that have stories for the average
         original_story_count_history = self.data.story_count_history
         self.data.story_count_history = json.encode({'months': months, 'hours': hours, 'days': days})
         if self.data.story_count_history != original_story_count_history:
@@ -2690,7 +2695,17 @@ class MStory(mongo.Document):
             else:
                 return
         
-        self.image_urls = image_urls
+        if text:
+            urls = []
+            for url in image_urls:
+                if 'http://' in url[1:] or 'https://' in url[1:]:
+                    continue
+                urls.append(url)
+            image_urls = urls
+        
+        if len(image_urls):
+            self.image_urls = image_urls
+        
         return self.image_urls
 
     def fetch_original_text(self, force=False, request=None, debug=False):
@@ -2702,6 +2717,7 @@ class MStory(mongo.Document):
             original_doc = ti.fetch(return_document=True)
             original_text = original_doc.get('content') if original_doc else None
             if original_doc and original_doc.get('image', False):
+                logging.user(request, "~FBReplacing ~FGoriginal (%s) ~FYimage url: %s" % (self.image_urls, original_doc['image']))
                 self.image_urls = [original_doc['image']]
             else:
                 self.extract_image_urls(force=force, text=True)
