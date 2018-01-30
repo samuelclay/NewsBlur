@@ -41,7 +41,7 @@ class TwitterFetcher:
         data['docs'] = None
         data['feed_url'] = address
         rss = feedgenerator.Atom1Feed(**data)
-
+        
         for tweet in tweets:
             story_data = self.tweet_story(tweet.__dict__)
             rss.add_item(**story_data)
@@ -147,20 +147,22 @@ class TwitterFetcher:
                 logging.debug(u'   ***> [%-30s] ~FRTwitter timeline failed, disconnecting twitter: %s: %s' % 
                               (self.feed.log_title[:30], self.address, e))
                 self.feed.save_feed_history(560, "Twitter Error: Not authorized")
-                return
+                return []
             elif 'user not found' in message:
                 logging.debug(u'   ***> [%-30s] ~FRTwitter user not found, disconnecting twitter: %s: %s' % 
                               (self.feed.log_title[:30], self.address, e))
                 self.feed.save_feed_history(560, "Twitter Error: User not found")
-                return
+                return []
             elif 'blocked from viewing' in message:
                 logging.debug(u'   ***> [%-30s] ~FRTwitter user blocked, ignoring: %s' % 
                               (self.feed.log_title[:30], e))
                 self.feed.save_feed_history(560, "Twitter Error: Blocked from viewing")
-                return
+                return []
             else:
                 raise e
-                
+        
+        if not tweets:
+            return []
         return tweets
         
     def tweet_story(self, user_tweet):
@@ -188,6 +190,8 @@ class TwitterFetcher:
         if not isinstance(author, dict): author = author.__dict__
         author_name = author['screen_name']
         original_author_name = author_name
+        if user_tweet['in_reply_to_user_id'] == author['id']:
+            categories.add('reply-to-self')        
         retweet_author = ""
         if 'retweeted_status' in user_tweet:
             retweet_author = """Retweeted by 

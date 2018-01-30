@@ -42,6 +42,8 @@ static const CGFloat kPhoneBlurblogTableViewRowHeight = 7.0f;
 static const CGFloat kFolderTitleHeight = 10.0f;
 static UIFont *userLabelFont;
 
+static NSArray<NSString *> *NewsBlurTopSectionNames;
+
 @interface NewsBlurViewController () 
 
 @property (nonatomic, strong) NSMutableDictionary *updatedDictSocialFeeds_;
@@ -94,6 +96,14 @@ static UIFont *userLabelFont;
     if (self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil]) {
     }
     return self;
+}
+
++ (void)initialize {
+    // keep in sync with NewsBlurTopSections
+    NewsBlurTopSectionNames = @[/* 0 */ @"river_global",
+                                /* 1 */ @"river_blurblogs",
+                                /* 2 */ @"infrequent",
+                                /* 3 */ @"everything"];
 }
 
 - (void)viewDidLoad {
@@ -314,18 +324,15 @@ static UIFont *userLabelFont;
     NSString *feedIdStr = [NSString stringWithFormat:@"%@", feedId];
     [self.feedTitlesTable deselectRowAtIndexPath:[self.feedTitlesTable indexPathForSelectedRow]
                                         animated:YES];
-    NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
-    if (![preferences boolForKey:@"show_feeds_after_being_read"]) {
-        for (NSIndexPath *indexPath in [self.feedTitlesTable indexPathsForVisibleRows]) {
-            NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:indexPath.section];
-            id cellFeedId = [[appDelegate.dictFolders objectForKey:folderName] objectAtIndex:indexPath.row];
-            if ([feedIdStr isEqualToString:[NSString stringWithFormat:@"%@", cellFeedId]]) {
-                [self.feedTitlesTable beginUpdates];
-                [self.feedTitlesTable reloadRowsAtIndexPaths:@[indexPath]
-                                            withRowAnimation:UITableViewRowAnimationFade];
-                [self.feedTitlesTable endUpdates];
-                break;
-            }
+    for (NSIndexPath *indexPath in [self.feedTitlesTable indexPathsForVisibleRows]) {
+        NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:indexPath.section];
+        id cellFeedId = [[appDelegate.dictFolders objectForKey:folderName] objectAtIndex:indexPath.row];
+        if ([feedIdStr isEqualToString:[NSString stringWithFormat:@"%@", cellFeedId]]) {
+            [self.feedTitlesTable beginUpdates];
+            [self.feedTitlesTable reloadRowsAtIndexPaths:@[indexPath]
+                                        withRowAnimation:UITableViewRowAnimationFade];
+            [self.feedTitlesTable endUpdates];
+            break;
         }
     }
 }
@@ -647,7 +654,7 @@ static UIFont *userLabelFont;
         NSArray *folder = [appDelegate.dictFolders objectForKey:f];
         NSString *folderTitle;
         if ([f isEqualToString:@" "]) {
-            folderTitle = @"infrequent";
+            folderTitle = @"everything";
         } else {
             folderTitle = f;
         }
@@ -677,27 +684,18 @@ static UIFont *userLabelFont;
     }
     appDelegate.dictFolders = sortedFolders;
     [appDelegate.dictFoldersArray sortUsingSelector:@selector(caseInsensitiveCompare:)];
-    
-    
-    // Move River Blurblog and Everything to the top
-    [appDelegate.dictFoldersArray removeObject:@"river_global"];
-    [appDelegate.dictFoldersArray insertObject:@"river_global" atIndex:0];
 
-    [appDelegate.dictFoldersArray removeObject:@"river_blurblogs"];
-    [appDelegate.dictFoldersArray insertObject:@"river_blurblogs" atIndex:1];
+    // Add global shared stories, etc. to top
+    [NewsBlurTopSectionNames enumerateObjectsUsingBlock:^(NSString * _Nonnull sectionName, NSUInteger sectionIndex, BOOL * _Nonnull stop) {
+        [appDelegate.dictFoldersArray removeObject:sectionName];
+        [appDelegate.dictFoldersArray insertObject:sectionName atIndex:sectionIndex];
+    }];
 
-    [appDelegate.dictFoldersArray removeObject:@"everything"];
-    [appDelegate.dictFoldersArray insertObject:@"everything" atIndex:2];
-
-    // Add Infrequent folder
-    [appDelegate.dictFoldersArray removeObject:@"infrequent"];
-    [appDelegate.dictFoldersArray insertObject:@"infrequent" atIndex:3];
-
-    // Add Read Stories folder
+    // Add Read Stories folder to bottom
     [appDelegate.dictFoldersArray removeObject:@"read_stories"];
     [appDelegate.dictFoldersArray insertObject:@"read_stories" atIndex:appDelegate.dictFoldersArray.count];
 
-    // Add Saved Stories folder
+    // Add Saved Stories folder to bottom
     [appDelegate.dictFoldersArray removeObject:@"saved_stories"];
     if (appDelegate.savedStoriesCount) {
         [appDelegate.dictFoldersArray insertObject:@"saved_stories" atIndex:appDelegate.dictFoldersArray.count];
@@ -750,10 +748,27 @@ static UIFont *userLabelFont;
 
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad && finished) {
         [appDelegate.dashboardViewController refreshStories];
+        [self cacheFeedRowLocations];
     }
     [self loadNotificationStory];
 
     [[NSNotificationCenter defaultCenter] postNotificationName:@"FinishedLoadingFeedsNotification" object:nil];
+}
+
+- (void)cacheFeedRowLocations {
+    indexPathsForFeedIds = [NSMutableDictionary dictionary];
+    dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul);
+
+    dispatch_async(queue, ^{
+        for (NSString *folderName in appDelegate.dictFoldersArray) {
+            NSInteger section = [appDelegate.dictFoldersArray indexOfObject:folderName];
+            NSArray *folder = [appDelegate.dictFolders objectForKey:folderName];
+            for (NSInteger row=0; row < folder.count; row++) {
+                NSIndexPath *indexPath = [NSIndexPath indexPathForRow:row inSection:section];
+                [indexPathsForFeedIds setObject:indexPath forKey:[folder objectAtIndex:row]];
+            }
+        }
+    });
 }
 
 - (void)loadOfflineFeeds:(BOOL)failed {
@@ -1163,18 +1178,7 @@ static UIFont *userLabelFont;
     self.currentRowAtIndexPath = indexPath;
     self.currentSection = 0;
     
-    NSString *folderName;
-    if (indexPath.section == 0) {
-        folderName = @"river_global";
-    } else if (indexPath.section == 1) {
-        folderName = @"river_blurblogs";
-    } else if (indexPath.section == 2) {
-        folderName = @"everything";
-    } else if (indexPath.section == 3) {
-        folderName = @"infrequent";
-    } else {
-        folderName = [appDelegate.dictFoldersArray objectAtIndex:indexPath.section];
-    }
+    NSString *folderName = appDelegate.dictFoldersArray[indexPath.section];
     id feedId = [[appDelegate.dictFolders objectForKey:folderName] objectAtIndex:indexPath.row];
     NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
     NSDictionary *feed;
@@ -1220,14 +1224,7 @@ static UIFont *userLabelFont;
         }
     }
     
-    NSString *folderName;
-    if (indexPath.section == 0) {
-        folderName = @"river_global";
-    } else if (indexPath.section == 1) {
-            folderName = @"river_blurblogs";
-    } else {
-        folderName = [appDelegate.dictFoldersArray objectAtIndex:indexPath.section];
-    }
+    NSString *folderName = appDelegate.dictFoldersArray[indexPath.section];
 
     bool isFolderCollapsed = [appDelegate isFolderCollapsed:folderName];
     if (isFolderCollapsed) {
@@ -1314,17 +1311,29 @@ static UIFont *userLabelFont;
 
 - (CGFloat)tableView:(UITableView *)tableView
 heightForHeaderInSection:(NSInteger)section {
+    NSUserDefaults *prefs = [NSUserDefaults standardUserDefaults];
+    
     if ([appDelegate.dictFoldersArray count] == 0) return 0;
     
     NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:section];
     
     BOOL visibleFeeds = [[self.visibleFolders objectForKey:folderName] boolValue];
-    if (!visibleFeeds && section != 2 && section != 3 && section != 0 &&
+    if (!visibleFeeds && section != NewsBlurTopSectionInfrequentSiteStories && section != NewsBlurTopSectionAllStories && section != NewsBlurTopSectionGlobalSharedStories &&
         ![folderName isEqualToString:@"saved_stories"] &&
         ![folderName isEqualToString:@"read_stories"]) {
         return 0;
     }
     
+    if (section == NewsBlurTopSectionInfrequentSiteStories &&
+        ![prefs boolForKey:@"show_infrequent_site_stories"]) {
+        return 0;
+    }
+
+    if (section == NewsBlurTopSectionGlobalSharedStories &&
+        ![prefs boolForKey:@"show_global_shared_stories"]) {
+        return 0;
+    }
+
     UIFontDescriptor *fontDescriptor = [self fontDescriptorUsingPreferredSize:UIFontTextStyleCaption1];
     UIFont *font = [UIFont fontWithDescriptor:fontDescriptor size:0.0];
     NSInteger height = kFolderTitleHeight;
@@ -1346,14 +1355,8 @@ heightForHeaderInSection:(NSInteger)section {
     self.currentSection = tag;
     
     NSString *folder;
-    if (tag == 0) {
-        folder = @"river_global";
-    } else if (tag == 1) {
-        folder = @"river_blurblogs";
-    } else if (tag == 2) {
-        folder = @"everything";
-    } else if (tag == 3) {
-        folder = @"infrequent";
+    if (tag >= 0 && tag < [NewsBlurTopSectionNames count]) {
+        folder = NewsBlurTopSectionNames[tag];
     } else {
         folder = [NSString stringWithFormat:@"%ld", (long)tag];
     }
@@ -1366,7 +1369,7 @@ heightForHeaderInSection:(NSInteger)section {
 }
 
 - (void)selectEverything:(id)sender {
-    [self didSelectSectionHeaderWithTag:2];
+    [self didSelectSectionHeaderWithTag:NewsBlurTopSectionAllStories];
 }
 
 #pragma mark - MCSwipeTableViewCellDelegate
@@ -1428,7 +1431,7 @@ heightForHeaderInSection:(NSInteger)section {
 
 - (void)markFeedsRead:(NSArray *)feedIds cutoffDays:(NSInteger)days {
     if (feedIds.count == 1 && ([feedIds.firstObject isEqual:@"everything"] || [feedIds.firstObject isEqual:@"infrequent"])) {
-        [self markEverythingReadWithDays:days];
+        [self markEverythingReadWithDays:days infrequent:[feedIds.firstObject isEqual:@"infrequent"]];
         return;
     }
     
@@ -1443,6 +1446,7 @@ heightForHeaderInSection:(NSInteger)section {
         [params setObject:[NSNumber numberWithInteger:cutoffTimestamp]
                        forKey:@"cutoff_timestamp"];
     }
+    
     [appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self finishMarkAllAsRead:params];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
@@ -1459,6 +1463,10 @@ heightForHeaderInSection:(NSInteger)section {
 }
 
 - (void)markEverythingReadWithDays:(NSInteger)days {
+    [self markEverythingReadWithDays:days infrequent:NO];
+}
+
+- (void)markEverythingReadWithDays:(NSInteger)days infrequent:(BOOL)infrequent {
     NSArray *feedIds = [appDelegate allFeedIds];
     
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_all_as_read",
@@ -1467,6 +1475,12 @@ heightForHeaderInSection:(NSInteger)section {
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
     [params setObject:[NSNumber numberWithInteger:days]
                forKey:@"days"];
+
+    if (infrequent || [appDelegate.storiesCollection.activeFolder isEqualToString:@"infrequent"]) {
+        NSUserDefaults *prefs = [NSUserDefaults standardUserDefaults];
+        NSString *infrequent = [NSString stringWithFormat:@"%ld", (long)[prefs integerForKey:@"infrequent_stories_per_month"]];
+        [params setObject:infrequent forKey:@"infrequent"];
+    }
 
     [appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self finishMarkAllAsRead:params];
@@ -1478,6 +1492,7 @@ heightForHeaderInSection:(NSInteger)section {
         for (NSString *feedId in feedIds) {
             [appDelegate markFeedAllRead:feedId];
         }
+        [feedTitlesTable reloadData];
     } else {
         //        [self showRefreshNotifier];
     }
@@ -1524,17 +1539,9 @@ heightForHeaderInSection:(NSInteger)section {
 #pragma mark - Table Actions
 
 - (void)didCollapseFolder:(UIButton *)button {
-    NSString *folderName;
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
-    
-    if (button.tag == 0) {
-        folderName = @"river_global";
-    } else if (button.tag == 1) {
-        folderName = @"river_blurblogs";
-    } else {
-        folderName = [appDelegate.dictFoldersArray objectAtIndex:button.tag];
-    }
-    
+
+    NSString *folderName = appDelegate.dictFoldersArray[button.tag];
     NSString *collapseKey = [NSString stringWithFormat:@"folderCollapsed:%@", folderName];
     bool isFolderCollapsed = [userPreferences boolForKey:collapseKey];
     
@@ -2113,6 +2120,27 @@ heightForHeaderInSection:(NSInteger)section {
     } else {
         [UIApplication sharedApplication].applicationIconBadgeNumber = 0;
     }
+}
+
+- (void)redrawFeedCounts:(id)feedId {
+    NSIndexPath *indexPath = [indexPathsForFeedIds objectForKey:feedId];
+    NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:indexPath.section];
+    BOOL isFolderCollapsed = [appDelegate isFolderCollapsed:folderName];
+
+    if (indexPath) {
+        [self.feedTitlesTable beginUpdates];
+        if (isFolderCollapsed) {
+            [appDelegate.folderCountCache removeObjectForKey:folderName];
+            NSIndexSet *indexSet = [[NSIndexSet alloc] initWithIndex:indexPath.section];
+            [self.feedTitlesTable reloadSections:indexSet withRowAnimation:UITableViewRowAnimationNone];
+        } else {
+            [self.feedTitlesTable reloadRowsAtIndexPaths:@[indexPath]
+                                        withRowAnimation:UITableViewRowAnimationNone];
+        }
+        [self.feedTitlesTable endUpdates];
+    }
+    
+    [self refreshHeaderCounts];
 }
 
 - (void)showRefreshNotifier {

@@ -110,7 +110,7 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
             ', {
                 folder_title: NEWSBLUR.reader.active_fake_folder_title(),
                 folder_id: NEWSBLUR.reader.active_feed,
-                all_stories: NEWSBLUR.reader.active_feed == "river:",
+                all_stories: NEWSBLUR.reader.active_feed == "river:" || NEWSBLUR.reader.active_feed == "river:infrequent",
                 infrequent_stories: NEWSBLUR.reader.active_feed == "river:infrequent",
                 infrequent_freq: NEWSBLUR.assets.preference('infrequent_stories_per_month'),
                 show_options: !NEWSBLUR.reader.active_folder.get('fake') ||
