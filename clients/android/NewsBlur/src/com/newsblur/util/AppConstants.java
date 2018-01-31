@@ -34,9 +34,6 @@ public class AppConstants {
     // how often to rebuild the DB
     public static final long VACUUM_TIME_MILLIS = 12L * 60L * 60L * 1000L;
 
-    // how often to clean up the DB
-    public static final long CLEANUP_TIME_MILLIS = 3L * 60L * 60L * 1000L;
-
     // how often to trigger the BG service. slightly longer than how often we will find new stories,
     // to account for the fact that it is approximate, and missing a cycle is bad.
     public static final long BG_SERVICE_CYCLE_MILLIS = AUTO_SYNC_TIME_MILLIS + 30L * 1000L;
