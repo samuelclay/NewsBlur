@@ -2471,7 +2471,7 @@ def send_story_email(request):
     from_address = 'share@newsblur.com'
     share_user_profile = MSocialProfile.get_user(request.user.pk)
     
-    quota = 20 if user.profile.is_premium else 1
+    quota = 32 if user.profile.is_premium else 1
     if share_user_profile.over_story_email_quota(quota=quota):
         code = -1
         if user.profile.is_premium:
