@@ -26,6 +26,14 @@
             android:key="keep_old_stories"
             android:title="@string/settings_keep_old_stories" 
             android:summary="@string/settings_keep_old_stories_sum" />
+        <ListPreference
+            android:key="cache_age_select"
+            android:title="@string/menu_cache_age_select"
+            android:dialogTitle="@string/menu_cache_age_select"
+            android:summary="@string/menu_cache_age_select_sum"
+            android:entries="@array/cache_age_select_entries"
+            android:entryValues="@array/cache_age_select_values"
+            android:defaultValue="@string/default_cache_age_select_value" />
     </PreferenceCategory>
 
     <PreferenceCategory

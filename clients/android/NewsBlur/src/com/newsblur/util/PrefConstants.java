@@ -62,10 +62,20 @@ public class PrefConstants {
     public static final String ENABLE_IMAGE_PREFETCH = "enable_image_prefetch";
     public static final String NETWORK_SELECT = "offline_network_select";
     public static final String KEEP_OLD_STORIES = "keep_old_stories";
+    public static final String CACHE_AGE_SELECT = "cache_age_select";
 
     public static final String NETWORK_SELECT_ANY = "ANY";
     public static final String NETWORK_SELECT_NOMO = "NOMO";
     public static final String NETWORK_SELECT_NOMONONME = "NOMONONME";
+
+    public static final String CACHE_AGE_SELECT_2D = "CACHE_AGE_2D";
+    public static final String CACHE_AGE_SELECT_7D = "CACHE_AGE_7D";
+    public static final String CACHE_AGE_SELECT_14D = "CACHE_AGE_14D";
+    public static final String CACHE_AGE_SELECT_30D = "CACHE_AGE_30D";
+    public static final long CACHE_AGE_VALUE_2D = 1000L * 60L * 60L * 24L * 2L;
+    public static final long CACHE_AGE_VALUE_7D = 1000L * 60L * 60L * 24L * 7L;
+    public static final long CACHE_AGE_VALUE_14D = 1000L * 60L * 60L * 24L * 14L;
+    public static final long CACHE_AGE_VALUE_30D = 1000L * 60L * 60L * 24L * 30L;
 
     public static final String ENABLE_ROW_GLOBAL_SHARED = "enable_row_global_shared";
     public static final String ENABLE_ROW_INFREQUENT_STORIES = "enable_row_infrequent_stories";
