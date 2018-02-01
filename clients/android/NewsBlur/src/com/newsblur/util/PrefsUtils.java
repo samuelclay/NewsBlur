@@ -318,6 +318,22 @@ public class PrefsUtils {
         prefs.edit().putLong(PrefConstants.LAST_VACUUM_TIME, (new Date()).getTime()).commit();
     }
 
+    public static boolean isTimeToCleanup(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        long lastTime = prefs.getLong(PrefConstants.LAST_CLEANUP_TIME, 1L);
+        long nowTime = (new Date()).getTime();
+        if ( (lastTime + AppConstants.CLEANUP_TIME_MILLIS) < nowTime ) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public static void updateLastCleanupTime(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        prefs.edit().putLong(PrefConstants.LAST_CLEANUP_TIME, (new Date()).getTime()).commit();
+    }
+
     public static StoryOrder getStoryOrderForFeed(Context context, String feedId) {
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
         return StoryOrder.valueOf(prefs.getString(PrefConstants.FEED_STORY_ORDER_PREFIX + feedId, getDefaultStoryOrder(prefs).toString()));

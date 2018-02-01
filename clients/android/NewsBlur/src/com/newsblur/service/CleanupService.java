@@ -18,10 +18,13 @@ public class CleanupService extends SubService {
     protected void exec() {
         gotWork();
 
-        com.newsblur.util.Log.d(this.getClass().getName(), "cleaning up old stories");
-        parent.dbHelper.cleanupVeryOldStories();
-        if (!PrefsUtils.isKeepOldStories(parent)) {
-            parent.dbHelper.cleanupReadStories();
+        if (PrefsUtils.isTimeToCleanup(parent)) {
+            com.newsblur.util.Log.d(this.getClass().getName(), "cleaning up old stories");
+            parent.dbHelper.cleanupVeryOldStories();
+            if (!PrefsUtils.isKeepOldStories(parent)) {
+                parent.dbHelper.cleanupReadStories();
+            }
+            PrefsUtils.updateLastCleanupTime(parent);
         }
 
         com.newsblur.util.Log.d(this.getClass().getName(), "cleaning up old story texts");
