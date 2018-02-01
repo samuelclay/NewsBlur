@@ -2,6 +2,7 @@ package com.newsblur.activity;
 
 import android.os.Bundle;
 import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -45,7 +46,6 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
     private static final String BUNDLE_ACTIVE_SEARCH_QUERY = "activeSearchQuery";
 
 	protected ItemListFragment itemListFragment;
-	protected FragmentManager fragmentManager;
     @Bind(R.id.itemlist_sync_status) TextView overlayStatusText;
     @Bind(R.id.itemlist_search_query) EditText searchQueryInput;
 	protected StateFilter intelState;
@@ -59,20 +59,28 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
         overridePendingTransition(R.anim.slide_in_from_right, R.anim.slide_out_to_left);
 
 		fs = (FeedSet) getIntent().getSerializableExtra(EXTRA_FEED_SET);
-
 		intelState = PrefsUtils.getStateFilter(this);
-
-        getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-
-		setContentView(R.layout.activity_itemslist);
-        ButterKnife.bind(this);
-		fragmentManager = getFragmentManager();
 
         if (PrefsUtils.isAutoOpenFirstUnread(this)) {
             if (FeedUtils.dbHelper.getUnreadCount(fs, intelState) > 0) {
                 UIUtils.startReadingActivity(fs, Reading.FIND_FIRST_UNREAD, this);
             }
         }
+
+        getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+
+		setContentView(R.layout.activity_itemslist);
+        ButterKnife.bind(this);
+
+		FragmentManager fragmentManager = getFragmentManager();
+		itemListFragment = (ItemListFragment) fragmentManager.findFragmentByTag(ItemListFragment.class.getName());
+		if (itemListFragment == null) {
+			itemListFragment = ItemListFragment.newInstance();
+			itemListFragment.setRetainInstance(true);
+			FragmentTransaction listTransaction = fragmentManager.beginTransaction();
+			listTransaction.add(R.id.activity_itemlist_container, itemListFragment, ItemListFragment.class.getName());
+			listTransaction.commit();
+		}
 
         if (bundle != null) {
             String activeSearchQuery = bundle.getString(BUNDLE_ACTIVE_SEARCH_QUERY);

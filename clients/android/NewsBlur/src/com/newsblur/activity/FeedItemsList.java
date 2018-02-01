@@ -2,7 +2,6 @@ package com.newsblur.activity;
 
 import android.os.Bundle;
 import android.app.DialogFragment;
-import android.app.FragmentTransaction;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -11,7 +10,6 @@ import com.newsblur.R;
 import com.newsblur.domain.Feed;
 import com.newsblur.fragment.DeleteFeedFragment;
 import com.newsblur.fragment.FeedIntelTrainerFragment;
-import com.newsblur.fragment.FeedItemListFragment;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.UIUtils;
 
@@ -30,20 +28,11 @@ public class FeedItemsList extends ItemsList {
 		super.onCreate(bundle);
 
         UIUtils.setCustomActionBar(this, feed.faviconUrl, feed.title);
-
-		itemListFragment = (FeedItemListFragment) fragmentManager.findFragmentByTag(FeedItemListFragment.class.getName());
-		if (itemListFragment == null) {
-			itemListFragment = FeedItemListFragment.newInstance(feed);
-			itemListFragment.setRetainInstance(true);
-			FragmentTransaction listTransaction = fragmentManager.beginTransaction();
-			listTransaction.add(R.id.activity_itemlist_container, itemListFragment, FeedItemListFragment.class.getName());
-			listTransaction.commit();
-		}
 	}
 
 	public void deleteFeed() {
 		DialogFragment deleteFeedFragment = DeleteFeedFragment.newInstance(feed, folderName);
-		deleteFeedFragment.show(fragmentManager, "dialog");
+		deleteFeedFragment.show(getFragmentManager(), "dialog");
 	}
 
 	@Override

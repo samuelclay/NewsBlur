@@ -44,7 +44,7 @@ import com.newsblur.util.UIUtils;
 import com.newsblur.util.ViewUtils;
 import com.newsblur.view.ProgressThrobber;
 
-public abstract class ItemListFragment extends NbFragment implements OnScrollListener, OnCreateContextMenuListener, LoaderManager.LoaderCallbacks<Cursor>, OnItemClickListener {
+public class ItemListFragment extends NbFragment implements OnScrollListener, OnCreateContextMenuListener, LoaderManager.LoaderCallbacks<Cursor>, OnItemClickListener {
 
 	public static int ITEMLIST_LOADER = 0x01;
 
@@ -72,6 +72,13 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
 
     // we have to de-dupe auto-mark-read-on-scroll actions
     private String lastAutoMarkHash = null;
+
+	public static ItemListFragment newInstance() {
+		ItemListFragment fragment = new ItemListFragment();
+		Bundle arguments = new Bundle();
+		fragment.setArguments(arguments);
+		return fragment;
+	}
 
     @Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -314,6 +321,21 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
 	public synchronized void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         if (stopLoading) return;
 		if (cursor != null) {
+            if (adapter == null) {
+                FeedSet fs = getFeedSet();
+                if (fs.isGlobalShared())  adapter = new StoryItemsAdapter(getActivity(), cursor, false, true, false);
+                if (fs.isAllSocial())     adapter = new StoryItemsAdapter(getActivity(), cursor, false, false, false);
+                if (fs.isAllNormal())     adapter = new StoryItemsAdapter(getActivity(), cursor, false, false, false);
+                if (fs.isInfrequent())    adapter = new StoryItemsAdapter(getActivity(), cursor, false, false, false);
+                if (fs.isSingleSocial())  adapter = new StoryItemsAdapter(getActivity(), cursor, false, false, false);
+                if (fs.isFolder())        adapter = new StoryItemsAdapter(getActivity(), cursor, fs.isFilterSaved(), fs.isFilterSaved(), false);
+                if (fs.isSingleNormal())  adapter = new StoryItemsAdapter(getActivity(), cursor, fs.isFilterSaved(), fs.isFilterSaved(), true);
+                if (fs.isAllRead())       adapter = new StoryItemsAdapter(getActivity(), cursor, false, true, false);
+                if (fs.isAllSaved())      adapter = new StoryItemsAdapter(getActivity(), cursor, true, true, false);
+                if (fs.isSingleSavedTag()) adapter = new StoryItemsAdapter(getActivity(), cursor, true, true, false);
+
+                itemList.setAdapter(adapter);
+            }
             if (! NBSyncService.isFeedSetReady(getFeedSet())) {
                 // the DB hasn't caught up yet from the last story list; don't display stale stories.
                 com.newsblur.util.Log.i(this.getClass().getName(), "stale load");
@@ -354,20 +376,37 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
         int truePosition = ((AdapterView.AdapterContextMenuInfo) menuInfo).position - 1;
         Story story = adapter.getStory(truePosition);
         if (story == null) return;
-        if (getFeedSet().isFilterSaved()) {
-            menu.removeItem(R.id.menu_mark_story_as_read);
-            menu.removeItem(R.id.menu_mark_story_as_unread);
-            menu.removeItem(R.id.menu_intel);
-        } else if (story.read) {
-            menu.removeItem(R.id.menu_mark_story_as_read);
-        } else {
-            menu.removeItem(R.id.menu_mark_story_as_unread);
-        }
 
         if (story.starred) {
             menu.removeItem(R.id.menu_save_story);
         } else {
             menu.removeItem(R.id.menu_unsave_story);
+        }
+
+        FeedSet fs = getFeedSet();
+        if ( fs.isGlobalShared() ||
+             fs.isFilterSaved() ||
+             fs.isAllSaved() ) {
+            menu.removeItem(R.id.menu_mark_story_as_read);
+            menu.removeItem(R.id.menu_mark_story_as_unread);
+        } else {
+            if (story.read) {
+                menu.removeItem(R.id.menu_mark_story_as_read);
+            } else {
+                menu.removeItem(R.id.menu_mark_story_as_unread);
+            }
+        }
+
+        if ( fs.isAllRead() ||
+             fs.isInfrequent() ||
+             fs.isAllSocial() ||
+             fs.isGlobalShared() ||
+             fs.isAllSaved() ) {
+            menu.removeItem(R.id.menu_mark_newer_stories_as_read);
+            menu.removeItem(R.id.menu_mark_older_stories_as_read);
+        }
+        if (fs.isFilterSaved()) {
+            menu.removeItem(R.id.menu_intel);
         }
     }
     
