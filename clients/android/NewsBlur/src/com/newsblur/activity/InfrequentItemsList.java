@@ -44,9 +44,9 @@ public class InfrequentItemsList extends ItemsList implements InfrequentCutoffCh
     @Override
     public void infrequentCutoffChanged(int newValue) {
         PrefsUtils.setInfrequentCutoff(this, newValue);
-        itemListFragment.resetEmptyState();
-        itemListFragment.hasUpdated();
-        itemListFragment.scrollToTop();
+        itemSetFragment.resetEmptyState();
+        itemSetFragment.hasUpdated();
+        itemSetFragment.scrollToTop();
         FeedUtils.dbHelper.clearInfrequentSession();
         NBSyncService.resetReadingSession();
         NBSyncService.resetFetchState(fs);
