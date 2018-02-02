@@ -1,14 +1,12 @@
 package com.newsblur.activity;
 
 import android.os.Bundle;
-import android.app.FragmentTransaction;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 
 import com.newsblur.R;
 import com.newsblur.domain.SocialFeed;
-import com.newsblur.fragment.SocialFeedItemListFragment;
 import com.newsblur.util.UIUtils;
 
 public class SocialFeedItemsList extends ItemsList {
@@ -23,14 +21,6 @@ public class SocialFeedItemsList extends ItemsList {
 		super.onCreate(bundle);
 				
         UIUtils.setCustomActionBar(this, socialFeed.photoUrl, socialFeed.feedTitle);
-		
-		if (itemListFragment == null) {
-			itemListFragment = SocialFeedItemListFragment.newInstance();
-			itemListFragment.setRetainInstance(true);
-			FragmentTransaction listTransaction = fragmentManager.beginTransaction();
-			listTransaction.add(R.id.activity_itemlist_container, itemListFragment, SocialFeedItemListFragment.class.getName());
-			listTransaction.commit();
-		}
 	}
 
 	@Override

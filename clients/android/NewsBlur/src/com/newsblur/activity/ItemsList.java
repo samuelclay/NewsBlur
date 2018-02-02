@@ -2,6 +2,7 @@ package com.newsblur.activity;
 
 import android.os.Bundle;
 import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -19,6 +20,7 @@ import butterknife.Bind;
 
 import com.newsblur.R;
 import com.newsblur.fragment.ItemListFragment;
+import com.newsblur.fragment.ItemSetFragment;
 import com.newsblur.fragment.ReadFilterDialogFragment;
 import com.newsblur.fragment.StoryOrderDialogFragment;
 import com.newsblur.fragment.TextSizeDialogFragment;
@@ -44,8 +46,7 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
     private static final String DEFAULT_FEED_VIEW = "defaultFeedView";
     private static final String BUNDLE_ACTIVE_SEARCH_QUERY = "activeSearchQuery";
 
-	protected ItemListFragment itemListFragment;
-	protected FragmentManager fragmentManager;
+	protected ItemSetFragment itemSetFragment;
     @Bind(R.id.itemlist_sync_status) TextView overlayStatusText;
     @Bind(R.id.itemlist_search_query) EditText searchQueryInput;
 	protected StateFilter intelState;
@@ -59,20 +60,28 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
         overridePendingTransition(R.anim.slide_in_from_right, R.anim.slide_out_to_left);
 
 		fs = (FeedSet) getIntent().getSerializableExtra(EXTRA_FEED_SET);
-
 		intelState = PrefsUtils.getStateFilter(this);
-
-        getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-
-		setContentView(R.layout.activity_itemslist);
-        ButterKnife.bind(this);
-		fragmentManager = getFragmentManager();
 
         if (PrefsUtils.isAutoOpenFirstUnread(this)) {
             if (FeedUtils.dbHelper.getUnreadCount(fs, intelState) > 0) {
                 UIUtils.startReadingActivity(fs, Reading.FIND_FIRST_UNREAD, this);
             }
         }
+
+        getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+
+		setContentView(R.layout.activity_itemslist);
+        ButterKnife.bind(this);
+
+		FragmentManager fragmentManager = getFragmentManager();
+		itemSetFragment = (ItemSetFragment) fragmentManager.findFragmentByTag(ItemSetFragment.class.getName());
+		if (itemSetFragment == null) {
+			itemSetFragment = ItemListFragment.newInstance();
+			itemSetFragment.setRetainInstance(true);
+			FragmentTransaction transaction = fragmentManager.beginTransaction();
+			transaction.add(R.id.activity_itemlist_container, itemSetFragment, ItemSetFragment.class.getName());
+			transaction.commit();
+		}
 
         if (bundle != null) {
             String activeSearchQuery = bundle.getString(BUNDLE_ACTIVE_SEARCH_QUERY);
@@ -125,7 +134,7 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
         FeedUtils.prepareReadingSession(fs);
         // Reading activities almost certainly changed the read/unread state of some stories. Ensure
         // we reflect those changes promptly.
-        itemListFragment.hasUpdated();
+        itemSetFragment.hasUpdated();
     }
 
     @Override
@@ -220,16 +229,16 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
             updateStatusIndicators();
         }
 		if ((updateType & UPDATE_STORY) != 0) {
-            if (itemListFragment != null) {
-			    itemListFragment.hasUpdated();
+            if (itemSetFragment != null) {
+			    itemSetFragment.hasUpdated();
             }
         }
     }
 
     private void updateStatusIndicators() {
         boolean isLoading = NBSyncService.isFeedSetSyncing(this.fs, this);
-        if (itemListFragment != null) {
-            itemListFragment.setLoading(isLoading);
+        if (itemSetFragment != null) {
+            itemSetFragment.setLoading(isLoading);
         }
 
         if (overlayStatusText != null) {
@@ -254,9 +263,9 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
         }
         fs.setSearchQuery(q);
         if (!TextUtils.equals(q, oldQuery)) {
-            itemListFragment.resetEmptyState();
-            itemListFragment.hasUpdated();
-            itemListFragment.scrollToTop();
+            itemSetFragment.resetEmptyState();
+            itemSetFragment.hasUpdated();
+            itemSetFragment.scrollToTop();
             NBSyncService.resetReadingSession();
             NBSyncService.resetFetchState(fs);
         }
@@ -265,9 +274,9 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
 	@Override
     public void storyOrderChanged(StoryOrder newValue) {
         updateStoryOrderPreference(newValue);
-        itemListFragment.resetEmptyState();
-        itemListFragment.hasUpdated();
-        itemListFragment.scrollToTop();
+        itemSetFragment.resetEmptyState();
+        itemSetFragment.hasUpdated();
+        itemSetFragment.scrollToTop();
         NBSyncService.resetFetchState(fs);
         triggerSync();
     }
@@ -275,9 +284,9 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
     @Override
     public void readFilterChanged(ReadFilter newValue) {
         updateReadFilterPreference(newValue);
-        itemListFragment.resetEmptyState();
-        itemListFragment.hasUpdated();
-        itemListFragment.scrollToTop();
+        itemSetFragment.resetEmptyState();
+        itemSetFragment.hasUpdated();
+        itemSetFragment.scrollToTop();
         NBSyncService.resetFetchState(fs);
         triggerSync();
     }
@@ -287,7 +296,7 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
 	public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
         float size = AppConstants.LIST_FONT_SIZE[progress];
 	    PrefsUtils.setListTextSize(this, size);
-        if (itemListFragment != null) itemListFragment.setTextSize(size);
+        if (itemSetFragment != null) itemSetFragment.setTextSize(size);
 	}
 
     // unused OnSeekBarChangeListener method
@@ -302,11 +311,11 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
 
     @Override
     public void finish() {
-        if (itemListFragment != null) {
+        if (itemSetFragment != null) {
             // since v6.0 of Android, the ListView in the fragment likes to crash if the underlying
             // dataset changes rapidly as happens when marking-all-read and when the fragment is
             // stopping. do a manual hard-stop of the loaders in the fragment before we finish
-            itemListFragment.stopLoader();
+            itemSetFragment.stopLoader();
         }
         super.finish();
         /*

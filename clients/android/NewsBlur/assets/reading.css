@@ -62,6 +62,7 @@ pre, blockquote {
     padding: 0.6em;
     margin: 0.6em;
     word-wrap: break-word !important;
+    white-space: pre-wrap !important;
 }
 
 /* these are the diff blocks produced by NewsBlur */

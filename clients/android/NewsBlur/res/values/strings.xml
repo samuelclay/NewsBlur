@@ -236,6 +236,26 @@
     </string-array>
     <string name="default_network_select_value">NOMONONME</string>
 
+    <string name="menu_cache_age_select">Maximum Cache Age</string>
+    <string name="menu_cache_age_select_sum">Clean up cached story content after…</string>
+    <string name="menu_cache_age_select_opt_2d">2 days (reduce storage use)</string>
+    <string name="menu_cache_age_select_opt_7d">7 days</string>
+    <string name="menu_cache_age_select_opt_14d">14 days</string>
+    <string name="menu_cache_age_select_opt_30d">30 days (reduce network use)</string>
+    <string-array name="cache_age_select_entries">
+        <item>@string/menu_cache_age_select_opt_2d</item>
+        <item>@string/menu_cache_age_select_opt_7d</item>
+        <item>@string/menu_cache_age_select_opt_14d</item>
+        <item>@string/menu_cache_age_select_opt_30d</item>
+    </string-array>
+    <string-array name="cache_age_select_values">
+        <item>CACHE_AGE_2D</item>
+        <item>CACHE_AGE_7D</item>
+        <item>CACHE_AGE_14D</item>
+        <item>CACHE_AGE_30D</item>
+    </string-array>
+    <string name="default_cache_age_select_value">CACHE_AGE_30D</string>
+
     <string name="settings_cat_feed_list">Feed List</string>
 
     <string name="settings_enable_row_global_shared">Show Global Shared Stories</string>
@@ -316,7 +336,6 @@
     <string name="feed_intel_author_header">AUTHORS</string>
     <string name="intel_feed_header">EVERYTHING BY PUBLISHER</string>
 
-    <string name="theme">Theme</string>
     <string name="light">Light</string>
     <string name="dark">Dark</string>
     <string name="black">Black</string>

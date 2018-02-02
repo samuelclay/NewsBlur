@@ -149,6 +149,7 @@ public class BlurDatabaseHelper {
                         " AND " + DatabaseConstants.STORY_TEXT_STORY_HASH + " NOT IN " +
                         "( SELECT " + DatabaseConstants.READING_SESSION_STORY_HASH + " FROM " + DatabaseConstants.READING_SESSION_TABLE + ")",
                         new String[]{Long.toString(cutoffDate.getTime().getTime())});
+            com.newsblur.util.Log.d(this, "cleaned up ancient stories: " + count);
         }
     }
 
@@ -163,6 +164,7 @@ public class BlurDatabaseHelper {
                         " AND " + DatabaseConstants.STORY_TEXT_STORY_HASH + " NOT IN " +
                         "( SELECT " + DatabaseConstants.READING_SESSION_STORY_HASH + " FROM " + DatabaseConstants.READING_SESSION_TABLE + ")",
                         null);
+            com.newsblur.util.Log.d(this, "cleaned up read stories: " + count);
         }
     }
 

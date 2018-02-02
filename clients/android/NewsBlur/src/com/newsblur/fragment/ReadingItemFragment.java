@@ -350,6 +350,7 @@ public class ReadingItemFragment extends NbFragment {
 		itemAuthors.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
+                if (story.feedId.equals("0")) return; // cannot train on feedless stories
                 StoryIntelTrainerFragment intelFrag = StoryIntelTrainerFragment.newInstance(story, fs);
                 intelFrag.show(getFragmentManager(), StoryIntelTrainerFragment.class.getName());
 			}	
@@ -358,6 +359,7 @@ public class ReadingItemFragment extends NbFragment {
 		itemFeed.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
+                if (story.feedId.equals("0")) return; // cannot train on feedless stories
                 StoryIntelTrainerFragment intelFrag = StoryIntelTrainerFragment.newInstance(story, fs);
                 intelFrag.show(getFragmentManager(), StoryIntelTrainerFragment.class.getName());
 			}
@@ -412,6 +414,7 @@ public class ReadingItemFragment extends NbFragment {
                 v.setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        if (story.feedId.equals("0")) return; // cannot train on feedless stories
                         StoryIntelTrainerFragment intelFrag = StoryIntelTrainerFragment.newInstance(story, fs);
                         intelFrag.show(getFragmentManager(), StoryIntelTrainerFragment.class.getName());
                     }

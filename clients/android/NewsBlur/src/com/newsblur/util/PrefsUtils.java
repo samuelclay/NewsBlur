@@ -321,7 +321,12 @@ public class PrefsUtils {
     public static boolean isTimeToCleanup(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
         long lastTime = prefs.getLong(PrefConstants.LAST_CLEANUP_TIME, 1L);
-        return ( (lastTime + AppConstants.CLEANUP_TIME_MILLIS) < (new Date()).getTime() );
+        long nowTime = (new Date()).getTime();
+        if ( (lastTime + AppConstants.CLEANUP_TIME_MILLIS) < nowTime ) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public static void updateLastCleanupTime(Context context) {
@@ -658,6 +663,16 @@ public class PrefsUtils {
     public static boolean isKeepOldStories(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
         return prefs.getBoolean(PrefConstants.KEEP_OLD_STORIES, false);
+    }
+
+    public static long getMaxCachedAgeMillis(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        String val = prefs.getString(PrefConstants.CACHE_AGE_SELECT, PrefConstants.CACHE_AGE_SELECT_30D);
+        if (val.equals(PrefConstants.CACHE_AGE_SELECT_2D)) return PrefConstants.CACHE_AGE_VALUE_2D;
+        if (val.equals(PrefConstants.CACHE_AGE_SELECT_7D)) return PrefConstants.CACHE_AGE_VALUE_7D;
+        if (val.equals(PrefConstants.CACHE_AGE_SELECT_14D)) return PrefConstants.CACHE_AGE_VALUE_14D;
+        if (val.equals(PrefConstants.CACHE_AGE_SELECT_30D)) return PrefConstants.CACHE_AGE_VALUE_30D;
+        return PrefConstants.CACHE_AGE_VALUE_30D;
     }
 
     public static void applyThemePreference(Activity activity) {
