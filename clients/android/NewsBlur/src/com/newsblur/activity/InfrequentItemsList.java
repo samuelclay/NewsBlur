@@ -1,6 +1,5 @@
 package com.newsblur.activity;
 
-import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
