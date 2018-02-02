@@ -1,6 +1,5 @@
 package com.newsblur.activity;
 
-import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -9,7 +8,6 @@ import android.view.MenuItem;
 import com.newsblur.R;
 import com.newsblur.fragment.InfrequentCutoffDialogFragment;
 import com.newsblur.fragment.InfrequentCutoffDialogFragment.InfrequentCutoffChangedListener;
-import com.newsblur.fragment.InfrequentItemListFragment;
 import com.newsblur.service.NBSyncService;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
@@ -22,15 +20,6 @@ public class InfrequentItemsList extends ItemsList implements InfrequentCutoffCh
 		super.onCreate(bundle);
 
         UIUtils.setCustomActionBar(this, R.drawable.ak_icon_allstories, getResources().getString(R.string.infrequent_title));
-
-		itemListFragment = (InfrequentItemListFragment) fragmentManager.findFragmentByTag(InfrequentItemListFragment.class.getName());
-		if (itemListFragment == null) {
-			itemListFragment = InfrequentItemListFragment.newInstance();
-			itemListFragment.setRetainInstance(true);
-			FragmentTransaction listTransaction = fragmentManager.beginTransaction();
-			listTransaction.add(R.id.activity_itemlist_container, itemListFragment, InfrequentItemListFragment.class.getName());
-			listTransaction.commit();
-		}
 	}
 
 	@Override
@@ -54,9 +43,9 @@ public class InfrequentItemsList extends ItemsList implements InfrequentCutoffCh
     @Override
     public void infrequentCutoffChanged(int newValue) {
         PrefsUtils.setInfrequentCutoff(this, newValue);
-        itemListFragment.resetEmptyState();
-        itemListFragment.hasUpdated();
-        itemListFragment.scrollToTop();
+        itemSetFragment.resetEmptyState();
+        itemSetFragment.hasUpdated();
+        itemSetFragment.scrollToTop();
         FeedUtils.dbHelper.clearInfrequentSession();
         NBSyncService.resetReadingSession();
         NBSyncService.resetFetchState(fs);

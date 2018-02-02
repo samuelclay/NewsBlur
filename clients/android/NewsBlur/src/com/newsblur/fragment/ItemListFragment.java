@@ -1,8 +1,6 @@
 package com.newsblur.fragment;
 
 import android.app.Activity;
-import android.app.LoaderManager;
-import android.content.Loader;
 import android.database.Cursor;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -30,7 +28,6 @@ import butterknife.ButterKnife;
 import butterknife.Bind;
 
 import com.newsblur.R;
-import com.newsblur.activity.ItemsList;
 import com.newsblur.database.StoryItemsAdapter;
 import com.newsblur.domain.Story;
 import com.newsblur.service.NBSyncService;
@@ -44,15 +41,10 @@ import com.newsblur.util.UIUtils;
 import com.newsblur.util.ViewUtils;
 import com.newsblur.view.ProgressThrobber;
 
-public abstract class ItemListFragment extends NbFragment implements OnScrollListener, OnCreateContextMenuListener, LoaderManager.LoaderCallbacks<Cursor>, OnItemClickListener {
+public class ItemListFragment extends ItemSetFragment implements OnScrollListener, OnCreateContextMenuListener, OnItemClickListener {
 
-	public static int ITEMLIST_LOADER = 0x01;
-
-    protected ItemsList activity;
 	@Bind(R.id.itemlistfragment_list) ListView itemList;
 	protected StoryItemsAdapter adapter;
-    private boolean cursorSeenYet = false;
-    private boolean stopLoading = false;
     
     // loading indicator for when stories are present but stale (at top of list)
     protected ProgressThrobber headerProgressView;
@@ -63,6 +55,9 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
 
     private View fleuronFooter;
 
+    // we have to de-dupe auto-mark-read-on-scroll actions
+    private String lastAutoMarkHash = null;
+
     // row index of the last story to get a LTR gesture or -1 if none
     private int gestureLeftToRightFlag = -1;
     // row index of the last story to get a RTL gesture or -1 if none
@@ -70,23 +65,12 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
     // flag indicating a gesture just occurred so we can ignore spurious story taps right after
     private boolean gestureDebounce = false;
 
-    // we have to de-dupe auto-mark-read-on-scroll actions
-    private String lastAutoMarkHash = null;
-
-    @Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-        activity = (ItemsList) getActivity();
-
-        if (getFeedSet() == null) {
-            com.newsblur.util.Log.w(this.getClass().getName(), "item list started without FeedSet.");
-            activity.finish();
-            return;
-        }
-
-        // warm up the sync service as soon as possible since it will init the story session DB
-        triggerRefresh(1, null);
-    }
+	public static ItemListFragment newInstance() {
+		ItemListFragment fragment = new ItemListFragment();
+		Bundle arguments = new Bundle();
+		fragment.setArguments(arguments);
+		return fragment;
+	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -137,57 +121,17 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
 	}
 
     @Override
-    public void onStart() {
-        super.onStart();
-        stopLoading = false;
-        getLoaderManager().initLoader(ITEMLIST_LOADER, null, this);
-    }
-
-    @Override
-    public void onPause() {
-        // a pause/resume cycle will depopulate and repopulate the list and trigger bad scroll
-        // readings and cause zero-index refreshes, wasting massive cycles. hold the refresh logic
-        // until the loaders reset
-        cursorSeenYet = false;
-        super.onPause();
-    }
-
-    @Override
-    public void onResume() {
-        if ((adapter != null) && adapter.isStale()) {
-            Log.e(this.getClass().getName(), "stale fragment loaded, falling back.");
-            getActivity().finish();
-        }
-        super.onResume();
-    }
-
-    private void triggerRefresh(int desiredStoryCount, Integer totalSeen) {
-        // ask the sync service for as many stories as we want
-        boolean gotSome = NBSyncService.requestMoreForFeed(getFeedSet(), desiredStoryCount, totalSeen);
-        // if the service thinks it can get more, or if we haven't even seen a cursor yet, start the service
-        if (gotSome || (totalSeen == null)) triggerSync();
-    }
-
-    /**
-     * Signal that all futher cursor loads should be ignored
-     */
-    public void stopLoader() {
-        stopLoading = true;
-    }
-
-    /**
-     * Indicate that the DB was cleared.
-     */
-    public void resetEmptyState() {
-        if (adapter != null) adapter.notifyDataSetInvalidated();
-        cursorSeenYet = false;
-        FeedUtils.dbHelper.clearStorySession();
+    protected boolean isAdapterValid() {
+        if (adapter == null) return true;
+        if (adapter.isStale()) return false;
+        return true;
     }
 
     /**
      * Turns on/off the loading indicator. Note that the text component of the
      * loading indicator requires a cursor and is handled below.
      */
+    @Override
     public void setLoading(boolean isLoading) {
         if (fleuronFooter != null) {
             if (isLoading) {
@@ -211,7 +155,7 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
         }
     }
 
-    private void updateLoadingMessage() {
+    protected void updateLoadingMessage(boolean isMuted, boolean isLoading) {
         if (itemList == null) {
             Log.w(this.getClass().getName(), "ItemListFragment does not have the expected ListView.");
             return;
@@ -220,12 +164,11 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
         TextView textView = (TextView) emptyView.findViewById(R.id.empty_view_text);
         ImageView imageView = (ImageView) emptyView.findViewById(R.id.empty_view_image);
 
-        if (getFeedSet().isMuted()) {
+        if (isMuted) {
             textView.setText(R.string.empty_list_view_muted_feed);
             textView.setTypeface(null, Typeface.NORMAL);
             imageView.setVisibility(View.VISIBLE);
         } else {
-            boolean isLoading = NBSyncService.isFeedSetSyncing(getFeedSet(), activity);
             if (isLoading || (!cursorSeenYet)) {
                 textView.setText(R.string.empty_list_view_loading);
                 textView.setTypeface(null, Typeface.ITALIC);
@@ -243,12 +186,12 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
         }
     }
 
+    @Override
     public void scrollToTop() {
         if (itemList == null) {
-            Log.w(this.getClass().getName(), "ItemListFragment does not have the expected ListView.");
+            com.newsblur.util.Log.w(this, "ItemListFragment does not have the expected ListView.");
             return;
         }
-
         itemList.setSelection(0);
     }
 
@@ -280,63 +223,39 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
 	@Override
 	public void onScrollStateChanged(AbsListView view, int scrollState) { }
 
-    protected FeedSet getFeedSet() {
-        return activity.getFeedSet();
-    }
+    @Override
+    protected void createAdapter(Cursor cursor) {
+        if (adapter == null) {
+            FeedSet fs = getFeedSet();
+            if (fs.isGlobalShared())  adapter = new StoryItemsAdapter(getActivity(), cursor, false, true, false);
+            if (fs.isAllSocial())     adapter = new StoryItemsAdapter(getActivity(), cursor, false, false, false);
+            if (fs.isAllNormal())     adapter = new StoryItemsAdapter(getActivity(), cursor, false, false, false);
+            if (fs.isInfrequent())    adapter = new StoryItemsAdapter(getActivity(), cursor, false, false, false);
+            if (fs.isSingleSocial())  adapter = new StoryItemsAdapter(getActivity(), cursor, false, false, false);
+            if (fs.isFolder())        adapter = new StoryItemsAdapter(getActivity(), cursor, fs.isFilterSaved(), fs.isFilterSaved(), false);
+            if (fs.isSingleNormal())  adapter = new StoryItemsAdapter(getActivity(), cursor, fs.isFilterSaved(), fs.isFilterSaved(), true);
+            if (fs.isAllRead())       adapter = new StoryItemsAdapter(getActivity(), cursor, false, true, false);
+            if (fs.isAllSaved())      adapter = new StoryItemsAdapter(getActivity(), cursor, true, true, false);
+            if (fs.isSingleSavedTag()) adapter = new StoryItemsAdapter(getActivity(), cursor, true, true, false);
 
-	public void hasUpdated() {
-        if (isAdded() && !getFeedSet().isMuted()) {
-		    getLoaderManager().restartLoader(ITEMLIST_LOADER , null, this);
-        }
-	}
-
-	@Override
-	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
-        FeedSet fs = getFeedSet();
-        if (fs == null) {
-            Log.e(this.getClass().getName(), "can't create fragment, no feedset ready");
-            // this is probably happening in a finalisation cycle or during a crash, pop the activity stack
-            try {
-                getActivity().finish();
-            } catch (Exception e) {
-                ;
-            }
-            return null;
-        } else if (fs.isMuted()) {
-            updateLoadingMessage();
-            return null;
-        } else {
-            return FeedUtils.dbHelper.getActiveStoriesLoader(getFeedSet());
+            itemList.setAdapter(adapter);
         }
     }
 
     @Override
-	public synchronized void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-        if (stopLoading) return;
-		if (cursor != null) {
-            if (! NBSyncService.isFeedSetReady(getFeedSet())) {
-                // the DB hasn't caught up yet from the last story list; don't display stale stories.
-                com.newsblur.util.Log.i(this.getClass().getName(), "stale load");
-                adapter.setShowNone(true);
-                setLoading(true);
-                triggerRefresh(1, null);
-            } else {
-                cursorSeenYet = true;
-                com.newsblur.util.Log.d(this.getClass().getName(), "loaded cursor with count: " + cursor.getCount());
-                if (cursor.getCount() < 1) {
-                    triggerRefresh(1, 0);
-                }
-                adapter.setShowNone(false);
-            }
-            adapter.swapCursor(cursor);
-		}
-        updateLoadingMessage();
-	}
+    protected void updateAdapter(Cursor cursor) {
+        adapter.swapCursor(cursor);
+    }
 
-	@Override
-	public void onLoaderReset(Loader<Cursor> loader) {
-        if (adapter != null) adapter.notifyDataSetInvalidated();
-	}
+    @Override
+    protected void resetAdapter() {  
+        //if (adapter != null) adapter.notifyDataSetInvalidated();
+    }
+
+    @Override
+    protected void setShowNone(boolean showNone) {
+        adapter.setShowNone(showNone);
+    }
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
@@ -354,20 +273,37 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
         int truePosition = ((AdapterView.AdapterContextMenuInfo) menuInfo).position - 1;
         Story story = adapter.getStory(truePosition);
         if (story == null) return;
-        if (getFeedSet().isFilterSaved()) {
-            menu.removeItem(R.id.menu_mark_story_as_read);
-            menu.removeItem(R.id.menu_mark_story_as_unread);
-            menu.removeItem(R.id.menu_intel);
-        } else if (story.read) {
-            menu.removeItem(R.id.menu_mark_story_as_read);
-        } else {
-            menu.removeItem(R.id.menu_mark_story_as_unread);
-        }
 
         if (story.starred) {
             menu.removeItem(R.id.menu_save_story);
         } else {
             menu.removeItem(R.id.menu_unsave_story);
+        }
+
+        FeedSet fs = getFeedSet();
+        if ( fs.isGlobalShared() ||
+             fs.isFilterSaved() ||
+             fs.isAllSaved() ) {
+            menu.removeItem(R.id.menu_mark_story_as_read);
+            menu.removeItem(R.id.menu_mark_story_as_unread);
+        } else {
+            if (story.read) {
+                menu.removeItem(R.id.menu_mark_story_as_read);
+            } else {
+                menu.removeItem(R.id.menu_mark_story_as_unread);
+            }
+        }
+
+        if ( fs.isAllRead() ||
+             fs.isInfrequent() ||
+             fs.isAllSocial() ||
+             fs.isGlobalShared() ||
+             fs.isAllSaved() ) {
+            menu.removeItem(R.id.menu_mark_newer_stories_as_read);
+            menu.removeItem(R.id.menu_mark_older_stories_as_read);
+        }
+        if (fs.isFilterSaved()) {
+            menu.removeItem(R.id.menu_intel);
         }
     }
     
@@ -412,6 +348,7 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
             return true;
 
         case R.id.menu_intel:
+            if (story.feedId.equals("0")) return true; // cannot train on feedless stories
             StoryIntelTrainerFragment intelFrag = StoryIntelTrainerFragment.newInstance(story, getFeedSet());
             intelFrag.show(getFragmentManager(), StoryIntelTrainerFragment.class.getName());
             return true;
@@ -438,6 +375,7 @@ public abstract class ItemListFragment extends NbFragment implements OnScrollLis
         UIUtils.startReadingActivity(getFeedSet(), story.storyHash, getActivity());
     }
 
+    @Override
     public void setTextSize(Float size) {
         if (adapter != null) {
             adapter.setTextSize(size);
