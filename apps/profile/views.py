@@ -317,6 +317,8 @@ def save_ios_receipt(request):
     product_identifier = request.POST.get('product_identifier')
     transaction_identifier = request.POST.get('transaction_identifier')
     
+    logging.user(request, "~BM~FBSaving iOS Receipt: %s %s" % (product_identifier, transaction_identifier))
+    
     paid = request.user.profile.activate_ios_premium(product_identifier, transaction_identifier)
     if paid:
         subject = "iOS Premium: %s (%s)" % (request.user.profile, product_identifier)
