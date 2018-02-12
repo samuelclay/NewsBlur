@@ -154,7 +154,7 @@
     <string name="menu_unmute_folder">Unmute folder</string>
     <string name="menu_instafetch_feed">Insta-fetch stories</string>
     <string name="menu_infrequent_cutoff">Infrequent stories per month</string>
-    <string name="menu_intel">Intellegence trainer</string>
+    <string name="menu_intel">Intelligence trainer</string>
     
     <string name="toast_story_unread">Story marked as unread</string>
     <string name="toast_hold_to_select">Press and hold to select text</string>
