@@ -193,6 +193,7 @@ def setup_common():
     setup_user()
     setup_sudoers()
     setup_ulimit()
+    setup_do_monitoring()
     setup_libxml()
     setup_psql_client()
     setup_repo()
@@ -701,6 +702,9 @@ def setup_ulimit():
     # echo "net.ipv4.ip_local_port_range = 1024 65535" >> /etc/sysctl.conf
     # sudo chmod 644 /etc/sysctl.conf
 
+def setup_do_monitoring():
+    run('curl -sSL https://agent.digitalocean.com/install.sh | sh')
+    
 def setup_syncookies():
     sudo('echo 1 | sudo tee /proc/sys/net/ipv4/tcp_syncookies')
     sudo('sudo /sbin/sysctl -w net.ipv4.tcp_syncookies=1')
@@ -1365,6 +1369,7 @@ def setup_do(name, size=2, image=None):
                                     size_slug=instance_size,
                                     image=image,
                                     region='nyc1',
+                                    monitoring=True,
                                     ssh_keys=ssh_key_ids)
     instance.create()
     time.sleep(2)
