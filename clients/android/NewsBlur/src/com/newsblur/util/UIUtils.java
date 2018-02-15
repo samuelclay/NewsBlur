@@ -23,6 +23,8 @@ import android.util.TypedValue;
 import android.text.Html;
 import android.text.Spanned;
 import android.view.LayoutInflater;
+import android.view.ContextMenu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
@@ -33,6 +35,7 @@ import android.widget.Toast;
 import com.newsblur.R;
 import com.newsblur.activity.*;
 import com.newsblur.domain.Classifier;
+import com.newsblur.domain.Story;
 
 public class UIUtils {
 
@@ -413,6 +416,45 @@ public class UIUtils {
             row.findViewById(R.id.intel_row_dislike).setBackgroundResource(R.drawable.ic_dislike_gray55);
             row.findViewById(R.id.intel_row_clear).setBackgroundResource(R.drawable.ic_clear_gray55);
         }
-    }   
+    }
+
+    public static void inflateStoryContextMenu(ContextMenu menu, MenuInflater inflater, Context context, FeedSet fs, Story story) {
+        if (PrefsUtils.getStoryOrder(context, fs) == StoryOrder.NEWEST) {
+            inflater.inflate(R.menu.context_story_newest, menu);
+        } else {
+            inflater.inflate(R.menu.context_story_oldest, menu);
+        }
+
+        if (story.starred) {
+            menu.removeItem(R.id.menu_save_story);
+        } else {
+            menu.removeItem(R.id.menu_unsave_story);
+        }
+
+        if ( fs.isGlobalShared() ||
+             fs.isFilterSaved() ||
+             fs.isAllSaved() ) {
+            menu.removeItem(R.id.menu_mark_story_as_read);
+            menu.removeItem(R.id.menu_mark_story_as_unread);
+        } else {
+            if (story.read) {
+                menu.removeItem(R.id.menu_mark_story_as_read);
+            } else {
+                menu.removeItem(R.id.menu_mark_story_as_unread);
+            }
+        }
+
+        if ( fs.isAllRead() ||
+             fs.isInfrequent() ||
+             fs.isAllSocial() ||
+             fs.isGlobalShared() ||
+             fs.isAllSaved() ) {
+            menu.removeItem(R.id.menu_mark_newer_stories_as_read);
+            menu.removeItem(R.id.menu_mark_older_stories_as_read);
+        }
+        if (fs.isFilterSaved()) {
+            menu.removeItem(R.id.menu_intel);
+        }
+    }
 
 }

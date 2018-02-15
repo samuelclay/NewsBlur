@@ -264,47 +264,12 @@ public class ItemListFragment extends ItemSetFragment implements OnScrollListene
         if ((gestureLeftToRightFlag > -1) || (gestureRightToLeftFlag > -1)) return;
 
         MenuInflater inflater = getActivity().getMenuInflater();
-        if (PrefsUtils.getStoryOrder(activity, getFeedSet()) == StoryOrder.NEWEST) {
-            inflater.inflate(R.menu.context_story_newest, menu);
-        } else {
-            inflater.inflate(R.menu.context_story_oldest, menu);
-        }
 
         int truePosition = ((AdapterView.AdapterContextMenuInfo) menuInfo).position - 1;
         Story story = adapter.getStory(truePosition);
         if (story == null) return;
 
-        if (story.starred) {
-            menu.removeItem(R.id.menu_save_story);
-        } else {
-            menu.removeItem(R.id.menu_unsave_story);
-        }
-
-        FeedSet fs = getFeedSet();
-        if ( fs.isGlobalShared() ||
-             fs.isFilterSaved() ||
-             fs.isAllSaved() ) {
-            menu.removeItem(R.id.menu_mark_story_as_read);
-            menu.removeItem(R.id.menu_mark_story_as_unread);
-        } else {
-            if (story.read) {
-                menu.removeItem(R.id.menu_mark_story_as_read);
-            } else {
-                menu.removeItem(R.id.menu_mark_story_as_unread);
-            }
-        }
-
-        if ( fs.isAllRead() ||
-             fs.isInfrequent() ||
-             fs.isAllSocial() ||
-             fs.isGlobalShared() ||
-             fs.isAllSaved() ) {
-            menu.removeItem(R.id.menu_mark_newer_stories_as_read);
-            menu.removeItem(R.id.menu_mark_older_stories_as_read);
-        }
-        if (fs.isFilterSaved()) {
-            menu.removeItem(R.id.menu_intel);
-        }
+        UIUtils.inflateStoryContextMenu(menu, inflater, getActivity(), getFeedSet(), story);
     }
     
     @Override

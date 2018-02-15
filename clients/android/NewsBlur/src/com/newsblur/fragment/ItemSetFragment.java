@@ -65,6 +65,8 @@ public abstract class ItemSetFragment extends NbFragment implements LoaderManage
     protected abstract boolean isAdapterValid();
 
     protected void triggerRefresh(int desiredStoryCount, Integer totalSeen) {
+        if (getFeedSet().isMuted()) return;
+
         // ask the sync service for as many stories as we want
         boolean gotSome = NBSyncService.requestMoreForFeed(getFeedSet(), desiredStoryCount, totalSeen);
         // if the service thinks it can get more, or if we haven't even seen a cursor yet, start the service
