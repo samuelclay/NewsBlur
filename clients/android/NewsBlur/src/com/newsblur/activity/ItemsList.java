@@ -19,6 +19,7 @@ import butterknife.ButterKnife;
 import butterknife.Bind;
 
 import com.newsblur.R;
+import com.newsblur.fragment.ItemGridFragment;
 import com.newsblur.fragment.ItemListFragment;
 import com.newsblur.fragment.ItemSetFragment;
 import com.newsblur.fragment.ReadFilterDialogFragment;
@@ -76,7 +77,8 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
 		FragmentManager fragmentManager = getFragmentManager();
 		itemSetFragment = (ItemSetFragment) fragmentManager.findFragmentByTag(ItemSetFragment.class.getName());
 		if (itemSetFragment == null) {
-			itemSetFragment = ItemListFragment.newInstance();
+			//itemSetFragment = ItemListFragment.newInstance();
+			itemSetFragment = ItemGridFragment.newInstance();
 			itemSetFragment.setRetainInstance(true);
 			FragmentTransaction transaction = fragmentManager.beginTransaction();
 			transaction.add(R.id.activity_itemlist_container, itemSetFragment, ItemSetFragment.class.getName());
