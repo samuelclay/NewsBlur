@@ -1040,7 +1040,7 @@ def disable_thp():
     sudo('update-rc.d disable-transparent-hugepages defaults')
     
 def setup_mongo():
-    MONGODB_VERSION = "3.2.10"
+    MONGODB_VERSION = "3.2.19"
     pull()
     disable_thp()
     sudo('systemctl enable rc-local.service') # Enable rc.local
@@ -1153,7 +1153,7 @@ def setup_redis(slave=False):
 def setup_munin():
     sudo('apt-get update')
     sudo('apt-get install -y munin munin-node munin-plugins-extra spawn-fcgi')
-    put('config/munin.conf', '/etc/munin/munin.conf', use_sudo=True)
+    # put('config/munin.conf', '/etc/munin/munin.conf', use_sudo=True) # Only use on main munin
     put('config/spawn_fcgi_munin_graph.conf', '/etc/init.d/spawn_fcgi_munin_graph', use_sudo=True)
     put('config/spawn_fcgi_munin_html.conf', '/etc/init.d/spawn_fcgi_munin_html', use_sudo=True)
     sudo('chmod u+x /etc/init.d/spawn_fcgi_munin_graph')
@@ -1186,7 +1186,7 @@ def copy_munin_data(from_server):
     put(os.path.join(env.SECRETS_PATH, 'keys/newsblur.key.pub'), '~/.ssh/newsblur.key.pub')
     run('chmod 600 ~/.ssh/newsblur*')
 
-    # put("config/munin.nginx.conf", "/usr/local/nginx/conf/sites-enabled/munin.conf", use_sudo=True)
+    put("config/munin.nginx.conf", "/usr/local/nginx/conf/sites-enabled/munin.conf", use_sudo=True)
     sudo('/etc/init.d/nginx reload')
 
     run("rsync -az -e \"ssh -i /home/sclay/.ssh/newsblur.key\" --stats --progress %s:/var/lib/munin/ /srv/munin" % from_server)
@@ -1340,11 +1340,19 @@ def copy_spam():
 # = Setup - Digital Ocean =
 # =========================
 
-def setup_do(name, size=2, image=None):
-    if int(size) == 512:
-        instance_size = "512mb"
-    else:
-        instance_size = "%sgb" % size
+DO_SIZES = {
+    '1': 's-1vcpu-1gb',
+    '2:': 's-1vcpu-2gb',
+    '4:': 's-2vcpu-4gb',
+    '8:': 's-4vcpu-8gb',
+    '16': 's-6vcpu-16gb',
+    '32': 's-8vcpu-32gb',
+    '48': 's-12vcpu-48gb',
+    '64': 's-16vcpu-64gb',
+}
+
+def setup_do(name, size=1, image=None):
+    instance_size = DO_SIZES[str(size)]
     doapi = digitalocean.Manager(token=django_settings.DO_TOKEN_FABRIC)
     # droplets = doapi.get_all_droplets()
     # sizes = dict((s.slug, s.slug) for s in doapi.get_all_sizes())
@@ -1370,6 +1378,7 @@ def setup_do(name, size=2, image=None):
                                     image=image,
                                     region='nyc1',
                                     monitoring=True,
+                                    private_networking=True,
                                     ssh_keys=ssh_key_ids)
     instance.create()
     time.sleep(2)
