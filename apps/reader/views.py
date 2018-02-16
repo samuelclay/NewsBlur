@@ -2522,7 +2522,7 @@ def send_story_email(request):
         msg.attach_alternative(html, "text/html")
         try:
             msg.send()
-        except boto.ses.connection.ResponseError, e:
+        except boto.ses.connection.BotoServerError, e:
             code = -1
             message = "Email error: %s" % str(e)
         

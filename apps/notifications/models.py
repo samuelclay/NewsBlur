@@ -289,8 +289,9 @@ class MUserFeedNotification(mongo.Document):
         msg.attach_alternative(html, "text/html")
         try:
             msg.send()
-        except boto.ses.connection.ResponseError, e:
+        except boto.ses.connection.BotoServerError, e:
             logging.user(usersub.user, '~BMStory notification by email error: ~FR%s' % e)
+            return
         logging.user(usersub.user, '~BMStory notification by email: ~FY~SB%s~SN~BM~FY/~SB%s' % 
                                    (story['story_title'][:50], usersub.feed.feed_title[:50]))
     
