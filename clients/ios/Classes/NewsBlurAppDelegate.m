@@ -231,7 +231,9 @@
 //    [self showFirstTimeUser];
     
     cachedFavicons = [[PINCache alloc] initWithName:@"NBFavicons"];
+    cachedFavicons.memoryCache.removeAllObjectsOnEnteringBackground = NO;
     cachedStoryImages = [[PINCache alloc] initWithName:@"NBStoryImages"];
+    cachedStoryImages.memoryCache.removeAllObjectsOnEnteringBackground = NO;
     isPremium = NO;
     premiumExpire = 0;
     
