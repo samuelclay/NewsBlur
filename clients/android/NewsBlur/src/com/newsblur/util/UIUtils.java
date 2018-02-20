@@ -1,5 +1,6 @@
 package com.newsblur.util;
 
+import java.io.File;
 import java.util.Map;
 
 import static android.graphics.Bitmap.Config.ARGB_8888;
@@ -10,6 +11,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.BitmapShader;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -80,6 +82,75 @@ public class UIUtils {
             result = canvasMap;
         }
         return result;
+    }
+
+    @SuppressWarnings("deprecation")
+    public static Bitmap decodeImage(File f, int maxDim, boolean cropSquare, float roundRadius) {
+        try {
+            // not only can cache misses occur, users can delete files, the system can clean up
+            // files, storage can be unmounted, etc.  fail fast.
+            if (f == null) return null;
+            if (!f.exists()) return null;
+
+            // the key to efficiently handling images from unknown sources is to downsample
+            // to a sensible size ASAP.  feeds can and will give us 50 megapixel files
+            // to cram into a grid of hundreds of thumbnails.
+
+            // first decode just enough of the image to determine the source file's size without
+            // actually placing it in memory, so we can calculate a downsampling rate. 
+            BitmapFactory.Options sizeSniffOpts = new BitmapFactory.Options();
+            sizeSniffOpts.inJustDecodeBounds = true;
+            BitmapFactory.decodeFile(f.getAbsolutePath(), sizeSniffOpts);
+            int sourceWidth = sizeSniffOpts.outWidth;
+            int sourceHeight = sizeSniffOpts.outHeight;
+
+            // the system bitmap decoder can fast-downsample only by powers of two. find the
+            // biggest divisor possible that doesn't reduce the source below our target dims
+            int downsample = 1;
+            while ( ((sourceWidth/(downsample*2)) >= maxDim) || ((sourceHeight/(downsample*2)) >= maxDim) ) downsample*=2;
+
+            // decode the file with the now-determined downsample rate
+            BitmapFactory.Options decodeOpts = new BitmapFactory.Options();
+            decodeOpts.inSampleSize = downsample;
+            decodeOpts.inJustDecodeBounds = false;
+            //decodeOpts.inPreferredConfig = Bitmap.Config.RGB_565;
+            //decodeOpts.inDither = true;
+            Bitmap bitmap = BitmapFactory.decodeFile(f.getAbsolutePath(), decodeOpts);
+
+            if (bitmap == null) return null;
+
+            // crop the image square if flagged
+            if (cropSquare) {
+                // image size will be a squared off version of the now-downsampled original
+                int targetSize = Math.min(bitmap.getWidth(), bitmap.getHeight());
+                // to clip square, calculate x and y offsets
+                int offsetX = (bitmap.getWidth() - targetSize) / 2;
+                int offsetY = (bitmap.getHeight() - targetSize) / 2;
+                // crop the bitmap. the returned object will likely be the same
+                bitmap = Bitmap.createBitmap(bitmap, offsetX, offsetY, targetSize, targetSize);
+            }
+
+            // round the corners of the image if the caller would like
+            if ((roundRadius > 0f) && (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)) {
+                Bitmap canvasMap = null;
+                canvasMap = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), ARGB_8888);
+                Canvas canvas = new Canvas(canvasMap);
+                BitmapShader shader = new BitmapShader(bitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
+                Paint paint = new Paint();
+                paint.setAntiAlias(true);
+                paint.setShader(shader);
+                canvas.drawRoundRect(0, 0, bitmap.getWidth(), bitmap.getHeight(), roundRadius, roundRadius, paint);
+                bitmap = canvasMap;
+            }
+
+            return bitmap;
+        } catch (Throwable t) {
+            // due to low memory, corrupt files, or bad source files, image processing can fail
+            // in countless ways even on happy systems.  these failures are virtually impossible
+            // to classify as fatal, so fail-fast.
+            android.util.Log.e(UIUtils.class.getName(), "couldn't process image", t);
+            return null;
+        }
     }
 	
 	/*
