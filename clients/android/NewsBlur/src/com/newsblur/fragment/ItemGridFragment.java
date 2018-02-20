@@ -3,6 +3,7 @@ package com.newsblur.fragment;
 import android.app.Activity;
 import android.database.Cursor;
 import android.graphics.Typeface;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -45,7 +46,10 @@ import com.newsblur.view.ProgressThrobber;
 
 public class ItemGridFragment extends ItemSetFragment {
 
-    private final static int GRID_COLUMN_COUNT = 2;
+    private final static int GRID_COLUMN_COUNT = 3;
+
+    private final static int GRID_SPACING_DP = 5;
+    private int gridSpacingPx;
 
 	@Bind(R.id.itemgridfragment_grid) RecyclerView itemGrid;
     private GridLayoutManager layoutManager;
@@ -74,6 +78,8 @@ public class ItemGridFragment extends ItemSetFragment {
 		View v = inflater.inflate(R.layout.fragment_itemgrid, null);
         ButterKnife.bind(this, v);
 
+        gridSpacingPx = UIUtils.dp2px(getActivity(), GRID_SPACING_DP);
+
         // disable the throbbers if animations are going to have a zero time scale
         boolean isDisableAnimations = ViewUtils.isPowerSaveMode(activity);
 
@@ -97,6 +103,13 @@ public class ItemGridFragment extends ItemSetFragment {
         layoutManager = new GridLayoutManager(getActivity(), GRID_COLUMN_COUNT);
         itemGrid.setLayoutManager(layoutManager);
 
+        itemGrid.addItemDecoration(new RecyclerView.ItemDecoration() {
+            @Override
+            public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
+                outRect.set(gridSpacingPx, gridSpacingPx, gridSpacingPx, gridSpacingPx);
+            }
+        });
+
         adapter = new StoryViewAdapter(getActivity(), getFeedSet());
         adapter.addFooterView(footerView);
         adapter.addFooterView(fleuronFooter);
@@ -117,7 +130,7 @@ public class ItemGridFragment extends ItemSetFragment {
             }
         });
 
-        itemGrid.setItemViewCacheSize(20);
+        //itemGrid.setItemViewCacheSize(20);
 
         itemGrid.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -187,6 +200,13 @@ public class ItemGridFragment extends ItemSetFragment {
         // the framework likes to trigger this on init before we even known counts, so disregard those
         if (!cursorSeenYet) return;
 
+        // don't bother checking on scroll up
+        if (dy < 1) return;
+
+        ensureSufficientStories();
+    }
+
+    private void ensureSufficientStories() {
         int totalCount = layoutManager.getItemCount();
         int visibleCount = layoutManager.getChildCount();
         int lastVisible = layoutManager.findLastVisibleItemPosition();
@@ -219,6 +239,10 @@ public class ItemGridFragment extends ItemSetFragment {
         } else {
             emptyView.setVisibility(View.VISIBLE);
         }
+
+        // some list views will auto-trigger a scroll handler when invalidated, but not a RecyclerView,
+        // so don't rely on that to check if we need more items
+        ensureSufficientStories();
     }
 
     @Override

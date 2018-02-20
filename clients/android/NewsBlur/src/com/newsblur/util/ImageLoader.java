@@ -45,13 +45,17 @@ public class ImageLoader {
     }
 
     public static ImageLoader asThumbnailLoader(Context context) {
-        return new ImageLoader(FileCache.asThumbnailCache(context), android.R.color.transparent, 32, true, (Runtime.getRuntime().maxMemory()/5));
+        return new ImageLoader(FileCache.asThumbnailCache(context), android.R.color.transparent, 32, true, (Runtime.getRuntime().maxMemory()/6));
     }
 	
-	public void displayImage(String url, ImageView imageView, float roundRadius, boolean cropSquare) {
+    public PhotoToLoad displayImage(String url, ImageView imageView, float roundRadius, boolean cropSquare) {
+        return displayImage(url, imageView, roundRadius, cropSquare, Integer.MAX_VALUE);
+    }
+
+	public PhotoToLoad displayImage(String url, ImageView imageView, float roundRadius, boolean cropSquare, int maxDimPX) {
         if (url == null) {
 			imageView.setImageResource(emptyRID);
-            return;
+            return null;
         }
 
         if (url.startsWith("/")) {
@@ -59,30 +63,27 @@ public class ImageLoader {
         }
 
 		imageViewMappings.put(imageView, url);
-        PhotoToLoad photoToLoad = new PhotoToLoad(url, imageView, roundRadius, cropSquare);
+        PhotoToLoad photoToLoad = new PhotoToLoad(url, imageView, roundRadius, cropSquare, maxDimPX);
 
-        // try from memory
-		Bitmap bitmap = memoryCache.get(url);
-
-		if (bitmap != null) {
-            setViewImage(bitmap, photoToLoad);
-		} else {
-            // if not loaded, fetch and set in background
-            executorService.submit(new PhotosLoader(photoToLoad));
-			imageView.setImageResource(emptyRID);
-		}
+        executorService.submit(new PhotosLoader(photoToLoad));
+        //imageView.setImageResource(emptyRID);
+        return photoToLoad;
 	}
 
-	private class PhotoToLoad {
+	public class PhotoToLoad {
 		public String url;
 		public ImageView imageView;
         public float roundRadius;
         public boolean cropSquare;
-		public PhotoToLoad(final String u, final ImageView i, float rr, boolean cs) {
-			url = u; 
-			imageView = i;
-            roundRadius = rr;
-            cropSquare = cs;
+        public int maxDimPX;
+        public boolean cancel;
+		public PhotoToLoad(final String url, final ImageView imageView, float roundRadius, boolean cropSquare, int maxDimPX) {
+			PhotoToLoad.this.url = url; 
+			PhotoToLoad.this.imageView = imageView;
+            PhotoToLoad.this.roundRadius = roundRadius;
+            PhotoToLoad.this.cropSquare = cropSquare;
+            PhotoToLoad.this.maxDimPX = maxDimPX;
+            PhotoToLoad.this.cancel = false;
 		}
 	}
 
@@ -96,18 +97,40 @@ public class ImageLoader {
 		@Override
 		public void run() {
             Process.setThreadPriority(Process.THREAD_PRIORITY_DEFAULT + Process.THREAD_PRIORITY_LESS_FAVORABLE);
+            if (photoToLoad.cancel) return;
+
+            // try from memory
+            Bitmap bitmap = memoryCache.get(photoToLoad.url);
+
+            if (bitmap != null) {
+                setViewImage(bitmap, photoToLoad);
+                return;
+            }
+
+            if (photoToLoad.cancel) return;
+
+            // callers frequently might botch this due to lazy view measuring
+            if (photoToLoad.maxDimPX < 1) {
+                photoToLoad.maxDimPX = Integer.MAX_VALUE;
+            }
             
+            // try from disk
             File f = fileCache.getCachedFile(photoToLoad.url);
-            Bitmap bitmap = decodeBitmap(f);
+            // the only reliable way to check a cached file is to try decoding it. the util method will
+            // return null if it fails
+            bitmap = UIUtils.decodeImage(f, photoToLoad.maxDimPX, photoToLoad.cropSquare, photoToLoad.roundRadius);
+            // try for network
             if (bitmap == null) {
+                if (photoToLoad.cancel) return;
                 fileCache.cacheFile(photoToLoad.url);
                 f = fileCache.getCachedFile(photoToLoad.url);
-                bitmap = decodeBitmap(f);
+                bitmap = UIUtils.decodeImage(f, photoToLoad.maxDimPX, photoToLoad.cropSquare, photoToLoad.roundRadius);
             }
 
             if (bitmap != null) {
                 memoryCache.put(photoToLoad.url, bitmap);			
             }
+            if (photoToLoad.cancel) return;
             setViewImage(bitmap, photoToLoad);
 		}
 	}
@@ -127,6 +150,8 @@ public class ImageLoader {
 			photoToLoad = p;
 		}
 		public void run() {
+            if (photoToLoad.cancel) return;
+
             // ensure this imageview even still wants this image
             String latestMappedUrl = imageViewMappings.get(photoToLoad.imageView);
             if (latestMappedUrl == null || !latestMappedUrl.equals(photoToLoad.url)) return;
@@ -138,25 +163,10 @@ public class ImageLoader {
                     photoToLoad.imageView.setImageResource(emptyRID);
                 }
             } else {
-                bitmap = UIUtils.clipAndRound(bitmap, photoToLoad.roundRadius, photoToLoad.cropSquare);
-                if (bitmap != null ) {
-                    photoToLoad.imageView.setImageBitmap(bitmap);
-                }
+                photoToLoad.imageView.setImageBitmap(bitmap);
 			}
 		}
 	}
-
-    private static Bitmap decodeBitmap(File f) {
-        // is is perfectly normal for files not to exist on cache misses or low
-        // device memory. this class will handle nulls with a queued action or
-        // placeholder image.
-        if (!f.exists()) return null;
-        try {
-            return BitmapFactory.decodeFile(f.getAbsolutePath());
-        } catch (Exception e) {
-            return null;
-        }
-    }
 
     /**
      * Directly access a previously cached image's bitmap.  This method is *not* for use
@@ -168,7 +178,12 @@ public class ImageLoader {
             url = APIConstants.buildUrl(url);
         }
         File f = fileCache.getCachedFile(url);
-        return decodeBitmap(f);
+        if (!f.exists()) return null;
+        try {
+            return BitmapFactory.decodeFile(f.getAbsolutePath());
+        } catch (Exception e) {
+            return null;
+        }
     }
 
 }

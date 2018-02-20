@@ -12,6 +12,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -30,6 +31,7 @@ import com.newsblur.domain.Story;
 import com.newsblur.domain.UserDetails;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
+import com.newsblur.util.ImageLoader;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.StoryUtils;
 import com.newsblur.util.UIUtils;
@@ -151,6 +153,8 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         @Bind(R.id.story_item_title) TextView storyTitleView;
 
         Story story;
+        ImageLoader.PhotoToLoad thumbLoader;
+        String lastThumbUrl;
 
         public StoryViewHolder(View view) {
             super(view);
@@ -212,9 +216,19 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
             Story story = Story.fromCursor(cursor);
             vh.story = story;
-            com.newsblur.util.Log.d(this, "BINDING: " + story.storyHash);
+            //com.newsblur.util.Log.d(this, "BINDING: " + story.storyHash);
 
-            FeedUtils.thumbnailLoader.displayImage(story.thumbnailUrl, vh.thumbView, 0, true);
+            // when first created, tiles' views tend to not yet have their dimensions calculated, but
+            // upon being recycled they will often have a known size, which lets us give a max size to
+            // the image loader, which in turn can massively optimise loading.  the image loader will
+            // reject nonsene values
+            int thumbSizeGuess = vh.thumbView.getMeasuredHeight();
+
+            if (!TextUtils.equals(story.thumbnailUrl, vh.lastThumbUrl)) {
+                vh.lastThumbUrl = story.thumbnailUrl;
+                vh.thumbView.setImageDrawable(null);
+            }
+            vh.thumbLoader = FeedUtils.thumbnailLoader.displayImage(story.thumbnailUrl, vh.thumbView, 0, true, thumbSizeGuess);
             vh.storyTitleView.setText(UIUtils.fromHtml(story.title));
 
             // lists with mixed feeds get added info, but single feeds do not
@@ -253,13 +267,20 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         } else {
             FooterViewHolder vh = (FooterViewHolder) viewHolder;
             vh.innerView.removeAllViews();
-            vh.innerView.addView(footerViews.get(position - getStoryCount()));
+            View targetFooter = footerViews.get(position - getStoryCount());
+            ViewParent oldFooterHolder = targetFooter.getParent();
+            if (oldFooterHolder instanceof ViewGroup) ((ViewGroup) oldFooterHolder).removeAllViews();
+            vh.innerView.addView(targetFooter);
         }
 
     }
 
     @Override
     public void onViewRecycled(RecyclerView.ViewHolder viewHolder) {
+        if (viewHolder instanceof StoryViewHolder) {
+            StoryViewHolder vh = (StoryViewHolder) viewHolder;
+            if (vh.thumbLoader != null) vh.thumbLoader.cancel = true;
+        }
         if (viewHolder instanceof FooterViewHolder) {
             FooterViewHolder vh = (FooterViewHolder) viewHolder;
             vh.innerView.removeAllViews();
