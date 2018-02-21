@@ -2,7 +2,7 @@ import datetime
 import enum
 import redis
 import mongoengine as mongo
-import boto
+from boto.ses.connection import BotoServerError
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
@@ -289,7 +289,7 @@ class MUserFeedNotification(mongo.Document):
         msg.attach_alternative(html, "text/html")
         try:
             msg.send()
-        except boto.ses.connection.BotoServerError, e:
+        except BotoServerError, e:
             logging.user(usersub.user, '~BMStory notification by email error: ~FR%s' % e)
             return
         logging.user(usersub.user, '~BMStory notification by email: ~FY~SB%s~SN~BM~FY/~SB%s' % 
