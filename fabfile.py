@@ -1186,7 +1186,7 @@ def copy_munin_data(from_server):
     put(os.path.join(env.SECRETS_PATH, 'keys/newsblur.key.pub'), '~/.ssh/newsblur.key.pub')
     run('chmod 600 ~/.ssh/newsblur*')
 
-    put("config/munin.nginx.conf", "/usr/local/nginx/conf/sites-enabled/munin.conf", use_sudo=True)
+    # put("config/munin.nginx.conf", "/usr/local/nginx/conf/sites-enabled/munin.conf", use_sudo=True)
     sudo('/etc/init.d/nginx reload')
 
     run("rsync -az -e \"ssh -i /home/sclay/.ssh/newsblur.key\" --stats --progress %s:/var/lib/munin/ /srv/munin" % from_server)
