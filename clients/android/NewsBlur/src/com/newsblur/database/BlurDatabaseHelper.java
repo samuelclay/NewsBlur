@@ -1125,6 +1125,7 @@ public class BlurDatabaseHelper {
     }
 
     public void clearStorySession() {
+        com.newsblur.util.Log.i(this, "reading session reset");
         synchronized (RW_MUTEX) {dbRW.delete(DatabaseConstants.READING_SESSION_TABLE, null, null);}
     }
 
