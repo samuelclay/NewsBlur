@@ -248,11 +248,6 @@ public class ItemListFragment extends ItemSetFragment implements OnScrollListene
     }
 
     @Override
-    protected void resetAdapter() {  
-        //if (adapter != null) adapter.notifyDataSetInvalidated();
-    }
-
-    @Override
     protected void setShowNone(boolean showNone) {
         adapter.setShowNone(showNone);
     }

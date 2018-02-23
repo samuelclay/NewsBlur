@@ -265,32 +265,35 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
         }
         fs.setSearchQuery(q);
         if (!TextUtils.equals(q, oldQuery)) {
+            NBSyncService.resetReadingSession();
+            FeedUtils.prepareReadingSession(fs);
+            triggerSync();
             itemSetFragment.resetEmptyState();
             itemSetFragment.hasUpdated();
             itemSetFragment.scrollToTop();
-            NBSyncService.resetReadingSession();
-            NBSyncService.resetFetchState(fs);
         }
     }
 
 	@Override
     public void storyOrderChanged(StoryOrder newValue) {
         updateStoryOrderPreference(newValue);
-        itemSetFragment.resetEmptyState();
-        itemSetFragment.hasUpdated();
-        itemSetFragment.scrollToTop();
-        NBSyncService.resetFetchState(fs);
-        triggerSync();
+        restartReadingSession();
     }
 
     @Override
     public void readFilterChanged(ReadFilter newValue) {
         updateReadFilterPreference(newValue);
+        restartReadingSession();
+    }
+
+    private void restartReadingSession() {
+        NBSyncService.resetFetchState(fs);
+        NBSyncService.resetReadingSession();
+        FeedUtils.prepareReadingSession(fs);
+        triggerSync();
         itemSetFragment.resetEmptyState();
         itemSetFragment.hasUpdated();
         itemSetFragment.scrollToTop();
-        NBSyncService.resetFetchState(fs);
-        triggerSync();
     }
 
     // NB: this callback is for the text size slider

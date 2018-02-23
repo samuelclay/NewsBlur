@@ -44,7 +44,9 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     public final static int VIEW_TYPE_STORY = 1;
     public final static int VIEW_TYPE_FOOTER = 2;
 
+    private final static float defaultTextSize_story_item_feedtitle = 13f;
     private final static float defaultTextSize_story_item_title = 14f;
+    private final static float defaultTextSize_story_item_date = 12f;
 
     private final static float READ_STORY_ALPHA = 0.4f;
     private final static int READ_STORY_ALPHA_B255 = (int) (255f * READ_STORY_ALPHA);
@@ -84,6 +86,10 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         setHasStableIds(true);
     }
 
+    public void updateFeedSet(FeedSet fs) {
+        this.fs = fs;
+    }
+
     public synchronized void addFooterView(View v) {
         footerViews.add(v);
     }
@@ -93,7 +99,7 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         return (getStoryCount() + footerViews.size());
     }
 
-    private int getStoryCount() {
+    public int getStoryCount() {
         if (showNone || (cursor == null)) {
             return 0;
         } else {
@@ -145,12 +151,30 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         this.textSize = textSize;
     }
 
+    @Override
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
+        if (viewType == VIEW_TYPE_STORY) {
+            View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.view_story_tile, viewGroup, false);
+            return new StoryViewHolder(v);
+        } else {
+            View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.view_footer_tile, viewGroup, false);
+            return new FooterViewHolder(v);
+        }
+    }
+
     public class StoryViewHolder extends RecyclerView.ViewHolder
                                  implements View.OnClickListener, View.OnCreateContextMenuListener, MenuItem.OnMenuItemClickListener {
 
+        @Bind(R.id.story_item_favicon_borderbar_1) View leftBarOne;
+        @Bind(R.id.story_item_favicon_borderbar_2) View leftBarTwo;
+        @Bind(R.id.story_item_inteldot) ImageView intelDot;
         @Bind(R.id.story_item_thumbnail) ImageView thumbView;
         @Bind(R.id.story_item_feedicon) ImageView feedIconView;
+        @Bind(R.id.story_item_feedtitle) TextView feedTitleView;
         @Bind(R.id.story_item_title) TextView storyTitleView;
+        @Bind(R.id.story_item_date) TextView storyDate;
+        @Bind(R.id.story_item_saved_icon) View savedView;
+        @Bind(R.id.story_item_shared_icon) View sharedView;
 
         Story story;
         ImageLoader.PhotoToLoad thumbLoader;
@@ -170,7 +194,6 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
         @Override
         public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-            com.newsblur.util.Log.d(this, "INFLATE: " + story.storyHash);
             MenuInflater inflater = new MenuInflater(context);
             UIUtils.inflateStoryContextMenu(menu, inflater, context, fs, story);
             for (int i=0; i<menu.size(); i++) {
@@ -185,27 +208,6 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         }
     }
 
-    public class FooterViewHolder extends RecyclerView.ViewHolder {
-
-        @Bind(R.id.footer_view_inner) FrameLayout innerView;
-
-        public FooterViewHolder(View view) {
-            super(view);
-            ButterKnife.bind(FooterViewHolder.this, view);
-        }
-    }
-
-    @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
-        if (viewType == VIEW_TYPE_STORY) {
-            View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.view_story_tile, viewGroup, false);
-            return new StoryViewHolder(v);
-        } else {
-            View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.view_footer_tile, viewGroup, false);
-            return new FooterViewHolder(v);
-        }
-    }
-
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
         if (viewHolder instanceof StoryViewHolder) {
@@ -216,46 +218,60 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
             Story story = Story.fromCursor(cursor);
             vh.story = story;
-            //com.newsblur.util.Log.d(this, "BINDING: " + story.storyHash);
 
             // when first created, tiles' views tend to not yet have their dimensions calculated, but
             // upon being recycled they will often have a known size, which lets us give a max size to
             // the image loader, which in turn can massively optimise loading.  the image loader will
             // reject nonsene values
             int thumbSizeGuess = vh.thumbView.getMeasuredHeight();
-
+            // there is a not-unlikely chance that the recycler will re-use a tile for a story with the
+            // same thumbnail.  only load it if it is different.
             if (!TextUtils.equals(story.thumbnailUrl, vh.lastThumbUrl)) {
-                vh.lastThumbUrl = story.thumbnailUrl;
+                // the view will display a stale, recycled thumb before the new one loads if the old is not cleared
                 vh.thumbView.setImageDrawable(null);
+                vh.lastThumbUrl = story.thumbnailUrl;
+                vh.thumbLoader = FeedUtils.thumbnailLoader.displayImage(story.thumbnailUrl, vh.thumbView, 0, true, thumbSizeGuess);
             }
-            vh.thumbLoader = FeedUtils.thumbnailLoader.displayImage(story.thumbnailUrl, vh.thumbView, 0, true, thumbSizeGuess);
+
+            String feedColor = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_FAVICON_COLOR));
+            String feedFade = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_FAVICON_FADE));
+            vh.leftBarOne.setBackgroundColor(UIUtils.decodeColourValue(feedColor, Color.GRAY));
+            vh.leftBarTwo.setBackgroundColor(UIUtils.decodeColourValue(feedFade, Color.LTGRAY));
+
+            if (! ignoreIntel) {
+                int score = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.STORY_INTELLIGENCE_TOTAL));
+                if (score > 0) {
+                    vh.intelDot.setImageResource(R.drawable.g_icn_focus);
+                } else if (score == 0) {
+                    vh.intelDot.setImageResource(R.drawable.g_icn_unread);
+                } else {
+                    vh.intelDot.setImageResource(R.drawable.g_icn_hidden);
+                }
+            } else {
+                vh.intelDot.setImageResource(android.R.color.transparent);
+            }
+
             vh.storyTitleView.setText(UIUtils.fromHtml(story.title));
+            vh.storyDate.setText(StoryUtils.formatShortDate(context, new Date(story.timestamp)));
 
             // lists with mixed feeds get added info, but single feeds do not
             if (!singleFeed) {
                 String faviconUrl = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_FAVICON_URL));
                 FeedUtils.iconLoader.displayImage(faviconUrl, vh.feedIconView, 0, false);
+                vh.feedTitleView.setText(cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_TITLE)));
+                vh.feedIconView.setVisibility(View.VISIBLE);
+                vh.feedTitleView.setVisibility(View.VISIBLE);
             } else {
                 vh.feedIconView.setVisibility(View.GONE);
+                vh.feedTitleView.setVisibility(View.GONE);
             }
 
-            // dynamic text sizing
-            vh.storyTitleView.setTextSize(textSize * defaultTextSize_story_item_title);
-            
-            // read/unread fading
-            if (this.ignoreReadStatus || (! story.read)) {
-                vh.thumbView.setImageAlpha(255);
-                vh.feedIconView.setImageAlpha(255);
-                vh.storyTitleView.setAlpha(1.0f);
-                vh.storyTitleView.setTypeface(null, Typeface.BOLD);
+            if (vh.story.starred) {
+                vh.savedView.setVisibility(View.VISIBLE);
             } else {
-                vh.thumbView.setImageAlpha(READ_STORY_ALPHA_B255);
-                vh.feedIconView.setImageAlpha(READ_STORY_ALPHA_B255);
-                vh.storyTitleView.setAlpha(READ_STORY_ALPHA);
-                vh.storyTitleView.setTypeface(null, Typeface.NORMAL);
+                vh.savedView.setVisibility(View.GONE);
             }
 
-            /*
             boolean shared = false;
             findshareloop: for (String userId : story.sharedUserIds) {
                 if (TextUtils.equals(userId, user.id)) {
@@ -263,7 +279,38 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                     break findshareloop;
                 }
             }
-            */
+            if (shared) {
+                vh.sharedView.setVisibility(View.VISIBLE);
+            } else {
+                vh.sharedView.setVisibility(View.GONE);
+            }
+
+            // dynamic text sizing
+            vh.feedTitleView.setTextSize(textSize * defaultTextSize_story_item_feedtitle);
+            vh.storyTitleView.setTextSize(textSize * defaultTextSize_story_item_title);
+            vh.storyDate.setTextSize(textSize * defaultTextSize_story_item_date);
+            
+            // read/unread fading
+            if (this.ignoreReadStatus || (! story.read)) {
+                vh.leftBarOne.getBackground().setAlpha(255);
+                vh.leftBarTwo.getBackground().setAlpha(255);
+                vh.intelDot.setImageAlpha(255);
+                vh.thumbView.setImageAlpha(255);
+                vh.feedIconView.setImageAlpha(255);
+                vh.feedTitleView.setAlpha(1.0f);
+                vh.storyTitleView.setAlpha(1.0f);
+                vh.storyDate.setAlpha(1.0f);
+            } else {
+                vh.leftBarOne.getBackground().setAlpha(READ_STORY_ALPHA_B255);
+                vh.leftBarTwo.getBackground().setAlpha(READ_STORY_ALPHA_B255);
+                vh.intelDot.setImageAlpha(READ_STORY_ALPHA_B255);
+                vh.thumbView.setImageAlpha(READ_STORY_ALPHA_B255);
+                vh.feedIconView.setImageAlpha(READ_STORY_ALPHA_B255);
+                vh.feedTitleView.setAlpha(READ_STORY_ALPHA);
+                vh.storyTitleView.setAlpha(READ_STORY_ALPHA);
+                vh.storyDate.setAlpha(READ_STORY_ALPHA);
+            }
+
         } else {
             FooterViewHolder vh = (FooterViewHolder) viewHolder;
             vh.innerView.removeAllViews();
@@ -273,6 +320,16 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             vh.innerView.addView(targetFooter);
         }
 
+    }
+
+    public class FooterViewHolder extends RecyclerView.ViewHolder {
+
+        @Bind(R.id.footer_view_inner) FrameLayout innerView;
+
+        public FooterViewHolder(View view) {
+            super(view);
+            ButterKnife.bind(FooterViewHolder.this, view);
+        }
     }
 
     @Override

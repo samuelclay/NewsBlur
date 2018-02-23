@@ -24,6 +24,7 @@ import android.util.Log;
 import android.util.TypedValue;
 import android.text.Html;
 import android.text.Spanned;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.ContextMenu;
 import android.view.MenuInflater;
@@ -526,6 +527,18 @@ public class UIUtils {
         if (fs.isFilterSaved()) {
             menu.removeItem(R.id.menu_intel);
         }
+    }
+
+    public static int decodeColourValue(String val, int defaultVal) {
+        int result = defaultVal;
+        if (val == null) return result;
+        if (TextUtils.equals(val, "null")) return result;
+        try {
+            result = Color.parseColor("#" + val);
+        } catch (NumberFormatException nfe) {
+            com.newsblur.util.Log.e(UIUtils.class.getName(), "feed supplied bad color info: " + nfe.getMessage());
+        }
+        return result;
     }
 
 }

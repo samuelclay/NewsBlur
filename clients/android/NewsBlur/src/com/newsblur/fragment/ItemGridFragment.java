@@ -167,7 +167,7 @@ public class ItemGridFragment extends ItemSetFragment {
         } else {
             topProgressView.setVisibility(View.INVISIBLE);
             bottomProgressView.setVisibility(View.INVISIBLE);
-            if (cursorSeenYet && NBSyncService.isFeedSetExhausted(getFeedSet())) {
+            if (cursorSeenYet && NBSyncService.isFeedSetExhausted(getFeedSet()) && (adapter.getStoryCount() > 0)) {
                 fleuronFooter.setVisibility(View.VISIBLE);
             }
         }
@@ -210,11 +210,11 @@ public class ItemGridFragment extends ItemSetFragment {
         int totalCount = layoutManager.getItemCount();
         int visibleCount = layoutManager.getChildCount();
         int lastVisible = layoutManager.findLastVisibleItemPosition();
-        //com.newsblur.util.Log.d(this, String.format("SCROLL  total:%d  bound:%d  last%d", totalCount, visibleCount, lastVisible));
         
-        // load an extra page or two worth of stories past the viewport
-        int desiredStoryCount = lastVisible + (visibleCount*2) + 1;
+        // load an extra page worth of stories past the viewport plus at least two rows to prime the height calc
+        int desiredStoryCount = lastVisible + (visibleCount*2) + (GRID_COLUMN_COUNT*2);
         triggerRefresh(desiredStoryCount, totalCount);
+        //com.newsblur.util.Log.d(this, String.format(" total:%d  bound:%d  last%d  desire:%d", totalCount, visibleCount, lastVisible, desiredStoryCount));
 
         // TODO: mark on scroll?
     }
@@ -233,6 +233,7 @@ public class ItemGridFragment extends ItemSetFragment {
     @Override
     protected void updateAdapter(Cursor cursor) {
         adapter.swapCursor(cursor);
+        adapter.updateFeedSet(getFeedSet());
         adapter.notifyDataSetChanged();
         if (cursor.getCount() > 0) {
             emptyView.setVisibility(View.INVISIBLE);
@@ -243,10 +244,6 @@ public class ItemGridFragment extends ItemSetFragment {
         // some list views will auto-trigger a scroll handler when invalidated, but not a RecyclerView,
         // so don't rely on that to check if we need more items
         ensureSufficientStories();
-    }
-
-    @Override
-    protected void resetAdapter() {  
     }
 
     @Override
