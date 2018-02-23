@@ -733,6 +733,7 @@
 //    [self cancelRequests];
     NSString *feedId = [NSString stringWithFormat:@"%@", [[storiesCollection activeFeed] objectForKey:@"id"]];
     NSInteger feedPage = storiesCollection.feedPage;
+    NSLog(@" ---> Loading feed url: %@", theFeedDetailURL);
     [appDelegate.networkManager GET:theFeedDetailURL parameters:nil progress:nil success:^(NSURLSessionTask *task, id responseObject) {
         if (!storiesCollection.activeFeed) return;
         [self finishedLoadingFeed:responseObject feedPage:feedPage feedId:feedId];
@@ -1461,8 +1462,7 @@
     
     cell.storyContent = nil;
     if (self.isDashboardModule || self.showContentPreview) {
-        cell.storyContent = [[story objectForKey:@"story_content"]
-                             stringByConvertingHTMLToPlainText];
+        cell.storyContent = [[[story objectForKey:@"story_content"] convertHTML] stringByDecodingXMLEntities];
     }
     
     // feed color bar border
@@ -1768,7 +1768,9 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
                 if ([storiesCollection isStoryUnread:story]) {
                     [storiesCollection markStoryRead:story];
                     [storiesCollection syncStoryAsRead:story];
-                    [self.storyTitlesTable reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:thisRow inSection:0]]
+                    NSIndexPath *reloadIndexPath = [NSIndexPath indexPathForRow:thisRow inSection:0];
+                    NSLog(@" --> Reloading indexPath: %@", reloadIndexPath);
+                    [self.storyTitlesTable reloadRowsAtIndexPaths:@[reloadIndexPath]
                                                  withRowAnimation:UITableViewRowAnimationFade];
                     
                     if (self.isDashboardModule) {
