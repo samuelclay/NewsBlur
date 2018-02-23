@@ -155,6 +155,9 @@
     <string name="menu_instafetch_feed">Insta-fetch stories</string>
     <string name="menu_infrequent_cutoff">Infrequent stories per month</string>
     <string name="menu_intel">Intelligence trainer</string>
+    <string name="menu_story_list_style_choose">List style…</string>
+    <string name="list_style_list">List</string>
+    <string name="list_style_grid">Grid</string>
     
     <string name="toast_story_unread">Story marked as unread</string>
     <string name="toast_hold_to_select">Press and hold to select text</string>
