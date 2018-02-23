@@ -46,7 +46,7 @@ import com.newsblur.view.ProgressThrobber;
 
 public class ItemGridFragment extends ItemSetFragment {
 
-    private final static int GRID_COLUMN_COUNT = 3;
+    private final static int GRID_COLUMN_COUNT = 2;
 
     private final static int GRID_SPACING_DP = 5;
     private int gridSpacingPx;
