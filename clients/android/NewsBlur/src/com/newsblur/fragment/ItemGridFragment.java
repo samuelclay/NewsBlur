@@ -66,6 +66,9 @@ public class ItemGridFragment extends ItemSetFragment {
 
     private View fleuronFooter;
 
+    // de-dupe the massive stream of scrolling data to auto-mark read
+    private int lastAutoMarkIndex;
+
 	public static ItemGridFragment newInstance() {
 		ItemGridFragment fragment = new ItemGridFragment();
 		Bundle arguments = new Bundle();
@@ -204,6 +207,24 @@ public class ItemGridFragment extends ItemSetFragment {
         if (dy < 1) return;
 
         ensureSufficientStories();
+
+        if (PrefsUtils.isMarkReadOnScroll(getActivity())) {
+            // we want the top row of stories that is partially obscured. go back one from the first fully visible
+            int markEnd = layoutManager.findFirstCompletelyVisibleItemPosition() - 1;
+            if (markEnd > lastAutoMarkIndex) {
+                lastAutoMarkIndex = markEnd;
+                // iterate backwards through that row, marking read
+                for (int i=0; i<GRID_COLUMN_COUNT; i++) {
+                    int index = markEnd - i;
+                    com.newsblur.util.Log.d(this, String.format("  marking %d", index));
+                    Story story = adapter.getStory(index);
+                    if (story != null) {
+                        com.newsblur.util.Log.d(this, "    hash: " + story.storyHash);
+                        FeedUtils.markStoryAsRead(story, getActivity());
+                    }
+                }
+            }
+        }
     }
 
     private void ensureSufficientStories() {
@@ -215,8 +236,6 @@ public class ItemGridFragment extends ItemSetFragment {
         int desiredStoryCount = lastVisible + (visibleCount*2) + (GRID_COLUMN_COUNT*2);
         triggerRefresh(desiredStoryCount, totalCount);
         //com.newsblur.util.Log.d(this, String.format(" total:%d  bound:%d  last%d  desire:%d", totalCount, visibleCount, lastVisible, desiredStoryCount));
-
-        // TODO: mark on scroll?
     }
 
     @Override
