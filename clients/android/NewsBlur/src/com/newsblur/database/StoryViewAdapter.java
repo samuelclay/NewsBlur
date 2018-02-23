@@ -1,5 +1,6 @@
 package com.newsblur.database;
 
+import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Color;
@@ -29,6 +30,7 @@ import com.newsblur.R;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.domain.Story;
 import com.newsblur.domain.UserDetails;
+import com.newsblur.fragment.StoryIntelTrainerFragment;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.ImageLoader;
@@ -48,7 +50,7 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     private final static float defaultTextSize_story_item_title = 14f;
     private final static float defaultTextSize_story_item_date = 12f;
 
-    private final static float READ_STORY_ALPHA = 0.4f;
+    private final static float READ_STORY_ALPHA = 0.35f;
     private final static int READ_STORY_ALPHA_B255 = (int) (255f * READ_STORY_ALPHA);
 
     private List<View> footerViews = new ArrayList<View>();
@@ -56,7 +58,7 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     protected Cursor cursor;
     private boolean showNone = false;
 
-    private Context context;
+    private Activity context;
     private FeedSet fs;
     private boolean ignoreReadStatus;
     private boolean ignoreIntel;
@@ -64,7 +66,7 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     private float textSize;
     private UserDetails user;
 
-    public StoryViewAdapter(Context context, FeedSet fs) {
+    public StoryViewAdapter(Activity context, FeedSet fs) {
         this.context = context;
         this.fs = fs;
         
@@ -189,7 +191,7 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
         @Override
         public void onClick(View view) {
-            com.newsblur.util.Log.d(this, "CLICK: " + story.storyHash);
+            UIUtils.startReadingActivity(fs, story.storyHash, context);
         }
 
         @Override
@@ -203,8 +205,48 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
         @Override
         public boolean onMenuItemClick (MenuItem item) {
-            com.newsblur.util.Log.d(this, "MENU ITEM CLICK: " + story.storyHash);
-            return true;
+            switch (item.getItemId()) {
+            case R.id.menu_mark_story_as_read:
+                FeedUtils.markStoryAsRead(story, context);
+                return true;
+
+            case R.id.menu_mark_story_as_unread:
+                FeedUtils.markStoryUnread(story, context);
+                return true;
+
+            case R.id.menu_mark_older_stories_as_read:
+                FeedUtils.markRead(context, fs, story.timestamp, null, R.array.mark_older_read_options, false);
+                return true;
+
+            case R.id.menu_mark_newer_stories_as_read:
+                FeedUtils.markRead(context, fs, null, story.timestamp, R.array.mark_newer_read_options, false);
+                return true;
+
+            case R.id.menu_send_story:
+                FeedUtils.sendStoryBrief(story, context);
+                return true;
+
+            case R.id.menu_send_story_full:
+                FeedUtils.sendStoryFull(story, context);
+                return true;
+
+            case R.id.menu_save_story:
+                FeedUtils.setStorySaved(story, true, context);
+                return true;
+
+            case R.id.menu_unsave_story:
+                FeedUtils.setStorySaved(story, false, context);
+                return true;
+
+            case R.id.menu_intel:
+                if (story.feedId.equals("0")) return true; // cannot train on feedless stories
+                StoryIntelTrainerFragment intelFrag = StoryIntelTrainerFragment.newInstance(story, fs);
+                intelFrag.show(context.getFragmentManager(), StoryIntelTrainerFragment.class.getName());
+                return true;
+
+            default:
+                return false;
+            }
         }
     }
 
