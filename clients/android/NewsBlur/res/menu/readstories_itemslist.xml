@@ -1,5 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
+    <item android:id="@+id/menu_story_list_style"
+          android:title="@string/menu_story_list_style_choose" >
+        <menu>
+            <group android:checkableBehavior="single">
+                <item android:id="@+id/menu_list_style_list"
+                      android:title="@string/list_style_list" />
+                <item android:id="@+id/menu_list_style_grid"
+                      android:title="@string/list_style_grid" />
+            </group>
+        </menu>
+    </item>
     <item
         android:id="@+id/menu_textsize"
         android:showAsAction="never"

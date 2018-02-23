@@ -34,6 +34,7 @@ import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadFilter;
 import com.newsblur.util.ReadFilterChangedListener;
 import com.newsblur.util.StateFilter;
+import com.newsblur.util.StoryListStyle;
 import com.newsblur.util.StoryOrder;
 import com.newsblur.util.StoryOrderChangedListener;
 import com.newsblur.util.UIUtils;
@@ -77,8 +78,12 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
 		FragmentManager fragmentManager = getFragmentManager();
 		itemSetFragment = (ItemSetFragment) fragmentManager.findFragmentByTag(ItemSetFragment.class.getName());
 		if (itemSetFragment == null) {
-			//itemSetFragment = ItemListFragment.newInstance();
-			itemSetFragment = ItemGridFragment.newInstance();
+            StoryListStyle listStyle = PrefsUtils.getStoryListStyle(this, fs);
+            if (listStyle == StoryListStyle.LIST) {
+			    itemSetFragment = ItemListFragment.newInstance();
+            } else {
+                itemSetFragment = ItemGridFragment.newInstance();
+            }
 			itemSetFragment.setRetainInstance(true);
 			FragmentTransaction transaction = fragmentManager.beginTransaction();
 			transaction.add(R.id.activity_itemlist_container, itemSetFragment, ItemSetFragment.class.getName());
@@ -148,9 +153,18 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		super.onPrepareOptionsMenu(menu);
+
         if (fs.isFilterSaved()) {
             menu.findItem(R.id.menu_mark_all_as_read).setVisible(false);
         }
+
+        StoryListStyle listStyle = PrefsUtils.getStoryListStyle(this, fs);
+        if (listStyle == StoryListStyle.LIST) {
+            menu.findItem(R.id.menu_list_style_list).setChecked(true);
+        } else {
+            menu.findItem(R.id.menu_list_style_grid).setChecked(true);
+        }
+
         ThemeValue themeValue = PrefsUtils.getSelectedTheme(this);
         if (themeValue == ThemeValue.LIGHT) {
             menu.findItem(R.id.menu_theme_light).setChecked(true);
@@ -200,6 +214,12 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
             UIUtils.restartActivity(this);
         } else if (item.getItemId() == R.id.menu_theme_black) {
             PrefsUtils.setSelectedTheme(this, ThemeValue.BLACK);
+            UIUtils.restartActivity(this);
+        } else if (item.getItemId() == R.id.menu_list_style_list) {
+            PrefsUtils.updateStoryListStyle(this, fs, StoryListStyle.LIST);
+            UIUtils.restartActivity(this);
+        } else if (item.getItemId() == R.id.menu_list_style_grid) {
+            PrefsUtils.updateStoryListStyle(this, fs, StoryListStyle.GRID);
             UIUtils.restartActivity(this);
         }
 	
