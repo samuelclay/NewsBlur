@@ -49,6 +49,9 @@ from apps.social.models import MSocialSubscription, MActivity, MInteraction
 from apps.categories.models import MCategory
 from apps.social.views import load_social_page
 from apps.rss_feeds.tasks import ScheduleImmediateFetches
+from apps.profile.middleware import DBProfilerMiddleware
+from utils.mongo_raw_log_middleware import MongoDumpMiddleware
+from utils.redis_raw_log_middleware import RedisDumpMiddleware
 from utils import json_functions as json
 from utils.user_functions import get_user, ajax_login_required
 from utils.feed_functions import relative_timesince
@@ -1248,7 +1251,15 @@ def load_river_stories__redis(request):
     user_search       = None
     offset            = (page-1) * limit
     story_date_order  = "%sstory_date" % ('' if order == 'oldest' else '-')
-
+    
+    profiler = DBProfilerMiddleware()
+    profiler.process_request(request)
+    if 'db_profiler' in request.activated_segments:
+        mongo_middleware = MongoDumpMiddleware()
+        mongo_middleware.process_celery(profiler)
+        redis_middleware = RedisDumpMiddleware()
+        redis_middleware.process_celery(profiler)
+    
     if infrequent:
         feed_ids = Feed.low_volume_feeds(feed_ids, stories_per_month=infrequent)
     
@@ -1442,6 +1453,8 @@ def load_river_stories__redis(request):
     
     if include_feeds: data['feeds'] = feeds
     if not include_hidden: data['hidden_stories_removed'] = hidden_stories_removed
+    if 'db_profiler' in request.activated_segments:
+        profiler.process_request_finished()
     
     return data
     
