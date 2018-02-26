@@ -367,7 +367,7 @@ def setup_installs():
     ]
     # sudo("sed -i -e 's/archive.ubuntu.com\|security.ubuntu.com/old-releases.ubuntu.com/g' /etc/apt/sources.list")
     put("config/apt_sources.conf", "/etc/apt/sources.list", use_sudo=True)
-    
+    run('sleep 10') # Dies on a lock, so just delay
     sudo('apt-get -y update')
     sudo('DEBIAN_FRONTEND=noninteractive apt-get -y --force-yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" dist-upgrade')
     sudo('DEBIAN_FRONTEND=noninteractive apt-get -y --force-yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install %s' % ' '.join(packages))
@@ -877,13 +877,67 @@ def config_haproxy(debug=False):
     if debug:
         put('config/debug_haproxy.conf', '/etc/haproxy/haproxy.cfg', use_sudo=True)
     else:
+        build_haproxy()
         put(os.path.join(env.SECRETS_PATH, 'configs/haproxy.conf'), 
             '/etc/haproxy/haproxy.cfg', use_sudo=True)
+
     haproxy_check = run('haproxy -c -f /etc/haproxy/haproxy.cfg')
     if haproxy_check.return_code == 0:
         sudo('/etc/init.d/haproxy reload')
     else:
         print " !!!> Uh-oh, HAProxy config doesn't check out: %s" % haproxy_check.return_code
+
+def build_haproxy():
+    droplets = assign_digitalocean_roledefs(split=True)
+    servers = defaultdict(list)
+    gunicorn_counts_servers = ['app13', 'app18']
+    gunicorn_refresh_servers = ['app06', 'app42']
+    maintenance_servers = ['app10']
+    
+    for group_type in ['app', 'push', 'work', 'node_socket', 'node_favicon', 'www']:
+        group_type_name = group_type
+        if 'node' in group_type:
+            group_type_name = 'node'
+        for server in droplets[group_type_name]:
+            droplet_nums = re.findall(r'\d+', server['name'])
+            droplet_num = droplet_nums[0] if droplet_nums else ''
+            server_type = group_type
+            port = 80
+            check_inter = 3000
+            
+            if server_type == 'www':
+                port = 81
+            if group_type == 'node_socket':
+                port = 8888
+            if group_type in ['app', 'push']:
+                port = 8000
+            address = "%s:%s" % (server['address'], port)
+
+            if server_type == 'app':
+                nginx_address = "%s:80" % (server['address'])
+                servers['nginx'].append("  server nginx%-15s %-22s check inter 3000ms" % (droplet_num, nginx_address))
+            if server['name'] in maintenance_servers:
+                nginx_address = "%s:80" % (server['address'])
+                servers['maintenance'].append("  server nginx%-15s %-22s check inter 3000ms" % (droplet_num, nginx_address))
+            
+            if server['name'] in gunicorn_counts_servers:
+                server_type = 'gunicorn_counts'
+                check_inter = 15000
+            elif server['name'] in gunicorn_refresh_servers:
+                server_type = 'gunicorn_refresh'
+                check_inter = 30000
+            
+            server_name = "%s%s" % (server_type, droplet_num)
+            servers[server_type].append("  server %-20s %-22s check inter %sms" % (server_name, address, check_inter))
+    
+    h = open(os.path.join(env.NEWSBLUR_PATH, 'config/haproxy.conf.template'), 'r')
+    haproxy_template = h.read()
+    for sub, server_list in servers.items():
+        sorted_servers = '\n'.join(sorted(server_list))
+        haproxy_template = haproxy_template.replace("{{ %s }}" % sub, sorted_servers)
+    f = open(os.path.join(env.SECRETS_PATH, 'configs/haproxy.conf'), 'w')
+    f.write(haproxy_template)
+    f.close()
 
 def upgrade_django():
     with virtualenv(), settings(warn_only=True):
