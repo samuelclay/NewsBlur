@@ -69,6 +69,13 @@ class DBProfilerMiddleware:
             logging.debug(" ---> ~FGProfiling~FB task: %s" % self.sql_times_elapsed)
             self._save_times(self.sql_times_elapsed, 'task_')
     
+    def process_request_finished(self):
+        middleware = SQLLogToConsoleMiddleware()
+        middleware.process_celery(self)
+        if hasattr(self, 'sql_times_elapsed'):
+            logging.debug(" ---> ~FGProfiling~FB app: %s" % self.sql_times_elapsed)
+            self._save_times(self.sql_times_elapsed, 'app_')
+    
     def _save_times(self, db_times, prefix=""):
         if not db_times: return
         
