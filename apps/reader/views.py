@@ -581,6 +581,15 @@ def load_single_feed(request, feed_id):
     message                 = None
     user_search             = None
 
+    
+    profiler = DBProfilerMiddleware()
+    profiler.process_request(request)
+    if 'db_profiler' in request.activated_segments:
+        mongo_middleware = MongoDumpMiddleware()
+        mongo_middleware.process_celery(profiler)
+        redis_middleware = RedisDumpMiddleware()
+        redis_middleware.process_celery(profiler)
+        
     dupe_feed_id = None
     user_profiles = []
     now = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
@@ -781,6 +790,9 @@ def load_single_feed(request, feed_id):
     # if page == 2:
     #     assert False
 
+    if 'db_profiler' in request.activated_segments:
+        profiler.process_request_finished()
+    
     return data
 
 def load_feed_page(request, feed_id):
