@@ -337,3 +337,30 @@ class MAnalyticsFetcher(mongo.Document):
     @classmethod
     def calculate_stats(cls, stats):
         return cls.aggregate(**stats)
+
+
+class MAnalyticsLoader(mongo.Document):
+    date = mongo.DateTimeField(default=datetime.datetime.now)
+    page_load = mongo.FloatField()
+    server = mongo.StringField()
+    
+    meta = {
+        'db_alias': 'nbanalytics',
+        'collection': 'page_loads',
+        'allow_inheritance': False,
+        'indexes': ['date', 'server'],
+        'ordering': ['date'],
+    }
+    
+    def __unicode__(self):
+        return "%s: %.4ss" % (self.server, self.page_load)
+        
+    @classmethod
+    def add(cls, page_load):
+        server_name = settings.SERVER_NAME
+
+        cls.objects.create(page_load=page_load, server=server_name)
+    
+    @classmethod
+    def calculate_stats(cls, stats):
+        return cls.aggregate(**stats)
