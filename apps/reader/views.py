@@ -500,7 +500,7 @@ def refresh_feeds(request):
             (end-start).total_seconds(),
             ))
     
-    MAnalyticsLoader.add(page_load=time.time()-start)
+    # MAnalyticsLoader.add(page_load=time.time()-start)
     
     return {
         'feeds': feeds, 
