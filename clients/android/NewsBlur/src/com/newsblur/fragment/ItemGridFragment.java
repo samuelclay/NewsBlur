@@ -216,10 +216,8 @@ public class ItemGridFragment extends ItemSetFragment {
                 // iterate backwards through that row, marking read
                 for (int i=0; i<GRID_COLUMN_COUNT; i++) {
                     int index = markEnd - i;
-                    com.newsblur.util.Log.d(this, String.format("  marking %d", index));
                     Story story = adapter.getStory(index);
                     if (story != null) {
-                        com.newsblur.util.Log.d(this, "    hash: " + story.storyHash);
                         FeedUtils.markStoryAsRead(story, getActivity());
                     }
                 }
