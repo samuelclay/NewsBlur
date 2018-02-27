@@ -80,7 +80,8 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         overlayStatusText.setVisibility(View.VISIBLE);
 
         swipeLayout = (SwipeRefreshLayout)findViewById(R.id.swipe_container);
-        swipeLayout.setColorScheme(R.color.refresh_1, R.color.refresh_2, R.color.refresh_3, R.color.refresh_4);
+        swipeLayout.setColorSchemeResources(R.color.refresh_1, R.color.refresh_2, R.color.refresh_3, R.color.refresh_4);
+        swipeLayout.setProgressBackgroundColorSchemeResource(UIUtils.getThemedResource(this, R.attr.actionbarBackground, android.R.attr.background));
         swipeLayout.setOnRefreshListener(this);
 
 		fragmentManager = getFragmentManager();
