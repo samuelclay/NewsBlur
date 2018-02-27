@@ -20,7 +20,7 @@ class NBMuninGraph(MuninGraph):
         return graph
 
     def calculate_metrics(self):
-        servers = dict((("%s" % s['_id'], s['total']) for s in self.stats))
+        servers = dict((("%s" % s['_id'], s['page_load']) for s in self.stats))
 
         return servers
     
@@ -38,7 +38,7 @@ class NBMuninGraph(MuninGraph):
         }, {
             "$group": {
                 "_id"   : "$server",
-                "total" : {"$avg": "$total"},
+                "page_load" : {"$avg": "$page_load"},
             },
         }])
         
