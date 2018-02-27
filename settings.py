@@ -270,9 +270,10 @@ SESSION_COOKIE_DOMAIN   = '.newsblur.com'
 SENTRY_DSN              = 'https://XXXNEWSBLURXXX@app.getsentry.com/99999999'
 
 if DEBUG:
-    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+    # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+    EMAIL_BACKEND = 'vendor.mailgun.MailgunBackend'
 else:
-    EMAIL_BACKEND = 'django_mailgun.MailgunBackend'
+    EMAIL_BACKEND = 'vendor.mailgun.MailgunBackend'
 
 # ==============
 # = Subdomains =
