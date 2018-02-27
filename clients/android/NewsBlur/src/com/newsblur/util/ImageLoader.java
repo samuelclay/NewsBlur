@@ -49,10 +49,10 @@ public class ImageLoader {
     }
 	
     public PhotoToLoad displayImage(String url, ImageView imageView, float roundRadius, boolean cropSquare) {
-        return displayImage(url, imageView, roundRadius, cropSquare, Integer.MAX_VALUE);
+        return displayImage(url, imageView, roundRadius, cropSquare, Integer.MAX_VALUE, false);
     }
 
-	public PhotoToLoad displayImage(String url, ImageView imageView, float roundRadius, boolean cropSquare, int maxDimPX) {
+	public PhotoToLoad displayImage(String url, ImageView imageView, float roundRadius, boolean cropSquare, int maxDimPX, boolean allowDelay) {
         if (url == null) {
 			imageView.setImageResource(emptyRID);
             return null;
@@ -63,10 +63,9 @@ public class ImageLoader {
         }
 
 		imageViewMappings.put(imageView, url);
-        PhotoToLoad photoToLoad = new PhotoToLoad(url, imageView, roundRadius, cropSquare, maxDimPX);
+        PhotoToLoad photoToLoad = new PhotoToLoad(url, imageView, roundRadius, cropSquare, maxDimPX, allowDelay);
 
         executorService.submit(new PhotosLoader(photoToLoad));
-        //imageView.setImageResource(emptyRID);
         return photoToLoad;
 	}
 
@@ -76,13 +75,15 @@ public class ImageLoader {
         public float roundRadius;
         public boolean cropSquare;
         public int maxDimPX;
+        public boolean allowDelay;
         public boolean cancel;
-		public PhotoToLoad(final String url, final ImageView imageView, float roundRadius, boolean cropSquare, int maxDimPX) {
+		public PhotoToLoad(final String url, final ImageView imageView, float roundRadius, boolean cropSquare, int maxDimPX, boolean allowDelay) {
 			PhotoToLoad.this.url = url; 
 			PhotoToLoad.this.imageView = imageView;
             PhotoToLoad.this.roundRadius = roundRadius;
             PhotoToLoad.this.cropSquare = cropSquare;
             PhotoToLoad.this.maxDimPX = maxDimPX;
+            PhotoToLoad.this.allowDelay = allowDelay;
             PhotoToLoad.this.cancel = false;
 		}
 	}
@@ -107,7 +108,18 @@ public class ImageLoader {
                 return;
             }
 
+            if (photoToLoad.allowDelay) {
+                try {
+                    Thread.sleep(50);
+                } catch (InterruptedException ie) {
+                    return;
+                }
+            }
+
             if (photoToLoad.cancel) return;
+
+            // ensure this imageview even still wants this image
+            if (!isUrlMapped(photoToLoad.imageView, photoToLoad.url)) return;
 
             // callers frequently might botch this due to lazy view measuring
             if (photoToLoad.maxDimPX < 1) {
@@ -153,8 +165,7 @@ public class ImageLoader {
             if (photoToLoad.cancel) return;
 
             // ensure this imageview even still wants this image
-            String latestMappedUrl = imageViewMappings.get(photoToLoad.imageView);
-            if (latestMappedUrl == null || !latestMappedUrl.equals(photoToLoad.url)) return;
+            if (!isUrlMapped(photoToLoad.imageView, photoToLoad.url)) return;
 
             if ((bitmap == null) || (bitmap.getHeight() < minImgHeight)) {
                 if (hideMissing) {
@@ -163,6 +174,7 @@ public class ImageLoader {
                     photoToLoad.imageView.setImageResource(emptyRID);
                 }
             } else {
+                photoToLoad.imageView.setVisibility(View.VISIBLE);
                 photoToLoad.imageView.setImageBitmap(bitmap);
 			}
 		}
@@ -184,6 +196,12 @@ public class ImageLoader {
         } catch (Exception e) {
             return null;
         }
+    }
+
+    public boolean isUrlMapped(ImageView view, String url) {
+        String latestMappedUrl = imageViewMappings.get(view);
+        if (latestMappedUrl == null || !latestMappedUrl.equals(url)) return false;
+        return true;
     }
 
 }
