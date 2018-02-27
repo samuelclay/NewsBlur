@@ -892,7 +892,7 @@ def build_haproxy():
     servers = defaultdict(list)
     gunicorn_counts_servers = ['app13', 'app18']
     gunicorn_refresh_servers = ['app06', 'app42']
-    maintenance_servers = ['app10']
+    maintenance_servers = ['app01']
     
     for group_type in ['app', 'push', 'work', 'node_socket', 'node_favicon', 'www']:
         group_type_name = group_type
@@ -1580,13 +1580,14 @@ def deploy_code(copy_assets=False, rebuild=False, fast=False, reload=False):
         if copy_assets:
             transfer_assets()
         
-    with virtualenv(), settings(warn_only=True):
-        if reload:
-            sudo('supervisorctl reload')
-        elif fast:
-            kill_gunicorn()
-        else:
-            sudo('kill -HUP `cat /srv/newsblur/logs/gunicorn.pid`')
+    with virtualenv():
+        with settings(warn_only=True):
+            if reload:
+                sudo('supervisorctl reload')
+            elif fast:
+                kill_gunicorn()
+            else:
+                sudo('kill -HUP `cat /srv/newsblur/logs/gunicorn.pid`')
 
 @parallel
 def kill():
