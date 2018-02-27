@@ -499,7 +499,9 @@ def refresh_feeds(request):
             (checkpoint2-start).total_seconds(),
             (end-start).total_seconds(),
             ))
-
+    
+    MAnalyticsLoader.add(page_load=time.time()-start)
+    
     return {
         'feeds': feeds, 
         'social_feeds': social_feeds,
@@ -520,6 +522,7 @@ def interactions_count(request):
 @ajax_login_required
 @json.json_view
 def feed_unread_count(request):
+    start = time.time()
     user = request.user
     feed_ids = request.REQUEST.getlist('feed_id') or request.REQUEST.getlist('feed_id[]')
     force = request.REQUEST.get('force', False)
@@ -544,10 +547,12 @@ def feed_unread_count(request):
     else:
         feed_title = "%s feeds" % (len(feeds) + len(social_feeds))
     logging.user(request, "~FBUpdating unread count on: %s" % feed_title)
+    MAnalyticsLoader.add(page_load=time.time()-start)
     
     return {'feeds': feeds, 'social_feeds': social_feeds}
     
 def refresh_feed(request, feed_id):
+    start = time.time()
     user = get_user(request)
     feed = get_object_or_404(Feed, pk=feed_id)
     
@@ -556,6 +561,7 @@ def refresh_feed(request, feed_id):
     usersub.calculate_feed_scores(silent=False)
     
     logging.user(request, "~FBRefreshing feed: %s" % feed)
+    MAnalyticsLoader.add(page_load=time.time()-start)
     
     return load_single_feed(request, feed_id)
     
