@@ -440,6 +440,7 @@ def load_feeds_flat(request):
 @json.json_view
 def refresh_feeds(request):
     start = datetime.datetime.now()
+    start_time = time.time()
     user = get_user(request)
     feed_ids = request.REQUEST.getlist('feed_id') or request.REQUEST.getlist('feed_id[]')
     check_fetch_status = request.REQUEST.get('check_fetch_status')
@@ -500,7 +501,7 @@ def refresh_feeds(request):
             (end-start).total_seconds(),
             ))
     
-    # MAnalyticsLoader.add(page_load=time.time()-start)
+    MAnalyticsLoader.add(page_load=time.time()-start_time)
     
     return {
         'feeds': feeds, 
@@ -547,7 +548,7 @@ def feed_unread_count(request):
     else:
         feed_title = "%s feeds" % (len(feeds) + len(social_feeds))
     logging.user(request, "~FBUpdating unread count on: %s" % feed_title)
-    # MAnalyticsLoader.add(page_load=time.time()-start)
+    MAnalyticsLoader.add(page_load=time.time()-start)
     
     return {'feeds': feeds, 'social_feeds': social_feeds}
     
@@ -561,7 +562,7 @@ def refresh_feed(request, feed_id):
     usersub.calculate_feed_scores(silent=False)
     
     logging.user(request, "~FBRefreshing feed: %s" % feed)
-    # MAnalyticsLoader.add(page_load=time.time()-start)
+    MAnalyticsLoader.add(page_load=time.time()-start)
     
     return load_single_feed(request, feed_id)
     
