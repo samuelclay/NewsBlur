@@ -890,9 +890,10 @@ def config_haproxy(debug=False):
 def build_haproxy():
     droplets = assign_digitalocean_roledefs(split=True)
     servers = defaultdict(list)
-    gunicorn_counts_servers = ['app13', 'app18']
-    gunicorn_refresh_servers = ['app06', 'app42']
-    maintenance_servers = ['app01']
+    gunicorn_counts_servers = ['app22', 'app23']
+    gunicorn_refresh_servers = ['app20', 'app21']
+    maintenance_servers = ['app20']
+    ignore_servers = ['app13', 'app18', 'app06', 'app42', 'app04', 'app06', 'app03', 'app11', 'app08', 'app07']
     
     for group_type in ['app', 'push', 'work', 'node_socket', 'node_favicon', 'www']:
         group_type_name = group_type
@@ -905,6 +906,9 @@ def build_haproxy():
             port = 80
             check_inter = 3000
             
+            if server['name'] in ignore_servers:
+                print " ---> Ignoring %s" % server['name']
+                continue
             if server_type == 'www':
                 port = 81
             if group_type == 'node_socket':

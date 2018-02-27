@@ -42,7 +42,7 @@ class DBProfilerMiddleware:
         setattr(request, 'activated_segments', [])
         if ((request.path.startswith('/reader/feed') or
              request.path.startswith('/reader/river')) and
-            random.random() < .1):
+            random.random() < .01):
             request.activated_segments.append('db_profiler')
             connection.use_debug_cursor = True
 
@@ -61,7 +61,7 @@ class DBProfilerMiddleware:
         if hasattr(request, 'sql_times_elapsed'):
             middleware = SQLLogToConsoleMiddleware()
             middleware.process_celery(self)
-            logging.debug(" ---> ~FGProfiling~FB app: %s" % request.sql_times_elapsed)
+            # logging.debug(" ---> ~FGProfiling~FB app: %s" % request.sql_times_elapsed)
             self._save_times(request.sql_times_elapsed)
         return response
     
