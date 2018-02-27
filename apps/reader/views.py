@@ -38,7 +38,7 @@ from apps.reader.forms import SignupForm, LoginForm, FeatureForm
 from apps.rss_feeds.models import MFeedIcon, MStarredStoryCounts, MSavedSearch
 from apps.notifications.models import MUserFeedNotification
 from apps.search.models import MUserSearch
-from apps.statistics.models import MStatistics
+from apps.statistics.models import MStatistics, MAnalyticsLoader
 # from apps.search.models import SearchStarredStory
 try:
     from apps.rss_feeds.models import Feed, MFeedPage, DuplicateFeed, MStory, MStarredStory
@@ -740,6 +740,7 @@ def load_single_feed(request, feed_id):
     search_log = "~SN~FG(~SB%s~SN) " % query if query else ""
     logging.user(request, "~FYLoading feed: ~SB%s%s (%s/%s) %s%s" % (
         feed.feed_title[:22], ('~SN/p%s' % page) if page > 1 else '', order, read_filter, search_log, time_breakdown))
+    MAnalyticsLoader.add(page_load=timediff)
 
     if not include_hidden:
         hidden_stories_removed = 0
@@ -1398,15 +1399,6 @@ def load_river_stories__redis(request):
         #     stories = []
         # else:
         #     stories = stories[:5]
-    diff = time.time() - start
-    timediff = round(float(diff), 2)
-    logging.user(request, "~FYLoading ~FC%sriver stories~FY: ~SBp%s~SN (%s/%s "
-                               "stories, ~SN%s/%s/%s feeds, %s/%s)" % 
-                               ("~FB~SBinfrequent~SN~FC " if infrequent else "",
-                                page, len(stories), len(mstories), len(found_feed_ids), 
-                                len(feed_ids), len(original_feed_ids), order, read_filter))
-
-
     if not include_hidden:
         hidden_stories_removed = 0
         new_stories = []
@@ -1432,6 +1424,16 @@ def load_river_stories__redis(request):
     #     import random
     #     time.sleep(random.randint(3, 6))
     
+    diff = time.time() - start
+    timediff = round(float(diff), 2)
+    logging.user(request, "~FYLoading ~FC%sriver stories~FY: ~SBp%s~SN (%s/%s "
+                               "stories, ~SN%s/%s/%s feeds, %s/%s)" % 
+                               ("~FB~SBinfrequent~SN~FC " if infrequent else "",
+                                page, len(stories), len(mstories), len(found_feed_ids), 
+                                len(feed_ids), len(original_feed_ids), order, read_filter))
+
+    MAnalyticsLoader.add(page_load=diff)
+
     data = dict(code=code,
                 message=message,
                 stories=stories,
@@ -1442,6 +1444,7 @@ def load_river_stories__redis(request):
     
     if include_feeds: data['feeds'] = feeds
     if not include_hidden: data['hidden_stories_removed'] = hidden_stories_removed
+
 
     return data
     
