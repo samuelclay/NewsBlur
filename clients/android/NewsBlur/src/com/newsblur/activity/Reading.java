@@ -339,7 +339,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
             pager.setPageMarginDrawable(R.drawable.divider_dark);
         }
 
-		pager.setOnPageChangeListener(this);
+		pager.addOnPageChangeListener(this);
 		pager.setAdapter(readingAdapter);
 
         // if the first story in the list was "viewed" before the page change listener was set,
