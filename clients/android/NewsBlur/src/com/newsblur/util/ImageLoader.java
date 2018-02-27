@@ -108,6 +108,9 @@ public class ImageLoader {
                 return;
             }
 
+            // this not only sets a theoretical cap on how frequently we will churn against memory, storage, CPU,
+            // and the UI handler, it also ensures that if the loader gets very behind (as happens during fast
+            // scrolling, the caller has a few cycles to raise the cancellation flag, saving many resources.
             if (photoToLoad.allowDelay) {
                 try {
                     Thread.sleep(50);
