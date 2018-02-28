@@ -1412,6 +1412,7 @@ DO_SIZES = {
     '32': 's-8vcpu-32gb',
     '48': 's-12vcpu-48gb',
     '64': 's-16vcpu-64gb',
+    '32c': 'c-16',
 }
 
 def setup_do(name, size=1, image=None):
