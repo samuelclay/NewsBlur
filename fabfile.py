@@ -1055,6 +1055,8 @@ def setup_postgres(standby=False):
     sudo('echo "%s" | sudo tee /proc/sys/kernel/shmmax' % shmmax)
     sudo('echo "\nkernel.shmmax = %s" | sudo tee -a /etc/sysctl.conf' % shmmax)
     sudo('echo "\nvm.nr_hugepages = %s\n" | sudo tee -a /etc/sysctl.conf' % hugepages)
+    run('echo "ulimit -n 100000" > postgresql.defaults')
+    sudo('mv postgresql.defaults /etc/default/postgresql')
     sudo('sysctl -p')
     sudo('rm /lib/systemd/system/postgresql.service') # Ubuntu 16 has wrong default
     sudo('systemctl daemon-reload')
@@ -1070,6 +1072,8 @@ def setup_postgres(standby=False):
 def config_postgres(standby=False):
     put('config/postgresql.conf', '/etc/postgresql/9.4/main/postgresql.conf', use_sudo=True)
     sudo('chown postgres.postgres /etc/postgresql/9.4/main/postgresql.conf')
+    run('echo "ulimit -n 100000" > postgresql.defaults')
+    sudo('mv postgresql.defaults /etc/default/postgresql')
     
     sudo('/etc/init.d/postgresql reload 9.4')
     
