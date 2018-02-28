@@ -890,10 +890,10 @@ def config_haproxy(debug=False):
 def build_haproxy():
     droplets = assign_digitalocean_roledefs(split=True)
     servers = defaultdict(list)
-    gunicorn_counts_servers = ['app22', 'app23']
+    gunicorn_counts_servers = ['app22', 'app26']
     gunicorn_refresh_servers = ['app20', 'app21']
     maintenance_servers = ['app20']
-    ignore_servers = ['app13', 'app18', 'app06', 'app42', 'app04', 'app06', 'app03', 'app11', 'app08', 'app07']
+    ignore_servers = []
     
     for group_type in ['app', 'push', 'work', 'node_socket', 'node_favicon', 'www']:
         group_type_name = group_type
@@ -1420,7 +1420,7 @@ def setup_do(name, size=1, image=None):
     else:
         images = dict((s.name, s.id) for s in doapi.get_all_images())
         if image == "task": 
-            image = images["task-2016-12"]
+            image = images["task-2018-02"]
         elif image == "app":
             image = images["app-2018-02"]
         else:
