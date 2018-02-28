@@ -1069,7 +1069,8 @@ def setup_postgres(standby=False):
 
 def config_postgres(standby=False):
     put('config/postgresql.conf', '/etc/postgresql/9.4/main/postgresql.conf', use_sudo=True)
-
+    sudo('chown postgres.postgres /etc/postgresql/9.4/main/postgresql.conf')
+    
     sudo('/etc/init.d/postgresql reload 9.4')
     
 def copy_postgres_to_standby(master='db01'):
