@@ -225,7 +225,7 @@ class FetchFeed:
                 return            
         
         if channel_id:
-            video_ids_xml = requests.get("https://www.youtube.com/feeds/videos.xml?channel_id=%s" % channel_id)
+            video_ids_xml = requests.get("https://www.youtube.com/feeds/videos.xml?channel_id=%s" % channel_id, verify=False)
             channel_json = requests.get("https://www.googleapis.com/youtube/v3/channels?part=snippet&id=%s&key=%s" %
                                        (channel_id, settings.YOUTUBE_API_KEY))
             channel = json.decode(channel_json.content)
@@ -245,7 +245,7 @@ class FetchFeed:
                 return
             channel_url = "https://www.youtube.com/playlist?list=%s" % list_id
         elif username:
-            video_ids_xml = requests.get("https://www.youtube.com/feeds/videos.xml?user=%s" % username)
+            video_ids_xml = requests.get("https://www.youtube.com/feeds/videos.xml?user=%s" % username, verify=False)
             description = "YouTube videos uploaded by %s" % username
         else:
             return
