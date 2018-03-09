@@ -411,6 +411,7 @@ def copy_ssh_keys(username='sclay', private=False):
     sudo("echo \"\n\" >> ~%s/.ssh/authorized_keys" % username)
     sudo("echo `cat ~%s/.ssh/id_rsa.pub` >> ~%s/.ssh/authorized_keys" % (username, username))
     sudo('chown -R %s.%s ~%s/.ssh' % (username, username, username))
+    sudo('chmod 700 ~%s/.ssh' % username)
     sudo('chmod 600 ~%s/.ssh/id_rsa*' % username)
 
 def setup_repo():
@@ -1040,18 +1041,18 @@ def setup_rabbitmq():
 #     sudo('apt-get -y install memcached')
 
 def setup_postgres(standby=False):
-    shmmax = 17672445952
+    shmmax = 17818362112
     hugepages = 9000
-    sudo('echo "deb http://apt.postgresql.org/pub/repos/apt/ trusty-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list')
+    sudo('echo "deb http://apt.postgresql.org/pub/repos/apt/ xenial-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list')
     sudo('wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -')
     sudo('apt-get update')
-    sudo('apt-get -y install postgresql-9.4 postgresql-client-9.4 postgresql-contrib-9.4 libpq-dev')
-    put('config/postgresql.conf', '/etc/postgresql/9.4/main/postgresql.conf', use_sudo=True)
-    put('config/postgres_hba.conf', '/etc/postgresql/9.4/main/pg_hba.conf', use_sudo=True)
-    sudo('mkdir /var/lib/postgresql/9.4/archive')
-    sudo('chown -R postgres.postgres /etc/postgresql/9.4/main')
-    sudo('chown -R postgres.postgres /var/lib/postgresql/9.4/main')
-    sudo('chown -R postgres.postgres /var/lib/postgresql/9.4/archive')
+    sudo('apt-get -y install postgresql-10 postgresql-client-10 postgresql-contrib-10 libpq-dev')
+    put('config/postgresql.conf', '/etc/postgresql/10/main/postgresql.conf', use_sudo=True)
+    put('config/postgres_hba.conf', '/etc/postgresql/10/main/pg_hba.conf', use_sudo=True)
+    sudo('mkdir /var/lib/postgresql/10/archive')
+    sudo('chown -R postgres.postgres /etc/postgresql/10/main')
+    sudo('chown -R postgres.postgres /var/lib/postgresql/10/main')
+    sudo('chown -R postgres.postgres /var/lib/postgresql/10/archive')
     sudo('echo "%s" | sudo tee /proc/sys/kernel/shmmax' % shmmax)
     sudo('echo "\nkernel.shmmax = %s" | sudo tee -a /etc/sysctl.conf' % shmmax)
     sudo('echo "\nvm.nr_hugepages = %s\n" | sudo tee -a /etc/sysctl.conf' % hugepages)
@@ -1063,19 +1064,23 @@ def setup_postgres(standby=False):
     sudo('systemctl enable postgresql')
 
     if standby:
-        put('config/postgresql_recovery.conf', '/var/lib/postgresql/9.4/recovery.conf', use_sudo=True)
-        sudo('chown -R postgres.postgres /var/lib/postgresql/9.4/recovery.conf')
+        put('config/postgresql_recovery.conf', '/var/lib/postgresql/10/recovery.conf', use_sudo=True)
+        sudo('chown -R postgres.postgres /var/lib/postgresql/10/recovery.conf')
 
     sudo('/etc/init.d/postgresql stop')
     sudo('/etc/init.d/postgresql start')
 
 def config_postgres(standby=False):
-    put('config/postgresql.conf', '/etc/postgresql/9.4/main/postgresql.conf', use_sudo=True)
-    sudo('chown postgres.postgres /etc/postgresql/9.4/main/postgresql.conf')
+    put('config/postgresql.conf', '/etc/postgresql/10/main/postgresql.conf', use_sudo=True)
+    put('config/postgres_hba.conf', '/etc/postgresql/10/main/pg_hba.conf', use_sudo=True)
+    sudo('chown postgres.postgres /etc/postgresql/10/main/postgresql.conf')
     run('echo "ulimit -n 100000" > postgresql.defaults')
     sudo('mv postgresql.defaults /etc/default/postgresql')
     
-    sudo('/etc/init.d/postgresql reload 9.4')
+    sudo('/etc/init.d/postgresql reload 10')
+
+def upgrade_postgres():
+    sudo('su postgres -c "/usr/lib/postgresql/10/bin/pg_upgrade -b /usr/lib/postgresql/9.4/bin -B /usr/lib/postgresql/10/bin -d /var/lib/postgresql/9.4/main -D /var/lib/postgresql/10/main"')
     
 def copy_postgres_to_standby(master='db01'):
     # http://www.rassoc.com/gregr/weblog/2013/02/16/zero-to-postgresql-streaming-replication-in-10-mins/
@@ -1085,12 +1090,14 @@ def copy_postgres_to_standby(master='db01'):
 
     # local: fab host:old copy_ssh_keys:postgres,private=True
     # new: ssh old
+    # new: sudo su postgres -c "rsync old"
     # old: sudo su postgres -c "psql -c \"SELECT pg_start_backup('label', true)\""
-    sudo('mkdir -p /var/lib/postgresql/9.4/archive')
-    sudo('chown postgres.postgres /var/lib/postgresql/9.4/archive')
+    sudo('systemctl stop postgresql')
+    sudo('mkdir -p /var/lib/postgresql/10/archive')
+    sudo('chown postgres.postgres /var/lib/postgresql/10/archive')
     with settings(warn_only=True):
-        sudo('su postgres -c "rsync -Pav -e \'ssh -i ~postgres/.ssh/newsblur.key\' --stats --progress postgres@%s:/var/lib/postgresql/9.4/main /var/lib/postgresql/9.4/ --exclude postmaster.pid"' % master)
-    put('config/postgresql_recovery.conf', '/var/lib/postgresql/9.4/main/recovery.conf', use_sudo=True)
+        sudo('su postgres -c "rsync -Pav -e \'ssh -i ~postgres/.ssh/newsblur.key\' --stats --progress postgres@%s:/var/lib/postgresql/10/main /var/lib/postgresql/10/ --exclude postmaster.pid"' % master)
+    put('config/postgresql_recovery.conf', '/var/lib/postgresql/10/main/recovery.conf', use_sudo=True)
     sudo('systemctl start postgresql')
     # old: sudo su postgres -c "psql -c \"SELECT pg_stop_backup()\""
     
@@ -1725,7 +1732,7 @@ def cleanup_assets():
 # ===========
 
 def setup_redis_backups(name=None):
-    # crontab for redis backups
+    # crontab for redis backups, name is either none, story, sessions, pubsub
     crontab = ("0 4 * * * /srv/newsblur/venv/newsblur/bin/python /srv/newsblur/utils/backups/backup_redis%s.py" % 
                 (("_%s"%name) if name else ""))
     run('(crontab -l ; echo "%s") | sort - | uniq - | crontab -' % crontab)
@@ -1741,8 +1748,8 @@ def setup_postgres_backups():
     # crontab for postgres backups
     crontab = """
 0 4 * * * /srv/newsblur/venv/newsblur/bin/python /srv/newsblur/utils/backups/backup_psql.py
-0 * * * * sudo find /var/lib/postgresql/9.4/archive -mtime +1 -exec rm {} \;
-0 * * * * sudo find /var/lib/postgresql/9.4/archive -type f -mmin +180 -delete"""
+0 * * * * sudo find /var/lib/postgresql/10/archive -mtime +1 -exec rm {} \;
+0 * * * * sudo find /var/lib/postgresql/10/archive -type f -mmin +180 -delete"""
 
     run('(crontab -l ; echo "%s") | sort - | uniq - | crontab -' % crontab)
     run('crontab -l')
