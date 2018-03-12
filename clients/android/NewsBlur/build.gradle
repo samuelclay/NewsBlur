@@ -1,33 +1,45 @@
 buildscript {
     repositories {
         mavenCentral()
+        maven {
+            url 'https://maven.google.com'
+        }
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.3'
+        classpath 'com.android.tools.build:gradle:3.0.1'
     }
 }
 
 repositories {
     mavenCentral()
+    maven {
+        url 'https://maven.google.com'
+    }
 }
 
 apply plugin: 'com.android.application'
+apply plugin: 'checkstyle'
+apply plugin: 'findbugs'
 
 dependencies {
-    compile 'com.android.support:support-v13:24.0.0'
+    compile 'com.android.support:support-v13:27.1.0'
     compile 'com.jakewharton:butterknife:7.0.1'
     compile 'com.squareup.okhttp3:okhttp:3.8.1'
     compile 'com.google.code.gson:gson:2.8.2'
-    compile 'com.android.support:recyclerview-v7:24.0.0'
+    compile 'com.android.support:recyclerview-v7:27.1.0'
 }
 
 android {
-    compileSdkVersion 24
-    buildToolsVersion '25.0.2'
+    compileSdkVersion 27
+    buildToolsVersion '27.0.3'
     compileOptions.with {
         sourceCompatibility = JavaVersion.VERSION_1_7
     }
+
+    // force old processing behaviour that butterknife 7 depends on, until we can afford to upgrade
+    android.defaultConfig.javaCompileOptions.annotationProcessorOptions.includeCompileClasspath = true
+
     sourceSets {
         main {
             manifest.srcFile 'AndroidManifest.xml'
@@ -36,9 +48,11 @@ android {
             assets.srcDirs = ['assets']
         }
     }
+
     lintOptions {
         abortOnError false
     }
+
     buildTypes {
         debug {
             minifyEnabled false
