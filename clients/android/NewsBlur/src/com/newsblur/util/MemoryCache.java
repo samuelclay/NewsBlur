@@ -10,7 +10,7 @@ import android.graphics.Bitmap;
 
 public class MemoryCache {
 
-	private Map<String, Bitmap> cache = Collections.synchronizedMap(new LinkedHashMap<String, Bitmap>(20, 1.7f, true));
+	private Map<String, Bitmap> cache = Collections.synchronizedMap(new LinkedHashMap<String, Bitmap>(32, 1.5f, true));
 	private long size = 0; //current allocated size
 	private long limit; //max memory in bytes
 
@@ -31,12 +31,14 @@ public class MemoryCache {
 	}
 
 	public void put(String id, Bitmap bitmap) {
-		if (cache.containsKey(id)) {
-			size -= getSizeInBytes(cache.get(id));
-		}
-		cache.put(id, bitmap);
-		size += getSizeInBytes(bitmap);
-		checkSize();
+        synchronized (this) {
+            if (cache.containsKey(id)) {
+                size -= getSizeInBytes(cache.get(id));
+            }
+            cache.put(id, bitmap);
+            size += getSizeInBytes(bitmap);
+            checkSize();
+        }
 	}
 
 	private void checkSize() {
@@ -57,7 +59,7 @@ public class MemoryCache {
 		if (bitmap == null) {
 			return 0;
 		} else {
-			return (bitmap.getRowBytes() * bitmap.getHeight());
+			return (bitmap.getAllocationByteCount());
 		}
 	}
 }

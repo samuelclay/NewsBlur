@@ -381,7 +381,31 @@ public class PrefsUtils {
         editor.putString(PrefConstants.FEED_READ_FILTER_PREFIX + feedId, newValue.toString());
         editor.commit();
     }
+
+    public static StoryListStyle getStoryListStyleForFeed(Context context, String feedId) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        return StoryListStyle.valueOf(prefs.getString(PrefConstants.FEED_STORY_LIST_STYLE_PREFIX + feedId, StoryListStyle.LIST.toString()));
+    }
     
+    public static StoryListStyle getStoryListStyleForFolder(Context context, String folderName) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        return StoryListStyle.valueOf(prefs.getString(PrefConstants.FOLDER_STORY_LIST_STYLE_PREFIX + folderName, StoryListStyle.LIST.toString()));
+    }
+    
+    public static void setStoryListStyleForFolder(Context context, String folderName, StoryListStyle newValue) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        Editor editor = prefs.edit();
+        editor.putString(PrefConstants.FOLDER_STORY_LIST_STYLE_PREFIX + folderName, newValue.toString());
+        editor.commit();
+    }
+    
+    public static void setStoryListStyleForFeed(Context context, String feedId, StoryListStyle newValue) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        Editor editor = prefs.edit();
+        editor.putString(PrefConstants.FEED_STORY_LIST_STYLE_PREFIX + feedId, newValue.toString());
+        editor.commit();
+    }
+
     private static StoryOrder getDefaultStoryOrder(SharedPreferences prefs) {
         return StoryOrder.valueOf(prefs.getString(PrefConstants.DEFAULT_STORY_ORDER, StoryOrder.NEWEST.toString()));
     }
@@ -588,6 +612,62 @@ public class PrefsUtils {
             throw new IllegalArgumentException( "unknown type of feed set" );
         }
     } 
+
+    public static StoryListStyle getStoryListStyle(Context context, FeedSet fs) {
+        if (fs.isAllNormal()) {
+            return getStoryListStyleForFolder(context, PrefConstants.ALL_STORIES_FOLDER_NAME);
+        } else if (fs.getSingleFeed() != null) {
+            return getStoryListStyleForFeed(context, fs.getSingleFeed());
+        } else if (fs.getMultipleFeeds() != null) {
+            return getStoryListStyleForFolder(context, fs.getFolderName());
+        } else if (fs.isAllSocial()) {
+            return getStoryListStyleForFolder(context, PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME);
+        } else if (fs.getSingleSocialFeed() != null) {
+            return getStoryListStyleForFeed(context, fs.getSingleSocialFeed().getKey());
+        } else if (fs.getMultipleSocialFeeds() != null) {
+            throw new IllegalArgumentException( "requests for multiple social feeds not supported" );
+        } else if (fs.isAllRead()) {
+            return getStoryListStyleForFolder(context, PrefConstants.READ_STORIES_FOLDER_NAME);
+        } else if (fs.isAllSaved()) {
+            return getStoryListStyleForFolder(context, PrefConstants.SAVED_STORIES_FOLDER_NAME);
+        } else if (fs.getSingleSavedTag() != null) {
+            return getStoryListStyleForFolder(context, PrefConstants.SAVED_STORIES_FOLDER_NAME);
+        } else if (fs.isGlobalShared()) {
+            return getStoryListStyleForFolder(context, PrefConstants.GLOBAL_SHARED_STORIES_FOLDER_NAME);
+        } else if (fs.isInfrequent()) {
+            return getStoryListStyleForFolder(context, PrefConstants.INFREQUENT_FOLDER_NAME);
+        } else {
+            throw new IllegalArgumentException( "unknown type of feed set" );
+        }
+    }
+
+    public static void updateStoryListStyle(Context context, FeedSet fs, StoryListStyle newListStyle) {
+        if (fs.isAllNormal()) {
+            setStoryListStyleForFolder(context, PrefConstants.ALL_STORIES_FOLDER_NAME, newListStyle);
+        } else if (fs.getSingleFeed() != null) {
+            setStoryListStyleForFeed(context, fs.getSingleFeed(), newListStyle);
+        } else if (fs.getMultipleFeeds() != null) {
+            setStoryListStyleForFolder(context, fs.getFolderName(), newListStyle);
+        } else if (fs.isAllSocial()) {
+            setStoryListStyleForFolder(context, PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME, newListStyle);
+        } else if (fs.getSingleSocialFeed() != null) {
+            setStoryListStyleForFeed(context, fs.getSingleSocialFeed().getKey(), newListStyle);
+        } else if (fs.getMultipleSocialFeeds() != null) {
+            throw new IllegalArgumentException( "multiple social feeds not supported" );
+        } else if (fs.isAllRead()) {
+            setStoryListStyleForFolder(context, PrefConstants.READ_STORIES_FOLDER_NAME, newListStyle);
+        } else if (fs.isAllSaved()) {
+            setStoryListStyleForFolder(context, PrefConstants.SAVED_STORIES_FOLDER_NAME, newListStyle);
+        } else if (fs.getSingleSavedTag() != null) {
+            setStoryListStyleForFolder(context, PrefConstants.SAVED_STORIES_FOLDER_NAME, newListStyle);
+        } else if (fs.isGlobalShared()) {
+            setStoryListStyleForFolder(context, PrefConstants.GLOBAL_SHARED_STORIES_FOLDER_NAME, newListStyle);
+        } else if (fs.isInfrequent()) {
+            setStoryListStyleForFolder(context, PrefConstants.INFREQUENT_FOLDER_NAME, newListStyle);
+        } else {
+            throw new IllegalArgumentException( "unknown type of feed set" );
+        }
+    }
 
     private static DefaultFeedView getDefaultFeedView() {
         return DefaultFeedView.STORY;

@@ -65,6 +65,8 @@ public abstract class ItemSetFragment extends NbFragment implements LoaderManage
     protected abstract boolean isAdapterValid();
 
     protected void triggerRefresh(int desiredStoryCount, Integer totalSeen) {
+        if (getFeedSet().isMuted()) return;
+
         // ask the sync service for as many stories as we want
         boolean gotSome = NBSyncService.requestMoreForFeed(getFeedSet(), desiredStoryCount, totalSeen);
         // if the service thinks it can get more, or if we haven't even seen a cursor yet, start the service
@@ -82,9 +84,8 @@ public abstract class ItemSetFragment extends NbFragment implements LoaderManage
      * Indicate that the DB was cleared.
      */
     public void resetEmptyState() {
-        resetAdapter();
+        setShowNone(true);
         cursorSeenYet = false;
-        FeedUtils.dbHelper.clearStorySession();
     }
 
     public abstract void setLoading(boolean isLoading);
@@ -160,13 +161,11 @@ public abstract class ItemSetFragment extends NbFragment implements LoaderManage
 
     protected abstract void updateAdapter(Cursor cursor);
 
-    protected abstract void resetAdapter();
-
     protected abstract void setShowNone(boolean showNone);
 
 	@Override
 	public void onLoaderReset(Loader<Cursor> loader) {
-        resetAdapter();
+        ;
 	}
 
     public abstract void setTextSize(Float size);

@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.newsblur.view.SquaredRelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:newsblur="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    newsblur:addedHeight="60"
+    android:background="@drawable/item_border"
+    >
+
+    <View
+        android:id="@+id/story_item_favicon_borderbar_1"
+        android:layout_width="4dp"
+        android:layout_height="match_parent" 
+        />
+
+    <View
+        android:id="@+id/story_item_favicon_borderbar_2"
+        android:layout_width="4dp"
+        android:layout_height="match_parent"
+        android:layout_toRightOf="@id/story_item_favicon_borderbar_1" 
+        />
+
+    <TextView
+        android:id="@+id/story_item_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="2dp"
+        android:layout_marginRight="4dp"
+        android:singleLine="true"
+        style="?storyDateText" 
+        />
+
+    <ImageView
+        android:id="@+id/story_item_feedicon"
+        android:layout_width="15dp"
+        android:layout_height="15dp"
+        android:layout_toRightOf="@id/story_item_favicon_borderbar_2"
+        android:layout_above="@id/story_item_date"
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="18dp"
+        android:layout_marginBottom="2dp"
+        />
+
+    <TextView
+        android:id="@+id/story_item_feedtitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_toRightOf="@id/story_item_feedicon"
+        android:layout_above="@id/story_item_date"
+        android:layout_marginLeft="6dp"
+        android:layout_marginRight="2dp"
+        android:layout_marginBottom="2dp"
+        android:ellipsize="end"
+        android:singleLine="true"
+        style="?storyFeedTitleText"
+        />
+
+    <ImageView
+        android:id="@+id/story_item_saved_icon"
+        android:src="@drawable/clock"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_above="@id/story_item_feedtitle"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="2dp"
+        android:layout_marginLeft="2dp"
+        android:layout_marginRight="2dp"
+        android:visibility="gone" 
+        />
+
+    <ImageView
+        android:id="@+id/story_item_shared_icon"
+        android:src="@drawable/ic_shared"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_above="@id/story_item_feedtitle"
+        android:layout_toLeftOf="@id/story_item_saved_icon"
+        android:layout_alignWithParentIfMissing="true"
+        android:layout_marginTop="2dp"
+        android:layout_marginLeft="2dp"
+        android:layout_marginRight="2dp"
+        android:visibility="gone" 
+        />
+
+    <TextView
+        android:id="@+id/story_item_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/story_item_feedtitle"
+        android:layout_toLeftOf="@id/story_item_shared_icon"
+        android:layout_marginLeft="26dp"
+        android:layout_marginRight="2dp"
+        android:layout_marginBottom="2dp"
+        android:maxLines="2"
+        android:ellipsize="end" 
+        />
+
+    <ImageView
+        android:id="@+id/story_item_inteldot"
+        android:layout_width="9dp"
+        android:layout_height="match_parent"
+        android:layout_alignTop="@id/story_item_title"
+        android:layout_alignBottom="@id/story_item_title"
+        android:layout_toRightOf="@id/story_item_favicon_borderbar_2"
+        android:layout_marginLeft="4dp"
+        />
+
+    <ImageView
+        android:id="@+id/story_item_thumbnail"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/story_item_title"
+        android:layout_marginBottom="2dp"
+        android:layout_marginLeft="10dp"
+        android:scaleType="centerCrop"
+        />
+
+</com.newsblur.view.SquaredRelativeLayout>
