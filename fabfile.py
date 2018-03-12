@@ -1091,6 +1091,8 @@ def copy_postgres_to_standby(master='db01'):
     # local: fab host:old copy_ssh_keys:postgres,private=True
     # new: ssh old
     # new: sudo su postgres -c "rsync old"
+    # new: sudo su postgres; ssh old
+    # old: sudo su postgres; ssh new
     # old: sudo su postgres -c "psql -c \"SELECT pg_start_backup('label', true)\""
     sudo('systemctl stop postgresql')
     sudo('mkdir -p /var/lib/postgresql/10/archive')
