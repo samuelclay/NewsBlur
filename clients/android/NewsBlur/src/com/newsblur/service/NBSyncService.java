@@ -118,6 +118,8 @@ public class NBSyncService extends Service {
     /** Feed to reset to zero-state, so it is fetched fresh, presumably with new filters. */
     private static FeedSet ResetFeed;
 
+    private static final Object MUTEX_ResetFeed = new Object();
+
     /** Actions that may need to be double-checked locally due to overlapping API calls. */
     private static List<ReadingAction> FollowupActions;
     static { FollowupActions = new ArrayList<ReadingAction>(); }
@@ -657,20 +659,23 @@ public class NBSyncService extends Service {
         FeedSet fs = PendingFeed;
 
         try {
+            // see if we need to quickly reset fetch state for a feed. we
+            // do this before the loop to prevent-mid loop state corruption
+            synchronized (MUTEX_ResetFeed) {
+                if (ResetFeed != null) {
+                    com.newsblur.util.Log.i(this.getClass().getName(), "Resetting state for feed set: " + ResetFeed);
+                    ExhaustedFeeds.remove(ResetFeed);
+                    FeedStoriesSeen.remove(ResetFeed);
+                    FeedPagesSeen.remove(ResetFeed);
+                    ResetFeed = null;
+                }
+            }
+
             if (fs == null) {
                 return;
             }
 
             prepareReadingSession(dbHelper, fs);
-
-            // see if we need to quickly reset fetch state for a feed. we
-            // do this before the loop to prevent-mid loop state corruption
-            if (ResetFeed != null) {
-                ExhaustedFeeds.remove(ResetFeed);
-                FeedStoriesSeen.remove(ResetFeed);
-                FeedPagesSeen.remove(ResetFeed);
-                ResetFeed = null;
-            }
 
             LastFeedSet = fs;
             
@@ -1040,7 +1045,7 @@ public class NBSyncService extends Service {
             PendingFeed = fs;
             PendingFeedTarget = desiredStoryCount;
 
-            if (AppConstants.VERBOSE_LOG) Log.d(NBSyncService.class.getName(), "callerhas: " + callerSeen + "  have:" + alreadySeen + "  want:" + desiredStoryCount + "  pending:" + alreadyPending);
+            //if (AppConstants.VERBOSE_LOG) Log.d(NBSyncService.class.getName(), "callerhas: " + callerSeen + "  have:" + alreadySeen + "  want:" + desiredStoryCount + "  pending:" + alreadyPending);
 
             if (!fs.equals(LastFeedSet)) {
                 return true;
@@ -1095,8 +1100,10 @@ public class NBSyncService extends Service {
      * Reset the API pagniation state for the given feedset, presumably because the order or filter changed.
      */
     public static void resetFetchState(FeedSet fs) {
-        com.newsblur.util.Log.d(NBSyncService.class.getName(), "requesting feed fetch state reset");
-        ResetFeed = fs;
+        synchronized (MUTEX_ResetFeed) {
+            com.newsblur.util.Log.d(NBSyncService.class.getName(), "requesting feed fetch state reset");
+            ResetFeed = fs;
+        }
     }
 
     public static void addRecountCandidates(FeedSet fs) {

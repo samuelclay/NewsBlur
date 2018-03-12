@@ -59,7 +59,7 @@
     <color name="dark_story_background_selected">#4C4C4C</color>
 
     <color name="story_feed_title_text">#606060</color>
-    <color name="dark_story_feed_title_text">#F7F8F5</color>
+    <color name="dark_story_feed_title_text">@color/gray55</color>
     <color name="story_date_text">#424242</color>
     <color name="dark_story_date_text">#BDBDBD</color>
     <color name="story_content_text">#404040</color>

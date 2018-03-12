@@ -35,8 +35,10 @@ public class PrefConstants {
 	
     public static final String FEED_STORY_ORDER_PREFIX = "feed_order_";
     public static final String FEED_READ_FILTER_PREFIX = "feed_read_filter_";
+    public static final String FEED_STORY_LIST_STYLE_PREFIX = "feed_list_style_";
     public static final String FOLDER_STORY_ORDER_PREFIX = "folder_order_";
     public static final String FOLDER_READ_FILTER_PREFIX = "folder_read_filter_";
+    public static final String FOLDER_STORY_LIST_STYLE_PREFIX = "folder_list_style_";
 	public static final String ALL_STORIES_FOLDER_NAME = "all_stories";
     public static final String ALL_SHARED_STORIES_FOLDER_NAME = "all_shared_stories";
     public static final String GLOBAL_SHARED_STORIES_FOLDER_NAME = "global_shared_stories";

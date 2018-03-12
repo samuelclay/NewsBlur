@@ -155,6 +155,9 @@
     <string name="menu_instafetch_feed">Insta-fetch stories</string>
     <string name="menu_infrequent_cutoff">Infrequent stories per month</string>
     <string name="menu_intel">Intelligence trainer</string>
+    <string name="menu_story_list_style_choose">List style…</string>
+    <string name="list_style_list">List</string>
+    <string name="list_style_grid">Grid</string>
     
     <string name="toast_story_unread">Story marked as unread</string>
     <string name="toast_hold_to_select">Press and hold to select text</string>
@@ -260,8 +263,8 @@
 
     <string name="settings_enable_row_global_shared">Show Global Shared Stories</string>
     <string name="settings_enable_row_global_shared_sum">Show the Global Shared Stories folder</string>
-    <string name="settings_enable_row_infrequent_stories">Show Infrequent Stories Stories</string>
-    <string name="settings_enable_row_infrequent_stories_sum">Show the Infrequent Site Stories Stories folder</string>
+    <string name="settings_enable_row_infrequent_stories">Show Infrequent Stories</string>
+    <string name="settings_enable_row_infrequent_stories_sum">Show the Infrequent Site Stories folder</string>
 
     <string name="settings_cat_story_list">Story List</string>
 

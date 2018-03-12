@@ -15,10 +15,11 @@ repositories {
 apply plugin: 'com.android.application'
 
 dependencies {
-    compile 'com.android.support:support-v13:19.1.0'
+    compile 'com.android.support:support-v13:24.0.0'
     compile 'com.jakewharton:butterknife:7.0.1'
     compile 'com.squareup.okhttp3:okhttp:3.8.1'
     compile 'com.google.code.gson:gson:2.8.2'
+    compile 'com.android.support:recyclerview-v7:24.0.0'
 }
 
 android {
