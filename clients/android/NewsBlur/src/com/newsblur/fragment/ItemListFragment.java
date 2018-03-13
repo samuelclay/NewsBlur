@@ -28,7 +28,6 @@ import butterknife.ButterKnife;
 import butterknife.Bind;
 
 import com.newsblur.R;
-import com.newsblur.database.StoryItemsAdapter;
 import com.newsblur.domain.Story;
 import com.newsblur.service.NBSyncService;
 import com.newsblur.util.FeedSet;
@@ -41,8 +40,9 @@ import com.newsblur.util.UIUtils;
 import com.newsblur.util.ViewUtils;
 import com.newsblur.view.ProgressThrobber;
 
-public class ItemListFragment extends ItemSetFragment implements OnScrollListener, OnCreateContextMenuListener, OnItemClickListener {
+public class ItemListFragment extends ItemSetFragment {
 
+    /*
 	@Bind(R.id.itemlistfragment_list) ListView itemList;
 	protected StoryItemsAdapter adapter;
     
@@ -127,10 +127,6 @@ public class ItemListFragment extends ItemSetFragment implements OnScrollListene
         return true;
     }
 
-    /**
-     * Turns on/off the loading indicator. Note that the text component of the
-     * loading indicator requires a cursor and is handled below.
-     */
     @Override
     public void setLoading(boolean isLoading) {
         if (fleuronFooter != null) {
@@ -431,4 +427,5 @@ public class ItemListFragment extends ItemSetFragment implements OnScrollListene
             return false;
         }
     }
+    */
 }
