@@ -19,8 +19,6 @@ import butterknife.ButterKnife;
 import butterknife.Bind;
 
 import com.newsblur.R;
-import com.newsblur.fragment.ItemGridFragment;
-import com.newsblur.fragment.ItemListFragment;
 import com.newsblur.fragment.ItemSetFragment;
 import com.newsblur.fragment.ReadFilterDialogFragment;
 import com.newsblur.fragment.StoryOrderDialogFragment;
@@ -78,12 +76,7 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
 		FragmentManager fragmentManager = getFragmentManager();
 		itemSetFragment = (ItemSetFragment) fragmentManager.findFragmentByTag(ItemSetFragment.class.getName());
 		if (itemSetFragment == null) {
-            StoryListStyle listStyle = PrefsUtils.getStoryListStyle(this, fs);
-            if (listStyle == StoryListStyle.LIST) {
-			    itemSetFragment = ItemListFragment.newInstance();
-            } else {
-                itemSetFragment = ItemGridFragment.newInstance();
-            }
+            itemSetFragment = ItemSetFragment.newInstance();
 			itemSetFragment.setRetainInstance(true);
 			FragmentTransaction transaction = fragmentManager.beginTransaction();
 			transaction.add(R.id.activity_itemlist_container, itemSetFragment, ItemSetFragment.class.getName());
@@ -217,10 +210,10 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
             UIUtils.restartActivity(this);
         } else if (item.getItemId() == R.id.menu_list_style_list) {
             PrefsUtils.updateStoryListStyle(this, fs, StoryListStyle.LIST);
-            UIUtils.restartActivity(this);
+            itemSetFragment.updateStyle();
         } else if (item.getItemId() == R.id.menu_list_style_grid) {
             PrefsUtils.updateStoryListStyle(this, fs, StoryListStyle.GRID);
-            UIUtils.restartActivity(this);
+            itemSetFragment.updateStyle();
         }
 	
 		return false;

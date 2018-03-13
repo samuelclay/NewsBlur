@@ -35,6 +35,7 @@ import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.ImageLoader;
 import com.newsblur.util.PrefsUtils;
+import com.newsblur.util.StoryListStyle;
 import com.newsblur.util.StoryUtils;
 import com.newsblur.util.UIUtils;
 
@@ -43,8 +44,9 @@ import com.newsblur.util.UIUtils;
  */
 public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    public final static int VIEW_TYPE_STORY = 1;
-    public final static int VIEW_TYPE_FOOTER = 2;
+    public final static int VIEW_TYPE_STORY_TILE = 1;
+    public final static int VIEW_TYPE_STORY_ROW = 2;
+    public final static int VIEW_TYPE_FOOTER = 3;
 
     private final static float defaultTextSize_story_item_feedtitle = 13f;
     private final static float defaultTextSize_story_item_title = 14f;
@@ -60,15 +62,17 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     private Activity context;
     private FeedSet fs;
+    private StoryListStyle listStyle;
     private boolean ignoreReadStatus;
     private boolean ignoreIntel;
     private boolean singleFeed;
     private float textSize;
     private UserDetails user;
 
-    public StoryViewAdapter(Activity context, FeedSet fs) {
+    public StoryViewAdapter(Activity context, FeedSet fs, StoryListStyle listStyle) {
         this.context = context;
         this.fs = fs;
+        this.listStyle = listStyle;
         
         if (fs.isGlobalShared())   {ignoreReadStatus = false; ignoreIntel = true; singleFeed = false;}
         if (fs.isAllSocial())      {ignoreReadStatus = false; ignoreIntel = false; singleFeed = false;}
@@ -92,6 +96,10 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         this.fs = fs;
     }
 
+    public void setStyle(StoryListStyle listStyle) {
+        this.listStyle = listStyle;
+    }
+
     public synchronized void addFooterView(View v) {
         footerViews.add(v);
     }
@@ -112,7 +120,11 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     @Override
     public int getItemViewType(int position) {
         if (position >= getStoryCount()) return VIEW_TYPE_FOOTER;
-        return VIEW_TYPE_STORY;
+        if (listStyle == StoryListStyle.LIST) {
+            return VIEW_TYPE_STORY_ROW;
+        } else {
+            return VIEW_TYPE_STORY_TILE;
+        }
     }
 
     @Override
@@ -155,9 +167,12 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
-        if (viewType == VIEW_TYPE_STORY) {
+        if (viewType == VIEW_TYPE_STORY_TILE) {
             View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.view_story_tile, viewGroup, false);
-            return new StoryViewHolder(v);
+            return new StoryTileViewHolder(v);
+        } else if (viewType == VIEW_TYPE_STORY_ROW) {
+            View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.view_story_row, viewGroup, false);
+            return new StoryRowViewHolder(v);
         } else {
             View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.view_footer_tile, viewGroup, false);
             return new FooterViewHolder(v);
@@ -247,6 +262,18 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             default:
                 return false;
             }
+        }
+    }
+
+    public class StoryTileViewHolder extends StoryViewHolder {
+        public StoryTileViewHolder(View view) {
+            super(view);
+        }
+    }
+
+    public class StoryRowViewHolder extends StoryViewHolder {
+        public StoryRowViewHolder(View view) {
+            super(view);
         }
     }
 
