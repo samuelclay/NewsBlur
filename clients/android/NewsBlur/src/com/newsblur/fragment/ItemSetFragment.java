@@ -188,6 +188,8 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
                 ItemSetFragment.this.onScrolled(recyclerView, dx, dy);
             }
         });
+        
+        setupGestureDetector(itemGrid);
 
 		return v;
 	}
@@ -415,6 +417,34 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
         int desiredStoryCount = lastVisible + (visibleCount*2) + (columnCount*2);
         triggerRefresh(desiredStoryCount, totalCount);
         //com.newsblur.util.Log.d(this, String.format(" total:%d  bound:%d  last%d  desire:%d", totalCount, visibleCount, lastVisible, desiredStoryCount));
+    }
+
+    private void setupGestureDetector(View v) {
+        final GestureDetector gestureDetector = new GestureDetector(getActivity(), new SwipeBackGestureDetector());
+        v.setOnTouchListener(new OnTouchListener() {
+            public boolean onTouch(View v, MotionEvent event) {
+                return gestureDetector.onTouchEvent(event);
+            }
+        });
+    }
+
+    /**
+     * A detector for the standard "swipe back out of activity" Android gesture.  Note that this does
+     * not necessarily wait for an UP event, as RecyclerViews like to capture them.
+     */
+    class SwipeBackGestureDetector extends GestureDetector.SimpleOnGestureListener {
+        @Override
+        public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+            if (e1 == null) return false;
+            if ((e1.getX() < 60f) &&                  // the gesture should start from the left bezel and
+                ((e2.getX()-e1.getX()) > 90f) &&      // move horizontally to the right and
+                (Math.abs(e1.getY()-e2.getY()) < 40f) // have minimal vertical travel, so we don't capture scrolling gestures
+                ) {
+                ItemSetFragment.this.getActivity().finish();
+                return true;
+            }
+            return false;
+        }
     }
 
 }
