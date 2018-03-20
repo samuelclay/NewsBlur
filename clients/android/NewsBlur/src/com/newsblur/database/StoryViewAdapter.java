@@ -8,9 +8,11 @@ import android.graphics.Typeface;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.ContextMenu;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
@@ -33,6 +35,7 @@ import com.newsblur.domain.UserDetails;
 import com.newsblur.fragment.StoryIntelTrainerFragment;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
+import com.newsblur.util.GestureAction;
 import com.newsblur.util.ImageLoader;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.StoryListStyle;
@@ -182,7 +185,10 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     }
 
     public class StoryViewHolder extends RecyclerView.ViewHolder
-                                 implements View.OnClickListener, View.OnCreateContextMenuListener, MenuItem.OnMenuItemClickListener {
+                                 implements View.OnClickListener, 
+                                            View.OnCreateContextMenuListener, 
+                                            MenuItem.OnMenuItemClickListener,
+                                            View.OnTouchListener {
 
         @Bind(R.id.story_item_favicon_borderbar_1) View leftBarOne;
         @Bind(R.id.story_item_favicon_borderbar_2) View leftBarTwo;
@@ -198,21 +204,40 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         Story story;
         ImageLoader.PhotoToLoad thumbLoader;
         String lastThumbUrl;
+        GestureDetector gestureDetector = new GestureDetector(context, new StoryViewGestureDetector(StoryViewHolder.this));
+        boolean gestureR2L = false;
+        boolean gestureL2R = false;
+        boolean gestureDebounce = false;
 
         public StoryViewHolder(View view) {
             super(view);
             ButterKnife.bind(StoryViewHolder.this, view);
             view.setOnClickListener(StoryViewHolder.this);
             view.setOnCreateContextMenuListener(StoryViewHolder.this);
+            view.setOnTouchListener(StoryViewHolder.this);
         }
 
         @Override
         public void onClick(View view) {
+            // clicks like to get accidentally triggered by the system right after we detect
+            // a gesture. ignore if a gesture appears to be in progress.
+            if (gestureDebounce) {
+                gestureDebounce = false;
+                return;
+            }
+            if (gestureL2R || gestureR2L) return;
             UIUtils.startReadingActivity(fs, story.storyHash, context);
         }
 
         @Override
         public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+            // clicks like to get accidentally triggered by the system right after we detect
+            // a gesture. ignore if a gesture appears to be in progress.
+            if (gestureDebounce) {
+                gestureDebounce = false;
+                return;
+            }
+            if (gestureL2R || gestureR2L) return;
             MenuInflater inflater = new MenuInflater(context);
             UIUtils.inflateStoryContextMenu(menu, inflater, context, fs, story);
             for (int i=0; i<menu.size(); i++) {
@@ -221,7 +246,7 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         }
 
         @Override
-        public boolean onMenuItemClick (MenuItem item) {
+        public boolean onMenuItemClick(MenuItem item) {
             switch (item.getItemId()) {
             case R.id.menu_mark_story_as_read:
                 FeedUtils.markStoryAsRead(story, context);
@@ -263,6 +288,50 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
             default:
                 return false;
+            }
+        }
+
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+            // detector looks for ongoing gestures and sets our flags
+            boolean result = gestureDetector.onTouchEvent(event);
+            // iff a gesture possibly completed, see if any were found
+            if (event.getActionMasked() == MotionEvent.ACTION_UP) {
+                flushGesture();
+            } else if (event.getActionMasked() == MotionEvent.ACTION_CANCEL) {
+                // RecyclerViews may take event ownership to detect scrolling and never send an ACTION_UP
+                // to children.  valid gestures end in a CANCEL more often than not
+                flushGesture();
+            }
+            return result;
+        }
+
+        private void flushGesture() {
+            // by default, do nothing
+            GestureAction action = GestureAction.GEST_ACTION_NONE;
+            if (gestureL2R) {
+                action = PrefsUtils.getLeftToRightGestureAction(context);
+                gestureL2R = false;
+            }
+            if (gestureR2L) {
+                action = PrefsUtils.getRightToLeftGestureAction(context);
+                gestureR2L = false;
+            }
+            switch (action) {
+                case GEST_ACTION_MARKREAD:
+                    FeedUtils.markStoryAsRead(story, context);
+                    break;
+                case GEST_ACTION_MARKUNREAD:
+                    FeedUtils.markStoryUnread(story, context);
+                    break;
+                case GEST_ACTION_SAVE:
+                    FeedUtils.setStorySaved(story, true, context);
+                    break;
+                case GEST_ACTION_UNSAVE:
+                    FeedUtils.setStorySaved(story, false, context);
+                    break;
+                case GEST_ACTION_NONE:
+                default:
             }
         }
     }
@@ -467,6 +536,34 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         if (viewHolder instanceof FooterViewHolder) {
             FooterViewHolder vh = (FooterViewHolder) viewHolder;
             vh.innerView.removeAllViews();
+        }
+    }
+
+    class StoryViewGestureDetector extends GestureDetector.SimpleOnGestureListener {
+        private StoryViewHolder vh;
+        public StoryViewGestureDetector(StoryViewHolder vh) {
+            StoryViewGestureDetector.this.vh = vh;
+        }
+
+        @Override
+        public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+            if ((e1.getX() > 10f) &&                  // the gesture should not start too close to the left edge and
+                ((e2.getX()-e1.getX()) > 50f) &&      // move horizontally to the right and
+                (Math.abs(e1.getY()-e2.getY()) < 25f) // have minimal vertical travel, so we don't capture scrolling gestures
+                ) {
+                vh.gestureL2R = true;
+                vh.gestureDebounce = true;
+                return true;
+            }
+            if ((e1.getX() > 10f) &&                  // the gesture should not start too close to the left edge and
+                ((e1.getX()-e2.getX()) > 50f) &&      // move horizontally to the left and
+                (Math.abs(e1.getY()-e2.getY()) < 25f) // have minimal vertical travel, so we don't capture scrolling gestures
+                ) {
+                vh.gestureR2L = true;
+                vh.gestureDebounce = true;
+                return true;
+            }
+            return false;
         }
     }
 
