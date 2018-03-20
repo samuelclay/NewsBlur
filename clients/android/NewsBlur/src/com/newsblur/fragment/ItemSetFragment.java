@@ -76,7 +76,7 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
     private View fleuronFooter;
 
     // de-dupe the massive stream of scrolling data to auto-mark read
-    private int lastAutoMarkIndex;
+    private int lastAutoMarkIndex = -1;
 
 	public static ItemSetFragment newInstance() {
 		ItemSetFragment fragment = new ItemSetFragment();
@@ -118,7 +118,7 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
 
     @Override
     public void onResume() {
-        if (!isAdapterValid()) {
+        if (!adapter.isCursorValid()) {
             com.newsblur.util.Log.e(this.getClass().getName(), "stale fragment loaded, falling back.");
             getActivity().finish();
         }
@@ -192,13 +192,6 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
 		return v;
 	}
 
-    /** 
-     * Sanity check the adapter, iff it exists. If false, the activity will finish.
-     */
-    protected boolean isAdapterValid() {
-        return (adapter.isCursorValid());
-    }
-
     protected void triggerRefresh(int desiredStoryCount, Integer totalSeen) {
         if (getFeedSet().isMuted()) return;
 
@@ -225,9 +218,10 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
 
     /**
      * Turns on/off the loading indicator. Note that the text component of the
-     * loading indicator requires a cursor and is handled below.
+     * loading indicator/explainer requires a cursor and is handled below.
      */
     public void setLoading(boolean isLoading) {
+        // sanity check that we even have views yet
         if (fleuronFooter == null) return;
 
         if (isLoading) {
@@ -248,19 +242,16 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
         }
     }
 
+    /**
+     * Set up the text view that shows when no stories are yet visible.
+     */
     private void updateLoadingMessage() {
-        boolean isMuted = getFeedSet().isMuted();
-        boolean isLoading = NBSyncService.isFeedSetSyncing(getFeedSet(), activity);
-        updateLoadingMessage(isMuted, isLoading);
-    }
-
-    protected void updateLoadingMessage(boolean isMuted, boolean isLoading) {
-        if (isMuted) {
+        if (getFeedSet().isMuted()) {
             emptyViewText.setText(R.string.empty_list_view_muted_feed);
             emptyViewText.setTypeface(null, Typeface.NORMAL);
             emptyViewImage.setVisibility(View.VISIBLE);
         } else {
-            if (isLoading || (!cursorSeenYet)) {
+            if (NBSyncService.isFeedSetSyncing(getFeedSet(), activity) || (!cursorSeenYet)) {
                 emptyViewText.setText(R.string.empty_list_view_loading);
                 emptyViewText.setTypeface(null, Typeface.ITALIC);
                 emptyViewImage.setVisibility(View.INVISIBLE);
@@ -344,8 +335,7 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
             emptyView.setVisibility(View.VISIBLE);
         }
 
-        // some list views will auto-trigger a scroll handler when invalidated, but not a RecyclerView,
-        // so don't rely on that to check if we need more items
+        // though we have stories, we might not yet have as many as we want
         ensureSufficientStories();
     }
 
