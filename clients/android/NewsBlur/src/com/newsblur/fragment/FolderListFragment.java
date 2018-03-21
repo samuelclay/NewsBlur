@@ -346,8 +346,11 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
             markFeedsAsRead(fs);
 			return true;
 		} else if (item.getItemId() == R.id.menu_choose_folders) {
-            DialogFragment chooseFoldersFragment = ChooseFoldersFragment.newInstance(adapter.getFeed(groupPosition, childPosition));
-            chooseFoldersFragment.show(getFragmentManager(), "dialog");
+            Feed feed = adapter.getFeed(groupPosition, childPosition);
+            if (feed != null) {
+                DialogFragment chooseFoldersFragment = ChooseFoldersFragment.newInstance(feed);
+                chooseFoldersFragment.show(getFragmentManager(), "dialog");
+            }
         } else if (item.getItemId() == R.id.menu_mute_feed) {
             Set<String> feedIds = new HashSet<String>();
             feedIds.add(adapter.getFeed(groupPosition, childPosition).feedId);
