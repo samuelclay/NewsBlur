@@ -25,6 +25,7 @@ import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -239,6 +240,7 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
             topProgressView.setVisibility(View.INVISIBLE);
             bottomProgressView.setVisibility(View.INVISIBLE);
             if (cursorSeenYet && NBSyncService.isFeedSetExhausted(getFeedSet()) && (adapter.getStoryCount() > 0)) {
+                calcFleuronPadding();
                 fleuronFooter.setVisibility(View.VISIBLE);
             }
         }
@@ -445,6 +447,24 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
             }
             return false;
         }
+    }
+
+    /**
+     * if the story list bottom has been reached, add an amount of padding to the footer so that it can still
+     * be scrolled until the bottom most story reaches to top, for those who mark-by-scrolling.
+     */
+    private void calcFleuronPadding() {
+        int listHeight = itemGrid.getMeasuredHeight();
+        View innerView = fleuronFooter.findViewById(R.id.fleuron);
+        ViewGroup.LayoutParams oldLayout = innerView.getLayoutParams();
+        ViewGroup.MarginLayoutParams newLayout = new LinearLayout.LayoutParams(oldLayout);
+        int marginPx_4dp = UIUtils.dp2px(getActivity(), 4);
+        if (listHeight > 1) {
+            newLayout.setMargins(0, marginPx_4dp, 0, listHeight);
+        } else {
+            newLayout.setMargins(0, marginPx_4dp, 0, marginPx_4dp);
+        }
+        innerView.setLayoutParams(newLayout);
     }
 
 }
