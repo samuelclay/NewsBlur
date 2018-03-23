@@ -946,7 +946,7 @@ public class BlurDatabaseHelper {
         closeQuietly(c);
 
         // the id to append to or remove from the shared list (the current user)
-        String currentUser = PrefsUtils.getUserDetails(context).id;
+        String currentUser = PrefsUtils.getUserId(context);
 
         // append to set and update DB
         Set<String> newIds = new HashSet<String>(Arrays.asList(sharedUserIds));
@@ -1273,14 +1273,6 @@ public class BlurDatabaseHelper {
     }
 
     public Comment getComment(String storyId, String userId) {
-        if (storyId == null) {
-            com.newsblur.util.Log.w(this, "couldn't look up exisint comment, story ID missing");
-            return null;
-        }
-        if (userId == null) {
-            com.newsblur.util.Log.w(this, "couldn't look up exisint comment, user ID missing");
-            return null;
-        }
         String selection = DatabaseConstants.COMMENT_STORYID + " = ? AND " + DatabaseConstants.COMMENT_USERID + " = ?";
         String[] selArgs = new String[] {storyId, userId};
         Cursor c = dbRO.query(DatabaseConstants.COMMENT_TABLE, null, selection, selArgs, null, null, null);
@@ -1297,7 +1289,7 @@ public class BlurDatabaseHelper {
      * an ID at which time the placeholder will be removed.
      */
     public void insertCommentPlaceholder(String storyId, String feedId, String commentText) {
-        String userId = PrefsUtils.getUserDetails(context).id;
+        String userId = PrefsUtils.getUserId(context);
         Comment comment = new Comment();
         comment.isPlaceholder = true;
         comment.id = Comment.PLACEHOLDER_COMMENT_ID + storyId + userId;
@@ -1330,7 +1322,7 @@ public class BlurDatabaseHelper {
     }
 
     public void clearSelfComments(String storyId) {
-        String userId = PrefsUtils.getUserDetails(context).id;
+        String userId = PrefsUtils.getUserId(context);
         synchronized (RW_MUTEX) {dbRW.delete(DatabaseConstants.COMMENT_TABLE, 
                                              DatabaseConstants.COMMENT_STORYID + " = ? AND " + DatabaseConstants.COMMENT_USERID + " = ?", 
                                              new String[]{storyId, userId});}
@@ -1353,7 +1345,7 @@ public class BlurDatabaseHelper {
         closeQuietly(c);
 
         // the new id to append/remove from the liking list (the current user)
-        String currentUser = PrefsUtils.getUserDetails(context).id;
+        String currentUser = PrefsUtils.getUserId(context);
 
         // append to set and update DB
         Set<String> newIds = new HashSet<String>(Arrays.asList(comment.likingUsers));
@@ -1407,7 +1399,7 @@ public class BlurDatabaseHelper {
         Reply reply = new Reply();
         reply.commentId = comment.id;
         reply.text = replyText;
-        reply.userId = PrefsUtils.getUserDetails(context).id;
+        reply.userId = PrefsUtils.getUserId(context);
         reply.date = new Date();
         reply.id = Reply.PLACEHOLDER_COMMENT_ID + storyId + comment.id + reply.userId;
         synchronized (RW_MUTEX) {dbRW.insertWithOnConflict(DatabaseConstants.REPLY_TABLE, null, reply.getValues(), SQLiteDatabase.CONFLICT_REPLACE);}

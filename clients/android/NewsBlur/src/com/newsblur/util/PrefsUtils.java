@@ -231,6 +231,11 @@ public class PrefsUtils {
 		saveUserImage(context, profile.photoUrl);
 	}
 
+    public static String getUserId(Context context) {   
+		SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        return preferences.getString(PrefConstants.USER_ID, null);
+    }
+
 	public static UserDetails getUserDetails(Context context) {
 		UserDetails user = new UserDetails();
 

@@ -52,6 +52,14 @@ public class NbActivity extends Activity {
         PrefsUtils.applyThemePreference(this);
         lastTheme = PrefsUtils.getSelectedTheme(this);
 
+        // in rare cases of process interruption or DB corruption, an activity can launch without valid
+        // login creds.  redirect the user back to the loging workflow.
+        if (PrefsUtils.getUserId(this) == null) {
+            com.newsblur.util.Log.e(this, "post-login activity launched without valid login.");
+            PrefsUtils.logout(this);
+            finish();
+        }
+
 		super.onCreate(bundle);
 
         FeedUtils.offerInitContext(this);
@@ -96,7 +104,7 @@ public class NbActivity extends Activity {
 	protected void finishIfNotLoggedIn() {
 		String currentLoginKey = PrefsUtils.getUniqueLoginKey(this);
 		if(currentLoginKey == null || !currentLoginKey.equals(uniqueLoginKey)) {
-			com.newsblur.util.Log.d( this.getClass().getName(), "This activity was for a different login. finishing it.");
+			com.newsblur.util.Log.d(this.getClass().getName(), "This activity was for a different login. finishing it.");
 			finish();
 		}
 	}
