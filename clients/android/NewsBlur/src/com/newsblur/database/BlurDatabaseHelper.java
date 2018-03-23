@@ -986,6 +986,7 @@ public class BlurDatabaseHelper {
             return null;
         } else {
             c.moveToFirst();
+            // TODO: may not contain col?
             String result = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.STORY_CONTENT));
             c.close();
             return result;
@@ -1272,6 +1273,14 @@ public class BlurDatabaseHelper {
     }
 
     public Comment getComment(String storyId, String userId) {
+        if (storyId == null) {
+            com.newsblur.util.Log.w(this, "couldn't look up exisint comment, story ID missing");
+            return null;
+        }
+        if (userId == null) {
+            com.newsblur.util.Log.w(this, "couldn't look up exisint comment, user ID missing");
+            return null;
+        }
         String selection = DatabaseConstants.COMMENT_STORYID + " = ? AND " + DatabaseConstants.COMMENT_USERID + " = ?";
         String[] selArgs = new String[] {storyId, userId};
         Cursor c = dbRO.query(DatabaseConstants.COMMENT_TABLE, null, selection, selArgs, null, null, null);
@@ -1303,7 +1312,7 @@ public class BlurDatabaseHelper {
             // in order to make this method idempotent (so it can be attempted before, during, or after
             // the real comment is done, we have to check for a real one
             if (getComment(storyId, userId) != null) {
-                com.newsblur.util.Log.w(this.getClass().getName(), "failing to insert placeholder comment over live one");
+                com.newsblur.util.Log.i(this.getClass().getName(), "electing not to insert placeholder comment over live one");
                 return;
             }
             dbRW.insertWithOnConflict(DatabaseConstants.COMMENT_TABLE, null, comment.getValues(), SQLiteDatabase.CONFLICT_REPLACE);
