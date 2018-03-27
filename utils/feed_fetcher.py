@@ -34,6 +34,7 @@ from django.utils.encoding import smart_unicode
 from utils import json_functions as json
 from celery.exceptions import SoftTimeLimitExceeded
 from utils.twitter_fetcher import TwitterFetcher
+from utils.facebook_fetcher import FacebookFetcher
 from utils.json_fetcher import JSONFetcher
 # from utils.feed_functions import mail_feed_error_to_admin
 
@@ -106,6 +107,13 @@ class FetchFeed:
                               (self.feed.log_title[:30], address))
                 return FEED_ERRHTTP, None
             self.fpf = feedparser.parse(twitter_feed)
+        elif re.match(r'(https?)?://(www\.)?facebook.com/\w+/?$', qurl(address, remove=['_'])):
+            facebook_feed = self.fetch_facebook(address)
+            if not facebook_feed:
+                logging.debug(u'   ***> [%-30s] ~FRFacebook fetch failed: %s' % 
+                              (self.feed.log_title[:30], address))
+                return FEED_ERRHTTP, None
+            self.fpf = feedparser.parse(facebook_feed)
         
         if not self.fpf:
             try:
@@ -185,6 +193,10 @@ class FetchFeed:
     def fetch_twitter(self, address=None):
         twitter_fetcher = TwitterFetcher(self.feed, self.options)
         return twitter_fetcher.fetch(address)
+    
+    def fetch_facebook(self, address=None):
+        facebook_fetcher = FacebookFetcher(self.feed, self.options)
+        return facebook_fetcher.fetch(address)
     
     def fetch_json_feed(self, address, headers):
         json_fetcher = JSONFetcher(self.feed, self.options)

@@ -410,6 +410,8 @@ class Feed(models.Model):
             return cls.objects.get(feed_address=url)
         if url and re.match('(https?://)?twitter.com/\w+/?$', url):
             without_rss = True
+        if url and re.match(r'(https?://)?(www\.)?facebook.com/\w+/?$', url):
+            without_rss = True
         if url and 'youtube.com/user/' in url:
             username = re.search('youtube.com/user/(\w+)', url).group(1)
             url = "http://gdata.youtube.com/feeds/base/users/%s/uploads" % username
