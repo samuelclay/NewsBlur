@@ -122,11 +122,10 @@ class FacebookFetcher:
                 logging.debug(u'   ***> [%-30s] ~FRFacebook page failed/expired, disconnecting facebook: %s: %s' % 
                               (self.feed.log_title[:30], self.feed.feed_address, e))
                 self.feed.save_feed_history(560, "Facebook Error: Expired token")
-                return []
-            stories = None
+            return {}
         
         if not stories:
-            return []
+            return {}
 
         return stories
     
