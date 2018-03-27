@@ -58,9 +58,9 @@ class FacebookFetcher:
                 continue
             for seen_data in merged_data:
                 if story_data['link'] == seen_data['link']:
-                    if len(story_data['description']) > len(seen_data['description']):
-                        seen_data['description'] = story_data['description']
-                        seen_data['title'] = story_data['title']
+                    # Video wins over posts (and attachments)
+                    seen_data['description'] = story_data['description']
+                    seen_data['title'] = story_data['title']
                     break
         
         for story_data in merged_data:
@@ -133,11 +133,23 @@ class FacebookFetcher:
         created_date = page_story['created_time']
         if isinstance(created_date, unicode):
             created_date = dateutil.parser.parse(created_date)
-        permalink = facebook_user.get_object(page_story['id'], fields='permalink_url')['permalink_url']
+        fields = facebook_user.get_object(page_story['id'], fields='permalink_url,link,attachments')
+        permalink = fields.get('link', fields['permalink_url'])
+        attachments_html = ""
+        if fields.get('attachments', None) and fields['attachments']['data']:
+            for attachment in fields['attachments']['data']:
+                if 'media' in attachment:
+                    attachments_html += "<img src=\"%s\" />" % attachment['media']['image']['src']
+                if attachment.get('subattachments', None):
+                    for subattachment in attachment['subattachments']['data']:
+                        attachments_html += "<img src=\"%s\" />" % subattachment['media']['image']['src']
+            
         content = """<div class="NB-facebook-rss">
                          <div class="NB-facebook-rss-message">%s</div>
+                         <div class="NB-facebook-rss-picture">%s</div>
                     </div>""" % (
-            message
+            message,
+            attachments_html
         )
         
         story = {
