@@ -108,7 +108,7 @@ class FetchFeed:
                 return FEED_ERRHTTP, None
             self.fpf = feedparser.parse(twitter_feed)
         elif re.match(r'(https?)?://(www\.)?facebook.com/\w+/?$', qurl(address, remove=['_'])):
-            facebook_feed = self.fetch_facebook(address)
+            facebook_feed = self.fetch_facebook()
             if not facebook_feed:
                 logging.debug(u'   ***> [%-30s] ~FRFacebook fetch failed: %s' % 
                               (self.feed.log_title[:30], address))
@@ -194,9 +194,9 @@ class FetchFeed:
         twitter_fetcher = TwitterFetcher(self.feed, self.options)
         return twitter_fetcher.fetch(address)
     
-    def fetch_facebook(self, address=None):
+    def fetch_facebook(self):
         facebook_fetcher = FacebookFetcher(self.feed, self.options)
-        return facebook_fetcher.fetch(address)
+        return facebook_fetcher.fetch()
     
     def fetch_json_feed(self, address, headers):
         json_fetcher = JSONFetcher(self.feed, self.options)
