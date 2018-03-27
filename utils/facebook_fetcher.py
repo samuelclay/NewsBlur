@@ -118,11 +118,12 @@ class FacebookFetcher:
             stories = facebook_user.get_object(page, fields=fields)
         except GraphAPIError, e:
             message = str(e).lower()
-            if 'Session has expired' in message:
+            if 'session has expired' in message:
                 logging.debug(u'   ***> [%-30s] ~FRFacebook page failed/expired, disconnecting facebook: %s: %s' % 
                               (self.feed.log_title[:30], self.address, e))
                 self.feed.save_feed_history(560, "Facebook Error: Expired token")
                 return []
+            stories = None
         
         if not stories:
             return []
@@ -205,7 +206,15 @@ class FacebookFetcher:
         page_name = self.extract_page_name()
         facebook_user = self.facebook_user()
         
-        picture_data = facebook_user.get_object(page_name, fields='picture')
+        try:
+            picture_data = facebook_user.get_object(page_name, fields='picture')
+        except GraphAPIError, e:
+            message = str(e).lower()
+            if 'session has expired' in message:
+                logging.debug(u'   ***> [%-30s] ~FRFacebook icon failed/expired, disconnecting facebook: %s: %s' % 
+                              (self.feed.log_title[:30], self.address, e))
+            return
+
         if 'picture' in picture_data:
             return picture_data['picture']['data']['url']
         
