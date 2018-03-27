@@ -951,10 +951,10 @@ public class NBSyncService extends Service {
     }
 
     /**
-     * Is the main feed/folder list sync running?
+     * Is the main feed/folder list sync running and blocking?
      */
     public static boolean isFeedFolderSyncRunning() {
-        return (HousekeepingRunning || ActionsRunning || RecountsRunning || FFSyncRunning || CleanupService.running() || UnreadsService.running() || StorySyncRunning || OriginalTextService.running() || ImagePrefetchService.running());
+        return (HousekeepingRunning || FFSyncRunning);
     }
 
     public static boolean isFeedCountSyncRunning() {
