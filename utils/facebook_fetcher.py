@@ -7,7 +7,7 @@ from django.utils.html import linebreaks
 from apps.social.models import MSocialServices
 from apps.reader.models import UserSubscription
 from utils import log as logging
-from utils.vendor.facebook import GraphAPIError
+from vendor.facebook import GraphAPIError
 
 class FacebookFetcher:
     
