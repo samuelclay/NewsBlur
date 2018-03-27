@@ -14,11 +14,7 @@ class FacebookFetcher:
         self.feed = feed
         self.options = options or {}
     
-    def fetch(self, address=None):
-        if not address:
-            address = self.feed.feed_address
-        self.address = address
-
+    def fetch(self):
         page_name = self.extract_page_name()
         if not page_name: 
             return
@@ -39,7 +35,7 @@ class FacebookFetcher:
         data['lastBuildDate'] = datetime.datetime.utcnow()
         data['generator'] = 'NewsBlur Facebook API Decrapifier - %s' % settings.NEWSBLUR_URL
         data['docs'] = None
-        data['feed_url'] = address
+        data['feed_url'] = self.feed.feed_address
         rss = feedgenerator.Atom1Feed(**data)
         merged_data = []
         
@@ -71,7 +67,7 @@ class FacebookFetcher:
     def extract_page_name(self):
         page = None
         try:
-            page_groups = re.search('facebook.com/(\w+)/?', self.address)
+            page_groups = re.search('facebook.com/(\w+)/?', self.feed.feed_address)
             if not page_groups:
                 return
             page = page_groups.group(1)
@@ -89,13 +85,13 @@ class FacebookFetcher:
             facebook_api = social_services.facebook_api()
             if not facebook_api:
                 logging.debug(u'   ***> [%-30s] ~FRFacebook fetch failed: %s: No facebook API for %s' % 
-                              (self.feed.log_title[:30], self.address, self.options))
+                              (self.feed.log_title[:30], self.feed.feed_address, self.options))
                 return
         else:
             usersubs = UserSubscription.objects.filter(feed=self.feed)
             if not usersubs:
                 logging.debug(u'   ***> [%-30s] ~FRTwitter fetch failed: %s: No subscriptions' % 
-                              (self.feed.log_title[:30], self.address))
+                              (self.feed.log_title[:30], self.feed.feed_address))
                 return
 
             for sub in usersubs:
@@ -111,7 +107,7 @@ class FacebookFetcher:
         
             if not facebook_api:
                 logging.debug(u'   ***> [%-30s] ~FRFacebook fetch failed: %s: No facebook API for %s' % 
-                              (self.feed.log_title[:30], self.address, usersubs[0].user.username))
+                              (self.feed.log_title[:30], self.feed.feed_address, usersubs[0].user.username))
                 return
         
         return facebook_api
@@ -196,4 +192,11 @@ class FacebookFetcher:
         
         return story
     
-    
+    def favicon_url(self):
+        page_name = self.extract_page_name()
+        facebook_user = self.facebook_user()
+        
+        picture_data = facebook_user.get_object(page_name, fields='picture')
+        if 'picture' in picture_data:
+            return picture_data['picture']['data']['url']
+        
