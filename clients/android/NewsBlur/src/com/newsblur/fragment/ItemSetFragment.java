@@ -421,11 +421,11 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
         //com.newsblur.util.Log.d(this, String.format(" total:%d  bound:%d  last%d  desire:%d", totalCount, visibleCount, lastVisible, desiredStoryCount));
     }
 
-    private void setupGestureDetector(View v) {
+    private void setupGestureDetector(RecyclerView v) {
         final GestureDetector gestureDetector = new GestureDetector(getActivity(), new SwipeBackGestureDetector());
-        v.setOnTouchListener(new OnTouchListener() {
-            public boolean onTouch(View v, MotionEvent event) {
-                return gestureDetector.onTouchEvent(event);
+        v.addOnItemTouchListener(new RecyclerView.SimpleOnItemTouchListener() {
+            public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
+                return gestureDetector.onTouchEvent(e);
             }
         });
     }
