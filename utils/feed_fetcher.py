@@ -126,7 +126,7 @@ class FetchFeed:
                 raw_feed = requests.get(address, headers=headers)
                 if raw_feed.status_code >= 400:
                     logging.debug("   ***> [%-30s] ~FRFeed fetch was %s status code, trying fake user agent: %s" % (self.feed.log_title[:30], raw_feed.status_code, raw_feed.headers))
-                    raw_feed = requests.get(address, headers=self.feed.fetch_headers(fake=True))
+                    raw_feed = requests.get(self.feed.feed_address, headers=self.feed.fetch_headers(fake=True))
                 
                 if raw_feed.content and 'application/json' in raw_feed.headers.get('Content-Type', ""):
                     # JSON Feed
