@@ -7,6 +7,7 @@ from django.utils.html import linebreaks
 from apps.social.models import MSocialServices
 from apps.reader.models import UserSubscription
 from utils import log as logging
+from utils.vendor.facebook import GraphAPIError
 
 class FacebookFetcher:
     
@@ -113,7 +114,15 @@ class FacebookFetcher:
         return facebook_api
     
     def fetch_page_feed(self, facebook_user, page, fields):
-        stories = facebook_user.get_object(page, fields=fields)
+        try:
+            stories = facebook_user.get_object(page, fields=fields)
+        except GraphAPIError, e:
+            message = str(e).lower()
+            if 'Session has expired' in message:
+                logging.debug(u'   ***> [%-30s] ~FRFacebook page failed/expired, disconnecting facebook: %s: %s' % 
+                              (self.feed.log_title[:30], self.address, e))
+                self.feed.save_feed_history(560, "Facebook Error: Expired token")
+                return []
         
         if not stories:
             return []
