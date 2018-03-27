@@ -49,16 +49,17 @@ class FacebookFetcher:
                 merged_data.append(story_data)
             
         videos = feed.get('videos', {}).get('data', None)
-        for video in videos:
-            story_data = self.page_video_story(facebook_user, video)
-            if not story_data:
-                continue
-            for seen_data in merged_data:
-                if story_data['link'] == seen_data['link']:
-                    # Video wins over posts (and attachments)
-                    seen_data['description'] = story_data['description']
-                    seen_data['title'] = story_data['title']
-                    break
+        if videos:
+            for video in videos:
+                story_data = self.page_video_story(facebook_user, video)
+                if not story_data:
+                    continue
+                for seen_data in merged_data:
+                    if story_data['link'] == seen_data['link']:
+                        # Video wins over posts (and attachments)
+                        seen_data['description'] = story_data['description']
+                        seen_data['title'] = story_data['title']
+                        break
         
         for story_data in merged_data:
             rss.add_item(**story_data)
