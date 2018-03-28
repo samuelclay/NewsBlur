@@ -15,9 +15,9 @@ public class AllSharedStoriesReading extends Reading {
         UIUtils.setCustomActionBar(this, R.drawable.ak_icon_blurblogs, getResources().getString(R.string.all_shared_stories_title));
 
         // No sourceUserId since this is all shared stories. The sourceUsedId for each story will be used.
-        readingAdapter = new MixedFeedsReadingAdapter(getFragmentManager(), null);
+        readingAdapter = new MixedFeedsReadingAdapter(getSupportFragmentManager(), null);
 
-        getLoaderManager().initLoader(0, null, this);
+        getSupportLoaderManager().initLoader(0, null, this);
     }
 
 }

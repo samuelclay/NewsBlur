@@ -4,13 +4,13 @@ import java.lang.ref.WeakReference;
 import java.util.HashSet;
 import java.util.Set;
 
-import android.app.LoaderManager;
-import android.content.Loader;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.app.DialogFragment;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -38,6 +38,7 @@ import com.newsblur.activity.GlobalSharedStoriesItemsList;
 import com.newsblur.activity.InfrequentItemsList;
 import com.newsblur.activity.ItemsList;
 import com.newsblur.activity.Main;
+import com.newsblur.activity.NbActivity;
 import com.newsblur.activity.ReadStoriesItemsList;
 import com.newsblur.activity.SavedStoriesItemsList;
 import com.newsblur.activity.SocialFeedItemsList;
@@ -374,7 +375,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 	}
 
     private void markFeedsAsRead(FeedSet fs) {
-        FeedUtils.markRead(getActivity(), fs, null, null, R.array.mark_all_read_options, false);
+        FeedUtils.markRead(((NbActivity) getActivity()), fs, null, null, R.array.mark_all_read_options, false);
         adapter.lastFeedViewedId = fs.getSingleFeed();
         adapter.lastFolderViewed = fs.getFolderName();
     }

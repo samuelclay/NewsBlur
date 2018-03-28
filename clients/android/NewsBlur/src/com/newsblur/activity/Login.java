@@ -1,15 +1,15 @@
 package com.newsblur.activity;
 
 import android.os.Bundle;
-import android.app.Activity;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.view.Window;
 
 import com.newsblur.R;
 import com.newsblur.fragment.LoginRegisterFragment;
 
-public class Login extends Activity {
+public class Login extends FragmentActivity {
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -17,7 +17,7 @@ public class Login extends Activity {
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_login);
-        FragmentManager fragmentManager = getFragmentManager();
+        FragmentManager fragmentManager = getSupportFragmentManager();
         
         if (fragmentManager.findFragmentByTag(LoginRegisterFragment.class.getName()) == null) {
             FragmentTransaction transaction = fragmentManager.beginTransaction();

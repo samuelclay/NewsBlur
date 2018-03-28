@@ -9,10 +9,10 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.app.DialogFragment;
-import android.app.FragmentManager;
-import android.app.LoaderManager;
-import android.content.Loader;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.util.Log;
@@ -126,7 +126,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 		setContentView(R.layout.activity_reading);
         ButterKnife.bind(this);
 
-		fragmentManager = getFragmentManager();
+		fragmentManager = getSupportFragmentManager();
 
         try {
             fs = (FeedSet)getIntent().getSerializableExtra(EXTRA_FEEDSET);
@@ -215,9 +215,6 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
         if (NBSyncService.isHousekeepingRunning()) finish();
         // this view shows stories, it is not safe to perform cleanup
         this.stopLoading = false;
-        // onCreate() in our subclass should have called createLoader(), but sometimes the callback never makes it.
-        // this ensures that at least one callback happens after activity re-create.
-        getLoaderManager().restartLoader(0, null, this);
         // this is not strictly necessary, since our first refresh with the fs will swap in
         // the correct session, but that can be delayed by sync backup, so we try here to
         // reduce UI lag, or in case somehow we got redisplayed in a zero-story state
@@ -243,7 +240,6 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 
 	@Override
 	public void onLoaderReset(Loader<Cursor> loader) {
-		readingAdapter.swapCursor(null);
 	}
 
 	@Override
@@ -305,24 +301,27 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
     private void skipPagerToStoryHash() {
         // if we already started and found our target story, this will be unset
         if (storyHash == null) return;
-        stories.moveToPosition(-1);
-        while (stories.moveToNext()) {
-            if (stopLoading) return;
-            Story story = Story.fromCursor(stories);
-            if ( (story.storyHash.equals(storyHash)) ||
-                 ((storyHash.equals(FIND_FIRST_UNREAD)) && (!story.read))
-                 ) {
-                // see above note about re-setting the adapter to force the pager to reload fragments
-                pager.setAdapter(readingAdapter);
-                pager.setCurrentItem(stories.getPosition(), false);
-                this.onPageSelected(stories.getPosition());
-                // now that the pager is getting the right story, make it visible
-                pager.setVisibility(View.VISIBLE);
-                emptyViewText.setVisibility(View.INVISIBLE);
-                storyHash = null;
-                return;
-            }
+        int position = -1;
+        if (storyHash.equals(FIND_FIRST_UNREAD)) {
+            position = readingAdapter.findFirstUnread();
+        } else {
+            position = readingAdapter.findHash(storyHash);
         }
+
+        if (stopLoading) return;
+
+        if (position >= 0 ) {
+            // see above note about re-setting the adapter to force the pager to reload fragments
+            pager.setAdapter(readingAdapter);
+            pager.setCurrentItem(position, false);
+            this.onPageSelected(position);
+            // now that the pager is getting the right story, make it visible
+            pager.setVisibility(View.VISIBLE);
+            emptyViewText.setVisibility(View.INVISIBLE);
+            storyHash = null;
+            return;
+        }
+
         // if the story wasn't found, try to get more stories into the cursor
         this.checkStoryCount(readingAdapter.getCount()+1);
     }
@@ -415,7 +414,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 			return true;
 		} else if (item.getItemId() == R.id.menu_reading_sharenewsblur) {
             DialogFragment newFragment = ShareDialogFragment.newInstance(story, readingAdapter.getSourceUserId());
-            newFragment.show(getFragmentManager(), "dialog");
+            newFragment.show(getSupportFragmentManager(), "dialog");
 			return true;
 		} else if (item.getItemId() == R.id.menu_send_story) {
 			FeedUtils.sendStoryBrief(story, this);
@@ -425,11 +424,11 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 			return true;
 		} else if (item.getItemId() == R.id.menu_textsize) {
 			TextSizeDialogFragment textSize = TextSizeDialogFragment.newInstance(PrefsUtils.getTextSize(this), TextSizeDialogFragment.TextSizeType.ReadingText);
-			textSize.show(getFragmentManager(), TextSizeDialogFragment.class.getName());
+			textSize.show(getSupportFragmentManager(), TextSizeDialogFragment.class.getName());
 			return true;
 		} else if (item.getItemId() == R.id.menu_font) {
             ReadingFontDialogFragment storyFont = ReadingFontDialogFragment.newInstance(PrefsUtils.getFontString(this));
-            storyFont.show(getFragmentManager(), ReadingFontDialogFragment.class.getName());
+            storyFont.show(getSupportFragmentManager(), ReadingFontDialogFragment.class.getName());
             return true;
         } else if (item.getItemId() == R.id.menu_reading_save) {
             if (story.starred) {
@@ -459,7 +458,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
         } else if (item.getItemId() == R.id.menu_intel) {
             if (story.feedId.equals("0")) return true; // cannot train on feedless stories
             StoryIntelTrainerFragment intelFrag = StoryIntelTrainerFragment.newInstance(story, fs);
-            intelFrag.show(getFragmentManager(), StoryIntelTrainerFragment.class.getName());
+            intelFrag.show(getSupportFragmentManager(), StoryIntelTrainerFragment.class.getName());
             return true;
         } else {
 			return super.onOptionsItemSelected(item);
@@ -500,7 +499,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
     private void updateCursor() {
         synchronized (STORIES_MUTEX) {
             try {
-                getLoaderManager().restartLoader(0, null, this);
+                getSupportLoaderManager().restartLoader(0, null, this);
             } catch (IllegalStateException ise) {
                 ; // our heavy use of async can race loader calls, which it will gripe about, but this
                  //  is only a refresh call, so dropping a refresh during creation is perfectly fine.

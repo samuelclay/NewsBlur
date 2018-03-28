@@ -15,8 +15,8 @@ public class SocialFeedReading extends Reading {
         SocialFeed socialFeed = FeedUtils.dbHelper.getSocialFeed(fs.getSingleSocialFeed().getKey());
         if (socialFeed == null) finish(); // don't open fatally stale intents
         UIUtils.setCustomActionBar(this, socialFeed.photoUrl, socialFeed.feedTitle);
-        readingAdapter = new MixedFeedsReadingAdapter(getFragmentManager(), socialFeed.userId);
-        getLoaderManager().initLoader(0, null, this);
+        readingAdapter = new MixedFeedsReadingAdapter(getSupportFragmentManager(), socialFeed.userId);
+        getSupportLoaderManager().initLoader(0, null, this);
     }
 
 }

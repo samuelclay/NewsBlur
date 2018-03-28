@@ -26,7 +26,7 @@ public class InfrequentItemsList extends ItemsList implements InfrequentCutoffCh
 	public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.menu_infrequent_cutoff) {
 			InfrequentCutoffDialogFragment dialog = InfrequentCutoffDialogFragment.newInstance(PrefsUtils.getInfrequentCutoff(this));
-			dialog.show(getFragmentManager(), InfrequentCutoffDialogFragment.class.getName());
+			dialog.show(getSupportFragmentManager(), InfrequentCutoffDialogFragment.class.getName());
 			return true;
         } else {
             return super.onOptionsItemSelected(item);
