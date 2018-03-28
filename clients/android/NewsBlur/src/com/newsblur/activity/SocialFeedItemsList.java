@@ -23,12 +23,4 @@ public class SocialFeedItemsList extends ItemsList {
         UIUtils.setCustomActionBar(this, socialFeed.photoUrl, socialFeed.feedTitle);
 	}
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		super.onCreateOptionsMenu(menu);
-		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.itemslist, menu);
-		return true;
-	}
-	
 }

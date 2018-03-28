@@ -71,27 +71,12 @@ public class FeedItemsList extends ItemsList {
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		super.onCreateOptionsMenu(menu);
         if (!feed.active) {
             // there is currently no way for a feed to be un-muted while in this activity, so
             // don't bother creating the menu, which contains no valid options for a muted feed
             return false;
         }
-		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.feed_itemslist, menu);
-        if (feed.isNotifyUnread()) {
-            menu.findItem(R.id.menu_notifications_disable).setChecked(false);
-            menu.findItem(R.id.menu_notifications_unread).setChecked(true);
-            menu.findItem(R.id.menu_notifications_focus).setChecked(false);
-        } else if (feed.isNotifyFocus()) {
-            menu.findItem(R.id.menu_notifications_disable).setChecked(false);
-            menu.findItem(R.id.menu_notifications_unread).setChecked(false);
-            menu.findItem(R.id.menu_notifications_focus).setChecked(true);
-        } else {
-            menu.findItem(R.id.menu_notifications_disable).setChecked(true);
-            menu.findItem(R.id.menu_notifications_unread).setChecked(false);
-            menu.findItem(R.id.menu_notifications_focus).setChecked(false);
-        }
+		super.onCreateOptionsMenu(menu);
 		return true;
 	}
 
