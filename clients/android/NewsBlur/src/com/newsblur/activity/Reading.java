@@ -280,6 +280,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
             // however, the pager can be tricked into wiping all fragments and recreating them from
             // the adapter by setting the adapter again, even if it is the same one.
             if (lastCursorWasStale) { 
+                // TODO: can crash with IllegalStateException
                 pager.setAdapter(readingAdapter);
             }
 

@@ -20,11 +20,4 @@ public class SavedStoriesItemsList extends ItemsList {
         UIUtils.setCustomActionBar(this, R.drawable.clock, title);
 	}
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.savedstories_itemslist, menu);
-        return true;
-	}
-
 }

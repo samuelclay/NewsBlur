@@ -7,6 +7,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnKeyListener;
@@ -144,18 +145,68 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
     }
 
 	@Override
-	public boolean onPrepareOptionsMenu(Menu menu) {
-		super.onPrepareOptionsMenu(menu);
+	public boolean onCreateOptionsMenu(Menu menu) {
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.itemslist, menu);
 
-        if (fs.isFilterSaved()) {
+        if (fs.isGlobalShared() || 
+            fs.isFilterSaved() ||
+            fs.isAllSaved() ||
+            fs.isSingleSavedTag() ||
+            fs.isInfrequent() ||
+            fs.isAllRead() ) {
             menu.findItem(R.id.menu_mark_all_as_read).setVisible(false);
         }
 
+        if (fs.isGlobalShared() ||
+            fs.isAllSocial() ||
+            fs.isAllRead() ) {
+            menu.findItem(R.id.menu_story_order).setVisible(false);
+        }
+
+        if (fs.isGlobalShared() ||
+            fs.isFilterSaved() ||
+            fs.isAllSaved() ||
+            fs.isSingleSavedTag() ||
+            fs.isInfrequent() || 
+            fs.isAllRead() ) {
+            menu.findItem(R.id.menu_read_filter).setVisible(false);
+        }
+
+        if (fs.isGlobalShared() ||
+            fs.isAllSocial() ||
+            fs.isInfrequent() ||
+            fs.isAllRead() ) {
+            menu.findItem(R.id.menu_search_stories).setVisible(false);
+        }
+
+        if ((!fs.isSingleNormal()) || fs.isFilterSaved()) {
+            menu.findItem(R.id.menu_notifications).setVisible(false);
+            menu.findItem(R.id.menu_delete_feed).setVisible(false);
+            menu.findItem(R.id.menu_instafetch_feed).setVisible(false);
+            menu.findItem(R.id.menu_intel).setVisible(false);
+        }
+
+        if (!fs.isInfrequent()) {
+            menu.findItem(R.id.menu_infrequent_cutoff).setVisible(false);
+        }
+
+		return true;
+	}
+
+	@Override
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		super.onPrepareOptionsMenu(menu);
+
         StoryListStyle listStyle = PrefsUtils.getStoryListStyle(this, fs);
-        if (listStyle == StoryListStyle.LIST) {
-            menu.findItem(R.id.menu_list_style_list).setChecked(true);
+        if (listStyle == StoryListStyle.GRID_F) {
+             menu.findItem(R.id.menu_list_style_grid_f).setChecked(true);
+        } else if (listStyle == StoryListStyle.GRID_M) {
+             menu.findItem(R.id.menu_list_style_grid_m).setChecked(true);
+        } else if (listStyle == StoryListStyle.GRID_C) {
+             menu.findItem(R.id.menu_list_style_grid_c).setChecked(true);
         } else {
-            menu.findItem(R.id.menu_list_style_grid).setChecked(true);
+            menu.findItem(R.id.menu_list_style_list).setChecked(true);
         }
 
         ThemeValue themeValue = PrefsUtils.getSelectedTheme(this);
@@ -166,6 +217,7 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
         } else if (themeValue == ThemeValue.BLACK) {
             menu.findItem(R.id.menu_theme_black).setChecked(true);
         }
+
 		return true;
 	}
 
@@ -211,8 +263,14 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
         } else if (item.getItemId() == R.id.menu_list_style_list) {
             PrefsUtils.updateStoryListStyle(this, fs, StoryListStyle.LIST);
             itemSetFragment.updateStyle();
-        } else if (item.getItemId() == R.id.menu_list_style_grid) {
-            PrefsUtils.updateStoryListStyle(this, fs, StoryListStyle.GRID);
+        } else if (item.getItemId() == R.id.menu_list_style_grid_f) {
+            PrefsUtils.updateStoryListStyle(this, fs, StoryListStyle.GRID_F);
+            itemSetFragment.updateStyle();
+        } else if (item.getItemId() == R.id.menu_list_style_grid_m) {
+            PrefsUtils.updateStoryListStyle(this, fs, StoryListStyle.GRID_M);
+            itemSetFragment.updateStyle();
+        } else if (item.getItemId() == R.id.menu_list_style_grid_c) {
+            PrefsUtils.updateStoryListStyle(this, fs, StoryListStyle.GRID_C);
             itemSetFragment.updateStyle();
         }
 	

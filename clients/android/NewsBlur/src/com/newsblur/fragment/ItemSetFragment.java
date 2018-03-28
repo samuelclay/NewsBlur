@@ -17,6 +17,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
+import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View.OnCreateContextMenuListener;
 import android.view.ViewGroup;
@@ -56,6 +57,7 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
     protected boolean cursorSeenYet = false;
     private boolean stopLoading = false;
 
+    private int itemGridWidthPx = 0;
     private int columnCount;
 
     private final static int GRID_SPACING_DP = 5;
@@ -151,6 +153,15 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
         fleuronFooter = inflater.inflate(R.layout.row_fleuron, null);
         fleuronFooter.setVisibility(View.GONE);
 
+        itemGrid.getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                itemGridWidthPx = itemGrid.getMeasuredWidth();
+                itemGrid.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                updateStyle();
+            }
+        });
+    
         StoryListStyle listStyle = PrefsUtils.getStoryListStyle(getActivity(), getFeedSet());
 
         calcColumnCount(listStyle);
@@ -369,10 +380,31 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
     }
 
     private void calcColumnCount(StoryListStyle listStyle) {
-        if (listStyle == StoryListStyle.LIST) {
-            columnCount = 1;
+        // sensible defaults
+        int colsFine = 3;
+        int colsMed = 2;
+        int colsCoarse = 1;
+
+        // ensure we have measured
+        if (itemGridWidthPx > 0) {
+            int itemGridWidthDp = Math.round(UIUtils.px2dp(getActivity(), itemGridWidthPx));
+            colsCoarse = itemGridWidthDp / 300;
+            colsMed = itemGridWidthDp / 200;
+            colsFine = itemGridWidthDp / 150;
+            // sanity check the counts are strictly increasing
+            if (colsCoarse < 1) colsCoarse = 1;
+            if (colsMed <= colsCoarse) colsMed = colsCoarse + 1;
+            if (colsFine <= colsMed) colsFine = colsMed +1;
+        }
+
+        if (listStyle == StoryListStyle.GRID_F) {
+            columnCount = colsFine;
+        } else if (listStyle == StoryListStyle.GRID_M) {
+            columnCount = colsMed;
+        } else if (listStyle == StoryListStyle.GRID_C) {
+            columnCount = colsCoarse;
         } else {
-            columnCount = 3;
+            columnCount = 1;
         }
     }
 

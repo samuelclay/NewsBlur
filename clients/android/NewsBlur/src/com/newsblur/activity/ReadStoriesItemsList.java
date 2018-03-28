@@ -16,11 +16,4 @@ public class ReadStoriesItemsList extends ItemsList {
         UIUtils.setCustomActionBar(this, R.drawable.g_icn_unread_double, getResources().getString(R.string.read_stories_title));
 	}
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.readstories_itemslist, menu);
-        return true;
-	}
-
 }

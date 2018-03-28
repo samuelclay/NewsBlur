@@ -22,13 +22,6 @@ public class InfrequentItemsList extends ItemsList implements InfrequentCutoffCh
         UIUtils.setCustomActionBar(this, R.drawable.ak_icon_allstories, getResources().getString(R.string.infrequent_title));
 	}
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.infrequent_itemslist, menu);
-        return true;
-	}
-
     @Override
 	public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.menu_infrequent_cutoff) {

@@ -21,11 +21,4 @@ public class FolderItemsList extends ItemsList {
         UIUtils.setCustomActionBar(this, R.drawable.g_icn_folder_rss, folderName);
 	}
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.itemslist, menu);
-		return true;
-	}
-
 }
