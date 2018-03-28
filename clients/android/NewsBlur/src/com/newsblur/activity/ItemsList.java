@@ -1,8 +1,8 @@
 package com.newsblur.activity;
 
 import android.os.Bundle;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -74,7 +74,7 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
 		setContentView(R.layout.activity_itemslist);
         ButterKnife.bind(this);
 
-		FragmentManager fragmentManager = getFragmentManager();
+		FragmentManager fragmentManager = getSupportFragmentManager();
 		itemSetFragment = (ItemSetFragment) fragmentManager.findFragmentByTag(ItemSetFragment.class.getName());
 		if (itemSetFragment == null) {
             itemSetFragment = ItemSetFragment.newInstance();
@@ -232,16 +232,16 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
 		} else if (item.getItemId() == R.id.menu_story_order) {
             StoryOrder currentValue = getStoryOrder();
             StoryOrderDialogFragment storyOrder = StoryOrderDialogFragment.newInstance(currentValue);
-            storyOrder.show(getFragmentManager(), STORY_ORDER);
+            storyOrder.show(getSupportFragmentManager(), STORY_ORDER);
             return true;
         } else if (item.getItemId() == R.id.menu_read_filter) {
             ReadFilter currentValue = getReadFilter();
             ReadFilterDialogFragment readFilter = ReadFilterDialogFragment.newInstance(currentValue);
-            readFilter.show(getFragmentManager(), READ_FILTER);
+            readFilter.show(getSupportFragmentManager(), READ_FILTER);
             return true;
 		} else if (item.getItemId() == R.id.menu_textsize) {
 			TextSizeDialogFragment textSize = TextSizeDialogFragment.newInstance(PrefsUtils.getListTextSize(this), TextSizeDialogFragment.TextSizeType.ListText);
-			textSize.show(getFragmentManager(), TextSizeDialogFragment.class.getName());
+			textSize.show(getSupportFragmentManager(), TextSizeDialogFragment.class.getName());
 			return true;
         } else if (item.getItemId() == R.id.menu_search_stories) {
             if (searchQueryInput.getVisibility() != View.VISIBLE) {

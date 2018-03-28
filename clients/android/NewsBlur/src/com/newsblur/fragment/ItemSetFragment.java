@@ -1,12 +1,12 @@
 package com.newsblur.fragment;
 
 import android.app.Activity;
-import android.app.LoaderManager;
-import android.content.Loader;
 import android.database.Cursor;
 import android.graphics.Typeface;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.ContextMenu;
@@ -35,6 +35,7 @@ import butterknife.Bind;
 
 import com.newsblur.R;
 import com.newsblur.activity.ItemsList;
+import com.newsblur.activity.NbActivity;
 import com.newsblur.database.StoryViewAdapter;
 import com.newsblur.domain.Story;
 import com.newsblur.service.NBSyncService;
@@ -53,7 +54,6 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
 
 	public static int ITEMLIST_LOADER = 0x01;
 
-    protected ItemsList activity;
     protected boolean cursorSeenYet = false;
     private boolean stopLoading = false;
 
@@ -89,18 +89,10 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
 	}
     
     @Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-        activity = (ItemsList) getActivity();
-
-        if (getFeedSet() == null) {
-            com.newsblur.util.Log.w(this.getClass().getName(), "item list started without FeedSet.");
-            activity.finish();
-            return;
-        }
-
+	public void onActivityCreated(Bundle savedInstanceState) {
         // warm up the sync service as soon as possible since it will init the story session DB
         triggerRefresh(1, null);
+        super.onActivityCreated(savedInstanceState);
     }
 
     @Override
@@ -121,10 +113,6 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
 
     @Override
     public void onResume() {
-        if (!adapter.isCursorValid()) {
-            com.newsblur.util.Log.e(this.getClass().getName(), "stale fragment loaded, falling back.");
-            getActivity().finish();
-        }
         super.onResume();
     }
 
@@ -134,7 +122,7 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
         ButterKnife.bind(this, v);
 
         // disable the throbbers if animations are going to have a zero time scale
-        boolean isDisableAnimations = ViewUtils.isPowerSaveMode(activity);
+        boolean isDisableAnimations = ViewUtils.isPowerSaveMode(getActivity());
 
         topProgressView.setEnabled(!isDisableAnimations);
         topProgressView.setColors(UIUtils.getColor(getActivity(), R.color.refresh_1),
@@ -157,7 +145,7 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
             @Override
             public void onGlobalLayout() {
                 itemGridWidthPx = itemGrid.getMeasuredWidth();
-                itemGrid.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                itemGrid.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                 updateStyle();
             }
         });
@@ -176,7 +164,7 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
             }
         });
 
-        adapter = new StoryViewAdapter(getActivity(), getFeedSet(), listStyle);
+        adapter = new StoryViewAdapter(((NbActivity) getActivity()), getFeedSet(), listStyle);
         adapter.addFooterView(footerView);
         adapter.addFooterView(fleuronFooter);
         itemGrid.setAdapter(adapter); 
@@ -226,7 +214,7 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
      * Indicate that the DB was cleared.
      */
     public void resetEmptyState() {
-        setShowNone(true);
+        updateAdapter(null);
         cursorSeenYet = false;
     }
 
@@ -266,7 +254,7 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
             emptyViewText.setTypeface(null, Typeface.NORMAL);
             emptyViewImage.setVisibility(View.VISIBLE);
         } else {
-            if (NBSyncService.isFeedSetSyncing(getFeedSet(), activity) || (!cursorSeenYet)) {
+            if (NBSyncService.isFeedSetSyncing(getFeedSet(), getActivity()) || (!cursorSeenYet)) {
                 emptyViewText.setText(R.string.empty_list_view_loading);
                 emptyViewText.setTypeface(null, Typeface.ITALIC);
                 emptyViewImage.setVisibility(View.INVISIBLE);
@@ -288,7 +276,7 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
     }
 
     protected FeedSet getFeedSet() {
-        return activity.getFeedSet();
+        return ((ItemsList) getActivity()).getFeedSet();
     }
 
 	public void hasUpdated() {
@@ -324,18 +312,17 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
             if (! NBSyncService.isFeedSetReady(getFeedSet())) {
                 // the DB hasn't caught up yet from the last story list; don't display stale stories.
                 com.newsblur.util.Log.i(this.getClass().getName(), "stale load");
-                setShowNone(true);
                 setLoading(true);
+                updateAdapter(null);
                 triggerRefresh(1, null);
             } else {
                 cursorSeenYet = true;
                 com.newsblur.util.Log.d(this.getClass().getName(), "loaded cursor with count: " + cursor.getCount());
+                updateAdapter(cursor);
                 if (cursor.getCount() < 1) {
                     triggerRefresh(1, 0);
                 }
-                setShowNone(false);
             }
-            updateAdapter(cursor);
 		}
         updateLoadingMessage();
 	}
@@ -343,8 +330,7 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
     protected void updateAdapter(Cursor cursor) {
         adapter.swapCursor(cursor);
         adapter.updateFeedSet(getFeedSet());
-        adapter.notifyDataSetChanged();
-        if (cursor.getCount() > 0) {
+        if ((cursor != null) && (cursor.getCount() > 0)) {
             emptyView.setVisibility(View.INVISIBLE);
         } else {
             emptyView.setVisibility(View.VISIBLE);
@@ -354,13 +340,8 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
         ensureSufficientStories();
     }
 
-    protected void setShowNone(boolean showNone) {
-        adapter.setShowNone(showNone);
-    }
-
 	@Override
 	public void onLoaderReset(Loader<Cursor> loader) {
-        ;
 	}
 
     public void updateStyle() {

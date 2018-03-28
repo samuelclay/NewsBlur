@@ -1,9 +1,9 @@
 package com.newsblur.activity;
 
 import android.database.Cursor;
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.support.v13.app.FragmentStatePagerAdapter;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.util.SparseArray;
 import android.view.ViewGroup;
 
@@ -61,9 +61,7 @@ public abstract class ReadingAdapter extends FragmentStatePagerAdapter {
 
     public synchronized void swapCursor(Cursor cursor) {
         this.stories = cursor;
-        if (cursor != null) {
-            notifyDataSetChanged();
-        }
+        notifyDataSetChanged();
     }
         
 	protected abstract ReadingItemFragment getReadingItemFragment(Story story);
@@ -89,6 +87,7 @@ public abstract class ReadingAdapter extends FragmentStatePagerAdapter {
 
     public synchronized int getPosition(Story story) {
         if (stories == null) return -1;
+        if (stories.isClosed()) return -1;
         int pos = 0;
         while (pos < stories.getCount()) {
 			stories.moveToPosition(pos);
@@ -125,6 +124,7 @@ public abstract class ReadingAdapter extends FragmentStatePagerAdapter {
 
         // go one step further than the default pageradapter and also refresh the
         // story object inside each fragment we have active
+        if (stories == null) return;
         for (int i=0; i<stories.getCount(); i++) {
             WeakReference<ReadingItemFragment> frag = cachedFragments.get(i);
             if (frag == null) continue;
@@ -133,5 +133,23 @@ public abstract class ReadingAdapter extends FragmentStatePagerAdapter {
             rif.offerStoryUpdate(getStory(i));
             rif.handleUpdate(NbActivity.UPDATE_STORY);
         }
+    }
+
+    public synchronized int findFirstUnread() {
+        stories.moveToPosition(-1);
+        while (stories.moveToNext()) {
+            Story story = Story.fromCursor(stories);
+            if (!story.read) return stories.getPosition();
+        }
+        return -1;
+    }
+
+    public synchronized int findHash(String storyHash) {
+        stories.moveToPosition(-1);
+        while (stories.moveToNext()) {
+            Story story = Story.fromCursor(stories);
+            if (story.storyHash.equals(storyHash)) return stories.getPosition();
+        }
+        return -1;
     }
 }

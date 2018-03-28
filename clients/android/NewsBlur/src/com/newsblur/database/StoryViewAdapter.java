@@ -1,6 +1,5 @@
 package com.newsblur.database;
 
-import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Color;
@@ -29,6 +28,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.newsblur.R;
+import com.newsblur.activity.NbActivity;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.domain.Story;
 import com.newsblur.domain.UserDetails;
@@ -65,7 +65,7 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     protected Cursor cursor;
     private boolean showNone = false;
 
-    private Activity context;
+    private NbActivity context;
     private FeedSet fs;
     private StoryListStyle listStyle;
     private boolean ignoreReadStatus;
@@ -74,7 +74,7 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     private float textSize;
     private UserDetails user;
 
-    public StoryViewAdapter(Activity context, FeedSet fs, StoryListStyle listStyle) {
+    public StoryViewAdapter(NbActivity context, FeedSet fs, StoryListStyle listStyle) {
         this.context = context;
         this.fs = fs;
         this.listStyle = listStyle;
@@ -115,7 +115,7 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     }
 
     public int getStoryCount() {
-        if (showNone || (cursor == null)) {
+        if (showNone || isCursorBad()) {
             return 0;
         } else {
             return cursor.getCount();
@@ -138,27 +138,24 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             return (footerViews.get(position - getStoryCount()).hashCode());
         }
         
-        if (cursor == null || cursor.isClosed() || cursor.getColumnCount() == 0 || position >= cursor.getCount() || position < 0) return 0;
+        if (isCursorBad() || cursor.getColumnCount() == 0 || position >= cursor.getCount() || position < 0) return 0;
         cursor.moveToPosition(position);
         return cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_HASH)).hashCode();
     }
 
-    public synchronized boolean isCursorValid() {
-        if (cursor == null) return true;
-        if (cursor.isClosed()) return false;
-        return true;
-    }
-
     public synchronized void swapCursor(Cursor c) {
         this.cursor = c;
+        notifyDataSetChanged();
     }
 
-    public synchronized void setShowNone(boolean showNone) {
-        this.showNone = showNone;
+    private boolean isCursorBad() {
+        if (cursor == null) return true;
+        if (cursor.isClosed()) return true;
+        return false;
     }
 
     public synchronized Story getStory(int position) {
-        if (cursor == null || cursor.isClosed() || cursor.getColumnCount() == 0 || position >= cursor.getCount() || position < 0) {
+        if (isCursorBad() || cursor.getColumnCount() == 0 || position >= cursor.getCount() || position < 0) {
             return null;
         } else {
             cursor.moveToPosition(position);
@@ -283,7 +280,7 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             case R.id.menu_intel:
                 if (story.feedId.equals("0")) return true; // cannot train on feedless stories
                 StoryIntelTrainerFragment intelFrag = StoryIntelTrainerFragment.newInstance(story, fs);
-                intelFrag.show(context.getFragmentManager(), StoryIntelTrainerFragment.class.getName());
+                intelFrag.show(context.getSupportFragmentManager(), StoryIntelTrainerFragment.class.getName());
                 return true;
 
             default:
@@ -355,7 +352,7 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         if (viewHolder instanceof StoryViewHolder) {
             StoryViewHolder vh = (StoryViewHolder) viewHolder;
 
-            if (cursor == null || cursor.isClosed() || cursor.getColumnCount() == 0 || position >= cursor.getCount() || position < 0) return;
+            if (isCursorBad() || cursor.getColumnCount() == 0 || position >= cursor.getCount() || position < 0) return;
             cursor.moveToPosition(position);
 
             Story story = Story.fromCursor(cursor);

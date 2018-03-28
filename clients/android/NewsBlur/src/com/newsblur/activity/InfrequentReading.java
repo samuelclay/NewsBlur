@@ -13,8 +13,8 @@ public class InfrequentReading extends Reading {
         super.onCreate(savedInstanceBundle);
 
         UIUtils.setCustomActionBar(this, R.drawable.ak_icon_allstories, getResources().getString(R.string.infrequent_title));
-        readingAdapter = new MixedFeedsReadingAdapter(getFragmentManager(), null);
-        getLoaderManager().initLoader(0, null, this);
+        readingAdapter = new MixedFeedsReadingAdapter(getSupportFragmentManager(), null);
+        getSupportLoaderManager().initLoader(0, null, this);
     }
 
 }

@@ -2,11 +2,11 @@ package com.newsblur.database;
 
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.Loader;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.CancellationSignal;
+import android.support.v4.content.Loader;
 import android.text.TextUtils;
 import android.util.Log;
 

@@ -1,7 +1,7 @@
 package com.newsblur.activity;
 
 import android.os.Bundle;
-import android.app.DialogFragment;
+import android.support.v4.app.DialogFragment;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -32,7 +32,7 @@ public class FeedItemsList extends ItemsList {
 
 	public void deleteFeed() {
 		DialogFragment deleteFeedFragment = DeleteFeedFragment.newInstance(feed, folderName);
-		deleteFeedFragment.show(getFragmentManager(), "dialog");
+		deleteFeedFragment.show(getSupportFragmentManager(), "dialog");
 	}
 
 	@Override
@@ -63,7 +63,7 @@ public class FeedItemsList extends ItemsList {
         }
         if (item.getItemId() == R.id.menu_intel) {
             FeedIntelTrainerFragment intelFrag = FeedIntelTrainerFragment.newInstance(feed, fs);
-            intelFrag.show(getFragmentManager(), FeedIntelTrainerFragment.class.getName());
+            intelFrag.show(getSupportFragmentManager(), FeedIntelTrainerFragment.class.getName());
             return true;
         }
         return false;
