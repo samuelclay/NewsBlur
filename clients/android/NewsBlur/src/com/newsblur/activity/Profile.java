@@ -57,6 +57,7 @@ public class Profile extends NbActivity {
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
         if (userId != null) {
             outState.putString(USER_ID, userId);
         }
