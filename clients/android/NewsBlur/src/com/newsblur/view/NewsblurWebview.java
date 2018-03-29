@@ -72,11 +72,7 @@ public class NewsblurWebview extends WebView {
     public void setTextSize(float textSize) {
         Log.d("Reading", "Setting textsize to " + textSize);
         String script = "javascript:document.body.style.fontSize='" + textSize + "em';";
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            evaluateJavascript(script, null);
-        } else {
-            loadUrl(script);
-        }
+        evaluateJavascript(script, null);
 	}
 
     /**
