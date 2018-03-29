@@ -242,7 +242,7 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
         } else {
             topProgressView.setVisibility(View.INVISIBLE);
             bottomProgressView.setVisibility(View.INVISIBLE);
-            if (cursorSeenYet && NBSyncService.isFeedSetExhausted(getFeedSet()) && (adapter.getStoryCount() > 0)) {
+            if (cursorSeenYet && NBSyncService.isFeedSetExhausted(getFeedSet()) && (adapter.getRawStoryCount() > 0)) {
                 fleuronFooter.setVisibility(View.VISIBLE);
             }
         }
@@ -325,6 +325,8 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
                 if (cursor.getCount() < 1) {
                     triggerRefresh(1, 0);
                 }
+                boolean isLoading = NBSyncService.isFeedSetSyncing(getFeedSet(), getActivity());
+                setLoading(isLoading);
             }
 		}
         updateLoadingMessage();

@@ -197,15 +197,18 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         // framework could close our cursor at any moment.  if this happens, it is fine,
         // as a new one will be provided and another cycle will start.  just return.
         try {
-            if (c == null) return;
-            if (c.isClosed()) return;
-            newStories = new ArrayList<Story>(c.getCount());
-            c.moveToPosition(-1);
-            while (c.moveToNext()) {
+            if (c == null) {
+                newStories = new ArrayList<Story>(0);
+            } else {
                 if (c.isClosed()) return;
-                Story s = Story.fromCursor(c);
-                s.bindExternValues(c);
-                newStories.add(s);
+                newStories = new ArrayList<Story>(c.getCount());
+                c.moveToPosition(-1);
+                while (c.moveToNext()) {
+                    if (c.isClosed()) return;
+                    Story s = Story.fromCursor(c);
+                    s.bindExternValues(c);
+                    newStories.add(s);
+                }
             }
         } catch (Exception e) {
             com.newsblur.util.Log.e(this, "error thawing story list: " + e.getMessage(), e);
