@@ -166,8 +166,6 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
         adapter.addFooterView(footerView);
         adapter.addFooterView(fleuronFooter);
         itemGrid.setAdapter(adapter); 
-        // immediately invalidate after adding the footers to ensure main thread consistency
-        adapter.notifyDataSetChanged();
 
         // the layout manager needs to know that the footer rows span all the way across
         layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
