@@ -4,7 +4,11 @@ import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.os.AsyncTask;
+import android.os.Parcelable;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.util.DiffUtil;
+import android.support.v7.util.ListUpdateCallback;
 import android.text.TextUtils;
 import android.view.ContextMenu;
 import android.view.GestureDetector;
@@ -26,6 +30,8 @@ import butterknife.ButterKnife;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import com.newsblur.R;
 import com.newsblur.activity.NbActivity;
@@ -62,8 +68,12 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     private List<View> footerViews = new ArrayList<View>();
     
-    protected Cursor cursor;
-    private boolean showNone = false;
+    // the cursor from which we pull story objects. should not be used except by the thaw/diff worker
+    private Cursor cursor;
+    // the live list of stories being used by the adapter
+    private List<Story> stories = new ArrayList<Story>(0);
+
+    private final ExecutorService executorService;
 
     private NbActivity context;
     private FeedSet fs;
@@ -94,6 +104,8 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
         user = PrefsUtils.getUserDetails(context);
 
+        executorService = Executors.newFixedThreadPool(1);
+
         setHasStableIds(true);
     }
 
@@ -105,21 +117,35 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         this.listStyle = listStyle;
     }
 
-    public synchronized void addFooterView(View v) {
+    public void addFooterView(View v) {
         footerViews.add(v);
     }
 
     @Override
-    public synchronized int getItemCount() {
+    public int getItemCount() {
         return (getStoryCount() + footerViews.size());
     }
 
     public int getStoryCount() {
-        if (showNone || isCursorBad()) {
-            return 0;
-        } else {
-            return cursor.getCount();
+        return stories.size();
+    }
+
+    /**
+     * get the number of stories we very likely have, even if they haven't
+     * been thawed yet, for callers that absolutely must know the size
+     * of our dataset (such as for calculating when to fetch more stories)
+     */
+    public int getRawStoryCount() {
+        if (cursor == null) return 0;
+        if (cursor.isClosed()) return 0;
+        int count = 0;
+        try {
+            count = cursor.getCount();
+        } catch (Exception e) {
+            // rather than worry about sync locking for cursor changes, just fail. a
+            // closing cursor may as well not be loaded.
         }
+        return count;
     }
 
     @Override
@@ -133,33 +159,104 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     }
 
     @Override
-    public synchronized long getItemId(int position) {
+    public long getItemId(int position) {
         if (position >= getStoryCount()) {
             return (footerViews.get(position - getStoryCount()).hashCode());
         }
         
-        if (isCursorBad() || cursor.getColumnCount() == 0 || position >= cursor.getCount() || position < 0) return 0;
-        cursor.moveToPosition(position);
-        return cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_HASH)).hashCode();
+        if (position >= stories.size() || position < 0) return 0;
+        return stories.get(position).storyHash.hashCode();
     }
 
-    public synchronized void swapCursor(Cursor c) {
-        this.cursor = c;
-        notifyDataSetChanged();
+    public void swapCursor(final Cursor c, final RecyclerView rv) {
+        // cache the identity of the most recent cursor so async batches can check to
+        // see if they are stale
+        cursor = c;
+        // process the cursor into objects and update the View async
+        Runnable r = new Runnable() {
+            @Override
+            public void run() {
+                thawDiffUpdate(c, rv);
+            }
+        };
+        executorService.submit(r);
     }
 
-    private boolean isCursorBad() {
-        if (cursor == null) return true;
-        if (cursor.isClosed()) return true;
-        return false;
+    /**
+     * Attempt to thaw a new set of stories from the cursor most recently
+     * see when the that cycle started.
+     */
+    private void thawDiffUpdate(final Cursor c, final RecyclerView rv) {
+        if (c != cursor) return;
+
+        // thawed stories
+        final List<Story> newStories;
+        // attempt to thaw as gracefully as possible despite the fact that the loader
+        // framework could close our cursor at any moment.  if this happens, it is fine,
+        // as a new one will be provided and another cycle will start.  just return.
+        try {
+            if (c == null) return;
+            if (c.isClosed()) return;
+            newStories = new ArrayList<Story>(c.getCount());
+            c.moveToPosition(-1);
+            while (c.moveToNext()) {
+                if (c.isClosed()) return;
+                Story s = Story.fromCursor(c);
+                s.bindExternValues(c);
+                newStories.add(s);
+            }
+        } catch (Exception e) {
+            com.newsblur.util.Log.e(this, "error thawing story list: " + e.getMessage(), e);
+            return;
+        }
+
+        // generate the RecyclerView diff
+        final DiffUtil.DiffResult diff = DiffUtil.calculateDiff(new StoryListDiffer(newStories), false);
+
+        if (c != cursor) return;
+
+        rv.post(new Runnable() {
+            @Override
+            public void run() {
+                if (c != cursor) return;
+
+                // many versions of RecyclerView like to auto-scroll to inserted elements which is
+                // not at all what we want.  the current scroll position is one of the things frozen
+                // in instance state, so keep it and re-apply after deltas to preserve position
+                Parcelable scrollState = rv.getLayoutManager().onSaveInstanceState();
+                synchronized (StoryViewAdapter.this) {
+                    stories = newStories;
+                    diff.dispatchUpdatesTo(StoryViewAdapter.this);
+                    rv.getLayoutManager().onRestoreInstanceState(scrollState);
+                }
+            }
+        });
+    }
+
+    private class StoryListDiffer extends DiffUtil.Callback {
+        private List<Story> newStories;
+        public StoryListDiffer(List<Story> newStories) {
+            StoryListDiffer.this.newStories = newStories;
+        }
+        public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
+            return newStories.get(newItemPosition).isChanged(stories.get(oldItemPosition));
+        }
+        public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
+            return newStories.get(newItemPosition).storyHash.equals(stories.get(oldItemPosition).storyHash);
+        }
+        public int getNewListSize() {
+            return newStories.size();
+        }
+        public int getOldListSize() {
+            return stories.size();
+        }
     }
 
     public synchronized Story getStory(int position) {
-        if (isCursorBad() || cursor.getColumnCount() == 0 || position >= cursor.getCount() || position < 0) {
+        if (position >= stories.size() || position < 0) {
             return null;
         } else {
-            cursor.moveToPosition(position);
-            return Story.fromCursor(cursor);
+            return stories.get(position);
         }
     }
 
@@ -352,10 +449,9 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         if (viewHolder instanceof StoryViewHolder) {
             StoryViewHolder vh = (StoryViewHolder) viewHolder;
 
-            if (isCursorBad() || cursor.getColumnCount() == 0 || position >= cursor.getCount() || position < 0) return;
-            cursor.moveToPosition(position);
+            if (position >= stories.size() || position < 0) return;
 
-            Story story = Story.fromCursor(cursor);
+            Story story = stories.get(position);
             vh.story = story;
 
             bindCommon(vh, position, story);
@@ -405,13 +501,11 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         }
 
 
-        String feedColor = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_FAVICON_COLOR));
-        String feedFade = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_FAVICON_FADE));
-        vh.leftBarOne.setBackgroundColor(UIUtils.decodeColourValue(feedColor, Color.GRAY));
-        vh.leftBarTwo.setBackgroundColor(UIUtils.decodeColourValue(feedFade, Color.LTGRAY));
+        vh.leftBarOne.setBackgroundColor(UIUtils.decodeColourValue(story.extern_feedColor, Color.GRAY));
+        vh.leftBarTwo.setBackgroundColor(UIUtils.decodeColourValue(story.extern_feedFade, Color.LTGRAY));
 
         if (! ignoreIntel) {
-            int score = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.STORY_INTELLIGENCE_TOTAL));
+            int score = story.extern_intelTotalScore;
             if (score > 0) {
                 vh.intelDot.setImageResource(R.drawable.g_icn_focus);
             } else if (score == 0) {
@@ -428,9 +522,8 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
         // lists with mixed feeds get added info, but single feeds do not
         if (!singleFeed) {
-            String faviconUrl = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_FAVICON_URL));
-            FeedUtils.iconLoader.displayImage(faviconUrl, vh.feedIconView, 0, false);
-            vh.feedTitleView.setText(cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_TITLE)));
+            FeedUtils.iconLoader.displayImage(story.extern_faviconUrl, vh.feedIconView, 0, false);
+            vh.feedTitleView.setText(story.extern_feedTitle);
             vh.feedIconView.setVisibility(View.VISIBLE);
             vh.feedTitleView.setVisibility(View.VISIBLE);
         } else {
