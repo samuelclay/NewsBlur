@@ -7,7 +7,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.0.1'
+        classpath 'com.android.tools.build:gradle:3.1.0'
     }
 }
 
@@ -16,6 +16,7 @@ repositories {
     maven {
         url 'https://maven.google.com'
     }
+    jcenter()
 }
 
 apply plugin: 'com.android.application'
@@ -23,7 +24,9 @@ apply plugin: 'checkstyle'
 apply plugin: 'findbugs'
 
 dependencies {
-    compile 'com.android.support:support-v13:27.1.0'
+    compile 'com.android.support:support-core-utils:27.1.0'
+    compile 'com.android.support:support-fragment:27.1.0'
+    compile 'com.android.support:support-core-ui:27.1.0'
     compile 'com.jakewharton:butterknife:7.0.1'
     compile 'com.squareup.okhttp3:okhttp:3.8.1'
     compile 'com.google.code.gson:gson:2.8.2'
