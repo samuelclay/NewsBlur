@@ -90,8 +90,6 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
     
     @Override
 	public void onActivityCreated(Bundle savedInstanceState) {
-        // warm up the sync service as soon as possible since it will init the story session DB
-        triggerRefresh(1, null);
         super.onActivityCreated(savedInstanceState);
     }
 
@@ -168,6 +166,8 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
         adapter.addFooterView(footerView);
         adapter.addFooterView(fleuronFooter);
         itemGrid.setAdapter(adapter); 
+        // immediately invalidate after adding the footers to ensure main thread consistency
+        adapter.notifyDataSetChanged();
 
         // the layout manager needs to know that the footer rows span all the way across
         layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
@@ -328,7 +328,7 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
 	}
 
     protected void updateAdapter(Cursor cursor) {
-        adapter.swapCursor(cursor);
+        adapter.swapCursor(cursor, itemGrid);
         adapter.updateFeedSet(getFeedSet());
         if ((cursor != null) && (cursor.getCount() > 0)) {
             emptyView.setVisibility(View.INVISIBLE);
@@ -424,7 +424,8 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
     }
 
     private void ensureSufficientStories() {
-        int totalCount = layoutManager.getItemCount();
+        // don't ask the list for how many rows it actually has - it may still be thawing from the cursor
+        int totalCount = adapter.getRawStoryCount();
         int visibleCount = layoutManager.getChildCount();
         int lastVisible = layoutManager.findLastVisibleItemPosition();
         

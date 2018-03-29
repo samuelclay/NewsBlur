@@ -63,6 +63,11 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
 		fs = (FeedSet) getIntent().getSerializableExtra(EXTRA_FEED_SET);
 		intelState = PrefsUtils.getStateFilter(this);
 
+        // this is not strictly necessary, since our first refresh with the fs will swap in
+        // the correct session, but that can be delayed by sync backup, so we try here to
+        // reduce UI lag, or in case somehow we got redisplayed in a zero-story state
+        FeedUtils.prepareReadingSession(fs);
+
         if (PrefsUtils.isAutoOpenFirstUnread(this)) {
             if (FeedUtils.dbHelper.getUnreadCount(fs, intelState) > 0) {
                 UIUtils.startReadingActivity(fs, Reading.FIND_FIRST_UNREAD, this);
@@ -129,10 +134,6 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
         super.onResume();
         if (NBSyncService.isHousekeepingRunning()) finish();
         updateStatusIndicators();
-        // this is not strictly necessary, since our first refresh with the fs will swap in
-        // the correct session, but that can be delayed by sync backup, so we try here to
-        // reduce UI lag, or in case somehow we got redisplayed in a zero-story state
-        FeedUtils.prepareReadingSession(fs);
         // Reading activities almost certainly changed the read/unread state of some stories. Ensure
         // we reflect those changes promptly.
         itemSetFragment.hasUpdated();
