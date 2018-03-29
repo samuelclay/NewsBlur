@@ -1,14 +1,11 @@
 package com.newsblur.database;
 
-import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.os.AsyncTask;
 import android.os.Parcelable;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.util.DiffUtil;
-import android.support.v7.util.ListUpdateCallback;
 import android.text.TextUtils;
 import android.view.ContextMenu;
 import android.view.GestureDetector;
@@ -22,7 +19,6 @@ import android.view.ViewParent;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.SimpleCursorAdapter;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -35,7 +31,6 @@ import java.util.concurrent.Executors;
 
 import com.newsblur.R;
 import com.newsblur.activity.NbActivity;
-import com.newsblur.database.DatabaseConstants;
 import com.newsblur.domain.Story;
 import com.newsblur.domain.UserDetails;
 import com.newsblur.fragment.StoryIntelTrainerFragment;

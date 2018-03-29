@@ -5,7 +5,6 @@ import android.database.Cursor;
 import android.os.CancellationSignal;
 import android.os.OperationCanceledException;
 import android.support.v4.content.AsyncTaskLoader;
-import android.util.Log;
 
 import com.newsblur.util.AppConstants;
 
