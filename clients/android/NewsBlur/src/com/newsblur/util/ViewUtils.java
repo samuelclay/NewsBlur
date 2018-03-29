@@ -72,13 +72,11 @@ public class ViewUtils {
      * or other extra features.
      */
     public static boolean isPowerSaveMode(Context context) {
-        if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) return false;
         PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
         return pm.isPowerSaveMode();
     }
 
     public static void setViewElevation(View v, float elevationDP) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) return;
         float elevationPX = UIUtils.dp2px(v.getContext(), elevationDP);
         v.setElevation(elevationPX);
     }
