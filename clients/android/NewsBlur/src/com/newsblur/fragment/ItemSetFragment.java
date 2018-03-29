@@ -4,6 +4,7 @@ import android.database.Cursor;
 import android.graphics.Typeface;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.widget.GridLayoutManager;
@@ -39,6 +40,7 @@ import com.newsblur.view.ProgressThrobber;
 public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
 	public static int ITEMLIST_LOADER = 0x01;
+    private static final String BUNDLE_GRIDSTATE = "gridstate";
 
     protected boolean cursorSeenYet = false;
     private boolean stopLoading = false;
@@ -52,6 +54,8 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
 	@Bind(R.id.itemgridfragment_grid) RecyclerView itemGrid;
     private GridLayoutManager layoutManager;
     private StoryViewAdapter adapter;
+    // an optional pending scroll state to restore.
+    private Parcelable gridState;
 
     // loading indicator for when stories are absent or stale (at top of list)
     @Bind(R.id.top_loading_throb) ProgressThrobber topProgressView;
@@ -102,6 +106,16 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
     public void onResume() {
         super.onResume();
         fleuronResized = false;
+    }
+
+    @Override
+    public void onViewStateRestored(Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+        if (savedInstanceState == null) return;
+        gridState = savedInstanceState.getParcelable(BUNDLE_GRIDSTATE);
+        // dont actually re-use the state yet, the adapter probably doesn't have any data
+        // and won't know how to scroll. swapCursor() will pass this to the adapter when
+        // data are ready.
     }
 
 	@Override
@@ -317,7 +331,8 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
 	}
 
     protected void updateAdapter(Cursor cursor) {
-        adapter.swapCursor(cursor, itemGrid);
+        adapter.swapCursor(cursor, itemGrid, gridState);
+        gridState = null;
         adapter.updateFeedSet(getFeedSet());
         if ((cursor != null) && (cursor.getCount() > 0)) {
             emptyView.setVisibility(View.INVISIBLE);
@@ -339,13 +354,13 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
         calcGridSpacing(listStyle);
         layoutManager.setSpanCount(columnCount);
         adapter.setStyle(listStyle);
-        adapter.notifyDataSetChanged();
+        adapter.notifyAllItemsChanged();
     }
 
     public void setTextSize(Float size) {
         if (adapter != null) {
             adapter.setTextSize(size);
-            adapter.notifyDataSetChanged();
+            adapter.notifyAllItemsChanged();
         }
     }
 
@@ -472,6 +487,12 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
             newLayout.setMargins(0, marginPx_4dp, 0, defaultPx_100dp);
         }
         innerView.setLayoutParams(newLayout);
+    }
+
+    @Override
+    public void onSaveInstanceState (Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable(BUNDLE_GRIDSTATE, itemGrid.getLayoutManager().onSaveInstanceState());
     }
 
 }
