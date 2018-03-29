@@ -3,9 +3,7 @@ package com.newsblur.view;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -58,7 +56,7 @@ public class NewsblurWebview extends WebView {
                     i.setData(uri);
                     context.startActivity(i);
                 } catch (Exception e) {
-                    Log.wtf(this.getClass().getName(), "device cannot open URLs");
+                    com.newsblur.util.Log.e(this.getClass().getName(), "device cannot open URLs");
                 }
                 return true;
             }
@@ -70,7 +68,6 @@ public class NewsblurWebview extends WebView {
 	}
 
     public void setTextSize(float textSize) {
-        Log.d("Reading", "Setting textsize to " + textSize);
         String script = "javascript:document.body.style.fontSize='" + textSize + "em';";
         evaluateJavascript(script, null);
 	}
@@ -109,17 +106,17 @@ public class NewsblurWebview extends WebView {
         @Override
         public void onShowCustomView(View view, WebChromeClient.CustomViewCallback callback) {
             if (customViewLayout == null) {
-                Log.w(getClass().getName(), "can't show HTML5 custom view, no container set");
+                com.newsblur.util.Log.w(this, "can't show HTML5 custom view, no container set");
                 return;
             }
             if (webviewWrapperLayout == null) {
-                Log.w(getClass().getName(), "can't show HTML5 custom view, no wrapper set");
+                com.newsblur.util.Log.w(this, "can't show HTML5 custom view, no wrapper set");
                 return;
             }
             // some devices like to try and stick other things in here. we know we used a FrameLayout
             // in fragment_readingitem.xml, so require it to prevent weirdness.
             if (! (view instanceof FrameLayout)) {
-                Log.w(getClass().getName(), "custom view wasn't a FrameLayout");
+                com.newsblur.util.Log.w(this, "custom view wasn't a FrameLayout");
                // return;
             }
             if (customView != null) {
