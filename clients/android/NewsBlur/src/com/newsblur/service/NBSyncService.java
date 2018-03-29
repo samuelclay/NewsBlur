@@ -668,6 +668,9 @@ public class NBSyncService extends Service {
                     FeedStoriesSeen.remove(ResetFeed);
                     FeedPagesSeen.remove(ResetFeed);
                     ResetFeed = null;
+                    // a reset should also reset the stories table, just in case an async page of stories came in between the
+                    // caller's (presumed) reset and our call ot prepareReadingSession()
+                    PreppedFeedSet = null;
                 }
             }
 
