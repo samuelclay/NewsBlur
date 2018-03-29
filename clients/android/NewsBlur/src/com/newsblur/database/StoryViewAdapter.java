@@ -278,11 +278,16 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
+        // NB: the non-temporary calls to setLayerType() dramatically speed up list movement, but
+        // are only safe because we perform fairly advanced delta updates. if any changes to invalidation
+        // logic are made, check the list with hardare layer profiling to ensure we aren't over-invalidating
         if (viewType == VIEW_TYPE_STORY_TILE) {
             View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.view_story_tile, viewGroup, false);
+            v.setLayerType(View.LAYER_TYPE_HARDWARE, null);
             return new StoryTileViewHolder(v);
         } else if (viewType == VIEW_TYPE_STORY_ROW) {
             View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.view_story_row, viewGroup, false);
+            v.setLayerType(View.LAYER_TYPE_HARDWARE, null);
             return new StoryRowViewHolder(v);
         } else {
             View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.view_footer_tile, viewGroup, false);
