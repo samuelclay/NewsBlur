@@ -188,7 +188,11 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
+        /*
+        TODO: the following call is pretty standard, but causes the pager to disappear when
+              restoring from a bundle (e.g. after rotation)
         super.onSaveInstanceState(outState);
+        */
         if (storyHash != null) {
             outState.putString(EXTRA_STORY_HASH, storyHash);
         } else {
