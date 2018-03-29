@@ -63,6 +63,9 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
     @Bind(R.id.empty_view_image) ImageView emptyViewImage;
 
     private View fleuronFooter;
+    // the fleuron has padding that can't be calculated until after layout, but only changes
+    // rarely thereafter
+    private boolean fleuronResized = false;
 
     // de-dupe the massive stream of scrolling data to auto-mark read
     private int lastAutoMarkIndex = -1;
@@ -98,6 +101,7 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
     @Override
     public void onResume() {
         super.onResume();
+        fleuronResized = false;
     }
 
 	@Override
@@ -123,7 +127,7 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
                                      UIUtils.getColor(getActivity(), R.color.refresh_4));
 
         fleuronFooter = inflater.inflate(R.layout.row_fleuron, null);
-        fleuronFooter.setVisibility(View.GONE);
+        fleuronFooter.setVisibility(View.INVISIBLE);
 
         itemGrid.getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
             @Override
@@ -210,6 +214,8 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
         // sanity check that we even have views yet
         if (fleuronFooter == null) return;
 
+        calcFleuronPadding();
+
         if (isLoading) {
             if (NBSyncService.isFeedSetStoriesFresh(getFeedSet())) {
                 topProgressView.setVisibility(View.INVISIBLE);
@@ -218,12 +224,11 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
                 topProgressView.setVisibility(View.VISIBLE);
                 bottomProgressView.setVisibility(View.GONE);
             }
-            fleuronFooter.setVisibility(View.GONE);
+            fleuronFooter.setVisibility(View.INVISIBLE);
         } else {
             topProgressView.setVisibility(View.INVISIBLE);
             bottomProgressView.setVisibility(View.INVISIBLE);
             if (cursorSeenYet && NBSyncService.isFeedSetExhausted(getFeedSet()) && (adapter.getStoryCount() > 0)) {
-                calcFleuronPadding();
                 fleuronFooter.setVisibility(View.VISIBLE);
             }
         }
@@ -452,15 +457,19 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
      * be scrolled until the bottom most story reaches to top, for those who mark-by-scrolling.
      */
     private void calcFleuronPadding() {
+        if (fleuronResized) return;
         int listHeight = itemGrid.getMeasuredHeight();
         View innerView = fleuronFooter.findViewById(R.id.fleuron);
         ViewGroup.LayoutParams oldLayout = innerView.getLayoutParams();
         ViewGroup.MarginLayoutParams newLayout = new LinearLayout.LayoutParams(oldLayout);
         int marginPx_4dp = UIUtils.dp2px(getActivity(), 4);
+        int defaultPx_100dp = UIUtils.dp2px(getActivity(), 100);
+        int bufferPx_50dp = UIUtils.dp2px(getActivity(), 50);
         if (listHeight > 1) {
-            newLayout.setMargins(0, marginPx_4dp, 0, listHeight);
+            newLayout.setMargins(0, marginPx_4dp, 0, listHeight-bufferPx_50dp);
+            fleuronResized = true;
         } else {
-            newLayout.setMargins(0, marginPx_4dp, 0, marginPx_4dp);
+            newLayout.setMargins(0, marginPx_4dp, 0, defaultPx_100dp);
         }
         innerView.setLayoutParams(newLayout);
     }
