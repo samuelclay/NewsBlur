@@ -188,6 +188,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
         if (storyHash != null) {
             outState.putString(EXTRA_STORY_HASH, storyHash);
         } else {
