@@ -68,6 +68,8 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     // the live list of stories being used by the adapter
     private List<Story> stories = new ArrayList<Story>(0);
 
+    private Parcelable oldScrollState;
+
     private final ExecutorService executorService;
 
     private NbActivity context;
@@ -163,10 +165,15 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         return stories.get(position).storyHash.hashCode();
     }
 
-    public void swapCursor(final Cursor c, final RecyclerView rv) {
+    public void swapCursor(final Cursor c, final RecyclerView rv, Parcelable oldScrollState) {
         // cache the identity of the most recent cursor so async batches can check to
         // see if they are stale
         cursor = c;
+        // if the caller wants to restore a scroll state, hold onto it for when we update
+        // the dataset and use that state at the right moment
+        if (oldScrollState != null) {
+            this.oldScrollState = oldScrollState;
+        }
         // process the cursor into objects and update the View async
         Runnable r = new Runnable() {
             @Override
@@ -222,7 +229,14 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 synchronized (StoryViewAdapter.this) {
                     stories = newStories;
                     diff.dispatchUpdatesTo(StoryViewAdapter.this);
-                    rv.getLayoutManager().onRestoreInstanceState(scrollState);
+                    // the one exception to restoring state is if we were passed an old state to restore
+                    // along with the cursor
+                    if (oldScrollState != null) {
+                        rv.getLayoutManager().onRestoreInstanceState(oldScrollState);
+                        oldScrollState = null;
+                    } else {
+                        rv.getLayoutManager().onRestoreInstanceState(scrollState);
+                    }
                 }
             }
         });
@@ -650,6 +664,10 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             }
             return false;
         }
+    }
+
+    public void notifyAllItemsChanged() {
+        notifyItemRangeChanged(0, getItemCount());
     }
 
 }
