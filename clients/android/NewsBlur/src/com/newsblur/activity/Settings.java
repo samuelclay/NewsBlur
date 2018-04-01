@@ -1,6 +1,6 @@
 package com.newsblur.activity;
 
-import android.app.Activity;
+import android.support.v4.app.FragmentActivity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -10,7 +10,7 @@ import com.newsblur.util.PrefConstants;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.UIUtils;
 
-public class Settings extends Activity implements SharedPreferences.OnSharedPreferenceChangeListener {
+public class Settings extends FragmentActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

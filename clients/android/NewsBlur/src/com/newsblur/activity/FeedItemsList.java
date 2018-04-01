@@ -1,7 +1,7 @@
 package com.newsblur.activity;
 
 import android.os.Bundle;
-import android.app.DialogFragment;
+import android.support.v4.app.DialogFragment;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -32,7 +32,7 @@ public class FeedItemsList extends ItemsList {
 
 	public void deleteFeed() {
 		DialogFragment deleteFeedFragment = DeleteFeedFragment.newInstance(feed, folderName);
-		deleteFeedFragment.show(getFragmentManager(), "dialog");
+		deleteFeedFragment.show(getSupportFragmentManager(), "dialog");
 	}
 
 	@Override
@@ -63,7 +63,7 @@ public class FeedItemsList extends ItemsList {
         }
         if (item.getItemId() == R.id.menu_intel) {
             FeedIntelTrainerFragment intelFrag = FeedIntelTrainerFragment.newInstance(feed, fs);
-            intelFrag.show(getFragmentManager(), FeedIntelTrainerFragment.class.getName());
+            intelFrag.show(getSupportFragmentManager(), FeedIntelTrainerFragment.class.getName());
             return true;
         }
         return false;
@@ -71,27 +71,12 @@ public class FeedItemsList extends ItemsList {
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		super.onCreateOptionsMenu(menu);
         if (!feed.active) {
             // there is currently no way for a feed to be un-muted while in this activity, so
             // don't bother creating the menu, which contains no valid options for a muted feed
             return false;
         }
-		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.feed_itemslist, menu);
-        if (feed.isNotifyUnread()) {
-            menu.findItem(R.id.menu_notifications_disable).setChecked(false);
-            menu.findItem(R.id.menu_notifications_unread).setChecked(true);
-            menu.findItem(R.id.menu_notifications_focus).setChecked(false);
-        } else if (feed.isNotifyFocus()) {
-            menu.findItem(R.id.menu_notifications_disable).setChecked(false);
-            menu.findItem(R.id.menu_notifications_unread).setChecked(false);
-            menu.findItem(R.id.menu_notifications_focus).setChecked(true);
-        } else {
-            menu.findItem(R.id.menu_notifications_disable).setChecked(true);
-            menu.findItem(R.id.menu_notifications_unread).setChecked(false);
-            menu.findItem(R.id.menu_notifications_focus).setChecked(false);
-        }
+		super.onCreateOptionsMenu(menu);
 		return true;
 	}
 
