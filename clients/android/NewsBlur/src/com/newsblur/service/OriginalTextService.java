@@ -1,7 +1,5 @@
 package com.newsblur.service;
 
-import android.util.Log;
-
 import com.newsblur.activity.NbActivity;
 import com.newsblur.network.domain.StoryTextResponse;
 import com.newsblur.util.AppConstants;

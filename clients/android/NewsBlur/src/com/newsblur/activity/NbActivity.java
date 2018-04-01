@@ -1,8 +1,8 @@
 package com.newsblur.activity;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -19,7 +19,7 @@ import java.util.ArrayList;
  * The base class for all Activities in the NewsBlur app.  Handles enforcement of
  * login state and tracking of sync/update broadcasts.
  */
-public class NbActivity extends Activity {
+public class NbActivity extends FragmentActivity {
 
     public static final int UPDATE_DB_READY = (1<<0);
     public static final int UPDATE_METADATA = (1<<1);
@@ -51,6 +51,14 @@ public class NbActivity extends Activity {
         // before onCreate() in order to work
         PrefsUtils.applyThemePreference(this);
         lastTheme = PrefsUtils.getSelectedTheme(this);
+
+        // in rare cases of process interruption or DB corruption, an activity can launch without valid
+        // login creds.  redirect the user back to the loging workflow.
+        if (PrefsUtils.getUserId(this) == null) {
+            com.newsblur.util.Log.e(this, "post-login activity launched without valid login.");
+            PrefsUtils.logout(this);
+            finish();
+        }
 
 		super.onCreate(bundle);
 
@@ -96,7 +104,7 @@ public class NbActivity extends Activity {
 	protected void finishIfNotLoggedIn() {
 		String currentLoginKey = PrefsUtils.getUniqueLoginKey(this);
 		if(currentLoginKey == null || !currentLoginKey.equals(uniqueLoginKey)) {
-			com.newsblur.util.Log.d( this.getClass().getName(), "This activity was for a different login. finishing it.");
+			com.newsblur.util.Log.d(this.getClass().getName(), "This activity was for a different login. finishing it.");
 			finish();
 		}
 	}
