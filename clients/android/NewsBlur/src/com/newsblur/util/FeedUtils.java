@@ -4,7 +4,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -184,7 +183,7 @@ public class FeedUtils {
     /**
      * Marks some or all of the stories in a FeedSet as read for an activity, handling confirmation dialogues as necessary.
      */
-    public static void markRead(Activity activity, FeedSet fs, Long olderThan, Long newerThan, int choicesRid, boolean finishAfter) {
+    public static void markRead(NbActivity activity, FeedSet fs, Long olderThan, Long newerThan, int choicesRid, boolean finishAfter) {
         ReadingAction ra = null;
         if (fs.isAllNormal() && (olderThan != null || newerThan != null)) {
             // the mark-all-read API doesn't support range bounding, so we need to pass each and every
@@ -247,7 +246,7 @@ public class FeedUtils {
                 title = FeedUtils.getFeed(fs.getSingleFeed()).title;
             }
             ReadingActionConfirmationFragment dialog = ReadingActionConfirmationFragment.newInstance(ra, title, optionalOverrideMessage, choicesRid, finishAfter);
-            dialog.show(activity.getFragmentManager(), "dialog");
+            dialog.show(activity.getSupportFragmentManager(), "dialog");
         }
     }
 

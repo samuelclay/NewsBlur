@@ -2,11 +2,11 @@ package com.newsblur.database;
 
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.Loader;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.CancellationSignal;
+import android.support.v4.content.Loader;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -946,7 +946,7 @@ public class BlurDatabaseHelper {
         closeQuietly(c);
 
         // the id to append to or remove from the shared list (the current user)
-        String currentUser = PrefsUtils.getUserDetails(context).id;
+        String currentUser = PrefsUtils.getUserId(context);
 
         // append to set and update DB
         Set<String> newIds = new HashSet<String>(Arrays.asList(sharedUserIds));
@@ -986,6 +986,7 @@ public class BlurDatabaseHelper {
             return null;
         } else {
             c.moveToFirst();
+            // TODO: may not contain col?
             String result = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.STORY_CONTENT));
             c.close();
             return result;
@@ -1288,7 +1289,7 @@ public class BlurDatabaseHelper {
      * an ID at which time the placeholder will be removed.
      */
     public void insertCommentPlaceholder(String storyId, String feedId, String commentText) {
-        String userId = PrefsUtils.getUserDetails(context).id;
+        String userId = PrefsUtils.getUserId(context);
         Comment comment = new Comment();
         comment.isPlaceholder = true;
         comment.id = Comment.PLACEHOLDER_COMMENT_ID + storyId + userId;
@@ -1303,7 +1304,7 @@ public class BlurDatabaseHelper {
             // in order to make this method idempotent (so it can be attempted before, during, or after
             // the real comment is done, we have to check for a real one
             if (getComment(storyId, userId) != null) {
-                com.newsblur.util.Log.w(this.getClass().getName(), "failing to insert placeholder comment over live one");
+                com.newsblur.util.Log.i(this.getClass().getName(), "electing not to insert placeholder comment over live one");
                 return;
             }
             dbRW.insertWithOnConflict(DatabaseConstants.COMMENT_TABLE, null, comment.getValues(), SQLiteDatabase.CONFLICT_REPLACE);
@@ -1321,7 +1322,7 @@ public class BlurDatabaseHelper {
     }
 
     public void clearSelfComments(String storyId) {
-        String userId = PrefsUtils.getUserDetails(context).id;
+        String userId = PrefsUtils.getUserId(context);
         synchronized (RW_MUTEX) {dbRW.delete(DatabaseConstants.COMMENT_TABLE, 
                                              DatabaseConstants.COMMENT_STORYID + " = ? AND " + DatabaseConstants.COMMENT_USERID + " = ?", 
                                              new String[]{storyId, userId});}
@@ -1344,7 +1345,7 @@ public class BlurDatabaseHelper {
         closeQuietly(c);
 
         // the new id to append/remove from the liking list (the current user)
-        String currentUser = PrefsUtils.getUserDetails(context).id;
+        String currentUser = PrefsUtils.getUserId(context);
 
         // append to set and update DB
         Set<String> newIds = new HashSet<String>(Arrays.asList(comment.likingUsers));
@@ -1398,7 +1399,7 @@ public class BlurDatabaseHelper {
         Reply reply = new Reply();
         reply.commentId = comment.id;
         reply.text = replyText;
-        reply.userId = PrefsUtils.getUserDetails(context).id;
+        reply.userId = PrefsUtils.getUserId(context);
         reply.date = new Date();
         reply.id = Reply.PLACEHOLDER_COMMENT_ID + storyId + comment.id + reply.userId;
         synchronized (RW_MUTEX) {dbRW.insertWithOnConflict(DatabaseConstants.REPLY_TABLE, null, reply.getValues(), SQLiteDatabase.CONFLICT_REPLACE);}

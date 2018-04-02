@@ -12,9 +12,8 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
-import android.app.DialogFragment;
+import android.support.v4.app.DialogFragment;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -210,22 +209,20 @@ public class ReadingItemFragment extends NbFragment {
 	}
 
     private void setupImmersiveViewGestureDetector() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            // Change the system visibility on the decorview from the activity so that the state is maintained as we page through
-            // fragments
-            ImmersiveViewHandler immersiveViewHandler = new ImmersiveViewHandler(getActivity().getWindow().getDecorView());
-            final GestureDetector gestureDetector = new GestureDetector(getActivity(), immersiveViewHandler);
-            View.OnTouchListener touchListener = new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View view, MotionEvent motionEvent) {
-                    return gestureDetector.onTouchEvent(motionEvent);
-                }
-            };
-            web.setOnTouchListener(touchListener);
-            view.setOnTouchListener(touchListener);
+        // Change the system visibility on the decorview from the activity so that the state is maintained as we page through
+        // fragments
+        ImmersiveViewHandler immersiveViewHandler = new ImmersiveViewHandler(getActivity().getWindow().getDecorView());
+        final GestureDetector gestureDetector = new GestureDetector(getActivity(), immersiveViewHandler);
+        View.OnTouchListener touchListener = new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                return gestureDetector.onTouchEvent(motionEvent);
+            }
+        };
+        web.setOnTouchListener(touchListener);
+        view.setOnTouchListener(touchListener);
 
-            getActivity().getWindow().getDecorView().setOnSystemUiVisibilityChangeListener(immersiveViewHandler);
-        }
+        getActivity().getWindow().getDecorView().setOnSystemUiVisibilityChangeListener(immersiveViewHandler);
     }
 
     @Override

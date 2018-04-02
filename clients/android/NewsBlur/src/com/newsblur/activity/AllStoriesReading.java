@@ -14,8 +14,8 @@ public class AllStoriesReading extends Reading {
 
         UIUtils.setCustomActionBar(this, R.drawable.ak_icon_allstories, getResources().getString(R.string.all_stories_title));
         setTitle(getResources().getString(R.string.all_stories_row_title));
-        readingAdapter = new MixedFeedsReadingAdapter(getFragmentManager(), null);
-        getLoaderManager().initLoader(0, null, this);
+        readingAdapter = new MixedFeedsReadingAdapter(getSupportFragmentManager(), null);
+        getSupportLoaderManager().initLoader(0, null, this);
     }
 
 }

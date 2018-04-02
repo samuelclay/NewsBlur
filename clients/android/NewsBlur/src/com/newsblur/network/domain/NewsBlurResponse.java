@@ -1,7 +1,5 @@
 package com.newsblur.network.domain;
 
-import android.util.Log;
-
 /**
  * A generic response to an API call that only encapsuates success versus failure.
  */

@@ -31,7 +31,7 @@ public class FeedReading extends Reading {
 
         readingAdapter = new FeedReadingAdapter(fragmentManager, feed, classifier);
 
-        getLoaderManager().initLoader(0, null, this);
+        getSupportLoaderManager().initLoader(0, null, this);
     }
 
 }

@@ -5,8 +5,7 @@
         android:id="@+id/menu_reading_fullscreen"
         android:icon="@drawable/ic_menu_fullscreen_gray55"
         android:showAsAction="always"
-        android:title="@string/menu_fullscreen"
-        android:visible="false"/>
+        android:title="@string/menu_fullscreen"/>
 
     <item
         android:id="@+id/menu_reading_sharenewsblur"

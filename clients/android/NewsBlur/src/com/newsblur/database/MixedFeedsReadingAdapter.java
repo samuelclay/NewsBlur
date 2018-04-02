@@ -1,6 +1,6 @@
 package com.newsblur.database;
 
-import android.app.FragmentManager;
+import android.support.v4.app.FragmentManager;
 
 import com.newsblur.activity.ReadingAdapter;
 import com.newsblur.domain.Classifier;

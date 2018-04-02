@@ -227,6 +227,26 @@ class TwitterFetcher:
                 entities += "<img src=\"%s\"> <hr>" % media['media_url_https']
                 if 'photo' not in categories:
                     categories.add('photo')
+            if media['type'] == 'video':
+                if media.get('url') and media['url'] in tweet_text:
+                    tweet_title = tweet_title.replace(media['url'], media['display_url'])
+                replacement = "<a href=\"%s\">%s</a>" % (media['expanded_url'], media['display_url'])
+                if not replaced.get(media['url']):
+                    tweet_text = tweet_text.replace(media['url'], replacement)
+                    replaced[media['url']] = True
+                bitrate = 0
+                chosen_variant = None
+                for variant in media['video_info']['variants']:
+                    if not chosen_variant:
+                        chosen_variant = variant
+                    if variant.get('bitrate', 0) > bitrate:
+                        bitrate = variant['bitrate']
+                        chosen_variant = variant
+                if chosen_variant:
+                    entities += "<video src=\"%s\" autoplay loop muted playsinline> <hr>" % chosen_variant['url']
+                if 'video' not in categories:
+                    categories.add('video')
+                
 
         for url in content_tweet['entities'].get('urls', []):
             if url['url'] in tweet_text:

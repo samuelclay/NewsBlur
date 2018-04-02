@@ -8,7 +8,6 @@ import java.util.Map;
 
 import android.content.ContentValues;
 import android.database.Cursor;
-import android.util.Log;
 
 import com.google.gson.annotations.SerializedName;
 import com.newsblur.database.DatabaseConstants;
