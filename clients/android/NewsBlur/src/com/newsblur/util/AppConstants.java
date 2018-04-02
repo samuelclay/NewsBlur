@@ -92,8 +92,4 @@ public class AppConstants {
     // link to the web-based forgot password flow
     public final static String FORGOT_PASWORD_URL = "http://www.newsblur.com/folder_rss/forgot_password";
 
-    // how many helper threads to use for loading icons and thumbnails. things look smoother
-    // if this is set to 3+, but as of late 2016, too many devices get resource constrained past 2
-    public final static int IMAGE_LOADER_THREAD_COUNT = 2;
-
 }

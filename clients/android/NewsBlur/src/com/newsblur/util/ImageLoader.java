@@ -34,10 +34,13 @@ public class ImageLoader {
 	private ImageLoader(FileCache fileCache, int emptyRID, int minImgHeight, boolean hideMissing, long memoryCacheSize) {
         this.memoryCache = new MemoryCache(memoryCacheSize);
 		this.fileCache = fileCache;
-		executorService = Executors.newFixedThreadPool(AppConstants.IMAGE_LOADER_THREAD_COUNT);
         this.emptyRID = emptyRID;
         this.minImgHeight = minImgHeight;
         this.hideMissing = hideMissing;
+
+        int threadCount = Runtime.getRuntime().availableProcessors() - 2;
+        if (threadCount < 1) threadCount = 1;
+		executorService = Executors.newFixedThreadPool(threadCount);
 	}
 
     public static ImageLoader asIconLoader(Context context) {
@@ -113,7 +116,7 @@ public class ImageLoader {
             // scrolling, the caller has a few cycles to raise the cancellation flag, saving many resources.
             if (photoToLoad.allowDelay) {
                 try {
-                    Thread.sleep(50);
+                    Thread.sleep(20);
                 } catch (InterruptedException ie) {
                     return;
                 }

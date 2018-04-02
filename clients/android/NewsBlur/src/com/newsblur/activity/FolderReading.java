@@ -14,9 +14,9 @@ public class FolderReading extends Reading {
 
         UIUtils.setCustomActionBar(this, R.drawable.g_icn_folder_rss, fs.getFolderName());
 
-        readingAdapter = new MixedFeedsReadingAdapter(getFragmentManager(), null);
+        readingAdapter = new MixedFeedsReadingAdapter(getSupportFragmentManager(), null);
 
-        getLoaderManager().initLoader(0, null, this);
+        getSupportLoaderManager().initLoader(0, null, this);
     }
 
 }

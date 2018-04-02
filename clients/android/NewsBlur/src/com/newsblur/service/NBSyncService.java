@@ -668,6 +668,9 @@ public class NBSyncService extends Service {
                     FeedStoriesSeen.remove(ResetFeed);
                     FeedPagesSeen.remove(ResetFeed);
                     ResetFeed = null;
+                    // a reset should also reset the stories table, just in case an async page of stories came in between the
+                    // caller's (presumed) reset and our call ot prepareReadingSession()
+                    PreppedFeedSet = null;
                 }
             }
 
@@ -951,10 +954,10 @@ public class NBSyncService extends Service {
     }
 
     /**
-     * Is the main feed/folder list sync running?
+     * Is the main feed/folder list sync running and blocking?
      */
     public static boolean isFeedFolderSyncRunning() {
-        return (HousekeepingRunning || ActionsRunning || RecountsRunning || FFSyncRunning || CleanupService.running() || UnreadsService.running() || StorySyncRunning || OriginalTextService.running() || ImagePrefetchService.running());
+        return (HousekeepingRunning || FFSyncRunning);
     }
 
     public static boolean isFeedCountSyncRunning() {
