@@ -102,13 +102,13 @@ def facebook_connect(request):
         uri = "https://graph.facebook.com/oauth/access_token?" + \
                 urllib.urlencode(args)
         response_text = urllib.urlopen(uri).read()
-        response = urlparse.parse_qs(response_text)
-
+        response = json.decode(response_text)
+        
         if "access_token" not in response:
-            logging.user(request, "~BB~FRFailed Facebook connect")
+            logging.user(request, "~BB~FRFailed Facebook connect, no access_token. (%s): %s" % (args, response))
             return dict(error="Facebook has returned an error. Try connecting again.")
 
-        access_token = response["access_token"][-1]
+        access_token = response["access_token"]
 
         # Get the user's profile.
         graph = facebook.GraphAPI(access_token)
@@ -138,7 +138,7 @@ def facebook_connect(request):
         logging.user(request, "~BB~FRFinishing Facebook connect")
         return {}
     elif request.REQUEST.get('error'):
-        logging.user(request, "~BB~FRFailed Facebook connect")
+        logging.user(request, "~BB~FRFailed Facebook connect, error: %s" % request.REQUEST.get('error'))
         return {'error': '%s... Try connecting again.' % request.REQUEST.get('error')}
     else:
         # Start the OAuth process
