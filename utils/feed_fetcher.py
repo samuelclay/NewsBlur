@@ -89,7 +89,7 @@ class FetchFeed:
             logging.debug(u'   ---> [%-30s] ~FM~BKFeed fetched in real-time with fat ping.' % (
                           self.feed.log_title[:30]))
             return FEED_OK, self.fpf
-        
+
         if 'youtube.com' in address:
             try:
                 youtube_feed = self.fetch_youtube(address)
@@ -100,14 +100,14 @@ class FetchFeed:
                               (self.feed.log_title[:30], address))
                 return FEED_ERRHTTP, None
             self.fpf = feedparser.parse(youtube_feed)
-        elif re.match('(https?)?://twitter.com/\w+/?$', qurl(address, remove=['_'])):
+        elif re.match(r'(https?)?://twitter.com/\w+/?$', qurl(address, remove=['_'])):
             twitter_feed = self.fetch_twitter(address)
             if not twitter_feed:
                 logging.debug(u'   ***> [%-30s] ~FRTwitter fetch failed: %s' % 
                               (self.feed.log_title[:30], address))
                 return FEED_ERRHTTP, None
             self.fpf = feedparser.parse(twitter_feed)
-        elif re.match(r'(https?)?://(www\.)?facebook.com/\w+/?$', qurl(address, remove=['_'])):
+        elif re.match(r'(.*?)facebook.com/\w+/?$', qurl(address, remove=['_'])):
             facebook_feed = self.fetch_facebook()
             if not facebook_feed:
                 logging.debug(u'   ***> [%-30s] ~FRFacebook fetch failed: %s' % 
