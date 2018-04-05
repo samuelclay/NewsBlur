@@ -33,6 +33,7 @@ import com.newsblur.R;
 import com.newsblur.activity.NbActivity;
 import com.newsblur.domain.Story;
 import com.newsblur.domain.UserDetails;
+import com.newsblur.fragment.ItemSetFragment;
 import com.newsblur.fragment.StoryIntelTrainerFragment;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
@@ -73,6 +74,7 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     private final ExecutorService executorService;
 
     private NbActivity context;
+    private ItemSetFragment fragment;
     private FeedSet fs;
     private StoryListStyle listStyle;
     private boolean ignoreReadStatus;
@@ -81,8 +83,9 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     private float textSize;
     private UserDetails user;
 
-    public StoryViewAdapter(NbActivity context, FeedSet fs, StoryListStyle listStyle) {
+    public StoryViewAdapter(NbActivity context, ItemSetFragment fragment, FeedSet fs, StoryListStyle listStyle) {
         this.context = context;
+        this.fragment = fragment;
         this.fs = fs;
         this.listStyle = listStyle;
         
@@ -186,13 +189,14 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     /**
      * Attempt to thaw a new set of stories from the cursor most recently
-     * see when the that cycle started.
+     * seen when the that cycle started.
      */
     private void thawDiffUpdate(final Cursor c, final RecyclerView rv) {
         if (c != cursor) return;
 
         // thawed stories
         final List<Story> newStories;
+        int indexOfLastUnread = -1;
         // attempt to thaw as gracefully as possible despite the fact that the loader
         // framework could close our cursor at any moment.  if this happens, it is fine,
         // as a new one will be provided and another cycle will start.  just return.
@@ -208,6 +212,7 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                     Story s = Story.fromCursor(c);
                     s.bindExternValues(c);
                     newStories.add(s);
+                    if (! s.read) indexOfLastUnread = c.getPosition();
                 }
             }
         } catch (Exception e) {
@@ -219,6 +224,8 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         final DiffUtil.DiffResult diff = DiffUtil.calculateDiff(new StoryListDiffer(newStories), false);
 
         if (c != cursor) return;
+
+        fragment.storyThawCompleted(indexOfLastUnread);
 
         rv.post(new Runnable() {
             @Override
