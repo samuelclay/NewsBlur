@@ -150,6 +150,7 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
 		inflater.inflate(R.menu.itemslist, menu);
 
         if (fs.isGlobalShared() || 
+            fs.isAllSocial() ||
             fs.isFilterSaved() ||
             fs.isAllSaved() ||
             fs.isSingleSavedTag() ||
