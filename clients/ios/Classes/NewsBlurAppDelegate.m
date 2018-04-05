@@ -1,4 +1,3 @@
-
 //  NewsBlurAppDelegate.m
 //  NewsBlur
 //
