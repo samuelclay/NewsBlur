@@ -74,6 +74,9 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
     // de-dupe the massive stream of scrolling data to auto-mark read
     private int lastAutoMarkIndex = -1;
 
+    public int indexOfLastUnread = -1;
+    public boolean fullFlingComplete = false;
+
 	public static ItemSetFragment newInstance() {
 		ItemSetFragment fragment = new ItemSetFragment();
 		Bundle arguments = new Bundle();
@@ -172,7 +175,7 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
             }
         });
 
-        adapter = new StoryViewAdapter(((NbActivity) getActivity()), getFeedSet(), listStyle);
+        adapter = new StoryViewAdapter(((NbActivity) getActivity()), this, getFeedSet(), listStyle);
         adapter.addFooterView(footerView);
         adapter.addFooterView(fleuronFooter);
         itemGrid.setAdapter(adapter); 
@@ -196,7 +199,7 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
                 ItemSetFragment.this.onScrolled(recyclerView, dx, dy);
             }
         });
-        
+
         setupGestureDetector(itemGrid);
 
 		return v;
@@ -278,6 +281,15 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
                 emptyViewImage.setVisibility(View.VISIBLE);
             }
         }
+    }
+
+    /**
+     * A calback for our adapter that async thaws the story list so the fragment can have
+     * some info about the story list when it is ready.
+     */
+    public void storyThawCompleted(int indexOfLastUnread) {
+        this.indexOfLastUnread = indexOfLastUnread;
+        this.fullFlingComplete = false;
     }
 
     public void scrollToTop() {
@@ -417,6 +429,25 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
         if (dy < 1) return;
 
         ensureSufficientStories();
+
+        // the list can be scrolled past the last item thanks to the offset footer, but don't fling
+        // past the last item, which can be confusing to users who don't know about or need the offset
+        if ( (!fullFlingComplete) &&
+             (layoutManager.findLastCompletelyVisibleItemPosition() >= adapter.getStoryCount()) ) {
+            itemGrid.stopScroll();
+            // but after halting at the end once, do allow scrolling past the bottom
+            fullFlingComplete = true;
+        }
+
+        // if flinging downwards, pause at the last unread as a convenience
+        if ( (indexOfLastUnread >= 0) &&
+             (layoutManager.findLastCompletelyVisibleItemPosition() >= indexOfLastUnread) ) {
+            // but don't interrupt if already past the last unread
+            if (indexOfLastUnread >= layoutManager.findFirstCompletelyVisibleItemPosition()) {
+                itemGrid.stopScroll();
+            }
+            indexOfLastUnread = -1;
+        }
 
         if (PrefsUtils.isMarkReadOnScroll(getActivity())) {
             // we want the top row of stories that is partially obscured. go back one from the first fully visible
