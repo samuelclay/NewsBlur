@@ -87,13 +87,13 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
     @Override
 	public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        getLoaderManager().initLoader(ITEMLIST_LOADER, null, this);
     }
 
     @Override
     public void onStart() {
         super.onStart();
         stopLoading = false;
-        getLoaderManager().initLoader(ITEMLIST_LOADER, null, this);
     }
 
     @Override
