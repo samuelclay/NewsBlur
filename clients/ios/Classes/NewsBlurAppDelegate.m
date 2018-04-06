@@ -939,6 +939,10 @@
     [userPreferences synchronize];
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        if (self.masterContainerViewController.presentedViewController == loginViewController) {
+            NSLog(@"Already showing login!");
+            return;
+        }
         [self.masterContainerViewController presentViewController:loginViewController animated:NO completion:nil];
     } else {
         [feedsMenuViewController dismissViewControllerAnimated:NO completion:nil];
