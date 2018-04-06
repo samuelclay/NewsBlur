@@ -408,7 +408,7 @@ def load_feeds_flat(request):
     categories = None
     if not user_subs:
         categories = MCategory.serialize()
-        
+    time.sleep(30)
     logging.user(request, "~FB~SBLoading ~FY%s~FB/~FM%s~FB/~FR%s~FB feeds/socials/inactive ~FMflat~FB%s%s" % (
             len(feeds.keys()), len(social_feeds), len(inactive_feeds), '. ~FCUpdating counts.' if update_counts else '',
             ' ~BB(background fetch)' if background_ios else ''))
