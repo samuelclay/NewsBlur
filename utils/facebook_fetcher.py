@@ -92,7 +92,7 @@ class FacebookFetcher:
         else:
             usersubs = UserSubscription.objects.filter(feed=self.feed)
             if not usersubs:
-                logging.debug(u'   ***> [%-30s] ~FRTwitter fetch failed: %s: No subscriptions' % 
+                logging.debug(u'   ***> [%-30s] ~FRFacebook fetch failed: %s: No subscriptions' % 
                               (self.feed.log_title[:30], self.feed.feed_address))
                 return
 
