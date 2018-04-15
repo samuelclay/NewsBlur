@@ -1414,9 +1414,9 @@ def copy_spam():
 
 DO_SIZES = {
     '1': 's-1vcpu-1gb',
-    '2:': 's-1vcpu-2gb',
-    '4:': 's-2vcpu-4gb',
-    '8:': 's-4vcpu-8gb',
+    '2': 's-1vcpu-2gb',
+    '4': 's-2vcpu-4gb',
+    '8': 's-4vcpu-8gb',
     '16': 's-6vcpu-16gb',
     '32': 's-8vcpu-32gb',
     '48': 's-12vcpu-48gb',
