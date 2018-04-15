@@ -527,9 +527,10 @@
     
     dispatch_async(dispatch_get_main_queue(), ^{
 //        NSLog(@"Drawing Story: %@", [self.activeStory objectForKey:@"story_title"]);
-        [self.webView setMediaPlaybackRequiresUserAction:YES];
+        [self.webView setMediaPlaybackRequiresUserAction:NO];
+        self.webView.allowsInlineMediaPlayback = YES;
         [self loadHTMLString:htmlTopAndBottom];
-        [appDelegate.storyPageControl setTextButton:self];
+        [self.appDelegate.storyPageControl setTextButton:self];
     });
 
     self.activeStoryId = [self.activeStory objectForKey:@"story_hash"];
