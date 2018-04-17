@@ -59,6 +59,24 @@ def format_story_link_date__long(date, now=None):
     else:
         return parsed_date.format('l, F jS, Y g:ia').replace('.','')
 
+def relative_date(d):
+    diff = datetime.datetime.utcnow() - d
+    s = diff.seconds
+    if diff.days == 1:
+        return '1 day ago'
+    elif diff.days > 1:
+        return '{} days ago'.format(diff.days)
+    elif s < 60:
+        return 'just now'
+    elif s < 120:
+        return '1 minute ago'
+    elif s < 3600:
+        return '{} minutes ago'.format(s/60)
+    elif s < 7200:
+        return '1 hour ago'
+    else:
+        return '{} hours ago'.format(s/3600)
+
 def _extract_date_tuples(date):
     parsed_date = DateFormat(date)
     date_tuple = datetime.datetime.timetuple(date)[:3]

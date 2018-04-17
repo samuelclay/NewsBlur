@@ -2,10 +2,12 @@ import datetime
 import mongoengine as mongo
 import urllib2
 import redis
+import dateutil
 from django.conf import settings
 from apps.social.models import MSharedStory
 from apps.profile.models import Profile
 from apps.statistics.rstats import RStats, round_time
+from utils.story_functions import relative_date
 from utils import json_functions as json
 from utils import db_functions
 from utils import log as logging
@@ -238,8 +240,8 @@ class MStatistics(mongo.Document):
 
 
 class MFeedback(mongo.Document):
-    date    = mongo.StringField()
-    summary = mongo.StringField()
+    date    = mongo.DateTimeField()
+    date_short = mongo.StringField()
     subject = mongo.StringField()
     url     = mongo.StringField()
     style   = mongo.StringField()
@@ -252,34 +254,46 @@ class MFeedback(mongo.Document):
         'ordering': ['order'],
     }
     
+    CATEGORIES = {
+        5: 'idea',
+        6: 'problem',
+        7: 'praise',
+        8: 'question',
+    }
+    
     def __unicode__(self):
         return "%s: (%s) %s" % (self.style, self.date, self.subject)
         
     @classmethod
     def collect_feedback(cls):
+        seen_posts = set()
         try:
-            data = urllib2.urlopen('https://getsatisfaction.com/newsblur/topics.widget').read()
+            data = urllib2.urlopen('https://forum.newsblur.com/posts.json').read()
         except (urllib2.HTTPError), e:
             logging.debug(" ***> Failed to collect feedback: %s" % e)
             return
-        start = data.index('[')
-        end = data.rfind(']')+1
-        data = json.decode(data[start:end])
-        print data
-        i    = 0
-        if len(data):
-            cls.objects.delete()
-            for feedback in data:
-                feedback['order'] = i
-                i += 1
-                for removal in ['about', 'less than']:
-                    if removal in feedback['date']:
-                        feedback['date'] = feedback['date'].replace(removal, '')
-            for feedback in data:
-                # Convert unicode to strings.
-                fb = dict([(str(k), v) for k, v in feedback.items()])
-                fb['url'] = fb['url'].replace('?utm_medium=widget&utm_source=widget_newsblur', "")
-                cls.objects.create(**fb)
+        data = json.decode(data).get('latest_posts', "")
+
+        if not len(data):
+            print "No data!"
+            return
+            
+        cls.objects.delete()
+        post_count = 0
+        for post in data:
+            if post['topic_id'] in seen_posts: continue
+            seen_posts.add(post['topic_id'])
+            feedback = {}
+            feedback['order'] = post_count
+            post_count += 1
+            feedback['date'] = dateutil.parser.parse(post['created_at']).replace(tzinfo=None)
+            feedback['date_short'] = relative_date(feedback['date'])
+            feedback['subject'] = post['topic_title']
+            feedback['url'] = "https://forum.newsblur.com/t/%s/%s/%s" % (post['topic_slug'], post['topic_id'], post['post_number'])
+            feedback['style'] = cls.CATEGORIES[post['category_id']]
+            cls.objects.create(**feedback)
+            print "%s: %s (%s)" % (feedback['style'], feedback['subject'], feedback['date_short'])
+            if post_count >= 4: break
     
     @classmethod
     def all(cls):
