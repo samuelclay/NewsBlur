@@ -1163,27 +1163,31 @@ class PaymentHistory(models.Model):
     
     @classmethod
     def report(cls, months=26):
-        def _counter(start_date, end_date, payments=None):
+        output = ""
+        
+        def _counter(start_date, end_date, output, payments=None):
             if not payments:
                 payments = PaymentHistory.objects.filter(payment_date__gte=start_date, payment_date__lte=end_date)
                 payments = payments.aggregate(avg=Avg('payment_amount'), 
                                               sum=Sum('payment_amount'), 
                                               count=Count('user'))
-            print "%s-%02d-%02d - %s-%02d-%02d:\t$%.2f\t$%-6s\t%-4s" % (
+            output += "%s-%02d-%02d - %s-%02d-%02d:\t$%.2f\t$%-6s\t%-4s\n" % (
                 start_date.year, start_date.month, start_date.day,
                 end_date.year, end_date.month, end_date.day,
                 round(payments['avg'] if payments['avg'] else 0, 2), payments['sum'] if payments['sum'] else 0, payments['count'])
-            return payments
+            
+            return payments, output
 
-        print "\nMonthly Totals:"
+        output += "\nMonthly Totals:\n"
         for m in reversed(range(months)):
             now = datetime.datetime.now()
             start_date = datetime.datetime(now.year, now.month, 1) - dateutil.relativedelta.relativedelta(months=m)
             end_time = start_date + datetime.timedelta(days=31)
             end_date = datetime.datetime(end_time.year, end_time.month, 1) - datetime.timedelta(seconds=1)
-            total = _counter(start_date, end_date)['sum']
+            total, output = _counter(start_date, end_date, output)
+            total = total['sum']
 
-        print "\nMTD Totals:"
+        output += "\nMTD Totals:\n"
         years = datetime.datetime.now().year - 2009
         this_mtd_avg = 0
         last_mtd_avg = 0
@@ -1196,17 +1200,17 @@ class PaymentHistory(models.Model):
             start_date = datetime.datetime(now.year, now.month, 1) - dateutil.relativedelta.relativedelta(years=y)
             end_date = now - dateutil.relativedelta.relativedelta(years=y)
             if end_date > now: end_date = now
-            count = _counter(start_date, end_date)
+            count, output = _counter(start_date, end_date, output)
             if end_date.year != now.year:
-                last_mtd_avg = count['avg']
-                last_mtd_sum = count['sum']
+                last_mtd_avg = count['avg'] or 0
+                last_mtd_sum = count['sum'] or 0
                 last_mtd_count = count['count']
             else:
-                this_mtd_avg = count['avg']
-                this_mtd_sum = count['sum']
+                this_mtd_avg = count['avg'] or 0
+                this_mtd_sum = count['sum'] or 0
                 this_mtd_count = count['count']
 
-        print "\nCurrent Month Totals:"
+        output += "\nCurrent Month Totals:\n"
         years = datetime.datetime.now().year - 2009
         last_month_avg = 0
         last_month_sum = 0
@@ -1220,14 +1224,14 @@ class PaymentHistory(models.Model):
                 payments = {'avg': this_mtd_avg / (max(1, last_mtd_avg) / float(max(1, last_month_avg))), 
                             'sum': int(round(this_mtd_sum / (max(1, last_mtd_sum) / float(max(1, last_month_sum))))), 
                             'count': int(round(this_mtd_count / (max(1, last_mtd_count) / float(max(1, last_month_count)))))}
-                _counter(start_date, end_date, payments=payments)
+                _, output = _counter(start_date, end_date, output, payments=payments)
             else:
-                count = _counter(start_date, end_date)
+                count, output = _counter(start_date, end_date, output)
                 last_month_avg = count['avg']
                 last_month_sum = count['sum']
                 last_month_count = count['count']
 
-        print "\nYTD Totals:"
+        output += "\nYTD Totals:\n"
         years = datetime.datetime.now().year - 2009
         this_ytd_avg = 0
         last_ytd_avg = 0
@@ -1239,17 +1243,17 @@ class PaymentHistory(models.Model):
             now = datetime.datetime.now()
             start_date = datetime.datetime(now.year, 1, 1) - dateutil.relativedelta.relativedelta(years=y)
             end_date = now - dateutil.relativedelta.relativedelta(years=y)
-            count = _counter(start_date, end_date)
+            count, output = _counter(start_date, end_date, output)
             if end_date.year != now.year:
-                last_ytd_avg = count['avg']
-                last_ytd_sum = count['sum']
+                last_ytd_avg = count['avg'] or 0
+                last_ytd_sum = count['sum'] or 0
                 last_ytd_count = count['count']
             else:
-                this_ytd_avg = count['avg']
-                this_ytd_sum = count['sum']
+                this_ytd_avg = count['avg'] or 0
+                this_ytd_sum = count['sum'] or 0
                 this_ytd_count = count['count']
 
-        print "\nYearly Totals:"
+        output += "\nYearly Totals:\n"
         years = datetime.datetime.now().year - 2009
         last_year_avg = 0
         last_year_sum = 0
@@ -1262,16 +1266,20 @@ class PaymentHistory(models.Model):
                 payments = {'avg': this_ytd_avg / (max(1, last_ytd_avg) / float(max(1, last_year_avg))), 
                             'sum': int(round(this_ytd_sum / (max(1, last_ytd_sum) / float(max(1, last_year_sum))))), 
                             'count': int(round(this_ytd_count / (max(1, last_ytd_count) / float(max(1, last_year_count)))))}
-                _counter(start_date, end_date, payments=payments)
+                _, output = _counter(start_date, end_date, output, payments=payments)
             else:
-                count = _counter(start_date, end_date)
-                last_year_avg = count['avg']
-                last_year_sum = count['sum']
+                count, output = _counter(start_date, end_date, output)
+                last_year_avg = count['avg'] or 0
+                last_year_sum = count['sum'] or 0
                 last_year_count = count['count']
                 
 
         total = cls.objects.all().aggregate(sum=Sum('payment_amount'))
-        print "\nTotal: $%s" % total['sum']
+        output += "\nTotal: $%s\n" % total['sum']
+        
+        print output
+        
+        return {'annual': last_year_sum, 'output': output}
 
 
 class MGiftCode(mongo.Document):
