@@ -1258,6 +1258,7 @@ class PaymentHistory(models.Model):
         last_year_avg = 0
         last_year_sum = 0
         last_year_count = 0
+        annual = 0
         for y in reversed(range(years)):
             now = datetime.datetime.now()
             start_date = datetime.datetime(now.year, 1, 1) - dateutil.relativedelta.relativedelta(years=y)
@@ -1266,7 +1267,8 @@ class PaymentHistory(models.Model):
                 payments = {'avg': this_ytd_avg / (max(1, last_ytd_avg) / float(max(1, last_year_avg))), 
                             'sum': int(round(this_ytd_sum / (max(1, last_ytd_sum) / float(max(1, last_year_sum))))), 
                             'count': int(round(this_ytd_count / (max(1, last_ytd_count) / float(max(1, last_year_count)))))}
-                _, output = _counter(start_date, end_date, output, payments=payments)
+                count, output = _counter(start_date, end_date, output, payments=payments)
+                annual = count['sum']
             else:
                 count, output = _counter(start_date, end_date, output)
                 last_year_avg = count['avg'] or 0
@@ -1279,7 +1281,7 @@ class PaymentHistory(models.Model):
         
         print output
         
-        return {'annual': last_year_sum, 'output': output}
+        return {'annual': annual, 'output': output}
 
 
 class MGiftCode(mongo.Document):
