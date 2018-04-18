@@ -31,7 +31,7 @@ def revenue(request):
     rss = feedgenerator.Atom1Feed(**data)
     
     report = PaymentHistory.report()
-    content = "%s revenue: $%s<br>%s" % (datetime.datetime.now().strftime('%Y'), report['annual'], report['output'].replace('\n', '<br>'))
+    content = "%s revenue: $%s<br><code>%s</code>" % (datetime.datetime.now().strftime('%Y'), report['annual'], report['output'].replace('\n', '<br>'))
     
     story = {
         'title': "Daily snapshot: %s" % (datetime.datetime.now().strftime('%A %B %-m, %Y')),
