@@ -1242,6 +1242,31 @@ public class BlurDatabaseHelper {
         }
     }
 
+    public void setSessionFeedSet(FeedSet fs) {
+        if (fs == null) {
+            synchronized (RW_MUTEX) {dbRW.delete(DatabaseConstants.SYNC_METADATA_TABLE, DatabaseConstants.SYNC_METADATA_KEY + " = ?", new String[] {DatabaseConstants.SYNC_METADATA_KEY_SESSION_FEED_SET});}
+        } else {
+            ContentValues values = new ContentValues();
+            values.put(DatabaseConstants.SYNC_METADATA_KEY, DatabaseConstants.SYNC_METADATA_KEY_SESSION_FEED_SET);
+            values.put(DatabaseConstants.SYNC_METADATA_VALUE, fs.toCompactSerial());
+            synchronized (RW_MUTEX) {dbRW.insertWithOnConflict(DatabaseConstants.SYNC_METADATA_TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);}
+        }
+    }
+        
+    public FeedSet getSessionFeedSet() {
+        FeedSet fs = null;
+        Cursor c = dbRO.query(DatabaseConstants.SYNC_METADATA_TABLE, null, DatabaseConstants.SYNC_METADATA_KEY + " = ?", new String[] {DatabaseConstants.SYNC_METADATA_KEY_SESSION_FEED_SET}, null, null, null, null);
+        if (c.getCount() < 1) return null;
+        c.moveToFirst();
+        fs = FeedSet.fromCompactSerial(c.getString(c.getColumnIndexOrThrow(DatabaseConstants.SYNC_METADATA_VALUE)));
+        closeQuietly(c);
+        return fs;
+    }
+
+    public boolean isFeedSetReady(FeedSet fs) {
+        return fs.equals(getSessionFeedSet());
+    }
+
     public void clearClassifiersForFeed(String feedId) {
         String[] selArgs = new String[] {feedId};
         synchronized (RW_MUTEX) {dbRW.delete(DatabaseConstants.CLASSIFIER_TABLE, DatabaseConstants.CLASSIFIER_ID + " = ?", selArgs);}

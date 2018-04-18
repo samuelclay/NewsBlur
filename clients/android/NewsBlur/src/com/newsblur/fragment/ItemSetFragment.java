@@ -42,7 +42,7 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
 	public static int ITEMLIST_LOADER = 0x01;
     private static final String BUNDLE_GRIDSTATE = "gridstate";
 
-    protected boolean cursorSeenYet = false;
+    protected boolean cursorSeenYet = false; // have we yet seen a valid cursor for our particular feedset?
     private boolean stopLoading = false;
 
     private int itemGridWidthPx = 0;
@@ -230,60 +230,6 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
     }
 
     /**
-     * Turns on/off the loading indicator. Note that the text component of the
-     * loading indicator/explainer requires a cursor and is handled below.
-     */
-    public void setLoading(boolean isLoading) {
-        // sanity check that we even have views yet
-        if (fleuronFooter == null) return;
-
-        calcFleuronPadding();
-
-        if (isLoading) {
-            if (NBSyncService.isFeedSetStoriesFresh(getFeedSet())) {
-                topProgressView.setVisibility(View.INVISIBLE);
-                bottomProgressView.setVisibility(View.VISIBLE);
-            } else {
-                topProgressView.setVisibility(View.VISIBLE);
-                bottomProgressView.setVisibility(View.GONE);
-            }
-            fleuronFooter.setVisibility(View.INVISIBLE);
-        } else {
-            topProgressView.setVisibility(View.INVISIBLE);
-            bottomProgressView.setVisibility(View.INVISIBLE);
-            if (cursorSeenYet && NBSyncService.isFeedSetExhausted(getFeedSet()) && (adapter.getRawStoryCount() > 0)) {
-                fleuronFooter.setVisibility(View.VISIBLE);
-            }
-        }
-    }
-
-    /**
-     * Set up the text view that shows when no stories are yet visible.
-     */
-    private void updateLoadingMessage() {
-        if (getFeedSet().isMuted()) {
-            emptyViewText.setText(R.string.empty_list_view_muted_feed);
-            emptyViewText.setTypeface(null, Typeface.NORMAL);
-            emptyViewImage.setVisibility(View.VISIBLE);
-        } else {
-            if (NBSyncService.isFeedSetSyncing(getFeedSet(), getActivity()) || (!cursorSeenYet)) {
-                emptyViewText.setText(R.string.empty_list_view_loading);
-                emptyViewText.setTypeface(null, Typeface.ITALIC);
-                emptyViewImage.setVisibility(View.INVISIBLE);
-            } else {
-                ReadFilter readFilter = PrefsUtils.getReadFilter(getActivity(), getFeedSet());
-                if (readFilter == ReadFilter.UNREAD) {
-                    emptyViewText.setText(R.string.empty_list_view_no_stories_unread);
-                } else {
-                    emptyViewText.setText(R.string.empty_list_view_no_stories);
-                }
-                emptyViewText.setTypeface(null, Typeface.NORMAL);
-                emptyViewImage.setVisibility(View.VISIBLE);
-            }
-        }
-    }
-
-    /**
      * A calback for our adapter that async thaws the story list so the fragment can have
      * some info about the story list when it is ready.
      */
@@ -319,7 +265,7 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
             }
             return null;
         } else if (fs.isMuted()) {
-            updateLoadingMessage();
+            updateLoadingIndicators();
             return null;
         } else {
             return FeedUtils.dbHelper.getActiveStoriesLoader(getFeedSet());
@@ -330,10 +276,9 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
 	public synchronized void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         if (stopLoading) return;
 		if (cursor != null) {
-            if (! NBSyncService.isFeedSetReady(getFeedSet())) {
+            if (! FeedUtils.dbHelper.isFeedSetReady(getFeedSet())) {
                 // the DB hasn't caught up yet from the last story list; don't display stale stories.
                 com.newsblur.util.Log.i(this.getClass().getName(), "stale load");
-                setLoading(true);
                 updateAdapter(null);
                 triggerRefresh(1, null);
             } else {
@@ -343,11 +288,9 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
                 if (cursor.getCount() < 1) {
                     triggerRefresh(1, 0);
                 }
-                boolean isLoading = NBSyncService.isFeedSetSyncing(getFeedSet(), getActivity());
-                setLoading(isLoading);
             }
 		}
-        updateLoadingMessage();
+        updateLoadingIndicators();
 	}
 
     protected void updateAdapter(Cursor cursor) {
@@ -367,6 +310,52 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
 	@Override
 	public void onLoaderReset(Loader<Cursor> loader) {
 	}
+
+    private void updateLoadingIndicators() {
+        // sanity check that we even have views yet
+        if (fleuronFooter == null) return;
+
+        calcFleuronPadding();
+
+        if (getFeedSet().isMuted()) {
+            emptyViewText.setText(R.string.empty_list_view_muted_feed);
+            emptyViewText.setTypeface(null, Typeface.NORMAL);
+            emptyViewImage.setVisibility(View.VISIBLE);
+            topProgressView.setVisibility(View.INVISIBLE);
+            bottomProgressView.setVisibility(View.INVISIBLE);
+            return;
+        }
+
+        if ( (!cursorSeenYet) || NBSyncService.isFeedSetSyncing(getFeedSet(), getActivity()) ) {
+            emptyViewText.setText(R.string.empty_list_view_loading);
+            emptyViewText.setTypeface(null, Typeface.ITALIC);
+            emptyViewImage.setVisibility(View.INVISIBLE);
+
+            if (NBSyncService.isFeedSetStoriesFresh(getFeedSet())) {
+                topProgressView.setVisibility(View.INVISIBLE);
+                bottomProgressView.setVisibility(View.VISIBLE);
+            } else {
+                topProgressView.setVisibility(View.VISIBLE);
+                bottomProgressView.setVisibility(View.GONE);
+            }
+            fleuronFooter.setVisibility(View.INVISIBLE);
+        } else {
+            ReadFilter readFilter = PrefsUtils.getReadFilter(getActivity(), getFeedSet());
+            if (readFilter == ReadFilter.UNREAD) {
+                emptyViewText.setText(R.string.empty_list_view_no_stories_unread);
+            } else {
+                emptyViewText.setText(R.string.empty_list_view_no_stories);
+            }
+            emptyViewText.setTypeface(null, Typeface.NORMAL);
+            emptyViewImage.setVisibility(View.VISIBLE);
+
+            topProgressView.setVisibility(View.INVISIBLE);
+            bottomProgressView.setVisibility(View.INVISIBLE);
+            if (cursorSeenYet && NBSyncService.isFeedSetExhausted(getFeedSet()) && (adapter.getRawStoryCount() > 0)) {
+                fleuronFooter.setVisibility(View.VISIBLE);
+            }
+        }
+    }
 
     public void updateStyle() {
         StoryListStyle listStyle = PrefsUtils.getStoryListStyle(getActivity(), getFeedSet());
