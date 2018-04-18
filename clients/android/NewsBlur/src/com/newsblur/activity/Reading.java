@@ -222,7 +222,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
         // this is not strictly necessary, since our first refresh with the fs will swap in
         // the correct session, but that can be delayed by sync backup, so we try here to
         // reduce UI lag, or in case somehow we got redisplayed in a zero-story state
-        FeedUtils.prepareReadingSession(fs);
+        FeedUtils.prepareReadingSession(fs, false);
     }
 
     @Override
@@ -259,7 +259,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
                 setupPager();
             }
 
-            if (! NBSyncService.isFeedSetReady(fs)) {
+            if (! FeedUtils.dbHelper.isFeedSetReady(fs)) {
                 // not only is the session table stale, our fragment is being re-used by the system
                 // to show a totally different feedset. trash anything that might have stale story
                 // data and let them get recreated when a good cursor comes in

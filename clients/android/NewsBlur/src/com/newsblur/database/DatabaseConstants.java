@@ -168,6 +168,9 @@ public class DatabaseConstants {
     public static final String FEED_AUTHORS_FEEDID = "feed_id";
     public static final String FEED_AUTHORS_AUTHOR = "author";
 
+    public static final String SYNC_METADATA_TABLE = "sync_metadata";
+    public static final String SYNC_METADATA_KEY = "key";
+    public static final String SYNC_METADATA_VALUE = "value";
 
 	static final String FOLDER_SQL = "CREATE TABLE " + FOLDER_TABLE + " (" +
 		FOLDER_NAME + TEXT + " PRIMARY KEY, " +  
@@ -334,6 +337,11 @@ public class DatabaseConstants {
         FEED_AUTHORS_AUTHOR + TEXT +
         ")";
 
+    static final String SYNC_METADATA_SQL = "CREATE TABLE " + SYNC_METADATA_TABLE + " (" +
+        SYNC_METADATA_KEY + TEXT + " PRIMARY KEY, " +
+        SYNC_METADATA_VALUE + TEXT +
+        ")";
+
 	private static final String[] BASE_STORY_COLUMNS = {
 		STORY_AUTHORS, STORY_SHORT_CONTENT, STORY_TIMESTAMP, STORY_SHARED_DATE,
         STORY_TABLE + "." + STORY_FEED_ID, STORY_TABLE + "." + STORY_ID,
@@ -467,4 +475,6 @@ public class DatabaseConstants {
     public static List<String> unflattenStringList(String flat) {
         return JsonHelper.fromJson(flat, new TypeToken<List<String>>(){}.getType());
     }
+
+    public static final String SYNC_METADATA_KEY_SESSION_FEED_SET = "session_feed_set";
 }
