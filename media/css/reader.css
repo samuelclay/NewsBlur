@@ -5258,8 +5258,8 @@ form.opml_import_form input {
   background: transparent url('/media/embed/reader/github.png') no-repeat 0 6px;
   background-size: 16px;
 }
-.NB-splash-info .NB-splash-links .NB-splash-link-getsatisfaction a:hover {
-  background: transparent url('/media/embed/reader/getsatisfaction.png') no-repeat 0 6px;
+.NB-splash-info .NB-splash-links .NB-splash-link-discourse a:hover {
+  background: transparent url('/media/embed/reader/discourse.png') no-repeat 0 6px;
   background-size: 16px;
 }
 .NB-splash-info .NB-splash-links .NB-splash-link-blog a:hover {

@@ -309,10 +309,9 @@ _.extend(NEWSBLUR.ReaderTutorial.prototype, {
               $.make('h4', { className: 'NB-tutorial-feedback-header' }, 'Community Feedback'),
               $.make('ul', [
                 $.make('li', [
-                  $.make('a', { href: 'http://getsatisfaction.com/newsblur', className: 'NB-splash-link' }, [
-                    'NewsBlur on ',
-                    $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL+'/img/reader/getsatisfaction.png', style: 'vertical-align: middle;margin: -2px 0 0; width: 16px;height: 16px;' }),
-                    ' Get Satisfaction'
+                  $.make('a', { href: 'https://forum.newsblur.com/', className: 'NB-splash-link' }, [
+                    $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL+'/img/reader/discourse.png', style: 'vertical-align: middle;margin: -2px 0 0; width: 16px;height: 16px;' }),
+                    ' NewsBlur Support Forum'
                   ])
                 ])
               ]),
