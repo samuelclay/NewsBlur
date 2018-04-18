@@ -34,10 +34,10 @@ def revenue(request):
     content = "%s revenue: $%s<br><code>%s</code>" % (datetime.datetime.now().strftime('%Y'), report['annual'], report['output'].replace('\n', '<br>'))
     
     story = {
-        'title': "Daily snapshot: %s" % (datetime.datetime.now().strftime('%a %b %-m, %Y')),
+        'title': "Daily snapshot: %s" % (datetime.datetime.now().strftime('%a %b %-d, %Y')),
         'link': 'https://www.newsblur.com',
         'description': content,
-        'unique_id': datetime.datetime.now().strftime('%a %b %-m, %Y'),
+        'unique_id': datetime.datetime.now().strftime('%a %b %-d, %Y'),
         'pubdate': datetime.datetime.now(),
     }
     rss.add_item(**story)
