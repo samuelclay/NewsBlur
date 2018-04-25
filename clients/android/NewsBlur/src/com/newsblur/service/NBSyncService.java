@@ -150,7 +150,7 @@ public class NBSyncService extends Service {
 	@Override
 	public void onCreate() {
 		super.onCreate();
-        if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "onCreate");
+        com.newsblur.util.Log.d(this, "onCreate");
         HaltNow = false;
         PowerManager pm = (PowerManager) getApplicationContext().getSystemService(POWER_SERVICE);
         wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, this.getClass().getSimpleName());
@@ -193,7 +193,7 @@ public class NBSyncService extends Service {
             };
             primaryExecutor.execute(r);
         } else {
-            Log.d(this.getClass().getName(), "Skipping sync: app not active and background sync not enabled.");
+            com.newsblur.util.Log.d(this, "Skipping sync: app not active and background sync not enabled.");
             stopSelf(startId);
         } 
 
@@ -229,7 +229,7 @@ public class NBSyncService extends Service {
                     OfflineNow = false;   
                     NbActivity.updateAllActivities(NbActivity.UPDATE_STATUS);
                 } else {
-                    Log.d(this.getClass().getName(), "Abandoning sync: network still offline");
+                    com.newsblur.util.Log.d(this, "Abandoning sync: network still offline");
                     return;
                 }
             }
@@ -350,7 +350,7 @@ public class NBSyncService extends Service {
                 // don't block story loading unless this is a brand new action
                 if ((ra.getTried() > 0) && (PendingFeed != null)) continue actionsloop;
                     
-                com.newsblur.util.Log.d(this.getClass().getName(), "attempting action: " + ra.toContentValues().toString());
+                com.newsblur.util.Log.d(this, "attempting action: " + ra.toContentValues().toString());
                 NewsBlurResponse response = ra.doRemote(apiManager, dbHelper);
 
                 if (response == null) {
@@ -1145,7 +1145,7 @@ public class NBSyncService extends Service {
     @Override
     public void onDestroy() {
         try {
-            if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "onDestroy - stopping execution");
+            com.newsblur.util.Log.d(this, "onDestroy - stopping execution");
             HaltNow = true;
             if (cleanupService != null) cleanupService.shutdown();
             if (unreadsService != null) unreadsService.shutdown();
@@ -1161,10 +1161,10 @@ public class NBSyncService extends Service {
                 }
             }
             if (dbHelper != null) dbHelper.close();
-            if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "onDestroy - execution halted");
+            com.newsblur.util.Log.d(this, "onDestroy - execution halted");
             super.onDestroy();
         } catch (Exception ex) {
-            com.newsblur.util.Log.e(this.getClass().getName(), "unclean shutdown", ex);
+            com.newsblur.util.Log.e(this, "unclean shutdown", ex);
         }
     }
 
