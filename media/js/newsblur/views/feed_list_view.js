@@ -284,6 +284,8 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
             NEWSBLUR.reader.open_friends_modal();
         } else if (next == 'account') {
             NEWSBLUR.reader.open_account_modal();
+        } else if (next == 'payments') {
+            NEWSBLUR.reader.open_account_modal({'tab': 'premium'});
         } else if (next == 'opml') {
             NEWSBLUR.reader.open_intro_modal({page_number: 2});
         } else if (next == 'organizer') {

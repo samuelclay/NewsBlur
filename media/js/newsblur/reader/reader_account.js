@@ -33,6 +33,10 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
         
         this.fetch_payment_history();
         this.render_dates();
+        
+        if (this.options.tab) {
+            this.switch_tab(this.options.tab);
+        }
     },
     
     make_modal: function() {
