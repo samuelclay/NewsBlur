@@ -492,8 +492,14 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             FooterViewHolder vh = (FooterViewHolder) viewHolder;
             vh.innerView.removeAllViews();
             View targetFooter = footerViews.get(position - getStoryCount());
+
+            // footers often move aboslute position, but views can only have one parent. since the RV doesn't
+            // necessarily remove from the old pos before adding to the new, we have to add a check here.
+            // however, modifying other views out of order causes requestLayout to be called from within a
+            // layout pass, which causes warnings.
             ViewParent oldFooterHolder = targetFooter.getParent();
             if (oldFooterHolder instanceof ViewGroup) ((ViewGroup) oldFooterHolder).removeAllViews();
+
             vh.innerView.addView(targetFooter);
         }
 
