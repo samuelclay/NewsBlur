@@ -506,7 +506,10 @@ public class ReadingItemFragment extends NbFragment {
      */
     public void offerStoryUpdate(Story story) {
         if (story == null) return;
-        if (! TextUtils.equals(story.storyHash, this.story.storyHash)) return;
+        if (! TextUtils.equals(story.storyHash, this.story.storyHash)) {
+            com.newsblur.util.Log.d(this, "prevented story list index offset shift");
+            return;
+        }
         this.story = story;
         if (AppConstants.VERBOSE_LOG) com.newsblur.util.Log.d(this, "got fresh story");
     }
