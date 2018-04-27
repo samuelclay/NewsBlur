@@ -164,7 +164,6 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
         // we try to avoid mid-list updates or pushdowns, but in case they happen, smooth them
         // out to avoid rows dodging out from under taps
         anim.setAddDuration((long) (anim.getAddDuration() * 1.75));
-        anim.setChangeDuration((long) (anim.getChangeDuration() * 1.5));
         anim.setMoveDuration((long) (anim.getMoveDuration() * 1.75));
 
         calcGridSpacing(listStyle);
