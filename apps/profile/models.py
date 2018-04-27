@@ -407,6 +407,17 @@ class Profile(models.Model):
         
         return True
     
+    def retrieve_stripe_ids(self):
+        if not self.stripe_id:
+            return
+        
+        stripe_customer = stripe.Customer.retrieve(self.stripe_id)
+        stripe_email = stripe_customer.email
+        
+        for email in set([stripe_email, self.user.email]):
+            customers = stripe.Customer.list(email=email)
+            
+        
     @property
     def latest_paypal_email(self):
         ipn = PayPalIPN.objects.filter(custom=self.user.username)
