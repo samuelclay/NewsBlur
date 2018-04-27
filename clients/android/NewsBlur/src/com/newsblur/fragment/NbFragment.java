@@ -22,20 +22,14 @@ public class NbFragment extends Fragment {
 	}
 
     @Override
-    public void onStart() {
-        if (AppConstants.VERBOSE_LOG) com.newsblur.util.Log.d(this, "onStart");
-        super.onStart();
-    }
-
-    @Override
     public void onActivityCreated(Bundle savedInstanceState) {
-        if (AppConstants.VERBOSE_LOG) com.newsblur.util.Log.d(this, "onActivityCreated");
+        com.newsblur.util.Log.d(this, "onActivityCreated");
         super.onActivityCreated(savedInstanceState);
     }
 
     @Override
     public void onResume() {
-        if (AppConstants.VERBOSE_LOG) com.newsblur.util.Log.d(this, "onResume");
+        com.newsblur.util.Log.d(this, "onResume");
         super.onResume();
     }
 
