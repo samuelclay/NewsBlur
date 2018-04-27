@@ -381,12 +381,6 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
 
     @Override
     public void finish() {
-        if (itemSetFragment != null) {
-            // since v6.0 of Android, the ListView in the fragment likes to crash if the underlying
-            // dataset changes rapidly as happens when marking-all-read and when the fragment is
-            // stopping. do a manual hard-stop of the loaders in the fragment before we finish
-            itemSetFragment.stopLoader();
-        }
         super.finish();
         /*
          * Animate out the list by sliding it to the right and the Main activity in from
