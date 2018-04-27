@@ -43,7 +43,6 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
     private static final String BUNDLE_GRIDSTATE = "gridstate";
 
     protected boolean cursorSeenYet = false; // have we yet seen a valid cursor for our particular feedset?
-    private boolean stopLoading = false;
 
     private int itemGridWidthPx = 0;
     private int columnCount;
@@ -93,7 +92,6 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
     @Override
     public void onStart() {
         super.onStart();
-        stopLoading = false;
     }
 
     @Override
@@ -214,13 +212,6 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
     }
 
     /**
-     * Signal that all futher cursor loads should be ignored
-     */
-    public void stopLoader() {
-        stopLoading = true;
-    }
-
-    /**
      * Indicate that the DB was cleared.
      */
     public void resetEmptyState() {
@@ -273,7 +264,6 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
 
     @Override
 	public synchronized void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-        if (stopLoading) return;
 		if (cursor != null) {
             if (! FeedUtils.dbHelper.isFeedSetReady(getFeedSet())) {
                 // the DB hasn't caught up yet from the last story list; don't display stale stories.
