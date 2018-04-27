@@ -225,9 +225,8 @@ class TwitterFetcher:
                     tweet_text = tweet_text.replace(media['url'], replacement)
                     replaced[media['url']] = True
                 entities += "<img src=\"%s\"> <hr>" % media['media_url_https']
-                if 'photo' not in categories:
-                    categories.add('photo')
-            if media['type'] == 'video':
+                categories.add('photo')
+            if media['type'] == 'video' or media['type'] == 'animated_gif':
                 if media.get('url') and media['url'] in tweet_text:
                     tweet_title = tweet_title.replace(media['url'], media['display_url'])
                 replacement = "<a href=\"%s\">%s</a>" % (media['expanded_url'], media['display_url'])
@@ -244,10 +243,8 @@ class TwitterFetcher:
                         chosen_variant = variant
                 if chosen_variant:
                     entities += "<video src=\"%s\" autoplay loop muted playsinline> <hr>" % chosen_variant['url']
-                if 'video' not in categories:
-                    categories.add('video')
+                categories.add(media['type'])                
                 
-
         for url in content_tweet['entities'].get('urls', []):
             if url['url'] in tweet_text:
                 replacement = "<a href=\"%s\">%s</a>" % (url['expanded_url'], url['display_url'])

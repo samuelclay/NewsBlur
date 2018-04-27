@@ -2778,6 +2778,11 @@ body {
   
   /* See http://www.newsblur.com/site/1031643/le-21me for width: auto, height: auto */
 }
+
+.NB-feed-story .NB-feed-story-content video {
+    max-width: 100%;
+}
+
 .NB-feed-story {
     position: relative;
 }
