@@ -387,7 +387,10 @@ public class ReadingItemFragment extends NbFragment {
         Drawable tag_red_background = UIUtils.getDrawable(getActivity(), R.drawable.tag_background_negative);
 
         tagContainer.removeAllViews();
-		for (final String tag : story.tags) {
+		for (String tag : story.tags) {
+            // TODO: these textviews with compound images are buggy, but stubbed in to let colourblind users
+            //       see what is going on. these should be replaced with proper Chips when the v28 Chip lib
+            //       is in full release.
             View v = inflater.inflate(R.layout.tag_view, null);
 
             TextView tagText = (TextView) v.findViewById(R.id.tag_text);
@@ -398,10 +401,18 @@ public class ReadingItemFragment extends NbFragment {
                 case Classifier.LIKE:
                     UIUtils.setViewBackground(tagText, tag_green_background);
                     tagText.setTextColor(tag_green_text);
+                    Drawable icon_like = UIUtils.getDrawable(getActivity(), R.drawable.ic_like_active);
+                    icon_like.setBounds(0, 0, 30, 30);
+                    tagText.setCompoundDrawables(null, null, icon_like, null);
+                    tagText.setCompoundDrawablePadding(8);
                     break;
                 case Classifier.DISLIKE:
                     UIUtils.setViewBackground(tagText, tag_red_background);
                     tagText.setTextColor(tag_red_text);
+                    Drawable icon_dislike = UIUtils.getDrawable(getActivity(), R.drawable.ic_dislike_active);
+                    icon_dislike.setBounds(0, 0, 30, 30);
+                    tagText.setCompoundDrawables(null, null, icon_dislike, null);
+                    tagText.setCompoundDrawablePadding(8);
                     break;
                 }
             }
