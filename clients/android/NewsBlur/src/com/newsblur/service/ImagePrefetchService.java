@@ -53,8 +53,8 @@ public class ImagePrefetchService extends SubService {
                 if (batch.size() >= AppConstants.IMAGE_PREFETCH_BATCH_SIZE) break batchloop;
             }
             try {
-                for (String url : batch) {
-                    if (parent.stopSync()) return;
+                fetchloop: for (String url : batch) {
+                    if (parent.stopSync()) break fetchloop;
                     // dont fetch the image if the associated story was marked read before we got to it
                     if (unreadImages.contains(url)) {
                         if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "prefetching image: " + url);
@@ -68,6 +68,8 @@ public class ImagePrefetchService extends SubService {
                 gotWork();
             }
         }
+
+        if (parent.stopSync()) return;
 
         while (ThumbnailQueue.size() > 0) {
             if (! PrefsUtils.isImagePrefetchEnabled(parent)) return;
@@ -86,8 +88,8 @@ public class ImagePrefetchService extends SubService {
                 if (batch.size() >= AppConstants.IMAGE_PREFETCH_BATCH_SIZE) break batchloop;
             }
             try {
-                for (String url : batch) {
-                    if (parent.stopSync()) return;
+                fetchloop: for (String url : batch) {
+                    if (parent.stopSync()) break fetchloop;
                     // dont fetch the image if the associated story was marked read before we got to it
                     if (unreadImages.contains(url)) {
                         if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "prefetching thumbnail: " + url);
