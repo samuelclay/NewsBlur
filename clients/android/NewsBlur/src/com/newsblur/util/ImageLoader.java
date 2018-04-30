@@ -55,6 +55,17 @@ public class ImageLoader {
         return displayImage(url, imageView, roundRadius, cropSquare, Integer.MAX_VALUE, false);
     }
 
+    /**
+     * Synchronously check a URL/View pair to ensure the view isn't showing a stale mapping.  Useful for
+     * legacy listviews that aren't smart enough to un-map a child before re-using it.
+     */ 
+    public void preCheck(String url, ImageView imageView) {
+        String latestMappedUrl = imageViewMappings.get(imageView);
+        if ( (latestMappedUrl != null) && (!latestMappedUrl.equals(url)) ) {
+            imageView.setImageResource(emptyRID);
+        }
+    }
+
 	public PhotoToLoad displayImage(String url, ImageView imageView, float roundRadius, boolean cropSquare, int maxDimPX, boolean allowDelay) {
         if (url == null) {
 			imageView.setImageResource(emptyRID);
