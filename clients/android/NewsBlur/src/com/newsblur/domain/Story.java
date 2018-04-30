@@ -108,6 +108,8 @@ public class Story implements Serializable {
     public String extern_feedFade;
     public int extern_intelTotalScore;
     public String extern_faviconUrl;
+    public String extern_faviconTextColor;
+    public String extern_faviconBorderColor;
     public String extern_feedTitle;
 
 	public ContentValues getValues() {
@@ -179,6 +181,8 @@ public class Story implements Serializable {
         extern_feedFade = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_FAVICON_FADE));
         extern_intelTotalScore = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.STORY_INTELLIGENCE_TOTAL));
         extern_faviconUrl = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_FAVICON_URL));
+        extern_faviconTextColor = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_FAVICON_TEXT));
+        extern_faviconBorderColor = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_FAVICON_BORDER));
         extern_feedTitle = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_TITLE));
     }
 

@@ -31,6 +31,7 @@ import butterknife.ButterKnife;
 import butterknife.Bind;
 
 import com.newsblur.R;
+import com.newsblur.database.ReadingAdapter;
 import com.newsblur.domain.Story;
 import com.newsblur.fragment.ReadingItemFragment;
 import com.newsblur.fragment.ShareDialogFragment;
@@ -183,6 +184,16 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
         // this likes to default to 'on' for some platforms
         enableProgressCircle(overlayProgressLeft, false);
         enableProgressCircle(overlayProgressRight, false);
+
+        boolean showFeedMetadata = true;
+        if (fs.isSingleNormal()) showFeedMetadata = false;
+        String sourceUserId = null;
+        if (fs.getSingleSocialFeed() != null) sourceUserId = fs.getSingleSocialFeed().getKey();
+        readingAdapter = new ReadingAdapter(getSupportFragmentManager(), sourceUserId, showFeedMetadata);
+        
+        setupPager();
+
+        getSupportLoaderManager().initLoader(0, null, this);
 	}
 
     @Override
@@ -222,7 +233,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
         // this is not strictly necessary, since our first refresh with the fs will swap in
         // the correct session, but that can be delayed by sync backup, so we try here to
         // reduce UI lag, or in case somehow we got redisplayed in a zero-story state
-        FeedUtils.prepareReadingSession(fs);
+        FeedUtils.prepareReadingSession(fs, false);
     }
 
     @Override
@@ -250,25 +261,20 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         synchronized (STORIES_MUTEX) {
             if (cursor == null) return;
+            if (stopLoading) return;
 
-            //NB: this implicitly calls readingAdapter.notifyDataSetChanged();
-            readingAdapter.swapCursor(cursor);
-
-            // if this is the first time we've found a cursor, we know the onCreate chain is done
-            if (this.pager == null) {
-                setupPager();
-            }
-
-            if (! NBSyncService.isFeedSetReady(fs)) {
-                // not only is the session table stale, our fragment is being re-used by the system
-                // to show a totally different feedset. trash anything that might have stale story
-                // data and let them get recreated when a good cursor comes in
+            if (! FeedUtils.dbHelper.isFeedSetReady(fs)) {
                 com.newsblur.util.Log.i(this.getClass().getName(), "stale load");
+                // the system can and will re-use activities, so during the initial mismatch of
+                // data, don't show the old stories
                 pager.setVisibility(View.INVISIBLE);
                 stories = null;
                 triggerRefresh(AppConstants.READING_STORY_PRELOAD);
                 return;
             }
+
+            //NB: this implicitly calls readingAdapter.notifyDataSetChanged();
+            readingAdapter.swapCursor(cursor);
 
             boolean lastCursorWasStale = (stories == null);
 

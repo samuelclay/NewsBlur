@@ -44,6 +44,8 @@ public class UnreadsService extends SubService {
     }
 
     private void syncUnreadList() {
+        if (parent.stopSync()) return;
+
         // get unread hashes and dates from the API
         UnreadStoryHashesResponse unreadHashes = parent.apiManager.getUnreadStoryHashes();
         
@@ -86,8 +88,6 @@ public class UnreadsService extends SubService {
         com.newsblur.util.Log.i(this, "new unreads found:     " + sortationList.size());
         com.newsblur.util.Log.i(this, "unreads to retire:     " + oldUnreadHashes.size());
 
-        if (parent.stopSync()) return;
-
         // any stories that we previously thought to be unread but were not found in the
         // list, mark them read now
 
@@ -127,7 +127,7 @@ public class UnreadsService extends SubService {
     private void getNewUnreadStories() {
         Set<String> notifyFeeds = parent.dbHelper.getNotifyFeeds();
         unreadsyncloop: while (StoryHashQueue.size() > 0) {
-            if (parent.stopSync()) return;
+            if (parent.stopSync()) break unreadsyncloop;
 
             boolean isOfflineEnabled = PrefsUtils.isOfflineEnabled(parent);
             boolean isEnableNotifications = PrefsUtils.isEnableNotifications(parent);

@@ -38,6 +38,7 @@ import com.newsblur.fragment.TextSizeDialogFragment;
 import com.newsblur.service.BootReceiver;
 import com.newsblur.service.NBSyncService;
 import com.newsblur.util.AppConstants;
+import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefConstants.ThemeValue;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.StateFilter;
@@ -154,7 +155,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         // will be required, however inefficient
         folderFeedList.hasUpdated();
 
-        NBSyncService.resetReadingSession();
+        NBSyncService.resetReadingSession(FeedUtils.dbHelper);
         NBSyncService.flushRecounts();
 
         updateStatusIndicators();

@@ -3,7 +3,6 @@ package com.newsblur.activity;
 import android.os.Bundle;
 
 import com.newsblur.R;
-import com.newsblur.database.MixedFeedsReadingAdapter;
 import com.newsblur.util.UIUtils;
 
 public class InfrequentReading extends Reading {
@@ -13,8 +12,6 @@ public class InfrequentReading extends Reading {
         super.onCreate(savedInstanceBundle);
 
         UIUtils.setCustomActionBar(this, R.drawable.ak_icon_allstories, getResources().getString(R.string.infrequent_title));
-        readingAdapter = new MixedFeedsReadingAdapter(getSupportFragmentManager(), null);
-        getSupportLoaderManager().initLoader(0, null, this);
     }
 
 }
