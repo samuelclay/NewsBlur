@@ -65,7 +65,7 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
         // this is not strictly necessary, since our first refresh with the fs will swap in
         // the correct session, but that can be delayed by sync backup, so we try here to
         // reduce UI lag, or in case somehow we got redisplayed in a zero-story state
-        FeedUtils.prepareReadingSession(fs);
+        FeedUtils.prepareReadingSession(fs, false);
 
         if (PrefsUtils.isAutoOpenFirstUnread(this)) {
             if (FeedUtils.dbHelper.getUnreadCount(fs, intelState) > 0) {
@@ -150,6 +150,7 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
 		inflater.inflate(R.menu.itemslist, menu);
 
         if (fs.isGlobalShared() || 
+            fs.isAllSocial() ||
             fs.isFilterSaved() ||
             fs.isAllSaved() ||
             fs.isSingleSavedTag() ||
@@ -309,11 +310,6 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
     }
 
     private void updateStatusIndicators() {
-        boolean isLoading = NBSyncService.isFeedSetSyncing(this.fs, this);
-        if (itemSetFragment != null) {
-            itemSetFragment.setLoading(isLoading);
-        }
-
         if (overlayStatusText != null) {
             String syncStatus = NBSyncService.getSyncStatusMessage(this, true);
             if (syncStatus != null)  {
@@ -336,8 +332,7 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
         }
         fs.setSearchQuery(q);
         if (!TextUtils.equals(q, oldQuery)) {
-            NBSyncService.resetReadingSession();
-            FeedUtils.prepareReadingSession(fs);
+            FeedUtils.prepareReadingSession(fs, true);
             triggerSync();
             itemSetFragment.resetEmptyState();
             itemSetFragment.hasUpdated();
@@ -357,10 +352,9 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
         restartReadingSession();
     }
 
-    private void restartReadingSession() {
+    protected void restartReadingSession() {
         NBSyncService.resetFetchState(fs);
-        NBSyncService.resetReadingSession();
-        FeedUtils.prepareReadingSession(fs);
+        FeedUtils.prepareReadingSession(fs, true);
         triggerSync();
         itemSetFragment.resetEmptyState();
         itemSetFragment.hasUpdated();
@@ -387,12 +381,6 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
 
     @Override
     public void finish() {
-        if (itemSetFragment != null) {
-            // since v6.0 of Android, the ListView in the fragment likes to crash if the underlying
-            // dataset changes rapidly as happens when marking-all-read and when the fragment is
-            // stopping. do a manual hard-stop of the loaders in the fragment before we finish
-            itemSetFragment.stopLoader();
-        }
         super.finish();
         /*
          * Animate out the list by sliding it to the right and the Main activity in from

@@ -24,13 +24,13 @@ apply plugin: 'checkstyle'
 apply plugin: 'findbugs'
 
 dependencies {
-    compile 'com.android.support:support-core-utils:27.1.0'
-    compile 'com.android.support:support-fragment:27.1.0'
-    compile 'com.android.support:support-core-ui:27.1.0'
+    compile 'com.android.support:support-core-utils:27.1.1'
+    compile 'com.android.support:support-fragment:27.1.1'
+    compile 'com.android.support:support-core-ui:27.1.1'
     compile 'com.jakewharton:butterknife:7.0.1'
     compile 'com.squareup.okhttp3:okhttp:3.8.1'
     compile 'com.google.code.gson:gson:2.8.2'
-    compile 'com.android.support:recyclerview-v7:27.1.0'
+    compile 'com.android.support:recyclerview-v7:27.1.1'
 }
 
 android {

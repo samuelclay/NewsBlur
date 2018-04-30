@@ -3,7 +3,6 @@ package com.newsblur.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.newsblur.service.NBSyncService;
@@ -45,7 +44,7 @@ public class NbActivity extends FragmentActivity {
 	@Override
 	protected void onCreate(Bundle bundle) {
         com.newsblur.util.Log.offerContext(this);
-        if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "onCreate");
+        com.newsblur.util.Log.d(this, "onCreate");
 
         // this is not redundant to the applyThemePreference() call in onResume. the theme needs to be set
         // before onCreate() in order to work
@@ -75,7 +74,7 @@ public class NbActivity extends FragmentActivity {
 
 	@Override
 	protected void onResume() {
-        com.newsblur.util.Log.d(this.getClass().getName(), "onResume" + UIUtils.getMemoryUsageDebug(this));
+        com.newsblur.util.Log.d(this, "onResume" + UIUtils.getMemoryUsageDebug(this));
 		super.onResume();
 		finishIfNotLoggedIn();
 
@@ -93,7 +92,7 @@ public class NbActivity extends FragmentActivity {
 
 	@Override
 	protected void onPause() {
-        if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "onPause");
+        com.newsblur.util.Log.d(this.getClass().getName(), "onPause");
 		super.onPause();
 
         synchronized (AllActivities) {
@@ -111,7 +110,7 @@ public class NbActivity extends FragmentActivity {
 	
 	@Override
 	protected void onSaveInstanceState(Bundle savedInstanceState) {
-        if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "onSave");
+        com.newsblur.util.Log.d(this, "onSave");
 		savedInstanceState.putString(UNIQUE_LOGIN_KEY, uniqueLoginKey);
 		super.onSaveInstanceState(savedInstanceState);
 	}
@@ -131,7 +130,7 @@ public class NbActivity extends FragmentActivity {
      *        type of update being broadcast.
      */
     protected void handleUpdate(int updateType) {
-        Log.w(this.getClass().getName(), "activity doesn't implement handleUpdate");
+        com.newsblur.util.Log.w(this, "activity doesn't implement handleUpdate");
     }
 
     private void _handleUpdate(final int updateType) {

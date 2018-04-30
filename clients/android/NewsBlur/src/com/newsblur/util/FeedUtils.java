@@ -58,11 +58,12 @@ public class FeedUtils {
         dbHelper.dropAndRecreateTables();
     }
 
-    public static void prepareReadingSession(final FeedSet fs) {
+    public static void prepareReadingSession(final FeedSet fs, final boolean resetFirst) {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... arg) {
                 try {
+                    if (resetFirst) NBSyncService.resetReadingSession(dbHelper);
                     NBSyncService.prepareReadingSession(dbHelper, fs);
                 } catch (Exception e) {
                     ; // this is a UI hinting call and might fail if the DB is being reset, but that is fine

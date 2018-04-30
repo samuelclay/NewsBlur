@@ -49,7 +49,7 @@ public class OriginalTextService extends SubService {
         }
         try {
             fetchloop: for (String hash : batch) {
-                if (parent.stopSync()) return;
+                if (parent.stopSync()) break fetchloop;
                 fetchedHashes.add(hash);
                 String result = null;
                 StoryTextResponse response = parent.apiManager.getStoryText(FeedUtils.inferFeedId(hash), hash);

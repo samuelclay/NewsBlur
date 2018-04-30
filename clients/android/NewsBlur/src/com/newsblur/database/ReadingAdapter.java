@@ -1,4 +1,4 @@
-package com.newsblur.activity;
+package com.newsblur.database;
 
 import android.database.Cursor;
 import android.support.v4.app.Fragment;
@@ -7,22 +7,27 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.util.SparseArray;
 import android.view.ViewGroup;
 
+import com.newsblur.activity.NbActivity;
+import com.newsblur.domain.Classifier;
 import com.newsblur.domain.Story;
 import com.newsblur.fragment.LoadingFragment;
 import com.newsblur.fragment.ReadingItemFragment;
+import com.newsblur.util.FeedUtils;
 
 import java.lang.ref.WeakReference;
 
-public abstract class ReadingAdapter extends FragmentStatePagerAdapter {
+public class ReadingAdapter extends FragmentStatePagerAdapter {
 
-	protected Cursor stories;
-    protected String sourceUserId;
+	private Cursor stories;
+    private String sourceUserId;
+    private boolean showFeedMetadata;
     private SparseArray<WeakReference<ReadingItemFragment>> cachedFragments;
 	
-	public ReadingAdapter(FragmentManager fm, String sourceUserId) {
+	public ReadingAdapter(FragmentManager fm, String sourceUserId, boolean showFeedMetadata) {
 		super(fm);
         this.cachedFragments = new SparseArray<WeakReference<ReadingItemFragment>>();
         this.sourceUserId = sourceUserId;
+        this.showFeedMetadata = showFeedMetadata;
 	}
 	
 	@Override
@@ -32,8 +37,22 @@ public abstract class ReadingAdapter extends FragmentStatePagerAdapter {
         } else {
             stories.moveToPosition(position);
             Story story = Story.fromCursor(stories);
-            ReadingItemFragment frag = getReadingItemFragment(story);
-            return frag;
+            story.bindExternValues(stories);
+
+            // TODO: does the pager generate new fragments in the UI thread? If so, classifiers should
+            // be loaded async by the fragment itself
+            Classifier classifier = FeedUtils.dbHelper.getClassifierForFeed(story.feedId);
+
+            return ReadingItemFragment.newInstance(story, 
+                                                   story.extern_feedTitle, 
+                                                   story.extern_feedColor, 
+                                                   story.extern_feedFade, 
+                                                   story.extern_faviconBorderColor, 
+                                                   story.extern_faviconTextColor, 
+                                                   story.extern_faviconUrl, 
+                                                   classifier, 
+                                                   showFeedMetadata, 
+                                                   sourceUserId);
         }
     }
 
@@ -64,8 +83,6 @@ public abstract class ReadingAdapter extends FragmentStatePagerAdapter {
         notifyDataSetChanged();
     }
         
-	protected abstract ReadingItemFragment getReadingItemFragment(Story story);
-	
 	@Override
 	public synchronized int getCount() {
 		if (stories != null && stories.getCount() > 0) {

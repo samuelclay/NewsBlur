@@ -7,7 +7,7 @@ public class AppConstants {
     // Enables high-volume logging that may be useful for debugging. This should
     // never be enabled for releases, as it not only slows down the app considerably,
     // it will log sensitive info such as passwords!
-    public static final boolean VERBOSE_LOG = false;
+    public static final boolean VERBOSE_LOG = true;
     public static final boolean VERBOSE_LOG_DB = false;
     public static final boolean VERBOSE_LOG_NET = false;
 	
@@ -75,7 +75,7 @@ public class AppConstants {
     public static final boolean ENABLE_FEEDBACK = true;
 
     // link to app feedback page
-    public static final String FEEDBACK_URL = "https://getsatisfaction.com/newsblur/topics/new/add_details?topic[subject]=Android%3A+&topic[categories][][id]=80957&topic[type]=question&topic[content]=";
+    public static final String FEEDBACK_URL = "https://forum.newsblur.com/new-topic?title=Android%3A+&body=";
 
     // how long to wait for sync threads to shutdown. ideally we would wait the max network timeout,
     // but the system like to force-kill terminating services that take too long, so it is often
