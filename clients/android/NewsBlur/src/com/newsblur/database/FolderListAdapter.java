@@ -275,6 +275,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
             nameView.setText(f.title);
             nameView.setTextSize(textSize * defaultTextSize_childName);
             ImageView iconView = (ImageView) v.findViewById(R.id.row_feedfavicon);
+            FeedUtils.iconLoader.preCheck(f.faviconUrl, iconView);
             FeedUtils.iconLoader.displayImage(f.faviconUrl, iconView, 0, false);
             TextView neutCounter = ((TextView) v.findViewById(R.id.row_feedneutral));
             TextView posCounter = ((TextView) v.findViewById(R.id.row_feedpositive));
