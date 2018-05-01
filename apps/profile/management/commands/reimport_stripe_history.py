@@ -60,5 +60,5 @@ class Command(BaseCommand):
                     time.sleep(2)
                     continue
 
-        return failed
+        return ','.join(failed)
 
