@@ -265,11 +265,11 @@ class Profile(models.Model):
                 stripe_id = stripe_id_model.stripe_id
                 stripe_customer = stripe.Customer.retrieve(stripe_id)
                 stripe_payments = stripe.Charge.all(customer=stripe_customer.id).data
-                total_stripe_payments += len(stripe_payments)
                 
                 for payment in stripe_payments:
                     created = datetime.datetime.fromtimestamp(payment.created)
                     if payment.status == 'failed': continue
+                    total_stripe_payments += 1
                     PaymentHistory.objects.create(user=self.user,
                                                   payment_date=created,
                                                   payment_amount=payment.amount / 100.0,
