@@ -257,17 +257,21 @@ class Profile(models.Model):
                 
         # Record Stripe payments
         if self.stripe_id:
-            stripe.api_key = settings.STRIPE_SECRET
-            stripe_customer = stripe.Customer.retrieve(self.stripe_id)
-            stripe_payments = stripe.Charge.all(customer=stripe_customer.id).data
+            self.retrieve_stripe_ids()
             
-            for payment in stripe_payments:
-                created = datetime.datetime.fromtimestamp(payment.created)
-                if payment.status == 'failed': continue
-                PaymentHistory.objects.create(user=self.user,
-                                              payment_date=created,
-                                              payment_amount=payment.amount / 100.0,
-                                              payment_provider='stripe')
+            stripe.api_key = settings.STRIPE_SECRET
+            for stripe_id_model in self.user.stripe_ids.all():
+                stripe_id = stripe_id_model.stripe_id
+                stripe_customer = stripe.Customer.retrieve(stripe_id)
+                stripe_payments = stripe.Charge.all(customer=stripe_customer.id).data
+            
+                for payment in stripe_payments:
+                    created = datetime.datetime.fromtimestamp(payment.created)
+                    if payment.status == 'failed': continue
+                    PaymentHistory.objects.create(user=self.user,
+                                                  payment_date=created,
+                                                  payment_amount=payment.amount / 100.0,
+                                                  payment_provider='stripe')
         
         # Calculate payments in last year, then add together
         payment_history = PaymentHistory.objects.filter(user=self.user)
@@ -414,9 +418,15 @@ class Profile(models.Model):
         stripe_customer = stripe.Customer.retrieve(self.stripe_id)
         stripe_email = stripe_customer.email
         
+        stripe_ids = set()
         for email in set([stripe_email, self.user.email]):
             customers = stripe.Customer.list(email=email)
-            
+            for customer in customers:
+                stripe_ids.add(customer.stripe_id)
+        
+        self.user.stripe_ids.all().delete()
+        for stripe_id in stripe_ids:
+            self.user.stripe_ids.create(stripe_id=stripe_id)
         
     @property
     def latest_paypal_email(self):
@@ -978,7 +988,15 @@ class Profile(models.Model):
                 continue
             profile.setup_premium_history(check_premium=True)
         
-            
+
+class StripeIds(models.Model):
+    user = models.ForeignKey(User, related_name='stripe_ids')
+    stripe_id = models.CharField(max_length=24, blank=True, null=True)
+
+    def __unicode__(self):
+        return "%s: %s" % (self.user.username, self.stripe_id)
+
+        
 def create_profile(sender, instance, created, **kwargs):
     if created:
         Profile.objects.create(user=instance)
@@ -1052,6 +1070,7 @@ def stripe_signup(sender, full_json, **kwargs):
         logging.user(profile.user, "~BC~SB~FBStripe subscription signup")
         profile.activate_premium()
         profile.cancel_premium_paypal()
+        profile.retrieve_stripe_ids()
     except Profile.DoesNotExist:
         return {"code": -1, "message": "User doesn't exist."}
 zebra_webhook_customer_subscription_created.connect(stripe_signup)
