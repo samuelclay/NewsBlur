@@ -1090,6 +1090,7 @@ def copy_postgres_to_standby(master='db01'):
 
     # local: fab host:new copy_ssh_keys:postgres,private=True
     # new: sudo su postgres; ssh old
+    # new: sudo su postgres; ssh db_pgsql
     # old: sudo su postgres; ssh new
     # old: sudo su postgres -c "psql -c \"SELECT pg_start_backup('label', true)\""
     sudo('systemctl stop postgresql')
