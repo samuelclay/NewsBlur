@@ -785,10 +785,10 @@ def setup_staging():
         run('touch logs/newsblur.log')
 
 def setup_node_app():
-    sudo('curl -sL https://deb.nodesource.com/setup_7.x | sudo -E bash -')
-    sudo('apt-get install -y nodejs-dev')
+    sudo('curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -')
+    sudo('apt-get install -y nodejs')
     # run('curl -L https://npmjs.org/install.sh | sudo sh')
-    sudo('apt-get install npm')
+    # sudo('apt-get install npm')
     sudo('npm install -g supervisor')
     sudo('ufw allow 8888')
 
