@@ -259,12 +259,14 @@ class Profile(models.Model):
         if self.stripe_id:
             self.retrieve_stripe_ids()
             
+            total_stripe_payments = 0
             stripe.api_key = settings.STRIPE_SECRET
             for stripe_id_model in self.user.stripe_ids.all():
                 stripe_id = stripe_id_model.stripe_id
                 stripe_customer = stripe.Customer.retrieve(stripe_id)
                 stripe_payments = stripe.Charge.all(customer=stripe_customer.id).data
-            
+                total_stripe_payments += len(stripe_payments)
+                
                 for payment in stripe_payments:
                     created = datetime.datetime.fromtimestamp(payment.created)
                     if payment.status == 'failed': continue
@@ -301,7 +303,7 @@ class Profile(models.Model):
                 self.save()
 
         logging.user(self.user, "~BY~SN~FWFound ~SB~FB%s paypal~FW~SN and ~SB~FC%s stripe~FW~SN payments (~SB%s payments expire: ~SN~FB%s~FW)" % (
-                     len(paypal_payments), len(stripe_payments), len(payment_history), self.premium_expire))
+                     len(paypal_payments), total_stripe_payments, len(payment_history), self.premium_expire))
 
         if (check_premium and not self.is_premium and
             (not self.premium_expire or self.premium_expire > datetime.datetime.now())):
@@ -415,6 +417,7 @@ class Profile(models.Model):
         if not self.stripe_id:
             return
         
+        stripe.api_key = settings.STRIPE_SECRET
         stripe_customer = stripe.Customer.retrieve(self.stripe_id)
         stripe_email = stripe_customer.email
         
