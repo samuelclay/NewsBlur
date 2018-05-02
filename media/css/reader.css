@@ -2704,6 +2704,10 @@ body {
     z-index: 2;
     line-height: 18px;
 }
+
+.NB-narrow-content .NB-feed-story-header-feed {
+    padding-right: 28px;
+}
 .NB-feed-story-header-feed.NB-feed-story-river-same-feed {
     z-index: 0;
 }
