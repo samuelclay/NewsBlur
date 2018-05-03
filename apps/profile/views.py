@@ -26,7 +26,7 @@ from apps.social.models import MSocialServices, MActivity, MSocialProfile
 from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifierFeed, MClassifierTag
 from utils import json_functions as json
 from utils.user_functions import ajax_login_required
-from utils.view_functions import render_to
+from utils.view_functions import render_to, is_true
 from utils.user_functions import get_user
 from utils import log as logging
 from vendor.paypalapi.exceptions import PayPalAPIResponseError
@@ -334,6 +334,7 @@ def stripe_form(request):
     stripe.api_key = settings.STRIPE_SECRET
     plan = int(request.GET.get('plan', 2))
     plan = PLANS[plan-1][0]
+    renew = is_true(request.GET.get('renew', False))
     error = None
     
     if request.method == 'POST':
@@ -388,6 +389,10 @@ def stripe_form(request):
         new_user_queue_behind = new_user_queue_count - new_user_queue_position 
         new_user_queue_position -= 1
     
+    immediate_charge = True
+    if user.profile.premium_expire and user.profile.premium_expire > datetime.datetime.now():
+        immediate_charge = False
+    
     logging.user(request, "~BM~FBLoading Stripe form")
 
     return render_to_response('profile/stripe_form.xhtml',
@@ -398,6 +403,8 @@ def stripe_form(request):
           'new_user_queue_count': new_user_queue_count - 1,
           'new_user_queue_position': new_user_queue_position,
           'new_user_queue_behind': new_user_queue_behind,
+          'renew': renew,
+          'immediate_charge': immediate_charge,
           'error': error,
         },
         context_instance=RequestContext(request)
