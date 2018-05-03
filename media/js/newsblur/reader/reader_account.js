@@ -320,10 +320,11 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
 
     },
     
-    close_and_load_premium: function() {
-      this.close(function() {
-          NEWSBLUR.reader.open_feedchooser_modal({'premium_only': true});
-      });
+    close_and_load_premium: function(options) {
+        options = _.extend({}, {'premium_only': true}, options);
+        this.close(function() {
+            NEWSBLUR.reader.open_feedchooser_modal(options);
+        });
     },
     
     cancel_premium: function() {
@@ -496,7 +497,7 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
         $.targetIs(e, { tagSelector: '.NB-account-premium-renew' }, function($t, $p) {
             e.preventDefault();
             
-            self.close_and_load_premium();
+            self.close_and_load_premium({'renew': true});
         });        
         $.targetIs(e, { tagSelector: '.NB-account-premium-cancel' }, function($t, $p) {
             e.preventDefault();
