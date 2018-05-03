@@ -135,7 +135,7 @@ float: right;">
             <button type="submit" class="submit-button NB-modal-submit-button NB-modal-submit-green">{% if renew %}Switch to this Credit Card{% else %}Submit Payment{% endif %}</button>
             
             <span class="payment-notice">
-                {% if immediate_charge and user.profile.premium_expire %}
+                {% if not immediate_charge and user.profile.premium_expire %}
                 You will not be charged until {{ user.profile.premium_expire|date:"F j, Y" }}
                 {% endif %}
             </span>
