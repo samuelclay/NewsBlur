@@ -8153,29 +8153,16 @@ form.opml_import_form input {
   top: 24px;
   position: relative;
 }
-.NB-modal-tutorial .NB-page-3 {
-  position: static;
-  float: right;
-  display: block;
-  overflow: hidden;
-  width: 240px;
-  height: 122px;
-}
-.NB-modal-tutorial .NB-page-3 .story {
-  padding-right: 0;
-}
-.NB-modal-tutorial .NB-page-3 .story:last-child {
-  border-bottom: 1px solid #E7EDF6;
-}
-.NB-modal-tutorial .NB-page-3 ul img.NB-trainer-bullet {
-  vertical-align: middle;
-}
 .NB-modal-tutorial .NB-page-3 .NB-tutorial-train-1 {
   margin-bottom: 12px;
 }
 .NB-modal-tutorial .NB-page-3 .NB-tutorial-train-1 img {
   margin-right: 24px;
   border: 1px solid #505050;
+}
+.NB-modal-tutorial .NB-page-3 ul img.NB-trainer-bullet {
+  width: 8px;
+  margin: 0px 8px 2px 0;
 }
 .NB-modal-tutorial .NB-page-4 ul li {
   clear: both;
