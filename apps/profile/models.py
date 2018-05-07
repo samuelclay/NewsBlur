@@ -224,6 +224,7 @@ class Profile(models.Model):
     def setup_premium_history(self, alt_email=None, check_premium=False, force_expiration=False):
         paypal_payments = []
         stripe_payments = []
+        total_stripe_payments = 0
         existing_history = PaymentHistory.objects.filter(user=self.user, 
                                                          payment_provider__in=['paypal', 'stripe'])
         if existing_history.count():
@@ -259,7 +260,6 @@ class Profile(models.Model):
         if self.stripe_id:
             self.retrieve_stripe_ids()
             
-            total_stripe_payments = 0
             stripe.api_key = settings.STRIPE_SECRET
             for stripe_id_model in self.user.stripe_ids.all():
                 stripe_id = stripe_id_model.stripe_id
