@@ -107,6 +107,7 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
     public void onResume() {
         super.onResume();
         fleuronResized = false;
+        updateLoadingIndicators();
     }
 
     @Override
@@ -253,10 +254,9 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
             } catch (Exception e) {
                 ;
             }
-            return null;
+            return FeedUtils.dbHelper.getNullLoader();
         } else if (fs.isMuted()) {
-            updateLoadingIndicators();
-            return null;
+            return FeedUtils.dbHelper.getNullLoader();
         } else {
             return FeedUtils.dbHelper.getActiveStoriesLoader(getFeedSet());
         }
