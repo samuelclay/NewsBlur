@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.CancellationSignal;
+import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
 import android.text.TextUtils;
 import android.util.Log;
@@ -1000,6 +1001,16 @@ public class BlurDatabaseHelper {
         synchronized (RW_MUTEX) {dbRW.insertOrThrow(DatabaseConstants.STORY_TEXT_TABLE, null, values);}
     }
 
+    /**
+     * Get a loader that always returns a null cursor, for fragments that know they will never
+     * have a result (such as muted feeds).
+     */
+    public Loader<Cursor> getNullLoader() {
+        return new AsyncTaskLoader<Cursor>(context) {
+            public Cursor loadInBackground() {return null;}
+        };
+    }
+        
     public Loader<Cursor> getSocialFeedsLoader() {
         return new QueryCursorLoader(context) {
             protected Cursor createCursor() {return getSocialFeedsCursor(cancellationSignal);}
