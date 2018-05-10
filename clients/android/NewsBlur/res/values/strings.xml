@@ -85,6 +85,7 @@
 	<string name="alert_dialog_ok">OKAY</string>
 	<string name="alert_dialog_cancel">CANCEL</string>
 	<string name="alert_dialog_done">DONE</string>
+	<string name="alert_dialog_openlink">OPEN LINK</string>
 	<string name="alert_dialog_openimage">OPEN IMAGE</string>
     <string name="dialog_folders_save">SAVE FOLDERS</string>
     <string name="dialog_story_intel_save">SAVE TRAINING</string>

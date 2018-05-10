@@ -239,28 +239,34 @@ public class ReadingItemFragment extends NbFragment {
             String mappedURL = imageUrlRemaps.get(imageURL);
             final String finalURL = mappedURL == null ? imageURL : mappedURL;
             final String altText = imageAltTexts.get(finalURL);
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setTitle(finalURL);
             if (altText != null) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                builder.setTitle(finalURL);
                 builder.setMessage(UIUtils.fromHtml(altText));
-                builder.setPositiveButton(R.string.alert_dialog_openimage, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        Intent i = new Intent(Intent.ACTION_VIEW);
-                        i.setData(Uri.parse(finalURL));
-                        try {
-                            startActivity(i);
-                        } catch (Exception e) {
-                            android.util.Log.wtf(this.getClass().getName(), "device cannot open URLs");
-                        }
-                    }
-                });
-                builder.setNegativeButton(R.string.alert_dialog_done, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        ; // do nothing
-                    }
-                });
-                builder.show();
+            } else {
+                builder.setMessage(finalURL);
             }
+            int actionRID = R.string.alert_dialog_openlink;
+            if (result.getType() == HitTestResult.IMAGE_TYPE || result.getType() == HitTestResult.SRC_IMAGE_ANCHOR_TYPE ) {
+                actionRID = R.string.alert_dialog_openimage;
+            }
+            builder.setPositiveButton(actionRID, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    Intent i = new Intent(Intent.ACTION_VIEW);
+                    i.setData(Uri.parse(finalURL));
+                    try {
+                        startActivity(i);
+                    } catch (Exception e) {
+                        android.util.Log.wtf(this.getClass().getName(), "device cannot open URLs");
+                    }
+                }
+            });
+            builder.setNegativeButton(R.string.alert_dialog_done, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    ; // do nothing
+                }
+            });
+            builder.show();
         } else {
             super.onCreateContextMenu(menu, v, menuInfo);
         }
