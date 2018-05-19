@@ -18,6 +18,7 @@ public class FileCache {
     private final int minValidCacheBytes;
 
 	private final File cacheDir;
+    private FileCache chain;
 
 	private FileCache(Context context, String subdir, int minValidCacheBytes) {
         this.minValidCacheBytes = minValidCacheBytes;
@@ -42,8 +43,22 @@ public class FileCache {
         return fc;
     }
 
+    /**
+     * Configure a chained cache so that if the provided cache already has a file, it will be used
+     * rather than being cached twice.
+     */
+    public void addChain(FileCache chain) {
+        this.chain = chain;
+    }
+
     public void cacheFile(String url) {
         try {
+            // if the chained cache already has this file, don't bother downloading again
+            if (chain != null) {
+                File f = chain.getCachedFile(url);
+                if ((f != null) && (f.exists())) return;
+            }
+            
             // don't be evil and download if the user is low on storage
             if (cacheDir.getFreeSpace() < MIN_FREE_SPACE_BYTES) {
                 Log.w(this.getClass().getName(), "device low on storage, not caching");
@@ -69,6 +84,12 @@ public class FileCache {
 
     public File getCachedFile(String url) {
         try {
+            // if the chained cache already has this file, use that one
+            if (chain != null) {
+                File f = chain.getCachedFile(url);
+                if ((f != null) && (f.exists())) return f;
+            }
+
             String fileName = getFileName(url);
             if (fileName == null) {
                 return null;
