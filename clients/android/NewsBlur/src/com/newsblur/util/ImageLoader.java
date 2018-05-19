@@ -50,6 +50,12 @@ public class ImageLoader {
     public static ImageLoader asThumbnailLoader(Context context) {
         return new ImageLoader(FileCache.asThumbnailCache(context), android.R.color.transparent, 32, true, (Runtime.getRuntime().maxMemory()/6));
     }
+
+    public static ImageLoader asThumbnailLoader(Context context, FileCache chainCache) {
+        FileCache cache = FileCache.asThumbnailCache(context);
+        cache.addChain(chainCache);
+        return new ImageLoader(cache, android.R.color.transparent, 32, true, (Runtime.getRuntime().maxMemory()/6));
+    }
 	
     public PhotoToLoad displayImage(String url, ImageView imageView, float roundRadius, boolean cropSquare) {
         return displayImage(url, imageView, roundRadius, cropSquare, Integer.MAX_VALUE, false);

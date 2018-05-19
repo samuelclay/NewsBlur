@@ -41,11 +41,11 @@ public class FeedUtils {
         if (iconLoader == null) {
             iconLoader = ImageLoader.asIconLoader(context.getApplicationContext());
         }
-        if (thumbnailLoader == null) {
-            thumbnailLoader = ImageLoader.asThumbnailLoader(context.getApplicationContext());
-        }
         if (storyImageCache == null) {
             storyImageCache = FileCache.asStoryImageCache(context.getApplicationContext());
+        }
+        if (thumbnailLoader == null) {
+            thumbnailLoader = ImageLoader.asThumbnailLoader(context.getApplicationContext(), storyImageCache);
         }
     }
 
