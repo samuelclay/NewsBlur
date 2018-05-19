@@ -28,6 +28,7 @@ public class ImagePrefetchService extends SubService {
         super(parent);
         storyImageCache = FileCache.asStoryImageCache(parent);
         thumbnailCache = FileCache.asThumbnailCache(parent);
+        thumbnailCache.addChain(storyImageCache);
     }
 
     @Override
