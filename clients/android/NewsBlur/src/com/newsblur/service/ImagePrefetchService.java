@@ -28,6 +28,7 @@ public class ImagePrefetchService extends SubService {
         super(parent);
         storyImageCache = FileCache.asStoryImageCache(parent);
         thumbnailCache = FileCache.asThumbnailCache(parent);
+        thumbnailCache.addChain(storyImageCache);
     }
 
     @Override
@@ -74,7 +75,6 @@ public class ImagePrefetchService extends SubService {
         while (ThumbnailQueue.size() > 0) {
             if (! PrefsUtils.isImagePrefetchEnabled(parent)) return;
             if (! PrefsUtils.isBackgroundNetworkAllowed(parent)) return;
-            if (! PrefsUtils.isShowThumbnails(parent)) return;
 
             startExpensiveCycle();
             com.newsblur.util.Log.d(this, "story thumbs to prefetch: " + StoryImageQueue.size());
