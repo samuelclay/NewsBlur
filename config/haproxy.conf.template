@@ -119,7 +119,6 @@ backend postgres
   
 backend mongo
   option httpchk GET /db_check/mongo
-  server mongo-db22a        db22a:5000              check inter 2000ms
   server mongo-db20         db20:5000               check inter 2000ms
   server mongo-db23a        db23a:5000              check inter 2000ms
   server mongo-db25a        db25a:5000              check inter 2000ms
