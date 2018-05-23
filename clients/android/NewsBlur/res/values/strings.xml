@@ -19,7 +19,7 @@
     <string name="add_feed_message">Add \"%s\" to your feeds?</string>
     
     <string name="loading">Loading…</string>
-    <string name="orig_text_loading">Fetching text…</string>
+    <string name="orig_text_loading">Fetching story text…</string>
     
     <string name="follow_error">There was a problem following the user. Check your internet connection and try again.</string>
     <string name="unfollow_error">There was a problem unfollowing the user. Check your internet connection and try again.</string>
