@@ -17,6 +17,9 @@ public class DatabaseConstants {
 
     private DatabaseConstants(){} // util class - no instances
 
+    // the largest value that can be queried from an Android DB (config_cursorWindowSize and worst-case encoding overhead)
+    public static final int MAX_TEXT_SIZE = 1024 * 2048 / 4;
+
 	private static final String TEXT = " TEXT";
 	private static final String INTEGER = " INTEGER";
 
