@@ -1,6 +1,7 @@
 package com.newsblur.service;
 
 import com.newsblur.activity.NbActivity;
+import com.newsblur.database.DatabaseConstants;
 import com.newsblur.network.domain.StoryTextResponse;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.FeedUtils;
@@ -54,13 +55,18 @@ public class OriginalTextService extends SubService {
                 String result = null;
                 StoryTextResponse response = parent.apiManager.getStoryText(FeedUtils.inferFeedId(hash), hash);
                 if (response != null) {
-                    if (response.originalText != null) {
-                        result = response.originalText;
-                    } else {
+                    if (response.originalText == null) {
                         // a null value in an otherwise valid response to this call indicates a fatal
                         // failure to extract text and should be recorded so the UI can inform the
                         // user and switch them back to a valid view mode
                         result = NULL_STORY_TEXT;
+                    } else if (response.originalText.length() >= DatabaseConstants.MAX_TEXT_SIZE) {
+                        // this API can occasionally return story texts that are much too large to query
+                        // from the DB.  stop insertion to prevent poisoning the DB and the cursor lifecycle
+                        com.newsblur.util.Log.w(this, "discarding too-large story text. hash " + hash + " size " + response.originalText.length());
+                        result = NULL_STORY_TEXT;
+                    } else {
+                        result = response.originalText;
                     }
                 }
                 if (result != null) {   
