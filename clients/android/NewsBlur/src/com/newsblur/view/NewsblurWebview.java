@@ -8,6 +8,8 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebChromeClient;
+import android.webkit.WebResourceError;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -18,6 +20,7 @@ import com.newsblur.fragment.ReadingItemFragment;
 
 public class NewsblurWebview extends WebView {
 
+    private NewsblurWebViewClient webViewClient;
     private NewsblurWebChromeClient webChromeClient;
     private boolean isCustomViewShowing;
 
@@ -62,6 +65,10 @@ public class NewsblurWebview extends WebView {
             }
         });
 
+        // handle progress and error callbacks
+        webViewClient = new NewsblurWebViewClient();
+        setWebViewClient(webViewClient);
+
         // do the minimum handling of view swapping so that fullscreen HTML5 works, for videos.
         webChromeClient = new NewsblurWebChromeClient();
         setWebChromeClient(webChromeClient);
@@ -95,6 +102,12 @@ public class NewsblurWebview extends WebView {
      */
     public void setWebviewWrapperLayout(View webviewWrapperLayout) {
         this.webChromeClient.webviewWrapperLayout = webviewWrapperLayout;
+    }
+
+    class NewsblurWebViewClient extends WebViewClient {
+        public void onReceivedError (WebView view, WebResourceRequest request, WebResourceError error) {
+            com.newsblur.util.Log.w(this, "WebView Error ("+error.getErrorCode()+"): " + error.getDescription());
+        }
     }
 
     // this WCC implements the bare minimum callbacks to get HTML5 fullscreen video working
