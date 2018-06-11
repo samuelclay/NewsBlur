@@ -23,13 +23,15 @@ public class NewsblurWebview extends WebView {
     private NewsblurWebViewClient webViewClient;
     private NewsblurWebChromeClient webChromeClient;
     private boolean isCustomViewShowing;
+    private Context context;
 
     public ReadingItemFragment fragment;
     // we need the less-abstract activity class in order to manipulate the overlay widgets
     public Reading activity;
 
-	public NewsblurWebview(final Context context, AttributeSet attrs) {
+	public NewsblurWebview(Context context, AttributeSet attrs) {
 		super(context, attrs);
+        this.context = context;
 
 		setVerticalScrollBarEnabled(false);
 		setHorizontalScrollBarEnabled(false);
@@ -44,28 +46,7 @@ public class NewsblurWebview extends WebView {
 
         this.setScrollBarStyle(SCROLLBARS_INSIDE_OVERLAY);
 
-        // as of v43.0.2357.121 of the system WebView, links no longer open in the user's chosen
-        // browser, but open in-app.  Override the default behaviour so it works as expected on
-        // all devices.
-        setWebViewClient(new WebViewClient() {
-            @Override
-            // this was deprecated in API 24 but the replacement only added in the same release.
-            // the suppression can be removed when we move past 24
-            @SuppressWarnings("deprecation")
-            public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                Uri uri = Uri.parse(url);
-                try {
-                    Intent i = new Intent(Intent.ACTION_VIEW);
-                    i.setData(uri);
-                    context.startActivity(i);
-                } catch (Exception e) {
-                    com.newsblur.util.Log.e(this.getClass().getName(), "device cannot open URLs");
-                }
-                return true;
-            }
-        });
-
-        // handle progress and error callbacks
+        // handle links, loading progress, and error callbacks
         webViewClient = new NewsblurWebViewClient();
         setWebViewClient(webViewClient);
 
@@ -105,6 +86,26 @@ public class NewsblurWebview extends WebView {
     }
 
     class NewsblurWebViewClient extends WebViewClient {
+        @Override
+        // this was deprecated in API 24 but the replacement only added in the same release.
+        // the suppression can be removed when we move past 24
+        @SuppressWarnings("deprecation")
+        // as of v43.0.2357.121 of the system WebView, links no longer open in the user's chosen
+        // browser, but open in-app.  Override the default behaviour so it works as expected on
+        // all devices.
+        public boolean shouldOverrideUrlLoading(WebView view, String url) {
+            Uri uri = Uri.parse(url);
+            try {
+                Intent i = new Intent(Intent.ACTION_VIEW);
+                i.setData(uri);
+                context.startActivity(i);
+            } catch (Exception e) {
+                com.newsblur.util.Log.e(this.getClass().getName(), "device cannot open URLs");
+            }
+            return true;
+        }
+
+        @Override
         public void onReceivedError (WebView view, WebResourceRequest request, WebResourceError error) {
             com.newsblur.util.Log.w(this, "WebView Error ("+error.getErrorCode()+"): " + error.getDescription());
         }
