@@ -399,7 +399,7 @@ class Feed(models.Model):
     @property
     def favicon_fetching(self):
         return bool(not (self.favicon_not_found or self.favicon_color))
-        
+    
     @classmethod
     def get_feed_from_url(cls, url, create=True, aggressive=False, fetch=True, offset=0, user=None):
         feed = None
@@ -446,6 +446,11 @@ class Feed(models.Model):
                 
             return feed
         
+        @timelimit(5)
+        def _feedfinder(url):
+            found_feed_urls = feedfinder.find_feeds(url)
+            return found_feed_urls
+        
         # Normalize and check for feed_address, dupes, and feed_link
         url = urlnorm.normalize(url)
         if not url:
@@ -458,7 +463,12 @@ class Feed(models.Model):
         if feed and len(feed) > offset:
             feed = feed[offset]
         else:
-            found_feed_urls = feedfinder.find_feeds(url)
+            try:
+                found_feed_urls = _feedfinder(url)
+            except TimeoutError:
+                logging.debug('   ---> Feed finder timed out...')
+                found_feed_urls = []
+                
             if len(found_feed_urls):
                 feed_finder_url = found_feed_urls[0]
                 logging.debug(" ---> Found feed URLs for %s: %s" % (url, found_feed_urls))
