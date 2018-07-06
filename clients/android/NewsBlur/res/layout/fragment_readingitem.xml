@@ -51,6 +51,20 @@
                 android:visibility="gone"
             />
 
+            <TextView
+                android:id="@+id/reading_textmodefailed"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                style="?readingBackground"
+                android:gravity="center_horizontal"
+                android:text="@string/orig_text_failed"
+                android:textSize="16sp"
+                android:textStyle="italic"
+                android:visibility="gone"
+            />
+
             <com.newsblur.view.NewsblurWebview
                 android:id="@+id/reading_webview"
                 android:layout_width="match_parent"
