@@ -27,7 +27,6 @@ import android.webkit.WebView.HitTestResult;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import butterknife.ButterKnife;
 import butterknife.Bind;
@@ -83,6 +82,7 @@ public class ReadingItemFragment extends NbFragment {
     private DefaultFeedView selectedFeedView;
     private boolean textViewUnavailable;
     @Bind(R.id.reading_textloading) TextView textViewLoadingMsg;
+    @Bind(R.id.reading_textmodefailed) TextView textViewLoadingFailedMsg;
     @Bind(R.id.save_story_button) Button saveButton;
     @Bind(R.id.share_story_button) Button shareButton;
 
@@ -500,24 +500,37 @@ public class ReadingItemFragment extends NbFragment {
     }
 
     private void reloadStoryContent() {
-        if ((selectedFeedView == DefaultFeedView.STORY) || textViewUnavailable) {
-            textViewLoadingMsg.setVisibility(View.GONE);
-            enableProgress(false);
+        // reset indicators
+        textViewLoadingMsg.setVisibility(View.GONE);
+        textViewLoadingFailedMsg.setVisibility(View.GONE);
+        enableProgress(false);
+
+        boolean needStoryContent = false;
+
+        if (selectedFeedView == DefaultFeedView.STORY) {
+            needStoryContent = true;
+        } else {
+            if (textViewUnavailable) {
+                textViewLoadingFailedMsg.setVisibility(View.VISIBLE);
+                needStoryContent = true;
+            } else if (originalText == null) {
+                textViewLoadingMsg.setVisibility(View.VISIBLE);
+                enableProgress(true);
+                loadOriginalText();
+                // still show the story mode version, as the text mode one may take some time
+                needStoryContent = true;
+            } else {
+                setupWebview(originalText);
+                onContentLoadFinished();
+            }
+        }
+
+        if (needStoryContent) {
             if (storyContent == null) {
                 loadStoryContent();
             } else {
                 setupWebview(storyContent);
                 onContentLoadFinished();
-            }
-        } else {
-            if (originalText == null) {
-                enableProgress(true);
-                loadOriginalText();
-            } else {
-                textViewLoadingMsg.setVisibility(View.GONE);
-                setupWebview(originalText);
-                onContentLoadFinished();
-                enableProgress(false);
             }
         }
     }
@@ -575,7 +588,6 @@ public class ReadingItemFragment extends NbFragment {
                         if (OriginalTextService.NULL_STORY_TEXT.equals(result)) {
                             // the server reported that text mode is not available.  kick back to story mode
                             com.newsblur.util.Log.d(this, "orig text not avail for story: " + story.storyHash);
-                            UIUtils.safeToast(getActivity(), R.string.text_mode_unavailable, Toast.LENGTH_SHORT);
                             textViewUnavailable = true;
                         } else {
                             ReadingItemFragment.this.originalText = result;
@@ -583,7 +595,6 @@ public class ReadingItemFragment extends NbFragment {
                         reloadStoryContent();
                     } else {
                         com.newsblur.util.Log.d(this, "orig text not yet cached for story: " + story.storyHash);
-                        textViewLoadingMsg.setVisibility(View.VISIBLE);
                         OriginalTextService.addPriorityHash(story.storyHash);
                         triggerSync();
                     }
