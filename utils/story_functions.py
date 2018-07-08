@@ -130,6 +130,8 @@ def pre_process_story(entry, encoding):
         entry['story_content'] = content.strip()
     else:
         entry['story_content'] = summary.strip()
+    if not entry['story_content'] and entry.get('subtitle'):
+        entry['story_content'] = entry.get('subtitle')
     
     if 'summary_detail' in entry and entry['summary_detail'].get('type', None) == 'text/plain':
         try:
@@ -150,6 +152,14 @@ def pre_process_story(entry, encoding):
                     <audio controls="controls" preload="none">
                         <source src="%(media_url)s" type="%(media_type)s" />
                     </audio>"""  % {
+                        'media_url': media_url, 
+                        'media_type': media_type
+                    }
+            elif 'video' in media_type and media_url:
+                entry['story_content'] += """<br><br>
+                    <video controls="controls" preload="none">
+                        <source src="%(media_url)s" type="%(media_type)s" />
+                    </video>"""  % {
                         'media_url': media_url, 
                         'media_type': media_type
                     }
