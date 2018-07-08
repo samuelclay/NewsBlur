@@ -45,7 +45,10 @@ _.extend(NEWSBLUR.ReaderGoodies.prototype, {
                     href: 'https://userstyles.org/styles/124890/newsblur-dark-theme-by-splike'
                 }, 'Download the Dark Theme'),
                 $.make('div', { className: 'NB-goodies-title' }, 'Dark theme for the web'),
-                $.make('div', { className: 'NB-goodies-subtitle' }, 'Use the Stylish browser extension to install a user-contributed dark theme.')
+                $.make('div', { className: 'NB-goodies-subtitle' }, [
+                    'Use the Stylus browser extension to install a user-contributed dark theme. Note that you should use the Stylus extension and not the Stylish extension due to privacy concerns. ',
+                    $.make('a', { href: 'https://www.ghacks.net/2017/05/16/stylus-is-a-stylish-fork-without-analytics/' }, 'You can install Stylus for Firefox, Opera, and Chrome.')
+                ])
             ]),
             
             $.make('fieldset', [
