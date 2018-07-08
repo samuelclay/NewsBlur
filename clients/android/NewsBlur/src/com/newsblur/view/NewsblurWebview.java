@@ -108,6 +108,7 @@ public class NewsblurWebview extends WebView {
         @Override
         public void onReceivedError (WebView view, WebResourceRequest request, WebResourceError error) {
             com.newsblur.util.Log.w(this, "WebView Error ("+error.getErrorCode()+"): " + error.getDescription());
+            fragment.flagWebviewError();
         }
     }
 

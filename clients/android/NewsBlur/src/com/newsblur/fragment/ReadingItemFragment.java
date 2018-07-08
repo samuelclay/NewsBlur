@@ -761,6 +761,10 @@ public class ReadingItemFragment extends NbFragment {
         // TODO: perform any position-dependent UI behaviours here (@manderson23)
     }
 
+    public void flagWebviewError() {
+        // TODO: enable a selective reload mechanism on load failures?
+    }
+
 	private class TextSizeReceiver extends BroadcastReceiver {
 		@Override
 		public void onReceive(Context context, Intent intent) {
