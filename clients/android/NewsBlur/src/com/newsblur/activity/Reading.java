@@ -384,90 +384,16 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
-        if (readingAdapter == null || pager == null) { return false; }
-        Story story = readingAdapter.getStory(pager.getCurrentItem());
-        if (story == null ) { return false; }
-        menu.findItem(R.id.menu_reading_save).setTitle(story.starred ? R.string.menu_unsave_story : R.string.menu_save_story);
-        if (fs.isFilterSaved() || fs.isAllSaved() || (fs.getSingleSavedTag() != null)) menu.findItem(R.id.menu_reading_markunread).setVisible(false);
-
-        ThemeValue themeValue = PrefsUtils.getSelectedTheme(this);
-        if (themeValue == ThemeValue.LIGHT) {
-            menu.findItem(R.id.menu_theme_light).setChecked(true);
-        } else if (themeValue == ThemeValue.DARK) {
-            menu.findItem(R.id.menu_theme_dark).setChecked(true);
-        } else if (themeValue == ThemeValue.BLACK) {
-            menu.findItem(R.id.menu_theme_black).setChecked(true);
-        }
-
         return true;
     }
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-        if (pager == null) return false;
-		int currentItem = pager.getCurrentItem();
-		Story story = readingAdapter.getStory(currentItem);
-        if (story == null) return false;
-
 		if (item.getItemId() == android.R.id.home) {
 			finish();
 			return true;
-		} else if (item.getItemId() == R.id.menu_reading_original) {
-            Intent i = new Intent(Intent.ACTION_VIEW);
-            i.setData(Uri.parse(story.permalink));
-            try {
-                startActivity(i);
-            } catch (Exception e) {
-                android.util.Log.wtf(this.getClass().getName(), "device cannot open URLs");
-            }
-			return true;
-		} else if (item.getItemId() == R.id.menu_reading_sharenewsblur) {
-            DialogFragment newFragment = ShareDialogFragment.newInstance(story, readingAdapter.getSourceUserId());
-            newFragment.show(getSupportFragmentManager(), "dialog");
-			return true;
-		} else if (item.getItemId() == R.id.menu_send_story) {
-			FeedUtils.sendStoryBrief(story, this);
-			return true;
-		} else if (item.getItemId() == R.id.menu_send_story_full) {
-			FeedUtils.sendStoryFull(story, this);
-			return true;
-		} else if (item.getItemId() == R.id.menu_textsize) {
-			TextSizeDialogFragment textSize = TextSizeDialogFragment.newInstance(PrefsUtils.getTextSize(this), TextSizeDialogFragment.TextSizeType.ReadingText);
-			textSize.show(getSupportFragmentManager(), TextSizeDialogFragment.class.getName());
-			return true;
-		} else if (item.getItemId() == R.id.menu_font) {
-            ReadingFontDialogFragment storyFont = ReadingFontDialogFragment.newInstance(PrefsUtils.getFontString(this));
-            storyFont.show(getSupportFragmentManager(), ReadingFontDialogFragment.class.getName());
-            return true;
-        } else if (item.getItemId() == R.id.menu_reading_save) {
-            if (story.starred) {
-			    FeedUtils.setStorySaved(story, false, Reading.this);
-            } else {
-			    FeedUtils.setStorySaved(story, true, Reading.this);
-            }
-			return true;
-        } else if (item.getItemId() == R.id.menu_reading_markunread) {
-            this.markStoryUnread(story);
-            return true;
 		} else if (item.getItemId() == R.id.menu_reading_fullscreen) {
             ViewUtils.hideSystemUI(getWindow().getDecorView());
-            return true;
-        } else if (item.getItemId() == R.id.menu_theme_light) {
-            PrefsUtils.setSelectedTheme(this, ThemeValue.LIGHT);
-            UIUtils.restartActivity(this);
-            return true;
-        } else if (item.getItemId() == R.id.menu_theme_dark) {
-            PrefsUtils.setSelectedTheme(this, ThemeValue.DARK);
-            UIUtils.restartActivity(this);
-            return true;
-        } else if (item.getItemId() == R.id.menu_theme_black) {
-            PrefsUtils.setSelectedTheme(this, ThemeValue.BLACK);
-            UIUtils.restartActivity(this);
-            return true;
-        } else if (item.getItemId() == R.id.menu_intel) {
-            if (story.feedId.equals("0")) return true; // cannot train on feedless stories
-            StoryIntelTrainerFragment intelFrag = StoryIntelTrainerFragment.newInstance(story, fs);
-            intelFrag.show(getSupportFragmentManager(), StoryIntelTrainerFragment.class.getName());
             return true;
         } else {
 			return super.onOptionsItemSelected(item);
@@ -534,7 +460,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
                 if (readingAdapter == null) return null;
                 Story story = readingAdapter.getStory(position);
                 if (story != null) {
-                    markStoryRead(story);
+                    FeedUtils.markStoryAsRead(story, Reading.this);
                     synchronized (pageHistory) {
                         // if the history is just starting out or the last entry in it isn't this page, add this page
                         if ((pageHistory.size() < 1) || (!story.equals(pageHistory.get(pageHistory.size()-1)))) {
@@ -718,15 +644,6 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
             boolean gotSome = NBSyncService.requestMoreForFeed(fs, desiredStoryCount, currentCount);
             if (gotSome) triggerSync();
 		}
-    }
-
-    private void markStoryRead(Story story) {
-        FeedUtils.markStoryAsRead(story, this);
-    }
-
-    private void markStoryUnread(Story story) {
-        FeedUtils.markStoryUnread(story, this);
-        Toast.makeText(Reading.this, R.string.toast_story_unread, Toast.LENGTH_SHORT).show();
     }
 
     // NB: this callback is for the text size slider
