@@ -125,10 +125,6 @@ public class ReadingAdapter extends FragmentStatePagerAdapter {
 		}
 	}
 
-    public String getSourceUserId() {
-        return sourceUserId;
-    }
-
     public synchronized ReadingItemFragment getExistingItem(int pos) {
         WeakReference<ReadingItemFragment> frag = cachedFragments.get(pos);
         if (frag == null) return null;

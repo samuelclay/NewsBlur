@@ -19,6 +19,8 @@ import android.util.Log;
 import android.view.ContextMenu;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -26,6 +28,7 @@ import android.view.ViewGroup;
 import android.webkit.WebView.HitTestResult;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import butterknife.ButterKnife;
@@ -58,7 +61,7 @@ import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class ReadingItemFragment extends NbFragment {
+public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuItemClickListener {
 
 	public static final String TEXT_SIZE_CHANGED = "textSizeChanged";
 	public static final String TEXT_SIZE_VALUE = "textSizeChangeValue";
@@ -85,6 +88,7 @@ public class ReadingItemFragment extends NbFragment {
     @Bind(R.id.reading_textmodefailed) TextView textViewLoadingFailedMsg;
     @Bind(R.id.save_story_button) Button saveButton;
     @Bind(R.id.share_story_button) Button shareButton;
+    @Bind(R.id.story_context_menu_button) Button menuButton;
 
     /** The story HTML, as provided by the 'content' element of the stories API. */
     private String storyContent;
@@ -272,6 +276,91 @@ public class ReadingItemFragment extends NbFragment {
         } else {
             super.onCreateContextMenu(menu, v, menuInfo);
         }
+    }
+
+    @OnClick(R.id.story_context_menu_button) void onClickMenuButton() {
+        com.newsblur.util.Log.d(this, "DD - click menu");
+        PopupMenu pm = new PopupMenu(getActivity(), menuButton);
+        Menu menu = pm.getMenu();
+        pm.getMenuInflater().inflate(R.menu.story_context, menu);
+
+        menu.findItem(R.id.menu_reading_save).setTitle(story.starred ? R.string.menu_unsave_story : R.string.menu_save_story);
+        if (fs.isFilterSaved() || fs.isAllSaved() || (fs.getSingleSavedTag() != null)) menu.findItem(R.id.menu_reading_markunread).setVisible(false);
+
+        ThemeValue themeValue = PrefsUtils.getSelectedTheme(getActivity());
+        if (themeValue == ThemeValue.LIGHT) {
+            menu.findItem(R.id.menu_theme_light).setChecked(true);
+        } else if (themeValue == ThemeValue.DARK) {
+            menu.findItem(R.id.menu_theme_dark).setChecked(true);
+        } else if (themeValue == ThemeValue.BLACK) {
+            menu.findItem(R.id.menu_theme_black).setChecked(true);
+        }
+
+        pm.setOnMenuItemClickListener(this);
+        pm.show();
+    }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+		if (item.getItemId() == R.id.menu_reading_original) {
+            Intent i = new Intent(Intent.ACTION_VIEW);
+            i.setData(Uri.parse(story.permalink));
+            try {
+                startActivity(i);
+            } catch (Exception e) {
+                com.newsblur.util.Log.e(this, "device cannot open URLs");
+            }
+			return true;
+		} else if (item.getItemId() == R.id.menu_reading_sharenewsblur) {
+            String sourceUserId = null;
+            if (fs.getSingleSocialFeed() != null) sourceUserId = fs.getSingleSocialFeed().getKey();
+            DialogFragment newFragment = ShareDialogFragment.newInstance(story, sourceUserId);
+            newFragment.show(getActivity().getSupportFragmentManager(), "dialog");
+			return true;
+		} else if (item.getItemId() == R.id.menu_send_story) {
+			FeedUtils.sendStoryBrief(story, getActivity());
+			return true;
+		} else if (item.getItemId() == R.id.menu_send_story_full) {
+			FeedUtils.sendStoryFull(story, getActivity());
+			return true;
+		} else if (item.getItemId() == R.id.menu_textsize) {
+			TextSizeDialogFragment textSize = TextSizeDialogFragment.newInstance(PrefsUtils.getTextSize(getActivity()), TextSizeDialogFragment.TextSizeType.ReadingText);
+			textSize.show(getActivity().getSupportFragmentManager(), TextSizeDialogFragment.class.getName());
+			return true;
+		} else if (item.getItemId() == R.id.menu_font) {
+            ReadingFontDialogFragment storyFont = ReadingFontDialogFragment.newInstance(PrefsUtils.getFontString(getActivity()));
+            storyFont.show(getActivity().getSupportFragmentManager(), ReadingFontDialogFragment.class.getName());
+            return true;
+        } else if (item.getItemId() == R.id.menu_reading_save) {
+            if (story.starred) {
+			    FeedUtils.setStorySaved(story, false, getActivity());
+            } else {
+			    FeedUtils.setStorySaved(story, true, getActivity());
+            }
+			return true;
+        } else if (item.getItemId() == R.id.menu_reading_markunread) {
+            FeedUtils.markStoryUnread(story, getActivity());
+            return true;
+		} else if (item.getItemId() == R.id.menu_theme_light) {
+            PrefsUtils.setSelectedTheme(getActivity(), ThemeValue.LIGHT);
+            UIUtils.restartActivity(getActivity());
+            return true;
+        } else if (item.getItemId() == R.id.menu_theme_dark) {
+            PrefsUtils.setSelectedTheme(getActivity(), ThemeValue.DARK);
+            UIUtils.restartActivity(getActivity());
+            return true;
+        } else if (item.getItemId() == R.id.menu_theme_black) {
+            PrefsUtils.setSelectedTheme(getActivity(), ThemeValue.BLACK);
+            UIUtils.restartActivity(getActivity());
+            return true;
+        } else if (item.getItemId() == R.id.menu_intel) {
+            if (story.feedId.equals("0")) return true; // cannot train on feedless stories
+            StoryIntelTrainerFragment intelFrag = StoryIntelTrainerFragment.newInstance(story, fs);
+            intelFrag.show(getActivity().getSupportFragmentManager(), StoryIntelTrainerFragment.class.getName());
+            return true;
+        } else {
+			return super.onOptionsItemSelected(item);
+		}
     }
 
     @OnClick(R.id.save_story_button) void clickSave() {
