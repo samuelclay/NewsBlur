@@ -290,7 +290,7 @@ class UserSubscription(models.Model):
             elif unreads_cached:
                 unread_story_hashes = range_func(unread_ranked_stories_keys, 0, offset+limit)
             else:
-                unread_story_hashes = None
+                unread_story_hashes = []
             return story_hashes, unread_story_hashes
         else:
             rt.delete(ranked_stories_keys)
