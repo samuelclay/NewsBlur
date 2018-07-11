@@ -81,6 +81,8 @@ public class ReadingItemFragment extends NbFragment {
 	private View view;
 	private UserDetails user;
     private DefaultFeedView selectedFeedView;
+    private boolean textViewUnavailable;
+    @Bind(R.id.reading_textloading) TextView textViewLoadingMsg;
     @Bind(R.id.save_story_button) Button saveButton;
     @Bind(R.id.share_story_button) Button shareButton;
 
@@ -482,7 +484,15 @@ public class ReadingItemFragment extends NbFragment {
         synchronized (selectedFeedView) {
             selectedFeedView = PrefsUtils.getDefaultViewModeForFeed(getActivity(), story.feedId);
         }
-        reloadStoryContent();
+        // these can come from async tasks
+        Activity a = getActivity();
+        if (a != null) {
+            a.runOnUiThread(new Runnable() {
+                public void run() {
+                    reloadStoryContent();
+                }
+            });
+        }
     }
 
     public DefaultFeedView getSelectedViewMode() {
@@ -490,7 +500,8 @@ public class ReadingItemFragment extends NbFragment {
     }
 
     private void reloadStoryContent() {
-        if (selectedFeedView == DefaultFeedView.STORY) {
+        if ((selectedFeedView == DefaultFeedView.STORY) || textViewUnavailable) {
+            textViewLoadingMsg.setVisibility(View.GONE);
             enableProgress(false);
             if (storyContent == null) {
                 loadStoryContent();
@@ -503,6 +514,7 @@ public class ReadingItemFragment extends NbFragment {
                 enableProgress(true);
                 loadOriginalText();
             } else {
+                textViewLoadingMsg.setVisibility(View.GONE);
                 setupWebview(originalText);
                 onContentLoadFinished();
                 enableProgress(false);
@@ -564,18 +576,14 @@ public class ReadingItemFragment extends NbFragment {
                             // the server reported that text mode is not available.  kick back to story mode
                             com.newsblur.util.Log.d(this, "orig text not avail for story: " + story.storyHash);
                             UIUtils.safeToast(getActivity(), R.string.text_mode_unavailable, Toast.LENGTH_SHORT);
-                            if (getActivity() != null) {
-                                setViewMode(DefaultFeedView.STORY);
-                                Reading activity = (Reading) getActivity();
-                                activity.viewModeChanged();
-                            }
+                            textViewUnavailable = true;
                         } else {
                             ReadingItemFragment.this.originalText = result;
                         }
                         reloadStoryContent();
                     } else {
                         com.newsblur.util.Log.d(this, "orig text not yet cached for story: " + story.storyHash);
-                        if (getActivity() != null) setupWebview(getActivity().getResources().getString(R.string.orig_text_loading));
+                        textViewLoadingMsg.setVisibility(View.VISIBLE);
                         OriginalTextService.addPriorityHash(story.storyHash);
                         triggerSync();
                     }
