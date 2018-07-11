@@ -603,7 +603,11 @@ def load_single_feed(request, feed_id):
     if feed.is_newsletter and not usersub:
         # User must be subscribed to a newsletter in order to read it
         raise Http404
-        
+    
+    if page > 200:
+        logging.user(request, "~BR~FK~SBOver page 200 on single feed: %s" % page)
+        raise Http404
+    
     if query:
         if user.profile.is_premium:
             user_search = MUserSearch.get_user(user.pk)
