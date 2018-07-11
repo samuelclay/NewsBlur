@@ -249,24 +249,30 @@ public class NBSyncService extends Service {
             // ping activities to indicate that housekeeping is done, and the DB is safe to use
             NbActivity.updateAllActivities(NbActivity.UPDATE_DB_READY);
 
+            // async text requests might have been queued up and are being waiting on by the live UI. give them priority
             originalTextService.start(startId);
 
             // first: catch up
             syncActions();
+
+            // if MD is stale, sync it first so unreads don't get backwards with story unread state
+            syncMetadata(startId);
             
-            // these requests are expressly enqueued by the UI/user, do them next
+            // handle fetching of stories that are actively being requested by the live UI
             syncPendingFeedStories(startId);
 
-            syncMetadata(startId);
-
-            unreadsService.start(startId);
-
-            imagePrefetchService.start(startId);
-
+            // re-apply the local state of any actions executed before local UI interaction
             finishActions();
 
+            // after all actions, double-check local state vs remote state consistency
             checkRecounts();
 
+            // async story and image prefetch are lower priority and don't affect active reading, do them last
+            unreadsService.start(startId);
+            imagePrefetchService.start(startId);
+
+            // almost all notifications will be pushed after the unreadsService gets new stories, but double-check
+            // here in case some made it through the feed sync loop first
             pushNotifications();
 
             if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "finishing primary sync");
