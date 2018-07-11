@@ -21,7 +21,7 @@ RUN       set -ex \
                     gfortran \
                     lib32ncurses5-dev  \
                     libblas-dev \
-			              libffi-dev \
+                    libffi-dev \
                     libjpeg-dev \
                     libmysqlclient-dev \
                     libpq-dev \
