@@ -178,7 +178,7 @@ def pre_process_story(entry, encoding):
     
     entry['guid'] = entry.get('guid') or entry.get('id') or entry.get('link') or str(entry.get('published'))
 
-    if not entry.get('title') and entry.get('story_content'):
+    if not entry.get('title'):
         entry['title'] = ""
         
     entry['title'] = strip_tags(entry.get('title'))
