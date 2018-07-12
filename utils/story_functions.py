@@ -179,12 +179,7 @@ def pre_process_story(entry, encoding):
     entry['guid'] = entry.get('guid') or entry.get('id') or entry.get('link') or str(entry.get('published'))
 
     if not entry.get('title') and entry.get('story_content'):
-        story_title = strip_tags(entry['story_content'])
-        if len(story_title) > 80:
-            story_title = story_title[:80] + '...'
-        entry['title'] = story_title
-    if not entry.get('title') and entry.get('link'):
-        entry['title'] = entry['link']
+        entry['title'] = ""
         
     entry['title'] = strip_tags(entry.get('title'))
     entry['author'] = strip_tags(entry.get('author'))

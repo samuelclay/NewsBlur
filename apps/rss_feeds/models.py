@@ -1838,14 +1838,27 @@ class Feed(models.Model):
             has_changes = True
         if not show_changes and latest_story_content:
             story_content = latest_story_content
-            
+        
+        story_title = story_db.story_title
+        blank_story_title = False
+        if not story_title:
+            blank_story_title = True
+            if story_content:
+                story_title = strip_tags(story_content)
+            if not story_title and story_db.story_permalink:
+                story_title = story_db.story_permalink
+            if len(story_title) > 80:
+                story_title = story_title[:80] + '...'
+        
         story                     = {}
         story['story_hash']       = getattr(story_db, 'story_hash', None)
         story['story_tags']       = story_db.story_tags or []
         story['story_date']       = story_db.story_date.replace(tzinfo=None)
         story['story_timestamp']  = story_db.story_date.strftime('%s')
         story['story_authors']    = story_db.story_author_name or ""
-        story['story_title']      = story_db.story_title
+        story['story_title']      = story_title
+        if blank_story_title:
+            story['story_title_blank'] = True
         story['story_content']    = story_content
         story['story_permalink']  = story_db.story_permalink
         story['image_urls']       = story_db.image_urls
