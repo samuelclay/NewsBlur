@@ -89,12 +89,12 @@ _.extend(NEWSBLUR.ReaderSendEmail.prototype, {
               ])
             ]),
             $.make('form', { className: 'NB-recommend-form' }, [
-                $.make('div', { className: 'NB-error' }),
                 $.make('div', { className: 'NB-modal-submit' }, [
                     $.make('input', { type: 'submit', className: 'NB-modal-submit-button NB-modal-submit-green', value: 'Send this story' }),
                     ' or ',
                     $.make('a', { href: '#', className: 'NB-modal-emailclient' }, 'open in an email client')
-                ])
+                ]),
+                $.make('div', { className: 'NB-error' })
             ])
         ]);
     },
@@ -114,7 +114,7 @@ _.extend(NEWSBLUR.ReaderSendEmail.prototype, {
         this.model.preference('full_name', from_name);
         this.model.preference('email', from_email);
         this.model.preference('email_cc', email_cc);
-        $('.NB-error', this.$modal).fadeOut(500);
+        $('.NB-error', this.$modal).hide();
         
         this.model.send_story_email({
           story_id   : this.story.id,
@@ -147,16 +147,19 @@ _.extend(NEWSBLUR.ReaderSendEmail.prototype, {
     },
     
     error: function(data) {
-        var $error = $('.NB-modal-error', this.$modal);
+        var $error = $('.NB-error', this.$modal);
         var $save = $('input[type=submit]', this.$modal);
         $error.show();
-        if (!data) {
+        console.log(['Error sending email', data]);
+        if (!data || !data.message) {
             $error.text("There was a issue on the backend with sending your email. Sorry about this! It has been noted and will be fixed soon. You should probably send this manually now.");
         } else {
-          $('.NB-error', this.$modal).html(data.message).fadeIn(500); 
+          $error.html(data.message).fadeIn(500); 
         }
         $save.removeClass('NB-disabled').val('Send this story');
         $('.NB-modal-loading', this.$modal).removeClass('NB-active');
+        
+        this.resize();
     },
     
     open_email_client: function() {
