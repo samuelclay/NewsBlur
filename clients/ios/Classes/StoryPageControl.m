@@ -1247,10 +1247,11 @@
 #pragma mark HUDs
 
 - (void)showShareHUD:(NSString *)msg {
-//    [MBProgressHUD hideHUDForView:self.view animated:NO];
+    [MBProgressHUD hideHUDForView:self.view animated:NO];
     self.storyHUD = [MBProgressHUD showHUDAddedTo:currentPage.view animated:YES];
     self.storyHUD.labelText = msg;
     self.storyHUD.margin = 20.0f;
+    self.storyHUD.removeFromSuperViewOnHide = YES;
     self.currentPage.noStoryMessage.hidden = YES;
 }
 
