@@ -270,10 +270,10 @@ _.extend(NEWSBLUR.ReaderGoodies.prototype, {
             $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
               $.make('a', {
                   className: 'NB-modal-submit-button NB-modal-submit-green',
-                  href: 'https://chrome.google.com/webstore/detail/nnbhbdncokmmjheldobdfbmfpamelojh'
+                  href: 'https://chrome.google.com/webstore/detail/newsblur-notifier-plus/nbmlfepgaaalffdmmjhpkgpjjlnpjjlp'
               }, 'Download'),
               $.make('div', { className: 'NB-goodies-chrome' }),
-              $.make('div', { className: 'NB-goodies-title' }, 'Chrome: NewsBlur unread count notifier'),
+              $.make('div', { className: 'NB-goodies-title' }, 'Chrome: NewsBlur Notifier Plus'),
               $.make('div', { className: 'NB-goodies-subtitle' }, 'Shows the unread count from your NewsBlur account.')
             ]),
             $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
