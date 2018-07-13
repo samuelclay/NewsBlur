@@ -490,7 +490,7 @@ class Feed(models.Model):
         if not feed and fetch and create:
             try:
                 r = requests.get(url)
-            except requests.ConnectionError:
+            except (requests.ConnectionError, requests.models.InvalidURL):
                 r = None
             if r and 'application/json' in r.headers.get('Content-Type'):
                 feed = cls.objects.create(feed_address=url)
