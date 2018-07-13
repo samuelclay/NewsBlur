@@ -261,6 +261,7 @@ class Profile(models.Model):
             self.retrieve_stripe_ids()
             
             stripe.api_key = settings.STRIPE_SECRET
+            seen_payments = set()
             for stripe_id_model in self.user.stripe_ids.all():
                 stripe_id = stripe_id_model.stripe_id
                 stripe_customer = stripe.Customer.retrieve(stripe_id)
@@ -269,6 +270,8 @@ class Profile(models.Model):
                 for payment in stripe_payments:
                     created = datetime.datetime.fromtimestamp(payment.created)
                     if payment.status == 'failed': continue
+                    if created in seen_payments: continue
+                    seen_payments.add(created)
                     total_stripe_payments += 1
                     PaymentHistory.objects.create(user=self.user,
                                                   payment_date=created,
