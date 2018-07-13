@@ -2029,8 +2029,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         if (copy) {
             [UIPasteboard generalPasteboard].image = image;
             [self flashCheckmarkHud:@"copied"];
-        }
-        if (save) {
+        } else if (save) {
             [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
                 PHAssetChangeRequest *changeRequest = [PHAssetChangeRequest creationRequestForAssetFromImage:image];
                 changeRequest.creationDate = [NSDate date];
@@ -2131,6 +2130,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 - (void)flashCheckmarkHud:(NSString *)messageType {
     [MBProgressHUD hideHUDForView:self.webView animated:NO];
+    [MBProgressHUD hideHUDForView:appDelegate.storyPageControl.currentPage.view animated:NO];
     self.storyHUD = [MBProgressHUD showHUDAddedTo:self.webView animated:YES];
     self.storyHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"37x-Checkmark.png"]];
     self.storyHUD.mode = MBProgressHUDModeCustomView;
