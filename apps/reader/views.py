@@ -804,8 +804,11 @@ def load_feed_page(request, feed_id):
                 settings.ORIGINAL_PAGE_SERVER,
                 feed.pk,
             )
-            page_response = requests.get(url)
-            if page_response.status_code == 200:
+            try:
+                page_response = requests.get(url)
+            except requests.ConnectionError:
+                page_response = None
+            if page_response and page_response.status_code == 200:
                 response = HttpResponse(page_response.content, mimetype="text/html; charset=utf-8")
                 response['Content-Encoding'] = 'gzip'
                 response['Last-Modified'] = page_response.headers.get('Last-modified')
