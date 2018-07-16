@@ -495,7 +495,9 @@
     };
     reach.unreachableBlock = ^(Reachability *reach) {
         NSLog(@"Un-Reachable: %@", reach);
-        [feedsViewController loadOfflineFeeds:NO];
+        dispatch_sync(dispatch_get_main_queue(), ^{
+            [feedsViewController loadOfflineFeeds:NO];
+        });
     };
     [reach startNotifier];
 }
