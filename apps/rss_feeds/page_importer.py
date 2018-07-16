@@ -183,11 +183,12 @@ class PageImporter(object):
         try:
             response = requests.get(story_permalink, headers=self.headers)
             response.connection.close()
-        except requests.exceptions.TooManyRedirects:
-            response = requests.get(story_permalink)
-        except (AttributeError, SocketError, OpenSSLError, PyAsn1Error, requests.exceptions.ConnectionError), e:
-            logging.debug('   ***> [%-30s] Original story fetch failed using requests: %s' % (self.feed.log_title[:30], e))
-            return
+        except (AttributeError, SocketError, OpenSSLError, PyAsn1Error, requests.exceptions.ConnectionError, requests.exceptions.TooManyRedirects), e:
+            try:
+                response = requests.get(story_permalink)
+            except (AttributeError, SocketError, OpenSSLError, PyAsn1Error, requests.exceptions.ConnectionError, requests.exceptions.TooManyRedirects), e:
+                logging.debug('   ***> [%-30s] Original story fetch failed using requests: %s' % (self.feed.log_title[:30], e))
+                return
         try:
             data = response.text
         except (LookupError, TypeError):
