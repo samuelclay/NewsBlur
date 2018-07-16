@@ -170,7 +170,9 @@ class PageImporter(object):
     def _fetch_story(self):
         html = None
         story_permalink = self.story.story_permalink
-            
+        
+        if not self.feed:
+            return
         if any(story_permalink.startswith(s) for s in BROKEN_PAGES):
             return
         if any(s in story_permalink.lower() for s in BROKEN_PAGE_URLS):
