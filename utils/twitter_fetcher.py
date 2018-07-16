@@ -128,7 +128,7 @@ class TwitterFetcher:
                               (self.feed.log_title[:30], self.address, e))
                 self.feed.save_feed_history(560, "Twitter Error: User not found")
                 return
-            elif 'over capacity' in message:
+            elif 'over capacity' in message or 'Max retries' in message:
                 logging.debug(u'   ***> [%-30s] ~FRTwitter over capacity, ignoring... %s: %s' % 
                               (self.feed.log_title[:30], self.address, e))
                 self.feed.save_feed_history(460, "Twitter Error: Over capacity")
