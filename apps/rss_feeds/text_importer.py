@@ -1,4 +1,5 @@
 import requests
+import urllib3
 import zlib
 from requests.packages.urllib3.exceptions import LocationParseError
 from socket import error as SocketError
@@ -194,6 +195,7 @@ class TextImporter:
                 requests.models.InvalidURL,
                 requests.models.ChunkedEncodingError,
                 requests.models.ContentDecodingError,
+                urllib3.exceptions.LocationValueError,
                 LocationParseError, OpenSSLError, PyAsn1Error), e:
             logging.user(self.request, "~SN~FRFailed~FY to fetch ~FGoriginal text~FY: %s" % e)
             return
