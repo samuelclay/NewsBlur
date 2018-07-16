@@ -1224,8 +1224,6 @@ class Feed(models.Model):
                               self.log_title[:30],
                               story.get('title'),
                               story.get('guid')))
-            if not story.get('title'):
-                continue
                 
             story_content = story.get('story_content')
             if error_count:
