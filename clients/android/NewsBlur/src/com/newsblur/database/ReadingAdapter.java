@@ -24,6 +24,11 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+/**
+ * An adapter to display stories in a ViewPager. Loosely based upon FragmentStatePagerAdapter, but
+ * with enhancements to correctly handle item insertion / removal and to pass invalidation down
+ * to child fragments during updates.
+ */
 public class ReadingAdapter extends PagerAdapter {
 
     private String sourceUserId;

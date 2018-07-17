@@ -270,8 +270,9 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
                 return;
             }
 
-            //NB: this implicitly calls readingAdapter.notifyDataSetChanged();
             if (readingAdapter != null) {
+                // swapCursor() will asynch process the new cursor and fully update the pager,
+                // update child fragments, and then call pagerUpdated()
                 readingAdapter.swapCursor(cursor, pager);
             }
 
@@ -284,6 +285,9 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
         }
 	}
 
+    /**
+     * notify the activity that the dataset for the pager has fully been updated
+     */
     public void pagerUpdated() {
         // see if we are just starting and need to jump to a target story
         skipPagerToStoryHash();
