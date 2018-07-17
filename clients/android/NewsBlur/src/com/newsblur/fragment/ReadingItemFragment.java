@@ -132,9 +132,8 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		story = getArguments() != null ? (Story) getArguments().getSerializable("story") : null;
+            com.newsblur.util.Log.d(this, "DD - onCreate page " + story.storyHash);
 
-		inflater = getActivity().getLayoutInflater();
-		
 		displayFeedDetails = getArguments().getBoolean("displayFeedDetails");
 		
 		user = PrefsUtils.getUserDetails(getActivity());
@@ -158,7 +157,7 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        outState.putSerializable("story", story);
+        super.onSaveInstanceState(outState);
     }
 
 	@Override
@@ -181,12 +180,15 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
 
     @Override
     public void onResume() {
+            com.newsblur.util.Log.d(this, "DD - onResume page");
         super.onResume();
         reloadStoryContent();
         if (this.web != null ) { this.web.onResume(); }
     }
 
-	public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            com.newsblur.util.Log.d(this, "DD - onCreateView page");
+        this.inflater = inflater;
         view = inflater.inflate(R.layout.fragment_readingitem, null);
         ButterKnife.bind(this, view);
 
@@ -279,7 +281,6 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
     }
 
     @OnClick(R.id.story_context_menu_button) void onClickMenuButton() {
-        com.newsblur.util.Log.d(this, "DD - click menu");
         PopupMenu pm = new PopupMenu(getActivity(), menuButton);
         Menu menu = pm.getMenu();
         pm.getMenuInflater().inflate(R.menu.story_context, menu);

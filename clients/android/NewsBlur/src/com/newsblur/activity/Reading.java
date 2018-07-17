@@ -10,6 +10,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v4.view.ViewPager;
@@ -34,6 +35,7 @@ import com.newsblur.R;
 import com.newsblur.database.ReadingAdapter;
 import com.newsblur.domain.Story;
 import com.newsblur.fragment.ReadingItemFragment;
+import com.newsblur.fragment.ReadingPagerFragment;
 import com.newsblur.fragment.ShareDialogFragment;
 import com.newsblur.fragment.StoryIntelTrainerFragment;
 import com.newsblur.fragment.ReadingFontDialogFragment;
@@ -93,8 +95,8 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
     @Bind(R.id.reading_sync_status) TextView overlayStatusText;
     
     ViewPager pager;
+    ReadingPagerFragment readingFragment;
 
-	protected FragmentManager fragmentManager;
 	protected ReadingAdapter readingAdapter;
     private boolean stopLoading;
     protected FeedSet fs;
@@ -125,8 +127,6 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 
 		setContentView(R.layout.activity_reading);
         ButterKnife.bind(this);
-
-		fragmentManager = getSupportFragmentManager();
 
         try {
             fs = (FeedSet)getIntent().getSerializableExtra(EXTRA_FEEDSET);
@@ -185,24 +185,21 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
         enableProgressCircle(overlayProgressLeft, false);
         enableProgressCircle(overlayProgressRight, false);
 
-        boolean showFeedMetadata = true;
-        if (fs.isSingleNormal()) showFeedMetadata = false;
-        String sourceUserId = null;
-        if (fs.getSingleSocialFeed() != null) sourceUserId = fs.getSingleSocialFeed().getKey();
-        readingAdapter = new ReadingAdapter(getSupportFragmentManager(), sourceUserId, showFeedMetadata);
-        
-        setupPager();
+		FragmentManager fragmentManager = getSupportFragmentManager();
+		ReadingPagerFragment fragment = (ReadingPagerFragment) fragmentManager.findFragmentByTag(ReadingPagerFragment.class.getName());
+		if (fragment == null) {
+            fragment = ReadingPagerFragment.newInstance();
+			FragmentTransaction transaction = fragmentManager.beginTransaction();
+			transaction.add(R.id.activity_reading_container, fragment, ReadingPagerFragment.class.getName());
+			transaction.commit();
+		}
 
         getSupportLoaderManager().initLoader(0, null, this);
 	}
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        /*
-        TODO: the following call is pretty standard, but causes the pager to disappear when
-              restoring from a bundle (e.g. after rotation)
         super.onSaveInstanceState(outState);
-        */
         if (storyHash != null) {
             outState.putString(EXTRA_STORY_HASH, storyHash);
         } else {
@@ -274,39 +271,31 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
             }
 
             //NB: this implicitly calls readingAdapter.notifyDataSetChanged();
-            readingAdapter.swapCursor(cursor);
-
-            boolean lastCursorWasStale = (stories == null);
+            if (readingAdapter != null) {
+                readingAdapter.swapCursor(cursor, pager);
+            }
 
             stories = cursor;
             
-            // if the pager previously showed a stale set of stories, it is *not* sufficent to just
-            // swap out the cursor and invalidate.  no number of calls to notifyDataSetChanged() or
-            // setCurrentItem() will ever get a pager to refresh the currently displayed fragment.
-            // however, the pager can be tricked into wiping all fragments and recreating them from
-            // the adapter by setting the adapter again, even if it is the same one.
-            if (lastCursorWasStale) { 
-                // TODO: can crash with IllegalStateException
-                pager.setAdapter(readingAdapter);
-            }
-
             com.newsblur.util.Log.d(this.getClass().getName(), "loaded cursor with count: " + cursor.getCount());
             if (cursor.getCount() < 1) {
                 triggerRefresh(AppConstants.READING_STORY_PRELOAD);
             }
-
-            // see if we are just starting and need to jump to a target story
-            skipPagerToStoryHash();
-
-            if (unreadSearchActive) {
-                // if we left this flag high, we were looking for an unread, but didn't find one;
-                // now that we have more stories, look again.
-                nextUnread();
-            }
-            updateOverlayNav();
-            updateOverlayText();
         }
 	}
+
+    public void pagerUpdated() {
+        // see if we are just starting and need to jump to a target story
+        skipPagerToStoryHash();
+
+        if (unreadSearchActive) {
+            // if we left this flag high, we were looking for an unread, but didn't find one;
+            // now that we have more stories, look again.
+            nextUnread();
+        }
+        updateOverlayNav();
+        updateOverlayText();
+    }
 
     private void skipPagerToStoryHash() {
         // if we already started and found our target story, this will be unset
@@ -321,8 +310,6 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
         if (stopLoading) return;
 
         if (position >= 0 ) {
-            // see above note about re-setting the adapter to force the pager to reload fragments
-            pager.setAdapter(readingAdapter);
             pager.setCurrentItem(position, false);
             this.onPageSelected(position);
             // now that the pager is getting the right story, make it visible
@@ -336,8 +323,16 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
         this.checkStoryCount(readingAdapter.getCount()+1);
     }
 
-    private void setupPager() {
-        pager = (ViewPager) findViewById(R.id.reading_pager);
+    /*
+     * The key component of this activity is the pager, which in order to correctly use
+     * child fragments for stories, needs to be within an enclosing fragment.  Because
+     * the view heirarchy of that fragment will have a different lifecycle than the
+     * activity, we need a way to get access to the pager when it is created and only
+     * then can we set it up.
+     */
+    public void offerPager(ViewPager pager, FragmentManager childFragmentManager) {
+        this.pager = pager;
+
         // since it might start on the wrong story, create the pager as invisible
         pager.setVisibility(View.INVISIBLE);
 		pager.setPageMargin(UIUtils.dp2px(getApplicationContext(), 1));
@@ -349,7 +344,12 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
             pager.setPageMarginDrawable(R.drawable.divider_dark);
         }
 
-		pager.addOnPageChangeListener(this);
+        boolean showFeedMetadata = true;
+        if (fs.isSingleNormal()) showFeedMetadata = false;
+        String sourceUserId = null;
+        if (fs.getSingleSocialFeed() != null) sourceUserId = fs.getSingleSocialFeed().getKey();
+        readingAdapter = new ReadingAdapter(childFragmentManager, sourceUserId, showFeedMetadata, this);
+        
 		pager.setAdapter(readingAdapter);
 
         // if the first story in the list was "viewed" before the page change listener was set,
