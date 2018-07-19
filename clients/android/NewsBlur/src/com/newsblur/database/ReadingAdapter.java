@@ -1,6 +1,8 @@
 package com.newsblur.database;
 
 import android.database.Cursor;
+import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -38,6 +40,7 @@ public class ReadingAdapter extends PagerAdapter {
     private FragmentTransaction curTransaction = null;
     private Fragment lastActiveFragment = null;
     private HashMap<String,ReadingItemFragment> fragments;
+    private HashMap<String,Fragment.SavedState> states;
 
     // the cursor from which we pull story objects. should not be used except by the thaw worker
     private Cursor mostRecentCursor;
@@ -53,6 +56,7 @@ public class ReadingAdapter extends PagerAdapter {
         this.activity = activity;
 
         this.fragments = new HashMap<String,ReadingItemFragment>();
+        this.states = new HashMap<String,Fragment.SavedState>();
 
         executorService = Executors.newFixedThreadPool(1);
 	}
@@ -153,11 +157,14 @@ public class ReadingAdapter extends PagerAdapter {
         } else {
             fragment = fragments.get(story.storyHash);
             if (fragment == null) {
+                com.newsblur.util.Log.d(this, "DD - new frag at " + position + " is " + story.storyHash);
                 ReadingItemFragment rif = createFragment(story);
                 fragment = rif;
-                // TODO: restore state?
+                Fragment.SavedState oldState = states.get(story.storyHash);
+                if (oldState != null) fragment.setInitialSavedState(oldState);
                 fragments.put(story.storyHash, rif);
             } else {
+                com.newsblur.util.Log.d(this, "DD - reuse frag at " + position);
                 // iff there was a real fragment for this story already, it will have been added and ready
                 return fragment;
             }
@@ -173,6 +180,7 @@ public class ReadingAdapter extends PagerAdapter {
 
     @Override
     public void destroyItem(ViewGroup container, int position, Object object) {
+                com.newsblur.util.Log.d(this, "DD - clean frag at " + position);
         Fragment fragment = (Fragment) object;
         if (curTransaction == null) {
             curTransaction = fm.beginTransaction();
@@ -180,7 +188,9 @@ public class ReadingAdapter extends PagerAdapter {
         curTransaction.remove(fragment);
         if (fragment instanceof ReadingItemFragment) {
             ReadingItemFragment rif = (ReadingItemFragment) fragment;
-            // TODO: save state?
+            if (rif.isAdded()) {
+                states.put(rif.story.storyHash, fm.saveFragmentInstanceState(rif));
+            }
             fragments.remove(rif.story.storyHash);
         }
     }
@@ -204,6 +214,7 @@ public class ReadingAdapter extends PagerAdapter {
     @Override
     public void finishUpdate(ViewGroup container) {
         if (curTransaction != null) {
+            com.newsblur.util.Log.d(this, "DD - flush adap");
             curTransaction.commitNowAllowingStateLoss();
             curTransaction = null;
         }
@@ -295,4 +306,47 @@ public class ReadingAdapter extends PagerAdapter {
         }
         return -1;
     }
+
+    @Override
+    public Parcelable saveState() {
+        // collect state from any active fragments alongside already-frozen ones
+        for (Map.Entry<String,ReadingItemFragment> entry : fragments.entrySet()) {
+            Fragment f = entry.getValue();
+            if (f.isAdded()) {
+                states.put(entry.getKey(), fm.saveFragmentInstanceState(f));
+            }
+        }
+        Bundle state = new Bundle();
+        for (Map.Entry<String,Fragment.SavedState> entry : states.entrySet()) {
+            state.putParcelable("ss-" + entry.getKey(), entry.getValue());
+        }
+        com.newsblur.util.Log.d(this, "DD - froze states: " + state.size());
+        return state;
+    }
+
+    @Override
+    public void restoreState(Parcelable state, ClassLoader loader) {
+        // most FragmentManager impls. will re-create added fragments even if they
+        // are not set to retaininstance. we want to only save state, not objects,
+        // so before we start restoration, clear out any stale instances.  without
+        // this, the pager will leak fragments on rotation or context switch.
+        for (Fragment fragment : fm.getFragments()) {
+            if (fragment instanceof ReadingItemFragment) {
+                fm.beginTransaction().remove(fragment).commit();
+            }
+        }
+        Bundle bundle = (Bundle)state;
+        bundle.setClassLoader(loader);
+        fragments.clear();
+        states.clear();
+        for (String key : bundle.keySet()) {
+            if (key.startsWith("ss-")) {
+                String storyHash = key.substring(3);
+                Parcelable fragState = bundle.getParcelable(key);
+                states.put(storyHash, (Fragment.SavedState) fragState);
+            }
+        }
+        com.newsblur.util.Log.d(this, "DD - thawed states: " + states.size());
+    }
+
 }

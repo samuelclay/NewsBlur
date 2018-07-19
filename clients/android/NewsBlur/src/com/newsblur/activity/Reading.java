@@ -335,6 +335,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
      * then can we set it up.
      */
     public void offerPager(ViewPager pager, FragmentManager childFragmentManager) {
+        com.newsblur.util.Log.d(this, "DD - offer pager");
         this.pager = pager;
 
         // since it might start on the wrong story, create the pager as invisible
