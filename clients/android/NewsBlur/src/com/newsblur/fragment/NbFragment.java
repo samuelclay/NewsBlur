@@ -21,16 +21,4 @@ public class NbFragment extends Fragment {
         }
 	}
 
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        com.newsblur.util.Log.d(this, "onActivityCreated");
-        super.onActivityCreated(savedInstanceState);
-    }
-
-    @Override
-    public void onResume() {
-        com.newsblur.util.Log.d(this, "onResume");
-        super.onResume();
-    }
-
 }

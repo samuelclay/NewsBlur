@@ -29,6 +29,7 @@ import android.webkit.WebView.HitTestResult;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import butterknife.ButterKnife;
@@ -62,7 +63,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuItemClickListener {
-
+    
+    private static final String BUNDLE_SCROLL_POS_REL = "scrollStateRel";
 	public static final String TEXT_SIZE_CHANGED = "textSizeChanged";
 	public static final String TEXT_SIZE_VALUE = "textSizeChangeValue";
     public static final String READING_FONT_CHANGED = "readingFontChanged";
@@ -73,7 +75,7 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
 	private Classifier classifier;
 	@Bind(R.id.reading_webview) NewsblurWebview web;
     @Bind(R.id.custom_view_container) ViewGroup webviewCustomViewLayout;
-    @Bind(R.id.reading_scrollview) View fragmentScrollview;
+    @Bind(R.id.reading_scrollview) ScrollView fragmentScrollview;
 	private BroadcastReceiver textSizeReceiver, readingFontReceiver;
     @Bind(R.id.reading_item_title) TextView itemTitle;
     @Bind(R.id.reading_item_authors) TextView itemAuthors;
@@ -106,6 +108,7 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
     private boolean isWebLoadFinished;
     private boolean isSocialLoadFinished;
     private Boolean isLoadFinished = false;
+    private float savedScrollPosRel = 0f;
 
     private final Object WEBVIEW_CONTENT_MUTEX = new Object();
 
@@ -153,11 +156,19 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
 		getActivity().registerReceiver(textSizeReceiver, new IntentFilter(TEXT_SIZE_CHANGED));
         readingFontReceiver = new ReadingFontReceiver();
         getActivity().registerReceiver(readingFontReceiver, new IntentFilter(READING_FONT_CHANGED));
+
+        if (savedInstanceState != null) {
+            savedScrollPosRel = savedInstanceState.getFloat(BUNDLE_SCROLL_POS_REL);
+            // we can't actually use the saved scroll position until the webview finishes loading
+        }
 	}
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+        int heightm = fragmentScrollview.getChildAt(0).getMeasuredHeight();
+        int pos = fragmentScrollview.getScrollY();
+        outState.putFloat(BUNDLE_SCROLL_POS_REL, (((float)pos)/heightm));
     }
 
 	@Override
@@ -180,14 +191,12 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
 
     @Override
     public void onResume() {
-            com.newsblur.util.Log.d(this, "DD - onResume page");
         super.onResume();
         reloadStoryContent();
         if (this.web != null ) { this.web.onResume(); }
     }
 
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-            com.newsblur.util.Log.d(this, "DD - onCreateView page");
         this.inflater = inflater;
         view = inflater.inflate(R.layout.fragment_readingitem, null);
         ButterKnife.bind(this, view);
@@ -643,7 +652,7 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
             return;
         }
         this.story = story;
-        if (AppConstants.VERBOSE_LOG) com.newsblur.util.Log.d(this, "got fresh story");
+        //if (AppConstants.VERBOSE_LOG) com.newsblur.util.Log.d(this, "got fresh story");
     }
 
     public void handleUpdate(int updateType) {
@@ -848,7 +857,14 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
     }
 
     private void onLoadFinished() {
-        // TODO: perform any position-dependent UI behaviours here (@manderson23)
+        if (savedScrollPosRel > 0f) {
+            fragmentScrollview.postDelayed(new Runnable() {
+                public void run() {
+                    int relPos = Math.round(fragmentScrollview.getChildAt(0).getMeasuredHeight() * savedScrollPosRel);
+                    fragmentScrollview.scrollTo(0, relPos);
+                }
+            }, 50L);
+        }
     }
 
     public void flagWebviewError() {

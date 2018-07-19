@@ -5,6 +5,7 @@ import android.graphics.Typeface;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v4.view.ViewPager;
@@ -51,12 +52,18 @@ public class ReadingPagerFragment extends NbFragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+            com.newsblur.util.Log.d(this, "DD - onCreate");
         super.onCreate(savedInstanceState);
     }
     
     @Override
     public void onStart() {
         super.onStart();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
     }
 
     @Override
@@ -69,14 +76,9 @@ public class ReadingPagerFragment extends NbFragment {
         super.onResume();
     }
 
-    @Override
-    public void onViewStateRestored(Bundle savedInstanceState) {
-        super.onViewStateRestored(savedInstanceState);
-        if (savedInstanceState == null) return;
-    }
-
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            com.newsblur.util.Log.d(this, "DD - onCreateView");
 		View v = inflater.inflate(R.layout.fragment_readingpager, null);
         ButterKnife.bind(this, v);
 
