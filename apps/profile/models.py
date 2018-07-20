@@ -164,19 +164,22 @@ class Profile(models.Model):
         
         EmailNewPremium.delay(user_id=self.user.pk)
         
+        was_premium = self.is_premium
         self.is_premium = True
         self.save()
         self.user.is_active = True
         self.user.save()
         
-        subs = UserSubscription.objects.filter(user=self.user)
-        for sub in subs:
-            if sub.active: continue
-            sub.active = True
-            try:
-                sub.save()
-            except (IntegrityError, Feed.DoesNotExist):
-                pass
+        # Only auto-enable every feed if a free user is moving to premium
+        if not was_premium:
+            subs = UserSubscription.objects.filter(user=self.user)
+            for sub in subs:
+                if sub.active: continue
+                sub.active = True
+                try:
+                    sub.save()
+                except (IntegrityError, Feed.DoesNotExist):
+                    pass
         
         try:
             scheduled_feeds = [sub.feed.pk for sub in subs]
