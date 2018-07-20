@@ -342,11 +342,11 @@ def stripe_form(request):
         if zebra_form.is_valid():
             user.email = zebra_form.cleaned_data['email']
             user.save()
-            
-            grace_period = datetime.datetime.now() - datetime.timedelta(days=30)
+            customer = None
             current_premium = (user.profile.is_premium and 
                                user.profile.premium_expire and
-                               user.profile.premium_expire > grace_period)
+                               user.profile.premium_expire > datetime.datetime.now())
+                               
             # Are they changing their existing card?
             if user.profile.stripe_id and current_premium:
                 customer = stripe.Customer.retrieve(user.profile.stripe_id)
@@ -374,6 +374,20 @@ def stripe_form(request):
                     user.profile.save()
                     user.profile.activate_premium() # TODO: Remove, because webhooks are slow
                     success_updating = True
+            
+            if success_updating and customer and customer.subscriptions.count == 0:
+                billing_cycle_anchor = "now"
+                if current_premium:
+                    billing_cycle_anchor = user.profile.premium_expire.strftime('%s')
+                stripe.Subscription.create(
+                  customer=customer.id,
+                  billing_cycle_anchor=billing_cycle_anchor,
+                  items=[
+                    {
+                      "plan": "newsblur-premium-36",
+                    },
+                  ]
+                )
 
     else:
         zebra_form = StripePlusPaymentForm(email=user.email, plan=plan)
