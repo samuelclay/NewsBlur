@@ -21,8 +21,10 @@ import com.newsblur.util.FeedUtils;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -46,6 +48,9 @@ public class ReadingAdapter extends PagerAdapter {
     private Cursor mostRecentCursor;
     // the live list of stories being used by the adapter
     private List<Story> stories = new ArrayList<Story>(0);
+
+    // classifiers for each feed seen in the story list
+    private Map<String,Classifier> classifiers = new HashMap<String,Classifier>(0);
 
     private final ExecutorService executorService;
 
@@ -93,15 +98,24 @@ public class ReadingAdapter extends PagerAdapter {
             } else {
                 if (c.isClosed()) return;
                 newStories = new ArrayList<Story>(c.getCount());
+                // keep track of which feeds are in this story set so we can also fetch Classifiers
+                Set<String> feedIdsSeen = new HashSet<String>();
                 c.moveToPosition(-1);
                 while (c.moveToNext()) {
                     if (c.isClosed()) return;
                     Story s = Story.fromCursor(c);
                     s.bindExternValues(c);
                     newStories.add(s);
+                    feedIdsSeen.add(s.feedId);
+                }
+                for (String feedId : feedIdsSeen) {
+                    classifiers.put(feedId, FeedUtils.dbHelper.getClassifierForFeed(feedId));
                 }
             }
         } catch (Exception e) {
+            // because we use interruptable loaders that auto-close cursors, it is expected
+            // that cursors will sometimes go bad. this is a useful signal to stop the thaw
+            // thread and let it start on a fresh cursor.
             com.newsblur.util.Log.e(this, "error thawing story list: " + e.getMessage(), e);
             return;
         }
@@ -133,9 +147,6 @@ public class ReadingAdapter extends PagerAdapter {
 	}
 	
 	private ReadingItemFragment createFragment(Story story) {
-        // TODO: classifiers should be pre-fetched by loaders?
-        Classifier classifier = FeedUtils.dbHelper.getClassifierForFeed(story.feedId);
-
         return ReadingItemFragment.newInstance(story, 
                                                story.extern_feedTitle, 
                                                story.extern_feedColor, 
@@ -143,7 +154,7 @@ public class ReadingAdapter extends PagerAdapter {
                                                story.extern_faviconBorderColor, 
                                                story.extern_faviconTextColor, 
                                                story.extern_faviconUrl, 
-                                               classifier, 
+                                               classifiers.get(story.feedId), 
                                                showFeedMetadata, 
                                                sourceUserId);
     }
