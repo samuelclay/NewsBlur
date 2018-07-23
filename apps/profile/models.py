@@ -181,15 +181,16 @@ class Profile(models.Model):
                 except (IntegrityError, Feed.DoesNotExist):
                     pass
         
-        try:
-            scheduled_feeds = [sub.feed.pk for sub in subs]
-        except Feed.DoesNotExist:
-            scheduled_feeds = []
-        logging.user(self.user, "~SN~FMTasking the scheduling immediate premium setup of ~SB%s~SN feeds..." % 
-                     len(scheduled_feeds))
-        SchedulePremiumSetup.apply_async(kwargs=dict(feed_ids=scheduled_feeds))
+            try:
+                scheduled_feeds = [sub.feed.pk for sub in subs]
+            except Feed.DoesNotExist:
+                scheduled_feeds = []
+            logging.user(self.user, "~SN~FMTasking the scheduling immediate premium setup of ~SB%s~SN feeds..." % 
+                         len(scheduled_feeds))
+            SchedulePremiumSetup.apply_async(kwargs=dict(feed_ids=scheduled_feeds))
         
-        UserSubscription.queue_new_feeds(self.user)
+            UserSubscription.queue_new_feeds(self.user)
+        
         self.setup_premium_history()
         
         if never_expire:
