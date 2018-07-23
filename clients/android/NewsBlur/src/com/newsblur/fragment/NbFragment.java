@@ -2,11 +2,9 @@ package com.newsblur.fragment;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.os.Bundle;
 import android.support.v4.app.Fragment;
 
 import com.newsblur.service.NBSyncService;
-import com.newsblur.util.AppConstants;
 
 public class NbFragment extends Fragment {
 

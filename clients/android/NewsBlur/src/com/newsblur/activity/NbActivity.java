@@ -6,7 +6,6 @@ import android.support.v4.app.FragmentActivity;
 import android.widget.Toast;
 
 import com.newsblur.service.NBSyncService;
-import com.newsblur.util.AppConstants;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.PrefConstants.ThemeValue;
