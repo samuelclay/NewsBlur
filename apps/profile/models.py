@@ -171,8 +171,8 @@ class Profile(models.Model):
         self.user.save()
         
         # Only auto-enable every feed if a free user is moving to premium
+        subs = UserSubscription.objects.filter(user=self.user)
         if not was_premium:
-            subs = UserSubscription.objects.filter(user=self.user)
             for sub in subs:
                 if sub.active: continue
                 sub.active = True
@@ -180,16 +180,16 @@ class Profile(models.Model):
                     sub.save()
                 except (IntegrityError, Feed.DoesNotExist):
                     pass
-        
-            try:
-                scheduled_feeds = [sub.feed.pk for sub in subs]
-            except Feed.DoesNotExist:
-                scheduled_feeds = []
-            logging.user(self.user, "~SN~FMTasking the scheduling immediate premium setup of ~SB%s~SN feeds..." % 
-                         len(scheduled_feeds))
-            SchedulePremiumSetup.apply_async(kwargs=dict(feed_ids=scheduled_feeds))
-        
-            UserSubscription.queue_new_feeds(self.user)
+    
+        try:
+            scheduled_feeds = [sub.feed.pk for sub in subs]
+        except Feed.DoesNotExist:
+            scheduled_feeds = []
+        logging.user(self.user, "~SN~FMTasking the scheduling immediate premium setup of ~SB%s~SN feeds..." % 
+                     len(scheduled_feeds))
+        SchedulePremiumSetup.apply_async(kwargs=dict(feed_ids=scheduled_feeds))
+    
+        UserSubscription.queue_new_feeds(self.user)
         
         self.setup_premium_history()
         
