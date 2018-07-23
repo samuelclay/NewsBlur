@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.view.Menu;
 
 import com.newsblur.R;
-import com.newsblur.database.MixedFeedsReadingAdapter;
 import com.newsblur.util.UIUtils;
 
 public class GlobalSharedStoriesReading extends Reading {
@@ -13,10 +12,7 @@ public class GlobalSharedStoriesReading extends Reading {
     protected void onCreate(Bundle savedInstanceBundle) {
         super.onCreate(savedInstanceBundle);
 
-        UIUtils.setCustomActionBar(this, R.drawable.ak_icon_global, getResources().getString(R.string.global_shared_stories));
-        readingAdapter = new MixedFeedsReadingAdapter(getFragmentManager(), null);
-
-        getLoaderManager().initLoader(0, null, this);
+        UIUtils.setCustomActionBar(this, R.drawable.ak_icon_global, getResources().getString(R.string.global_shared_stories_title));
     }
 
     @Override

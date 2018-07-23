@@ -129,7 +129,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                     return;
                 }
                 if (errorThrown == "timeout") textStatus = "NewsBlur timed out trying<br />to connect. Just try again.";
-                if (error_callback) {
+                if (error_callback && _.isFunction(error_callback)) {
                     error_callback(e, textStatus, errorThrown);
                 } else if ($.isFunction(callback)) {
                     var message = "Please create an account. Not much<br />to do without an account.";
@@ -285,7 +285,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         this.make_request('/reader/starred_counts', {}, pre_callback, pre_callback, {request_type: 'GET'});
     },
     
-    mark_feed_as_read: function(feed_id, cutoff_timestamp, direction, callback) {
+    mark_feed_as_read: function(feed_id, cutoff_timestamp, direction, options, callback) {
         var self = this;
         var feed_ids = _.isArray(feed_id) 
                        ? _.select(feed_id, function(f) { return f; })
@@ -325,12 +325,15 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                 feed.set({'ps': 0, 'nt': 0, 'ng': 0});
             });
         }
-
-        this.make_request('/reader/mark_feed_as_read', {
+        
+        options = $.extend({
             feed_id: feed_ids,
             cutoff_timestamp: cutoff_timestamp,
             direction: direction
-        }, callback);
+        }, options);
+        
+        
+        this.make_request('/reader/mark_feed_as_read', options, callback);
     },
     
     mark_story_as_shared: function(params, callback, error_callback) {
@@ -688,8 +691,17 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         });
     },
     
-    fetch_river_stories: function(feed_id, feeds, page, callback, error_callback, first_load) {
+    fetch_river_stories: function(feed_id, feeds, page, options, callback, error_callback, first_load) {
         var self = this;
+        options = $.extend({
+            feeds: feeds,
+            page: page,
+            order: this.view_setting(feed_id, 'order'),
+            read_filter: this.view_setting(feed_id, 'read_filter'),
+            query: NEWSBLUR.reader.flags.search,
+            include_hidden: true,
+            infrequent: false
+        }, options);
         
         var pre_callback = function(data) {
             if (!NEWSBLUR.Globals.is_premium && NEWSBLUR.Globals.is_authenticated) {
@@ -706,14 +718,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         
         this.feed_id = feed_id;
 
-        this.make_request('/reader/river_stories', {
-            feeds: feeds,
-            page: page,
-            order: this.view_setting(feed_id, 'order'),
-            read_filter: this.view_setting(feed_id, 'read_filter'),
-            query: NEWSBLUR.reader.flags.search,
-            include_hidden: true
-        }, pre_callback, error_callback, {
+        this.make_request('/reader/river_stories', options, pre_callback, error_callback, {
             'ajax_group': (page ? 'feed_page' : 'feed'),
             'request_type': 'GET'
         });

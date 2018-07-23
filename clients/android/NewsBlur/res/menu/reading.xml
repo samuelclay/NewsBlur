@@ -5,24 +5,28 @@
         android:id="@+id/menu_reading_fullscreen"
         android:icon="@drawable/ic_menu_fullscreen_gray55"
         android:showAsAction="always"
-        android:title="@string/menu_fullscreen"
-        android:visible="false"/>
+        android:title="@string/menu_fullscreen"/>
+
     <item
         android:id="@+id/menu_reading_sharenewsblur"
         android:showAsAction="never"
         android:title="@string/menu_sharenewsblur"/>
+
     <item
         android:id="@+id/menu_reading_original"
         android:showAsAction="never"
         android:title="@string/menu_original"/>
+
     <item
         android:id="@+id/menu_send_story"
         android:showAsAction="never"
         android:title="@string/menu_send_story"/>
+
     <item
         android:id="@+id/menu_send_story_full"
         android:showAsAction="never"
         android:title="@string/menu_send_story_full"/>
+
     <item
         android:id="@+id/menu_textsize"
         android:showAsAction="never"
@@ -42,5 +46,24 @@
         android:id="@+id/menu_reading_markunread"
         android:showAsAction="never"
         android:title="@string/menu_mark_unread"/>
+
+    <item
+        android:id="@+id/menu_intel"
+        android:showAsAction="never"
+        android:title="@string/menu_intel"/>
+
+    <item android:id="@+id/menu_theme"
+          android:title="@string/menu_theme_choose" >
+        <menu>
+            <group android:checkableBehavior="single">
+                <item android:id="@+id/menu_theme_light"
+                      android:title="@string/light" />
+                <item android:id="@+id/menu_theme_dark"
+                      android:title="@string/dark" />
+                <item android:id="@+id/menu_theme_black"
+                      android:title="@string/black" />
+            </group>
+        </menu>
+    </item>
 
 </menu>

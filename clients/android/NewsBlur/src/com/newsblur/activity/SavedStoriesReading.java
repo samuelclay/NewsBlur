@@ -3,7 +3,6 @@ package com.newsblur.activity;
 import android.os.Bundle;
 
 import com.newsblur.R;
-import com.newsblur.database.MixedFeedsReadingAdapter;
 import com.newsblur.util.UIUtils;
 
 public class SavedStoriesReading extends Reading {
@@ -17,9 +16,6 @@ public class SavedStoriesReading extends Reading {
             title = title + " - " + fs.getSingleSavedTag();
         }
         UIUtils.setCustomActionBar(this, R.drawable.clock, title);
-        readingAdapter = new MixedFeedsReadingAdapter(getFragmentManager(), null);
-
-        getLoaderManager().initLoader(0, null, this);
     }
 
 }

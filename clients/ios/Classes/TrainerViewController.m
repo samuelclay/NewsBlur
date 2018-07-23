@@ -10,7 +10,6 @@
 #import "NBContainerViewController.h"
 #import "StringHelper.h"
 #import "Utilities.h"
-#import "Base64.h"
 #import "AFNetworking.h"
 #import "StoriesCollection.h"
 
@@ -85,12 +84,14 @@
         [appDelegate.networkManager GET:urlString parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
             [MBProgressHUD hideHUDForView:self.view animated:YES];
             NSArray *resultsArray = responseObject;
-            NSDictionary *results = resultsArray[0];
-            NSMutableDictionary *newClassifiers = [[results objectForKey:@"classifiers"] mutableCopy];
-            [appDelegate.storiesCollection.activeClassifiers setObject:newClassifiers
-                                                                forKey:feedId];
-            appDelegate.storiesCollection.activePopularAuthors = [results objectForKey:@"feed_authors"];
-            appDelegate.storiesCollection.activePopularTags = [results objectForKey:@"feed_tags"];
+            if (resultsArray.count) {
+                NSDictionary *results = resultsArray[0];
+                NSMutableDictionary *newClassifiers = [[results objectForKey:@"classifiers"] mutableCopy];
+                [appDelegate.storiesCollection.activeClassifiers setObject:newClassifiers
+                                                                    forKey:feedId];
+                appDelegate.storiesCollection.activePopularAuthors = [results objectForKey:@"feed_authors"];
+                appDelegate.storiesCollection.activePopularTags = [results objectForKey:@"feed_tags"];
+            }
             [self renderTrainer];
         } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
             NSLog(@"Failed fetch trainer: %@", error);
@@ -420,7 +421,7 @@
     UIImage *favicon = [appDelegate getFavicon:feedId];
     NSData *faviconData = UIImagePNGRepresentation(favicon);
     NSString *feedImageUrl = [NSString stringWithFormat:@"data:image/png;charset=utf-8;base64,%@",
-                              [faviconData base64Encoding]];
+                              [faviconData base64EncodedDataWithOptions:NSDataBase64Encoding64CharacterLineLength]];
     NSString *publisherTitle = [NSString stringWithFormat:@"<img class=\"feed_favicon\" src=\"%@\"> %@",
                                 feedImageUrl, feedTitle];
     NSString *storyPublisher = [NSString stringWithFormat:@"<div class=\"NB-trainer-section-inner\">"

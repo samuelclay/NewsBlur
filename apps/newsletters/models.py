@@ -24,7 +24,11 @@ class EmailNewsletter:
         sender_name, sender_username, sender_domain = self._split_sender(params['from'])
         feed_address = self._feed_address(user, "%s@%s" % (sender_username, sender_domain))
         
-        usf = UserSubscriptionFolders.objects.get(user=user)
+        try:
+            usf = UserSubscriptionFolders.objects.get(user=user)
+        except UserSubscriptionFolders.DoesNotExist:
+            logging.user(user, "~FRUser does not have a USF, ignoring newsletter.")
+            return
         usf.add_folder('', 'Newsletters')
         
         try:
@@ -40,6 +44,10 @@ class EmailNewsletter:
             r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
             r.publish(user.username, 'reload:%s' % feed.pk)
             self._check_if_first_newsletter(user)
+        
+        feed.last_update = datetime.datetime.now()
+        feed.last_story_date = datetime.datetime.now()
+        feed.save()
         
         if feed.feed_title != sender_name:
             feed.feed_title = sender_name
@@ -74,7 +82,7 @@ class EmailNewsletter:
                                             kwargs={'story_hash': story_hash})),
             "story_guid": params['signature'],
         }
-        print story_params
+
         try:
             story = MStory.objects.get(story_hash=story_hash)
         except MStory.DoesNotExist:

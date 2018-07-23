@@ -1,11 +1,10 @@
 package com.newsblur.database;
 
-import android.content.AsyncTaskLoader;
 import android.content.Context;
 import android.database.Cursor;
 import android.os.CancellationSignal;
 import android.os.OperationCanceledException;
-import android.util.Log;
+import android.support.v4.content.AsyncTaskLoader;
 
 import com.newsblur.util.AppConstants;
 
@@ -78,15 +77,16 @@ public abstract class QueryCursorLoader extends AsyncTaskLoader<Cursor> {
     @Override
     public void deliverResult(Cursor cursor) {
         if (isReset()) {
-        clearCursor();
+            clearCursor();
             return;
         }
-        if (this.cursor != cursor) {
-            clearCursor();
-        }
+        Cursor oldCursor = this.cursor;
         this.cursor = cursor;
         if (isStarted()) {
             super.deliverResult(cursor);
+        }
+        if (oldCursor != null && oldCursor != this.cursor && !oldCursor.isClosed()) {
+            oldCursor.close();
         }
     } 
 
@@ -95,8 +95,9 @@ public abstract class QueryCursorLoader extends AsyncTaskLoader<Cursor> {
         if (cursor != null) {
             // if we already have a cursor and haven't been reset, use it!
             deliverResult(cursor);
-        } else {
-            takeContentChanged();
+        }
+        // if we had nothing or have a pending change, reload
+        if ((cursor == null) || takeContentChanged()) {
             forceLoad();
         }
     }
@@ -110,21 +111,16 @@ public abstract class QueryCursorLoader extends AsyncTaskLoader<Cursor> {
 
     @Override
     public void onCanceled(Cursor cursor) {
-        // many some other loaders mysteriously deliver results when they are cancelled and
-        // *very importantly*, some LoaderManager implementations rely upon this fact. do not
-        // remove this seemingly incorrect side-effect without rigorously testing many combinations
-        // of LoaderManager call patterns on all supported platforms.
-        // not that this may also require double-checking that adapters close cursors to prevent
-        // cursor leakage
-        if (cursor != null) {
-            deliverResult(cursor);
-        }
+        clearCursor();
     }
 
     @Override
     protected void onReset() {
         super.onReset();
-        clearCursor();
+        onStopLoading();
+        // note that the stock CursorLoader here closes the cursor early rather than waiting for the
+        // rest of the reset->stop->cancel->cancelled cycle, which can cause contexts to briefly have
+        // a closed cursor but no replacement.
     }
 
     private void clearCursor() {

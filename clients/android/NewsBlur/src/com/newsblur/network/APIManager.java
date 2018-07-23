@@ -314,6 +314,10 @@ public class APIManager {
             for (Map.Entry<String,String> entry : fs.getMultipleSocialFeeds().entrySet()) {
                 values.put(APIConstants.PARAMETER_FEEDS, entry.getKey());
             }
+        } else if (fs.isInfrequent()) {
+            uri = Uri.parse(buildUrl(APIConstants.PATH_RIVER_STORIES));
+            values.put(APIConstants.PARAMETER_INCLUDE_HIDDEN, APIConstants.VALUE_TRUE);
+            values.put(APIConstants.PARAMETER_INFREQUENT, Integer.toString(PrefsUtils.getInfrequentCutoff(context)));
         } else if (fs.isAllNormal()) {
             uri = Uri.parse(buildUrl(APIConstants.PATH_RIVER_STORIES));
             values.put(APIConstants.PARAMETER_INCLUDE_HIDDEN, APIConstants.VALUE_TRUE);
@@ -424,53 +428,10 @@ public class APIManager {
         return result;
 	}
 
-	public NewsBlurResponse trainClassifier(String feedId, String key, int type, int action) {
-		String typeText = null;
-		String actionText = null;
-
-		switch (type) {
-		case Classifier.AUTHOR:
-			typeText = "author"; 
-			break;
-		case Classifier.TAG:
-			typeText = "tag";
-			break;
-		case Classifier.TITLE:
-			typeText = "title";
-			break;
-		case Classifier.FEED:
-			typeText = "feed";
-			break;	
-		}
-
-		switch (action) {
-		case Classifier.CLEAR_LIKE:
-			actionText = "remove_like_"; 
-			break;
-		case Classifier.CLEAR_DISLIKE:
-			actionText = "remove_dislike_"; 
-			break;	
-		case Classifier.LIKE:
-			actionText = "like_";
-			break;
-		case Classifier.DISLIKE:
-			actionText = "dislike_";
-			break;	
-		}
-
-		StringBuilder builder = new StringBuilder();;
-		builder.append(actionText);
-		builder.append(typeText);
-
-		ContentValues values = new ContentValues();
-		if (type == Classifier.FEED) {
-			values.put(builder.toString(), feedId);
-		} else {
-			values.put(builder.toString(), key);
-		}
-		values.put(APIConstants.PARAMETER_FEEDID, feedId);
-
-		final APIResponse response = post(buildUrl(APIConstants.PATH_CLASSIFIER_SAVE), values);
+    public NewsBlurResponse updateFeedIntel(String feedId, Classifier classifier) {
+        ValueMultimap values = classifier.getAPITuples();
+        values.put(APIConstants.PARAMETER_FEEDID, feedId);
+		APIResponse response = post(buildUrl(APIConstants.PATH_CLASSIFIER_SAVE), values);
 		return response.getResponse(gson, NewsBlurResponse.class);
 	}
 

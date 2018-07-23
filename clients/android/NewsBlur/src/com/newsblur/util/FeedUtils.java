@@ -4,12 +4,10 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.text.TextUtils;
-import android.widget.Toast;
 
 import com.newsblur.R;
 import com.newsblur.activity.NbActivity;
@@ -43,11 +41,11 @@ public class FeedUtils {
         if (iconLoader == null) {
             iconLoader = ImageLoader.asIconLoader(context.getApplicationContext());
         }
-        if (thumbnailLoader == null) {
-            thumbnailLoader = ImageLoader.asThumbnailLoader(context.getApplicationContext());
-        }
         if (storyImageCache == null) {
             storyImageCache = FileCache.asStoryImageCache(context.getApplicationContext());
+        }
+        if (thumbnailLoader == null) {
+            thumbnailLoader = ImageLoader.asThumbnailLoader(context.getApplicationContext(), storyImageCache);
         }
     }
 
@@ -60,11 +58,12 @@ public class FeedUtils {
         dbHelper.dropAndRecreateTables();
     }
 
-    public static void prepareReadingSession(final FeedSet fs) {
+    public static void prepareReadingSession(final FeedSet fs, final boolean resetFirst) {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... arg) {
                 try {
+                    if (resetFirst) NBSyncService.resetReadingSession(dbHelper);
                     NBSyncService.prepareReadingSession(dbHelper, fs);
                 } catch (Exception e) {
                     ; // this is a UI hinting call and might fail if the DB is being reset, but that is fine
@@ -185,7 +184,7 @@ public class FeedUtils {
     /**
      * Marks some or all of the stories in a FeedSet as read for an activity, handling confirmation dialogues as necessary.
      */
-    public static void markRead(Activity activity, FeedSet fs, Long olderThan, Long newerThan, int choicesRid, boolean finishAfter) {
+    public static void markRead(NbActivity activity, FeedSet fs, Long olderThan, Long newerThan, int choicesRid, boolean finishAfter) {
         ReadingAction ra = null;
         if (fs.isAllNormal() && (olderThan != null || newerThan != null)) {
             // the mark-all-read API doesn't support range bounding, so we need to pass each and every
@@ -196,6 +195,10 @@ public class FeedUtils {
             if (fs.getSingleFeed() != null) {
                 if (!fs.isMuted()) {
                     ra = ReadingAction.markFeedRead(fs, olderThan, newerThan);
+                } else {
+                    // this should not be possible if appropriate menus have been altered. 
+                    com.newsblur.util.Log.w(activity, "disregarding mark-read for muted feed.");
+                    return;
                 }
             } else if (fs.isFolder()) {
                 Set<String> feedIds = fs.getMultipleFeeds();
@@ -244,7 +247,7 @@ public class FeedUtils {
                 title = FeedUtils.getFeed(fs.getSingleFeed()).title;
             }
             ReadingActionConfirmationFragment dialog = ReadingActionConfirmationFragment.newInstance(ra, title, optionalOverrideMessage, choicesRid, finishAfter);
-            dialog.show(activity.getFragmentManager(), "dialog");
+            dialog.show(activity.getSupportFragmentManager(), "dialog");
         }
     }
 
@@ -291,27 +294,9 @@ public class FeedUtils {
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
-    public static void updateClassifier(final String feedId, final String key, final Classifier classifier, final int classifierType, final int classifierAction, final Context context) {
-        // first, update the server
-        new AsyncTask<Void, Void, NewsBlurResponse>() {
-            @Override
-            protected NewsBlurResponse doInBackground(Void... arg) {
-                APIManager apiManager = new APIManager(context);
-                return apiManager.trainClassifier(feedId, key, classifierType, classifierAction);
-            }
-            @Override
-            protected void onPostExecute(NewsBlurResponse result) {
-                if (result.isError()) {
-                    Toast.makeText(context, result.getErrorMessage(context.getString(R.string.error_saving_classifier)), Toast.LENGTH_LONG).show();
-                }
-            }
-        }.execute();
-
-        // next, update the local DB
-        classifier.getMapForType(classifierType).put(key, classifierAction);
-        classifier.feedId = feedId;
-        dbHelper.clearClassifiersForFeed(feedId);
-        dbHelper.insertClassifier(classifier);
+    public static void updateClassifier(String feedId, Classifier classifier, FeedSet fs, Context context) {
+        ReadingAction ra = ReadingAction.updateIntel(feedId, classifier, fs);
+        doAction(ra, context);
     }
 
     public static void sendStoryBrief(Story story, Context context) {
@@ -487,6 +472,15 @@ public class FeedUtils {
         String[] parts = TextUtils.split(storyHash, ":");
         if (parts.length != 2) return null;
         return parts[0];
+    }
+
+    /**
+     * Because story objects have to join on the feeds table to get feed metadata, there are times
+     * where standalone stories are missing this info and it must be re-fetched.  This is costly
+     * and should be avoided where possible.
+     */
+    public static String getFeedTitle(String feedId) {
+        return getFeed(feedId).title;
     }
 
     public static Feed getFeed(String feedId) {

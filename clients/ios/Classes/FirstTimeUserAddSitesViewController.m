@@ -12,7 +12,6 @@
 #import "AuthorizeServicesViewController.h"
 #import "NewsBlurViewController.h"
 #import "SiteCell.h"
-#import "Base64.h"
 
 @interface FirstTimeUserAddSitesViewController()
 
@@ -394,7 +393,7 @@
     // favicon
     
     NSString *faviconStr = [NSString stringWithFormat:@"%@", [feed valueForKey:@"favicon"]];
-    NSData *imageData = [NSData dataWithBase64EncodedString:faviconStr];
+    NSData *imageData = [[NSData alloc] initWithBase64EncodedString:faviconStr options:NSDataBase64DecodingIgnoreUnknownCharacters];
     UIImage *faviconImage = [UIImage imageWithData:imageData];
     
 

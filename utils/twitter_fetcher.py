@@ -41,7 +41,7 @@ class TwitterFetcher:
         data['docs'] = None
         data['feed_url'] = address
         rss = feedgenerator.Atom1Feed(**data)
-
+        
         for tweet in tweets:
             story_data = self.tweet_story(tweet.__dict__)
             rss.add_item(**story_data)
@@ -128,7 +128,7 @@ class TwitterFetcher:
                               (self.feed.log_title[:30], self.address, e))
                 self.feed.save_feed_history(560, "Twitter Error: User not found")
                 return
-            elif 'over capacity' in message:
+            elif 'over capacity' in message or 'Max retries' in message:
                 logging.debug(u'   ***> [%-30s] ~FRTwitter over capacity, ignoring... %s: %s' % 
                               (self.feed.log_title[:30], self.address, e))
                 self.feed.save_feed_history(460, "Twitter Error: Over capacity")
@@ -147,20 +147,22 @@ class TwitterFetcher:
                 logging.debug(u'   ***> [%-30s] ~FRTwitter timeline failed, disconnecting twitter: %s: %s' % 
                               (self.feed.log_title[:30], self.address, e))
                 self.feed.save_feed_history(560, "Twitter Error: Not authorized")
-                return
+                return []
             elif 'user not found' in message:
                 logging.debug(u'   ***> [%-30s] ~FRTwitter user not found, disconnecting twitter: %s: %s' % 
                               (self.feed.log_title[:30], self.address, e))
                 self.feed.save_feed_history(560, "Twitter Error: User not found")
-                return
+                return []
             elif 'blocked from viewing' in message:
                 logging.debug(u'   ***> [%-30s] ~FRTwitter user blocked, ignoring: %s' % 
                               (self.feed.log_title[:30], e))
                 self.feed.save_feed_history(560, "Twitter Error: Blocked from viewing")
-                return
+                return []
             else:
                 raise e
-                
+        
+        if not tweets:
+            return []
         return tweets
         
     def tweet_story(self, user_tweet):
@@ -188,6 +190,8 @@ class TwitterFetcher:
         if not isinstance(author, dict): author = author.__dict__
         author_name = author['screen_name']
         original_author_name = author_name
+        if user_tweet['in_reply_to_user_id'] == author['id']:
+            categories.add('reply-to-self')        
         retweet_author = ""
         if 'retweeted_status' in user_tweet:
             retweet_author = """Retweeted by 
@@ -221,9 +225,26 @@ class TwitterFetcher:
                     tweet_text = tweet_text.replace(media['url'], replacement)
                     replaced[media['url']] = True
                 entities += "<img src=\"%s\"> <hr>" % media['media_url_https']
-                if 'photo' not in categories:
-                    categories.add('photo')
-
+                categories.add('photo')
+            if media['type'] == 'video' or media['type'] == 'animated_gif':
+                if media.get('url') and media['url'] in tweet_text:
+                    tweet_title = tweet_title.replace(media['url'], media['display_url'])
+                replacement = "<a href=\"%s\">%s</a>" % (media['expanded_url'], media['display_url'])
+                if not replaced.get(media['url']):
+                    tweet_text = tweet_text.replace(media['url'], replacement)
+                    replaced[media['url']] = True
+                bitrate = 0
+                chosen_variant = None
+                for variant in media['video_info']['variants']:
+                    if not chosen_variant:
+                        chosen_variant = variant
+                    if variant.get('bitrate', 0) > bitrate:
+                        bitrate = variant['bitrate']
+                        chosen_variant = variant
+                if chosen_variant:
+                    entities += "<video src=\"%s\" autoplay loop muted playsinline> <hr>" % chosen_variant['url']
+                categories.add(media['type'])                
+                
         for url in content_tweet['entities'].get('urls', []):
             if url['url'] in tweet_text:
                 replacement = "<a href=\"%s\">%s</a>" % (url['expanded_url'], url['display_url'])

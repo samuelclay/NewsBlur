@@ -17,6 +17,9 @@ public class DatabaseConstants {
 
     private DatabaseConstants(){} // util class - no instances
 
+    // the largest value that can be queried from an Android DB (config_cursorWindowSize and worst-case encoding overhead)
+    public static final int MAX_TEXT_SIZE = 1024 * 2048 / 4;
+
 	private static final String TEXT = " TEXT";
 	private static final String INTEGER = " INTEGER";
 
@@ -100,6 +103,7 @@ public class DatabaseConstants {
     public static final String STORY_LAST_READ_DATE = "last_read_date";
     public static final String STORY_SEARCH_HIT = "search_hit";
     public static final String STORY_THUMBNAIL_URL = "thumbnail_url";
+    public static final String STORY_INFREQUENT = "infrequent";
 
     public static final String READING_SESSION_TABLE = "reading_session";
     public static final String READING_SESSION_STORY_HASH = "session_story_hash";
@@ -139,6 +143,7 @@ public class DatabaseConstants {
     public static final String ACTION_REPLY_ID = "reply_id";
     public static final String ACTION_STORY_HASH = "story_hash";
     public static final String ACTION_FEED_ID = "feed_id";
+    public static final String ACTION_FEED_SET = "feed_set";
     public static final String ACTION_MODIFIED_FEED_IDS = "modified_feed_ids";
     public static final String ACTION_INCLUDE_OLDER = "include_older";
     public static final String ACTION_INCLUDE_NEWER = "include_newer";
@@ -147,6 +152,7 @@ public class DatabaseConstants {
     public static final String ACTION_COMMENT_ID = "comment_id";
     public static final String ACTION_NOTIFY_FILTER = "notify_filter";
     public static final String ACTION_NOTIFY_TYPES = "notify_types";
+    public static final String ACTION_CLASSIFIER = "classifier";
 
     public static final String STARREDCOUNTS_TABLE = "starred_counts";
     public static final String STARREDCOUNTS_COUNT = "count";
@@ -157,6 +163,17 @@ public class DatabaseConstants {
     public static final String NOTIFY_DISMISS_STORY_HASH = "story_hash";
     public static final String NOTIFY_DISMISS_TIME = "time";
 
+    public static final String FEED_TAGS_TABLE = "feed_tags";
+    public static final String FEED_TAGS_FEEDID = "feed_id";
+    public static final String FEED_TAGS_TAG = "tag";
+
+    public static final String FEED_AUTHORS_TABLE = "feed_authors";
+    public static final String FEED_AUTHORS_FEEDID = "feed_id";
+    public static final String FEED_AUTHORS_AUTHOR = "author";
+
+    public static final String SYNC_METADATA_TABLE = "sync_metadata";
+    public static final String SYNC_METADATA_KEY = "key";
+    public static final String SYNC_METADATA_VALUE = "value";
 
 	static final String FOLDER_SQL = "CREATE TABLE " + FOLDER_TABLE + " (" +
 		FOLDER_NAME + TEXT + " PRIMARY KEY, " +  
@@ -251,6 +268,7 @@ public class DatabaseConstants {
 		STORY_READ + INTEGER + ", " +
 		STORY_STARRED + INTEGER + ", " +
 		STORY_STARRED_DATE + INTEGER + ", " +
+        STORY_INFREQUENT + INTEGER + ", " +
 		STORY_TITLE + TEXT + ", " +
         STORY_IMAGE_URLS + TEXT + ", " +
         STORY_LAST_READ_DATE + INTEGER + ", " +
@@ -288,6 +306,7 @@ public class DatabaseConstants {
         ACTION_COMMENT_TEXT + TEXT + ", " +
         ACTION_STORY_HASH + TEXT + ", " +
         ACTION_FEED_ID + TEXT + ", " +
+        ACTION_FEED_SET + TEXT + ", " +
         ACTION_INCLUDE_OLDER + INTEGER + ", " +
         ACTION_INCLUDE_NEWER + INTEGER + ", " +
         ACTION_STORY_ID + TEXT + ", " +
@@ -296,7 +315,8 @@ public class DatabaseConstants {
         ACTION_REPLY_ID + TEXT + ", " +
         ACTION_MODIFIED_FEED_IDS + TEXT + ", " +
         ACTION_NOTIFY_FILTER + TEXT + ", " +
-        ACTION_NOTIFY_TYPES + TEXT + 
+        ACTION_NOTIFY_TYPES + TEXT + ", " +
+        ACTION_CLASSIFIER + TEXT +
         ")";
 
 	static final String STARREDCOUNTS_SQL = "CREATE TABLE " + STARREDCOUNTS_TABLE + " (" +
@@ -308,6 +328,21 @@ public class DatabaseConstants {
     static final String NOTIFY_DISMISS_SQL = "CREATE TABLE " + NOTIFY_DISMISS_TABLE + " (" +
         NOTIFY_DISMISS_STORY_HASH + TEXT + ", " +
         NOTIFY_DISMISS_TIME + INTEGER + " NOT NULL " +
+        ")";
+
+    static final String FEED_TAGS_SQL = "CREATE TABLE " + FEED_TAGS_TABLE + " (" +
+        FEED_TAGS_FEEDID + TEXT + ", " +
+        FEED_TAGS_TAG + TEXT +
+        ")";
+
+    static final String FEED_AUTHORS_SQL = "CREATE TABLE " + FEED_AUTHORS_TABLE + " (" +
+        FEED_AUTHORS_FEEDID + TEXT + ", " +
+        FEED_AUTHORS_AUTHOR + TEXT +
+        ")";
+
+    static final String SYNC_METADATA_SQL = "CREATE TABLE " + SYNC_METADATA_TABLE + " (" +
+        SYNC_METADATA_KEY + TEXT + " PRIMARY KEY, " +
+        SYNC_METADATA_VALUE + TEXT +
         ")";
 
 	private static final String[] BASE_STORY_COLUMNS = {
@@ -443,4 +478,6 @@ public class DatabaseConstants {
     public static List<String> unflattenStringList(String flat) {
         return JsonHelper.fromJson(flat, new TypeToken<List<String>>(){}.getType());
     }
+
+    public static final String SYNC_METADATA_KEY_SESSION_FEED_SET = "session_feed_set";
 }

@@ -25,7 +25,7 @@ compress_assets: on
 
 javascripts:
     common:
-        - media/js/vendor/jquery-2.0.3.js
+        - media/js/vendor/jquery-2.2.4.js
         # - media/js/vendor/jquery.migrate-*.js
         - media/js/vendor/jquery.browser.js
         - media/js/vendor/jquery.json.js
@@ -83,7 +83,7 @@ javascripts:
         - media/js/newsblur/payments/paypal_return.js
         - media/js/newsblur/payments/stripe_form.js
     bookmarklet:
-        - media/js/vendor/jquery-2.0.3.min.js
+        - media/js/vendor/jquery-2.2.4.min.js
         # - media/js/vendor/jquery.migrate-*.js
         - media/js/vendor/jquery.noConflict.js
         - media/js/vendor/jquery.browser.js
@@ -98,7 +98,7 @@ javascripts:
         - media/js/vendor/underscore.noconflict.js
         - media/js/vendor/readability-*.js
     blurblog:
-        - media/js/vendor/jquery-2.0.3.js
+        - media/js/vendor/jquery-2.2.4.js
         # - media/js/vendor/jquery.migrate-*.js
         - media/js/vendor/jquery.browser.js
         - media/js/vendor/jquery.color.js

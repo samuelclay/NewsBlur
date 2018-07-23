@@ -8,12 +8,16 @@
 
 #import <UIKit/UIKit.h>
 
+#define NOTIFIER_HEIGHT 32
+
 @interface NBNotifier : UIView {
     
     UIView *progressBar;
     
     @protected
     UILabel *_txtLabel;
+    NSLayoutConstraint *progressBarWidthConstraint;
+    NSLayoutConstraint *txtLabelLeadingConstraint;
 }
 
 typedef enum {
@@ -32,17 +36,14 @@ typedef enum {
 @property (nonatomic, strong) NSString *title;
 @property (nonatomic, assign) BOOL showing;
 @property (nonatomic, retain) UIView *progressBar;
+@property (nonatomic) NSLayoutConstraint *topOffsetConstraint;
 
 - (id)initWithTitle:(NSString *)title;
-- (id)initWithTitle:(NSString *)title inView:(UIView *)view;
-- (id)initWithTitle:(NSString *)title inView:(UIView *)view withOffset:(CGPoint)offset;
-- (id)initWithTitle:(NSString *)title inView:(UIView *)view style:(NBNotifierStyle)style;
-- (id)initWithTitle:(NSString *)title inView:(UIView *)view style:(NBNotifierStyle)style withOffset:(CGPoint)offset;
+- (id)initWithTitle:(NSString *)title withOffset:(CGPoint)offset;
+- (id)initWithTitle:(NSString *)title style:(NBNotifierStyle)style;
+- (id)initWithTitle:(NSString *)title style:(NBNotifierStyle)style withOffset:(CGPoint)offset;
 
-- (void) didChangedOrientation:(NSNotification *)sender;
-- (void)setAccessoryView:(UIView *)view animated:(BOOL)animated;
-- (void)setProgress:(float)value;
-- (void)setTitle:(id)title animated:(BOOL)animated;
+- (void)setProgress:(CGFloat)value;
 
 - (void)show;
 - (void)showIn:(float)time;

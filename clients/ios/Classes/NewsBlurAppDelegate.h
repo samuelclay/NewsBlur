@@ -51,6 +51,7 @@
 @class UnreadCounts;
 @class StoriesCollection;
 @class PINCache;
+@class PremiumViewController;
 
 @interface NewsBlurAppDelegate : BaseViewController
 <UIApplicationDelegate, UINavigationControllerDelegate, UIPopoverPresentationControllerDelegate,
@@ -63,6 +64,7 @@ SFSafariViewControllerDelegate>  {
     UINavigationController *userProfileNavigationController;
     UINavigationController *trainNavigationController;
     UINavigationController *notificationsNavigationController;
+    UINavigationController *premiumNavigationController;
     NBContainerViewController *masterContainerViewController;
 
     FirstTimeUserViewController *firstTimeUserViewController;
@@ -91,6 +93,7 @@ SFSafariViewControllerDelegate>  {
     UINavigationController *originalStoryViewNavController;
     UserProfileViewController *userProfileViewController;
     IASKAppSettingsViewController *preferencesViewController;
+    PremiumViewController *premiumViewController;
 
     AFHTTPSessionManager *networkManager;
 
@@ -163,6 +166,7 @@ SFSafariViewControllerDelegate>  {
 @property (nonatomic) UINavigationController *shareNavigationController;
 @property (nonatomic) UINavigationController *trainNavigationController;
 @property (nonatomic) UINavigationController *notificationsNavigationController;
+@property (nonatomic) UINavigationController *premiumNavigationController;
 @property (nonatomic) UINavigationController *userProfileNavigationController;
 @property (nonatomic) UINavigationController *originalStoryViewNavController;
 @property (nonatomic) IBOutlet NBContainerViewController *masterContainerViewController;
@@ -187,6 +191,7 @@ SFSafariViewControllerDelegate>  {
 @property (nonatomic) IBOutlet FontSettingsViewController *fontSettingsViewController;
 @property (nonatomic) IBOutlet UserProfileViewController *userProfileViewController;
 @property (nonatomic) IBOutlet IASKAppSettingsViewController *preferencesViewController;
+@property (nonatomic) IBOutlet PremiumViewController *premiumViewController;
 @property (nonatomic, strong) UINavigationController *fontSettingsNavigationController;
 @property (nonatomic, strong) MarkReadMenuViewController *markReadMenuViewController;
 @property (nonatomic, strong) FeedChooserViewController *feedChooserViewController;
@@ -249,6 +254,8 @@ SFSafariViewControllerDelegate>  {
 @property (nonatomic) NSDictionary *dictSocialProfile;
 @property (nonatomic) NSDictionary *dictUserProfile;
 @property (nonatomic) NSDictionary *dictSocialServices;
+@property (nonatomic) BOOL isPremium;
+@property (nonatomic) NSInteger premiumExpire;
 @property (nonatomic, strong) NSMutableDictionary *dictUnreadCounts;
 @property (nonatomic, strong) NSMutableDictionary *dictTextFeeds;
 @property (nonatomic) NSArray *userInteractionsArray;
@@ -296,6 +303,7 @@ SFSafariViewControllerDelegate>  {
 - (void)showFindFriends;
 - (void)showMuteSites;
 - (void)showOrganizeSites;
+- (void)showPremiumDialog;
 - (void)showPreferences;
 - (void)resizeFontSize;
 

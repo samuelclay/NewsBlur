@@ -1,4 +1,3 @@
-
 //  NewsBlurAppDelegate.m
 //  NewsBlur
 //
@@ -29,6 +28,7 @@
 #import "FontSettingsViewController.h"
 #import "FeedChooserViewController.h"
 #import "UserProfileViewController.h"
+#import "PremiumViewController.h"
 #import "InteractionsModule.h"
 #import "ActivityModule.h"
 #import "FirstTimeUserViewController.h"
@@ -87,6 +87,7 @@
 @synthesize shareNavigationController;
 @synthesize trainNavigationController;
 @synthesize notificationsNavigationController;
+@synthesize premiumNavigationController;
 @synthesize userProfileNavigationController;
 @synthesize masterContainerViewController;
 @synthesize dashboardViewController;
@@ -109,6 +110,7 @@
 @synthesize originalStoryViewNavController;
 @synthesize userProfileViewController;
 @synthesize preferencesViewController;
+@synthesize premiumViewController;
 
 @synthesize firstTimeUserViewController;
 @synthesize firstTimeUserAddSitesViewController;
@@ -162,6 +164,8 @@
 @synthesize dictSocialServices;
 @synthesize dictUnreadCounts;
 @synthesize dictTextFeeds;
+@synthesize isPremium;
+@synthesize premiumExpire;
 @synthesize userInteractionsArray;
 @synthesize userActivitiesArray;
 @synthesize dictFoldersArray;
@@ -226,7 +230,11 @@
 //    [self showFirstTimeUser];
     
     cachedFavicons = [[PINCache alloc] initWithName:@"NBFavicons"];
+    cachedFavicons.memoryCache.removeAllObjectsOnEnteringBackground = NO;
     cachedStoryImages = [[PINCache alloc] initWithName:@"NBStoryImages"];
+    cachedStoryImages.memoryCache.removeAllObjectsOnEnteringBackground = NO;
+    isPremium = NO;
+    premiumExpire = 0;
     
     NBURLCache *urlCache = [[NBURLCache alloc] init];
     [NSURLCache setSharedURLCache:urlCache];
@@ -350,6 +358,9 @@
     }
     
     [[NSUserDefaults standardUserDefaults] registerDefaults:defaultsToRegister];
+    
+    NSString *version = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];
+    [[NSUserDefaults standardUserDefaults] setObject:version forKey:@"version"];
 }
 
 - (void)registerForRemoteNotifications {
@@ -484,7 +495,9 @@
     };
     reach.unreachableBlock = ^(Reachability *reach) {
         NSLog(@"Un-Reachable: %@", reach);
-        [feedsViewController loadOfflineFeeds:NO];
+        dispatch_sync(dispatch_get_main_queue(), ^{
+            [feedsViewController loadOfflineFeeds:NO];
+        });
     };
     [reach startNotifier];
 }
@@ -619,6 +632,24 @@
 
 - (void)resizeFontSize {
     [feedsViewController resizeFontSize];
+}
+
+- (void)showPremiumDialog {
+    UINavigationController *navController = self.navigationController;
+    if (self.premiumNavigationController == nil) {
+        self.premiumNavigationController = [[UINavigationController alloc]
+                                            initWithRootViewController:self.premiumViewController];
+    }
+    self.premiumNavigationController.navigationBar.translucent = NO;
+
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        [masterContainerViewController dismissViewControllerAnimated:NO completion:nil];
+        premiumNavigationController.modalPresentationStyle = UIModalPresentationFormSheet;
+        [masterContainerViewController presentViewController:premiumNavigationController animated:YES completion:nil];
+        [self.premiumViewController.view setNeedsLayout];
+    } else {
+        [navController presentViewController:self.premiumNavigationController animated:YES completion:nil];
+    }
 }
 
 - (void)showPreferences {
@@ -910,6 +941,10 @@
     [userPreferences synchronize];
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        if (self.masterContainerViewController.presentedViewController == loginViewController) {
+            NSLog(@"Already showing login!");
+            return;
+        }
         [self.masterContainerViewController presentViewController:loginViewController animated:NO completion:nil];
     } else {
         [feedsMenuViewController dismissViewControllerAnimated:NO completion:nil];
@@ -1316,7 +1351,7 @@
 }
 
 - (NSArray *)feedIdsForFolderTitle:(NSString *)folderTitle {
-    if ([folderTitle isEqualToString:@"everything"]) {
+    if ([folderTitle isEqualToString:@"everything"] || [folderTitle isEqualToString:@"infrequent"]) {
         return @[folderTitle];
     } else {
         return self.dictFolders[folderTitle];
@@ -1400,7 +1435,9 @@
 }
 
 - (void)refreshFeedCount:(id)feedId {
-    [feedsViewController fadeFeed:feedId];
+//    [feedsViewController fadeFeed:feedId];
+    [feedsViewController redrawFeedCounts:feedId];
+    [feedsViewController refreshHeaderCounts];
 }
 
 - (void)loadRiverFeedDetailView:(FeedDetailViewController *)feedDetailView withFolder:(NSString *)folder {
@@ -1443,10 +1480,10 @@
                     }
                 }
             }
-        } else if ([folder isEqualToString:@"everything"]) {
+        } else if ([folder isEqualToString:@"everything"] || [folder isEqualToString:@"infrequent"]) {
             feedDetailView.storiesCollection.isRiverView = YES;
             // add all the feeds from every NON blurblog folder
-            [feedDetailView.storiesCollection setActiveFolder:@"everything"];
+            [feedDetailView.storiesCollection setActiveFolder:folder];
             for (NSString *folderName in self.feedsViewController.activeFeedLocations) {
                 if ([folderName isEqualToString:@"river_blurblogs"]) continue;
                 if ([folderName isEqualToString:@"read_stories"]) continue;
@@ -1731,6 +1768,10 @@
         self.safariViewController = [[SFSafariViewController alloc] initWithURL:url];
         self.safariViewController.delegate = self;
         [navigationController presentViewController:self.safariViewController animated:YES completion:nil];
+    } else if ([storyBrowser isEqualToString:@"inappsafarireader"]) {
+        self.safariViewController = [[SFSafariViewController alloc] initWithURL:url entersReaderIfAvailable:YES];
+        self.safariViewController.delegate = self;
+        [navigationController presentViewController:self.safariViewController animated:YES completion:nil];
     } else {
         if (!originalStoryViewController) {
             originalStoryViewController = [[OriginalStoryViewController alloc] init];
@@ -1945,7 +1986,9 @@
                (!folderName && [storiesCollection.activeFolder isEqual:@"river_global"])) {
         total = 0;
     } else if ([folderName isEqual:@"everything"] ||
-               (!folderName && [storiesCollection.activeFolder isEqual:@"everything"])) {
+               [folderName isEqual:@"infrequent"] ||
+               (!folderName && ([storiesCollection.activeFolder isEqual:@"everything"] ||
+                                [storiesCollection.activeFolder isEqual:@"infrequent"]))) {
         // TODO: Fix race condition where self.dictUnreadCounts can be changed while being updated.
         for (id feedId in self.dictUnreadCounts) {
             total += [self unreadCountForFeed:feedId];
@@ -2003,7 +2046,9 @@
             (!folderName && [storiesCollection.activeFolder isEqual:@"river_global"])) {
         // Nothing for global
     } else if ([folderName isEqual:@"everything"] ||
-               (!folderName && [storiesCollection.activeFolder isEqual:@"everything"])) {
+               [folderName isEqual:@"infrequent"] ||
+               (!folderName && ([storiesCollection.activeFolder isEqual:@"everything"] ||
+                                [storiesCollection.activeFolder isEqual:@"infrequent"]))) {
         for (NSArray *folder in [self.dictFolders allValues]) {
             for (id feedId in folder) {
                 if ([feedId isKindOfClass:[NSString class]] && [feedId startsWith:@"saved:"]) {
@@ -2075,7 +2120,7 @@
 #pragma mark Mark as read
 
 - (void)markActiveFolderAllRead {
-    if ([storiesCollection.activeFolder isEqual:@"everything"]) {
+    if ([storiesCollection.activeFolder isEqual:@"everything"] || [storiesCollection.activeFolder isEqual:@"infrequent"]) {
         for (NSString *folderName in self.dictFoldersArray) {
             for (id feedId in [self.dictFolders objectForKey:folderName]) {
                 [self markFeedAllRead:feedId];
@@ -2556,7 +2601,8 @@
 
 - (NSString *)extractParentFolderName:(NSString *)folderName {
     if ([folderName containsString:@"Top Level"] ||
-        [folderName isEqual:@"everything"]) {
+        [folderName isEqual:@"everything"] ||
+        [folderName isEqual:@"infrequent"]) {
         folderName = @"";
     }
     
@@ -2573,7 +2619,8 @@
 
 - (NSString *)extractFolderName:(NSString *)folderName {
     if ([folderName containsString:@"Top Level"] ||
-        [folderName isEqual:@"everything"]) {
+        [folderName isEqual:@"everything"] ||
+        [folderName isEqual:@"infrequent"]) {
         folderName = @"";
     }
     if ([folderName containsString:@" - "]) {
@@ -2784,6 +2831,9 @@
     } else if (storiesCollection.isRiverView &&
                [storiesCollection.activeFolder isEqualToString:@"everything"]) {
         titleLabel.text = [NSString stringWithFormat:@"     All Stories"];
+    } else if (storiesCollection.isRiverView &&
+               [storiesCollection.activeFolder isEqualToString:@"infrequent"]) {
+        titleLabel.text = [NSString stringWithFormat:@"     Infrequent Site Stories"];
     } else if (storiesCollection.isSavedView && storiesCollection.activeSavedStoryTag) {
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
             titleLabel.text = [NSString stringWithFormat:@"     %@", storiesCollection.activeSavedStoryTag];
@@ -2822,6 +2872,9 @@
             titleImage = [UIImage imageNamed:@"ak-icon-blurblogs.png"];
         } else if (storiesCollection.isRiverView &&
                    [storiesCollection.activeFolder isEqualToString:@"everything"]) {
+            titleImage = [UIImage imageNamed:@"ak-icon-allstories.png"];
+        } else if (storiesCollection.isRiverView &&
+                   [storiesCollection.activeFolder isEqualToString:@"infrequent"]) {
             titleImage = [UIImage imageNamed:@"ak-icon-allstories.png"];
         } else if (storiesCollection.isSavedView && storiesCollection.activeSavedStoryTag) {
             titleImage = [UIImage imageNamed:@"tag.png"];
@@ -3354,16 +3407,18 @@
 
 - (void)markScrollPosition:(NSInteger)position inStory:(NSDictionary *)story {
     if (position < 0) return;
+    __block NSNumber *positionNum = @(position);
+    __block NSDictionary *storyDict = story;
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW,
                                              (unsigned long)NULL), ^(void) {
         [self.database inDatabase:^(FMDatabase *db) {
-//            NSLog(@"Saving scroll %ld in %@-%@", position, [story objectForKey:@"story_hash"], [story objectForKey:@"story_title"]);
+            NSLog(@"Saving scroll %ld in %@-%@", (long)[positionNum integerValue], [storyDict objectForKey:@"story_hash"], [storyDict objectForKey:@"story_title"]);
             [db executeUpdate:@"INSERT INTO story_scrolls (story_feed_id, story_hash, story_timestamp, scroll) VALUES (?, ?, ?, ?)",
-             [story objectForKey:@"story_feed_id"],
-             [story objectForKey:@"story_hash"],
-             [story objectForKey:@"story_timestamp"],
-             [NSNumber numberWithInteger:position]];
+             [storyDict objectForKey:@"story_feed_id"],
+             [storyDict objectForKey:@"story_hash"],
+             [storyDict objectForKey:@"story_timestamp"],
+             positionNum];
         }];
     });
 }

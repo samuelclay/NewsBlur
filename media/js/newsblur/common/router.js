@@ -32,7 +32,7 @@ NEWSBLUR.Router = Backbone.Router.extend({
         // NEWSBLUR.log(["site", site_id, slug]);
         site_id = parseInt(site_id, 10);
         var feed = NEWSBLUR.assets.get_feed(site_id);
-        var query = $.getQueryString('search');
+        var query = this.extract_query();
         if (query) {
             NEWSBLUR.reader.flags.searching = true;
             NEWSBLUR.reader.flags.search = query;
@@ -55,7 +55,7 @@ NEWSBLUR.Router = Backbone.Router.extend({
         var options = {
             router: true
         };
-        var query = $.getQueryString('search');
+        var query = this.extract_query();
         if (query) {
             NEWSBLUR.reader.flags.searching = true;
             NEWSBLUR.reader.flags.search = query;
@@ -70,7 +70,7 @@ NEWSBLUR.Router = Backbone.Router.extend({
             router: true,
             tag: tag
         };
-        var query = $.getQueryString('search');
+        var query = this.extract_query();
         if (query) {
             NEWSBLUR.reader.flags.searching = true;
             NEWSBLUR.reader.flags.search = query;
@@ -84,7 +84,7 @@ NEWSBLUR.Router = Backbone.Router.extend({
         folder_name = folder_name.replace(/-/g, ' ');
         // NEWSBLUR.log(["folder", folder_name]);
         var options = {router: true};
-        var query = $.getQueryString('search');
+        var query = this.extract_query();
         if (query) {
             NEWSBLUR.reader.flags.searching = true;
             NEWSBLUR.reader.flags.search = query;
@@ -92,6 +92,9 @@ NEWSBLUR.Router = Backbone.Router.extend({
         }
 
         if (folder_name == "everything") {
+            NEWSBLUR.reader.open_river_stories(null, null, options);
+        } else if (folder_name == "infrequent") {
+            options.infrequent = NEWSBLUR.assets.preference('infrequent_stories_per_month');
             NEWSBLUR.reader.open_river_stories(null, null, options);
         } else if (folder_name == "blurblogs") {
             NEWSBLUR.reader.open_river_blurblogs_stories(options);
@@ -108,7 +111,7 @@ NEWSBLUR.Router = Backbone.Router.extend({
     
     social: function(user_id, slug) {
         NEWSBLUR.log(["router:social", user_id, slug]);
-        var query = $.getQueryString('search');
+        var query = this.extract_query();
         if (query) {
             NEWSBLUR.reader.flags.searching = true;
             NEWSBLUR.reader.flags.search = query;
@@ -129,6 +132,15 @@ NEWSBLUR.Router = Backbone.Router.extend({
                 }
             });
         }
+    },
+    
+    extract_query: function() {
+        var search = $.getQueryString('search');
+        var sanitized = search && search.replace(/[^\w\s]+/g, " ");
+        
+        // console.log('extract_query', search, sanitized);
+        
+        return sanitized;
     },
     
     user: function(user) {

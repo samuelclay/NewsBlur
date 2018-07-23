@@ -15,8 +15,6 @@ import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import android.util.Log;
-
 /**
  * Created by mark on 15/03/2014.
  */

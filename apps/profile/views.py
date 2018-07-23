@@ -26,7 +26,7 @@ from apps.social.models import MSocialServices, MActivity, MSocialProfile
 from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifierFeed, MClassifierTag
 from utils import json_functions as json
 from utils.user_functions import ajax_login_required
-from utils.view_functions import render_to
+from utils.view_functions import render_to, is_true
 from utils.user_functions import get_user
 from utils import log as logging
 from vendor.paypalapi.exceptions import PayPalAPIResponseError
@@ -310,6 +310,23 @@ def profile_is_premium(request):
         'total_subs': total_subs,
     }
 
+@ajax_login_required
+@json.json_view
+def save_ios_receipt(request):
+    receipt = request.REQUEST.get('receipt')
+    product_identifier = request.POST.get('product_identifier')
+    transaction_identifier = request.POST.get('transaction_identifier')
+    
+    logging.user(request, "~BM~FBSaving iOS Receipt: %s %s" % (product_identifier, transaction_identifier))
+    
+    paid = request.user.profile.activate_ios_premium(product_identifier, transaction_identifier)
+    if paid:
+        subject = "iOS Premium: %s (%s)" % (request.user.profile, product_identifier)
+        message = """User: %s (%s) -- Email: %s, product: %s, txn: %s, receipt: %s""" % (request.user.username, request.user.pk, request.user.email, product_identifier, transaction_identifier, receipt)
+        mail_admins(subject, message, fail_silently=True)
+    
+    return request.user.profile
+    
 @login_required
 def stripe_form(request):
     user = request.user
@@ -317,6 +334,7 @@ def stripe_form(request):
     stripe.api_key = settings.STRIPE_SECRET
     plan = int(request.GET.get('plan', 2))
     plan = PLANS[plan-1][0]
+    renew = is_true(request.GET.get('renew', False))
     error = None
     
     if request.method == 'POST':
@@ -324,10 +342,11 @@ def stripe_form(request):
         if zebra_form.is_valid():
             user.email = zebra_form.cleaned_data['email']
             user.save()
-            
+            customer = None
             current_premium = (user.profile.is_premium and 
                                user.profile.premium_expire and
                                user.profile.premium_expire > datetime.datetime.now())
+                               
             # Are they changing their existing card?
             if user.profile.stripe_id and current_premium:
                 customer = stripe.Customer.retrieve(user.profile.stripe_id)
@@ -355,6 +374,20 @@ def stripe_form(request):
                     user.profile.save()
                     user.profile.activate_premium() # TODO: Remove, because webhooks are slow
                     success_updating = True
+            
+            if success_updating and customer and customer.subscriptions.count == 0:
+                billing_cycle_anchor = "now"
+                if current_premium:
+                    billing_cycle_anchor = user.profile.premium_expire.strftime('%s')
+                stripe.Subscription.create(
+                  customer=customer.id,
+                  billing_cycle_anchor=billing_cycle_anchor,
+                  items=[
+                    {
+                      "plan": "newsblur-premium-36",
+                    },
+                  ]
+                )
 
     else:
         zebra_form = StripePlusPaymentForm(email=user.email, plan=plan)
@@ -370,6 +403,10 @@ def stripe_form(request):
         new_user_queue_behind = new_user_queue_count - new_user_queue_position 
         new_user_queue_position -= 1
     
+    immediate_charge = True
+    if user.profile.premium_expire and user.profile.premium_expire > datetime.datetime.now():
+        immediate_charge = False
+    
     logging.user(request, "~BM~FBLoading Stripe form")
 
     return render_to_response('profile/stripe_form.xhtml',
@@ -380,6 +417,8 @@ def stripe_form(request):
           'new_user_queue_count': new_user_queue_count - 1,
           'new_user_queue_position': new_user_queue_position,
           'new_user_queue_behind': new_user_queue_behind,
+          'renew': renew,
+          'immediate_charge': immediate_charge,
           'error': error,
         },
         context_instance=RequestContext(request)

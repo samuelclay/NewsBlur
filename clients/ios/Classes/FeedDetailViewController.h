@@ -21,7 +21,8 @@
 <UITableViewDelegate, UITableViewDataSource,
  UIPopoverControllerDelegate,
  MCSwipeTableViewCellDelegate,
- UIGestureRecognizerDelegate, UISearchBarDelegate> {
+ UIGestureRecognizerDelegate, UISearchBarDelegate,
+ UITableViewDragDelegate> {
     NewsBlurAppDelegate *appDelegate;
     
     BOOL pageFetching;
@@ -74,6 +75,7 @@
 - (void)testForTryFeed;
 - (void)cacheStoryImages:(NSArray *)storyImageUrls;
 - (void)showStoryImage:(NSString *)imageUrl;
+- (void)flashInfrequentStories;
 
 - (void)renderStories:(NSArray *)newStories;
 - (void)scrollViewDidScroll:(UIScrollView *)scroll;

@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14113" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="ipad9_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <customFonts key="customFonts">
+        <array key="GothamNarrow-Medium.otf">
+            <string>GothamNarrow-Medium</string>
+        </array>
+    </customFonts>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="PremiumViewController">
+            <connections>
+                <outlet property="confettiView" destination="TFM-k9-HJ2" id="Xqn-VR-200"/>
+                <outlet property="freeView" destination="vys-ne-LmS" id="EUB-JT-1vy"/>
+                <outlet property="labelPremiumExpire" destination="kSd-jt-UJ6" id="E6q-in-P1o"/>
+                <outlet property="labelPremiumTitle" destination="ueU-QC-PqI" id="cmx-VI-DAg"/>
+                <outlet property="labelSubtitle" destination="wHV-Eo-ith" id="BeK-G5-G9j"/>
+                <outlet property="labelTitle" destination="bVF-I1-nis" id="0Eg-04-NaQ"/>
+                <outlet property="premiumView" destination="rCC-u8-EID" id="SRr-a7-DrJ"/>
+                <outlet property="productsHeight" destination="Gta-B6-eUD" id="nYZ-wi-Pfc"/>
+                <outlet property="productsTable" destination="0Bc-Oc-gNV" id="9R5-FZ-rK7"/>
+                <outlet property="reasonsTable" destination="fn0-sC-cuM" id="ww2-5k-3rd"/>
+                <outlet property="spinner" destination="yBE-Kx-Lyj" id="Uwq-Yj-4xx"/>
+                <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="i5M-Pr-FkT">
+            <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="vys-ne-LmS">
+                    <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
+                    <subviews>
+                        <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" animating="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="yBE-Kx-Lyj">
+                            <rect key="frame" x="374" y="167" width="20" height="20"/>
+                        </activityIndicatorView>
+                        <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="fn0-sC-cuM">
+                            <rect key="frame" x="0.0" y="229" width="768" height="795"/>
+                            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            <connections>
+                                <outlet property="dataSource" destination="-1" id="Hc6-OJ-jhm"/>
+                                <outlet property="delegate" destination="-1" id="bI2-jz-jA3"/>
+                            </connections>
+                        </tableView>
+                        <tableView clipsSubviews="YES" contentMode="scaleToFill" verticalCompressionResistancePriority="1000" alwaysBounceVertical="YES" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="0Bc-Oc-gNV">
+                            <rect key="frame" x="0.0" y="149" width="768" height="56"/>
+                            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="56" id="Gta-B6-eUD"/>
+                            </constraints>
+                            <connections>
+                                <outlet property="dataSource" destination="-1" id="ao8-dO-pyT"/>
+                                <outlet property="delegate" destination="-1" id="w2e-z9-J11"/>
+                            </connections>
+                        </tableView>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="1000" text="Thank you so much for going premium!" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bVF-I1-nis">
+                            <rect key="frame" x="24" y="18" width="720" height="23"/>
+                            <fontDescription key="fontDescription" name="GothamNarrow-Medium" family="Gotham Narrow" pointSize="19"/>
+                            <nil key="textColor"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="249" verticalCompressionResistancePriority="1000" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="8" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wHV-Eo-ith">
+                            <rect key="frame" x="24" y="53" width="720" height="72"/>
+                            <string key="text">Upgrading to a NewsBlur premium subscription gives you all of these features. Payment will be charged to your iTunes Account at confirmation of purchase. Subscription automatically renews unless auto-renew is turned off at least 24 hours before the end of the current period. Cancel at any time from Account Settings in iTunes.</string>
+                            <fontDescription key="fontDescription" name="GothamNarrow-Medium" family="Gotham Narrow" pointSize="15"/>
+                            <nil key="textColor"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                    </subviews>
+                    <constraints>
+                        <constraint firstAttribute="bottom" secondItem="fn0-sC-cuM" secondAttribute="bottom" id="2Bj-WY-sdY"/>
+                        <constraint firstItem="yBE-Kx-Lyj" firstAttribute="centerY" secondItem="0Bc-Oc-gNV" secondAttribute="centerY" id="A3t-Kf-7rY"/>
+                        <constraint firstItem="fn0-sC-cuM" firstAttribute="top" secondItem="0Bc-Oc-gNV" secondAttribute="bottom" constant="24" id="IyC-Dp-Hc0"/>
+                        <constraint firstAttribute="trailing" secondItem="bVF-I1-nis" secondAttribute="trailing" constant="24" id="K2F-Yb-Ka6"/>
+                        <constraint firstAttribute="trailing" secondItem="fn0-sC-cuM" secondAttribute="trailing" id="KUQ-4z-rJQ"/>
+                        <constraint firstAttribute="trailing" secondItem="wHV-Eo-ith" secondAttribute="trailing" constant="24" id="Nfb-a7-jDr"/>
+                        <constraint firstItem="0Bc-Oc-gNV" firstAttribute="top" secondItem="wHV-Eo-ith" secondAttribute="bottom" constant="24" id="Opl-bA-k6v"/>
+                        <constraint firstItem="bVF-I1-nis" firstAttribute="centerX" secondItem="vys-ne-LmS" secondAttribute="centerX" id="Ruc-wE-XRY"/>
+                        <constraint firstItem="0Bc-Oc-gNV" firstAttribute="leading" secondItem="vys-ne-LmS" secondAttribute="leading" id="S26-YV-Bgu"/>
+                        <constraint firstItem="bVF-I1-nis" firstAttribute="top" secondItem="vys-ne-LmS" secondAttribute="top" constant="18" id="XFJ-7c-wws"/>
+                        <constraint firstAttribute="trailing" secondItem="0Bc-Oc-gNV" secondAttribute="trailing" id="ef4-Av-ZlG"/>
+                        <constraint firstItem="yBE-Kx-Lyj" firstAttribute="centerX" secondItem="0Bc-Oc-gNV" secondAttribute="centerX" id="l0s-HJ-wPi"/>
+                        <constraint firstItem="wHV-Eo-ith" firstAttribute="top" secondItem="bVF-I1-nis" secondAttribute="bottom" constant="12" id="qx3-55-Vki"/>
+                        <constraint firstItem="bVF-I1-nis" firstAttribute="leading" secondItem="vys-ne-LmS" secondAttribute="leading" constant="24" id="s7o-bi-uQo"/>
+                        <constraint firstItem="wHV-Eo-ith" firstAttribute="leading" secondItem="vys-ne-LmS" secondAttribute="leading" constant="24" id="v8a-ek-NUU"/>
+                        <constraint firstItem="fn0-sC-cuM" firstAttribute="leading" secondItem="vys-ne-LmS" secondAttribute="leading" id="x3Z-Fi-aVJ"/>
+                    </constraints>
+                </view>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="rCC-u8-EID">
+                    <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
+                    <subviews>
+                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="TFM-k9-HJ2" customClass="SAConfettiView" customModule="NewsBlur" customModuleProvider="target">
+                            <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
+                        </view>
+                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="mVi-67-VUL">
+                            <rect key="frame" x="24" y="400" width="720" height="225.5"/>
+                            <subviews>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Thank you for going premium!" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ueU-QC-PqI">
+                                    <rect key="frame" x="0.0" y="0.0" width="720" height="51.5"/>
+                                    <fontDescription key="fontDescription" type="boldSystem" pointSize="42"/>
+                                    <nil key="textColor"/>
+                                    <nil key="highlightedColor"/>
+                                    <color key="shadowColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    <size key="shadowOffset" width="0.0" height="1"/>
+                                </label>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Your premium subscription will renew on December 31st, 2018" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="5" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="kSd-jt-UJ6">
+                                    <rect key="frame" x="0.0" y="195.5" width="720" height="30"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="24"/>
+                                    <nil key="textColor"/>
+                                    <nil key="highlightedColor"/>
+                                    <color key="shadowColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    <size key="shadowOffset" width="0.0" height="1"/>
+                                </label>
+                            </subviews>
+                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            <constraints>
+                                <constraint firstAttribute="bottom" secondItem="kSd-jt-UJ6" secondAttribute="bottom" id="4iu-RE-mE5"/>
+                                <constraint firstItem="ueU-QC-PqI" firstAttribute="top" secondItem="mVi-67-VUL" secondAttribute="top" id="gdD-lC-uWV"/>
+                                <constraint firstAttribute="trailing" secondItem="ueU-QC-PqI" secondAttribute="trailing" id="ifU-kO-RyW"/>
+                                <constraint firstItem="kSd-jt-UJ6" firstAttribute="top" secondItem="ueU-QC-PqI" secondAttribute="bottom" constant="144" id="j2C-UQ-5Fa"/>
+                                <constraint firstAttribute="trailing" secondItem="kSd-jt-UJ6" secondAttribute="trailing" id="uKx-wN-L60"/>
+                                <constraint firstItem="kSd-jt-UJ6" firstAttribute="leading" secondItem="mVi-67-VUL" secondAttribute="leading" id="ub5-Bd-N6e"/>
+                                <constraint firstItem="ueU-QC-PqI" firstAttribute="leading" secondItem="mVi-67-VUL" secondAttribute="leading" id="zYX-Kk-LtM"/>
+                            </constraints>
+                        </view>
+                    </subviews>
+                    <constraints>
+                        <constraint firstItem="mVi-67-VUL" firstAttribute="centerY" secondItem="rCC-u8-EID" secondAttribute="centerY" id="Amv-DQ-A35"/>
+                        <constraint firstAttribute="bottom" secondItem="TFM-k9-HJ2" secondAttribute="bottom" id="JlI-5W-WNC"/>
+                        <constraint firstItem="mVi-67-VUL" firstAttribute="leading" secondItem="rCC-u8-EID" secondAttribute="leading" constant="24" id="MHv-fA-I6f"/>
+                        <constraint firstAttribute="trailing" secondItem="TFM-k9-HJ2" secondAttribute="trailing" id="ahF-PY-wDI"/>
+                        <constraint firstAttribute="trailing" secondItem="mVi-67-VUL" secondAttribute="trailing" constant="24" id="b44-pf-TL4"/>
+                        <constraint firstItem="TFM-k9-HJ2" firstAttribute="leading" secondItem="rCC-u8-EID" secondAttribute="leading" id="f4J-In-Lgr"/>
+                        <constraint firstItem="TFM-k9-HJ2" firstAttribute="top" secondItem="rCC-u8-EID" secondAttribute="top" id="kG9-70-2gb"/>
+                        <constraint firstItem="mVi-67-VUL" firstAttribute="centerX" secondItem="rCC-u8-EID" secondAttribute="centerX" id="voU-b3-P9x"/>
+                    </constraints>
+                </view>
+            </subviews>
+            <constraints>
+                <constraint firstItem="rCC-u8-EID" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="49S-a4-0Y4"/>
+                <constraint firstItem="vys-ne-LmS" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="Fa7-DY-bbF"/>
+                <constraint firstItem="rCC-u8-EID" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="MuC-aI-ptJ"/>
+                <constraint firstAttribute="bottom" secondItem="rCC-u8-EID" secondAttribute="bottom" id="VQq-Zr-Ial"/>
+                <constraint firstAttribute="trailing" secondItem="vys-ne-LmS" secondAttribute="trailing" id="nKn-Qp-cu5"/>
+                <constraint firstItem="vys-ne-LmS" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="swR-6C-sga"/>
+                <constraint firstAttribute="bottom" secondItem="vys-ne-LmS" secondAttribute="bottom" id="uPS-qn-k8W"/>
+                <constraint firstAttribute="trailing" secondItem="rCC-u8-EID" secondAttribute="trailing" id="wVW-Sj-l7C"/>
+            </constraints>
+            <nil key="simulatedTopBarMetrics"/>
+            <point key="canvasLocation" x="24.5" y="51.5"/>
+        </view>
+    </objects>
+</document>

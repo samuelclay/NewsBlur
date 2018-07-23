@@ -12,9 +12,8 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
-import android.app.DialogFragment;
+import android.support.v4.app.DialogFragment;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -46,6 +45,7 @@ import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.Font;
+import com.newsblur.util.PrefConstants.ThemeValue;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.StoryUtils;
 import com.newsblur.util.UIUtils;
@@ -59,7 +59,7 @@ import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class ReadingItemFragment extends NbFragment implements ClassifierDialogFragment.TagUpdateCallback {
+public class ReadingItemFragment extends NbFragment {
 
 	public static final String TEXT_SIZE_CHANGED = "textSizeChanged";
 	public static final String TEXT_SIZE_VALUE = "textSizeChangeValue";
@@ -73,6 +73,7 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
     @Bind(R.id.custom_view_container) ViewGroup webviewCustomViewLayout;
     @Bind(R.id.reading_scrollview) View fragmentScrollview;
 	private BroadcastReceiver textSizeReceiver, readingFontReceiver;
+    @Bind(R.id.reading_item_title) TextView itemTitle;
     @Bind(R.id.reading_item_authors) TextView itemAuthors;
 	@Bind(R.id.reading_feed_title) TextView itemFeed;
 	private boolean displayFeedDetails;
@@ -80,6 +81,8 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
 	private View view;
 	private UserDetails user;
     private DefaultFeedView selectedFeedView;
+    private boolean textViewUnavailable;
+    @Bind(R.id.reading_textloading) TextView textViewLoadingMsg;
     @Bind(R.id.save_story_button) Button saveButton;
     @Bind(R.id.share_story_button) Button shareButton;
 
@@ -208,22 +211,20 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
 	}
 
     private void setupImmersiveViewGestureDetector() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            // Change the system visibility on the decorview from the activity so that the state is maintained as we page through
-            // fragments
-            ImmersiveViewHandler immersiveViewHandler = new ImmersiveViewHandler(getActivity().getWindow().getDecorView());
-            final GestureDetector gestureDetector = new GestureDetector(getActivity(), immersiveViewHandler);
-            View.OnTouchListener touchListener = new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View view, MotionEvent motionEvent) {
-                    return gestureDetector.onTouchEvent(motionEvent);
-                }
-            };
-            web.setOnTouchListener(touchListener);
-            view.setOnTouchListener(touchListener);
+        // Change the system visibility on the decorview from the activity so that the state is maintained as we page through
+        // fragments
+        ImmersiveViewHandler immersiveViewHandler = new ImmersiveViewHandler(getActivity().getWindow().getDecorView());
+        final GestureDetector gestureDetector = new GestureDetector(getActivity(), immersiveViewHandler);
+        View.OnTouchListener touchListener = new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                return gestureDetector.onTouchEvent(motionEvent);
+            }
+        };
+        web.setOnTouchListener(touchListener);
+        view.setOnTouchListener(touchListener);
 
-            getActivity().getWindow().getDecorView().setOnSystemUiVisibilityChangeListener(immersiveViewHandler);
-        }
+        getActivity().getWindow().getDecorView().setOnSystemUiVisibilityChangeListener(immersiveViewHandler);
     }
 
     @Override
@@ -240,28 +241,34 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
             String mappedURL = imageUrlRemaps.get(imageURL);
             final String finalURL = mappedURL == null ? imageURL : mappedURL;
             final String altText = imageAltTexts.get(finalURL);
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setTitle(finalURL);
             if (altText != null) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                builder.setTitle(finalURL);
                 builder.setMessage(UIUtils.fromHtml(altText));
-                builder.setPositiveButton(R.string.alert_dialog_openimage, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        Intent i = new Intent(Intent.ACTION_VIEW);
-                        i.setData(Uri.parse(finalURL));
-                        try {
-                            startActivity(i);
-                        } catch (Exception e) {
-                            android.util.Log.wtf(this.getClass().getName(), "device cannot open URLs");
-                        }
-                    }
-                });
-                builder.setNegativeButton(R.string.alert_dialog_done, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        ; // do nothing
-                    }
-                });
-                builder.show();
+            } else {
+                builder.setMessage(finalURL);
             }
+            int actionRID = R.string.alert_dialog_openlink;
+            if (result.getType() == HitTestResult.IMAGE_TYPE || result.getType() == HitTestResult.SRC_IMAGE_ANCHOR_TYPE ) {
+                actionRID = R.string.alert_dialog_openimage;
+            }
+            builder.setPositiveButton(actionRID, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    Intent i = new Intent(Intent.ACTION_VIEW);
+                    i.setData(Uri.parse(finalURL));
+                    try {
+                        startActivity(i);
+                    } catch (Exception e) {
+                        android.util.Log.wtf(this.getClass().getName(), "device cannot open URLs");
+                    }
+                }
+            });
+            builder.setNegativeButton(R.string.alert_dialog_done, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    ; // do nothing
+                }
+            });
+            builder.show();
         } else {
             super.onCreateContextMenu(menu, v, menuInfo);
         }
@@ -303,7 +310,6 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
 	private void setupItemMetadata() {
         View feedHeader = view.findViewById(R.id.row_item_feed_header);
         View feedHeaderBorder = view.findViewById(R.id.item_feed_border);
-        TextView itemTitle = (TextView) view.findViewById(R.id.reading_item_title);
         TextView itemDate = (TextView) view.findViewById(R.id.reading_item_date);
         ImageView feedIcon = (ImageView) view.findViewById(R.id.reading_feed_icon);
 
@@ -340,17 +346,7 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
 			itemFeed.setText(feedTitle);
 		}
 
-        String title = story.title;
-        title = UIUtils.colourTitleFromClassifier(title, classifier);
-        itemTitle.setText(UIUtils.fromHtml(title));
         itemDate.setText(StoryUtils.formatLongDate(getActivity(), new Date(story.timestamp)));
-
-        if (!TextUtils.isEmpty(story.authors)) {
-            itemAuthors.setText("•   " + story.authors);
-            if (classifier != null && classifier.authors.containsKey(story.authors)) {
-                updateTagView(story.authors, Classifier.AUTHOR, classifier.authors.get(story.authors));
-            }
-        }
 
         if (story.tags.length <= 0) {
             tagContainer.setVisibility(View.GONE);
@@ -359,16 +355,18 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
 		itemAuthors.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				ClassifierDialogFragment classifierFragment = ClassifierDialogFragment.newInstance(ReadingItemFragment.this, story.feedId, classifier, story.authors, Classifier.AUTHOR);
-				classifierFragment.show(getFragmentManager(), "dialog");		
+                if (story.feedId.equals("0")) return; // cannot train on feedless stories
+                StoryIntelTrainerFragment intelFrag = StoryIntelTrainerFragment.newInstance(story, fs);
+                intelFrag.show(getFragmentManager(), StoryIntelTrainerFragment.class.getName());
 			}	
 		});
 
 		itemFeed.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				ClassifierDialogFragment classifierFragment = ClassifierDialogFragment.newInstance(ReadingItemFragment.this, story.feedId, classifier, feedTitle, Classifier.FEED);
-				classifierFragment.show(getFragmentManager(), "dialog");
+                if (story.feedId.equals("0")) return; // cannot train on feedless stories
+                StoryIntelTrainerFragment intelFrag = StoryIntelTrainerFragment.newInstance(story, fs);
+                intelFrag.show(getFragmentManager(), StoryIntelTrainerFragment.class.getName());
 			}
 		});
 
@@ -387,15 +385,20 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
 			}
 		});
 
-		setupTags();
+		setupTagsAndIntel();
 	}
 
-	private void setupTags() {
+	private void setupTagsAndIntel() {
         int tag_green_text = UIUtils.getColor(getActivity(), R.color.tag_green_text);
         int tag_red_text = UIUtils.getColor(getActivity(), R.color.tag_red_text);
         Drawable tag_green_background = UIUtils.getDrawable(getActivity(), R.drawable.tag_background_positive);
         Drawable tag_red_background = UIUtils.getDrawable(getActivity(), R.drawable.tag_background_negative);
-		for (final String tag : story.tags) {
+
+        tagContainer.removeAllViews();
+		for (String tag : story.tags) {
+            // TODO: these textviews with compound images are buggy, but stubbed in to let colourblind users
+            //       see what is going on. these should be replaced with proper Chips when the v28 Chip lib
+            //       is in full release.
             View v = inflater.inflate(R.layout.tag_view, null);
 
             TextView tagText = (TextView) v.findViewById(R.id.tag_text);
@@ -406,10 +409,18 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
                 case Classifier.LIKE:
                     UIUtils.setViewBackground(tagText, tag_green_background);
                     tagText.setTextColor(tag_green_text);
+                    Drawable icon_like = UIUtils.getDrawable(getActivity(), R.drawable.ic_like_active);
+                    icon_like.setBounds(0, 0, 30, 30);
+                    tagText.setCompoundDrawables(null, null, icon_like, null);
+                    tagText.setCompoundDrawablePadding(8);
                     break;
                 case Classifier.DISLIKE:
                     UIUtils.setViewBackground(tagText, tag_red_background);
                     tagText.setTextColor(tag_red_text);
+                    Drawable icon_dislike = UIUtils.getDrawable(getActivity(), R.drawable.ic_dislike_active);
+                    icon_dislike.setBounds(0, 0, 30, 30);
+                    tagText.setCompoundDrawables(null, null, icon_dislike, null);
+                    tagText.setCompoundDrawablePadding(8);
                     break;
                 }
             }
@@ -419,14 +430,36 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
                 v.setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        ClassifierDialogFragment classifierFragment = ClassifierDialogFragment.newInstance(ReadingItemFragment.this, story.feedId, classifier, tag, Classifier.TAG);
-                        classifierFragment.show(getFragmentManager(), "dialog");
+                        if (story.feedId.equals("0")) return; // cannot train on feedless stories
+                        StoryIntelTrainerFragment intelFrag = StoryIntelTrainerFragment.newInstance(story, fs);
+                        intelFrag.show(getFragmentManager(), StoryIntelTrainerFragment.class.getName());
                     }
                 });
             }
 
 			tagContainer.addView(v);
 		}
+
+        if (!TextUtils.isEmpty(story.authors)) {
+            itemAuthors.setText("•   " + story.authors);
+            if (classifier != null && classifier.authors.containsKey(story.authors)) {
+                switch (classifier.authors.get(story.authors)) {
+                    case Classifier.LIKE:
+                        itemAuthors.setTextColor(UIUtils.getColor(getActivity(), R.color.positive));
+                        break;
+                    case Classifier.DISLIKE:
+                        itemAuthors.setTextColor(UIUtils.getColor(getActivity(), R.color.negative));
+                        break;
+                    default:
+                        itemAuthors.setTextColor(UIUtils.getThemedColor(getActivity(), R.attr.readingItemMetadata, android.R.attr.textColor));
+                        break;
+                }
+            }
+        }
+
+        String title = story.title;
+        title = UIUtils.colourTitleFromClassifier(title, classifier);
+        itemTitle.setText(UIUtils.fromHtml(title));
 	}
 
     public void switchSelectedViewMode() {
@@ -451,7 +484,15 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
         synchronized (selectedFeedView) {
             selectedFeedView = PrefsUtils.getDefaultViewModeForFeed(getActivity(), story.feedId);
         }
-        reloadStoryContent();
+        // these can come from async tasks
+        Activity a = getActivity();
+        if (a != null) {
+            a.runOnUiThread(new Runnable() {
+                public void run() {
+                    reloadStoryContent();
+                }
+            });
+        }
     }
 
     public DefaultFeedView getSelectedViewMode() {
@@ -459,7 +500,8 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
     }
 
     private void reloadStoryContent() {
-        if (selectedFeedView == DefaultFeedView.STORY) {
+        if ((selectedFeedView == DefaultFeedView.STORY) || textViewUnavailable) {
+            textViewLoadingMsg.setVisibility(View.GONE);
             enableProgress(false);
             if (storyContent == null) {
                 loadStoryContent();
@@ -472,6 +514,7 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
                 enableProgress(true);
                 loadOriginalText();
             } else {
+                textViewLoadingMsg.setVisibility(View.GONE);
                 setupWebview(originalText);
                 onContentLoadFinished();
                 enableProgress(false);
@@ -492,7 +535,10 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
      */
     public void offerStoryUpdate(Story story) {
         if (story == null) return;
-        if (! TextUtils.equals(story.storyHash, this.story.storyHash)) return;
+        if (! TextUtils.equals(story.storyHash, this.story.storyHash)) {
+            com.newsblur.util.Log.d(this, "prevented story list index offset shift");
+            return;
+        }
         this.story = story;
         if (AppConstants.VERBOSE_LOG) com.newsblur.util.Log.d(this, "got fresh story");
     }
@@ -510,6 +556,10 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
             updateShareButton();
             setupItemCommentsAndShares();
         }
+        if ((updateType & NbActivity.UPDATE_INTEL) != 0) {
+            classifier = FeedUtils.dbHelper.getClassifierForFeed(story.feedId);
+            setupTagsAndIntel();
+        }
     }
 
     private void loadOriginalText() {
@@ -526,18 +576,14 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
                             // the server reported that text mode is not available.  kick back to story mode
                             com.newsblur.util.Log.d(this, "orig text not avail for story: " + story.storyHash);
                             UIUtils.safeToast(getActivity(), R.string.text_mode_unavailable, Toast.LENGTH_SHORT);
-                            if (getActivity() != null) {
-                                setViewMode(DefaultFeedView.STORY);
-                                Reading activity = (Reading) getActivity();
-                                activity.viewModeChanged();
-                            }
+                            textViewUnavailable = true;
                         } else {
                             ReadingItemFragment.this.originalText = result;
                         }
                         reloadStoryContent();
                     } else {
                         com.newsblur.util.Log.d(this, "orig text not yet cached for story: " + story.storyHash);
-                        if (getActivity() != null) setupWebview(getActivity().getResources().getString(R.string.orig_text_loading));
+                        textViewLoadingMsg.setVisibility(View.VISIBLE);
                         OriginalTextService.addPriorityHash(story.storyHash);
                         triggerSync();
                     }
@@ -599,15 +645,18 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
 
             float currentSize = PrefsUtils.getTextSize(getActivity());
             Font font = PrefsUtils.getFont(getActivity());
+            ThemeValue themeValue = PrefsUtils.getSelectedTheme(getActivity());
 
             StringBuilder builder = new StringBuilder();
             builder.append("<html><head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=0\" />");
             builder.append(font.forWebView(currentSize));
             builder.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"reading.css\" />");
-            if (PrefsUtils.isLightThemeSelected(getActivity())) {
+            if (themeValue == ThemeValue.LIGHT) {
                 builder.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"light_reading.css\" />");
-            } else {
+            } else if (themeValue == ThemeValue.DARK) {
                 builder.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"dark_reading.css\" />");
+            } else if (themeValue == ThemeValue.BLACK) {
+                builder.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"black_reading.css\" />");
             }
             builder.append("</head><body><div class=\"NB-story\">");
             builder.append(storyText);
@@ -651,8 +700,10 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
         imageUrlRemaps = new HashMap<String,String>();
     }
 
+    private static final Pattern imgSniff = Pattern.compile("<img[^>]*(src\\s*=\\s*)\"([^\"]*)\"[^>]*>", Pattern.CASE_INSENSITIVE);
+
     private String swapInOfflineImages(String html) {
-        Matcher imageTagMatcher = Pattern.compile("<img[^>]*(src\\s*=\\s*)\"([^\"]*)\"[^>]*>", Pattern.CASE_INSENSITIVE).matcher(html);
+        Matcher imageTagMatcher = imgSniff.matcher(html);
         while (imageTagMatcher.find()) {
             String url = imageTagMatcher.group(2);
             String localPath = FeedUtils.storyImageCache.getCachedLocation(url);
@@ -714,48 +765,6 @@ public class ReadingItemFragment extends NbFragment implements ClassifierDialogF
         }
     }
 
-	@Override
-	public void updateTagView(String key, int classifierType, int classifierAction) {
-		switch (classifierType) {
-		case Classifier.AUTHOR:
-			switch (classifierAction) {
-			case Classifier.LIKE:
-				itemAuthors.setTextColor(UIUtils.getColor(getActivity(), R.color.positive));
-				break;
-			case Classifier.DISLIKE:
-				itemAuthors.setTextColor(UIUtils.getColor(getActivity(), R.color.negative));
-				break;
-			case Classifier.CLEAR_DISLIKE:
-				itemAuthors.setTextColor(UIUtils.getThemedColor(getActivity(), R.attr.readingItemMetadata, android.R.attr.textColor));
-				break;
-			case Classifier.CLEAR_LIKE:
-				itemAuthors.setTextColor(UIUtils.getThemedColor(getActivity(), R.attr.readingItemMetadata, android.R.attr.textColor));
-				break;	
-			}
-			break;
-		case Classifier.FEED:
-			switch (classifierAction) {
-			case Classifier.LIKE:
-				itemFeed.setTextColor(UIUtils.getColor(getActivity(), R.color.positive));
-				break;
-			case Classifier.DISLIKE:
-				itemFeed.setTextColor(UIUtils.getColor(getActivity(), R.color.negative));
-				break;
-			case Classifier.CLEAR_DISLIKE:
-				itemFeed.setTextColor(UIUtils.getColor(getActivity(), R.color.text));
-				break;
-			case Classifier.CLEAR_LIKE:
-				itemFeed.setTextColor(UIUtils.getColor(getActivity(), R.color.text));
-				break;
-			}
-			break;
-		case Classifier.TAG:
-			classifier.tags.put(key, classifierAction);
-			tagContainer.removeAllViews();
-			setupTags();
-			break;	
-		}
-	}
     private class ImmersiveViewHandler extends GestureDetector.SimpleOnGestureListener implements View.OnSystemUiVisibilityChangeListener {
         private View view;
 

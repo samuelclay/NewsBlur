@@ -144,33 +144,17 @@ _.extend(NEWSBLUR.ReaderTutorial.prototype, {
                 $.make('li', [
                   $.make('b', 'Second: The intelligence slider filters stories based on training.'),
                   $.make('div', { className: 'NB-tutorial-stories', id: 'story_titles' }),
-                  $.make('img', { className: 'NB-trainer-bullet', src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/silk/bullet_green.png'}),
-                  ' are stories you like',
+                  $.make('img', { className: 'NB-trainer-bullet', src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/circular/g_icn_focus.png'}),
+                  'Focus stories are stories you like',
                   $.make('br'),
                   $.make('img', { className: 'NB-trainer-bullet', src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/circular/g_icn_unread.png'}),
-                  ' are stories you have not yet rated',
+                  'Unread stories include both focus and unread stories',
                   $.make('br'),
-                  $.make('img', { className: 'NB-trainer-bullet', src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/silk/bullet_red.png'}),
-                  ' are stories you don\'t like',
-                  $.make('div', { className: 'NB-taskbar-intelligence' }, [
-                    $.make('div', { className: 'NB-tutorial-slider' }),
-                    $.make('div', { className: 'NB-intelligence-slider' }, [
-                        $.make('ul', { className: 'segmented-control' }, [
-                            $.make('li', { className: 'NB-intelligence-slider-control NB-intelligence-slider-red' }, [
-                                $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/silk/bullet_red.png' }),
-                                $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/circular/g_icn_unread.png' }),
-                                $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/silk/bullet_green.png' })
-                            ]),
-                            $.make('li', { className: 'NB-intelligence-slider-control NB-intelligence-slider-yellow' }, [
-                                $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/circular/g_icn_unread.png' }),
-                                $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/silk/bullet_green.png' })
-                            ]),
-                            $.make('li', { className: 'NB-intelligence-slider-control NB-intelligence-slider-green' }, [
-                                $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/silk/bullet_green.png' })
-                            ])
-                        ])
-                    ])
-                  ])
+                  $.make('img', { className: 'NB-trainer-bullet', src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/circular/g_icn_hidden.png'}),
+                  'Hidden stories are filtered out'
+                ]),
+                $.make('li', [
+                    $.make('a', { href: '/faq#intelligence', target: "_blank", className: 'NB-splash-link' }, 'Read more about how Intelligence works in the FAQ')
                 ])
               ])
             ]),
@@ -309,10 +293,9 @@ _.extend(NEWSBLUR.ReaderTutorial.prototype, {
               $.make('h4', { className: 'NB-tutorial-feedback-header' }, 'Community Feedback'),
               $.make('ul', [
                 $.make('li', [
-                  $.make('a', { href: 'http://getsatisfaction.com/newsblur', className: 'NB-splash-link' }, [
-                    'NewsBlur on ',
-                    $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL+'/img/reader/getsatisfaction.png', style: 'vertical-align: middle;margin: -2px 0 0; width: 16px;height: 16px;' }),
-                    ' Get Satisfaction'
+                  $.make('a', { href: 'https://forum.newsblur.com/', className: 'NB-splash-link' }, [
+                    $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL+'/img/reader/discourse.png', style: 'vertical-align: middle;margin: -2px 0 0; width: 16px;height: 16px;' }),
+                    ' NewsBlur Support Forum'
                   ])
                 ])
               ]),
@@ -476,6 +459,9 @@ _.extend(NEWSBLUR.ReaderTutorial.prototype, {
       ]));
       this.set_title();
       this.resize();
+      _.defer(_.bind(function() {
+          this.resize();
+      }, this));
     },
     
     close: function() {

@@ -545,10 +545,12 @@ static const CGFloat kFolderTitleHeight = 36.0;
 
 - (void)updateDictFolders {
     NSMutableDictionary *folders = [self.appDelegate.dictFolders mutableCopy];
-    NSDictionary *everything = folders[@"everything"];
+    if ([folders objectForKey:@"everything"]) {
+        NSDictionary *everything = folders[@"everything"];
     
-    [folders removeObjectForKey:@"everything"];
-    [folders setObject:everything forKey:@" "];
+        [folders removeObjectForKey:@"everything"];
+        [folders setObject:everything forKey:@" "];
+    }
     
     self.dictFolders = folders;
 }

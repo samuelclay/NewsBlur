@@ -117,6 +117,7 @@ public class APIConstants {
     public static final String PARAMETER_NOTIFICATION_TYPES = "notification_types";
     public static final String PARAMETER_NOTIFICATION_FILTER = "notification_filter";
     public static final String PARAMETER_RESET_FETCH = "reset_fetch";
+    public static final String PARAMETER_INFREQUENT = "infrequent";
 
     public static final String VALUE_PREFIX_SOCIAL = "social:";
     public static final String VALUE_ALLSOCIAL = "river:blurblogs"; // the magic value passed to the mark-read API for all social feeds

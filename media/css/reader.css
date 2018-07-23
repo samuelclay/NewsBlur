@@ -690,7 +690,7 @@ a img {
     text-overflow: ellipsis;
     -webkit-line-clamp: 1;
     -webkit-box-orient: vertical;
-    display: -webkit-box;
+    white-space: nowrap;
 }
 
 .NB-feedlist .feed .NB-feedlist-manage-icon,
@@ -2704,6 +2704,10 @@ body {
     z-index: 2;
     line-height: 18px;
 }
+
+.NB-narrow-content .NB-feed-story-header-feed {
+    padding-right: 28px;
+}
 .NB-feed-story-header-feed.NB-feed-story-river-same-feed {
     z-index: 0;
 }
@@ -2778,6 +2782,11 @@ body {
   
   /* See http://www.newsblur.com/site/1031643/le-21me for width: auto, height: auto */
 }
+
+.NB-feed-story .NB-feed-story-content video {
+    max-width: 100%;
+}
+
 .NB-feed-story {
     position: relative;
 }
@@ -3247,11 +3256,13 @@ body {
 /* = Text View = */
 /* ============= */
 
-#story_pane .NB-text-view-detail .NB-feed-story-content {
+#story_pane .NB-text-view-detail .NB-feed-story-content,
+#story_titles .NB-text-view-detail .NB-feed-story-content {
     min-height: 120px;
 }
 
-#story_pane .NB-premium-only .NB-text-view-detail .NB-feed-story-content {
+#story_pane .NB-premium-only .NB-feed-story-content,
+#story_titles .NB-premium-only .NB-feed-story-content {
     max-height: 300px;
     overflow: hidden;
 }
@@ -5256,8 +5267,8 @@ form.opml_import_form input {
   background: transparent url('/media/embed/reader/github.png') no-repeat 0 6px;
   background-size: 16px;
 }
-.NB-splash-info .NB-splash-links .NB-splash-link-getsatisfaction a:hover {
-  background: transparent url('/media/embed/reader/getsatisfaction.png') no-repeat 0 6px;
+.NB-splash-info .NB-splash-links .NB-splash-link-discourse a:hover {
+  background: transparent url('/media/embed/reader/discourse.png') no-repeat 0 6px;
   background-size: 16px;
 }
 .NB-splash-info .NB-splash-links .NB-splash-link-blog a:hover {
@@ -8053,7 +8064,6 @@ form.opml_import_form input {
   padding: 14px 1px 0;
 }
 .NB-modal.NB-modal-email .NB-error {
-  float: right;
   font-size: 12px;
   margin-top: 8px;
 }
@@ -8142,29 +8152,16 @@ form.opml_import_form input {
   top: 24px;
   position: relative;
 }
-.NB-modal-tutorial .NB-page-3 {
-  position: static;
-  float: right;
-  display: block;
-  overflow: hidden;
-  width: 240px;
-  height: 122px;
-}
-.NB-modal-tutorial .NB-page-3 .story {
-  padding-right: 0;
-}
-.NB-modal-tutorial .NB-page-3 .story:last-child {
-  border-bottom: 1px solid #E7EDF6;
-}
-.NB-modal-tutorial .NB-page-3 ul img.NB-trainer-bullet {
-  vertical-align: middle;
-}
 .NB-modal-tutorial .NB-page-3 .NB-tutorial-train-1 {
   margin-bottom: 12px;
 }
 .NB-modal-tutorial .NB-page-3 .NB-tutorial-train-1 img {
   margin-right: 24px;
   border: 1px solid #505050;
+}
+.NB-modal-tutorial .NB-page-3 ul img.NB-trainer-bullet {
+  width: 8px;
+  margin: 0px 8px 2px 0;
 }
 .NB-modal-tutorial .NB-page-4 ul li {
   clear: both;
@@ -12204,6 +12201,11 @@ form.opml_import_form input {
 .NB-filter-popover .segmented-control.NB-feed-notification-types li {
     width: 44px;
 }
+.NB-filter-popover .segmented-control.NB-menu-manage-view-setting-infrequent li {
+    width: auto;
+    padding-left: 10px;
+    padding-right: 10px;
+}
 .NB-filter-popover .segmented-control .NB-unread-icon,
 .NB-filter-popover .segmented-control .NB-focus-icon {
     height: 17px;
@@ -12261,6 +12263,14 @@ form.opml_import_form input {
 .NB-filter-popover-notifications-icon {
     background: transparent url("/media/embed/icons/circular/menu_icn_notifications.png") no-repeat center center;
     background-size: 32px;
+}
+.NB-feedbar-notifications-icon {
+    background: transparent url("/media/embed/icons/circular/menu_icn_notifications.png") no-repeat center center;
+    background-size: 12px;
+    width: 12px;
+    height: 12px;
+    display: inline-block;
+    margin: 0px 0 -2px 0;
 }
 
 /* =========== */

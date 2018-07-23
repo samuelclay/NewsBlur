@@ -270,9 +270,10 @@ SESSION_COOKIE_DOMAIN   = '.newsblur.com'
 SENTRY_DSN              = 'https://XXXNEWSBLURXXX@app.getsentry.com/99999999'
 
 if DEBUG:
-    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+    # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+    EMAIL_BACKEND = 'vendor.mailgun.MailgunBackend'
 else:
-    EMAIL_BACKEND = 'django_mailgun.MailgunBackend'
+    EMAIL_BACKEND = 'vendor.mailgun.MailgunBackend'
 
 # ==============
 # = Subdomains =
@@ -474,7 +475,12 @@ CELERYBEAT_SCHEDULE = {
     },
     'clean-spam': {
         'task': 'clean-spam',
-        'schedule': datetime.timedelta(hours=12),
+        'schedule': datetime.timedelta(hours=6),
+        'options': {'queue': 'beat_tasks'},
+    },
+    'clean-social-spam': {
+        'task': 'clean-social-spam',
+        'schedule': datetime.timedelta(hours=6),
         'options': {'queue': 'beat_tasks'},
     },
     'premium-expire': {

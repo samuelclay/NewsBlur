@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.newsblur"
-    android:versionCode="145"
-    android:versionName="6.1.0" >
+    android:versionCode="159"
+    android:versionName="8.0.0" >
 
     <uses-sdk
-        android:minSdkVersion="19"
+        android:minSdkVersion="21"
         android:targetSdkVersion="24" />
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -82,6 +82,9 @@
             android:name=".activity.AllStoriesItemsList" />
 
         <activity
+            android:name=".activity.InfrequentItemsList" />
+
+        <activity
             android:name=".activity.ReadStoriesItemsList" />
 
         <activity
@@ -104,6 +107,9 @@
         
         <activity
             android:name=".activity.AllStoriesReading"/>
+
+        <activity
+            android:name=".activity.InfrequentReading"/>
 
         <activity
             android:name=".activity.ReadStoriesReading"/>
