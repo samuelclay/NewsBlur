@@ -5,10 +5,8 @@ import java.util.List;
 
 import android.content.Intent;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.LoaderManager;
@@ -36,10 +34,6 @@ import com.newsblur.database.ReadingAdapter;
 import com.newsblur.domain.Story;
 import com.newsblur.fragment.ReadingItemFragment;
 import com.newsblur.fragment.ReadingPagerFragment;
-import com.newsblur.fragment.ShareDialogFragment;
-import com.newsblur.fragment.StoryIntelTrainerFragment;
-import com.newsblur.fragment.ReadingFontDialogFragment;
-import com.newsblur.fragment.TextSizeDialogFragment;
 import com.newsblur.service.NBSyncService;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.DefaultFeedView;
@@ -335,7 +329,6 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
      * then can we set it up.
      */
     public void offerPager(ViewPager pager, FragmentManager childFragmentManager) {
-        com.newsblur.util.Log.d(this, "DD - offer pager");
         this.pager = pager;
 
         // since it might start on the wrong story, create the pager as invisible
