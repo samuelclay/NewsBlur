@@ -1,9 +1,9 @@
 package com.newsblur.activity;
 
-import android.app.Fragment;
-import android.app.FragmentManager;
 import android.content.res.Resources;
-import android.support.v13.app.FragmentPagerAdapter;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
 
 import com.newsblur.R;
 import com.newsblur.domain.UserDetails;

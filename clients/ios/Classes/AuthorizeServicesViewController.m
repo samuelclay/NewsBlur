@@ -52,8 +52,6 @@
         self.navigationItem.title = @"Facebook";
     } else if ([type isEqualToString:@"twitter"]) {
         self.navigationItem.title = @"Twitter";
-    } else if ([type isEqualToString:@"appdotnet"]) {
-        self.navigationItem.title = @"App.net";
     }
     NSString *urlAddress = [NSString stringWithFormat:@"%@%@", self.appDelegate.url, url];
     NSURL *fullUrl = [NSURL URLWithString:urlAddress];

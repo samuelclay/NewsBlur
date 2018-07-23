@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.iPad.XIB" version="3.0" toolsVersion="12118" systemVersion="16E195" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.iPad.XIB" version="3.0" toolsVersion="13529" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none" colorMatched="YES">
     <device id="ipad9_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12086"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13527"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -34,6 +34,7 @@
                 <outlet property="moveSiteViewController" destination="124" id="126"/>
                 <outlet property="navigationController" destination="173" id="185"/>
                 <outlet property="notificationsViewController" destination="3z0-yS-4jT" id="LzV-NG-kRx"/>
+                <outlet property="premiumViewController" destination="Nno-Ma-6TQ" id="0Ex-VU-Hek"/>
                 <outlet property="shareViewController" destination="168" id="272"/>
                 <outlet property="storyDetailViewController" destination="92" id="93"/>
                 <outlet property="storyPageControl" destination="290" id="292"/>
@@ -196,7 +197,7 @@
             <extendedEdge key="edgesForExtendedLayout"/>
             <simulatedStatusBarMetrics key="simulatedStatusBarMetrics" statusBarStyle="blackOpaque"/>
             <navigationBar key="navigationBar" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" id="174">
-                <rect key="frame" x="0.0" y="0.0" width="1000" height="1000"/>
+                <rect key="frame" x="0.0" y="20" width="768" height="44"/>
                 <autoresizingMask key="autoresizingMask"/>
             </navigationBar>
             <viewControllers>
@@ -212,10 +213,11 @@
                 <outlet property="appDelegate" destination="3" id="A6X-fi-Lbl"/>
             </connections>
         </viewController>
+        <viewController id="Nno-Ma-6TQ" customClass="PremiumViewController">
+            <extendedEdge key="edgesForExtendedLayout"/>
+            <connections>
+                <outlet property="appDelegate" destination="3" id="5eA-fi-2HF"/>
+            </connections>
+        </viewController>
     </objects>
-    <simulatedMetricsContainer key="defaultSimulatedMetrics">
-        <simulatedStatusBarMetrics key="statusBar"/>
-        <simulatedOrientationMetrics key="orientation"/>
-        <simulatedScreenMetrics key="destination"/>
-    </simulatedMetricsContainer>
 </document>

@@ -21,7 +21,6 @@
 
 @synthesize facebookButton;
 @synthesize twitterButton;
-@synthesize appdotnetButton;
 @synthesize submitButton;
 @synthesize commentField;
 @synthesize appDelegate;
@@ -73,8 +72,6 @@
     twitterButton.layer.cornerRadius = 1.0f;
     facebookButton.layer.borderWidth = 1.0f;
     facebookButton.layer.cornerRadius = 1.0f;
-    appdotnetButton.layer.borderWidth = 1.0f;
-    appdotnetButton.layer.cornerRadius = 1.0f;
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWasShown:) name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillBeHidden:) name:UIKeyboardWillHideNotification object:nil];
@@ -173,10 +170,13 @@
                                [appDelegate.activeStory objectForKey:@"story_feed_id"]];
         UIImage *titleImage  = [appDelegate getFavicon:feedIdStr];
         UIImageView *titleImageView = [[UIImageView alloc] initWithImage:titleImage];
+        UIImageView *titleImageViewWrapper = [[UIImageView alloc] init];
         titleImageView.frame = CGRectMake(0.0, 2.0, 16.0, 16.0);
         titleImageView.hidden = YES;
         titleImageView.contentMode = UIViewContentModeScaleAspectFit;
-        self.navigationItem.titleView = titleImageView;
+        [titleImageViewWrapper addSubview:titleImageView];
+        [titleImageViewWrapper setFrame:titleImageView.frame];
+        self.navigationItem.titleView = titleImageViewWrapper;
         titleImageView.hidden = NO;
     }
 }
@@ -198,15 +198,6 @@
     } else {
         facebookButton.selected = NO;
         facebookButton.layer.borderColor = [UIColorFromRGB(0xD9DBD6) CGColor];
-    }
-    
-    if (appdotnetButton.selected &&
-        [[[appDelegate.dictSocialServices objectForKey:@"appdotnet"]
-          objectForKey:@"appdotnet_uid"] class] == [NSNull class]) {
-        [self doToggleButton:appdotnetButton];
-    } else {
-        appdotnetButton.selected = NO;
-        appdotnetButton.layer.borderColor = [UIColorFromRGB(0xD9DBD6) CGColor];
     }
 }
 
@@ -234,9 +225,8 @@
                                          v.height - k - (showingShareButtons ? bH + bP*2 : 6) - 12 - stHeight);
     CGPoint o = self.commentField.frame.origin;
     CGSize c = self.commentField.frame.size;
-    self.twitterButton.frame   = CGRectMake(v.width - 20 - bW*3 - bP*2, o.y + c.height + bP, bW, bH);
-    self.facebookButton.frame  = CGRectMake(v.width - 20 - bW*2 - bP*1, o.y + c.height + bP, bW, bH);
-    self.appdotnetButton.frame = CGRectMake(v.width - 20 - bW*1 - bP*0, o.y + c.height + bP, bW, bH);
+    self.twitterButton.frame   = CGRectMake(v.width - 20 - bW*2 - bP*2, o.y + c.height + bP, bW, bH);
+    self.facebookButton.frame  = CGRectMake(v.width - 20 - bW*1 - bP*1, o.y + c.height + bP, bW, bH);
     
     [self onTextChange:nil];
 }
@@ -264,13 +254,6 @@
         } else {
             button.layer.borderColor = [UIColorFromRGB(0xD9DBD6) CGColor];
         }
-    } else if (button.tag == 3) { // App.net
-        if (selected) {
-            [self checkService:@"appdotnet"];
-            button.layer.borderColor = [UIColorFromRGB(0xD16857) CGColor];
-        } else {
-            button.layer.borderColor = [UIColorFromRGB(0xD9DBD6) CGColor];
-        }
     }
 }
 
@@ -282,10 +265,6 @@
     } else if ([service isEqualToString:@"facebook"] &&
               [[[appDelegate.dictSocialServices objectForKey:@"facebook"]
                 objectForKey:@"facebook_uid"] class] == [NSNull class]) {
-        [appDelegate showConnectToService:service];
-    } else if ([service isEqualToString:@"appdotnet"] &&
-              [[[appDelegate.dictSocialServices objectForKey:@"appdotnet"]
-                objectForKey:@"appdotnet_uid"] class] == [NSNull class]) {
         [appDelegate showConnectToService:service];
     }
 }
@@ -304,7 +283,6 @@
         [submitButton setTitle:@"Save your reply"];
         facebookButton.hidden = YES;
         twitterButton.hidden = YES;
-        appdotnetButton.hidden = YES;
         [submitButton setAction:(@selector(doReplyToComment:))];
         self.activeReplyId = replyId;
         
@@ -326,7 +304,6 @@
         [submitButton setTitle:[NSString stringWithFormat:@"Reply to %@", username]];
         facebookButton.hidden = YES;
         twitterButton.hidden = YES;
-        appdotnetButton.hidden = YES;
         [submitButton setAction:(@selector(doReplyToComment:))];
         
         // Don't bother to reset comment field for replies while on the same story.
@@ -340,7 +317,6 @@
     } else if ([type isEqualToString: @"edit-share"]) {
         facebookButton.hidden = NO;
         twitterButton.hidden = NO;
-        appdotnetButton.hidden = NO;
         
         // get old comment
         self.commentField.text = [self stringByStrippingHTML:[appDelegate.activeComment objectForKey:@"comments"]];
@@ -350,7 +326,6 @@
     } else if ([type isEqualToString: @"share"]) {        
         facebookButton.hidden = NO;
         twitterButton.hidden = NO;
-        appdotnetButton.hidden = NO;
         [submitButton setTitle:@"Share this story"];
         [submitButton setAction:(@selector(doShareThisStory:))];
         if (![self.currentType isEqualToString:@"share"] &&
@@ -367,7 +342,6 @@
     self.currentType = nil;
     self.twitterButton.selected = NO;
     self.facebookButton.selected = NO;
-    self.appdotnetButton.selected = NO;
 }
 
 # pragma mark

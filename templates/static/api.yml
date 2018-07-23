@@ -299,6 +299,11 @@
             Search for a keyword or phrase in the folder. Note that only premium users can search feeds.
           optional: true
           example: "pizza"
+        - key: infrequent
+          desc: "Show only stories from infrequently published sites. Specify the number of stories/month (default: 30) or specify <code>false</code>."
+          optional: true
+          default: "false"
+          example: 30
       tips:
         - > 
             Counts are broken into three. Add them up for a total, but you shouldn't show or count the hidden stories:

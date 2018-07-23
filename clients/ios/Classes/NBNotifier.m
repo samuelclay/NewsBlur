@@ -29,7 +29,6 @@
 #include <QuartzCore/QuartzCore.h>
 
 #define _displaytime 4.f
-#define NOTIFIER_HEIGHT 32
 #define PROGRESS_BAR_SIZE 40
 
 @implementation NBNotifier
@@ -38,6 +37,7 @@
 @synthesize showing;
 @synthesize progressBar;
 @synthesize offset = _offset;
+@synthesize topOffsetConstraint;
 
 + (void)initialize {
     if (self == [NBNotifier class]) {
@@ -51,36 +51,35 @@
     if (self) {
         // Initialization code
         showing = NO;
+        self.translatesAutoresizingMaskIntoConstraints = NO;
     }
     return self;
 }
 
 - (id)initWithTitle:(NSString *)title {
-    return [self initWithTitle:title inView:[[[UIApplication sharedApplication] delegate] window]];
+    return [self initWithTitle:title style:NBLoadingStyle withOffset:CGPointZero];
 }
 
-- (id)initWithTitle:(NSString *)title inView:(UIView *)view {
-    return [self initWithTitle:title inView:view style:NBLoadingStyle withOffset:CGPointZero];
+- (id)initWithTitle:(NSString *)title withOffset:(CGPoint)offset {
+    return [self initWithTitle:title style:NBLoadingStyle withOffset:offset];
 }
 
-- (id)initWithTitle:(NSString *)title inView:(UIView *)view withOffset:(CGPoint)offset {
-    return [self initWithTitle:title inView:view style:NBLoadingStyle withOffset:offset];
+- (id)initWithTitle:(NSString *)title style:(NBNotifierStyle)style {
+    return [self initWithTitle:title style:NBLoadingStyle withOffset:CGPointZero];
 }
 
-- (id)initWithTitle:(NSString *)title inView:(UIView *)view style:(NBNotifierStyle)style {
-    return [self initWithTitle:title inView:view style:NBLoadingStyle withOffset:CGPointZero];
-}
-
-- (id)initWithTitle:(NSString *)title inView:(UIView *)view style:(NBNotifierStyle)style withOffset:(CGPoint)offset{
+- (id)initWithTitle:(NSString *)title style:(NBNotifierStyle)style withOffset:(CGPoint)offset{
     
-    if (self = [super initWithFrame:CGRectMake(0, view.bounds.size.height - offset.y, view.bounds.size.width, NOTIFIER_HEIGHT)]){
-        
+//    if (self = [super initWithFrame:CGRectMake(0, view.bounds.size.height - offset.y, view.bounds.size.width, NOTIFIER_HEIGHT)]){
+    if (self = [super init]) {
         self.backgroundColor = [UIColor clearColor];
         
         self.style = style;
         self.offset = offset;
         
-        _txtLabel = [[UILabel alloc]initWithFrame:CGRectMake(32, 12, self.frame.size.width - 32, 20)];
+//        _txtLabel = [[UILabel alloc] initWithFrame:CGRectMake(32, 12, self.frame.size.width - 32, 20)];
+        _txtLabel = [[UILabel alloc] init];
+        _txtLabel.translatesAutoresizingMaskIntoConstraints = NO;
         [_txtLabel setFont:[UIFont fontWithName: @"Helvetica" size: 16]];
         [_txtLabel setBackgroundColor:[UIColor clearColor]];
         
@@ -95,60 +94,86 @@
         
         [self addSubview:_txtLabel];
         
+        [self addConstraint:[NSLayoutConstraint constraintWithItem:_txtLabel attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeWidth multiplier:1.0 constant:0]];
+        [self addConstraint:[NSLayoutConstraint constraintWithItem:_txtLabel attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:20]];
+        txtLabelLeadingConstraint = [NSLayoutConstraint constraintWithItem:_txtLabel attribute:NSLayoutAttributeLeading relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeLeading multiplier:1.0 constant:32];
+        [self addConstraint:txtLabelLeadingConstraint];
+        [self addConstraint:[NSLayoutConstraint constraintWithItem:_txtLabel attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:2]];
+        
         self.title = title;        
         
-        self.view = view;
-        
-        self.progressBar = [[UIView alloc] initWithFrame:CGRectMake(0, 4, 0, 1)];
+//        self.progressBar = [[UIView alloc] initWithFrame:CGRectMake(0, 4, 0, 1)];
+        self.progressBar = [[UIView alloc] init];
+        self.progressBar.translatesAutoresizingMaskIntoConstraints = NO;
         self.progressBar.backgroundColor = UIColorFromRGB(0xD05046);
         self.progressBar.alpha = 0.6f;
         self.progressBar.hidden = YES;
         [self addSubview:self.progressBar];
+        [self addConstraint:[NSLayoutConstraint constraintWithItem:self.progressBar attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeTop multiplier:1.0 constant:4]];
+        [self addConstraint:[NSLayoutConstraint constraintWithItem:self.progressBar attribute:NSLayoutAttributeLeading relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeLeading multiplier:1.0 constant:0]];
+        [self addConstraint:[NSLayoutConstraint constraintWithItem:self.progressBar attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem: nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:1]];
+        progressBarWidthConstraint = [NSLayoutConstraint constraintWithItem:self.progressBar attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeWidth multiplier:0.0 constant:0];
+        [self addConstraint:progressBarWidthConstraint];
+
         
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(didChangedOrientation:)
-                                                     name:UIDeviceOrientationDidChangeNotification
-                                                   object:nil];
+//        [[NSNotificationCenter defaultCenter] addObserver:self
+//                                                 selector:@selector(didChangedOrientation:)
+//                                                     name:UIDeviceOrientationDidChangeNotification
+//                                                   object:nil];
     }
     
     return self;
 }
 
-- (void) setNeedsLayout {
-    [super setNeedsLayout];
-    [self didChangedOrientation:nil];
-}
-
-- (void) didChangedOrientation:(NSNotification *)sender {
-//    UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
-//    NSLog(@"Notifier changed orieintation to: %ld (%@/%@)", (long)orientation, NSStringFromCGRect(self.frame), NSStringFromCGRect(self.view.frame));
-    [self setView:self.view];
-    self.progressBar.frame = CGRectMake(0, 4, 0, 1);
-}
-
-
-- (void)setAccessoryView:(UIView *)accessoryView{
+- (void)setAccessoryView:(UIView *)accessoryView {
     if (_accessoryView) {
+        for (NSLayoutConstraint *constraint in [self constraints]) {
+            if (constraint.firstItem == _accessoryView) {
+                [self removeConstraint:constraint];
+            }
+        }
+
         [_accessoryView removeFromSuperview];
     }
     _accessoryView = accessoryView;
+    accessoryView.translatesAutoresizingMaskIntoConstraints = NO;
     int offset = 0;
     if (self.style == NBSyncingStyle || self.style == NBSyncingProgressStyle) {
         offset = 1;
     }
+
+//    NSInteger leadingOffset = 30;
+    txtLabelLeadingConstraint.constant = 30;
+    if (self.style == NBSyncingStyle || self.style == NBSyncingProgressStyle) {
+//        leadingOffset = 34;
+        txtLabelLeadingConstraint.constant = 34;
+//        [_txtLabel setFrame:CGRectMake(34, (NOTIFIER_HEIGHT / 2) - 8, self.frame.size.width - 32, 20)];
+//    } else {
+//        [_txtLabel setFrame:CGRectMake(30, (NOTIFIER_HEIGHT / 2) - 8, self.frame.size.width - 32, 20)];
+    }
+
     accessoryView.tag = 1;
-    [accessoryView setFrame:CGRectMake((32 - accessoryView.frame.size.width) / 2 + offset, ((self.frame.size.height -accessoryView.frame.size.height)/2)+2, accessoryView.frame.size.width, accessoryView.frame.size.height)];
+//    [accessoryView setFrame:CGRectMake((32 - accessoryView.frame.size.width) / 2 + offset, ((self.frame.size.height -accessoryView.frame.size.height)/2)+2, accessoryView.frame.size.width, accessoryView.frame.size.height)];
     
     [self addSubview:accessoryView];
-    if (self.style == NBSyncingStyle || self.style == NBSyncingProgressStyle) {
-        [_txtLabel setFrame:CGRectMake(34, (NOTIFIER_HEIGHT / 2) - 8, self.frame.size.width - 32, 20)];
-    } else {
-        [_txtLabel setFrame:CGRectMake(30, (NOTIFIER_HEIGHT / 2) - 8, self.frame.size.width - 32, 20)];
-    }
+    
+    [self addConstraint:[NSLayoutConstraint constraintWithItem:accessoryView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:32]];
+    [self addConstraint:[NSLayoutConstraint constraintWithItem:accessoryView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:20]];
+    [self addConstraint:[NSLayoutConstraint constraintWithItem:accessoryView attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:2]];
+    [self addConstraint:[NSLayoutConstraint constraintWithItem:accessoryView attribute:NSLayoutAttributeLeading relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeLeading multiplier:1.0 constant:offset]];
+    
+    [self layoutIfNeeded];
 }
 
-- (void)setProgress:(float)value {
-    self.progressBar.frame = CGRectMake(0, 4, value * self.frame.size.width, 1);
+- (void)setProgress:(CGFloat)value {
+    [self removeConstraint:progressBarWidthConstraint];
+    progressBarWidthConstraint = [NSLayoutConstraint constraintWithItem:self.progressBar attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeWidth multiplier:value constant:0];
+    [self addConstraint:progressBarWidthConstraint];
+    
+    [UIView animateWithDuration:0.5 animations:^{
+        [self layoutIfNeeded];
+    } completion:nil];
+//    self.progressBar.frame = CGRectMake(0, 4, value * self.frame.size.width, 1);
 }
 
 - (void)setTitle:(NSString *)title {
@@ -168,10 +193,14 @@
         self.accessoryView = activityIndicator;
     } else if (style == NBOfflineStyle) {
         UIImage *offlineImage = [UIImage imageNamed:@"g_icn_offline.png"];
-        self.accessoryView = [[UIImageView alloc] initWithImage:offlineImage];
+        UIImageView *imageView = [[UIImageView alloc] initWithImage:offlineImage];
+        imageView.contentMode = UIViewContentModeScaleAspectFit;
+        self.accessoryView = imageView;
     } else if (style == NBSyncingProgressStyle) {
         UIImage *offlineImage = [UIImage imageNamed:@"g_icn_offline.png"];
-        self.accessoryView = [[UIImageView alloc] initWithImage:offlineImage];
+        UIImageView *imageView = [[UIImageView alloc] initWithImage:offlineImage];
+        imageView.contentMode = UIViewContentModeScaleAspectFit;
+        self.accessoryView = imageView;
         self.progressBar.hidden = NO;
     } else if (style == NBSyncingStyle) {
         UIActivityIndicatorView *activityIndicator = [[UIActivityIndicatorView alloc]initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
@@ -179,19 +208,9 @@
         self.accessoryView = activityIndicator;        
     } else if (style == NBDoneStyle) {
         UIImage *doneImage = [UIImage imageNamed:@"checkmark.png"];
-        self.accessoryView = [[UIImageView alloc] initWithImage:doneImage];
-    }
-    
-    [self setNeedsDisplay];
-}
-
-- (void)setView:(UIView *)view {
-    _view = view;
-
-    if (self.showing) {
-        self.frame = CGRectMake(self.offset.x, view.bounds.size.height - self.offset.y - self.frame.size.height, view.bounds.size.width, NOTIFIER_HEIGHT);
-    } else {
-        self.frame = CGRectMake(self.offset.x, view.bounds.size.height - self.offset.y, view.bounds.size.width, NOTIFIER_HEIGHT);
+        UIImageView *imageView = [[UIImageView alloc] initWithImage:doneImage];
+        imageView.contentMode = UIViewContentModeScaleAspectFit;
+        self.accessoryView = imageView;
     }
 }
 
@@ -201,16 +220,19 @@
 
 - (void)showIn:(float)time {
     showing = YES;
-    CGRect frame = self.frame;
-    frame.size.width = self.view.frame.size.width;
-    self.frame = frame;
+//    CGRect frame = self.frame;
+//    frame.size.width = self.view.frame.size.width;
+//    self.frame = frame;
     self.hidden = NO;
     
+    topOffsetConstraint.constant = -1 * NOTIFIER_HEIGHT;
+    
     [UIView animateWithDuration:time animations:^{
-        CGRect move = self.frame;
-        move.origin.x = self.view.frame.origin.x + self.offset.x;
-        move.origin.y = self.view.frame.size.height - NOTIFIER_HEIGHT - self.offset.y;
-        self.frame = move;
+//        CGRect move = self.frame;
+//        move.origin.x = self.view.frame.origin.x + self.offset.x;
+//        move.origin.y = self.view.frame.size.height - NOTIFIER_HEIGHT - self.offset.y;
+//        self.frame = move;
+        [self.superview layoutIfNeeded];
     } completion:nil];
 }
 
@@ -225,97 +247,18 @@
 - (void)hideIn:(float)seconds {
     
 //    if (!showing) return;
+    topOffsetConstraint.constant = 0;
     
     [UIView animateWithDuration:seconds animations:^{
-        CGRect move = self.frame;
-        move.origin.y = self.view.bounds.size.height - self.offset.y;
-        self.frame = move;
+//        CGRect move = self.frame;
+//        move.origin.y = self.view.bounds.size.height - self.offset.y;
+//        self.frame = move;
+        [self.superview layoutIfNeeded];
     } completion:^(BOOL finished) {
-        self.hidden = YES;
+//        self.hidden = YES;
     }];
     
     showing = NO;
-}
-
-- (void)setAccessoryView:(UIView *)view animated:(BOOL)animated{
-    
-    if (!animated){
-        [[self viewWithTag:1]removeFromSuperview];
-        view.tag = 1;
-    }
-    
-    [view setFrame:CGRectMake(12, ((self.frame.size.height -view.frame.size.height)/2)+1, view.frame.size.width, view.frame.size.height)];
-    [self addSubview:view];
-    
-    if (animated) {
-        view.alpha = 0.0;
-        
-        if ([self viewWithTag:1])
-            view.tag = 0;
-        else
-            view.tag = 2;
-        [UIView animateWithDuration:0.5
-                         animations:^{
-                             if ([self viewWithTag:1])
-                                 [self viewWithTag:1].alpha = 0.0;
-                             else
-                                 view.alpha = 1.0;
-                         }
-                         completion:^(BOOL finished){
-                             
-                             [[self viewWithTag:1]removeFromSuperview];
-                             
-                             [UIView animateWithDuration:0.5
-                                              animations:^{
-                                                  view.alpha = 1.0;
-                                                  
-                                              }
-                                              completion:^(BOOL finished){
-                                                  
-                                                  view.tag = 1;
-                                              }];
-                             
-                         }];
-    }
-    
-    if (self.style == NBSyncingStyle || self.style == NBSyncingProgressStyle) {
-        [_txtLabel setFrame:CGRectMake(34, (NOTIFIER_HEIGHT / 2) - 8, self.frame.size.width - 32, 20)];
-    } else {
-        [_txtLabel setFrame:CGRectMake(30, (NOTIFIER_HEIGHT / 2) - 8, self.frame.size.width - 32, 20)];
-    }
-    
-    
-}
-
-- (void)setTitle:(id)title animated:(BOOL)animated{
-    
-    float duration = 0.0;
-    
-    if (animated)
-        duration = 0.5;
-    
-    [UIView animateWithDuration:duration
-                     animations:^{
-                         
-                         _txtLabel.alpha = 0.0f;
-                         
-                     }
-                     completion:^(BOOL finished){
-                         
-                         _txtLabel.text = title;
-                         
-                         [UIView animateWithDuration:duration
-                                          animations:^{
-                                              _txtLabel.alpha = 1.0f;
-                                              
-                                              
-                                          }
-                                          completion:^(BOOL finished){
-                                              
-                                          }];
-                         
-                     }];
-    
 }
 
 - (void)drawRect:(CGRect)rect{
@@ -440,3 +383,4 @@
 }
 
 @end
+

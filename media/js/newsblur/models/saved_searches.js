@@ -14,6 +14,8 @@ NEWSBLUR.Models.SavedSearchFeed = Backbone.Model.extend({
         
         if (feed_id == 'river:') {
             feed_title = "All Site Stories";
+        } else if (feed_id == 'river:infrequent') {
+            feed_title = "Infrequent Site Stories";
         } else if (_.string.startsWith(feed_id, 'river:')) {
             var feed = NEWSBLUR.assets.get_feed(feed_id);
             if (!feed) return;
@@ -57,7 +59,7 @@ NEWSBLUR.Models.SavedSearchFeed = Backbone.Model.extend({
         var url;
         var feed_id = this.get('feed_id');
         
-        if (feed_id == 'river:') {
+        if (feed_id == 'river:' || feed_id == 'river:infrequent') {
             url = NEWSBLUR.Globals.MEDIA_URL + 'img/icons/circular/ak-icon-allstories.png';
         } else if (_.string.startsWith(feed_id, 'river:')) {
             url = NEWSBLUR.Globals.MEDIA_URL + 'img/icons/circular/g_icn_folder.png';

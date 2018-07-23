@@ -28,6 +28,7 @@ public class FeedSet implements Serializable {
     private Set<String> savedTags;
     private boolean isAllRead;
     private boolean isGlobalShared;
+    private boolean isInfrequent;
 
     private String folderName;
     private String searchQuery;
@@ -78,6 +79,15 @@ public class FeedSet implements Serializable {
     public static FeedSet allFeeds() {
         FeedSet fs = new FeedSet();
         fs.feeds = Collections.EMPTY_SET;
+        return fs;
+    }
+
+    /** 
+     * Convenience constructor for the meta-feed for stories from feeds that publish infrequently.
+     */
+    public static FeedSet infrequentFeeds() {
+        FeedSet fs = new FeedSet();
+        fs.isInfrequent = true;
         return fs;
     }
 
@@ -175,6 +185,10 @@ public class FeedSet implements Serializable {
         return ((socialFeeds != null) && (socialFeeds.size() < 1));
     }
 
+    public boolean isInfrequent() {
+        return this.isInfrequent;
+    }
+
     public boolean isAllRead() {
         return this.isAllRead;
     }
@@ -183,12 +197,20 @@ public class FeedSet implements Serializable {
         return ((savedTags != null) && (savedTags.size() < 1));
     }
 
+    public boolean isSingleSavedTag() {
+        return ((savedTags != null) && (savedTags.size() == 1));
+    }
+
     /**
      * Gets a single saved tag iff there is only one or null otherwise.
      */
     public String getSingleSavedTag() {
         if (folderName != null) return null;
         if (savedTags != null && savedTags.size() == 1) return savedTags.iterator().next(); else return null;
+    }
+
+    public boolean isSingleNormal() {
+        return ((feeds != null) && (feeds.size() == 1));
     }
 
     public boolean isSingleSocial() {
@@ -274,6 +296,7 @@ public class FeedSet implements Serializable {
         if ( (savedTags != null) && (s.savedTags != null) && s.savedTags.equals(savedTags) ) return true;
         if ( isAllRead && s.isAllRead ) return true;
         if ( isGlobalShared && s.isGlobalShared ) return true;
+        if ( isInfrequent && s.isInfrequent ) return true;
         return false;
     }
 
@@ -285,6 +308,7 @@ public class FeedSet implements Serializable {
         if (isAllSaved()) result = 13;
         if (isGlobalShared) result = 14;
         if (isAllRead) result = 15;
+        if (isInfrequent) result = 16;
         if (feeds != null) result = 31 * result + feeds.hashCode();
         if (socialFeeds != null) result = 37 * result + socialFeeds.hashCode();
         if (folderName != null) result = 41 * result + folderName.hashCode();

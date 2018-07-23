@@ -341,6 +341,10 @@
 #pragma mark Story Actions - read on server
 
 - (void)syncStoryAsRead:(NSDictionary *)story {
+    if (!story) {
+        NSLog(@" ***> ERROR: No story found for syncStoryAsRead!");
+        return;
+    }
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_story_hashes_as_read",
                            self.appDelegate.url];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];

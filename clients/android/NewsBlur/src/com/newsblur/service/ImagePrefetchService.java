@@ -28,6 +28,7 @@ public class ImagePrefetchService extends SubService {
         super(parent);
         storyImageCache = FileCache.asStoryImageCache(parent);
         thumbnailCache = FileCache.asThumbnailCache(parent);
+        thumbnailCache.addChain(storyImageCache);
     }
 
     @Override
@@ -53,8 +54,8 @@ public class ImagePrefetchService extends SubService {
                 if (batch.size() >= AppConstants.IMAGE_PREFETCH_BATCH_SIZE) break batchloop;
             }
             try {
-                for (String url : batch) {
-                    if (parent.stopSync()) return;
+                fetchloop: for (String url : batch) {
+                    if (parent.stopSync()) break fetchloop;
                     // dont fetch the image if the associated story was marked read before we got to it
                     if (unreadImages.contains(url)) {
                         if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "prefetching image: " + url);
@@ -69,10 +70,11 @@ public class ImagePrefetchService extends SubService {
             }
         }
 
+        if (parent.stopSync()) return;
+
         while (ThumbnailQueue.size() > 0) {
             if (! PrefsUtils.isImagePrefetchEnabled(parent)) return;
             if (! PrefsUtils.isBackgroundNetworkAllowed(parent)) return;
-            if (! PrefsUtils.isShowThumbnails(parent)) return;
 
             startExpensiveCycle();
             com.newsblur.util.Log.d(this, "story thumbs to prefetch: " + StoryImageQueue.size());
@@ -86,8 +88,8 @@ public class ImagePrefetchService extends SubService {
                 if (batch.size() >= AppConstants.IMAGE_PREFETCH_BATCH_SIZE) break batchloop;
             }
             try {
-                for (String url : batch) {
-                    if (parent.stopSync()) return;
+                fetchloop: for (String url : batch) {
+                    if (parent.stopSync()) break fetchloop;
                     // dont fetch the image if the associated story was marked read before we got to it
                     if (unreadImages.contains(url)) {
                         if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "prefetching thumbnail: " + url);

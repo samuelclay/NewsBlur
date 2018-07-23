@@ -14,6 +14,15 @@
 #import "IASKAppSettingsViewController.h"
 #import "MCSwipeTableViewCell.h"
 
+// indices in appDelegate.dictFoldersArray and button tags
+// keep in sync with NewsBlurTopSectionNames
+static enum {
+    NewsBlurTopSectionGlobalSharedStories = 0,
+    NewsBlurTopSectionAllSharedStories = 1,
+    NewsBlurTopSectionInfrequentSiteStories = 2,
+    NewsBlurTopSectionAllStories = 3
+} NewsBlurTopSection;
+
 @class NewsBlurAppDelegate;
 
 @interface NewsBlurViewController : BaseViewController
@@ -28,6 +37,7 @@ UIGestureRecognizerDelegate> {
     NSMutableDictionary * activeFeedLocations;
     NSMutableDictionary *stillVisibleFeeds;
     NSMutableDictionary *visibleFolders;
+    NSMutableDictionary *indexPathsForFeedIds;
     
     BOOL isOffline;
     BOOL viewShowingAllFeeds;
@@ -75,6 +85,7 @@ UIGestureRecognizerDelegate> {
 @property (nonatomic) NSIndexPath *currentRowAtIndexPath;
 @property (nonatomic) NSInteger currentSection;
 @property (strong, nonatomic) IBOutlet UIView *noFocusMessage;
+@property (strong, nonatomic) IBOutlet UILabel *noFocusLabel;
 @property (strong, nonatomic) IBOutlet UIBarButtonItem *toolbarLeftMargin;
 @property (nonatomic, retain) NBNotifier *notifier;
 @property (nonatomic, retain) UIImageView *avatarImageView;
@@ -115,6 +126,7 @@ UIGestureRecognizerDelegate> {
 - (void)resetToolbar;
 - (void)layoutHeaderCounts:(UIInterfaceOrientation)orientation;
 - (void)refreshHeaderCounts;
+- (void)redrawFeedCounts:(id)feedId;
 
 - (void)resizeFontSize;
 - (void)settingsViewControllerDidEnd:(IASKAppSettingsViewController*)sender;

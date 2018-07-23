@@ -102,9 +102,6 @@ public class NBSyncService extends Service {
     /** The last feed set that was actually fetched from the API. */
     private static FeedSet LastFeedSet;
 
-    /** The last feed set that was loaded/primed into the session table. */
-    private static FeedSet PreppedFeedSet;
-
     /** Feed sets that the API has said to have no more pages left. */
     private static Set<FeedSet> ExhaustedFeeds;
     static { ExhaustedFeeds = new HashSet<FeedSet>(); }
@@ -118,6 +115,8 @@ public class NBSyncService extends Service {
     /** Feed to reset to zero-state, so it is fetched fresh, presumably with new filters. */
     private static FeedSet ResetFeed;
 
+    private static final Object MUTEX_ResetFeed = new Object();
+
     /** Actions that may need to be double-checked locally due to overlapping API calls. */
     private static List<ReadingAction> FollowupActions;
     static { FollowupActions = new ArrayList<ReadingAction>(); }
@@ -127,8 +126,8 @@ public class NBSyncService extends Service {
     static { RecountCandidates = new HashSet<FeedSet>(); }
     private volatile static boolean FlushRecounts = false;
 
-    Set<String> orphanFeedIds;
-    Set<String> disabledFeedIds;
+    Set<String> orphanFeedIds = new HashSet<String>();
+    Set<String> disabledFeedIds = new HashSet<String>();
 
     private ExecutorService primaryExecutor;
     CleanupService cleanupService;
@@ -151,7 +150,7 @@ public class NBSyncService extends Service {
 	@Override
 	public void onCreate() {
 		super.onCreate();
-        if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "onCreate");
+        com.newsblur.util.Log.d(this, "onCreate");
         HaltNow = false;
         PowerManager pm = (PowerManager) getApplicationContext().getSystemService(POWER_SERVICE);
         wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, this.getClass().getSimpleName());
@@ -194,7 +193,7 @@ public class NBSyncService extends Service {
             };
             primaryExecutor.execute(r);
         } else {
-            Log.d(this.getClass().getName(), "Skipping sync: app not active and background sync not enabled.");
+            com.newsblur.util.Log.d(this, "Skipping sync: app not active and background sync not enabled.");
             stopSelf(startId);
         } 
 
@@ -230,7 +229,7 @@ public class NBSyncService extends Service {
                     OfflineNow = false;   
                     NbActivity.updateAllActivities(NbActivity.UPDATE_STATUS);
                 } else {
-                    Log.d(this.getClass().getName(), "Abandoning sync: network still offline");
+                    com.newsblur.util.Log.d(this, "Abandoning sync: network still offline");
                     return;
                 }
             }
@@ -250,24 +249,30 @@ public class NBSyncService extends Service {
             // ping activities to indicate that housekeeping is done, and the DB is safe to use
             NbActivity.updateAllActivities(NbActivity.UPDATE_DB_READY);
 
+            // async text requests might have been queued up and are being waiting on by the live UI. give them priority
             originalTextService.start(startId);
 
             // first: catch up
             syncActions();
+
+            // if MD is stale, sync it first so unreads don't get backwards with story unread state
+            syncMetadata(startId);
             
-            // these requests are expressly enqueued by the UI/user, do them next
+            // handle fetching of stories that are actively being requested by the live UI
             syncPendingFeedStories(startId);
 
-            syncMetadata(startId);
-
-            unreadsService.start(startId);
-
-            imagePrefetchService.start(startId);
-
+            // re-apply the local state of any actions executed before local UI interaction
             finishActions();
 
+            // after all actions, double-check local state vs remote state consistency
             checkRecounts();
 
+            // async story and image prefetch are lower priority and don't affect active reading, do them last
+            unreadsService.start(startId);
+            imagePrefetchService.start(startId);
+
+            // almost all notifications will be pushed after the unreadsService gets new stories, but double-check
+            // here in case some made it through the feed sync loop first
             pushNotifications();
 
             if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "finishing primary sync");
@@ -351,7 +356,7 @@ public class NBSyncService extends Service {
                 // don't block story loading unless this is a brand new action
                 if ((ra.getTried() > 0) && (PendingFeed != null)) continue actionsloop;
                     
-                com.newsblur.util.Log.d(this.getClass().getName(), "attempting action: " + ra.toContentValues().toString());
+                com.newsblur.util.Log.d(this, "attempting action: " + ra.toContentValues().toString());
                 NewsBlurResponse response = ra.doRemote(apiManager, dbHelper);
 
                 if (response == null) {
@@ -657,20 +662,27 @@ public class NBSyncService extends Service {
         FeedSet fs = PendingFeed;
 
         try {
+            // see if we need to quickly reset fetch state for a feed. we
+            // do this before the loop to prevent-mid loop state corruption
+            synchronized (MUTEX_ResetFeed) {
+                if (ResetFeed != null) {
+                    com.newsblur.util.Log.i(this.getClass().getName(), "Resetting state for feed set: " + ResetFeed);
+                    ExhaustedFeeds.remove(ResetFeed);
+                    FeedStoriesSeen.remove(ResetFeed);
+                    FeedPagesSeen.remove(ResetFeed);
+                    ResetFeed = null;
+                    // a reset should also reset the stories table, just in case an async page of stories came in between the
+                    // caller's (presumed) reset and our call ot prepareReadingSession(). unsetting the session feedset will
+                    // cause the later call to prepareReadingSession() to do another reset
+                    dbHelper.setSessionFeedSet(null);
+                }
+            }
+
             if (fs == null) {
                 return;
             }
 
             prepareReadingSession(dbHelper, fs);
-
-            // see if we need to quickly reset fetch state for a feed. we
-            // do this before the loop to prevent-mid loop state corruption
-            if (ResetFeed != null) {
-                ExhaustedFeeds.remove(ResetFeed);
-                FeedStoriesSeen.remove(ResetFeed);
-                FeedPagesSeen.remove(ResetFeed);
-                ResetFeed = null;
-            }
 
             LastFeedSet = fs;
             
@@ -785,6 +797,15 @@ public class NBSyncService extends Service {
                 // we page through, so they append to the list as if most-recent-first.
                 workaroundGloblaSharedStoryTimestamp --;
                 story.sharedTimestamp = workaroundGloblaSharedStoryTimestamp;
+            }
+        }
+
+        if (fs.isInfrequent()) {
+            // the API vends a river of stories from sites that publish infrequently, but the
+            // list of which feeds qualify is not vended. as a workaround, stories received
+            // from this API are specially tagged so they can be displayed
+            for (Story story : apiResponse.stories) {
+                story.infrequent = true;
             }
         }
 
@@ -937,10 +958,10 @@ public class NBSyncService extends Service {
     }
 
     /**
-     * Is the main feed/folder list sync running?
+     * Is the main feed/folder list sync running and blocking?
      */
     public static boolean isFeedFolderSyncRunning() {
-        return (HousekeepingRunning || ActionsRunning || RecountsRunning || FFSyncRunning || CleanupService.running() || UnreadsService.running() || StorySyncRunning || OriginalTextService.running() || ImagePrefetchService.running());
+        return (HousekeepingRunning || FFSyncRunning);
     }
 
     public static boolean isFeedCountSyncRunning() {
@@ -958,16 +979,11 @@ public class NBSyncService extends Service {
         return (fs.equals(PendingFeed) && (!stopSync(context)));
     }
 
-    public static boolean isFeedSetReady(FeedSet fs) {
-        return fs.equals(PreppedFeedSet);
-    }
-
     public static boolean isFeedSetExhausted(FeedSet fs) {
         return ExhaustedFeeds.contains(fs);
     }
 
     public static boolean isFeedSetStoriesFresh(FeedSet fs) {
-        if (! isFeedSetReady(fs)) return false;
         Integer count = FeedStoriesSeen.get(fs);
         if (count == null) return false;
         if (count < 1) return false;
@@ -1031,7 +1047,7 @@ public class NBSyncService extends Service {
             PendingFeed = fs;
             PendingFeedTarget = desiredStoryCount;
 
-            if (AppConstants.VERBOSE_LOG) Log.d(NBSyncService.class.getName(), "callerhas: " + callerSeen + "  have:" + alreadySeen + "  want:" + desiredStoryCount + "  pending:" + alreadyPending);
+            //if (AppConstants.VERBOSE_LOG) Log.d(NBSyncService.class.getName(), "callerhas: " + callerSeen + "  have:" + alreadySeen + "  want:" + desiredStoryCount + "  pending:" + alreadyPending);
 
             if (!fs.equals(LastFeedSet)) {
                 return true;
@@ -1056,7 +1072,7 @@ public class NBSyncService extends Service {
      */
     public static void prepareReadingSession(BlurDatabaseHelper dbHelper, FeedSet fs) {
         synchronized (PENDING_FEED_MUTEX) {
-            if (! fs.equals(PreppedFeedSet)) {
+            if (! fs.equals(dbHelper.getSessionFeedSet())) {
                 com.newsblur.util.Log.d(NBSyncService.class.getName(), "preparing new reading session");
                 // the next fetch will be the start of a new reading session; clear it so it
                 // will be re-primed
@@ -1065,20 +1081,21 @@ public class NBSyncService extends Service {
                 // after we insert our first page and not trigger
                 dbHelper.prepareReadingSession(fs);
                 // note which feedset we are loading so we can trigger another reset when it changes
-                PreppedFeedSet = fs;
+                dbHelper.setSessionFeedSet(fs);
                 NbActivity.updateAllActivities(NbActivity.UPDATE_STORY | NbActivity.UPDATE_STATUS);
             }
         }
     }
 
     /**
-     * Gracefully stop the loading of the current FeedSet.
+     * Gracefully stop the loading of the current FeedSet and unset the current story session
+     * so it will get reset before any further stories are fetched.
      */
-    public static void resetReadingSession() {
+    public static void resetReadingSession(BlurDatabaseHelper dbHelper) {
         com.newsblur.util.Log.d(NBSyncService.class.getName(), "requesting reading session reset");
         synchronized (PENDING_FEED_MUTEX) {
             PendingFeed = null;
-            PreppedFeedSet = null;
+            dbHelper.setSessionFeedSet(null);
         }
     }
 
@@ -1086,8 +1103,10 @@ public class NBSyncService extends Service {
      * Reset the API pagniation state for the given feedset, presumably because the order or filter changed.
      */
     public static void resetFetchState(FeedSet fs) {
-        com.newsblur.util.Log.d(NBSyncService.class.getName(), "requesting feed fetch state reset");
-        ResetFeed = fs;
+        synchronized (MUTEX_ResetFeed) {
+            com.newsblur.util.Log.d(NBSyncService.class.getName(), "requesting feed fetch state reset");
+            ResetFeed = fs;
+        }
     }
 
     public static void addRecountCandidates(FeedSet fs) {
@@ -1113,7 +1132,8 @@ public class NBSyncService extends Service {
      * Resets any internal temp vars or queues. Called when switching accounts.
      */
     public static void clearState() {
-        resetReadingSession();
+        PendingFeed = null;
+        ResetFeed = null;
         FollowupActions.clear();
         RecountCandidates.clear();
         ExhaustedFeeds.clear();
@@ -1131,7 +1151,7 @@ public class NBSyncService extends Service {
     @Override
     public void onDestroy() {
         try {
-            if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "onDestroy - stopping execution");
+            com.newsblur.util.Log.d(this, "onDestroy - stopping execution");
             HaltNow = true;
             if (cleanupService != null) cleanupService.shutdown();
             if (unreadsService != null) unreadsService.shutdown();
@@ -1147,10 +1167,10 @@ public class NBSyncService extends Service {
                 }
             }
             if (dbHelper != null) dbHelper.close();
-            if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "onDestroy - execution halted");
+            com.newsblur.util.Log.d(this, "onDestroy - execution halted");
             super.onDestroy();
         } catch (Exception ex) {
-            com.newsblur.util.Log.e(this.getClass().getName(), "unclean shutdown", ex);
+            com.newsblur.util.Log.e(this, "unclean shutdown", ex);
         }
     }
 

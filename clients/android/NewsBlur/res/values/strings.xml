@@ -19,7 +19,7 @@
     <string name="add_feed_message">Add \"%s\" to your feeds?</string>
     
     <string name="loading">Loading…</string>
-    <string name="orig_text_loading">Fetching text…</string>
+    <string name="orig_text_loading">Fetching story text…</string>
     
     <string name="follow_error">There was a problem following the user. Check your internet connection and try again.</string>
     <string name="unfollow_error">There was a problem unfollowing the user. Check your internet connection and try again.</string>
@@ -37,15 +37,19 @@
     <string name="title_choose_folders">Choose Folders for Feed %s</string>
 	
 	<string name="all_stories_row_title">ALL STORIES</string>
-	<string name="all_shared_stories">ALL SHARED STORIES</string>
-    <string name="global_shared_stories">GLOBAL SHARED STORIES</string>
+	<string name="all_stories_title">All Stories</string>
+	<string name="infrequent_row_title">INFREQUENT SITE STORIES</string>
+	<string name="infrequent_title">Infrequent Site Stories</string>
+	<string name="all_shared_stories_row_title">ALL SHARED STORIES</string>
+	<string name="all_shared_stories_title">All Shared Stories</string>
+    <string name="global_shared_stories_row_title">GLOBAL SHARED STORIES</string>
+    <string name="global_shared_stories_title">Global Shared Stories</string>
 	<string name="read_stories_row_title">READ STORIES</string>
-	<string name="saved_stories_row_title">SAVED STORIES</string>
 	<string name="read_stories_title">Read Stories</string>
+	<string name="saved_stories_row_title">SAVED STORIES</string>
 	<string name="saved_stories_title">Saved Stories</string>
+
     <string name="top_level">TOP LEVEL</string>
-	
-	<string name="error_saving_classifier">There was an error. Check your internet connection.</string>
 	
 	<string name="send_brief">%1$s %2$s</string>
 	<string name="send_full">%1$s \n\n\"%2$s\" \n\n%3$s \n\n--\nShared with NewsBlur.com</string>
@@ -81,8 +85,10 @@
 	<string name="alert_dialog_ok">OKAY</string>
 	<string name="alert_dialog_cancel">CANCEL</string>
 	<string name="alert_dialog_done">DONE</string>
+	<string name="alert_dialog_openlink">OPEN LINK</string>
 	<string name="alert_dialog_openimage">OPEN IMAGE</string>
     <string name="dialog_folders_save">SAVE FOLDERS</string>
+    <string name="dialog_story_intel_save">SAVE TRAINING</string>
 	
     <string name="profile">Profile</string>
     <string name="profile_location_icon">Location icon</string>
@@ -148,8 +154,16 @@
     <string name="menu_mute_folder">Mute folder</string>
     <string name="menu_unmute_folder">Unmute folder</string>
     <string name="menu_instafetch_feed">Insta-fetch stories</string>
+    <string name="menu_infrequent_cutoff">Infrequent stories per month</string>
+    <string name="menu_intel">Intelligence trainer</string>
+    <string name="menu_story_list_style_choose">List style…</string>
+    <string name="list_style_list">List</string>
+    <string name="list_style_grid_f">Grid (fine)</string>
+    <string name="list_style_grid_m">Grid (medium)</string>
+    <string name="list_style_grid_c">Grid (coarse)</string>
     
     <string name="toast_story_unread">Story marked as unread</string>
+    <string name="toast_hold_to_select">Press and hold to select text</string>
 
     <string name="logout_warning">Are you sure you want to log out?</string>
     <string name="search_mark_read_warning">Look out! All stories in feed/folder would be marked read, not just search results.  If you really want to mark all stories read, please clear your search query to confirm.</string>
@@ -228,6 +242,33 @@
     </string-array>
     <string name="default_network_select_value">NOMONONME</string>
 
+    <string name="menu_cache_age_select">Maximum Cache Age</string>
+    <string name="menu_cache_age_select_sum">Clean up cached story content after…</string>
+    <string name="menu_cache_age_select_opt_2d">2 days (reduce storage use)</string>
+    <string name="menu_cache_age_select_opt_7d">7 days</string>
+    <string name="menu_cache_age_select_opt_14d">14 days</string>
+    <string name="menu_cache_age_select_opt_30d">30 days (reduce network use)</string>
+    <string-array name="cache_age_select_entries">
+        <item>@string/menu_cache_age_select_opt_2d</item>
+        <item>@string/menu_cache_age_select_opt_7d</item>
+        <item>@string/menu_cache_age_select_opt_14d</item>
+        <item>@string/menu_cache_age_select_opt_30d</item>
+    </string-array>
+    <string-array name="cache_age_select_values">
+        <item>CACHE_AGE_2D</item>
+        <item>CACHE_AGE_7D</item>
+        <item>CACHE_AGE_14D</item>
+        <item>CACHE_AGE_30D</item>
+    </string-array>
+    <string name="default_cache_age_select_value">CACHE_AGE_30D</string>
+
+    <string name="settings_cat_feed_list">Feed List</string>
+
+    <string name="settings_enable_row_global_shared">Show Global Shared Stories</string>
+    <string name="settings_enable_row_global_shared_sum">Show the Global Shared Stories folder</string>
+    <string name="settings_enable_row_infrequent_stories">Show Infrequent Stories</string>
+    <string name="settings_enable_row_infrequent_stories_sum">Show the Infrequent Site Stories folder</string>
+
     <string name="settings_cat_story_list">Story List</string>
 
     <string name="oldest">Oldest</string>
@@ -284,21 +325,26 @@
     <string name="settings_notifications">Notifications</string>
     <string name="settings_enable_notifications">Enable Notifications</string>
 
-    <string name="story">Story</string>
-    <string name="text">Text</string>
+    <string name="infrequent_choice_title">Stories from sites with</string>
+    <string name="infrequent_5">&lt; 5 STORIES/MONTH</string>
+    <string name="infrequent_15">&lt; 15 STORIES/MONTH</string>
+    <string name="infrequent_30">&lt; 30 STORIES/MONTH</string>
+    <string name="infrequent_60">&lt; 60 STORIES/MONTH</string>
+    <string name="infrequent_90">&lt; 90 STORIES/MONTH</string>
 
-    <string name="theme">Theme</string>
+    <string name="story_intel_dialog_title">What do you like and dislike about this story?</string>
+    <string name="feed_intel_dialog_title">What do you like and dislike about this site?</string>
+    <string name="intel_title_header">STORY TITLE</string>
+    <string name="feed_intel_title_header">TITLES</string>
+    <string name="intel_tag_header">STORY TAGS</string>
+    <string name="feed_intel_tag_header">TAGS</string>
+    <string name="intel_author_header">STORY AUTHOR</string>
+    <string name="feed_intel_author_header">AUTHORS</string>
+    <string name="intel_feed_header">EVERYTHING BY PUBLISHER</string>
+
     <string name="light">Light</string>
     <string name="dark">Dark</string>
-    <string-array name="default_theme_entries">
-        <item>@string/light</item>
-        <item>@string/dark</item>
-    </string-array>
-    <string-array name="default_theme_values">
-        <item>light</item>
-        <item>dark</item>
-    </string-array>
-    <string name="default_theme_value">light</string>
+    <string name="black">Black</string>
 
     <string name="settings_gestures">Gestures</string>
 

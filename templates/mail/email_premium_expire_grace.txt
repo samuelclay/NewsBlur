@@ -14,6 +14,6 @@ Here are some easy ways to have a great time on NewsBlur:
 
     * Follow friends from Twitter, Facebook, and NewsBlur: http://{% current_domain %}{{ user.profile.autologin_url }}
     * Visit the popular blurblog, The People Have Spoken: http://popular.newsblur.com
-    * Renew your premium account for only $24/year: http://{% current_domain %}{{ user.profile.autologin_url }}?next=renew
+    * Renew your premium account for only $36/year: http://{% current_domain %}{{ user.profile.autologin_url }}?next=renew
 
 Spend a few days trying out NewsBlur again. We hope you love it.{% endblock body %}

@@ -7,12 +7,11 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
-import android.app.DialogFragment;
-import android.app.FragmentManager;
-import android.app.LoaderManager;
-import android.content.Loader;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.util.Log;
@@ -32,9 +31,11 @@ import butterknife.ButterKnife;
 import butterknife.Bind;
 
 import com.newsblur.R;
+import com.newsblur.database.ReadingAdapter;
 import com.newsblur.domain.Story;
 import com.newsblur.fragment.ReadingItemFragment;
 import com.newsblur.fragment.ShareDialogFragment;
+import com.newsblur.fragment.StoryIntelTrainerFragment;
 import com.newsblur.fragment.ReadingFontDialogFragment;
 import com.newsblur.fragment.TextSizeDialogFragment;
 import com.newsblur.service.NBSyncService;
@@ -42,10 +43,9 @@ import com.newsblur.util.AppConstants;
 import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
+import com.newsblur.util.PrefConstants.ThemeValue;
 import com.newsblur.util.PrefsUtils;
-import com.newsblur.util.ReadFilter;
 import com.newsblur.util.ReadingFontChangedListener;
-import com.newsblur.util.StoryOrder;
 import com.newsblur.util.StateFilter;
 import com.newsblur.util.UIUtils;
 import com.newsblur.util.ViewUtils;
@@ -114,15 +114,29 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
     private VolumeKeyNavigation volumeKeyNavigation;
 
     @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+    }
+
+    @Override
 	protected void onCreate(Bundle savedInstanceBundle) {
-		super.onCreate(savedInstanceBundle);
+        super.onCreate(savedInstanceBundle);
 
 		setContentView(R.layout.activity_reading);
         ButterKnife.bind(this);
 
-		fragmentManager = getFragmentManager();
+		fragmentManager = getSupportFragmentManager();
 
-        fs = (FeedSet)getIntent().getSerializableExtra(EXTRA_FEEDSET);
+        try {
+            fs = (FeedSet)getIntent().getSerializableExtra(EXTRA_FEEDSET);
+        } catch (RuntimeException re) {
+            // in the wild, the notification system likes to pass us an Intent that has missing or very stale
+            // Serializable extras.
+            com.newsblur.util.Log.e(this, "failed to unfreeze required extras", re);
+            finish();
+            return;
+        }
 
         if (fs == null) {
             com.newsblur.util.Log.w(this.getClass().getName(), "reading view had no FeedSet");
@@ -170,10 +184,25 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
         // this likes to default to 'on' for some platforms
         enableProgressCircle(overlayProgressLeft, false);
         enableProgressCircle(overlayProgressRight, false);
+
+        boolean showFeedMetadata = true;
+        if (fs.isSingleNormal()) showFeedMetadata = false;
+        String sourceUserId = null;
+        if (fs.getSingleSocialFeed() != null) sourceUserId = fs.getSingleSocialFeed().getKey();
+        readingAdapter = new ReadingAdapter(getSupportFragmentManager(), sourceUserId, showFeedMetadata);
+        
+        setupPager();
+
+        getSupportLoaderManager().initLoader(0, null, this);
 	}
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
+        /*
+        TODO: the following call is pretty standard, but causes the pager to disappear when
+              restoring from a bundle (e.g. after rotation)
+        super.onSaveInstanceState(outState);
+        */
         if (storyHash != null) {
             outState.putString(EXTRA_STORY_HASH, storyHash);
         } else {
@@ -201,13 +230,10 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
         if (NBSyncService.isHousekeepingRunning()) finish();
         // this view shows stories, it is not safe to perform cleanup
         this.stopLoading = false;
-        // onCreate() in our subclass should have called createLoader(), but sometimes the callback never makes it.
-        // this ensures that at least one callback happens after activity re-create.
-        getLoaderManager().restartLoader(0, null, this);
         // this is not strictly necessary, since our first refresh with the fs will swap in
         // the correct session, but that can be delayed by sync backup, so we try here to
         // reduce UI lag, or in case somehow we got redisplayed in a zero-story state
-        FeedUtils.prepareReadingSession(fs);
+        FeedUtils.prepareReadingSession(fs, false);
     }
 
     @Override
@@ -229,32 +255,26 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 
 	@Override
 	public void onLoaderReset(Loader<Cursor> loader) {
-		readingAdapter.swapCursor(null);
 	}
 
 	@Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         synchronized (STORIES_MUTEX) {
             if (cursor == null) return;
+            if (stopLoading) return;
 
-            //NB: this implicitly calls readingAdapter.notifyDataSetChanged();
-            readingAdapter.swapCursor(cursor);
-
-            // if this is the first time we've found a cursor, we know the onCreate chain is done
-            if (this.pager == null) {
-                setupPager();
-            }
-
-            if (! NBSyncService.isFeedSetReady(fs)) {
-                // not only is the session table stale, our fragment is being re-used by the system
-                // to show a totally different feedset. trash anything that might have stale story
-                // data and let them get recreated when a good cursor comes in
+            if (! FeedUtils.dbHelper.isFeedSetReady(fs)) {
                 com.newsblur.util.Log.i(this.getClass().getName(), "stale load");
+                // the system can and will re-use activities, so during the initial mismatch of
+                // data, don't show the old stories
                 pager.setVisibility(View.INVISIBLE);
                 stories = null;
                 triggerRefresh(AppConstants.READING_STORY_PRELOAD);
                 return;
             }
+
+            //NB: this implicitly calls readingAdapter.notifyDataSetChanged();
+            readingAdapter.swapCursor(cursor);
 
             boolean lastCursorWasStale = (stories == null);
 
@@ -266,6 +286,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
             // however, the pager can be tricked into wiping all fragments and recreating them from
             // the adapter by setting the adapter again, even if it is the same one.
             if (lastCursorWasStale) { 
+                // TODO: can crash with IllegalStateException
                 pager.setAdapter(readingAdapter);
             }
 
@@ -290,24 +311,27 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
     private void skipPagerToStoryHash() {
         // if we already started and found our target story, this will be unset
         if (storyHash == null) return;
-        stories.moveToPosition(-1);
-        while (stories.moveToNext()) {
-            if (stopLoading) return;
-            Story story = Story.fromCursor(stories);
-            if ( (story.storyHash.equals(storyHash)) ||
-                 ((storyHash.equals(FIND_FIRST_UNREAD)) && (!story.read))
-                 ) {
-                // see above note about re-setting the adapter to force the pager to reload fragments
-                pager.setAdapter(readingAdapter);
-                pager.setCurrentItem(stories.getPosition(), false);
-                this.onPageSelected(stories.getPosition());
-                // now that the pager is getting the right story, make it visible
-                pager.setVisibility(View.VISIBLE);
-                emptyViewText.setVisibility(View.INVISIBLE);
-                storyHash = null;
-                return;
-            }
+        int position = -1;
+        if (storyHash.equals(FIND_FIRST_UNREAD)) {
+            position = readingAdapter.findFirstUnread();
+        } else {
+            position = readingAdapter.findHash(storyHash);
         }
+
+        if (stopLoading) return;
+
+        if (position >= 0 ) {
+            // see above note about re-setting the adapter to force the pager to reload fragments
+            pager.setAdapter(readingAdapter);
+            pager.setCurrentItem(position, false);
+            this.onPageSelected(position);
+            // now that the pager is getting the right story, make it visible
+            pager.setVisibility(View.VISIBLE);
+            emptyViewText.setVisibility(View.INVISIBLE);
+            storyHash = null;
+            return;
+        }
+
         // if the story wasn't found, try to get more stories into the cursor
         this.checkStoryCount(readingAdapter.getCount()+1);
     }
@@ -317,13 +341,15 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
         // since it might start on the wrong story, create the pager as invisible
         pager.setVisibility(View.INVISIBLE);
 		pager.setPageMargin(UIUtils.dp2px(getApplicationContext(), 1));
-        if (PrefsUtils.isLightThemeSelected(this)) {
+
+        ThemeValue themeValue = PrefsUtils.getSelectedTheme(this);
+        if (themeValue == ThemeValue.LIGHT) {
             pager.setPageMarginDrawable(R.drawable.divider_light);
-        } else {
+        } else if (themeValue == ThemeValue.DARK) {
             pager.setPageMarginDrawable(R.drawable.divider_dark);
         }
 
-		pager.setOnPageChangeListener(this);
+		pager.addOnPageChangeListener(this);
 		pager.setAdapter(readingAdapter);
 
         // if the first story in the list was "viewed" before the page change listener was set,
@@ -362,8 +388,17 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
         Story story = readingAdapter.getStory(pager.getCurrentItem());
         if (story == null ) { return false; }
         menu.findItem(R.id.menu_reading_save).setTitle(story.starred ? R.string.menu_unsave_story : R.string.menu_save_story);
-        menu.findItem(R.id.menu_reading_fullscreen).setVisible(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT);
         if (fs.isFilterSaved() || fs.isAllSaved() || (fs.getSingleSavedTag() != null)) menu.findItem(R.id.menu_reading_markunread).setVisible(false);
+
+        ThemeValue themeValue = PrefsUtils.getSelectedTheme(this);
+        if (themeValue == ThemeValue.LIGHT) {
+            menu.findItem(R.id.menu_theme_light).setChecked(true);
+        } else if (themeValue == ThemeValue.DARK) {
+            menu.findItem(R.id.menu_theme_dark).setChecked(true);
+        } else if (themeValue == ThemeValue.BLACK) {
+            menu.findItem(R.id.menu_theme_black).setChecked(true);
+        }
+
         return true;
     }
 
@@ -388,7 +423,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 			return true;
 		} else if (item.getItemId() == R.id.menu_reading_sharenewsblur) {
             DialogFragment newFragment = ShareDialogFragment.newInstance(story, readingAdapter.getSourceUserId());
-            newFragment.show(getFragmentManager(), "dialog");
+            newFragment.show(getSupportFragmentManager(), "dialog");
 			return true;
 		} else if (item.getItemId() == R.id.menu_send_story) {
 			FeedUtils.sendStoryBrief(story, this);
@@ -398,11 +433,11 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 			return true;
 		} else if (item.getItemId() == R.id.menu_textsize) {
 			TextSizeDialogFragment textSize = TextSizeDialogFragment.newInstance(PrefsUtils.getTextSize(this), TextSizeDialogFragment.TextSizeType.ReadingText);
-			textSize.show(getFragmentManager(), TextSizeDialogFragment.class.getName());
+			textSize.show(getSupportFragmentManager(), TextSizeDialogFragment.class.getName());
 			return true;
 		} else if (item.getItemId() == R.id.menu_font) {
             ReadingFontDialogFragment storyFont = ReadingFontDialogFragment.newInstance(PrefsUtils.getFontString(this));
-            storyFont.show(getFragmentManager(), ReadingFontDialogFragment.class.getName());
+            storyFont.show(getSupportFragmentManager(), ReadingFontDialogFragment.class.getName());
             return true;
         } else if (item.getItemId() == R.id.menu_reading_save) {
             if (story.starred) {
@@ -416,6 +451,23 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
             return true;
 		} else if (item.getItemId() == R.id.menu_reading_fullscreen) {
             ViewUtils.hideSystemUI(getWindow().getDecorView());
+            return true;
+        } else if (item.getItemId() == R.id.menu_theme_light) {
+            PrefsUtils.setSelectedTheme(this, ThemeValue.LIGHT);
+            UIUtils.restartActivity(this);
+            return true;
+        } else if (item.getItemId() == R.id.menu_theme_dark) {
+            PrefsUtils.setSelectedTheme(this, ThemeValue.DARK);
+            UIUtils.restartActivity(this);
+            return true;
+        } else if (item.getItemId() == R.id.menu_theme_black) {
+            PrefsUtils.setSelectedTheme(this, ThemeValue.BLACK);
+            UIUtils.restartActivity(this);
+            return true;
+        } else if (item.getItemId() == R.id.menu_intel) {
+            if (story.feedId.equals("0")) return true; // cannot train on feedless stories
+            StoryIntelTrainerFragment intelFrag = StoryIntelTrainerFragment.newInstance(story, fs);
+            intelFrag.show(getSupportFragmentManager(), StoryIntelTrainerFragment.class.getName());
             return true;
         } else {
 			return super.onOptionsItemSelected(item);
@@ -456,7 +508,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
     private void updateCursor() {
         synchronized (STORIES_MUTEX) {
             try {
-                getLoaderManager().restartLoader(0, null, this);
+                getSupportLoaderManager().restartLoader(0, null, this);
             } catch (IllegalStateException ise) {
                 ; // our heavy use of async can race loader calls, which it will gripe about, but this
                  //  is only a refresh call, so dropping a refresh during creation is perfectly fine.

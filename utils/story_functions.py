@@ -59,6 +59,24 @@ def format_story_link_date__long(date, now=None):
     else:
         return parsed_date.format('l, F jS, Y g:ia').replace('.','')
 
+def relative_date(d):
+    diff = datetime.datetime.utcnow() - d
+    s = diff.seconds
+    if diff.days == 1:
+        return '1 day ago'
+    elif diff.days > 1:
+        return '{} days ago'.format(diff.days)
+    elif s < 60:
+        return 'just now'
+    elif s < 120:
+        return '1 minute ago'
+    elif s < 3600:
+        return '{} minutes ago'.format(s/60)
+    elif s < 7200:
+        return '1 hour ago'
+    else:
+        return '{} hours ago'.format(s/3600)
+
 def _extract_date_tuples(date):
     parsed_date = DateFormat(date)
     date_tuple = datetime.datetime.timetuple(date)[:3]
@@ -112,6 +130,8 @@ def pre_process_story(entry, encoding):
         entry['story_content'] = content.strip()
     else:
         entry['story_content'] = summary.strip()
+    if not entry['story_content'] and entry.get('subtitle'):
+        entry['story_content'] = entry.get('subtitle')
     
     if 'summary_detail' in entry and entry['summary_detail'].get('type', None) == 'text/plain':
         try:
@@ -135,6 +155,14 @@ def pre_process_story(entry, encoding):
                         'media_url': media_url, 
                         'media_type': media_type
                     }
+            elif 'video' in media_type and media_url:
+                entry['story_content'] += """<br><br>
+                    <video controls="controls" preload="none">
+                        <source src="%(media_url)s" type="%(media_type)s" />
+                    </video>"""  % {
+                        'media_url': media_url, 
+                        'media_type': media_type
+                    }
             elif 'image' in media_type and media_url and media_url not in entry['story_content']:
                 entry['story_content'] += """<br><br><img src="%s" />"""  % media_url
                 continue
@@ -150,13 +178,8 @@ def pre_process_story(entry, encoding):
     
     entry['guid'] = entry.get('guid') or entry.get('id') or entry.get('link') or str(entry.get('published'))
 
-    if not entry.get('title') and entry.get('story_content'):
-        story_title = strip_tags(entry['story_content'])
-        if len(story_title) > 80:
-            story_title = story_title[:80] + '...'
-        entry['title'] = story_title
-    if not entry.get('title') and entry.get('link'):
-        entry['title'] = entry['link']
+    if not entry.get('title'):
+        entry['title'] = ""
         
     entry['title'] = strip_tags(entry.get('title'))
     entry['author'] = strip_tags(entry.get('author'))

@@ -6,8 +6,25 @@
 
 {% block title %}Frequently Asked Questions{% endblock %}
 
-{% block content %}
+{% block extra_head_js %}
+<script>
+    $(document).ready(function(){
+        $(window).load(function(){
+            // Remove the # from the hash, as different browsers may or may not include it
+            var hash = location.hash.replace('#','');
+            if (hash != '') {
+                $('html, body').animate({ scrollTop: $('#intelligence_scroll').offset().top - 72}, {
+                    duration: 1000, 
+                    easing: 'easeOutQuart'
+                });
 
+            }
+        });
+    });
+</script>
+{% endblock %}
+    
+{% block content %}
 <div class="NB-static-title">
     Frequently Asked Questions
 </div>
@@ -58,7 +75,7 @@
 </div>
 
 <div class="NB-module">
-    <h5 class="NB-module-title">The Intelligence</h5>
+    <h5 class="NB-module-title" id="intelligence_scroll">The Intelligence</h5>
     <div class="NB-module-content">
         <ul class="NB-about-server">
             <li class="NB-faq-question">
@@ -165,7 +182,7 @@
                 Help! I have an issue and it's not mentioned here.
             </li>
             <li class="NB-faq-answer last">
-                Please, please, please report your issue on the <a href="http://getsatisfaction.com/newsblur">Get Satisfaction forum for NewsBlur</a>. If you have an issue it is entirely possible that other people do, too, and the more we know about something that’s gone wrong, the more able and likely we are to fix it. Don’t be shy, drop us a line!
+                Please, please, please report your issue on the <a href="https://forum.newsblur.com">NewsBlur support forum</a>. If you have an issue it is entirely possible that other people do, too, and the more we know about something that’s gone wrong, the more able and likely we are to fix it. Don’t be shy, drop us a line!
             </li>
         </ul>
     </div>

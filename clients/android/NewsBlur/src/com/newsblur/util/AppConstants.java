@@ -34,8 +34,8 @@ public class AppConstants {
     // how often to rebuild the DB
     public static final long VACUUM_TIME_MILLIS = 12L * 60L * 60L * 1000L;
 
-    // how often to clean up the DB
-    public static final long CLEANUP_TIME_MILLIS = 3L * 60L * 60L * 1000L;
+    // how often to clean up stories from the DB
+    public static final long CLEANUP_TIME_MILLIS = 6L * 60L * 60L * 1000L;
 
     // how often to trigger the BG service. slightly longer than how often we will find new stories,
     // to account for the fact that it is approximate, and missing a cycle is bad.
@@ -75,7 +75,7 @@ public class AppConstants {
     public static final boolean ENABLE_FEEDBACK = true;
 
     // link to app feedback page
-    public static final String FEEDBACK_URL = "https://getsatisfaction.com/newsblur/topics/new/add_details?topic[subject]=Android%3A+&topic[categories][][id]=80957&topic[type]=question&topic[content]=";
+    public static final String FEEDBACK_URL = "https://forum.newsblur.com/new-topic?title=Android%3A+&body=";
 
     // how long to wait for sync threads to shutdown. ideally we would wait the max network timeout,
     // but the system like to force-kill terminating services that take too long, so it is often
@@ -91,9 +91,5 @@ public class AppConstants {
 
     // link to the web-based forgot password flow
     public final static String FORGOT_PASWORD_URL = "http://www.newsblur.com/folder_rss/forgot_password";
-
-    // how many helper threads to use for loading icons and thumbnails. things look smoother
-    // if this is set to 3+, but as of late 2016, too many devices get resource constrained past 2
-    public final static int IMAGE_LOADER_THREAD_COUNT = 2;
 
 }

@@ -60,6 +60,7 @@
     [self addBundledFontWithName:@"GothamNarrow-Book" styleClass:@"GothamNarrow-Book" displayName:nil];
     [self addBuiltInFontWithName:@"Helvetica" styleClass:@"NB-helvetica" displayName:nil];
     [self addBuiltInFontWithName:@"Palatino-Roman" styleClass:@"NB-palatino" displayName:nil];
+    [self addBundledFontWithName:@"SanFrancisco" styleClass:@"NB-sanfrancisco" displayName:@"San Francisco"];
     [self addBundledFontWithName:@"WhitneySSm-Book" styleClass:@"WhitneySSm-Book" displayName:@"Whitney"];
     
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
@@ -134,6 +135,9 @@
                    
 - (void)addBuiltInFontWithName:(NSString *)fontName styleClass:(NSString *)styleClass displayName:(NSString *)displayName {
     UIFont *font = [UIFont fontWithName:fontName size:16.0];
+    if ([fontName isEqualToString:@"SanFrancisco"]) {
+        font = [UIFont systemFontOfSize:16.0 weight:UIFontWeightRegular];
+    }
     
     if (font) {
         if (!displayName) {

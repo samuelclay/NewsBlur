@@ -17,7 +17,6 @@
 @property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property (nonatomic) IBOutlet UIButton *facebookButton;
 @property (nonatomic) IBOutlet UIButton *twitterButton;
-@property (nonatomic) IBOutlet UIButton *appdotnetButton;
 @property (nonatomic) IBOutlet UIBarButtonItem *submitButton;
 @property (nonatomic) IBOutlet UILabel *storyTitle;
 @property (nonatomic) NSString * activeReplyId;
