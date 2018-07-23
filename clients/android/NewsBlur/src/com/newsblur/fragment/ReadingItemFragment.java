@@ -43,7 +43,6 @@ import com.newsblur.domain.Classifier;
 import com.newsblur.domain.Story;
 import com.newsblur.domain.UserDetails;
 import com.newsblur.service.OriginalTextService;
-import com.newsblur.util.AppConstants;
 import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
@@ -135,7 +134,6 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		story = getArguments() != null ? (Story) getArguments().getSerializable("story") : null;
-            com.newsblur.util.Log.d(this, "DD - onCreate page " + story.storyHash);
 
 		displayFeedDetails = getArguments().getBoolean("displayFeedDetails");
 		

@@ -18,7 +18,6 @@ import com.newsblur.fragment.LoadingFragment;
 import com.newsblur.fragment.ReadingItemFragment;
 import com.newsblur.util.FeedUtils;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -168,14 +167,12 @@ public class ReadingAdapter extends PagerAdapter {
         } else {
             fragment = fragments.get(story.storyHash);
             if (fragment == null) {
-                com.newsblur.util.Log.d(this, "DD - new frag at " + position + " is " + story.storyHash);
                 ReadingItemFragment rif = createFragment(story);
                 fragment = rif;
                 Fragment.SavedState oldState = states.get(story.storyHash);
                 if (oldState != null) fragment.setInitialSavedState(oldState);
                 fragments.put(story.storyHash, rif);
             } else {
-                com.newsblur.util.Log.d(this, "DD - reuse frag at " + position);
                 // iff there was a real fragment for this story already, it will have been added and ready
                 return fragment;
             }
@@ -191,7 +188,6 @@ public class ReadingAdapter extends PagerAdapter {
 
     @Override
     public void destroyItem(ViewGroup container, int position, Object object) {
-                com.newsblur.util.Log.d(this, "DD - clean frag at " + position);
         Fragment fragment = (Fragment) object;
         if (curTransaction == null) {
             curTransaction = fm.beginTransaction();
@@ -225,7 +221,6 @@ public class ReadingAdapter extends PagerAdapter {
     @Override
     public void finishUpdate(ViewGroup container) {
         if (curTransaction != null) {
-            com.newsblur.util.Log.d(this, "DD - flush adap");
             curTransaction.commitNowAllowingStateLoss();
             curTransaction = null;
         }
@@ -331,7 +326,6 @@ public class ReadingAdapter extends PagerAdapter {
         for (Map.Entry<String,Fragment.SavedState> entry : states.entrySet()) {
             state.putParcelable("ss-" + entry.getKey(), entry.getValue());
         }
-        com.newsblur.util.Log.d(this, "DD - froze states: " + state.size());
         return state;
     }
 
@@ -357,7 +351,6 @@ public class ReadingAdapter extends PagerAdapter {
                 states.put(storyHash, (Fragment.SavedState) fragState);
             }
         }
-        com.newsblur.util.Log.d(this, "DD - thawed states: " + states.size());
     }
 
 }
