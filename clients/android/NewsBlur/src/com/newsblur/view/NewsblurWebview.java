@@ -3,6 +3,7 @@ package com.newsblur.view;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.View;
@@ -107,7 +108,9 @@ public class NewsblurWebview extends WebView {
 
         @Override
         public void onReceivedError (WebView view, WebResourceRequest request, WebResourceError error) {
-            com.newsblur.util.Log.w(this, "WebView Error ("+error.getErrorCode()+"): " + error.getDescription());
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                com.newsblur.util.Log.w(this, "WebView Error ("+error.getErrorCode()+"): " + error.getDescription());
+            }
             fragment.flagWebviewError();
         }
     }
