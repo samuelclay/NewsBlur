@@ -348,7 +348,7 @@ def stripe_form(request):
                                user.profile.premium_expire > datetime.datetime.now())
                                
             # Are they changing their existing card?
-            if user.profile.stripe_id and current_premium:
+            if user.profile.stripe_id:
                 customer = stripe.Customer.retrieve(user.profile.stripe_id)
                 try:
                     card = customer.cards.create(card=zebra_form.cleaned_data['stripe_token'])
@@ -357,6 +357,9 @@ def stripe_form(request):
                 else:
                     customer.default_card = card.id
                     customer.save()
+                    user.profile.strip_4_digits = zebra_form.cleaned_data['last_4_digits']
+                    user.profile.save()
+                    user.profile.activate_premium() # TODO: Remove, because webhooks are slow
                     success_updating = True
             else:
                 try:
