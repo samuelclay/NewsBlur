@@ -378,6 +378,14 @@ def stripe_form(request):
                     user.profile.activate_premium() # TODO: Remove, because webhooks are slow
                     success_updating = True
             
+            # Check subscription to ensure latest plan, otherwise cancel it and subscribe
+            if success_updating and customer and customer.subscriptions.total_count == 1:
+                subscription = customer.subscriptions.data[0]
+                if subscription['plan']['id'] != "newsblur-premium-36":
+                    for sub in customer.subscriptions:
+                        sub.delete()
+                    customer = stripe.Customer.retrieve(user.profile.stripe_id)
+                
             if success_updating and customer and customer.subscriptions.total_count == 0:
                 params = dict(
                   customer=customer.id,
