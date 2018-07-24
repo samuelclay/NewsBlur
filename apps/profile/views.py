@@ -378,7 +378,7 @@ def stripe_form(request):
                     user.profile.activate_premium() # TODO: Remove, because webhooks are slow
                     success_updating = True
             
-            if success_updating and customer and customer.subscriptions.count == 0:
+            if success_updating and customer and customer.subscriptions.total_count == 0:
                 billing_cycle_anchor = "now"
                 if current_premium:
                     billing_cycle_anchor = user.profile.premium_expire.strftime('%s')
