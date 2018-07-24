@@ -394,9 +394,10 @@ def stripe_form(request):
                       "plan": "newsblur-premium-36",
                     },
                   ])
-                if current_premium:
-                    params['billing_cycle_anchor'] = user.profile.premium_expire.strftime('%s')
-                    params['trial_end'] = user.profile.premium_expire.strftime('%s')
+                premium_expire = user.profile.premium_expire
+                if current_premium and premium_expire:
+                    params['billing_cycle_anchor'] = premium_expire.strftime('%s')
+                    params['trial_end'] = premium_expire.strftime('%s')
                 stripe.Subscription.create(**params)
 
     else:
