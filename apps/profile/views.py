@@ -381,7 +381,6 @@ def stripe_form(request):
             if success_updating and customer and customer.subscriptions.total_count == 0:
                 params = dict(
                   customer=customer.id,
-                  billing_cycle_anchor="now",
                   items=[
                     {
                       "plan": "newsblur-premium-36",
