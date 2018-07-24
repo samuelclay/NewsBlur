@@ -385,6 +385,7 @@ def stripe_form(request):
                 stripe.Subscription.create(
                   customer=customer.id,
                   billing_cycle_anchor=billing_cycle_anchor,
+                  trial_end=billing_cycle_anchor,
                   items=[
                     {
                       "plan": "newsblur-premium-36",
