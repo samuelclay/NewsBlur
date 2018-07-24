@@ -165,7 +165,7 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
             });
             var success = !this.story_title_view.$st.find('a')[0].dispatchEvent(event);
             if (!success) {
-                success = this.story_title_view.hasClass('NB-story-webkit-opened');
+                success = this.story_title_view.$st.hasClass('NB-story-webkit-opened');
             }
             if (success) {
                 // console.log(['Used safari extension to open link in background', success]);
