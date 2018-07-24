@@ -379,19 +379,18 @@ def stripe_form(request):
                     success_updating = True
             
             if success_updating and customer and customer.subscriptions.total_count == 0:
-                billing_cycle_anchor = "now"
-                if current_premium:
-                    billing_cycle_anchor = user.profile.premium_expire.strftime('%s')
-                stripe.Subscription.create(
+                params = dict(
                   customer=customer.id,
-                  billing_cycle_anchor=billing_cycle_anchor,
-                  trial_end=billing_cycle_anchor,
+                  billing_cycle_anchor="now",
                   items=[
                     {
                       "plan": "newsblur-premium-36",
                     },
-                  ]
-                )
+                  ])
+                if current_premium:
+                    params['billing_cycle_anchor'] = user.profile.premium_expire.strftime('%s')
+                    params['trial_end'] = user.profile.premium_expire.strftime('%s')
+                stripe.Subscription.create(**params)
 
     else:
         zebra_form = StripePlusPaymentForm(email=user.email, plan=plan)
