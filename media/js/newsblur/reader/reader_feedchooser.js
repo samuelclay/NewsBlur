@@ -88,7 +88,7 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
               ])),
               (!NEWSBLUR.Globals.is_premium && $.make('div', { className: 'NB-feedchooser-info'}, [
                   $.make('div', { className: 'NB-feedchooser-info-type' }, [
-                    $.make('span', { className: 'NB-feedchooser-subtitle-type-prefix' }, 'Super-Mega'),
+                    $.make('span', { className: 'NB-feedchooser-subtitle-type-prefix' }, 'Unlimited'),
                     ' Premium Account'
                   ])
               ])),
