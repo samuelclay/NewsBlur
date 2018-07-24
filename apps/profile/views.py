@@ -396,8 +396,9 @@ def stripe_form(request):
                   ])
                 premium_expire = user.profile.premium_expire
                 if current_premium and premium_expire:
-                    params['billing_cycle_anchor'] = premium_expire.strftime('%s')
-                    params['trial_end'] = premium_expire.strftime('%s')
+                    if premium_expire < (datetime.datetime.now() + datetime.timedelta(days=365)):
+                        params['billing_cycle_anchor'] = premium_expire.strftime('%s')
+                        params['trial_end'] = premium_expire.strftime('%s')
                 stripe.Subscription.create(**params)
 
     else:
