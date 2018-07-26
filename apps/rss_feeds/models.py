@@ -1136,7 +1136,6 @@ class Feed(models.Model):
         
         if getattr(settings, 'TEST_DEBUG', False):
             print " ---> Testing feed fetch: %s" % self.log_title
-            options['force'] = False
             # options['force_fp'] = True # No, why would this be needed?
             original_feed_address = self.feed_address
             original_feed_link = self.feed_link
