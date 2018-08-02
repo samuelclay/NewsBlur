@@ -854,14 +854,28 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
         }
     }
 
+    /**
+     * A hook for performing actions that need to happen after all of the view has loaded, including
+     * the story's HTML content, all metadata views, and all associated social views.
+     */
     private void onLoadFinished() {
+        // if there was a scroll position saved, restore it
         if (savedScrollPosRel > 0f) {
+            // ScrollViews containing WebViews are very particular about call timing.  since the inner view
+            // height can drastically change as viewport width changes, position has to be saved and restored
+            // as a proportion of total inner view height. that height won't be known until all the various 
+            // async bits of the fragment have finished loading.  however, even after the WebView calls back
+            // onProgressChanged with a value of 100, immediate calls to get the size of the view will return
+            // incorrect values.  even posting a runnable to the very end of our UI event queue may be
+            // insufficient time to allow the WebView to actually finish internally computing state and size.
+            // an additional fixed delay is added in a last ditch attempt to give the black-box platform
+            // threads a chance to finish their work.
             fragmentScrollview.postDelayed(new Runnable() {
                 public void run() {
                     int relPos = Math.round(fragmentScrollview.getChildAt(0).getMeasuredHeight() * savedScrollPosRel);
                     fragmentScrollview.scrollTo(0, relPos);
                 }
-            }, 50L);
+            }, 75L);
         }
     }
 
