@@ -2056,12 +2056,12 @@ class Feed(models.Model):
         # SpD = 0  Subs > 1:  t = 60 * 3    # 30158  * 1440/(60*3) =  241264
         # SpD = 0  Subs = 1:  t = 60 * 24   # 514131 * 1440/(60*24) = 514131
         if spd >= 1:
-            if subs > 10:
+            if subs >= 10:
                 total = 6
             elif subs > 1:
                 total = 15
             else:
-                total = 60
+                total = 45
         elif spd > 0:
             if subs > 1:
                 total = 60 - (spd * 60)
@@ -2098,9 +2098,9 @@ class Feed(models.Model):
             if len(fetch_history['push_history']):
                 total = total * 12
         
-        # 12 hour max for premiums, 48 hour max for free
+        # 6 hour max for premiums, 48 hour max for free
         if subs >= 1:
-            total = min(total, 60*12*1)
+            total = min(total, 60*6*1)
         else:
             total = min(total, 60*24*2)
         
