@@ -262,6 +262,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
             if (currentState == StateFilter.SAVED) break;
 			inflater.inflate(R.menu.context_feed, menu);
             if (adapter.isRowAllSharedStories(groupPosition)) {
+                // social feeds
                 menu.removeItem(R.id.menu_delete_feed);
                 menu.removeItem(R.id.menu_choose_folders);
                 menu.removeItem(R.id.menu_unmute_feed);
@@ -269,7 +270,9 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
                 menu.removeItem(R.id.menu_notifications);
                 menu.removeItem(R.id.menu_instafetch_feed);
                 menu.removeItem(R.id.menu_intel);
+                menu.removeItem(R.id.menu_rename_feed);
             } else {
+                // normal feeds
                 menu.removeItem(R.id.menu_unfollow);
 
                 Feed feed = adapter.getFeed(groupPosition, childPosition);
@@ -351,6 +354,12 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
             if (feed != null) {
                 DialogFragment chooseFoldersFragment = ChooseFoldersFragment.newInstance(feed);
                 chooseFoldersFragment.show(getFragmentManager(), "dialog");
+            }
+        } else if (item.getItemId() == R.id.menu_rename_feed) {
+            Feed feed = adapter.getFeed(groupPosition, childPosition);
+            if (feed != null) {
+                DialogFragment renameFeedFragment = RenameFeedFragment.newInstance(feed);
+                renameFeedFragment.show(getFragmentManager(), "dialog");
             }
         } else if (item.getItemId() == R.id.menu_mute_feed) {
             Set<String> feedIds = new HashSet<String>();
