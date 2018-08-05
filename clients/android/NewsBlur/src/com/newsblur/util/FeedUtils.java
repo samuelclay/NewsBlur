@@ -330,6 +330,14 @@ public class FeedUtils {
         triggerSync(context);
     }
 
+    public static void renameFeed(Context context, String feedId, String newFeedName) {
+        ReadingAction ra = ReadingAction.renameFeed(feedId, newFeedName);
+        dbHelper.enqueueAction(ra);
+        int impact = ra.doLocal(dbHelper);
+        NbActivity.updateAllActivities(impact);
+        triggerSync(context);
+    }
+
     public static void unshareStory(Story story, Context context) {
         ReadingAction ra = ReadingAction.unshareStory(story.storyHash, story.id, story.feedId);
         dbHelper.enqueueAction(ra);
