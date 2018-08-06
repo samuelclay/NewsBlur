@@ -20,6 +20,7 @@ from utils import json_functions as json
 from utils import log as logging
 from utils.feed_functions import relative_timesince
 from utils.view_functions import required_params
+from utils.user_functions import get_user, ajax_login_required
 
 
 @json.json_view
@@ -156,7 +157,42 @@ def add_site(request, token):
         'message': message,
         'usersub': us and us.feed_id,
     }) + ')', mimetype='text/plain')
+
+@ajax_login_required
+def add_site_authed(request):
+    code       = 0
+    url        = request.GET['url']
+    folder     = request.GET['folder']
+    new_folder = request.GET.get('new_folder')
+    callback   = request.GET['callback']
+    user       = get_user(request)
     
+    if not url:
+        code = -1
+    else:
+        if new_folder:
+            usf, _ = UserSubscriptionFolders.objects.get_or_create(user=user)
+            usf.add_folder(folder, new_folder)
+            folder = new_folder
+        code, message, us = UserSubscription.add_subscription(
+            user=user, 
+            feed_address=url,
+            folder=folder,
+            bookmarklet=True
+        )
+    
+    if code > 0:
+        message = 'OK'
+        
+    logging.user(user, "~FRAdding authed URL from site: ~SB%s (in %s)" % (url, folder),
+                 request=request)
+    
+    return HttpResponse(callback + '(' + json.encode({
+        'code':    code,
+        'message': message,
+        'usersub': us and us.feed_id,
+    }) + ')', mimetype='text/plain')
+
 def check_share_on_site(request, token):
     code       = 0
     story_url  = request.GET['story_url']

@@ -1,11 +1,11 @@
 var loadImages = function() {
     
-    $('.NB-story img').each(function () {
+    $('.NB-story img, .NB-story video').each(function () {
         if ($(this).closest('.NB-twitter-rss-author,.NB-twitter-rss-retweet').length) return;
         setImage(this);
     });
 
-    $('.NB-story img').bind('load', function () {
+    $('.NB-story img, .NB-story video').bind('load', function () {
         if ($(this).closest('.NB-twitter-rss-author,.NB-twitter-rss-retweet').length) return;
         setImage(this);
     });
@@ -68,7 +68,9 @@ function setImage(img) {
     var width = $(img).width();
     var height = $(img).height();
 //    console.log("img load", img.src, width, height);
-    if ($img.attr('src').indexOf('feedburner') != - 1) {
+    if ($img.prop('tagName') == 'VIDEO') {
+        $img.attr('class', 'NB-large-image');
+    } else if ($img.attr('src').indexOf('feedburner') != - 1) {
         $img.attr('class', 'NB-feedburner');
     } else if (width >= (320-24) && height >= 50) {
         $img.attr('class', 'NB-large-image');

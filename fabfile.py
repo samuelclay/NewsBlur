@@ -367,7 +367,7 @@ def setup_installs():
     ]
     # sudo("sed -i -e 's/archive.ubuntu.com\|security.ubuntu.com/old-releases.ubuntu.com/g' /etc/apt/sources.list")
     put("config/apt_sources.conf", "/etc/apt/sources.list", use_sudo=True)
-    
+    run('sleep 10') # Dies on a lock, so just delay
     sudo('apt-get -y update')
     sudo('DEBIAN_FRONTEND=noninteractive apt-get -y --force-yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" dist-upgrade')
     sudo('DEBIAN_FRONTEND=noninteractive apt-get -y --force-yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install %s' % ' '.join(packages))
@@ -411,6 +411,7 @@ def copy_ssh_keys(username='sclay', private=False):
     sudo("echo \"\n\" >> ~%s/.ssh/authorized_keys" % username)
     sudo("echo `cat ~%s/.ssh/id_rsa.pub` >> ~%s/.ssh/authorized_keys" % (username, username))
     sudo('chown -R %s.%s ~%s/.ssh' % (username, username, username))
+    sudo('chmod 700 ~%s/.ssh' % username)
     sudo('chmod 600 ~%s/.ssh/id_rsa*' % username)
 
 def setup_repo():
@@ -784,10 +785,10 @@ def setup_staging():
         run('touch logs/newsblur.log')
 
 def setup_node_app():
-    sudo('curl -sL https://deb.nodesource.com/setup_7.x | sudo -E bash -')
-    sudo('apt-get install -y nodejs-dev')
+    sudo('curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -')
+    sudo('apt-get install -y nodejs')
     # run('curl -L https://npmjs.org/install.sh | sudo sh')
-    sudo('apt-get install npm')
+    # sudo('apt-get install npm')
     sudo('npm install -g supervisor')
     sudo('ufw allow 8888')
 
@@ -877,13 +878,71 @@ def config_haproxy(debug=False):
     if debug:
         put('config/debug_haproxy.conf', '/etc/haproxy/haproxy.cfg', use_sudo=True)
     else:
+        build_haproxy()
         put(os.path.join(env.SECRETS_PATH, 'configs/haproxy.conf'), 
             '/etc/haproxy/haproxy.cfg', use_sudo=True)
+
     haproxy_check = run('haproxy -c -f /etc/haproxy/haproxy.cfg')
     if haproxy_check.return_code == 0:
         sudo('/etc/init.d/haproxy reload')
     else:
         print " !!!> Uh-oh, HAProxy config doesn't check out: %s" % haproxy_check.return_code
+
+def build_haproxy():
+    droplets = assign_digitalocean_roledefs(split=True)
+    servers = defaultdict(list)
+    gunicorn_counts_servers = ['app22', 'app26']
+    gunicorn_refresh_servers = ['app20', 'app21']
+    maintenance_servers = ['app20']
+    ignore_servers = []
+    
+    for group_type in ['app', 'push', 'work', 'node_socket', 'node_favicon', 'www']:
+        group_type_name = group_type
+        if 'node' in group_type:
+            group_type_name = 'node'
+        for server in droplets[group_type_name]:
+            droplet_nums = re.findall(r'\d+', server['name'])
+            droplet_num = droplet_nums[0] if droplet_nums else ''
+            server_type = group_type
+            port = 80
+            check_inter = 3000
+            
+            if server['name'] in ignore_servers:
+                print " ---> Ignoring %s" % server['name']
+                continue
+            if server_type == 'www':
+                port = 81
+            if group_type == 'node_socket':
+                port = 8888
+            if group_type in ['app', 'push']:
+                port = 8000
+            address = "%s:%s" % (server['address'], port)
+
+            if server_type == 'app':
+                nginx_address = "%s:80" % (server['address'])
+                servers['nginx'].append("  server nginx%-15s %-22s check inter 3000ms" % (droplet_num, nginx_address))
+            if server['name'] in maintenance_servers:
+                nginx_address = "%s:80" % (server['address'])
+                servers['maintenance'].append("  server nginx%-15s %-22s check inter 3000ms" % (droplet_num, nginx_address))
+            
+            if server['name'] in gunicorn_counts_servers:
+                server_type = 'gunicorn_counts'
+                check_inter = 15000
+            elif server['name'] in gunicorn_refresh_servers:
+                server_type = 'gunicorn_refresh'
+                check_inter = 30000
+            
+            server_name = "%s%s" % (server_type, droplet_num)
+            servers[server_type].append("  server %-20s %-22s check inter %sms" % (server_name, address, check_inter))
+    
+    h = open(os.path.join(env.NEWSBLUR_PATH, 'config/haproxy.conf.template'), 'r')
+    haproxy_template = h.read()
+    for sub, server_list in servers.items():
+        sorted_servers = '\n'.join(sorted(server_list))
+        haproxy_template = haproxy_template.replace("{{ %s }}" % sub, sorted_servers)
+    f = open(os.path.join(env.SECRETS_PATH, 'configs/haproxy.conf'), 'w')
+    f.write(haproxy_template)
+    f.close()
 
 def upgrade_django():
     with virtualenv(), settings(warn_only=True):
@@ -982,23 +1041,25 @@ def setup_rabbitmq():
 #     sudo('apt-get -y install memcached')
 
 def setup_postgres(standby=False):
-    shmmax = 17672445952
+    shmmax = 17818362112
     hugepages = 9000
-    sudo('echo "deb http://apt.postgresql.org/pub/repos/apt/ trusty-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list')
+    sudo('echo "deb http://apt.postgresql.org/pub/repos/apt/ xenial-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list')
     sudo('wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -')
     sudo('apt-get update')
     sudo('apt-get -y install postgresql-9.4 postgresql-client-9.4 postgresql-contrib-9.4 libpq-dev')
     put('config/postgresql.conf', '/etc/postgresql/9.4/main/postgresql.conf', use_sudo=True)
     put('config/postgres_hba.conf', '/etc/postgresql/9.4/main/pg_hba.conf', use_sudo=True)
-    sudo('mkdir /var/lib/postgresql/9.4/archive')
+    sudo('mkdir -p /var/lib/postgresql/9.4/archive')
     sudo('chown -R postgres.postgres /etc/postgresql/9.4/main')
     sudo('chown -R postgres.postgres /var/lib/postgresql/9.4/main')
     sudo('chown -R postgres.postgres /var/lib/postgresql/9.4/archive')
     sudo('echo "%s" | sudo tee /proc/sys/kernel/shmmax' % shmmax)
     sudo('echo "\nkernel.shmmax = %s" | sudo tee -a /etc/sysctl.conf' % shmmax)
     sudo('echo "\nvm.nr_hugepages = %s\n" | sudo tee -a /etc/sysctl.conf' % hugepages)
+    run('echo "ulimit -n 100000" > postgresql.defaults')
+    sudo('mv postgresql.defaults /etc/default/postgresql')
     sudo('sysctl -p')
-    sudo('rm /lib/systemd/system/postgresql.service') # Ubuntu 16 has wrong default
+    sudo('rm -f /lib/systemd/system/postgresql.service') # Ubuntu 16 has wrong default
     sudo('systemctl daemon-reload')
     sudo('systemctl enable postgresql')
 
@@ -1011,8 +1072,15 @@ def setup_postgres(standby=False):
 
 def config_postgres(standby=False):
     put('config/postgresql.conf', '/etc/postgresql/9.4/main/postgresql.conf', use_sudo=True)
-
+    put('config/postgres_hba.conf', '/etc/postgresql/9.4/main/pg_hba.conf', use_sudo=True)
+    sudo('chown postgres.postgres /etc/postgresql/9.4/main/postgresql.conf')
+    run('echo "ulimit -n 100000" > postgresql.defaults')
+    sudo('mv postgresql.defaults /etc/default/postgresql')
+    
     sudo('/etc/init.d/postgresql reload 9.4')
+
+def upgrade_postgres():
+    sudo('su postgres -c "/usr/lib/postgresql/10/bin/pg_upgrade -b /usr/lib/postgresql/9.4/bin -B /usr/lib/postgresql/10/bin -d /var/lib/postgresql/9.4/main -D /var/lib/postgresql/10/main"')
     
 def copy_postgres_to_standby(master='db01'):
     # http://www.rassoc.com/gregr/weblog/2013/02/16/zero-to-postgresql-streaming-replication-in-10-mins/
@@ -1020,9 +1088,12 @@ def copy_postgres_to_standby(master='db01'):
     # Make sure you can ssh from master to slave and back with the postgres user account.
     # Need to give postgres accounts keys in authroized_keys.
 
-    # local: fab host:old copy_ssh_keys:postgres,private=True
-    # new: ssh old
+    # local: fab host:new copy_ssh_keys:postgres,private=True
+    # new: sudo su postgres; ssh old
+    # new: sudo su postgres; ssh db_pgsql
+    # old: sudo su postgres; ssh new
     # old: sudo su postgres -c "psql -c \"SELECT pg_start_backup('label', true)\""
+    sudo('systemctl stop postgresql')
     sudo('mkdir -p /var/lib/postgresql/9.4/archive')
     sudo('chown postgres.postgres /var/lib/postgresql/9.4/archive')
     with settings(warn_only=True):
@@ -1342,13 +1413,14 @@ def copy_spam():
 
 DO_SIZES = {
     '1': 's-1vcpu-1gb',
-    '2:': 's-1vcpu-2gb',
-    '4:': 's-2vcpu-4gb',
-    '8:': 's-4vcpu-8gb',
+    '2': 's-1vcpu-2gb',
+    '4': 's-2vcpu-4gb',
+    '8': 's-4vcpu-8gb',
     '16': 's-6vcpu-16gb',
     '32': 's-8vcpu-32gb',
     '48': 's-12vcpu-48gb',
     '64': 's-16vcpu-64gb',
+    '32c': 'c-16',
 }
 
 def setup_do(name, size=1, image=None):
@@ -1362,9 +1434,9 @@ def setup_do(name, size=1, image=None):
     else:
         images = dict((s.name, s.id) for s in doapi.get_all_images())
         if image == "task": 
-            image = images["task-2016-12"]
+            image = images["task-2018-02"]
         elif image == "app":
-            image = images["app_02-2016"]
+            image = images["app-2018-02"]
         else:
             images = dict((s.name, s.id) for s in doapi.get_all_images())
             print images
@@ -1526,13 +1598,14 @@ def deploy_code(copy_assets=False, rebuild=False, fast=False, reload=False):
         if copy_assets:
             transfer_assets()
         
-    with virtualenv(), settings(warn_only=True):
-        if reload:
-            sudo('supervisorctl reload')
-        elif fast:
-            kill_gunicorn()
-        else:
-            sudo('kill -HUP `cat /srv/newsblur/logs/gunicorn.pid`')
+    with virtualenv():
+        with settings(warn_only=True):
+            if reload:
+                sudo('supervisorctl reload')
+            elif fast:
+                kill_gunicorn()
+            else:
+                sudo('kill -HUP `cat /srv/newsblur/logs/gunicorn.pid`')
 
 @parallel
 def kill():
@@ -1660,7 +1733,7 @@ def cleanup_assets():
 # ===========
 
 def setup_redis_backups(name=None):
-    # crontab for redis backups
+    # crontab for redis backups, name is either none, story, sessions, pubsub
     crontab = ("0 4 * * * /srv/newsblur/venv/newsblur/bin/python /srv/newsblur/utils/backups/backup_redis%s.py" % 
                 (("_%s"%name) if name else ""))
     run('(crontab -l ; echo "%s") | sort - | uniq - | crontab -' % crontab)

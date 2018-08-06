@@ -165,9 +165,11 @@ NEWSBLUR.Views.StoryComment = Backbone.View.extend({
             this.$el.append($form);
         }
         
-        $('.NB-story-comment-reply-comments', $form).bind('keydown', 'enter', 
-            _.bind(this.save_social_comment_reply, this));
         $('.NB-story-comment-reply-comments', $form).bind('keydown', 'return', 
+            _.bind(this.save_social_comment_reply, this));
+        $('.NB-story-comment-reply-comments', $form).bind('keydown', 'ctrl+return', 
+            _.bind(this.save_social_comment_reply, this));
+        $('.NB-story-comment-reply-comments', $form).bind('keydown', 'meta+return', 
             _.bind(this.save_social_comment_reply, this));
         $('.NB-story-comment-reply-comments', $form).bind('keydown', 'esc', _.bind(function(e) {
             e.preventDefault();

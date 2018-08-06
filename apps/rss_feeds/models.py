@@ -399,7 +399,7 @@ class Feed(models.Model):
     @property
     def favicon_fetching(self):
         return bool(not (self.favicon_not_found or self.favicon_color))
-        
+    
     @classmethod
     def get_feed_from_url(cls, url, create=True, aggressive=False, fetch=True, offset=0, user=None):
         feed = None
@@ -409,6 +409,8 @@ class Feed(models.Model):
         if url and url.startswith('newsletter:'):
             return cls.objects.get(feed_address=url)
         if url and re.match('(https?://)?twitter.com/\w+/?$', url):
+            without_rss = True
+        if url and re.match(r'(https?://)?(www\.)?facebook.com/\w+/?$', url):
             without_rss = True
         if url and 'youtube.com/user/' in url:
             username = re.search('youtube.com/user/(\w+)', url).group(1)
@@ -444,6 +446,11 @@ class Feed(models.Model):
                 
             return feed
         
+        @timelimit(5)
+        def _feedfinder(url):
+            found_feed_urls = feedfinder.find_feeds(url)
+            return found_feed_urls
+        
         # Normalize and check for feed_address, dupes, and feed_link
         url = urlnorm.normalize(url)
         if not url:
@@ -456,7 +463,12 @@ class Feed(models.Model):
         if feed and len(feed) > offset:
             feed = feed[offset]
         else:
-            found_feed_urls = feedfinder.find_feeds(url)
+            try:
+                found_feed_urls = _feedfinder(url)
+            except TimeoutError:
+                logging.debug('   ---> Feed finder timed out...')
+                found_feed_urls = []
+                
             if len(found_feed_urls):
                 feed_finder_url = found_feed_urls[0]
                 logging.debug(" ---> Found feed URLs for %s: %s" % (url, found_feed_urls))
@@ -478,7 +490,7 @@ class Feed(models.Model):
         if not feed and fetch and create:
             try:
                 r = requests.get(url)
-            except requests.ConnectionError:
+            except (requests.ConnectionError, requests.models.InvalidURL):
                 r = None
             if r and 'application/json' in r.headers.get('Content-Type'):
                 feed = cls.objects.create(feed_address=url)
@@ -1124,7 +1136,6 @@ class Feed(models.Model):
         
         if getattr(settings, 'TEST_DEBUG', False):
             print " ---> Testing feed fetch: %s" % self.log_title
-            options['force'] = False
             # options['force_fp'] = True # No, why would this be needed?
             original_feed_address = self.feed_address
             original_feed_link = self.feed_link
@@ -1212,8 +1223,6 @@ class Feed(models.Model):
                               self.log_title[:30],
                               story.get('title'),
                               story.get('guid')))
-            if not story.get('title'):
-                continue
                 
             story_content = story.get('story_content')
             if error_count:
@@ -1826,14 +1835,27 @@ class Feed(models.Model):
             has_changes = True
         if not show_changes and latest_story_content:
             story_content = latest_story_content
-            
+        
+        story_title = story_db.story_title
+        blank_story_title = False
+        if not story_title:
+            blank_story_title = True
+            if story_content:
+                story_title = strip_tags(story_content)
+            if not story_title and story_db.story_permalink:
+                story_title = story_db.story_permalink
+            if len(story_title) > 80:
+                story_title = story_title[:80] + '...'
+        
         story                     = {}
         story['story_hash']       = getattr(story_db, 'story_hash', None)
         story['story_tags']       = story_db.story_tags or []
         story['story_date']       = story_db.story_date.replace(tzinfo=None)
         story['story_timestamp']  = story_db.story_date.strftime('%s')
         story['story_authors']    = story_db.story_author_name or ""
-        story['story_title']      = story_db.story_title
+        story['story_title']      = story_title
+        if blank_story_title:
+            story['story_title_blank'] = True
         story['story_content']    = story_content
         story['story_permalink']  = story_db.story_permalink
         story['image_urls']       = story_db.image_urls
@@ -2034,12 +2056,12 @@ class Feed(models.Model):
         # SpD = 0  Subs > 1:  t = 60 * 3    # 30158  * 1440/(60*3) =  241264
         # SpD = 0  Subs = 1:  t = 60 * 24   # 514131 * 1440/(60*24) = 514131
         if spd >= 1:
-            if subs > 10:
+            if subs >= 10:
                 total = 6
             elif subs > 1:
                 total = 15
             else:
-                total = 60
+                total = 45
         elif spd > 0:
             if subs > 1:
                 total = 60 - (spd * 60)
@@ -2076,9 +2098,9 @@ class Feed(models.Model):
             if len(fetch_history['push_history']):
                 total = total * 12
         
-        # 12 hour max for premiums, 48 hour max for free
+        # 6 hour max for premiums, 48 hour max for free
         if subs >= 1:
-            total = min(total, 60*12*1)
+            total = min(total, 60*6*1)
         else:
             total = min(total, 60*24*2)
         

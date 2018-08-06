@@ -45,7 +45,10 @@ _.extend(NEWSBLUR.ReaderGoodies.prototype, {
                     href: 'https://userstyles.org/styles/124890/newsblur-dark-theme-by-splike'
                 }, 'Download the Dark Theme'),
                 $.make('div', { className: 'NB-goodies-title' }, 'Dark theme for the web'),
-                $.make('div', { className: 'NB-goodies-subtitle' }, 'Use the Stylish browser extension to install a user-contributed dark theme.')
+                $.make('div', { className: 'NB-goodies-subtitle' }, [
+                    'Use the Stylus browser extension to install a user-contributed dark theme. Note that you should use the Stylus extension and not the Stylish extension due to privacy concerns. ',
+                    $.make('a', { href: 'https://www.ghacks.net/2017/05/16/stylus-is-a-stylish-fork-without-analytics/' }, 'You can install Stylus for Firefox, Opera, and Chrome.')
+                ])
             ]),
             
             $.make('fieldset', [
@@ -267,10 +270,10 @@ _.extend(NEWSBLUR.ReaderGoodies.prototype, {
             $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
               $.make('a', {
                   className: 'NB-modal-submit-button NB-modal-submit-green',
-                  href: 'https://chrome.google.com/webstore/detail/nnbhbdncokmmjheldobdfbmfpamelojh'
+                  href: 'https://chrome.google.com/webstore/detail/newsblur-notifier-plus/nbmlfepgaaalffdmmjhpkgpjjlnpjjlp'
               }, 'Download'),
               $.make('div', { className: 'NB-goodies-chrome' }),
-              $.make('div', { className: 'NB-goodies-title' }, 'Chrome: NewsBlur unread count notifier'),
+              $.make('div', { className: 'NB-goodies-title' }, 'Chrome: NewsBlur Notifier Plus'),
               $.make('div', { className: 'NB-goodies-subtitle' }, 'Shows the unread count from your NewsBlur account.')
             ]),
             $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [

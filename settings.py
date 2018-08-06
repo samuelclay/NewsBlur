@@ -270,9 +270,10 @@ SESSION_COOKIE_DOMAIN   = '.newsblur.com'
 SENTRY_DSN              = 'https://XXXNEWSBLURXXX@app.getsentry.com/99999999'
 
 if DEBUG:
-    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+    # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+    EMAIL_BACKEND = 'vendor.mailgun.MailgunBackend'
 else:
-    EMAIL_BACKEND = 'anymail.backends.mailgun.EmailBackend'
+    EMAIL_BACKEND = 'vendor.mailgun.MailgunBackend'
 
 # ==============
 # = Subdomains =
@@ -303,7 +304,6 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'django_extensions',
     'djcelery',
-    'anymail',
     # 'kombu.transport.django',
     'vendor.paypal.standard.ipn',
     'apps.rss_feeds',
@@ -612,11 +612,6 @@ AWS_SECRET_ACCESS_KEY = S3_SECRET
 
 os.environ["AWS_ACCESS_KEY_ID"] = AWS_ACCESS_KEY_ID
 os.environ["AWS_SECRET_ACCESS_KEY"] = AWS_SECRET_ACCESS_KEY
-
-ANYMAIL = {
-    "MAILGUN_API_KEY": MAILGUN_ACCESS_KEY,
-    "MAILGUN_SENDER_DOMAIN": MAILGUN_SERVER_NAME,
-}
 
 def custom_show_toolbar(request):
     return DEBUG
