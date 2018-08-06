@@ -4,12 +4,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import android.app.job.JobInfo;
-import android.app.job.JobParameters;
-import android.app.job.JobScheduler;
-import android.app.job.JobWorkItem;
 import android.content.Context;
-import android.content.ComponentName;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.text.TextUtils;
