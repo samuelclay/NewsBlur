@@ -165,7 +165,6 @@
     <string name="list_style_grid_m">Grid (medium)</string>
     <string name="list_style_grid_c">Grid (coarse)</string>
     
-    <string name="toast_story_unread">Story marked as unread</string>
     <string name="toast_hold_to_select">Press and hold to select text</string>
 
     <string name="logout_warning">Are you sure you want to log out?</string>
