@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.support.v4.app.Fragment;
 
-import com.newsblur.service.NBSyncService;
+import com.newsblur.util.FeedUtils;
 
 public class NbFragment extends Fragment {
 
@@ -14,8 +14,7 @@ public class NbFragment extends Fragment {
     protected void triggerSync() {
         Activity a = getActivity();
         if (a != null) {
-            Intent i = new Intent(a, NBSyncService.class);
-            a.startService(i);
+            FeedUtils.triggerSync(a);
         }
 	}
 

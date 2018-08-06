@@ -80,7 +80,6 @@ public class LoginAsDialogFragment extends DialogFragment {
         @Override
         protected void onPostExecute(Boolean result) {
             if (result) {
-                NBSyncService.resumeFromInterrupt();
                 Intent startMain = new Intent(activity, Main.class);
                 activity.startActivity(startMain);
             } else {
