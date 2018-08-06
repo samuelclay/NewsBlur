@@ -4,7 +4,12 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import android.app.job.JobInfo;
+import android.app.job.JobParameters;
+import android.app.job.JobScheduler;
+import android.app.job.JobWorkItem;
 import android.content.Context;
+import android.content.ComponentName;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.text.TextUtils;
@@ -49,7 +54,10 @@ public class FeedUtils {
         }
     }
 
-    private static void triggerSync(Context c) {
+    public static void triggerSync(Context c) {
+        // NB: when our minSDKversion hits 28, it could be possible to start the service via the JobScheduler
+        // with the setImportantWhileForeground() flag via an enqueue() and get rid of all legacy startService
+        // code paths
         Intent i = new Intent(c, NBSyncService.class);
         c.startService(i);
     }
