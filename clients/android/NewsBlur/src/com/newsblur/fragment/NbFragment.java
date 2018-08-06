@@ -1,7 +1,6 @@
 package com.newsblur.fragment;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.support.v4.app.Fragment;
 
 import com.newsblur.util.FeedUtils;

@@ -6,11 +6,8 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.ViewGroup;
 import android.widget.EditText;
 
 import butterknife.ButterKnife;
@@ -18,7 +15,6 @@ import butterknife.Bind;
 
 import com.newsblur.R;
 import com.newsblur.domain.Feed;
-import com.newsblur.domain.Folder;
 import com.newsblur.util.FeedUtils;
 
 public class RenameFeedFragment extends DialogFragment {

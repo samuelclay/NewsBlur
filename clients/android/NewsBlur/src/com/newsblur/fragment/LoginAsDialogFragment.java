@@ -16,7 +16,6 @@ import android.widget.Toast;
 import com.newsblur.R;
 import com.newsblur.activity.Main;
 import com.newsblur.network.APIManager;
-import com.newsblur.service.NBSyncService;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.UIUtils;
 

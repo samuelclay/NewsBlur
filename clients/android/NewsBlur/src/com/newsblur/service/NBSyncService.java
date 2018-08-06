@@ -3,13 +3,10 @@ package com.newsblur.service;
 import android.app.Service;
 import android.app.job.JobParameters;
 import android.app.job.JobService;
-import android.content.ComponentCallbacks2;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.os.IBinder;
-import android.os.PowerManager;
 import android.os.Process;
 
 import com.newsblur.R;

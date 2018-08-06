@@ -1,6 +1,5 @@
 package com.newsblur.service;
 
-import android.app.job.JobParameters;
 import android.os.Process;
 
 import com.newsblur.activity.NbActivity;
