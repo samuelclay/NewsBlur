@@ -528,8 +528,9 @@
     dispatch_async(dispatch_get_main_queue(), ^{
 //        NSLog(@"Drawing Story: %@", [self.activeStory objectForKey:@"story_title"]);
         [self.webView setMediaPlaybackRequiresUserAction:NO];
+        self.webView.allowsInlineMediaPlayback = YES;
         [self loadHTMLString:htmlTopAndBottom];
-        [appDelegate.storyPageControl setTextButton:self];
+        [self.appDelegate.storyPageControl setTextButton:self];
     });
 
     self.activeStoryId = [self.activeStory objectForKey:@"story_hash"];
@@ -2028,8 +2029,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         if (copy) {
             [UIPasteboard generalPasteboard].image = image;
             [self flashCheckmarkHud:@"copied"];
-        }
-        if (save) {
+        } else if (save) {
             [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
                 PHAssetChangeRequest *changeRequest = [PHAssetChangeRequest creationRequestForAssetFromImage:image];
                 changeRequest.creationDate = [NSDate date];
@@ -2130,6 +2130,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 - (void)flashCheckmarkHud:(NSString *)messageType {
     [MBProgressHUD hideHUDForView:self.webView animated:NO];
+    [MBProgressHUD hideHUDForView:appDelegate.storyPageControl.currentPage.view animated:NO];
     self.storyHUD = [MBProgressHUD showHUDAddedTo:self.webView animated:YES];
     self.storyHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"37x-Checkmark.png"]];
     self.storyHUD.mode = MBProgressHUDModeCustomView;

@@ -17,6 +17,7 @@ from boto.s3.key import Key
 from StringIO import StringIO
 from django.conf import settings
 from apps.rss_feeds.models import MFeedPage, MFeedIcon
+from utils.facebook_fetcher import FacebookFetcher
 from utils import log as logging
 from utils.feed_functions import timelimit, TimeoutError
 from OpenSSL.SSL import Error as OpenSSLError
@@ -44,7 +45,10 @@ class IconImporter(object):
         ):
             # print 'Found, but skipping...'
             return
-        image, image_file, icon_url = self.fetch_image_from_page_data()
+        if 'facebook.com' in self.feed.feed_address:
+            image, image_file, icon_url = self.fetch_facebook_image()
+        else:
+            image, image_file, icon_url = self.fetch_image_from_page_data()
         if not image:
             image, image_file, icon_url = self.fetch_image_from_path(force=self.force)
 
@@ -250,7 +254,17 @@ class IconImporter(object):
             image, image_file = self.get_image_from_url(url)
         # print 'Found: %s - %s' % (url, image)
         return image, image_file, url
-
+    
+    def fetch_facebook_image(self):
+        facebook_fetcher = FacebookFetcher(self.feed)
+        url = facebook_fetcher.favicon_url()
+        image, image_file = self.get_image_from_url(url)
+        if not image:
+            url = urlparse.urljoin(self.feed.feed_link, '/favicon.ico')
+            image, image_file = self.get_image_from_url(url)
+        # print 'Found: %s - %s' % (url, image)
+        return image, image_file, url
+        
     def get_image_from_url(self, url):
         # print 'Requesting: %s' % url
         if not url:

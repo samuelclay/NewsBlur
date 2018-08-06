@@ -748,9 +748,16 @@ def save_comment_reply(request):
             'message': 'You must be following %s to reply to them.' % commenter_profile.username,
         })
     
-    shared_story = MSharedStory.objects.get(user_id=comment_user_id, 
-                                            story_feed_id=feed_id, 
-                                            story_guid=story_id)
+    try:
+        shared_story = MSharedStory.objects.get(user_id=comment_user_id, 
+                                                story_feed_id=feed_id, 
+                                                story_guid=story_id)
+    except MSharedStory.DoesNotExist:
+        return json.json_response(request, {
+            'code': -1, 
+            'message': 'Shared story cannot be found.',
+        })
+        
     reply = MCommentReply()
     reply.user_id = request.user.pk
     reply.publish_date = datetime.datetime.now()

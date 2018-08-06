@@ -175,6 +175,13 @@
     display: block;
     font-weight: bold;
 }
+.NB-static-form .payment-notice {
+    margin: 8px 0 0 150px;
+    color: #606060;
+    display: block;
+    font-weight: 300;
+    font-size: 11px;
+}
 
 .NB-static-form .payextra-label {
     clear: none;

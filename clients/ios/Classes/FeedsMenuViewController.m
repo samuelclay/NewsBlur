@@ -269,6 +269,7 @@
             [MBProgressHUD hideHUDForView:self.view animated:YES];
             [appDelegate reloadFeedsView:YES];
         } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+            [MBProgressHUD hideHUDForView:self.view animated:YES];
             [self informError:error];
         }];
         

@@ -38,7 +38,7 @@ from apps.reader.forms import SignupForm, LoginForm, FeatureForm
 from apps.rss_feeds.models import MFeedIcon, MStarredStoryCounts, MSavedSearch
 from apps.notifications.models import MUserFeedNotification
 from apps.search.models import MUserSearch
-from apps.statistics.models import MStatistics
+from apps.statistics.models import MStatistics, MAnalyticsLoader
 # from apps.search.models import SearchStarredStory
 try:
     from apps.rss_feeds.models import Feed, MFeedPage, DuplicateFeed, MStory, MStarredStory
@@ -408,7 +408,7 @@ def load_feeds_flat(request):
     categories = None
     if not user_subs:
         categories = MCategory.serialize()
-        
+
     logging.user(request, "~FB~SBLoading ~FY%s~FB/~FM%s~FB/~FR%s~FB feeds/socials/inactive ~FMflat~FB%s%s" % (
             len(feeds.keys()), len(social_feeds), len(inactive_feeds), '. ~FCUpdating counts.' if update_counts else '',
             ' ~BB(background fetch)' if background_ios else ''))
@@ -440,6 +440,7 @@ def load_feeds_flat(request):
 @json.json_view
 def refresh_feeds(request):
     start = datetime.datetime.now()
+    start_time = time.time()
     user = get_user(request)
     feed_ids = request.REQUEST.getlist('feed_id') or request.REQUEST.getlist('feed_id[]')
     check_fetch_status = request.REQUEST.get('check_fetch_status')
@@ -499,7 +500,9 @@ def refresh_feeds(request):
             (checkpoint2-start).total_seconds(),
             (end-start).total_seconds(),
             ))
-
+    
+    MAnalyticsLoader.add(page_load=time.time()-start_time)
+    
     return {
         'feeds': feeds, 
         'social_feeds': social_feeds,
@@ -520,6 +523,7 @@ def interactions_count(request):
 @ajax_login_required
 @json.json_view
 def feed_unread_count(request):
+    start = time.time()
     user = request.user
     feed_ids = request.REQUEST.getlist('feed_id') or request.REQUEST.getlist('feed_id[]')
     force = request.REQUEST.get('force', False)
@@ -544,10 +548,12 @@ def feed_unread_count(request):
     else:
         feed_title = "%s feeds" % (len(feeds) + len(social_feeds))
     logging.user(request, "~FBUpdating unread count on: %s" % feed_title)
+    MAnalyticsLoader.add(page_load=time.time()-start)
     
     return {'feeds': feeds, 'social_feeds': social_feeds}
     
 def refresh_feed(request, feed_id):
+    start = time.time()
     user = get_user(request)
     feed = get_object_or_404(Feed, pk=feed_id)
     
@@ -556,6 +562,7 @@ def refresh_feed(request, feed_id):
     usersub.calculate_feed_scores(silent=False)
     
     logging.user(request, "~FBRefreshing feed: %s" % feed)
+    MAnalyticsLoader.add(page_load=time.time()-start)
     
     return load_single_feed(request, feed_id)
     
@@ -577,7 +584,7 @@ def load_single_feed(request, feed_id):
     include_feeds           = is_true(request.REQUEST.get('include_feeds', False))
     message                 = None
     user_search             = None
-
+        
     dupe_feed_id = None
     user_profiles = []
     now = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
@@ -596,7 +603,11 @@ def load_single_feed(request, feed_id):
     if feed.is_newsletter and not usersub:
         # User must be subscribed to a newsletter in order to read it
         raise Http404
-        
+    
+    if page > 200:
+        logging.user(request, "~BR~FK~SBOver page 200 on single feed: %s" % page)
+        raise Http404
+    
     if query:
         if user.profile.is_premium:
             user_search = MUserSearch.get_user(user.pk)
@@ -740,6 +751,7 @@ def load_single_feed(request, feed_id):
     search_log = "~SN~FG(~SB%s~SN) " % query if query else ""
     logging.user(request, "~FYLoading feed: ~SB%s%s (%s/%s) %s%s" % (
         feed.feed_title[:22], ('~SN/p%s' % page) if page > 1 else '', order, read_filter, search_log, time_breakdown))
+    MAnalyticsLoader.add(page_load=timediff)
 
     if not include_hidden:
         hidden_stories_removed = 0
@@ -792,8 +804,11 @@ def load_feed_page(request, feed_id):
                 settings.ORIGINAL_PAGE_SERVER,
                 feed.pk,
             )
-            page_response = requests.get(url)
-            if page_response.status_code == 200:
+            try:
+                page_response = requests.get(url)
+            except requests.ConnectionError:
+                page_response = None
+            if page_response and page_response.status_code == 200:
                 response = HttpResponse(page_response.content, mimetype="text/html; charset=utf-8")
                 response['Content-Encoding'] = 'gzip'
                 response['Last-Modified'] = page_response.headers.get('Last-modified')
@@ -1248,7 +1263,7 @@ def load_river_stories__redis(request):
     user_search       = None
     offset            = (page-1) * limit
     story_date_order  = "%sstory_date" % ('' if order == 'oldest' else '-')
-
+    
     if infrequent:
         feed_ids = Feed.low_volume_feeds(feed_ids, stories_per_month=infrequent)
     
@@ -1398,15 +1413,6 @@ def load_river_stories__redis(request):
         #     stories = []
         # else:
         #     stories = stories[:5]
-    diff = time.time() - start
-    timediff = round(float(diff), 2)
-    logging.user(request, "~FYLoading ~FC%sriver stories~FY: ~SBp%s~SN (%s/%s "
-                               "stories, ~SN%s/%s/%s feeds, %s/%s)" % 
-                               ("~FB~SBinfrequent~SN~FC " if infrequent else "",
-                                page, len(stories), len(mstories), len(found_feed_ids), 
-                                len(feed_ids), len(original_feed_ids), order, read_filter))
-
-
     if not include_hidden:
         hidden_stories_removed = 0
         new_stories = []
@@ -1432,6 +1438,16 @@ def load_river_stories__redis(request):
     #     import random
     #     time.sleep(random.randint(3, 6))
     
+    diff = time.time() - start
+    timediff = round(float(diff), 2)
+    logging.user(request, "~FYLoading ~FC%sriver stories~FY: ~SBp%s~SN (%s/%s "
+                               "stories, ~SN%s/%s/%s feeds, %s/%s)" % 
+                               ("~FB~SBinfrequent~SN~FC " if infrequent else "",
+                                page, len(stories), len(mstories), len(found_feed_ids), 
+                                len(feed_ids), len(original_feed_ids), order, read_filter))
+
+    MAnalyticsLoader.add(page_load=diff)
+
     data = dict(code=code,
                 message=message,
                 stories=stories,
@@ -1442,7 +1458,8 @@ def load_river_stories__redis(request):
     
     if include_feeds: data['feeds'] = feeds
     if not include_hidden: data['hidden_stories_removed'] = hidden_stories_removed
-    
+
+
     return data
     
 @json.json_view
@@ -2518,7 +2535,7 @@ def send_story_email(request):
                                          from_email='NewsBlur <%s>' % from_address,
                                          to=to_addresses, 
                                          cc=cc,
-                                         headers={'Reply-To': from_email})
+                                         headers={'Reply-To': "%s <%s>" % (from_name, from_email)})
         msg.attach_alternative(html, "text/html")
         try:
             msg.send()

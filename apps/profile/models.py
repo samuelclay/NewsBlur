@@ -164,20 +164,23 @@ class Profile(models.Model):
         
         EmailNewPremium.delay(user_id=self.user.pk)
         
+        was_premium = self.is_premium
         self.is_premium = True
         self.save()
         self.user.is_active = True
         self.user.save()
         
+        # Only auto-enable every feed if a free user is moving to premium
         subs = UserSubscription.objects.filter(user=self.user)
-        for sub in subs:
-            if sub.active: continue
-            sub.active = True
-            try:
-                sub.save()
-            except (IntegrityError, Feed.DoesNotExist):
-                pass
-        
+        if not was_premium:
+            for sub in subs:
+                if sub.active: continue
+                sub.active = True
+                try:
+                    sub.save()
+                except (IntegrityError, Feed.DoesNotExist):
+                    pass
+    
         try:
             scheduled_feeds = [sub.feed.pk for sub in subs]
         except Feed.DoesNotExist:
@@ -185,8 +188,9 @@ class Profile(models.Model):
         logging.user(self.user, "~SN~FMTasking the scheduling immediate premium setup of ~SB%s~SN feeds..." % 
                      len(scheduled_feeds))
         SchedulePremiumSetup.apply_async(kwargs=dict(feed_ids=scheduled_feeds))
-        
+    
         UserSubscription.queue_new_feeds(self.user)
+        
         self.setup_premium_history()
         
         if never_expire:
@@ -224,6 +228,7 @@ class Profile(models.Model):
     def setup_premium_history(self, alt_email=None, check_premium=False, force_expiration=False):
         paypal_payments = []
         stripe_payments = []
+        total_stripe_payments = 0
         existing_history = PaymentHistory.objects.filter(user=self.user, 
                                                          payment_provider__in=['paypal', 'stripe'])
         if existing_history.count():
@@ -257,17 +262,25 @@ class Profile(models.Model):
                 
         # Record Stripe payments
         if self.stripe_id:
-            stripe.api_key = settings.STRIPE_SECRET
-            stripe_customer = stripe.Customer.retrieve(self.stripe_id)
-            stripe_payments = stripe.Charge.all(customer=stripe_customer.id).data
+            self.retrieve_stripe_ids()
             
-            for payment in stripe_payments:
-                created = datetime.datetime.fromtimestamp(payment.created)
-                if payment.status == 'failed': continue
-                PaymentHistory.objects.create(user=self.user,
-                                              payment_date=created,
-                                              payment_amount=payment.amount / 100.0,
-                                              payment_provider='stripe')
+            stripe.api_key = settings.STRIPE_SECRET
+            seen_payments = set()
+            for stripe_id_model in self.user.stripe_ids.all():
+                stripe_id = stripe_id_model.stripe_id
+                stripe_customer = stripe.Customer.retrieve(stripe_id)
+                stripe_payments = stripe.Charge.all(customer=stripe_customer.id).data
+                
+                for payment in stripe_payments:
+                    created = datetime.datetime.fromtimestamp(payment.created)
+                    if payment.status == 'failed': continue
+                    if created in seen_payments: continue
+                    seen_payments.add(created)
+                    total_stripe_payments += 1
+                    PaymentHistory.objects.create(user=self.user,
+                                                  payment_date=created,
+                                                  payment_amount=payment.amount / 100.0,
+                                                  payment_provider='stripe')
         
         # Calculate payments in last year, then add together
         payment_history = PaymentHistory.objects.filter(user=self.user)
@@ -297,7 +310,7 @@ class Profile(models.Model):
                 self.save()
 
         logging.user(self.user, "~BY~SN~FWFound ~SB~FB%s paypal~FW~SN and ~SB~FC%s stripe~FW~SN payments (~SB%s payments expire: ~SN~FB%s~FW)" % (
-                     len(paypal_payments), len(stripe_payments), len(payment_history), self.premium_expire))
+                     len(paypal_payments), total_stripe_payments, len(payment_history), self.premium_expire))
 
         if (check_premium and not self.is_premium and
             (not self.premium_expire or self.premium_expire > datetime.datetime.now())):
@@ -407,6 +420,24 @@ class Profile(models.Model):
         
         return True
     
+    def retrieve_stripe_ids(self):
+        if not self.stripe_id:
+            return
+        
+        stripe.api_key = settings.STRIPE_SECRET
+        stripe_customer = stripe.Customer.retrieve(self.stripe_id)
+        stripe_email = stripe_customer.email
+        
+        stripe_ids = set()
+        for email in set([stripe_email, self.user.email]):
+            customers = stripe.Customer.list(email=email)
+            for customer in customers:
+                stripe_ids.add(customer.stripe_id)
+        
+        self.user.stripe_ids.all().delete()
+        for stripe_id in stripe_ids:
+            self.user.stripe_ids.create(stripe_id=stripe_id)
+        
     @property
     def latest_paypal_email(self):
         ipn = PayPalIPN.objects.filter(custom=self.user.username)
@@ -967,7 +998,15 @@ class Profile(models.Model):
                 continue
             profile.setup_premium_history(check_premium=True)
         
-            
+
+class StripeIds(models.Model):
+    user = models.ForeignKey(User, related_name='stripe_ids')
+    stripe_id = models.CharField(max_length=24, blank=True, null=True)
+
+    def __unicode__(self):
+        return "%s: %s" % (self.user.username, self.stripe_id)
+
+        
 def create_profile(sender, instance, created, **kwargs):
     if created:
         Profile.objects.create(user=instance)
@@ -1041,6 +1080,7 @@ def stripe_signup(sender, full_json, **kwargs):
         logging.user(profile.user, "~BC~SB~FBStripe subscription signup")
         profile.activate_premium()
         profile.cancel_premium_paypal()
+        profile.retrieve_stripe_ids()
     except Profile.DoesNotExist:
         return {"code": -1, "message": "User doesn't exist."}
 zebra_webhook_customer_subscription_created.connect(stripe_signup)
@@ -1163,27 +1203,31 @@ class PaymentHistory(models.Model):
     
     @classmethod
     def report(cls, months=26):
-        def _counter(start_date, end_date, payments=None):
+        output = ""
+        
+        def _counter(start_date, end_date, output, payments=None):
             if not payments:
                 payments = PaymentHistory.objects.filter(payment_date__gte=start_date, payment_date__lte=end_date)
                 payments = payments.aggregate(avg=Avg('payment_amount'), 
                                               sum=Sum('payment_amount'), 
                                               count=Count('user'))
-            print "%s-%02d-%02d - %s-%02d-%02d:\t$%.2f\t$%-6s\t%-4s" % (
+            output += "%s-%02d-%02d - %s-%02d-%02d:\t$%.2f\t$%-6s\t%-4s\n" % (
                 start_date.year, start_date.month, start_date.day,
                 end_date.year, end_date.month, end_date.day,
                 round(payments['avg'] if payments['avg'] else 0, 2), payments['sum'] if payments['sum'] else 0, payments['count'])
-            return payments
+            
+            return payments, output
 
-        print "\nMonthly Totals:"
+        output += "\nMonthly Totals:\n"
         for m in reversed(range(months)):
             now = datetime.datetime.now()
             start_date = datetime.datetime(now.year, now.month, 1) - dateutil.relativedelta.relativedelta(months=m)
             end_time = start_date + datetime.timedelta(days=31)
             end_date = datetime.datetime(end_time.year, end_time.month, 1) - datetime.timedelta(seconds=1)
-            total = _counter(start_date, end_date)['sum']
+            total, output = _counter(start_date, end_date, output)
+            total = total['sum']
 
-        print "\nMTD Totals:"
+        output += "\nMTD Totals:\n"
         years = datetime.datetime.now().year - 2009
         this_mtd_avg = 0
         last_mtd_avg = 0
@@ -1196,17 +1240,17 @@ class PaymentHistory(models.Model):
             start_date = datetime.datetime(now.year, now.month, 1) - dateutil.relativedelta.relativedelta(years=y)
             end_date = now - dateutil.relativedelta.relativedelta(years=y)
             if end_date > now: end_date = now
-            count = _counter(start_date, end_date)
+            count, output = _counter(start_date, end_date, output)
             if end_date.year != now.year:
-                last_mtd_avg = count['avg']
-                last_mtd_sum = count['sum']
+                last_mtd_avg = count['avg'] or 0
+                last_mtd_sum = count['sum'] or 0
                 last_mtd_count = count['count']
             else:
-                this_mtd_avg = count['avg']
-                this_mtd_sum = count['sum']
+                this_mtd_avg = count['avg'] or 0
+                this_mtd_sum = count['sum'] or 0
                 this_mtd_count = count['count']
 
-        print "\nCurrent Month Totals:"
+        output += "\nCurrent Month Totals:\n"
         years = datetime.datetime.now().year - 2009
         last_month_avg = 0
         last_month_sum = 0
@@ -1220,14 +1264,14 @@ class PaymentHistory(models.Model):
                 payments = {'avg': this_mtd_avg / (max(1, last_mtd_avg) / float(max(1, last_month_avg))), 
                             'sum': int(round(this_mtd_sum / (max(1, last_mtd_sum) / float(max(1, last_month_sum))))), 
                             'count': int(round(this_mtd_count / (max(1, last_mtd_count) / float(max(1, last_month_count)))))}
-                _counter(start_date, end_date, payments=payments)
+                _, output = _counter(start_date, end_date, output, payments=payments)
             else:
-                count = _counter(start_date, end_date)
+                count, output = _counter(start_date, end_date, output)
                 last_month_avg = count['avg']
                 last_month_sum = count['sum']
                 last_month_count = count['count']
 
-        print "\nYTD Totals:"
+        output += "\nYTD Totals:\n"
         years = datetime.datetime.now().year - 2009
         this_ytd_avg = 0
         last_ytd_avg = 0
@@ -1239,21 +1283,22 @@ class PaymentHistory(models.Model):
             now = datetime.datetime.now()
             start_date = datetime.datetime(now.year, 1, 1) - dateutil.relativedelta.relativedelta(years=y)
             end_date = now - dateutil.relativedelta.relativedelta(years=y)
-            count = _counter(start_date, end_date)
+            count, output = _counter(start_date, end_date, output)
             if end_date.year != now.year:
-                last_ytd_avg = count['avg']
-                last_ytd_sum = count['sum']
+                last_ytd_avg = count['avg'] or 0
+                last_ytd_sum = count['sum'] or 0
                 last_ytd_count = count['count']
             else:
-                this_ytd_avg = count['avg']
-                this_ytd_sum = count['sum']
+                this_ytd_avg = count['avg'] or 0
+                this_ytd_sum = count['sum'] or 0
                 this_ytd_count = count['count']
 
-        print "\nYearly Totals:"
+        output += "\nYearly Totals:\n"
         years = datetime.datetime.now().year - 2009
         last_year_avg = 0
         last_year_sum = 0
         last_year_count = 0
+        annual = 0
         for y in reversed(range(years)):
             now = datetime.datetime.now()
             start_date = datetime.datetime(now.year, 1, 1) - dateutil.relativedelta.relativedelta(years=y)
@@ -1262,16 +1307,21 @@ class PaymentHistory(models.Model):
                 payments = {'avg': this_ytd_avg / (max(1, last_ytd_avg) / float(max(1, last_year_avg))), 
                             'sum': int(round(this_ytd_sum / (max(1, last_ytd_sum) / float(max(1, last_year_sum))))), 
                             'count': int(round(this_ytd_count / (max(1, last_ytd_count) / float(max(1, last_year_count)))))}
-                _counter(start_date, end_date, payments=payments)
+                count, output = _counter(start_date, end_date, output, payments=payments)
+                annual = count['sum']
             else:
-                count = _counter(start_date, end_date)
-                last_year_avg = count['avg']
-                last_year_sum = count['sum']
+                count, output = _counter(start_date, end_date, output)
+                last_year_avg = count['avg'] or 0
+                last_year_sum = count['sum'] or 0
                 last_year_count = count['count']
                 
 
         total = cls.objects.all().aggregate(sum=Sum('payment_amount'))
-        print "\nTotal: $%s" % total['sum']
+        output += "\nTotal: $%s\n" % total['sum']
+        
+        print output
+        
+        return {'annual': annual, 'output': output}
 
 
 class MGiftCode(mongo.Document):

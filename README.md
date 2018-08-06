@@ -289,18 +289,18 @@ You got the downtime message either through email or SMS. This is the order of o
  1. Check www.newsblur.com to confirm it's down.
     
     If you don't get a 502 page, then NewsBlur isn't even reachable and you just need to contact [the
-    hosting provider](http://cloud.digitalocean.com/support) and yell at them. 
-    
- 2. Check [Sentry](https://app.getsentry.com/newsblur/app/) and see if the answer is at the top of the 
-    list.
- 
-    This will show if a database (redis, mongo, postgres) can't be found.
+    hosting provider](https://cloudsupport.digitalocean.com/s/createticket) and yell at them. 
 
- 3. Check which servers can't be reached on HAProxy stats page. Basic auth can be found in secrets/configs/haproxy.conf.
+ 2. Check which servers can't be reached on HAProxy stats page. Basic auth can be found in secrets/configs/haproxy.conf.
  
     Typically it'll be mongo, but any of the redis or postgres servers can be unreachable due to
     acts of god. Otherwise, a frequent cause is lack of disk space. There are monitors on every DB
     server watching for disk space, emailing me when they're running low, but it still happens.
+    
+ 3. Check [Sentry](https://app.getsentry.com/newsblur/app/) and see if the answer is at the top of the 
+    list.
+ 
+    This will show if a database (redis, mongo, postgres) can't be found.
  
  4. Check the various databases:
 
@@ -356,7 +356,7 @@ You got the downtime message either through email or SMS. This is the order of o
     d. Changes should be instant, but you can also bounce every machine with:
     
        ```
-       fab web deploy:fast=True # fast=True just kill -9's processes.
+       fab web deploy
        fab task celery
        ```
       

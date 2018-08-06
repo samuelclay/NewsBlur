@@ -34,7 +34,7 @@
 float: right;">
     <div class="NB-feedchooser-info">
         <div class="NB-feedchooser-info-type">
-            <span class="NB-feedchooser-subtitle-type-prefix">Super-Mega</span> Premium Account
+            <span class="NB-feedchooser-subtitle-type-prefix">Unlimited</span> Premium Account
         </div>
     </div>
     <ul class="NB-feedchooser-premium-bullets">
@@ -132,8 +132,13 @@ float: right;">
             <noscript><h3>Note:&nbsp; this form requires Javascript to use.</h3></noscript>
         
             <span class="payment-errors"></span>
-        
-            <button type="submit" class="submit-button NB-modal-submit-button NB-modal-submit-green">Submit Payment</button>
+            <button type="submit" class="submit-button NB-modal-submit-button NB-modal-submit-green">{% if renew %}Switch to this Credit Card{% else %}Submit Payment{% endif %}</button>
+            
+            <span class="payment-notice">
+                {% if not immediate_charge and user.profile.premium_expire %}
+                You will not be charged until {{ user.profile.premium_expire|date:"F j, Y" }}
+                {% endif %}
+            </span>
         </form>
 
     </div>  

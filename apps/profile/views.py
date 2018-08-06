@@ -26,7 +26,7 @@ from apps.social.models import MSocialServices, MActivity, MSocialProfile
 from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifierFeed, MClassifierTag
 from utils import json_functions as json
 from utils.user_functions import ajax_login_required
-from utils.view_functions import render_to
+from utils.view_functions import render_to, is_true
 from utils.user_functions import get_user
 from utils import log as logging
 from vendor.paypalapi.exceptions import PayPalAPIResponseError
@@ -334,6 +334,7 @@ def stripe_form(request):
     stripe.api_key = settings.STRIPE_SECRET
     plan = int(request.GET.get('plan', 2))
     plan = PLANS[plan-1][0]
+    renew = is_true(request.GET.get('renew', False))
     error = None
     
     if request.method == 'POST':
@@ -341,25 +342,29 @@ def stripe_form(request):
         if zebra_form.is_valid():
             user.email = zebra_form.cleaned_data['email']
             user.save()
-            
+            customer = None
             current_premium = (user.profile.is_premium and 
                                user.profile.premium_expire and
                                user.profile.premium_expire > datetime.datetime.now())
+                               
             # Are they changing their existing card?
-            if user.profile.stripe_id and current_premium:
+            if user.profile.stripe_id:
                 customer = stripe.Customer.retrieve(user.profile.stripe_id)
                 try:
-                    card = customer.cards.create(card=zebra_form.cleaned_data['stripe_token'])
+                    card = customer.sources.create(source=zebra_form.cleaned_data['stripe_token'])
                 except stripe.CardError:
                     error = "This card was declined."
                 else:
                     customer.default_card = card.id
                     customer.save()
+                    user.profile.strip_4_digits = zebra_form.cleaned_data['last_4_digits']
+                    user.profile.save()
+                    user.profile.activate_premium() # TODO: Remove, because webhooks are slow
                     success_updating = True
             else:
                 try:
                     customer = stripe.Customer.create(**{
-                        'card': zebra_form.cleaned_data['stripe_token'],
+                        'source': zebra_form.cleaned_data['stripe_token'],
                         'plan': zebra_form.cleaned_data['plan'],
                         'email': user.email,
                         'description': user.username,
@@ -372,6 +377,29 @@ def stripe_form(request):
                     user.profile.save()
                     user.profile.activate_premium() # TODO: Remove, because webhooks are slow
                     success_updating = True
+            
+            # Check subscription to ensure latest plan, otherwise cancel it and subscribe
+            if success_updating and customer and customer.subscriptions.total_count == 1:
+                subscription = customer.subscriptions.data[0]
+                if subscription['plan']['id'] != "newsblur-premium-36":
+                    for sub in customer.subscriptions:
+                        sub.delete()
+                    customer = stripe.Customer.retrieve(user.profile.stripe_id)
+                
+            if success_updating and customer and customer.subscriptions.total_count == 0:
+                params = dict(
+                  customer=customer.id,
+                  items=[
+                    {
+                      "plan": "newsblur-premium-36",
+                    },
+                  ])
+                premium_expire = user.profile.premium_expire
+                if current_premium and premium_expire:
+                    if premium_expire < (datetime.datetime.now() + datetime.timedelta(days=365)):
+                        params['billing_cycle_anchor'] = premium_expire.strftime('%s')
+                        params['trial_end'] = premium_expire.strftime('%s')
+                stripe.Subscription.create(**params)
 
     else:
         zebra_form = StripePlusPaymentForm(email=user.email, plan=plan)
@@ -387,6 +415,10 @@ def stripe_form(request):
         new_user_queue_behind = new_user_queue_count - new_user_queue_position 
         new_user_queue_position -= 1
     
+    immediate_charge = True
+    if user.profile.premium_expire and user.profile.premium_expire > datetime.datetime.now():
+        immediate_charge = False
+    
     logging.user(request, "~BM~FBLoading Stripe form")
 
     return render_to_response('profile/stripe_form.xhtml',
@@ -397,6 +429,8 @@ def stripe_form(request):
           'new_user_queue_count': new_user_queue_count - 1,
           'new_user_queue_position': new_user_queue_position,
           'new_user_queue_behind': new_user_queue_behind,
+          'renew': renew,
+          'immediate_charge': immediate_charge,
           'error': error,
         },
         context_instance=RequestContext(request)

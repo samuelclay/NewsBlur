@@ -88,7 +88,7 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
               ])),
               (!NEWSBLUR.Globals.is_premium && $.make('div', { className: 'NB-feedchooser-info'}, [
                   $.make('div', { className: 'NB-feedchooser-info-type' }, [
-                    $.make('span', { className: 'NB-feedchooser-subtitle-type-prefix' }, 'Super-Mega'),
+                    $.make('span', { className: 'NB-feedchooser-subtitle-type-prefix' }, 'Unlimited'),
                     ' Premium Account'
                   ])
               ])),
@@ -176,7 +176,7 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
                         $.make('div', { 
                             className: "NB-stripe-button NB-modal-submit-button NB-modal-submit-green"
                         }, [
-                            "Pay by",
+                            (this.options.renew ? "Renew by" : "Pay by"),
                             $.make('br'),
                             "Credit Card"
                         ])
@@ -465,7 +465,8 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
     },
     
     open_stripe_form: function() {
-        window.location.href = "https://" + NEWSBLUR.URLs.domain + "/profile/stripe_form?plan=" + this.plan;
+        var renew = (this.options.renew ? "&renew=true" : "");
+        window.location.href = "https://" + NEWSBLUR.URLs.domain + "/profile/stripe_form?plan=" + this.plan + renew;
     },
     
     choose_dollar_amount: function(plan) {

@@ -253,7 +253,7 @@
     NSString *urlString = [NSString stringWithFormat:@"%@/profile/save_ios_receipt/",
                            appDelegate.url];
     NSDictionary *params = @{
-                             @"receipt": [receipt base64EncodedStringWithOptions:0],
+//                             @"receipt": [receipt base64EncodedStringWithOptions:0],
                              @"transaction_identifier": transaction.originalTransaction.transactionIdentifier,
                              @"product_identifier": transaction.payment.productIdentifier,
                              };

@@ -2581,10 +2581,10 @@ class MSocialServices(mongo.Document):
         self.syncing_facebook = False
         self.save()
         
-        facebook_user = graph.request('me', args={'fields':'website,bio,location'})
+        facebook_user = graph.request('me', args={'fields':'website,about,location'})
         profile = MSocialProfile.get_user(self.user_id)
         profile.location = profile.location or (facebook_user.get('location') and facebook_user['location']['name'])
-        profile.bio = profile.bio or facebook_user.get('bio')
+        profile.bio = profile.bio or facebook_user.get('about')
         if not profile.website and facebook_user.get('website'):
             profile.website = facebook_user.get('website').split()[0]
         profile.save()

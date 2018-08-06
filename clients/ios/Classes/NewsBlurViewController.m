@@ -418,7 +418,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 #pragma mark Initialization
 
 - (void)returnToApp {
-    NSDate *decayDate = [[NSDate alloc] initWithTimeIntervalSinceNow:(BACKGROUND_REFRESH_SECONDS)];
+    NSDate *decayDate = [[NSDate alloc] initWithTimeIntervalSinceNow:(-1 * BACKGROUND_REFRESH_SECONDS)];
     NSLog(@"Last Update: %@ - %f", self.lastUpdate, [self.lastUpdate timeIntervalSinceDate:decayDate]);
     if ([self.lastUpdate timeIntervalSinceDate:decayDate] < 0) {
         [appDelegate reloadFeedsView:YES];
@@ -725,18 +725,10 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
             return;
         }
         
-        if (self.inPullToRefresh_) {
-            [self showSyncingNotifier];
-            [self.appDelegate flushQueuedReadStories:YES withCallback:^{
-                [self refreshFeedList];
-//                [self.appDelegate startOfflineQueue];
-            }];
-        } else {
-            [self showSyncingNotifier];
-            [self.appDelegate flushQueuedReadStories:YES withCallback:^{
-                [self refreshFeedList];
-            }];
-        }
+        [self showSyncingNotifier];
+        [self.appDelegate flushQueuedReadStories:YES withCallback:^{
+            [self refreshFeedList];
+        }];
     }
     
     self.intelligenceControl.hidden = NO;
@@ -1560,19 +1552,19 @@ heightForHeaderInSection:(NSInteger)section {
                         withRowAnimation:UITableViewRowAnimationFade];
     [self.feedTitlesTable endUpdates];
     
-    // Scroll to section header if collapse causes it to scroll far off screen
-    NSArray *indexPathsVisibleCells = [self.feedTitlesTable indexPathsForVisibleRows];
-    BOOL firstFeedInFolderVisible = NO;
-    for (NSIndexPath *indexPath in indexPathsVisibleCells) {
-        if (indexPath.row == 0 && indexPath.section == button.tag) {
-            firstFeedInFolderVisible = YES;
-        }
-    }
-    if (!firstFeedInFolderVisible) {
-        CGRect headerRect = [self.feedTitlesTable rectForHeaderInSection:button.tag];
-        CGPoint headerPoint = CGPointMake(headerRect.origin.x, headerRect.origin.y);
-        [self.feedTitlesTable setContentOffset:headerPoint animated:YES];
-    }
+//    // Scroll to section header if collapse causes it to scroll far off screen
+//    NSArray *indexPathsVisibleCells = [self.feedTitlesTable indexPathsForVisibleRows];
+//    BOOL firstFeedInFolderVisible = NO;
+//    for (NSIndexPath *indexPath in indexPathsVisibleCells) {
+//        if (indexPath.row == 0 && indexPath.section == button.tag) {
+//            firstFeedInFolderVisible = YES;
+//        }
+//    }
+//    if (!firstFeedInFolderVisible) {
+//        CGRect headerRect = [self.feedTitlesTable rectForHeaderInSection:button.tag];
+//        CGPoint headerPoint = CGPointMake(headerRect.origin.x, headerRect.origin.y);
+////        [self.feedTitlesTable setContentOffset:headerPoint animated:YES];
+//    }
     
 }
 
