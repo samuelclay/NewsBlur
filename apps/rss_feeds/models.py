@@ -1844,7 +1844,7 @@ class Feed(models.Model):
                 story_title = strip_tags(story_content)
             if not story_title and story_db.story_permalink:
                 story_title = story_db.story_permalink
-            if len(story_title) > 80:
+            if story_title and len(story_title) > 80:
                 story_title = story_title[:80] + '...'
         
         story                     = {}
@@ -1873,6 +1873,10 @@ class Feed(models.Model):
             story['starred_date'] = story_db.starred_date
         if hasattr(story_db, 'user_tags'):
             story['user_tags'] = story_db.user_tags
+        if hasattr(story_db, 'highlights'):
+            story['highlights'] = [json.decode(highlight) for highlight in story_db.highlights]
+            print story_db.highlights
+            print [json.decode(highlight) for highlight in story_db.highlights]
         if hasattr(story_db, 'shared_date'):
             story['shared_date'] = story_db.shared_date
         if hasattr(story_db, 'comments'):
@@ -2783,6 +2787,7 @@ class MStarredStory(mongo.DynamicDocument):
     story_hash               = mongo.StringField()
     story_tags               = mongo.ListField(mongo.StringField(max_length=250))
     user_tags                = mongo.ListField(mongo.StringField(max_length=128))
+    highlights               = mongo.ListField(mongo.StringField(max_length=10000))
     image_urls               = mongo.ListField(mongo.StringField(max_length=1024))
 
     meta = {
