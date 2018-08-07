@@ -138,21 +138,7 @@ public class DatabaseConstants {
 	public static final String ACTION_ID = BaseColumns._ID;
     public static final String ACTION_TIME = "time";
     public static final String ACTION_TRIED = "tried";
-    public static final String ACTION_TYPE = "action_type";
-    public static final String ACTION_COMMENT_TEXT = "comment_text";
-    public static final String ACTION_REPLY_ID = "reply_id";
-    public static final String ACTION_STORY_HASH = "story_hash";
-    public static final String ACTION_FEED_ID = "feed_id";
-    public static final String ACTION_FEED_SET = "feed_set";
-    public static final String ACTION_MODIFIED_FEED_IDS = "modified_feed_ids";
-    public static final String ACTION_INCLUDE_OLDER = "include_older";
-    public static final String ACTION_INCLUDE_NEWER = "include_newer";
-    public static final String ACTION_STORY_ID = "story_id";
-    public static final String ACTION_SOURCE_USER_ID = "source_user_id";
-    public static final String ACTION_COMMENT_ID = "comment_id";
-    public static final String ACTION_NOTIFY_FILTER = "notify_filter";
-    public static final String ACTION_NOTIFY_TYPES = "notify_types";
-    public static final String ACTION_CLASSIFIER = "classifier";
+    public static final String ACTION_PARAMS = "action_params";
 
     public static final String STARREDCOUNTS_TABLE = "starred_counts";
     public static final String STARREDCOUNTS_COUNT = "count";
@@ -302,21 +288,7 @@ public class DatabaseConstants {
         ACTION_ID + INTEGER + " PRIMARY KEY AUTOINCREMENT, " +
         ACTION_TIME + INTEGER + " NOT NULL, " +
         ACTION_TRIED + INTEGER + ", " +
-        ACTION_TYPE + TEXT + ", " +
-        ACTION_COMMENT_TEXT + TEXT + ", " +
-        ACTION_STORY_HASH + TEXT + ", " +
-        ACTION_FEED_ID + TEXT + ", " +
-        ACTION_FEED_SET + TEXT + ", " +
-        ACTION_INCLUDE_OLDER + INTEGER + ", " +
-        ACTION_INCLUDE_NEWER + INTEGER + ", " +
-        ACTION_STORY_ID + TEXT + ", " +
-        ACTION_SOURCE_USER_ID + TEXT + ", " +
-        ACTION_COMMENT_ID + TEXT + ", " +
-        ACTION_REPLY_ID + TEXT + ", " +
-        ACTION_MODIFIED_FEED_IDS + TEXT + ", " +
-        ACTION_NOTIFY_FILTER + TEXT + ", " +
-        ACTION_NOTIFY_TYPES + TEXT + ", " +
-        ACTION_CLASSIFIER + TEXT +
+        ACTION_PARAMS + TEXT +
         ")";
 
 	static final String STARREDCOUNTS_SQL = "CREATE TABLE " + STARREDCOUNTS_TABLE + " (" +

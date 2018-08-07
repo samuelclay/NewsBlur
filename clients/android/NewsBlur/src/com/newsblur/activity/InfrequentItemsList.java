@@ -6,7 +6,6 @@ import android.view.MenuItem;
 import com.newsblur.R;
 import com.newsblur.fragment.InfrequentCutoffDialogFragment;
 import com.newsblur.fragment.InfrequentCutoffDialogFragment.InfrequentCutoffChangedListener;
-import com.newsblur.service.NBSyncService;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.UIUtils;
