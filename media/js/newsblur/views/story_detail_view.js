@@ -17,6 +17,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         "mouseenter .NB-feed-story-manage-icon" : "mouseenter_manage_icon",
         "mouseleave .NB-feed-story-manage-icon" : "mouseleave_manage_icon",
         "contextmenu .NB-feed-story-header"     : "show_manage_menu_rightclick",
+        "mouseup .NB-feed-story-content"        : "mouseup_check_selection",
         "click .NB-feed-story-manage-icon"      : "show_manage_menu",
         "click .NB-feed-story-show-changes"     : "show_story_changes",
         "click .NB-feed-story-header-title"     : "open_feed",
@@ -30,7 +31,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     },
     
     initialize: function() {
-        _.bindAll(this, 'mouseleave', 'mouseenter');
+        _.bindAll(this, 'mouseleave', 'mouseenter', 'mouseup_check_selection');
         this.model.bind('change', this.toggle_classes, this);
         this.model.bind('change:read_status', this.toggle_read_status, this);
         this.model.bind('change:selected', this.toggle_selected, this);
@@ -93,6 +94,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         this.generate_gradients();
         this.render_comments();
         this.attach_handlers();
+        this.apply_starred_story_selections();
         if (!this.model.get('image_urls') || (this.model.get('image_urls') && this.model.get('image_urls').length == 0)) {
             this.watch_images_load();
         }
@@ -710,6 +712,37 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     
     mouseleave: function() {
         
+    },
+    
+    mouseup_check_selection: function() {
+        rangy.init();
+        
+        var selection = rangy.getSelection();
+        var html = selection.toHtml();
+        var selection_serialized = rangy.serializeSelection(selection, true, this.$(".NB-feed-story-content").get(0));
+        var selections = this.model.get('highlights') || [];
+        
+        selections.push([html, selection_serialized]);
+        
+        this.model.set('highlights', selections);
+        this.model.toggle_starred(true);
+        
+        this.apply_starred_story_selections();
+        
+        return true;
+    },
+    
+    apply_starred_story_selections: function() {
+        rangy.init();
+        
+        var applier = rangy.createClassApplier("NB-starred-story-selection-highlight");
+        var selections = this.model.get('highlights') || [];
+        
+        for (var s in selections) {
+            var selection_serialized = selections[s][1];
+            console.log(['selection', selection_serialized, this.$(".NB-feed-story-content").get(0)]);
+            rangy.deserializeSelection(selection_serialized, this.$(".NB-feed-story-content").get(0));
+        }
     },
     
     show_manage_menu_rightclick: function(e) {
