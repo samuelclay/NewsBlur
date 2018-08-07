@@ -1,12 +1,9 @@
 package com.newsblur.activity;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.widget.Toast;
 
-import com.newsblur.service.NBSyncService;
-import com.newsblur.util.AppConstants;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.PrefConstants.ThemeValue;
@@ -119,8 +116,7 @@ public class NbActivity extends FragmentActivity {
      * Pokes the sync service to perform any pending sync actions.
      */
     protected void triggerSync() {
-        Intent i = new Intent(this, NBSyncService.class);
-        startService(i);
+        FeedUtils.triggerSync(this);
 	}
 
     /**

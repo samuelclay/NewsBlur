@@ -35,6 +35,7 @@
     <string name="description_menu">Menu</string>
     
     <string name="title_choose_folders">Choose Folders for Feed %s</string>
+    <string name="title_rename_feed">Rename Feed %s</string>
 	
 	<string name="all_stories_row_title">ALL STORIES</string>
 	<string name="all_stories_title">All Stories</string>
@@ -60,6 +61,7 @@
     <string name="share_this_story">SHARE</string>
     <string name="unshare">DELETE SHARE</string>
     <string name="update_shared">UPDATE COMMENT</string>
+    <string name="feed_name_save">RENAME FEED</string>
 
 	<string name="save_this">SAVE</string>
 	<string name="unsave_this">REMOVE FROM SAVED</string>
@@ -70,7 +72,7 @@
     <string name="overlay_count_toast_1">1 unread story</string>
     <string name="overlay_text">TEXT</string>
     <string name="overlay_story">STORY</string>
-    <string name="text_mode_unavailable">Sorry, the story\'s text could not be extracted.</string>
+    <string name="orig_text_failed">Sorry, the story\'s text could not be extracted.</string>
 
     <string name="state_all">ALL</string>
     <string name="state_unread">UNREAD</string>
@@ -156,13 +158,13 @@
     <string name="menu_instafetch_feed">Insta-fetch stories</string>
     <string name="menu_infrequent_cutoff">Infrequent stories per month</string>
     <string name="menu_intel">Intelligence trainer</string>
+    <string name="menu_rename_feed">Rename feed</string>
     <string name="menu_story_list_style_choose">List style…</string>
     <string name="list_style_list">List</string>
     <string name="list_style_grid_f">Grid (fine)</string>
     <string name="list_style_grid_m">Grid (medium)</string>
     <string name="list_style_grid_c">Grid (coarse)</string>
     
-    <string name="toast_story_unread">Story marked as unread</string>
     <string name="toast_hold_to_select">Press and hold to select text</string>
 
     <string name="logout_warning">Are you sure you want to log out?</string>

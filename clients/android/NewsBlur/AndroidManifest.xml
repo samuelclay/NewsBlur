@@ -6,7 +6,7 @@
 
     <uses-sdk
         android:minSdkVersion="21"
-        android:targetSdkVersion="24" />
+        android:targetSdkVersion="26" />
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -137,7 +137,9 @@
         <activity
             android:name=".activity.SocialFeedReading"/>
 
-        <service android:name=".service.NBSyncService" />
+        <service 
+            android:name=".service.NBSyncService"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
 
         <receiver android:name=".service.BootReceiver">
             <intent-filter>
@@ -145,8 +147,6 @@
             </intent-filter>
         </receiver>
 
-        <receiver android:name=".service.ServiceScheduleReceiver" />
-        
         <receiver android:name=".util.NotifyDismissReceiver" android:exported="false" />
         <receiver android:name=".util.NotifySaveReceiver" android:exported="false" />
         <receiver android:name=".util.NotifyMarkreadReceiver" android:exported="false" />

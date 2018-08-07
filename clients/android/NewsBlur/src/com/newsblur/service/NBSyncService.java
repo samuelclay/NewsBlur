@@ -1,15 +1,13 @@
 package com.newsblur.service;
 
 import android.app.Service;
-import android.content.ComponentCallbacks2;
+import android.app.job.JobParameters;
+import android.app.job.JobService;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.os.IBinder;
-import android.os.PowerManager;
 import android.os.Process;
-import android.util.Log;
 
 import com.newsblur.R;
 import com.newsblur.activity.NbActivity;
@@ -31,6 +29,7 @@ import com.newsblur.util.AppConstants;
 import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FileCache;
+import com.newsblur.util.Log;
 import com.newsblur.util.NetworkUtils;
 import com.newsblur.util.NotificationUtils;
 import com.newsblur.util.PrefsUtils;
@@ -66,9 +65,9 @@ import java.util.concurrent.TimeUnit;
  * after sync operations are performed.  Activities can then refresh views and
  * query this class to see if progress indicators should be active.
  */
-public class NBSyncService extends Service {
+public class NBSyncService extends JobService {
 
-    private static final Object WAKELOCK_MUTEX = new Object();
+    private static final Object COMPLETION_CALLBACKS_MUTEX = new Object();
     private static final Object PENDING_FEED_MUTEX = new Object();
 
     private volatile static boolean ActionsRunning = false;
@@ -88,7 +87,6 @@ public class NBSyncService extends Service {
     public volatile static Boolean isPremium = null;
     public volatile static Boolean isStaff = null;
 
-    private volatile static boolean isMemoryLow = false;
     private static long lastFeedCount = 0L;
     private static long lastFFConnMillis = 0L;
     private static long lastFFReadMillis = 0L;
@@ -130,16 +128,18 @@ public class NBSyncService extends Service {
     Set<String> disabledFeedIds = new HashSet<String>();
 
     private ExecutorService primaryExecutor;
+    private List<Integer> outstandingStartIds = new ArrayList<Integer>();
+    private List<JobParameters> outstandingStartParams = new ArrayList<JobParameters>();
+    private boolean mainSyncRunning = false;
     CleanupService cleanupService;
     OriginalTextService originalTextService;
     UnreadsService unreadsService;
     ImagePrefetchService imagePrefetchService;
+    private boolean forceHalted = false;
 
-    PowerManager.WakeLock wl = null;
 	APIManager apiManager;
     BlurDatabaseHelper dbHelper;
     FileCache iconCache;
-    private int lastStartIdCompleted = -1;
 
     /** The time of the last hard API failure we encountered. Used to implement back-off so that the sync
         service doesn't spin in the background chewing up battery when the API is unavailable. */
@@ -152,10 +152,6 @@ public class NBSyncService extends Service {
 		super.onCreate();
         com.newsblur.util.Log.d(this, "onCreate");
         HaltNow = false;
-        PowerManager pm = (PowerManager) getApplicationContext().getSystemService(POWER_SERVICE);
-        wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, this.getClass().getSimpleName());
-        wl.setReferenceCounted(true);
-
         primaryExecutor = Executors.newFixedThreadPool(1);
 	}
 
@@ -164,7 +160,7 @@ public class NBSyncService extends Service {
      * parts of construction in onCreate, but save them for when we are in our own thread.
      */
     private void finishConstruction() {
-        if (apiManager == null) {
+        if ((apiManager == null) || (dbHelper == null)) {
             apiManager = new APIManager(this);
             dbHelper = new BlurDatabaseHelper(this);
             iconCache = FileCache.asIconCache(this);
@@ -177,42 +173,89 @@ public class NBSyncService extends Service {
     }
 
     /**
-     * Called serially, once per "start" of the service.  This serves as a wakeup call
-     * that the service should check for outstanding work.
+     * Kickoff hook for when we are started via Context.startService()
      */
     @Override
     public int onStartCommand(Intent intent, int flags, final int startId) {
+        com.newsblur.util.Log.d(this, "onStartCommand");
         // only perform a sync if the app is actually running or background syncs are enabled
         if ((NbActivity.getActiveActivityCount() > 0) || PrefsUtils.isBackgroundNeeded(this)) {
+            HaltNow = false;
             // Services actually get invoked on the main system thread, and are not
             // allowed to do tangible work.  We spawn a thread to do so.
             Runnable r = new Runnable() {
                 public void run() {
-                    doSync(startId);
+                    mainSyncRunning = true;
+                    doSync();
+                    mainSyncRunning = false;
+                    // record the startId so when the sync thread and all sub-service threads finish,
+                    // we can report that this invocation completed.
+                    synchronized (COMPLETION_CALLBACKS_MUTEX) {outstandingStartIds.add(startId);}
+                    checkCompletion();
                 }
             };
             primaryExecutor.execute(r);
         } else {
-            com.newsblur.util.Log.d(this, "Skipping sync: app not active and background sync not enabled.");
-            stopSelf(startId);
+            com.newsblur.util.Log.i(this, "Skipping sync: app not active and background sync not enabled.");
+            synchronized (COMPLETION_CALLBACKS_MUTEX) {outstandingStartIds.add(startId);}
+            checkCompletion();
         } 
-
         // indicate to the system that the service should be alive when started, but
         // needn't necessarily persist under memory pressure
         return Service.START_NOT_STICKY;
     }
 
     /**
+     * Kickoff hook for when we are started via a JobScheduler
+     */
+    @Override
+    public boolean onStartJob(final JobParameters params) {
+        com.newsblur.util.Log.d(this, "onStartJob");
+        // only perform a sync if the app is actually running or background syncs are enabled
+        if ((NbActivity.getActiveActivityCount() > 0) || PrefsUtils.isBackgroundNeeded(this)) {
+            HaltNow = false;
+            // Services actually get invoked on the main system thread, and are not
+            // allowed to do tangible work.  We spawn a thread to do so.
+            Runnable r = new Runnable() {
+                public void run() {
+                    mainSyncRunning = true;
+                    doSync();
+                    mainSyncRunning = false;
+                    // record the JobParams so when the sync thread and all sub-service threads finish,
+                    // we can report that this invocation completed.
+                    synchronized (COMPLETION_CALLBACKS_MUTEX) {outstandingStartParams.add(params);}
+                    checkCompletion();
+                }
+            };
+            primaryExecutor.execute(r);
+        } else {
+            com.newsblur.util.Log.d(this, "Skipping sync: app not active and background sync not enabled.");
+            synchronized (COMPLETION_CALLBACKS_MUTEX) {outstandingStartParams.add(params);}
+            checkCompletion();
+        } 
+        return true; // indicate that we are async
+    }
+
+    @Override
+    public boolean onStopJob(JobParameters params) {
+        com.newsblur.util.Log.d(this, "onStopJob");
+        HaltNow = true;
+        // return false to indicate that we don't necessarily need re-invocation ahead of schedule.
+        // background syncs can pick up where the last one left off and forground syncs aren't
+        // run via cancellable JobScheduler invocations.
+        return false;
+    }
+
+    /**
      * Do the actual work of syncing.
      */
-    private synchronized void doSync(final int startId) {
+    private synchronized void doSync() {
         try {
             if (HaltNow) return;
 
-            incrementRunningChild();
             finishConstruction();
 
-            if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "starting primary sync");
+            Log.d(this, "starting primary sync");
 
             if (NbActivity.getActiveActivityCount() < 1) {
                 // if the UI isn't running, politely run at background priority
@@ -250,16 +293,16 @@ public class NBSyncService extends Service {
             NbActivity.updateAllActivities(NbActivity.UPDATE_DB_READY);
 
             // async text requests might have been queued up and are being waiting on by the live UI. give them priority
-            originalTextService.start(startId);
+            originalTextService.start();
 
             // first: catch up
             syncActions();
 
             // if MD is stale, sync it first so unreads don't get backwards with story unread state
-            syncMetadata(startId);
+            syncMetadata();
             
             // handle fetching of stories that are actively being requested by the live UI
-            syncPendingFeedStories(startId);
+            syncPendingFeedStories();
 
             // re-apply the local state of any actions executed before local UI interaction
             finishActions();
@@ -268,20 +311,18 @@ public class NBSyncService extends Service {
             checkRecounts();
 
             // async story and image prefetch are lower priority and don't affect active reading, do them last
-            unreadsService.start(startId);
-            imagePrefetchService.start(startId);
+            unreadsService.start();
+            imagePrefetchService.start();
 
             // almost all notifications will be pushed after the unreadsService gets new stories, but double-check
             // here in case some made it through the feed sync loop first
             pushNotifications();
 
-            if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "finishing primary sync");
+            Log.d(this, "finishing primary sync");
 
         } catch (Exception e) {
             com.newsblur.util.Log.e(this.getClass().getName(), "Sync error.", e);
-        } finally {
-            decrementRunningChild(startId);
-        }
+        } 
     }
 
     /**
@@ -397,7 +438,7 @@ public class NBSyncService extends Service {
         if (HaltNow) return;
         if (FollowupActions.size() < 1) return;
 
-        if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "double-checking " + FollowupActions.size() + " actions");
+        Log.d(this, "double-checking " + FollowupActions.size() + " actions");
         int impactFlags = 0;
         for (ReadingAction ra : FollowupActions) {
             int impact = ra.doLocal(dbHelper, true);
@@ -420,7 +461,7 @@ public class NBSyncService extends Service {
      * The very first step of a sync - get the feed/folder list, unread counts, and
      * unread hashes. Doing this resets pagination on the server!
      */
-    private void syncMetadata(int startId) {
+    private void syncMetadata() {
         if (stopSync()) return;
         if (backoffBackgroundCalls()) return;
         int untriedActions = dbHelper.getUntriedActionCount();
@@ -559,8 +600,8 @@ public class NBSyncService extends Service {
             com.newsblur.util.Log.i(this.getClass().getName(), "got feed list: " + getSpeedInfo());
 
             UnreadsService.doMetadata();
-            unreadsService.start(startId);
-            cleanupService.start(startId);
+            unreadsService.start();
+            cleanupService.start();
 
         } finally {
             FFSyncRunning = false;
@@ -654,7 +695,7 @@ public class NBSyncService extends Service {
     /**
      * Fetch stories needed because the user is actively viewing a feed or folder.
      */
-    private void syncPendingFeedStories(int startId) {
+    private void syncPendingFeedStories() {
         // track whether we actually tried to handle the feedset and found we had nothing
         // more to do, in which case we will clear it
         boolean finished = false;
@@ -679,6 +720,7 @@ public class NBSyncService extends Service {
             }
 
             if (fs == null) {
+                com.newsblur.util.Log.d(this.getClass().getName(), "No feed set to sync");
                 return;
             }
 
@@ -731,7 +773,7 @@ public class NBSyncService extends Service {
                 finishActions();
                 NbActivity.updateAllActivities(NbActivity.UPDATE_STORY | NbActivity.UPDATE_STATUS);
 
-                prefetchOriginalText(apiResponse, startId);
+                prefetchOriginalText(apiResponse);
             
                 FeedPagesSeen.put(fs, pageNumber);
                 totalStoriesSeen += apiResponse.stories.length;
@@ -843,7 +885,7 @@ public class NBSyncService extends Service {
         dbHelper.insertStories(apiResponse, false);
     }
 
-    void prefetchOriginalText(StoriesResponse apiResponse, int startId) {
+    void prefetchOriginalText(StoriesResponse apiResponse) {
         storyloop: for (Story story : apiResponse.stories) {
             // only prefetch for unreads, so we don't grind to cache when the user scrolls
             // through old read stories
@@ -856,10 +898,10 @@ public class NBSyncService extends Service {
                 }
             }
         }
-        originalTextService.startConditional(startId);
+        originalTextService.start();
     }
 
-    void prefetchImages(StoriesResponse apiResponse, int startId) {
+    void prefetchImages(StoriesResponse apiResponse) {
         storyloop: for (Story story : apiResponse.stories) {
             // only prefetch for unreads, so we don't grind to cache when the user scrolls
             // through old read stories
@@ -874,7 +916,7 @@ public class NBSyncService extends Service {
                 imagePrefetchService.addThumbnailUrl(story.thumbnailUrl);
             }
         }
-        imagePrefetchService.startConditional(startId);
+        imagePrefetchService.start();
     }
 
     void pushNotifications() {
@@ -892,27 +934,28 @@ public class NBSyncService extends Service {
         closeQuietly(cUnread);
     }
 
-    void incrementRunningChild() {
-        synchronized (WAKELOCK_MUTEX) {
-            wl.acquire();
-        }
-    }
-
-    void decrementRunningChild(int startId) {
-        synchronized (WAKELOCK_MUTEX) {
-            if (wl == null) return;
-            if (wl.isHeld()) {
-                wl.release();
+    /**
+     * Check to see if all async sync tasks have completed, indicating that sync can me marked as
+     * complete.  Call this any time any individual sync task finishes.
+     */
+    void checkCompletion() {
+        //Log.d(this, "checking completion");
+        if (mainSyncRunning) return;
+        if ((cleanupService != null) && cleanupService.isRunning()) return;
+        if ((originalTextService != null) && originalTextService.isRunning()) return;
+        if ((unreadsService != null) && unreadsService.isRunning()) return;
+        if ((imagePrefetchService != null) && imagePrefetchService.isRunning()) return;
+        Log.d(this, "confirmed completion");
+        // iff all threads have finished, mark all received work as completed
+        synchronized (COMPLETION_CALLBACKS_MUTEX) {
+            for (JobParameters params : outstandingStartParams) {
+                jobFinished(params, forceHalted);
             }
-            // our wakelock reference counts.  only stop the service if it is in the background and if
-            // we are the last thread to release the lock.
-            if (!wl.isHeld()) {
-                if (NbActivity.getActiveActivityCount() < 1) {
-                    stopSelf(startId);
-                }
-                lastStartIdCompleted = startId;
-                if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "wakelock depleted");
+            for (Integer startId : outstandingStartIds) {
+                stopSelf(startId);
             }
+            outstandingStartIds.clear();
+            outstandingStartParams.clear();
         }
     }
 
@@ -943,18 +986,6 @@ public class NBSyncService extends Service {
         if (System.currentTimeMillis() > (lastAPIFailure + AppConstants.API_BACKGROUND_BACKOFF_MILLIS)) return false;
         com.newsblur.util.Log.i(this.getClass().getName(), "abandoning background sync due to recent API failures.");
         return true;
-    }
-
-    public void onTrimMemory (int level) {
-        if (level > ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN) {
-            isMemoryLow = true;
-        }
-
-        // this is also called when the UI is hidden, so double check if we need to
-        // stop
-        if ( (lastStartIdCompleted != -1) && (NbActivity.getActiveActivityCount() < 1)) {
-            stopSelf(lastStartIdCompleted);
-        }
     }
 
     /**
@@ -994,14 +1025,14 @@ public class NBSyncService extends Service {
         if (OfflineNow) return context.getResources().getString(R.string.sync_status_offline);
         if (HousekeepingRunning) return context.getResources().getString(R.string.sync_status_housekeeping);
         if (FFSyncRunning) return context.getResources().getString(R.string.sync_status_ffsync);
-        if (CleanupService.running()) return context.getResources().getString(R.string.sync_status_cleanup);
+        if (CleanupService.activelyRunning) return context.getResources().getString(R.string.sync_status_cleanup);
         if (brief && !AppConstants.VERBOSE_LOG) return null;
         if (ActionsRunning) return String.format(context.getResources().getString(R.string.sync_status_actions), lastActionCount);
         if (RecountsRunning) return context.getResources().getString(R.string.sync_status_recounts);
         if (StorySyncRunning) return context.getResources().getString(R.string.sync_status_stories);
-        if (UnreadsService.running()) return String.format(context.getResources().getString(R.string.sync_status_unreads), UnreadsService.getPendingCount());
-        if (OriginalTextService.running()) return String.format(context.getResources().getString(R.string.sync_status_text), OriginalTextService.getPendingCount());
-        if (ImagePrefetchService.running()) return String.format(context.getResources().getString(R.string.sync_status_images), ImagePrefetchService.getPendingCount());
+        if (UnreadsService.activelyRunning) return String.format(context.getResources().getString(R.string.sync_status_unreads), UnreadsService.getPendingCount());
+        if (OriginalTextService.activelyRunning) return String.format(context.getResources().getString(R.string.sync_status_text), OriginalTextService.getPendingCount());
+        if (ImagePrefetchService.activelyRunning) return String.format(context.getResources().getString(R.string.sync_status_images), ImagePrefetchService.getPendingCount());
         return null;
     }
 
@@ -1047,7 +1078,7 @@ public class NBSyncService extends Service {
             PendingFeed = fs;
             PendingFeedTarget = desiredStoryCount;
 
-            //if (AppConstants.VERBOSE_LOG) Log.d(NBSyncService.class.getName(), "callerhas: " + callerSeen + "  have:" + alreadySeen + "  want:" + desiredStoryCount + "  pending:" + alreadyPending);
+            //Log.d(NBSyncService.class.getName(), "callerhas: " + callerSeen + "  have:" + alreadySeen + "  want:" + desiredStoryCount + "  pending:" + alreadyPending);
 
             if (!fs.equals(LastFeedSet)) {
                 return true;
@@ -1144,15 +1175,15 @@ public class NBSyncService extends Service {
         ImagePrefetchService.clear();
     }
 
-    public static void resumeFromInterrupt() {
-        HaltNow = false;
-    }
-
     @Override
     public void onDestroy() {
         try {
-            com.newsblur.util.Log.d(this, "onDestroy - stopping execution");
-            HaltNow = true;
+            com.newsblur.util.Log.d(this, "onDestroy");
+            synchronized (COMPLETION_CALLBACKS_MUTEX) {
+                if ((outstandingStartIds.size() > 0) || (outstandingStartParams.size() > 0)) {
+                    com.newsblur.util.Log.w(this, "Service scheduler destroyed before all jobs marked done?");
+                }
+            }
             if (cleanupService != null) cleanupService.shutdown();
             if (unreadsService != null) unreadsService.shutdown();
             if (originalTextService != null) originalTextService.shutdown();
@@ -1166,21 +1197,15 @@ public class NBSyncService extends Service {
                     Thread.currentThread().interrupt();
                 }
             }
-            if (dbHelper != null) dbHelper.close();
-            com.newsblur.util.Log.d(this, "onDestroy - execution halted");
-            super.onDestroy();
+            if (dbHelper != null) {
+                dbHelper.close();
+                dbHelper = null;
+            }
+            com.newsblur.util.Log.d(this, "onDestroy done");
         } catch (Exception ex) {
             com.newsblur.util.Log.e(this, "unclean shutdown", ex);
         }
-    }
-
-    @Override
-    public IBinder onBind(Intent intent) {
-        return null;
-    }
-
-    public static boolean isMemoryLow() {
-        return isMemoryLow;
+        super.onDestroy();
     }
 
     public static String getSpeedInfo() {

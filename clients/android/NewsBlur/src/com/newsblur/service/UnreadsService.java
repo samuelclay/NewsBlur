@@ -16,7 +16,7 @@ import java.util.Set;
 
 public class UnreadsService extends SubService {
 
-    private static volatile boolean Running = false;
+    public static boolean activelyRunning = false;
 
     private static volatile boolean doMetadata = false;
 
@@ -30,17 +30,20 @@ public class UnreadsService extends SubService {
 
     @Override
     protected void exec() {
-        if (doMetadata) {
-            gotWork();
-            syncUnreadList();
-            doMetadata = false;
-        }
+        activelyRunning = true;
+        try {
+            if (doMetadata) {
+                syncUnreadList();
+                doMetadata = false;
+            }
 
-        if (StoryHashQueue.size() > 0) {
-            getNewUnreadStories();
-            parent.pushNotifications();
+            if (StoryHashQueue.size() > 0) {
+                getNewUnreadStories();
+                parent.pushNotifications();
+            }
+        } finally {
+            activelyRunning = false;
         }
-
     }
 
     private void syncUnreadList() {
@@ -133,7 +136,6 @@ public class UnreadsService extends SubService {
             boolean isEnableNotifications = PrefsUtils.isEnableNotifications(parent);
             if (! (isOfflineEnabled || isEnableNotifications)) return;
 
-            gotWork();
             startExpensiveCycle();
 
             List<String> hashBatch = new ArrayList(AppConstants.UNREAD_FETCH_BATCH_SIZE);
@@ -161,8 +163,8 @@ public class UnreadsService extends SubService {
                 StoryHashQueue.remove(hash);
             } 
 
-            parent.prefetchOriginalText(response, startId);
-            parent.prefetchImages(response, startId);
+            parent.prefetchOriginalText(response);
+            parent.prefetchImages(response);
         }
     }
 
@@ -200,18 +202,6 @@ public class UnreadsService extends SubService {
 
     public static boolean isDoMetadata() {
         return doMetadata;
-    }
-
-    public static boolean running() {
-        return Running;
-    }
-    @Override
-    protected void setRunning(boolean running) {
-        Running = running;
-    }
-    @Override
-    protected boolean isRunning() {
-        return Running;
     }
 
 }
