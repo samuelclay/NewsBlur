@@ -94,7 +94,6 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         this.generate_gradients();
         this.render_comments();
         this.attach_handlers();
-        this.apply_starred_story_selections();
         if (!this.model.get('image_urls') || (this.model.get('image_urls') && this.model.get('image_urls').length == 0)) {
             this.watch_images_load();
         }
@@ -716,16 +715,18 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     
     mouseup_check_selection: function() {
         rangy.init();
-        
-        var selection = rangy.getSelection();
-        var html = selection.toHtml();
-        var selection_serialized = rangy.serializeSelection(selection, true, this.$(".NB-feed-story-content").get(0));
-        var selections = this.model.get('highlights') || [];
-        
-        selections.push([html, selection_serialized]);
-        
-        this.model.set('highlights', selections);
-        this.model.toggle_starred(true);
+        var $doc = this.$(".NB-feed-story-content");
+        var highlighter = rangy.createHighlighter();
+        highlighter.addClassApplier(rangy.createClassApplier("NB-starred-story-selection-highlight"));
+        $doc.attr('id', 'NB-highlighting');
+        console.log(['highlighting pre', highlighter.serialize()]);
+        highlighter.highlightSelection("NB-starred-story-selection-highlight", {
+            containerElementId: "NB-highlighting"
+        });
+        $doc.removeAttr('id');
+        console.log(['highlighting post', highlighter.serialize()]);
+        this.model.set('highlights', highlighter.serialize());
+        this.model.update_highlights();
         
         this.apply_starred_story_selections();
         
@@ -734,15 +735,16 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     
     apply_starred_story_selections: function() {
         rangy.init();
-        
-        var applier = rangy.createClassApplier("NB-starred-story-selection-highlight");
-        var selections = this.model.get('highlights') || [];
-        
-        for (var s in selections) {
-            var selection_serialized = selections[s][1];
-            console.log(['selection', selection_serialized, this.$(".NB-feed-story-content").get(0)]);
-            rangy.deserializeSelection(selection_serialized, this.$(".NB-feed-story-content").get(0));
-        }
+        console.log(['apply_starred_story_selections', this.model.get('highlights')]);
+        var $doc = this.$(".NB-feed-story-content");
+        var highlighter = rangy.createHighlighter();
+        highlighter.addClassApplier(rangy.createClassApplier("NB-starred-story-selection-highlight"));
+        $doc.attr('id', 'NB-highlighting');
+        var highlights = this.model.get('highlights');
+        if (!highlights) return;
+        console.log(['highlights', highlights]);
+        highlighter.deserialize(highlights);
+        $doc.removeAttr('id');
     },
     
     show_manage_menu_rightclick: function(e) {
