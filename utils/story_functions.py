@@ -272,11 +272,13 @@ def linkify(*args, **kwargs):
     return xhtml_unescape_tornado(linkify_tornado(*args, **kwargs))
     
 def truncate_chars(value, max_length):
-    if len(value) <= max_length:
+    if isinstance(value, unicode):
+        uvalue = value.encode('utf-8')
+    if len(uvalue) <= max_length:
         return value
  
-    truncd_val = value[:max_length]
-    if value[max_length] != " ":
+    truncd_val = uvalue[:max_length]
+    if uvalue[max_length] != " ":
         rightmost_space = truncd_val.rfind(" ")
         if rightmost_space != -1:
             truncd_val = truncd_val[:rightmost_space]
