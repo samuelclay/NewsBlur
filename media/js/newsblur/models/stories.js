@@ -216,7 +216,7 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
     toggle_starred: function(force_starred) {
         this.set('user_tags', this.existing_tags(), {silent: true});
         
-        if (!this.get('starred') || force_starred === true) {
+        if (!this.get('starred')) {
             NEWSBLUR.assets.starred_count += 1;
             this.set('starred', true);
         } else {
@@ -224,6 +224,18 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
             this.set('starred', false);
         }
         NEWSBLUR.reader.update_starred_count();
+    },
+    
+    update_highlights: function() {
+        this.set('user_tags', this.existing_tags(), {silent: true});
+        
+        if (!this.get('starred')) {
+            NEWSBLUR.assets.starred_count += 1;
+            this.set('starred', true);
+        } else {
+            NEWSBLUR.assets.mark_story_as_starred(this.id);
+        }
+        NEWSBLUR.reader.update_starred_count();        
     },
     
     change_starred: function() {
@@ -278,15 +290,8 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
         }, [])));
         
         return all_tags;
-    },
-    
-    highlights_serialized: function() {
-        var highlights = this.get('highlights');
-        return _.map(highlights, function(highlight) {
-            return $.toJSON(highlight);
-        });
     }
-    
+        
 });
 
 NEWSBLUR.Collections.Stories = Backbone.Collection.extend({

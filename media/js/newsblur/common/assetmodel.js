@@ -247,7 +247,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         this.make_request('/reader/mark_story_hash_as_starred', {
             story_hash: story.get('story_hash'),
             user_tags: story.get('user_tags'),
-            highlights: story.highlights_serialized()
+            highlights: story.get('highlights')
         }, pre_callback);
     },
     

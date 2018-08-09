@@ -2340,7 +2340,7 @@ def _mark_story_as_starred(request):
     story_id   = request.REQUEST.get('story_id', None)
     story_hash = request.REQUEST.get('story_hash', None)
     user_tags  = request.REQUEST.getlist('user_tags') or request.REQUEST.getlist('user_tags[]')
-    highlights = request.REQUEST.getlist('highlights') or request.REQUEST.getlist('highlights[]')
+    highlights = request.REQUEST.get('highlights', None)
     message    = ""
     if story_hash:
         story, _   = MStory.find_story(story_hash=story_hash)

@@ -1874,9 +1874,7 @@ class Feed(models.Model):
         if hasattr(story_db, 'user_tags'):
             story['user_tags'] = story_db.user_tags
         if hasattr(story_db, 'highlights'):
-            story['highlights'] = [json.decode(highlight) for highlight in story_db.highlights]
-            print story_db.highlights
-            print [json.decode(highlight) for highlight in story_db.highlights]
+            story['highlights'] = story_db.highlights
         if hasattr(story_db, 'shared_date'):
             story['shared_date'] = story_db.shared_date
         if hasattr(story_db, 'comments'):
@@ -2787,7 +2785,7 @@ class MStarredStory(mongo.DynamicDocument):
     story_hash               = mongo.StringField()
     story_tags               = mongo.ListField(mongo.StringField(max_length=250))
     user_tags                = mongo.ListField(mongo.StringField(max_length=128))
-    highlights               = mongo.ListField(mongo.StringField(max_length=10000))
+    highlights               = mongo.StringField(max_length=1024)
     image_urls               = mongo.ListField(mongo.StringField(max_length=1024))
 
     meta = {
