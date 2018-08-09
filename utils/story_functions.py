@@ -273,7 +273,10 @@ def linkify(*args, **kwargs):
     
 def truncate_chars(value, max_length):
     if isinstance(value, unicode):
-        value = value.encode('utf-8')
+        try:
+            value = value.encode('utf-8')
+        except UnicodeDecodeError:
+            pass
     if len(value) <= max_length:
         return value
  
