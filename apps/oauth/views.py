@@ -1,5 +1,4 @@
 import urllib
-import urlparse
 import datetime
 import lxml.html
 import tweepy
@@ -284,7 +283,12 @@ def api_user_info(request):
 @json.json_view
 def api_feed_list(request, trigger_slug=None):
     user = request.user
-    usf = UserSubscriptionFolders.objects.get(user=user)
+    try:
+        usf = UserSubscriptionFolders.objects.get(user=user)
+    except UserSubscriptionFolders.DoesNotExist:
+        return {"errors": [{
+            'message': 'Could not find feeds for user.'
+        }]}
     flat_folders = usf.flatten_folders()
     titles = [dict(label=" - Folder: All Site Stories", value="all")]
     feeds = {}

@@ -272,6 +272,11 @@ def linkify(*args, **kwargs):
     return xhtml_unescape_tornado(linkify_tornado(*args, **kwargs))
     
 def truncate_chars(value, max_length):
+    if isinstance(value, unicode):
+        try:
+            value = value.encode('utf-8')
+        except UnicodeDecodeError:
+            pass
     if len(value) <= max_length:
         return value
  
