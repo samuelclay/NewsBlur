@@ -15,7 +15,6 @@ from apps.social.models import MSocialSubscription
 from utils import json_functions as json
 from utils.user_functions import get_user
 from utils.user_functions import ajax_login_required
-from utils.view_functions import render_to
 
 def index(requst):
     pass
@@ -84,10 +83,13 @@ def save_classifier(request):
                     try:
                         classifier = ClassifierCls.objects.get(**classifier_dict)
                     except ClassifierCls.DoesNotExist:
-                        classifier_dict.update(dict(score=score))
-                        classifier = ClassifierCls.objects.create(**classifier_dict)
-                    except NotUniqueError:
-                        continue
+                        classifier = None
+                    if not classifier:
+                        try:
+                            classifier_dict.update(dict(score=score))
+                            classifier = ClassifierCls.objects.create(**classifier_dict)
+                        except NotUniqueError:
+                            continue
                     if score == 0:
                         classifier.delete()
                     elif classifier.score != score:
