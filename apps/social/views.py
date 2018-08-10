@@ -987,7 +987,7 @@ def save_user_profile(request):
     profile.private = is_true(data.get('private', False))
     profile.save()
 
-    social_services = MSocialServices.objects.get(user_id=request.user.pk)
+    social_services = MSocialServices.get_user(user_id=request.user.pk)
     profile = social_services.set_photo(data['photo_service'])
     
     logging.user(request, "~BB~FRSaving social profile")
