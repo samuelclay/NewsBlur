@@ -272,11 +272,10 @@ def linkify(*args, **kwargs):
     return xhtml_unescape_tornado(linkify_tornado(*args, **kwargs))
     
 def truncate_chars(value, max_length):
-    if isinstance(value, unicode):
-        try:
-            value = value.encode('utf-8')
-        except UnicodeDecodeError:
-            pass
+    try:
+        value = value.encode('utf-8')
+    except UnicodeDecodeError:
+        pass
     if len(value) <= max_length:
         return value
  
@@ -286,7 +285,7 @@ def truncate_chars(value, max_length):
         if rightmost_space != -1:
             truncd_val = truncd_val[:rightmost_space]
  
-    return truncd_val + "..."
+    return truncd_val.decode('utf-8', 'ignore') + "..."
 
 def image_size(datastream):
     datastream = reseekfile.ReseekFile(datastream)
