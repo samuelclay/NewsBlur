@@ -39,6 +39,9 @@ class Command(BaseCommand):
             starting_after = charges[-1]["id"]
             customers = [c['customer'] for c in charges if 'customer' in c]
             for customer in customers:
+                if not customer:
+                    print " ***> No customer!"
+                    continue
                 try:
                     profile = Profile.objects.get(stripe_id=customer)
                     user = profile.user
