@@ -49,16 +49,7 @@ class Command(BaseCommand):
                     logging.debug(" ***> Couldn't find stripe_id=%s" % customer)
                     failed.append(customer)
                 try:
-                    if not user.profile.is_premium:
-                        user.profile.activate_premium()
-                    elif user.payments.all().count() != 1:
-                        user.profile.setup_premium_history()
-                    elif not user.profile.premium_expire:
-                        user.profile.setup_premium_history()
-                    elif user.profile.premium_expire > datetime.datetime.now() + datetime.timedelta(days=365):
-                        user.profile.setup_premium_history()
-                    else:
-                        logging.debug(" ---> %s is fine" % user.username)
+                    user.profile.setup_premium_history()
                 except stripe.APIConnectionError:
                     logging.debug(" ***> Failed: %s" % user.username)
                     failed.append(user.username)
