@@ -1344,7 +1344,7 @@ def load_river_stories__redis(request):
             starred_stories = MStarredStory.objects(
                 user_id=user.pk,
                 story_hash__in=story_hashes
-            ).only('story_hash', 'starred_date')
+            ).only('story_hash', 'starred_date', 'user_tags')
         starred_stories = dict([(story.story_hash, dict(starred_date=story.starred_date,
                                                         user_tags=story.user_tags)) 
                                 for story in starred_stories])
