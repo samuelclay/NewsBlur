@@ -12,6 +12,7 @@ class Command(BaseCommand):
         # make_option("-u", "--username", dest="username", nargs=1, help="Specify user id or username"),
         # make_option("-e", "--email", dest="email", nargs=1, help="Specify email if it doesn't exist"),
         make_option("-d", "--days", dest="days", nargs=1, type='int', default=365, help="Number of days to go back"),
+        make_option("-l", "--limit", dest="limit", nargs=1, type='int', default=100, help="Charges per batch"),
         make_option("-s", "--start", dest="start", nargs=1, type='string', default=None, help="Offset customer_id (starting_after)"),
     )
 
@@ -19,7 +20,7 @@ class Command(BaseCommand):
         stripe.api_key = settings.STRIPE_SECRET
         week = (datetime.datetime.now() - datetime.timedelta(days=int(options.get('days', 365)))).strftime('%s')
         failed = []
-        limit = 100
+        limit = options.get('limit')
         starting_after = options.get('start')
         i = 0
         
