@@ -48,6 +48,11 @@ class Command(BaseCommand):
                 except Profile.DoesNotExist:
                     logging.debug(" ***> Couldn't find stripe_id=%s" % customer)
                     failed.append(customer)
+                    continue
+                except Profile.MultipleObjectsReturned:
+                    logging.debug(" ***> Multiple stripe_id=%s" % customer)
+                    failed.append(customer)
+                    continue
                 try:
                     user.profile.setup_premium_history()
                 except stripe.APIConnectionError:
