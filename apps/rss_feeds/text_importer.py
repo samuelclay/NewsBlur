@@ -75,7 +75,7 @@ class TextImporter:
         except JSONDecodeError:
             doc = None
         if not doc or doc.get('error', False):
-            logging.user(self.request, "~SN~FRFailed~FY to fetch ~FGoriginal text~FY: %s" % doc.get('messages', "[unknown merucry error]"))
+            logging.user(self.request, "~SN~FRFailed~FY to fetch ~FGoriginal text~FY: %s" % (doc and doc.get('messages', None) or "[unknown mercury error]"))
             return
         
         text = doc['content']

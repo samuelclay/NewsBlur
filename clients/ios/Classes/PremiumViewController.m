@@ -247,7 +247,7 @@
     if (!receipt) {
         NSLog(@" No receipt found!");
         [self informError:@"No receipt found"];
-        return;
+//        return;
     }
     
     NSString *urlString = [NSString stringWithFormat:@"%@/profile/save_ios_receipt/",
@@ -283,6 +283,7 @@
     }];
 
 }
+
 #pragma mark - Table Delegate
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
