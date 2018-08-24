@@ -27,11 +27,12 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         "click .NB-feed-story-email"            : "open_email",
         "click .NB-feed-story-save"             : "toggle_starred",
         "click .NB-story-comments-label"        : "scroll_to_comments",
-        "click .NB-story-content-expander"      : "expand_story"
+        "click .NB-story-content-expander"      : "expand_story",
+        "click .NB-highlight-selection"         : "highlight_selected_text"
     },
     
     initialize: function() {
-        _.bindAll(this, 'mouseleave', 'mouseenter', 'mouseup_check_selection');
+        _.bindAll(this, 'mouseleave', 'mouseenter', 'mouseup_check_selection', 'highlight_selected_text');
         this.model.bind('change', this.toggle_classes, this);
         this.model.bind('change:read_status', this.toggle_read_status, this);
         this.model.bind('change:selected', this.toggle_selected, this);
@@ -715,19 +716,46 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     
     mouseup_check_selection: function() {
         rangy.init();
-        var $doc = this.$(".NB-feed-story-content");
-        this.highlighter = this.highlighter || rangy.createHighlighter();
-        this.highlighter.addClassApplier(rangy.createClassApplier("NB-starred-story-selection-highlight"));
 
+        this.highlighter = rangy.createHighlighter();
+
+        this.highlighter.addClassApplier(rangy.createClassApplier("NB-starred-story-selection-highlight-popover"));
+
+        var $doc = this.$(".NB-feed-story-content");
         $doc.attr('id', 'NB-highlighting');
-        this.highlighter.highlightSelection("NB-starred-story-selection-highlight", {
+        this.highlighter.highlightSelection("NB-starred-story-selection-highlight-popover", {
             containerElementId: "NB-highlighting"
         });
+        this.serialized_highlight = this.highlighter.serialize();
         $doc.removeAttr('id');
-        rangy.getSelection().removeAllRanges();
+        console.log(['mouseup_check_selection', this.serialized_highlight]);
         
-        console.log(['highlighting', this.highlighter.serialize()]);
-        this.model.set('highlights', this.highlighter.serialize());
+        var $selection = $(".NB-starred-story-selection-highlight-popover", $doc);
+        $selection.attr('title', "<div class='NB-highlight-selection'>Highlight</div>");
+        var $t = tippy($selection.get(0), {
+            // delay: 100,
+            appendTo: this.el,
+            arrow: true,
+            arrowType: 'round',
+            size: 'large',
+            duration: 350,
+            animation: 'scale',
+            trigger: 'click',
+            interactive: true,
+            performance: true,
+            onHide: _.bind(function() {
+                this.$(".NB-starred-story-selection-highlight-popover").removeClass('NB-starred-story-selection-highlight-popover');
+            }, this)
+        });
+        _.defer(function() {
+            $t.tooltips[0].show();
+        });
+        console.log(['mouseup_check_selection', $selection, $t, this.el, rangy.serializeSelection()]);
+    },
+    
+    highlight_selected_text: function() {
+        console.log(['highlighting', this.serialized_highlight]);
+        this.model.set('highlights', this.serialized_highlight);
         this.model.update_highlights();
         
         this.apply_starred_story_selections();
@@ -742,11 +770,11 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         rangy.init();
         console.log(['apply_starred_story_selections', highlights]);
         var $doc = this.$(".NB-feed-story-content");
-        this.highlighter = this.highlighter || rangy.createHighlighter();
-        this.highlighter.addClassApplier(rangy.createClassApplier("NB-starred-story-selection-highlight"));
+        var highlighter = rangy.createHighlighter();
+        highlighter.addClassApplier(rangy.createClassApplier("NB-starred-story-selection-highlight"));
         $doc.attr('id', 'NB-highlighting');
         console.log(['highlights', highlights]);
-        this.highlighter.deserialize(highlights);
+        highlighter.deserialize(highlights);
         $doc.removeAttr('id');
     },
     

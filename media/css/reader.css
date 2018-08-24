@@ -3175,6 +3175,9 @@ body {
 .NB-feed-story-content .NB-starred-story-selection-highlight {
     background-color: #FFEE8E;
 }
+.NB-feed-story-content .NB-starred-story-selection-highlight-popover {
+    background-color: #FEFFB5;
+}
 
 /* =========================== */
 /* = Story content expansion = */
