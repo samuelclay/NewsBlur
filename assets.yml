@@ -53,6 +53,7 @@ javascripts:
         - media/js/vendor/jquery.tinysort.js
         - media/js/vendor/jquery.fieldselection.js
         - media/js/vendor/jquery.tipsy.js
+        - media/js/vendor/tippy-*.js
         - media/js/vendor/jquery.autosize.js
         - media/js/vendor/jquery.chosen.js
         - media/js/vendor/jquery.effects.core.js

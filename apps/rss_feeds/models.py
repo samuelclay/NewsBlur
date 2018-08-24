@@ -2796,6 +2796,12 @@ class MStarredStory(mongo.DynamicDocument):
         'allow_inheritance': False,
         'strict': False,
     }
+
+    def __unicode__(self):
+        user = User.objects.get(pk=self.user_id)
+        return "%s: %s (%s)" % (user.username, 
+                                    self.story_title[:20], 
+                                    self.story_feed_id)
     
     def save(self, *args, **kwargs):
         if self.story_content:
