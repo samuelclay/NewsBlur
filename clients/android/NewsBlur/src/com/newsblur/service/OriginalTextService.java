@@ -13,12 +13,12 @@ import java.util.regex.Pattern;
 
 public class OriginalTextService extends SubService {
 
+    public static boolean activelyRunning = false;
+
     // special value for when the API responds that it could fatally could not fetch text
     public static final String NULL_STORY_TEXT = "__NULL_STORY_TEXT__";
 
     private static final Pattern imgSniff = Pattern.compile("<img[^>]*src=(['\"])((?:(?!\\1).)*)\\1[^>]*>", Pattern.CASE_INSENSITIVE);
-
-    private static volatile boolean Running = false;
 
     /** story hashes we need to fetch (from newly found stories) */
     private static Set<String> Hashes;
@@ -33,11 +33,15 @@ public class OriginalTextService extends SubService {
 
     @Override
     protected void exec() {
-        while ((Hashes.size() > 0) || (PriorityHashes.size() > 0)) {
-            if (parent.stopSync()) return;
-            gotWork();
-            fetchBatch(PriorityHashes);
-            fetchBatch(Hashes);
+        activelyRunning = true;
+        try {
+            while ((Hashes.size() > 0) || (PriorityHashes.size() > 0)) {
+                if (parent.stopSync()) return;
+                fetchBatch(PriorityHashes);
+                fetchBatch(Hashes);
+            }
+        } finally {
+            activelyRunning = false;
         }
     }
 
@@ -97,26 +101,9 @@ public class OriginalTextService extends SubService {
         return (Hashes.size() + PriorityHashes.size());
     }
 
-    @Override
-    public boolean haveWork() {
-        return (getPendingCount() > 0);
-    }
-
     public static void clear() {
         Hashes.clear();
         PriorityHashes.clear();
-    }
-
-    public static boolean running() {
-        return Running;
-    }
-    @Override
-    protected void setRunning(boolean running) {
-        Running = running;
-    }
-    @Override
-    public boolean isRunning() {
-        return Running;
     }
 
 }

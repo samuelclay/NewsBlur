@@ -49,7 +49,10 @@ public class FeedUtils {
         }
     }
 
-    private static void triggerSync(Context c) {
+    public static void triggerSync(Context c) {
+        // NB: when our minSDKversion hits 28, it could be possible to start the service via the JobScheduler
+        // with the setImportantWhileForeground() flag via an enqueue() and get rid of all legacy startService
+        // code paths
         Intent i = new Intent(c, NBSyncService.class);
         c.startService(i);
     }
@@ -327,6 +330,14 @@ public class FeedUtils {
         dbHelper.enqueueAction(ra);
         ra.doLocal(dbHelper);
         NbActivity.updateAllActivities(NbActivity.UPDATE_SOCIAL | NbActivity.UPDATE_STORY);
+        triggerSync(context);
+    }
+
+    public static void renameFeed(Context context, String feedId, String newFeedName) {
+        ReadingAction ra = ReadingAction.renameFeed(feedId, newFeedName);
+        dbHelper.enqueueAction(ra);
+        int impact = ra.doLocal(dbHelper);
+        NbActivity.updateAllActivities(impact);
         triggerSync(context);
     }
 

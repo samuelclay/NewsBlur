@@ -1,14 +1,15 @@
 package com.newsblur.service;
 
 import android.os.Process;
-import android.util.Log;
 
 import com.newsblur.activity.NbActivity;
 import com.newsblur.util.AppConstants;
+import com.newsblur.util.Log;
 
-import java.util.concurrent.Executors;
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.RejectedExecutionException;
 
 /**
  * A utility construct to make NbSyncService a bit more modular by encapsulating sync tasks
@@ -19,8 +20,7 @@ import java.util.concurrent.TimeUnit;
 public abstract class SubService {
 
     protected NBSyncService parent;
-    private ExecutorService executor;
-    protected int startId;
+    private ThreadPoolExecutor executor;
     private long cycleStartTime = 0L;
 
     private SubService() {
@@ -29,15 +29,13 @@ public abstract class SubService {
 
     SubService(NBSyncService parent) {
         this.parent = parent;
-        executor = Executors.newFixedThreadPool(1);
+        executor = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
     }
 
-    public void start(final int startId) {
-        if (parent.stopSync()) return;
-        parent.incrementRunningChild();
-        this.startId = startId;
+    public void start() {
         Runnable r = new Runnable() {
             public void run() {
+                if (parent.stopSync()) return;
                 if (NbActivity.getActiveActivityCount() < 1) {
                     Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND + Process.THREAD_PRIORITY_LESS_FAVORABLE );
                 } else {
@@ -45,44 +43,37 @@ public abstract class SubService {
                 }
                 Thread.currentThread().setName(this.getClass().getName());
                 exec_();
-                parent.decrementRunningChild(startId);
             }
         };
-        executor.execute(r);
-    }
-
-    public void startConditional(int startId) {
-        if (haveWork()) start(startId);
-    }
-
-    /**
-     * Stub - children should implement a queue check or ready check so that startConditional()
-     * can more efficiently allocate threads.
-     */
-    protected boolean haveWork() {
-        return true;
+        try {
+            executor.execute(r);
+            // enqueue a check task that will run strictly after the real one, so the callback
+            // can effectively check queue size to see if there are queued tasks
+            executor.execute(new Runnable() {
+                public void run() {
+                    parent.checkCompletion();
+                    NbActivity.updateAllActivities(NbActivity.UPDATE_STATUS);
+                }
+            });
+        } catch (RejectedExecutionException ree) {
+            // this is perfectly normal, as service soft-stop mechanics might have shut down our thread pool
+            // while peer subservices are still running
+        }
     }
 
     private synchronized void exec_() {
         try {
-            //if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "SubService started");
             exec();
-            //if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "SubService completed");
             cycleStartTime = 0;
         } catch (Exception e) {
             com.newsblur.util.Log.e(this.getClass().getName(), "Sync error.", e);
-        } finally {
-            if (isRunning()) {
-                setRunning(false);
-                NbActivity.updateAllActivities(NbActivity.UPDATE_STATUS);
-            }
-        }
+        } 
     }
 
     protected abstract void exec();
 
     public void shutdown() {
-        if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "SubService stopping");
+        Log.d(this, "SubService stopping");
         executor.shutdown();
         try {
             executor.awaitTermination(AppConstants.SHUTDOWN_SLACK_SECONDS, TimeUnit.SECONDS);
@@ -90,21 +81,18 @@ public abstract class SubService {
             executor.shutdownNow();
             Thread.currentThread().interrupt();
         } finally {
-            if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "SubService stopped");
+            Log.d(this, "SubService stopped");
         }
-    }
-
-    protected void gotWork() {
-        setRunning(true);
-        NbActivity.updateAllActivities(NbActivity.UPDATE_STATUS);
     }
 
     protected void gotData(int updateType) {
         NbActivity.updateAllActivities(updateType);
     }
 
-    protected abstract void setRunning(boolean running);
-    protected abstract boolean isRunning();
+    public boolean isRunning() {
+        // don't advise completion until there are no tasks, or just one check task left
+        return (executor.getQueue().size() > 0);
+    }
 
     /**
      * If called at the beginning of an expensive loop in a SubService, enforces the maximum duty cycle

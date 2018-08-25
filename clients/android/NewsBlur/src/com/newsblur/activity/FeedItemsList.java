@@ -3,13 +3,13 @@ package com.newsblur.activity;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import com.newsblur.R;
 import com.newsblur.domain.Feed;
 import com.newsblur.fragment.DeleteFeedFragment;
 import com.newsblur.fragment.FeedIntelTrainerFragment;
+import com.newsblur.fragment.RenameFeedFragment;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.UIUtils;
 
@@ -65,6 +65,13 @@ public class FeedItemsList extends ItemsList {
             FeedIntelTrainerFragment intelFrag = FeedIntelTrainerFragment.newInstance(feed, fs);
             intelFrag.show(getSupportFragmentManager(), FeedIntelTrainerFragment.class.getName());
             return true;
+        }
+        if (item.getItemId() == R.id.menu_rename_feed) {
+            RenameFeedFragment frag = RenameFeedFragment.newInstance(feed);
+            frag.show(getSupportFragmentManager(), RenameFeedFragment.class.getName());
+            return true;
+            // TODO: since this activity uses a feed object passed as an extra and doesn't query the DB,
+            // the name change won't be reflected until the activity finishes.
         }
         return false;
 	}

@@ -205,6 +205,10 @@ class FacebookFetcher:
     def favicon_url(self):
         page_name = self.extract_page_name()
         facebook_user = self.facebook_user()
+        if not facebook_user:
+            logging.debug(u'   ***> [%-30s] ~FRFacebook icon failed, disconnecting facebook: %s' % 
+                          (self.feed.log_title[:30], self.feed.feed_address))
+            return
         
         try:
             picture_data = facebook_user.get_object(page_name, fields='picture')

@@ -1532,6 +1532,12 @@ public class BlurDatabaseHelper {
         return result;
     }
 
+    public void renameFeed(String feedId, String newFeedName) {
+        ContentValues values = new ContentValues();
+        values.put(DatabaseConstants.FEED_TITLE, newFeedName);
+        synchronized (RW_MUTEX) {dbRW.update(DatabaseConstants.FEED_TABLE, values, DatabaseConstants.FEED_ID + " = ?", new String[]{feedId});}
+    }
+
     public static void closeQuietly(Cursor c) {
         if (c == null) return;
         try {c.close();} catch (Exception e) {;}

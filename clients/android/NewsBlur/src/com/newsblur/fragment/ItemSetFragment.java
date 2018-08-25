@@ -159,11 +159,7 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
         calcColumnCount(listStyle);
         layoutManager = new GridLayoutManager(getActivity(), columnCount);
         itemGrid.setLayoutManager(layoutManager);
-        RecyclerView.ItemAnimator anim = itemGrid.getItemAnimator();
-        // we try to avoid mid-list updates or pushdowns, but in case they happen, smooth them
-        // out to avoid rows dodging out from under taps
-        anim.setAddDuration((long) (anim.getAddDuration() * 1.75));
-        anim.setMoveDuration((long) (anim.getMoveDuration() * 1.75));
+        setupAnimSpeeds();
 
         calcGridSpacing(listStyle);
         itemGrid.addItemDecoration(new RecyclerView.ItemDecoration() {
@@ -227,6 +223,8 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
     public void storyThawCompleted(int indexOfLastUnread) {
         this.indexOfLastUnread = indexOfLastUnread;
         this.fullFlingComplete = false;
+        // we don't actually calculate list speed until it has some stories
+        setupAnimSpeeds();
     }
 
     public void scrollToTop() {
@@ -397,6 +395,25 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
         } else {
             gridSpacingPx = UIUtils.dp2px(getActivity(), GRID_SPACING_DP);
         }
+    }
+
+    private void setupAnimSpeeds() {
+        // to mitigate taps missed because of list pushdowns, RVs animate them. however, the speed
+        // is device and settings dependent.  to keep the UI consistent across installs, take the
+        // system default speed and tweak it towards a speed that looked and functioned well in
+        // testing while still somewhat respecting the system's requested adjustments to speed.
+        long targetAddDuration = 250L;
+        // moves are especially jarring, and very rare
+        long targetMovDuration = 500L;
+        // if there are no stories in the list at all, let the first insert happen very quickly
+        if ((adapter == null) || (adapter.getRawStoryCount() < 1)) {
+            targetAddDuration = 0L;
+            targetMovDuration = 0L;
+        }
+
+        RecyclerView.ItemAnimator anim = itemGrid.getItemAnimator();
+        anim.setAddDuration((long) ((anim.getAddDuration() + targetAddDuration)/2L));
+        anim.setMoveDuration((long) ((anim.getMoveDuration() + targetMovDuration)/2L));
     }
 
     private void onScrolled(RecyclerView recyclerView, int dx, int dy) {

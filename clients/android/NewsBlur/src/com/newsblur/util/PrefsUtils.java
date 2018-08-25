@@ -50,7 +50,6 @@ public class PrefsUtils {
 		edit.putString(PrefConstants.PREF_COOKIE, cookie);
 		edit.putString(PrefConstants.PREF_UNIQUE_LOGIN, userName + "_" + System.currentTimeMillis());
 		edit.commit();
-        NBSyncService.resumeFromInterrupt();
 	}
 
     public static boolean checkForUpgrade(Context context) {
@@ -125,8 +124,6 @@ public class PrefsUtils {
         s.append("username: ").append(getUserDetails(context).username);
         s.append("\n");
         s.append("server: ").append(APIConstants.isCustomServer() ? "default" : "custom");
-        s.append("\n");
-        s.append("memory: ").append(NBSyncService.isMemoryLow() ? "low" : "normal");
         s.append("\n");
         s.append("speed: ").append(NBSyncService.getSpeedInfo());
         s.append("\n");
