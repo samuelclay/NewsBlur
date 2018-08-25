@@ -1,3 +1,5 @@
+import os
+import urlparse
 import datetime
 import time
 import zlib
@@ -2329,6 +2331,7 @@ class MSharedStory(mongo.DynamicDocument):
                                               reverse=True)
             self.image_sizes = image_sizes
         self.image_count = len(image_sizes)
+        self.image_urls = image_sources
         self.save()
         
         logging.debug(" ---> ~SN~FGFetched image sizes on shared story: ~SB%s/%s images" % 
@@ -2788,14 +2791,38 @@ class MSocialServices(mongo.Document):
         
         try:
             api = self.twitter_api()
-            api.update_status(status=message)
+            filename = self.fetch_image_file_for_twitter(shared_story)
+            if filename:
+                api.update_with_media(filename, status=message)
+                os.remove(filename)
+            else:
+                api.update_status(status=message)
         except tweepy.TweepError, e:
             user = User.objects.get(pk=self.user_id)
             logging.user(user, "~FRTwitter error: ~SB%s" % e)
             return
             
         return True
-            
+    
+    def fetch_image_file_for_twitter(self, shared_story):
+        if not shared_story.image_urls: return
+
+        user = User.objects.get(pk=self.user_id)
+        logging.user(user, "~FCFetching image for twitter: ~SB%s" % shared_story.image_urls[0])
+        
+        url = shared_story.image_urls[0]
+        image_filename = os.path.basename(urlparse.urlparse(url).path)
+        req = requests.get(url, stream=True)
+        filename = "/tmp/%s-%s" % (shared_story.story_hash, image_filename)
+        
+        if req.status_code == 200:
+            f = open(filename, "wb")
+            for chunk in req:
+                f.write(chunk)
+            f.close()
+        
+            return filename
+                
     def post_to_facebook(self, shared_story):
         message = shared_story.generate_post_to_service_message(include_url=False)
         shared_story.calculate_image_sizes()

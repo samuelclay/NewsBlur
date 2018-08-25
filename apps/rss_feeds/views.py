@@ -526,7 +526,8 @@ def original_story(request):
 
     if not story:
         logging.user(request, "~FYFetching ~FGoriginal~FY story page: ~FRstory not found")
-        return {'code': -1, 'message': 'Story not found.', 'original_page': None, 'failed': True}
+        # return {'code': -1, 'message': 'Story not found.', 'original_page': None, 'failed': True}
+        raise Http404
     
     original_page = story.fetch_original_page(force=force, request=request, debug=debug)
 

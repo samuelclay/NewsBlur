@@ -1900,19 +1900,6 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         });
     },
     
-    fetch_original_story_page: function(story_hash, callback, error_callback) {
-        var story = this.get_story(story_hash);
-        this.make_request('/rss_feeds/original_story', {
-            story_hash: story_hash
-        }, function(data) {
-            story.set('original_page', data.original_page);
-            callback(data);
-        }, error_callback, {
-            request_type: 'GET',
-            ajax_group: 'statistics'
-        });
-    },
-    
     recalculate_story_scores: function(feed_id, options) {
         options = options || {};
         this.stories.each(_.bind(function(story, i) {

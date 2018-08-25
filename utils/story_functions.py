@@ -2,6 +2,7 @@ import re
 import datetime
 import struct
 import dateutil
+from random import randint
 from HTMLParser import HTMLParser
 from lxml.html.diff import tokenize, fixup_ins_del_tags, htmldiff_tokens
 from lxml.etree import ParserError, XMLSyntaxError
@@ -87,7 +88,7 @@ def _extract_date_tuples(date):
     return parsed_date, date_tuple, today_tuple, yesterday_tuple
     
 def pre_process_story(entry, encoding):
-    publish_date = entry.get('published_parsed') or entry.get('updated_parsed')
+    publish_date = entry.get('g_parsed') or entry.get('updated_parsed')
     if publish_date:
         publish_date = datetime.datetime(*publish_date[:6])
     if not publish_date and entry.get('published'):
@@ -99,7 +100,7 @@ def pre_process_story(entry, encoding):
     if publish_date:
         entry['published'] = publish_date
     else:
-        entry['published'] = datetime.datetime.utcnow()
+        entry['published'] = datetime.datetime.utcnow() + datetime.timedelta(seconds=randint(0, 59))
     
     if entry['published'] < datetime.datetime(2000, 1, 1):
         entry['published'] = datetime.datetime.utcnow()
@@ -107,7 +108,7 @@ def pre_process_story(entry, encoding):
     # Future dated stories get forced to current date
     # if entry['published'] > datetime.datetime.now() + datetime.timedelta(days=1):
     if entry['published'] > datetime.datetime.now():
-        entry['published'] = datetime.datetime.now()
+        entry['published'] = datetime.datetime.now() + datetime.timedelta(seconds=randint(0, 59))
     
     # entry_link = entry.get('link') or ''
     # protocol_index = entry_link.find("://")
@@ -271,6 +272,10 @@ def linkify(*args, **kwargs):
     return xhtml_unescape_tornado(linkify_tornado(*args, **kwargs))
     
 def truncate_chars(value, max_length):
+    try:
+        value = value.encode('utf-8')
+    except UnicodeDecodeError:
+        pass
     if len(value) <= max_length:
         return value
  
@@ -280,7 +285,7 @@ def truncate_chars(value, max_length):
         if rightmost_space != -1:
             truncd_val = truncd_val[:rightmost_space]
  
-    return truncd_val + "..."
+    return truncd_val.decode('utf-8', 'ignore') + "..."
 
 def image_size(datastream):
     datastream = reseekfile.ReseekFile(datastream)

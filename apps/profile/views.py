@@ -348,20 +348,23 @@ def stripe_form(request):
                                user.profile.premium_expire > datetime.datetime.now())
                                
             # Are they changing their existing card?
-            if user.profile.stripe_id and current_premium:
+            if user.profile.stripe_id:
                 customer = stripe.Customer.retrieve(user.profile.stripe_id)
                 try:
-                    card = customer.cards.create(card=zebra_form.cleaned_data['stripe_token'])
+                    card = customer.sources.create(source=zebra_form.cleaned_data['stripe_token'])
                 except stripe.CardError:
                     error = "This card was declined."
                 else:
                     customer.default_card = card.id
                     customer.save()
+                    user.profile.strip_4_digits = zebra_form.cleaned_data['last_4_digits']
+                    user.profile.save()
+                    user.profile.activate_premium() # TODO: Remove, because webhooks are slow
                     success_updating = True
             else:
                 try:
                     customer = stripe.Customer.create(**{
-                        'card': zebra_form.cleaned_data['stripe_token'],
+                        'source': zebra_form.cleaned_data['stripe_token'],
                         'plan': zebra_form.cleaned_data['plan'],
                         'email': user.email,
                         'description': user.username,
@@ -375,19 +378,28 @@ def stripe_form(request):
                     user.profile.activate_premium() # TODO: Remove, because webhooks are slow
                     success_updating = True
             
-            if success_updating and customer and customer.subscriptions.count == 0:
-                billing_cycle_anchor = "now"
-                if current_premium:
-                    billing_cycle_anchor = user.profile.premium_expire.strftime('%s')
-                stripe.Subscription.create(
+            # Check subscription to ensure latest plan, otherwise cancel it and subscribe
+            if success_updating and customer and customer.subscriptions.total_count == 1:
+                subscription = customer.subscriptions.data[0]
+                if subscription['plan']['id'] != "newsblur-premium-36":
+                    for sub in customer.subscriptions:
+                        sub.delete()
+                    customer = stripe.Customer.retrieve(user.profile.stripe_id)
+                
+            if success_updating and customer and customer.subscriptions.total_count == 0:
+                params = dict(
                   customer=customer.id,
-                  billing_cycle_anchor=billing_cycle_anchor,
                   items=[
                     {
                       "plan": "newsblur-premium-36",
                     },
-                  ]
-                )
+                  ])
+                premium_expire = user.profile.premium_expire
+                if current_premium and premium_expire:
+                    if premium_expire < (datetime.datetime.now() + datetime.timedelta(days=365)):
+                        params['billing_cycle_anchor'] = premium_expire.strftime('%s')
+                        params['trial_end'] = premium_expire.strftime('%s')
+                stripe.Subscription.create(**params)
 
     else:
         zebra_form = StripePlusPaymentForm(email=user.email, plan=plan)

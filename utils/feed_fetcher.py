@@ -505,6 +505,7 @@ class ProcessFeed:
         stories = []
         for entry in self.fpf.entries:
             story = pre_process_story(entry, self.fpf.encoding)
+            if not story['title'] and not story['story_content']: continue
             if story.get('published') < start_date:
                 start_date = story.get('published')
             if replace_guids:

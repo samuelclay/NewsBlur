@@ -1,6 +1,7 @@
 import requests
 import urllib3
 import zlib
+from simplejson.decoder import JSONDecodeError
 from requests.packages.urllib3.exceptions import LocationParseError
 from socket import error as SocketError
 from mongoengine.queryset import NotUniqueError
@@ -69,9 +70,12 @@ class TextImporter:
         if not resp:
             return
         
-        doc = resp.json()
-        if doc.get('error', False):
-            logging.user(self.request, "~SN~FRFailed~FY to fetch ~FGoriginal text~FY: %s" % doc.get('messages', "[unknown merucry error]"))
+        try:
+            doc = resp.json()
+        except JSONDecodeError:
+            doc = None
+        if not doc or doc.get('error', False):
+            logging.user(self.request, "~SN~FRFailed~FY to fetch ~FGoriginal text~FY: %s" % (doc and doc.get('messages', None) or "[unknown mercury error]"))
             return
         
         text = doc['content']
