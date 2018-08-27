@@ -28,6 +28,8 @@
 - (void)didSelectPost {
     NSItemProvider *itemProvider = [self providerWithURL];
     
+    NSLog(@"ShareExt: didSelectPost");
+    
     if (itemProvider) {
         [itemProvider loadItemForTypeIdentifier:(NSString *)kUTTypeURL options:nil completionHandler:^(NSURL *item, NSError * _Null_unspecified error) {
             if (item) {
@@ -76,7 +78,7 @@
 - (void)sendURL:(NSURL *)url orText:(NSString *)text {
     NSUserDefaults *defaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.com.newsblur.NewsBlur-Group"];
     NSString *host = [defaults objectForKey:@"share:host"];
-//    NSString *token = [defaults objectForKey:@"share:token"];
+    NSString *token = [defaults objectForKey:@"share:token"];
     NSString *comments = self.contentText;
     
     if (text && [comments isEqualToString:text]) {
@@ -91,13 +93,15 @@
     NSURLSession *mySession = [self configureMySession];
     //    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"https://%@/api/add_site_load_script/%@/?url=%@&time=%@&comments=%@", host, token, encodedURL, @(time), encodedComments]];
     //    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"https://%@/api/share_story/%@", host, token]];
-    NSURL *requestURL = [NSURL URLWithString:[NSString stringWithFormat:@"https://%@/api/share_story", host]];
+    NSURL *requestURL = [NSURL URLWithString:[NSString stringWithFormat:@"%@/api/share_story/%@", host, token]];
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:requestURL];
     request.HTTPMethod = @"POST";
     NSString *postBody = [NSString stringWithFormat:@"story_url=%@&title=&content=%@&comments=%@", encodedURL, encodedContent, encodedComments];
     request.HTTPBody = [postBody dataUsingEncoding:NSUTF8StringEncoding];
     NSURLSessionTask *myTask = [mySession dataTaskWithRequest:request];
     [myTask resume];
+    
+    NSLog(@"ShareExt: sendURL %@ or text %@ to %@ with body %@", url, text, requestURL, postBody);
 }
 
 - (NSURLSession *)configureMySession {
@@ -115,7 +119,7 @@
 //}
 
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(nullable NSError *)error {
-    
+    NSLog(@"URLSession completed with error: %@", error);  // log
 }
 
 - (NSArray *)configurationItems {
