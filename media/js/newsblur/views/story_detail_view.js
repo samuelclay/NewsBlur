@@ -715,22 +715,28 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     },
     
     mouseup_check_selection: function() {
+        var $doc = this.$(".NB-feed-story-content");
+        var applier_class = "NB-starred-story-selection-highlight";
         rangy.init();
 
-        this.highlighter = rangy.createHighlighter();
+        this.$(".NB-starred-story-selection-highlight,[data-tippy]").contents().unwrap();
+        
+        this.highlighter = rangy.createHighlighter($doc.get(0));
 
-        this.highlighter.addClassApplier(rangy.createClassApplier("NB-starred-story-selection-highlight-popover"));
+        this.highlighter.addClassApplier(rangy.createClassApplier(applier_class));
 
-        var $doc = this.$(".NB-feed-story-content");
         $doc.attr('id', 'NB-highlighting');
-        this.highlighter.highlightSelection("NB-starred-story-selection-highlight-popover", {
+        this.highlighter.highlightSelection(applier_class, {
             containerElementId: "NB-highlighting"
         });
-        this.serialized_highlight = this.highlighter.serialize();
-        $doc.removeAttr('id');
-        console.log(['mouseup_check_selection', this.serialized_highlight]);
+        this.serialized_highlight = rangy.serializeSelection(rangy.getSelection(), true, $doc.get(0));
+        // this.serialized_highlight = this.highlighter.serialize();
+        console.log(['mouseup_check_selection', this.serialized_highlight, this.highlighter.serialize()]);
+        // this.highlighter.deserialize(this.serialized_highlight);
         
-        var $selection = $(".NB-starred-story-selection-highlight-popover", $doc);
+        if (!this.serialized_highlight || this.serialized_highlight == "type:textContent") return;
+        
+        var $selection = $(".NB-starred-story-selection-highlight", $doc);
         $selection.attr('title', "<div class='NB-highlight-selection'>Highlight</div>");
         var $t = tippy($selection.get(0), {
             // delay: 100,
@@ -744,13 +750,14 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             interactive: true,
             performance: true,
             onHide: _.bind(function() {
-                this.$(".NB-starred-story-selection-highlight-popover").removeClass('NB-starred-story-selection-highlight-popover');
+                this.$(".NB-starred-story-selection-highlight").removeClass('NB-starred-story-selection-highlight');
             }, this)
         });
         _.defer(function() {
-            $t.tooltips[0].show();
+            if ($t.tooltips && $t.tooltips.length) $t.tooltips[0].show();
         });
-        console.log(['mouseup_check_selection', $selection, $t, this.el, rangy.serializeSelection()]);
+        console.log(['mouseup_check_selection', this.serialized_highlight, rangy.serializeSelection(), this.highlighter.serialize()]);
+        $doc.removeAttr('id');
     },
     
     highlight_selected_text: function() {
@@ -770,12 +777,12 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         rangy.init();
         console.log(['apply_starred_story_selections', highlights]);
         var $doc = this.$(".NB-feed-story-content");
-        var highlighter = rangy.createHighlighter();
+        var highlighter = rangy.createHighlighter($doc.get(0));
         highlighter.addClassApplier(rangy.createClassApplier("NB-starred-story-selection-highlight"));
-        $doc.attr('id', 'NB-highlighting');
+        // $doc.attr('id', 'NB-highlighting');
         console.log(['highlights', highlights]);
         highlighter.deserialize(highlights);
-        $doc.removeAttr('id');
+        // $doc.removeAttr('id');
     },
     
     show_manage_menu_rightclick: function(e) {
