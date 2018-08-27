@@ -35,7 +35,7 @@
         }
 
         function getContainerElement(doc, id) {
-            return id ? doc.getElementById(id) : getBody(doc);
+            return doc; //id ? doc.getElementById(id) : getBody(doc);
         }
 
         /*----------------------------------------------------------------------------------------------------------------*/
@@ -337,8 +337,9 @@
                 var containerElementId = options.containerElementId;
                 var exclusive = options.exclusive;
 
-                var containerElement, containerElementRange, containerElementCharRange;
-                if (containerElementId) {
+                var containerElement = this.doc;
+                var containerElementRange, containerElementCharRange;
+                if (containerElementId && !containerElement) {
                     containerElement = this.doc.getElementById(containerElementId);
                     if (containerElement) {
                         containerElementRange = api.createRange(this.doc);
@@ -467,7 +468,7 @@
                 var exclusive = options.exclusive;
                 var selection = options.selection || api.getSelection(this.doc);
                 var doc = selection.win.document;
-                var containerElement = getContainerElement(doc, containerElementId);
+                var containerElement = this.doc || getContainerElement(doc, containerElementId);
 
                 if (!classApplier && className !== false) {
                     throw new Error("No class applier found for class '" + className + "'");
