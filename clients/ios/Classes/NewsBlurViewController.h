@@ -31,7 +31,7 @@ NSCacheDelegate,
 UIPopoverControllerDelegate,
 IASKSettingsDelegate,
 MCSwipeTableViewCellDelegate,
-UIGestureRecognizerDelegate> {
+UIGestureRecognizerDelegate, UISearchBarDelegate> {
     NewsBlurAppDelegate *appDelegate;
     
     NSMutableDictionary * activeFeedLocations;
@@ -79,6 +79,8 @@ UIGestureRecognizerDelegate> {
 @property (nonatomic, readwrite) BOOL interactiveFeedDetailTransition;
 @property (nonatomic, readwrite) BOOL isOffline;
 @property (nonatomic) UIRefreshControl *refreshControl;
+@property (nonatomic) UISearchBar *searchBar;
+@property (nonatomic, strong) NSArray<NSString *> *searchFeedIds;
 @property (nonatomic) NSDate *lastUpdate;
 @property (nonatomic) NSCache *imageCache;
 @property (nonatomic) IBOutlet UISegmentedControl * intelligenceControl;
