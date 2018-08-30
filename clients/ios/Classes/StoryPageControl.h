@@ -75,6 +75,7 @@
 @property (nonatomic) MBProgressHUD *storyHUD;
 @property (nonatomic, strong) NBNotifier *notifier;
 @property (nonatomic) NSInteger scrollingToPage;
+@property (nonatomic, readonly) BOOL isHorizontal;
 
 - (void)resizeScrollView;
 - (void)applyNewIndex:(NSInteger)newIndex pageController:(StoryDetailViewController *)pageController;
