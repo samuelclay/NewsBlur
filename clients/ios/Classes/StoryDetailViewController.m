@@ -80,6 +80,7 @@
     self.webView.scalesPageToFit = YES;
 //    self.webView.multipleTouchEnabled = NO;
     
+    [self.webView.scrollView setAlwaysBounceVertical:appDelegate.storyPageControl.isHorizontal];
     [self.webView.scrollView setDelaysContentTouches:NO];
     [self.webView.scrollView setDecelerationRate:UIScrollViewDecelerationRateNormal];
     [self.webView.scrollView setAutoresizesSubviews:(UIViewAutoresizingFlexibleWidth |
@@ -1286,10 +1287,10 @@
             } completion:^(BOOL finished) {
                 
             }];
-        } else if (singlePage) {
+        } else if (singlePage || !appDelegate.storyPageControl.isHorizontal) {
             appDelegate.storyPageControl.traverseView.alpha = 1;
             NSLog(@" ---> Bottom position: %d", bottomPosition);
-            if (bottomPosition >= 0) {
+            if (bottomPosition >= 0 || !appDelegate.storyPageControl.isHorizontal) {
 //                appDelegate.storyPageControl.traverseView.frame = CGRectMake(tvf.origin.x,
 //                                                                             self.webView.scrollView.frame.size.height - tvf.size.height - safeBottomMargin,
 //                                                                             tvf.size.width, tvf.size.height);
