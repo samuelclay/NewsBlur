@@ -78,6 +78,7 @@
                         error:nil];
     
     self.webView.scalesPageToFit = YES;
+    self.webView.allowsLinkPreview = YES;
 //    self.webView.multipleTouchEnabled = NO;
     
     [self.webView.scrollView setAlwaysBounceVertical:appDelegate.storyPageControl.isHorizontal];
