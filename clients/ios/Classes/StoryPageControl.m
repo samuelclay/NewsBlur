@@ -1301,6 +1301,12 @@
     [self.previousPage changeLineSpacing:lineSpacing];
 }
 
+- (void)changedScrollOrientation {
+    [self.scrollView setAlwaysBounceHorizontal:self.isHorizontal];
+    [self.scrollView setAlwaysBounceVertical:!self.isHorizontal];
+    [self reorientPages];
+}
+
 - (void)drawStories {
     [self.currentPage drawStory];
     [self.nextPage drawStory];

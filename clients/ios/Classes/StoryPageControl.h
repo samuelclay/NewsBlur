@@ -105,6 +105,7 @@
 - (void)setFontStyle:(NSString *)fontStyle;
 - (void)changeFontSize:(NSString *)fontSize;
 - (void)changeLineSpacing:(NSString *)lineSpacing;
+- (void)changedScrollOrientation;
 - (void)drawStories;
 - (void)showShareHUD:(NSString *)msg;
 - (void)showFetchingTextNotifier;

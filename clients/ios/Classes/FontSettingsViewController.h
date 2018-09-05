@@ -15,11 +15,13 @@
 @property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property (nonatomic) IBOutlet UISegmentedControl *fontSizeSegment;
 @property (nonatomic) IBOutlet UISegmentedControl *lineSpacingSegment;
+@property (nonatomic) IBOutlet UISegmentedControl *scrollOrientationSegment;
 @property (nonatomic) IBOutlet UISegmentedControl *themeSegment;
 @property (nonatomic) IBOutlet UITableView *menuTableView;
 
 - (IBAction)changeFontSize:(id)sender;
 - (IBAction)changeLineSpacing:(id)sender;
+- (IBAction)changeScrollOrientation:(id)sender;
 - (IBAction)changeTheme:(id)sender;
 
 @end
