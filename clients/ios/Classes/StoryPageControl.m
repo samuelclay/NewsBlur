@@ -533,6 +533,10 @@
     } else {
         frame.origin.x = 0;
         frame.origin.y = frame.size.height * currentIndex;
+        
+        if (@available(iOS 11.0, *)) {
+            frame.origin.y -= self.view.safeAreaInsets.bottom;
+        }
     }
     
     [self.scrollView scrollRectToVisible:frame animated:NO];
@@ -678,7 +682,7 @@
 
     if (suppressRedraw) return;
     
-    NSInteger wasIndex = pageController.pageIndex;
+//    NSInteger wasIndex = pageController.pageIndex;
 	pageController.pageIndex = newIndex;
 //    NSLog(@"Applied Index to %@: Was %ld, now %ld (%ld/%ld/%ld) [%lu stories - %d] %@", pageController, (long)wasIndex, (long)newIndex, (long)previousPage.pageIndex, (long)currentPage.pageIndex, (long)nextPage.pageIndex, (unsigned long)[appDelegate.storiesCollection.activeFeedStoryLocations count], outOfBounds, NSStringFromCGRect(self.scrollView.frame));
     
@@ -911,6 +915,10 @@
     } else {
         frame.origin.x = 0;
         frame.origin.y = frame.size.height * pageIndex;
+        
+        if (@available(iOS 11.0, *)) {
+            frame.origin.y -= self.view.safeAreaInsets.bottom;
+        }
     }
 
     self.scrollingToPage = pageIndex;
