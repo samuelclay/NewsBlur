@@ -2500,7 +2500,7 @@
         
         send_story_to_instapaper: function(story_id) {
             var story = this.model.get_story(story_id);
-            var url = 'http://www.instapaper.com/edit';
+            var url = 'https://www.instapaper.com/edit';
             var instapaper_url = [
               url,
               '?url=',
@@ -2528,7 +2528,7 @@
         
         send_story_to_tumblr: function(story_id) {
             var story = this.model.get_story(story_id);
-            var url = 'http://www.tumblr.com/share';
+            var url = 'https://www.tumblr.com/share';
             var tumblr_url = [
               url,
               '?v=3&u=',
@@ -2570,13 +2570,14 @@
         
         send_story_to_twitter: function(story_id) {
             var story = this.model.get_story(story_id);
-            var url = 'http://twitter.com/';
+            var url = 'https://twitter.com/intent/tweet';
             var twitter_url = [
               url,
-              '?status=',
+              '?text=',
               encodeURIComponent(story.get('story_title')),
-              ': ',
-              encodeURIComponent(story.get('story_permalink'))
+              '&url=',
+              encodeURIComponent(story.get('story_permalink')),
+	      '&via=Newsblur'
             ].join('');
             window.open(twitter_url, '_blank');
             NEWSBLUR.assets.stories.mark_read(story, {skip_delay: true});
@@ -2584,10 +2585,10 @@
         
         send_story_to_facebook: function(story_id) {
             var story = this.model.get_story(story_id);
-            var url = 'http://www.facebook.com/sharer.php?src=newsblur&v=3.14159265&i=1.61803399';
+            var url = 'https://www.facebook.com/sharer/sharer.php';
             var facebook_url = [
               url,
-              '&u=',
+              '?u=',
               encodeURIComponent(story.get('story_permalink')),
               '&t=',
               encodeURIComponent(story.get('story_title'))
@@ -2598,7 +2599,7 @@
         
         send_story_to_pinboard: function(story_id) {
             var story = this.model.get_story(story_id);
-            var url = 'http://pinboard.in/add/?';
+            var url = 'https://pinboard.in/add/?';
             var pinboard_url = [
               url,
               'url=',
@@ -2614,7 +2615,7 @@
         
         send_story_to_pinterest: function(story_id) {
             var story = this.model.get_story(story_id);
-            var url = 'http://www.pinterest.com/pin/find/?';
+            var url = 'https://www.pinterest.com/pin/find/?';
             var pinterest_url = [
               url,
               'url=',
@@ -2640,7 +2641,7 @@
         
         send_story_to_diigo: function(story_id) {
             var story = this.model.get_story(story_id);
-            var url = 'http://www.diigo.com/post?';
+            var url = 'https://www.diigo.com/post?';
             var url = [
               url,
               'url=',
