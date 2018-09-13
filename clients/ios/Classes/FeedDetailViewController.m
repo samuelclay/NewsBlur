@@ -1581,6 +1581,11 @@
     NSInteger rowIndex = [storiesCollection locationOfActiveStory];
     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:rowIndex inSection:0];
     FeedDetailTableCell *cell = (FeedDetailTableCell*) [self.storyTitlesTable cellForRowAtIndexPath:indexPath];
+    
+    if (![cell isKindOfClass:[FeedDetailTableCell class]]) {
+        return;
+    }
+    
     cell.isRead = ![storiesCollection isStoryUnread:appDelegate.activeStory];
     cell.isShared = [[appDelegate.activeStory objectForKey:@"shared"] boolValue];
     cell.isSaved = [[appDelegate.activeStory objectForKey:@"starred"] boolValue];

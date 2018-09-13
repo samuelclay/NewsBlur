@@ -530,7 +530,8 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     appDelegate.hasNoSites = NO;
     appDelegate.recentlyReadStories = [NSMutableDictionary dictionary];
     appDelegate.unreadStoryHashes = [NSMutableDictionary dictionary];
-
+    appDelegate.unsavedStoryHashes = [NSMutableDictionary dictionary];
+    
     self.isOffline = NO;
 
     appDelegate.activeUsername = [results objectForKey:@"user"];
