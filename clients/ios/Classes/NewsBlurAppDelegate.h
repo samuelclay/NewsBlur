@@ -240,6 +240,7 @@ SFSafariViewControllerDelegate>  {
 @property (readwrite) NSMutableSet * recentlyReadFeeds;
 @property (readwrite) NSMutableArray * readStories;
 @property (readwrite) NSMutableDictionary *unreadStoryHashes;
+@property (readwrite) NSMutableDictionary *unsavedStoryHashes;
 @property (nonatomic) NSMutableDictionary *folderCountCache;
 @property (nonatomic) NSMutableDictionary *collapsedFolders;
 @property (nonatomic) UIFontDescriptor *fontDescriptorTitleSize;
@@ -271,6 +272,7 @@ SFSafariViewControllerDelegate>  {
 @property (nonatomic) NSOperationQueue *cacheImagesOperationQueue;
 @property (nonatomic) NSMutableDictionary *activeCachedImages;
 @property (nonatomic, readwrite) BOOL hasQueuedReadStories;
+@property (nonatomic, readwrite) BOOL hasQueuedSavedStories;
 @property (nonatomic, readonly) BOOL showingSafariViewController;
 @property (nonatomic, readonly) BOOL isCompactWidth;
 @property (nonatomic) CGFloat compactWidth;
@@ -431,6 +433,7 @@ SFSafariViewControllerDelegate>  {
 - (BOOL)dequeueReadStoryHash:(NSString *)storyHash inFeed:(NSString *)storyFeedId;
 - (void)flushQueuedReadStories:(BOOL)forceCheck withCallback:(void(^)(void))callback;
 - (void)syncQueuedReadStories:(FMDatabase *)db withStories:(NSDictionary *)hashes withCallback:(void(^)(void))callback;
+- (void)queueSavedStory:(NSDictionary *)story;
 - (void)prepareActiveCachedImages:(FMDatabase *)db;
 - (void)cleanImageCache;
 - (void)deleteAllCachedImages;

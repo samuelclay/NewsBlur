@@ -77,7 +77,7 @@
 
 @implementation NewsBlurAppDelegate
 
-#define CURRENT_DB_VERSION 35
+#define CURRENT_DB_VERSION 36
 
 @synthesize window;
 
@@ -150,6 +150,7 @@
 @synthesize recentlyReadFeeds;
 @synthesize readStories;
 @synthesize unreadStoryHashes;
+@synthesize unsavedStoryHashes;
 @synthesize folderCountCache;
 @synthesize collapsedFolders;
 @synthesize fontDescriptorTitleSize;
@@ -1196,9 +1197,12 @@
     }
     
     [self flushQueuedReadStories:NO withCallback:^{
-        [feedDetailViewController fetchFeedDetail:1 withCallback:nil];
+        [self flushQueuedSavedStories:NO withCallback:^{
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [feedDetailViewController fetchFeedDetail:1 withCallback:nil];
+            });
+        }];
     }];
-    
 }
 
 - (void)loadFeed:(NSString *)feedId
@@ -1546,7 +1550,11 @@
     
     if (!transferFromDashboard) {
         [self flushQueuedReadStories:NO withCallback:^{
-            [feedDetailView fetchRiver];
+            [self flushQueuedSavedStories:NO withCallback:^{
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [feedDetailView fetchRiver];
+                });
+            }];
         }];
     } else {
         [feedDetailView reloadData];
@@ -3196,28 +3204,39 @@
 }
 
 - (void)setupDatabase:(FMDatabase *)db force:(BOOL)force {
-    if ([self databaseSchemaVersion:db] < CURRENT_DB_VERSION || force) {
+    NSUInteger databaseVersion = [self databaseSchemaVersion:db];
+    
+    if (databaseVersion < CURRENT_DB_VERSION || force) {
         // FMDB cannot execute this query because FMDB tries to use prepared statements
         [db closeOpenResultSets];
-        [db executeUpdate:@"drop table if exists `stories`"];
-        [db executeUpdate:@"drop table if exists `unread_hashes`"];
-        [db executeUpdate:@"drop table if exists `accounts`"];
-        [db executeUpdate:@"drop table if exists `unread_counts`"];
-        [db executeUpdate:@"drop table if exists `cached_images`"];
-        [db executeUpdate:@"drop table if exists `users`"];
-        //        [db executeUpdate:@"drop table if exists `queued_read_hashes`"]; // Nope, don't clear this.
-        //        [db executeUpdate:@"drop table if exists `queued_saved_hashes`"]; // Nope, don't clear this.
+        
+        // Perform just the needed updates (in the future, if any of these table schemas change, move their drop statement to a new block below)
+        if (databaseVersion < 35) {
+            [db executeUpdate:@"drop table if exists `stories`"];
+            [db executeUpdate:@"drop table if exists `unread_hashes`"];
+            [db executeUpdate:@"drop table if exists `accounts`"];
+            [db executeUpdate:@"drop table if exists `unread_counts`"];
+            [db executeUpdate:@"drop table if exists `cached_images`"];
+            [db executeUpdate:@"drop table if exists `users`"];
+            //        [db executeUpdate:@"drop table if exists `queued_read_hashes`"]; // Nope, don't clear this.
+            //        [db executeUpdate:@"drop table if exists `queued_saved_hashes`"]; // Nope, don't clear this.
+            
+            NSFileManager *fileManager = [NSFileManager defaultManager];
+            NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+            NSString *cacheDirectory = [[paths objectAtIndex:0] stringByAppendingPathComponent:@"story_images"];
+            NSError *error = nil;
+            BOOL success = [fileManager removeItemAtPath:cacheDirectory error:&error];
+            if (!success || error) {
+                // something went wrong
+            }
+        }
+        
+        if (databaseVersion < 36) {
+            [db executeUpdate:@"drop table if exists `queued_saved_hashes`"];
+        }
+        
         NSLog(@"Dropped db: %@", [db lastErrorMessage]);
         sqlite3_exec(db.sqliteHandle, [[NSString stringWithFormat:@"PRAGMA user_version = %d", CURRENT_DB_VERSION] UTF8String], NULL, NULL, NULL);
-        
-        NSFileManager *fileManager = [NSFileManager defaultManager];
-        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
-        NSString *cacheDirectory = [[paths objectAtIndex:0] stringByAppendingPathComponent:@"story_images"];
-        NSError *error = nil;
-        BOOL success = [fileManager removeItemAtPath:cacheDirectory error:&error];
-        if (!success || error) {
-            // something went wrong
-        }
     }
     NSString *createAccountsTable = [NSString stringWithFormat:@"create table if not exists accounts "
                                   "("
@@ -3289,6 +3308,8 @@
                                  "("
                                  " story_feed_id varchar(20),"
                                  " story_hash varchar(24),"
+                                 " saved boolean,"
+                                 " info_json text,"
                                  " UNIQUE(story_hash) ON CONFLICT IGNORE"
                                  ")"];
     [db executeUpdate:createSavedTable];
@@ -3536,6 +3557,129 @@
         [db executeUpdate:deleteSql];
     }];
 }
+
+
+- (void)queueSavedStory:(NSDictionary *)story {
+    NSString *storyHash = [story objectForKey:@"story_hash"];
+    NSString *storyFeedId = [story objectForKey:@"story_feed_id"];
+    
+    if ([self dequeueSavedStoryHash:storyHash inFeed:storyFeedId]) {
+        return;
+    }
+    
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
+                                             (unsigned long)NULL), ^(void) {
+        [self.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
+            BOOL isSaved = [[story objectForKey:@"starred"] boolValue];
+            NSArray *userTags = [[story objectForKey:@"user_tags"] copy];
+            NSDictionary *info = @{@"user_tags" : userTags}; // A dictionary to enable easily adding future properties (highlights?)
+            
+            [db executeUpdate:@"INSERT INTO queued_saved_hashes "
+             "(story_feed_id, story_hash, saved, info_json) VALUES "
+             "(?, ?, ?, ?)", storyFeedId, storyHash, @(isSaved), info.JSONRepresentation];
+        }];
+    });
+    self.hasQueuedSavedStories = YES;
+}
+
+- (BOOL)dequeueSavedStoryHash:(NSString *)storyHash inFeed:(NSString *)storyFeedId {
+    __block BOOL storyQueued = NO;
+    
+    [self.database inDatabase:^(FMDatabase *db) {
+        FMResultSet *stories = [db executeQuery:@"SELECT * FROM queued_saved_hashes "
+                                "WHERE story_hash = ? AND story_feed_id = ? LIMIT 1",
+                                storyHash, storyFeedId];
+        while ([stories next]) {
+            storyQueued = YES;
+            break;
+        }
+        [stories close];
+        if (storyQueued) {
+            [db executeUpdate:@"DELETE FROM queued_saved_hashes "
+             "WHERE story_hash = ? AND story_feed_id = ?",
+             storyHash, storyFeedId];
+        }
+    }];
+    
+    return storyQueued;
+}
+
+- (void)flushQueuedSavedStories:(BOOL)forceCheck withCallback:(void(^)(void))callback {
+    if (self.feedsViewController.isOffline) {
+        if (callback) callback();
+        return;
+    }
+    
+    if (self.hasQueuedSavedStories || forceCheck) {
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW,
+                                                 (unsigned long)NULL), ^(void) {
+            [self.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
+                FMResultSet *stories = [db executeQuery:@"SELECT * FROM queued_saved_hashes"];
+                __block NSMutableArray *requests = [NSMutableArray array];
+                
+                while ([stories next]) {
+                    NSString *storyFeedId = [NSString stringWithFormat:@"%@", [stories objectForColumnName:@"story_feed_id"]];
+                    NSString *storyHash = [stories objectForColumnName:@"story_hash"];
+                    BOOL saved = [stories boolForColumn:@"saved"];
+                    NSDictionary *info = [NSJSONSerialization
+                                          JSONObjectWithData:[[stories stringForColumn:@"info_json"]
+                                                              dataUsingEncoding:NSUTF8StringEncoding]
+                                          options:0 error:nil];
+                    
+                    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+                    NSArray *userTags = info[@"user_tags"];
+                    
+                    [params setObject:storyHash forKey:@"story_id"];
+                    [params setObject:storyFeedId forKey:@"feed_id"];
+                    
+                    if (saved) {
+                        [params setObject:userTags forKey:@"user_tags"];
+                    }
+                    
+                    [requests addObject:params];
+                }
+                
+                [stories close];
+                
+                self.hasQueuedSavedStories = NO;
+                [self syncQueuedSavedStoriesRequests:requests withCallback:callback];
+            }];
+        });
+    } else {
+        if (callback) callback();
+    }
+}
+
+- (void)syncQueuedSavedStoriesRequests:(NSMutableArray *)requests withCallback:(void(^)(void))callback {
+    NSDictionary *params = requests.firstObject;
+    [requests removeObject:params];
+    
+    if (!params) {
+        if (callback) callback();
+        return;
+    }
+    
+    [self syncQueuedSavedStoryParams:params withCallback:^{
+        [self syncQueuedSavedStoriesRequests:requests withCallback:callback];
+    }];
+}
+
+- (void)syncQueuedSavedStoryParams:(NSDictionary *)params withCallback:(void(^)(void))callback {
+    BOOL saved = [params objectForKey:@"user_tags"] != nil;
+    NSString *endpoint = saved ? @"mark_story_as_starred" : @"mark_story_as_unstarred";
+    NSString *urlString = [NSString stringWithFormat:@"%@/reader/%@", self.url, endpoint];
+    
+    [networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        NSString *storyHash = [params objectForKey:@"story_id"];
+        NSString *storyFeedId = [params objectForKey:@"feed_id"];
+        [self dequeueSavedStoryHash:storyHash inFeed:storyFeedId];
+        if (callback) callback();
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        self.hasQueuedSavedStories = YES;
+        if (callback) callback();
+    }];
+}
+
 
 - (void)prepareActiveCachedImages:(FMDatabase *)db {
     activeCachedImages = [NSMutableDictionary dictionary];
