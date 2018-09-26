@@ -76,6 +76,8 @@
     AVAudioSession *audioSession = [AVAudioSession sharedInstance];
     [audioSession setCategory:AVAudioSessionCategoryPlayback
                         error:nil];
+    [audioSession setActive:YES
+                      error:nil];
     
     self.webView.scalesPageToFit = YES;
     self.webView.allowsLinkPreview = YES;
