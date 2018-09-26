@@ -627,6 +627,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
                  forControlEvents:UIControlEventTouchUpInside];
         activitiesButton = [[UIBarButtonItem alloc]
                             initWithCustomView:activityButton];
+        activitiesButton.width = 32;
         self.navigationItem.rightBarButtonItem = activitiesButton;
     }
     
