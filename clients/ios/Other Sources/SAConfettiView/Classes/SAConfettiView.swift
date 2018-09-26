@@ -48,7 +48,7 @@ public class SAConfettiView: UIView, CAAnimationDelegate {
         emitter = CAEmitterLayer()
         
         emitter.emitterPosition = CGPoint(x: self.center.x, y: 0)
-        emitter.emitterShape = kCAEmitterLayerLine
+        emitter.emitterShape = CAEmitterLayerEmitterShape.line
         emitter.emitterSize = CGSize(width: 40.0, height: 1)
         
         var cells = [CAEmitterCell]()
