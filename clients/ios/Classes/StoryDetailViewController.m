@@ -1290,7 +1290,7 @@
             }];
         } else if (singlePage || !appDelegate.storyPageControl.isHorizontal) {
             appDelegate.storyPageControl.traverseView.alpha = 1;
-            NSLog(@" ---> Bottom position: %d", bottomPosition);
+//            NSLog(@" ---> Bottom position: %d", bottomPosition);
             if (bottomPosition >= 0 || !appDelegate.storyPageControl.isHorizontal) {
 //                appDelegate.storyPageControl.traverseView.frame = CGRectMake(tvf.origin.x,
 //                                                                             self.webView.scrollView.frame.size.height - tvf.size.height - safeBottomMargin,
