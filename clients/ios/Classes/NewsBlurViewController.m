@@ -2131,6 +2131,7 @@ heightForHeaderInSection:(NSInteger)section {
                                                   target:self
                                                   action:@selector(showUserProfile)];
     userAvatarButton.customView.frame = CGRectMake(0, yOffset + 1, 32, 32);
+    userAvatarButton.width = 32;
     userAvatarButton.accessibilityLabel = @"User info";
     userAvatarButton.accessibilityHint = @"Double-tap for information about your account.";
 
@@ -2141,8 +2142,7 @@ heightForHeaderInSection:(NSInteger)section {
     typeof(self) __weak weakSelf = self;
     [avatarImageView setImageWithURLRequest:avatarRequest placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
         typeof(weakSelf) __strong strongSelf = weakSelf;
-        image = [Utilities imageWithImage:image convertToSize:CGSizeMake(32, 32)];
-        image = [Utilities roundCorneredImage:image radius:6];
+        image = [Utilities roundCorneredImage:image radius:6 convertToSize:CGSizeMake(32, 32)];
         [(UIButton *)strongSelf.userAvatarButton.customView setImage:image forState:UIControlStateNormal];
         
     } failure:^(NSURLRequest * _Nonnull request, NSHTTPURLResponse * _Nonnull response, NSError * _Nonnull error) {

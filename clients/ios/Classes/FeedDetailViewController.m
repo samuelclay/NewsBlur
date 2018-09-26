@@ -328,12 +328,11 @@
         spacerBarButton.width = -6;
         NSString *feedIdStr = [NSString stringWithFormat:@"%@", [storiesCollection.activeFeed objectForKey:@"id"]];
         UIImage *titleImage  = [appDelegate getFavicon:feedIdStr isSocial:YES];
-        titleImage = [Utilities roundCorneredImage:titleImage radius:6];
+        titleImage = [Utilities roundCorneredImage:titleImage radius:6 convertToSize:CGSizeMake(32, 32)];
         [((UIButton *)titleImageBarButton.customView).imageView removeFromSuperview];
         titleImageBarButton = [UIBarButtonItem barItemWithImage:titleImage
                                                          target:self
                                                          action:@selector(showUserProfile)];
-        titleImageBarButton.customView.frame = CGRectMake(0, 0, 32, 32);
         self.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects:
                                                    spacerBarButton,
                                                    titleImageBarButton,

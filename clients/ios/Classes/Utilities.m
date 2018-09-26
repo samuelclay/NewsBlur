@@ -58,12 +58,16 @@ void drawLinearGradient(CGContextRef context, CGRect rect, CGColorRef startColor
     CGColorSpaceRelease(colorSpace);
 }
 
-+ (UIImage *)roundCorneredImage: (UIImage*) orig radius:(CGFloat) r {
++ (UIImage *)roundCorneredImage:(UIImage*)orig radius:(CGFloat)r {
+    return [self roundCorneredImage:orig radius:r convertToSize:orig.size];
+}
+
++ (UIImage *)roundCorneredImage:(UIImage*)orig radius:(CGFloat)r convertToSize:(CGSize)size {
     if (!orig) return nil;
-    UIGraphicsBeginImageContextWithOptions(orig.size, NO, 0);
-    [[UIBezierPath bezierPathWithRoundedRect:(CGRect){CGPointZero, orig.size} 
+    UIGraphicsBeginImageContextWithOptions(size, NO, 0);
+    [[UIBezierPath bezierPathWithRoundedRect:(CGRect){CGPointZero, size}
                                 cornerRadius:r] addClip];
-    [orig drawInRect:(CGRect){CGPointZero, orig.size}];
+    [orig drawInRect:(CGRect){CGPointZero, size}];
     UIImage* result = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
     return result;
