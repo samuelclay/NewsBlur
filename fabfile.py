@@ -820,6 +820,7 @@ def copy_certificates():
     put(os.path.join(env.SECRETS_PATH, 'certificates/ios/aps_development.pem'), cert_path)
     put(os.path.join(env.SECRETS_PATH, 'certificates/ios/aps.pem'), cert_path)
     run('cat %s/newsblur.com.pem > %s/newsblur.pem' % (cert_path, cert_path))
+    run('echo "\n" >> %s/newsblur.pem' % (cert_path))
     run('cat %s/newsblur.com.key >> %s/newsblur.pem' % (cert_path, cert_path))
 
 @parallel
