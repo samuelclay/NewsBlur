@@ -51,6 +51,7 @@
 @class UnreadCounts;
 @class StoriesCollection;
 @class PINCache;
+@class PremiumManager;
 @class PremiumViewController;
 
 @interface NewsBlurAppDelegate : BaseViewController
@@ -191,6 +192,7 @@ SFSafariViewControllerDelegate>  {
 @property (nonatomic) IBOutlet FontSettingsViewController *fontSettingsViewController;
 @property (nonatomic) IBOutlet UserProfileViewController *userProfileViewController;
 @property (nonatomic) IBOutlet IASKAppSettingsViewController *preferencesViewController;
+@property (nonatomic,  strong) PremiumManager *premiumManager;
 @property (nonatomic) IBOutlet PremiumViewController *premiumViewController;
 @property (nonatomic, strong) UINavigationController *fontSettingsNavigationController;
 @property (nonatomic, strong) MarkReadMenuViewController *markReadMenuViewController;
