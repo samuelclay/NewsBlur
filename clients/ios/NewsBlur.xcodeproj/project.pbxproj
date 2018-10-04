@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		010EDEFA1B2386B7003B79DE /* OnePasswordExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = 010EDEF81B2386B7003B79DE /* OnePasswordExtension.m */; };
 		010EDEFC1B238722003B79DE /* 1Password.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 010EDEFB1B238722003B79DE /* 1Password.xcassets */; };
+		1715D02B2166B3F900227731 /* PremiumManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 1715D02A2166B3F900227731 /* PremiumManager.m */; };
 		1740C6881C10FD75005EA453 /* theme_color_dark.png in Resources */ = {isa = PBXBuildFile; fileRef = 1740C6841C10FD75005EA453 /* theme_color_dark.png */; };
 		1740C6891C10FD75005EA453 /* theme_color_light.png in Resources */ = {isa = PBXBuildFile; fileRef = 1740C6851C10FD75005EA453 /* theme_color_light.png */; };
 		1740C68A1C10FD75005EA453 /* theme_color_medium.png in Resources */ = {isa = PBXBuildFile; fileRef = 1740C6861C10FD75005EA453 /* theme_color_medium.png */; };
@@ -629,6 +630,8 @@
 		010EDEF81B2386B7003B79DE /* OnePasswordExtension.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OnePasswordExtension.m; path = "Other Sources/OnePasswordExtension/OnePasswordExtension.m"; sourceTree = "<group>"; };
 		010EDEF91B2386B7003B79DE /* OnePasswordExtension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OnePasswordExtension.h; path = "Other Sources/OnePasswordExtension/OnePasswordExtension.h"; sourceTree = "<group>"; };
 		010EDEFB1B238722003B79DE /* 1Password.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = 1Password.xcassets; path = "Other Sources/OnePasswordExtension/1Password.xcassets"; sourceTree = "<group>"; };
+		1715D0292166B3F900227731 /* PremiumManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PremiumManager.h; sourceTree = "<group>"; };
+		1715D02A2166B3F900227731 /* PremiumManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PremiumManager.m; sourceTree = "<group>"; };
 		1740C6841C10FD75005EA453 /* theme_color_dark.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = theme_color_dark.png; sourceTree = "<group>"; };
 		1740C6851C10FD75005EA453 /* theme_color_light.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = theme_color_light.png; sourceTree = "<group>"; };
 		1740C6861C10FD75005EA453 /* theme_color_medium.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = theme_color_medium.png; sourceTree = "<group>"; };
@@ -1726,6 +1729,8 @@
 				43B232BF15D5F61700D035B4 /* AuthorizeServicesViewController.xib */,
 				43CE0F5D15DADB7E00608ED8 /* SiteCell.h */,
 				43CE0F5E15DADB7F00608ED8 /* SiteCell.m */,
+				1715D0292166B3F900227731 /* PremiumManager.h */,
+				1715D02A2166B3F900227731 /* PremiumManager.m */,
 				FF83FF021FB52565008DAC0F /* PremiumViewController.h */,
 				FF83FF031FB52565008DAC0F /* PremiumViewController.m */,
 				FF83FF041FB52565008DAC0F /* PremiumViewController.xib */,
@@ -3263,6 +3268,7 @@
 				437F976F15AE21290007136B /* ActivityModule.m in Sources */,
 				437F977215AE70E30007136B /* InteractionsModule.m in Sources */,
 				43A4C3D715B00966008787B5 /* ABTableViewCell.m in Sources */,
+				1715D02B2166B3F900227731 /* PremiumManager.m in Sources */,
 				43A4C3DA15B00966008787B5 /* GTMNString+HTML.m in Sources */,
 				43A4C3DC15B00966008787B5 /* main.m in Sources */,
 				43A4C3DD15B00966008787B5 /* MBProgressHUD.m in Sources */,

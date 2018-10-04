@@ -7,18 +7,12 @@
 //
 
 #import <UIKit/UIKit.h>
-#import <StoreKit/StoreKit.h>
 #import "NewsBlurAppDelegate.h"
 
 @class SAConfettiView;
 
-@interface PremiumViewController : BaseViewController <UITableViewDelegate, UITableViewDataSource, SKProductsRequestDelegate, SKPaymentTransactionObserver> {
+@interface PremiumViewController : BaseViewController <UITableViewDelegate, UITableViewDataSource> {
     NewsBlurAppDelegate *appDelegate;
-    NSArray<SKProduct *> *products;
-    
-    NSArray *reasons;
-    SKProductsRequest *request;
-    
 }
 
 @property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
@@ -40,5 +34,8 @@
 
 - (IBAction)closeDialog:(id)sender;
 - (IBAction)restorePurchase:(id)sender;
+
+- (void)loadedProducts;
+- (void)finishedTransaction;
 
 @end

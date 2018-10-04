@@ -35,6 +35,7 @@
 #import "NBBarButtonItem.h"
 #import "UISearchBar+Field.h"
 #import "StoriesCollection.h"
+#import "PremiumManager.h"
 
 static const CGFloat kPhoneTableViewRowHeight = 6.0f;
 static const CGFloat kTableViewRowHeight = 6.0f;
@@ -646,7 +647,11 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     if (premiumExpire && ![premiumExpire isKindOfClass:[NSNull class]] && premiumExpire != 0) {
         appDelegate.premiumExpire = [premiumExpire integerValue];
     }
-
+    
+    if (!appDelegate.premiumManager) {
+        appDelegate.premiumManager = [PremiumManager new];
+    }
+    
     // Set up dictSocialFeeds
     NSArray *socialFeedsArray = [results objectForKey:@"social_feeds"];
     NSMutableArray *socialFolder = [[NSMutableArray alloc] init];
