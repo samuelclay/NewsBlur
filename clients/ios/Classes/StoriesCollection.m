@@ -715,23 +715,21 @@
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_story_as_starred",
                            self.appDelegate.url];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
-    
-    [params setObject:[story objectForKey:@"story_hash"]
-                   forKey:@"story_id"];
-    [params setObject:[story objectForKey:@"story_feed_id"]
-                   forKey:@"feed_id"];
-    
+    NSString *storyHash = [story objectForKey:@"story_hash"];
+    NSString *storyFeedId = [story objectForKey:@"story_feed_id"];
     NSMutableArray *tags = [NSMutableArray array];
     for (NSString *userTag in [story objectForKey:@"user_tags"]) {
         [tags addObject:userTag];
     }
+    
+    [params setObject:storyHash forKey:@"story_id"];
+    [params setObject:storyFeedId forKey:@"feed_id"];
     [params setObject:tags forKey:@"user_tags"];
     
     [appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self finishMarkAsSaved:responseObject withParams:params];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        [self markStory:params asSaved:NO];
-        [appDelegate failedMarkAsSaved:params];
+        [appDelegate queueSavedStory:story];
     }];
 }
 
@@ -752,17 +750,16 @@
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_story_as_unstarred",
                            self.appDelegate.url];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
-    [params setObject:[story
-                       objectForKey:@"story_hash"]
-               forKey:@"story_id"];
-    [params setObject:[story
-                       objectForKey:@"story_feed_id"]
-               forKey:@"feed_id"];
+    NSString *storyHash = [story objectForKey:@"story_hash"];
+    NSString *storyFeedId = [story objectForKey:@"story_feed_id"];
+    
+    [params setObject:storyHash forKey:@"story_id"];
+    [params setObject:storyFeedId forKey:@"feed_id"];
+    
     [appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self finishMarkAsUnsaved:responseObject withParams:params];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        [self markStory:params asSaved:YES];
-        [appDelegate failedMarkAsUnsaved:params];
+        [appDelegate queueSavedStory:story];
     }];
 }
 
@@ -772,8 +769,23 @@
 }
 
 - (void)failedMarkAsUnsaved:(NSDictionary *)params {
-    [self markStory:params asSaved:YES];
-    [appDelegate failedMarkAsUnsaved:params];
+    NSString *storyFeedId = [params objectForKey:@"story_feed_id"];
+    NSString *storyHash = [params objectForKey:@"story_hash"];
+    BOOL dequeued = [appDelegate dequeueReadStoryHash:storyHash inFeed:storyFeedId];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (!dequeued) {
+            // Offline means can't unsave a story unless it was saved while offline.
+            NSDictionary *story = [appDelegate getStory:storyHash];
+            
+            if (story) {
+                [self markStory:story asSaved:NO];
+                [appDelegate failedMarkAsUnsaved:params];
+            }
+        } else {
+            // Offline but saved story while offline, so it never touched the server.
+            [appDelegate.unsavedStoryHashes setObject:[NSNumber numberWithBool:YES] forKey:storyHash];
+        }
+    });
 }
 
 @end

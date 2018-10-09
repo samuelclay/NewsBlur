@@ -648,6 +648,16 @@
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 			<key>Title</key>
+			<string>Scroll horizontally</string>
+			<key>Key</key>
+			<string>scroll_stories_horizontally</string>
+			<key>DefaultValue</key>
+			<true/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
 			<string>Show public comments</string>
 			<key>Key</key>
 			<string>show_public_comments</string>

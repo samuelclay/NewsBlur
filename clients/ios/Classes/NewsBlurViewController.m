@@ -33,7 +33,9 @@
 #import "IASKSettingsReader.h"
 #import "UIImageView+AFNetworking.h"
 #import "NBBarButtonItem.h"
+#import "UISearchBar+Field.h"
 #import "StoriesCollection.h"
+#import "PremiumManager.h"
 
 static const CGFloat kPhoneTableViewRowHeight = 6.0f;
 static const CGFloat kTableViewRowHeight = 6.0f;
@@ -116,6 +118,17 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     [self.feedTitlesTable addSubview:self.refreshControl];
     self.feedViewToolbar.translatesAutoresizingMaskIntoConstraints = NO;
     
+    self.searchBar = [[UISearchBar alloc]
+                      initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.feedTitlesTable.frame), 44.)];
+    self.searchBar.delegate = self;
+    [self.searchBar setReturnKeyType:UIReturnKeySearch];
+    self.searchBar.backgroundColor = UIColorFromRGB(0xE3E6E0);
+    self.searchBar.tintColor = UIColorFromRGB(0x0);
+    self.searchBar.nb_searchField.textColor = UIColorFromRGB(0x0);
+    [self.searchBar setSearchBarStyle:UISearchBarStyleMinimal];
+    [self.searchBar setAutocapitalizationType:UITextAutocapitalizationTypeNone];
+    self.feedTitlesTable.tableHeaderView = self.searchBar;
+    
     userLabelFont = [UIFont fontWithName:@"Helvetica-Bold" size:14.0];
     
     imageCache = [[NSCache alloc] init];
@@ -181,10 +194,10 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 
     [self.navigationController.interactivePopGestureRecognizer addTarget:self action:@selector(handleGesture:)];
     
-    [self addKeyCommandWithInput:@"e" modifierFlags:UIKeyModifierShift action:@selector(selectEverything:) discoverabilityTitle:@"Open All Stories"];
+    [self addKeyCommandWithInput:@"e" modifierFlags:UIKeyModifierCommand action:@selector(selectEverything:) discoverabilityTitle:@"Open All Stories"];
     [self addKeyCommandWithInput:UIKeyInputLeftArrow modifierFlags:0 action:@selector(selectPreviousIntelligence:) discoverabilityTitle:@"Switch Views"];
     [self addKeyCommandWithInput:UIKeyInputRightArrow modifierFlags:0 action:@selector(selectNextIntelligence:) discoverabilityTitle:@"Switch Views"];
-    [self addKeyCommandWithInput:@"a" modifierFlags:0 action:@selector(tapAddSite:) discoverabilityTitle:@"Add Site"];
+    [self addKeyCommandWithInput:@"a" modifierFlags:UIKeyModifierCommand action:@selector(tapAddSite:) discoverabilityTitle:@"Add Site"];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -234,6 +247,16 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 //                                    scrollPosition:UITableViewScrollPositionNone];
         [self.notifier setNeedsLayout];
     }
+    
+    if (self.searchFeedIds) {
+        [self.feedTitlesTable setContentOffset:CGPointMake(0, 0)];
+        [self.searchBar becomeFirstResponder];
+    } else {
+        [self.searchBar setText:@""];
+        [self.feedTitlesTable setContentOffset:CGPointMake(0, CGRectGetHeight(self.searchBar.frame))];
+    }
+    
+    [self.searchBar setShowsCancelButton:self.searchBar.text.length > 0 animated:YES];
     
 //    NSLog(@"Feed List timing 2: %f", [NSDate timeIntervalSinceReferenceDate] - start);
 }
@@ -340,6 +363,13 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 - (void)viewWillDisappear:(BOOL)animated {
     [self.appDelegate hidePopoverAnimated:YES];
     [super viewWillDisappear:animated];
+    [self.searchBar resignFirstResponder];
+}
+
+- (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+    
+    [self.searchBar resignFirstResponder];
 }
 
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
@@ -501,10 +531,16 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     appDelegate.hasNoSites = NO;
     appDelegate.recentlyReadStories = [NSMutableDictionary dictionary];
     appDelegate.unreadStoryHashes = [NSMutableDictionary dictionary];
-
+    appDelegate.unsavedStoryHashes = [NSMutableDictionary dictionary];
+    
     self.isOffline = NO;
 
     appDelegate.activeUsername = [results objectForKey:@"user"];
+    
+    NSUserDefaults *defaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.com.newsblur.NewsBlur-Group"];
+    [defaults setObject:[results objectForKey:@"share_ext_token"] forKey:@"share:token"];
+    [defaults setObject:DEFAULT_NEWSBLUR_URL forKey:@"share:host"];
+    [defaults synchronize];
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
                                              (unsigned long)NULL), ^(void) {
@@ -592,6 +628,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
                  forControlEvents:UIControlEventTouchUpInside];
         activitiesButton = [[UIBarButtonItem alloc]
                             initWithCustomView:activityButton];
+        activitiesButton.width = 32;
         self.navigationItem.rightBarButtonItem = activitiesButton;
     }
     
@@ -610,7 +647,11 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     if (premiumExpire && ![premiumExpire isKindOfClass:[NSNull class]] && premiumExpire != 0) {
         appDelegate.premiumExpire = [premiumExpire integerValue];
     }
-
+    
+    if (!appDelegate.premiumManager) {
+        appDelegate.premiumManager = [PremiumManager new];
+    }
+    
     // Set up dictSocialFeeds
     NSArray *socialFeedsArray = [results objectForKey:@"social_feeds"];
     NSMutableArray *socialFolder = [[NSMutableArray alloc] init];
@@ -989,6 +1030,17 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     [self layoutHeaderCounts:0];
     [self refreshHeaderCounts];
     
+    self.searchBar.backgroundColor = UIColorFromRGB(0xE3E6E0);
+    self.searchBar.tintColor = UIColorFromRGB(0xffffff);
+    self.searchBar.nb_searchField.textColor = UIColorFromRGB(NEWSBLUR_BLACK_COLOR);
+    self.searchBar.nb_searchField.tintColor = UIColorFromRGB(NEWSBLUR_BLACK_COLOR);
+    
+    if ([ThemeManager themeManager].isDarkTheme) {
+        self.searchBar.keyboardAppearance = UIKeyboardAppearanceDark;
+    } else {
+        self.searchBar.keyboardAppearance = UIKeyboardAppearanceDefault;
+    }
+    
     self.feedTitlesTable.backgroundColor = UIColorFromRGB(0xf4f4f4);
     [self.feedTitlesTable reloadData];
     
@@ -1088,10 +1140,16 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     BOOL isSocial = [appDelegate isSocialFeed:feedIdStr];
     BOOL isSaved = [appDelegate isSavedFeed:feedIdStr];
     BOOL isSavedStoriesFeed = self.appDelegate.isSavedStoriesIntelligenceMode && [self.appDelegate savedStoriesCountForFeed:feedIdStr] > 0;
-    BOOL isFolderCollapsed = [appDelegate isFolderCollapsed:folderName];
-    
+    BOOL isOmitted = false;
     NSString *CellIdentifier;
-    if (isFolderCollapsed || ![self isFeedVisible:feedIdStr]) {
+    
+    if (self.searchFeedIds && !isSaved) {
+        isOmitted = ![self.searchFeedIds containsObject:feedIdStr];
+    } else {
+        isOmitted = [appDelegate isFolderCollapsed:folderName] || ![self isFeedVisible:feedIdStr];
+    }
+    
+    if (isOmitted) {
         CellIdentifier = @"BlankCellIdentifier";
         UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
         if (!cell) {
@@ -1189,7 +1247,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
         appDelegate.storiesCollection.isSocialView = NO;
         appDelegate.storiesCollection.isSavedView = NO;
     }
-
+    
     // If all feeds are already showing, no need to remember this one.
 //    NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
     if (!self.viewShowingAllFeeds) {
@@ -1217,15 +1275,22 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     }
     
     NSString *folderName = appDelegate.dictFoldersArray[indexPath.section];
-
-    bool isFolderCollapsed = [appDelegate isFolderCollapsed:folderName];
-    if (isFolderCollapsed) {
-        return 0;
-    }
-    
     id feedId = [[appDelegate.dictFolders objectForKey:folderName] objectAtIndex:indexPath.row];
-    if (![self isFeedVisible:feedId]) {
-        return 0;
+    NSString *feedIdStr = [NSString stringWithFormat:@"%@", feedId];
+    
+    if (self.searchFeedIds && ![appDelegate isSavedFeed:feedIdStr]) {
+        if (![self.searchFeedIds containsObject:feedIdStr]) {
+            return 0;
+        }
+    } else {
+        BOOL isFolderCollapsed = [appDelegate isFolderCollapsed:folderName];
+        if (isFolderCollapsed) {
+            return 0;
+        }
+        
+        if (![self isFeedVisible:feedId]) {
+            return 0;
+        }
     }
     
     NSInteger height;
@@ -1844,6 +1909,73 @@ heightForHeaderInSection:(NSInteger)section {
 }
 
 #pragma mark -
+#pragma mark Search
+
+- (BOOL)searchBarShouldBeginEditing:(UISearchBar *)searchBar {
+    [self updateTheme];
+    
+    return YES;
+}
+
+- (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar {
+    [self.searchBar setShowsCancelButton:YES animated:YES];
+}
+
+- (void)searchBarTextDidEndEditing:(UISearchBar *)searchBar {
+    if ([self.searchBar.text length]) {
+        [self.searchBar setShowsCancelButton:YES animated:YES];
+    } else {
+        [self.searchBar setShowsCancelButton:NO animated:YES];
+    }
+    [self.searchBar resignFirstResponder];
+}
+
+- (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar {
+    [self.searchBar setText:@""];
+    [self.searchBar resignFirstResponder];
+    self.searchFeedIds = nil;
+    [self.feedTitlesTable reloadData];
+}
+
+- (void)searchBarSearchButtonClicked:(UISearchBar*) theSearchBar {
+    [self.searchBar resignFirstResponder];
+}
+
+- (BOOL)disablesAutomaticKeyboardDismissal {
+    return NO;
+}
+
+- (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText {
+    if (searchText.length) {
+        NSMutableArray *array = [NSMutableArray array];
+        
+        for (NSString *folderName in appDelegate.dictFoldersArray) {
+            NSArray *folder = [appDelegate.dictFolders objectForKey:folderName];
+            
+            for (id feedId in folder) {
+                NSString *feedIdStr = [NSString stringWithFormat:@"%@", feedId];
+                NSDictionary *feed = [appDelegate getFeed:feedIdStr];
+                NSString *title = [feed objectForKey:@"feed_title"];
+                
+                if ([title localizedStandardContainsString:searchText]) {
+                    [array addObject:feedIdStr];
+                }
+            }
+        }
+        
+        NSLog(@"search: '%@' matches %@ feeds", searchText, @(array.count));  // log
+        
+        if (array.count) {
+            self.searchFeedIds = array;
+            [self.feedTitlesTable reloadData];
+        }
+    } else {
+        self.searchFeedIds = nil;
+        [self.feedTitlesTable reloadData];
+    }
+}
+
+#pragma mark -
 #pragma mark PullToRefresh
 
 - (void)refresh:(UIRefreshControl *)refreshControl {
@@ -1968,6 +2100,9 @@ heightForHeaderInSection:(NSInteger)section {
                 [self.appDelegate startOfflineQueue];
             }
             [self loadFavicons];
+            if (!self.searchFeedIds) {
+                [self.feedTitlesTable setContentOffset:CGPointMake(0, CGRectGetHeight(self.searchBar.frame))];
+            }
         });
     });
 }
@@ -2002,6 +2137,7 @@ heightForHeaderInSection:(NSInteger)section {
                                                   target:self
                                                   action:@selector(showUserProfile)];
     userAvatarButton.customView.frame = CGRectMake(0, yOffset + 1, 32, 32);
+    userAvatarButton.width = 32;
     userAvatarButton.accessibilityLabel = @"User info";
     userAvatarButton.accessibilityHint = @"Double-tap for information about your account.";
 
@@ -2012,8 +2148,7 @@ heightForHeaderInSection:(NSInteger)section {
     typeof(self) __weak weakSelf = self;
     [avatarImageView setImageWithURLRequest:avatarRequest placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
         typeof(weakSelf) __strong strongSelf = weakSelf;
-        image = [Utilities imageWithImage:image convertToSize:CGSizeMake(32, 32)];
-        image = [Utilities roundCorneredImage:image radius:6];
+        image = [Utilities roundCorneredImage:image radius:6 convertToSize:CGSizeMake(32, 32)];
         [(UIButton *)strongSelf.userAvatarButton.customView setImage:image forState:UIControlStateNormal];
         
     } failure:^(NSURLRequest * _Nonnull request, NSHTTPURLResponse * _Nonnull response, NSError * _Nonnull error) {
