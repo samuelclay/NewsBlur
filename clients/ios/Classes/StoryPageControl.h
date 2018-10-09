@@ -75,6 +75,7 @@
 @property (nonatomic) MBProgressHUD *storyHUD;
 @property (nonatomic, strong) NBNotifier *notifier;
 @property (nonatomic) NSInteger scrollingToPage;
+@property (nonatomic, readonly) BOOL isHorizontal;
 
 - (void)resizeScrollView;
 - (void)applyNewIndex:(NSInteger)newIndex pageController:(StoryDetailViewController *)pageController;
@@ -104,6 +105,7 @@
 - (void)setFontStyle:(NSString *)fontStyle;
 - (void)changeFontSize:(NSString *)fontSize;
 - (void)changeLineSpacing:(NSString *)lineSpacing;
+- (void)changedScrollOrientation;
 - (void)drawStories;
 - (void)showShareHUD:(NSString *)msg;
 - (void)showFetchingTextNotifier;

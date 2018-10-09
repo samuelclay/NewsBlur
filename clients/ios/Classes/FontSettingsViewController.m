@@ -95,6 +95,15 @@
         }
     }
     
+    if([userPreferences objectForKey:@"scroll_stories_horizontally"]){
+        BOOL scrollHorizontally = [userPreferences boolForKey:@"scroll_stories_horizontally"];
+        if (scrollHorizontally) {
+            [self.scrollOrientationSegment setSelectedSegmentIndex:0];
+        } else {
+            [self.scrollOrientationSegment setSelectedSegmentIndex:1];
+        }
+    }
+    
     NSString *theme = [ThemeManager themeManager].theme;
     if ([theme isEqualToString:@"sepia"]) {
         self.themeSegment.selectedSegmentIndex = 1;
@@ -195,6 +204,13 @@
     [userPreferences synchronize];
 }
 
+- (IBAction)changeScrollOrientation:(id)sender {
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+    [userPreferences setBool:[sender selectedSegmentIndex] == 0 forKey:@"scroll_stories_horizontally"];
+    [userPreferences synchronize];
+    [self.appDelegate.storyPageControl changedScrollOrientation];
+}
+
 - (IBAction)changeTheme:(id)sender {
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     NSString *theme = ThemeStyleLight;
@@ -223,7 +239,7 @@
 #pragma mark - Table view data source
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return 9;
+    return 10;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -236,6 +252,8 @@
     } else if (indexPath.row == 7) {
         return [self makeLineSpacingTableCell];
     } else if (indexPath.row == 8) {
+        return [self makeScrollOrientationTableCell];
+    } else if (indexPath.row == 9) {
         return [self makeThemeTableCell];
     }
     
@@ -396,6 +414,26 @@
     self.lineSpacingSegment.backgroundColor = UIColorFromRGB(0xeeeeee);
     
     [cell addSubview:self.lineSpacingSegment];
+    
+    return cell;
+}
+
+- (UITableViewCell *)makeScrollOrientationTableCell {
+    UITableViewCell *cell = [[UITableViewCell alloc] init];
+    cell.frame = CGRectMake(0, 0, 240, kMenuOptionHeight);
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    cell.separatorInset = UIEdgeInsetsZero;
+    cell.backgroundColor = UIColorFromRGB(0xffffff);
+    
+    self.scrollOrientationSegment.frame = CGRectMake(8, 7, cell.frame.size.width - 8*2, kMenuOptionHeight - 7*2);
+    [self.scrollOrientationSegment setTitle:[@"⏩ Horizontal" uppercaseString] forSegmentAtIndex:0];
+    [self.scrollOrientationSegment setTitle:[@"⏬ Vertical" uppercaseString] forSegmentAtIndex:1];
+    self.scrollOrientationSegment.backgroundColor = UIColorFromRGB(0xeeeeee);
+    [self.scrollOrientationSegment setTitleTextAttributes:@{NSFontAttributeName:[UIFont fontWithName:@"Helvetica-Bold" size:11.0f]} forState:UIControlStateNormal];
+    [self.scrollOrientationSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:0];
+    [self.scrollOrientationSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:1];
+    
+    [cell addSubview:self.scrollOrientationSegment];
     
     return cell;
 }
