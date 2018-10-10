@@ -13,6 +13,9 @@ services:
       - redis
     ports:
       - '8000:8000'
+    networks:
+      - front
+      - back
 
   postgres:
     image: postgres:9
@@ -23,19 +26,56 @@ services:
       - '5432:5432'
     volumes:
       - ./docker/postgres:/docker-entrypoint-initdb.d
+      - ./docker/volumes/postgres:/var/lib/postgresql/data
+    networks:
+      - back
 
   redis:
     image: redis:3
     ports:
       - '6379:6379'
+    volumes:
+      - ./docker/volumes/redis:/data
+      - ./config/redis.conf:/usr/local/etc/redis_server.conf
+      - ./config/redis_docker.conf:/etc/redis_server.conf
+      - ./docker/volumes/redis.var.lib:/var/lib/redis
+    command: /usr/local/bin/redis-server /usr/local/etc/redis_server.conf
+    networks:
+      - back
+
 
   elasticsearch:
     image: elasticsearch:1.7
     ports:
       - '9200:9200'
+    volumes:
+      - ./docker/volumes/elasticsearch:/usr/share/elasticsearch/data
+    networks:
+      - back
 
   mongo:
     image: mongo:3.2
     ports:
       - '27017:27017'
     command: mongod --smallfiles
+    volumes:
+      - ./docker/volumes/mongo:/data/db
+    networks:
+      - back
+
+networks:
+    front:
+      driver: bridge
+# Note: below is optional, if you have an existing ingress bridge
+#      config:
+#        external:
+#            name: ingress
+    back:
+      driver: bridge
+      ipam:
+        driver: default
+# Note: below is optional, if you'd like the back bridge to use fewer IP addresses
+#        config:
+#        - subnet: 172.16.128.0/24
+#          gateway: 172.16.128.1
+      internal: true
