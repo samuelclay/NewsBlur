@@ -628,7 +628,7 @@
     [self updateTraverseBackground];
     [self setNextPreviousButtons];
     [self setTextButton];
-    [self drawStories];
+    [self updateStoriesTheme];
 }
 
 // allow keyboard comands
@@ -1315,10 +1315,10 @@
     [self reorientPages];
 }
 
-- (void)drawStories {
-    [self.currentPage drawStory];
-    [self.nextPage drawStory];
-    [self.previousPage drawStory];
+- (void)updateStoriesTheme {
+    [self.currentPage updateStoryTheme];
+    [self.nextPage updateStoryTheme];
+    [self.previousPage updateStoryTheme];
 }
 
 - (void)backToDashboard:(id)sender {
