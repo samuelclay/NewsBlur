@@ -57,6 +57,7 @@
 
     self.navigationItem.title = @"NewsBlur Premium";
     [self loadProducts];
+    [self preparePolicyText];
     [self updateTheme];
     [confettiView setNeedsLayout];
     [confettiView startConfetti];
@@ -77,6 +78,26 @@
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
+- (void)preparePolicyText {
+    NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle defaultParagraphStyle] mutableCopy];
+    paragraphStyle.alignment = NSTextAlignmentCenter;
+    NSDictionary *attributes = @{NSParagraphStyleAttributeName : paragraphStyle};
+    NSMutableAttributedString *policyString = [[NSMutableAttributedString alloc] initWithString:@"See NewsBlur's " attributes:attributes];
+    NSURL *privacyURL = [NSURL URLWithString:@"https://newsblur.com/privacy/"];
+    NSURL *termsURL = [NSURL URLWithString:@"https://newsblur.com/tos/"];
+    NSAttributedString *privacyLink = [[NSAttributedString alloc] initWithString:@"privacy policy"
+                                                                      attributes:@{NSLinkAttributeName : privacyURL}];
+    NSAttributedString *termsLink = [[NSAttributedString alloc] initWithString:@"terms of use"
+                                                                    attributes:@{NSLinkAttributeName : termsURL}];
+    
+    [policyString appendAttributedString:privacyLink];
+    [policyString appendAttributedString:[[NSAttributedString alloc] initWithString:@" and "]];
+    [policyString appendAttributedString:termsLink];
+    [policyString appendAttributedString:[[NSAttributedString alloc] initWithString:@" for details."]];
+    
+    self.policyTextView.attributedText = policyString;
+}
+
 - (void)updateTheme {
     [super updateTheme];
     
@@ -85,6 +106,9 @@
     self.view.backgroundColor = UIColorFromRGB(0xf4f4f4);
     self.labelTitle.textColor = UIColorFromRGB(0x0c0c0c);
     self.labelSubtitle.textColor = UIColorFromRGB(0x0c0c0c);
+    self.policyTextView.textColor = UIColorFromRGB(0x0c0c0c);
+    self.policyTextView.linkTextAttributes = @{NSForegroundColorAttributeName : UIColorFromRGB(NEWSBLUR_LINK_COLOR)};
+
     self.labelPremiumExpire.textColor = UIColorFromRGB(0x0c0c0c);
     self.labelPremiumTitle.textColor = UIColorFromRGB(0x0c0c0c);
     self.labelPremiumExpire.shadowColor = UIColorFromRGB(0xf4f4f4);
