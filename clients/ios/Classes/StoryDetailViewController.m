@@ -451,11 +451,7 @@
                             appDelegate.storiesCollection.isReadView) ?
                             @"NB-river" : @"NB-non-river";
     
-    NSString *themeStyle = [ThemeManager themeManager].themeCSSSuffix;
-    
-    if (themeStyle.length) {
-        themeStyle = [NSString stringWithFormat:@"<link rel=\"stylesheet\" type=\"text/css\" href=\"storyDetailView%@.css\">", themeStyle];
-    }
+    NSString *themeStyle = [NSString stringWithFormat:@"<link rel=\"stylesheet\" type=\"text/css\" id=\"NB-theme-style\" href=\"storyDetailView%@.css\">", [ThemeManager themeManager].themeCSSSuffix];
     
     // set up layout values based on iPad/iPhone
     headerString = [NSString stringWithFormat:@
@@ -1745,6 +1741,13 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 - (void)changeLineSpacing:(NSString *)lineSpacing {
     NSString *jsString = [[NSString alloc] initWithFormat:@"document.getElementById('NB-line-spacing').setAttribute('class', 'NB-line-spacing-%@')",
                           lineSpacing];
+    
+    [self.webView stringByEvaluatingJavaScriptFromString:jsString];
+}
+
+- (void)updateStoryTheme {
+    NSString *jsString = [NSString stringWithFormat:@"document.getElementById('NB-theme-style').href='storyDetailView%@.css';",
+                          [ThemeManager themeManager].themeCSSSuffix];
     
     [self.webView stringByEvaluatingJavaScriptFromString:jsString];
 }
