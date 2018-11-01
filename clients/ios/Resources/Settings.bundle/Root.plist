@@ -464,6 +464,28 @@
 			<key>DefaultValue</key>
 			<true/>
 		</dict>
+        <dict>
+            <key>FooterText</key>
+            <string></string>
+            <key>Type</key>
+            <string>PSMultiValueSpecifier</string>
+            <key>Title</key>
+            <string>Tap story</string>
+            <key>Titles</key>
+            <array>
+                <string>Toggle full screen</string>
+                <string>Do nothing</string>
+            </array>
+            <key>DefaultValue</key>
+            <string>toggle_full_screen</string>
+            <key>Values</key>
+            <array>
+                <string>toggle_full_screen</string>
+                <string>nothing</string>
+            </array>
+            <key>Key</key>
+            <string>tap_story</string>
+        </dict>
 		<dict>
 			<key>FooterText</key>
 			<string></string>

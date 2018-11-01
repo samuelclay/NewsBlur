@@ -104,12 +104,12 @@
     doubleTapGesture.delegate = self;
     [self.webView addGestureRecognizer:doubleTapGesture];
     
-//    UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc]
-//                                          initWithTarget:self action:@selector(tap:)];
-//    tapGesture.numberOfTapsRequired = 1;
-//    tapGesture.delegate = self;
-//    [tapGesture requireGestureRecognizerToFail:doubleTapGesture];
-//    [self.webView addGestureRecognizer:tapGesture];
+    UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc]
+                                          initWithTarget:self action:@selector(tap:)];
+    tapGesture.numberOfTapsRequired = 1;
+    tapGesture.delegate = self;
+    [tapGesture requireGestureRecognizerToFail:doubleTapGesture];
+    [self.webView addGestureRecognizer:tapGesture];
     
     UITapGestureRecognizer *doubleDoubleTapGesture = [[UITapGestureRecognizer alloc]
                                                       initWithTarget:self
@@ -166,10 +166,60 @@
 }
 
 - (void)tap:(UITapGestureRecognizer *)gestureRecognizer {
-//    NSLog(@"Gesture tap: %d (%d) - %d", gestureRecognizer.state, UIGestureRecognizerStateEnded, inDoubleTap);
+//    NSLog(@"Gesture tap: %ld (%ld) - %d", (long)gestureRecognizer.state, (long)UIGestureRecognizerStateEnded, inDoubleTap);
 
-    if (gestureRecognizer.state == UIGestureRecognizerStateEnded && gestureRecognizer.numberOfTouches == 1) {
-        [self tapImage:gestureRecognizer];
+    NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
+    NSString *tapStory = [preferences stringForKey:@"tap_story"];
+    
+    if (gestureRecognizer.state == UIGestureRecognizerStateEnded && gestureRecognizer.numberOfTouches == 1 && [tapStory isEqualToString:@"toggle_full_screen"] && UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        CGPoint pt = [self pointForGesture:gestureRecognizer];
+        if (pt.x == CGPointZero.x && pt.y == CGPointZero.y) return;
+//        NSLog(@"Tapped point: %@", NSStringFromCGPoint(pt));
+        NSString *tagName = [webView stringByEvaluatingJavaScriptFromString:
+                             [NSString stringWithFormat:@"linkAt(%li, %li, 'tagName');",
+                              (long)pt.x,(long)pt.y]];
+        
+        // Special case to handle the story title, Train, Save, and Share buttons.
+        if ([tagName isEqualToString:@"DIV"]) {
+            NSString *identifier = [webView stringByEvaluatingJavaScriptFromString:
+                                   [NSString stringWithFormat:@"linkAt(%li, %li, 'id');",
+                                    (long)pt.x,(long)pt.y]];
+            NSString *outerHTML = [webView stringByEvaluatingJavaScriptFromString:
+             [NSString stringWithFormat:@"linkAt(%li, %li, 'outerHTML');",
+              (long)pt.x,(long)pt.y]];
+            
+            if (![identifier isEqualToString:@"NB-story"] && [outerHTML containsString:@"NB-"]) {
+                tagName = @"A";
+            }
+        }
+        
+        // Ignore links, images, videos, and iframes (e.g. embedded YouTube videos).
+        if (!inDoubleTap && ![@[@"A", @"IMG", @"VIDEO", @"IFRAME"] containsObject:tagName]) {
+            BOOL isHidden = self.navigationController.navigationBarHidden;
+            
+            [self.navigationController setNavigationBarHidden:!isHidden animated:YES];
+            
+            if (@available(iOS 11.0, *)) {
+                if (!isHidden && self.view.safeAreaInsets.top > 0.0 && self.webView.scrollView.contentOffset.y <= 0.0) {
+                    CGRect frame = self.webView.frame;
+                    self.webView.frame = CGRectMake(frame.origin.x, frame.origin.y + 40, frame.size.width, frame.size.height + 80);
+                    self.webView.scrollView.contentOffset = CGPointMake(0.0, 10.0);
+                }
+            }
+            
+            [UIView animateWithDuration:0.5 animations:^{
+                [self setNeedsStatusBarAppearanceUpdate];
+            }];
+            
+            UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
+            [appDelegate.storyPageControl adjustDragBar:orientation];
+            [appDelegate.storyPageControl reorientPages];
+            
+            [self.view setNeedsLayout];
+            [self.view layoutIfNeeded];
+        }
+        
+//        [self tapImage:gestureRecognizer];
     }
 }
 
@@ -547,6 +597,16 @@
         self.feedTitleGradient = nil;
     }
     
+    if (self.navigationController.navigationBarHidden) {
+        if (@available(iOS 11.0, *)) {
+            if (self.view.safeAreaInsets.top > 0.0) {
+                return;
+            }
+        } else {
+            return;
+        }
+    }
+
     self.feedTitleGradient = [appDelegate
                               makeFeedTitleGradient:feed
                               withRect:CGRectMake(0, -1, CGRectGetWidth(self.view.bounds), 21)]; // 1024 hack for self.webView.frame.size.width
