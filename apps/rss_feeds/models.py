@@ -11,6 +11,7 @@ import hashlib
 import redis
 import pymongo
 import HTMLParser
+import urlparse
 from collections import defaultdict
 from operator import itemgetter
 from bson.objectid import ObjectId
@@ -1086,6 +1087,12 @@ class Feed(models.Model):
     
     @property
     def user_agent(self):
+        feed_parts = urlparse.urlparse(self.feed_address)
+        if feed_parts.netloc.find('.tumblr.com') != -1:
+            # Certain tumblr feeds will redirect to tumblr's login page when fetching.
+            # A known workaround is using facebook's user agent.
+            return 'facebookexternalhit/1.0 (+http://www.facebook.com/externalhit_uatext.php)'
+
         ua = ('NewsBlur Feed Fetcher - %s subscriber%s - %s '
               '(Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_3) '
               'AppleWebKit/537.36 (KHTML, like Gecko) '
