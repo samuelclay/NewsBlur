@@ -82,7 +82,7 @@ PAYPAL_TEST           = False
 
 # Uncomment below to force all feeds to store this many stories. Default is to cut 
 # off at 25 stories for single subscriber non-premium feeds and 500 for popular feeds.
-OVERRIDE_STORY_COUNT_MAX = 1000
+# OVERRIDE_STORY_COUNT_MAX = 1000
 
 # ===========================
 # = Django-specific Modules =
