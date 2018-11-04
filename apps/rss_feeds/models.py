@@ -1494,6 +1494,9 @@ class Feed(models.Model):
                 logging.debug("   ***> [%-30s] Error trimming: %s" % (self.log_title[:30], e))
                 pass
         
+        if getattr(settings, 'OVERRIDE_STORY_COUNT_MAX', None):
+            cutoff = settings.OVERRIDE_STORY_COUNT_MAX
+        
         return cutoff
                 
     def trim_feed(self, verbose=False, cutoff=None):
