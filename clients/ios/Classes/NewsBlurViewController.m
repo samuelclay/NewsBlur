@@ -115,7 +115,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     self.refreshControl.tintColor = UIColorFromLightDarkRGB(0x0, 0xffffff);
     self.refreshControl.backgroundColor = UIColorFromRGB(0xE3E6E0);
     [self.refreshControl addTarget:self action:@selector(refresh:) forControlEvents:UIControlEventValueChanged];
-    [self.feedTitlesTable addSubview:self.refreshControl];
+    self.feedTitlesTable.refreshControl = self.refreshControl;
     self.feedViewToolbar.translatesAutoresizingMaskIntoConstraints = NO;
     
     self.searchBar = [[UISearchBar alloc]
@@ -2100,8 +2100,11 @@ heightForHeaderInSection:(NSInteger)section {
                 [self.appDelegate startOfflineQueue];
             }
             [self loadFavicons];
-            if (!self.searchFeedIds) {
-                [self.feedTitlesTable setContentOffset:CGPointMake(0, CGRectGetHeight(self.searchBar.frame))];
+            if (!self.searchFeedIds && self.feedTitlesTable.contentOffset.y == 0) {
+                [UIView animateWithDuration:0.2 animations:^{
+                    self.feedTitlesTable.contentOffset = CGPointMake(0, CGRectGetHeight(self.searchBar.frame));
+                }];
+                
             }
         });
     });
