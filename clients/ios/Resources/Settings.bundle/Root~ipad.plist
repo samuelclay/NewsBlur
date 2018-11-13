@@ -184,13 +184,25 @@
 		</dict>
 		<dict>
 			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
+			<string>PSMultiValueSpecifier</string>
 			<key>Title</key>
 			<string>Preview images</string>
+			<key>Titles</key>
+			<array>
+				<string>None</string>
+				<string>Small</string>
+				<string>Large</string>
+			</array>
+			<key>Values</key>
+			<array>
+				<string>none</string>
+				<string>small</string>
+				<string>large</string>
+			</array>
 			<key>Key</key>
-			<string>story_list_preview_images</string>
+			<string>story_list_preview_images_size</string>
 			<key>DefaultValue</key>
-			<true/>
+			<string>large</string>
 		</dict>
 		<dict>
 			<key>Title</key>

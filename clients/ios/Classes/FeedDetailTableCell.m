@@ -184,6 +184,7 @@ static UIFont *indicatorFont = nil;
     
     CGRect rect = CGRectInset(r, 12, 12);
     rect.size.width -= 18; // Scrollbar padding
+    CGRect dateRect = rect;
     
     UIColor *backgroundColor;
     backgroundColor = cell.highlighted || cell.selected ?
@@ -193,8 +194,13 @@ static UIFont *indicatorFont = nil;
     CGContextFillRect(context, r);
     
     if (cell.storyImageUrl) {
-        CGRect imageFrame = CGRectMake(r.size.width-r.size.height, 1,
-                                       r.size.height, r.size.height);
+        NSString *preview = [[NSUserDefaults standardUserDefaults] stringForKey:@"story_list_preview_images_size"];
+        BOOL isSmall = [preview isEqualToString:@"small"];
+        CGFloat previewOffset = isSmall ? 60 : 0;
+        CGFloat previewMargin = isSmall ? 10 : 0;
+        
+        CGRect imageFrame = CGRectMake(r.size.width - r.size.height + previewOffset - previewMargin, (previewOffset / 2.0) + 1.0,
+                                       r.size.height - previewOffset, r.size.height - previewOffset);
         UIImageView *storyImageView = [[UIImageView alloc] initWithFrame:imageFrame];
         
         UIImage *cachedImage = (UIImage *)[appDelegate.cachedStoryImages objectForKey:cell.storyImageUrl];
@@ -211,6 +217,10 @@ static UIFont *indicatorFont = nil;
             }
             [storyImageView.image drawInRect:imageFrame blendMode:0 alpha:alpha];
             rect.size.width -= imageFrame.size.width;
+            
+            if (!isSmall) {
+                dateRect = rect;
+            }
         }
     }
     
@@ -365,7 +375,7 @@ static UIFont *indicatorFont = nil;
                                                  NSForegroundColorAttributeName: textColor,
                                                  NSParagraphStyleAttributeName: paragraphStyle}];
     [date
-     drawInRect:CGRectMake(0, storyAuthorDateY, rect.size.width + leftMargin, 15.0)
+     drawInRect:CGRectMake(0, storyAuthorDateY, dateRect.size.width + leftMargin, 15.0)
      withAttributes:@{NSFontAttributeName: font,
                       NSForegroundColorAttributeName: textColor,
                       NSParagraphStyleAttributeName: paragraphStyle}];
