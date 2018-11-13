@@ -164,13 +164,25 @@
 		</dict>
 		<dict>
 			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
+			<string>PSMultiValueSpecifier</string>
+			<key>Titles</key>
+			<array>
+				<string>None</string>
+				<string>Small</string>
+				<string>Large</string>
+			</array>
+			<key>Values</key>
+			<array>
+				<string>none</string>
+				<string>small</string>
+				<string>large</string>
+			</array>
 			<key>Title</key>
 			<string>Preview images</string>
 			<key>Key</key>
-			<string>story_list_preview_images</string>
+			<string>story_list_preview_images_size</string>
 			<key>DefaultValue</key>
-			<true/>
+			<string>large</string>
 		</dict>
 		<dict>
 			<key>Title</key>
@@ -464,28 +476,28 @@
 			<key>DefaultValue</key>
 			<true/>
 		</dict>
-        <dict>
-            <key>FooterText</key>
-            <string></string>
-            <key>Type</key>
-            <string>PSMultiValueSpecifier</string>
-            <key>Title</key>
-            <string>Tap story</string>
-            <key>Titles</key>
-            <array>
-                <string>Toggle full screen</string>
-                <string>Do nothing</string>
-            </array>
-            <key>DefaultValue</key>
-            <string>toggle_full_screen</string>
-            <key>Values</key>
-            <array>
-                <string>toggle_full_screen</string>
-                <string>nothing</string>
-            </array>
-            <key>Key</key>
-            <string>tap_story</string>
-        </dict>
+		<dict>
+			<key>FooterText</key>
+			<string></string>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Tap story</string>
+			<key>Titles</key>
+			<array>
+				<string>Toggle full screen</string>
+				<string>Do nothing</string>
+			</array>
+			<key>DefaultValue</key>
+			<string>toggle_full_screen</string>
+			<key>Values</key>
+			<array>
+				<string>toggle_full_screen</string>
+				<string>nothing</string>
+			</array>
+			<key>Key</key>
+			<string>tap_story</string>
+		</dict>
 		<dict>
 			<key>FooterText</key>
 			<string></string>
