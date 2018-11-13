@@ -40,7 +40,7 @@
 }
 
 - (void)rebuildOptions {
-    if ([appDelegate.activeUsername isEqualToString:@"samuel"]) {
+    if ([appDelegate.activeUsername isEqualToString:@"samuel"] || [appDelegate.activeUsername isEqualToString:@"Dejal"]) {
         self.menuOptions = [[NSArray alloc]
                             initWithObjects:[@"Preferences" uppercaseString],
                                             [@"Mute Sites" uppercaseString],

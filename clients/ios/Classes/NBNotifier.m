@@ -219,6 +219,10 @@
 }
 
 - (void)showIn:(float)time {
+    if (showing) {
+        return;
+    }
+    
     showing = YES;
 //    CGRect frame = self.frame;
 //    frame.size.width = self.view.frame.size.width;
@@ -226,6 +230,10 @@
     self.hidden = NO;
     
     topOffsetConstraint.constant = -1 * NOTIFIER_HEIGHT;
+    
+    if (time == 0) {
+        return;
+    }
     
     [UIView animateWithDuration:time animations:^{
 //        CGRect move = self.frame;
