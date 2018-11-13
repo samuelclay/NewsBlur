@@ -2277,7 +2277,7 @@ heightForHeaderInSection:(NSInteger)section {
     self.notifier.style = NBSyncingStyle;
     self.notifier.title = @"On its way...";
     [self.notifier setProgress:0];
-    [self.notifier show];
+    [self.notifier showIn:self.inPullToRefresh_ ? 0.3f : 0.0f];
 }
 
 - (void)showCountingNotifier {
