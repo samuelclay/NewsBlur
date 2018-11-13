@@ -279,7 +279,7 @@
 - (void)reloadData {
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     self.showContentPreview = [userPreferences boolForKey:@"story_list_preview_description"];
-    self.showImagePreview = [userPreferences boolForKey:@"story_list_preview_images"];
+    self.showImagePreview = ![[userPreferences stringForKey:@"story_list_preview_images_size"] isEqualToString:@"none"];
     
     appDelegate.fontDescriptorTitleSize = nil;
     self.scrollingMarkReadRow = NSNotFound;
@@ -315,7 +315,7 @@
     
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     self.showContentPreview = [userPreferences boolForKey:@"story_list_preview_description"];
-    self.showImagePreview = [userPreferences boolForKey:@"story_list_preview_images"];
+    self.showImagePreview = ![[userPreferences stringForKey:@"story_list_preview_images_size"] isEqualToString:@"none"];
     
     // set right avatar title image
     spacerBarButton.width = 0;

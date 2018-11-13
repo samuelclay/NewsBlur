@@ -2695,7 +2695,7 @@
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 1000;
+				LastUpgradeCheck = 1010;
 				ORGANIZATIONNAME = NewsBlur;
 				TargetAttributes = {
 					1749390F1C251BFE003D98AA = {
