@@ -232,6 +232,14 @@
     }];
 }
 
+- (BOOL)prefersStatusBarHidden {
+    if (@available(iOS 11.0, *)) {
+        return self.navigationController.navigationBarHidden && self.view.safeAreaInsets.top > 0.0;
+    } else {
+        return self.navigationController.navigationBarHidden;
+    }
+}
+
 - (void)adjustLayout {
     if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
         return;

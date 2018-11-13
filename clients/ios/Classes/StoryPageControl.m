@@ -426,6 +426,14 @@
     [self adjustDragBar:orientation];
 }
 
+- (BOOL)prefersStatusBarHidden {
+    if (@available(iOS 11.0, *)) {
+        return self.navigationController.navigationBarHidden && self.view.safeAreaInsets.top > 0.0;
+    } else {
+        return self.navigationController.navigationBarHidden;
+    }
+}
+
 - (void)adjustDragBar:(UIInterfaceOrientation)orientation {
 //    CGRect scrollViewFrame = self.scrollView.frame;
 //    CGRect traverseViewFrame = self.traverseView.frame;
