@@ -119,6 +119,11 @@
     doubleDoubleTapGesture.delegate = self;
     [self.webView addGestureRecognizer:doubleDoubleTapGesture];
     
+    UIScreenEdgePanGestureRecognizer *screenEdgeGesture = [[UIScreenEdgePanGestureRecognizer alloc]
+                                                           initWithTarget:self action:@selector(screenEdgeSwipe:)];
+    screenEdgeGesture.edges = UIRectEdgeLeft;
+    [self.webView addGestureRecognizer:screenEdgeGesture];
+    
     [[ThemeManager themeManager] addThemeGestureRecognizerToView:self.webView];
     
     // This makes the theme gesture work reliably, but makes scrolling more "sticky", so isn't acceptable:
@@ -171,7 +176,7 @@
     NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
     NSString *tapStory = [preferences stringForKey:@"tap_story"];
     
-    if (gestureRecognizer.state == UIGestureRecognizerStateEnded && gestureRecognizer.numberOfTouches == 1 && [tapStory isEqualToString:@"toggle_full_screen"] && UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+    if (gestureRecognizer.state == UIGestureRecognizerStateEnded && gestureRecognizer.numberOfTouches == 1 && [tapStory isEqualToString:@"toggle_full_screen"] && UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone && self.presentedViewController == nil) {
         CGPoint pt = [self pointForGesture:gestureRecognizer];
         if (pt.x == CGPointZero.x && pt.y == CGPointZero.y) return;
 //        NSLog(@"Tapped point: %@", NSStringFromCGPoint(pt));
@@ -193,8 +198,8 @@
             }
         }
         
-        // Ignore links, images, videos, and iframes (e.g. embedded YouTube videos).
-        if (!inDoubleTap && ![@[@"A", @"IMG", @"VIDEO", @"IFRAME"] containsObject:tagName]) {
+        // Ignore links, videos, and iframes (e.g. embedded YouTube videos).
+        if (!inDoubleTap && ![@[@"A", @"VIDEO", @"IFRAME"] containsObject:tagName]) {
             BOOL isHidden = self.navigationController.navigationBarHidden;
             
             [self.navigationController setNavigationBarHidden:!isHidden animated:YES];
@@ -267,6 +272,16 @@
         }
         inDoubleTap = NO;
         [self performSelector:@selector(deferredEnableScrolling) withObject:nil afterDelay:0.0];
+    }
+}
+
+- (void)screenEdgeSwipe:(UITapGestureRecognizer *)gestureRecognizer {
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+    BOOL swipeEnabled = [[userPreferences stringForKey:@"story_detail_swipe_left_edge"]
+                         isEqualToString:@"pop_to_story_list"];
+    
+    if (swipeEnabled && gestureRecognizer.state == UIGestureRecognizerStateEnded) {
+        [appDelegate hideStoryDetailView];
     }
 }
 
