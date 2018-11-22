@@ -538,6 +538,12 @@
     if (self.isHorizontal) {
         frame.origin.x = frame.size.width * currentIndex;
         frame.origin.y = 0;
+        
+//        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+//            if (@available(iOS 11.0, *)) {
+//                frame.origin.y -= self.view.safeAreaInsets.bottom;
+//            }
+//        }
     } else {
         frame.origin.x = 0;
         frame.origin.y = frame.size.height * currentIndex;
