@@ -575,6 +575,7 @@ def load_single_feed(request, feed_id):
     # limit                   = int(request.REQUEST.get('limit', 6))
     limit                   = 6
     page                    = int(request.REQUEST.get('page', 1))
+    delay                   = int(request.REQUEST.get('delay', 0))
     offset                  = limit * (page-1)
     order                   = request.REQUEST.get('order', 'newest')
     read_filter             = request.REQUEST.get('read_filter', 'all')
@@ -782,10 +783,11 @@ def load_single_feed(request, feed_id):
     # if not usersub and feed.num_subscribers <= 1:
     #     data = dict(code=-1, message="You must be subscribed to this feed.")
     
-    # if page <= 3:
-    #     import random
-    #     # time.sleep(random.randint(2, 7) / 10.0)
-    #     time.sleep(random.randint(1, 10))
+    if delay and user.is_staff:
+        # import random
+        # time.sleep(random.randint(2, 7) / 10.0)
+        # time.sleep(random.randint(1, 10))
+        time.sleep(delay)
     
     # if page == 2:
     #     assert False
