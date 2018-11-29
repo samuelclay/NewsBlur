@@ -97,6 +97,13 @@
 	[self.scrollView setShowsVerticalScrollIndicator:NO];
     [self.scrollView setAlwaysBounceHorizontal:self.isHorizontal];
     [self.scrollView setAlwaysBounceVertical:!self.isHorizontal];
+    
+    if (@available(iOS 11.0, *)) {
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+            self.scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+        }
+    }
+    
 //    NSLog(@"Scroll view frame post: %@", NSStringFromCGRect(self.scrollView.frame));
 //    NSLog(@"Scroll view parent: %@", NSStringFromCGRect(currentPage.view.frame));
     [self.scrollView sizeToFit];
