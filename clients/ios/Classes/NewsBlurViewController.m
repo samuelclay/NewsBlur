@@ -249,11 +249,11 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     }
     
     if (self.searchFeedIds) {
-        [self.feedTitlesTable setContentOffset:CGPointMake(0, 0)];
+//        [self.feedTitlesTable setContentOffset:CGPointMake(0, 0)];
         [self.searchBar becomeFirstResponder];
     } else {
         [self.searchBar setText:@""];
-        [self.feedTitlesTable setContentOffset:CGPointMake(0, CGRectGetHeight(self.searchBar.frame))];
+//        [self.feedTitlesTable setContentOffset:CGPointMake(0, CGRectGetHeight(self.searchBar.frame))];
     }
     
     [self.searchBar setShowsCancelButton:self.searchBar.text.length > 0 animated:YES];
@@ -580,6 +580,11 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 
 - (void)finishLoadingFeedListWithDict:(NSDictionary *)results finished:(BOOL)finished {
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+    
+    // Doing this here avoids the search bar from appearing on initial load, but doesn't help when only a few rows visible.
+//    if (!self.searchFeedIds && self.feedTitlesTable.contentOffset.y == 0) {
+//        self.feedTitlesTable.contentOffset = CGPointMake(0, CGRectGetHeight(self.searchBar.frame));
+//    }
     
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     self.stillVisibleFeeds = [NSMutableDictionary dictionary];
@@ -2100,12 +2105,12 @@ heightForHeaderInSection:(NSInteger)section {
                 [self.appDelegate startOfflineQueue];
             }
             [self loadFavicons];
-            if (!self.searchFeedIds && self.feedTitlesTable.contentOffset.y == 0) {
-                [UIView animateWithDuration:0.2 animations:^{
-                    self.feedTitlesTable.contentOffset = CGPointMake(0, CGRectGetHeight(self.searchBar.frame));
-                }];
-                
-            }
+//            if (!self.searchFeedIds && self.feedTitlesTable.contentOffset.y == 0) {
+//                [UIView animateWithDuration:0.2 animations:^{
+//                    self.feedTitlesTable.contentOffset = CGPointMake(0, CGRectGetHeight(self.searchBar.frame));
+//                }];
+//
+//            }
         });
     });
 }

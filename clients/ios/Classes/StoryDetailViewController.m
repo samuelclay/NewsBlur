@@ -76,8 +76,6 @@
     AVAudioSession *audioSession = [AVAudioSession sharedInstance];
     [audioSession setCategory:AVAudioSessionCategoryPlayback
                         error:nil];
-    [audioSession setActive:YES
-                      error:nil];
     
     self.webView.scalesPageToFit = YES;
     self.webView.allowsLinkPreview = YES;
@@ -88,6 +86,13 @@
     [self.webView.scrollView setDecelerationRate:UIScrollViewDecelerationRateNormal];
     [self.webView.scrollView setAutoresizesSubviews:(UIViewAutoresizingFlexibleWidth |
                                                      UIViewAutoresizingFlexibleHeight)];
+    
+    if (@available(iOS 11.0, *)) {
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+            self.webView.scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+        }
+    }
+    
     [self.webView.scrollView addObserver:self forKeyPath:@"contentOffset"
                                  options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld
                                  context:nil];
@@ -118,6 +123,11 @@
     doubleDoubleTapGesture.numberOfTapsRequired = 2;
     doubleDoubleTapGesture.delegate = self;
     [self.webView addGestureRecognizer:doubleDoubleTapGesture];
+    
+    UIScreenEdgePanGestureRecognizer *screenEdgeGesture = [[UIScreenEdgePanGestureRecognizer alloc]
+                                                           initWithTarget:self action:@selector(screenEdgeSwipe:)];
+    screenEdgeGesture.edges = UIRectEdgeLeft;
+    [self.webView addGestureRecognizer:screenEdgeGesture];
     
     [[ThemeManager themeManager] addThemeGestureRecognizerToView:self.webView];
     
@@ -171,7 +181,7 @@
     NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
     NSString *tapStory = [preferences stringForKey:@"tap_story"];
     
-    if (gestureRecognizer.state == UIGestureRecognizerStateEnded && gestureRecognizer.numberOfTouches == 1 && [tapStory isEqualToString:@"toggle_full_screen"] && UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+    if (gestureRecognizer.state == UIGestureRecognizerStateEnded && gestureRecognizer.numberOfTouches == 1 && [tapStory isEqualToString:@"toggle_full_screen"] && UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone && self.presentedViewController == nil) {
         CGPoint pt = [self pointForGesture:gestureRecognizer];
         if (pt.x == CGPointZero.x && pt.y == CGPointZero.y) return;
 //        NSLog(@"Tapped point: %@", NSStringFromCGPoint(pt));
@@ -193,8 +203,8 @@
             }
         }
         
-        // Ignore links, images, videos, and iframes (e.g. embedded YouTube videos).
-        if (!inDoubleTap && ![@[@"A", @"IMG", @"VIDEO", @"IFRAME"] containsObject:tagName]) {
+        // Ignore links, videos, and iframes (e.g. embedded YouTube videos).
+        if (!inDoubleTap && ![@[@"A", @"VIDEO", @"IFRAME"] containsObject:tagName]) {
             BOOL isHidden = self.navigationController.navigationBarHidden;
             
             [self.navigationController setNavigationBarHidden:!isHidden animated:YES];
@@ -267,6 +277,16 @@
         }
         inDoubleTap = NO;
         [self performSelector:@selector(deferredEnableScrolling) withObject:nil afterDelay:0.0];
+    }
+}
+
+- (void)screenEdgeSwipe:(UITapGestureRecognizer *)gestureRecognizer {
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+    BOOL swipeEnabled = [[userPreferences stringForKey:@"story_detail_swipe_left_edge"]
+                         isEqualToString:@"pop_to_story_list"];
+    
+    if (swipeEnabled && gestureRecognizer.state == UIGestureRecognizerStateEnded) {
+        [appDelegate hideStoryDetailView];
     }
 }
 
