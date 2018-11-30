@@ -489,7 +489,7 @@
 				<string>Do nothing</string>
 			</array>
 			<key>DefaultValue</key>
-			<string>toggle_full_screen</string>
+			<string>nothing</string>
 			<key>Values</key>
 			<array>
 				<string>toggle_full_screen</string>
