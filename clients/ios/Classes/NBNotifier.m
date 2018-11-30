@@ -227,6 +227,8 @@
     
     topOffsetConstraint.constant = -1 * NOTIFIER_HEIGHT;
     
+    [self.superview layoutIfNeeded];
+    
     [UIView animateWithDuration:time animations:^{
 //        CGRect move = self.frame;
 //        move.origin.x = self.view.frame.origin.x + self.offset.x;
