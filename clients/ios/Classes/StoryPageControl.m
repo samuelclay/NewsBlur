@@ -434,11 +434,7 @@
 }
 
 - (BOOL)prefersStatusBarHidden {
-    if (@available(iOS 11.0, *)) {
-        return self.navigationController.navigationBarHidden && self.view.safeAreaInsets.top > 0.0;
-    } else {
-        return self.navigationController.navigationBarHidden;
-    }
+    return self.navigationController.navigationBarHidden;
 }
 
 - (void)adjustDragBar:(UIInterfaceOrientation)orientation {
@@ -1026,6 +1022,18 @@
         appDelegate.feedDetailViewController.storyTitlesTable.scrollsToTop = NO;
     }
     self.scrollView.scrollsToTop = NO;
+    
+    BOOL canHide = currentPage.canHideNavigationBar;
+    
+    self.navigationController.hidesBarsOnSwipe = canHide;
+    
+    if (!canHide && self.navigationController.navigationBarHidden) {
+        [self.navigationController setNavigationBarHidden:NO animated:YES];
+        
+        [UIView animateWithDuration:0.5 animations:^{
+            [self setNeedsStatusBarAppearanceUpdate];
+        }];
+    }
     
     if (self.isDraggingScrollview || self.scrollingToPage == currentPage.pageIndex) {
         if (currentPage.pageIndex == -2) return;
