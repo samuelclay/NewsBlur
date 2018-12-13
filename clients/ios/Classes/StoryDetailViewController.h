@@ -46,6 +46,7 @@ UIActionSheetDelegate> {
 @property (nonatomic, assign) BOOL inTextView;
 @property (nonatomic, assign) BOOL isRecentlyUnread;
 @property (nonatomic) BOOL hasStory;
+@property (nonatomic,  readonly) BOOL canHideNavigationBar;
 
 @property NSInteger pageIndex;
 @property (nonatomic) MBProgressHUD *storyHUD;
@@ -66,6 +67,7 @@ UIActionSheetDelegate> {
 - (void)tryScrollingDown:(BOOL)down;
 - (void)scrollPageDown:(id)sender;
 - (void)scrollPageUp:(id)sender;
+- (void)setNavigationBarHidden:(BOOL)hide;
 - (void)changeWebViewWidth;
 - (void)showUserProfile:(NSString *)userId xCoordinate:(int)x yCoordinate:(int)y width:(int)width height:(int)height;
 - (void)checkTryFeedStory;
