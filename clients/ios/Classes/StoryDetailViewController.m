@@ -34,6 +34,7 @@
 @interface StoryDetailViewController ()
 
 @property (nonatomic, strong) NSString *fullStoryHTML;
+@property (nonatomic)  BOOL wasNavigationBarHidden;
 
 @end
 
@@ -81,6 +82,7 @@
     self.webView.allowsLinkPreview = YES;
 //    self.webView.multipleTouchEnabled = NO;
     
+    self.webView.scrollView.delegate = self;
     [self.webView.scrollView setAlwaysBounceVertical:appDelegate.storyPageControl.isHorizontal];
     [self.webView.scrollView setDelaysContentTouches:NO];
     [self.webView.scrollView setDecelerationRate:UIScrollViewDecelerationRateNormal];
@@ -207,26 +209,9 @@
         if (!inDoubleTap && ![@[@"A", @"VIDEO", @"IFRAME"] containsObject:tagName]) {
             BOOL isHidden = self.navigationController.navigationBarHidden;
             
-            [self.navigationController setNavigationBarHidden:!isHidden animated:YES];
-            
-            if (@available(iOS 11.0, *)) {
-                if (!isHidden && self.view.safeAreaInsets.top > 0.0 && self.webView.scrollView.contentOffset.y <= 0.0) {
-                    CGRect frame = self.webView.frame;
-                    self.webView.frame = CGRectMake(frame.origin.x, frame.origin.y + 40, frame.size.width, frame.size.height + 80);
-                    self.webView.scrollView.contentOffset = CGPointMake(0.0, 10.0);
-                }
+            if (self.webView.scrollView.contentOffset.y > 10) {
+                [self setNavigationBarHidden:!isHidden];
             }
-            
-            [UIView animateWithDuration:0.5 animations:^{
-                [self setNeedsStatusBarAppearanceUpdate];
-            }];
-            
-            UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
-            [appDelegate.storyPageControl adjustDragBar:orientation];
-            [appDelegate.storyPageControl reorientPages];
-            
-            [self.view setNeedsLayout];
-            [self.view layoutIfNeeded];
         }
         
 //        [self tapImage:gestureRecognizer];
@@ -617,16 +602,6 @@
         self.feedTitleGradient = nil;
     }
     
-    if (self.navigationController.navigationBarHidden) {
-        if (@available(iOS 11.0, *)) {
-            if (self.view.safeAreaInsets.top > 0.0) {
-                return;
-            }
-        } else {
-            return;
-        }
-    }
-
     self.feedTitleGradient = [appDelegate
                               makeFeedTitleGradient:feed
                               withRect:CGRectMake(0, -1, CGRectGetWidth(self.view.bounds), 21)]; // 1024 hack for self.webView.frame.size.width
@@ -648,6 +623,16 @@
         self.webView.scrollView.scrollIndicatorInsets = UIEdgeInsetsMake(9, 0, 0, 0);
     }
     [self.webView insertSubview:feedTitleGradient aboveSubview:self.webView.scrollView];
+    
+    if (@available(iOS 11.0, *)) {
+        if (self.view.safeAreaInsets.top > 0.0 && UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+            feedTitleGradient.alpha = self.navigationController.navigationBarHidden ? 1 : 0;
+            
+            [UIView animateWithDuration:0.3 animations:^{
+                feedTitleGradient.alpha = self.navigationController.navigationBarHidden ? 0 : 1;
+            }];
+        }
+    }
 }
 
 - (void)showStory {
@@ -1356,7 +1341,17 @@
         if (!hasScrolled && topPosition != 0) {
             hasScrolled = YES;
         }
-
+        
+        BOOL isNavBarHidden = self.navigationController.navigationBarHidden;
+        
+        if (self.wasNavigationBarHidden != isNavBarHidden) {
+            self.wasNavigationBarHidden = isNavBarHidden;
+            
+            [UIView animateWithDuration:0.5 animations:^{
+                [self setNeedsStatusBarAppearanceUpdate];
+            }];
+        }
+        
         if (!atTop && !atBottom && !singlePage) {
             // Hide
             [UIView animateWithDuration:.3 delay:0
@@ -1429,6 +1424,16 @@
     }
 }
 
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
+    NSInteger topPosition = self.webView.scrollView.contentOffset.y;
+    BOOL canHideNavBar = self.canHideNavigationBar && topPosition > 0;
+    
+    // If the navigation bar shouldn't be hidden now, show it.
+    if (!canHideNavBar && self.navigationController.navigationBarHidden) {
+        [self setNavigationBarHidden:NO];
+    }
+}
+
 - (NSInteger)scrollPosition {
     NSInteger updatedPos = floor(self.webView.scrollView.contentOffset.y / self.webView.scrollView.contentSize.height
                                  * 1000);
@@ -1463,6 +1468,10 @@
 - (void)scrollToLastPosition:(BOOL)animated {
     if (hasScrolled) return;
     hasScrolled = YES;
+    
+    if (appDelegate.storyPageControl.currentPage == self) {
+        self.navigationController.hidesBarsOnSwipe = self.canHideNavigationBar;
+    }
     
     __block NSString *storyHash = [self.activeStory objectForKey:@"story_hash"];
     __weak __typeof(&*self)weakSelf = self;
@@ -1830,6 +1839,60 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
                           [ThemeManager themeManager].themeCSSSuffix];
     
     [self.webView stringByEvaluatingJavaScriptFromString:jsString];
+}
+
+- (BOOL)canHideNavigationBar {
+    if (UI_USER_INTERFACE_IDIOM() != UIUserInterfaceIdiomPhone || self.presentedViewController != nil) {
+        return NO;
+    }
+    
+    NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
+    NSString *tapStory = [preferences stringForKey:@"tap_story"];
+    
+    if (![tapStory isEqualToString:@"toggle_full_screen"]) {
+        NSLog(@"canHideNavigationBar: no, toggle is off");  // log
+        return NO;
+    }
+    
+    NSInteger webpageHeight = self.webView.scrollView.contentSize.height;
+    NSInteger viewportHeight = self.view.frame.size.height;
+    BOOL singlePage = webpageHeight - 200 <= viewportHeight;
+    BOOL canHide = !singlePage;
+    
+    NSLog(@"canHideNavigationBar: %@", canHide ? @"yes" : @"no");  // log
+    
+    return canHide;
+}
+
+- (void)setNavigationBarHidden:(BOOL)hide {
+    if (self.navigationController.navigationBarHidden == hide) {
+        return;
+    }
+    
+    [self.navigationController setNavigationBarHidden:hide animated:YES];
+    
+    self.wasNavigationBarHidden = hide;
+    
+    CGPoint oldOffset = self.webView.scrollView.contentOffset;
+    CGFloat navHeight = self.navigationController.navigationBar.bounds.size.height;
+    CGFloat statusAdjustment = 20.0;
+    
+    if (@available(iOS 11.0, *)) {
+        // The top inset is zero when the status bar is hidden, so using the bottom one to confirm.
+        if (self.view.safeAreaInsets.top > 0.0 || self.view.safeAreaInsets.bottom > 0.0) {
+            statusAdjustment = 0.0;
+        }
+    }
+    
+    CGFloat sign = hide ? -1.0 : 1.0;
+    CGFloat totalAdjustment = sign * (navHeight + statusAdjustment);
+    CGPoint newOffset = CGPointMake(oldOffset.x, oldOffset.y + totalAdjustment);
+    
+    [UIView animateWithDuration:0.2 animations:^{
+        [self setNeedsStatusBarAppearanceUpdate];
+        
+        self.webView.scrollView.contentOffset = newOffset;
+    }];
 }
 
 #pragma mark -
