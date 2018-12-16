@@ -448,7 +448,8 @@ class Profile(models.Model):
     
     def activate_ios_premium(self, product_identifier, transaction_identifier, amount=36):
         payments = PaymentHistory.objects.filter(user=self.user,
-                                                 payment_identifier=transaction_identifier)
+                                                 payment_identifier=transaction_identifier,
+                                                 payment_date__gte=datetime.datetime.now()-datetime.timedelta(days=3))
         if len(payments):
             # Already paid
             logging.user(self.user, "~FG~BBAlready paid iOS premium subscription: $%s~FW" % transaction_identifier)
