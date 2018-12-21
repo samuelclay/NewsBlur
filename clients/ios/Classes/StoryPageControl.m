@@ -1025,7 +1025,8 @@
     
     BOOL canHide = currentPage.canHideNavigationBar;
     
-    self.navigationController.hidesBarsOnSwipe = canHide;
+    // Kept commented out in case dynamic hiding is wanted in the future.
+//    self.navigationController.hidesBarsOnSwipe = canHide;
     
     if (!canHide && self.navigationController.navigationBarHidden) {
         [self.navigationController setNavigationBarHidden:NO animated:YES];
