@@ -209,9 +209,10 @@
         if (!inDoubleTap && ![@[@"A", @"VIDEO", @"IFRAME"] containsObject:tagName]) {
             BOOL isHidden = self.navigationController.navigationBarHidden;
             
-            if (self.webView.scrollView.contentOffset.y > 10) {
+// Kept commented out in case dynamic hiding is wanted in the future.
+//            if (self.webView.scrollView.contentOffset.y > 10) {
                 [self setNavigationBarHidden:!isHidden];
-            }
+//            }
         }
         
 //        [self tapImage:gestureRecognizer];
@@ -1424,15 +1425,16 @@
     }
 }
 
-- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
-    NSInteger topPosition = self.webView.scrollView.contentOffset.y;
-    BOOL canHideNavBar = self.canHideNavigationBar && topPosition > 0;
-    
-    // If the navigation bar shouldn't be hidden now, show it.
-    if (!canHideNavBar && self.navigationController.navigationBarHidden) {
-        [self setNavigationBarHidden:NO];
-    }
-}
+// Kept commented out in case dynamic hiding is wanted in the future.
+//- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
+//    NSInteger topPosition = self.webView.scrollView.contentOffset.y;
+//    BOOL canHideNavBar = self.canHideNavigationBar && topPosition > 0;
+//
+//    // If the navigation bar shouldn't be hidden now, show it.
+//    if (!canHideNavBar && self.navigationController.navigationBarHidden) {
+//        [self setNavigationBarHidden:NO];
+//    }
+//}
 
 - (NSInteger)scrollPosition {
     NSInteger updatedPos = floor(self.webView.scrollView.contentOffset.y / self.webView.scrollView.contentSize.height
@@ -1469,9 +1471,10 @@
     if (hasScrolled) return;
     hasScrolled = YES;
     
-    if (appDelegate.storyPageControl.currentPage == self) {
-        self.navigationController.hidesBarsOnSwipe = self.canHideNavigationBar;
-    }
+    // Kept commented out in case dynamic hiding is wanted in the future.
+//    if (appDelegate.storyPageControl.currentPage == self) {
+//        self.navigationController.hidesBarsOnSwipe = self.canHideNavigationBar;
+//    }
     
     __block NSString *storyHash = [self.activeStory objectForKey:@"story_hash"];
     __weak __typeof(&*self)weakSelf = self;
@@ -1849,19 +1852,22 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
     NSString *tapStory = [preferences stringForKey:@"tap_story"];
     
-    if (![tapStory isEqualToString:@"toggle_full_screen"]) {
-        NSLog(@"canHideNavigationBar: no, toggle is off");  // log
-        return NO;
-    }
+    return [tapStory isEqualToString:@"toggle_full_screen"];
     
-    NSInteger webpageHeight = self.webView.scrollView.contentSize.height;
-    NSInteger viewportHeight = self.view.frame.size.height;
-    BOOL singlePage = webpageHeight - 200 <= viewportHeight;
-    BOOL canHide = !singlePage;
-    
-    NSLog(@"canHideNavigationBar: %@", canHide ? @"yes" : @"no");  // log
-    
-    return canHide;
+    // Kept commented out in case dynamic hiding is wanted in the future.
+//    if (![tapStory isEqualToString:@"toggle_full_screen"]) {
+//        NSLog(@"canHideNavigationBar: no, toggle is off");  // log
+//        return NO;
+//    }
+//
+//    NSInteger webpageHeight = self.webView.scrollView.contentSize.height;
+//    NSInteger viewportHeight = self.view.frame.size.height;
+//    BOOL singlePage = webpageHeight - 200 <= viewportHeight;
+//    BOOL canHide = !singlePage;
+//
+//    NSLog(@"canHideNavigationBar: %@", canHide ? @"yes" : @"no");  // log
+//
+//    return canHide;
 }
 
 - (void)setNavigationBarHidden:(BOOL)hide {
@@ -1887,9 +1893,20 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     CGFloat sign = hide ? -1.0 : 1.0;
     CGFloat totalAdjustment = sign * (navHeight + statusAdjustment);
     CGPoint newOffset = CGPointMake(oldOffset.x, oldOffset.y + totalAdjustment);
+    UIView *webContent = self.webView.scrollView.subviews.firstObject;
+    CGRect webFrame = webContent.frame;
+    CGRect adjustedFrame = webFrame;
+    
+    if (hide) {
+        adjustedFrame = CGRectMake(webFrame.origin.x, webFrame.origin.y + totalAdjustment, webFrame.size.width, webFrame.size.height + totalAdjustment);
+    }
     
     [UIView animateWithDuration:0.2 animations:^{
         [self setNeedsStatusBarAppearanceUpdate];
+        
+        if (hide) {
+//            webContent.frame = adjustedFrame;
+        }
         
         self.webView.scrollView.contentOffset = newOffset;
     }];
