@@ -1890,26 +1890,45 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         }
     }
     
-    CGFloat sign = hide ? -1.0 : 1.0;
-    CGFloat totalAdjustment = sign * (navHeight + statusAdjustment);
-    CGPoint newOffset = CGPointMake(oldOffset.x, oldOffset.y + totalAdjustment);
-    UIView *webContent = self.webView.scrollView.subviews.firstObject;
-    CGRect webFrame = webContent.frame;
-    CGRect adjustedFrame = webFrame;
+    if (oldOffset.y < 0.0) {
+        oldOffset.y = 0.0;
+    }
     
-    if (hide) {
-        adjustedFrame = CGRectMake(webFrame.origin.x, webFrame.origin.y + totalAdjustment, webFrame.size.width, webFrame.size.height + totalAdjustment);
+    CGFloat sign = hide ? -1.0 : 1.0;
+    CGFloat absoluteAdjustment = navHeight + statusAdjustment;
+    CGFloat totalAdjustment = sign * absoluteAdjustment;
+    CGPoint newOffset = CGPointMake(oldOffset.x, oldOffset.y + totalAdjustment);
+    BOOL wantTopMargin = oldOffset.y == 0.0;
+    
+    if (wantTopMargin && hide) {
+        NSString *marginString = [NSString stringWithFormat:@"%@px", @(absoluteAdjustment)];
+        NSString *jsString = [NSString stringWithFormat:@"document.getElementById('NB-header-container').style.marginTop = '%@';",
+                              marginString];
+        
+        [self.webView stringByEvaluatingJavaScriptFromString:jsString];
+        
+        self.webView.scrollView.contentOffset = oldOffset;
     }
     
     [UIView animateWithDuration:0.2 animations:^{
         [self setNeedsStatusBarAppearanceUpdate];
         
-        if (hide) {
-//            webContent.frame = adjustedFrame;
-        }
-        
         self.webView.scrollView.contentOffset = newOffset;
-    }];
+    }
+     completion:^(BOOL finished) {
+         if (!hide) {
+             NSString *jsString = [NSString stringWithFormat:@"document.getElementById('NB-header-container').style.marginTop;"];
+             NSString *topMargin = [self.webView stringByEvaluatingJavaScriptFromString:jsString];
+             
+             if (![topMargin isEqualToString:@"0px"]) {
+                 jsString = [NSString stringWithFormat:@"document.getElementById('NB-header-container').style.marginTop = '0px';"];
+                 
+                 [self.webView stringByEvaluatingJavaScriptFromString:jsString];
+                 
+                 self.webView.scrollView.contentOffset = oldOffset;
+             }
+         }
+     }];
 }
 
 #pragma mark -
