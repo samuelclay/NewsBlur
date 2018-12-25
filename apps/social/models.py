@@ -2133,8 +2133,8 @@ class MSharedStory(mongo.DynamicDocument):
         
         if service == 'twitter':
             posted = social_service.post_to_twitter(self)
-        elif service == 'facebook':
-            posted = social_service.post_to_facebook(self)
+        # elif service == 'facebook':
+        #     posted = social_service.post_to_facebook(self)
         elif service == 'appdotnet':
             posted = social_service.post_to_appdotnet(self)
         
@@ -2476,7 +2476,7 @@ class MSocialServices(mongo.Document):
         return api
     
     def facebook_api(self):
-        graph = facebook.GraphAPI(self.facebook_access_token)
+        graph = facebook.GraphAPI(access_token=self.facebook_access_token, version="3.1")
         return graph
     
     def appdotnet_api(self):
