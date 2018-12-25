@@ -271,9 +271,13 @@
     BOOL swipeEnabled = [[userPreferences stringForKey:@"story_detail_swipe_left_edge"]
                          isEqualToString:@"pop_to_story_list"];
     
-    if (swipeEnabled && gestureRecognizer.state == UIGestureRecognizerStateEnded) {
-        [appDelegate hideStoryDetailView];
+    if (swipeEnabled && gestureRecognizer.state == UIGestureRecognizerStateBegan) {
+        [self setNavigationBarHidden:NO];
     }
+    
+//    if (swipeEnabled && gestureRecognizer.state == UIGestureRecognizerStateEnded) {
+//        [appDelegate hideStoryDetailView];
+//    }
 }
 
 - (void)deferredEnableScrolling {
