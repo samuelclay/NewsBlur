@@ -3225,6 +3225,10 @@
             NEWSBLUR.newsletters = new NEWSBLUR.ReaderNewsletters();
         },
                         
+        open_facebook_modal: function() {
+            NEWSBLUR.facebook_dialog = new NEWSBLUR.ReaderFacebook(this.active_story.get('story_permalink'), this.active_story.get('shared_comments'));
+        },
+                        
         open_preferences_modal: function() {
             NEWSBLUR.preferences = new NEWSBLUR.ReaderPreferences();
         },

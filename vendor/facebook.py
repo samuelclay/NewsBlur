@@ -40,13 +40,13 @@ except ImportError:
 
 
 
-__version__ = "3.0.0-alpha"
+__version__ = "3.2.0-pre"
 
 FACEBOOK_GRAPH_URL = "https://graph.facebook.com/"
-FACEBOOK_OAUTH_DIALOG_URL = "https://www.facebook.com/dialog/oauth?"
-VALID_API_VERSIONS = [
-    "2.5", "2.6", "2.7", "2.8", "2.9", "2.10", "2.11", "2.12"]
-VALID_SEARCH_TYPES = ["page", "event", "group", "place", "placetopic", "user"]
+FACEBOOK_WWW_URL = "https://www.facebook.com/"
+FACEBOOK_OAUTH_DIALOG_PATH = "dialog/oauth?"
+VALID_API_VERSIONS = ["2.8", "2.9", "2.10", "2.11", "2.12", "3.0", "3.1"]
+VALID_SEARCH_TYPES = ["place", "placetopic"]
 
 
 class GraphAPI(object):
@@ -78,8 +78,14 @@ class GraphAPI(object):
 
     """
 
-    def __init__(self, access_token=None, timeout=None, version=None,
-                 proxies=None, session=None):
+    def __init__(
+        self,
+        access_token=None,
+        timeout=None,
+        version=None,
+        proxies=None,
+        session=None,
+    ):
         # The default version is only used if the version kwarg does not exist.
         default_version = VALID_API_VERSIONS[0]
 
@@ -93,13 +99,17 @@ class GraphAPI(object):
             match = version_regex.search(str(version))
             if match is not None:
                 if str(version) not in VALID_API_VERSIONS:
-                    raise GraphAPIError("Valid API versions are " +
-                                        str(VALID_API_VERSIONS).strip('[]'))
+                    raise GraphAPIError(
+                        "Valid API versions are "
+                        + str(VALID_API_VERSIONS).strip("[]")
+                    )
                 else:
                     self.version = "v" + str(version)
             else:
-                raise GraphAPIError("Version number should be in the"
-                                    " following format: #.# (e.g. 2.0).")
+                raise GraphAPIError(
+                    "Version number should be in the"
+                    " following format: #.# (e.g. 2.0)."
+                )
         else:
             self.version = "v" + default_version
 
@@ -107,7 +117,7 @@ class GraphAPI(object):
         """Fetches the permissions object from the graph."""
         response = self.request(
             "{0}/{1}/permissions".format(self.version, user_id), {}
-            )["data"]
+        )["data"]
         return {x["permission"] for x in response if x["status"] == "granted"}
 
     def get_object(self, id, **args):
@@ -124,14 +134,11 @@ class GraphAPI(object):
         return self.request(self.version + "/", args)
 
     def search(self, type, **args):
-        """Fetches all objects of a given type from the graph.
-
-        Returns all objects of a given type from the graph as a dict.
-        """
-
+        """https://developers.facebook.com/docs/places/search"""
         if type not in VALID_SEARCH_TYPES:
-            raise GraphAPIError('Valid types are: %s'
-                                % ', '.join(VALID_SEARCH_TYPES))
+            raise GraphAPIError(
+                "Valid types are: %s" % ", ".join(VALID_SEARCH_TYPES)
+            )
 
         args["type"] = type
         return self.request(self.version + "/search/", args)
@@ -139,7 +146,8 @@ class GraphAPI(object):
     def get_connections(self, id, connection_name, **args):
         """Fetches the connections for given object."""
         return self.request(
-            "{0}/{1}/{2}".format(self.version, id, connection_name), args)
+            "{0}/{1}/{2}".format(self.version, id, connection_name), args
+        )
 
     def get_all_connections(self, id, connection_name, **args):
         """Get all pages from a get_connections call
@@ -149,13 +157,13 @@ class GraphAPI(object):
         """
         while True:
             page = self.get_connections(id, connection_name, **args)
-            for post in page['data']:
+            for post in page["data"]:
                 yield post
-            next = page.get('paging', {}).get('next')
+            next = page.get("paging", {}).get("next")
             if not next:
                 return
             args = parse_qs(urlparse(next).query)
-            del args['access_token']
+            del args["access_token"]
 
     def put_object(self, parent_object, connection_name, **data):
         """Writes the given object to the graph, connected to the given parent.
@@ -180,7 +188,8 @@ class GraphAPI(object):
         return self.request(
             "{0}/{1}/{2}".format(self.version, parent_object, connection_name),
             post_args=data,
-            method="POST")
+            method="POST",
+        )
 
     def put_comment(self, object_id, message):
         """Writes the given comment on the given post."""
@@ -192,11 +201,15 @@ class GraphAPI(object):
 
     def delete_object(self, id):
         """Deletes the object with the given ID from the graph."""
-        self.request("{0}/{1}".format(self.version, id), method="DELETE")
+        return self.request(
+            "{0}/{1}".format(self.version, id), method="DELETE"
+        )
 
     def delete_request(self, user_id, request_id):
         """Deletes the Request with the given ID for the given user."""
-        self.request("{0}_{1}".format(request_id, user_id), method="DELETE")
+        return self.request(
+            "{0}_{1}".format(request_id, user_id), method="DELETE"
+        )
 
     def put_photo(self, image, album_path="me/photos", **kwargs):
         """
@@ -210,7 +223,8 @@ class GraphAPI(object):
             "{0}/{1}".format(self.version, album_path),
             post_args=kwargs,
             files={"source": image},
-            method="POST")
+            method="POST",
+        )
 
     def get_version(self):
         """Fetches the current version number of the Graph API being used."""
@@ -221,7 +235,8 @@ class GraphAPI(object):
                 FACEBOOK_GRAPH_URL + self.version + "/me",
                 params=args,
                 timeout=self.timeout,
-                proxies=self.proxies)
+                proxies=self.proxies,
+            )
         except requests.HTTPError as e:
             response = json.loads(e.read())
             raise GraphAPIError(response)
@@ -234,7 +249,8 @@ class GraphAPI(object):
             raise GraphAPIError("API version number not available")
 
     def request(
-            self, path, args=None, post_args=None, files=None, method=None):
+        self, path, args=None, post_args=None, files=None, method=None
+    ):
         """Fetches the given path in the Graph API.
 
         We translate args to a valid query string. If post_args is
@@ -265,19 +281,22 @@ class GraphAPI(object):
                 params=args,
                 data=post_args,
                 proxies=self.proxies,
-                files=files)
+                files=files,
+            )
         except requests.HTTPError as e:
             response = json.loads(e.read())
             raise GraphAPIError(response)
 
         headers = response.headers
-        if 'json' in headers['content-type']:
+        if "json" in headers["content-type"]:
             result = response.json()
-        elif 'image/' in headers['content-type']:
-            mimetype = headers['content-type']
-            result = {"data": response.content,
-                      "mime-type": mimetype,
-                      "url": response.url}
+        elif "image/" in headers["content-type"]:
+            mimetype = headers["content-type"]
+            result = {
+                "data": response.content,
+                "mime-type": mimetype,
+                "url": response.url,
+            }
         elif "access_token" in parse_qs(response.text):
             query_str = parse_qs(response.text)
             if "access_token" in query_str:
@@ -287,7 +306,7 @@ class GraphAPI(object):
             else:
                 raise GraphAPIError(response.json())
         else:
-            raise GraphAPIError('Maintype was not text, image, or querystring')
+            raise GraphAPIError("Maintype was not text, image, or querystring")
 
         if result and isinstance(result, dict) and result.get("error"):
             raise GraphAPIError(result)
@@ -304,15 +323,19 @@ class GraphAPI(object):
         if offline:
             return "{0}|{1}".format(app_id, app_secret)
         else:
-            args = {'grant_type': 'client_credentials',
-                    'client_id': app_id,
-                    'client_secret': app_secret}
+            args = {
+                "grant_type": "client_credentials",
+                "client_id": app_id,
+                "client_secret": app_secret,
+            }
 
-            return self.request("{0}/oauth/access_token".format(self.version),
-                                args=args)["access_token"]
+            return self.request(
+                "{0}/oauth/access_token".format(self.version), args=args
+            )["access_token"]
 
     def get_access_token_from_code(
-            self, code, redirect_uri, app_id, app_secret):
+        self, code, redirect_uri, app_id, app_secret
+    ):
         """Get an access token from the "code" returned from an OAuth dialog.
 
         Returns a dict containing the user-specific access token and its
@@ -323,10 +346,12 @@ class GraphAPI(object):
             "code": code,
             "redirect_uri": redirect_uri,
             "client_id": app_id,
-            "client_secret": app_secret}
+            "client_secret": app_secret,
+        }
 
         return self.request(
-            "{0}/oauth/access_token".format(self.version), args)
+            "{0}/oauth/access_token".format(self.version), args
+        )
 
     def extend_access_token(self, app_id, app_secret):
         """
@@ -342,8 +367,9 @@ class GraphAPI(object):
             "fb_exchange_token": self.access_token,
         }
 
-        return self.request("{0}/oauth/access_token".format(self.version),
-                            args=args)
+        return self.request(
+            "{0}/oauth/access_token".format(self.version), args=args
+        )
 
     def debug_access_token(self, token, app_id, app_secret):
         """
@@ -358,9 +384,21 @@ class GraphAPI(object):
         """
         args = {
             "input_token": token,
-            "access_token": "{0}|{1}".format(app_id, app_secret)
+            "access_token": "{0}|{1}".format(app_id, app_secret),
         }
         return self.request(self.version + "/" + "debug_token", args=args)
+
+    def get_auth_url(self, app_id, canvas_url, perms=None, **kwargs):
+        """Build a URL to create an OAuth dialog."""
+        url = "{0}{1}/{2}".format(
+            FACEBOOK_WWW_URL, self.version, FACEBOOK_OAUTH_DIALOG_PATH
+        )
+
+        args = {"client_id": app_id, "redirect_uri": canvas_url}
+        if perms:
+            args["scope"] = ",".join(perms)
+        args.update(kwargs)
+        return url + urlencode(args)
 
 
 class GraphAPIError(Exception):
@@ -416,7 +454,8 @@ def get_user_from_cookie(cookies, app_id, app_secret):
         return None
     try:
         result = GraphAPI().get_access_token_from_code(
-            parsed_request["code"], "", app_id, app_secret)
+            parsed_request["code"], "", app_id, app_secret
+        )
     except GraphAPIError:
         return None
     result["uid"] = parsed_request["user_id"]
@@ -434,12 +473,14 @@ def parse_signed_request(signed_request, app_secret):
 
     """
     try:
-        encoded_sig, payload = map(str, signed_request.split('.', 1))
+        encoded_sig, payload = map(str, signed_request.split(".", 1))
 
-        sig = base64.urlsafe_b64decode(encoded_sig + "=" *
-                                       ((4 - len(encoded_sig) % 4) % 4))
-        data = base64.urlsafe_b64decode(payload + "=" *
-                                        ((4 - len(payload) % 4) % 4))
+        sig = base64.urlsafe_b64decode(
+            encoded_sig + "=" * ((4 - len(encoded_sig) % 4) % 4)
+        )
+        data = base64.urlsafe_b64decode(
+            payload + "=" * ((4 - len(payload) % 4) % 4)
+        )
     except IndexError:
         # Signed request was malformed.
         return False
@@ -450,28 +491,19 @@ def parse_signed_request(signed_request, app_secret):
         # Signed request had a corrupted payload.
         return False
 
-    data = json.loads(data.decode('ascii'))
-    if data.get('algorithm', '').upper() != 'HMAC-SHA256':
+    data = json.loads(data.decode("ascii"))
+    if data.get("algorithm", "").upper() != "HMAC-SHA256":
         return False
 
     # HMAC can only handle ascii (byte) strings
     # https://bugs.python.org/issue5285
-    app_secret = app_secret.encode('ascii')
-    payload = payload.encode('ascii')
+    app_secret = app_secret.encode("ascii")
+    payload = payload.encode("ascii")
 
-    expected_sig = hmac.new(app_secret,
-                            msg=payload,
-                            digestmod=hashlib.sha256).digest()
+    expected_sig = hmac.new(
+        app_secret, msg=payload, digestmod=hashlib.sha256
+    ).digest()
     if sig != expected_sig:
         return False
 
     return data
-
-
-def auth_url(app_id, canvas_url, perms=None, **kwargs):
-    url = FACEBOOK_OAUTH_DIALOG_URL
-    kvps = {'client_id': app_id, 'redirect_uri': canvas_url}
-    if perms:
-        kvps['scope'] = ",".join(perms)
-    kvps.update(kwargs)
-    return url + urlencode(kvps)
