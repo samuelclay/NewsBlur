@@ -2453,7 +2453,7 @@ def _mark_story_as_unstarred(request):
                 MStarredStoryCounts.adjust_count(request.user.pk, tag=tag, amount=-1)
             except MStarredStoryCounts.DoesNotExist:
                 pass
-        # MStarredStoryCounts.schedule_count_tags_for_user(request.user.pk)
+        MStarredStoryCounts.schedule_count_tags_for_user(request.user.pk)
         MStarredStoryCounts.count_for_user(request.user.pk, total_only=True)
         starred_counts = MStarredStoryCounts.user_counts(request.user.pk)
         
