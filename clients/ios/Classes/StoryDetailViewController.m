@@ -209,9 +209,10 @@
         if (!inDoubleTap && ![@[@"A", @"VIDEO", @"IFRAME"] containsObject:tagName]) {
             BOOL isHidden = self.navigationController.navigationBarHidden;
             
-            if (self.webView.scrollView.contentOffset.y > 10) {
+// Kept commented out in case dynamic hiding is wanted in the future.
+//            if (self.webView.scrollView.contentOffset.y > 10) {
                 [self setNavigationBarHidden:!isHidden];
-            }
+//            }
         }
         
 //        [self tapImage:gestureRecognizer];
@@ -270,9 +271,13 @@
     BOOL swipeEnabled = [[userPreferences stringForKey:@"story_detail_swipe_left_edge"]
                          isEqualToString:@"pop_to_story_list"];
     
-    if (swipeEnabled && gestureRecognizer.state == UIGestureRecognizerStateEnded) {
-        [appDelegate hideStoryDetailView];
+    if (swipeEnabled && gestureRecognizer.state == UIGestureRecognizerStateBegan) {
+        [self setNavigationBarHidden:NO];
     }
+    
+//    if (swipeEnabled && gestureRecognizer.state == UIGestureRecognizerStateEnded) {
+//        [appDelegate hideStoryDetailView];
+//    }
 }
 
 - (void)deferredEnableScrolling {
@@ -1424,15 +1429,16 @@
     }
 }
 
-- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
-    NSInteger topPosition = self.webView.scrollView.contentOffset.y;
-    BOOL canHideNavBar = self.canHideNavigationBar && topPosition > 0;
-    
-    // If the navigation bar shouldn't be hidden now, show it.
-    if (!canHideNavBar && self.navigationController.navigationBarHidden) {
-        [self setNavigationBarHidden:NO];
-    }
-}
+// Kept commented out in case dynamic hiding is wanted in the future.
+//- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
+//    NSInteger topPosition = self.webView.scrollView.contentOffset.y;
+//    BOOL canHideNavBar = self.canHideNavigationBar && topPosition > 0;
+//
+//    // If the navigation bar shouldn't be hidden now, show it.
+//    if (!canHideNavBar && self.navigationController.navigationBarHidden) {
+//        [self setNavigationBarHidden:NO];
+//    }
+//}
 
 - (NSInteger)scrollPosition {
     NSInteger updatedPos = floor(self.webView.scrollView.contentOffset.y / self.webView.scrollView.contentSize.height
@@ -1469,9 +1475,10 @@
     if (hasScrolled) return;
     hasScrolled = YES;
     
-    if (appDelegate.storyPageControl.currentPage == self) {
-        self.navigationController.hidesBarsOnSwipe = self.canHideNavigationBar;
-    }
+    // Kept commented out in case dynamic hiding is wanted in the future.
+//    if (appDelegate.storyPageControl.currentPage == self) {
+//        self.navigationController.hidesBarsOnSwipe = self.canHideNavigationBar;
+//    }
     
     __block NSString *storyHash = [self.activeStory objectForKey:@"story_hash"];
     __weak __typeof(&*self)weakSelf = self;
@@ -1849,19 +1856,22 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
     NSString *tapStory = [preferences stringForKey:@"tap_story"];
     
-    if (![tapStory isEqualToString:@"toggle_full_screen"]) {
-        NSLog(@"canHideNavigationBar: no, toggle is off");  // log
-        return NO;
-    }
+    return [tapStory isEqualToString:@"toggle_full_screen"];
     
-    NSInteger webpageHeight = self.webView.scrollView.contentSize.height;
-    NSInteger viewportHeight = self.view.frame.size.height;
-    BOOL singlePage = webpageHeight - 200 <= viewportHeight;
-    BOOL canHide = !singlePage;
-    
-    NSLog(@"canHideNavigationBar: %@", canHide ? @"yes" : @"no");  // log
-    
-    return canHide;
+    // Kept commented out in case dynamic hiding is wanted in the future.
+//    if (![tapStory isEqualToString:@"toggle_full_screen"]) {
+//        NSLog(@"canHideNavigationBar: no, toggle is off");  // log
+//        return NO;
+//    }
+//
+//    NSInteger webpageHeight = self.webView.scrollView.contentSize.height;
+//    NSInteger viewportHeight = self.view.frame.size.height;
+//    BOOL singlePage = webpageHeight - 200 <= viewportHeight;
+//    BOOL canHide = !singlePage;
+//
+//    NSLog(@"canHideNavigationBar: %@", canHide ? @"yes" : @"no");  // log
+//
+//    return canHide;
 }
 
 - (void)setNavigationBarHidden:(BOOL)hide {
@@ -1884,15 +1894,45 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         }
     }
     
+    if (oldOffset.y < 0.0) {
+        oldOffset.y = 0.0;
+    }
+    
     CGFloat sign = hide ? -1.0 : 1.0;
-    CGFloat totalAdjustment = sign * (navHeight + statusAdjustment);
+    CGFloat absoluteAdjustment = navHeight + statusAdjustment;
+    CGFloat totalAdjustment = sign * absoluteAdjustment;
     CGPoint newOffset = CGPointMake(oldOffset.x, oldOffset.y + totalAdjustment);
+    BOOL wantTopMargin = oldOffset.y == 0.0;
+    
+    if (wantTopMargin && hide) {
+        NSString *marginString = [NSString stringWithFormat:@"%@px", @(absoluteAdjustment)];
+        NSString *jsString = [NSString stringWithFormat:@"document.getElementById('NB-header-container').style.marginTop = '%@';",
+                              marginString];
+        
+        [self.webView stringByEvaluatingJavaScriptFromString:jsString];
+        
+        self.webView.scrollView.contentOffset = oldOffset;
+    }
     
     [UIView animateWithDuration:0.2 animations:^{
         [self setNeedsStatusBarAppearanceUpdate];
         
         self.webView.scrollView.contentOffset = newOffset;
-    }];
+    }
+     completion:^(BOOL finished) {
+         if (!hide) {
+             NSString *jsString = [NSString stringWithFormat:@"document.getElementById('NB-header-container').style.marginTop;"];
+             NSString *topMargin = [self.webView stringByEvaluatingJavaScriptFromString:jsString];
+             
+             if (![topMargin isEqualToString:@"0px"]) {
+                 jsString = [NSString stringWithFormat:@"document.getElementById('NB-header-container').style.marginTop = '0px';"];
+                 
+                 [self.webView stringByEvaluatingJavaScriptFromString:jsString];
+                 
+                 self.webView.scrollView.contentOffset = oldOffset;
+             }
+         }
+     }];
 }
 
 #pragma mark -
