@@ -4901,6 +4901,7 @@
                     NEWSBLUR.log(["Connected to real-time pubsub with " + active_feeds.length + " feeds."]);
                     this.flags.feed_refreshing_in_realtime = true;
                     this.setup_feed_refresh();
+                    NEWSBLUR.assets.stories.retry_failed_marked_read_stories();
                     
                     // $('.NB-module-content-account-realtime-subtitle').html($.make('b', 'Updating in real-time'));
                     $('.NB-module-content-account-realtime').attr('title', 'Updating sites in real-time...').removeClass('NB-error').addClass('NB-active');
@@ -5107,6 +5108,10 @@
             this.model.refresh_feeds(_.bind(function(data) {
                 this.post_feed_refresh(data);
             }, this), this.flags['has_unfetched_feeds'], feed_id, error_callback);
+            
+            if (this.socket && this.socket.connected) {
+                NEWSBLUR.assets.stories.retry_failed_marked_read_stories();
+            }
         },
         
         post_feed_refresh: function(data) {
