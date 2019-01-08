@@ -1613,6 +1613,7 @@ def mark_story_as_read(request):
 @ajax_login_required
 @json.json_view
 def mark_story_hashes_as_read(request):
+    retrying_failed = is_true(request.POST.get('retrying_failed', False))
     r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
     try:
         story_hashes = request.REQUEST.getlist('story_hash') or request.REQUEST.getlist('story_hash[]')
@@ -1645,8 +1646,10 @@ def mark_story_hashes_as_read(request):
             r.publish(request.user.username, 'feed:%s' % feed_id)
     
     hash_count = len(story_hashes)
-    logging.user(request, "~FYRead %s %s in feed/socialsubs: %s/%s" % (
-                 hash_count, 'story' if hash_count == 1 else 'stories', feed_ids, friend_ids))
+    logging.user(request, "~FYRead %s %s in feed/socialsubs: %s/%s: %s %s" % (
+                 hash_count, 'story' if hash_count == 1 else 'stories', feed_ids, friend_ids,
+                 story_hashes,
+                 '(retrying failed)' if retrying_failed else ''))
 
     return dict(code=1, story_hashes=story_hashes, 
                 feed_ids=feed_ids, friend_user_ids=friend_ids)
