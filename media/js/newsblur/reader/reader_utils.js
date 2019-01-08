@@ -14,6 +14,7 @@ NEWSBLUR.utils = {
     compute_story_score: function(story) {
       var score = 0;
       var intelligence = story.get('intelligence');
+      if (!intelligence) return score;
       var score_max = Math.max(intelligence['title'],
                                intelligence['author'],
                                intelligence['tags']);
