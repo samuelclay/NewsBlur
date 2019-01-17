@@ -437,6 +437,50 @@
     return self.navigationController.navigationBarHidden;
 }
 
+- (void)setNavigationBarHidden:(BOOL)hide {
+    if (self.navigationController.navigationBarHidden == hide || self.currentlyTogglingNavigationBar) {
+        return;
+    }
+    
+    self.currentlyTogglingNavigationBar = YES;
+    
+    [self.navigationController setNavigationBarHidden:hide animated:YES];
+    
+    CGPoint oldOffset = currentPage.webView.scrollView.contentOffset;
+    CGFloat navHeight = self.navigationController.navigationBar.bounds.size.height;
+    CGFloat statusAdjustment = 20.0;
+    
+    if (@available(iOS 11.0, *)) {
+        // The top inset is zero when the status bar is hidden, so using the bottom one to confirm.
+        if (self.view.safeAreaInsets.top > 0.0 || self.view.safeAreaInsets.bottom > 0.0) {
+            statusAdjustment = 0.0;
+        }
+    }
+    
+    if (oldOffset.y < 0.0) {
+        oldOffset.y = 0.0;
+    }
+    
+    CGFloat sign = hide ? -1.0 : 1.0;
+    CGFloat absoluteAdjustment = navHeight + statusAdjustment;
+    CGFloat totalAdjustment = sign * absoluteAdjustment;
+    CGPoint newOffset = CGPointMake(oldOffset.x, oldOffset.y + totalAdjustment);
+    
+    [UIView animateWithDuration:0.2 animations:^{
+        currentPage.webView.scrollView.contentOffset = newOffset;
+    }];
+    
+    if (!hide) {
+        [self resizeScrollView];
+    }
+    
+    [UIView animateWithDuration:0.2 animations:^{
+        [self setNeedsStatusBarAppearanceUpdate];
+    } completion:^(BOOL finished) {
+        self.currentlyTogglingNavigationBar = NO;
+    }];
+}
+
 - (void)adjustDragBar:(UIInterfaceOrientation)orientation {
 //    CGRect scrollViewFrame = self.scrollView.frame;
 //    CGRect traverseViewFrame = self.traverseView.frame;
@@ -1023,10 +1067,8 @@
     }
     self.scrollView.scrollsToTop = NO;
     
-    BOOL canHide = currentPage.canHideNavigationBar;
-    
-    // Kept commented out in case dynamic hiding is wanted in the future.
-//    self.navigationController.hidesBarsOnSwipe = canHide;
+    NSInteger topPosition = currentPage.webView.scrollView.contentOffset.y;
+    BOOL canHide = currentPage.canHideNavigationBar && topPosition >= 0;
     
     if (!canHide && self.navigationController.navigationBarHidden) {
         [self.navigationController setNavigationBarHidden:NO animated:YES];
