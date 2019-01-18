@@ -2904,6 +2904,18 @@ class MStarredStory(mongo.DynamicDocument):
             original_text = zlib.decompress(original_text_z)
         
         return original_text
+    
+    def fetch_original_page(self, force=False, request=None, debug=False):
+        from apps.rss_feeds.page_importer import PageImporter
+        if not self.original_page_z or force:
+            feed = Feed.get_by_id(self.story_feed_id)
+            importer = PageImporter(request=request, feed=feed, story=self)
+            original_page = importer.fetch_story()
+        else:
+            logging.user(request, "~FYFetching ~FGoriginal~FY story page, ~SBfound.")
+            original_page = zlib.decompress(self.original_page_z)
+        
+        return original_page
         
 class MStarredStoryCounts(mongo.Document):
     user_id = mongo.IntField()
