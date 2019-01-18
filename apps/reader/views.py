@@ -914,6 +914,9 @@ def load_starred_stories(request):
             saved_story.feed_id = feed_id
             _, story_hash = MStory.split_story_hash(story['story_hash'])
             saved_story.story_hash = "%s:%s" % (feed_id, story_hash)
+            saved_story.story_feed_id = feed_id
+            story['story_hash'] = saved_story.story_hash
+            story['story_feed_id'] = saved_story.story_feed_id
             saved_story.save()
             logging.user(request, "~FCSaving new feed for starred story: ~SB%s -> %s" % (story['story_hash'], feed_id))
         except (MStarredStory.DoesNotExist):
