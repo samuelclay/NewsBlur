@@ -912,7 +912,7 @@ def load_starred_stories(request):
         try:
             saved_story = MStarredStory.objects.get(user_id=user.pk, story_hash=story['story_hash'])
             saved_story.feed_id = feed_id
-            _, story_hash = Feed.split_story_hash(story['story_hash'])
+            _, story_hash = MStory.split_story_hash(story['story_hash'])
             saved_story.story_hash = "%s:%s" % (feed_id, story_hash)
             saved_story.save()
         except (MStarredStory.DoesNotExist):
