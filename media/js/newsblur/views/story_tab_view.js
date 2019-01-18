@@ -36,13 +36,13 @@ NEWSBLUR.Views.StoryTabView = Backbone.View.extend({
         if (!story) return;
         
         var permalink = story.get('story_permalink');
-        if (window.location.protocol == 'https:' && !_.string.startsWith(permalink, 'https')) {
+        // if (window.location.protocol == 'https:' && !_.string.startsWith(permalink, 'https')) {
             this.flags.proxied_https = true;
             this.load_original_story_page(story);
-        } else {
-            this.flags.proxied_https = false;
-            this.load_story_iframe(story);
-        }
+        // } else {
+        //     this.flags.proxied_https = false;
+        //     this.load_story_iframe(story);
+        // }
     },
     
     load_original_story_page: function(story) {
