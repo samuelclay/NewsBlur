@@ -309,7 +309,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
         if (i) {
             this.$(".NB-storytitles-story-image").css({
                 'display': 'block',
-                'background-image': "url("+NEWSBLUR.Globals.MEDIA_URL+"img/reader/youtube_play.png), url(" + "http://img.youtube.com/vi/" + i + "/0.jpg" + ")"
+                'background-image': "url("+NEWSBLUR.Globals.MEDIA_URL+"img/reader/youtube_play.png), url(" + "https://img.youtube.com/vi/" + i + "/0.jpg" + ")"
             });
             return true;
         }
