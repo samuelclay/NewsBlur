@@ -46,6 +46,7 @@ from utils.feed_functions import relative_timesince
 from utils.feed_functions import seconds_timesince
 from utils.story_functions import strip_tags, htmldiff, strip_comments, strip_comments__lxml
 from utils.story_functions import prep_for_search
+from utils.story_functions import create_signed_url
 
 ENTRY_NEW, ENTRY_UPDATED, ENTRY_SAME, ENTRY_ERR = range(4)
 
@@ -156,8 +157,8 @@ class Feed(models.Model):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         current_time = int(time.time() + 60*60*24)
         unread_cutoff = self.unread_cutoff.strftime('%s')
-        print " ---> zrevrangebyscore zF:%s %s %s" % (self.pk, current_time, unread_cutoff)
         story_hashes = r.zrevrangebyscore('zF:%s' % self.pk, current_time, unread_cutoff)
+
         return story_hashes
         
     @classmethod
@@ -1869,6 +1870,7 @@ class Feed(models.Model):
         story['story_content']    = story_content
         story['story_permalink']  = story_db.story_permalink
         story['image_urls']       = story_db.image_urls
+        story['secure_image_urls']= cls.secure_image_urls(story_db.image_urls)
         story['story_feed_id']    = feed_id or story_db.story_feed_id
         story['has_modifications']= has_changes
         story['comment_count']    = story_db.comment_count if hasattr(story_db, 'comment_count') else 0
@@ -1900,6 +1902,13 @@ class Feed(models.Model):
         
         return story
     
+    @classmethod
+    def secure_image_urls(cls, urls):
+        signed_urls = [create_signed_url(settings.IMAGES_URL, 
+                                         settings.IMAGES_SECRET_KEY, 
+                                         url) for url in urls]
+        return dict(zip(urls, signed_urls))
+        
     def get_tags(self, entry):
         fcat = []
         if entry.has_key('tags'):
