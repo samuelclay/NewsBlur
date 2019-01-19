@@ -2904,6 +2904,9 @@ class MStarredStory(mongo.DynamicDocument):
             original_text = zlib.decompress(original_text_z)
         
         return original_text
+    
+    def fetch_original_page(self, force=False, request=None, debug=False):
+        return None
         
 class MStarredStoryCounts(mongo.Document):
     user_id = mongo.IntField()

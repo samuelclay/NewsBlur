@@ -34,7 +34,6 @@
 @interface StoryDetailViewController ()
 
 @property (nonatomic, strong) NSString *fullStoryHTML;
-@property (nonatomic)  BOOL wasNavigationBarHidden;
 
 @end
 
@@ -82,7 +81,6 @@
     self.webView.allowsLinkPreview = YES;
 //    self.webView.multipleTouchEnabled = NO;
     
-    self.webView.scrollView.delegate = self;
     [self.webView.scrollView setAlwaysBounceVertical:appDelegate.storyPageControl.isHorizontal];
     [self.webView.scrollView setDelaysContentTouches:NO];
     [self.webView.scrollView setDecelerationRate:UIScrollViewDecelerationRateNormal];
@@ -209,10 +207,11 @@
         if (!inDoubleTap && ![@[@"A", @"VIDEO", @"IFRAME"] containsObject:tagName]) {
             BOOL isHidden = self.navigationController.navigationBarHidden;
             
-// Kept commented out in case dynamic hiding is wanted in the future.
-//            if (self.webView.scrollView.contentOffset.y > 10) {
-                [self setNavigationBarHidden:!isHidden];
-//            }
+            if (self.webView.scrollView.contentOffset.y > 10 || isHidden) {
+                appDelegate.storyPageControl.wantNavigationBarHidden = !isHidden;
+                
+                [appDelegate.storyPageControl setNavigationBarHidden:!isHidden];
+            }
         }
         
 //        [self tapImage:gestureRecognizer];
@@ -271,13 +270,13 @@
     BOOL swipeEnabled = [[userPreferences stringForKey:@"story_detail_swipe_left_edge"]
                          isEqualToString:@"pop_to_story_list"];
     
-    if (swipeEnabled && gestureRecognizer.state == UIGestureRecognizerStateBegan) {
-        [self setNavigationBarHidden:NO];
-    }
-    
-//    if (swipeEnabled && gestureRecognizer.state == UIGestureRecognizerStateEnded) {
-//        [appDelegate hideStoryDetailView];
+//    if (swipeEnabled && gestureRecognizer.state == UIGestureRecognizerStateBegan) {
+//        [appDelegate.storyPageControl setNavigationBarHidden:NO];
 //    }
+    
+    if (swipeEnabled && gestureRecognizer.state == UIGestureRecognizerStateEnded) {
+        [appDelegate hideStoryDetailView];
+    }
 }
 
 - (void)deferredEnableScrolling {
@@ -1342,6 +1341,7 @@
         BOOL singlePage = webpageHeight - 200 <= viewportHeight;
         BOOL atBottom = bottomPosition < 150;
         BOOL atTop = topPosition < 10;
+        BOOL nearTop = topPosition < 100;
         
         if (!hasScrolled && topPosition != 0) {
             hasScrolled = YES;
@@ -1349,12 +1349,10 @@
         
         BOOL isNavBarHidden = self.navigationController.navigationBarHidden;
         
-        if (self.wasNavigationBarHidden != isNavBarHidden) {
-            self.wasNavigationBarHidden = isNavBarHidden;
-            
-            [UIView animateWithDuration:0.5 animations:^{
-                [self setNeedsStatusBarAppearanceUpdate];
-            }];
+        if (topPosition <= 0 && isNavBarHidden) {
+            [appDelegate.storyPageControl setNavigationBarHidden:NO];
+        } else if (!nearTop && !isNavBarHidden && self.canHideNavigationBar && appDelegate.storyPageControl.wantNavigationBarHidden) {
+            [appDelegate.storyPageControl setNavigationBarHidden:YES];
         }
         
         if (!atTop && !atBottom && !singlePage) {
@@ -1429,17 +1427,6 @@
     }
 }
 
-// Kept commented out in case dynamic hiding is wanted in the future.
-//- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
-//    NSInteger topPosition = self.webView.scrollView.contentOffset.y;
-//    BOOL canHideNavBar = self.canHideNavigationBar && topPosition > 0;
-//
-//    // If the navigation bar shouldn't be hidden now, show it.
-//    if (!canHideNavBar && self.navigationController.navigationBarHidden) {
-//        [self setNavigationBarHidden:NO];
-//    }
-//}
-
 - (NSInteger)scrollPosition {
     NSInteger updatedPos = floor(self.webView.scrollView.contentOffset.y / self.webView.scrollView.contentSize.height
                                  * 1000);
@@ -1474,11 +1461,6 @@
 - (void)scrollToLastPosition:(BOOL)animated {
     if (hasScrolled) return;
     hasScrolled = YES;
-    
-    // Kept commented out in case dynamic hiding is wanted in the future.
-//    if (appDelegate.storyPageControl.currentPage == self) {
-//        self.navigationController.hidesBarsOnSwipe = self.canHideNavigationBar;
-//    }
     
     __block NSString *storyHash = [self.activeStory objectForKey:@"story_hash"];
     __weak __typeof(&*self)weakSelf = self;
@@ -1856,83 +1838,19 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
     NSString *tapStory = [preferences stringForKey:@"tap_story"];
     
-    return [tapStory isEqualToString:@"toggle_full_screen"];
-    
-    // Kept commented out in case dynamic hiding is wanted in the future.
-//    if (![tapStory isEqualToString:@"toggle_full_screen"]) {
-//        NSLog(@"canHideNavigationBar: no, toggle is off");  // log
-//        return NO;
-//    }
-//
-//    NSInteger webpageHeight = self.webView.scrollView.contentSize.height;
-//    NSInteger viewportHeight = self.view.frame.size.height;
-//    BOOL singlePage = webpageHeight - 200 <= viewportHeight;
-//    BOOL canHide = !singlePage;
-//
-//    NSLog(@"canHideNavigationBar: %@", canHide ? @"yes" : @"no");  // log
-//
-//    return canHide;
-}
-
-- (void)setNavigationBarHidden:(BOOL)hide {
-    if (self.navigationController.navigationBarHidden == hide) {
-        return;
+    if (![tapStory isEqualToString:@"toggle_full_screen"]) {
+        NSLog(@"canHideNavigationBar: no, toggle is off");  // log
+        return NO;
     }
     
-    [self.navigationController setNavigationBarHidden:hide animated:YES];
+    NSInteger webpageHeight = self.webView.scrollView.contentSize.height;
+    NSInteger viewportHeight = self.view.frame.size.height;
+    BOOL singlePage = webpageHeight - 200 <= viewportHeight;
+    BOOL canHide = !singlePage;
     
-    self.wasNavigationBarHidden = hide;
+    NSLog(@"canHideNavigationBar: %@", canHide ? @"yes" : @"no");  // log
     
-    CGPoint oldOffset = self.webView.scrollView.contentOffset;
-    CGFloat navHeight = self.navigationController.navigationBar.bounds.size.height;
-    CGFloat statusAdjustment = 20.0;
-    
-    if (@available(iOS 11.0, *)) {
-        // The top inset is zero when the status bar is hidden, so using the bottom one to confirm.
-        if (self.view.safeAreaInsets.top > 0.0 || self.view.safeAreaInsets.bottom > 0.0) {
-            statusAdjustment = 0.0;
-        }
-    }
-    
-    if (oldOffset.y < 0.0) {
-        oldOffset.y = 0.0;
-    }
-    
-    CGFloat sign = hide ? -1.0 : 1.0;
-    CGFloat absoluteAdjustment = navHeight + statusAdjustment;
-    CGFloat totalAdjustment = sign * absoluteAdjustment;
-    CGPoint newOffset = CGPointMake(oldOffset.x, oldOffset.y + totalAdjustment);
-    BOOL wantTopMargin = oldOffset.y == 0.0;
-    
-    if (wantTopMargin && hide) {
-        NSString *marginString = [NSString stringWithFormat:@"%@px", @(absoluteAdjustment)];
-        NSString *jsString = [NSString stringWithFormat:@"document.getElementById('NB-header-container').style.marginTop = '%@';",
-                              marginString];
-        
-        [self.webView stringByEvaluatingJavaScriptFromString:jsString];
-        
-        self.webView.scrollView.contentOffset = oldOffset;
-    }
-    
-    [UIView animateWithDuration:0.2 animations:^{
-        [self setNeedsStatusBarAppearanceUpdate];
-        
-        self.webView.scrollView.contentOffset = newOffset;
-    }
-     completion:^(BOOL finished) {
-         if (!hide) {
-             NSString *jsString = [NSString stringWithFormat:@"document.getElementById('NB-header-container').style.marginTop;"];
-             NSString *topMargin = [self.webView stringByEvaluatingJavaScriptFromString:jsString];
-             
-             if (![topMargin isEqualToString:@"0px"]) {
-                 jsString = [NSString stringWithFormat:@"document.getElementById('NB-header-container').style.marginTop = '0px';"];
-                 
-                 [self.webView stringByEvaluatingJavaScriptFromString:jsString];
-                 
-                 self.webView.scrollView.contentOffset = oldOffset;
-             }
-         }
-     }];
+    return canHide;
 }
 
 #pragma mark -
