@@ -40,7 +40,8 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
     },
     
     content_preview: function(attribute, length) {
-        var content = this.get(attribute || 'story_content');
+        var content = this.get(attribute);
+        if (!attribute || !content) content = this.story_content(); 
         content = content && Inflector.stripTags(content);
         
         return _.string.prune(_.string.trim(content), length || 150, "...");
@@ -49,8 +50,31 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
     image_url: function(index) {
         if (!index) index = 0;
         if (this.get('image_urls').length >= index+1) {
-            return this.get('image_urls')[index];
+            var url = this.get('image_urls')[index];
+            if (window.location.protocol == 'https:' && 
+                NEWSBLUR.Globals.is_staff &&
+                _.str.startsWith(url, "http://")) {
+                var secure_url = this.get('secure_image_urls')[url];
+                if (secure_url) url = secure_url;
+            }
+            return url;
         }
+    },
+    
+    story_content: function() {
+        var content = this.get('story_content');
+        
+        if (window.location.protocol == 'https:' && 
+            NEWSBLUR.Globals.is_staff) {
+            _.each(this.get('secure_image_urls'), function(secure_url, url) {
+                if (_.str.startsWith(url, "http://")) {
+                    // console.log(['Securing image url', url, secure_url]);
+                    content = content.split(url).join(secure_url);
+                }
+            });
+        }
+        
+        return content;
     },
     
     story_authors: function() {
