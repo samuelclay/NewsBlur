@@ -349,7 +349,7 @@ class MSocialProfile(mongo.Document):
     def email_photo_url(self):
         if self.photo_url:
             if self.photo_url.startswith('//'):
-                self.photo_url = 'http:' + self.photo_url
+                self.photo_url = 'https:' + self.photo_url
             return self.photo_url
         domain = Site.objects.get_current().domain
         return 'https://' + domain + settings.MEDIA_URL + 'img/reader/default_profile_photo.png'
