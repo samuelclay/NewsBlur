@@ -67,7 +67,6 @@ UIActionSheetDelegate> {
 - (void)tryScrollingDown:(BOOL)down;
 - (void)scrollPageDown:(id)sender;
 - (void)scrollPageUp:(id)sender;
-- (void)setNavigationBarHidden:(BOOL)hide;
 - (void)changeWebViewWidth;
 - (void)showUserProfile:(NSString *)userId xCoordinate:(int)x yCoordinate:(int)y width:(int)width height:(int)height;
 - (void)checkTryFeedStory;

@@ -904,6 +904,25 @@ def load_starred_stories(request):
     unsub_feed_ids = list(set(story_feed_ids).difference(set(usersub_ids)))
     unsub_feeds    = Feed.objects.filter(pk__in=unsub_feed_ids)
     unsub_feeds    = dict((feed.pk, feed.canonical(include_favicon=False)) for feed in unsub_feeds)
+    for story in stories:
+        if story['story_feed_id'] in unsub_feeds: continue
+        duplicate_feed = DuplicateFeed.objects.filter(duplicate_feed_id=story['story_feed_id'])
+        if not duplicate_feed: continue
+        feed_id = duplicate_feed[0].feed_id
+        try:
+            saved_story = MStarredStory.objects.get(user_id=user.pk, story_hash=story['story_hash'])
+            saved_story.feed_id = feed_id
+            _, story_hash = MStory.split_story_hash(story['story_hash'])
+            saved_story.story_hash = "%s:%s" % (feed_id, story_hash)
+            saved_story.story_feed_id = feed_id
+            story['story_hash'] = saved_story.story_hash
+            story['story_feed_id'] = saved_story.story_feed_id
+            saved_story.save()
+            logging.user(request, "~FCSaving new feed for starred story: ~SB%s -> %s" % (story['story_hash'], feed_id))
+        except (MStarredStory.DoesNotExist):
+            logging.user(request, "~FCCan't find feed for starred story: ~SB%s" % (story['story_hash']))
+            continue
+    
     shared_story_hashes = MSharedStory.check_shared_story_hashes(user.pk, story_hashes)
     shared_stories = []
     if shared_story_hashes:
