@@ -2292,6 +2292,19 @@ class MSharedStory(mongo.DynamicDocument):
             original_user.username,
             self.decoded_story_title[:30]))
     
+    def extract_image_urls(self, force=False):
+        if not self.story_content_z:
+            return
+
+        if self.image_urls and not force:
+            return
+            
+        soup = BeautifulSoup(zlib.decompress(self.story_content_z))
+        image_sources = [img.get('src') for img in soup.findAll('img')]
+        if len(image_sources) > 0:
+            self.image_urls = image_sources
+            self.save()
+            
     def calculate_image_sizes(self, force=False):
         if not self.story_content_z:
             return
@@ -2307,11 +2320,11 @@ class MSharedStory(mongo.DynamicDocument):
                 settings.NEWSBLUR_URL
             ),
         }
-        soup = BeautifulSoup(zlib.decompress(self.story_content_z))
-        image_sources = [img.get('src') for img in soup.findAll('img')]
+        
+        self.extract_image_urls()
         image_sizes = []
         
-        for image_source in image_sources[:10]:
+        for image_source in self.image_urls[:10]:
             if any(ignore in image_source for ignore in IGNORE_IMAGE_SOURCES):
                 continue
             req = requests.get(image_source, headers=headers, stream=True)
@@ -2322,8 +2335,8 @@ class MSharedStory(mongo.DynamicDocument):
                 logging.debug(" ***> Couldn't read image: %s / %s" % (e, image_source))
                 datastream = StringIO(req.content[:100])
                 _, width, height = image_size(datastream)
-            if width <= 16 or height <= 16:
-                continue
+            # if width <= 16 or height <= 16:
+            #     continue
             image_sizes.append({'src': image_source, 'size': (width, height)})
         
         if image_sizes:
@@ -2331,11 +2344,10 @@ class MSharedStory(mongo.DynamicDocument):
                                               reverse=True)
             self.image_sizes = image_sizes
         self.image_count = len(image_sizes)
-        self.image_urls = image_sources
         self.save()
         
         logging.debug(" ---> ~SN~FGFetched image sizes on shared story: ~SB%s/%s images" % 
-                      (self.image_count, len(image_sources)))
+                      (self.image_count, len(self.image_urls)))
         
         return image_sizes
     
