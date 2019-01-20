@@ -80,6 +80,7 @@ a img {
 }
 #NB-splash {
     display: block;
+    background-color: #F6F8F0;
 }
 .NB-show-reader #NB-splash {
     display: none;
