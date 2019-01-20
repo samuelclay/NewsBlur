@@ -2732,7 +2732,7 @@ class MStory(mongo.Document):
             if image_url and len(image_url) >= 1024:
                 continue
             image_urls.append(image_url)
-
+                
         if not image_urls:
             if not text:
                 return self.extract_image_urls(force=force, text=True)
@@ -2747,8 +2747,16 @@ class MStory(mongo.Document):
                 urls.append(url)
             image_urls = urls
         
+        ordered_image_urls = []
+        for image_url in list(set(image_urls)):
+            if 'feedburner' in image_url:
+                ordered_image_urls.append(image_url)
+            else:
+                ordered_image_urls.insert(0, image_url)
+        image_urls = ordered_image_urls
+        
         if len(image_urls):
-            self.image_urls = list(set(image_urls))
+            self.image_urls = image_urls
         
         return self.image_urls
 
