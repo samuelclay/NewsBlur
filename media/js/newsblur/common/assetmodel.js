@@ -1892,6 +1892,8 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             story_hash: story_hash
         }, function(data) {
             story.set('original_text', data.original_text);
+            story.set('image_urls', data.image_urls);
+            story.set('secure_image_urls', data.secure_image_urls);
             callback(data);
         }, error_callback, {
             request_type: 'GET',

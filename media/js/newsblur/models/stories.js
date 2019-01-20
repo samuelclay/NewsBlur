@@ -62,7 +62,15 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
     },
     
     story_content: function() {
-        var content = this.get('story_content');
+        return this.secure_content('story_content');
+    },
+    
+    original_text: function() {
+        return this.secure_content('original_text');
+    },
+    
+    secure_content: function(content_attr) {
+        var content = this.get(content_attr);
         
         if (window.location.protocol == 'https:' && 
             NEWSBLUR.Globals.is_staff) {

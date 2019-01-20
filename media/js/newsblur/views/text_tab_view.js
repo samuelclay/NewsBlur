@@ -73,7 +73,7 @@ NEWSBLUR.Views.TextTabView = Backbone.View.extend({
             this.story.get('original_text').length < (this.story.get('story_content').length / 3)) {
             this.error();
         } else {
-            $content.html(this.story.get('original_text'));
+            $content.html(this.story.original_text());
             NEWSBLUR.reader.make_story_titles_pane_counter();
             this.resize_starred_tags();
         }
@@ -110,7 +110,7 @@ NEWSBLUR.Views.TextTabView = Backbone.View.extend({
         NEWSBLUR.app.taskbar_info.show_stories_error({}, "Sorry, the story\'s text<br />could not be extracted.");
         
         var $content = this.$('.NB-feed-story-content');
-        $content.html(this.story.get('story_content'));
+        $content.html(this.story.story_content());
         this.story_detail.attach_handlers();
     },
     
