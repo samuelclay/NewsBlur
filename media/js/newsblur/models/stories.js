@@ -42,6 +42,8 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
     content_preview: function(attribute, length) {
         var content = this.get(attribute);
         if (!attribute || !content) content = this.story_content(); 
+        // First do a naive strip, which is faster than rendering which makes network calls
+        content = content && content.replace(/<(?:.|\n)*?>/gm, '');
         content = content && Inflector.stripTags(content);
         
         return _.string.prune(_.string.trim(content), length || 150, "...");
