@@ -2721,7 +2721,10 @@ class MStory(mongo.Document):
             else:
                 return
         
-        image_urls = []
+        image_urls = self.image_urls
+        if not image_urls:
+            image_urls = []
+            
         for image in images:
             image_url = image.get('src')
             if not image_url:
@@ -2745,7 +2748,7 @@ class MStory(mongo.Document):
             image_urls = urls
         
         if len(image_urls):
-            self.image_urls = image_urls
+            self.image_urls = list(set(image_urls))
         
         return self.image_urls
 
