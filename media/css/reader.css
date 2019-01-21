@@ -7423,7 +7423,7 @@ form.opml_import_form input {
     background-size: 18px;
 }
 .NB-menu-manage .NB-menu-manage-newsletters .NB-menu-manage-image {
-    background: transparent url('/media/embed/icons/circular/menu_icn_mail.png') no-repeat  0 0;
+    background: transparent url('/media/embed/icons/circular/menu_icn_mail2.png') no-repeat  0 0;
     background-size: 18px;
 }
 .NB-menu-manage .NB-menu-manage-notifications .NB-menu-manage-image {
@@ -7458,6 +7458,10 @@ form.opml_import_form input {
     background: transparent url('/media/embed/icons/circular/menu_icn_book.png') no-repeat  0 0;
     background-size: 18px;
 }
+.NB-menu-manage .NB-menu-manage-services .NB-menu-manage-image {
+    background: transparent url('/media/embed/icons/circular/menu_icn_services2.png') no-repeat  0 0;
+    background-size: 18px;
+}
 .NB-menu-manage .NB-menu-manage-premium .NB-menu-manage-image {
     background: transparent url('/media/embed/icons/circular/g_icn_greensun.png') no-repeat  0 0px;
     background-size: 18px;
@@ -7474,7 +7478,7 @@ form.opml_import_form input {
     padding: 0 4px 0 0;
 }
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-email {
-    background: transparent url('/media/embed/icons/circular/menu_icn_mail.png') no-repeat 0 0;
+    background: transparent url('/media/embed/icons/circular/menu_icn_mail2.png') no-repeat 0 0;
     background-size: 16px;
 }
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-instapaper {
@@ -7518,7 +7522,7 @@ form.opml_import_form input {
     background: transparent url('/media/embed/reader/googleplus.png') no-repeat 0 0;
 }
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-email {
-    background: transparent url('/media/embed/icons/circular/menu_icn_mail.png') no-repeat 0 0;
+    background: transparent url('/media/embed/icons/circular/menu_icn_mail2.png') no-repeat 0 0;
     background-size: 16px;
 }
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-twitter {
@@ -9520,7 +9524,7 @@ form.opml_import_form input {
     margin: 32px 0;
 }
 .NB-modal-newsletters .NB-modal-title .NB-icon {
-    background: transparent url('/media/embed/icons/circular/g_modal_mail.png');
+    background: transparent url('/media/embed/icons/circular/menu_icn_mail2.png');
     background-size: 28px;
 }
 
@@ -10044,7 +10048,7 @@ form.opml_import_form input {
     background: transparent url('/media/embed/reader/googleplus.png') no-repeat 0 0;
 }
 .NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-email] {
-    background: transparent url('/media/embed/icons/circular/menu_icn_mail.png') no-repeat 0 0;
+    background: transparent url('/media/embed/icons/circular/menu_icn_mail2.png') no-repeat 0 0;
     background-size: 16px;
 }
 .NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-instapaper] {
@@ -11024,6 +11028,15 @@ form.opml_import_form input {
 }
 .NB-modal-friends .NB-profile-section-heading {
     margin: 18px 0 0px;
+}
+
+/* ========================== */
+/* = Sharing Services Modal = */
+/* ========================== */
+
+.NB-modal-services .NB-modal-title .NB-icon {
+    background: transparent url('/media/embed/icons/circular/menu_icn_services2.png');
+    background-size: 28px;
 }
 
 

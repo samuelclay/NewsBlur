@@ -3245,6 +3245,10 @@
             NEWSBLUR.organizer = new NEWSBLUR.ReaderOrganizer(options);
         },
         
+        open_services_modal: function(options) {
+            NEWSBLUR.services = new NEWSBLUR.ReaderServices(options);
+        },
+        
         open_feed_exception_modal: function(feed_id, options) {
             feed_id = feed_id || this.active_feed;
             
@@ -3366,6 +3370,11 @@
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Organize Sites'),
                         $.make('div', { className: 'NB-menu-manage-subtitle' }, 'Cleanup and rearrange feeds')
+                    ]),
+                    $.make('li', { className: 'NB-menu-item NB-menu-manage-services' }, [
+                        $.make('div', { className: 'NB-menu-manage-image' }),
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Sharing Services'),
+                        $.make('div', { className: 'NB-menu-manage-subtitle' }, 'Evernote, Pocket, etc')
                     ]),
                     (show_chooser && $.make('li', { className: 'NB-menu-item NB-menu-manage-premium' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
@@ -6308,6 +6317,14 @@
                 if (!$t.hasClass('NB-disabled')) {
                     $.modal.close(function() {
                         self.open_organizer_modal();
+                    });
+                }
+            });  
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-services' }, function($t, $p){
+                e.preventDefault();
+                if (!$t.hasClass('NB-disabled')) {
+                    $.modal.close(function() {
+                        self.open_services_modal();
                     });
                 }
             });  
