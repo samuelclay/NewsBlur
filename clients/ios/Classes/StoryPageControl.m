@@ -438,6 +438,10 @@
 }
 
 - (void)setNavigationBarHidden:(BOOL)hide {
+    [self setNavigationBarHidden:hide alsoTraverse:NO];
+}
+
+- (void)setNavigationBarHidden:(BOOL)hide alsoTraverse:(BOOL)alsoTraverse {
     if (self.navigationController.navigationBarHidden == hide || self.currentlyTogglingNavigationBar) {
         return;
     }
@@ -466,8 +470,28 @@
     CGFloat totalAdjustment = sign * absoluteAdjustment;
     CGPoint newOffset = CGPointMake(oldOffset.x, oldOffset.y + totalAdjustment);
     
+    if (alsoTraverse) {
+        self.traversePinned = YES;
+        self.traverseFloating = NO;
+        
+        if (!hide) {
+            int safeBottomMargin = 0;
+            if (@available(iOS 11.0, *)) {
+                safeBottomMargin = -1 * self.view.safeAreaInsets.bottom/2;
+            }
+            
+            self.traverseBottomConstraint.constant = safeBottomMargin;
+            [self.view layoutIfNeeded];
+        }
+    }
+    
     [UIView animateWithDuration:0.2 animations:^{
         currentPage.webView.scrollView.contentOffset = newOffset;
+        
+        if (alsoTraverse) {
+             [self.view layoutIfNeeded];
+            self.traverseView.alpha = hide ? 0 : 1;
+        }
     }];
     
     if (!hide) {

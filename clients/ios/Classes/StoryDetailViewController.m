@@ -210,7 +210,7 @@
             if (self.webView.scrollView.contentOffset.y > 10 || isHidden) {
                 appDelegate.storyPageControl.wantNavigationBarHidden = !isHidden;
                 
-                [appDelegate.storyPageControl setNavigationBarHidden:!isHidden];
+                [appDelegate.storyPageControl setNavigationBarHidden:!isHidden alsoTraverse:YES];
             }
         }
         
