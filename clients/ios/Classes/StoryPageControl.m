@@ -1025,23 +1025,24 @@
 }
 
 - (void)changeToNextPage:(id)sender {
-    NSInteger nextPageIndex = nextPage.pageIndex;
-    if (nextPageIndex < 0 && currentPage.pageIndex < 0) {
+    if (nextPage.pageIndex < 0 && currentPage.pageIndex < 0) {
         // just displaying a placeholder - display the first story instead
         [self changePage:0 animated:YES];
         return;
     }
-    [self changePage:nextPageIndex animated:YES];
+    
+    [self changePage:currentPage.pageIndex + 1 animated:YES];
 }
 
 - (void)changeToPreviousPage:(id)sender {
-    NSInteger previousPageIndex = previousPage.pageIndex;
-    if (previousPageIndex < 0) {
-        if (currentPage.pageIndex < 0)
+    if (previousPage.pageIndex < 0) {
+        if (currentPage.pageIndex < 0) {
             [self changeToNextPage:sender];
+        }
         return;
     }
-    [self changePage:previousPageIndex animated:YES];
+    
+    [self changePage:currentPage.pageIndex - 1 animated:YES];
 }
 
 - (void)setStoryFromScroll {
