@@ -33,11 +33,11 @@
                     </items>
                 </navigationBar>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="kFc-yL-pjO" customClass="InteractionsModule">
-                    <rect key="frame" x="0.0" y="75" width="478" height="815"/>
+                    <rect key="frame" x="0.0" y="74" width="478" height="816"/>
                     <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                 </view>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="38" customClass="ActivityModule">
-                    <rect key="frame" x="0.0" y="75" width="478" height="815"/>
+                    <rect key="frame" x="0.0" y="74" width="478" height="816"/>
                     <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                 </view>
                 <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="logo_newsblur_blur.png" translatesAutoresizingMaskIntoConstraints="NO" id="zOJ-C7-I3n">
@@ -72,9 +72,9 @@
             <constraints>
                 <constraint firstItem="JXg-Pa-wL0" firstAttribute="trailing" secondItem="kFc-yL-pjO" secondAttribute="trailing" id="8NI-hM-m1o"/>
                 <constraint firstItem="JXg-Pa-wL0" firstAttribute="trailing" secondItem="HEg-7j-EHc" secondAttribute="trailing" id="D83-2w-qw7"/>
-                <constraint firstItem="kFc-yL-pjO" firstAttribute="top" secondItem="HEg-7j-EHc" secondAttribute="bottom" constant="1" id="DDw-77-cHI"/>
+                <constraint firstItem="kFc-yL-pjO" firstAttribute="top" secondItem="HEg-7j-EHc" secondAttribute="bottom" id="DDw-77-cHI"/>
                 <constraint firstItem="JXg-Pa-wL0" firstAttribute="leading" secondItem="HEg-7j-EHc" secondAttribute="leading" id="Dp8-SG-1go"/>
-                <constraint firstItem="38" firstAttribute="top" secondItem="HEg-7j-EHc" secondAttribute="bottom" constant="1" id="KkL-gv-dMF"/>
+                <constraint firstItem="38" firstAttribute="top" secondItem="HEg-7j-EHc" secondAttribute="bottom" id="KkL-gv-dMF"/>
                 <constraint firstItem="22" firstAttribute="leading" secondItem="JXg-Pa-wL0" secondAttribute="leading" id="KmZ-Jk-Wct"/>
                 <constraint firstItem="JXg-Pa-wL0" firstAttribute="trailing" secondItem="22" secondAttribute="trailing" id="NGg-Cd-jcJ"/>
                 <constraint firstItem="JXg-Pa-wL0" firstAttribute="trailing" secondItem="zOJ-C7-I3n" secondAttribute="trailing" id="NjH-Ut-O6A"/>
