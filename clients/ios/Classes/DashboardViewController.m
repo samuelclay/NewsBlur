@@ -82,7 +82,7 @@
         [self addChildViewController:self.storiesModule];
         [self.storiesModule didMoveToParentViewController:self];
         
-        [NSLayoutConstraint constraintWithItem:self.storiesModule.view attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.topToolbar attribute:NSLayoutAttributeBottom multiplier:1.0 constant:1.0].active = YES;
+        [NSLayoutConstraint constraintWithItem:self.storiesModule.view attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.topToolbar attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0.0].active = YES;
         [NSLayoutConstraint constraintWithItem:self.storiesModule.view attribute:NSLayoutAttributeLeading relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeLeading multiplier:1.0 constant:0.0].active = YES;
         [NSLayoutConstraint constraintWithItem:self.storiesModule.view attribute:NSLayoutAttributeTrailing relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeTrailing multiplier:1.0 constant:0.0].active = YES;
         [NSLayoutConstraint constraintWithItem:self.storiesModule.view attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self.toolbar attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0.0].active = YES;
