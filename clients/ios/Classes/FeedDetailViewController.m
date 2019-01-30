@@ -64,7 +64,6 @@
 @synthesize isShowingFetching;
 @synthesize isDashboardModule;
 @synthesize storiesCollection;
-@synthesize showContentPreview;
 @synthesize showImagePreview;
 @synthesize invalidateFontCache;
 
@@ -276,9 +275,24 @@
     [self.storyTitlesTable reloadData];
 }
 
+- (void)updateTextSize {
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+    NSString *textSizePref = [userPreferences stringForKey:@"story_list_preview_text_size"];
+    
+    if ([textSizePref isEqualToString:@"short"]) {
+        self.textSize = FeedDetailTextSizeShort;
+    } else if ([textSizePref isEqualToString:@"medium"]) {
+        self.textSize = FeedDetailTextSizeMedium;
+    } else if ([textSizePref isEqualToString:@"long"]) {
+        self.textSize = FeedDetailTextSizeLong;
+    } else {
+        self.textSize = FeedDetailTextSizeTitleOnly;
+    }
+}
+
 - (void)reloadData {
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
-    self.showContentPreview = [userPreferences boolForKey:@"story_list_preview_description"];
+    
     self.showImagePreview = ![[userPreferences stringForKey:@"story_list_preview_images_size"] isEqualToString:@"none"];
     
     appDelegate.fontDescriptorTitleSize = nil;
@@ -313,8 +327,9 @@
     [MBProgressHUD hideHUDForView:self.view animated:NO];
     self.messageView.hidden = YES;
     
+    [self updateTextSize];
+    
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
-    self.showContentPreview = [userPreferences boolForKey:@"story_list_preview_description"];
     self.showImagePreview = ![[userPreferences stringForKey:@"story_list_preview_images_size"] isEqualToString:@"none"];
     
     // set right avatar title image
@@ -1460,7 +1475,7 @@
     }
     
     cell.storyContent = nil;
-    if (self.isDashboardModule || self.showContentPreview) {
+    if (self.isDashboardModule || self.textSize != FeedDetailTextSizeTitleOnly) {
         cell.storyContent = [[[story objectForKey:@"story_content"] convertHTML] stringByDecodingXMLEntities];
     }
     
@@ -1496,8 +1511,9 @@
     
     cell.isRead = ![storiesCollection isStoryUnread:story];
     cell.isReadAvailable = ![storiesCollection.activeFolder isEqualToString:@"saved_stories"];
-    
+    cell.textSize = self.textSize;
     cell.isShort = NO;
+    
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
     if (!self.isPhoneOrCompact &&
         !self.isDashboardModule &&
@@ -1662,44 +1678,45 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
             return CGRectGetHeight(self.view.frame) - 40;
         }
         return 120;
-    } else if (storiesCollection.isRiverView ||
-               storiesCollection.isSavedView ||
-               storiesCollection.isReadView ||
-               storiesCollection.isSocialView ||
-               storiesCollection.isSocialRiverView) {
-        NSInteger height = kTableViewRiverRowHeight;
-        if ([self isShortTitles]) {
-            height = height - kTableViewShortRowDifference;
-        }
-        UIFontDescriptor *fontDescriptor = [self fontDescriptorUsingPreferredSize:UIFontTextStyleCaption1];
-        UIFont *font = [UIFont fontWithDescriptor:fontDescriptor size:0.0];
-        if ([self isShortTitles] && self.showContentPreview) {
-            return height + font.pointSize*3.25;
-        } else if (self.isDashboardModule || self.showContentPreview) {
-            return height + font.pointSize*5;
-        } else {
-            return height + font.pointSize*2;
-        }
     } else {
         NSInteger height = kTableViewRowHeight;
+        if (storiesCollection.isRiverView ||
+            storiesCollection.isSavedView ||
+            storiesCollection.isReadView ||
+            storiesCollection.isSocialView ||
+            storiesCollection.isSocialRiverView) {
+            height = kTableViewRiverRowHeight;
+        }
         if ([self isShortTitles]) {
             height = height - kTableViewShortRowDifference;
         }
         UIFontDescriptor *fontDescriptor = [self fontDescriptorUsingPreferredSize:UIFontTextStyleCaption1];
         UIFont *font = [UIFont fontWithDescriptor:fontDescriptor size:0.0];
-        if ([self isShortTitles] && self.showContentPreview) {
+        if ([self isShortTitles] && self.textSize != FeedDetailTextSizeTitleOnly) {
             return height + font.pointSize*3.25;
-        } else if (self.isDashboardModule || self.showContentPreview) {
-            return height + font.pointSize*5;
+        } else if (self.isDashboardModule || self.textSize != FeedDetailTextSizeTitleOnly) {
+            switch (self.textSize) {
+                case FeedDetailTextSizeLong:
+                    return height + font.pointSize*9;
+                    break;
+                case FeedDetailTextSizeMedium:
+                    return height + font.pointSize*7;
+                    break;
+                default:
+                    return height + font.pointSize*5;
+                    break;
+            }
         } else {
             return height + font.pointSize*2;
         }
     }
 }
+
 - (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section {
     // This will create a "invisible" footer
     return 0.01f;
 }
+
 - (void)scrollViewDidScroll: (UIScrollView *)scroll {
     [self checkScroll];
 }
