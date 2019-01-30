@@ -12,9 +12,9 @@
 #import "Utilities.h"
 #import "NBNotifier.h"
 #import "MCSwipeTableViewCell.h"
+#import "FeedDetailTableCell.h"
 
 @class NewsBlurAppDelegate;
-@class FeedDetailTableCell;
 @class MCSwipeTableViewCell;
 
 @interface FeedDetailViewController : BaseViewController 
@@ -60,7 +60,7 @@
 @property (nonatomic, readwrite) BOOL isOnline;
 @property (nonatomic, readwrite) BOOL isShowingFetching;
 @property (nonatomic, readwrite) BOOL isDashboardModule;
-@property (nonatomic, readwrite) BOOL showContentPreview;
+@property (nonatomic) FeedDetailTextSize textSize;
 @property (nonatomic, readwrite) BOOL showImagePreview;
 @property (nonatomic, readwrite) BOOL invalidateFontCache;
 
