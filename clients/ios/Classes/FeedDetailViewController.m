@@ -1757,13 +1757,10 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     NSInteger currentOffset = self.storyTitlesTable.contentOffset.y;
     NSInteger maximumOffset = self.storyTitlesTable.contentSize.height - self.storyTitlesTable.frame.size.height;
     
-    if (self.pageFetching) {
-        return;
-    }
     if (![storiesCollection.activeFeedStories count]) return;
     
-    if (maximumOffset - currentOffset <= 500.0 ||
-        (appDelegate.inFindingStoryMode)) {
+    if (!self.pageFetching && (maximumOffset - currentOffset <= 500.0 ||
+        (appDelegate.inFindingStoryMode))) {
         if (storiesCollection.isRiverView && storiesCollection.activeFolder) {
             [self fetchRiverPage:storiesCollection.feedPage+1 withCallback:nil];
         } else {

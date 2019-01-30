@@ -307,6 +307,9 @@
         [appDelegate.feedDetailViewController.view endEditing:YES];
     }
     [self storeScrollPosition:NO];
+    
+    [self.loadingTimer invalidate];
+    self.loadingTimer = nil;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
