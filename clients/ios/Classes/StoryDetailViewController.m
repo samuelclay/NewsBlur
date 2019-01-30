@@ -34,6 +34,7 @@
 @interface StoryDetailViewController ()
 
 @property (nonatomic, strong) NSString *fullStoryHTML;
+@property (nonatomic, strong) NSTimer *loadingTimer;
 
 @end
 
@@ -669,6 +670,7 @@
     self.webView.hidden = YES;
     self.activityIndicator.color = UIColorFromRGB(NEWSBLUR_BLACK_COLOR);
     [self.activityIndicator startAnimating];
+    self.loadingTimer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(loadStory) userInfo:nil repeats:NO];
     
     NSString *themeStyle = [ThemeManager themeManager].themeCSSSuffix;
     
@@ -1735,25 +1737,31 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 }
 
 - (void)webViewDidFinishLoad:(UIWebView *)webView {
-    [self.activityIndicator stopAnimating];
+    [self loadStory];
+}
 
+- (void)loadStory {
     if (!self.fullStoryHTML)
         return; // if we're loading anything other than a full story, the view will be hidden
+    
+    [self.activityIndicator stopAnimating];
+    [self.loadingTimer invalidate];
+    self.loadingTimer = nil;
     
     [self loadHTMLString:self.fullStoryHTML];
     self.fullStoryHTML = nil;
     self.hasStory = YES;
     
     [MBProgressHUD hideHUDForView:self.view animated:YES];
-
+    
     if ([appDelegate.storiesCollection.activeFeedStories count] &&
         self.activeStoryId) {
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, .15 * NSEC_PER_SEC),
                        dispatch_get_main_queue(), ^{
-            [self checkTryFeedStory];
-        });
+                           [self checkTryFeedStory];
+                       });
     }
-
+    
     self.webView.hidden = NO;
     [self.webView setNeedsDisplay];
 }
