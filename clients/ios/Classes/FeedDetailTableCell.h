@@ -38,7 +38,6 @@ typedef NS_ENUM(NSUInteger, FeedDetailTextSize)
     NSString *siteTitle;
     UIImage *siteFavicon;
     BOOL isRead;
-    BOOL isShort;
     BOOL isRiverOrSocial;
     BOOL hasAlpha;
 
