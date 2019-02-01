@@ -5014,6 +5014,14 @@
                 }, this));
             }
             
+            this.watch_navigator_online();
+        },
+        
+        watch_navigator_online: function() {
+            window.removeEventListener('online', _.bind(this.setup_socket_realtime_unread_counts, this));
+            window.removeEventListener('offline', _.bind(this.setup_socket_realtime_unread_counts, this));
+            window.addEventListener('online', _.bind(this.setup_socket_realtime_unread_counts, this));
+            window.addEventListener('offline', _.bind(this.setup_socket_realtime_unread_counts, this));
         },
         
         send_socket_active_feeds: function() {
