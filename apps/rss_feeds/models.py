@@ -1332,7 +1332,7 @@ class Feed(models.Model):
                 # Leads to incorrect unread story counts.
                 if replace_story_date:
                     existing_story.story_date = story.get('published') # Really shouldn't do this.
-                existing_story.extract_image_urls()                
+                existing_story.extract_image_urls(force=True)
                 try:
                     existing_story.save()
                     ret_values['updated'] += 1
@@ -2768,11 +2768,7 @@ class MStory(mongo.Document):
             ti = TextImporter(self, feed=feed, request=request, debug=debug)
             original_doc = ti.fetch(return_document=True)
             original_text = original_doc.get('content') if original_doc else None
-            if original_doc and original_doc.get('image', False):
-                logging.user(request, "~FBReplacing ~FGoriginal (%s) ~FYimage url: %s" % (self.image_urls, original_doc['image']))
-                self.image_urls = [original_doc['image']]
-            else:
-                self.extract_image_urls(force=force, text=True)
+            self.extract_image_urls(force=force, text=True)
             self.save()
         else:
             logging.user(request, "~FYFetching ~FGoriginal~FY story text, ~SBfound.")
