@@ -28,14 +28,17 @@ _.extend(NEWSBLUR.ReaderServices.prototype, {
         
         this.$modal = $.make('div', { className: 'NB-modal NB-modal-services' }, [
             $.make('div', { className: 'NB-modal-tabs' }, [
-                $.make('div', { className: 'NB-modal-loading' })
+                $.make('div', { className: 'NB-modal-loading' }),
+                $.make('div', { className: 'NB-modal-tab NB-active NB-modal-tab-services' }, 'Services'),
+                $.make('div', { className: 'NB-modal-tab NB-modal-tab-shortcuts' }, 'Sharing Shortcuts'),
+                $.make('div', { className: 'NB-modal-tab NB-modal-tab-' }, '')
             ]),
             $.make('h2', { className: 'NB-modal-title' }, [
                 $.make('div', { className: 'NB-icon' }),
                 'Sharing Services',
                 $.make('div', { className: 'NB-icon-dropdown' })
             ]),
-            $.make('div', { className: 'NB-services' }, [
+            $.make('div', { className: 'NB-tab NB-tab-services NB-active' }, [
                 $.make('fieldset', [
                     $.make('legend', 'Your profile'),
                     $.make('div', { className: 'NB-modal-section NB-friends-findfriends-profile' })
@@ -68,6 +71,23 @@ _.extend(NEWSBLUR.ReaderServices.prototype, {
             callback && callback();
             _.defer(_.bind(this.resize, this));            
         }, this));
+    },
+    
+    switch_tab: function(newtab) {
+        var $modal_tabs = $('.NB-modal-tab', this.$modal);
+        var $tabs = $('.NB-tab', this.$modal);
+        
+        $modal_tabs.removeClass('NB-active');
+        $tabs.removeClass('NB-active');
+        
+        $modal_tabs.filter('.NB-modal-tab-'+newtab).addClass('NB-active');
+        $tabs.filter('.NB-tab-'+newtab).addClass('NB-active');
+        
+        if (newtab == 'following') {
+            this.make_following_tab();
+        } else if (newtab == 'followers') {
+            this.make_followers_tab();
+        }
     },
     
     make_find_friends_and_services: function() {
@@ -202,6 +222,19 @@ _.extend(NEWSBLUR.ReaderServices.prototype, {
 
     handle_click: function(elem, e) {
         var self = this;
+        
+        $.targetIs(e, { tagSelector: '.NB-modal-tab' }, function($t, $p) {
+            e.preventDefault();
+            var newtab;
+            if ($t.hasClass('NB-modal-tab-services')) {
+                newtab = 'services';
+            } else if ($t.hasClass('NB-modal-tab-shortcuts')) {
+                newtab = 'shortcuts';
+            } else if ($t.hasClass('NB-modal-tab-')) {
+                newtab = '';
+            }
+            self.switch_tab(newtab);
+        });        
         
         $.targetIs(e, { tagSelector: '.NB-friends-service-connect' }, function($t, $p) {
             e.preventDefault();

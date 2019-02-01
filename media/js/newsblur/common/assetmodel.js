@@ -1711,6 +1711,15 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         });
     },
     
+    fetch_services: function(callback, error_callback) {
+        this.make_request('/profile/load_services', null, _.bind(function(data) {
+            this.user_profile.set(data.user_profile);
+            callback(data);
+        }, this), error_callback, {
+            request_type: 'GET'
+        });
+    },
+    
     fetch_follow_requests: function(callback) {
         this.make_request('/social/load_follow_requests', null, _.bind(function(data) {
             this.user_profile.set(data.user_profile);
