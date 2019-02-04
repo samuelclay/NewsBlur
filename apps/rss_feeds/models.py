@@ -1262,7 +1262,6 @@ class Feed(models.Model):
                        story_guid = story.get('guid'),
                        story_tags = story_tags
                 )
-                s.extract_image_urls()
                 try:
                     s.save()
                     ret_values['new'] += 1
@@ -2409,6 +2408,8 @@ class MStory(mongo.Document):
         story_title_max = MStory._fields['story_title'].max_length
         story_content_type_max = MStory._fields['story_content_type'].max_length
         self.story_hash = self.feed_guid_hash
+        
+        self.extract_image_urls()
         
         if self.story_content:
             self.story_content_z = zlib.compress(smart_str(self.story_content))
