@@ -309,6 +309,7 @@ SFSafariViewControllerDelegate>  {
 - (void)showOrganizeSites;
 - (void)showPremiumDialog;
 - (void)showPreferences;
+- (void)resizePreviewSize;
 - (void)resizeFontSize;
 
 - (void)showMoveSite;

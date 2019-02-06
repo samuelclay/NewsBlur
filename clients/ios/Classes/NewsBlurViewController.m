@@ -993,6 +993,15 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     [self resetupGestures];
 }
 
+- (void)resizePreviewSize {
+    [self.feedTitlesTable reloadData];
+    
+    [appDelegate.feedDetailViewController reloadData];
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        [appDelegate.dashboardViewController.storiesModule reloadData];
+    }
+}
+
 - (void)resizeFontSize {
     appDelegate.fontDescriptorTitleSize = nil;
     [self.feedTitlesTable reloadData];

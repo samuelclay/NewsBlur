@@ -130,6 +130,7 @@ UIGestureRecognizerDelegate, UISearchBarDelegate> {
 - (void)refreshHeaderCounts;
 - (void)redrawFeedCounts:(id)feedId;
 
+- (void)resizePreviewSize;
 - (void)resizeFontSize;
 - (void)settingsViewControllerDidEnd:(IASKAppSettingsViewController*)sender;
 - (void)settingDidChange:(NSNotification*)notification;
