@@ -79,6 +79,23 @@
 
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     
+    [self.previewSizeSegment
+     setTitleTextAttributes:@{NSFontAttributeName:
+                                  [UIFont fontWithName:@"Helvetica-Bold" size:11.0f]}
+     forState:UIControlStateNormal];
+    if([userPreferences stringForKey:@"story_list_preview_text_size"]){
+        NSString *previewSize = [userPreferences stringForKey:@"story_list_preview_text_size"];
+        if ([previewSize isEqualToString:@"title"]) {
+            [self.previewSizeSegment setSelectedSegmentIndex:0];
+        } else if ([previewSize isEqualToString:@"short"]) {
+            [self.previewSizeSegment setSelectedSegmentIndex:1];
+        } else if ([previewSize isEqualToString:@"medium"]) {
+            [self.previewSizeSegment setSelectedSegmentIndex:2];
+        } else if ([previewSize isEqualToString:@"long"]) {
+            [self.previewSizeSegment setSelectedSegmentIndex:3];
+        }
+    }
+
     [self.fontSizeSegment
      setTitleTextAttributes:@{NSFontAttributeName:
                                   [UIFont fontWithName:@"Helvetica-Bold" size:11.0f]}
@@ -97,7 +114,7 @@
             [self.fontSizeSegment setSelectedSegmentIndex:4];
         }
     }
-
+    
     [self.infrequentSegmentedControl
      setTitleTextAttributes:@{NSFontAttributeName:
                                   [UIFont fontWithName:@"Helvetica-Bold" size:11.0f]}
@@ -134,14 +151,14 @@
         self.infrequentSegmentedControl.hidden = YES;
     }
     
-    NSInteger menuCount = self.menuOptions.count + ([self isRiver] ? 3 : 4) + ([self isInfrequent] ? 1 : 0);
+    NSInteger menuCount = self.menuOptions.count + ([self isRiver] ? 4 : 5) + ([self isInfrequent] ? 1 : 0);
     self.navigationController.preferredContentSize = CGSizeMake(260, 38 * menuCount);
 }
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     
-    NSInteger menuCount = self.menuOptions.count + ([self isRiver] ? 3 : 4) + ([self isInfrequent] ? 1 : 0);
+    NSInteger menuCount = self.menuOptions.count + ([self isRiver] ? 4 : 5) + ([self isInfrequent] ? 1 : 0);
     self.navigationController.preferredContentSize = CGSizeMake(260, 38 * menuCount);
     self.menuTableView.scrollEnabled = self.navigationController.preferredContentSize.height > self.view.frame.size.height;
 }
@@ -206,7 +223,7 @@
 {
     [self buildMenuOptions];
     
-    return [self.menuOptions count] + ([self isRiver] ? 3 : 4) + ([self isInfrequent] ? 1 : 0);
+    return [self.menuOptions count] + ([self isRiver] ? 4 : 5) + ([self isInfrequent] ? 1 : 0);
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -219,24 +236,30 @@
         if (indexPath.row == [self.menuOptions count] + 1) {
             return [self makeReadFilterCell];
         } else if (indexPath.row == [self.menuOptions count] + 2) {
-            return [self makeFontSizeTableCell];
+            return [self makePreviewSizeTableCell];
         } else if (indexPath.row == [self.menuOptions count] + 3) {
-            return [self makeInfrequentTableCell];
+            return [self makeFontSizeTableCell];
         } else if (indexPath.row == [self.menuOptions count] + 4) {
+            return [self makeInfrequentTableCell];
+        } else if (indexPath.row == [self.menuOptions count] + 5) {
             return [self makeThemeTableCell];
         }
     } else if (![self isRiver]) {
         if (indexPath.row == [self.menuOptions count] + 1) {
             return [self makeReadFilterCell];
         } else if (indexPath.row == [self.menuOptions count] + 2) {
-            return [self makeFontSizeTableCell];
+            return [self makePreviewSizeTableCell];
         } else if (indexPath.row == [self.menuOptions count] + 3) {
+            return [self makeFontSizeTableCell];
+        } else if (indexPath.row == [self.menuOptions count] + 4) {
             return [self makeThemeTableCell];
         }
     } else if ([self isRiver]) {
         if (indexPath.row == [self.menuOptions count] + 1) {
-            return [self makeFontSizeTableCell];
+            return [self makePreviewSizeTableCell];
         } else if (indexPath.row == [self.menuOptions count] + 2) {
+            return [self makeFontSizeTableCell];
+        } else if (indexPath.row == [self.menuOptions count] + 3) {
             return [self makeThemeTableCell];
         }
     }
@@ -349,6 +372,30 @@
     self.readFilterSegmentedControl.backgroundColor = UIColorFromRGB(0xeeeeee);
     
     [cell addSubview:readFilterSegmentedControl];
+    
+    return cell;
+}
+
+- (UITableViewCell *)makePreviewSizeTableCell {
+    UITableViewCell *cell = [[UITableViewCell alloc] init];
+    cell.frame = CGRectMake(0, 0, 240, kMenuOptionHeight);
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    cell.separatorInset = UIEdgeInsetsZero;
+    cell.backgroundColor = UIColorFromRGB(0xffffff);
+    
+    self.previewSizeSegment.frame = CGRectMake(8, 7, cell.frame.size.width - 8*2, kMenuOptionHeight - 7*2);
+    [self.previewSizeSegment setTitle:[@"Title Only" uppercaseString] forSegmentAtIndex:0];
+    [self.previewSizeSegment setTitle:@"1" forSegmentAtIndex:1];
+    [self.previewSizeSegment setTitle:@"2" forSegmentAtIndex:2];
+    [self.previewSizeSegment setTitle:@"3" forSegmentAtIndex:3];
+    self.previewSizeSegment.backgroundColor = UIColorFromRGB(0xeeeeee);
+    [self.previewSizeSegment setTitleTextAttributes:@{NSFontAttributeName:[UIFont fontWithName:@"Helvetica-Bold" size:11.0f]} forState:UIControlStateNormal];
+    [self.previewSizeSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:0];
+    [self.previewSizeSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:1];
+    [self.previewSizeSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:2];
+    [self.previewSizeSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:3];
+    
+    [cell addSubview:self.previewSizeSegment];
     
     return cell;
 }
@@ -471,6 +518,22 @@
     
     [appDelegate.feedDetailViewController reloadStories];
     
+}
+
+- (IBAction)changePreviewSize:(id)sender {
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+    if ([sender selectedSegmentIndex] == 0) {
+        [userPreferences setObject:@"title" forKey:@"story_list_preview_text_size"];
+    } else if ([sender selectedSegmentIndex] == 1) {
+        [userPreferences setObject:@"short" forKey:@"story_list_preview_text_size"];
+    } else if ([sender selectedSegmentIndex] == 2) {
+        [userPreferences setObject:@"medium" forKey:@"story_list_preview_text_size"];
+    } else if ([sender selectedSegmentIndex] == 3) {
+        [userPreferences setObject:@"long" forKey:@"story_list_preview_text_size"];
+    }
+    [userPreferences synchronize];
+    
+    [appDelegate resizePreviewSize];
 }
 
 - (IBAction)changeFontSize:(id)sender {

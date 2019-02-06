@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="13529" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13527"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -15,6 +15,7 @@
                 <outlet property="infrequentSegmentedControl" destination="wTg-kB-yYa" id="9s1-Eu-iT5"/>
                 <outlet property="menuTableView" destination="3" id="15"/>
                 <outlet property="orderSegmentedControl" destination="18" id="20"/>
+                <outlet property="previewSizeSegment" destination="YDG-1N-Pky" id="tti-11-cI6"/>
                 <outlet property="readFilterSegmentedControl" destination="19" id="21"/>
                 <outlet property="themeSegmentedControl" destination="KEQ-LR-Qwh" id="VCu-7n-52C"/>
                 <outlet property="view" destination="1" id="16"/>
@@ -69,7 +70,7 @@
                         <action selector="changeTheme:" destination="-1" eventType="valueChanged" id="XZv-tp-Ovk"/>
                     </connections>
                 </segmentedControl>
-                <segmentedControl opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="bar" selectedSegmentIndex="2" id="bWr-qv-pDn">
+                <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="bar" selectedSegmentIndex="2" id="bWr-qv-pDn">
                     <rect key="frame" x="61" y="325" width="209" height="28"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <segments>
@@ -83,7 +84,21 @@
                         <action selector="changeFontSize:" destination="-1" eventType="valueChanged" id="Aix-Az-zOq"/>
                     </connections>
                 </segmentedControl>
-                <segmentedControl opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="bar" selectedSegmentIndex="2" id="wTg-kB-yYa">
+                <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" apportionsSegmentWidthsByContent="YES" segmentControlStyle="bar" selectedSegmentIndex="2" id="YDG-1N-Pky">
+                    <rect key="frame" x="80" y="215" width="159" height="29"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <segments>
+                        <segment title="TITLE ONLY"/>
+                        <segment title="1"/>
+                        <segment title="2"/>
+                        <segment title="3"/>
+                    </segments>
+                    <connections>
+                        <action selector="changeInfrequent:" destination="-1" eventType="valueChanged" id="hB8-BI-nxG"/>
+                        <action selector="changePreviewSize:" destination="-1" eventType="valueChanged" id="qgZ-FG-KU6"/>
+                    </connections>
+                </segmentedControl>
+                <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="bar" selectedSegmentIndex="2" id="wTg-kB-yYa">
                     <rect key="frame" x="86" y="360" width="159" height="29"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <segments>

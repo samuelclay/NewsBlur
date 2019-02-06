@@ -293,6 +293,7 @@
 - (void)reloadData {
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     
+    [self updateTextSize];
     self.showImagePreview = ![[userPreferences stringForKey:@"story_list_preview_images_size"] isEqualToString:@"none"];
     
     appDelegate.fontDescriptorTitleSize = nil;
@@ -2036,7 +2037,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     
     [self.appDelegate.feedDetailMenuViewController buildMenuOptions];
     [self.appDelegate.feedDetailMenuViewController view];
-    NSInteger menuCount = [self.appDelegate.feedDetailMenuViewController.menuOptions count] + 4;
+    NSInteger menuCount = [self.appDelegate.feedDetailMenuViewController.menuOptions count] + 5;
     
     [self.appDelegate.feedDetailMenuNavigationController popToRootViewControllerAnimated:NO];
     [self.appDelegate showPopoverWithViewController:self.appDelegate.feedDetailMenuNavigationController contentSize:CGSizeMake(260, 38 * menuCount) barButtonItem:self.settingsBarButton];

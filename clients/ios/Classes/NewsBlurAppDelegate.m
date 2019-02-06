@@ -631,6 +631,10 @@
     }
 }
 
+- (void)resizePreviewSize {
+    [feedsViewController resizePreviewSize];
+}
+
 - (void)resizeFontSize {
     [feedsViewController resizeFontSize];
 }
