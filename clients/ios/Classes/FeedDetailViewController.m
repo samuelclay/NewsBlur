@@ -1477,7 +1477,7 @@
     
     cell.storyContent = nil;
     if (self.isDashboardModule || self.textSize != FeedDetailTextSizeTitleOnly) {
-        cell.storyContent = [[[story objectForKey:@"story_content"] convertHTML] stringByDecodingXMLEntities];
+        cell.storyContent = [[[[[story objectForKey:@"story_content"] convertHTML] stringByDecodingXMLEntities] stringByDecodingHTMLEntities] stringByReplacingOccurrencesOfString:@"\n" withString:@" "];
     }
     
     // feed color bar border
@@ -1694,21 +1694,26 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
         UIFontDescriptor *fontDescriptor = [self fontDescriptorUsingPreferredSize:UIFontTextStyleCaption1];
         UIFont *font = [UIFont fontWithDescriptor:fontDescriptor size:0.0];
         if ([self isShortTitles] && self.textSize != FeedDetailTextSizeTitleOnly) {
-            return height + font.pointSize*3.25;
+            return height + font.pointSize * 3.25;
         } else if (self.isDashboardModule || self.textSize != FeedDetailTextSizeTitleOnly) {
-            switch (self.textSize) {
-                case FeedDetailTextSizeLong:
-                    return height + font.pointSize*9;
-                    break;
-                case FeedDetailTextSizeMedium:
-                    return height + font.pointSize*7;
-                    break;
-                default:
-                    return height + font.pointSize*5;
-                    break;
+            if (self.textSize == FeedDetailTextSizeMedium || self.textSize == FeedDetailTextSizeLong) {
+                NSDictionary *story = [self getStoryAtRow:indexPath.row];
+                NSString *content = [[story objectForKey:@"story_content"] convertHTML];
+                
+                if (content.length < 50) {
+                    return height + font.pointSize * 3;
+                } else if (content.length < 100) {
+                    return height + font.pointSize * 5;
+                } else if (self.textSize == FeedDetailTextSizeMedium) {
+                    return height + font.pointSize * 7;
+                } else {
+                    return height + font.pointSize * 9;
+                }
+            } else {
+                return height + font.pointSize * 5;
             }
         } else {
-            return height + font.pointSize*2;
+            return height + font.pointSize * 2;
         }
     }
 }
