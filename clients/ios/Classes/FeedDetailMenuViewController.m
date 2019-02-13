@@ -96,6 +96,21 @@
         }
     }
 
+    [self.imageSizeSegment
+     setTitleTextAttributes:@{NSFontAttributeName:
+                                  [UIFont fontWithName:@"Helvetica-Bold" size:11.0f]}
+     forState:UIControlStateNormal];
+    if([userPreferences stringForKey:@"story_list_preview_images_size"]){
+        NSString *imagesSize = [userPreferences stringForKey:@"story_list_preview_images_size"];
+        if ([imagesSize isEqualToString:@"none"]) {
+            [self.imageSizeSegment setSelectedSegmentIndex:0];
+        } else if ([imagesSize isEqualToString:@"small"]) {
+            [self.imageSizeSegment setSelectedSegmentIndex:1];
+        } else if ([imagesSize isEqualToString:@"large"]) {
+            [self.imageSizeSegment setSelectedSegmentIndex:2];
+        }
+    }
+    
     [self.fontSizeSegment
      setTitleTextAttributes:@{NSFontAttributeName:
                                   [UIFont fontWithName:@"Helvetica-Bold" size:11.0f]}
@@ -151,15 +166,13 @@
         self.infrequentSegmentedControl.hidden = YES;
     }
     
-    NSInteger menuCount = self.menuOptions.count + ([self isRiver] ? 4 : 5) + ([self isInfrequent] ? 1 : 0);
-    self.navigationController.preferredContentSize = CGSizeMake(260, 38 * menuCount);
+    self.navigationController.preferredContentSize = CGSizeMake(260, 38 * [self menuCount]);
 }
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     
-    NSInteger menuCount = self.menuOptions.count + ([self isRiver] ? 4 : 5) + ([self isInfrequent] ? 1 : 0);
-    self.navigationController.preferredContentSize = CGSizeMake(260, 38 * menuCount);
+    self.navigationController.preferredContentSize = CGSizeMake(260, 38 * [self menuCount]);
     self.menuTableView.scrollEnabled = self.navigationController.preferredContentSize.height > self.view.frame.size.height;
 }
 
@@ -216,6 +229,10 @@
            [appDelegate.storiesCollection.activeFolder isEqualToString:@"infrequent"];
 }
 
+- (NSUInteger)menuCount {
+    return [self.menuOptions count] + ([self isRiver] ? 5 : 6) + ([self isInfrequent] ? 1 : 0);
+}
+
 #pragma mark -
 #pragma mark - Table view data source
 
@@ -223,7 +240,7 @@
 {
     [self buildMenuOptions];
     
-    return [self.menuOptions count] + ([self isRiver] ? 4 : 5) + ([self isInfrequent] ? 1 : 0);
+    return [self menuCount];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -238,8 +255,10 @@
         } else if (indexPath.row == [self.menuOptions count] + 2) {
             return [self makePreviewSizeTableCell];
         } else if (indexPath.row == [self.menuOptions count] + 3) {
-            return [self makeFontSizeTableCell];
+            return [self makeImageSizeTableCell];
         } else if (indexPath.row == [self.menuOptions count] + 4) {
+            return [self makeFontSizeTableCell];
+        } else if (indexPath.row == [self.menuOptions count] + 5) {
             return [self makeInfrequentTableCell];
         } else if (indexPath.row == [self.menuOptions count] + 5) {
             return [self makeThemeTableCell];
@@ -250,16 +269,20 @@
         } else if (indexPath.row == [self.menuOptions count] + 2) {
             return [self makePreviewSizeTableCell];
         } else if (indexPath.row == [self.menuOptions count] + 3) {
-            return [self makeFontSizeTableCell];
+            return [self makeImageSizeTableCell];
         } else if (indexPath.row == [self.menuOptions count] + 4) {
+            return [self makeFontSizeTableCell];
+        } else if (indexPath.row == [self.menuOptions count] + 5) {
             return [self makeThemeTableCell];
         }
     } else if ([self isRiver]) {
         if (indexPath.row == [self.menuOptions count] + 1) {
             return [self makePreviewSizeTableCell];
         } else if (indexPath.row == [self.menuOptions count] + 2) {
-            return [self makeFontSizeTableCell];
+            return [self makeImageSizeTableCell];
         } else if (indexPath.row == [self.menuOptions count] + 3) {
+            return [self makeFontSizeTableCell];
+        } else if (indexPath.row == [self.menuOptions count] + 4) {
             return [self makeThemeTableCell];
         }
     }
@@ -352,6 +375,9 @@
     [orderSegmentedControl setTitle:[@"Newest first" uppercaseString] forSegmentAtIndex:0];
     [orderSegmentedControl setTitle:[@"Oldest" uppercaseString] forSegmentAtIndex:1];
     self.orderSegmentedControl.backgroundColor = UIColorFromRGB(0xeeeeee);
+    [self.orderSegmentedControl setTitleTextAttributes:@{NSFontAttributeName:[UIFont fontWithName:@"Helvetica-Bold" size:11.0f]} forState:UIControlStateNormal];
+    [self.orderSegmentedControl setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:0];
+    [self.orderSegmentedControl setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:1];
     
     [cell addSubview:orderSegmentedControl];
     
@@ -370,6 +396,9 @@
     [readFilterSegmentedControl setTitle:[@"All stories" uppercaseString] forSegmentAtIndex:0];
     [readFilterSegmentedControl setTitle:[@"Unread only" uppercaseString] forSegmentAtIndex:1];
     self.readFilterSegmentedControl.backgroundColor = UIColorFromRGB(0xeeeeee);
+    [self.readFilterSegmentedControl setTitleTextAttributes:@{NSFontAttributeName:[UIFont fontWithName:@"Helvetica-Bold" size:11.0f]} forState:UIControlStateNormal];
+    [self.readFilterSegmentedControl setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:0];
+    [self.readFilterSegmentedControl setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:1];
     
     [cell addSubview:readFilterSegmentedControl];
     
@@ -384,7 +413,7 @@
     cell.backgroundColor = UIColorFromRGB(0xffffff);
     
     self.previewSizeSegment.frame = CGRectMake(8, 7, cell.frame.size.width - 8*2, kMenuOptionHeight - 7*2);
-    [self.previewSizeSegment setTitle:[@"Title Only" uppercaseString] forSegmentAtIndex:0];
+    [self.previewSizeSegment setTitle:[@"Title" uppercaseString] forSegmentAtIndex:0];
     [self.previewSizeSegment setTitle:@"1" forSegmentAtIndex:1];
     [self.previewSizeSegment setTitle:@"2" forSegmentAtIndex:2];
     [self.previewSizeSegment setTitle:@"3" forSegmentAtIndex:3];
@@ -396,6 +425,28 @@
     [self.previewSizeSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:3];
     
     [cell addSubview:self.previewSizeSegment];
+    
+    return cell;
+}
+
+- (UITableViewCell *)makeImageSizeTableCell {
+    UITableViewCell *cell = [[UITableViewCell alloc] init];
+    cell.frame = CGRectMake(0, 0, 240, kMenuOptionHeight);
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    cell.separatorInset = UIEdgeInsetsZero;
+    cell.backgroundColor = UIColorFromRGB(0xffffff);
+    
+    self.imageSizeSegment.frame = CGRectMake(8, 7, cell.frame.size.width - 8*2, kMenuOptionHeight - 7*2);
+    [self.imageSizeSegment setTitle:[@"No Image" uppercaseString] forSegmentAtIndex:0];
+    [self.imageSizeSegment setTitle:[@"Small" uppercaseString] forSegmentAtIndex:1];
+    [self.imageSizeSegment setTitle:[@"Large" uppercaseString] forSegmentAtIndex:2];
+    self.imageSizeSegment.backgroundColor = UIColorFromRGB(0xeeeeee);
+    [self.imageSizeSegment setTitleTextAttributes:@{NSFontAttributeName:[UIFont fontWithName:@"Helvetica-Bold" size:11.0f]} forState:UIControlStateNormal];
+    [self.imageSizeSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:0];
+    [self.imageSizeSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:1];
+    [self.imageSizeSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:2];
+    
+    [cell addSubview:self.imageSizeSegment];
     
     return cell;
 }
@@ -530,6 +581,20 @@
         [userPreferences setObject:@"medium" forKey:@"story_list_preview_text_size"];
     } else if ([sender selectedSegmentIndex] == 3) {
         [userPreferences setObject:@"long" forKey:@"story_list_preview_text_size"];
+    }
+    [userPreferences synchronize];
+    
+    [appDelegate resizePreviewSize];
+}
+
+- (IBAction)changeImageSize:(id)sender {
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+    if ([sender selectedSegmentIndex] == 0) {
+        [userPreferences setObject:@"none" forKey:@"story_list_preview_images_size"];
+    } else if ([sender selectedSegmentIndex] == 1) {
+        [userPreferences setObject:@"small" forKey:@"story_list_preview_images_size"];
+    } else if ([sender selectedSegmentIndex] == 2) {
+        [userPreferences setObject:@"large" forKey:@"story_list_preview_images_size"];
     }
     [userPreferences synchronize];
     
