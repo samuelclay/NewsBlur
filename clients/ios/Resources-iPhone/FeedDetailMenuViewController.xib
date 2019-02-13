@@ -12,6 +12,7 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="FeedDetailMenuViewController">
             <connections>
                 <outlet property="fontSizeSegment" destination="bWr-qv-pDn" id="fcF-wf-yty"/>
+                <outlet property="imageSizeSegment" destination="XGc-Fp-10c" id="cvr-6z-2bb"/>
                 <outlet property="infrequentSegmentedControl" destination="wTg-kB-yYa" id="9s1-Eu-iT5"/>
                 <outlet property="menuTableView" destination="3" id="15"/>
                 <outlet property="orderSegmentedControl" destination="18" id="20"/>
@@ -36,7 +37,7 @@
                     </connections>
                 </tableView>
                 <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="bar" selectedSegmentIndex="0" id="19">
-                    <rect key="frame" x="43" y="252" width="234" height="30"/>
+                    <rect key="frame" x="43" y="252" width="159" height="30"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <segments>
                         <segment title="ALL STORIES"/>
@@ -47,7 +48,7 @@
                     </connections>
                 </segmentedControl>
                 <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="bar" selectedSegmentIndex="0" id="18">
-                    <rect key="frame" x="43" y="215" width="234" height="30"/>
+                    <rect key="frame" x="43" y="215" width="159" height="30"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <segments>
                         <segment title="NEWEST FIRST"/>
@@ -71,7 +72,7 @@
                     </connections>
                 </segmentedControl>
                 <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="bar" selectedSegmentIndex="2" id="bWr-qv-pDn">
-                    <rect key="frame" x="61" y="325" width="209" height="28"/>
+                    <rect key="frame" x="61" y="325" width="159" height="28"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <segments>
                         <segment title="11pt"/>
@@ -84,7 +85,19 @@
                         <action selector="changeFontSize:" destination="-1" eventType="valueChanged" id="Aix-Az-zOq"/>
                     </connections>
                 </segmentedControl>
-                <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" apportionsSegmentWidthsByContent="YES" segmentControlStyle="bar" selectedSegmentIndex="2" id="YDG-1N-Pky">
+                <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="bar" selectedSegmentIndex="2" id="XGc-Fp-10c">
+                    <rect key="frame" x="80" y="215" width="159" height="29"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <segments>
+                        <segment title="NO IMAGE"/>
+                        <segment title="SMALL"/>
+                        <segment title="LARGE"/>
+                    </segments>
+                    <connections>
+                        <action selector="changeImageSize:" destination="-1" eventType="valueChanged" id="hB6-bC-oPu"/>
+                    </connections>
+                </segmentedControl>
+                <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="bar" selectedSegmentIndex="2" id="YDG-1N-Pky">
                     <rect key="frame" x="80" y="215" width="159" height="29"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <segments>
@@ -94,7 +107,6 @@
                         <segment title="3"/>
                     </segments>
                     <connections>
-                        <action selector="changeInfrequent:" destination="-1" eventType="valueChanged" id="hB8-BI-nxG"/>
                         <action selector="changePreviewSize:" destination="-1" eventType="valueChanged" id="qgZ-FG-KU6"/>
                     </connections>
                 </segmentedControl>
