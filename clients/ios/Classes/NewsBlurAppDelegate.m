@@ -1779,6 +1779,7 @@
     } else if ([storyBrowser isEqualToString:@"inappsafari"]) {
         self.safariViewController = [[SFSafariViewController alloc] initWithURL:url];
         self.safariViewController.delegate = self;
+        self.safariViewController.modalPresentationStyle = UIModalPresentationPageSheet;
         [navigationController presentViewController:self.safariViewController animated:YES completion:nil];
     } else if ([storyBrowser isEqualToString:@"inappsafarireader"]) {
         self.safariViewController = [[SFSafariViewController alloc] initWithURL:url entersReaderIfAvailable:YES];
