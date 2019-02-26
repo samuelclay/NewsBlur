@@ -2300,7 +2300,7 @@ class MSharedStory(mongo.DynamicDocument):
             return
             
         soup = BeautifulSoup(zlib.decompress(self.story_content_z))
-        image_sources = [img.get('src') for img in soup.findAll('img')]
+        image_sources = [img.get('src') for img in soup.findAll('img') if img and img.get('src')]
         if len(image_sources) > 0:
             self.image_urls = image_sources
             self.save()

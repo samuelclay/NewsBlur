@@ -2757,7 +2757,7 @@ class MStory(mongo.Document):
         image_urls = ordered_image_urls
         
         if len(image_urls):
-            self.image_urls = image_urls
+            self.image_urls = [u for u in image_urls if u]
         
         return self.image_urls
 

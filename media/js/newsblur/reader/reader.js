@@ -5014,7 +5014,7 @@
                 }, this));
             }
             
-            this.watch_navigator_online();
+            // this.watch_navigator_online();
         },
         
         watch_navigator_online: function() {
