@@ -11,7 +11,9 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="FontSettingsViewController">
             <connections>
+                <outlet property="autoscrollSegment" destination="DbL-5f-bAN" id="Tb1-WQ-ng4"/>
                 <outlet property="fontSizeSegment" destination="28" id="34"/>
+                <outlet property="fullscreenSegment" destination="RRB-to-azP" id="YoH-EL-BKL"/>
                 <outlet property="lineSpacingSegment" destination="4iD-hO-qU2" id="K0A-P6-riY"/>
                 <outlet property="menuTableView" destination="35" id="38"/>
                 <outlet property="scrollOrientationSegment" destination="muZ-4L-Qll" id="Uie-9I-ECx"/>
@@ -61,6 +63,28 @@
                     </segments>
                     <connections>
                         <action selector="changeScrollOrientation:" destination="-1" eventType="valueChanged" id="x5R-7P-7ha"/>
+                    </connections>
+                </segmentedControl>
+                <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="bar" id="RRB-to-azP">
+                    <rect key="frame" x="3" y="96" width="234" height="29"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <segments>
+                        <segment title="Full Screen"/>
+                        <segment title="Toolbar"/>
+                    </segments>
+                    <connections>
+                        <action selector="changeFullscreen:" destination="-1" eventType="valueChanged" id="h3Y-T6-P9J"/>
+                    </connections>
+                </segmentedControl>
+                <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="bar" id="DbL-5f-bAN">
+                    <rect key="frame" x="3" y="96" width="234" height="29"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <segments>
+                        <segment title="Manual Scroll"/>
+                        <segment title="Auto Scroll"/>
+                    </segments>
+                    <connections>
+                        <action selector="changeAutoscroll:" destination="-1" eventType="valueChanged" id="dFh-eV-zfx"/>
                     </connections>
                 </segmentedControl>
                 <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="bar" selectedSegmentIndex="2" id="9Zd-0Z-SQt">

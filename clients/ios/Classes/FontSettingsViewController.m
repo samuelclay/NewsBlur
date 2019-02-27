@@ -65,7 +65,7 @@
     
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     
-    if([userPreferences stringForKey:@"story_font_size"]){
+    if ([userPreferences stringForKey:@"story_font_size"]){
         NSString *fontSize = [userPreferences stringForKey:@"story_font_size"];
         if ([fontSize isEqualToString:@"xs"]) {
             [self.fontSizeSegment setSelectedSegmentIndex:0];
@@ -80,7 +80,7 @@
         }
     }
     
-    if([userPreferences stringForKey:@"story_line_spacing"]){
+    if ([userPreferences stringForKey:@"story_line_spacing"]){
         NSString *lineSpacing = [userPreferences stringForKey:@"story_line_spacing"];
         if ([lineSpacing isEqualToString:@"xs"]) {
             [self.lineSpacingSegment setSelectedSegmentIndex:0];
@@ -95,7 +95,19 @@
         }
     }
     
-    if([userPreferences objectForKey:@"scroll_stories_horizontally"]){
+    if ([userPreferences boolForKey:@"story_full_screen"]) {
+        [self.fullscreenSegment setSelectedSegmentIndex:0];
+    } else {
+        [self.fullscreenSegment setSelectedSegmentIndex:1];
+    }
+    
+    if ([userPreferences boolForKey:@"story_autoscroll"]) {
+        [self.autoscrollSegment setSelectedSegmentIndex:1];
+    } else {
+        [self.autoscrollSegment setSelectedSegmentIndex:0];
+    }
+    
+    if ([userPreferences objectForKey:@"scroll_stories_horizontally"]){
         BOOL scrollHorizontally = [userPreferences boolForKey:@"scroll_stories_horizontally"];
         if (scrollHorizontally) {
             [self.scrollOrientationSegment setSelectedSegmentIndex:0];
@@ -204,6 +216,20 @@
     [userPreferences synchronize];
 }
 
+- (IBAction)changeFullscreen:(id)sender {
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+    [userPreferences setBool:[sender selectedSegmentIndex] == 0 forKey:@"story_full_screen"];
+    [userPreferences synchronize];
+    [self.appDelegate.storyPageControl changedFullscreen];
+}
+
+- (IBAction)changeAutoscroll:(id)sender {
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+    [userPreferences setBool:[sender selectedSegmentIndex] == 1 forKey:@"story_autoscroll"];
+    [userPreferences synchronize];
+    [self.appDelegate.storyPageControl changedAutoscroll];
+}
+
 - (IBAction)changeScrollOrientation:(id)sender {
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     [userPreferences setBool:[sender selectedSegmentIndex] == 0 forKey:@"scroll_stories_horizontally"];
@@ -239,21 +265,30 @@
 #pragma mark - Table view data source
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return 10;
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        return 12;
+    } else {
+        return 11;
+    }
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     static NSString *CellIndentifier = @"Cell";
     
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIndentifier];
+    NSUInteger iPadOffset = UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone ? 0 : 1;
     
     if (indexPath.row == 6) {
         return [self makeFontSizeTableCell];
     } else if (indexPath.row == 7) {
         return [self makeLineSpacingTableCell];
-    } else if (indexPath.row == 8) {
+    } else if (indexPath.row == 8 && iPadOffset == 0) {
+        return [self makeFullScreenTableCell];
+    } else if (indexPath.row == 9 - iPadOffset) {
+        return [self makeAutoscrollTableCell];
+    } else if (indexPath.row == 10 - iPadOffset) {
         return [self makeScrollOrientationTableCell];
-    } else if (indexPath.row == 9) {
+    } else if (indexPath.row == 11 - iPadOffset) {
         return [self makeThemeTableCell];
     }
     
@@ -414,6 +449,46 @@
     self.lineSpacingSegment.backgroundColor = UIColorFromRGB(0xeeeeee);
     
     [cell addSubview:self.lineSpacingSegment];
+    
+    return cell;
+}
+
+- (UITableViewCell *)makeFullScreenTableCell {
+    UITableViewCell *cell = [[UITableViewCell alloc] init];
+    cell.frame = CGRectMake(0, 0, 240, kMenuOptionHeight);
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    cell.separatorInset = UIEdgeInsetsZero;
+    cell.backgroundColor = UIColorFromRGB(0xffffff);
+    
+    self.fullscreenSegment.frame = CGRectMake(8, 7, cell.frame.size.width - 8*2, kMenuOptionHeight - 7*2);
+    [self.fullscreenSegment setTitle:[@"Full Screen" uppercaseString] forSegmentAtIndex:0];
+    [self.fullscreenSegment setTitle:[@"Toolbar" uppercaseString] forSegmentAtIndex:1];
+    self.fullscreenSegment.backgroundColor = UIColorFromRGB(0xeeeeee);
+    [self.fullscreenSegment setTitleTextAttributes:@{NSFontAttributeName:[UIFont fontWithName:@"Helvetica-Bold" size:11.0f]} forState:UIControlStateNormal];
+    [self.fullscreenSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:0];
+    [self.fullscreenSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:1];
+    
+    [cell addSubview:self.fullscreenSegment];
+    
+    return cell;
+}
+
+- (UITableViewCell *)makeAutoscrollTableCell {
+    UITableViewCell *cell = [[UITableViewCell alloc] init];
+    cell.frame = CGRectMake(0, 0, 240, kMenuOptionHeight);
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    cell.separatorInset = UIEdgeInsetsZero;
+    cell.backgroundColor = UIColorFromRGB(0xffffff);
+    
+    self.autoscrollSegment.frame = CGRectMake(8, 7, cell.frame.size.width - 8*2, kMenuOptionHeight - 7*2);
+    [self.autoscrollSegment setTitle:[@"Manual Scroll" uppercaseString] forSegmentAtIndex:0];
+    [self.autoscrollSegment setTitle:[@"Auto Scroll" uppercaseString] forSegmentAtIndex:1];
+    self.autoscrollSegment.backgroundColor = UIColorFromRGB(0xeeeeee);
+    [self.autoscrollSegment setTitleTextAttributes:@{NSFontAttributeName:[UIFont fontWithName:@"Helvetica-Bold" size:11.0f]} forState:UIControlStateNormal];
+    [self.autoscrollSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:0];
+    [self.autoscrollSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:1];
+    
+    [cell addSubview:self.autoscrollSegment];
     
     return cell;
 }
