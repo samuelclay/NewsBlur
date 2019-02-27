@@ -251,7 +251,9 @@
     [self updateTraverseBackground];
     [self setNextPreviousButtons];
     [self setTextButton];
-
+    
+    self.currentlyTogglingNavigationBar = NO;
+    
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     BOOL swipeEnabled = [[userPreferences stringForKey:@"story_detail_swipe_left_edge"]
                          isEqualToString:@"pop_to_story_list"];;
@@ -437,6 +439,12 @@
     return self.navigationController.navigationBarHidden;
 }
 
+- (BOOL)wantNavigationBarHidden {
+    NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
+    
+    return [preferences boolForKey:@"story_full_screen"] || [preferences boolForKey:@"story_autoscroll"];
+}
+
 - (void)setNavigationBarHidden:(BOOL)hide {
     [self setNavigationBarHidden:hide alsoTraverse:NO];
 }
@@ -486,6 +494,10 @@
     }
     
     [UIView animateWithDuration:0.2 animations:^{
+        if (!self.isHorizontal) {
+            [self reorientPages];
+        }
+        
         currentPage.webView.scrollView.contentOffset = newOffset;
         
         if (alsoTraverse) {
@@ -1095,12 +1107,8 @@
     NSInteger topPosition = currentPage.webView.scrollView.contentOffset.y;
     BOOL canHide = currentPage.canHideNavigationBar && topPosition >= 0;
     
-    if (!canHide && self.navigationController.navigationBarHidden) {
-        [self.navigationController setNavigationBarHidden:NO animated:YES];
-        
-        [UIView animateWithDuration:0.5 animations:^{
-            [self setNeedsStatusBarAppearanceUpdate];
-        }];
+    if (!canHide && self.isHorizontal && self.navigationController.navigationBarHidden) {
+        [self setNavigationBarHidden:NO];
     }
     
     if (self.isDraggingScrollview || self.scrollingToPage == currentPage.pageIndex) {
@@ -1404,6 +1412,20 @@
     [self.currentPage changeLineSpacing:lineSpacing];
     [self.nextPage changeLineSpacing:lineSpacing];
     [self.previousPage changeLineSpacing:lineSpacing];
+}
+
+- (void)changedFullscreen {
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+    BOOL wantHidden = [userPreferences boolForKey:@"story_full_screen"];
+    BOOL isHidden = self.navigationController.navigationBarHidden;
+    
+    if (self.currentPage.webView.scrollView.contentOffset.y > 10 || isHidden) {
+        [self setNavigationBarHidden:wantHidden alsoTraverse:YES];
+    }
+}
+
+- (void)changedAutoscroll {
+    #warning *** to be implemented ***
 }
 
 - (void)changedScrollOrientation {

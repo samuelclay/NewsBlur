@@ -178,45 +178,46 @@
 
 - (void)tap:(UITapGestureRecognizer *)gestureRecognizer {
 //    NSLog(@"Gesture tap: %ld (%ld) - %d", (long)gestureRecognizer.state, (long)UIGestureRecognizerStateEnded, inDoubleTap);
-
-    NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
-    NSString *tapStory = [preferences stringForKey:@"tap_story"];
     
-    if (gestureRecognizer.state == UIGestureRecognizerStateEnded && gestureRecognizer.numberOfTouches == 1 && [tapStory isEqualToString:@"toggle_full_screen"] && UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone && self.presentedViewController == nil) {
-        CGPoint pt = [self pointForGesture:gestureRecognizer];
-        if (pt.x == CGPointZero.x && pt.y == CGPointZero.y) return;
-//        NSLog(@"Tapped point: %@", NSStringFromCGPoint(pt));
-        NSString *tagName = [webView stringByEvaluatingJavaScriptFromString:
-                             [NSString stringWithFormat:@"linkAt(%li, %li, 'tagName');",
-                              (long)pt.x,(long)pt.y]];
-        
-        // Special case to handle the story title, Train, Save, and Share buttons.
-        if ([tagName isEqualToString:@"DIV"]) {
-            NSString *identifier = [webView stringByEvaluatingJavaScriptFromString:
-                                   [NSString stringWithFormat:@"linkAt(%li, %li, 'id');",
-                                    (long)pt.x,(long)pt.y]];
-            NSString *outerHTML = [webView stringByEvaluatingJavaScriptFromString:
-             [NSString stringWithFormat:@"linkAt(%li, %li, 'outerHTML');",
-              (long)pt.x,(long)pt.y]];
-            
-            if (![identifier isEqualToString:@"NB-story"] && [outerHTML containsString:@"NB-"]) {
-                tagName = @"A";
-            }
-        }
-        
-        // Ignore links, videos, and iframes (e.g. embedded YouTube videos).
-        if (!inDoubleTap && ![@[@"A", @"VIDEO", @"IFRAME"] containsObject:tagName]) {
-            BOOL isHidden = self.navigationController.navigationBarHidden;
-            
-            if (self.webView.scrollView.contentOffset.y > 10 || isHidden) {
-                appDelegate.storyPageControl.wantNavigationBarHidden = !isHidden;
-                
-                [appDelegate.storyPageControl setNavigationBarHidden:!isHidden alsoTraverse:YES];
-            }
-        }
-        
-//        [self tapImage:gestureRecognizer];
-    }
+    // This logic is commented out for now, but kept, since we'll want it for the new autoscroll feature.
+//    NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
+//    NSString *tapStory = [preferences stringForKey:@"tap_story"];
+//
+//    if (gestureRecognizer.state == UIGestureRecognizerStateEnded && gestureRecognizer.numberOfTouches == 1 && [tapStory isEqualToString:@"toggle_full_screen"] && UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone && self.presentedViewController == nil) {
+//        CGPoint pt = [self pointForGesture:gestureRecognizer];
+//        if (pt.x == CGPointZero.x && pt.y == CGPointZero.y) return;
+////        NSLog(@"Tapped point: %@", NSStringFromCGPoint(pt));
+//        NSString *tagName = [webView stringByEvaluatingJavaScriptFromString:
+//                             [NSString stringWithFormat:@"linkAt(%li, %li, 'tagName');",
+//                              (long)pt.x,(long)pt.y]];
+//
+//        // Special case to handle the story title, Train, Save, and Share buttons.
+//        if ([tagName isEqualToString:@"DIV"]) {
+//            NSString *identifier = [webView stringByEvaluatingJavaScriptFromString:
+//                                   [NSString stringWithFormat:@"linkAt(%li, %li, 'id');",
+//                                    (long)pt.x,(long)pt.y]];
+//            NSString *outerHTML = [webView stringByEvaluatingJavaScriptFromString:
+//             [NSString stringWithFormat:@"linkAt(%li, %li, 'outerHTML');",
+//              (long)pt.x,(long)pt.y]];
+//
+//            if (![identifier isEqualToString:@"NB-story"] && [outerHTML containsString:@"NB-"]) {
+//                tagName = @"A";
+//            }
+//        }
+//
+//        // Ignore links, videos, and iframes (e.g. embedded YouTube videos).
+//        if (!inDoubleTap && ![@[@"A", @"VIDEO", @"IFRAME"] containsObject:tagName]) {
+//            BOOL isHidden = self.navigationController.navigationBarHidden;
+//
+//            if (self.webView.scrollView.contentOffset.y > 10 || isHidden) {
+//                appDelegate.storyPageControl.wantNavigationBarHidden = !isHidden;
+//
+//                [appDelegate.storyPageControl setNavigationBarHidden:!isHidden alsoTraverse:YES];
+//            }
+//        }
+//
+////        [self tapImage:gestureRecognizer];
+//    }
 }
 
 - (void)doubleTap:(UITapGestureRecognizer *)gestureRecognizer {
@@ -1352,11 +1353,14 @@
             hasScrolled = YES;
         }
         
+        BOOL isHorizontal = appDelegate.storyPageControl.isHorizontal;
         BOOL isNavBarHidden = self.navigationController.navigationBarHidden;
         
-        if (topPosition <= 0 && isNavBarHidden) {
+        if (!isHorizontal && appDelegate.storyPageControl.previousPage.pageIndex < 0) {
             [appDelegate.storyPageControl setNavigationBarHidden:NO];
-        } else if (!nearTop && !isNavBarHidden && self.canHideNavigationBar && appDelegate.storyPageControl.wantNavigationBarHidden) {
+        } else if (isHorizontal && topPosition <= 0 && isNavBarHidden) {
+            [appDelegate.storyPageControl setNavigationBarHidden:NO];
+        } else if (!nearTop && !isNavBarHidden && self.canHideNavigationBar) {
             [appDelegate.storyPageControl setNavigationBarHidden:YES];
         }
         
@@ -1369,10 +1373,10 @@
             } completion:^(BOOL finished) {
                 
             }];
-        } else if (singlePage || !appDelegate.storyPageControl.isHorizontal) {
+        } else if (singlePage || !isHorizontal) {
             appDelegate.storyPageControl.traverseView.alpha = 1;
 //            NSLog(@" ---> Bottom position: %d", bottomPosition);
-            if (bottomPosition >= 0 || !appDelegate.storyPageControl.isHorizontal) {
+            if (bottomPosition >= 0 || !isHorizontal) {
 //                appDelegate.storyPageControl.traverseView.frame = CGRectMake(tvf.origin.x,
 //                                                                             self.webView.scrollView.frame.size.height - tvf.size.height - safeBottomMargin,
 //                                                                             tvf.size.width, tvf.size.height);
@@ -1846,10 +1850,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         return NO;
     }
     
-    NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
-    NSString *tapStory = [preferences stringForKey:@"tap_story"];
-    
-    if (![tapStory isEqualToString:@"toggle_full_screen"]) {
+    if (!appDelegate.storyPageControl.wantNavigationBarHidden) {
         NSLog(@"canHideNavigationBar: no, toggle is off");  // log
         return NO;
     }
