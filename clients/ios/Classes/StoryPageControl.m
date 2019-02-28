@@ -24,6 +24,13 @@
 #import "FMDatabase.h"
 #import "StoriesCollection.h"
 
+@interface StoryPageControl ()
+
+@property (nonatomic, strong) NSTimer *autoscrollTimer;
+@property (nonatomic, strong) NSTimer *autoscrollViewTimer;
+
+@end
+
 @implementation StoryPageControl
 
 @synthesize currentPage, nextPage, previousPage;
@@ -248,6 +255,7 @@
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
+    [self updateAutoscrollButtons];
     [self updateTraverseBackground];
     [self setNextPreviousButtons];
     [self setTextButton];
@@ -321,6 +329,7 @@
         }
     }
     
+    self.autoscrollView.alpha = 0;
     previousPage.view.hidden = YES;
     self.traverseView.alpha = 1;
     self.isAnimatedIntoPlace = NO;
@@ -353,6 +362,8 @@
     [self reorientPages];
 //    [self applyNewIndex:previousPage.pageIndex pageController:previousPage];
     previousPage.view.hidden = NO;
+    [self showAutoscrollBriefly:YES];
+    
     [self becomeFirstResponder];
 }
 
@@ -372,6 +383,7 @@
     
     previousPage.view.hidden = YES;
     self.navigationController.interactivePopGestureRecognizer.enabled = YES;
+    self.autoscrollActive = NO;
 }
 
 - (BOOL)becomeFirstResponder {
@@ -442,7 +454,7 @@
 - (BOOL)wantNavigationBarHidden {
     NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
     
-    return [preferences boolForKey:@"story_full_screen"] || [preferences boolForKey:@"story_autoscroll"];
+    return [preferences boolForKey:@"story_full_screen"] || self.autoscrollAvailable;
 }
 
 - (void)setNavigationBarHidden:(BOOL)hide {
@@ -712,6 +724,21 @@
     return UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone || appDelegate.isCompactWidth;
 }
 
+- (void)updateAutoscrollButtons {
+    self.autoscrollBackgroundImageView.image = [[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"traverse_background.png"]];
+    
+    [self.autoscrollDisableButton setBackgroundImage:[[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"autoscroll_off.png"]]  forState:UIControlStateNormal];
+    
+    if (self.autoscrollActive) {
+        [self.autoscrollPauseResumeButton setBackgroundImage:[[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"autoscroll_pause.png"]]  forState:UIControlStateNormal];
+    } else {
+        [self.autoscrollPauseResumeButton setBackgroundImage:[[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"autoscroll_resume.png"]]  forState:UIControlStateNormal];
+    }
+    
+    [self.autoscrollSlowerButton setBackgroundImage:[[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"autoscroll_slower.png"]]  forState:UIControlStateNormal];
+    [self.autoscrollFasterButton setBackgroundImage:[[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"autoscroll_faster.png"]]  forState:UIControlStateNormal];
+}
+
 - (void)updateTraverseBackground {
     self.textStorySendBackgroundImageView.image = [[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"traverse_background.png"]];
     self.prevNextBackgroundImageView.image = [[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"traverse_background.png"]];
@@ -722,6 +749,7 @@
 - (void)updateTheme {
     [super updateTheme];
     
+    [self updateAutoscrollButtons];
     [self updateTraverseBackground];
     [self setNextPreviousButtons];
     [self setTextButton];
@@ -892,6 +920,8 @@
 //    if (self.isDraggingScrollview) {
         [self setStoryFromScroll];
 //    }
+    
+    [self showAutoscrollBriefly:YES];
     
     // Stick to bottom
     traversePinned = YES;
@@ -1094,6 +1124,9 @@
     }
     
 //    NSLog(@"Set Story from scroll: %@ = %@ (%@/%@/%@)", @(fractionalPage), @(nearestNumber), @(previousPage.pageIndex), @(currentPage.pageIndex), @(nextPage.pageIndex));
+    
+    self.autoscrollActive = NO;
+    [self showAutoscrollBriefly:YES];
     
     nextPage.webView.scrollView.scrollsToTop = NO;
     previousPage.webView.scrollView.scrollsToTop = NO;
@@ -1425,7 +1458,7 @@
 }
 
 - (void)changedAutoscroll {
-    #warning *** to be implemented ***
+    self.autoscrollActive = self.autoscrollAvailable;
 }
 
 - (void)changedScrollOrientation {
@@ -1472,6 +1505,139 @@
 
 - (void)hideNotifier {
     [self.notifier hide];
+}
+
+#pragma mark -
+#pragma mark Story Autoscroll
+
+- (BOOL)autoscrollAvailable {
+    return [[NSUserDefaults standardUserDefaults] boolForKey:@"story_autoscroll"];
+}
+
+- (void)setAutoscrollAvailable:(BOOL)available {
+    [[NSUserDefaults standardUserDefaults] setBool:available forKey:@"story_autoscroll"];
+}
+
+- (NSTimeInterval)autoscrollSpeed {
+    CGFloat speed = [[NSUserDefaults standardUserDefaults] doubleForKey:@"story_autoscroll_speed"];
+    
+    if (speed <= 0) {
+        speed = 0.03;
+    }
+    
+    return speed;
+}
+
+- (void)setAutoscrollSpeed:(NSTimeInterval)speed {
+    [[NSUserDefaults standardUserDefaults] setDouble:speed forKey:@"story_autoscroll_speed"];
+    
+    // This will update the timer with the new speed.
+    self.autoscrollActive = self.autoscrollActive;
+    
+    NSLog(@"set autoscroll speed to: %@", @(speed));  // log
+}
+
+- (BOOL)autoscrollActive {
+    return self.autoscrollTimer != nil;
+}
+
+- (void)setAutoscrollActive:(BOOL)active {
+    [self.autoscrollTimer invalidate];
+    self.autoscrollTimer = nil;
+    
+    if (active && self.autoscrollAvailable) {
+        self.autoscrollTimer = [NSTimer scheduledTimerWithTimeInterval:self.autoscrollSpeed target:self selector:@selector(autoscroll:) userInfo:nil repeats:YES];
+    }
+    
+    [self updateAutoscrollButtons];
+}
+
+- (void)autoscroll:(NSTimer *)timer {
+    UIWebView *webView = self.currentPage.webView;
+    CGFloat position = webView.scrollView.contentOffset.y + 0.5;
+    CGFloat maximum = webView.scrollView.contentSize.height - webView.frame.size.height;
+    
+    if (@available(iOS 11.0, *)) {
+        maximum += self.view.safeAreaInsets.bottom;
+    }
+    
+    if (position < maximum) {
+        [webView.scrollView setContentOffset:CGPointMake(0, position) animated:NO];
+    } else {
+        self.autoscrollActive = NO;
+    }
+}
+
+- (void)showAutoscrollBriefly:(BOOL)briefly {
+    if (!self.autoscrollAvailable || self.currentPage.webView.scrollView.contentSize.height - 200 <= self.currentPage.view.frame.size.height) {
+        [self hideAutoscroll];
+        return;
+    }
+    
+    if (self.autoscrollView.alpha == 0) {
+        [UIView animateWithDuration:0.2 animations:^{
+            [self.view layoutIfNeeded];
+            self.autoscrollView.alpha = 1;
+        }];
+    }
+    
+    if (briefly) {
+        [self hideAutoscrollAfterDelay];
+    }
+}
+
+- (void)hideAutoscrollAfterDelay {
+    [self.autoscrollViewTimer invalidate];
+    self.autoscrollViewTimer = [NSTimer scheduledTimerWithTimeInterval:2 target:self selector:@selector(hideAutoscroll) userInfo:nil repeats:NO];
+}
+
+- (void)hideAutoscroll {
+    [self.autoscrollViewTimer invalidate];
+    self.autoscrollViewTimer = nil;
+    
+    [UIView animateWithDuration:1 animations:^{
+        [self.view layoutIfNeeded];
+        self.autoscrollView.alpha = 0;
+    }];
+}
+
+- (void)resetAutoscrollViewTimerIfNeeded {
+    if (self.autoscrollViewTimer != nil) {
+        [self hideAutoscrollAfterDelay];
+    }
+}
+
+- (IBAction)autoscrollDisable:(UIButton *)sender {
+    self.autoscrollAvailable = NO;
+    self.autoscrollActive = NO;
+    
+    [self hideAutoscroll];
+}
+
+- (IBAction)autoscrollPauseResume:(UIButton *)sender {
+    self.autoscrollActive = !self.autoscrollActive;
+    
+    [self resetAutoscrollViewTimerIfNeeded];
+}
+
+- (IBAction)autoscrollSlower:(UIButton *)sender {
+    if (self.autoscrollSpeed < 1) {
+        self.autoscrollSpeed = self.autoscrollSpeed * 2; // + 0.05;
+    } else {
+        NSLog(@"Minimum autoscroll speed reached");  // log
+    }
+    
+    [self resetAutoscrollViewTimerIfNeeded];
+}
+
+- (IBAction)autoscrollFaster:(UIButton *)sender {
+    if (self.autoscrollSpeed > 0.001) {
+        self.autoscrollSpeed = self.autoscrollSpeed / 2; // - 0.05;
+    } else {
+        NSLog(@"Maximum autoscroll speed reached");  // log
+    }
+    
+    [self resetAutoscrollViewTimerIfNeeded];
 }
 
 #pragma mark -
