@@ -454,7 +454,7 @@
 - (BOOL)wantNavigationBarHidden {
     NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
     
-    return [preferences boolForKey:@"story_full_screen"] || self.autoscrollAvailable;
+    return ([preferences boolForKey:@"story_full_screen"] || self.autoscrollAvailable) && !self.forceNavigationBarShown;
 }
 
 - (void)setNavigationBarHidden:(BOOL)hide {
@@ -1448,8 +1448,7 @@
 }
 
 - (void)changedFullscreen {
-    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
-    BOOL wantHidden = [userPreferences boolForKey:@"story_full_screen"];
+    BOOL wantHidden = self.wantNavigationBarHidden;
     BOOL isHidden = self.navigationController.navigationBarHidden;
     
     if (self.currentPage.webView.scrollView.contentOffset.y > 10 || isHidden) {
