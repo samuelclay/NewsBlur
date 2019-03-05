@@ -1698,9 +1698,9 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
         } else if (self.isDashboardModule || self.textSize != FeedDetailTextSizeTitleOnly) {
             if (self.textSize == FeedDetailTextSizeMedium || self.textSize == FeedDetailTextSizeLong) {
                 NSDictionary *story = [self getStoryAtRow:indexPath.row];
-                NSString *content = [[story objectForKey:@"story_content"] convertHTML];
+                NSString *content = [story[@"story_content"] convertHTML];
                 
-                if (content.length < 50) {
+                if (content.length < 50 && [story[@"story_title"] length] < 30) {
                     return height + font.pointSize * 3;
                 } else if (content.length < 100) {
                     return height + font.pointSize * 5;
