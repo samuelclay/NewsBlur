@@ -125,6 +125,12 @@
     doubleDoubleTapGesture.delegate = self;
     [self.webView addGestureRecognizer:doubleDoubleTapGesture];
     
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        UIPinchGestureRecognizer *pinchGesture = [[UIPinchGestureRecognizer alloc]
+                                                  initWithTarget:self action:@selector(pinchGesture:)];
+        [self.webView addGestureRecognizer:pinchGesture];
+    }
+    
     UIScreenEdgePanGestureRecognizer *screenEdgeGesture = [[UIScreenEdgePanGestureRecognizer alloc]
                                                            initWithTarget:self action:@selector(screenEdgeSwipe:)];
     screenEdgeGesture.edges = UIRectEdgeLeft;
@@ -256,6 +262,15 @@
         [self performSelector:@selector(deferredEnableScrolling) withObject:nil afterDelay:0.0];
         appDelegate.storyPageControl.autoscrollActive = NO;
     }
+}
+
+- (void)pinchGesture:(UIPinchGestureRecognizer *)gestureRecognizer {
+    if (gestureRecognizer.state != UIGestureRecognizerStateEnded) {
+        return;
+    }
+    
+    appDelegate.storyPageControl.forceNavigationBarShown = gestureRecognizer.scale < 1;
+    [appDelegate.storyPageControl changedFullscreen];
 }
 
 - (void)screenEdgeSwipe:(UITapGestureRecognizer *)gestureRecognizer {
