@@ -1477,7 +1477,11 @@
     
     cell.storyContent = nil;
     if (self.isDashboardModule || self.textSize != FeedDetailTextSizeTitleOnly) {
-        cell.storyContent = [[[[[story objectForKey:@"story_content"] convertHTML] stringByDecodingXMLEntities] stringByDecodingHTMLEntities] stringByReplacingOccurrencesOfString:@"\n" withString:@" "];
+        NSString *content = [[[[story objectForKey:@"story_content"] convertHTML] stringByDecodingXMLEntities] stringByDecodingHTMLEntities];
+        if ([content length] > 500) {
+            content = [content substringToIndex:500];
+        }
+        cell.storyContent = [content stringByReplacingOccurrencesOfString:@"\n" withString:@" "];
     }
     
     // feed color bar border
