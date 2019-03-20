@@ -40,13 +40,13 @@
     NSString *string = nil;
     
     while ([scanner isAtEnd] == NO) {
-        [scanner scanUpToString:@"<" intoString:&string];
+        if ([scanner scanUpToString:@"<" intoString:&string] == YES && string != nil) {
+            [output appendString:string];
+            [output appendString:@" "];
+        }
+        
         [scanner scanUpToString:@">" intoString:NULL];
         [scanner scanString:@">" intoString:NULL];
-        
-        if (string != nil) {
-            [output appendString:string];
-        }
     }
     
     return [output stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
