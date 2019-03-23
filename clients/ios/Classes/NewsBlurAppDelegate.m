@@ -79,6 +79,8 @@
 
 #define CURRENT_DB_VERSION 36
 
+#define CURRENT_STATE_VERSION 1
+
 @synthesize window;
 
 @synthesize ftuxNavigationController;
@@ -193,7 +195,7 @@
 	return (NewsBlurAppDelegate*) [UIApplication sharedApplication].delegate;
 }
 
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+- (BOOL)application:(UIApplication *)application willFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     [self registerDefaultsFromSettingsBundle];
     
     self.navigationController.delegate = self;
@@ -242,6 +244,10 @@
     // Uncomment below line to test image caching
 //    [[NSURLCache sharedURLCache] removeAllCachedResponses];
     
+    return YES;
+}
+
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     if ([UIApplicationShortcutItem class] && launchOptions[UIApplicationLaunchOptionsShortcutItemKey]) {
         self.launchedShortcutItem = launchOptions[UIApplicationLaunchOptionsShortcutItemKey];
         return NO;
@@ -262,6 +268,12 @@
         [self handleShortcutItem:self.launchedShortcutItem];
         self.launchedShortcutItem = nil;
     }
+    
+    if (storyPageControl.temporarilyMarkedUnread && [storiesCollection isStoryUnread:activeStory]) {
+        [storiesCollection markStoryRead:activeStory];
+        [storiesCollection syncStoryAsRead:activeStory];
+        storyPageControl.temporarilyMarkedUnread = NO;
+    }
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application {
@@ -274,6 +286,75 @@
 
 - (void)applicationDidEnterBackground:(UIApplication *)application {
     [self.feedsViewController refreshHeaderCounts];
+}
+
+- (BOOL)application:(UIApplication *)application shouldSaveApplicationState:(NSCoder *)coder {
+    // Temporary? bypass to not save on iPad, since that isn't supported yet.
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        return NO;
+    }
+    
+    return YES;
+}
+
+- (void)application:(UIApplication *)application willEncodeRestorableStateWithCoder:(NSCoder *)coder {
+    [coder encodeInteger:CURRENT_STATE_VERSION forKey:@"version"];
+    [coder encodeObject:[NSDate date] forKey:@"last_saved_state_date"];
+}
+
+- (BOOL)application:(UIApplication *)application shouldRestoreApplicationState:(NSCoder *)coder {
+    // Temporary? bypass to not restore on iPad, since that isn't supported yet.
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        return NO;
+    }
+    
+    NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
+    NSString *option = [preferences stringForKey:@"restore_state"];
+    
+    if ([option isEqualToString:@"never"]) {
+        return NO;
+    } else if ([option isEqualToString:@"always"]) {
+        return YES;
+    }
+    
+    NSTimeInterval daysInterval = 60 * 60;
+    NSTimeInterval limitInterval = option.doubleValue * daysInterval;
+    NSInteger version = [coder decodeIntegerForKey:@"version"];
+    NSDate *lastSavedDate = [coder decodeObjectOfClass:[NSDate class] forKey:@"last_saved_state_date"];
+    
+    if (limitInterval == 0) {
+        limitInterval = 24 * daysInterval;
+    }
+    
+    if (version > CURRENT_STATE_VERSION || lastSavedDate == nil) {
+        return NO;
+    }
+    
+    NSTimeInterval savedInterval = -[lastSavedDate timeIntervalSinceNow];
+    
+    return savedInterval < limitInterval;
+}
+
+- (UIViewController *)application:(UIApplication *)application viewControllerWithRestorationIdentifierPath:(NSArray<NSString *> *)identifierComponents coder:(NSCoder *)coder {
+    NSString *identifier = identifierComponents.lastObject;
+    
+    if ([identifier isEqualToString:@"MainNavigation"]) {
+        return self.navigationController;
+    } else if ([identifier isEqualToString:@"FeedsView"]) {
+        return self.feedsViewController;
+    } else if ([identifier isEqualToString:@"FeedDetailView"]) {
+        return self.feedDetailViewController;
+    } else if ([identifier isEqualToString:@"StoryPageControl"]) {
+        return self.storyPageControl;
+    } else if ([identifier isEqualToString:@"ContainerView"]) {
+        return self.masterContainerViewController;
+    } else {
+        return nil;
+    }
+}
+
+- (void)application:(UIApplication *)application didDecodeRestorableStateWithCoder:(NSCoder *)coder {
+    // All done; could do any cleanup here
 }
 
 - (void)application:(UIApplication *)application performActionForShortcutItem:(UIApplicationShortcutItem *)shortcutItem completionHandler:(void (^)(BOOL))completionHandler {
@@ -1538,7 +1619,7 @@
         [self.folderCountCache removeObjectForKey:feedDetailView.storiesCollection.activeFolder];
     }
     
-    if (feedDetailView == feedDetailViewController) {
+    if (feedDetailView == feedDetailViewController && feedDetailView.navigationController == nil) {
         UIBarButtonItem *newBackButton = [[UIBarButtonItem alloc] initWithTitle: @"All"
                                                                           style: UIBarButtonItemStylePlain
                                                                          target: nil
