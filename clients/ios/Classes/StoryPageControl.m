@@ -28,6 +28,7 @@
 
 @property (nonatomic, strong) NSTimer *autoscrollTimer;
 @property (nonatomic, strong) NSTimer *autoscrollViewTimer;
+@property (nonatomic, strong) NSString *restoringStoryId;
 
 @end
 
@@ -231,7 +232,7 @@
                          context:nil];
     
     _orientation = [UIApplication sharedApplication].statusBarOrientation;
-
+    
     [self addKeyCommandWithInput:UIKeyInputDownArrow modifierFlags:0 action:@selector(changeToNextPage:) discoverabilityTitle:@"Next Story"];
     [self addKeyCommandWithInput:@"j" modifierFlags:0 action:@selector(changeToNextPage:) discoverabilityTitle:@"Next Story"];
     [self addKeyCommandWithInput:UIKeyInputUpArrow modifierFlags:0 action:@selector(changeToPreviousPage:) discoverabilityTitle:@"Previous Story"];
@@ -762,6 +763,38 @@
 }
 
 #pragma mark -
+#pragma mark State Restoration
+
+- (void)encodeRestorableStateWithCoder:(NSCoder *)coder {
+    [super encodeRestorableStateWithCoder:coder];
+    
+    [coder encodeObject:currentPage.activeStoryId forKey:@"current_story_id"];
+    
+    [appDelegate.storiesCollection toggleStoryUnread];
+    self.temporarilyMarkedUnread = YES;
+}
+
+- (void)decodeRestorableStateWithCoder:(NSCoder *)coder {
+    [super decodeRestorableStateWithCoder:coder];
+    
+    self.restoringStoryId = [coder decodeObjectOfClass:[NSString class] forKey:@"current_story_id"];
+}
+
+- (void)restorePage {
+    if (self.restoringStoryId.length > 0) {
+        NSInteger pageIndex = [appDelegate.storiesCollection indexOfStoryId:self.restoringStoryId];
+        
+        if (pageIndex < 0) {
+            [self doNextUnreadStory:nil];
+        } else {
+            [self changePage:pageIndex animated:NO];
+        }
+        
+        self.restoringStoryId = nil;
+    }
+}
+
+#pragma mark -
 #pragma mark Side scroll view
 
 - (void)applyNewIndex:(NSInteger)newIndex
@@ -1166,6 +1199,11 @@
 }
 
 - (void)advanceToNextUnread {
+    if (self.restoringStoryId.length > 0) {
+        [self restorePage];
+        return;
+    }
+    
     if (!self.waitingForNextUnreadFromServer) {
         return;
     }

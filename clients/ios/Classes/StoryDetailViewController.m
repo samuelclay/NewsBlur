@@ -429,6 +429,10 @@
 //        NSLog(@"Already drawn story, drawing anyway: %@", [self.activeStory objectForKey:@"story_title"]);
 //        return;
     }
+    
+    if (self.activeStory == nil) {
+        return;
+    }
 
     scrollPct = 0;
     hasScrolled = NO;

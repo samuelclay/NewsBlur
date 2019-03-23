@@ -44,6 +44,8 @@
 @interface FeedDetailViewController ()
 
 @property (nonatomic) NSUInteger scrollingMarkReadRow;
+@property (nonatomic, strong) NSString *restoringFolder;
+@property (nonatomic, strong) NSString *restoringFeedID;
 
 @end
 
@@ -82,7 +84,9 @@
                                              selector:@selector(preferredContentSizeChanged:)
                                                  name:UIContentSizeCategoryDidChangeNotification
                                                object:nil];
-
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(finishedLoadingFeedsNotification:) name:@"FinishedLoadingFeedsNotification" object:nil];
+    
     self.storyTitlesTable.backgroundColor = UIColorFromRGB(0xf4f4f4);
     self.storyTitlesTable.separatorColor = UIColorFromRGB(0xE9E8E4);
     if (@available(iOS 11.0, *)) {
@@ -526,6 +530,57 @@
 
 - (BOOL)isPhoneOrCompact {
     return UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone || self.appDelegate.isCompactWidth;
+}
+
+#pragma mark -
+#pragma mark State Restoration
+
+- (void)encodeRestorableStateWithCoder:(NSCoder *)coder {
+    [super encodeRestorableStateWithCoder:coder];
+    
+    [coder encodeObject:appDelegate.storiesCollection.activeFolder forKey:@"folder"];
+    
+    if (appDelegate.storiesCollection.activeFeed != nil) {
+        [coder encodeObject:[NSString stringWithFormat:@"%@", appDelegate.storiesCollection.activeFeed[@"id"]] forKey:@"feed_id"];
+    }
+}
+
+- (void)decodeRestorableStateWithCoder:(NSCoder *)coder {
+    [super decodeRestorableStateWithCoder:coder];
+    
+    NSString *folder = [coder decodeObjectOfClass:[NSString class] forKey:@"folder"];
+    NSString *feedID = [coder decodeObjectOfClass:[NSString class] forKey:@"feed_id"];
+    
+    if (folder != nil || feedID != nil) {
+        self.restoringFolder = folder;
+        self.restoringFeedID = feedID;
+    }
+}
+
+- (void)finishedLoadingFeedsNotification:(NSNotification *)notification {
+    if (self.restoringFeedID.length > 0) {
+        NSDictionary *feed = [appDelegate getFeed:self.restoringFeedID];
+        
+        if (feed != nil) {
+            appDelegate.storiesCollection.isSocialView = NO;
+            appDelegate.storiesCollection.activeFeed = feed;
+            [appDelegate loadFeedDetailView:NO];
+            [self viewWillAppear:NO];
+        }
+    } else if (self.restoringFolder.length > 0) {
+        NSString *folder = self.restoringFolder;
+        NSInteger index = [appDelegate.dictFoldersArray indexOfObject:folder];
+        
+        if (index != NSNotFound && index > NewsBlurTopSectionAllStories) {
+            folder = [NSString stringWithFormat:@"%@", @(index)];
+        }
+        
+        [appDelegate loadRiverFeedDetailView:self withFolder:folder];
+        [self viewWillAppear:NO];
+    }
+    
+    self.restoringFolder = nil;
+    self.restoringFeedID = 0;
 }
 
 #pragma mark -
