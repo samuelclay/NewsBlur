@@ -321,7 +321,19 @@
     self.storyPageControl.navigationItem.titleView = titleLabel;
 }
 
-# pragma mark Modals and Popovers
+#pragma mark -
+#pragma mark State Restoration
+
+- (void)encodeRestorableStateWithCoder:(NSCoder *)coder {
+    [super encodeRestorableStateWithCoder:coder];
+}
+
+- (void)decodeRestorableStateWithCoder:(NSCoder *)coder {
+    [super decodeRestorableStateWithCoder:coder];
+}
+
+#pragma mark -
+#pragma mark Modals and Popovers
 
 - (void)showUserProfilePopover:(id)sender {
     if ([sender class] == [InteractionCell class] ||
