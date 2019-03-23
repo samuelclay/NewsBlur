@@ -445,6 +445,17 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 }
 
 #pragma mark -
+#pragma mark State Restoration
+
+- (void)encodeRestorableStateWithCoder:(NSCoder *)coder {
+    [super encodeRestorableStateWithCoder:coder];
+}
+
+- (void)decodeRestorableStateWithCoder:(NSCoder *)coder {
+    [super decodeRestorableStateWithCoder:coder];
+}
+
+#pragma mark -
 #pragma mark Initialization
 
 - (void)returnToApp {

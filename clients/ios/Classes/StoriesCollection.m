@@ -176,7 +176,7 @@
 - (NSInteger)indexOfActiveStory {
     for (NSInteger i=0; i < self.storyCount; i++) {
         NSDictionary *story = [activeFeedStories objectAtIndex:i];
-        if ([appDelegate.activeStory objectForKey:@"story_hash"] == [story objectForKey:@"story_hash"]) {
+        if ([[appDelegate.activeStory objectForKey:@"story_hash"] isEqualToString:[story objectForKey:@"story_hash"]]) {
             return i;
         }
     }
@@ -186,7 +186,7 @@
 - (NSInteger)indexOfStoryId:(id)storyId {
     for (int i=0; i < self.storyCount; i++) {
         NSDictionary *story = [activeFeedStories objectAtIndex:i];
-        if ([story objectForKey:@"story_hash"] == storyId) {
+        if ([[story objectForKey:@"story_hash"] isEqualToString:storyId]) {
             return i;
         }
     }
@@ -195,7 +195,7 @@
 
 - (NSInteger)locationOfStoryId:(id)storyId {
     for (int i=0; i < [activeFeedStoryLocations count]; i++) {
-        if ([activeFeedStoryLocationIds objectAtIndex:i] == storyId) {
+        if ([[activeFeedStoryLocationIds objectAtIndex:i] isEqualToString:storyId]) {
             return i;
         }
     }
