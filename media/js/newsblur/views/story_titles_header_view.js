@@ -76,6 +76,14 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
         } else if (this.showing_fake_folder) {
             $view = $(_.template('\
                 <div class="NB-folder NB-no-hover NB-folder-<%= all_stories ? "river" : "fake" %>">\
+                    <div class="NB-feedbar-mark-feed-read-container">\
+                        <div class="NB-feedbar-mark-feed-read"><div class="NB-icon"></div></div>\
+                        <div class="NB-feedbar-mark-feed-read-time" data-days="1">1d</div>\
+                        <div class="NB-feedbar-mark-feed-read-time" data-days="3">3d</div>\
+                        <div class="NB-feedbar-mark-feed-read-time" data-days="7">7d</div>\
+                        <div class="NB-feedbar-mark-feed-read-time" data-days="14">14d</div>\
+                        <div class="NB-feedbar-mark-feed-read-expand"></div>\
+                    </div>\
                     <div class="NB-search-container"></div>\
                     <% if (show_options) { %>\
                         <div class="NB-feedbar-options-container">\
@@ -91,14 +99,6 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
                             </span>\
                         </div>\
                     <% } %>\
-                    <div class="NB-feedbar-mark-feed-read-container">\
-                        <div class="NB-feedbar-mark-feed-read"><div class="NB-icon"></div></div>\
-                        <div class="NB-feedbar-mark-feed-read-time" data-days="1">1d</div>\
-                        <div class="NB-feedbar-mark-feed-read-time" data-days="3">3d</div>\
-                        <div class="NB-feedbar-mark-feed-read-time" data-days="7">7d</div>\
-                        <div class="NB-feedbar-mark-feed-read-time" data-days="14">14d</div>\
-                        <div class="NB-feedbar-mark-feed-read-expand"></div>\
-                    </div>\
                     <div class="NB-story-title-indicator">\
                         <div class="NB-story-title-indicator-count"></div>\
                         <span class="NB-story-title-indicator-text">show hidden stories</span>\
