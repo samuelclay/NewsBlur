@@ -1321,14 +1321,14 @@ a img {
 
 .NB-feedbar .NB-feedbar-mark-feed-read-container {
     position: relative;
-    margin: 0 10px 0 6px;
+    margin: 0 0 0 16px;
     font-size: 9px;
     line-height: 15px;
     font-weight: bold;
     float: right;
 }
 .NB-intelligence-starred .NB-feedbar .NB-feedbar-mark-feed-read-container,
-.NB-searching .NB-feedbar-mark-feed-read-container {
+.NB-searching .NB-feedbar-options-container {
     display: none;
 }
 .NB-feedbar .NB-feedbar-mark-feed-read,
