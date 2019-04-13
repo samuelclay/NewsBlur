@@ -1636,6 +1636,7 @@ def deploy_node():
         run('sudo supervisorctl restart node_unread')
         run('sudo supervisorctl restart node_unread_ssl')
         run('sudo supervisorctl restart node_favicons')
+        run('sudo supervisorctl restart node_text')
 
 def gunicorn_restart():
     restart_gunicorn()
