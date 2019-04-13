@@ -28,6 +28,7 @@ var deprecate = require('depd')('express');
 var flatten = require('array-flatten');
 var merge = require('utils-merge');
 var resolve = require('path').resolve;
+var setPrototypeOf = require('setprototypeof')
 var slice = Array.prototype.slice;
 
 /**
@@ -94,10 +95,10 @@ app.defaultConfiguration = function defaultConfiguration() {
     }
 
     // inherit protos
-    this.request.__proto__ = parent.request;
-    this.response.__proto__ = parent.response;
-    this.engines.__proto__ = parent.engines;
-    this.settings.__proto__ = parent.settings;
+    setPrototypeOf(this.request, parent.request)
+    setPrototypeOf(this.response, parent.response)
+    setPrototypeOf(this.engines, parent.engines)
+    setPrototypeOf(this.settings, parent.settings)
   });
 
   // setup locals
@@ -206,7 +207,7 @@ app.use = function use(fn) {
   var fns = flatten(slice.call(arguments, offset));
 
   if (fns.length === 0) {
-    throw new TypeError('app.use() requires middleware functions');
+    throw new TypeError('app.use() requires a middleware function')
   }
 
   // setup router
@@ -227,8 +228,8 @@ app.use = function use(fn) {
     router.use(path, function mounted_app(req, res, next) {
       var orig = req.app;
       fn.handle(req, res, function (err) {
-        req.__proto__ = orig.request;
-        res.__proto__ = orig.response;
+        setPrototypeOf(req, orig.request)
+        setPrototypeOf(res, orig.response)
         next(err);
       });
     });
@@ -261,9 +262,9 @@ app.route = function route(path) {
  *
  * By default will `require()` the engine based on the
  * file extension. For example if you try to render
- * a "foo.jade" file Express will invoke the following internally:
+ * a "foo.ejs" file Express will invoke the following internally:
  *
- *     app.engine('jade', require('jade').__express);
+ *     app.engine('ejs', require('ejs').__express);
  *
  * For engines that do not provide `.__express` out of the box,
  * or if you wish to "map" a different extension to the template engine
@@ -337,7 +338,7 @@ app.param = function param(name, fn) {
  * Assign `setting` to `val`, or return `setting`'s value.
  *
  *    app.set('foo', 'bar');
- *    app.get('foo');
+ *    app.set('foo');
  *    // => "bar"
  *
  * Mounted servers inherit their parent server's settings.

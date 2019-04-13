@@ -2,15 +2,17 @@
 
 Fork of [node-XMLHttpRequest](https://github.com/driverdan/node-XMLHttpRequest) by [driverdan](http://driverdan.com). Forked and published to npm because a [pull request](https://github.com/rase-/node-XMLHttpRequest/commit/a6b6f296e0a8278165c2d0270d9840b54d5eeadd) is not being created and merged. Changes made by [rase-](https://github.com/rase-/node-XMLHttpRequest/tree/add/ssl-support) are needed for [engine.io-client](https://github.com/Automattic/engine.io-client).
 
+## Usage ## 
+
+Here's how to include the module in your project and use as the browser-based
+XHR object.
+
+	var XMLHttpRequest = require("xmlhttprequest-ssl").XMLHttpRequest;
+	var xhr = new XMLHttpRequest();
+
+Note: use the lowercase string "xmlhttprequest-ssl" in your require(). On
+case-sensitive systems (eg Linux) using uppercase letters won't work.
 # Original README #
-
-node-XMLHttpRequest is a wrapper for the built-in http client to emulate the
-browser XMLHttpRequest object.
-
-This can be used with JS designed for browsers to improve reuse of code and
-allow the use of existing libraries.
-
-Note: This library currently conforms to [XMLHttpRequest 1](http://www.w3.org/TR/XMLHttpRequest/). Version 2.0 will target [XMLHttpRequest Level 2](http://www.w3.org/TR/XMLHttpRequest2/).
 
 ## Usage ##
 
