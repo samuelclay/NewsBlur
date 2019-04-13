@@ -790,6 +790,7 @@ def setup_node_app():
     # run('curl -L https://npmjs.org/install.sh | sudo sh')
     # sudo('apt-get install npm')
     sudo('npm install -g supervisor')
+    sudo('npm install -g @postlight/mercury-parser')
     sudo('ufw allow 8888')
 
 def config_node():
@@ -797,6 +798,7 @@ def config_node():
     put('config/supervisor_node_unread.conf', '/etc/supervisor/conf.d/node_unread.conf', use_sudo=True)
     put('config/supervisor_node_unread_ssl.conf', '/etc/supervisor/conf.d/node_unread_ssl.conf', use_sudo=True)
     put('config/supervisor_node_favicons.conf', '/etc/supervisor/conf.d/node_favicons.conf', use_sudo=True)
+    put('config/supervisor_node_text.conf', '/etc/supervisor/conf.d/node_text.conf', use_sudo=True)
     sudo('supervisorctl reload')
 
 @parallel
@@ -897,7 +899,7 @@ def build_haproxy():
     maintenance_servers = ['app20']
     ignore_servers = []
     
-    for group_type in ['app', 'push', 'work', 'node_socket', 'node_favicon', 'www']:
+    for group_type in ['app', 'push', 'work', 'node_socket', 'node_favicon', 'node_text', 'www']:
         group_type_name = group_type
         if 'node' in group_type:
             group_type_name = 'node'

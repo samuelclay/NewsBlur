@@ -70,10 +70,16 @@ backend node_socket
 {{ node_socket }}
  
 backend node_favicon
-  http-check expect rstatus 200|503
-  option httpchk GET /rss_feeds/icon/1
-  balance roundrobin
+ http-check expect rstatus 200|503
+ option httpchk GET /rss_feeds/icon/1
+ balance roundrobin
 {{ node_favicon }}
+
+backend node_text
+  http-check expect rstatus 200|503
+  option httpchk GET /rss_feeds/original_text_fetcher
+  balance roundrobin
+{{ node_text }}
 
 backend self
   balance roundrobin
