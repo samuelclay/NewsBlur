@@ -789,16 +789,23 @@ def setup_node_app():
     sudo('apt-get install -y nodejs')
     # run('curl -L https://npmjs.org/install.sh | sudo sh')
     # sudo('apt-get install npm')
+    sudo('sudo npm install -g npm')
     sudo('npm install -g supervisor')
     sudo('ufw allow 8888')
     sudo('ufw allow 4040')
 
-def config_node():
+def config_node(full=False):
     sudo('rm -fr /etc/supervisor/conf.d/node.conf')
     put('config/supervisor_node_unread.conf', '/etc/supervisor/conf.d/node_unread.conf', use_sudo=True)
     put('config/supervisor_node_unread_ssl.conf', '/etc/supervisor/conf.d/node_unread_ssl.conf', use_sudo=True)
     put('config/supervisor_node_favicons.conf', '/etc/supervisor/conf.d/node_favicons.conf', use_sudo=True)
     put('config/supervisor_node_text.conf', '/etc/supervisor/conf.d/node_text.conf', use_sudo=True)
+    
+    if full:
+        run("rm -fr /srv/newsblur/node/node_modules")
+        with cd(os.path.join(env.NEWSBLUR_PATH, "node")):
+            run("npm install")
+    
     sudo('supervisorctl reload')
 
 @parallel
