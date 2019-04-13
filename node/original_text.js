@@ -37,7 +37,7 @@
           error: "Missing `url` query parameter."
         }));
       }
-      api_key = req.header('x-api-key');
+      api_key = req.header('x-api-key') || req.query.apikey;
       if (!DEV && (!api_key || api_key.indexOf("djtXZrSIEfDa3Dex9FQ9AR") === -1)) {
         log.debug("Mismatched API key: " + url + " / " + api_key);
         return res.end(JSON.stringify({
