@@ -1,20 +1,20 @@
 // Copyright (c) 2008, Fair Oaks Labs, Inc.
 // All rights reserved.
-// 
+//
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met:
-// 
+//
 //  * Redistributions of source code must retain the above copyright notice,
 //    this list of conditions and the following disclaimer.
-// 
+//
 //  * Redistributions in binary form must reproduce the above copyright notice,
 //    this list of conditions and the following disclaimer in the documentation
 //    and/or other materials provided with the distribution.
-// 
+//
 //  * Neither the name of Fair Oaks Labs, Inc. nor the names of its contributors
 //    may be used to endorse or promote products derived from this software
 //    without specific prior written permission.
-// 
+//
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 // AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
 // IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -31,32 +31,33 @@
 // Modifications to writeIEEE754 to support negative zeroes made by Brian White
 
 var readIEEE754 = function(buffer, offset, endian, mLen, nBytes) {
-  var e, m,
-      bBE = (endian === 'big'),
-      eLen = nBytes * 8 - mLen - 1,
-      eMax = (1 << eLen) - 1,
-      eBias = eMax >> 1,
-      nBits = -7,
-      i = bBE ? 0 : (nBytes - 1),
-      d = bBE ? 1 : -1,
-      s = buffer[offset + i];
+  var e,
+    m,
+    bBE = endian === 'big',
+    eLen = nBytes * 8 - mLen - 1,
+    eMax = (1 << eLen) - 1,
+    eBias = eMax >> 1,
+    nBits = -7,
+    i = bBE ? 0 : nBytes - 1,
+    d = bBE ? 1 : -1,
+    s = buffer[offset + i];
 
   i += d;
 
-  e = s & ((1 << (-nBits)) - 1);
-  s >>= (-nBits);
+  e = s & ((1 << -nBits) - 1);
+  s >>= -nBits;
   nBits += eLen;
   for (; nBits > 0; e = e * 256 + buffer[offset + i], i += d, nBits -= 8);
 
-  m = e & ((1 << (-nBits)) - 1);
-  e >>= (-nBits);
+  m = e & ((1 << -nBits) - 1);
+  e >>= -nBits;
   nBits += mLen;
   for (; nBits > 0; m = m * 256 + buffer[offset + i], i += d, nBits -= 8);
 
   if (e === 0) {
     e = 1 - eBias;
   } else if (e === eMax) {
-    return m ? NaN : ((s ? -1 : 1) * Infinity);
+    return m ? NaN : (s ? -1 : 1) * Infinity;
   } else {
     m = m + Math.pow(2, mLen);
     e = e - eBias;
@@ -65,15 +66,17 @@ var readIEEE754 = function(buffer, offset, endian, mLen, nBytes) {
 };
 
 var writeIEEE754 = function(buffer, value, offset, endian, mLen, nBytes) {
-  var e, m, c,
-      bBE = (endian === 'big'),
-      eLen = nBytes * 8 - mLen - 1,
-      eMax = (1 << eLen) - 1,
-      eBias = eMax >> 1,
-      rt = (mLen === 23 ? Math.pow(2, -24) - Math.pow(2, -77) : 0),
-      i = bBE ? (nBytes-1) : 0,
-      d = bBE ? -1 : 1,
-      s = value < 0 || (value === 0 && 1 / value < 0) ? 1 : 0;
+  var e,
+    m,
+    c,
+    bBE = endian === 'big',
+    eLen = nBytes * 8 - mLen - 1,
+    eMax = (1 << eLen) - 1,
+    eBias = eMax >> 1,
+    rt = mLen === 23 ? Math.pow(2, -24) - Math.pow(2, -77) : 0,
+    i = bBE ? nBytes - 1 : 0,
+    d = bBE ? -1 : 1,
+    s = value < 0 || (value === 0 && 1 / value < 0) ? 1 : 0;
 
   value = Math.abs(value);
 
@@ -86,7 +89,7 @@ var writeIEEE754 = function(buffer, value, offset, endian, mLen, nBytes) {
       e--;
       c *= 2;
     }
-    if (e+eBias >= 1) {
+    if (e + eBias >= 1) {
       value += rt / c;
     } else {
       value += rt * Math.pow(2, 1 - eBias);

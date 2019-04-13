@@ -1,3 +1,6 @@
+// Custom inspect property name / symbol.
+var inspect = Buffer ? require('util').inspect.custom || 'inspect' : 'inspect';
+
 /**
  * A class representation of the BSON Symbol type.
  *
@@ -7,7 +10,7 @@
  * @return {Symbol}
  */
 function Symbol(value) {
-  if(!(this instanceof Symbol)) return new Symbol(value);
+  if (!(this instanceof Symbol)) return new Symbol(value);
   this._bsontype = 'Symbol';
   this.value = value;
 }
@@ -27,21 +30,21 @@ Symbol.prototype.valueOf = function() {
  */
 Symbol.prototype.toString = function() {
   return this.value;
-}
+};
 
 /**
  * @ignore
  */
-Symbol.prototype.inspect = function() {
+Symbol.prototype[inspect] = function() {
   return this.value;
-}
+};
 
 /**
  * @ignore
  */
 Symbol.prototype.toJSON = function() {
   return this.value;
-}
+};
 
 module.exports = Symbol;
 module.exports.Symbol = Symbol;
