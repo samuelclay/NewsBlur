@@ -925,6 +925,8 @@ def build_haproxy():
                 port = 81
             if group_type == 'node_socket':
                 port = 8888
+            if group_type == 'node_text':
+                port = 4040
             if group_type in ['app', 'push']:
                 port = 8000
             address = "%s:%s" % (server['address'], port)

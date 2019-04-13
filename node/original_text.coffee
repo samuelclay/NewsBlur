@@ -24,7 +24,7 @@ app.get /\/rss_feeds\/original_text_fetcher\/?/, (req, res) =>
         log.debug "Missing url"
         return res.end JSON.stringify error: "Missing `url` query parameter."
     
-    api_key = req.header 'x-api-key'
+    api_key = req.header('x-api-key') or req.query.apikey
     if not DEV and (!api_key or api_key.indexOf("djtXZrSIEfDa3Dex9FQ9AR") == -1)
         log.debug "Mismatched API key: #{url} / #{api_key}"
         return res.end JSON.stringify error: "Invalid API key. You need to set up your own Original Text server."
