@@ -8,7 +8,7 @@
     "connect-busboy": "^0.0.2",
     "express": "^4.16.4",
     "mkdirp": "^0.5.1",
-    "mongodb": "^2.2.12",
+    "mongodb": "^2.2.36",
     "qs": "^6.3.0",
     "redis": "^2.6.3",
     "socket.io": "^2.2.0",
