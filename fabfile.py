@@ -785,13 +785,13 @@ def setup_staging():
         run('touch logs/newsblur.log')
 
 def setup_node_app():
-    sudo('curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -')
+    sudo('curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -')
     sudo('apt-get install -y nodejs')
     # run('curl -L https://npmjs.org/install.sh | sudo sh')
     # sudo('apt-get install npm')
     sudo('npm install -g supervisor')
-    sudo('npm install -g @postlight/mercury-parser')
     sudo('ufw allow 8888')
+    sudo('ufw allow 4040')
 
 def config_node():
     sudo('rm -fr /etc/supervisor/conf.d/node.conf')
@@ -863,6 +863,7 @@ def setup_haproxy(debug=False):
     if debug:
         put('config/debug_haproxy.conf', '/etc/haproxy/haproxy.cfg', use_sudo=True)
     else:
+        build_haproxy()
         put(os.path.join(env.SECRETS_PATH, 'configs/haproxy.conf'), 
             '/etc/haproxy/haproxy.cfg', use_sudo=True)
     sudo('echo "ENABLED=1" | sudo tee /etc/default/haproxy')
@@ -874,7 +875,7 @@ def setup_haproxy(debug=False):
     sudo('update-rc.d -f haproxy defaults')
 
     sudo('/etc/init.d/haproxy stop')
-    run('sleep 1')
+    run('sleep 5')
     sudo('/etc/init.d/haproxy start')
 
 def config_haproxy(debug=False):

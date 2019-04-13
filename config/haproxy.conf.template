@@ -51,6 +51,7 @@ frontend public
 
   use_backend node_socket if { path_beg /v2/socket.io/ }
   use_backend node_favicon if { path_beg /rss_feeds/icon/ }
+  use_backend node_text if { path_beg /rss_feeds/original_text_fetcher/ }
   use_backend nginx if { path_beg /media/ }
   use_backend nginx if { path_beg /static/ }
   use_backend nginx if { path_beg /favicon }
@@ -77,7 +78,7 @@ backend node_favicon
 
 backend node_text
   http-check expect rstatus 200|503
-  option httpchk GET /rss_feeds/original_text_fetcher
+  option httpchk GET /rss_feeds/original_text_fetcher?test=1
   balance roundrobin
 {{ node_text }}
 
