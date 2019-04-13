@@ -9,8 +9,8 @@
     "express": "^4.16.4",
     "mkdirp": "^0.5.1",
     "mongodb": "^2.2.36",
-    "qs": "^6.3.0",
-    "redis": "^2.6.3",
+    "qs": "^6.7.0",
+    "redis": "^2.8.0",
     "socket.io": "^2.2.0",
     "socket.io-client": "^2.2.0",
     "supervisor": "^0.12.0"

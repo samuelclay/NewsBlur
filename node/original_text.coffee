@@ -16,14 +16,18 @@ else
 
 app.get /\/rss_feeds\/original_text_fetcher\/?/, (req, res) =>
     res.setHeader 'Content-Type', 'application/json'
+    if req.query.test
+        return res.end "OK"
+    
     url = req.query.url
     if !url
         log.debug "Missing url"
-        res.end JSON.stringify error: "Missing `url` query parameter."
+        return res.end JSON.stringify error: "Missing `url` query parameter."
+    
     api_key = req.header 'x-api-key'
     if not DEV and (!api_key or api_key.indexOf "djtXZrSIEfDa3Dex9FQ9AR" == -1)
         log.debug "Mismatched API key: #{url}"
-        res.end JSON.stringify error: "Invalid API key. You need to set up your own Original Text server."
+        return res.end JSON.stringify error: "Invalid API key. You need to set up your own Original Text server."
         
     Mercury.parse(url).then (result) => 
         log.debug "Fetched: #{url}"
