@@ -2655,22 +2655,6 @@
             NEWSBLUR.assets.stories.mark_read(story, {skip_delay: true});
         },
         
-        send_story_to_kippt: function(story_id) {
-            var story = this.model.get_story(story_id);
-            var url = 'https://kippt.com/extensions/new/?';
-            var url = [
-              url,
-              'url=',
-              encodeURIComponent(story.get('story_permalink')),
-              '&title=',
-              encodeURIComponent(story.get('story_title')),
-              '&tags=',
-              encodeURIComponent(story.get('story_tags').join(', '))
-            ].join('');
-            window.open(url, '_blank');
-            NEWSBLUR.assets.stories.mark_read(story, {skip_delay: true});
-        },
-        
         send_story_to_evernote: function(story_id) {
             var story = this.model.get_story(story_id);
             var url = 'https://www.evernote.com/clip.action?';
@@ -3711,11 +3695,6 @@
                         }, this)).bind('mouseleave', _.bind(function(e) {
                             $(e.target).siblings('.NB-menu-manage-title').text('Email story').parent().removeClass('NB-menu-manage-highlight-diigo');
                         }, this))),
-                        (NEWSBLUR.Preferences['story_share_kippt'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-kippt'}).bind('mouseenter', _.bind(function(e) {
-                            $(e.target).siblings('.NB-menu-manage-title').text('Kippt').parent().addClass('NB-menu-manage-highlight-kippt');
-                        }, this)).bind('mouseleave', _.bind(function(e) {
-                            $(e.target).siblings('.NB-menu-manage-title').text('Email story').parent().removeClass('NB-menu-manage-highlight-kippt');
-                        }, this))),
                         (NEWSBLUR.Preferences['story_share_evernote'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-evernote'}).bind('mouseenter', _.bind(function(e) {
                             $(e.target).siblings('.NB-menu-manage-title').text('Evernote').parent().addClass('NB-menu-manage-highlight-evernote');
                         }, this)).bind('mouseleave', _.bind(function(e) {
@@ -3758,8 +3737,6 @@
                           this.send_story_to_buffer(story.id);
                       } else if ($target.hasClass('NB-menu-manage-thirdparty-diigo')) {
                           this.send_story_to_diigo(story.id);
-                      } else if ($target.hasClass('NB-menu-manage-thirdparty-kippt')) {
-                          this.send_story_to_kippt(story.id);
                       } else if ($target.hasClass('NB-menu-manage-thirdparty-evernote')) {
                           this.send_story_to_evernote(story.id);
                       } else if ($target.hasClass('NB-menu-manage-thirdparty-googleplus')) {
