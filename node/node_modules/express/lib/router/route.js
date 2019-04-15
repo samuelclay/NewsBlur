@@ -44,7 +44,7 @@ function Route(path) {
   this.path = path;
   this.stack = [];
 
-  debug('new %s', path);
+  debug('new %o', path)
 
   // route handlers for various http methods
   this.methods = {};
@@ -112,8 +112,14 @@ Route.prototype.dispatch = function dispatch(req, res, done) {
   next();
 
   function next(err) {
+    // signal to exit route
     if (err && err === 'route') {
       return done();
+    }
+
+    // signal to exit router
+    if (err && err === 'router') {
+      return done(err)
     }
 
     var layer = stack[idx++];
@@ -169,7 +175,7 @@ Route.prototype.all = function all() {
 
     if (typeof handle !== 'function') {
       var type = toString.call(handle);
-      var msg = 'Route.all() requires callback functions but got a ' + type;
+      var msg = 'Route.all() requires a callback function but got a ' + type
       throw new TypeError(msg);
     }
 
@@ -192,11 +198,11 @@ methods.forEach(function(method){
 
       if (typeof handle !== 'function') {
         var type = toString.call(handle);
-        var msg = 'Route.' + method + '() requires callback functions but got a ' + type;
+        var msg = 'Route.' + method + '() requires a callback function but got a ' + type
         throw new Error(msg);
       }
 
-      debug('%s %s', method, this.path);
+      debug('%s %o', method, this.path)
 
       var layer = Layer('/', {}, handle);
       layer.method = method;

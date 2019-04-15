@@ -1,0 +1,50 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 1,
+    "passes": 0,
+    "pending": 0,
+    "failures": 1,
+    "start": "2019-04-10T19:02:16.698Z",
+    "end": "2019-04-10T19:02:16.703Z",
+    "duration": 5
+  },
+  "tests": [
+    {
+      "title": "adds 2 + 2",
+      "fullTitle": "basic test adds 2 + 2",
+      "duration": 1,
+      "currentRetry": 0,
+      "err": {
+        "stack": "AssertionError [ERR_ASSERTION]: 5 == 4\n    at Context.it (src/tests/mocha/getTestReport.test.js:9:12)",
+        "message": "5 == 4",
+        "generatedMessage": true,
+        "name": "AssertionError [ERR_ASSERTION]",
+        "code": "ERR_ASSERTION",
+        "actual": "5",
+        "expected": "4",
+        "operator": "=="
+      }
+    }
+  ],
+  "pending": [],
+  "failures": [
+    {
+      "title": "adds 2 + 2",
+      "fullTitle": "basic test adds 2 + 2",
+      "duration": 1,
+      "currentRetry": 0,
+      "err": {
+        "stack": "AssertionError [ERR_ASSERTION]: 5 == 4\n    at Context.it (src/tests/mocha/getTestReport.test.js:9:12)",
+        "message": "5 == 4",
+        "generatedMessage": true,
+        "name": "AssertionError [ERR_ASSERTION]",
+        "code": "ERR_ASSERTION",
+        "actual": "5",
+        "expected": "4",
+        "operator": "=="
+      }
+    }
+  ],
+  "passes": []
+}

@@ -1,0 +1,87 @@
+{
+  "numFailedTestSuites": 0,
+  "numFailedTests": 0,
+  "numPassedTestSuites": 3,
+  "numPassedTests": 3,
+  "numPendingTestSuites": 0,
+  "numPendingTests": 0,
+  "numRuntimeErrorTestSuites": 0,
+  "numTodoTests": 0,
+  "numTotalTestSuites": 3,
+  "numTotalTests": 3,
+  "openHandles": [],
+  "snapshot": {
+    "added": 0,
+    "didUpdate": false,
+    "failure": false,
+    "filesAdded": 0,
+    "filesRemoved": 0,
+    "filesUnmatched": 0,
+    "filesUpdated": 0,
+    "matched": 0,
+    "total": 0,
+    "unchecked": 0,
+    "uncheckedKeysByFile": [],
+    "unmatched": 0,
+    "updated": 0
+  },
+  "startTime": 1554926034198,
+  "success": true,
+  "testResults": [
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": ["getTestReport"],
+          "failureMessages": [],
+          "fullName": "getTestReport Generates a test report",
+          "location": null,
+          "status": "passed",
+          "title": "Generates a test report"
+        }
+      ],
+      "endTime": 1554926036444,
+      "message": "",
+      "name": "/Users/frankiesimms/Desktop/nodejs-typescript-kit/src/tests/getTestReport.test.js",
+      "startTime": 1554926035479,
+      "status": "passed",
+      "summary": ""
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": ["getReport"],
+          "failureMessages": [],
+          "fullName": "getReport returns formatted test report",
+          "location": null,
+          "status": "passed",
+          "title": "returns formatted test report"
+        }
+      ],
+      "endTime": 1554926036480,
+      "message": "",
+      "name": "/Users/frankiesimms/Desktop/nodejs-typescript-kit/index.test.js",
+      "startTime": 1554926035468,
+      "status": "passed",
+      "summary": ""
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": ["basic test"],
+          "failureMessages": [],
+          "fullName": "basic test Generates a test report",
+          "location": null,
+          "status": "passed",
+          "title": "Generates a test report"
+        }
+      ],
+      "endTime": 1554926036654,
+      "message": "",
+      "name": "/Users/frankiesimms/Desktop/nodejs-typescript-kit/src/tests/mocha/getTestReport.test.js",
+      "startTime": 1554926035472,
+      "status": "passed",
+      "summary": ""
+    }
+  ],
+  "wasInterrupted": false
+}

@@ -785,18 +785,27 @@ def setup_staging():
         run('touch logs/newsblur.log')
 
 def setup_node_app():
-    sudo('curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -')
+    sudo('curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -')
     sudo('apt-get install -y nodejs')
     # run('curl -L https://npmjs.org/install.sh | sudo sh')
     # sudo('apt-get install npm')
+    sudo('sudo npm install -g npm')
     sudo('npm install -g supervisor')
     sudo('ufw allow 8888')
+    sudo('ufw allow 4040')
 
-def config_node():
+def config_node(full=False):
     sudo('rm -fr /etc/supervisor/conf.d/node.conf')
     put('config/supervisor_node_unread.conf', '/etc/supervisor/conf.d/node_unread.conf', use_sudo=True)
     put('config/supervisor_node_unread_ssl.conf', '/etc/supervisor/conf.d/node_unread_ssl.conf', use_sudo=True)
     put('config/supervisor_node_favicons.conf', '/etc/supervisor/conf.d/node_favicons.conf', use_sudo=True)
+    put('config/supervisor_node_text.conf', '/etc/supervisor/conf.d/node_text.conf', use_sudo=True)
+    
+    if full:
+        run("rm -fr /srv/newsblur/node/node_modules")
+        with cd(os.path.join(env.NEWSBLUR_PATH, "node")):
+            run("npm install")
+    
     sudo('supervisorctl reload')
 
 @parallel
@@ -861,6 +870,7 @@ def setup_haproxy(debug=False):
     if debug:
         put('config/debug_haproxy.conf', '/etc/haproxy/haproxy.cfg', use_sudo=True)
     else:
+        build_haproxy()
         put(os.path.join(env.SECRETS_PATH, 'configs/haproxy.conf'), 
             '/etc/haproxy/haproxy.cfg', use_sudo=True)
     sudo('echo "ENABLED=1" | sudo tee /etc/default/haproxy')
@@ -872,7 +882,7 @@ def setup_haproxy(debug=False):
     sudo('update-rc.d -f haproxy defaults')
 
     sudo('/etc/init.d/haproxy stop')
-    run('sleep 1')
+    run('sleep 5')
     sudo('/etc/init.d/haproxy start')
 
 def config_haproxy(debug=False):
@@ -897,7 +907,7 @@ def build_haproxy():
     maintenance_servers = ['app20']
     ignore_servers = []
     
-    for group_type in ['app', 'push', 'work', 'node_socket', 'node_favicon', 'www']:
+    for group_type in ['app', 'push', 'work', 'node_socket', 'node_favicon', 'node_text', 'www']:
         group_type_name = group_type
         if 'node' in group_type:
             group_type_name = 'node'
@@ -915,6 +925,8 @@ def build_haproxy():
                 port = 81
             if group_type == 'node_socket':
                 port = 8888
+            if group_type == 'node_text':
+                port = 4040
             if group_type in ['app', 'push']:
                 port = 8000
             address = "%s:%s" % (server['address'], port)
@@ -1624,6 +1636,7 @@ def deploy_node():
         run('sudo supervisorctl restart node_unread')
         run('sudo supervisorctl restart node_unread_ssl')
         run('sudo supervisorctl restart node_favicons')
+        run('sudo supervisorctl restart node_text')
 
 def gunicorn_restart():
     restart_gunicorn()
