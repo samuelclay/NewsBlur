@@ -12,7 +12,7 @@ var Insert = function(requestId, ismaster, bson, ns, documents, options) {
   if(ns == null) throw new MongoError("ns must be specified for query");
   if(!Array.isArray(documents) || documents.length == 0) throw new MongoError("documents array must contain at least one document to insert");
 
-  // Validate that we are not passing 0x00 in the colletion name
+  // Validate that we are not passing 0x00 in the collection name
   if(!!~ns.indexOf("\x00")) {
     throw new MongoError("namespace cannot contain a null character");
   }
@@ -56,11 +56,11 @@ Insert.prototype.toBin = function() {
 
   // Serialize all the documents
   for(var i = 0; i < this.documents.length; i++) {
-    var buffer = this.bson.serialize(this.documents[i]
-      , this.checkKeys
-      , true
-      , this.serializeFunctions
-      , 0, this.ignoreUndefined);
+    var buffer = this.bson.serialize(this.documents[i], {
+      checkKeys: this.checkKeys,
+      serializeFunctions: this.serializeFunctions,
+      ignoreUndefined: this.ignoreUndefined,
+    });
 
     // Document is larger than maxBsonObjectSize, terminate serialization
     if(buffer.length > this.ismaster.maxBsonObjectSize) {
@@ -173,20 +173,20 @@ Update.prototype.toBin = function() {
   var totalLength = header.length;
 
   // Serialize the selector
-  var selector = this.bson.serialize(this.q
-    , this.checkKeys
-    , true
-    , this.serializeFunctions
-    , 0, this.ignoreUndefined);
+  var selector = this.bson.serialize(this.q, {
+    checkKeys: this.checkKeys,
+    serializeFunctions: this.serializeFunctions,
+    ignoreUndefined: this.ignoreUndefined,
+  });
   buffers.push(selector);
   totalLength = totalLength + selector.length;
 
   // Serialize the update
-  var update = this.bson.serialize(this.u
-    , this.checkKeys
-    , true
-    , this.serializeFunctions
-    , 0, this.ignoreUndefined);
+  var update = this.bson.serialize(this.u, {
+    checkKeys: this.checkKeys,
+    serializeFunctions: this.serializeFunctions,
+    ignoreUndefined: this.ignoreUndefined,
+  });
   buffers.push(update);
   totalLength = totalLength + update.length;
 
@@ -289,11 +289,11 @@ Remove.prototype.toBin = function() {
   var totalLength = header.length;
 
   // Serialize the selector
-  var selector = this.bson.serialize(this.q
-    , this.checkKeys
-    , true
-    , this.serializeFunctions
-    , 0, this.ignoreUndefined);
+  var selector = this.bson.serialize(this.q, {
+    checkKeys: this.checkKeys,
+    serializeFunctions: this.serializeFunctions,
+    ignoreUndefined: this.ignoreUndefined,
+  });
   buffers.push(selector);
   totalLength = totalLength + selector.length;
 

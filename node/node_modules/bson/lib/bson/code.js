@@ -7,7 +7,7 @@
  * @return {Code}
  */
 var Code = function Code(code, scope) {
-  if(!(this instanceof Code)) return new Code(code, scope);
+  if (!(this instanceof Code)) return new Code(code, scope);
   this._bsontype = 'Code';
   this.code = code;
   this.scope = scope;
@@ -17,8 +17,8 @@ var Code = function Code(code, scope) {
  * @ignore
  */
 Code.prototype.toJSON = function() {
-  return {scope:this.scope, code:this.code};
-}
+  return { scope: this.scope, code: this.code };
+};
 
 module.exports = Code;
 module.exports.Code = Code;

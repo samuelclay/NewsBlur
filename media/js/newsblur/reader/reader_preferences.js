@@ -672,10 +672,6 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                                 $.make('input', { type: 'checkbox', id: 'NB-preference-story-share-diigo', name: 'story_share_diigo' }),
                                 $.make('label', { 'for': 'NB-preference-story-share-diigo' })
                             ]),
-                            $.make('div', { className: 'NB-preference-option', title: 'Kippt' }, [
-                                $.make('input', { type: 'checkbox', id: 'NB-preference-story-share-kippt', name: 'story_share_kippt' }),
-                                $.make('label', { 'for': 'NB-preference-story-share-kippt' })
-                            ]),
                             $.make('div', { className: 'NB-preference-option', title: 'Evernote' }, [
                                 $.make('input', { type: 'checkbox', id: 'NB-preference-story-share-evernote', name: 'story_share_evernote' }),
                                 $.make('label', { 'for': 'NB-preference-story-share-evernote' })
