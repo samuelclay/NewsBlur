@@ -490,6 +490,7 @@
     CGFloat absoluteAdjustment = navHeight + statusAdjustment;
     CGFloat totalAdjustment = sign * absoluteAdjustment;
     CGPoint newOffset = CGPointMake(oldOffset.x, oldOffset.y + totalAdjustment);
+    BOOL singlePage = currentPage.isSinglePage;
     
     if (alsoTraverse) {
         self.traversePinned = YES;
@@ -497,8 +498,11 @@
         
         if (!hide) {
             int safeBottomMargin = 0;
-            if (@available(iOS 11.0, *)) {
-                safeBottomMargin = -1 * self.view.safeAreaInsets.bottom/2;
+            
+            if (self.isPhoneOrCompact) {
+                if (@available(iOS 11.0, *)) {
+                    safeBottomMargin = -1 * self.view.safeAreaInsets.bottom/2;
+                }
             }
             
             self.traverseBottomConstraint.constant = safeBottomMargin;
@@ -511,7 +515,9 @@
             [self reorientPages];
         }
         
-        currentPage.webView.scrollView.contentOffset = newOffset;
+        if (!singlePage) {
+            currentPage.webView.scrollView.contentOffset = newOffset;
+        }
         
         if (alsoTraverse) {
              [self.view layoutIfNeeded];
@@ -958,7 +964,10 @@
     
     // Stick to bottom
     traversePinned = YES;
-    if (@available(iOS 11.0, *)) {
+    
+    if (!self.isPhoneOrCompact) {
+        self.traverseBottomConstraint.constant = 0;
+    } else if (@available(iOS 11.0, *)) {
         self.traverseBottomConstraint.constant = -1 * self.view.safeAreaInsets.bottom/2;
     } else {
         self.traverseBottomConstraint.constant = 0;
@@ -1612,6 +1621,14 @@
     }
     
     if (self.autoscrollView.alpha == 0) {
+        if (self.isPhoneOrCompact) {
+            self.autoscrollBottomConstraint.constant = 50;
+        } else {
+            self.autoscrollBottomConstraint.constant = 0;
+        }
+        
+        [self.view layoutIfNeeded];
+        
         [UIView animateWithDuration:0.2 animations:^{
             [self.view layoutIfNeeded];
             self.autoscrollView.alpha = 1;
