@@ -47,6 +47,7 @@ UIActionSheetDelegate> {
 @property (nonatomic, assign) BOOL isRecentlyUnread;
 @property (nonatomic) BOOL hasStory;
 @property (nonatomic,  readonly) BOOL canHideNavigationBar;
+@property (nonatomic,  readonly) BOOL isSinglePage;
 
 @property NSInteger pageIndex;
 @property (nonatomic) MBProgressHUD *storyHUD;
