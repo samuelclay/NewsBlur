@@ -47,6 +47,7 @@
 @property (weak, nonatomic) IBOutlet UIButton *autoscrollPauseResumeButton;
 @property (weak, nonatomic) IBOutlet UIButton *autoscrollSlowerButton;
 @property (weak, nonatomic) IBOutlet UIButton *autoscrollFasterButton;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *autoscrollBottomConstraint;
 
 @property (nonatomic, strong) IBOutlet UIActivityIndicatorView *loadingIndicator;
 @property (nonatomic) IBOutlet UIImageView *textStorySendBackgroundImageView;

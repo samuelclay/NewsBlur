@@ -1865,14 +1865,18 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         return NO;
     }
     
-    NSInteger webpageHeight = self.webView.scrollView.contentSize.height;
-    NSInteger viewportHeight = self.view.frame.size.height;
-    BOOL singlePage = webpageHeight - 200 <= viewportHeight;
-    BOOL canHide = !singlePage;
+    BOOL canHide = !self.isSinglePage;
     
     NSLog(@"canHideNavigationBar: %@", canHide ? @"yes" : @"no");  // log
     
     return canHide;
+}
+
+- (BOOL)isSinglePage {
+    NSInteger webpageHeight = self.webView.scrollView.contentSize.height;
+    NSInteger viewportHeight = self.view.frame.size.height;
+    
+    return webpageHeight - 200 <= viewportHeight;
 }
 
 #pragma mark -
