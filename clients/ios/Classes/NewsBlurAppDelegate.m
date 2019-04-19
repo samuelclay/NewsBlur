@@ -289,11 +289,6 @@
 }
 
 - (BOOL)application:(UIApplication *)application shouldSaveApplicationState:(NSCoder *)coder {
-    // Temporary? bypass to not save on iPad, since that isn't supported yet.
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        return NO;
-    }
-    
     return YES;
 }
 
@@ -303,11 +298,6 @@
 }
 
 - (BOOL)application:(UIApplication *)application shouldRestoreApplicationState:(NSCoder *)coder {
-    // Temporary? bypass to not restore on iPad, since that isn't supported yet.
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        return NO;
-    }
-    
     NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
     NSString *option = [preferences stringForKey:@"restore_state"];
     
