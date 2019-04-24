@@ -131,11 +131,6 @@
         [self.webView addGestureRecognizer:pinchGesture];
     }
     
-    UIScreenEdgePanGestureRecognizer *screenEdgeGesture = [[UIScreenEdgePanGestureRecognizer alloc]
-                                                           initWithTarget:self action:@selector(screenEdgeSwipe:)];
-    screenEdgeGesture.edges = UIRectEdgeLeft;
-    [self.webView addGestureRecognizer:screenEdgeGesture];
-    
     [[ThemeManager themeManager] addThemeGestureRecognizerToView:self.webView];
     
     // This makes the theme gesture work reliably, but makes scrolling more "sticky", so isn't acceptable:
