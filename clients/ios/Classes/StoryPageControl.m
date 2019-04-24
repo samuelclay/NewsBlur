@@ -471,6 +471,12 @@
     
     [self.navigationController setNavigationBarHidden:hide animated:YES];
     
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+    BOOL swipeEnabled = [[userPreferences stringForKey:@"story_detail_swipe_left_edge"]
+                         isEqualToString:@"pop_to_story_list"];;
+    self.navigationController.interactivePopGestureRecognizer.enabled = swipeEnabled;
+    self.navigationController.interactivePopGestureRecognizer.delegate = self;
+    
     CGPoint oldOffset = currentPage.webView.scrollView.contentOffset;
     CGFloat navHeight = self.navigationController.navigationBar.bounds.size.height;
     CGFloat statusAdjustment = 20.0;
@@ -534,6 +540,10 @@
     } completion:^(BOOL finished) {
         self.currentlyTogglingNavigationBar = NO;
     }];
+}
+
+- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer {
+    return YES;
 }
 
 - (void)adjustDragBar:(UIInterfaceOrientation)orientation {
