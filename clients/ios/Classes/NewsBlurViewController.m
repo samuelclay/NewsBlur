@@ -1256,22 +1256,6 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     NSString *folderName = appDelegate.dictFoldersArray[indexPath.section];
     id feedId = [[appDelegate.dictFolders objectForKey:folderName] objectAtIndex:indexPath.row];
     NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
-    NSDictionary *feed;
-    appDelegate.storiesCollection.isReadView = NO;
-    if ([appDelegate isSocialFeed:feedIdStr]) {
-        feed = [appDelegate.dictSocialFeeds objectForKey:feedIdStr];
-        appDelegate.storiesCollection.isSocialView = YES;
-        appDelegate.storiesCollection.isSavedView = NO;
-    } else if ([appDelegate isSavedFeed:feedIdStr]) {
-        feed = [appDelegate.dictSavedStoryTags objectForKey:feedIdStr];
-        appDelegate.storiesCollection.isSocialView = NO;
-        appDelegate.storiesCollection.isSavedView = YES;
-        appDelegate.storiesCollection.activeSavedStoryTag = [feed objectForKey:@"tag"];
-    } else {
-        feed = [appDelegate.dictFeeds objectForKey:feedIdStr];
-        appDelegate.storiesCollection.isSocialView = NO;
-        appDelegate.storiesCollection.isSavedView = NO;
-    }
     
     // If all feeds are already showing, no need to remember this one.
 //    NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
@@ -1280,13 +1264,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
         [self.stillVisibleFeeds setObject:indexPath forKey:feedIdStr];
     }
     
-    [appDelegate.storiesCollection setActiveFeed:feed];
-    [appDelegate.storiesCollection setActiveFolder:folderName];
-    appDelegate.readStories = [NSMutableArray array];
-    [appDelegate.folderCountCache removeObjectForKey:folderName];
-    appDelegate.storiesCollection.activeClassifiers = [NSMutableDictionary dictionary];
-
-    [appDelegate loadFeedDetailView];
+    [appDelegate loadFolder:folderName feedID:feedIdStr];
 }
 
 - (CGFloat)tableView:(UITableView *)tableView
@@ -2006,6 +1984,7 @@ heightForHeaderInSection:(NSInteger)section {
 - (void)refresh:(UIRefreshControl *)refreshControl {
     self.inPullToRefresh_ = YES;
     [appDelegate reloadFeedsView:NO];
+    [appDelegate donateRefresh];
 }
 
 - (void)finishRefresh {

@@ -76,6 +76,7 @@
 - (void)cacheStoryImages:(NSArray *)storyImageUrls;
 - (void)showStoryImage:(NSString *)imageUrl;
 - (void)flashInfrequentStories;
+- (void)gotoFolder:(NSString *)folder feedID:(NSString *)feedID;
 
 - (void)renderStories:(NSArray *)newStories;
 - (void)scrollViewDidScroll:(UIScrollView *)scroll;
