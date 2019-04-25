@@ -66,6 +66,9 @@
 #import "PINCache.h"
 #import <float.h>
 #import <UserNotifications/UserNotifications.h>
+#import <Intents/Intents.h>
+#import <CoreSpotlight/CoreSpotlight.h>
+#import <CoreServices/CoreServices.h>
 
 @interface NewsBlurAppDelegate () <UIViewControllerTransitioningDelegate, UNUserNotificationCenterDelegate>
 
@@ -345,6 +348,12 @@
 
 - (void)application:(UIApplication *)application didDecodeRestorableStateWithCoder:(NSCoder *)coder {
     // All done; could do any cleanup here
+}
+
+- (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity restorationHandler:(void (^)(NSArray<id<UIUserActivityRestoring>> *restorableObjects))restorationHandler {
+    [self handleUserActivity:userActivity];
+    
+    return YES;
 }
 
 - (void)application:(UIApplication *)application performActionForShortcutItem:(UIApplicationShortcutItem *)shortcutItem completionHandler:(void (^)(BOOL))completionHandler {
@@ -1236,6 +1245,33 @@
 
 #pragma mark -
 
+- (void)loadFolder:(NSString *)folder feedID:(NSString *)feedIdStr {
+    NSDictionary *feed;
+    storiesCollection.isReadView = NO;
+    if ([self isSocialFeed:feedIdStr]) {
+        feed = [dictSocialFeeds objectForKey:feedIdStr];
+        storiesCollection.isSocialView = YES;
+        storiesCollection.isSavedView = NO;
+    } else if ([self isSavedFeed:feedIdStr]) {
+        feed = [dictSavedStoryTags objectForKey:feedIdStr];
+        storiesCollection.isSocialView = NO;
+        storiesCollection.isSavedView = YES;
+        storiesCollection.activeSavedStoryTag = [feed objectForKey:@"tag"];
+    } else {
+        feed = [dictFeeds objectForKey:feedIdStr];
+        storiesCollection.isSocialView = NO;
+        storiesCollection.isSavedView = NO;
+    }
+    
+    [storiesCollection setActiveFeed:feed];
+    [storiesCollection setActiveFolder:folder];
+    readStories = [NSMutableArray array];
+    [folderCountCache removeObjectForKey:folder];
+    storiesCollection.activeClassifiers = [NSMutableDictionary dictionary];
+    
+    [self loadFeedDetailView];
+}
+
 - (void)reloadFeedsView:(BOOL)showLoader {
     [feedsViewController fetchFeedList:showLoader];
 }
@@ -1950,6 +1986,130 @@
     } else {
         [self.navigationController popViewControllerAnimated:YES];
     }
+}
+
+#pragma mark -
+#pragma mark Siri Shortcuts
+
+- (void)handleUserActivity:(NSUserActivity *)activity {
+    if ([activity.activityType isEqualToString:@"com.newsblur.refresh"]) {
+        [self.navigationController popToRootViewControllerAnimated:NO];
+        [self.feedsViewController refreshFeedList];
+    } else if ([activity.activityType isEqualToString:@"com.newsblur.gotoFolder"]) {
+        NSString *folder = activity.userInfo[@"folder"];
+        
+        [self.navigationController popToRootViewControllerAnimated:NO];
+        [self loadRiverFeedDetailView:self.feedDetailViewController withFolder:folder];
+    } else if ([activity.activityType isEqualToString:@"com.newsblur.gotoFeed"]) {
+        NSString *folder = activity.userInfo[@"folder"];
+        NSString *feedID = activity.userInfo[@"feedID"];
+        
+        [self.navigationController popToRootViewControllerAnimated:NO];
+        [self loadFolder:folder feedID:feedID];
+    }
+}
+
+- (void)donateRefresh {
+    NSUserActivity *activity = [[NSUserActivity alloc] initWithActivityType:@"com.newsblur.refresh"];
+    
+    activity.title = @"Refresh NewsBlur";
+    activity.userInfo = @{};
+    activity.requiredUserInfoKeys = [NSSet new];
+    activity.eligibleForSearch = YES;
+    
+    if (@available(iOS 12.0, *)) {
+        activity.eligibleForPrediction = YES;
+        activity.suggestedInvocationPhrase = @"Refresh NewsBlur";
+    }
+    
+    CSSearchableItemAttributeSet *attributes = [[CSSearchableItemAttributeSet alloc] initWithItemContentType:(NSString *)kUTTypeItem];
+    
+    attributes.contentDescription = @"Fetch new stories in NewsBlur.";
+    
+    activity.contentAttributeSet = attributes;
+    
+    self.userActivity = activity;
+    [self.userActivity becomeCurrent];
+}
+
+- (void)donateFolder {
+    NSUserActivity *activity = [[NSUserActivity alloc] initWithActivityType:@"com.newsblur.gotoFolder"];
+    NSString *folder = storiesCollection.activeFolder;
+    NSString *title = storiesCollection.activeTitle;
+    
+    if ([folder isEqualToString:@"river_blurblogs"]) {
+        activity.title = @"Read All Shared Stories";
+    } else if ([folder isEqualToString:@"river_global"]) {
+        activity.title = @"Read Global Shared Stories";
+    } else if ([folder isEqualToString:@"everything"]) {
+        activity.title = @"Read All the Stories";
+    } else if ([folder isEqualToString:@"infrequent"]) {
+        activity.title = @"Read Infrequent Site Stories";
+    } else if (storiesCollection.isSavedView && storiesCollection.activeSavedStoryTag) {
+        activity.title = [NSString stringWithFormat:@"Read %@", storiesCollection.activeSavedStoryTag];
+    } else if ([folder isEqualToString:@"read_stories"]) {
+        activity.title = @"Re-read Stories";
+    } else if ([folder isEqualToString:@"saved_stories"]) {
+        activity.title = @"Re-read Saved Stories";
+    } else {
+        activity.title = [NSString stringWithFormat:@"Read %@", title];
+    }
+    
+    activity.userInfo = @{@"folder" : folder};
+    activity.requiredUserInfoKeys = [NSSet setWithObject:@"folder"];
+    activity.eligibleForSearch = YES;
+    
+    if (@available(iOS 12.0, *)) {
+        activity.eligibleForPrediction = YES;
+        activity.suggestedInvocationPhrase = activity.title;
+    }
+    
+    CSSearchableItemAttributeSet *attributes = [[CSSearchableItemAttributeSet alloc] initWithItemContentType:(NSString *)kUTTypeItem];
+    
+    attributes.contentDescription = [NSString stringWithFormat:@"Go to the %@ folder in NewsBlur.", title];
+    
+    activity.contentAttributeSet = attributes;
+    
+    self.userActivity = activity;
+    [self.userActivity becomeCurrent];
+}
+
+- (void)donateFeed {
+    NSUserActivity *activity = [[NSUserActivity alloc] initWithActivityType:@"com.newsblur.gotoFeed"];
+    NSString *folder = storiesCollection.activeFolder;
+    NSDictionary *feed = storiesCollection.activeFeed;
+    NSString *title = storiesCollection.activeTitle;
+    NSString *feedID = [NSString stringWithFormat:@"%@", feed[@"id"]];
+    
+    activity.title = [NSString stringWithFormat:@"Read %@", title];
+    activity.eligibleForSearch = YES;
+    
+    if (folder != nil) {
+        activity.userInfo = @{@"folder" : folder, @"feedID" : feedID};
+        activity.requiredUserInfoKeys = [NSSet setWithArray:@[@"folder", @"feedID"]];
+    } else {
+        activity.userInfo = @{@"feedID" : feedID};
+        activity.requiredUserInfoKeys = [NSSet setWithArray:@[@"feedID"]];
+    }
+    
+    if (@available(iOS 12.0, *)) {
+        activity.eligibleForPrediction = YES;
+        activity.suggestedInvocationPhrase = activity.title;
+    }
+    
+    CSSearchableItemAttributeSet *attributes = [[CSSearchableItemAttributeSet alloc] initWithItemContentType:(NSString *)kUTTypeItem];
+    BOOL isSocial = [self isSocialFeed:feedID];
+    BOOL isSaved = [self isSavedFeed:feedID];
+    UIImage *thumbnailImage = [self getFavicon:feedID isSocial:isSocial isSaved:isSaved];
+    UIImage *scaledImage = [Utilities imageWithImage:thumbnailImage convertToSize:CGSizeMake(128, 128)];
+    
+    attributes.contentDescription = [NSString stringWithFormat:@"Go to the %@ feed in NewsBlur.", title];
+    attributes.thumbnailData = UIImagePNGRepresentation(scaledImage);
+    
+    activity.contentAttributeSet = attributes;
+    
+    self.userActivity = activity;
+    [self.userActivity becomeCurrent];
 }
 
 #pragma mark - Text View

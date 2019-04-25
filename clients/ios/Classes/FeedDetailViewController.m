@@ -428,6 +428,12 @@
     } else {
         [self.searchBar setShowsCancelButton:NO animated:YES];
     }
+    
+    if (storiesCollection.activeFeed != nil) {
+        [appDelegate donateFeed];
+    } else if (storiesCollection.activeFolder != nil) {
+        [appDelegate donateFolder];
+    }
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -581,6 +587,14 @@
     
     self.restoringFolder = nil;
     self.restoringFeedID = 0;
+}
+
+#pragma mark -
+#pragma mark Siri Shortcuts
+
+- (void)gotoFolder:(NSString *)folder feedID:(NSString *)feedID {
+    self.restoringFolder = folder;
+    self.restoringFeedID = feedID;
 }
 
 #pragma mark -
