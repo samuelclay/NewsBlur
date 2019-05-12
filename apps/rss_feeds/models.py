@@ -456,6 +456,7 @@ class Feed(models.Model):
         # Normalize and check for feed_address, dupes, and feed_link
         url = urlnorm.normalize(url)
         if not url:
+            logging.debug(" ---> ~FRCouldn't normalize url: ~SB%s" % url)
             return
         
         feed = by_url(url)
@@ -510,6 +511,7 @@ class Feed(models.Model):
         
         # Not created and not within bounds, so toss results.
         if isinstance(feed, QuerySet):
+            logging.debug(" ---> ~FRNot created and not within bounds, tossing: ~SB%s" % feed)
             return
         
         return feed
