@@ -403,7 +403,7 @@ class Feed(models.Model):
         return bool(not (self.favicon_not_found or self.favicon_color))
     
     @classmethod
-    def get_feed_from_url(cls, url, create=True, aggressive=False, fetch=True, offset=0, user=None):
+    def get_feed_from_url(cls, url, create=True, aggressive=False, fetch=True, offset=0, user=None, interactive=False):
         feed = None
         without_rss = False
         original_url = url
@@ -461,6 +461,9 @@ class Feed(models.Model):
         
         feed = by_url(url)
         found_feed_urls = []
+        
+        if interactive:
+            import pdb; pdb.set_trace()
         
         # Create if it looks good
         if feed and len(feed) > offset:
