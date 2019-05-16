@@ -1370,11 +1370,17 @@
         }
         
         if (!atTop && !atBottom && !singlePage) {
+            BOOL traversalVisible = appDelegate.storyPageControl.traverseView.alpha > 0;
+            
             // Hide
             [UIView animateWithDuration:.3 delay:0
                                 options:UIViewAnimationOptionCurveEaseInOut
             animations:^{
                 appDelegate.storyPageControl.traverseView.alpha = 0;
+                
+                if (traversalVisible) {
+                    [appDelegate.storyPageControl hideAutoscrollImmediately];
+                }
             } completion:^(BOOL finished) {
                 
             }];
