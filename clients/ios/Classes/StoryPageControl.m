@@ -363,7 +363,7 @@
     [self reorientPages];
 //    [self applyNewIndex:previousPage.pageIndex pageController:previousPage];
     previousPage.view.hidden = NO;
-    [self showAutoscrollBriefly:YES];
+//    [self showAutoscrollBriefly:YES];
     
     [self becomeFirstResponder];
 }
@@ -528,6 +528,10 @@
         if (alsoTraverse) {
              [self.view layoutIfNeeded];
             self.traverseView.alpha = hide ? 0 : 1;
+            
+            if (hide) {
+                [self hideAutoscrollImmediately];
+            }
         }
     }];
     
@@ -1178,7 +1182,7 @@
 //    NSLog(@"Set Story from scroll: %@ = %@ (%@/%@/%@)", @(fractionalPage), @(nearestNumber), @(previousPage.pageIndex), @(currentPage.pageIndex), @(nextPage.pageIndex));
     
     self.autoscrollActive = NO;
-    [self showAutoscrollBriefly:YES];
+//    [self showAutoscrollBriefly:YES];
     
     nextPage.webView.scrollView.scrollsToTop = NO;
     previousPage.webView.scrollView.scrollsToTop = NO;
@@ -1626,7 +1630,7 @@
 
 - (void)showAutoscrollBriefly:(BOOL)briefly {
     if (!self.autoscrollAvailable || self.currentPage.webView.scrollView.contentSize.height - 200 <= self.currentPage.view.frame.size.height) {
-        [self hideAutoscroll];
+        [self hideAutoscrollWithAnimation];
         return;
     }
     
@@ -1652,10 +1656,10 @@
 
 - (void)hideAutoscrollAfterDelay {
     [self.autoscrollViewTimer invalidate];
-    self.autoscrollViewTimer = [NSTimer scheduledTimerWithTimeInterval:2 target:self selector:@selector(hideAutoscroll) userInfo:nil repeats:NO];
+    self.autoscrollViewTimer = [NSTimer scheduledTimerWithTimeInterval:2 target:self selector:@selector(hideAutoscrollWithAnimation) userInfo:nil repeats:NO];
 }
 
-- (void)hideAutoscroll {
+- (void)hideAutoscrollWithAnimation {
     [self.autoscrollViewTimer invalidate];
     self.autoscrollViewTimer = nil;
     
@@ -1663,6 +1667,12 @@
         [self.view layoutIfNeeded];
         self.autoscrollView.alpha = 0;
     }];
+}
+
+- (void)hideAutoscrollImmediately {
+    [self.autoscrollViewTimer invalidate];
+    self.autoscrollViewTimer = nil;
+    self.autoscrollView.alpha = 0;
 }
 
 - (void)resetAutoscrollViewTimerIfNeeded {
@@ -1675,7 +1685,7 @@
     self.autoscrollAvailable = NO;
     self.autoscrollActive = NO;
     
-    [self hideAutoscroll];
+    [self hideAutoscrollWithAnimation];
 }
 
 - (IBAction)autoscrollPauseResume:(UIButton *)sender {
