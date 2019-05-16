@@ -403,7 +403,7 @@ class Feed(models.Model):
         return bool(not (self.favicon_not_found or self.favicon_color))
     
     @classmethod
-    def get_feed_from_url(cls, url, create=True, aggressive=False, fetch=True, offset=0, user=None):
+    def get_feed_from_url(cls, url, create=True, aggressive=False, fetch=True, offset=0, user=None, interactive=False):
         feed = None
         without_rss = False
         original_url = url
@@ -456,10 +456,14 @@ class Feed(models.Model):
         # Normalize and check for feed_address, dupes, and feed_link
         url = urlnorm.normalize(url)
         if not url:
+            logging.debug(" ---> ~FRCouldn't normalize url: ~SB%s" % url)
             return
         
         feed = by_url(url)
         found_feed_urls = []
+        
+        if interactive:
+            import pdb; pdb.set_trace()
         
         # Create if it looks good
         if feed and len(feed) > offset:
@@ -510,6 +514,7 @@ class Feed(models.Model):
         
         # Not created and not within bounds, so toss results.
         if isinstance(feed, QuerySet):
+            logging.debug(" ---> ~FRNot created and not within bounds, tossing: ~SB%s" % feed)
             return
         
         return feed
