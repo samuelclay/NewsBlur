@@ -805,7 +805,8 @@
         NSInteger pageIndex = [appDelegate.storiesCollection indexOfStoryId:self.restoringStoryId];
         
         if (pageIndex < 0) {
-            [self doNextUnreadStory:nil];
+            [appDelegate hideStoryDetailView];
+//            [self doNextUnreadStory:nil];
         } else {
             [self changePage:pageIndex animated:NO];
         }
