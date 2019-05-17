@@ -325,7 +325,7 @@ static UIFont *indicatorFont = nil;
         CGFloat boundingRows = cell.isShort ? 1.5 : 3;
         
         if (!cell.isShort && (self.cell.textSize == FeedDetailTextSizeMedium || self.cell.textSize == FeedDetailTextSizeLong)) {
-            boundingRows = (r.size.height - 24 - CGRectGetMaxY(storyTitleFrame)) / font.pointSize;
+            boundingRows = (r.size.height - 30 - CGRectGetMaxY(storyTitleFrame)) / font.pointSize;
         }
         
         CGSize contentSize = [cell.storyContent
