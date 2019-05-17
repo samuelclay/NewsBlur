@@ -328,8 +328,6 @@
     
     if (self.standardInteractivePopGestureDelegate == nil) {
         self.standardInteractivePopGestureDelegate = self.navigationController.interactivePopGestureRecognizer.delegate;
-    } else if (self.navigationController.interactivePopGestureRecognizer.delegate != self.standardInteractivePopGestureDelegate) {
-        self.navigationController.interactivePopGestureRecognizer.delegate = self.standardInteractivePopGestureDelegate;
     }
     
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
@@ -444,6 +442,11 @@
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
+    
+    if (self.navigationController.interactivePopGestureRecognizer.delegate != self.standardInteractivePopGestureDelegate) {
+        self.navigationController.interactivePopGestureRecognizer.delegate = self.standardInteractivePopGestureDelegate;
+    }
+    
     if (appDelegate.inStoryDetail && self.isPhoneOrCompact) {
         appDelegate.inStoryDetail = NO;
 //        [appDelegate.storyPageControl resetPages];
