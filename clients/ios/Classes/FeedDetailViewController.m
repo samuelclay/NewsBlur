@@ -46,6 +46,7 @@
 @property (nonatomic) NSUInteger scrollingMarkReadRow;
 @property (nonatomic, strong) NSString *restoringFolder;
 @property (nonatomic, strong) NSString *restoringFeedID;
+@property (nonatomic, strong) id standardInteractivePopGestureDelegate;
 
 @end
 
@@ -166,7 +167,6 @@
     self.notifier.topOffsetConstraint = [NSLayoutConstraint constraintWithItem:self.notifier attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0];
     [self.view addConstraint:self.notifier.topOffsetConstraint];
 }
-
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch {
     //    NSLog(@"Gesture double tap: %ld - %ld", touch.tapCount, gestureRecognizer.state);
@@ -325,6 +325,12 @@
     [super viewWillAppear:animated];
     
     self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];
+    
+    if (self.standardInteractivePopGestureDelegate == nil) {
+        self.standardInteractivePopGestureDelegate = self.navigationController.interactivePopGestureRecognizer.delegate;
+    } else if (self.navigationController.interactivePopGestureRecognizer.delegate != self.standardInteractivePopGestureDelegate) {
+        self.navigationController.interactivePopGestureRecognizer.delegate = self.standardInteractivePopGestureDelegate;
+    }
     
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
     [self setUserAvatarLayout:orientation];
