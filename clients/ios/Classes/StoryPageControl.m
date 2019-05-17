@@ -463,7 +463,7 @@
 }
 
 - (void)setNavigationBarHidden:(BOOL)hide alsoTraverse:(BOOL)alsoTraverse {
-    if (self.navigationController.navigationBarHidden == hide || self.currentlyTogglingNavigationBar) {
+    if (self.navigationController == nil || self.navigationController.navigationBarHidden == hide || self.currentlyTogglingNavigationBar) {
         return;
     }
     
