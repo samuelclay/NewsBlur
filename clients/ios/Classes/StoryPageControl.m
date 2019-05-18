@@ -475,7 +475,12 @@
     BOOL swipeEnabled = [[userPreferences stringForKey:@"story_detail_swipe_left_edge"]
                          isEqualToString:@"pop_to_story_list"];;
     self.navigationController.interactivePopGestureRecognizer.enabled = swipeEnabled;
-    self.navigationController.interactivePopGestureRecognizer.delegate = self;
+    
+    if (hide) {
+        self.navigationController.interactivePopGestureRecognizer.delegate = self;
+    } else if (appDelegate.feedDetailViewController.standardInteractivePopGestureDelegate != nil) {
+        self.navigationController.interactivePopGestureRecognizer.delegate = appDelegate.feedDetailViewController.standardInteractivePopGestureDelegate;
+    }
     
     CGPoint oldOffset = currentPage.webView.scrollView.contentOffset;
     CGFloat navHeight = self.navigationController.navigationBar.bounds.size.height;
