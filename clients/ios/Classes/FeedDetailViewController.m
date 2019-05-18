@@ -46,7 +46,6 @@
 @property (nonatomic) NSUInteger scrollingMarkReadRow;
 @property (nonatomic, strong) NSString *restoringFolder;
 @property (nonatomic, strong) NSString *restoringFeedID;
-@property (nonatomic, strong) id standardInteractivePopGestureDelegate;
 
 @end
 
