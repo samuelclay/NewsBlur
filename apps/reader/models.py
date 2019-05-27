@@ -1623,12 +1623,12 @@ class UserSubscriptionFolders(models.Model):
                           self.user, len(missing_subs), missing_subs))
             for feed_id in missing_subs:
                 feed = Feed.get_by_id(feed_id)
-                if feed_id != feed.pk:
-                    # Clear out duplicate sub in folders before subscribing to feed
-                    duplicate_feed = Feed.get_by_id(feed_id)
-                    duplicate_feed.pk = feed_id
-                    self.rewrite_feed(feed, duplicate_feed)
                 if feed:
+                    if feed_id != feed.pk:
+                        # Clear out duplicate sub in folders before subscribing to feed
+                        duplicate_feed = Feed.get_by_id(feed_id)
+                        duplicate_feed.pk = feed_id
+                        self.rewrite_feed(feed, duplicate_feed)
                     us, _ = UserSubscription.objects.get_or_create(user=self.user, feed=feed, defaults={
                         'needs_unread_recalc': True
                     })
