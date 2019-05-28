@@ -2121,9 +2121,9 @@ class Feed(models.Model):
             if len(fetch_history['push_history']):
                 total = total * 12
         
-        # 6 hour max for premiums, 48 hour max for free
+        # 3 hour max for premiums, 48 hour max for free
         if subs >= 1:
-            total = min(total, 60*6*1)
+            total = min(total, 60*3*1)
         else:
             total = min(total, 60*24*2)
         
