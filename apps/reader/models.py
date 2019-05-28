@@ -1315,7 +1315,7 @@ class UserSubscriptionFolders(models.Model):
         new_folders = _compact(folders)
         logging.info(" ---> Compacting from %s to %s" % (folders, new_folders))
         new_folders = json.encode(new_folders)
-        logging.info(" ---> Compacting from %s to %s" % (len(self.folders), len(new_folders)))
+        logging.info(" ---> Compacting from %s bytes to %s bytes" % (len(self.folders), len(new_folders)))
         self.folders = new_folders
         self.save()
         
@@ -1624,6 +1624,11 @@ class UserSubscriptionFolders(models.Model):
             for feed_id in missing_subs:
                 feed = Feed.get_by_id(feed_id)
                 if feed:
+                    if feed_id != feed.pk:
+                        # Clear out duplicate sub in folders before subscribing to feed
+                        duplicate_feed = Feed.get_by_id(feed_id)
+                        duplicate_feed.pk = feed_id
+                        self.rewrite_feed(feed, duplicate_feed)
                     us, _ = UserSubscription.objects.get_or_create(user=self.user, feed=feed, defaults={
                         'needs_unread_recalc': True
                     })
