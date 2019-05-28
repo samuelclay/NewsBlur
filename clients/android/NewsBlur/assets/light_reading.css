@@ -1,4 +1,4 @@
-body {
+body, html {
 	background-color: #FFF;
 }
 
@@ -20,7 +20,7 @@ pre, blockquote {
 }
 /* do not adhere to Chromium's color scheme settings */
 @media(prefers-color-scheme: dark){
-    body {
+    body, html {
         background-color: #FFF;
     }
 }
