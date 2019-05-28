@@ -511,9 +511,8 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
      * Bind view elements that are common to tiles and rows.
      */
     private void bindCommon(StoryViewHolder vh, int position, Story story) {
-        ThumbnailStyle thumbnailStyle = PrefsUtils.getThumbnailStyle(context);
         if ((vh instanceof StoryTileViewHolder) ||
-            ((thumbnailStyle != ThumbnailStyle.OFF) && (story.thumbnailUrl != null))) {
+            ((PrefsUtils.getThumbnailStyle(context)  != ThumbnailStyle.OFF) && (story.thumbnailUrl != null))) {
             // when first created, tiles' views tend to not yet have their dimensions calculated, but
             // upon being recycled they will often have a known size, which lets us give a max size to
             // the image loader, which in turn can massively optimise loading.  the image loader will
