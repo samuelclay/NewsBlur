@@ -324,8 +324,25 @@
     <string name="settings_immersive_enter_single_tap">Immersive Mode Via Single Tap</string>
     <string name="settings_show_content_preview">Show Content Preview Text</string>
     <string name="settings_show_thumbnails">Show Image Preview Thumbnails</string>
+    <string name="settings_thumbnails_style">Image Preview Thumbnails</string>
     <string name="settings_notifications">Notifications</string>
     <string name="settings_enable_notifications">Enable Notifications</string>
+
+    <string name="large">Large</string>
+    <string name="small">Small</string>
+    <string-array name="thumbnails_style_entries">
+        <item>@string/large</item>
+        <item>@string/small</item>
+        <item>@string/off</item>
+    </string-array>
+
+    <string-array name="thumbnails_style_values">
+        <item>LARGE</item>
+        <item>SMALL</item>
+        <item>OFF</item>
+    </string-array>
+
+    <string name="thumbnails_style_value">LARGE</string>
 
     <string name="infrequent_choice_title">Stories from sites with</string>
     <string name="infrequent_5">&lt; 5 STORIES/MONTH</string>
