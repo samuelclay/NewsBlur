@@ -1344,8 +1344,16 @@
         int viewportHeight = self.view.frame.size.height;
         int topPosition = self.webView.scrollView.contentOffset.y;
         int safeBottomMargin = 0;
+        int minimumTopPositionWhenHidden = -1;
+        
         if (@available(iOS 11.0, *)) {
-            safeBottomMargin = -1 * appDelegate.storyPageControl.view.safeAreaInsets.bottom/2;
+            CGFloat bottomInset = appDelegate.storyPageControl.view.safeAreaInsets.bottom;
+            
+            safeBottomMargin = -1 * bottomInset / 2;
+            
+            if (bottomInset != 0) {
+                minimumTopPositionWhenHidden = 0;
+            }
         }
         
         int bottomPosition = webpageHeight - topPosition - viewportHeight;
@@ -1363,7 +1371,7 @@
         
         if (!isHorizontal && appDelegate.storyPageControl.previousPage.pageIndex < 0) {
             [appDelegate.storyPageControl setNavigationBarHidden:NO];
-        } else if (isHorizontal && topPosition <= 0 && isNavBarHidden) {
+        } else if (isHorizontal && topPosition <= minimumTopPositionWhenHidden && isNavBarHidden) {
             [appDelegate.storyPageControl setNavigationBarHidden:NO];
         } else if (!nearTop && !isNavBarHidden && self.canHideNavigationBar) {
             [appDelegate.storyPageControl setNavigationBarHidden:YES];
