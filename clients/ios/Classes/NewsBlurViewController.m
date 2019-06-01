@@ -51,6 +51,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 @property (nonatomic, strong) NSMutableDictionary *updatedDictSocialFeeds_;
 @property (nonatomic, strong) NSMutableDictionary *updatedDictFeeds_;
 @property (readwrite) BOOL inPullToRefresh_;
+@property (nonatomic, strong) NSMutableDictionary<NSIndexPath *, NSNumber *> *rowHeights;
 
 @end
 
@@ -110,7 +111,9 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-        
+    
+    self.rowHeights = [NSMutableDictionary dictionary];
+    
     self.refreshControl = [UIRefreshControl new];
     self.refreshControl.tintColor = UIColorFromLightDarkRGB(0x0, 0xffffff);
     self.refreshControl.backgroundColor = UIColorFromRGB(0xE3E6E0);
@@ -187,6 +190,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     self.feedTitlesTable.backgroundColor = UIColorFromRGB(0xf4f4f4);
     self.feedTitlesTable.separatorColor = [UIColor clearColor];
     self.feedTitlesTable.translatesAutoresizingMaskIntoConstraints = NO;
+    self.feedTitlesTable.estimatedRowHeight = 0;
     
     userAvatarButton.customView.hidden = YES;
     userInfoBarButton.customView.hidden = YES;
@@ -202,7 +206,9 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 
 - (void)viewWillAppear:(BOOL)animated {
 //    NSTimeInterval start = [NSDate timeIntervalSinceReferenceDate];
-
+    
+    [self resetRowHeights];
+    
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad &&
         !self.interactiveFeedDetailTransition) {
         
@@ -239,7 +245,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     if (appDelegate.inFeedDetail) {
         appDelegate.inFeedDetail = NO;
         // reload the data and then set the highlight again
-//        [self.feedTitlesTable reloadData];
+//        [self reloadFeedTitlesTable];
 //        [self refreshHeaderCounts];
         [self redrawUnreadCounts];
 //        [self.feedTitlesTable selectRowAtIndexPath:self.currentRowAtIndexPath
@@ -380,7 +386,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
         [self layoutForInterfaceOrientation:orientation];
         [self.notifier setNeedsLayout];
     } completion:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
-        [self.feedTitlesTable reloadData];
+        [self reloadFeedTitlesTable];
     }];
 }
 
@@ -765,7 +771,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     }
     
     [self calculateFeedLocations];
-    [self.feedTitlesTable reloadData];
+    [self reloadFeedTitlesTable];
     [self refreshHeaderCounts];
 
     // assign categories for FTUX    
@@ -1005,7 +1011,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 }
 
 - (void)resizePreviewSize {
-    [self.feedTitlesTable reloadData];
+    [self reloadFeedTitlesTable];
     
     [appDelegate.feedDetailViewController reloadData];
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
@@ -1015,7 +1021,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 
 - (void)resizeFontSize {
     appDelegate.fontDescriptorTitleSize = nil;
-    [self.feedTitlesTable reloadData];
+    [self reloadFeedTitlesTable];
     
     appDelegate.feedDetailViewController.invalidateFontCache = YES;
     [appDelegate.feedDetailViewController reloadData];
@@ -1067,7 +1073,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     }
     
     self.feedTitlesTable.backgroundColor = UIColorFromRGB(0xf4f4f4);
-    [self.feedTitlesTable reloadData];
+    [self reloadFeedTitlesTable];
     
     [self resetupGestures];
 }
@@ -1269,6 +1275,24 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 
 - (CGFloat)tableView:(UITableView *)tableView
            heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    NSNumber *cachedHeight = self.rowHeights[indexPath];
+
+    if (cachedHeight != nil) {
+//        NSLog(@"Got cached height: %@", cachedHeight);  // log
+
+        return cachedHeight.floatValue;
+    }
+
+    CGFloat height = [self calculateHeightForRowAtIndexPath:indexPath];
+    
+    self.rowHeights[indexPath] = @(height);
+    
+//    NSLog(@"Calculated height: %@", @(height));  // log
+    
+    return height;
+}
+
+- (CGFloat)calculateHeightForRowAtIndexPath:(NSIndexPath *)indexPath {
     if (appDelegate.hasNoSites) {
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
             return kBlurblogTableViewRowHeight;            
@@ -1316,6 +1340,15 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     UIFontDescriptor *fontDescriptor = [self fontDescriptorUsingPreferredSize:UIFontTextStyleCaption1];
     UIFont *font = [UIFont fontWithDescriptor:fontDescriptor size:0.0];
     return height + font.pointSize*2;
+}
+
+- (void)resetRowHeights {
+    [self.rowHeights removeAllObjects];
+}
+
+- (void)reloadFeedTitlesTable {
+    [self resetRowHeights];
+    [self.feedTitlesTable reloadData];
 }
 
 - (UIFontDescriptor *)fontDescriptorUsingPreferredSize:(NSString *)textStyle {
@@ -1552,7 +1585,7 @@ heightForHeaderInSection:(NSInteger)section {
         for (NSString *feedId in feedIds) {
             [appDelegate markFeedAllRead:feedId];
         }
-        [feedTitlesTable reloadData];
+        [self reloadFeedTitlesTable];
     } else {
         //        [self showRefreshNotifier];
     }
@@ -1578,7 +1611,7 @@ heightForHeaderInSection:(NSInteger)section {
                  cutoffTimestamp:[[params objectForKey:@"cutoff_timestamp"] integerValue]];
     [self showOfflineNotifier];
     self.isOffline = YES;
-    [self.feedTitlesTable reloadData];
+    [self reloadFeedTitlesTable];
 }
 
 - (void)finishMarkAllAsRead:(NSDictionary *)params {
@@ -1615,6 +1648,7 @@ heightForHeaderInSection:(NSInteger)section {
     [userPreferences synchronize];
     appDelegate.collapsedFolders = nil;
     
+    [self resetRowHeights];
     [self.feedTitlesTable beginUpdates];
     [self.feedTitlesTable reloadSections:[NSIndexSet indexSetWithIndex:button.tag]
                         withRowAnimation:UITableViewRowAnimationFade];
@@ -1731,7 +1765,7 @@ heightForHeaderInSection:(NSInteger)section {
     }
     
     [self calculateFeedLocations];
-    [self.feedTitlesTable reloadData];
+    [self reloadFeedTitlesTable];
 
     NSIndexPath *newMiddleRow;
     if (topRow && [self.feedTitlesTable numberOfRowsInSection:topRow.section] == 0) {
@@ -1804,13 +1838,13 @@ heightForHeaderInSection:(NSInteger)section {
         [cell setNeutralCount:[[unreadCounts objectForKey:@"nt"] intValue]];
         [cell setNegativeCount:[[unreadCounts objectForKey:@"ng"] intValue]];
     } else {
-        [self.feedTitlesTable reloadData];
+        [self reloadFeedTitlesTable];
     }
 }
 
 - (void)resetupGestures {
     while ([self.feedTitlesTable dequeueReusableCellWithIdentifier:@"FeedCellIdentifier"]) {}
-    [self.feedTitlesTable reloadData];
+    [self reloadFeedTitlesTable];
 }
 
 - (void)calculateFeedLocations {
@@ -1874,7 +1908,7 @@ heightForHeaderInSection:(NSInteger)section {
         }
         
         dispatch_async(dispatch_get_main_queue(), ^{
-            [self.feedTitlesTable reloadData];
+            [self reloadFeedTitlesTable];
         });
     });
 }
@@ -1900,7 +1934,7 @@ heightForHeaderInSection:(NSInteger)section {
         }
         
         dispatch_async(dispatch_get_main_queue(), ^{
-            [self.feedTitlesTable reloadData];
+            [self reloadFeedTitlesTable];
             [self loadAvatars];
         });
     });
@@ -1937,7 +1971,7 @@ heightForHeaderInSection:(NSInteger)section {
     [self.searchBar setText:@""];
     [self.searchBar resignFirstResponder];
     self.searchFeedIds = nil;
-    [self.feedTitlesTable reloadData];
+    [self reloadFeedTitlesTable];
 }
 
 - (void)searchBarSearchButtonClicked:(UISearchBar*) theSearchBar {
@@ -1970,11 +2004,11 @@ heightForHeaderInSection:(NSInteger)section {
         
         if (array.count) {
             self.searchFeedIds = array;
-            [self.feedTitlesTable reloadData];
+            [self reloadFeedTitlesTable];
         }
     } else {
         self.searchFeedIds = nil;
-        [self.feedTitlesTable reloadData];
+        [self reloadFeedTitlesTable];
     }
 }
 
@@ -2098,7 +2132,7 @@ heightForHeaderInSection:(NSInteger)section {
         
         dispatch_async(dispatch_get_main_queue(), ^{
             [appDelegate.folderCountCache removeAllObjects];
-            [self.feedTitlesTable reloadData];
+            [self reloadFeedTitlesTable];
             [self refreshHeaderCounts];
             if (!feedId) {
                 [self.appDelegate startOfflineQueue];
@@ -2262,6 +2296,7 @@ heightForHeaderInSection:(NSInteger)section {
     BOOL isFolderCollapsed = [appDelegate isFolderCollapsed:folderName];
 
     if (indexPath) {
+        [self resetRowHeights];
         [self.feedTitlesTable beginUpdates];
         if (isFolderCollapsed) {
             [appDelegate.folderCountCache removeObjectForKey:folderName];
