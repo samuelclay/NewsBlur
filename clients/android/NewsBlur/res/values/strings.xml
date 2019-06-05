@@ -472,4 +472,7 @@
         <item>@string/whitney_font_prefvalue</item>
     </string-array>
     <string name="default_font_value">DEFAULT</string>
+
+    <string name="story_notification_channel_id">story_notification_channel</string>
+    <string name="story_notification_channel_name">New Stories</string>
 </resources>
