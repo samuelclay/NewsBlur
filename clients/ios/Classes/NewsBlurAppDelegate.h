@@ -335,6 +335,7 @@ SFSafariViewControllerDelegate>  {
 - (void)calibrateStoryTitles;
 - (void)recalculateIntelligenceScores:(id)feedId;
 - (void)cancelRequests;
+- (void)loadFolder:(NSString *)folder feedID:(NSString *)feedIdStr;
 - (void)reloadFeedsView:(BOOL)showLoader;
 - (void)setTitle:(NSString *)title;
 - (void)showOriginalStory:(NSURL *)url;
@@ -356,6 +357,10 @@ SFSafariViewControllerDelegate>  {
 - (void)showAlert:(UIAlertController *)alert withViewController:(UIViewController *)vc;
 - (void)refreshUserProfile:(void(^)(void))callback;
 - (void)refreshFeedCount:(id)feedId;
+
+- (void)donateRefresh;
+- (void)donateFolder;
+- (void)donateFeed;
 
 - (void)populateDictTextFeeds;
 - (BOOL)isFeedInTextView:(id)feedId;

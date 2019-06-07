@@ -283,7 +283,7 @@ static UIFont *indicatorFont = nil;
     }
     CGFloat boundingRows = cell.isShort ? 1.5 : 3;
     if (!cell.isShort && (self.cell.textSize == FeedDetailTextSizeMedium || self.cell.textSize == FeedDetailTextSizeLong)) {
-        boundingRows = 5;
+        boundingRows = ((r.size.height - 24) / font.pointSize) - 2;
     }
     CGSize theSize = [cell.storyTitle
                       boundingRectWithSize:CGSizeMake(rect.size.width, font.pointSize * boundingRows)
@@ -291,7 +291,6 @@ static UIFont *indicatorFont = nil;
                       attributes:@{NSFontAttributeName: font,
                                    NSParagraphStyleAttributeName: paragraphStyle}
                       context:nil].size;
-    NSUInteger titleRows = theSize.height / font.pointSize;
     BOOL needsCentering = theSize.height < font.pointSize * 2;
     int centeringOffset = needsCentering ? ((font.pointSize * 2 - theSize.height) / 2) : 0;
     int storyTitleY = 14 + riverPadding + centeringOffset;
@@ -324,10 +323,9 @@ static UIFont *indicatorFont = nil;
             storyContentWidth -= leftMargin*2;
         }
         CGFloat boundingRows = cell.isShort ? 1.5 : 3;
-        if (!cell.isShort && self.cell.textSize == FeedDetailTextSizeMedium) {
-            boundingRows = 6 - titleRows;
-        } else if (!cell.isShort && self.cell.textSize == FeedDetailTextSizeLong) {
-            boundingRows = 8 - titleRows;
+        
+        if (!cell.isShort && (self.cell.textSize == FeedDetailTextSizeMedium || self.cell.textSize == FeedDetailTextSizeLong)) {
+            boundingRows = (r.size.height - 30 - CGRectGetMaxY(storyTitleFrame)) / font.pointSize;
         }
         
         CGSize contentSize = [cell.storyContent

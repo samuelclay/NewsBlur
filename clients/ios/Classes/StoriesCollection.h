@@ -44,6 +44,7 @@
 @property (strong, readwrite) NSMutableDictionary * activeClassifiers;
 @property (strong, readwrite) NSArray * activePopularTags;
 @property (strong, readwrite) NSArray * activePopularAuthors;
+@property (nonatomic, readonly) NSString *activeTitle;
 @property (readwrite) int storyCount;
 @property (readwrite) int storyLocationsCount;
 @property (readwrite) int visibleUnreadCount;

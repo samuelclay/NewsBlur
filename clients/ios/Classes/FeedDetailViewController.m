@@ -167,7 +167,6 @@
     [self.view addConstraint:self.notifier.topOffsetConstraint];
 }
 
-
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch {
     //    NSLog(@"Gesture double tap: %ld - %ld", touch.tapCount, gestureRecognizer.state);
     inDoubleTap = (touch.tapCount == 2);
@@ -326,6 +325,10 @@
     
     self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];
     
+    if (self.standardInteractivePopGestureDelegate == nil) {
+        self.standardInteractivePopGestureDelegate = self.navigationController.interactivePopGestureRecognizer.delegate;
+    }
+    
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
     [self setUserAvatarLayout:orientation];
     self.finishedAnimatingIn = NO;
@@ -428,10 +431,21 @@
     } else {
         [self.searchBar setShowsCancelButton:NO animated:YES];
     }
+    
+    if (storiesCollection.activeFeed != nil) {
+        [appDelegate donateFeed];
+    } else if (storiesCollection.activeFolder != nil) {
+        [appDelegate donateFolder];
+    }
 }
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
+    
+    if (self.navigationController.interactivePopGestureRecognizer.delegate != self.standardInteractivePopGestureDelegate) {
+        self.navigationController.interactivePopGestureRecognizer.delegate = self.standardInteractivePopGestureDelegate;
+    }
+    
     if (appDelegate.inStoryDetail && self.isPhoneOrCompact) {
         appDelegate.inStoryDetail = NO;
 //        [appDelegate.storyPageControl resetPages];
@@ -581,6 +595,14 @@
     
     self.restoringFolder = nil;
     self.restoringFeedID = 0;
+}
+
+#pragma mark -
+#pragma mark Siri Shortcuts
+
+- (void)gotoFolder:(NSString *)folder feedID:(NSString *)feedID {
+    self.restoringFolder = folder;
+    self.restoringFeedID = feedID;
 }
 
 #pragma mark -
