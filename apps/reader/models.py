@@ -1641,7 +1641,7 @@ class UserSubscriptionFolders(models.Model):
                     # No feed found for subscription, remove subscription
                     logging.debug(" ---> %s: No feed found, removing subscription: %s" % (
                                   self.user, feed_id))
-                    UserSubscription.objects.filter(user=self.user, feed=feed_id).delete()
+                    self.delete_feed(feed_id, None, commit_delete=False)
                     
 
         missing_folder_feeds = set(subs) - set(all_feeds)
