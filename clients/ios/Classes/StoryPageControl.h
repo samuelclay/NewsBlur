@@ -135,6 +135,8 @@
 - (void)flashCheckmarkHud:(NSString *)messageType;
 
 - (void)showAutoscrollBriefly:(BOOL)briefly;
+- (void)hideAutoscrollAfterDelay;
+- (void)hideAutoscrollImmediately;
 
 - (IBAction)autoscrollDisable:(UIButton *)sender;
 - (IBAction)autoscrollPauseResume:(UIButton *)sender;

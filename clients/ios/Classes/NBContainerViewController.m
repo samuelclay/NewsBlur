@@ -326,10 +326,30 @@
 
 - (void)encodeRestorableStateWithCoder:(NSCoder *)coder {
     [super encodeRestorableStateWithCoder:coder];
+    
+    [coder encodeBool:self.feedDetailIsVisible forKey:@"feedDetailIsVisible"];
+    [coder encodeBool:self.originalViewIsVisible forKey:@"originalViewIsVisible"];
+    
+    if (self.feedDetailIsVisible) {
+        [self.feedDetailViewController encodeRestorableStateWithCoder:coder];
+        [self.storyPageControl encodeRestorableStateWithCoder:coder];
+    }
 }
 
 - (void)decodeRestorableStateWithCoder:(NSCoder *)coder {
     [super decodeRestorableStateWithCoder:coder];
+    
+    if ([coder decodeBoolForKey:@"feedDetailIsVisible"]) {
+        UIBarButtonItem *newBackButton = [[UIBarButtonItem alloc] initWithTitle: @"All"
+                                                                          style: UIBarButtonItemStylePlain
+                                                                         target: nil
+                                                                         action: nil];
+        [self.feedsViewController.navigationItem setBackBarButtonItem: newBackButton];
+        
+        [self transitionToFeedDetail:YES animated:NO];
+        [self.feedDetailViewController decodeRestorableStateWithCoder:coder];
+        [self.storyPageControl decodeRestorableStateWithCoder:coder];
+    }
 }
 
 #pragma mark -
@@ -555,7 +575,12 @@
 - (void)transitionToFeedDetail {
     [self transitionToFeedDetail:YES];
 }
+
 - (void)transitionToFeedDetail:(BOOL)resetLayout {
+    [self transitionToFeedDetail:resetLayout animated:YES];
+}
+
+- (void)transitionToFeedDetail:(BOOL)resetLayout animated:(BOOL)animated {
     [self.appDelegate hidePopover];
     if (self.feedDetailIsVisible) resetLayout = NO;
     self.feedDetailIsVisible = YES;
@@ -640,23 +665,28 @@
                                                                    vb.size.height);
             [self.masterNavigationController
              pushViewController:self.feedDetailViewController
-             animated:YES];
+             animated:animated];
             [self interactiveTransitionFromFeedDetail:1];
 
             UIView *titleLabel = [appDelegate makeFeedTitle:appDelegate.storiesCollection.activeFeed];
             self.storyPageControl.navigationItem.titleView = titleLabel;
         }
         self.leftBorder.hidden = NO;
-
-        [UIView animateWithDuration:.35 delay:0
-                            options:UIViewAnimationOptionCurveEaseOut
-                         animations:^{
+        
+        if (animated) {
+            [UIView animateWithDuration:.35 delay:0
+                                options:UIViewAnimationOptionCurveEaseOut
+                             animations:^{
+                [self interactiveTransitionFromFeedDetail:0];
+            } completion:^(BOOL finished) {
+                self.feedDetailIsVisible = YES;
+    //            NSLog(@"Finished hiding dashboard: %d", finished);
+    //            [self.dashboardViewController.view removeFromSuperview];
+            }];
+        } else {
             [self interactiveTransitionFromFeedDetail:0];
-        } completion:^(BOOL finished) {
             self.feedDetailIsVisible = YES;
-//            NSLog(@"Finished hiding dashboard: %d", finished);
-//            [self.dashboardViewController.view removeFromSuperview];
-        }];
+        }
     }
 }
 

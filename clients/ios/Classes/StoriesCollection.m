@@ -294,6 +294,29 @@
     }
 }
 
+- (NSString *)activeTitle {
+    if (isRiverView) {
+        if ([activeFolder isEqualToString:@"river_blurblogs"]) {
+            return @"All Shared Stories";
+        } else if ([activeFolder isEqualToString:@"river_global"]) {
+            return @"Global Shared Stories";
+        } else if ([activeFolder isEqualToString:@"everything"]) {
+            return @"All Stories";
+        } else if ([activeFolder isEqualToString:@"infrequent"]) {
+            return @"Infrequent Site Stories";
+        } else if (isSavedView && activeSavedStoryTag) {
+            return activeSavedStoryTag;
+        } else if ([activeFolder isEqualToString:@"read_stories"]) {
+            return @"Read Stories";
+        } else if ([activeFolder isEqualToString:@"saved_stories"]) {
+            return @"Saved Stories";
+        } else {
+            return activeFolder;
+        }
+    } else {
+        return [activeFeed objectForKey:@"feed_title"];
+    }
+}
 
 #pragma mark - Story Management
 
