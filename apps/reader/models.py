@@ -1625,6 +1625,8 @@ class UserSubscriptionFolders(models.Model):
                 feed = Feed.get_by_id(feed_id)
                 if feed:
                     if feed_id != feed.pk:
+                        logging.debug(" ---> %s doesn't match %s, rewriting to remove %s..." % (
+                                      feed_id, feed.pk, feed_id))
                         # Clear out duplicate sub in folders before subscribing to feed
                         duplicate_feed = Feed.get_by_id(feed_id)
                         duplicate_feed.pk = feed_id
@@ -1635,6 +1637,12 @@ class UserSubscriptionFolders(models.Model):
                     if not us.needs_unread_recalc:
                         us.needs_unread_recalc = True
                         us.save()
+                elif feed_id and not feed:
+                    # No feed found for subscription, remove subscription
+                    logging.debug(" ---> %s: No feed found, removing subscription: %s" % (
+                                  self.user, feed_id))
+                    UserSubscription.objects.filter(user=self.user, feed=feed_id).delete()
+                    
 
         missing_folder_feeds = set(subs) - set(all_feeds)
         if missing_folder_feeds:

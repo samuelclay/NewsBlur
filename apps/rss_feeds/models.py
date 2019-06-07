@@ -2123,7 +2123,7 @@ class Feed(models.Model):
         
         # 3 hour max for premiums, 48 hour max for free
         if subs >= 1:
-            total = min(total, 60*3*1)
+            total = min(total, 60*4*1)
         else:
             total = min(total, 60*24*2)
         
