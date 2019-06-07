@@ -1323,11 +1323,13 @@ class UserSubscriptionFolders(models.Model):
             return new_folder
         
         new_folders = _compact(folders)
-        logging.info(" ---> Compacting from %s to %s" % (folders, new_folders))
+        compact_msg = " ---> Compacting from %s to %s" % (folders, new_folders)
         new_folders = json.encode(new_folders)
-        logging.info(" ---> Compacting from %s bytes to %s bytes" % (len(self.folders), len(new_folders)))
-        self.folders = new_folders
-        self.save()
+        if len(self.folders) != len(new_folders):
+            logging.info(compact_msg)
+            logging.info(" ---> Compacting from %s bytes to %s bytes" % (len(self.folders), len(new_folders)))
+            self.folders = new_folders
+            self.save()
         
     def add_folder(self, parent_folder, folder):
         if self.folders:
