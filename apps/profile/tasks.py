@@ -63,6 +63,7 @@ class CleanupUser(Task):
         MInteraction.trim(user_id)
         MActivity.trim(user_id)
         UserSubscriptionFolders.add_missing_feeds_for_user(user_id)
+        UserSubscriptionFolders.compact_for_user(user_id)
         # UserSubscription.refresh_stale_feeds(user_id)
         
         try:

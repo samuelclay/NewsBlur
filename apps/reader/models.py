@@ -1299,6 +1299,16 @@ class UserSubscriptionFolders(models.Model):
         verbose_name_plural = "folders"
         verbose_name = "folder"
     
+    @classmethod
+    def compact_for_user(cls, user_id):
+        user = User.objects.get(pk=user_id)
+        try:
+            usf = UserSubscriptionFolders.objects.get(user=user)
+        except UserSubscriptionFolders.DoesNotExist:
+            return
+        
+        usf.compact()
+        
     def compact(self):
         folders = json.decode(self.folders)
         
