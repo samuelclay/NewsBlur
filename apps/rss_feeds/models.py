@@ -3037,8 +3037,10 @@ class MStarredStoryCounts(mongo.Document):
         if user_feeds.get(0, False):
             user_feeds[-1] = user_feeds.get(0, 0)
             del user_feeds[0]
-
+        
+        too_many_feeds = False if len(user_feeds) < 1000 else True
         for feed_id, count in user_feeds.items():
+            if too_many_feeds and count <= 1: continue
             cls.objects(user_id=user_id, 
                         feed_id=feed_id, 
                         slug="feed:%s" % feed_id).update_one(set__count=count, 
