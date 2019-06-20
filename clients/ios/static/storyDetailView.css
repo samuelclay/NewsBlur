@@ -280,6 +280,13 @@ body.NB-iphone {
 .NB-story-permalink {
     color: #313350;
 }
+
+.NB-story-toggle-changes {
+    display: inline;
+    color: #818776;
+    font-size: .8em;
+    white-space: nowrap;
+}
 .NB-story-date {
     display: inline;
     color: #818776;
@@ -657,11 +664,22 @@ div + p {
 }
 
 ins {
+    background-color: #BEE8BC;
     text-decoration: none;
 }
 
 del {
-    display: none;
+    background-color: #f5c3c3
+    /*display: none;*/
+}
+
+.NB-story ins {
+    background-color: #BEE8BC;
+    text-decoration: none
+}
+
+.NB-story del {
+    background-color: #f5c3c3
 }
 
 /* Comments */
