@@ -283,9 +283,13 @@ body.NB-iphone {
 
 .NB-story-toggle-changes {
     display: inline;
+    float: left;
+    padding-left: 24px;
     color: #818776;
     font-size: .8em;
     white-space: nowrap;
+    background: transparent url("data:image/png;charset=utf-8;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAkCAYAAADhAJiYAAACHklEQVRYCe3YTS8DQRwG8GeXhAOnrVAEofESIiFuJC7q9SAOvoC4Cgc+BQfiik/g0BD1UomDs3hr0QjBRRGtqx527X+TSTayu53d7jRNmKTZ7aQz85tnZ3aSSpqmoZhKqR1mbX0lL6kESVOhzi7MLW3ZjWFVL1tV+lGnQZN01GbiJk4TM38cu7dNiLWan1tkt66uesLG709PT6AoCmqqg1zthSXERv/OfiMS2Ubq7ZVVOV6Fg2h0N6iCgMyo1fXlGaeICgZiKBnyhhOqoCBC0e4jlF1KOXeZXcNc9Xa7k3YfoezaFzwhOwir/zsgOiOPYvtIJm/Z5LmuwtZQ7PgAt3cJ3CVvDEhbWwcXyPdHRsmoqorGhiZI+mlG359fnrgw9CNfE6LBD2NRA9PR3mkgCBMeGuUG+ZYQw1RWVKKsrBzR/V2EQq0YDo8ZSfGKfAGZMcFgnY7ZgVyiv/5k9927b/FrqlYYSmYkPO4qGdZtXiC/MYTyDBKB8QwShfEEYph0+hPBmlpjAeezZghhLq4eGcNkMml8fLxjdy9ibG2vC9gMYfeuQNfxS2SzWUxNTiOgBEDHgZ8YQnGDKJ3zizPU1dbrh2YUSqDKdwyBuI+Oh8d7fH1lEE9cobenD12d3Z7eMzSoU+EGpVKvmBifREtzSAiEIblBA/2DrI3QK/caEqowdf4PMoVheVt0CeVc1OxfDMvpCKgsuoQkegMXU/kBCWzUL4jai/kAAAAASUVORK5CYII=") no-repeat 0 center;
+    background-size: 16px;
 }
 .NB-story-date {
     display: inline;
