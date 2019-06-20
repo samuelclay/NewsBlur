@@ -37,6 +37,7 @@
                [activityType isEqualToString:UIActivityTypePostToTwitter] ||
                [activityType isEqualToString:UIActivityTypePostToFacebook] ||
                [activityType isEqualToString:UIActivityTypePostToWeibo] ||
+               [activityType isEqualToString:UIActivityTypeCopyToPasteboard] ||
                [activityType isEqualToString:@"NBCopyLinkActivity"] ||
                [activityType isEqualToString:@"TUSafariActivity"] ||
                [activityType isEqualToString:@"ARChromeActivity"] ||

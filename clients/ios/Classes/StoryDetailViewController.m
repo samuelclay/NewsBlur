@@ -446,6 +446,10 @@
     if (self.inTextView && [self.activeStory objectForKey:@"original_text"]) {
         storyContent = [self.activeStory objectForKey:@"original_text"];
     }
+    NSString *changes = self.activeStory[@"story_changes"];
+    if (changes != nil) {
+        storyContent = changes;
+    }
     
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     
@@ -791,6 +795,9 @@
         }
     }
     
+    NSString *storyToggleChanges = [self.activeStory[@"has_modifications"] boolValue] ? [NSString stringWithFormat:@"<a href=\"http://ios.newsblur.com/togglechanges\" "
+                                                                           "class=\"NB-story-toggle-changes\" id=\"NB-story-toggle-changes\">%@</a><span class=\"NB-middot\">&middot;</span>", self.activeStory[@"story_changes"] != nil ? @"Hide Changes" : @"Show Changes"] : @"";
+    
     NSString *storyDate = [Utilities formatLongDateFromTimestamp:[[self.activeStory
                                                                   objectForKey:@"story_timestamp"]
                                                                   integerValue]];
@@ -800,6 +807,7 @@
                              "  %@"
                              "  <a href=\"%@\" class=\"NB-story-permalink\">%@</a>"
                              "</div>"
+                             "%@"
                              "<div class=\"NB-story-date\">%@</div>"
                              "%@"
                              "%@"
@@ -809,6 +817,7 @@
                              storyUnread,
                              storyPermalink,
                              storyTitle,
+                             storyToggleChanges,
                              storyDate,
                              storyAuthor,
                              storyTags,
@@ -1625,7 +1634,15 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
             } else if ([action isEqualToString:@"unlike-comment"]) {
                 [self toggleLikeComment:NO];
             }
-            return NO; 
+            return NO;
+        } else if ([action isEqualToString:@"togglechanges"]) {
+            if (self.activeStory[@"story_changes"] != nil) {
+                [self.activeStory removeObjectForKey:@"story_changes"];
+                [self drawStory];
+            } else {
+                [self fetchStoryChanges];
+            }
+            return NO;
         } else if ([action isEqualToString:@"share"]) {
             [self openShareDialog];
             return NO;
@@ -2532,5 +2549,69 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 //    NSLog(@"Fetched Text: %@", [self.activeStory objectForKey:@"story_title"]);
 }
 
+- (void)fetchStoryChanges {
+    if (!self.activeStoryId || !self.activeStory) return;
+    self.inTextView = YES;
+//    NSLog(@"Fetching Changes: %@", [self.activeStory objectForKey:@"story_title"]);
+    if (self.activeStory == appDelegate.storyPageControl.currentPage.activeStory) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.appDelegate.storyPageControl showFetchingTextNotifier];
+        });
+    }
+    
+    NSString *urlString = [NSString stringWithFormat:@"%@/rss_feeds/story_changes",
+                           self.appDelegate.url];
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    [params setObject:[self.activeStory objectForKey:@"story_hash"] forKey:@"story_hash"];
+    [params setObject:@"true" forKey:@"show_changes"];
+    NSString *storyId = [self.activeStory objectForKey:@"id"];
+    [appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        [self finishFetchStoryChanges:responseObject storyId:storyId];
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        [self failedFetchStoryChanges:error];
+    }];
+}
+
+- (void)failedFetchStoryChanges:(NSError *)error {
+    [self.appDelegate.storyPageControl hideNotifier];
+    [MBProgressHUD hideHUDForView:self.webView animated:YES];
+    if (self.activeStory == appDelegate.storyPageControl.currentPage.activeStory) {
+        [self informError:@"Could not fetch changes"];
+    }
+    self.inTextView = NO;
+    [appDelegate.storyPageControl setTextButton:self];
+}
+
+- (void)finishFetchStoryChanges:(NSDictionary *)results storyId:(NSString *)storyId {
+    if ([results[@"failed"] boolValue]) {
+        [self failedFetchText:nil];
+        return;
+    }
+    
+    if (![storyId isEqualToString:self.activeStory[@"id"]]) {
+        [self.appDelegate.storyPageControl hideNotifier];
+        [MBProgressHUD hideHUDForView:self.webView animated:YES];
+        self.inTextView = NO;
+        [appDelegate.storyPageControl setTextButton:self];
+        return;
+    }
+    
+    NSMutableDictionary *newActiveStory = [self.activeStory mutableCopy];
+    NSDictionary *resultsStory = results[@"story"];
+    newActiveStory[@"story_changes"] = resultsStory[@"story_content"];
+    if ([self.activeStory[@"story_hash"] isEqualToString:appDelegate.activeStory[@"story_hash"]]) {
+        appDelegate.activeStory = newActiveStory;
+    }
+    self.activeStory = newActiveStory;
+    
+    [self.appDelegate.storyPageControl hideNotifier];
+    [MBProgressHUD hideHUDForView:self.webView animated:YES];
+    
+    self.inTextView = YES;
+    
+    [self drawStory];
+    
+//    NSLog(@"Fetched Changes: %@", self.activeStory[@"story_title"]);
+}
 
 @end
