@@ -20,7 +20,6 @@
 #import "FeedTableCell.h"
 #import "FeedDetailTableCell.h"
 #import "FeedsMenuViewController.h"
-#import "FeedDetailMenuViewController.h"
 #import "FontSettingsViewController.h"
 #import "AddSiteViewController.h"
 #import "TrainerViewController.h"

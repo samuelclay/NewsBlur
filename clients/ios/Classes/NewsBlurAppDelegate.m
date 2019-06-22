@@ -12,7 +12,6 @@
 #import "DashboardViewController.h"
 #import "MarkReadMenuViewController.h"
 #import "FeedsMenuViewController.h"
-#import "FeedDetailMenuViewController.h"
 #import "StoryDetailViewController.h"
 #import "StoryPageControl.h"
 #import "FirstTimeUserViewController.h"
@@ -99,7 +98,6 @@
 @synthesize feedsViewController;
 @synthesize feedsMenuViewController;
 @synthesize feedDetailViewController;
-@synthesize feedDetailMenuViewController;
 @synthesize friendsListViewController;
 @synthesize fontSettingsViewController;
 @synthesize storyDetailViewController;
@@ -1936,7 +1934,7 @@
 }
 
 - (void)navigationController:(UINavigationController *)_navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
-    if ([viewController isKindOfClass:[SFSafariViewController class]] || [viewController isKindOfClass:[FontSettingsViewController class]] || [viewController isKindOfClass:[feedDetailMenuViewController class]]) {
+    if ([viewController isKindOfClass:[SFSafariViewController class]] || [viewController isKindOfClass:[FontSettingsViewController class]]) {
         [_navigationController setNavigationBarHidden:YES animated:YES];
     } else {
         [_navigationController setNavigationBarHidden:NO animated:YES];
@@ -1959,15 +1957,6 @@
     }
     
     return _fontSettingsNavigationController;
-}
-
-- (UINavigationController *)feedDetailMenuNavigationController {
-    if (!_feedDetailMenuNavigationController) {
-        self.feedDetailMenuNavigationController = [[UINavigationController alloc] initWithRootViewController:self.feedDetailMenuViewController];
-        self.feedDetailMenuNavigationController.delegate = self;
-    }
-    
-    return _feedDetailMenuNavigationController;
 }
 
 - (void)closeOriginalStory {

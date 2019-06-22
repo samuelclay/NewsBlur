@@ -22,7 +22,6 @@
 #import "StringHelper.h"
 #import "Utilities.h"
 #import "UIBarButtonItem+Image.h"
-#import "FeedDetailMenuViewController.h"
 #import "MarkReadMenuViewController.h"
 #import "NBNotifier.h"
 #import "NBLoadingCell.h"
@@ -2115,26 +2114,153 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     }];
 }
 
+- (BOOL)isRiver {
+    return appDelegate.storiesCollection.isSocialRiverView ||
+    appDelegate.storiesCollection.isSocialView ||
+    appDelegate.storiesCollection.isSavedView ||
+    appDelegate.storiesCollection.isReadView;
+}
+
+- (BOOL)isInfrequent {
+    return appDelegate.storiesCollection.isRiverView &&
+    [appDelegate.storiesCollection.activeFolder isEqualToString:@"infrequent"];
+}
+
 - (IBAction)doOpenSettingsMenu:(id)sender {
     if (self.presentedViewController) {
         [self.presentedViewController dismissViewControllerAnimated:YES completion:nil];
         return;
     }
     
-    [self.appDelegate.feedDetailMenuViewController buildMenuOptions];
-    [self.appDelegate.feedDetailMenuViewController view];
-    NSInteger menuCount = [self.appDelegate.feedDetailMenuViewController.menuOptions count] + 5;
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+    MenuViewController *viewController = [MenuViewController new];
+    __weak MenuViewController *weakViewController = viewController;
     
-    [self.appDelegate.feedDetailMenuNavigationController popToRootViewControllerAnimated:NO];
-    [self.appDelegate showPopoverWithViewController:self.appDelegate.feedDetailMenuNavigationController contentSize:CGSizeMake(260, 38 * menuCount) barButtonItem:self.settingsBarButton];
+    BOOL everything = appDelegate.storiesCollection.isRiverView &&
+    [appDelegate.storiesCollection.activeFolder isEqualToString:@"everything"];
+    BOOL infrequent = [self isInfrequent];
+    BOOL river = [self isRiver];
+    BOOL read = appDelegate.storiesCollection.isReadView;
+    BOOL saved = appDelegate.storiesCollection.isSavedView;
+    
+    if (!everything && !infrequent && !read && !saved) {
+        NSString *deleteText = [NSString stringWithFormat:@"Delete %@",
+                                appDelegate.storiesCollection.isRiverView ?
+                                @"this entire folder" :
+                                @"this site"];
+        
+        [viewController addTitle:deleteText iconName:@"menu_icn_delete.png" selectionShouldDismiss:NO handler:^{
+            [self confirmDeleteSite:weakViewController.navigationController];
+        }];
+        
+        [viewController addTitle:@"Move to another folder" iconName:@"menu_icn_move.png" selectionShouldDismiss:NO handler:^{
+            [self openMoveView:weakViewController.navigationController];
+        }];
+    }
+    
+    if (!infrequent && !saved && !read) {
+        NSString *renameText = [NSString stringWithFormat:@"Rename this %@", appDelegate.storiesCollection.isRiverView ? @"folder" : @"site"];
+        
+        [viewController addTitle:renameText iconName:@"menu_icn_rename.png" selectionShouldDismiss:YES handler:^{
+            [self openRenameSite];
+        }];
+    }
+    
+    if (!appDelegate.storiesCollection.isRiverView && !infrequent && !saved && !read) {
+        [viewController addTitle:@"Mute this site" iconName:@"menu_icn_mute.png" selectionShouldDismiss:NO handler:^{
+            [self confirmMuteSite:weakViewController.navigationController];
+        }];
+        
+        [viewController addTitle:@"Train this site" iconName:@"menu_icn_train.png" selectionShouldDismiss:YES handler:^{
+            [self openTrainSite];
+        }];
+        
+        if ([appDelegate.storiesCollection.activeFeed[@"ng"] integerValue] > 0) {
+            NSString *title =  appDelegate.storiesCollection.showHiddenStories ? @"Hide hidden stories" : @"Show hidden stories";
+            
+            [viewController addTitle:title iconName:@"menu_icn_all.png" selectionShouldDismiss:YES handler:^{
+                [self toggleHiddenStories];
+            }];
+        }
+        
+        [viewController addTitle:@"Notifications" iconName:@"menu_icn_notifications.png" selectionShouldDismiss:YES handler:^{
+            [self
+             openNotificationsWithFeed:[NSString stringWithFormat:@"%@", [appDelegate.storiesCollection.activeFeed objectForKey:@"id"]]];
+        }];
+        
+        [viewController addTitle:@"Insta-fetch stories" iconName:@"menu_icn_fetch.png" selectionShouldDismiss:YES handler:^{
+            [self instafetchFeed];
+        }];
+    }
+    
+    [viewController addSegmentedControlWithTitles:@[@"Newest First", @"Oldest"] selectIndex:[appDelegate.storiesCollection.activeOrder isEqualToString:@"newest"] ? 0 : 1 selectionShouldDismiss:YES handler:^(NSUInteger selectedIndex) {
+        if (selectedIndex == 0) {
+            [userPreferences setObject:@"newest" forKey:[appDelegate.storiesCollection orderKey]];
+        } else {
+            [userPreferences setObject:@"oldest" forKey:[appDelegate.storiesCollection orderKey]];
+        }
+        
+        [self reloadStories];
+    }];
+    
+    if (infrequent || !river) {
+        [viewController addSegmentedControlWithTitles:@[@"All stories", @"Unread only"] selectIndex:[appDelegate.storiesCollection.activeReadFilter isEqualToString:@"all"] ? 0 : 1 selectionShouldDismiss:YES handler:^(NSUInteger selectedIndex) {
+            if (selectedIndex == 0) {
+                [userPreferences setObject:@"all" forKey:appDelegate.storiesCollection.readFilterKey];
+            } else {
+                [userPreferences setObject:@"unread" forKey:appDelegate.storiesCollection.readFilterKey];
+            }
+            
+            [self reloadStories];
+        }];
+    }
+    
+    NSString *preferenceKey = @"story_list_preview_text_size";
+    NSArray *titles = @[@"Title", @"1", @"2", @"3"];
+    NSArray *values = @[@"title", @"short", @"medium", @"long"];
+    
+    [viewController addSegmentedControlWithTitles:titles values:values preferenceKey:preferenceKey selectionShouldDismiss:YES handler:^(NSUInteger selectedIndex) {
+        [appDelegate resizePreviewSize];
+    }];
+    
+    preferenceKey = @"story_list_preview_images_size";
+    titles = @[@"No image", @"Small", @"Large"];
+    values = @[@"none", @"small", @"large"];
+    
+    [viewController addSegmentedControlWithTitles:titles values:values preferenceKey:preferenceKey selectionShouldDismiss:YES handler:^(NSUInteger selectedIndex) {
+        [appDelegate resizePreviewSize];
+    }];
+    
+    preferenceKey = @"feed_list_font_size";
+    titles = @[@"XS", @"S", @"M", @"L", @"XL"];
+    values = @[@"xs", @"small", @"medium", @"large", @"xl"];
+    
+    [viewController addSegmentedControlWithTitles:titles values:values preferenceKey:preferenceKey selectionShouldDismiss:YES handler:^(NSUInteger selectedIndex) {
+        [appDelegate resizeFontSize];
+    }];
+    
+    if (infrequent) {
+        preferenceKey = @"infrequent_stories_per_month";
+        titles = @[@"5", @"15", @"30", @"60", @"90"];
+        values = @[@5, @15, @30, @60, @90];
+        
+        [viewController addSegmentedControlWithTitles:titles values:values preferenceKey:preferenceKey selectionShouldDismiss:YES handler:^(NSUInteger selectedIndex) {
+            [appDelegate.feedDetailViewController reloadStories];
+            [appDelegate.feedDetailViewController flashInfrequentStories];
+        }];
+    }
+    
+    [viewController addThemeSegmentedControl];
+    
+    [viewController showFromNavigationController:self.navigationController barButtonItem:self.settingsBarButton];
 }
 
-- (void)confirmDeleteSite {
+- (void)confirmDeleteSite:(UINavigationController *)menuNavigationController {
     MenuViewController *viewController = [MenuViewController new];
     viewController.title = @"Positive?";
     NSString *title = storiesCollection.isRiverView ? @"Delete Folder" : @"Delete Site";
     
-    [viewController addTitle:title iconName:@"menu_icn_delete.png" selectionShouldDismiss:YES handler:^{
+    [viewController addTitle:title iconName:@"menu_icn_delete.png" destructive:YES selectionShouldDismiss:YES handler:^{
         if (storiesCollection.isRiverView) {
             [self deleteFolder];
         } else {
@@ -2142,10 +2268,10 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         }
     }];
     
-    [self.appDelegate.feedDetailMenuNavigationController pushViewController:viewController animated:YES];
+    [menuNavigationController pushViewController:viewController animated:YES];
 }
 
-- (void)confirmMuteSite {
+- (void)confirmMuteSite:(UINavigationController *)menuNavigationController {
     MenuViewController *viewController = [MenuViewController new];
     viewController.title = @"Positive?";
     
@@ -2153,7 +2279,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         [self muteSite];
     }];
     
-    [self.appDelegate.feedDetailMenuNavigationController pushViewController:viewController animated:YES];
+    [menuNavigationController pushViewController:viewController animated:YES];
 }
 
 - (void)renameTo:(NSString *)newTitle {
@@ -2309,7 +2435,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     }];
 }
 
-- (void)openMoveView {
+- (void)openMoveView:(UINavigationController *)menuNavigationController {
     MenuViewController *viewController = [MenuViewController new];
     viewController.title = @"Move To";
     
@@ -2337,7 +2463,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         }
     }
     
-    [self.appDelegate.feedDetailMenuNavigationController pushViewController:viewController animated:YES];
+    [menuNavigationController pushViewController:viewController animated:YES];
 }
 
 //- (void)openMoveView {
@@ -2346,6 +2472,12 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 
 - (void)openTrainSite {
     [appDelegate openTrainSite];
+}
+
+- (void)toggleHiddenStories {
+    appDelegate.storiesCollection.showHiddenStories = !appDelegate.storiesCollection.showHiddenStories;
+    [appDelegate.storiesCollection calculateStoryLocations];
+    [self.storyTitlesTable reloadData];
 }
 
 - (void)openNotificationsWithFeed:(NSString *)feedId {
@@ -2378,8 +2510,9 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         [self.presentedViewController dismissViewControllerAnimated:NO completion:^{
             [self presentViewController:alert animated:YES completion:nil];
         }];
+    } else {
+        [self presentViewController:alert animated:YES completion:nil];
     }
-//    [self.appDelegate showAlert:alert withViewController:self];
 }
 
 - (void)showUserProfile {
