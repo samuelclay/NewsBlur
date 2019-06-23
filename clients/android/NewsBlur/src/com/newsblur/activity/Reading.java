@@ -587,10 +587,6 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
         // this callback is a good API-level-independent way to tell when the root view size/layout changes
         super.onWindowFocusChanged(hasFocus);
         this.contentView = findViewById(android.R.id.content);
-        // Ensure that we come out of immersive view if the activity no longer has focus
-        if (!hasFocus) {
-            ViewUtils.showSystemUI(getWindow().getDecorView());
-        }
     }
 
 	/**
