@@ -114,7 +114,9 @@
         NSDictionary *story = [self.activeFeedStories objectAtIndex:i];
         NSInteger score = [NewsBlurAppDelegate computeStoryScore:[story objectForKey:@"intelligence"]];
         BOOL want = NO;
-        if (self.appDelegate.isSavedStoriesIntelligenceMode) {
+        if (self.showHiddenStories) {
+            want = YES;
+        } else if (self.appDelegate.isSavedStoriesIntelligenceMode) {
             want = [story[@"starred"] boolValue];
         } else {
             want = score >= appDelegate.selectedIntelligence || [[story objectForKey:@"sticky"] boolValue];
