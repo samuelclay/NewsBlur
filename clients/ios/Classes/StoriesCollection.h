@@ -56,6 +56,7 @@
 @property (nonatomic, readwrite) BOOL isSavedView;
 @property (nonatomic, readwrite) BOOL isReadView;
 @property (nonatomic, readwrite) BOOL transferredFromDashboard;
+@property (nonatomic, readwrite) BOOL showHiddenStories;
 @property (nonatomic, readwrite) BOOL inSearch;
 @property (nonatomic) NSString *searchQuery;
 

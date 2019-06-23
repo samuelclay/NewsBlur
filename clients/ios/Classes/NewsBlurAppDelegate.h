@@ -25,7 +25,6 @@
 @class DashboardViewController;
 @class FeedsMenuViewController;
 @class FeedDetailViewController;
-@class FeedDetailMenuViewController;
 @class MarkReadMenuViewController;
 @class FirstTimeUserViewController;
 @class FirstTimeUserAddSitesViewController;
@@ -77,7 +76,6 @@ SFSafariViewControllerDelegate>  {
     NewsBlurViewController *feedsViewController;
     FeedsMenuViewController *feedsMenuViewController;
     FeedDetailViewController *feedDetailViewController;
-    FeedDetailMenuViewController *feedDetailMenuViewController;
     FriendsListViewController *friendsListViewController;
     FontSettingsViewController *fontSettingsViewController;
     
@@ -175,7 +173,6 @@ SFSafariViewControllerDelegate>  {
 @property (nonatomic) IBOutlet NewsBlurViewController *feedsViewController;
 @property (nonatomic) IBOutlet FeedsMenuViewController *feedsMenuViewController;
 @property (nonatomic) IBOutlet FeedDetailViewController *feedDetailViewController;
-@property (nonatomic) IBOutlet FeedDetailMenuViewController *feedDetailMenuViewController;
 @property (nonatomic, strong) UINavigationController *feedDetailMenuNavigationController;
 @property (nonatomic) IBOutlet FriendsListViewController *friendsListViewController;
 @property (nonatomic) IBOutlet StoryDetailViewController *storyDetailViewController;

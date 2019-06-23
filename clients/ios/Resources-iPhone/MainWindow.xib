@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14490.49"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -19,7 +19,6 @@
             <connections>
                 <outlet property="addSiteViewController" destination="121" id="127"/>
                 <outlet property="dashboardViewController" destination="177" id="179"/>
-                <outlet property="feedDetailMenuViewController" destination="165" id="167"/>
                 <outlet property="feedDetailViewController" destination="51" id="91"/>
                 <outlet property="feedsMenuViewController" destination="128" id="129"/>
                 <outlet property="feedsViewController" destination="10" id="15"/>
@@ -53,12 +52,6 @@
             <extendedEdge key="edgesForExtendedLayout"/>
             <connections>
                 <outlet property="appDelegate" destination="3" id="168"/>
-            </connections>
-        </viewController>
-        <viewController id="165" customClass="FeedDetailMenuViewController">
-            <extendedEdge key="edgesForExtendedLayout"/>
-            <connections>
-                <outlet property="appDelegate" destination="3" id="166"/>
             </connections>
         </viewController>
         <viewController restorationIdentifier="FeedDetailView" nibName="FeedDetailViewController" id="51" customClass="FeedDetailViewController">

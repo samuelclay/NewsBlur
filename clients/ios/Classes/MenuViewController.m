@@ -12,6 +12,7 @@
 NSString * const MenuTitle = @"title";
 NSString * const MenuIcon = @"icon";
 NSString * const MenuDestructive = @"destructive";
+NSString * const MenuThemeSegment = @"theme";
 NSString * const MenuSegmentTitles = @"segmentTitles";
 NSString * const MenuSegmentIndex = @"segmentIndex";
 NSString * const MenuSelectionShouldDismiss = @"selectionShouldDismiss";
@@ -19,7 +20,7 @@ NSString * const MenuHandler = @"handler";
 
 #define kMenuOptionHeight 38
 
-@interface MenuViewController () <UIPopoverPresentationControllerDelegate>
+@interface MenuViewController () <UIPopoverPresentationControllerDelegate, UINavigationControllerDelegate>
 
 @property (nonatomic, strong) NSMutableArray *items;
 
@@ -89,7 +90,11 @@ NSString * const MenuHandler = @"handler";
 }
 
 - (void)addTitle:(NSString *)title iconName:(NSString *)iconName selectionShouldDismiss:(BOOL)selectionShouldDismiss handler:(MenuItemHandler)handler {
-    [self addTitle:title iconImage:[UIImage imageNamed:iconName] destructive:[iconName isEqualToString:@"menu_icn_delete.png"] || [iconName isEqualToString:@"menu_icn_mute.png"]selectionShouldDismiss:selectionShouldDismiss handler:handler];
+    [self addTitle:title iconImage:[UIImage imageNamed:iconName] destructive:NO selectionShouldDismiss:selectionShouldDismiss handler:handler];
+}
+
+- (void)addTitle:(NSString *)title iconName:(NSString *)iconName destructive:(BOOL)isDestructive selectionShouldDismiss:(BOOL)selectionShouldDismiss handler:(MenuItemHandler)handler {
+    [self addTitle:title iconImage:[UIImage imageNamed:iconName] destructive:isDestructive selectionShouldDismiss:selectionShouldDismiss handler:handler];
 }
 
 - (void)addTitle:(NSString *)title iconTemplateName:(NSString *)iconTemplateName selectionShouldDismiss:(BOOL)selectionShouldDismiss handler:(MenuItemHandler)handler {
@@ -98,6 +103,88 @@ NSString * const MenuHandler = @"handler";
 
 - (void)addSegmentedControlWithTitles:(NSArray *)titles selectIndex:(NSUInteger)selectIndex selectionShouldDismiss:(BOOL)selectionShouldDismiss handler:(MenuItemSegmentedHandler)handler {
     [self.items addObject:@{MenuSegmentTitles : titles, MenuSegmentIndex : @(selectIndex), MenuSelectionShouldDismiss : @(selectionShouldDismiss), MenuHandler : handler}];
+}
+
+- (void)addSegmentedControlWithTitles:(NSArray *)titles values:(NSArray *)values preferenceKey:(NSString *)preferenceKey selectionShouldDismiss:(BOOL)selectionShouldDismiss handler:(MenuItemSegmentedHandler)handler {
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+    id value = [userPreferences objectForKey:preferenceKey];
+    NSUInteger valueIndex = [values indexOfObject:value];
+    
+    if (valueIndex < 0) {
+        valueIndex = 0;
+    }
+    
+    [self addSegmentedControlWithTitles:titles selectIndex:valueIndex selectionShouldDismiss:selectionShouldDismiss handler:^(NSUInteger selectedIndex) {
+        [userPreferences setObject:values[selectedIndex] forKey:preferenceKey];
+        
+        handler(selectedIndex);
+    }];
+}
+
+- (void)addThemeSegmentedControl {
+    [self.items addObject:@{MenuSegmentTitles : @[], MenuThemeSegment : @YES}];
+}
+
+- (UIImage *)themeImageWithName:(NSString *)name selected:(BOOL)selected {
+    if (selected) {
+        name = [name stringByAppendingString:@"-sel"];
+    }
+    
+    return [[UIImage imageNamed:name] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+}
+
+- (UITableViewCell *)makeThemeSegmentedTableCell {
+    UITableViewCell *cell = [UITableViewCell new];
+    cell.frame = CGRectMake(0, 0, 240, kMenuOptionHeight);
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    cell.separatorInset = UIEdgeInsetsZero;
+    cell.backgroundColor = UIColorFromRGB(0xffffff);
+    
+    NSString *theme = [ThemeManager themeManager].theme;
+    NSArray *values = @[ThemeStyleLight, ThemeStyleSepia, ThemeStyleMedium, ThemeStyleDark];
+    NSUInteger valueIndex = [values indexOfObject:theme];
+    
+    if (valueIndex < 0) {
+        valueIndex = 0;
+    }
+    
+    UISegmentedControl *segmentedControl = [[UISegmentedControl alloc] initWithFrame:CGRectMake(8, 4, cell.frame.size.width - 8 * 2, kMenuOptionHeight - 4 * 2)];
+    
+    [segmentedControl addTarget:self action:@selector(changeTheme:) forControlEvents:UIControlEventValueChanged];
+    
+    UIImage *lightImage = [self themeImageWithName:@"theme_color_light" selected:valueIndex == 0];
+    UIImage *sepiaImage = [self themeImageWithName:@"theme_color_sepia" selected:valueIndex == 1];
+    UIImage *mediumImage = [self themeImageWithName:@"theme_color_medium" selected:valueIndex == 2];
+    UIImage *darkImage = [self themeImageWithName:@"theme_color_dark" selected:valueIndex == 3];
+    
+    [segmentedControl insertSegmentWithImage:lightImage atIndex:0 animated: NO];
+    [segmentedControl insertSegmentWithImage:sepiaImage atIndex:1 animated: NO];
+    [segmentedControl insertSegmentWithImage:mediumImage atIndex:2 animated: NO];
+    [segmentedControl insertSegmentWithImage:darkImage atIndex:3 animated: NO];
+    
+    UIGraphicsBeginImageContextWithOptions(CGSizeMake(1, segmentedControl.frame.size.height), NO, 0.0);
+    UIImage *blankImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    
+    [segmentedControl setDividerImage:blankImage forLeftSegmentState:UIControlStateNormal rightSegmentState:UIControlStateNormal barMetrics:UIBarMetricsDefault];
+    segmentedControl.tintColor = [UIColor clearColor];
+    segmentedControl.backgroundColor = [UIColor clearColor];
+    
+    segmentedControl.selectedSegmentIndex = valueIndex;
+    
+    [cell addSubview:segmentedControl];
+    
+    return cell;
+}
+
+- (IBAction)changeTheme:(UISegmentedControl *)sender {
+    NSArray *values = @[ThemeStyleLight, ThemeStyleSepia, ThemeStyleMedium, ThemeStyleDark];
+    
+    [ThemeManager themeManager].theme = [values objectAtIndex:sender.selectedSegmentIndex];
+    
+    self.menuTableView.backgroundColor = UIColorFromRGB(0xECEEEA);
+    self.menuTableView.separatorColor = UIColorFromRGB(0x909090);
+    [self.menuTableView reloadData];
 }
 
 - (UITableViewCell *)makeSegmentedTableCellForItem:(NSDictionary *)item forRow:(NSUInteger)row {
@@ -150,15 +237,19 @@ NSString * const MenuHandler = @"handler";
         [presentedViewController dismissViewControllerAnimated:YES completion:nil];
     }
     
-    self.modalPresentationStyle = UIModalPresentationPopover;
+    UINavigationController *embeddedNavController = [[UINavigationController alloc] initWithRootViewController:self];
     
-    UIPopoverPresentationController *popoverPresentationController = self.popoverPresentationController;
+    embeddedNavController.navigationBarHidden = YES;
+    embeddedNavController.modalPresentationStyle = UIModalPresentationPopover;
+    embeddedNavController.delegate = self;
+    
+    UIPopoverPresentationController *popoverPresentationController = embeddedNavController.popoverPresentationController;
     popoverPresentationController.delegate = self;
     popoverPresentationController.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
     popoverPresentationController.permittedArrowDirections = UIPopoverArrowDirectionUp;
     popoverPresentationController.barButtonItem = barButtonItem;
     
-    [navigationController presentViewController:self animated:YES completion:nil];
+    [navigationController presentViewController:embeddedNavController animated:YES completion:nil];
 }
 
 #pragma mark - Table view data source
@@ -170,7 +261,9 @@ NSString * const MenuHandler = @"handler";
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     NSDictionary *item = self.items[indexPath.row];
     
-    if (item[MenuSegmentTitles]) {
+    if (item[MenuThemeSegment]) {
+        return [self makeThemeSegmentedTableCell];
+    } else if (item[MenuSegmentTitles]) {
         return [self makeSegmentedTableCellForItem:item forRow:indexPath.row];
     } else {
         static NSString *CellIndentifier = @"MenuTableCell";
@@ -249,6 +342,12 @@ NSString * const MenuHandler = @"handler";
 
 - (UIModalPresentationStyle)adaptivePresentationStyleForPresentationController:(UIPresentationController *)controller {
     return UIModalPresentationNone;
+}
+
+#pragma mark - UINavigationControllerDelegate
+
+- (void)navigationController:(UINavigationController *)navController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
+    [navController setNavigationBarHidden:viewController == self animated:YES];
 }
 
 @end
