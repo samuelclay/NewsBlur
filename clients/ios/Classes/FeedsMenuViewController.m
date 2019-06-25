@@ -130,7 +130,7 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section 
 {
-    return [self.menuOptions count] + 3;
+    return [self.menuOptions count] + 2;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -145,7 +145,7 @@
         return [self makeThemeTableCell];
     }
     
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIndentifier]; 
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIndentifier];
     
     if (cell == nil) {
         cell = [[MenuTableViewCell alloc]
