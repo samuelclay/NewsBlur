@@ -34,7 +34,6 @@
 @interface StoryDetailViewController ()
 
 @property (nonatomic, strong) NSString *fullStoryHTML;
-@property (nonatomic, strong) NSTimer *loadingTimer;
 
 @end
 
@@ -310,8 +309,7 @@
     }
     [self storeScrollPosition:NO];
     
-    [self.loadingTimer invalidate];
-    self.loadingTimer = nil;
+    self.fullStoryHTML = nil;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -605,7 +603,11 @@
         [self loadHTMLString:htmlTopAndBottom];
         [self.appDelegate.storyPageControl setTextButton:self];
     });
-
+    
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [self loadStory];
+    });
+    
     self.activeStoryId = [self.activeStory objectForKey:@"story_hash"];
 }
 
@@ -683,7 +685,6 @@
     self.webView.hidden = YES;
     self.activityIndicator.color = UIColorFromRGB(NEWSBLUR_BLACK_COLOR);
     [self.activityIndicator startAnimating];
-    self.loadingTimer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(loadStory) userInfo:nil repeats:NO];
     
     NSString *themeStyle = [ThemeManager themeManager].themeCSSSuffix;
     
@@ -1788,8 +1789,6 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         return; // if we're loading anything other than a full story, the view will be hidden
     
     [self.activityIndicator stopAnimating];
-    [self.loadingTimer invalidate];
-    self.loadingTimer = nil;
     
     [self loadHTMLString:self.fullStoryHTML];
     self.fullStoryHTML = nil;

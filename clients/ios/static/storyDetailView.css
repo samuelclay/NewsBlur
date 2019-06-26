@@ -284,6 +284,7 @@ body.NB-iphone {
 .NB-story-toggle-changes {
     display: inline;
     float: left;
+    padding-top: 1px;
     padding-left: 24px;
     color: #818776;
     font-size: .8em;
