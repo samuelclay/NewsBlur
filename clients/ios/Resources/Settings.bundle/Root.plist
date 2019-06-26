@@ -700,44 +700,74 @@
 			<key>Key</key>
 			<string>story_browser</string>
 		</dict>
-        <dict>
-            <key>Type</key>
-            <string>PSMultiValueSpecifier</string>
-            <key>Title</key>
-            <string>Restore position</string>
-            <key>Titles</key>
-            <array>
-                <string>Always</string>
-                <string>Within 1 hour</string>
-                <string>Within 2 hours</string>
-                <string>Within 4 hours</string>
-                <string>Within 6 hours</string>
-                <string>Within 8 hours</string>
-                <string>Within 12 hours</string>
-                <string>Within 1 day</string>
-                <string>Within 2 days</string>
-                <string>Within 1 week</string>
-                <string>Never</string>
-            </array>
-            <key>DefaultValue</key>
-            <string>24</string>
-            <key>Values</key>
-            <array>
-                <string>always</string>
-                <string>1</string>
-                <string>2</string>
-                <string>4</string>
-                <string>6</string>
-                <string>8</string>
-                <string>12</string>
-                <string>24</string>
-                <string>48</string>
-                <string>168</string>
-                <string>never</string>
-            </array>
-            <key>Key</key>
-            <string>restore_state</string>
-        </dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Restore position</string>
+			<key>Titles</key>
+			<array>
+				<string>Always</string>
+				<string>Within 1 hour</string>
+				<string>Within 2 hours</string>
+				<string>Within 4 hours</string>
+				<string>Within 6 hours</string>
+				<string>Within 8 hours</string>
+				<string>Within 12 hours</string>
+				<string>Within 1 day</string>
+				<string>Within 2 days</string>
+				<string>Within 1 week</string>
+				<string>Never</string>
+			</array>
+			<key>DefaultValue</key>
+			<string>24</string>
+			<key>Values</key>
+			<array>
+				<string>always</string>
+				<string>1</string>
+				<string>2</string>
+				<string>4</string>
+				<string>6</string>
+				<string>8</string>
+				<string>12</string>
+				<string>24</string>
+				<string>48</string>
+				<string>168</string>
+				<string>never</string>
+			</array>
+			<key>Key</key>
+			<string>restore_state</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Full screen</string>
+			<key>DefaultValue</key>
+			<true/>
+			<key>Key</key>
+			<string>story_full_screen</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Show autoscroll</string>
+			<key>DefaultValue</key>
+			<false/>
+			<key>Key</key>
+			<string>story_autoscroll</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Scroll horizontally</string>
+			<key>DefaultValue</key>
+			<string>YES</string>
+			<key>Key</key>
+			<string>scroll_stories_horizontally</string>
+		</dict>
 		<dict>
 			<key>Title</key>
 			<string>App badge</string>
