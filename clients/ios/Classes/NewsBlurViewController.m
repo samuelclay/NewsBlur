@@ -1552,6 +1552,8 @@ heightForHeaderInSection:(NSInteger)section {
     } else {
         //        [self showRefreshNotifier];
     }
+    
+    [self resetRowHeights];
 }
 
 - (void)markEverythingReadWithDays:(NSInteger)days {
@@ -1586,6 +1588,7 @@ heightForHeaderInSection:(NSInteger)section {
         }
         [self reloadFeedTitlesTable];
     } else {
+        [self resetRowHeights];
         //        [self showRefreshNotifier];
     }
 }
