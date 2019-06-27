@@ -1647,10 +1647,8 @@
     if (self.autoscrollView.alpha == 0) {
         if (self.isPhoneOrCompact) {
             self.autoscrollBottomConstraint.constant = 50;
-        } else if (self.traverseView.alpha != 0) {
-            self.autoscrollBottomConstraint.constant = -7;
         } else {
-            self.autoscrollBottomConstraint.constant = 20;
+            self.autoscrollBottomConstraint.constant = 0;
         }
         
         [self.view layoutIfNeeded];
