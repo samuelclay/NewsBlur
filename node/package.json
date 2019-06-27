@@ -4,7 +4,7 @@
   "description": "Servers used in running NewsBlur",
   "main": "favicons.js",
   "dependencies": {
-    "@postlight/mercury-parser": "^2.1.0",
+    "@postlight/mercury-parser": "^2.1.1",
     "connect-busboy": "^0.0.2",
     "esm": "^3.2.22",
     "express": "^4.16.4",
