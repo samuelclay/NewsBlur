@@ -204,10 +204,8 @@
     self.storiesCollection = [StoriesCollection new];
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [window addSubview:self.masterContainerViewController.view];
         self.window.rootViewController = self.masterContainerViewController;
     } else {
-        [window addSubview:self.navigationController.view];
         self.window.rootViewController = self.navigationController;
     }
     
@@ -1028,6 +1026,7 @@
             NSLog(@"Already showing login!");
             return;
         }
+        loginViewController.modalPresentationStyle = UIModalPresentationFullScreen;
         [self.masterContainerViewController presentViewController:loginViewController animated:NO completion:nil];
     } else {
         [feedsMenuViewController dismissViewControllerAnimated:NO completion:nil];
@@ -1051,7 +1050,7 @@
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [masterContainerViewController dismissViewControllerAnimated:NO completion:nil];
-        self.ftuxNavigationController.modalPresentationStyle = UIModalPresentationFormSheet;
+        self.ftuxNavigationController.modalPresentationStyle = UIModalPresentationFullScreen;
         [self.masterContainerViewController presentViewController:self.ftuxNavigationController animated:YES completion:nil];
         
         self.ftuxNavigationController.view.superview.frame = CGRectMake(0, 0, 540, 540);//it's important to do this after 
