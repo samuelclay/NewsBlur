@@ -317,7 +317,7 @@ class Profile(models.Model):
             self.activate_premium()
 
     @classmethod
-    def reimport_stripe_history(limit=10, days=7, starting_after=0):
+    def reimport_stripe_history(cls, limit=10, days=7, starting_after=None):
         stripe.api_key = settings.STRIPE_SECRET
         week = (datetime.datetime.now() - datetime.timedelta(days=days)).strftime('%s')
         failed = []
