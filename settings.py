@@ -479,6 +479,11 @@ CELERYBEAT_SCHEDULE = {
         'schedule': datetime.timedelta(hours=12),
         'options': {'queue': 'beat_tasks', 'timeout': 720*10},
     },
+    'reimport-stripe-history': {
+        'task': 'reimport-stripe-history',
+        'schedule': datetime.timedelta(hours=6),
+        'options': {'queue': 'beat_tasks'},
+    },
     'clean-spam': {
         'task': 'clean-spam',
         'schedule': datetime.timedelta(hours=6),

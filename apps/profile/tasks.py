@@ -79,5 +79,12 @@ class CleanSpam(Task):
     def run(self, **kwargs):
         logging.debug(" ---> Finding spammers...")
         Profile.clear_dead_spammers(confirm=True)
+
+class ReimportStripeHistory(Task):
+    name = 'reimport-stripe-history'
+
+    def run(self, **kwargs):
+        logging.debug(" ---> Reimporting Stripe history...")
+        Profile.reimport_stripe_history(limit=10, days=1)
             
 
