@@ -316,6 +316,52 @@ class Profile(models.Model):
             (not self.premium_expire or self.premium_expire > datetime.datetime.now())):
             self.activate_premium()
 
+    @classmethod
+    def reimport_stripe_history(limit=10, days=7, starting_after=0):
+        stripe.api_key = settings.STRIPE_SECRET
+        week = (datetime.datetime.now() - datetime.timedelta(days=days)).strftime('%s')
+        failed = []
+        i = 0
+        
+        while True:
+            logging.debug(" ---> At %s / %s" % (i, starting_after))
+            i += 1
+            try:
+                data = stripe.Charge.all(created={'gt': week}, count=limit, starting_after=starting_after)
+            except stripe.APIConnectionError:
+                time.sleep(10)
+                continue
+            charges = data['data']
+            if not len(charges):
+                logging.debug("At %s (%s), finished" % (i, starting_after))
+                break
+            starting_after = charges[-1]["id"]
+            customers = [c['customer'] for c in charges if 'customer' in c]
+            for customer in customers:
+                if not customer:
+                    print " ***> No customer!"
+                    continue
+                try:
+                    profile = Profile.objects.get(stripe_id=customer)
+                    user = profile.user
+                except Profile.DoesNotExist:
+                    logging.debug(" ***> Couldn't find stripe_id=%s" % customer)
+                    failed.append(customer)
+                    continue
+                except Profile.MultipleObjectsReturned:
+                    logging.debug(" ***> Multiple stripe_id=%s" % customer)
+                    failed.append(customer)
+                    continue
+                try:
+                    user.profile.setup_premium_history()
+                except stripe.APIConnectionError:
+                    logging.debug(" ***> Failed: %s" % user.username)
+                    failed.append(user.username)
+                    time.sleep(2)
+                    continue
+
+        return ','.join(failed)
+        
     def refund_premium(self, partial=False):
         refunded = False
         
