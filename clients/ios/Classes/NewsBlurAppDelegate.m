@@ -272,6 +272,9 @@
         [storiesCollection markStoryRead:activeStory];
         [storiesCollection syncStoryAsRead:activeStory];
         storyPageControl.temporarilyMarkedUnread = NO;
+        
+        [self.feedDetailViewController reloadData];
+        [self.storyPageControl refreshHeaders];
     }
 }
 
