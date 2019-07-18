@@ -177,6 +177,8 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     
     [[ThemeManager themeManager] addThemeGestureRecognizerToView:self.feedTitlesTable];
     
+    [self updateTheme];
+    
     self.notifier = [[NBNotifier alloc] initWithTitle:@"Fetching stories..."
                                            withOffset:CGPointMake(0, 0)];
     [self.view insertSubview:self.notifier belowSubview:self.feedViewToolbar];

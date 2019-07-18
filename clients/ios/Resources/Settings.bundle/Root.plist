@@ -759,16 +759,6 @@
 			<string>story_autoscroll</string>
 		</dict>
 		<dict>
-			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
-			<key>Title</key>
-			<string>Scroll horizontally</string>
-			<key>DefaultValue</key>
-			<string>YES</string>
-			<key>Key</key>
-			<string>scroll_stories_horizontally</string>
-		</dict>
-		<dict>
 			<key>Title</key>
 			<string>App badge</string>
 			<key>Type</key>
