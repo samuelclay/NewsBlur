@@ -1886,6 +1886,7 @@
     } else if ([storyBrowser isEqualToString:@"inappsafari"]) {
         self.safariViewController = [[SFSafariViewController alloc] initWithURL:url];
         self.safariViewController.delegate = self;
+        [self.storyPageControl setNavigationBarHidden:NO];
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
             self.safariViewController.modalPresentationStyle = UIModalPresentationPageSheet;
         }
@@ -1893,6 +1894,7 @@
     } else if ([storyBrowser isEqualToString:@"inappsafarireader"]) {
         self.safariViewController = [[SFSafariViewController alloc] initWithURL:url entersReaderIfAvailable:YES];
         self.safariViewController.delegate = self;
+        [self.storyPageControl setNavigationBarHidden:NO];
         [navigationController presentViewController:self.safariViewController animated:YES completion:nil];
     } else {
         if (!originalStoryViewController) {
