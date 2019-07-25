@@ -401,6 +401,17 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 //        self.feedViewToolbar.frame = (CGRect){CGPointMake(0.f, CGRectGetHeight(self.view.frame) - toolbarSize.height), toolbarSize};
 //    }
 //    self.innerView.frame = (CGRect){CGPointZero, CGSizeMake(CGRectGetWidth(self.view.frame), CGRectGetMinY(self.feedViewToolbar.frame))};
+    
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad && !appDelegate.isCompactWidth) {
+        CGRect navFrame = appDelegate.navigationController.view.frame;
+        CGFloat limit = appDelegate.masterContainerViewController.rightBorder.frame.origin.x + 1;
+        
+        if (navFrame.size.width > limit) {
+            navFrame.size.width = limit;
+            appDelegate.navigationController.view.frame = navFrame;
+        }
+    }
+    
     self.notifier.offset = CGPointMake(0, 0);
     
     [self updateIntelligenceControlForOrientation:interfaceOrientation];
@@ -2178,7 +2189,7 @@ heightForHeaderInSection:(NSInteger)section {
     NSURL *imageURL = [NSURL URLWithString:[NSString stringWithFormat:@"%@",
                                             [appDelegate.dictSocialProfile
                                              objectForKey:@"large_photo_url"]]];
-    userAvatarButton = [UIBarButtonItem barItemWithImage:[UIImage alloc]
+    userAvatarButton = [UIBarButtonItem barItemWithImage:[UIImage imageNamed:@"user"]
                                                   target:self
                                                   action:@selector(showUserProfile)];
     userAvatarButton.customView.frame = CGRectMake(0, yOffset + 1, 32, 32);
