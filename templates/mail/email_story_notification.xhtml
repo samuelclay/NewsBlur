@@ -12,7 +12,7 @@
     
     <hr>
 
-    <h2><a href="http://{% current_domain %}/site/{{ feed.pk }}/{{ feed_title|slugify }}?story={{ story.story_hash }}" style="color: #404070;text-decoration: none;">{{ story.story_title }}</a></h2>
+    <h2><a href="https://{% current_domain %}/site/{{ feed.pk }}/{{ feed_title|slugify }}?story={{ story.story_hash }}" style="color: #404070;text-decoration: none;">{{ story.story_title }}</a></h2>
 
     <p>{{ story_content|safe }}</p>
     
@@ -27,7 +27,7 @@
 <tr>
     <td class="comment_body_td content-td content-td-footer" style="-webkit-background-clip: padding-box; -webkit-border-radius: 0 0 3px 3px; background: white; background-clip: padding-box; border-radius: 0 0 3px 3px; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05); color: #525252; font-family: 'Helvetica Neue',Arial,sans-serif; font-size: 15px; line-height: 22px; overflow: hidden; padding: 0 40px 12px;" bgcolor="white">
         <p style="font-size:12px;text-align: center;"> 
-            You received this because you have <a href="http://{% current_domain %}/site/{{ feed.pk }}/{{ feed_title|slugify }}?next=notifications" style="text-decoration:none;">email notifications for {{ feed_title }}</a>.
+            You received this because you have <a href="https://{% current_domain %}/site/{{ feed.pk }}/{{ feed_title|slugify }}?next=notifications" style="text-decoration:none;">email notifications for {{ feed_title }}</a>.
         </p>
     </td>
 </tr>
