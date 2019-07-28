@@ -13,4 +13,4 @@
 Sent from NewsBlur - www.newsblur.com - a personal news reader bringing people together to talk about the world.
 
 You received this because you have email notifications for {{ feed_title }}. 
-http://{% current_domain %}/site/{{ feed.pk }}/{{ feed_title|slugify }}?next=notifications
+https://{% current_domain %}/site/{{ feed.pk }}/{{ feed_title|slugify }}?next=notifications
