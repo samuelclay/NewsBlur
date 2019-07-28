@@ -14,6 +14,7 @@ class TwitterFetcher:
     
     def __init__(self, feed, options=None):
         self.feed = feed
+        self.address = self.feed.feed_address
         self.options = options or {}
     
     def fetch(self, address=None):
@@ -193,6 +194,7 @@ class TwitterFetcher:
         if user_tweet['in_reply_to_user_id'] == author['id']:
             categories.add('reply-to-self')        
         retweet_author = ""
+        tweet_link = "https://twitter.com/%s/status/%s" % (original_author_name, user_tweet['id'])
         if 'retweeted_status' in user_tweet:
             retweet_author = """Retweeted by 
                                  <a href="https://twitter.com/%s"><img src="%s" style="height: 20px" /></a>
@@ -208,6 +210,7 @@ class TwitterFetcher:
             author = content_tweet['author']
             if not isinstance(author, dict): author = author.__dict__
             author_name = author['screen_name']
+            tweet_link = "https://twitter.com/%s/status/%s" % (author_name, user_tweet['retweeted_status'].id)
         
         tweet_title = user_tweet['full_text']
         tweet_text = linebreaks(content_tweet['full_text'])
@@ -271,7 +274,7 @@ class TwitterFetcher:
                              Posted by
                                  <a href="https://twitter.com/%s"><img src="%s" style="height: 32px" /></a>
                                  <a href="https://twitter.com/%s">%s</a>
-                            on %s</div>
+                            on <a href="%s">%s</a></div>
                          <div class="NB-twitter-rss-retweet">%s</div>
                          <div class="NB-twitter-rss-stats">%s %s%s %s</div>
                     </div>""" % (
@@ -282,6 +285,7 @@ class TwitterFetcher:
             author['profile_image_url_https'],
             author_name,
             author_name,
+            tweet_link,
             DateFormat(created_date).format('l, F jS, Y g:ia').replace('.',''),
             retweet_author,
             ("<br /><br />" if content_tweet['favorite_count'] or content_tweet['retweet_count'] else ""),
