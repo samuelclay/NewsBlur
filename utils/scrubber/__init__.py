@@ -14,7 +14,7 @@ __all__ = ['Scrubber', 'SelectiveScriptScrubber', 'ScrubberWarning', 'Unapproved
 import re, string
 from urlparse import urljoin
 from itertools import chain
-from BeautifulSoup import BeautifulSoup, Comment
+from bs4 import BeautifulSoup, Comment
 
 def urlize(text, trim_url_limit=None, nofollow=False, autoescape=False):
     """Converts any URLs in text into clickable links.
@@ -157,21 +157,23 @@ class Scrubber(object):
                 continue
 
             # Remove disallowed attributes
-            attrs = []
-            for k, v in node.attrs:
-                if not v:
-                    continue
+            attrs = {}
+            if hasattr(node, 'attrs') and isinstance(node.attrs, dict):
+                for k, v in node.attrs.items():
+                    if not v:
+                        continue
 
-                if k.lower() not in self.allowed_attributes:
-                    continue
+                    if k.lower() not in self.allowed_attributes:
+                        continue
 
-                # TODO: This probably needs to be more robust
-                v2 = v.lower()
-                if any(x in v2 for x in ('javascript:', 'vbscript:', 'expression(')):
-                    continue
+                    # TODO: This probably needs to be more robust
+                    if isinstance(v, str):
+                        v2 = v.lower()
+                        if any(x in v2 for x in ('javascript:', 'vbscript:', 'expression(')):
+                            continue
 
-                attrs.append((k,v))
-            node.attrs = attrs
+                    attrs[k] = v
+                node.attrs = attrs
 
         self._remove_nodes(toremove)
 
@@ -203,10 +205,10 @@ class Scrubber(object):
 
     def _scrub_tag_a(self, a):
         if self.nofollow:
-            a['rel'] = "nofollow"
+            a['rel'] = ["nofollow"]
 
         if not a.get('class', None):
-            a['class'] = "external"
+            a['class'] = ["external"]
 
         self._clean_path(a, 'href')
 
@@ -251,7 +253,7 @@ class Scrubber(object):
 
         toremove = []
         for tag_name, scrubbers in self.tag_scrubbers.items():
-            for node in soup(tag_name):
+            for node in soup.find_all(tag_name):
                 for scrub in scrubbers:
                     remove = scrub(node)
                     if remove:
@@ -267,9 +269,8 @@ class Scrubber(object):
         """Return a sanitized version of the given html."""
 
         self.warnings = []
-
         html = self._scrub_html_pre(html)
-        soup = BeautifulSoup(html)
+        soup = BeautifulSoup(html, features="lxml")
         self._scrub_soup(soup)
         html = unicode(soup)
         return self._scrub_html_post(html)
