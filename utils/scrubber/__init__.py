@@ -225,12 +225,13 @@ class Scrubber(object):
         self._clean_path(img, 'src')
 
     def _scrub_tag_font(self, node):
-        attrs = []
+        attrs = {}
+        if hasattr(node, 'attrs') and isinstance(node.attrs, dict):
         for k, v in node.attrs:
             if k.lower() == 'size' and v.startswith('+'):
                 # Remove "size=+0"
                 continue
-            attrs.append((k, v))
+            attrs[k] = v
         node.attrs = attrs
 
         if len(node.attrs) == 0:
