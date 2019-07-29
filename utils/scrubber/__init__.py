@@ -227,16 +227,16 @@ class Scrubber(object):
     def _scrub_tag_font(self, node):
         attrs = {}
         if hasattr(node, 'attrs') and isinstance(node.attrs, dict):
-        for k, v in node.attrs:
-            if k.lower() == 'size' and v.startswith('+'):
-                # Remove "size=+0"
-                continue
-            attrs[k] = v
-        node.attrs = attrs
+            for k, v in node.attrs:
+                if k.lower() == 'size' and v.startswith('+'):
+                    # Remove "size=+0"
+                    continue
+                attrs[k] = v
+            node.attrs = attrs
 
-        if len(node.attrs) == 0:
-            # IE renders font tags with no attributes differently then other browsers so remove them
-            return "keep_contents"
+            if len(node.attrs) == 0:
+                # IE renders font tags with no attributes differently then other browsers so remove them
+                return "keep_contents"
 
     def _scrub_html_pre(self, html):
         """Process the html before sanitization"""
