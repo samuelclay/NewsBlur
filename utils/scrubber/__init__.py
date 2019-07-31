@@ -227,7 +227,7 @@ class Scrubber(object):
     def _scrub_tag_font(self, node):
         attrs = {}
         if hasattr(node, 'attrs') and isinstance(node.attrs, dict):
-            for k, v in node.attrs:
+            for k, v in node.attrs.items():
                 if k.lower() == 'size' and v.startswith('+'):
                     # Remove "size=+0"
                     continue
