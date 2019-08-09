@@ -685,9 +685,16 @@ public class PrefsUtils {
         return prefs.getBoolean(PrefConstants.STORIES_SHOW_PREVIEWS, true);
     }
 
-    public static boolean isShowThumbnails(Context context) {
+    private static boolean isShowThumbnails(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
         return prefs.getBoolean(PrefConstants.STORIES_SHOW_THUMBNAILS,  true);
+    }
+
+    public static ThumbnailStyle getThumbnailStyle(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        boolean isShowThumbnails = isShowThumbnails(context);
+        ThumbnailStyle defValue = isShowThumbnails ? ThumbnailStyle.LARGE : ThumbnailStyle.OFF;
+        return ThumbnailStyle.valueOf(prefs.getString(PrefConstants.STORIES_THUMBNAILS_STYLE, defValue.toString()));
     }
 
     public static boolean isAutoOpenFirstUnread(Context context) {
