@@ -88,10 +88,13 @@
             android:defaultValue="true"
             android:key="pref_show_content_preview"
             android:title="@string/settings_show_content_preview" />
-        <CheckBoxPreference
-            android:defaultValue="true"
-            android:key="pref_show_thumbnails"
-            android:title="@string/settings_show_thumbnails" />
+        <ListPreference
+            android:key="pref_thumbnails_style"
+            android:title="@string/settings_thumbnails_style"
+            android:dialogTitle="@string/settings_thumbnails_style"
+            android:entries="@array/thumbnails_style_entries"
+            android:entryValues="@array/thumbnails_style_values"
+            android:defaultValue="@string/thumbnails_style_value" />
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="pref_mark_read_on_scroll"

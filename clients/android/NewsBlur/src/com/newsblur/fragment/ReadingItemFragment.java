@@ -760,6 +760,8 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
             builder.append(font.forWebView(currentSize));
             builder.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"reading.css\" />");
             if (themeValue == ThemeValue.LIGHT) {
+//                builder.append("<meta name=\"color-scheme\" content=\"light\"/>");
+//                builder.append("<meta name=\"supported-color-schemes\" content=\"light\"/>");
                 builder.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"light_reading.css\" />");
             } else if (themeValue == ThemeValue.DARK) {
                 builder.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"dark_reading.css\" />");
