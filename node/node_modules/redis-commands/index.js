@@ -1,6 +1,6 @@
 'use strict'
 
-var commands = require('./commands')
+var commands = require('./commands.json')
 
 /**
  * Redis command list

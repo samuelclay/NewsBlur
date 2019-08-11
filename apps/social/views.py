@@ -76,9 +76,11 @@ def load_social_stories(request, user_id, username=None):
         if story_hashes:
             mstories = MSharedStory.objects(user_id=social_user.pk,
                                             story_hash__in=story_hashes).order_by(story_date_order)
+            for story in mstories: story.extract_image_urls()
             stories = Feed.format_stories(mstories)
     else:
         mstories = MSharedStory.objects(user_id=social_user.pk).order_by('-shared_date')[offset:offset+limit]
+        for story in mstories: story.extract_image_urls()
         stories = Feed.format_stories(mstories)
 
     if not stories or False: # False is to force a recount even if 0 stories

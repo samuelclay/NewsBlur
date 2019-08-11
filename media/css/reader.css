@@ -80,6 +80,7 @@ a img {
 }
 #NB-splash {
     display: block;
+    background-color: #F6F8F0;
 }
 .NB-show-reader #NB-splash {
     display: none;
@@ -1320,14 +1321,14 @@ a img {
 
 .NB-feedbar .NB-feedbar-mark-feed-read-container {
     position: relative;
-    margin: 0 10px 0 6px;
+    margin: 0 0 0 16px;
     font-size: 9px;
     line-height: 15px;
     font-weight: bold;
     float: right;
 }
 .NB-intelligence-starred .NB-feedbar .NB-feedbar-mark-feed-read-container,
-.NB-searching .NB-feedbar-mark-feed-read-container {
+.NB-searching .NB-feedbar-options-container {
     display: none;
 }
 .NB-feedbar .NB-feedbar-mark-feed-read,
@@ -7527,9 +7528,6 @@ form.opml_import_form input {
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-diigo {
     background: transparent url('/media/embed/reader/diigo.png') no-repeat 0 0;
 }
-.NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-kippt {
-    background: transparent url('/media/embed/reader/kippt.png') no-repeat 0 0;
-}
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-evernote {
     background: transparent url('/media/embed/reader/evernote.png') no-repeat 0 0;
 }
@@ -7564,7 +7562,6 @@ form.opml_import_form input {
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-pinterest .NB-menu-manage-thirdparty-email,
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-buffer .NB-menu-manage-thirdparty-email,
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-diigo .NB-menu-manage-thirdparty-email,
-.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-kippt .NB-menu-manage-thirdparty-email,
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-evernote .NB-menu-manage-thirdparty-email,
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-googleplus .NB-menu-manage-thirdparty-email,
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-instapaper .NB-menu-manage-thirdparty-email {
@@ -7598,9 +7595,6 @@ form.opml_import_form input {
   opacity: 1;
 }
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-diigo .NB-menu-manage-thirdparty-diigo {
-  opacity: 1;
-}
-.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-kippt .NB-menu-manage-thirdparty-kippt {
   opacity: 1;
 }
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-evernote .NB-menu-manage-thirdparty-evernote {
@@ -10052,9 +10046,6 @@ form.opml_import_form input {
 }
 .NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-diigo] {
     background: transparent url('/media/embed/reader/diigo.png') no-repeat 0 0;
-}
-.NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-kippt] {
-    background: transparent url('/media/embed/reader/kippt.png') no-repeat 0 0;
 }
 .NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-evernote] {
     background: transparent url('/media/embed/reader/evernote.png') no-repeat 0 0;

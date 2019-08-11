@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="13529" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13527"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14490.49"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -19,7 +19,6 @@
             <connections>
                 <outlet property="addSiteViewController" destination="121" id="127"/>
                 <outlet property="dashboardViewController" destination="177" id="179"/>
-                <outlet property="feedDetailMenuViewController" destination="165" id="167"/>
                 <outlet property="feedDetailViewController" destination="51" id="91"/>
                 <outlet property="feedsMenuViewController" destination="128" id="129"/>
                 <outlet property="feedsViewController" destination="10" id="15"/>
@@ -42,7 +41,7 @@
                 <outlet property="window" destination="12" id="78"/>
             </connections>
         </customObject>
-        <viewController nibName="NewsBlurViewController" id="10" customClass="NewsBlurViewController">
+        <viewController restorationIdentifier="FeedsView" nibName="NewsBlurViewController" id="10" customClass="NewsBlurViewController">
             <extendedEdge key="edgesForExtendedLayout"/>
             <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" prompted="NO"/>
             <connections>
@@ -55,25 +54,19 @@
                 <outlet property="appDelegate" destination="3" id="168"/>
             </connections>
         </viewController>
-        <viewController id="165" customClass="FeedDetailMenuViewController">
-            <extendedEdge key="edgesForExtendedLayout"/>
-            <connections>
-                <outlet property="appDelegate" destination="3" id="166"/>
-            </connections>
-        </viewController>
-        <viewController nibName="FeedDetailViewController" id="51" customClass="FeedDetailViewController">
+        <viewController restorationIdentifier="FeedDetailView" nibName="FeedDetailViewController" id="51" customClass="FeedDetailViewController">
             <extendedEdge key="edgesForExtendedLayout"/>
             <connections>
                 <outlet property="appDelegate" destination="3" id="58"/>
             </connections>
         </viewController>
-        <viewController nibName="StoryDetailViewController" id="92" customClass="StoryDetailViewController">
+        <viewController restorationIdentifier="StoryDetailView" nibName="StoryDetailViewController" id="92" customClass="StoryDetailViewController">
             <extendedEdge key="edgesForExtendedLayout"/>
             <connections>
                 <outlet property="appDelegate" destination="3" id="105"/>
             </connections>
         </viewController>
-        <viewController nibName="StoryPageControl" automaticallyAdjustsScrollViewInsets="NO" id="170" customClass="StoryPageControl">
+        <viewController restorationIdentifier="StoryPageControl" nibName="StoryPageControl" automaticallyAdjustsScrollViewInsets="NO" id="170" customClass="StoryPageControl">
             <extendedEdge key="edgesForExtendedLayout"/>
             <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" prompted="NO"/>
             <connections>
@@ -162,22 +155,22 @@
                 <outlet property="appDelegate" destination="3" id="158"/>
             </connections>
         </viewController>
-        <viewController id="177" customClass="DashboardViewController">
+        <viewController restorationIdentifier="DashboardView" id="177" customClass="DashboardViewController">
             <extendedEdge key="edgesForExtendedLayout"/>
             <connections>
                 <outlet property="appDelegate" destination="3" id="178"/>
             </connections>
         </viewController>
-        <window opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="12" customClass="EventWindow">
+        <window opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" restorationIdentifier="EventWindow" id="12" customClass="EventWindow">
             <rect key="frame" x="0.0" y="0.0" width="320" height="480"/>
             <autoresizingMask key="autoresizingMask"/>
             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
         </window>
-        <navigationController automaticallyAdjustsScrollViewInsets="NO" id="39">
+        <navigationController restorationIdentifier="MainNavigation" automaticallyAdjustsScrollViewInsets="NO" id="39">
             <extendedEdge key="edgesForExtendedLayout"/>
             <navigationBar key="navigationBar" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" id="41">
-                <rect key="frame" x="0.0" y="0.0" width="1000" height="1000"/>
+                <rect key="frame" x="0.0" y="-44" width="375" height="44"/>
                 <autoresizingMask key="autoresizingMask"/>
             </navigationBar>
             <viewControllers>

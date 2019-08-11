@@ -8,13 +8,13 @@
  * @return {DBRef}
  */
 function DBRef(namespace, oid, db) {
-  if(!(this instanceof DBRef)) return new DBRef(namespace, oid, db);
-  
+  if (!(this instanceof DBRef)) return new DBRef(namespace, oid, db);
+
   this._bsontype = 'DBRef';
   this.namespace = namespace;
   this.oid = oid;
   this.db = db;
-};
+}
 
 /**
  * @ignore
@@ -22,11 +22,11 @@ function DBRef(namespace, oid, db) {
  */
 DBRef.prototype.toJSON = function() {
   return {
-    '$ref':this.namespace,
-    '$id':this.oid,
-    '$db':this.db == null ? '' : this.db
+    $ref: this.namespace,
+    $id: this.oid,
+    $db: this.db == null ? '' : this.db
   };
-}
+};
 
 module.exports = DBRef;
 module.exports.DBRef = DBRef;

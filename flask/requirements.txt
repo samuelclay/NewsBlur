@@ -1,4 +1,4 @@
-flask==0.10.1
+flask==0.12.3
 pymongo==3.4.0
 psycopg2==2.5.2
 redis==2.10.5

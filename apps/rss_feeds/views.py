@@ -512,6 +512,8 @@ def original_text(request):
         'feed_id': story.story_feed_id,
         'story_hash': story.story_hash,
         'story_id': story.story_guid,
+        'image_urls': story.image_urls,
+        'secure_image_urls': Feed.secure_image_urls(story.image_urls),
         'original_text': original_text,
         'failed': not original_text or len(original_text) < 100,
     }

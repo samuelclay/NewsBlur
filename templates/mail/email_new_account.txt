@@ -8,9 +8,9 @@ OK, firstly, thank you for trying out NewsBlur. I hope NewsBlur can make your da
 
 Here are some easy ways to have a great time on NewsBlur:
 
-    * Follow friends from Twitter, Facebook, and NewsBlur: http://{% current_domain %}{{ user.profile.autologin_url }}?next=friends
-    * Visit the popular blurblog, The People Have Spoken: http://popular.newsblur.com
-    * Upgrade to a premium account for only $36/year: http://{% current_domain %}{{ user.profile.autologin_url }}?next=chooser
+    * Follow friends from Twitter, Facebook, and NewsBlur: https://{% current_domain %}{{ user.profile.autologin_url }}?next=friends
+    * Visit the popular blurblog, The People Have Spoken: https://popular.newsblur.com
+    * Upgrade to a premium account for only $36/year: https://{% current_domain %}{{ user.profile.autologin_url }}?next=chooser
 
 I made NewsBlur because I wanted a better way to read the news and talk about it with people. I hope you love it, too.
 

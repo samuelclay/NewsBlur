@@ -6,7 +6,7 @@
  * @return {Double}
  */
 function Double(value) {
-  if(!(this instanceof Double)) return new Double(value);
+  if (!(this instanceof Double)) return new Double(value);
 
   this._bsontype = 'Double';
   this.value = value;
@@ -27,7 +27,7 @@ Double.prototype.valueOf = function() {
  */
 Double.prototype.toJSON = function() {
   return this.value;
-}
+};
 
 module.exports = Double;
 module.exports.Double = Double;

@@ -17,49 +17,8 @@ class Command(BaseCommand):
     )
 
     def handle(self, *args, **options):
-        stripe.api_key = settings.STRIPE_SECRET
-        week = (datetime.datetime.now() - datetime.timedelta(days=int(options.get('days', 365)))).strftime('%s')
-        failed = []
         limit = options.get('limit')
+        days = int(options.get('days'))
         starting_after = options.get('start')
-        i = 0
         
-        while True:
-            logging.debug(" ---> At %s / %s" % (i, starting_after))
-            i += 1
-            try:
-                data = stripe.Charge.all(created={'gt': week}, count=limit, starting_after=starting_after)
-            except stripe.APIConnectionError:
-                time.sleep(10)
-                continue
-            charges = data['data']
-            if not len(charges):
-                logging.debug("At %s (%s), finished" % (i, starting_after))
-                break
-            starting_after = charges[-1]["id"]
-            customers = [c['customer'] for c in charges if 'customer' in c]
-            for customer in customers:
-                if not customer:
-                    print " ***> No customer!"
-                    continue
-                try:
-                    profile = Profile.objects.get(stripe_id=customer)
-                    user = profile.user
-                except Profile.DoesNotExist:
-                    logging.debug(" ***> Couldn't find stripe_id=%s" % customer)
-                    failed.append(customer)
-                    continue
-                except Profile.MultipleObjectsReturned:
-                    logging.debug(" ***> Multiple stripe_id=%s" % customer)
-                    failed.append(customer)
-                    continue
-                try:
-                    user.profile.setup_premium_history()
-                except stripe.APIConnectionError:
-                    logging.debug(" ***> Failed: %s" % user.username)
-                    failed.append(user.username)
-                    time.sleep(2)
-                    continue
-
-        return ','.join(failed)
-
+        Profile.reimport_stripe_history(limit, days, starting_after)

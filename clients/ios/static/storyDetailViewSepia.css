@@ -38,6 +38,9 @@ body {
 .NB-story-permalink {
     color: #111111;
 }
+.NB-story-toggle-changes {
+    color: #818776;
+}
 .NB-story-date {
     color: #818776;
 }

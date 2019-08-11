@@ -114,7 +114,9 @@
         NSDictionary *story = [self.activeFeedStories objectAtIndex:i];
         NSInteger score = [NewsBlurAppDelegate computeStoryScore:[story objectForKey:@"intelligence"]];
         BOOL want = NO;
-        if (self.appDelegate.isSavedStoriesIntelligenceMode) {
+        if (self.showHiddenStories) {
+            want = YES;
+        } else if (self.appDelegate.isSavedStoriesIntelligenceMode) {
             want = [story[@"starred"] boolValue];
         } else {
             want = score >= appDelegate.selectedIntelligence || [[story objectForKey:@"sticky"] boolValue];
@@ -176,7 +178,7 @@
 - (NSInteger)indexOfActiveStory {
     for (NSInteger i=0; i < self.storyCount; i++) {
         NSDictionary *story = [activeFeedStories objectAtIndex:i];
-        if ([appDelegate.activeStory objectForKey:@"story_hash"] == [story objectForKey:@"story_hash"]) {
+        if ([[appDelegate.activeStory objectForKey:@"story_hash"] isEqualToString:[story objectForKey:@"story_hash"]]) {
             return i;
         }
     }
@@ -186,7 +188,7 @@
 - (NSInteger)indexOfStoryId:(id)storyId {
     for (int i=0; i < self.storyCount; i++) {
         NSDictionary *story = [activeFeedStories objectAtIndex:i];
-        if ([story objectForKey:@"story_hash"] == storyId) {
+        if ([[story objectForKey:@"story_hash"] isEqualToString:storyId]) {
             return i;
         }
     }
@@ -195,7 +197,7 @@
 
 - (NSInteger)locationOfStoryId:(id)storyId {
     for (int i=0; i < [activeFeedStoryLocations count]; i++) {
-        if ([activeFeedStoryLocationIds objectAtIndex:i] == storyId) {
+        if ([[activeFeedStoryLocationIds objectAtIndex:i] isEqualToString:storyId]) {
             return i;
         }
     }
@@ -294,6 +296,29 @@
     }
 }
 
+- (NSString *)activeTitle {
+    if (isRiverView) {
+        if ([activeFolder isEqualToString:@"river_blurblogs"]) {
+            return @"All Shared Stories";
+        } else if ([activeFolder isEqualToString:@"river_global"]) {
+            return @"Global Shared Stories";
+        } else if ([activeFolder isEqualToString:@"everything"]) {
+            return @"All Stories";
+        } else if ([activeFolder isEqualToString:@"infrequent"]) {
+            return @"Infrequent Site Stories";
+        } else if (isSavedView && activeSavedStoryTag) {
+            return activeSavedStoryTag;
+        } else if ([activeFolder isEqualToString:@"read_stories"]) {
+            return @"Read Stories";
+        } else if ([activeFolder isEqualToString:@"saved_stories"]) {
+            return @"Saved Stories";
+        } else {
+            return activeFolder;
+        }
+    } else {
+        return [activeFeed objectForKey:@"feed_title"];
+    }
+}
 
 #pragma mark - Story Management
 
@@ -715,23 +740,21 @@
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_story_as_starred",
                            self.appDelegate.url];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
-    
-    [params setObject:[story objectForKey:@"story_hash"]
-                   forKey:@"story_id"];
-    [params setObject:[story objectForKey:@"story_feed_id"]
-                   forKey:@"feed_id"];
-    
+    NSString *storyHash = [story objectForKey:@"story_hash"];
+    NSString *storyFeedId = [story objectForKey:@"story_feed_id"];
     NSMutableArray *tags = [NSMutableArray array];
     for (NSString *userTag in [story objectForKey:@"user_tags"]) {
         [tags addObject:userTag];
     }
+    
+    [params setObject:storyHash forKey:@"story_id"];
+    [params setObject:storyFeedId forKey:@"feed_id"];
     [params setObject:tags forKey:@"user_tags"];
     
     [appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self finishMarkAsSaved:responseObject withParams:params];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        [self markStory:params asSaved:NO];
-        [appDelegate failedMarkAsSaved:params];
+        [appDelegate queueSavedStory:story];
     }];
 }
 
@@ -752,17 +775,16 @@
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_story_as_unstarred",
                            self.appDelegate.url];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
-    [params setObject:[story
-                       objectForKey:@"story_hash"]
-               forKey:@"story_id"];
-    [params setObject:[story
-                       objectForKey:@"story_feed_id"]
-               forKey:@"feed_id"];
+    NSString *storyHash = [story objectForKey:@"story_hash"];
+    NSString *storyFeedId = [story objectForKey:@"story_feed_id"];
+    
+    [params setObject:storyHash forKey:@"story_id"];
+    [params setObject:storyFeedId forKey:@"feed_id"];
+    
     [appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self finishMarkAsUnsaved:responseObject withParams:params];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        [self markStory:params asSaved:YES];
-        [appDelegate failedMarkAsUnsaved:params];
+        [appDelegate queueSavedStory:story];
     }];
 }
 
@@ -772,8 +794,23 @@
 }
 
 - (void)failedMarkAsUnsaved:(NSDictionary *)params {
-    [self markStory:params asSaved:YES];
-    [appDelegate failedMarkAsUnsaved:params];
+    NSString *storyFeedId = [params objectForKey:@"story_feed_id"];
+    NSString *storyHash = [params objectForKey:@"story_hash"];
+    BOOL dequeued = [appDelegate dequeueReadStoryHash:storyHash inFeed:storyFeedId];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (!dequeued) {
+            // Offline means can't unsave a story unless it was saved while offline.
+            NSDictionary *story = [appDelegate getStory:storyHash];
+            
+            if (story) {
+                [self markStory:story asSaved:NO];
+                [appDelegate failedMarkAsUnsaved:params];
+            }
+        } else {
+            // Offline but saved story while offline, so it never touched the server.
+            [appDelegate.unsavedStoryHashes setObject:[NSNumber numberWithBool:YES] forKey:storyHash];
+        }
+    });
 }
 
 @end

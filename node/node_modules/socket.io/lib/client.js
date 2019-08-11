@@ -24,8 +24,8 @@ module.exports = Client;
 function Client(server, conn){
   this.server = server;
   this.conn = conn;
-  this.encoder = new parser.Encoder();
-  this.decoder = new parser.Decoder();
+  this.encoder = server.encoder;
+  this.decoder = new server.parser.Decoder();
   this.id = conn.id;
   this.request = conn.request;
   this.setup();
@@ -56,16 +56,37 @@ Client.prototype.setup = function(){
  * Connects a client to a namespace.
  *
  * @param {String} name namespace
+ * @param {Object} query the query parameters
  * @api private
  */
 
 Client.prototype.connect = function(name, query){
-  debug('connecting to namespace %s', name);
-  var nsp = this.server.nsps[name];
-  if (!nsp) {
-    this.packet({ type: parser.ERROR, nsp: name, data : 'Invalid namespace'});
-    return;
+  if (this.server.nsps[name]) {
+    debug('connecting to namespace %s', name);
+    return this.doConnect(name, query);
   }
+
+  this.server.checkNamespace(name, query, (dynamicNsp) => {
+    if (dynamicNsp) {
+      debug('dynamic namespace %s was created', dynamicNsp.name);
+      this.doConnect(name, query);
+    } else {
+      debug('creation of namespace %s was denied', name);
+      this.packet({ type: parser.ERROR, nsp: name, data: 'Invalid namespace' });
+    }
+  });
+};
+
+/**
+ * Connects a client to a namespace.
+ *
+ * @param {String} name namespace
+ * @param {String} query the query parameters
+ * @api private
+ */
+
+Client.prototype.doConnect = function(name, query){
+  var nsp = this.server.of(name);
 
   if ('/' != name && !this.nsps['/']) {
     this.connectBuffer.push(name);
@@ -153,9 +174,7 @@ Client.prototype.packet = function(packet, opts){
   if ('open' == this.conn.readyState) {
     debug('writing packet %j', packet);
     if (!opts.preEncoded) { // not broadcasting, need to encode
-      this.encoder.encode(packet, function (encodedPackets) { // encode, then write results to engine
-        writeToEngine(encodedPackets);
-      });
+      this.encoder.encode(packet, writeToEngine); // encode, then write results to engine
     } else { // a broadcast pre-encodes a packet
       writeToEngine(packet);
     }
@@ -213,7 +232,7 @@ Client.prototype.onerror = function(err){
       this.sockets[id].onerror(err);
     }
   }
-  this.onclose('client error');
+  this.conn.close();
 };
 
 /**

@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.iPad.XIB" version="3.0" toolsVersion="13196" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none" colorMatched="YES">
-    <device id="ipad9_7" orientation="portrait">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.iPad.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none" useAutolayout="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="ipad12_9rounded" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13173"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -16,7 +17,7 @@
                 <outlet property="logoImageView" destination="zOJ-C7-I3n" id="2QA-mL-Y5t"/>
                 <outlet property="segmentedButton" destination="24" id="44"/>
                 <outlet property="toolbar" destination="22" id="55"/>
-                <outlet property="topToolbar" destination="4z7-nH-jyd" id="mgJ-kU-Ppl"/>
+                <outlet property="topToolbar" destination="HEg-7j-EHc" id="O19-Sy-I0z"/>
                 <outlet property="view" destination="2" id="3"/>
             </connections>
         </placeholder>
@@ -25,35 +26,33 @@
             <rect key="frame" x="0.0" y="0.0" width="478" height="960"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <view contentMode="scaleToFill" id="kFc-yL-pjO" customClass="InteractionsModule">
-                    <rect key="frame" x="0.0" y="64" width="478" height="852"/>
-                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                    <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                </view>
-                <view contentMode="scaleToFill" id="38" customClass="ActivityModule">
-                    <rect key="frame" x="0.0" y="64" width="478" height="852"/>
-                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                    <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                </view>
-                <navigationBar contentMode="scaleToFill" translucent="NO" id="4z7-nH-jyd" customClass="NBDashboardNavigationBar">
-                    <rect key="frame" x="0.0" y="0.0" width="478" height="44"/>
-                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                <navigationBar contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" largeTitles="YES" translatesAutoresizingMaskIntoConstraints="NO" id="HEg-7j-EHc" customClass="NBDashboardNavigationBar">
+                    <rect key="frame" x="0.0" y="-28" width="478" height="102"/>
                     <items>
-                        <navigationItem id="9Fx-4n-yL9"/>
+                        <navigationItem id="Sib-SD-SGC"/>
                     </items>
                 </navigationBar>
-                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="logo_newsblur_blur.png" id="zOJ-C7-I3n">
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="kFc-yL-pjO" customClass="InteractionsModule">
+                    <rect key="frame" x="0.0" y="74" width="478" height="816"/>
+                    <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                </view>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="38" customClass="ActivityModule">
+                    <rect key="frame" x="0.0" y="74" width="478" height="816"/>
+                    <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                </view>
+                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="logo_newsblur_blur.png" translatesAutoresizingMaskIntoConstraints="NO" id="zOJ-C7-I3n">
                     <rect key="frame" x="0.0" y="26" width="478" height="34"/>
-                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="34" id="6Pb-hf-Zfe"/>
+                    </constraints>
                 </imageView>
-                <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translucent="NO" id="22">
-                    <rect key="frame" x="0.0" y="916" width="478" height="44"/>
-                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translucent="NO" translatesAutoresizingMaskIntoConstraints="NO" id="22">
+                    <rect key="frame" x="0.0" y="890" width="478" height="50"/>
                     <items>
                         <barButtonItem style="plain" systemItem="flexibleSpace" id="26"/>
                         <barButtonItem width="360" style="plain" id="25">
                             <segmentedControl key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="bar" selectedSegmentIndex="0" id="24">
-                                <rect key="frame" x="59" y="7.5" width="360" height="29"/>
+                                <rect key="frame" x="59" y="10.5" width="360" height="29"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <segments>
                                     <segment title="All Stories"/>
@@ -70,8 +69,28 @@
                 </toolbar>
             </subviews>
             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <constraints>
+                <constraint firstItem="JXg-Pa-wL0" firstAttribute="trailing" secondItem="kFc-yL-pjO" secondAttribute="trailing" id="8NI-hM-m1o"/>
+                <constraint firstItem="JXg-Pa-wL0" firstAttribute="trailing" secondItem="HEg-7j-EHc" secondAttribute="trailing" id="D83-2w-qw7"/>
+                <constraint firstItem="kFc-yL-pjO" firstAttribute="top" secondItem="HEg-7j-EHc" secondAttribute="bottom" id="DDw-77-cHI"/>
+                <constraint firstItem="JXg-Pa-wL0" firstAttribute="leading" secondItem="HEg-7j-EHc" secondAttribute="leading" id="Dp8-SG-1go"/>
+                <constraint firstItem="38" firstAttribute="top" secondItem="HEg-7j-EHc" secondAttribute="bottom" id="KkL-gv-dMF"/>
+                <constraint firstItem="22" firstAttribute="leading" secondItem="JXg-Pa-wL0" secondAttribute="leading" id="KmZ-Jk-Wct"/>
+                <constraint firstItem="JXg-Pa-wL0" firstAttribute="trailing" secondItem="22" secondAttribute="trailing" id="NGg-Cd-jcJ"/>
+                <constraint firstItem="JXg-Pa-wL0" firstAttribute="trailing" secondItem="zOJ-C7-I3n" secondAttribute="trailing" id="NjH-Ut-O6A"/>
+                <constraint firstItem="zOJ-C7-I3n" firstAttribute="top" secondItem="JXg-Pa-wL0" secondAttribute="top" constant="2" id="PIb-0D-Zjn"/>
+                <constraint firstItem="38" firstAttribute="leading" secondItem="JXg-Pa-wL0" secondAttribute="leading" id="PrR-oY-Fl7"/>
+                <constraint firstItem="kFc-yL-pjO" firstAttribute="leading" secondItem="JXg-Pa-wL0" secondAttribute="leading" id="cGG-AO-XMd"/>
+                <constraint firstItem="22" firstAttribute="top" secondItem="kFc-yL-pjO" secondAttribute="bottom" symbolic="YES" id="ccE-bh-2mg"/>
+                <constraint firstItem="22" firstAttribute="top" secondItem="38" secondAttribute="bottom" symbolic="YES" id="fE5-qO-Cw1"/>
+                <constraint firstItem="JXg-Pa-wL0" firstAttribute="trailing" secondItem="38" secondAttribute="trailing" id="gqA-07-l3o"/>
+                <constraint firstItem="22" firstAttribute="bottom" secondItem="JXg-Pa-wL0" secondAttribute="bottom" id="lSw-MS-cWc"/>
+                <constraint firstItem="HEg-7j-EHc" firstAttribute="top" secondItem="2" secondAttribute="topMargin" constant="-52" id="lon-Xf-JwL"/>
+                <constraint firstItem="zOJ-C7-I3n" firstAttribute="leading" secondItem="JXg-Pa-wL0" secondAttribute="leading" id="oY8-Xk-mPC"/>
+            </constraints>
             <nil key="simulatedStatusBarMetrics"/>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <viewLayoutGuide key="safeArea" id="JXg-Pa-wL0"/>
         </view>
     </objects>
     <resources>

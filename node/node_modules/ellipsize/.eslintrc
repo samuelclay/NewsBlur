@@ -1,0 +1,7 @@
+{
+  "env": {
+    "node": true,
+  },
+  "rules": {
+  }
+}

@@ -575,6 +575,7 @@ def load_single_feed(request, feed_id):
     # limit                   = int(request.REQUEST.get('limit', 6))
     limit                   = 6
     page                    = int(request.REQUEST.get('page', 1))
+    delay                   = int(request.REQUEST.get('delay', 0))
     offset                  = limit * (page-1)
     order                   = request.REQUEST.get('order', 'newest')
     read_filter             = request.REQUEST.get('read_filter', 'all')
@@ -782,10 +783,11 @@ def load_single_feed(request, feed_id):
     # if not usersub and feed.num_subscribers <= 1:
     #     data = dict(code=-1, message="You must be subscribed to this feed.")
     
-    # if page <= 3:
-    #     import random
-    #     # time.sleep(random.randint(2, 7) / 10.0)
-    #     time.sleep(random.randint(1, 10))
+    if delay and user.is_staff:
+        # import random
+        # time.sleep(random.randint(2, 7) / 10.0)
+        # time.sleep(random.randint(1, 10))
+        time.sleep(delay)
     
     # if page == 2:
     #     assert False
@@ -902,6 +904,25 @@ def load_starred_stories(request):
     unsub_feed_ids = list(set(story_feed_ids).difference(set(usersub_ids)))
     unsub_feeds    = Feed.objects.filter(pk__in=unsub_feed_ids)
     unsub_feeds    = dict((feed.pk, feed.canonical(include_favicon=False)) for feed in unsub_feeds)
+    for story in stories:
+        if story['story_feed_id'] in unsub_feeds: continue
+        duplicate_feed = DuplicateFeed.objects.filter(duplicate_feed_id=story['story_feed_id'])
+        if not duplicate_feed: continue
+        feed_id = duplicate_feed[0].feed_id
+        try:
+            saved_story = MStarredStory.objects.get(user_id=user.pk, story_hash=story['story_hash'])
+            saved_story.feed_id = feed_id
+            _, story_hash = MStory.split_story_hash(story['story_hash'])
+            saved_story.story_hash = "%s:%s" % (feed_id, story_hash)
+            saved_story.story_feed_id = feed_id
+            story['story_hash'] = saved_story.story_hash
+            story['story_feed_id'] = saved_story.story_feed_id
+            saved_story.save()
+            logging.user(request, "~FCSaving new feed for starred story: ~SB%s -> %s" % (story['story_hash'], feed_id))
+        except (MStarredStory.DoesNotExist):
+            logging.user(request, "~FCCan't find feed for starred story: ~SB%s" % (story['story_hash']))
+            continue
+    
     shared_story_hashes = MSharedStory.check_shared_story_hashes(user.pk, story_hashes)
     shared_stories = []
     if shared_story_hashes:
@@ -1612,6 +1633,7 @@ def mark_story_as_read(request):
 @ajax_login_required
 @json.json_view
 def mark_story_hashes_as_read(request):
+    retrying_failed = is_true(request.POST.get('retrying_failed', False))
     r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
     try:
         story_hashes = request.REQUEST.getlist('story_hash') or request.REQUEST.getlist('story_hash[]')
@@ -1644,8 +1666,10 @@ def mark_story_hashes_as_read(request):
             r.publish(request.user.username, 'feed:%s' % feed_id)
     
     hash_count = len(story_hashes)
-    logging.user(request, "~FYRead %s %s in feed/socialsubs: %s/%s" % (
-                 hash_count, 'story' if hash_count == 1 else 'stories', feed_ids, friend_ids))
+    logging.user(request, "~FYRead %s %s in feed/socialsubs: %s/%s: %s %s" % (
+                 hash_count, 'story' if hash_count == 1 else 'stories', feed_ids, friend_ids,
+                 story_hashes,
+                 '(retrying failed)' if retrying_failed else ''))
 
     return dict(code=1, story_hashes=story_hashes, 
                 feed_ids=feed_ids, friend_user_ids=friend_ids)
@@ -2455,7 +2479,7 @@ def _mark_story_as_unstarred(request):
                 MStarredStoryCounts.adjust_count(request.user.pk, tag=tag, amount=-1)
             except MStarredStoryCounts.DoesNotExist:
                 pass
-        # MStarredStoryCounts.schedule_count_tags_for_user(request.user.pk)
+        MStarredStoryCounts.schedule_count_tags_for_user(request.user.pk)
         MStarredStoryCounts.count_for_user(request.user.pk, total_only=True)
         starred_counts = MStarredStoryCounts.user_counts(request.user.pk)
         

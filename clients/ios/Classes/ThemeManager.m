@@ -83,7 +83,7 @@ NSString * const ThemeStyleDark = @"dark";
     } else if ([theme isEqualToString:ThemeStyleMedium]) {
         return @"Medium";
     } else {
-        return @"";
+        return @"Light";
     }
 }
 

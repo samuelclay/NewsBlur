@@ -1,5 +1,6 @@
 var assert = require('assert'),
-  require_optional = require('../');
+  require_optional = require('../'),
+  nestedTest = require('./nestedTest');
 
 describe('Require Optional', function() {
   describe('top level require', function() {
@@ -38,5 +39,21 @@ describe('Require Optional', function() {
       assert.equal(true, require_optional.exists('bson/lib/bson/long.js'));
       assert.equal(false, require_optional.exists('es6-promise2'));
     });
+  });
+
+  describe('require_optional inside dependencies', function() {
+    it('should correctly walk up module call stack searching for peerOptionalDependencies', function() {
+      assert.ok(nestedTest.findPackage('bson'))
+    });
+    it('should return null when a package is defined in top-level package.json but not installed', function() {
+      assert.equal(null, nestedTest.findPackage('es6-promise2'))
+    });
+    it('should error when searching for an optional dependency that is not defined in any ancestor package.json', function() {
+      try {
+        nestedTest.findPackage('bison')
+      } catch (err) {
+        assert.equal(err.message, 'no optional dependency [bison] defined in peerOptionalDependencies in any package.json')
+      }
+    })
   });
 });

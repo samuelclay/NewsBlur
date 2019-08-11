@@ -90,7 +90,7 @@ def facebook_connect(request):
     args = {
         "client_id": facebook_app_id,
         "redirect_uri": "http://" + Site.objects.get_current().domain + reverse('facebook-connect'),
-        "scope": "user_website,user_friends,publish_actions",
+        "scope": "user_friends",
         "display": "popup",
     }
 
