@@ -366,7 +366,7 @@ def htmldiff(old_html, new_html):
     return fixup_ins_del_tags(result)
 
 
-def create_signed_url(base_url, hmac_key, url):
+def create_camo_signed_url(base_url, hmac_key, url):
     """Create a camo signed URL for the specified image URL
     Args:
         base_url: Base URL of the camo installation

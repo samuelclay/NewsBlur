@@ -46,7 +46,7 @@ from utils.feed_functions import relative_timesince
 from utils.feed_functions import seconds_timesince
 from utils.story_functions import strip_tags, htmldiff, strip_comments, strip_comments__lxml
 from utils.story_functions import prep_for_search
-from utils.story_functions import create_signed_url
+from utils.story_functions import create_camo_signed_url
 
 ENTRY_NEW, ENTRY_UPDATED, ENTRY_SAME, ENTRY_ERR = range(4)
 
@@ -1908,9 +1908,9 @@ class Feed(models.Model):
     
     @classmethod
     def secure_image_urls(cls, urls):
-        signed_urls = [create_signed_url(settings.IMAGES_URL, 
-                                         settings.IMAGES_SECRET_KEY, 
-                                         url) for url in urls]
+        signed_urls = [create_camo_signed_url(settings.IMAGES_URL, 
+                                              settings.IMAGES_SECRET_KEY, 
+                                              url) for url in urls]
         return dict(zip(urls, signed_urls))
         
     def get_tags(self, entry):
