@@ -174,23 +174,49 @@
 		</dict>
 		<dict>
 			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
+			<string>PSMultiValueSpecifier</string>
 			<key>Title</key>
 			<string>Preview descriptions</string>
+			<key>Values</key>
+			<array>
+				<string>title</string>
+				<string>short</string>
+				<string>medium</string>
+				<string>long</string>
+			</array>
+			<key>Titles</key>
+			<array>
+				<string>Title only</string>
+				<string>Short title and content</string>
+				<string>Medium title and content</string>
+				<string>Long title and content</string>
+			</array>
 			<key>Key</key>
-			<string>story_list_preview_description</string>
+			<string>story_list_preview_text_size</string>
 			<key>DefaultValue</key>
-			<true/>
+			<string>short</string>
 		</dict>
 		<dict>
 			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
+			<string>PSMultiValueSpecifier</string>
 			<key>Title</key>
 			<string>Preview images</string>
+			<key>Titles</key>
+			<array>
+				<string>None</string>
+				<string>Small</string>
+				<string>Large</string>
+			</array>
+			<key>Values</key>
+			<array>
+				<string>none</string>
+				<string>small</string>
+				<string>large</string>
+			</array>
 			<key>Key</key>
-			<string>story_list_preview_images</string>
+			<string>story_list_preview_images_size</string>
 			<key>DefaultValue</key>
-			<true/>
+			<string>large</string>
 		</dict>
 		<dict>
 			<key>Title</key>
@@ -648,6 +674,16 @@
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 			<key>Title</key>
+			<string>Scroll horizontally</string>
+			<key>Key</key>
+			<string>scroll_stories_horizontally</string>
+			<key>DefaultValue</key>
+			<true/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
 			<string>Show public comments</string>
 			<key>Key</key>
 			<string>show_public_comments</string>
@@ -683,6 +719,64 @@
 			</array>
 			<key>Key</key>
 			<string>story_browser</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Restore position</string>
+			<key>Titles</key>
+			<array>
+				<string>Always</string>
+				<string>Within 1 hour</string>
+				<string>Within 2 hours</string>
+				<string>Within 4 hours</string>
+				<string>Within 6 hours</string>
+				<string>Within 8 hours</string>
+				<string>Within 12 hours</string>
+				<string>Within 1 day</string>
+				<string>Within 2 days</string>
+				<string>Within 1 week</string>
+				<string>Never</string>
+			</array>
+			<key>DefaultValue</key>
+			<string>24</string>
+			<key>Values</key>
+			<array>
+				<string>always</string>
+				<string>1</string>
+				<string>2</string>
+				<string>4</string>
+				<string>6</string>
+				<string>8</string>
+				<string>12</string>
+				<string>24</string>
+				<string>48</string>
+				<string>168</string>
+				<string>never</string>
+			</array>
+			<key>Key</key>
+			<string>restore_state</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Show autoscroll</string>
+			<key>DefaultValue</key>
+			<false/>
+			<key>Key</key>
+			<string>story_autoscroll</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Scroll horizontally</string>
+			<key>DefaultValue</key>
+			<string>YES</string>
+			<key>Key</key>
+			<string>scroll_stories_horizontally</string>
 		</dict>
 		<dict>
 			<key>Title</key>

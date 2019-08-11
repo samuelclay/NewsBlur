@@ -32,12 +32,15 @@
    used to store stories, read stories, feed/page fetch histories, and proxied sites.
  * [PostgreSQL](http://www.postgresql.com): Relational database, used to store feeds, 
    subscriptions, and user accounts.
-
+ * [Redis](http://redis.io): Programmer's database, used to assemble stories for the river, store story ids, manage feed fetching schedules, and the minuscule bit of caching that NewsBlur uses.
+ * [Elasticsearch](http://elasticsearch.org): Search database, use for searching stories. Optional.
+ 
 ### Client-side and design
 
  * [jQuery](http://www.jquery.com): Cross-browser compliant JavaScript code. IE works without effort.
  * [Underscore.js](http://underscorejs.org/): Functional programming for JavaScript. 
    Indispensible.
+ * [Backbone.js](http://backbonejs.org/): Framework for the web app. Also indispensible.
  * Miscellaneous jQuery Plugins: Everything from resizable layouts, to progress 
    bars, sortables, date handling, colors, corners, JSON, animations. 
    [See the complete list](https://github.com/samuelclay/NewsBlur/tree/master/media/js).
@@ -191,15 +194,15 @@ these after the installation below.
 If you are on Ubuntu, you can simply use [Fabric](http://docs.fabfile.org/) to install 
 NewsBlur and its many components. NewsBlur is designed to run on three separate servers: 
 an app server, a db server, and assorted task servers. To install everything on a single 
-machine, read through `fabfile.py` and setup all three servers without repeating the 
-`setup_common` steps.
+machine, read through `fabfile.py` and setup all three servers (app, db, and task) without
+repeating the `setup_common` steps.
 
 ### Finishing Installation
 
 You must perform a few tasks to tie all of the various systems together.
 
- 1. First, copy local_settings.py and fill in your OAuth keys, S3 keys, database names (if not `newsblur`),
-task server/broker address (RabbitMQ), and paths:
+ 1. First, copy local_settings.py and fill in your OAuth keys, S3 keys, database names 
+    (if not `newsblur`), task server/broker address (RabbitMQ), and paths:
 
         cp local_settings.py.template local_settings.py
     
@@ -291,7 +294,7 @@ You got the downtime message either through email or SMS. This is the order of o
     If you don't get a 502 page, then NewsBlur isn't even reachable and you just need to contact [the
     hosting provider](https://cloudsupport.digitalocean.com/s/createticket) and yell at them. 
 
- 2. Check which servers can't be reached on HAProxy stats page. Basic auth can be found in secrets/configs/haproxy.conf.
+ 2. Check which servers can't be reached on HAProxy stats page. Basic auth can be found in secrets/configs/haproxy.conf. Search the secrets repo for "gimmiestats".
  
     Typically it'll be mongo, but any of the redis or postgres servers can be unreachable due to
     acts of god. Otherwise, a frequent cause is lack of disk space. There are monitors on every DB

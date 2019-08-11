@@ -40,6 +40,10 @@ body {
 .NB-story-permalink {
     color: lightgray;
 }
+.NB-story-toggle-changes {
+    color: #c6c6c6;
+    text-shadow: 0 1px 0 rgba(28, 28, 28, .1);
+}
 .NB-story-date {
     color: #c6c6c6;
     text-shadow: 0 1px 0 rgba(28, 28, 28, .1);
@@ -115,6 +119,25 @@ a:active {
 .NB-story blockquote {
     border-left-color: #676264;
     background-color: #6c696a;
+}
+
+ins {
+    background-color: #475D49;
+    text-decoration: none;
+}
+
+del {
+    background-color: #685253
+    /*display: none;*/
+}
+
+.NB-story ins {
+    background-color: #475D49;
+    text-decoration: none
+}
+
+.NB-story del {
+    background-color: #685253
 }
 
 /* Comments */

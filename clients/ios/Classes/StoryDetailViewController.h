@@ -46,6 +46,8 @@ UIActionSheetDelegate> {
 @property (nonatomic, assign) BOOL inTextView;
 @property (nonatomic, assign) BOOL isRecentlyUnread;
 @property (nonatomic) BOOL hasStory;
+@property (nonatomic,  readonly) BOOL canHideNavigationBar;
+@property (nonatomic,  readonly) BOOL isSinglePage;
 
 @property NSInteger pageIndex;
 @property (nonatomic) MBProgressHUD *storyHUD;
@@ -54,6 +56,7 @@ UIActionSheetDelegate> {
 - (void)hideNoStoryMessage;
 - (void)drawStory;
 - (void)drawStory:(BOOL)force withOrientation:(UIInterfaceOrientation)orientation;
+- (void)updateStoryTheme;
 - (void)drawFeedGradient;
 - (void)showStory;
 - (void)clearStory;

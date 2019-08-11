@@ -37,6 +37,8 @@ XMLHttpRequest.XMLHttpRequest = XMLHttpRequest;
 function XMLHttpRequest(opts) {
   "use strict";
 
+  opts = opts || {};
+
   /**
    * Private variables
    */
@@ -61,7 +63,7 @@ function XMLHttpRequest(opts) {
     "Accept": "*/*"
   };
 
-  var headers = defaultHeaders;
+  var headers = Object.assign({}, defaultHeaders);
 
   // These headers are not user setable.
   // The following are allowed but banned in the spec:
@@ -378,10 +380,7 @@ function XMLHttpRequest(opts) {
       headers["Content-Length"] = 0;
     }
 
-    var agent = false;
-    if (opts && opts.agent) {
-      agent = opts.agent;
-    }
+    var agent = opts.agent || false;
     var options = {
       host: host,
       port: port,
@@ -474,9 +473,11 @@ function XMLHttpRequest(opts) {
 
         response.on('end', function() {
           if (sendFlag) {
+            // The sendFlag needs to be set before setState is called.  Otherwise if we are chaining callbacks
+            // there can be a timing issue (the callback is called and a new call is made before the flag is reset).
+            sendFlag = false;
             // Discard the 'end' event if the connection has been aborted
             setState(self.DONE);
-            sendFlag = false;
           }
         });
 
@@ -574,7 +575,7 @@ function XMLHttpRequest(opts) {
       request = null;
     }
 
-    headers = defaultHeaders;
+    headers = Object.assign({}, defaultHeaders);
     this.responseText = "";
     this.responseXML = "";
 

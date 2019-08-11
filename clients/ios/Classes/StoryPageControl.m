@@ -24,6 +24,14 @@
 #import "FMDatabase.h"
 #import "StoriesCollection.h"
 
+@interface StoryPageControl ()
+
+@property (nonatomic, strong) NSTimer *autoscrollTimer;
+@property (nonatomic, strong) NSTimer *autoscrollViewTimer;
+@property (nonatomic, strong) NSString *restoringStoryId;
+
+@end
+
 @implementation StoryPageControl
 
 @synthesize currentPage, nextPage, previousPage;
@@ -95,6 +103,15 @@
 	[self.scrollView setScrollEnabled:YES];
 	[self.scrollView setShowsHorizontalScrollIndicator:NO];
 	[self.scrollView setShowsVerticalScrollIndicator:NO];
+    [self.scrollView setAlwaysBounceHorizontal:self.isHorizontal];
+    [self.scrollView setAlwaysBounceVertical:!self.isHorizontal];
+    
+    if (@available(iOS 11.0, *)) {
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+            self.scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+        }
+    }
+    
 //    NSLog(@"Scroll view frame post: %@", NSStringFromCGRect(self.scrollView.frame));
 //    NSLog(@"Scroll view parent: %@", NSStringFromCGRect(currentPage.view.frame));
     [self.scrollView sizeToFit];
@@ -215,7 +232,7 @@
                          context:nil];
     
     _orientation = [UIApplication sharedApplication].statusBarOrientation;
-
+    
     [self addKeyCommandWithInput:UIKeyInputDownArrow modifierFlags:0 action:@selector(changeToNextPage:) discoverabilityTitle:@"Next Story"];
     [self addKeyCommandWithInput:@"j" modifierFlags:0 action:@selector(changeToNextPage:) discoverabilityTitle:@"Next Story"];
     [self addKeyCommandWithInput:UIKeyInputUpArrow modifierFlags:0 action:@selector(changeToPreviousPage:) discoverabilityTitle:@"Previous Story"];
@@ -239,10 +256,13 @@
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
+    [self updateAutoscrollButtons];
     [self updateTraverseBackground];
     [self setNextPreviousButtons];
     [self setTextButton];
-
+    
+    self.currentlyTogglingNavigationBar = NO;
+    
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     BOOL swipeEnabled = [[userPreferences stringForKey:@"story_detail_swipe_left_edge"]
                          isEqualToString:@"pop_to_story_list"];;
@@ -310,6 +330,7 @@
         }
     }
     
+    self.autoscrollView.alpha = 0;
     previousPage.view.hidden = YES;
     self.traverseView.alpha = 1;
     self.isAnimatedIntoPlace = NO;
@@ -342,6 +363,8 @@
     [self reorientPages];
 //    [self applyNewIndex:previousPage.pageIndex pageController:previousPage];
     previousPage.view.hidden = NO;
+//    [self showAutoscrollBriefly:YES];
+    
     [self becomeFirstResponder];
 }
 
@@ -361,6 +384,7 @@
     
     previousPage.view.hidden = YES;
     self.navigationController.interactivePopGestureRecognizer.enabled = YES;
+    self.autoscrollActive = NO;
 }
 
 - (BOOL)becomeFirstResponder {
@@ -424,6 +448,117 @@
     [self adjustDragBar:orientation];
 }
 
+- (BOOL)prefersStatusBarHidden {
+    return self.navigationController.navigationBarHidden;
+}
+
+- (BOOL)wantNavigationBarHidden {
+    NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
+    
+    return ([preferences boolForKey:@"story_full_screen"] || self.autoscrollAvailable) && !self.forceNavigationBarShown;
+}
+
+- (void)setNavigationBarHidden:(BOOL)hide {
+    [self setNavigationBarHidden:hide alsoTraverse:NO];
+}
+
+- (void)setNavigationBarHidden:(BOOL)hide alsoTraverse:(BOOL)alsoTraverse {
+    if (self.navigationController == nil || self.navigationController.navigationBarHidden == hide || self.currentlyTogglingNavigationBar) {
+        return;
+    }
+    
+    self.currentlyTogglingNavigationBar = YES;
+    
+    [self.navigationController setNavigationBarHidden:hide animated:YES];
+    
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+    BOOL swipeEnabled = [[userPreferences stringForKey:@"story_detail_swipe_left_edge"]
+                         isEqualToString:@"pop_to_story_list"];;
+    self.navigationController.interactivePopGestureRecognizer.enabled = swipeEnabled;
+    
+    if (hide) {
+        self.navigationController.interactivePopGestureRecognizer.delegate = self;
+    } else if (appDelegate.feedDetailViewController.standardInteractivePopGestureDelegate != nil) {
+        self.navigationController.interactivePopGestureRecognizer.delegate = appDelegate.feedDetailViewController.standardInteractivePopGestureDelegate;
+    }
+    
+    CGPoint oldOffset = currentPage.webView.scrollView.contentOffset;
+    CGFloat navHeight = self.navigationController.navigationBar.bounds.size.height;
+    CGFloat statusAdjustment = 20.0;
+    
+    if (@available(iOS 11.0, *)) {
+        // The top inset is zero when the status bar is hidden, so using the bottom one to confirm.
+        if (self.view.safeAreaInsets.top > 0.0 || self.view.safeAreaInsets.bottom > 0.0) {
+            statusAdjustment = 0.0;
+        }
+    }
+    
+    if (oldOffset.y < 0.0) {
+        oldOffset.y = 0.0;
+    }
+    
+    CGFloat sign = hide ? -1.0 : 1.0;
+    CGFloat absoluteAdjustment = navHeight + statusAdjustment;
+    CGFloat totalAdjustment = sign * absoluteAdjustment;
+    CGPoint newOffset = CGPointMake(oldOffset.x, oldOffset.y + totalAdjustment);
+    BOOL singlePage = currentPage.isSinglePage;
+    
+    if (alsoTraverse) {
+        self.traversePinned = YES;
+        self.traverseFloating = NO;
+        
+        if (!hide) {
+            int safeBottomMargin = 0;
+            
+            if (self.isPhoneOrCompact) {
+                if (@available(iOS 11.0, *)) {
+                    safeBottomMargin = -1 * self.view.safeAreaInsets.bottom/2;
+                }
+            }
+            
+            self.traverseBottomConstraint.constant = safeBottomMargin;
+            [self.view layoutIfNeeded];
+        }
+    }
+    
+    [UIView animateWithDuration:0.2 animations:^{
+        if (!self.isHorizontal) {
+            [self reorientPages];
+        }
+        
+        if (!singlePage) {
+            currentPage.webView.scrollView.contentOffset = newOffset;
+        }
+        
+        if (alsoTraverse) {
+             [self.view layoutIfNeeded];
+            self.traverseView.alpha = hide ? 0 : 1;
+            
+            if (hide) {
+                [self hideAutoscrollImmediately];
+            }
+        }
+    }];
+    
+    if (!hide) {
+        [self resizeScrollView];
+    }
+    
+    [UIView animateWithDuration:0.2 animations:^{
+        [self setNeedsStatusBarAppearanceUpdate];
+    } completion:^(BOOL finished) {
+        self.currentlyTogglingNavigationBar = NO;
+    }];
+}
+
+- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer {
+    return YES;
+}
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldBeRequiredToFailByGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
+    return ![otherGestureRecognizer isKindOfClass:[UIScreenEdgePanGestureRecognizer class]];
+}
+
 - (void)adjustDragBar:(UIInterfaceOrientation)orientation {
 //    CGRect scrollViewFrame = self.scrollView.frame;
 //    CGRect traverseViewFrame = self.traverseView.frame;
@@ -466,6 +601,10 @@
     if (!sender) return;
     
     [self performSelector:@selector(unhighlightButton:) withObject:sender afterDelay:0.2];
+}
+
+- (BOOL)isHorizontal {
+    return [[[NSUserDefaults standardUserDefaults] objectForKey:@"scroll_stories_horizontally"] boolValue];
 }
 
 - (void)resetPages {
@@ -520,8 +659,25 @@
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         frame = self.scrollView.bounds;
     }
-    frame.origin.x = frame.size.width * currentIndex;
-    frame.origin.y = 0;
+    
+    if (self.isHorizontal) {
+        frame.origin.x = frame.size.width * currentIndex;
+        frame.origin.y = 0;
+        
+//        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+//            if (@available(iOS 11.0, *)) {
+//                frame.origin.y -= self.view.safeAreaInsets.bottom;
+//            }
+//        }
+    } else {
+        frame.origin.x = 0;
+        frame.origin.y = frame.size.height * currentIndex;
+        
+        if (@available(iOS 11.0, *)) {
+            frame.origin.y -= self.view.safeAreaInsets.bottom;
+        }
+    }
+    
     [self.scrollView scrollRectToVisible:frame animated:NO];
 //    NSLog(@"---> Scrolling to story at: %@ %d-%d", NSStringFromCGRect(frame), currentPage.pageIndex, currentIndex);
     [MBProgressHUD hideHUDForView:self.view animated:YES];
@@ -546,13 +702,20 @@
 }
 
 - (void)resizeScrollView {
-    NSInteger widthCount = appDelegate.storiesCollection.storyLocationsCount;
-	if (widthCount == 0) {
-		widthCount = 1;
+    NSInteger storyCount = appDelegate.storiesCollection.storyLocationsCount;
+	if (storyCount == 0) {
+		storyCount = 1;
 	}
-    self.scrollView.contentSize = CGSizeMake(self.scrollView.bounds.size.width
-                                             * widthCount,
-                                             self.scrollView.bounds.size.height);
+    
+    if (self.isHorizontal) {
+        self.scrollView.contentSize = CGSizeMake(self.scrollView.bounds.size.width
+                                                 * storyCount,
+                                                 self.scrollView.bounds.size.height);
+    } else {
+        self.scrollView.contentSize = CGSizeMake(self.scrollView.bounds.size.width,
+                                                 self.scrollView.bounds.size.height
+                                                 * storyCount);
+    }
 }
 
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
@@ -591,6 +754,21 @@
     return UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone || appDelegate.isCompactWidth;
 }
 
+- (void)updateAutoscrollButtons {
+    self.autoscrollBackgroundImageView.image = [[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"traverse_background.png"]];
+    
+    [self.autoscrollDisableButton setBackgroundImage:[[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"autoscroll_off.png"]]  forState:UIControlStateNormal];
+    
+    if (self.autoscrollActive) {
+        [self.autoscrollPauseResumeButton setBackgroundImage:[[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"autoscroll_pause.png"]]  forState:UIControlStateNormal];
+    } else {
+        [self.autoscrollPauseResumeButton setBackgroundImage:[[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"autoscroll_resume.png"]]  forState:UIControlStateNormal];
+    }
+    
+    [self.autoscrollSlowerButton setBackgroundImage:[[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"autoscroll_slower.png"]]  forState:UIControlStateNormal];
+    [self.autoscrollFasterButton setBackgroundImage:[[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"autoscroll_faster.png"]]  forState:UIControlStateNormal];
+}
+
 - (void)updateTraverseBackground {
     self.textStorySendBackgroundImageView.image = [[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"traverse_background.png"]];
     self.prevNextBackgroundImageView.image = [[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"traverse_background.png"]];
@@ -601,15 +779,49 @@
 - (void)updateTheme {
     [super updateTheme];
     
+    [self updateAutoscrollButtons];
     [self updateTraverseBackground];
     [self setNextPreviousButtons];
     [self setTextButton];
-    [self drawStories];
+    [self updateStoriesTheme];
 }
 
 // allow keyboard comands
 - (BOOL)canBecomeFirstResponder {
     return YES;
+}
+
+#pragma mark -
+#pragma mark State Restoration
+
+- (void)encodeRestorableStateWithCoder:(NSCoder *)coder {
+    [super encodeRestorableStateWithCoder:coder];
+    
+    [coder encodeObject:currentPage.activeStoryId forKey:@"current_story_id"];
+    
+    [appDelegate.storiesCollection toggleStoryUnread];
+    self.temporarilyMarkedUnread = YES;
+}
+
+- (void)decodeRestorableStateWithCoder:(NSCoder *)coder {
+    [super decodeRestorableStateWithCoder:coder];
+    
+    self.restoringStoryId = [coder decodeObjectOfClass:[NSString class] forKey:@"current_story_id"];
+}
+
+- (void)restorePage {
+    if (self.restoringStoryId.length > 0) {
+        NSInteger pageIndex = [appDelegate.storiesCollection indexOfStoryId:self.restoringStoryId];
+        
+        if (pageIndex < 0) {
+            [appDelegate hideStoryDetailView];
+//            [self doNextUnreadStory:nil];
+        } else {
+            [self changePage:pageIndex animated:NO];
+        }
+        
+        self.restoringStoryId = nil;
+    }
 }
 
 #pragma mark -
@@ -628,27 +840,37 @@
     
 	if (!outOfBounds) {
         CGRect pageFrame = pageController.view.bounds;
-		pageFrame.origin.y = 0;
-		pageFrame.origin.x = CGRectGetWidth(self.scrollView.bounds) * newIndex;
+        if (self.isHorizontal) {
+            pageFrame.origin.y = 0;
+            pageFrame.origin.x = CGRectGetWidth(self.scrollView.bounds) * newIndex;
+        } else {
+            pageFrame.origin.y = CGRectGetHeight(self.scrollView.bounds) * newIndex;
+            pageFrame.origin.x = 0;
+        }
         pageFrame.size.height = CGRectGetHeight(self.scrollView.bounds);
         pageFrame.size.width = CGRectGetWidth(self.scrollView.bounds);
         pageController.view.hidden = NO;
 		pageController.view.frame = pageFrame;
 	} else {
-//        NSLog(@"Out of bounds: was %d, now %d", pageController.pageIndex, newIndex);
+//        NSLog(@"Out of bounds: was %@, now %@", @(pageController.pageIndex), @(newIndex));
 		CGRect pageFrame = pageController.view.bounds;
-		pageFrame.origin.x = CGRectGetWidth(self.scrollView.bounds) * newIndex;
-		pageFrame.origin.y = CGRectGetHeight(self.scrollView.bounds);
+        if (self.isHorizontal) {
+            pageFrame.origin.x = CGRectGetWidth(self.scrollView.bounds) * newIndex;
+            pageFrame.origin.y = CGRectGetHeight(self.scrollView.bounds);
+        } else {
+            pageFrame.origin.x = 0;
+            pageFrame.origin.y = CGRectGetHeight(self.scrollView.bounds) * newIndex;
+        }
         pageFrame.size.height = CGRectGetHeight(self.scrollView.bounds);
         pageFrame.size.width = CGRectGetWidth(self.scrollView.bounds);
         pageController.view.hidden = YES;
 		pageController.view.frame = pageFrame;
 	}
-//    NSLog(@"---> Story page control orient page: %@ (%d-%d)", NSStringFromCGRect(self.scrollView.bounds), pageController.pageIndex, suppressRedraw);
+//    NSLog(@"---> Story page control orient page: %@ (%@-%@)", NSStringFromCGRect(self.scrollView.bounds), @(pageController.pageIndex), suppressRedraw ? @"supress" : @"redraw");
 
     if (suppressRedraw) return;
     
-    //    NSInteger wasIndex = pageController.pageIndex;
+//    NSInteger wasIndex = pageController.pageIndex;
 	pageController.pageIndex = newIndex;
 //    NSLog(@"Applied Index to %@: Was %ld, now %ld (%ld/%ld/%ld) [%lu stories - %d] %@", pageController, (long)wasIndex, (long)newIndex, (long)previousPage.pageIndex, (long)currentPage.pageIndex, (long)nextPage.pageIndex, (unsigned long)[appDelegate.storiesCollection.activeFeedStoryLocations count], outOfBounds, NSStringFromCGRect(self.scrollView.frame));
     
@@ -658,7 +880,7 @@
             !appDelegate.feedDetailViewController.pageFinished &&
             !appDelegate.feedDetailViewController.pageFetching) {
             [appDelegate.feedDetailViewController fetchNextPage:^() {
-//                NSLog(@"Fetched next page, %d stories", [appDelegate.activeFeedStoryLocations count]);
+//                NSLog(@"Fetched next page, %@ stories", @([appDelegate.storiesCollection.activeFeedStoryLocations count]));
                 [self applyNewIndex:newIndex pageController:pageController];
             }];
         } else if (!appDelegate.feedDetailViewController.pageFinished &&
@@ -681,7 +903,7 @@
             __block StoryDetailViewController *blockPageController = pageController;
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0ul), ^{
                 if (blockPageController.activeStoryId && ![blockPageController.activeStoryId isEqualToString:originalStoryId]) {
-                    NSLog(@"Stale story, already drawn. Was: %@, Now: %@", originalStoryId, blockPageController.activeStoryId);
+//                    NSLog(@"Stale story, already drawn. Was: %@, Now: %@", originalStoryId, blockPageController.activeStoryId);
                     return;
                 }
                 dispatch_async(dispatch_get_main_queue(), ^{
@@ -709,8 +931,10 @@
 - (void)scrollViewDidScroll:(UIScrollView *)sender {
 //    [sender setContentOffset:CGPointMake(sender.contentOffset.x, 0)];
     if (inRotation) return;
-    CGFloat pageWidth = self.scrollView.frame.size.width;
-    float fractionalPage = self.scrollView.contentOffset.x / pageWidth;
+    CGSize size = self.scrollView.frame.size;
+    CGPoint offset = self.scrollView.contentOffset;
+    CGFloat pageAmount = self.isHorizontal ? size.width : size.height;
+    float fractionalPage = (self.isHorizontal ? offset.x : offset.y) / pageAmount;
 	
 	NSInteger lowerNumber = floor(fractionalPage);
 	NSInteger upperNumber = lowerNumber + 1;
@@ -719,7 +943,7 @@
     NSInteger storyCount = [appDelegate.storiesCollection.activeFeedStoryLocations count];
     if (storyCount == 0 || lowerNumber > storyCount) return;
     
-//    NSLog(@"Did Scroll: %f = %d (%d/%d/%d)", fractionalPage, lowerNumber, previousPage.pageIndex, currentPage.pageIndex, nextPage.pageIndex);
+//    NSLog(@"Did Scroll: %@ = %@ (%@/%@/%@)", @(fractionalPage), @(lowerNumber), @(previousPage.pageIndex), @(currentPage.pageIndex), @(nextPage.pageIndex));
 	if (lowerNumber == currentPage.pageIndex) {
 		if (upperNumber != nextPage.pageIndex) {
 //            NSLog(@"Next was %d, now %d (A)", nextPage.pageIndex, upperNumber);
@@ -760,9 +984,14 @@
         [self setStoryFromScroll];
 //    }
     
+    [self showAutoscrollBriefly:YES];
+    
     // Stick to bottom
     traversePinned = YES;
-    if (@available(iOS 11.0, *)) {
+    
+    if (!self.isPhoneOrCompact) {
+        self.traverseBottomConstraint.constant = 0;
+    } else if (@available(iOS 11.0, *)) {
         self.traverseBottomConstraint.constant = -1 * self.view.safeAreaInsets.bottom/2;
     } else {
         self.traverseBottomConstraint.constant = 0;
@@ -795,8 +1024,10 @@
 - (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)newScrollView
 {
     self.isDraggingScrollview = NO;
-    CGFloat pageWidth = self.scrollView.frame.size.width;
-    float fractionalPage = self.scrollView.contentOffset.x / pageWidth;
+    CGSize size = self.scrollView.frame.size;
+    CGPoint offset = self.scrollView.contentOffset;
+    CGFloat pageAmount = self.isHorizontal ? size.width : size.height;
+    float fractionalPage = (self.isHorizontal ? offset.x : offset.y) / pageAmount;
 	NSInteger nearestNumber = lround(fractionalPage);
     self.scrollingToPage = nearestNumber;
     [self setStoryFromScroll];
@@ -809,11 +1040,15 @@
     if (!self.isPhoneOrCompact &&
         [keyPath isEqual:@"contentOffset"] &&
         self.isDraggingScrollview) {
-        CGFloat pageWidth = self.scrollView.frame.size.width;
-        float fractionalPage = self.scrollView.contentOffset.x / pageWidth;
+        CGSize size = self.scrollView.frame.size;
+        CGPoint offset = self.scrollView.contentOffset;
+        CGFloat pageAmount = self.isHorizontal ? size.width : size.height;
+        float fractionalPage = (self.isHorizontal ? offset.x : offset.y) / pageAmount;
         NSInteger nearestNumber = lround(fractionalPage);
         
         if (![appDelegate.storiesCollection.activeFeedStories count]) return;
+        
+//        NSLog(@"observe content offset: fractional page %@", @(fractionalPage));  // log
         
         NSInteger storyIndex = [appDelegate.storiesCollection indexFromLocation:nearestNumber];
         if (storyIndex != [appDelegate.storiesCollection indexOfActiveStory] && storyIndex != NSNotFound) {
@@ -829,14 +1064,25 @@
     if (!self.isPhoneOrCompact &&
         !self.isAnimatedIntoPlace) {
         CGRect frame = self.scrollView.frame;
-        frame.origin.x = frame.size.width;
+        
+        if (self.isHorizontal) {
+            frame.origin.x = frame.size.width;
+        } else {
+            frame.origin.y = frame.size.height;
+        }
+        
         self.scrollView.frame = frame;
+        
         [UIView animateWithDuration:(animated ? .22 : 0) delay:0
                             options:UIViewAnimationOptionCurveEaseInOut
                          animations:^
         {
             CGRect frame = self.scrollView.frame;
-            frame.origin.x = 0;
+            if (self.isHorizontal) {
+                frame.origin.x = 0;
+            } else {
+                frame.origin.y = 0;
+            }
             self.scrollView.frame = frame;
         } completion:^(BOOL finished) {
             self.isAnimatedIntoPlace = YES;
@@ -849,12 +1095,24 @@
 }
 
 - (void)changePage:(NSInteger)pageIndex animated:(BOOL)animated {
-//    NSLog(@"changePage to %d (animated: %d)", pageIndex, animated);
+//    NSLog(@"changePage to %@ (%@animated)", @(pageIndex), animated ? @"" : @"not ");
+    
 	// update the scroll view to the appropriate page
     [self resizeScrollView];
     CGRect frame = self.scrollView.frame;
-    frame.origin.x = frame.size.width * pageIndex;
-    frame.origin.y = 0;
+    CGPoint offset = self.scrollView.contentOffset;
+    
+    if (self.isHorizontal) {
+        frame.origin.x = frame.size.width * pageIndex;
+        frame.origin.y = 0;
+    } else {
+        frame.origin.x = 0;
+        frame.origin.y = frame.size.height * pageIndex;
+        
+        if (@available(iOS 11.0, *)) {
+            frame.origin.y -= self.view.safeAreaInsets.bottom;
+        }
+    }
 
     self.scrollingToPage = pageIndex;
     [self.currentPage hideNoStoryMessage];
@@ -862,7 +1120,7 @@
     [self.previousPage hideNoStoryMessage];
     
     // Check if already on the selected page
-    if (self.scrollView.contentOffset.x == frame.origin.x) {
+    if (self.isHorizontal ? offset.x == frame.origin.x : offset.y == frame.origin.y) {
         [self applyNewIndex:pageIndex pageController:currentPage];
         [self setStoryFromScroll];
     } else {
@@ -875,23 +1133,24 @@
 }
 
 - (void)changeToNextPage:(id)sender {
-    NSInteger nextPageIndex = nextPage.pageIndex;
-    if (nextPageIndex < 0 && currentPage.pageIndex < 0) {
+    if (nextPage.pageIndex < 0 && currentPage.pageIndex < 0) {
         // just displaying a placeholder - display the first story instead
         [self changePage:0 animated:YES];
         return;
     }
-    [self changePage:nextPageIndex animated:YES];
+    
+    [self changePage:currentPage.pageIndex + 1 animated:YES];
 }
 
 - (void)changeToPreviousPage:(id)sender {
-    NSInteger previousPageIndex = previousPage.pageIndex;
-    if (previousPageIndex < 0) {
-        if (currentPage.pageIndex < 0)
+    if (previousPage.pageIndex < 0) {
+        if (currentPage.pageIndex < 0) {
             [self changeToNextPage:sender];
+        }
         return;
     }
-    [self changePage:previousPageIndex animated:YES];
+    
+    [self changePage:currentPage.pageIndex - 1 animated:YES];
 }
 
 - (void)setStoryFromScroll {
@@ -899,26 +1158,30 @@
 }
 
 - (void)setStoryFromScroll:(BOOL)force {
-    CGFloat pageWidth = self.scrollView.bounds.size.width;
-    float fractionalPage = self.scrollView.contentOffset.x / pageWidth;
+    CGSize size = self.scrollView.bounds.size;
+    CGPoint offset = self.scrollView.contentOffset;
+    CGFloat pageAmount = self.isHorizontal ? size.width : size.height;
+    float fractionalPage = (self.isHorizontal ? offset.x : offset.y) / pageAmount;
 	NSInteger nearestNumber = lround(fractionalPage);
+    
+//    NSLog(@"setStoryFromScroll: fractional page %@", @(fractionalPage));  // log
     
     if (!force && currentPage.pageIndex >= 0 &&
         currentPage.pageIndex == nearestNumber &&
         currentPage.pageIndex != self.scrollingToPage) {
-//        NSLog(@"Skipping setStoryFromScroll: currentPage is %d (%d, %d)", currentPage.pageIndex, nearestNumber, self.scrollingToPage);
+//        NSLog(@"Skipping setStoryFromScroll: currentPage is %@ (%@, %@)", @(currentPage.pageIndex), @(nearestNumber), @(self.scrollingToPage));
         return;
     }
     
 	if (currentPage.pageIndex < nearestNumber) {
-//        NSLog(@"Swap next into current, current into previous: %d / %d", currentPage.pageIndex, nearestNumber);
+//        NSLog(@"Swap next into current, current into previous: %@ / %@", @(currentPage.pageIndex), @(nearestNumber));
 		StoryDetailViewController *swapCurrentController = currentPage;
 		StoryDetailViewController *swapPreviousController = previousPage;
 		currentPage = nextPage;
 		previousPage = swapCurrentController;
         nextPage = swapPreviousController;
 	} else if (currentPage.pageIndex > nearestNumber) {
-//        NSLog(@"Swap previous into current: %d / %d", currentPage.pageIndex, nearestNumber);
+//        NSLog(@"Swap previous into current: %@ / %@", @(currentPage.pageIndex), @(nearestNumber));
 		StoryDetailViewController *swapCurrentController = currentPage;
 		StoryDetailViewController *swapNextController = nextPage;
 		currentPage = previousPage;
@@ -926,7 +1189,10 @@
         previousPage = swapNextController;
     }
     
-//    NSLog(@"Set Story from scroll: %f = %d (%d/%d/%d)", fractionalPage, nearestNumber, previousPage.pageIndex, currentPage.pageIndex, nextPage.pageIndex);
+//    NSLog(@"Set Story from scroll: %@ = %@ (%@/%@/%@)", @(fractionalPage), @(nearestNumber), @(previousPage.pageIndex), @(currentPage.pageIndex), @(nextPage.pageIndex));
+    
+    self.autoscrollActive = NO;
+//    [self showAutoscrollBriefly:YES];
     
     nextPage.webView.scrollView.scrollsToTop = NO;
     previousPage.webView.scrollView.scrollsToTop = NO;
@@ -937,10 +1203,22 @@
     }
     self.scrollView.scrollsToTop = NO;
     
+    NSInteger topPosition = currentPage.webView.scrollView.contentOffset.y;
+    BOOL canHide = currentPage.canHideNavigationBar && topPosition >= 0;
+    
+    if (!canHide && self.isHorizontal && self.navigationController.navigationBarHidden) {
+        [self setNavigationBarHidden:NO];
+    }
+    
     if (self.isDraggingScrollview || self.scrollingToPage == currentPage.pageIndex) {
         if (currentPage.pageIndex == -2) return;
         self.scrollingToPage = -1;
         NSInteger storyIndex = [appDelegate.storiesCollection indexFromLocation:currentPage.pageIndex];
+        
+        if (storyIndex < 0) {
+            NSLog(@"invalid story index: %@ for page index: %@", @(storyIndex), @(currentPage.pageIndex));  // log
+        }
+        
         appDelegate.activeStory = [appDelegate.storiesCollection.activeFeedStories objectAtIndex:storyIndex];
         [self updatePageWithActiveStory:currentPage.pageIndex];
         if ([appDelegate.storiesCollection isStoryUnread:appDelegate.activeStory]) {
@@ -954,6 +1232,11 @@
 }
 
 - (void)advanceToNextUnread {
+    if (self.restoringStoryId.length > 0) {
+        [self restorePage];
+        return;
+    }
+    
     if (!self.waitingForNextUnreadFromServer) {
         return;
     }
@@ -1024,8 +1307,12 @@
         [buttonPrevious setEnabled:YES];
     }
     
-    [buttonPrevious setBackgroundImage:[[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"traverse_previous.png"]]
+    NSString *previousName = self.isHorizontal ? @"traverse_previous.png" : @"traverse_previous_vert.png";
+    NSString *previousNameOff = self.isHorizontal ? @"traverse_previous_off.png" : @"traverse_previous_off_vert.png";
+    [buttonPrevious setBackgroundImage:[[ThemeManager themeManager] themedImage:[UIImage imageNamed:previousName]]
                               forState:UIControlStateNormal];
+    [buttonPrevious setBackgroundImage:[[ThemeManager themeManager] themedImage:[UIImage imageNamed:previousNameOff]]
+                              forState:UIControlStateDisabled];
     
     // setting up the NEXT UNREAD STORY BUTTON
     buttonNext.enabled = YES;
@@ -1034,8 +1321,9 @@
     BOOL pageFinished = appDelegate.feedDetailViewController.pageFinished;
     if ((nextIndex == -1 && unreadCount > 0 && !pageFinished) ||
         nextIndex != -1) {
+        NSString *nextName = self.isHorizontal ? @"traverse_next.png" : @"traverse_next_vert.png";
         [buttonNext setTitle:[@"Next" uppercaseString] forState:UIControlStateNormal];
-        [buttonNext setBackgroundImage:[[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"traverse_next.png"]]
+        [buttonNext setBackgroundImage:[[ThemeManager themeManager] themedImage:[UIImage imageNamed:nextName]]
                               forState:UIControlStateNormal];
     } else {
         [buttonNext setTitle:[@"Done" uppercaseString] forState:UIControlStateNormal];
@@ -1230,10 +1518,29 @@
     [self.previousPage changeLineSpacing:lineSpacing];
 }
 
-- (void)drawStories {
-    [self.currentPage drawStory];
-    [self.nextPage drawStory];
-    [self.previousPage drawStory];
+- (void)changedFullscreen {
+    BOOL wantHidden = self.wantNavigationBarHidden;
+    BOOL isHidden = self.navigationController.navigationBarHidden;
+    
+    if (self.currentPage.webView.scrollView.contentOffset.y > 10 || isHidden) {
+        [self setNavigationBarHidden:wantHidden alsoTraverse:YES];
+    }
+}
+
+- (void)changedAutoscroll {
+    self.autoscrollActive = self.autoscrollAvailable;
+}
+
+- (void)changedScrollOrientation {
+    [self.scrollView setAlwaysBounceHorizontal:self.isHorizontal];
+    [self.scrollView setAlwaysBounceVertical:!self.isHorizontal];
+    [self reorientPages];
+}
+
+- (void)updateStoriesTheme {
+    [self.currentPage updateStoryTheme];
+    [self.nextPage updateStoryTheme];
+    [self.previousPage updateStoryTheme];
 }
 
 - (void)backToDashboard:(id)sender {
@@ -1268,6 +1575,153 @@
 
 - (void)hideNotifier {
     [self.notifier hide];
+}
+
+#pragma mark -
+#pragma mark Story Autoscroll
+
+- (BOOL)autoscrollAvailable {
+    return [[NSUserDefaults standardUserDefaults] boolForKey:@"story_autoscroll"];
+}
+
+- (void)setAutoscrollAvailable:(BOOL)available {
+    [[NSUserDefaults standardUserDefaults] setBool:available forKey:@"story_autoscroll"];
+}
+
+- (NSTimeInterval)autoscrollSpeed {
+    CGFloat speed = [[NSUserDefaults standardUserDefaults] doubleForKey:@"story_autoscroll_speed"];
+    
+    if (speed <= 0) {
+        speed = 0.03;
+    }
+    
+    return speed;
+}
+
+- (void)setAutoscrollSpeed:(NSTimeInterval)speed {
+    [[NSUserDefaults standardUserDefaults] setDouble:speed forKey:@"story_autoscroll_speed"];
+    
+    // This will update the timer with the new speed.
+    self.autoscrollActive = self.autoscrollActive;
+    
+    NSLog(@"set autoscroll speed to: %@", @(speed));  // log
+}
+
+- (BOOL)autoscrollActive {
+    return self.autoscrollTimer != nil;
+}
+
+- (void)setAutoscrollActive:(BOOL)active {
+    [self.autoscrollTimer invalidate];
+    self.autoscrollTimer = nil;
+    
+    if (active && self.autoscrollAvailable) {
+        self.autoscrollTimer = [NSTimer scheduledTimerWithTimeInterval:self.autoscrollSpeed target:self selector:@selector(autoscroll:) userInfo:nil repeats:YES];
+    }
+    
+    [self updateAutoscrollButtons];
+}
+
+- (void)autoscroll:(NSTimer *)timer {
+    UIWebView *webView = self.currentPage.webView;
+    CGFloat position = webView.scrollView.contentOffset.y + 0.5;
+    CGFloat maximum = webView.scrollView.contentSize.height - webView.frame.size.height;
+    
+    if (@available(iOS 11.0, *)) {
+        maximum += self.view.safeAreaInsets.bottom;
+    }
+    
+    if (position < maximum) {
+        [webView.scrollView setContentOffset:CGPointMake(0, position) animated:NO];
+    } else {
+        self.autoscrollActive = NO;
+    }
+}
+
+- (void)showAutoscrollBriefly:(BOOL)briefly {
+    if (!self.autoscrollAvailable || self.currentPage.webView.scrollView.contentSize.height - 200 <= self.currentPage.view.frame.size.height) {
+        [self hideAutoscrollWithAnimation];
+        return;
+    }
+    
+    if (self.autoscrollView.alpha == 0) {
+        if (self.isPhoneOrCompact) {
+            self.autoscrollBottomConstraint.constant = 50;
+        } else {
+            self.autoscrollBottomConstraint.constant = 0;
+        }
+        
+        [self.view layoutIfNeeded];
+        
+        [UIView animateWithDuration:0.2 animations:^{
+            [self.view layoutIfNeeded];
+            self.autoscrollView.alpha = 1;
+        }];
+    }
+    
+    if (briefly) {
+        [self hideAutoscrollAfterDelay];
+    }
+}
+
+- (void)hideAutoscrollAfterDelay {
+    [self.autoscrollViewTimer invalidate];
+    self.autoscrollViewTimer = [NSTimer scheduledTimerWithTimeInterval:2 target:self selector:@selector(hideAutoscrollWithAnimation) userInfo:nil repeats:NO];
+}
+
+- (void)hideAutoscrollWithAnimation {
+    [self.autoscrollViewTimer invalidate];
+    self.autoscrollViewTimer = nil;
+    
+    [UIView animateWithDuration:1 animations:^{
+        [self.view layoutIfNeeded];
+        self.autoscrollView.alpha = 0;
+    }];
+}
+
+- (void)hideAutoscrollImmediately {
+    [self.autoscrollViewTimer invalidate];
+    self.autoscrollViewTimer = nil;
+    self.autoscrollView.alpha = 0;
+}
+
+- (void)resetAutoscrollViewTimerIfNeeded {
+    if (self.autoscrollViewTimer != nil) {
+        [self hideAutoscrollAfterDelay];
+    }
+}
+
+- (IBAction)autoscrollDisable:(UIButton *)sender {
+    self.autoscrollAvailable = NO;
+    self.autoscrollActive = NO;
+    
+    [self hideAutoscrollWithAnimation];
+}
+
+- (IBAction)autoscrollPauseResume:(UIButton *)sender {
+    self.autoscrollActive = !self.autoscrollActive;
+    
+    [self resetAutoscrollViewTimerIfNeeded];
+}
+
+- (IBAction)autoscrollSlower:(UIButton *)sender {
+    if (self.autoscrollSpeed < 1) {
+        self.autoscrollSpeed = self.autoscrollSpeed * 2; // + 0.05;
+    } else {
+        NSLog(@"Minimum autoscroll speed reached");  // log
+    }
+    
+    [self resetAutoscrollViewTimerIfNeeded];
+}
+
+- (IBAction)autoscrollFaster:(UIButton *)sender {
+    if (self.autoscrollSpeed > 0.001) {
+        self.autoscrollSpeed = self.autoscrollSpeed / 2; // - 0.05;
+    } else {
+        NSLog(@"Maximum autoscroll speed reached");  // log
+    }
+    
+    [self resetAutoscrollViewTimerIfNeeded];
 }
 
 #pragma mark -

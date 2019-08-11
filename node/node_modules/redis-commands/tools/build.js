@@ -1,6 +1,6 @@
 var fs = require('fs')
 var path = require('path')
-var stringify = require('json-stable-stringify')
+var stringify = require('safe-stable-stringify')
 var commandPath = path.join(__dirname, '..', 'commands.json')
 var redisCommands = require('../')
 
@@ -54,9 +54,9 @@ redis.command().then(function (res) {
     throw new Error('Not all commands (\'' + movableKeys.join('\', \'') + '\') with the "movablekeys" flag are handled in the code')
   }
 
-  // Use json-stable-stringify instead fo JSON.stringify
+  // Use safe-stable-stringify instead fo JSON.stringify
   // for easier diffing
-  var content = stringify(commands, { space: '  ' })
+  var content = stringify(commands, null, '  ')
 
-  fs.writeFile(commandPath, content)
+  fs.writeFileSync(commandPath, content)
 })

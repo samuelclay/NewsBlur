@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.newsblur.util.AppConstants;
-import com.newsblur.service.NBSyncService;
 
 /**
  * First receiver in the chain that starts with the device.  Simply schedules another broadcast
@@ -29,7 +28,9 @@ public class BootReceiver extends BroadcastReceiver {
         builder.setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY);
         builder.setPersisted(true);
         JobScheduler sched = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
-        sched.schedule(builder.build());
+
+        int result = sched.schedule(builder.build());
+        com.newsblur.util.Log.d("BootReceiver", String.format("Scheduling result: %s - %s", result, result == 0 ? "Failure" : "Success"));
     }
         
 }

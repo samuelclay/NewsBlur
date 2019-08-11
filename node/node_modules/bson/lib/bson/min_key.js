@@ -5,8 +5,8 @@
  * @return {MinKey} A MinKey instance
  */
 function MinKey() {
-  if(!(this instanceof MinKey)) return new MinKey();
-  
+  if (!(this instanceof MinKey)) return new MinKey();
+
   this._bsontype = 'MinKey';
 }
 

@@ -16,7 +16,6 @@
 var debug = require('debug')('express:view');
 var path = require('path');
 var fs = require('fs');
-var utils = require('./utils');
 
 /**
  * Module variables.
@@ -75,7 +74,17 @@ function View(name, options) {
 
   if (!opts.engines[this.ext]) {
     // load engine
-    opts.engines[this.ext] = require(this.ext.substr(1)).__express;
+    var mod = this.ext.substr(1)
+    debug('require "%s"', mod)
+
+    // default engine export
+    var fn = require(mod).__express
+
+    if (typeof fn !== 'function') {
+      throw new Error('Module "' + mod + '" does not provide a view engine.')
+    }
+
+    opts.engines[this.ext] = fn
   }
 
   // store loaded engine

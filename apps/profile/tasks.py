@@ -63,6 +63,7 @@ class CleanupUser(Task):
         MInteraction.trim(user_id)
         MActivity.trim(user_id)
         UserSubscriptionFolders.add_missing_feeds_for_user(user_id)
+        UserSubscriptionFolders.compact_for_user(user_id)
         # UserSubscription.refresh_stale_feeds(user_id)
         
         try:
@@ -78,5 +79,12 @@ class CleanSpam(Task):
     def run(self, **kwargs):
         logging.debug(" ---> Finding spammers...")
         Profile.clear_dead_spammers(confirm=True)
+
+class ReimportStripeHistory(Task):
+    name = 'reimport-stripe-history'
+
+    def run(self, **kwargs):
+        logging.debug(" ---> Reimporting Stripe history...")
+        Profile.reimport_stripe_history(limit=10, days=1)
             
 

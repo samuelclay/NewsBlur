@@ -35,20 +35,21 @@
 #pragma mark - Instance Methods
 
 - (NSString *)convertHTML {
-    NSScanner *myScanner;
-    NSString *text = nil;
-    NSString *html = self;
-    myScanner = [NSScanner scannerWithString:html];
+    NSScanner *scanner = [NSScanner scannerWithString:self];
+    NSMutableString *output = [NSMutableString string];
+    NSString *string = nil;
     
-    while ([myScanner isAtEnd] == NO) {
-        [myScanner scanUpToString:@"<" intoString:NULL] ;
-        [myScanner scanUpToString:@">" intoString:&text] ;
-        html = [html stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"%@>", text] withString:@""];
+    while ([scanner isAtEnd] == NO) {
+        if ([scanner scanUpToString:@"<" intoString:&string] == YES && string != nil) {
+            [output appendString:string];
+            [output appendString:@" "];
+        }
+        
+        [scanner scanUpToString:@">" intoString:NULL];
+        [scanner scanString:@">" intoString:NULL];
     }
-
-    html = [html stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
     
-    return html;
+    return [output stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
 }
 
 - (NSString *)stringByDecodingXMLEntities {

@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="13529" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina3_5" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13527"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14490.49"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -24,15 +24,15 @@
             </connections>
         </placeholder>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
-        <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="6">
+        <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" restorationIdentifier="RootView" id="6">
             <rect key="frame" x="0.0" y="0.0" width="320" height="480"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="85">
-                    <rect key="frame" x="0.0" y="0.0" width="320" height="436"/>
+                    <rect key="frame" x="0.0" y="0.0" width="320" height="416"/>
                     <subviews>
-                        <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" bouncesZoom="NO" style="plain" separatorStyle="none" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="8" userLabel="Table View">
-                            <rect key="frame" x="0.0" y="0.0" width="320" height="436"/>
+                        <tableView clipsSubviews="YES" contentMode="scaleToFill" restorationIdentifier="FeedTitlesTable" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" bouncesZoom="NO" style="plain" separatorStyle="none" rowHeight="6" estimatedRowHeight="6" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="8" userLabel="Table View">
+                            <rect key="frame" x="0.0" y="0.0" width="320" height="416"/>
                             <color key="backgroundColor" cocoaTouchSystemColor="lightTextColor"/>
                             <connections>
                                 <outlet property="dataSource" destination="-1" id="36"/>
@@ -40,7 +40,7 @@
                             </connections>
                         </tableView>
                         <view hidden="YES" opaque="NO" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="122">
-                            <rect key="frame" x="92" y="125" width="136" height="195"/>
+                            <rect key="frame" x="92" y="115" width="136" height="195"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                             <subviews>
                                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" fixedFrame="YES" text="You have no unread stories in Focus mode." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="123">
@@ -74,7 +74,7 @@
                     </constraints>
                 </view>
                 <toolbar clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translucent="NO" translatesAutoresizingMaskIntoConstraints="NO" id="11">
-                    <rect key="frame" x="0.0" y="436" width="320" height="44"/>
+                    <rect key="frame" x="0.0" y="416" width="320" height="64"/>
                     <items>
                         <barButtonItem image="nav_icn_add.png" width="34" style="plain" id="106">
                             <connections>
@@ -84,7 +84,7 @@
                         <barButtonItem style="plain" systemItem="flexibleSpace" id="104"/>
                         <barButtonItem id="56">
                             <segmentedControl key="customView" contentMode="center" contentHorizontalAlignment="left" contentVerticalAlignment="top" apportionsSegmentWidthsByContent="YES" segmentControlStyle="plain" selectedSegmentIndex="0" id="55">
-                                <rect key="frame" x="41.5" y="7.5" width="237" height="29"/>
+                                <rect key="frame" x="41.5" y="17.5" width="237.5" height="29"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <segments>
                                     <segment title="" image="all.png" width="36"/>
@@ -125,12 +125,12 @@
         </view>
     </objects>
     <resources>
-        <image name="all.png" width="19" height="12"/>
-        <image name="big_world.png" width="128" height="128"/>
-        <image name="nav_icn_add.png" width="34" height="44"/>
-        <image name="nav_icn_settings.png" width="32" height="25"/>
-        <image name="unread_blue.png" width="49" height="12"/>
-        <image name="unread_green.png" width="49" height="12"/>
-        <image name="unread_yellow.png" width="58" height="12"/>
+        <image name="all.png" width="19.5" height="12.5"/>
+        <image name="big_world.png" width="30.719999313354492" height="30.719999313354492"/>
+        <image name="nav_icn_add.png" width="49.454544067382812" height="64"/>
+        <image name="nav_icn_settings.png" width="15.359999656677246" height="12.239999771118164"/>
+        <image name="unread_blue.png" width="49.5" height="12.5"/>
+        <image name="unread_green.png" width="49" height="12.5"/>
+        <image name="unread_yellow.png" width="58" height="12.5"/>
     </resources>
 </document>

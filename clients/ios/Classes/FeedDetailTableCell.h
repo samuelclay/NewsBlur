@@ -10,6 +10,14 @@
 #import "NewsBlurAppDelegate.h"
 #import "NBSwipeableCell.h"
 
+typedef NS_ENUM(NSUInteger, FeedDetailTextSize)
+{
+    FeedDetailTextSizeTitleOnly = 0,
+    FeedDetailTextSizeShort,
+    FeedDetailTextSizeMedium,
+    FeedDetailTextSizeLong
+};
+
 @interface FeedDetailTableCell : NBSwipeableCell {
     NewsBlurAppDelegate *appDelegate;
     
@@ -30,7 +38,6 @@
     NSString *siteTitle;
     UIImage *siteFavicon;
     BOOL isRead;
-    BOOL isShort;
     BOOL isRiverOrSocial;
     BOOL hasAlpha;
 
@@ -63,6 +70,8 @@
 @property (readwrite) BOOL isRiverOrSocial;
 @property (readwrite) BOOL hasAlpha;
 @property (readwrite) BOOL inDashboard;
+
+@property (nonatomic) FeedDetailTextSize textSize;
 
 - (void)setupGestures;
 

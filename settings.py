@@ -48,7 +48,9 @@ SERVER_NAME  = 'newsblur'
 SERVER_EMAIL = 'server@newsblur.com'
 HELLO_EMAIL  = 'hello@newsblur.com'
 NEWSBLUR_URL = 'http://www.newsblur.com'
+IMAGES_URL   = 'https://images.newsblur.com'
 SECRET_KEY            = 'YOUR_SECRET_KEY'
+IMAGES_SECRET_KEY = "YOUR_SECRET_IMAGE_KEY"
 
 # ===================
 # = Global Settings =
@@ -79,6 +81,10 @@ ALLOWED_HOSTS         = ['*']
 AUTO_PREMIUM_NEW_USERS = False
 AUTO_ENABLE_NEW_USERS = True
 PAYPAL_TEST           = False
+
+# Uncomment below to force all feeds to store this many stories. Default is to cut 
+# off at 25 stories for single subscriber non-premium feeds and 500 for popular feeds.
+# OVERRIDE_STORY_COUNT_MAX = 1000
 
 # ===========================
 # = Django-specific Modules =
@@ -472,6 +478,11 @@ CELERYBEAT_SCHEDULE = {
         'task': 'clean-analytics',
         'schedule': datetime.timedelta(hours=12),
         'options': {'queue': 'beat_tasks', 'timeout': 720*10},
+    },
+    'reimport-stripe-history': {
+        'task': 'reimport-stripe-history',
+        'schedule': datetime.timedelta(hours=6),
+        'options': {'queue': 'beat_tasks'},
     },
     'clean-spam': {
         'task': 'clean-spam',

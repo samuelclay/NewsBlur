@@ -2500,7 +2500,7 @@
         
         send_story_to_instapaper: function(story_id) {
             var story = this.model.get_story(story_id);
-            var url = 'http://www.instapaper.com/edit';
+            var url = 'https://www.instapaper.com/edit';
             var instapaper_url = [
               url,
               '?url=',
@@ -2528,7 +2528,7 @@
         
         send_story_to_tumblr: function(story_id) {
             var story = this.model.get_story(story_id);
-            var url = 'http://www.tumblr.com/share';
+            var url = 'https://www.tumblr.com/share';
             var tumblr_url = [
               url,
               '?v=3&u=',
@@ -2570,13 +2570,14 @@
         
         send_story_to_twitter: function(story_id) {
             var story = this.model.get_story(story_id);
-            var url = 'http://twitter.com/';
+            var url = 'https://twitter.com/intent/tweet';
             var twitter_url = [
               url,
-              '?status=',
+              '?text=',
               encodeURIComponent(story.get('story_title')),
-              ': ',
-              encodeURIComponent(story.get('story_permalink'))
+              '&url=',
+              encodeURIComponent(story.get('story_permalink')),
+	      '&via=Newsblur'
             ].join('');
             window.open(twitter_url, '_blank');
             NEWSBLUR.assets.stories.mark_read(story, {skip_delay: true});
@@ -2584,10 +2585,10 @@
         
         send_story_to_facebook: function(story_id) {
             var story = this.model.get_story(story_id);
-            var url = 'http://www.facebook.com/sharer.php?src=newsblur&v=3.14159265&i=1.61803399';
+            var url = 'https://www.facebook.com/sharer/sharer.php';
             var facebook_url = [
               url,
-              '&u=',
+              '?u=',
               encodeURIComponent(story.get('story_permalink')),
               '&t=',
               encodeURIComponent(story.get('story_title'))
@@ -2598,7 +2599,7 @@
         
         send_story_to_pinboard: function(story_id) {
             var story = this.model.get_story(story_id);
-            var url = 'http://pinboard.in/add/?';
+            var url = 'https://pinboard.in/add/?';
             var pinboard_url = [
               url,
               'url=',
@@ -2614,7 +2615,7 @@
         
         send_story_to_pinterest: function(story_id) {
             var story = this.model.get_story(story_id);
-            var url = 'http://www.pinterest.com/pin/find/?';
+            var url = 'https://www.pinterest.com/pin/find/?';
             var pinterest_url = [
               url,
               'url=',
@@ -2640,23 +2641,7 @@
         
         send_story_to_diigo: function(story_id) {
             var story = this.model.get_story(story_id);
-            var url = 'http://www.diigo.com/post?';
-            var url = [
-              url,
-              'url=',
-              encodeURIComponent(story.get('story_permalink')),
-              '&title=',
-              encodeURIComponent(story.get('story_title')),
-              '&tags=',
-              encodeURIComponent(story.get('story_tags').join(', '))
-            ].join('');
-            window.open(url, '_blank');
-            NEWSBLUR.assets.stories.mark_read(story, {skip_delay: true});
-        },
-        
-        send_story_to_kippt: function(story_id) {
-            var story = this.model.get_story(story_id);
-            var url = 'https://kippt.com/extensions/new/?';
+            var url = 'https://www.diigo.com/post?';
             var url = [
               url,
               'url=',
@@ -3224,6 +3209,10 @@
             NEWSBLUR.newsletters = new NEWSBLUR.ReaderNewsletters();
         },
                         
+        open_facebook_modal: function() {
+            NEWSBLUR.facebook_dialog = new NEWSBLUR.ReaderFacebook(this.active_story.get('story_permalink'), this.active_story.get('shared_comments'));
+        },
+                        
         open_preferences_modal: function() {
             NEWSBLUR.preferences = new NEWSBLUR.ReaderPreferences();
         },
@@ -3706,11 +3695,6 @@
                         }, this)).bind('mouseleave', _.bind(function(e) {
                             $(e.target).siblings('.NB-menu-manage-title').text('Email story').parent().removeClass('NB-menu-manage-highlight-diigo');
                         }, this))),
-                        (NEWSBLUR.Preferences['story_share_kippt'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-kippt'}).bind('mouseenter', _.bind(function(e) {
-                            $(e.target).siblings('.NB-menu-manage-title').text('Kippt').parent().addClass('NB-menu-manage-highlight-kippt');
-                        }, this)).bind('mouseleave', _.bind(function(e) {
-                            $(e.target).siblings('.NB-menu-manage-title').text('Email story').parent().removeClass('NB-menu-manage-highlight-kippt');
-                        }, this))),
                         (NEWSBLUR.Preferences['story_share_evernote'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-evernote'}).bind('mouseenter', _.bind(function(e) {
                             $(e.target).siblings('.NB-menu-manage-title').text('Evernote').parent().addClass('NB-menu-manage-highlight-evernote');
                         }, this)).bind('mouseleave', _.bind(function(e) {
@@ -3753,8 +3737,6 @@
                           this.send_story_to_buffer(story.id);
                       } else if ($target.hasClass('NB-menu-manage-thirdparty-diigo')) {
                           this.send_story_to_diigo(story.id);
-                      } else if ($target.hasClass('NB-menu-manage-thirdparty-kippt')) {
-                          this.send_story_to_kippt(story.id);
                       } else if ($target.hasClass('NB-menu-manage-thirdparty-evernote')) {
                           this.send_story_to_evernote(story.id);
                       } else if ($target.hasClass('NB-menu-manage-thirdparty-googleplus')) {
@@ -4896,6 +4878,7 @@
                     NEWSBLUR.log(["Connected to real-time pubsub with " + active_feeds.length + " feeds."]);
                     this.flags.feed_refreshing_in_realtime = true;
                     this.setup_feed_refresh();
+                    NEWSBLUR.assets.stories.retry_failed_marked_read_stories();
                     
                     // $('.NB-module-content-account-realtime-subtitle').html($.make('b', 'Updating in real-time'));
                     $('.NB-module-content-account-realtime').attr('title', 'Updating sites in real-time...').removeClass('NB-error').addClass('NB-active');
@@ -5008,6 +4991,14 @@
                 }, this));
             }
             
+            // this.watch_navigator_online();
+        },
+        
+        watch_navigator_online: function() {
+            window.removeEventListener('online', _.bind(this.setup_socket_realtime_unread_counts, this));
+            window.removeEventListener('offline', _.bind(this.setup_socket_realtime_unread_counts, this));
+            window.addEventListener('online', _.bind(this.setup_socket_realtime_unread_counts, this));
+            window.addEventListener('offline', _.bind(this.setup_socket_realtime_unread_counts, this));
         },
         
         send_socket_active_feeds: function() {
@@ -5102,6 +5093,10 @@
             this.model.refresh_feeds(_.bind(function(data) {
                 this.post_feed_refresh(data);
             }, this), this.flags['has_unfetched_feeds'], feed_id, error_callback);
+            
+            if (this.socket && this.socket.connected) {
+                NEWSBLUR.assets.stories.retry_failed_marked_read_stories();
+            }
         },
         
         post_feed_refresh: function(data) {

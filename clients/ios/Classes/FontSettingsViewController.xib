@@ -1,15 +1,22 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.iPad.XIB" version="3.0" toolsVersion="9060" systemVersion="15B42" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none">
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.iPad.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none" colorMatched="YES">
+    <device id="ipad9_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9051"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="FontSettingsViewController">
             <connections>
+                <outlet property="autoscrollSegment" destination="DbL-5f-bAN" id="Tb1-WQ-ng4"/>
                 <outlet property="fontSizeSegment" destination="28" id="34"/>
+                <outlet property="fullscreenSegment" destination="RRB-to-azP" id="YoH-EL-BKL"/>
                 <outlet property="lineSpacingSegment" destination="4iD-hO-qU2" id="K0A-P6-riY"/>
                 <outlet property="menuTableView" destination="35" id="38"/>
+                <outlet property="scrollOrientationSegment" destination="muZ-4L-Qll" id="Uie-9I-ECx"/>
                 <outlet property="themeSegment" destination="9Zd-0Z-SQt" id="V1G-LP-kgy"/>
                 <outlet property="view" destination="2" id="3"/>
             </connections>
@@ -22,7 +29,6 @@
                 <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="bar" selectedSegmentIndex="2" id="28">
                     <rect key="frame" x="3" y="81" width="234" height="30"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                    <animations/>
                     <segments>
                         <segment title="11pt"/>
                         <segment title="12pt"/>
@@ -37,7 +43,6 @@
                 <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="bar" selectedSegmentIndex="2" id="4iD-hO-qU2">
                     <rect key="frame" x="3" y="123" width="234" height="29"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                    <animations/>
                     <segments>
                         <segment title="" image="line_spacing_xs.png"/>
                         <segment title="" image="line_spacing_s.png"/>
@@ -49,10 +54,42 @@
                         <action selector="changeLineSpacing:" destination="-1" eventType="valueChanged" id="3hE-hD-2Aq"/>
                     </connections>
                 </segmentedControl>
+                <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="bar" id="muZ-4L-Qll">
+                    <rect key="frame" x="3" y="96" width="234" height="29"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <segments>
+                        <segment title="Scroll Up/Down"/>
+                        <segment title="Left/Right"/>
+                    </segments>
+                    <connections>
+                        <action selector="changeScrollOrientation:" destination="-1" eventType="valueChanged" id="x5R-7P-7ha"/>
+                    </connections>
+                </segmentedControl>
+                <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="bar" id="RRB-to-azP">
+                    <rect key="frame" x="3" y="96" width="234" height="29"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <segments>
+                        <segment title="Full Screen"/>
+                        <segment title="Toolbar"/>
+                    </segments>
+                    <connections>
+                        <action selector="changeFullscreen:" destination="-1" eventType="valueChanged" id="h3Y-T6-P9J"/>
+                    </connections>
+                </segmentedControl>
+                <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="bar" id="DbL-5f-bAN">
+                    <rect key="frame" x="3" y="96" width="234" height="29"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <segments>
+                        <segment title="Manual Scroll"/>
+                        <segment title="Auto Scroll"/>
+                    </segments>
+                    <connections>
+                        <action selector="changeAutoscroll:" destination="-1" eventType="valueChanged" id="dFh-eV-zfx"/>
+                    </connections>
+                </segmentedControl>
                 <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="bar" selectedSegmentIndex="2" id="9Zd-0Z-SQt">
                     <rect key="frame" x="3" y="97" width="234" height="29"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                    <animations/>
                     <segments>
                         <segment title="" image="theme_color_light.png"/>
                         <segment title="" image="theme_color_sepia.png"/>
@@ -66,16 +103,14 @@
                 <tableView clipsSubviews="YES" contentMode="scaleToFill" bounces="NO" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="35">
                     <rect key="frame" x="0.0" y="-1" width="240" height="223"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                    <animations/>
-                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <connections>
                         <outlet property="dataSource" destination="-1" id="36"/>
                         <outlet property="delegate" destination="-1" id="37"/>
                     </connections>
                 </tableView>
             </subviews>
-            <animations/>
-            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+            <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <nil key="simulatedStatusBarMetrics"/>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
         </view>
@@ -86,9 +121,9 @@
         <image name="line_spacing_s.png" width="32" height="32"/>
         <image name="line_spacing_xl.png" width="32" height="32"/>
         <image name="line_spacing_xs.png" width="32" height="32"/>
-        <image name="theme_color_dark.png" width="64" height="64"/>
-        <image name="theme_color_light.png" width="64" height="64"/>
-        <image name="theme_color_medium.png" width="64" height="64"/>
-        <image name="theme_color_sepia.png" width="64" height="64"/>
+        <image name="theme_color_dark.png" width="32" height="32"/>
+        <image name="theme_color_light.png" width="32" height="32"/>
+        <image name="theme_color_medium.png" width="32" height="32"/>
+        <image name="theme_color_sepia.png" width="32" height="32"/>
     </resources>
 </document>

@@ -40,7 +40,7 @@
 }
 
 - (void)rebuildOptions {
-    if ([appDelegate.activeUsername isEqualToString:@"samuel"]) {
+    if ([appDelegate.activeUsername isEqualToString:@"samuel"] || [appDelegate.activeUsername isEqualToString:@"Dejal"]) {
         self.menuOptions = [[NSArray alloc]
                             initWithObjects:[@"Preferences" uppercaseString],
                                             [@"Mute Sites" uppercaseString],
@@ -130,7 +130,7 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section 
 {
-    return [self.menuOptions count] + 3;
+    return [self.menuOptions count] + 2;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -145,7 +145,7 @@
         return [self makeThemeTableCell];
     }
     
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIndentifier]; 
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIndentifier];
     
     if (cell == nil) {
         cell = [[MenuTableViewCell alloc]
@@ -266,10 +266,10 @@
 
         [appDelegate.networkManager GET:urlString parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
             NSLog(@"Login as %@ successful", username);
-            [MBProgressHUD hideHUDForView:self.view animated:YES];
+            [MBProgressHUD hideHUDForView:appDelegate.feedsViewController.view animated:YES];
             [appDelegate reloadFeedsView:YES];
         } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-            [MBProgressHUD hideHUDForView:self.view animated:YES];
+            [MBProgressHUD hideHUDForView:appDelegate.feedsViewController.view animated:YES];
             [self informError:error];
         }];
         

@@ -527,7 +527,7 @@ static const CGFloat kFolderTitleHeight = 36.0;
     NSUInteger count = self.tableView.indexPathsForSelectedRows.count;
     NSString *title = count == 1 ? @"Delete selected site?" : [NSString stringWithFormat:@"Delete %@ sites?", @(count)];
     
-    [viewController addTitle:title iconName:@"menu_icn_delete.png" selectionShouldDismiss:YES handler:^{
+    [viewController addTitle:title iconName:@"menu_icn_delete.png" destructive:YES selectionShouldDismiss:YES handler:^{
         [self performDeleteFeeds];
     }];
     

@@ -1,4 +1,4 @@
-body {
+body, html {
 	background-color: #FFF;
 }
 
@@ -17,4 +17,10 @@ code {
 pre, blockquote {
     background-color: #F2F2F2;
     color: rgba(10, 12, 38, .8);
+}
+/* do not adhere to Chromium's color scheme settings */
+@media(prefers-color-scheme: dark){
+    body, html {
+        background-color: #FFF;
+    }
 }
