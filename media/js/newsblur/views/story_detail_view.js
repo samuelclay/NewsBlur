@@ -792,8 +792,8 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         highlights = highlights.split(',').filter(function(h) { return h.length > 1; });
         
         rangy.init();
-        console.log(['apply_starred_story_selections', highlights]);
         var $doc = this.$(".NB-feed-story-content");
+        console.log(['apply_starred_story_selections', highlights, $doc, $doc.text()]);
         var highlighter = rangy.createHighlighter($doc.get(0));
         highlighter.addClassApplier(rangy.createClassApplier("NB-starred-story-selection-highlight"));
         $doc.attr('id', 'NB-highlighting');
