@@ -152,7 +152,6 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
             }).render();
             this.$(".NB-story-detail").html(this.story_detail.$el);
             this.story_detail.attach_handlers();
-            this.story_detail.apply_starred_story_selections();
             this.story_detail.setElement(this.story_detail.$el);
         }
     },

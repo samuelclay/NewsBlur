@@ -125,6 +125,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         this.attach_syntax_highlighter_handler();
         this.attach_fitvid_handler();
         this.render_starred_tags();
+        this.apply_starred_story_selections();
     },
     
     watch_images_load: function() {
@@ -776,6 +777,10 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         highlights.push(this.serialized_highlight);
         this.model.set('highlights', highlights.join(','));
         
+        if (this.tooltip && this.tooltip.tooltips && this.tooltip.tooltips.length) {
+            this.tooltip.tooltips[0].hide();
+        }
+        
         this.apply_starred_story_selections();
         
         return true;
@@ -792,7 +797,6 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         var highlighter = rangy.createHighlighter($doc.get(0));
         highlighter.addClassApplier(rangy.createClassApplier("NB-starred-story-selection-highlight"));
         $doc.attr('id', 'NB-highlighting');
-        console.log(['highlights', highlights]);
         
         highlights.forEach(function(highlight) {
             highlighter.deserialize(highlight);
