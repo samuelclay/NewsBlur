@@ -28,7 +28,8 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         "click .NB-feed-story-save"             : "toggle_starred",
         "click .NB-story-comments-label"        : "scroll_to_comments",
         "click .NB-story-content-expander"      : "expand_story",
-        "click .NB-highlight-selection"         : "highlight_selected_text"
+        "click .NB-highlight-selection"         : "highlight_selected_text",
+        "click .NB-unhighlight-selection"       : "unhighlight_selected_text"
     },
     
     initialize: function() {
@@ -715,9 +716,15 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         
     },
     
-    mouseup_check_selection: function() {
-        var $doc = this.$(".NB-feed-story-content");
+    mouseup_check_selection: function(e) {
         var applier_class = "NB-starred-story-selection-highlight";
+        var $doc = this.$(".NB-feed-story-content");
+        console.log(['mouseup_check_selection', e, $(e.target)]);
+        if ($(e.target).hasClass(applier_class)) {
+            this.show_unhighlight_tooltip($(e.target));
+            return;
+        }
+
         var classApplier = rangy.createClassApplier(applier_class);
         // classApplier.addClass("NB-temporary");
         rangy.init();
@@ -769,6 +776,30 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         this.apply_starred_story_selections();
     },
     
+    show_unhighlight_tooltip: function($highlight) {
+        $highlight.attr('title', "<div class='NB-unhighlight-selection'>Unhighlight</div>");
+        var $t = tippy($highlight.get(0), {
+            // delay: 100,
+            appendTo: this.el,
+            arrow: true,
+            arrowType: 'round',
+            size: 'large',
+            duration: 350,
+            animation: 'scale',
+            trigger: 'click',
+            interactive: true,
+            performance: true,
+            onHide: _.bind(function() {
+                $highlight.removeClass('NB-starred-story-selection-highlight');
+            }, this)
+        });
+        this.tooltip = $t;
+        _.defer(function() {
+            if ($t.tooltips && $t.tooltips.length) $t.tooltips[0].show();
+        });
+        
+    },
+    
     highlight_selected_text: function() {
         var highlights = this.model.get('highlights');
         if (highlights && highlights.length > 1) highlights = highlights.split(',').filter(function(h) { return h.length > 1; });
@@ -786,6 +817,10 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         return true;
     },
     
+    unhighlight_selected_text: function() {
+        
+    },
+    
     apply_starred_story_selections: function() {
         var highlights = this.model.get('highlights');
         if (!highlights) return;
@@ -793,7 +828,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         
         rangy.init();
         var $doc = this.$(".NB-feed-story-content");
-        console.log(['apply_starred_story_selections', highlights, $doc, $doc.text()]);
+        console.log(['apply_starred_story_selections', highlights]);
         var highlighter = rangy.createHighlighter($doc.get(0));
         highlighter.addClassApplier(rangy.createClassApplier("NB-starred-story-selection-highlight"));
         $doc.attr('id', 'NB-highlighting');

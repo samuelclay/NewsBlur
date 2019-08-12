@@ -3182,14 +3182,17 @@ body {
 /*.NB-feed-story-content ::selection {*/
 /*  background: rgba(185, 215, 251, .2);*/
 /*}*/
-.NB-highlight-selection {
+.NB-highlight-selection,
+.NB-unhighlight-selection {
     padding: 2px 8px;
 }
-.NB-highlight-selection:hover {
+.NB-highlight-selection:hover,
+.NB-unhighlight-selection:hover {
     cursor: pointer;
     background-color: rgba(255, 255, 255, 0.2);
 }
-.NB-highlight-selection:active {
+.NB-highlight-selection:active,
+.NB-unhighlight-selection:active {
     color: rgba(255, 255, 255, 0.8);
     background-color: rgba(255, 255, 255, 0.1);
 }
