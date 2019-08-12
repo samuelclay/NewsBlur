@@ -476,7 +476,7 @@
 
                 // Store the existing selection as character ranges
                 var serializedSelection = converter.serializeSelection(selection, containerElement);
-                console.log(['Rangy highlighter', serializedSelection, converter, containerElement]);
+
                 // Create an array of selected character ranges
                 var selCharRanges = [];
                 forEach(serializedSelection, function(rangeInfo) {

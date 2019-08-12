@@ -72,7 +72,6 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
         } else {
             this.$el.html(_.pluck(stories, 'el'));
             _.invoke(stories, 'attach_handlers');
-            _.invoke(stories, 'apply_starred_story_selections');
         }
         this.show_correct_feed_in_feed_title_floater();
         this.stories = stories;
@@ -101,7 +100,6 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
             if (!NEWSBLUR.assets.preference('feed_view_single_story')) {
                 this.$el.append(_.pluck(stories, 'el'));
                 _.invoke(stories, 'attach_handlers');
-                _.invoke(stories, 'apply_starred_story_selections');
             }
             
             this.stories = this.stories.concat(stories);
