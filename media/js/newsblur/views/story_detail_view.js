@@ -721,23 +721,23 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         // classApplier.addClass("NB-temporary");
         rangy.init();
         this.$(".NB-starred-story-selection-highlight,[data-tippy]").contents().unwrap();
-        
         $doc.attr('id', 'NB-highlighting');
+        
         this.highlighter = rangy.createHighlighter($doc.get(0));
         this.highlighter.addClassApplier(classApplier);
-        
         this.highlighter.highlightSelection(applier_class, {
             containerElementId: "NB-highlighting"
         });
-        // this.serialized_highlight = rangy.serializeSelection(rangy.getSelection(), true, $doc.get(0));
+
         this.serialized_highlight = this.highlighter.serialize();
-        console.log(['mouseup_check_selection 1', this.serialized_highlight, this.highlighter.serialize()]);
-        // this.highlighter.deserialize(this.serialized_highlight);
+        console.log(['mouseup_check_selection 1', this.serialized_highlight]);
         
+        if (this.tooltip && this.tooltip.tooltips && this.tooltip.tooltips.length) {
+            this.tooltip.tooltips[0].hide();
+        }
         if (!this.serialized_highlight || this.serialized_highlight == "type:textContent") {
             $doc.removeAttr('id');
             this.apply_starred_story_selections();
-            
             return;
         }
         
@@ -758,6 +758,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                 $selection.removeClass('NB-starred-story-selection-highlight');
             }, this)
         });
+        this.tooltip = $t;
         _.defer(function() {
             if ($t.tooltips && $t.tooltips.length) $t.tooltips[0].show();
         });
