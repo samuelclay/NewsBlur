@@ -7,6 +7,7 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
         this.bind('change:starred', this.change_starred);
         this.bind('change:user_tags', this.change_user_tags);
         this.bind('change:selected', this.select_story);
+        this.bind('change:highlights', this.update_highlights);
         this.populate_comments();
         this.story_permalink = this.get('story_permalink');
         this.story_title = this.get('story_title');
