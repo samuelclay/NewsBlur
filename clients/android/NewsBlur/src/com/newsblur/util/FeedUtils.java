@@ -1,5 +1,6 @@
 package com.newsblur.util;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -34,6 +35,12 @@ public class FeedUtils {
     public static ImageLoader iconLoader;
     public static ImageLoader thumbnailLoader;
     public static FileCache storyImageCache;
+
+    // this is gross, but the feedset can't hold a folder title
+    // without being mistaken for a folder feed.
+    // The alternative is to pass it through alongside all instances
+    // of the feedset
+    public static String currentFolderName;
 
     public static void offerInitContext(Context context) {
         if (dbHelper == null) {
@@ -78,7 +85,11 @@ public class FeedUtils {
     }
 
     public static void setStorySaved(final String storyHash, final boolean saved, final Context context) {
-        setStorySaved(storyHash, saved, context, null);
+        List<String> userTags = new ArrayList<>();
+        if(FeedUtils.currentFolderName != null){
+            userTags.add(FeedUtils.currentFolderName);
+        }
+        setStorySaved(storyHash, saved, context, userTags);
     }
 	public static void setStorySaved(final Story story, final boolean saved, final Context context, final List<String> userTags) {
         setStorySaved(story.storyHash, saved, context, userTags);

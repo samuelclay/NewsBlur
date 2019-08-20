@@ -346,11 +346,7 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
             if (story.starred) {
 			    FeedUtils.setStorySaved(story, false, getActivity(), null);
             } else {
-                //TODO get current folder (not feed)
-                Feed folder = FeedUtils.getFeed(story.feedId);
-                List<String> userTags = new ArrayList<>();
-                userTags.add(folder.title);
-			    FeedUtils.setStorySaved(story, true, getActivity(), userTags);
+			    FeedUtils.setStorySaved(story.storyHash, true, getActivity());
             }
 			return true;
         } else if (item.getItemId() == R.id.menu_reading_markunread) {
