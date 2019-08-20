@@ -116,7 +116,8 @@ public class APIConstants {
     public static final String PARAMETER_TAG = "tag";
     public static final String PARAMETER_APPROVED_FEEDS = "approved_feeds";
     public static final String PARAMETER_NOTIFICATION_TYPES = "notification_types";
-    public static final String PARAMETER_NOTIFICATION_FILTER = "notification_filter";
+	public static final String PAREMETER_USER_TAGS = "user_tags";
+	public static final String PARAMETER_NOTIFICATION_FILTER = "notification_filter";
     public static final String PARAMETER_RESET_FETCH = "reset_fetch";
     public static final String PARAMETER_INFREQUENT = "infrequent";
     public static final String PARAMETER_FEEDTITLE = "feed_title";
