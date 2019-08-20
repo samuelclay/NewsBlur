@@ -393,11 +393,12 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 return true;
 
             case R.id.menu_save_story:
-                FeedUtils.setStorySaved(story, true, context);
+                //TODO get folder name
+                FeedUtils.setStorySaved(story, true, context, null);
                 return true;
 
             case R.id.menu_unsave_story:
-                FeedUtils.setStorySaved(story, false, context);
+                FeedUtils.setStorySaved(story, false, context, null);
                 return true;
 
             case R.id.menu_intel:
@@ -445,10 +446,10 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                     FeedUtils.markStoryUnread(story, context);
                     break;
                 case GEST_ACTION_SAVE:
-                    FeedUtils.setStorySaved(story, true, context);
+                    FeedUtils.setStorySaved(story, true, context, null);
                     break;
                 case GEST_ACTION_UNSAVE:
-                    FeedUtils.setStorySaved(story, false, context);
+                    FeedUtils.setStorySaved(story, false, context, null);
                     break;
                 case GEST_ACTION_NONE:
                 default:
