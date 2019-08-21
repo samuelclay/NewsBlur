@@ -247,7 +247,6 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         HitTestResult result = web.getHitTestResult();
         if (result.getType() == HitTestResult.IMAGE_TYPE ||
-            result.getType() == HitTestResult.SRC_ANCHOR_TYPE ||
             result.getType() == HitTestResult.SRC_IMAGE_ANCHOR_TYPE ) {
             // if the long-pressed item was an image, see if we can pop up a little dialogue
             // that presents the alt text.  Note that images wrapped in links tend to get detected
@@ -285,6 +284,13 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
                 }
             });
             builder.show();
+        } else if (result.getType() == HitTestResult.SRC_ANCHOR_TYPE) {
+            String url = result.getExtra();
+            Intent intent = new Intent(Intent.ACTION_SEND);
+            intent.setType("text/plain");
+            intent.putExtra(Intent.EXTRA_SUBJECT, UIUtils.fromHtml(story.title).toString());
+            intent.putExtra(Intent.EXTRA_TEXT, url);
+            startActivity(Intent.createChooser(intent, "Share using"));
         } else {
             super.onCreateContextMenu(menu, v, menuInfo);
         }
