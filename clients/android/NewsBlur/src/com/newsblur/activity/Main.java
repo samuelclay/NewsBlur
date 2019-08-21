@@ -121,6 +121,8 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
             public void afterTextChanged(Editable s) {}
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
         });
+
+        FeedUtils.currentFolderName = null;
 	}
 
     @Override
