@@ -198,9 +198,12 @@ public class APIManager {
         return response.getResponse(gson, NewsBlurResponse.class);
     }
 
-	public NewsBlurResponse markStoryAsStarred(String storyHash) {
+	public NewsBlurResponse markStoryAsStarred(String storyHash, List<String> userTags) {
 		ValueMultimap values = new ValueMultimap();
 		values.put(APIConstants.PARAMETER_STORY_HASH, storyHash);
+        for (String tag : userTags) {
+            values.put(APIConstants.PAREMETER_USER_TAGS, tag);
+        }
 		APIResponse response = post(buildUrl(APIConstants.PATH_MARK_STORY_AS_STARRED), values);
         return response.getResponse(gson, NewsBlurResponse.class);
 	}
