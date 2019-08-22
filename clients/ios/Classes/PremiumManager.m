@@ -166,7 +166,7 @@
                              @"product_identifier": transaction.payment.productIdentifier,
                              };
     
-    [self.appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [self.appDelegate POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         NSLog(@"Sent iOS receipt: %@", params);
         [self.appDelegate.premiumViewController finishedTransaction];
         NSDictionary *results = (NSDictionary *)responseObject;
