@@ -14,7 +14,8 @@ from pyasn1.error import PyAsn1Error
 from django.utils.encoding import smart_str
 from django.conf import settings
 from BeautifulSoup import BeautifulSoup
-
+from urlparse import urljoin
+ 
 BROKEN_URLS = [
     "gamespot.com",
 ]
@@ -135,9 +136,6 @@ class TextImporter:
 
         url = resp.url
         
-        if content:
-            content = self.rewrite_content(content)
-    
         return self.process_content(content, title, url, image=None, skip_save=skip_save, return_document=return_document,
                                     original_text_doc=original_text_doc)
         
@@ -163,6 +161,9 @@ class TextImporter:
             )), warn_color=False)
             return
         
+        if content:
+            content = self.rewrite_content(content)
+        
         if return_document:
             return dict(content=content, title=title, url=url, doc=original_text_doc, image=image)
 
@@ -175,7 +176,14 @@ class TextImporter:
             if len(noscript.contents) > 0:
                 noscript.replaceWith(noscript.contents[0])
         
-        return unicode(soup)
+        content = unicode(soup)
+        
+        images = set([img['src'] for img in soup.findAll('img') if hasattr(img, 'src')])
+        for image_url in images:
+            abs_image_url = urljoin(self.story.story_permalink, image_url)
+            content = content.replace(image_url, abs_image_url)
+        
+        return content
     
     @timelimit(10)
     def fetch_request(self, use_mercury=True):
