@@ -178,7 +178,7 @@ class TextImporter:
         
         content = unicode(soup)
         
-        images = set([img['src'] for img in soup.findAll('img') if hasattr(img, 'src')])
+        images = set([img['src'] for img in soup.findAll('img') if 'src' in img])
         for image_url in images:
             abs_image_url = urljoin(self.story.story_permalink, image_url)
             content = content.replace(image_url, abs_image_url)
