@@ -33,7 +33,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     },
     
     initialize: function() {
-        _.bindAll(this, 'mouseleave', 'mouseenter', 'mouseup_check_selection', 'highlight_selected_text');
+        _.bindAll(this, 'mouseleave', 'mouseenter', 'mouseup_check_selection', 'highlight_selected_text', 'unhighlight_selected_text');
         this.model.bind('change', this.toggle_classes, this);
         this.model.bind('change:read_status', this.toggle_read_status, this);
         this.model.bind('change:selected', this.toggle_selected, this);
@@ -818,7 +818,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     },
     
     unhighlight_selected_text: function() {
-        
+        console.log(['Unhighlighting', this.model.get('highlights')]);
     },
     
     apply_starred_story_selections: function() {
