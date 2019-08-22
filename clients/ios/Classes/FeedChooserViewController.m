@@ -98,11 +98,7 @@ static const CGFloat kFolderTitleHeight = 36.0;
     }
     
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/feeds?flat=true&update_counts=false&include_inactive=true", self.appDelegate.url];
-    [appDelegate.networkManager GET:urlString parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-        [self finishLoadingInactiveFeeds:responseObject];
-    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        [self finishedWithError:error];
-    }];
+    [appDelegate GET:urlString parameters:nil target:self success:@selector(finishLoadingInactiveFeeds:) failure:@selector(finishedWithError:)];
 }
 
 - (void)finishLoadingInactiveFeeds:(NSDictionary *)results {
@@ -461,7 +457,7 @@ static const CGFloat kFolderTitleHeight = 36.0;
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
     [params setObject:feedsByFolder.JSONRepresentation forKey:@"feeds_by_folder"];
     [params setObject:toFolder.identifier forKey:@"to_folder"];
-    [appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [appDelegate POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         HUD.labelText = @"Reloading...";
         [self.appDelegate reloadFeedsView:YES];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
@@ -514,7 +510,7 @@ static const CGFloat kFolderTitleHeight = 36.0;
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/delete_feeds_by_folder", self.appDelegate.url];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
     [params setObject:feedsByFolder.JSONRepresentation forKey:@"feeds_by_folder"];
-    [appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [appDelegate POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         HUD.labelText = @"Reloading...";
         [self.appDelegate reloadFeedsView:YES];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
@@ -572,7 +568,7 @@ static const CGFloat kFolderTitleHeight = 36.0;
     }];
     
     [params setObject:feeds forKey:@"approved_feeds"];
-    [appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [appDelegate POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self.appDelegate reloadFeedsView:YES];
         [self dismissViewControllerAnimated:YES completion:nil];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {

@@ -264,7 +264,7 @@
         NSString *urlString = [NSString stringWithFormat:@"%@/reader/login_as?user=%@",
                           self.appDelegate.url, username];
 
-        [appDelegate.networkManager GET:urlString parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        [appDelegate GET:urlString parameters:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
             NSLog(@"Login as %@ successful", username);
             [MBProgressHUD hideHUDForView:appDelegate.feedsViewController.view animated:YES];
             [appDelegate reloadFeedsView:YES];

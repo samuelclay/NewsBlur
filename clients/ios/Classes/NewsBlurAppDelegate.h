@@ -331,7 +331,22 @@ SFSafariViewControllerDelegate>  {
 - (void)adjustStoryDetailWebView;
 - (void)calibrateStoryTitles;
 - (void)recalculateIntelligenceScores:(id)feedId;
+
 - (void)cancelRequests;
+
+- (void)GET:(NSString *)urlString parameters:(id)parameters
+    success:(void (^)(NSURLSessionDataTask *, id))success
+    failure:(void (^)(NSURLSessionDataTask *, NSError *))failure;
+- (void)GET:(NSString *)urlString parameters:(id)parameters target:(id)target
+    success:(SEL)success
+    failure:(SEL)failure;
+- (void)POST:(NSString *)urlString parameters:(id)parameters
+     success:(void (^)(NSURLSessionDataTask *, id))success
+     failure:(void (^)(NSURLSessionDataTask *, NSError *))failure;
+- (void)POST:(NSString *)urlString parameters:(id)parameters target:(id)target
+     success:(SEL)success
+     failure:(SEL)failure;
+
 - (void)loadFolder:(NSString *)folder feedID:(NSString *)feedIdStr;
 - (void)reloadFeedsView:(BOOL)showLoader;
 - (void)setTitle:(NSString *)title;

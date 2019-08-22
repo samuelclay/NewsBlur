@@ -502,7 +502,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
         urlFeedList = [urlFeedList stringByAppendingString:@"&background_ios=true"];
     }
     
-    [appDelegate.networkManager GET:urlFeedList parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [appDelegate GET:urlFeedList parameters:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self finishLoadingFeedList:responseObject];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)task.response;
@@ -1552,7 +1552,7 @@ heightForHeaderInSection:(NSInteger)section {
                        forKey:@"cutoff_timestamp"];
     }
     
-    [appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [appDelegate POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self finishMarkAllAsRead:params];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         [self requestFailedMarkStoryRead:error withParams:params];
@@ -1589,7 +1589,7 @@ heightForHeaderInSection:(NSInteger)section {
         [params setObject:infrequent forKey:@"infrequent"];
     }
 
-    [appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [appDelegate POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self finishMarkAllAsRead:params];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         [self requestFailedMarkStoryRead:error withParams:params];
@@ -1613,7 +1613,7 @@ heightForHeaderInSection:(NSInteger)section {
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
     [params setObject:[feedsStories JSONRepresentation] forKey:@"feeds_stories"];
     
-    [appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [appDelegate POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self finishMarkAllAsRead:params];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         [self requestFailedMarkStoryRead:error withParams:params];
@@ -1900,11 +1900,7 @@ heightForHeaderInSection:(NSInteger)section {
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/favicons",
                            self.appDelegate.url];
 
-    [appDelegate.networkManager GET:urlString parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-        [self saveAndDrawFavicons:responseObject];
-    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        [self requestFailed:error];
-    }];
+    [appDelegate GET:urlString parameters:nil target:self success:@selector(saveAndDrawFavicons:) failure:@selector(requestFailed:)];
 }
 
 - (void)loadAvatars {
@@ -2061,7 +2057,7 @@ heightForHeaderInSection:(NSInteger)section {
         [self.appDelegate cancelOfflineQueue];
     }
     
-    [appDelegate.networkManager GET:urlString parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [appDelegate GET:urlString parameters:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self finishRefreshingFeedList:responseObject feedId:feedId];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)task.response;

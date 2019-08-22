@@ -74,6 +74,7 @@
 @property (nonatomic, strong) NSString *cachedURL;
 @property (nonatomic, strong) UIApplicationShortcutItem *launchedShortcutItem;
 @property (nonatomic, strong) SFSafariViewController *safariViewController;
+@property (nonatomic, strong) NSMutableDictionary<NSString *, NSNumber *> *networkBackgroundTasks;
 
 @end
 
@@ -542,7 +543,7 @@
     NSString *url = [NSString stringWithFormat:@"%@/notifications/apns_token/", self.url];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
     [params setObject:token forKey:@"apns_token"];
-    [networkManager POST:url parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [self POST:url parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         NSLog(@" -> APNS: %@", responseObject);
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         NSLog(@"Failed to set APNS token");
@@ -1164,7 +1165,7 @@
     
     [self.dictFeeds setObject:feed forKey:feedId];
     
-    [self.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [self POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         NSLog(@"Saved notifications %@: %@", feedId, params);
         [self checkForFeedNotifications];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
@@ -1226,6 +1227,12 @@
 }
 
 - (void)clearNetworkManager {
+    for (NSString *networkOperationIdentifier in self.networkBackgroundTasks) {
+        [self endNetworkOperation:networkOperationIdentifier];
+    }
+    
+    self.networkBackgroundTasks = [NSMutableDictionary new];
+    
     [networkManager invalidateSessionCancelingTasks:YES];
     networkManager = [AFHTTPSessionManager manager];
     networkManager.responseSerializer = [AFJSONResponseSerializer serializer];
@@ -1242,6 +1249,105 @@
     [networkManager.requestSerializer setValue:UA forHTTPHeaderField:@"User-Agent"];
 }
 
+- (NSString *)beginNetworkOperation {
+    NSString *networkOperationIdentifier = [NSUUID UUID].UUIDString;
+    
+    UIBackgroundTaskIdentifier backgroundTaskIdentifier = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
+        [self endNetworkOperation:networkOperationIdentifier];
+    }];
+    
+    if (backgroundTaskIdentifier != UIBackgroundTaskInvalid) {
+        self.networkBackgroundTasks[networkOperationIdentifier] = @(backgroundTaskIdentifier);
+    }
+    
+    return networkOperationIdentifier;
+}
+
+- (void)endNetworkOperation:(NSString *)networkOperationIdentifier {
+    UIBackgroundTaskIdentifier identifier = self.networkBackgroundTasks[networkOperationIdentifier].integerValue;
+    
+    if (identifier != UIBackgroundTaskInvalid) {
+        [[UIApplication sharedApplication] endBackgroundTask:identifier];
+    }
+    
+    [self.networkBackgroundTasks removeObjectForKey:networkOperationIdentifier];
+}
+
+- (void)safelyInvokeTarget:(id _Nonnull)target withSelector:(SEL _Nullable)selector passingObject:(id _Nullable)object {
+    if (selector == NULL) {
+        return;
+    }
+    
+    IMP imp = [target methodForSelector:selector];
+    void (*func)(id, SEL, id _Nullable) = (void *)imp;
+    func(target, selector, object);
+}
+
+- (void)GET:(NSString *)urlString
+ parameters:(id)parameters
+    success:(void (^)(NSURLSessionDataTask * _Nonnull, id _Nullable))success
+    failure:(void (^)(NSURLSessionDataTask * _Nullable, NSError * _Nonnull))failure {
+    NSString *networkOperationIdentifier = [self beginNetworkOperation];
+    
+    [networkManager GET:urlString parameters:parameters progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        if (success) {
+            success(task, responseObject);
+        }
+        
+        [self endNetworkOperation:networkOperationIdentifier];
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        if (failure) {
+            failure(task, error);
+        }
+        
+        [self endNetworkOperation:networkOperationIdentifier];
+    }];
+}
+
+- (void)GET:(NSString *)urlString
+ parameters:(id)parameters
+     target:(id)target
+    success:(SEL)success
+    failure:(SEL)failure {
+    [self GET:urlString parameters:parameters success:^(NSURLSessionDataTask * _Nonnull task, id _Nullable responseObject) {
+        [self safelyInvokeTarget:target withSelector:success passingObject:responseObject];
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        [self safelyInvokeTarget:target withSelector:failure passingObject:error];
+    }];
+}
+
+- (void)POST:(NSString *)urlString
+  parameters:(id)parameters
+     success:(void (^)(NSURLSessionDataTask * _Nonnull, id _Nullable))success
+     failure:(void (^)(NSURLSessionDataTask * _Nullable, NSError * _Nonnull))failure {
+    NSString *networkOperationIdentifier = [self beginNetworkOperation];
+    
+    [networkManager POST:urlString parameters:parameters progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        if (success) {
+            success(task, responseObject);
+        }
+        
+        [self endNetworkOperation:networkOperationIdentifier];
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        if (failure) {
+            failure(task, error);
+        }
+        
+        [self endNetworkOperation:networkOperationIdentifier];
+    }];
+}
+
+- (void)POST:(NSString *)urlString
+ parameters:(id)parameters
+     target:(id)target
+    success:(SEL)success
+    failure:(SEL)failure {
+    [self POST:urlString parameters:parameters success:^(NSURLSessionDataTask * _Nonnull task, id _Nullable responseObject) {
+        [self safelyInvokeTarget:target withSelector:success passingObject:responseObject];
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        [self safelyInvokeTarget:target withSelector:failure passingObject:error];
+    }];
+}
 
 #pragma mark -
 
@@ -1493,7 +1599,7 @@
         NSLog(@"Logging out...");
         NSString *urlString = [NSString stringWithFormat:@"%@/reader/logout?api=1",
                           self.url];
-        [networkManager GET:urlString parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        [self GET:urlString parameters:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
             [MBProgressHUD hideHUDForView:self.view animated:YES];
             [self showLogin];
         } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
@@ -1539,7 +1645,7 @@
 - (void)refreshUserProfile:(void(^)(void))callback {
     NSString *urlString = [NSString stringWithFormat:@"%@/social/load_user_profile",
                            self.url];
-    [networkManager GET:urlString parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [self GET:urlString parameters:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         self.dictUserProfile = [responseObject objectForKey:@"user_profile"];
         self.dictSocialServices = [responseObject objectForKey:@"services"];
         callback();
@@ -2474,7 +2580,7 @@
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
     [params setObject:storyHash forKey:@"story_hash"];
     
-    [networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [self POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         NSLog(@"Marked as read: %@", storyHash);
         callback();
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
@@ -2492,7 +2598,7 @@
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
     [params setObject:storyHash forKey:@"story_hash"];
     
-    [networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [self POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         NSLog(@"Marked as starred: %@", storyHash);
         callback();
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
@@ -3217,7 +3323,7 @@
      @"remove_like_author"];
     [params setObject:feedId forKey:@"feed_id"];
     
-    [networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [self POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self.feedsViewController refreshFeedList:feedId];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         [self failedClassifierSave:task];
@@ -3261,7 +3367,7 @@
      @"remove_like_tag"];
     [params setObject:feedId forKey:@"feed_id"];
     
-    [networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [self POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self.feedsViewController refreshFeedList:feedId];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         [self failedClassifierSave:task];
@@ -3309,7 +3415,7 @@
      @"remove_like_title"];
     [params setObject:feedId forKey:@"feed_id"];
     
-    [networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [self POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self.feedsViewController refreshFeedList:feedId];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         [self failedClassifierSave:task];
@@ -3351,7 +3457,7 @@
                           @"remove_like_feed"];
     [params setObject:feedId forKey:@"feed_id"];
     
-    [networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [self POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self.feedsViewController refreshFeedList:feedId];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         [self failedRequest:task.response];
@@ -3760,7 +3866,7 @@
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
     [params setObject:[hashes JSONRepresentation] forKey:@"feeds_stories"];
     
-    [networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [self POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         NSLog(@"Completed clearing %@ hashes", completedHashesStr);
         [db executeUpdate:[NSString stringWithFormat:@"DELETE FROM queued_read_hashes "
                            "WHERE story_hash in (\"%@\")", completedHashesStr]];
@@ -3900,7 +4006,7 @@
     NSString *endpoint = saved ? @"mark_story_as_starred" : @"mark_story_as_unstarred";
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/%@", self.url, endpoint];
     
-    [networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [self POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         NSString *storyHash = [params objectForKey:@"story_id"];
         NSString *storyFeedId = [params objectForKey:@"feed_id"];
         [self dequeueSavedStoryHash:storyHash inFeed:storyFeedId];
