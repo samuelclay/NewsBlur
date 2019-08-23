@@ -39,8 +39,8 @@
 
  * [jQuery](http://www.jquery.com): Cross-browser compliant JavaScript code. IE works without effort.
  * [Underscore.js](http://underscorejs.org/): Functional programming for JavaScript. 
-   Indispensible.
- * [Backbone.js](http://backbonejs.org/): Framework for the web app. Also indispensible.
+   Indispensable.
+ * [Backbone.js](http://backbonejs.org/): Framework for the web app. Also indispensable.
  * Miscellaneous jQuery Plugins: Everything from resizable layouts, to progress 
    bars, sortables, date handling, colors, corners, JSON, animations. 
    [See the complete list](https://github.com/samuelclay/NewsBlur/tree/master/media/js).
