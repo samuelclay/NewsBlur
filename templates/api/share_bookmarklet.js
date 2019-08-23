@@ -16,6 +16,7 @@
         this.profile  = {{ user_profile|safe }};
         this.folders  = {{ folders|safe }};
         this.domain   = "{% current_domain %}";
+        this.starred_counts = {{ starred_counts|safe }};
         this.flags    = {
             'new_folder': false,
             'in_transit': false
@@ -93,14 +94,26 @@
                             $.make('div', { className: 'NB-bookmarklet-page-content', contenteditable: true })
                         ]),
                         $.make('div', { className: 'NB-bookmarklet-page-comment NB-modal-submit' }, [
-                            $.make('div', { className: 'NB-bookmarklet-comment-photo' }, [
-                                $.make('img', { src: this.profile.photo_url })
-                            ]),
-                            $.make('div', { className: 'NB-bookmarklet-comment-input' }, [
-                                $.make('textarea', { name: 'newsblur_comment', placeholder: "Comments..." })
-                            ]),
-                            $.make('div', { className: 'NB-bookmarklet-comment-submit NB-modal-submit-button NB-modal-submit-green' }, 'Share this story'),
-                            $.make('div', { className: 'NB-bookmarklet-comment-error NB-error' })
+                            $.make('div', { className: 'NB-bookmarklet-comment-error NB-error' }),
+                            $.make('div', { className: 'NB-bookmarklet-submit-left' }, [
+                                $.make('div', { className: 'NB-bookmarklet-user-tags' }, [
+                                    $.make('select', { multiple: "1" }, this.user_tags_options())
+                                ]),
+                                $.make('input', { className: 'NB-bookmarklet-add-tag', name: "add_user_tag", placeholder: "Add tags..." }),
+                                $.make('div', { className: 'NB-bookmarklet-save NB-modal-submit-button NB-modal-submit-green' }, 'Save this story')
+                            ]),                                
+                            $.make('div', { className: 'NB-bookmarklet-submit-right' }, [
+                                $.make('div', { className: 'NB-bookmarklet-comment-separator' }),
+                                $.make('div', { className: 'NB-bookmarklet-comment-container' }, [
+                                    $.make('div', { className: 'NB-bookmarklet-comment-photo' }, [
+                                        $.make('img', { src: this.profile.photo_url })
+                                    ]),
+                                    $.make('div', { className: 'NB-bookmarklet-comment-input' }, [
+                                        $.make('textarea', { name: 'newsblur_comment', placeholder: "Comments..." })
+                                    ])
+                                ]),
+                                $.make('div', { className: 'NB-bookmarklet-comment-submit NB-modal-submit-button NB-modal-submit-green' }, 'Share this story')
+                            ])
                         ])
                     ])
                 ]),
@@ -116,7 +129,7 @@
                             ])
                         ]),
                         $.make('div', { className: 'NB-modal-submit' }, [
-                            $.make('div', { className: 'NB-bookmarklet-button-subscribe NB-modal-submit-button NB-modal-submit-green' }, 'Subscribe to this site')
+                            $.make('div', { className: 'NB-bookmarklet-button-subscribe NB-modal-submit-button NB-modal-submit-green' }, 'Subscribe')
                         ]),
                         $.make('div', { className: 'NB-bookmarklet-stories-same NB-empty'}),
                         $.make('div', { className: 'NB-bookmarklet-stories-other NB-empty'}),
@@ -128,6 +141,16 @@
                     ])
                 ])
             ]);
+        },
+        
+        user_tags_options: function() {
+            var options = __NB_.map(__NB_.filter(this.starred_counts, function(count) {
+                return count.tag && count.tag.length
+            }), function(count) {
+                return $.make('option', { value: count.tag }, count.tag + " ("+ count.count +" stories)");
+            });
+            
+            return options;
         },
         
         make_folders: function() {
@@ -270,6 +293,7 @@
             var $side_loading = $('.NB-bookmarklet-side-loading', this.$modal);
             var $side_subscribe = $('.NB-bookmarklet-side-subscribe', this.$modal);
             var $share = $(".NB-bookmarklet-comment-submit", this.$modal);
+            var $save = $(".NB-bookmarklet-save", this.$modal);
             var $comments = $('textarea[name=newsblur_comment]', this.$modal);
             var $content_wrapper = $('.NB-bookmarklet-page-content-wrapper', this.$modal);
             var $content = $('.NB-bookmarklet-page-content', this.$modal);
@@ -400,6 +424,72 @@
             return $story;
         },
         
+        
+        // ==============
+        // = Save story =
+        // ==============
+        
+        save_story: function(disable_https) {
+            var $save = $(".NB-bookmarklet-comment-submit", this.$modal);
+            var $error = $(".NB-bookmarklet-comment-error", this.$modal);
+            
+            this.flags.in_transit = true;
+            
+            $error.html('');
+            $save.addClass('NB-disabled').text('Saving...');
+            this.feed = this.feed || {};
+            
+            var scheme = {% if debug %}'http'{% else %}'https'{% endif %};
+            var url = scheme + '://' + this.domain + "{% url "api-share-story" token %}";
+            
+            $.ajax({
+                url: url,
+                type: 'POST',
+                data: {
+                    title: $(".NB-bookmarklet-page-title", this.$modal).html() || this.story_title,
+                    content: $(".NB-bookmarklet-page-content", this.$modal).html() || this.story_content,
+                    comments: $('textarea[name=newsblur_comment]', this.$modal).val(),
+                    feed_id: this.feed.id,
+                    story_url: window.location.href,
+                    rss_url: this.get_page_rss_url()
+                },
+                success: __NB_.bind(this.post_save_story, this),
+                error: __NB_.bind(this.error_save_story, this)
+            });
+        },
+        
+        post_save_story: function(data) {
+            var $save = $(".NB-bookmarklet-save", this.$modal);
+            this.flags.in_transit = false;
+            
+            if (data.code < 0) {
+                return this.error_save_story(data);
+            }
+            
+            $save.addClass('NB-disabled');
+            $save.html($.make('div', { className: 'NB-bookmarklet-accept' }, [
+                $.make('img', { src: 'data:image/png;charset=utf-8;base64,' + this.images['accept_image'] }),
+                'Saved'
+            ]));
+            setTimeout(function() {
+                $.modal.close();
+            }, 2000);
+
+        },
+        
+        error_save_story: function(data) {
+            var $save = $(".NB-bookmarklet-save", this.$modal);
+            var $error = $(".NB-bookmarklet-comment-error", this.$modal);
+            this.flags.in_transit = false;
+            
+            $save.removeClass('NB-disabled');
+            $error.show();
+            console.log(["error sharing", data]);
+            
+            this.update_share_button_title();
+
+            $error.text(data.message || "Sorry, but there was an error trying to save this story.")
+        },
         
         // ===============
         // = Share story =
@@ -608,6 +698,14 @@
                 
                 if (!$t.hasClass('NB-disabled')) {
                     self.share_story();
+                }
+            });
+
+            $.targetIs(e, { tagSelector: '.NB-bookmarklet-save' }, function($t, $p) {
+                e.preventDefault();
+                
+                if (!$t.hasClass('NB-disabled')) {
+                    self.save_story();
                 }
             });
 
