@@ -13,7 +13,7 @@ from django.contrib.auth import logout as logout_user
 from apps.reader.forms import SignupForm, LoginForm
 from apps.profile.models import Profile
 from apps.social.models import MSocialProfile, MSharedStory, MSocialSubscription
-from apps.rss_feeds.models import Feed
+from apps.rss_feeds.models import Feed, MStarredStoryCounts
 from apps.rss_feeds.text_importer import TextImporter
 from apps.reader.models import UserSubscription, UserSubscriptionFolders, RUserStory
 from utils import json_functions as json
@@ -81,8 +81,10 @@ def logout(request):
 def add_site_load_script(request, token):
     code = 0
     usf = None
-    profile = None;
-    user_profile = None;
+    profile = None
+    user_profile = None
+    starred_counts = {}
+    
     def image_base64(image_name, path='icons/circular/'):
         image_file = open(os.path.join(settings.MEDIA_ROOT, 'img/%s%s' % (path, image_name)))
         return base64.b64encode(image_file.read())
@@ -100,6 +102,7 @@ def add_site_load_script(request, token):
                 user=profile.user
             )
             user_profile = MSocialProfile.get_user(user_id=profile.user.pk)
+            starred_counts = MStarredStoryCounts.user_counts(profile.user.pk)
         else:
             code = -1
     except Profile.DoesNotExist:
@@ -113,6 +116,7 @@ def add_site_load_script(request, token):
         'folders': (usf and usf.folders) or [],
         'user': profile and profile.user or {},
         'user_profile': user_profile and json.encode(user_profile.canonical()) or {},
+        'starred_counts': json.encode(starred_counts),
         'accept_image': accept_image,
         'error_image': error_image,
         'add_image': add_image,
