@@ -321,9 +321,13 @@ def save_ios_receipt(request):
     
     paid = request.user.profile.activate_ios_premium(product_identifier, transaction_identifier)
     if paid:
+        logging.user(request, "~BM~FBSending iOS Receipt email: %s %s" % (product_identifier, transaction_identifier))
         subject = "iOS Premium: %s (%s)" % (request.user.profile, product_identifier)
         message = """User: %s (%s) -- Email: %s, product: %s, txn: %s, receipt: %s""" % (request.user.username, request.user.pk, request.user.email, product_identifier, transaction_identifier, receipt)
         mail_admins(subject, message, fail_silently=True)
+    else:
+        logging.user(request, "~BM~FBNot sending iOS Receipt email, already paid: %s %s" % (product_identifier, transaction_identifier))
+        
     
     return request.user.profile
     

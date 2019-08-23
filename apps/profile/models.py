@@ -277,10 +277,10 @@ class Profile(models.Model):
                     if created in seen_payments: continue
                     seen_payments.add(created)
                     total_stripe_payments += 1
-                    PaymentHistory.objects.create(user=self.user,
-                                                  payment_date=created,
-                                                  payment_amount=payment.amount / 100.0,
-                                                  payment_provider='stripe')
+                    PaymentHistory.objects.get_or_create(user=self.user,
+                                                         payment_date=created,
+                                                         payment_amount=payment.amount / 100.0,
+                                                         payment_provider='stripe')
         
         # Calculate payments in last year, then add together
         payment_history = PaymentHistory.objects.filter(user=self.user)
