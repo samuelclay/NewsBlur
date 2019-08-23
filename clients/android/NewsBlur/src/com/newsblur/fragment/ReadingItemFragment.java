@@ -40,6 +40,7 @@ import com.newsblur.R;
 import com.newsblur.activity.NbActivity;
 import com.newsblur.activity.Reading;
 import com.newsblur.domain.Classifier;
+import com.newsblur.domain.Feed;
 import com.newsblur.domain.Story;
 import com.newsblur.domain.UserDetails;
 import com.newsblur.service.OriginalTextService;
@@ -56,8 +57,10 @@ import com.newsblur.view.FlowLayout;
 import com.newsblur.view.NewsblurWebview;
 import com.newsblur.view.ReadingScrollView;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -244,7 +247,6 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         HitTestResult result = web.getHitTestResult();
         if (result.getType() == HitTestResult.IMAGE_TYPE ||
-            result.getType() == HitTestResult.SRC_ANCHOR_TYPE ||
             result.getType() == HitTestResult.SRC_IMAGE_ANCHOR_TYPE ) {
             // if the long-pressed item was an image, see if we can pop up a little dialogue
             // that presents the alt text.  Note that images wrapped in links tend to get detected
@@ -282,6 +284,13 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
                 }
             });
             builder.show();
+        } else if (result.getType() == HitTestResult.SRC_ANCHOR_TYPE) {
+            String url = result.getExtra();
+            Intent intent = new Intent(Intent.ACTION_SEND);
+            intent.setType("text/plain");
+            intent.putExtra(Intent.EXTRA_SUBJECT, UIUtils.fromHtml(story.title).toString());
+            intent.putExtra(Intent.EXTRA_TEXT, url);
+            startActivity(Intent.createChooser(intent, "Share using"));
         } else {
             super.onCreateContextMenu(menu, v, menuInfo);
         }
@@ -341,9 +350,9 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
             return true;
         } else if (item.getItemId() == R.id.menu_reading_save) {
             if (story.starred) {
-			    FeedUtils.setStorySaved(story, false, getActivity());
+			    FeedUtils.setStorySaved(story, false, getActivity(), null);
             } else {
-			    FeedUtils.setStorySaved(story, true, getActivity());
+			    FeedUtils.setStorySaved(story.storyHash, true, getActivity());
             }
 			return true;
         } else if (item.getItemId() == R.id.menu_reading_markunread) {
@@ -373,9 +382,9 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
 
     @OnClick(R.id.save_story_button) void clickSave() {
         if (story.starred) {
-            FeedUtils.setStorySaved(story, false, getActivity());
+            FeedUtils.setStorySaved(story.storyHash, false, getActivity());
         } else {
-            FeedUtils.setStorySaved(story,true, getActivity());
+            FeedUtils.setStorySaved(story.storyHash,true, getActivity());
         }
     }
 

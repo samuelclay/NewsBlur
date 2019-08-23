@@ -80,6 +80,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 		super.onCreate(savedInstanceState);
         currentState = PrefsUtils.getStateFilter(getActivity());
 		adapter = new FolderListAdapter(getActivity(), currentState);
+        FeedUtils.currentFolderName = null;
         // NB: it is by design that loaders are not started until we get a
         // ping from the sync service indicating that it has initialised
 	}
@@ -502,6 +503,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 
 	@Override
     public boolean onChildClick(ExpandableListView list, View childView, int groupPosition, int childPosition, long id) {
+        FeedUtils.currentFolderName = null;
         FeedSet fs = adapter.getChild(groupPosition, childPosition);
 		if (adapter.isRowAllSharedStories(groupPosition)) {
             SocialFeed socialFeed = adapter.getSocialFeed(groupPosition, childPosition);
@@ -519,6 +521,12 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
             // a folder name on the FeedSet and making it into a folder-type set.  it is just a single feed,
             // and the folder name is a bit of metadata needed by the UI/API
 			String folderName = adapter.getGroupFolderName(groupPosition);
+			if(folderName == null || folderName.equals(AppConstants.ROOT_FOLDER)){
+                FeedUtils.currentFolderName = null;
+            }else{
+
+                FeedUtils.currentFolderName = folderName;
+            }
 			Intent intent = new Intent(getActivity(), FeedItemsList.class);
             intent.putExtra(ItemsList.EXTRA_FEED_SET, fs);
 			intent.putExtra(FeedItemsList.EXTRA_FEED, feed);
