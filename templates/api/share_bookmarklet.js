@@ -97,7 +97,7 @@
                             $.make('div', { className: 'NB-bookmarklet-comment-error NB-error' }),
                             $.make('div', { className: 'NB-bookmarklet-submit-left' }, [
                                 $.make('div', { className: 'NB-bookmarklet-user-tags' }, [
-                                    $.make('select', { multiple: "1" }, this.user_tags_options())
+                                    $.make('select', { multiple: "1" }, this.make_user_tags_options())
                                 ]),
                                 $.make('input', { className: 'NB-bookmarklet-add-tag', name: "add_user_tag", placeholder: "Add tags..." }),
                                 $.make('div', { className: 'NB-bookmarklet-save NB-modal-submit-button NB-modal-submit-green' }, 'Save this story')
@@ -143,11 +143,11 @@
             ]);
         },
         
-        user_tags_options: function() {
+        make_user_tags_options: function() {
             var options = __NB_.map(__NB_.filter(this.starred_counts, function(count) {
                 return count.tag && count.tag.length
             }), function(count) {
-                return $.make('option', { value: count.tag }, count.tag + " ("+ count.count +" stories)");
+                return $.make('option', { value: count.tag }, count.tag + " ("+ count.count + (count.count == 1 ? " story": " stories")+")");
             });
             
             return options;
