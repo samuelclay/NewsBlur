@@ -1993,9 +1993,9 @@
         self.safariViewController = [[SFSafariViewController alloc] initWithURL:url];
         self.safariViewController.delegate = self;
         [self.storyPageControl setNavigationBarHidden:NO];
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-            self.safariViewController.modalPresentationStyle = UIModalPresentationPageSheet;
-        }
+//        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+//            self.safariViewController.modalPresentationStyle = UIModalPresentationPageSheet;
+//        }
         [navigationController presentViewController:self.safariViewController animated:YES completion:nil];
     } else if ([storyBrowser isEqualToString:@"inappsafarireader"]) {
         self.safariViewController = [[SFSafariViewController alloc] initWithURL:url entersReaderIfAvailable:YES];
