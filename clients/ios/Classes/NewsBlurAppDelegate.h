@@ -421,6 +421,7 @@ SFSafariViewControllerDelegate>  {
 - (NSString *)extractFolderName:(NSString *)folderName;
 - (NSString *)extractParentFolderName:(NSString *)folderName;
 - (NSArray *)parentFoldersForFeed:(NSString *)feedId;
+- (NSDictionary *)getFeedWithId:(id)feedId;
 - (NSDictionary *)getFeed:(NSString *)feedId;
 - (NSDictionary *)getStory:(NSString *)storyHash;
 

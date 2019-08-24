@@ -723,6 +723,17 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     [appDelegate populateDictUnreadCounts];
     [appDelegate populateDictTextFeeds];
     
+    NSString *sortOrder = [userPreferences stringForKey:@"feed_list_sort_order"];
+    BOOL sortByMostUsed = [sortOrder isEqualToString:@"usage"];
+    
+    NSMutableArray *sortDescriptors = [NSMutableArray array];
+    
+    if (sortByMostUsed) {
+        [sortDescriptors addObject:[NSSortDescriptor sortDescriptorWithKey:@"feed_opens" ascending:NO]];
+    }
+    
+    [sortDescriptors addObject:[NSSortDescriptor sortDescriptorWithKey:@"feed_title" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]];
+    
     // sort all the folders
     appDelegate.dictFoldersArray = [NSMutableArray array];
     for (id f in appDelegate.dictFolders) {
@@ -734,27 +745,30 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
             folderTitle = f;
         }
         [appDelegate.dictFoldersArray addObject:folderTitle];
-        sortedArray = [folder sortedArrayUsingComparator:^NSComparisonResult(id id1, id id2) {
-            NSString *feedTitleA;
-            NSString *feedTitleB;
+        
+        NSMutableArray *feeds = [NSMutableArray array];
+        
+        for (id feedId in folder) {
+            NSString *feedIdStr = [NSString stringWithFormat:@"%@", feedId];
+            NSDictionary *feed;
             
-            if ([appDelegate isSocialFeed:[NSString stringWithFormat:@"%@", id1]]) {
-                feedTitleA = [[appDelegate.dictSocialFeeds 
-                               objectForKey:[NSString stringWithFormat:@"%@", id1]] 
-                              objectForKey:@"feed_title"];
-                feedTitleB = [[appDelegate.dictSocialFeeds 
-                               objectForKey:[NSString stringWithFormat:@"%@", id2]] 
-                              objectForKey:@"feed_title"];
+            if ([appDelegate isSavedFeed:feedIdStr]) {
+                feed = @{@"id" : feedId};
+            } else if ([appDelegate isSocialFeed:feedIdStr]) {
+                feed = appDelegate.dictSocialFeeds[feedIdStr];
             } else {
-                feedTitleA = [[appDelegate.dictFeeds 
-                                         objectForKey:[NSString stringWithFormat:@"%@", id1]] 
-                                        objectForKey:@"feed_title"];
-                feedTitleB = [[appDelegate.dictFeeds 
-                                         objectForKey:[NSString stringWithFormat:@"%@", id2]] 
-                                        objectForKey:@"feed_title"];
+                feed = appDelegate.dictFeeds[feedIdStr];
             }
-            return [feedTitleA caseInsensitiveCompare:feedTitleB];
-        }];
+            
+            if (feed != nil) {
+                [feeds addObject:feed];
+            }
+        }
+        
+        NSArray *sortedFeeds = [feeds sortedArrayUsingDescriptors:sortDescriptors];
+        
+        sortedArray = [sortedFeeds valueForKey:@"id"];
+        
         [sortedFolders setValue:sortedArray forKey:folderTitle];
     }
     appDelegate.dictFolders = sortedFolders;
