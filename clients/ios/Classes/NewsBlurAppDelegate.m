@@ -2136,7 +2136,9 @@
     NSString *folder = storiesCollection.activeFolder;
     NSString *title = storiesCollection.activeTitle;
     
-    if ([folder isEqualToString:@"river_blurblogs"]) {
+    if (folder == nil || title == nil) {
+        return;
+    } else if ([folder isEqualToString:@"river_blurblogs"]) {
         activity.title = @"Read All Shared Stories";
     } else if ([folder isEqualToString:@"river_global"]) {
         activity.title = @"Read Global Shared Stories";
