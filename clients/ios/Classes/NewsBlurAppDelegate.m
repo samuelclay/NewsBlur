@@ -3001,6 +3001,12 @@
     return uniqueFolderNames;
 }
 
+- (NSDictionary *)getFeedWithId:(id)feedId {
+     NSString *feedIdStr = [NSString stringWithFormat:@"%@", feedId];
+    
+    return [self getFeed:feedIdStr];
+}
+
 - (NSDictionary *)getFeed:(NSString *)feedId {
     NSDictionary *feed;
     if (storiesCollection.isSocialView ||
