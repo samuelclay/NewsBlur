@@ -573,9 +573,10 @@
 - (void)finishedLoadingFeedsNotification:(NSNotification *)notification {
     if (self.restoringFeedID.length > 0) {
         NSDictionary *feed = [appDelegate getFeed:self.restoringFeedID];
+        BOOL isSocial = [appDelegate isSocialFeed:self.restoringFeedID];
         
         if (feed != nil) {
-            appDelegate.storiesCollection.isSocialView = NO;
+            appDelegate.storiesCollection.isSocialView = isSocial;
             appDelegate.storiesCollection.activeFeed = feed;
             [appDelegate loadFeedDetailView:NO];
             [self viewWillAppear:NO];
