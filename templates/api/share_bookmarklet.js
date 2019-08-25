@@ -97,10 +97,10 @@
                             $.make('div', { className: 'NB-bookmarklet-comment-error NB-error' }),
                             $.make('div', { className: 'NB-bookmarklet-submit-left' }, [
                                 $.make('div', { className: 'NB-bookmarklet-user-tags' }, [
-                                    $.make('select', { multiple: "1" }, this.make_user_tags_options())
+                                    $.make('select', { multiple: "1", name: "user_tags" }, this.make_user_tags_options())
                                 ]),
                                 $.make('input', { className: 'NB-bookmarklet-add-tag', name: "add_user_tag", placeholder: "Add tags..." }),
-                                $.make('div', { className: 'NB-bookmarklet-save NB-modal-submit-button NB-modal-submit-green' }, 'Save this story')
+                                $.make('div', { className: 'NB-bookmarklet-save-button NB-modal-submit-button NB-modal-submit-green' }, 'Save this story')
                             ]),                                
                             $.make('div', { className: 'NB-bookmarklet-submit-right' }, [
                                 $.make('div', { className: 'NB-bookmarklet-comment-separator' }),
@@ -235,7 +235,7 @@
             ]));
         },
 
-        save: function() {
+        subscribe: function() {
             var self = this;
             var $submit = $('.NB-bookmarklet-button-subscribe', this.$modal);
             var folder = $('.NB-folders').val();
@@ -293,7 +293,7 @@
             var $side_loading = $('.NB-bookmarklet-side-loading', this.$modal);
             var $side_subscribe = $('.NB-bookmarklet-side-subscribe', this.$modal);
             var $share = $(".NB-bookmarklet-comment-submit", this.$modal);
-            var $save = $(".NB-bookmarklet-save", this.$modal);
+            var $save = $(".NB-bookmarklet-save-button", this.$modal);
             var $comments = $('textarea[name=newsblur_comment]', this.$modal);
             var $content_wrapper = $('.NB-bookmarklet-page-content-wrapper', this.$modal);
             var $content = $('.NB-bookmarklet-page-content', this.$modal);
@@ -430,7 +430,7 @@
         // ==============
         
         save_story: function(disable_https) {
-            var $save = $(".NB-bookmarklet-comment-submit", this.$modal);
+            var $save = $(".NB-bookmarklet-save-button", this.$modal);
             var $error = $(".NB-bookmarklet-comment-error", this.$modal);
             
             this.flags.in_transit = true;
@@ -440,7 +440,7 @@
             this.feed = this.feed || {};
             
             var scheme = {% if debug %}'http'{% else %}'https'{% endif %};
-            var url = scheme + '://' + this.domain + "{% url "api-share-story" token %}";
+            var url = scheme + '://' + this.domain + "{% url "api-save-story" token %}";
             
             $.ajax({
                 url: url,
@@ -448,7 +448,8 @@
                 data: {
                     title: $(".NB-bookmarklet-page-title", this.$modal).html() || this.story_title,
                     content: $(".NB-bookmarklet-page-content", this.$modal).html() || this.story_content,
-                    comments: $('textarea[name=newsblur_comment]', this.$modal).val(),
+                    user_tags: $('select[name=user_tags]', this.$modal).val(),
+                    add_user_tag: $('input[name=add_user_tag]', this.$modal).val(),
                     feed_id: this.feed.id,
                     story_url: window.location.href,
                     rss_url: this.get_page_rss_url()
@@ -459,7 +460,7 @@
         },
         
         post_save_story: function(data) {
-            var $save = $(".NB-bookmarklet-save", this.$modal);
+            var $save = $(".NB-bookmarklet-save-button", this.$modal);
             this.flags.in_transit = false;
             
             if (data.code < 0) {
@@ -478,7 +479,7 @@
         },
         
         error_save_story: function(data) {
-            var $save = $(".NB-bookmarklet-save", this.$modal);
+            var $save = $(".NB-bookmarklet-save-button", this.$modal);
             var $error = $(".NB-bookmarklet-comment-error", this.$modal);
             this.flags.in_transit = false;
             
@@ -678,7 +679,7 @@
                 e.preventDefault();
                 
                 if (!$t.hasClass('NB-disabled')) {
-                    self.save();
+                    self.subscribe();
                 }
             });
         
@@ -701,7 +702,7 @@
                 }
             });
 
-            $.targetIs(e, { tagSelector: '.NB-bookmarklet-save' }, function($t, $p) {
+            $.targetIs(e, { tagSelector: '.NB-bookmarklet-save-button' }, function($t, $p) {
                 e.preventDefault();
                 
                 if (!$t.hasClass('NB-disabled')) {
@@ -722,6 +723,7 @@
             var $comment = $('textarea[name=newsblur_comment]', this.$modal);
             var $submit = $('.NB-bookmarklet-comment-submit', this.$modal);
             var $error = $(".NB-bookmarklet-comment-error", this.$modal);
+            var $save = $('.NB-bookmarklet-save-button', this.$modal);
             
             $error.html('');
             $submit.removeClass('NB-disabled');
@@ -730,6 +732,7 @@
             } else {
                 $submit.text('Share this story');
             }
+            $save.text("Save this story");
         }
     
     };
