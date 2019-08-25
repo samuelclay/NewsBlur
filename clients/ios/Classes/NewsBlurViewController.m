@@ -1117,7 +1117,13 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 - (void)settingDidChange:(NSNotification*)notification {
     NSString *identifier = notification.object;
     
-	if ([identifier isEqual:@"offline_allowed"]) {
+    if (![identifier isKindOfClass:[NSString class]]) {
+        identifier = notification.userInfo.allKeys.firstObject;
+    }
+    
+    if ([identifier isEqualToString:@"feed_list_sort_order"]) {
+        [self.appDelegate reloadFeedsView:YES];
+    } else if ([identifier isEqual:@"offline_allowed"]) {
 		BOOL enabled = [[notification.userInfo objectForKey:@"offline_allowed"] boolValue];
 		[appDelegate.preferencesViewController setHiddenKeys:enabled ? nil :
          [NSSet setWithObjects:@"offline_image_download",
