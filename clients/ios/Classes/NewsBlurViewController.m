@@ -1072,11 +1072,12 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     self.feedViewToolbar.tintColor = [UINavigationBar appearance].tintColor;
     self.feedViewToolbar.barTintColor = [UINavigationBar appearance].barTintColor;
     self.addBarButton.tintColor = UIColorFromRGB(0x8F918B);
-    self.intelligenceControl.tintColor = UIColorFromRGB(0x8F918B);
     self.settingsBarButton.tintColor = UIColorFromRGB(0x8F918B);
     self.refreshControl.tintColor = UIColorFromLightDarkRGB(0x0, 0xffffff);
     self.refreshControl.backgroundColor = UIColorFromRGB(0xE3E6E0);
     self.view.backgroundColor = UIColorFromRGB(0xf4f4f4);
+    
+    [[ThemeManager themeManager] updateSegmentedControl:self.intelligenceControl];
     
     NBBarButtonItem *barButton = self.addBarButton.customView;
     [barButton setImage:[[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"nav_icn_add.png"]] forState:UIControlStateNormal];

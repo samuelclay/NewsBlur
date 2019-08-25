@@ -196,6 +196,28 @@ NSString * const ThemeStyleDark = @"dark";
     }
 }
 
+- (void)updateTextAttributesForSegmentedControl:(UISegmentedControl *)segmentedControl forState:(UIControlState)state foregroundColor:(UIColor *)foregroundColor {
+    NSMutableDictionary *attributes = [NSMutableDictionary dictionary];
+    NSDictionary *oldAttributes = [segmentedControl titleTextAttributesForState:state];
+    
+    attributes[NSForegroundColorAttributeName] = foregroundColor;
+    
+    if (oldAttributes != nil) {
+        [attributes addEntriesFromDictionary:oldAttributes];
+    }
+    
+    [segmentedControl setTitleTextAttributes:attributes forState:state];
+}
+
+- (void)updateSegmentedControl:(UISegmentedControl *)segmentedControl {
+    segmentedControl.tintColor = UIColorFromRGB(0x8F918B);
+    
+    if (@available(iOS 13.0, *)) {
+        [self updateTextAttributesForSegmentedControl:segmentedControl forState:UIControlStateNormal foregroundColor:UIColorFromLightDarkRGB(0x0, 0xffffff)];
+        [self updateTextAttributesForSegmentedControl:segmentedControl forState:UIControlStateSelected foregroundColor:UIColorFromFixedRGB(0x0)];
+    }
+}
+
 - (void)debugColor:(NSInteger)rgbValue {
     static NSMutableSet *colors = nil;
     

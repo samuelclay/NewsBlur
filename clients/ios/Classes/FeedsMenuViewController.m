@@ -303,6 +303,8 @@
     [self.fontSizeSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:3];
     [self.fontSizeSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:4];
     
+    [[ThemeManager themeManager] updateSegmentedControl:self.fontSizeSegment];
+    
     [cell addSubview:self.fontSizeSegment];
     
     return cell;

@@ -162,6 +162,8 @@ NSString * const MenuHandler = @"handler";
     [segmentedControl insertSegmentWithImage:mediumImage atIndex:2 animated: NO];
     [segmentedControl insertSegmentWithImage:darkImage atIndex:3 animated: NO];
     
+    [[ThemeManager themeManager] updateSegmentedControl:segmentedControl];
+    
     UIGraphicsBeginImageContextWithOptions(CGSizeMake(1, segmentedControl.frame.size.height), NO, 0.0);
     UIImage *blankImage = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
@@ -207,6 +209,8 @@ NSString * const MenuHandler = @"handler";
     segmentedControl.backgroundColor = UIColorFromRGB(0xeeeeee);
     [segmentedControl setTitleTextAttributes:@{NSFontAttributeName : [UIFont fontWithName:@"Helvetica-Bold" size:11.0]} forState:UIControlStateNormal];
     [segmentedControl addTarget:self action:@selector(segmentedValueChanged:) forControlEvents:UIControlEventValueChanged];
+    
+    [[ThemeManager themeManager] updateSegmentedControl:segmentedControl];
     
     [cell addSubview:segmentedControl];
     
