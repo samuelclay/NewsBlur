@@ -13,7 +13,7 @@ from django.contrib.auth import logout as logout_user
 from apps.reader.forms import SignupForm, LoginForm
 from apps.profile.models import Profile
 from apps.social.models import MSocialProfile, MSharedStory, MSocialSubscription
-from apps.rss_feeds.models import Feed, MStarredStoryCounts
+from apps.rss_feeds.models import Feed, MStarredStoryCounts, MStarredStory
 from apps.rss_feeds.text_importer import TextImporter
 from apps.reader.models import UserSubscription, UserSubscriptionFolders, RUserStory
 from utils import json_functions as json
@@ -453,6 +453,9 @@ def save_story(request, token=None):
         if not title:
             title = document['title']
     
+    if add_user_tag:
+        user_tags = user_tags + [tag for tag in add_user_tag.split(',')]
+        
     starred_story = MStarredStory.objects.filter(user_id=profile.user.pk,
                                                  story_feed_id=feed_id, 
                                                  story_guid=story_url).limit(1).first()
@@ -464,34 +467,30 @@ def save_story(request, token=None):
             "story_feed_id": feed_id,
             "story_content": content,
             "story_date": datetime.datetime.now(),
+            "starred_date": datetime.datetime.now(),
             "user_id": profile.user.pk,
-            "has_comments": bool(comments),
+            "user_tags": user_tags,
         }
-        shared_story = MSharedStory.objects.create(**story_db)
-        socialsubs = MSocialSubscription.objects.filter(subscription_user_id=profile.user.pk)
-        for socialsub in socialsubs:
-            socialsub.needs_unread_recalc = True
-            socialsub.save()
-        logging.user(profile.user, "~BM~FYSharing story from site: ~SB%s: %s" % (story_url, comments))
-        message = "Sharing story from site: %s: %s" % (story_url, comments)
+        starred_story = MStarredStory.objects.create(**story_db)
+        logging.user(profile.user, "~BM~FCStarring story from site: ~SB%s: %s" % (story_url, user_tags))
+        message = "Saving story from site: %s: %s" % (story_url, user_tags)
     else:
-        shared_story.story_content = content
-        shared_story.story_title = title
-        shared_story.comments = comments
-        shared_story.story_permalink = story_url
-        shared_story.story_guid = story_url
-        shared_story.has_comments = bool(comments)
-        shared_story.story_feed_id = feed_id
-        shared_story.save()
-        logging.user(profile.user, "~BM~FY~SBUpdating~SN shared story from site: ~SB%s: %s" % (story_url, comments))
-        message = "Updating shared story from site: %s: %s" % (story_url, comments)
+        starred_story.story_content = content
+        starred_story.story_title = title
+        starred_story.user_tags = user_tags
+        starred_story.story_permalink = story_url
+        starred_story.story_guid = story_url
+        starred_story.story_feed_id = feed_id
+        starred_story.save()
+        logging.user(profile.user, "~BM~FC~SBUpdating~SN starred story from site: ~SB%s: %s" % (story_url, user_tags))
+        message = "Updating saved story from site: %s: %s" % (story_url, user_tags)
 
-    shared_story.publish_update_to_subscribers()
+    MStarredStoryCounts.schedule_count_tags_for_user(request.user.pk)
     
     response = HttpResponse(json.encode({
         'code':     code,
         'message':  message,
-        'story':    shared_story,
+        'story':    starred_story,
     }), mimetype='text/plain')
     response['Access-Control-Allow-Origin'] = '*'
     response['Access-Control-Allow-Methods'] = 'POST'
