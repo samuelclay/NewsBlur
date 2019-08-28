@@ -449,7 +449,7 @@ class Feed(models.Model):
                 
             return feed
         
-        @timelimit(15)
+        @timelimit(20)
         def _feedfinder(url):
             found_feed_urls = feedfinder.find_feeds(url)
             if not found_feed_urls:
