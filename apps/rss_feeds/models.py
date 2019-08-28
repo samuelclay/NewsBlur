@@ -37,6 +37,7 @@ from apps.search.models import SearchStory, SearchFeed
 from apps.statistics.rstats import RStats
 from utils import json_functions as json
 from utils import feedfinder2 as feedfinder
+from utils import feedfinder as feedfinder_old
 from utils import urlnorm
 from utils import log as logging
 from utils.fields import AutoOneToOneField
@@ -448,9 +449,11 @@ class Feed(models.Model):
                 
             return feed
         
-        @timelimit(10)
+        @timelimit(15)
         def _feedfinder(url):
             found_feed_urls = feedfinder.find_feeds(url)
+            if not found_feed_urls:
+                found_feed_urls = feedfinder_old.feeds(url)
             return found_feed_urls
         
         # Normalize and check for feed_address, dupes, and feed_link
