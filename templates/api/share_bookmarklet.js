@@ -86,7 +86,7 @@
                     'Signed in as ',
                     $.make('b', { style: 'color: #505050' }, this.username)
                 ]),
-                $.make('div', { className: 'NB-modal-title' }, 'Share this story on NewsBlur'),
+                $.make('div', { className: 'NB-modal-title' }, 'Send this story to NewsBlur'),
                 $.make('div', { className: 'NB-bookmarklet-main'}, [
                     $.make('div', { className: 'NB-bookmarklet-page' }, [
                         $.make('div', { className: 'NB-bookmarklet-page-title', contenteditable: true }),

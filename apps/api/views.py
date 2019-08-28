@@ -306,7 +306,6 @@ def share_story(request, token=None):
                 message = "Not authenticated, couldn't find user by token."
             else:
                 message = "Not authenticated, no token supplied and not authenticated."
-
     
     if not profile:
         return HttpResponse(json.encode({
@@ -385,6 +384,107 @@ def share_story(request, token=None):
     else:
         RUserStory.mark_read(profile.user.pk, shared_story.story_feed_id, shared_story.story_hash)
 
+
+    shared_story.publish_update_to_subscribers()
+    
+    response = HttpResponse(json.encode({
+        'code':     code,
+        'message':  message,
+        'story':    shared_story,
+    }), mimetype='text/plain')
+    response['Access-Control-Allow-Origin'] = '*'
+    response['Access-Control-Allow-Methods'] = 'POST'
+    
+    return response
+
+@required_params('story_url', 'title')
+def save_story(request, token=None):
+    code      = 0
+    story_url = request.POST['story_url']
+    user_tags = request.POST.getlist('user_tags') or request.REQUEST.getlist('user_tags[]') or []
+    add_user_tag = request.POST.get('add_user_tag', None)
+    title     = request.POST['title']
+    content   = request.POST.get('content', None)
+    rss_url   = request.POST.get('rss_url', None)
+    feed_id   = request.POST.get('feed_id', None) or 0
+    feed      = None
+    message   = None
+    profile   = None
+    
+    if request.user.is_authenticated():
+        profile = request.user.profile
+    else:
+        try:
+            profile = Profile.objects.get(secret_token=token)
+        except Profile.DoesNotExist:
+            code = -1
+            if token:
+                message = "Not authenticated, couldn't find user by token."
+            else:
+                message = "Not authenticated, no token supplied and not authenticated."
+    
+    if not profile:
+        return HttpResponse(json.encode({
+            'code':     code,
+            'message':  message,
+            'story':    None,
+        }), mimetype='text/plain')
+    
+    if feed_id:
+        feed = Feed.get_by_id(feed_id)
+    else:
+        if rss_url:
+            logging.user(request.user, "~FBFinding feed (save_story): %s" % rss_url)
+            feed = Feed.get_feed_from_url(rss_url, create=True, fetch=True)
+        if not feed:
+            logging.user(request.user, "~FBFinding feed (save_story): %s" % story_url)
+            feed = Feed.get_feed_from_url(story_url, create=True, fetch=True)
+        if feed:
+            feed_id = feed.pk
+    
+    if content:
+        content = lxml.html.fromstring(content)
+        content.make_links_absolute(story_url)
+        content = lxml.html.tostring(content)
+    else:
+        importer = TextImporter(story=None, story_url=story_url, request=request, debug=settings.DEBUG)
+        document = importer.fetch(skip_save=True, return_document=True)
+        content = document['content']
+        if not title:
+            title = document['title']
+    
+    starred_story = MStarredStory.objects.filter(user_id=profile.user.pk,
+                                                 story_feed_id=feed_id, 
+                                                 story_guid=story_url).limit(1).first()
+    if not starred_story:
+        story_db = {
+            "story_guid": story_url,
+            "story_permalink": story_url,
+            "story_title": title,
+            "story_feed_id": feed_id,
+            "story_content": content,
+            "story_date": datetime.datetime.now(),
+            "user_id": profile.user.pk,
+            "has_comments": bool(comments),
+        }
+        shared_story = MSharedStory.objects.create(**story_db)
+        socialsubs = MSocialSubscription.objects.filter(subscription_user_id=profile.user.pk)
+        for socialsub in socialsubs:
+            socialsub.needs_unread_recalc = True
+            socialsub.save()
+        logging.user(profile.user, "~BM~FYSharing story from site: ~SB%s: %s" % (story_url, comments))
+        message = "Sharing story from site: %s: %s" % (story_url, comments)
+    else:
+        shared_story.story_content = content
+        shared_story.story_title = title
+        shared_story.comments = comments
+        shared_story.story_permalink = story_url
+        shared_story.story_guid = story_url
+        shared_story.has_comments = bool(comments)
+        shared_story.story_feed_id = feed_id
+        shared_story.save()
+        logging.user(profile.user, "~BM~FY~SBUpdating~SN shared story from site: ~SB%s: %s" % (story_url, comments))
+        message = "Updating shared story from site: %s: %s" % (story_url, comments)
 
     shared_story.publish_update_to_subscribers()
     
