@@ -449,11 +449,14 @@ class Feed(models.Model):
                 
             return feed
         
-        @timelimit(20)
+        @timelimit(10)
         def _feedfinder(url):
             found_feed_urls = feedfinder.find_feeds(url)
-            if not found_feed_urls:
-                found_feed_urls = feedfinder_old.feeds(url)
+            return found_feed_urls
+
+        @timelimit(10)
+        def _feedfinder_old(url):
+            found_feed_urls = feedfinder_old.feeds(url)
             return found_feed_urls
         
         # Normalize and check for feed_address, dupes, and feed_link
@@ -477,6 +480,12 @@ class Feed(models.Model):
             except TimeoutError:
                 logging.debug('   ---> Feed finder timed out...')
                 found_feed_urls = []
+            if not found_feed_urls:
+                try:
+                    found_feed_urls = _feedfinder_old(url)
+                except TimeoutError:
+                    logging.debug('   ---> Feed finder old timed out...')
+                    found_feed_urls = []
                 
             if len(found_feed_urls):
                 feed_finder_url = found_feed_urls[0]
