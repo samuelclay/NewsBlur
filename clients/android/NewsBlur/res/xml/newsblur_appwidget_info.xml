@@ -3,9 +3,9 @@
     android:minWidth="40dp"
     android:minHeight="40dp"
     android:updatePeriodMillis="86400000"
-    android:previewImage="@drawable/preview"
     android:initialLayout="@layout/newsblur_widget"
-    android:configure="com.newsblur.activity.ConfigureWidgetActivity"
+    android:configure="com.newsblur.widget.ConfigureWidgetActivity"
     android:resizeMode="horizontal|vertical"
     android:widgetCategory="home_screen">
 </appwidget-provider>
+<!--    android:previewImage="@drawable/preview"-->

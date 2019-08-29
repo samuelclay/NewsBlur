@@ -137,7 +137,7 @@
         <activity
             android:name=".activity.SocialFeedReading"/>
 
-        <activity android:name=".activity.ConfigureWidgetActivity">
+        <activity android:name=".widget.ConfigureWidgetActivity">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
             </intent-filter>
@@ -145,8 +145,9 @@
         <service 
             android:name=".service.NBSyncService"
             android:permission="android.permission.BIND_JOB_SERVICE" />
-        <service android:name=".widget.WidgetRemoteViewsService"
-            android:permission="android.permission.BIND_REMOTEVIEWS"/>
+        <service android:name=".widget.BlurWidgetRemoteViewsService"
+            android:permission="android.permission.BIND_REMOTEVIEWS"
+            />
 
         <receiver android:name=".service.BootReceiver">
             <intent-filter>
