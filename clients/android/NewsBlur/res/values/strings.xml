@@ -492,4 +492,5 @@
 
     <string name="story_notification_channel_id">story_notification_channel</string>
     <string name="story_notification_channel_name">New Stories</string>
+    <string name="go_to_feed">Go to feed</string>
 </resources>

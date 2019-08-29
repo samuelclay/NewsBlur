@@ -1,5 +1,6 @@
 package com.newsblur.database;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -31,6 +32,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import com.newsblur.R;
+import com.newsblur.activity.FeedItemsList;
+import com.newsblur.activity.ItemsList;
 import com.newsblur.activity.NbActivity;
 import com.newsblur.domain.Story;
 import com.newsblur.domain.UserDetails;
@@ -407,6 +410,11 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 intelFrag.show(context.getSupportFragmentManager(), StoryIntelTrainerFragment.class.getName());
                 return true;
 
+            case R.id.menu_go_to_feed:
+                FeedSet fs = FeedSet.singleFeed(story.feedId);
+                FeedItemsList.startActivity(context, fs,
+                        FeedUtils.getFeed(story.feedId), null);
+                return true;
             default:
                 return false;
             }
