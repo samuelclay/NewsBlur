@@ -671,4 +671,15 @@ def email_optout(request):
     return {
         "user": user,
     }
+
+@json.json_view
+def ios_subscription_status(request):
+    logging.debug(" ---> iOS Subscription Status: %s" % request.POST)
     
+    subject = "iOS Subscription Status"
+    message = """%s""" % (request.POST)
+    mail_admins(subject, message)
+    
+    return {
+        "code": 1
+    }
