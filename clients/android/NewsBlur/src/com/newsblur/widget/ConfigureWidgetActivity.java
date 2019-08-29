@@ -40,7 +40,7 @@ public class ConfigureWidgetActivity extends NbActivity {
         // set result as cancelled in the case that we don't finish config
         Intent resultValue = new Intent();
         resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
-//        setResult(RESULT_CANCELED, resultValue);
+        setResult(RESULT_CANCELED, resultValue);
     }
 
 
