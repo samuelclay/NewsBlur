@@ -7,27 +7,49 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.widget.RemoteViews;
+import android.widget.Toast;
 
 import com.newsblur.R;
+import com.newsblur.util.Log;
 
 public class NewsBlurWidgetProvider extends AppWidgetProvider {
     public static String ACTION_OPEN_STORY = "ACTION_OPEN_STORY";
     public static String EXTRA_ITEM_ID = "EXTRA_ITEM_ID";
 
+    private static String TAG = "NewsBlurWidgetProvider";
+    // Called when the BroadcastReceiver receives an Intent broadcast.
+    // Checks to see whether the intent's action is TOAST_ACTION. If it is, the app widget
+    // displays a Toast message for the current item.
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        Log.d(TAG, "onReceive");
+        AppWidgetManager mgr = AppWidgetManager.getInstance(context);
+        if (intent.getAction().equals(ACTION_OPEN_STORY)) {
+            int appWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
+                    AppWidgetManager.INVALID_APPWIDGET_ID);
+            int viewIndex = intent.getIntExtra(EXTRA_ITEM_ID, 0);
+            Toast.makeText(context, "Touched view " + viewIndex, Toast.LENGTH_SHORT).show();
+        }
+        super.onReceive(context, intent);
+    }
     /**
      * Called to update at regular interval
      */
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         // update each of the app widgets with the remote adapter
+        Log.d(TAG, "onUpdate");
         for (int i = 0; i < appWidgetIds.length; ++i) {
 
-            // Set up the intent that starts the StackViewService, which will
+            Log.d(TAG, "onUpdate iteration #" + i);
+            // Set up the intent that starts the BlurWidgetRemoteViewService, which will
             // provide the views for this collection.
-            Intent intent = new Intent(context, WidgetRemoteViewsService.class);
+            Intent intent = new Intent(context, BlurWidgetRemoteViewsService.class);
             // Add the app widget ID to the intent extras.
             intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetIds[i]);
             intent.setData(Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME)));
+
+
             // Instantiate the RemoteViews object for the app widget layout.
             RemoteViews rv = new RemoteViews(context.getPackageName(), R.layout.newsblur_widget);
             // Set up the RemoteViews object to use a RemoteViews adapter.
@@ -49,16 +71,16 @@ public class NewsBlurWidgetProvider extends AppWidgetProvider {
             // cannot set up their own pending intents. Instead, the collection as a whole sets
             // up a pending intent template, and the individual items set a fillInIntent
             // to create unique behavior on an item-by-item basis.
-            Intent toastIntent = new Intent(context, NewsBlurWidgetProvider.class);
+            /*Intent touchIntent = new Intent(context, NewsBlurWidgetProvider.class);
             // Set the action for the intent.
             // When the user touches a particular view, it will have the effect of
             // broadcasting TOAST_ACTION.
-            toastIntent.setAction(NewsBlurWidgetProvider.TOAST_ACTION);
-            toastIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetIds[i]);
+            touchIntent.setAction(NewsBlurWidgetProvider.ACTION_OPEN_STORY);
+            touchIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetIds[i]);
             intent.setData(Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME)));
-            PendingIntent toastPendingIntent = PendingIntent.getBroadcast(context, 0, toastIntent,
+            PendingIntent touchIntentTemplate = PendingIntent.getBroadcast(context, 0, touchIntent,
                     PendingIntent.FLAG_UPDATE_CURRENT);
-            rv.setPendingIntentTemplate(R.id.stack_view, toastPendingIntent);
+            rv.setPendingIntentTemplate(R.id.widget_list, touchIntentTemplate);*/
 
 
             appWidgetManager.updateAppWidget(appWidgetIds[i], rv);
