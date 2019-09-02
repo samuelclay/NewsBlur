@@ -1,5 +1,7 @@
 package com.newsblur.activity;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.view.Menu;
@@ -10,6 +12,7 @@ import com.newsblur.domain.Feed;
 import com.newsblur.fragment.DeleteFeedFragment;
 import com.newsblur.fragment.FeedIntelTrainerFragment;
 import com.newsblur.fragment.RenameFeedFragment;
+import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.UIUtils;
 
@@ -19,6 +22,15 @@ public class FeedItemsList extends ItemsList {
     public static final String EXTRA_FOLDER_NAME = "folderName";
 	private Feed feed;
 	private String folderName;
+
+    public static void startActivity(Context context, FeedSet feedSet,
+                                     Feed feed, String folderName) {
+        Intent intent = new Intent(context, FeedItemsList.class);
+        intent.putExtra(ItemsList.EXTRA_FEED_SET, feedSet);
+        intent.putExtra(FeedItemsList.EXTRA_FEED, feed);
+        intent.putExtra(FeedItemsList.EXTRA_FOLDER_NAME, folderName);
+        context.startActivity(intent);
+    }
 
 	@Override
 	protected void onCreate(Bundle bundle) {
