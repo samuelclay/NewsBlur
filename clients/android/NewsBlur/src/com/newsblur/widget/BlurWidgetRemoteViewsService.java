@@ -26,6 +26,7 @@ import java.util.concurrent.Executors;
 
 public class BlurWidgetRemoteViewsService extends RemoteViewsService {
     private static String TAG = "BlurWidgetRemoteViewsFactory";
+    public static String EXTRA_FEED_ID = "EXTRA_FEED_ID";
     @Override
     public RemoteViewsFactory onGetViewFactory(Intent intent) {
         Log.d(TAG, "onGetViewFactory");
@@ -36,20 +37,18 @@ public class BlurWidgetRemoteViewsService extends RemoteViewsService {
 class BlurWidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
     private Context context;
     private int appWidgetId;
-
+    private String feedId;
     private BlurDatabaseHelper dbHelper;
     private static String TAG = "BlurWidgetRemoteViewsFactory";
     private List<Story> storyItems = new ArrayList<Story>();
     private FeedSet fs;
-    private final ExecutorService executorService;
     private Cursor cursor;
     public BlurWidgetRemoteViewsFactory(Context context, Intent intent) {
         Log.d(TAG, "Constructor");
         this.context = context;
         appWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
                 AppWidgetManager.INVALID_APPWIDGET_ID);
-
-        executorService = Executors.newFixedThreadPool(1);
+        feedId = intent.getStringExtra(BlurWidgetRemoteViewsService.EXTRA_FEED_ID);
     }
     /**
      * The system calls onCreate() when creating your factory for the first time.
@@ -63,15 +62,7 @@ class BlurWidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFact
     public void onCreate() {
         Log.d(TAG, "onCreate");
         dbHelper = new BlurDatabaseHelper(context);
-
-        fs = FeedSet.allFeeds();
-//        FeedSet.allFeeds()
-//        dbHelper
-        Set<String> allFeeds = dbHelper.getAllActiveFeeds();
-        String feedId = allFeeds.iterator().next();
-
         fs = FeedSet.singleFeed(feedId);
-//        Set<String> feeds = dbHelper.getSessionFeedSet()
         cursor = null;
         Loader<Cursor> loader = dbHelper.getActiveStoriesLoader(fs);
         loader.registerListener(loader.getId(), new Loader.OnLoadCompleteListener<Cursor>() {
@@ -82,15 +73,6 @@ class BlurWidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFact
             }
         });
         loader.startLoading();
-//        while (cursor == null) {
-//            try {
-//                Thread.sleep(200);
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//        context.getApplicationContext().loade
-    //.initLoader(0, null, this);
     }
 
     /**
