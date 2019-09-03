@@ -121,8 +121,10 @@ class BlurWidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFact
         // Next, set a fill-intent, which will be used to fill in the pending intent template
         // that is set on the collection view in StackWidgetProvider.
         Bundle extras = new Bundle();
-        extras.putInt(NewsBlurWidgetProvider.EXTRA_ITEM_ID, position);
+        extras.putString(NewsBlurWidgetProvider.EXTRA_ITEM_ID, story.storyHash);
+        extras.putString(NewsBlurWidgetProvider.EXTRA_FEED_ID, story.feedId);
         Intent fillInIntent = new Intent();
+//        fillInIntent.setAction(NewsBlurWidgetProvider.ACTION_OPEN_STORY);
         fillInIntent.putExtras(extras);
         // Make it possible to distinguish the individual on-click
         // action of a given item
