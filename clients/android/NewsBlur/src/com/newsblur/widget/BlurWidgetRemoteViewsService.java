@@ -16,7 +16,9 @@ import com.newsblur.R;
 import com.newsblur.database.BlurDatabaseHelper;
 import com.newsblur.domain.Story;
 import com.newsblur.util.FeedSet;
+import com.newsblur.util.FeedUtils;
 import com.newsblur.util.Log;
+import com.newsblur.util.PrefsUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +28,7 @@ import java.util.concurrent.Executors;
 
 public class BlurWidgetRemoteViewsService extends RemoteViewsService {
     private static String TAG = "BlurWidgetRemoteViewsFactory";
-    public static String EXTRA_FEED_ID = "EXTRA_FEED_ID";
+//    public static String EXTRA_FEED_ID = "EXTRA_FEED_ID";
     @Override
     public RemoteViewsFactory onGetViewFactory(Intent intent) {
         Log.d(TAG, "onGetViewFactory");
@@ -48,7 +50,8 @@ class BlurWidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFact
         this.context = context;
         appWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
                 AppWidgetManager.INVALID_APPWIDGET_ID);
-        feedId = intent.getStringExtra(BlurWidgetRemoteViewsService.EXTRA_FEED_ID);
+        feedId = PrefsUtils.getWidgetFeed(context, appWidgetId);
+        Log.d(TAG, "Feed ID: " + feedId);
     }
     /**
      * The system calls onCreate() when creating your factory for the first time.
@@ -61,10 +64,15 @@ class BlurWidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFact
     @Override
     public void onCreate() {
         Log.d(TAG, "onCreate");
-        dbHelper = new BlurDatabaseHelper(context);
+        FeedUtils.offerInitContext(context.getApplicationContext());
         fs = FeedSet.singleFeed(feedId);
+
+        setUpCursor();
+    }
+
+    private void setUpCursor(){
         cursor = null;
-        Loader<Cursor> loader = dbHelper.getActiveStoriesLoader(fs);
+        Loader<Cursor> loader = FeedUtils.dbHelper.getStoriesLoader(fs);
         loader.registerListener(loader.getId(), new Loader.OnLoadCompleteListener<Cursor>() {
             @Override
             public void onLoadComplete(@NonNull Loader<Cursor> loader, @Nullable Cursor data) {
@@ -91,6 +99,10 @@ class BlurWidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFact
         }
         storyItems.clear();
         storyItems.addAll(loadedStories);
+        cursor.close();
+
+        AppWidgetManager.getInstance(context)
+                .notifyAppWidgetViewDataChanged(appWidgetId, R.id.widget_list);
     }
     /**
      * allowed to run synchronous calls
@@ -173,6 +185,7 @@ class BlurWidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFact
     @Override
     public void onDestroy() {
         Log.d(TAG, "onDestroy");
+        cursor.close();
     }
 
     /**

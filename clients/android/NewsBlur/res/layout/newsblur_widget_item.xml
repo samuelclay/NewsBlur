@@ -5,6 +5,12 @@
     android:layout_height="match_parent">
     <TextView
         android:id="@+id/newsblur_widget_item_title"
-        android:layout_width="wrap_content"
+        android:paddingBottom="7dp"
+        android:paddingTop="7dp"
+        android:ellipsize="end"
+        android:lines="1"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 </LinearLayout>

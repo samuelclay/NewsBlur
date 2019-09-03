@@ -19,6 +19,7 @@ import com.newsblur.domain.Feed;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.Log;
+import com.newsblur.util.PrefsUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -125,7 +126,9 @@ public class ConfigureWidgetActivity extends NbActivity {
         Intent intent = new Intent(this, BlurWidgetRemoteViewsService.class);
         // Add the app widget ID to the intent extras.
         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
-        intent.putExtra(BlurWidgetRemoteViewsService.EXTRA_FEED_ID, selectedFeed.feedId);
+//        intent.putExtra(BlurWidgetRemoteViewsService.EXTRA_FEED_ID, selectedFeed.feedId);
+
+        PrefsUtils.setWidgetFeed(this, appWidgetId, selectedFeed.feedId);
 
         rv.setRemoteAdapter(R.id.widget_list, intent);
         rv.setEmptyView(R.id.widget_list, R.id.empty_view);

@@ -858,4 +858,19 @@ public class PrefsUtils {
         editor.putString(PrefConstants.READING_FONT, newValue);
         editor.commit();
     }
+
+
+    public static void setWidgetFeed(Context context, int widgetId, String feedId) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        Editor editor = prefs.edit();
+        editor.putString(PrefConstants.WIDGET_FEED_ID + widgetId, feedId);
+        editor.commit();
+    }
+
+    public static String getWidgetFeed(Context context, int widgetId) {
+        SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        float storedValue = preferences.getFloat(PrefConstants.PREFERENCE_LIST_TEXT_SIZE, 1.0f);
+        String feedId = preferences.getString(PrefConstants.WIDGET_FEED_ID + widgetId, "0");
+        return feedId;
+    }
 }
