@@ -7,6 +7,8 @@
         android:id="@+id/newsblur_widget_item_title"
         android:paddingBottom="7dp"
         android:paddingTop="7dp"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
         android:ellipsize="end"
         android:lines="1"
         android:textSize="14sp"

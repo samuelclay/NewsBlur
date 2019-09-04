@@ -39,7 +39,7 @@ public class ConfigureWidgetActivity extends NbActivity {
     protected void onCreate(Bundle bundle) {
         super.onCreate(bundle);
         setContentView(R.layout.activity_configure_widget);
-
+        PrefsUtils.applyThemePreference(this);
         Intent intent = getIntent();
         Bundle extras = intent.getExtras();
         if (extras != null) {
@@ -49,21 +49,7 @@ public class ConfigureWidgetActivity extends NbActivity {
         }
 
 
-        Button btnSelect = findViewById(R.id.btn_select);
-        btnSelect.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getAllFeeds();
-            }
-        });
-        Button btnSaveWidget = findViewById(R.id.btn_save);
-        btnSaveWidget.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                saveWidget();
-            }
-        });
-
+        getAllFeeds();
         // set result as cancelled in the case that we don't finish config
         Intent resultValue = new Intent();
         resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
@@ -106,6 +92,7 @@ public class ConfigureWidgetActivity extends NbActivity {
                     public void onClick(DialogInterface dialog, int which) {
                         Log.d(TAG, "Clicked " + which);
                         selectedFeed = feeds.get(which);
+                        saveWidget();
                     }
                 });
         builder.create().show();
