@@ -71,6 +71,9 @@ class BlurWidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFact
     }
 
     private void setUpCursor(){
+        if (cursor != null && !cursor.isClosed()) {
+            cursor.close();
+        }
         cursor = null;
         Loader<Cursor> loader = FeedUtils.dbHelper.getStoriesLoader(fs);
         loader.registerListener(loader.getId(), new Loader.OnLoadCompleteListener<Cursor>() {
@@ -97,12 +100,16 @@ class BlurWidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFact
             s.bindExternValues(cursor);
             loadedStories.add(s);
         }
+//        loadedStories.equals()
         storyItems.clear();
         storyItems.addAll(loadedStories);
         cursor.close();
 
-        AppWidgetManager.getInstance(context)
-                .notifyAppWidgetViewDataChanged(appWidgetId, R.id.widget_list);
+
+//            AppWidgetManager widgetManager = AppWidgetManager.getInstance(this);
+//            int [] widgetIds = widgetManager.getAppWidgetIds(new ComponentName(this, NewsBlurWidgetProvider.class));
+//            widgetManager.notifyAppWidgetViewDataChanged(widgetIds, R.id.widget_list);
+
     }
     /**
      * allowed to run synchronous calls
@@ -176,7 +183,8 @@ class BlurWidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFact
     @Override
     public void onDataSetChanged() {
         // fetch any new data
-        loadStories(10);
+//        loadStories(10);
+        setUpCursor();
         Log.d(TAG, "onDataSetChanged");
     }
 
@@ -196,7 +204,7 @@ class BlurWidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFact
      */
     @Override
     public int getCount() {
-        Log.d(TAG, "getCount");
+        Log.d(TAG, "getCount: " + Math.min(storyItems.size(), 10));
         return Math.min(storyItems.size(), 10);
     }
 }

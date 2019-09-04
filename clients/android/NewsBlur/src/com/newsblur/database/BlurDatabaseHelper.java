@@ -1122,6 +1122,9 @@ public class BlurDatabaseHelper {
         q.append(DatabaseConstants.STORY_FEED_ID);
         q.append(" = ");
         q.append(fs.getSingleFeed());
+        q.append(" ORDER BY ");
+        q.append(DatabaseConstants.STORY_TIMESTAMP);
+        q.append(" DESC LIMIT 10");
         return rawQuery(q.toString(), null, cancellationSignal);
     }
 
