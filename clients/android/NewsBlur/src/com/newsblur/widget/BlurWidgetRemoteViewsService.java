@@ -1,34 +1,28 @@
 package com.newsblur.widget;
 
-import android.app.LoaderManager;
 import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.content.Loader;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
 import com.newsblur.R;
-import com.newsblur.database.BlurDatabaseHelper;
 import com.newsblur.domain.Story;
+import com.newsblur.network.APIManager;
+import com.newsblur.network.domain.StoriesResponse;
 import com.newsblur.util.FeedSet;
-import com.newsblur.util.FeedUtils;
 import com.newsblur.util.Log;
 import com.newsblur.util.PrefsUtils;
+import com.newsblur.util.ReadFilter;
+import com.newsblur.util.StoryOrder;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class BlurWidgetRemoteViewsService extends RemoteViewsService {
     private static String TAG = "BlurWidgetRemoteViewsFactory";
-//    public static String EXTRA_FEED_ID = "EXTRA_FEED_ID";
     @Override
     public RemoteViewsFactory onGetViewFactory(Intent intent) {
         Log.d(TAG, "onGetViewFactory");
@@ -38,19 +32,18 @@ public class BlurWidgetRemoteViewsService extends RemoteViewsService {
 
 class BlurWidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
     private Context context;
-    private int appWidgetId;
     private String feedId;
-    private BlurDatabaseHelper dbHelper;
     private static String TAG = "BlurWidgetRemoteViewsFactory";
     private List<Story> storyItems = new ArrayList<Story>();
     private FeedSet fs;
-    private Cursor cursor;
+    private APIManager apiManager;
     public BlurWidgetRemoteViewsFactory(Context context, Intent intent) {
         Log.d(TAG, "Constructor");
         this.context = context;
-        appWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
+        int appWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
                 AppWidgetManager.INVALID_APPWIDGET_ID);
         feedId = PrefsUtils.getWidgetFeed(context, appWidgetId);
+        apiManager = new APIManager(context);
         Log.d(TAG, "Feed ID: " + feedId);
     }
     /**
@@ -64,52 +57,27 @@ class BlurWidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFact
     @Override
     public void onCreate() {
         Log.d(TAG, "onCreate");
-        FeedUtils.offerInitContext(context.getApplicationContext());
         fs = FeedSet.singleFeed(feedId);
-
-        setUpCursor();
     }
 
-    private void setUpCursor(){
-        if (cursor != null && !cursor.isClosed()) {
-            cursor.close();
-        }
-        cursor = null;
-        Loader<Cursor> loader = FeedUtils.dbHelper.getStoriesLoader(fs);
-        loader.registerListener(loader.getId(), new Loader.OnLoadCompleteListener<Cursor>() {
-            @Override
-            public void onLoadComplete(@NonNull Loader<Cursor> loader, @Nullable Cursor data) {
-                cursor = data;
-                loadStories(10);
-            }
-        });
-        loader.startLoading();
-    }
+    private void fetchStories() {
+        Log.d(TAG, String.format("Fetching stories %s", fs.hashCode()));
+        StoriesResponse response =
+                apiManager.getStories(fs, 1, StoryOrder.NEWEST, ReadFilter.ALL);
 
-    /**
-     * load up to {count} stories
-     */
-    private void loadStories(int count) {
-        List<Story> loadedStories = new ArrayList<>();
-        if (cursor == null || cursor.isClosed()) {
+        if (response == null) {
+            Log.e(TAG, "Response is null");
+            return;
+        } else if (response.stories == null) {
+            Log.e(TAG, "Stories are empty");
+            return;
+        } else if (response.isError()) {
+            String err = String.format("response error for feed %s", fs.hashCode());
+            Log.e(TAG, response.getErrorMessage(err));
             return;
         }
-        cursor.moveToPosition(-1);
-        while (!cursor.isClosed() && cursor.moveToNext() && loadedStories.size() < count) {
-            Story s = Story.fromCursor(cursor);
-            s.bindExternValues(cursor);
-            loadedStories.add(s);
-        }
-//        loadedStories.equals()
         storyItems.clear();
-        storyItems.addAll(loadedStories);
-        cursor.close();
-
-
-//            AppWidgetManager widgetManager = AppWidgetManager.getInstance(this);
-//            int [] widgetIds = widgetManager.getAppWidgetIds(new ComponentName(this, NewsBlurWidgetProvider.class));
-//            widgetManager.notifyAppWidgetViewDataChanged(widgetIds, R.id.widget_list);
-
+        storyItems.addAll(Arrays.asList(response.stories));
     }
     /**
      * allowed to run synchronous calls
@@ -183,8 +151,7 @@ class BlurWidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFact
     @Override
     public void onDataSetChanged() {
         // fetch any new data
-//        loadStories(10);
-        setUpCursor();
+        fetchStories();
         Log.d(TAG, "onDataSetChanged");
     }
 
@@ -195,7 +162,6 @@ class BlurWidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFact
     @Override
     public void onDestroy() {
         Log.d(TAG, "onDestroy");
-        cursor.close();
     }
 
     /**
