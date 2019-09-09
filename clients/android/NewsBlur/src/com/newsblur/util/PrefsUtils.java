@@ -869,7 +869,6 @@ public class PrefsUtils {
 
     public static String getWidgetFeed(Context context, int widgetId) {
         SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
-        float storedValue = preferences.getFloat(PrefConstants.PREFERENCE_LIST_TEXT_SIZE, 1.0f);
         String feedId = preferences.getString(PrefConstants.WIDGET_FEED_ID + widgetId, "0");
         return feedId;
     }

@@ -9,29 +9,20 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.Loader;
-import android.view.View;
-import android.widget.Button;
 import android.widget.RemoteViews;
 
 import com.newsblur.R;
 import com.newsblur.activity.NbActivity;
 import com.newsblur.domain.Feed;
-import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.Log;
 import com.newsblur.util.PrefsUtils;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class ConfigureWidgetActivity extends NbActivity {
     private int appWidgetId;
-    private ExecutorService executorService;
     private List<Feed> feeds = new ArrayList<>();
     private static String TAG = "ConfigureWidgetActivity";
     private Feed selectedFeed = null;
@@ -90,7 +81,7 @@ public class ConfigureWidgetActivity extends NbActivity {
                 .setItems(feedTitles.toArray(new String[feedTitles.size()]), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        Log.d(TAG, "Clicked " + which);
+                        Log.d(TAG, "Selected " + which);
                         selectedFeed = feeds.get(which);
                         saveWidget();
                     }
@@ -105,7 +96,8 @@ public class ConfigureWidgetActivity extends NbActivity {
             return;
         }
         //update widget
-        Log.d(TAG, "saveWidget");
+        Log.d(TAG, String.format("saving widget with feed id %s - %s",
+                selectedFeed.feedId, selectedFeed.title));
         AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
         RemoteViews rv = new RemoteViews(getPackageName(),
                 R.layout.newsblur_widget);
@@ -113,7 +105,6 @@ public class ConfigureWidgetActivity extends NbActivity {
         Intent intent = new Intent(this, BlurWidgetRemoteViewsService.class);
         // Add the app widget ID to the intent extras.
         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
-//        intent.putExtra(BlurWidgetRemoteViewsService.EXTRA_FEED_ID, selectedFeed.feedId);
 
         PrefsUtils.setWidgetFeed(this, appWidgetId, selectedFeed.feedId);
 
