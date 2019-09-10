@@ -106,7 +106,6 @@ public class ConfigureWidgetActivity extends NbActivity {
         Intent intent = new Intent(this, BlurWidgetRemoteViewsService.class);
         // Add the app widget ID to the intent extras.
         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
-        intent.putExtra(BlurWidgetRemoteViewsService.EXTRA_FEED_NAME, selectedFeed.title);
 
         PrefsUtils.setWidgetFeed(this, appWidgetId, selectedFeed.feedId, selectedFeed.title);
 
@@ -114,9 +113,7 @@ public class ConfigureWidgetActivity extends NbActivity {
         rv.setRemoteAdapter(R.id.widget_list, intent);
         rv.setEmptyView(R.id.widget_list, R.id.empty_view);
 
-
         appWidgetManager.updateAppWidget(appWidgetId, rv);
-
 
         Intent resultValue = new Intent();
         resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
