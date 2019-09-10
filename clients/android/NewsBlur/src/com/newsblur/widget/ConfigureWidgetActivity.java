@@ -39,6 +39,7 @@ public class ConfigureWidgetActivity extends NbActivity {
                     AppWidgetManager.INVALID_APPWIDGET_ID);
         }
 
+        PrefsUtils.removeWidgetFeed(this, appWidgetId);
 
         getAllFeeds();
         // set result as cancelled in the case that we don't finish config
