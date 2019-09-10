@@ -872,4 +872,13 @@ public class PrefsUtils {
         String feedId = preferences.getString(PrefConstants.WIDGET_FEED_ID + widgetId, "0");
         return feedId;
     }
+
+    public static void removeWidgetFeed(Context context, int widgetId) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        if(prefs.contains(PrefConstants.WIDGET_FEED_ID + widgetId)){
+            Editor editor = prefs.edit();
+            editor.remove(PrefConstants.WIDGET_FEED_ID + widgetId);
+            editor.apply();
+        }
+    }
 }
