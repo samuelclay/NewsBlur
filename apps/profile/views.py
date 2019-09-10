@@ -550,7 +550,7 @@ def never_expire_premium(request):
 def update_payment_history(request):
     user_id = request.REQUEST.get('user_id')
     user = User.objects.get(pk=user_id)
-    user.profile.setup_premium_history(check_premium=False)
+    user.profile.setup_premium_history(set_premium_expire=False)
     
     return {'code': 1}
     
