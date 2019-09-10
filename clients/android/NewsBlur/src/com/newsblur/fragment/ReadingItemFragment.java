@@ -452,7 +452,7 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
 			itemFeed.setText(feedTitle);
 		}
 
-        itemDate.setText(StoryUtils.formatLongDate(getActivity(), new Date(story.timestamp)));
+        itemDate.setText(StoryUtils.formatLongDate(getActivity(), story.timestamp));
 
         if (story.tags.length <= 0) {
             tagContainer.setVisibility(View.GONE);
