@@ -4,6 +4,8 @@ import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.format.DateFormat;
+import android.text.format.DateUtils;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
@@ -16,7 +18,9 @@ import com.newsblur.util.Log;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadFilter;
 import com.newsblur.util.StoryOrder;
+import com.newsblur.util.StoryUtils;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -89,7 +93,11 @@ class BlurWidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFact
         // Construct a remote views item based on the app widget item XML file,
         // and set the text based on the position.
         RemoteViews rv = new RemoteViews(context.getPackageName(), R.layout.newsblur_widget_item);
-        rv.setTextViewText(R.id.newsblur_widget_item_title, story.title);
+        rv.setTextViewText(R.id.widget_item_title, story.title);
+
+        CharSequence time = StoryUtils.formatRelativeTime(context, story.timestamp);
+
+        rv.setTextViewText(R.id.widget_item_time, time);
 
 
 

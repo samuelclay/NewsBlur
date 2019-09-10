@@ -2,6 +2,7 @@ package com.newsblur.util;
 
 import android.content.Context;
 import android.text.format.DateFormat;
+import android.text.format.DateUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -57,8 +58,8 @@ public class StoryUtils {
         }
     };
 
-    public static String formatLongDate(Context context, Date storyDate) {
-
+    public static String formatLongDate(Context context, long timestamp) {
+        Date storyDate = new Date(timestamp);
         Date midnightToday = midnightToday();
         Date midnightYesterday = midnightYesterday();
         Date beginningOfMonth = beginningOfMonth();
@@ -95,6 +96,23 @@ public class StoryUtils {
         } else {
             // Monday, January 1st 2014 00:00
             return monthLongFormat.get().format(storyDate) + getDayOfMonthSuffix(month) + " " + yearLongFormat.get().format(storyDate) + " " + timeFormat.format(storyDate);
+        }
+    }
+
+    public static CharSequence formatRelativeTime(Context context, long timestamp) {
+        Date date = new Date(timestamp);
+        Date sixDaysAgo = new Date(System.currentTimeMillis()
+                - (DateUtils.DAY_IN_MILLIS * 6));
+        if (DateUtils.isToday(timestamp)) {
+            // "3 hours ago"
+            return DateUtils.getRelativeTimeSpanString(timestamp,
+                    System.currentTimeMillis(),
+                    DateUtils.MINUTE_IN_MILLIS);
+        } else if (date.after(sixDaysAgo)){
+            // "Wednesday"
+            return DateFormat.format("EEEE", timestamp);
+        } else {
+            return DateFormat.getDateFormat(context).format(date);
         }
     }
 
@@ -142,8 +160,8 @@ public class StoryUtils {
         }
     }
 
-    public static String formatShortDate(Context context, Date storyDate) {
-
+    public static String formatShortDate(Context context, long timestamp) {
+        Date storyDate = new Date(timestamp);
         Date midnightToday = midnightToday();
         Date midnightYesterday = midnightYesterday();
 
