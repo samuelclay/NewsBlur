@@ -119,5 +119,6 @@ public class ConfigureWidgetActivity extends NbActivity {
         resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
         setResult(RESULT_OK, resultValue);
         finish();
+
     }
 }
