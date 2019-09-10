@@ -107,4 +107,5 @@ public class PrefConstants {
 
     public static final String READING_FONT = "reading_font";
     public static final String WIDGET_FEED_ID = "WIDGET_FEED_ID";
+    public static final String WIDGET_FEED_NAME = "WIDGET_FEED_NAME";
 }

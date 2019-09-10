@@ -14,6 +14,7 @@ import com.newsblur.activity.FeedReading;
 import com.newsblur.activity.Reading;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.Log;
+import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.UIUtils;
 
 public class NewsBlurWidgetProvider extends AppWidgetProvider {
@@ -74,6 +75,9 @@ public class NewsBlurWidgetProvider extends AppWidgetProvider {
             // It should be in the same layout used to instantiate the RemoteViews
             // object above.
             rv.setEmptyView(R.id.widget_list, R.id.empty_view);
+
+            rv.setTextViewText(R.id.txt_feed_name,
+                    PrefsUtils.getWidgetFeedName(context, appWidgetIds[i]));
 
             //
             // Do additional processing specific to this app widget...

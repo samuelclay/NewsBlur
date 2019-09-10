@@ -26,6 +26,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class BlurWidgetRemoteViewsService extends RemoteViewsService {
+    public static String EXTRA_FEED_NAME = "EXTRA_FEED_NAME";
     private static String TAG = "BlurWidgetRemoteViewsFactory";
     @Override
     public RemoteViewsFactory onGetViewFactory(Intent intent) {
