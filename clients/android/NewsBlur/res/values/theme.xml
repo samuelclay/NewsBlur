@@ -88,6 +88,7 @@
         <!--requires API 24-->
         <item name="android:contextPopupMenuStyle">@style/contextPopupStyle.dark</item>
         <item name="android:textColorPrimary">@color/white</item>
+        <item name="android:itemTextAppearance">@style/itemTextAppearance.dark</item>
     </style>
 
     <style name="NewsBlurBlackTheme" parent="@android:style/Theme.Holo" >
@@ -132,5 +133,6 @@
         <item name="muteicon">@style/muteicon.dark</item>
         <item name="android:contextPopupMenuStyle">@style/contextPopupStyle.dark</item>
         <item name="android:textColorPrimary">@color/white</item>
+        <item name="android:itemTextAppearance">@style/itemTextAppearance.dark</item>
     </style>
 </resources>
