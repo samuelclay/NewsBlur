@@ -37,6 +37,7 @@ from apps.search.models import SearchStory, SearchFeed
 from apps.statistics.rstats import RStats
 from utils import json_functions as json
 from utils import feedfinder2 as feedfinder
+from utils import feedfinder as feedfinder_old
 from utils import urlnorm
 from utils import log as logging
 from utils.fields import AutoOneToOneField
@@ -452,6 +453,11 @@ class Feed(models.Model):
         def _feedfinder(url):
             found_feed_urls = feedfinder.find_feeds(url)
             return found_feed_urls
+
+        @timelimit(10)
+        def _feedfinder_old(url):
+            found_feed_urls = feedfinder_old.feeds(url)
+            return found_feed_urls
         
         # Normalize and check for feed_address, dupes, and feed_link
         url = urlnorm.normalize(url)
@@ -474,6 +480,12 @@ class Feed(models.Model):
             except TimeoutError:
                 logging.debug('   ---> Feed finder timed out...')
                 found_feed_urls = []
+            if not found_feed_urls:
+                try:
+                    found_feed_urls = _feedfinder_old(url)
+                except TimeoutError:
+                    logging.debug('   ---> Feed finder old timed out...')
+                    found_feed_urls = []
                 
             if len(found_feed_urls):
                 feed_finder_url = found_feed_urls[0]
