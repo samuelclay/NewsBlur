@@ -560,7 +560,7 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         }
 
         vh.storyTitleView.setText(UIUtils.fromHtml(story.title));
-        vh.storyDate.setText(StoryUtils.formatShortDate(context, new Date(story.timestamp)));
+        vh.storyDate.setText(StoryUtils.formatShortDate(context, story.timestamp));
 
         // lists with mixed feeds get added info, but single feeds do not
         if (!singleFeed) {
