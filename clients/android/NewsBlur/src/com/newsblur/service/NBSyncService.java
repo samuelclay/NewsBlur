@@ -3,6 +3,8 @@ package com.newsblur.service;
 import android.app.Service;
 import android.app.job.JobParameters;
 import android.app.job.JobService;
+import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -37,6 +39,7 @@ import com.newsblur.util.ReadingAction;
 import com.newsblur.util.ReadFilter;
 import com.newsblur.util.StateFilter;
 import com.newsblur.util.StoryOrder;
+import com.newsblur.widget.NewsBlurWidgetProvider;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -280,6 +283,10 @@ public class NBSyncService extends JobService {
             // do this even if background syncs aren't enabled, because it absolutely must happen
             // on all devices
             housekeeping();
+
+            AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
+            int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(this, NewsBlurWidgetProvider.class));
+            appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.widget_list);
 
             // check to see if we are on an allowable network only after ensuring we have CPU
             if (!( (NbActivity.getActiveActivityCount() > 0) ||
