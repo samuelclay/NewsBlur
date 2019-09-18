@@ -486,7 +486,7 @@ CELERYBEAT_SCHEDULE = {
     },
     'clean-spam': {
         'task': 'clean-spam',
-        'schedule': datetime.timedelta(hours=6),
+        'schedule': datetime.timedelta(hours=1),
         'options': {'queue': 'beat_tasks'},
     },
     'clean-social-spam': {

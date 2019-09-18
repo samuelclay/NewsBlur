@@ -527,11 +527,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 
                 FeedUtils.currentFolderName = folderName;
             }
-			Intent intent = new Intent(getActivity(), FeedItemsList.class);
-            intent.putExtra(ItemsList.EXTRA_FEED_SET, fs);
-			intent.putExtra(FeedItemsList.EXTRA_FEED, feed);
-			intent.putExtra(FeedItemsList.EXTRA_FOLDER_NAME, folderName);
-			getActivity().startActivity(intent);
+			FeedItemsList.startActivity(getActivity(), fs, feed, folderName);
             adapter.lastFeedViewedId = feed.feedId;
             adapter.lastFolderViewed = null;
 		}

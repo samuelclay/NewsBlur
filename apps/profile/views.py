@@ -321,9 +321,13 @@ def save_ios_receipt(request):
     
     paid = request.user.profile.activate_ios_premium(product_identifier, transaction_identifier)
     if paid:
+        logging.user(request, "~BM~FBSending iOS Receipt email: %s %s" % (product_identifier, transaction_identifier))
         subject = "iOS Premium: %s (%s)" % (request.user.profile, product_identifier)
         message = """User: %s (%s) -- Email: %s, product: %s, txn: %s, receipt: %s""" % (request.user.username, request.user.pk, request.user.email, product_identifier, transaction_identifier, receipt)
         mail_admins(subject, message, fail_silently=True)
+    else:
+        logging.user(request, "~BM~FBNot sending iOS Receipt email, already paid: %s %s" % (product_identifier, transaction_identifier))
+        
     
     return request.user.profile
     
@@ -546,7 +550,7 @@ def never_expire_premium(request):
 def update_payment_history(request):
     user_id = request.REQUEST.get('user_id')
     user = User.objects.get(pk=user_id)
-    user.profile.setup_premium_history(check_premium=False)
+    user.profile.setup_premium_history(set_premium_expire=False)
     
     return {'code': 1}
     
@@ -667,4 +671,15 @@ def email_optout(request):
     return {
         "user": user,
     }
+
+@json.json_view
+def ios_subscription_status(request):
+    logging.debug(" ---> iOS Subscription Status: %s" % request.POST)
     
+    subject = "iOS Subscription Status"
+    message = """%s""" % (request.POST)
+    mail_admins(subject, message)
+    
+    return {
+        "code": 1
+    }

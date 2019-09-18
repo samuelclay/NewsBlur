@@ -386,4 +386,12 @@
     <style name="contextPopupStyle.dark" parent="@android:style/Widget.Holo.PopupMenu">
         <item name="android:overlapAnchor">true</item>
     </style>
+
+    <!-- Fixes menu text being too dark on Moto devices -->
+    <style name="itemTextAppearance">
+        <item name="android:textColor">@color/black</item>
+    </style>
+    <style name="itemTextAppearance.dark">
+        <item name="android:textColor">@color/white</item>
+    </style>
 </resources>

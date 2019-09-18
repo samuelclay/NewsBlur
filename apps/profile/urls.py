@@ -29,4 +29,5 @@ urlpatterns = patterns('',
     url(r'^delete_starred_stories/?', views.delete_starred_stories, name='profile-delete-starred-stories'),
     url(r'^delete_all_sites/?', views.delete_all_sites, name='profile-delete-all-sites'),
     url(r'^email_optout/?', views.email_optout, name='profile-email-optout'),
+    url(r'^ios_subscription_status/?', views.ios_subscription_status, name='profile-ios-subscription-status'),
 )
