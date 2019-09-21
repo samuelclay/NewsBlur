@@ -306,6 +306,7 @@ SFSafariViewControllerDelegate>  {
 - (void)showOrganizeSites;
 - (void)showPremiumDialog;
 - (void)showPreferences;
+- (void)setHiddenPreferencesAnimated:(BOOL)animated;
 - (void)resizePreviewSize;
 - (void)resizeFontSize;
 
@@ -331,7 +332,22 @@ SFSafariViewControllerDelegate>  {
 - (void)adjustStoryDetailWebView;
 - (void)calibrateStoryTitles;
 - (void)recalculateIntelligenceScores:(id)feedId;
+
 - (void)cancelRequests;
+
+- (void)GET:(NSString *)urlString parameters:(id)parameters
+    success:(void (^)(NSURLSessionDataTask *, id))success
+    failure:(void (^)(NSURLSessionDataTask *, NSError *))failure;
+- (void)GET:(NSString *)urlString parameters:(id)parameters target:(id)target
+    success:(SEL)success
+    failure:(SEL)failure;
+- (void)POST:(NSString *)urlString parameters:(id)parameters
+     success:(void (^)(NSURLSessionDataTask *, id))success
+     failure:(void (^)(NSURLSessionDataTask *, NSError *))failure;
+- (void)POST:(NSString *)urlString parameters:(id)parameters target:(id)target
+     success:(SEL)success
+     failure:(SEL)failure;
+
 - (void)loadFolder:(NSString *)folder feedID:(NSString *)feedIdStr;
 - (void)reloadFeedsView:(BOOL)showLoader;
 - (void)setTitle:(NSString *)title;
@@ -406,6 +422,7 @@ SFSafariViewControllerDelegate>  {
 - (NSString *)extractFolderName:(NSString *)folderName;
 - (NSString *)extractParentFolderName:(NSString *)folderName;
 - (NSArray *)parentFoldersForFeed:(NSString *)feedId;
+- (NSDictionary *)getFeedWithId:(id)feedId;
 - (NSDictionary *)getFeed:(NSString *)feedId;
 - (NSDictionary *)getStory:(NSString *)storyHash;
 

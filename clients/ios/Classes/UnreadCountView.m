@@ -117,6 +117,9 @@ const int COUNT_HEIGHT = 15;
             rr = CGRectMake(rect.size.width + rect.origin.x - psWidth - psPadding - ntOffset, CGRectGetMidY(r)-COUNT_HEIGHT/2-1, ntWidth, COUNT_HEIGHT);
         }
         
+        if (rr.origin.x > CGFLOAT_MAX) {
+            return;
+        }
         
         [UIColorFromLightDarkRGB(0x93968D, 0x53564D) set];
         CGRect rrShadow = CGRectMake(rr.origin.x, rr.origin.y+1, rr.size.width, rr.size.height);

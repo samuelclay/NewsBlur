@@ -813,11 +813,12 @@
     if (self.restoringStoryId.length > 0) {
         NSInteger pageIndex = [appDelegate.storiesCollection indexOfStoryId:self.restoringStoryId];
         
-        if (pageIndex < 0) {
-            [appDelegate hideStoryDetailView];
-//            [self doNextUnreadStory:nil];
-        } else {
+        if (pageIndex >= 0) {
             [self changePage:pageIndex animated:NO];
+        } else if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+            [self doNextUnreadStory:nil];
+        } else {
+            [appDelegate hideStoryDetailView];
         }
         
         self.restoringStoryId = nil;

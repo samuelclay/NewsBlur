@@ -115,11 +115,7 @@
 - (void)connectToSocial {
     NSString *urlString = [NSString stringWithFormat:@"%@/social/load_user_friends",
                            self.appDelegate.url];
-    [appDelegate.networkManager GET:urlString parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-        [self finishConnectFromSocial:responseObject];
-    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        [self requestFailed:error];
-    }];
+    [appDelegate GET:urlString parameters:nil target:self success:@selector(finishConnectFromSocial:) failure:@selector(requestFailed:)];
 }
 
 - (void)requestFailed:(NSError *)error {
@@ -195,11 +191,7 @@
         [params setObject:@"true" forKey:@"autofollow_friends"];
     }
     
-    [appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-        [self finishToggleAutoFollowFriends:responseObject];
-    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        [self requestFailed:error];
-    }];
+    [appDelegate POST:urlString parameters:params target:self success:@selector(finishToggleAutoFollowFriends:) failure:@selector(requestFailed:)];
 }
 
 - (void)finishToggleAutoFollowFriends:(NSDictionary *)results {

@@ -132,6 +132,10 @@
     // -[NewsBlurAppDelegate navigationController:willShowViewController:animated:] hides this too late, so this gets mis-measured otherwise
     self.navigationController.navigationBarHidden = YES;
     self.navigationController.preferredContentSize = CGSizeMake(240.0, self.menuTableView.contentSize.height + (self.menuTableView.frame.origin.y * 2));
+    
+    if (@available(iOS 13.0, *)) {
+        self.menuTableView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentAlways;
+    }
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
@@ -428,6 +432,8 @@
     [self.fontSizeSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:3];
     [self.fontSizeSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:4];
     
+    [[ThemeManager themeManager] updateSegmentedControl:self.fontSizeSegment];
+    
     [cell addSubview:self.fontSizeSegment];
     
     return cell;
@@ -447,6 +453,8 @@
     [self.lineSpacingSegment setImage:[UIImage imageNamed:@"line_spacing_l"] forSegmentAtIndex:3];
     [self.lineSpacingSegment setImage:[UIImage imageNamed:@"line_spacing_xl"] forSegmentAtIndex:4];
     self.lineSpacingSegment.backgroundColor = UIColorFromRGB(0xeeeeee);
+    
+    [[ThemeManager themeManager] updateSegmentedControl:self.lineSpacingSegment];
     
     [cell addSubview:self.lineSpacingSegment];
     
@@ -468,6 +476,8 @@
     [self.fullscreenSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:0];
     [self.fullscreenSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:1];
     
+    [[ThemeManager themeManager] updateSegmentedControl:self.fullscreenSegment];
+    
     [cell addSubview:self.fullscreenSegment];
     
     return cell;
@@ -488,6 +498,8 @@
     [self.autoscrollSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:0];
     [self.autoscrollSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:1];
     
+    [[ThemeManager themeManager] updateSegmentedControl:self.autoscrollSegment];
+    
     [cell addSubview:self.autoscrollSegment];
     
     return cell;
@@ -507,6 +519,8 @@
     [self.scrollOrientationSegment setTitleTextAttributes:@{NSFontAttributeName:[UIFont fontWithName:@"Helvetica-Bold" size:11.0f]} forState:UIControlStateNormal];
     [self.scrollOrientationSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:0];
     [self.scrollOrientationSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:1];
+    
+    [[ThemeManager themeManager] updateSegmentedControl:self.scrollOrientationSegment];
     
     [cell addSubview:self.scrollOrientationSegment];
     
@@ -538,6 +552,8 @@
     [self.themeSegment setDividerImage:blankImage forLeftSegmentState:UIControlStateNormal rightSegmentState:UIControlStateNormal barMetrics:UIBarMetricsDefault];
     self.themeSegment.tintColor = [UIColor clearColor];
     self.themeSegment.backgroundColor = [UIColor clearColor];
+    
+    [[ThemeManager themeManager] updateThemeSegmentedControl:self.themeSegment];
     
     [cell addSubview:self.themeSegment];
     

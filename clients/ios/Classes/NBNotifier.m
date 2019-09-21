@@ -219,6 +219,10 @@
 }
 
 - (void)showIn:(float)time {
+    if (!self.window) {
+        return;
+    }
+    
     showing = YES;
 //    CGRect frame = self.frame;
 //    frame.size.width = self.view.frame.size.width;
@@ -247,6 +251,9 @@
 }
 
 - (void)hideIn:(float)seconds {
+    if (!self.window) {
+        return;
+    }
     
 //    if (!showing) return;
     topOffsetConstraint.constant = 0;
