@@ -132,6 +132,10 @@
     // -[NewsBlurAppDelegate navigationController:willShowViewController:animated:] hides this too late, so this gets mis-measured otherwise
     self.navigationController.navigationBarHidden = YES;
     self.navigationController.preferredContentSize = CGSizeMake(240.0, self.menuTableView.contentSize.height + (self.menuTableView.frame.origin.y * 2));
+    
+    if (@available(iOS 13.0, *)) {
+        self.menuTableView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentAlways;
+    }
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
@@ -549,7 +553,7 @@
     self.themeSegment.tintColor = [UIColor clearColor];
     self.themeSegment.backgroundColor = [UIColor clearColor];
     
-    [[ThemeManager themeManager] updateSegmentedControl:self.themeSegment];
+    [[ThemeManager themeManager] updateThemeSegmentedControl:self.themeSegment];
     
     [cell addSubview:self.themeSegment];
     

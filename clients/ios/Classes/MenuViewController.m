@@ -162,7 +162,7 @@ NSString * const MenuHandler = @"handler";
     [segmentedControl insertSegmentWithImage:mediumImage atIndex:2 animated: NO];
     [segmentedControl insertSegmentWithImage:darkImage atIndex:3 animated: NO];
     
-    [[ThemeManager themeManager] updateSegmentedControl:segmentedControl];
+    [[ThemeManager themeManager] updateThemeSegmentedControl:segmentedControl];
     
     UIGraphicsBeginImageContextWithOptions(CGSizeMake(1, segmentedControl.frame.size.height), NO, 0.0);
     UIImage *blankImage = UIGraphicsGetImageFromCurrentImageContext();

@@ -103,6 +103,10 @@
 	[super viewDidLoad];
     
     [[ThemeManager themeManager] addThemeGestureRecognizerToView:self.view];
+    
+    if (@available(iOS 13.0, *)) {
+        [[ThemeManager themeManager] systemAppearanceDidChange:self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark];
+    }
 }
 
 - (void) viewDidUnload {
@@ -115,6 +119,16 @@
     if ([self presentedViewController]) {
         [[self presentedViewController] viewWillTransitionToSize:size
                                        withTransitionCoordinator:coordinator];
+    }
+}
+
+- (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection {
+    [super traitCollectionDidChange:previousTraitCollection];
+    
+    if (@available(iOS 13.0, *)) {
+        if ([previousTraitCollection hasDifferentColorAppearanceComparedToTraitCollection:self.traitCollection]) {
+            [[ThemeManager themeManager] systemAppearanceDidChange:self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark];
+        }
     }
 }
 

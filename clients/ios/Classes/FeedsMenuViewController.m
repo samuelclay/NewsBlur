@@ -356,6 +356,10 @@
     self.themeSegmentedControl.tintColor = [UIColor clearColor];
     self.themeSegmentedControl.backgroundColor = [UIColor clearColor];
     
+    if (@available(iOS 13.0, *)) {
+        self.themeSegmentedControl.selectedSegmentTintColor = [UIColor clearColor];
+    }
+    
     [cell addSubview:self.themeSegmentedControl];
     
     return cell;

@@ -306,6 +306,7 @@ SFSafariViewControllerDelegate>  {
 - (void)showOrganizeSites;
 - (void)showPremiumDialog;
 - (void)showPreferences;
+- (void)setHiddenPreferencesAnimated:(BOOL)animated;
 - (void)resizePreviewSize;
 - (void)resizeFontSize;
 
