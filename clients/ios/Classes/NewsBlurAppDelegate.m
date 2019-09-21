@@ -749,24 +749,9 @@
     preferencesViewController.showDoneButton = YES;
     preferencesViewController.showCreditsFooter = NO;
     preferencesViewController.title = @"Preferences";
-    NSMutableSet *hiddenSet = [NSMutableSet set];
-    BOOL offline_enabled = [[NSUserDefaults standardUserDefaults] boolForKey:@"offline_allowed"];
-    if (!offline_enabled) {
-        [hiddenSet addObjectsFromArray:@[@"offline_image_download",
-                                         @"offline_download_connection",
-                                         @"offline_store_limit"]];
-    }
-    BOOL system_font_enabled = [[NSUserDefaults standardUserDefaults] boolForKey:@"use_system_font_size"];
-    if (system_font_enabled) {
-        [hiddenSet addObjectsFromArray:@[@"feed_list_font_size"]];
-    }
-    BOOL theme_auto_toggle = [[NSUserDefaults standardUserDefaults] boolForKey:@"theme_auto_toggle"];
-    if (theme_auto_toggle) {
-        [hiddenSet addObjectsFromArray:@[@"theme_style", @"theme_gesture"]];
-    } else {
-        [hiddenSet addObjectsFromArray:@[@"theme_auto_brightness"]];
-    }
-    preferencesViewController.hiddenKeys = hiddenSet;
+    
+    [self setHiddenPreferencesAnimated:NO];
+    
     [[NSUserDefaults standardUserDefaults] setObject:@"Delete offline stories..."
                                               forKey:@"offline_cache_empty_stories"];
     
@@ -781,6 +766,35 @@
     } else {
         [navigationController presentViewController:modalNavigationController animated:YES completion:nil];
     }
+}
+
+- (void)setHiddenPreferencesAnimated:(BOOL)animated {
+    NSMutableSet *hiddenSet = [NSMutableSet set];
+    
+    BOOL offline_enabled = [[NSUserDefaults standardUserDefaults] boolForKey:@"offline_allowed"];
+    if (!offline_enabled) {
+        [hiddenSet addObjectsFromArray:@[@"offline_image_download",
+                                         @"offline_download_connection",
+                                         @"offline_store_limit"]];
+    }
+    BOOL system_font_enabled = [[NSUserDefaults standardUserDefaults] boolForKey:@"use_system_font_size"];
+    if (system_font_enabled) {
+        [hiddenSet addObjectsFromArray:@[@"feed_list_font_size"]];
+    }
+    if (@available(iOS 13.0, *)) {
+        BOOL theme_follow_system = [[NSUserDefaults standardUserDefaults] boolForKey:@"theme_follow_system"];
+        if (theme_follow_system) {
+            [hiddenSet addObjectsFromArray:@[@"theme_auto_toggle", @"theme_auto_brightness", @"theme_style", @"theme_gesture"]];
+        }
+    }
+    BOOL theme_auto_toggle = [[NSUserDefaults standardUserDefaults] boolForKey:@"theme_auto_toggle"];
+    if (theme_auto_toggle) {
+        [hiddenSet addObjectsFromArray:@[@"theme_style", @"theme_gesture"]];
+    } else {
+        [hiddenSet addObjectsFromArray:@[@"theme_auto_brightness"]];
+    }
+    
+    [preferencesViewController setHiddenKeys:hiddenSet animated:animated];
 }
 
 - (void)showFeedChooserForOperation:(FeedChooserOperation)operation {
@@ -801,8 +815,6 @@
         [navigationController presentViewController:modalNavigationController animated:YES completion:nil];
     }
 }
-
-
 
 - (void)showMuteSites {
     [self showFeedChooserForOperation:FeedChooserOperationMuteSites];
@@ -2837,7 +2849,11 @@
     self.markReadMenuViewController.olderNewerStory = olderNewerStory;
     self.markReadMenuViewController.extraItems = extraItems;
     self.markReadMenuViewController.completionHandler = completionHandler;
-
+    
+    if (@available(iOS 13.0, *)) {
+        self.markReadMenuViewController.menuTableView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentAlways;
+    }
+    
     [self showPopoverWithViewController:self.markReadMenuViewController contentSize:CGSizeZero barButtonItem:barButtonItem sourceView:sourceView sourceRect:sourceRect permittedArrowDirections:UIPopoverArrowDirectionAny];
 }
 

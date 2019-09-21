@@ -334,6 +334,16 @@
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 			<key>Title</key>
+			<string>Follow system appearance</string>
+			<key>Key</key>
+			<string>theme_follow_system</string>
+			<key>DefaultValue</key>
+			<true/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
 			<string>Switch automatically</string>
 			<key>Key</key>
 			<string>theme_auto_toggle</string>

@@ -135,7 +135,7 @@
 }
 
 - (CGSize)preferredContentSize {
-    return [[self view] sizeThatFits:CGSizeMake(320, 2000)];
+    return [[self view] sizeThatFits:CGSizeMake(500, 2000)];
 }
 
 @end

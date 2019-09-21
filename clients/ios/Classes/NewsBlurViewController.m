@@ -1124,23 +1124,8 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     
     if ([identifier isEqualToString:@"feed_list_sort_order"]) {
         [self.appDelegate reloadFeedsView:YES];
-    } else if ([identifier isEqual:@"offline_allowed"]) {
-		BOOL enabled = [[notification.userInfo objectForKey:@"offline_allowed"] boolValue];
-		[appDelegate.preferencesViewController setHiddenKeys:enabled ? nil :
-         [NSSet setWithObjects:@"offline_image_download",
-          @"offline_download_connection",
-          @"offline_store_limit",
-          nil] animated:YES];
-	} else if ([identifier isEqual:@"use_system_font_size"]) {
-		BOOL enabled = [[notification.userInfo objectForKey:@"use_system_font_size"] boolValue];
-		[appDelegate.preferencesViewController setHiddenKeys:!enabled ? nil :
-         [NSSet setWithObjects:@"feed_list_font_size",
-          nil] animated:YES];
     } else if ([identifier isEqual:@"feed_list_font_size"]) {
         [self resizeFontSize];
-    } else if ([identifier isEqual:@"theme_auto_toggle"]) {
-        BOOL enabled = [[notification.userInfo objectForKey:@"theme_auto_toggle"] boolValue];
-        [appDelegate.preferencesViewController setHiddenKeys:!enabled ? [NSSet setWithObject:@"theme_auto_brightness"] : [NSSet setWithObjects:@"theme_style", @"theme_gesture", nil] animated:YES];
     } else if ([identifier isEqual:@"theme_auto_brightness"]) {
         [self updateThemeBrightness];
     } else if ([identifier isEqual:@"theme_style"]) {
@@ -1150,6 +1135,8 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
             [appDelegate.dashboardViewController.storiesModule reloadData];
         }
     }
+    
+    [appDelegate setHiddenPreferencesAnimated:YES];
 }
 
 - (void)settingsViewController:(IASKAppSettingsViewController*)sender buttonTappedForSpecifier:(IASKSpecifier*)specifier {
