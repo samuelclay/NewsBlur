@@ -206,6 +206,26 @@
 		</dict>
 		<dict>
 			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Feed list order</string>
+			<key>Titles</key>
+			<array>
+				<string>Alphabetical</string>
+				<string>Most used then alphabetical</string>
+			</array>
+			<key>DefaultValue</key>
+			<string>title</string>
+			<key>Values</key>
+			<array>
+				<string>title</string>
+				<string>usage</string>
+			</array>
+			<key>Key</key>
+			<string>feed_list_sort_order</string>
+		</dict>
+		<dict>
+			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 			<key>Title</key>
 			<string>Show feeds after being read</string>
@@ -289,6 +309,16 @@
 			<string>Switch between both light themes and both dark themes by swiping up or down repeatedly with two fingers, like a light switch.</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Follow system appearance</string>
+			<key>Key</key>
+			<string>theme_follow_system</string>
+			<key>DefaultValue</key>
+			<true/>
 		</dict>
 		<dict>
 			<key>Type</key>
@@ -757,16 +787,6 @@
 			<false/>
 			<key>Key</key>
 			<string>story_autoscroll</string>
-		</dict>
-		<dict>
-			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
-			<key>Title</key>
-			<string>Scroll horizontally</string>
-			<key>DefaultValue</key>
-			<string>YES</string>
-			<key>Key</key>
-			<string>scroll_stories_horizontally</string>
 		</dict>
 		<dict>
 			<key>Title</key>

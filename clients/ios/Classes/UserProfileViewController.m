@@ -111,11 +111,7 @@
                            self.appDelegate.url,
                            appDelegate.activeUserProfileId];
 
-    [appDelegate.networkManager GET:urlString parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-        [self requestFinished:responseObject];
-    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        [self informError:error];
-    }];
+    [appDelegate GET:urlString parameters:nil target:self success:@selector(requestFinished:) failure:@selector(informError:)];
 }
 
 - (void)requestFinished:(NSDictionary *)results {

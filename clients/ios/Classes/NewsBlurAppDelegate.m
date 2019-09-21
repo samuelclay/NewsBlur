@@ -74,6 +74,7 @@
 @property (nonatomic, strong) NSString *cachedURL;
 @property (nonatomic, strong) UIApplicationShortcutItem *launchedShortcutItem;
 @property (nonatomic, strong) SFSafariViewController *safariViewController;
+@property (nonatomic, strong) NSMutableDictionary<NSString *, NSNumber *> *networkBackgroundTasks;
 
 @end
 
@@ -272,6 +273,9 @@
         [storiesCollection markStoryRead:activeStory];
         [storiesCollection syncStoryAsRead:activeStory];
         storyPageControl.temporarilyMarkedUnread = NO;
+        
+        [self.feedDetailViewController reloadData];
+        [self.storyPageControl refreshHeaders];
     }
 }
 
@@ -539,7 +543,7 @@
     NSString *url = [NSString stringWithFormat:@"%@/notifications/apns_token/", self.url];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
     [params setObject:token forKey:@"apns_token"];
-    [networkManager POST:url parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [self POST:url parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         NSLog(@" -> APNS: %@", responseObject);
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         NSLog(@"Failed to set APNS token");
@@ -745,24 +749,9 @@
     preferencesViewController.showDoneButton = YES;
     preferencesViewController.showCreditsFooter = NO;
     preferencesViewController.title = @"Preferences";
-    NSMutableSet *hiddenSet = [NSMutableSet set];
-    BOOL offline_enabled = [[NSUserDefaults standardUserDefaults] boolForKey:@"offline_allowed"];
-    if (!offline_enabled) {
-        [hiddenSet addObjectsFromArray:@[@"offline_image_download",
-                                         @"offline_download_connection",
-                                         @"offline_store_limit"]];
-    }
-    BOOL system_font_enabled = [[NSUserDefaults standardUserDefaults] boolForKey:@"use_system_font_size"];
-    if (system_font_enabled) {
-        [hiddenSet addObjectsFromArray:@[@"feed_list_font_size"]];
-    }
-    BOOL theme_auto_toggle = [[NSUserDefaults standardUserDefaults] boolForKey:@"theme_auto_toggle"];
-    if (theme_auto_toggle) {
-        [hiddenSet addObjectsFromArray:@[@"theme_style", @"theme_gesture"]];
-    } else {
-        [hiddenSet addObjectsFromArray:@[@"theme_auto_brightness"]];
-    }
-    preferencesViewController.hiddenKeys = hiddenSet;
+    
+    [self setHiddenPreferencesAnimated:NO];
+    
     [[NSUserDefaults standardUserDefaults] setObject:@"Delete offline stories..."
                                               forKey:@"offline_cache_empty_stories"];
     
@@ -777,6 +766,35 @@
     } else {
         [navigationController presentViewController:modalNavigationController animated:YES completion:nil];
     }
+}
+
+- (void)setHiddenPreferencesAnimated:(BOOL)animated {
+    NSMutableSet *hiddenSet = [NSMutableSet set];
+    
+    BOOL offline_enabled = [[NSUserDefaults standardUserDefaults] boolForKey:@"offline_allowed"];
+    if (!offline_enabled) {
+        [hiddenSet addObjectsFromArray:@[@"offline_image_download",
+                                         @"offline_download_connection",
+                                         @"offline_store_limit"]];
+    }
+    BOOL system_font_enabled = [[NSUserDefaults standardUserDefaults] boolForKey:@"use_system_font_size"];
+    if (system_font_enabled) {
+        [hiddenSet addObjectsFromArray:@[@"feed_list_font_size"]];
+    }
+    if (@available(iOS 13.0, *)) {
+        BOOL theme_follow_system = [[NSUserDefaults standardUserDefaults] boolForKey:@"theme_follow_system"];
+        if (theme_follow_system) {
+            [hiddenSet addObjectsFromArray:@[@"theme_auto_toggle", @"theme_auto_brightness", @"theme_style", @"theme_gesture"]];
+        }
+    }
+    BOOL theme_auto_toggle = [[NSUserDefaults standardUserDefaults] boolForKey:@"theme_auto_toggle"];
+    if (theme_auto_toggle) {
+        [hiddenSet addObjectsFromArray:@[@"theme_style", @"theme_gesture"]];
+    } else {
+        [hiddenSet addObjectsFromArray:@[@"theme_auto_brightness"]];
+    }
+    
+    [preferencesViewController setHiddenKeys:hiddenSet animated:animated];
 }
 
 - (void)showFeedChooserForOperation:(FeedChooserOperation)operation {
@@ -797,8 +815,6 @@
         [navigationController presentViewController:modalNavigationController animated:YES completion:nil];
     }
 }
-
-
 
 - (void)showMuteSites {
     [self showFeedChooserForOperation:FeedChooserOperationMuteSites];
@@ -1161,7 +1177,7 @@
     
     [self.dictFeeds setObject:feed forKey:feedId];
     
-    [self.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [self POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         NSLog(@"Saved notifications %@: %@", feedId, params);
         [self checkForFeedNotifications];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
@@ -1223,6 +1239,12 @@
 }
 
 - (void)clearNetworkManager {
+    for (NSString *networkOperationIdentifier in self.networkBackgroundTasks) {
+        [self endNetworkOperation:networkOperationIdentifier];
+    }
+    
+    self.networkBackgroundTasks = [NSMutableDictionary new];
+    
     [networkManager invalidateSessionCancelingTasks:YES];
     networkManager = [AFHTTPSessionManager manager];
     networkManager.responseSerializer = [AFJSONResponseSerializer serializer];
@@ -1239,6 +1261,105 @@
     [networkManager.requestSerializer setValue:UA forHTTPHeaderField:@"User-Agent"];
 }
 
+- (NSString *)beginNetworkOperation {
+    NSString *networkOperationIdentifier = [NSUUID UUID].UUIDString;
+    
+    UIBackgroundTaskIdentifier backgroundTaskIdentifier = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
+        [self endNetworkOperation:networkOperationIdentifier];
+    }];
+    
+    if (backgroundTaskIdentifier != UIBackgroundTaskInvalid) {
+        self.networkBackgroundTasks[networkOperationIdentifier] = @(backgroundTaskIdentifier);
+    }
+    
+    return networkOperationIdentifier;
+}
+
+- (void)endNetworkOperation:(NSString *)networkOperationIdentifier {
+    UIBackgroundTaskIdentifier identifier = self.networkBackgroundTasks[networkOperationIdentifier].integerValue;
+    
+    if (identifier != UIBackgroundTaskInvalid) {
+        [[UIApplication sharedApplication] endBackgroundTask:identifier];
+    }
+    
+    [self.networkBackgroundTasks removeObjectForKey:networkOperationIdentifier];
+}
+
+- (void)safelyInvokeTarget:(id _Nonnull)target withSelector:(SEL _Nullable)selector passingObject:(id _Nullable)object {
+    if (selector == NULL) {
+        return;
+    }
+    
+    IMP imp = [target methodForSelector:selector];
+    void (*func)(id, SEL, id _Nullable) = (void *)imp;
+    func(target, selector, object);
+}
+
+- (void)GET:(NSString *)urlString
+ parameters:(id)parameters
+    success:(void (^)(NSURLSessionDataTask * _Nonnull, id _Nullable))success
+    failure:(void (^)(NSURLSessionDataTask * _Nullable, NSError * _Nonnull))failure {
+    NSString *networkOperationIdentifier = [self beginNetworkOperation];
+    
+    [networkManager GET:urlString parameters:parameters progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        if (success) {
+            success(task, responseObject);
+        }
+        
+        [self endNetworkOperation:networkOperationIdentifier];
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        if (failure) {
+            failure(task, error);
+        }
+        
+        [self endNetworkOperation:networkOperationIdentifier];
+    }];
+}
+
+- (void)GET:(NSString *)urlString
+ parameters:(id)parameters
+     target:(id)target
+    success:(SEL)success
+    failure:(SEL)failure {
+    [self GET:urlString parameters:parameters success:^(NSURLSessionDataTask * _Nonnull task, id _Nullable responseObject) {
+        [self safelyInvokeTarget:target withSelector:success passingObject:responseObject];
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        [self safelyInvokeTarget:target withSelector:failure passingObject:error];
+    }];
+}
+
+- (void)POST:(NSString *)urlString
+  parameters:(id)parameters
+     success:(void (^)(NSURLSessionDataTask * _Nonnull, id _Nullable))success
+     failure:(void (^)(NSURLSessionDataTask * _Nullable, NSError * _Nonnull))failure {
+    NSString *networkOperationIdentifier = [self beginNetworkOperation];
+    
+    [networkManager POST:urlString parameters:parameters progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        if (success) {
+            success(task, responseObject);
+        }
+        
+        [self endNetworkOperation:networkOperationIdentifier];
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        if (failure) {
+            failure(task, error);
+        }
+        
+        [self endNetworkOperation:networkOperationIdentifier];
+    }];
+}
+
+- (void)POST:(NSString *)urlString
+ parameters:(id)parameters
+     target:(id)target
+    success:(SEL)success
+    failure:(SEL)failure {
+    [self POST:urlString parameters:parameters success:^(NSURLSessionDataTask * _Nonnull task, id _Nullable responseObject) {
+        [self safelyInvokeTarget:target withSelector:success passingObject:responseObject];
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        [self safelyInvokeTarget:target withSelector:failure passingObject:error];
+    }];
+}
 
 #pragma mark -
 
@@ -1490,7 +1611,7 @@
         NSLog(@"Logging out...");
         NSString *urlString = [NSString stringWithFormat:@"%@/reader/logout?api=1",
                           self.url];
-        [networkManager GET:urlString parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        [self GET:urlString parameters:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
             [MBProgressHUD hideHUDForView:self.view animated:YES];
             [self showLogin];
         } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
@@ -1536,7 +1657,7 @@
 - (void)refreshUserProfile:(void(^)(void))callback {
     NSString *urlString = [NSString stringWithFormat:@"%@/social/load_user_profile",
                            self.url];
-    [networkManager GET:urlString parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [self GET:urlString parameters:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         self.dictUserProfile = [responseObject objectForKey:@"user_profile"];
         self.dictSocialServices = [responseObject objectForKey:@"services"];
         callback();
@@ -1883,13 +2004,15 @@
     } else if ([storyBrowser isEqualToString:@"inappsafari"]) {
         self.safariViewController = [[SFSafariViewController alloc] initWithURL:url];
         self.safariViewController.delegate = self;
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-            self.safariViewController.modalPresentationStyle = UIModalPresentationPageSheet;
-        }
+        [self.storyPageControl setNavigationBarHidden:NO];
+//        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+//            self.safariViewController.modalPresentationStyle = UIModalPresentationPageSheet;
+//        }
         [navigationController presentViewController:self.safariViewController animated:YES completion:nil];
     } else if ([storyBrowser isEqualToString:@"inappsafarireader"]) {
         self.safariViewController = [[SFSafariViewController alloc] initWithURL:url entersReaderIfAvailable:YES];
         self.safariViewController.delegate = self;
+        [self.storyPageControl setNavigationBarHidden:NO];
         [navigationController presentViewController:self.safariViewController animated:YES completion:nil];
     } else {
         if (!originalStoryViewController) {
@@ -2025,7 +2148,9 @@
     NSString *folder = storiesCollection.activeFolder;
     NSString *title = storiesCollection.activeTitle;
     
-    if ([folder isEqualToString:@"river_blurblogs"]) {
+    if (folder == nil || title == nil) {
+        return;
+    } else if ([folder isEqualToString:@"river_blurblogs"]) {
         activity.title = @"Read All Shared Stories";
     } else if ([folder isEqualToString:@"river_global"]) {
         activity.title = @"Read Global Shared Stories";
@@ -2469,7 +2594,7 @@
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
     [params setObject:storyHash forKey:@"story_hash"];
     
-    [networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [self POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         NSLog(@"Marked as read: %@", storyHash);
         callback();
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
@@ -2487,7 +2612,7 @@
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
     [params setObject:storyHash forKey:@"story_hash"];
     
-    [networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [self POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         NSLog(@"Marked as starred: %@", storyHash);
         callback();
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
@@ -2724,7 +2849,11 @@
     self.markReadMenuViewController.olderNewerStory = olderNewerStory;
     self.markReadMenuViewController.extraItems = extraItems;
     self.markReadMenuViewController.completionHandler = completionHandler;
-
+    
+    if (@available(iOS 13.0, *)) {
+        self.markReadMenuViewController.menuTableView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentAlways;
+    }
+    
     [self showPopoverWithViewController:self.markReadMenuViewController contentSize:CGSizeZero barButtonItem:barButtonItem sourceView:sourceView sourceRect:sourceRect permittedArrowDirections:UIPopoverArrowDirectionAny];
 }
 
@@ -2886,6 +3015,12 @@
     }
     
     return uniqueFolderNames;
+}
+
+- (NSDictionary *)getFeedWithId:(id)feedId {
+     NSString *feedIdStr = [NSString stringWithFormat:@"%@", feedId];
+    
+    return [self getFeed:feedIdStr];
 }
 
 - (NSDictionary *)getFeed:(NSString *)feedId {
@@ -3212,7 +3347,7 @@
      @"remove_like_author"];
     [params setObject:feedId forKey:@"feed_id"];
     
-    [networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [self POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self.feedsViewController refreshFeedList:feedId];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         [self failedClassifierSave:task];
@@ -3256,7 +3391,7 @@
      @"remove_like_tag"];
     [params setObject:feedId forKey:@"feed_id"];
     
-    [networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [self POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self.feedsViewController refreshFeedList:feedId];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         [self failedClassifierSave:task];
@@ -3304,7 +3439,7 @@
      @"remove_like_title"];
     [params setObject:feedId forKey:@"feed_id"];
     
-    [networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [self POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self.feedsViewController refreshFeedList:feedId];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         [self failedClassifierSave:task];
@@ -3346,7 +3481,7 @@
                           @"remove_like_feed"];
     [params setObject:feedId forKey:@"feed_id"];
     
-    [networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [self POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self.feedsViewController refreshFeedList:feedId];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         [self failedRequest:task.response];
@@ -3755,7 +3890,7 @@
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
     [params setObject:[hashes JSONRepresentation] forKey:@"feeds_stories"];
     
-    [networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [self POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         NSLog(@"Completed clearing %@ hashes", completedHashesStr);
         [db executeUpdate:[NSString stringWithFormat:@"DELETE FROM queued_read_hashes "
                            "WHERE story_hash in (\"%@\")", completedHashesStr]];
@@ -3895,7 +4030,7 @@
     NSString *endpoint = saved ? @"mark_story_as_starred" : @"mark_story_as_unstarred";
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/%@", self.url, endpoint];
     
-    [networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [self POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         NSString *storyHash = [params objectForKey:@"story_id"];
         NSString *storyFeedId = [params objectForKey:@"feed_id"];
         [self dequeueSavedStoryHash:storyHash inFeed:storyFeedId];

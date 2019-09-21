@@ -264,7 +264,7 @@
         NSString *urlString = [NSString stringWithFormat:@"%@/reader/login_as?user=%@",
                           self.appDelegate.url, username];
 
-        [appDelegate.networkManager GET:urlString parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        [appDelegate GET:urlString parameters:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
             NSLog(@"Login as %@ successful", username);
             [MBProgressHUD hideHUDForView:appDelegate.feedsViewController.view animated:YES];
             [appDelegate reloadFeedsView:YES];
@@ -302,6 +302,8 @@
     [self.fontSizeSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:2];
     [self.fontSizeSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:3];
     [self.fontSizeSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:4];
+    
+    [[ThemeManager themeManager] updateSegmentedControl:self.fontSizeSegment];
     
     [cell addSubview:self.fontSizeSegment];
     
@@ -353,6 +355,10 @@
     [self.themeSegmentedControl setDividerImage:blankImage forLeftSegmentState:UIControlStateNormal rightSegmentState:UIControlStateNormal barMetrics:UIBarMetricsDefault];
     self.themeSegmentedControl.tintColor = [UIColor clearColor];
     self.themeSegmentedControl.backgroundColor = [UIColor clearColor];
+    
+    if (@available(iOS 13.0, *)) {
+        self.themeSegmentedControl.selectedSegmentTintColor = [UIColor clearColor];
+    }
     
     [cell addSubview:self.themeSegmentedControl];
     

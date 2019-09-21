@@ -1923,7 +1923,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     [params setObject:[self.activeStory objectForKey:@"story_feed_id"] forKey:@"story_feed_id"];
     [params setObject:[appDelegate.activeComment objectForKey:@"user_id"] forKey:@"comment_user_id"];
     
-    [appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [appDelegate POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self finishLikeComment:responseObject];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)task.response;
@@ -2227,7 +2227,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
                            objectForKey:@"user_id"] 
                    forKey:@"user_id"];
 
-    [appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [appDelegate POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self finishSubscribeToBlurblog:responseObject];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)task.response;
@@ -2500,7 +2500,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     [params setObject:[self.activeStory objectForKey:@"id"] forKey:@"story_id"];
     [params setObject:[self.activeStory objectForKey:@"story_feed_id"] forKey:@"feed_id"];
     NSString *storyId = [self.activeStory objectForKey:@"id"];
-    [appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [appDelegate POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self finishFetchTextView:responseObject storyId:storyId];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         [self failedFetchText:error];
@@ -2564,7 +2564,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     [params setObject:[self.activeStory objectForKey:@"story_hash"] forKey:@"story_hash"];
     [params setObject:@"true" forKey:@"show_changes"];
     NSString *storyId = [self.activeStory objectForKey:@"id"];
-    [appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [appDelegate POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self finishFetchStoryChanges:responseObject storyId:storyId];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         [self failedFetchStoryChanges:error];
