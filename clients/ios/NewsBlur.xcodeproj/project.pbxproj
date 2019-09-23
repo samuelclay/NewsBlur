@@ -369,7 +369,6 @@
 		FF5ACC241DE5F0C000FBD044 /* NotificationsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FF5ACC231DE5F0C000FBD044 /* NotificationsViewController.m */; };
 		FF5ACC271DE5FA3E00FBD044 /* NotificationFeedCell.m in Sources */ = {isa = PBXBuildFile; fileRef = FF5ACC261DE5FA3E00FBD044 /* NotificationFeedCell.m */; };
 		FF5ACC2B1DE6088B00FBD044 /* menu_icn_notifications@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF5ACC291DE6088B00FBD044 /* menu_icn_notifications@2x.png */; };
-		FF5ACC2E1DE63C6D00FBD044 /* MultiSelectSegmentedControl.m in Sources */ = {isa = PBXBuildFile; fileRef = FF5ACC2D1DE63C6D00FBD044 /* MultiSelectSegmentedControl.m */; };
 		FF5D4017179A00B900349659 /* traverse_send.png in Resources */ = {isa = PBXBuildFile; fileRef = FF5D4015179A00B900349659 /* traverse_send.png */; };
 		FF5D4018179A00B900349659 /* traverse_send@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF5D4016179A00B900349659 /* traverse_send@2x.png */; };
 		FF5D401B179A03E700349659 /* traverse_previous_off.png in Resources */ = {isa = PBXBuildFile; fileRef = FF5D4019179A03E700349659 /* traverse_previous_off.png */; };
@@ -1132,8 +1131,6 @@
 		FF5ACC251DE5FA3E00FBD044 /* NotificationFeedCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NotificationFeedCell.h; sourceTree = "<group>"; };
 		FF5ACC261DE5FA3E00FBD044 /* NotificationFeedCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NotificationFeedCell.m; sourceTree = "<group>"; };
 		FF5ACC291DE6088B00FBD044 /* menu_icn_notifications@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "menu_icn_notifications@2x.png"; sourceTree = "<group>"; };
-		FF5ACC2C1DE63C6D00FBD044 /* MultiSelectSegmentedControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MultiSelectSegmentedControl.h; path = "Other Sources/MultiSelectSegmentedControl.h"; sourceTree = "<group>"; };
-		FF5ACC2D1DE63C6D00FBD044 /* MultiSelectSegmentedControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MultiSelectSegmentedControl.m; path = "Other Sources/MultiSelectSegmentedControl.m"; sourceTree = "<group>"; };
 		FF5D4015179A00B900349659 /* traverse_send.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = traverse_send.png; sourceTree = "<group>"; };
 		FF5D4016179A00B900349659 /* traverse_send@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "traverse_send@2x.png"; sourceTree = "<group>"; };
 		FF5D4019179A03E700349659 /* traverse_previous_off.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = traverse_previous_off.png; sourceTree = "<group>"; };
@@ -1623,8 +1620,6 @@
 				FF8D1EDA1BAA3CCD00725D8A /* JNWThrottledBlock.m */,
 				43A4C3C315B00966008787B5 /* MBProgressHUD.h */,
 				43A4C3C415B00966008787B5 /* MBProgressHUD.m */,
-				FF5ACC2C1DE63C6D00FBD044 /* MultiSelectSegmentedControl.h */,
-				FF5ACC2D1DE63C6D00FBD044 /* MultiSelectSegmentedControl.m */,
 				43A4C3CC15B00966008787B5 /* NSString+HTML.h */,
 				43A4C3CD15B00966008787B5 /* NSString+HTML.m */,
 				43A4C3D015B00966008787B5 /* StringHelper.h */,
@@ -3335,7 +3330,6 @@
 				43ABBCAA15B53A1400EA3111 /* InteractionCell.m in Sources */,
 				FF34FD611E9D93CB0062F8ED /* IASKAppSettingsWebViewController.m in Sources */,
 				FF8D1ECF1BAA311000725D8A /* SBJson4StreamTokeniser.m in Sources */,
-				FF5ACC2E1DE63C6D00FBD044 /* MultiSelectSegmentedControl.m in Sources */,
 				FF8D1ED81BAA33BA00725D8A /* NSObject+SBJSON.m in Sources */,
 				FF34FD651E9D93CB0062F8ED /* IASKSettingsStore.m in Sources */,
 				43D818A315B940C200733444 /* DataUtilities.m in Sources */,
