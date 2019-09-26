@@ -884,6 +884,7 @@ def load_starred_stories(request):
             stories = []
             message = "You must be a premium subscriber to read saved stories by tag."
     elif story_hashes:
+        limit = 100
         mstories = MStarredStory.objects(
             user_id=user.pk,
             story_hash__in=story_hashes
