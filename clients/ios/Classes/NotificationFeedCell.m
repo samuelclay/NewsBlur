@@ -65,7 +65,8 @@
     button.layer.borderWidth = 1.5;
     button.layer.cornerRadius = 8.0;
     
-    [button setTitleColor:UIColorFromLightDarkRGB(0x0, 0xffffff) forState:UIControlStateNormal];
+    [button setTitleColor:UIColorFromLightDarkRGB(0x606060, 0xaaaaaa) forState:UIControlStateNormal];
+    [button setTitleColor:UIColorFromLightDarkRGB(0x0, 0xffffff) forState:UIControlStateSelected];
     
     button.titleLabel.font = [UIFont systemFontOfSize:14];
     [button setTitle:title forState:UIControlStateNormal];
