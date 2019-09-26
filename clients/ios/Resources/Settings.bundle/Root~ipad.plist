@@ -194,7 +194,7 @@
 			<key>Key</key>
 			<string>story_list_preview_text_size</string>
 			<key>DefaultValue</key>
-			<string>short</string>
+			<string>medium</string>
 		</dict>
 		<dict>
 			<key>Type</key>
@@ -216,7 +216,7 @@
 			<key>Key</key>
 			<string>story_list_preview_images_size</string>
 			<key>DefaultValue</key>
-			<string>large</string>
+			<string>small</string>
 		</dict>
 		<dict>
 			<key>Title</key>
