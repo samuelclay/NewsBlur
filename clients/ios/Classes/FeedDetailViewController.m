@@ -508,14 +508,11 @@
     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:location inSection:0];
     
     if (indexPath && location >= 0) {
-        [self.storyTitlesTable selectRowAtIndexPath:indexPath
-                                           animated:NO
-                                     scrollPosition:UITableViewScrollPositionNone];
+        [self tableView:self.storyTitlesTable selectRowAtIndexPath:indexPath animated:NO];
         if (deselect) {
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW,  0.1 * NSEC_PER_SEC),
                            dispatch_get_main_queue(), ^(void) {
-                [self.storyTitlesTable deselectRowAtIndexPath:indexPath
-                                                     animated:YES];
+                [self tableView:self.storyTitlesTable deselectRowAtIndexPath:indexPath animated:YES];
             });
         }
     }
@@ -1335,9 +1332,10 @@
             }
             NSIndexPath *indexPath = [NSIndexPath indexPathForRow:locationOfStoryId inSection:0];
             
-            [self.storyTitlesTable selectRowAtIndexPath:indexPath
+            [self tableView:self.storyTitlesTable selectRowAtIndexPath:indexPath
                                                animated:NO
                                          scrollPosition:UITableViewScrollPositionMiddle];
+            [[self.storyTitlesTable cellForRowAtIndexPath:indexPath] setNeedsDisplay];
             
             dispatch_async(dispatch_get_main_queue(), ^{
                 FeedDetailTableCell *cell = (FeedDetailTableCell *)[self.storyTitlesTable cellForRowAtIndexPath:indexPath];
@@ -1616,8 +1614,8 @@
     if (!self.isPhoneOrCompact && !self.isDashboardModule) {
         NSInteger rowIndex = [storiesCollection locationOfActiveStory];
         if (rowIndex == indexPath.row) {
-            [tableView selectRowAtIndexPath:indexPath animated:NO scrollPosition:UITableViewScrollPositionNone];
-        } 
+            [self tableView:tableView selectRowAtIndexPath:indexPath animated:NO];
+        }
     }
     
     [cell setupGestures];
@@ -1701,6 +1699,8 @@
     if (indexPath.row < storiesCollection.storyLocationsCount) {
         // mark the cell as read
         appDelegate.feedsViewController.currentRowAtIndexPath = nil;
+        [self fadeSelectedCell];
+        [self tableView:tableView redisplayCellAtIndexPath:indexPath];
         
         if (self.isDashboardModule) {
             NSInteger storyIndex = [storiesCollection indexFromLocation:indexPath.row];
@@ -2535,9 +2535,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:rowIndex inSection:0];
     NSIndexPath *offsetIndexPath = [NSIndexPath indexPathForRow:(rowIndex - offset) inSection:0];
 
-    [storyTitlesTable selectRowAtIndexPath:indexPath 
-                                  animated:YES 
-                            scrollPosition:UITableViewScrollPositionNone];
+    [self tableView:storyTitlesTable selectRowAtIndexPath:indexPath animated:YES];
     
     // check to see if the cell is completely visible
     CGRect cellRect = [storyTitlesTable rectForRowAtIndexPath:indexPath];
