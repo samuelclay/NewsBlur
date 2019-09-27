@@ -318,9 +318,8 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 - (void)fadeSelectedCell {
     NSIndexPath *indexPath = [self.feedTitlesTable indexPathForSelectedRow];
     if (!indexPath) return;
-    [self.feedTitlesTable deselectRowAtIndexPath:indexPath
-                                        animated:YES];
-
+    [self tableView:self.feedTitlesTable deselectRowAtIndexPath:indexPath animated:YES];
+    
     NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:indexPath.section];
     id feedId = [[appDelegate.dictFolders objectForKey:folderName] objectAtIndex:indexPath.row];
     NSString *feedIdStr = [NSString stringWithFormat:@"%@", feedId];
@@ -352,8 +351,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 
 - (void)fadeFeed:(id)feedId {
     NSString *feedIdStr = [NSString stringWithFormat:@"%@", feedId];
-    [self.feedTitlesTable deselectRowAtIndexPath:[self.feedTitlesTable indexPathForSelectedRow]
-                                        animated:YES];
+    [self tableView:self.feedTitlesTable deselectRowAtIndexPath:[self.feedTitlesTable indexPathForSelectedRow] animated:YES];
     for (NSIndexPath *indexPath in [self.feedTitlesTable indexPathsForVisibleRows]) {
         NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:indexPath.section];
         id cellFeedId = [[appDelegate.dictFolders objectForKey:folderName] objectAtIndex:indexPath.row];
@@ -1289,6 +1287,8 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 //        [preferences boolForKey:@"show_feeds_after_being_read"]) {
         [self.stillVisibleFeeds setObject:indexPath forKey:feedIdStr];
     }
+    
+    [[tableView cellForRowAtIndexPath:indexPath] setNeedsDisplay];
     
     [appDelegate loadFolder:folderName feedID:feedIdStr];
 }
