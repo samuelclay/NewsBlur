@@ -61,11 +61,11 @@
     UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
     button.frame = frame;
     
-    button.layer.borderColor = UIColorFromLightDarkRGB(0xe7e6e7, 0x3b3b3d).CGColor;
+    button.layer.borderColor = UIColorFromLightDarkRGB(0xe7e6e7, 0x303030).CGColor;
     button.layer.borderWidth = 1.5;
     button.layer.cornerRadius = 8.0;
     
-    [button setTitleColor:UIColorFromLightDarkRGB(0x606060, 0xaaaaaa) forState:UIControlStateNormal];
+    [button setTitleColor:UIColorFromLightDarkRGB(0x909090, 0xaaaaaa) forState:UIControlStateNormal];
     [button setTitleColor:UIColorFromLightDarkRGB(0x0, 0xffffff) forState:UIControlStateSelected];
     
     button.titleLabel.font = [UIFont systemFontOfSize:14];
