@@ -543,7 +543,10 @@ class Profile(models.Model):
         if not confirm: return usernames
         
         for username in usernames:
-            u = User.objects.get(username=username)
+            try:
+                u = User.objects.get(username=username)
+            except User.DoesNotExist:
+                continue
             u.profile.delete_user(confirm=True)
 
         RNewUserQueue.user_count()
