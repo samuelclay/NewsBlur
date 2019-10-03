@@ -53,6 +53,10 @@ def newsletter_receive(request):
     return response
 
 def newsletter_story(request, story_hash):
-    story = MStory.objects.get(story_hash=story_hash)
+    try:
+        story = MStory.objects.get(story_hash=story_hash)
+    except MStory.DoesNotExist:
+        raise Http404
+
     story = Feed.format_story(story)
     return HttpResponse(story['story_content'])
