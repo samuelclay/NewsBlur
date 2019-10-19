@@ -1,10 +1,12 @@
 package com.newsblur.widget;
 
 import android.app.AlertDialog;
+import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -106,12 +108,27 @@ public class ConfigureWidgetActivity extends NbActivity {
         Intent intent = new Intent(this, BlurWidgetRemoteViewsService.class);
         // Add the app widget ID to the intent extras.
         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
+        intent.setData(Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME)));
 
         PrefsUtils.setWidgetFeed(this, appWidgetId, selectedFeed.feedId, selectedFeed.title);
 
         rv.setTextViewText(R.id.txt_feed_name, selectedFeed.title);
         rv.setRemoteAdapter(R.id.widget_list, intent);
         rv.setEmptyView(R.id.widget_list, R.id.empty_view);
+
+
+        Intent touchIntent = new Intent(this, NewsBlurWidgetProvider.class);
+        // Set the action for the intent.
+        // When the user touches a particular view, it will have the effect of
+        // broadcasting TOAST_ACTION.
+        touchIntent.setAction(NewsBlurWidgetProvider.ACTION_OPEN_STORY);
+        touchIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
+        intent.setData(Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME)));
+        PendingIntent touchIntentTemplate = PendingIntent.getBroadcast(this, 0, touchIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT);
+        rv.setPendingIntentTemplate(R.id.widget_list, touchIntentTemplate);
+
+
 
         appWidgetManager.updateAppWidget(appWidgetId, rv);
 
