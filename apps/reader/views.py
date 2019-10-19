@@ -1953,7 +1953,7 @@ def add_url(request):
                 ss.twitter_api().me()
             except tweepy.TweepError:
                 code = -1
-                message = "Your Twitter connection isn't setup. Go to Manage - Friends and reconnect Twitter."
+                message = "Your Twitter connection isn't setup. Go to Manage - Friends/Followers and reconnect Twitter."
     
     if code == -1:
         return dict(code=code, message=message)
