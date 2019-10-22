@@ -1699,7 +1699,14 @@
     if (indexPath.row < storiesCollection.storyLocationsCount) {
         // mark the cell as read
         appDelegate.feedsViewController.currentRowAtIndexPath = nil;
-        [self fadeSelectedCell];
+        
+        NSInteger location = storiesCollection.locationOfActiveStory;
+        NSIndexPath *oldIndexPath = [NSIndexPath indexPathForRow:location inSection:0];
+        
+        if (![oldIndexPath isEqual:indexPath]) {
+            [self tableView:tableView deselectRowAtIndexPath:oldIndexPath animated:YES];
+        }
+        
         [self tableView:tableView redisplayCellAtIndexPath:indexPath];
         
         if (self.isDashboardModule) {
@@ -2531,10 +2538,12 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         offset = 0;
     }
     if (offset > rowIndex) offset = rowIndex;
-                    
+    
     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:rowIndex inSection:0];
     NSIndexPath *offsetIndexPath = [NSIndexPath indexPathForRow:(rowIndex - offset) inSection:0];
-
+    NSIndexPath *oldIndexPath = storyTitlesTable.indexPathForSelectedRow;
+    
+    [self tableView:storyTitlesTable deselectRowAtIndexPath:oldIndexPath animated:YES];
     [self tableView:storyTitlesTable selectRowAtIndexPath:indexPath animated:YES];
     
     // check to see if the cell is completely visible
