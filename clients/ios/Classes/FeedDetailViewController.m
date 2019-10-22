@@ -1139,7 +1139,7 @@
         newUserProfiles = [results objectForKey:@"user_profiles"];
     }
     // add self to user profiles
-    if (storiesCollection.feedPage == 1) {
+    if (storiesCollection.feedPage == 1 && appDelegate.dictSocialProfile != nil) {
         newUserProfiles = [newUserProfiles arrayByAddingObject:appDelegate.dictSocialProfile];
     }
     
