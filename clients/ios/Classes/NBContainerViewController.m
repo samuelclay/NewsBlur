@@ -620,6 +620,8 @@
     CGRect vb = [self.view bounds];
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
 	if (UIInterfaceOrientationIsPortrait(orientation) && !self.storyTitlesOnLeft) {
+        // Force the story page control to load.
+        [storyPageControl view];
         // CASE: story titles on bottom
         if (resetLayout) {
             self.storyPageControl.navigationItem.leftBarButtonItem = self.storyPageControl.buttonBack;
