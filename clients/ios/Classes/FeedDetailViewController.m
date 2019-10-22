@@ -2260,7 +2260,9 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     
     [viewController addThemeSegmentedControl];
     
-    [viewController showFromNavigationController:self.navigationController barButtonItem:self.settingsBarButton];
+    UINavigationController *navController = self.navigationController ?: appDelegate.storyPageControl.navigationController;
+    
+    [viewController showFromNavigationController:navController barButtonItem:self.settingsBarButton];
 }
 
 - (void)confirmDeleteSite:(UINavigationController *)menuNavigationController {
