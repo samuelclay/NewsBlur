@@ -60,6 +60,7 @@ except:
         'app'   : ['app01.newsblur.com'],
         'db'    : ['db01.newsblur.com'],
         'task'  : ['task01.newsblur.com'],
+        'local' : ['localhost'],
     }
 
 def do_roledefs(split=False):
