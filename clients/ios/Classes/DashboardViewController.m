@@ -125,10 +125,10 @@
 }
 
 - (void)updateTheme {
-    self.topToolbar.barTintColor = UIColorFromRGB(0xE3E6E0);
-    self.topToolbar.backgroundColor = UIColorFromRGB(0xE3E6E0);
-    self.toolbar.barTintColor = UIColorFromRGB(0xE3E6E0);
-    self.segmentedButton.tintColor = UIColorFromRGB(0x8F918B);
+    self.topToolbar.barTintColor = [UINavigationBar appearance].barTintColor;
+    self.topToolbar.backgroundColor = [UINavigationBar appearance].backgroundColor;
+    self.toolbar.barTintColor = [UINavigationBar appearance].barTintColor;
+    self.segmentedButton.tintColor = [UINavigationBar appearance].tintColor;
     
     self.storiesModule.searchBar.backgroundColor = UIColorFromRGB(0xE3E6E0);
     self.storiesModule.searchBar.tintColor = UIColorFromRGB(0xffffff);

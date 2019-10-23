@@ -307,14 +307,14 @@
     self.leftBorder.backgroundColor = UIColorFromRGB(0xC2C5BE).CGColor;
     self.rightBorder.backgroundColor = UIColorFromRGB(0xC2C5BE).CGColor;
     
-    self.masterNavigationController.navigationBar.tintColor = UIColorFromRGB(0x8F918B);
-    self.masterNavigationController.navigationBar.barTintColor = UIColorFromRGB(0xE3E6E0);
+    self.masterNavigationController.navigationBar.tintColor = [UINavigationBar appearance].tintColor;
+    self.masterNavigationController.navigationBar.barTintColor = [UINavigationBar appearance].barTintColor;
     
-    self.storyNavigationController.navigationBar.tintColor = UIColorFromRGB(0x8F918B);
-    self.storyNavigationController.navigationBar.barTintColor = UIColorFromRGB(0xE3E6E0);
+    self.storyNavigationController.navigationBar.tintColor = [UINavigationBar appearance].tintColor;
+    self.storyNavigationController.navigationBar.barTintColor = [UINavigationBar appearance].barTintColor;
     
-    self.originalNavigationController.navigationBar.tintColor = UIColorFromRGB(0x8F918B);
-    self.originalNavigationController.navigationBar.barTintColor = UIColorFromRGB(0xE3E6E0);
+    self.originalNavigationController.navigationBar.tintColor = [UINavigationBar appearance].tintColor;
+    self.originalNavigationController.navigationBar.barTintColor = [UINavigationBar appearance].barTintColor;
     
     UIView *titleLabel = [appDelegate makeFeedTitle:appDelegate.storiesCollection.activeFeed];
     self.storyPageControl.navigationItem.titleView = titleLabel;

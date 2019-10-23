@@ -227,6 +227,8 @@
                                                    fontSettingsButton, nil];
     }
     
+    [self updateTheme];
+    
     [self.scrollView addObserver:self forKeyPath:@"contentOffset"
                          options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld
                          context:nil];
@@ -778,6 +780,11 @@
 
 - (void)updateTheme {
     [super updateTheme];
+    
+    self.navigationController.navigationBar.tintColor = [UINavigationBar appearance].tintColor;
+    self.navigationController.navigationBar.barTintColor = [UINavigationBar appearance].barTintColor;
+    self.navigationController.navigationBar.backgroundColor = [UINavigationBar appearance].backgroundColor;
+    self.view.backgroundColor = UIColorFromRGB(0xe0e0e0);
     
     [self updateAutoscrollButtons];
     [self updateTraverseBackground];
