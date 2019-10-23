@@ -188,7 +188,7 @@ static UIFont *indicatorFont = nil;
     
     UIColor *backgroundColor;
     backgroundColor = cell.highlighted || cell.selected ?
-                      UIColorFromLightSepiaMediumDarkRGB(0xFFFDEF, 0xFFFDEF, 0x808A90, 0x0F0F22) : UIColorFromRGB(0xf4f4f4);
+                      UIColorFromLightSepiaMediumDarkRGB(0xFFFDEF, 0xEEECCD, 0x303A40, 0x303030) : UIColorFromLightSepiaMediumDarkRGB(0xF4F4F4, 0xFFFDEF, 0x4F4F4F, 0x101010);
     [backgroundColor set];
     
     CGContextFillRect(context, r);
