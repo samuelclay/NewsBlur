@@ -144,6 +144,10 @@ static UIFont *textFont = nil;
 @synthesize cell;
 
 - (void)drawRect:(CGRect)r {
+    if (!cell) {
+        return;
+    }
+    
     CGContextRef context = UIGraphicsGetCurrentContext();
     
     UIColor *backgroundColor;
