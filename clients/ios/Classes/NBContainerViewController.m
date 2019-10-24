@@ -210,11 +210,13 @@
             leftBorder.hidden = NO;
         }
         
-        [self adjustLayout];
+        [self adjustLayoutCompleted:NO];
     } completion:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
         //    leftBorder.frame = CGRectMake(0, 0, 1, CGRectGetHeight(self.view.bounds));
         
-        [self adjustLayout];
+        if (!self.feedDetailIsVisible) {
+            [self adjustLayoutCompleted:YES];
+        }
         
         if (self.feedDetailIsVisible) {
             // Defer this in the background, to avoid misaligning the detail views
@@ -239,8 +241,8 @@
     }
 }
 
-- (void)adjustLayout {
-    if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
+- (void)adjustLayoutCompleted:(BOOL)completed {
+    if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground && !completed) {
         return;
     }
     
@@ -306,6 +308,8 @@
 - (void)updateTheme {
     self.leftBorder.backgroundColor = UIColorFromRGB(0xC2C5BE).CGColor;
     self.rightBorder.backgroundColor = UIColorFromRGB(0xC2C5BE).CGColor;
+    
+    self.view.backgroundColor = UIColor.blackColor;
     
     self.masterNavigationController.navigationBar.tintColor = [UINavigationBar appearance].tintColor;
     self.masterNavigationController.navigationBar.barTintColor = [UINavigationBar appearance].barTintColor;
