@@ -132,7 +132,7 @@ function serveStatic (root, options) {
  */
 function collapseLeadingSlashes (str) {
   for (var i = 0; i < str.length; i++) {
-    if (str[i] !== '/') {
+    if (str.charCodeAt(i) !== 0x2f /* / */) {
       break
     }
   }
@@ -140,6 +140,27 @@ function collapseLeadingSlashes (str) {
   return i > 1
     ? '/' + str.substr(i)
     : str
+}
+
+ /**
+ * Create a minimal HTML document.
+ *
+ * @param {string} title
+ * @param {string} body
+ * @private
+ */
+
+function createHtmlDocument (title, body) {
+  return '<!DOCTYPE html>\n' +
+    '<html lang="en">\n' +
+    '<head>\n' +
+    '<meta charset="utf-8">\n' +
+    '<title>' + title + '</title>\n' +
+    '</head>\n' +
+    '<body>\n' +
+    '<pre>' + body + '</pre>\n' +
+    '</body>\n' +
+    '</html>\n'
 }
 
 /**
@@ -159,7 +180,7 @@ function createNotFoundDirectoryListener () {
  */
 
 function createRedirectDirectoryListener () {
-  return function redirect () {
+  return function redirect (res) {
     if (this.hasTrailingSlash()) {
       this.error(404)
       return
@@ -174,15 +195,16 @@ function createRedirectDirectoryListener () {
 
     // reformat the URL
     var loc = encodeUrl(url.format(originalUrl))
-    var msg = 'Redirecting to <a href="' + escapeHtml(loc) + '">' + escapeHtml(loc) + '</a>\n'
-    var res = this.res
+    var doc = createHtmlDocument('Redirecting', 'Redirecting to <a href="' + escapeHtml(loc) + '">' +
+      escapeHtml(loc) + '</a>')
 
     // send redirect response
     res.statusCode = 301
     res.setHeader('Content-Type', 'text/html; charset=UTF-8')
-    res.setHeader('Content-Length', Buffer.byteLength(msg))
+    res.setHeader('Content-Length', Buffer.byteLength(doc))
+    res.setHeader('Content-Security-Policy', "default-src 'self'")
     res.setHeader('X-Content-Type-Options', 'nosniff')
     res.setHeader('Location', loc)
-    res.end(msg)
+    res.end(doc)
   }
 }

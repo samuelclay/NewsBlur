@@ -1,11 +1,11 @@
 package com.newsblur.service;
 
-import android.app.AlarmManager;
-import android.app.PendingIntent;
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 
 import com.newsblur.util.AppConstants;
 
@@ -17,20 +17,20 @@ public class BootReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        Log.d(this.getClass().getName(), "triggering sync service from device boot");
+        com.newsblur.util.Log.d(this, "triggering sync service from device boot");
         scheduleSyncService(context);
     }
 
     public static void scheduleSyncService(Context context) {
-        Log.d(BootReceiver.class.getName(), "scheduling sync service");
+        com.newsblur.util.Log.d(BootReceiver.class.getName(), "scheduling sync service");
+        JobInfo.Builder builder = new JobInfo.Builder(1, new ComponentName(context, NBSyncService.class));
+        builder.setPeriodic(AppConstants.BG_SERVICE_CYCLE_MILLIS);
+        builder.setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY);
+        builder.setPersisted(true);
+        JobScheduler sched = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
 
-        // wake up to check if a sync is needed less often than necessary to compensate for execution time
-        long interval = AppConstants.BG_SERVICE_CYCLE_MILLIS;
-
-        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        Intent i = new Intent(context, ServiceScheduleReceiver.class);
-        PendingIntent pi = PendingIntent.getBroadcast(context, 0, i, PendingIntent.FLAG_CANCEL_CURRENT);
-        alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, interval, interval, pi);
+        int result = sched.schedule(builder.build());
+        com.newsblur.util.Log.d("BootReceiver", String.format("Scheduling result: %s - %s", result, result == 0 ? "Failure" : "Success"));
     }
         
 }

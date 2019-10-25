@@ -70,6 +70,7 @@ public class APIConstants {
     public static final String PATH_CONNECT_TWITTER = "/oauth/twitter_connect/";
     public static final String PATH_SET_NOTIFICATIONS = "/notifications/feed/";
     public static final String PATH_INSTA_FETCH = "/rss_feeds/exception_retry";
+    public static final String PATH_RENAME_FEED = "/reader/rename_feed";
 
     public static String buildUrl(String path) {
         return CurrentUrlBase + path;
@@ -115,9 +116,11 @@ public class APIConstants {
     public static final String PARAMETER_TAG = "tag";
     public static final String PARAMETER_APPROVED_FEEDS = "approved_feeds";
     public static final String PARAMETER_NOTIFICATION_TYPES = "notification_types";
-    public static final String PARAMETER_NOTIFICATION_FILTER = "notification_filter";
+	public static final String PAREMETER_USER_TAGS = "user_tags";
+	public static final String PARAMETER_NOTIFICATION_FILTER = "notification_filter";
     public static final String PARAMETER_RESET_FETCH = "reset_fetch";
     public static final String PARAMETER_INFREQUENT = "infrequent";
+    public static final String PARAMETER_FEEDTITLE = "feed_title";
 
     public static final String VALUE_PREFIX_SOCIAL = "social:";
     public static final String VALUE_ALLSOCIAL = "river:blurblogs"; // the magic value passed to the mark-read API for all social feeds

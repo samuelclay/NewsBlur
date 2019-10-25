@@ -283,12 +283,14 @@ class UserSubscription(models.Model):
         unread_ranked_stories_keys  = '%szhU:%s:feeds:%s' % (cache_prefix, user_id, feeds_string)
         stories_cached = rt.exists(ranked_stories_keys)
         unreads_cached = True if read_filter == "unread" else rt.exists(unread_ranked_stories_keys)
-        if offset and stories_cached and unreads_cached:
+        if offset and stories_cached:
             story_hashes = range_func(ranked_stories_keys, offset, offset+limit)
             if read_filter == "unread":
                 unread_story_hashes = story_hashes
-            else:
+            elif unreads_cached:
                 unread_story_hashes = range_func(unread_ranked_stories_keys, 0, offset+limit)
+            else:
+                unread_story_hashes = []
             return story_hashes, unread_story_hashes
         else:
             rt.delete(ranked_stories_keys)
@@ -1297,6 +1299,16 @@ class UserSubscriptionFolders(models.Model):
         verbose_name_plural = "folders"
         verbose_name = "folder"
     
+    @classmethod
+    def compact_for_user(cls, user_id):
+        user = User.objects.get(pk=user_id)
+        try:
+            usf = UserSubscriptionFolders.objects.get(user=user)
+        except UserSubscriptionFolders.DoesNotExist:
+            return
+        
+        usf.compact()
+        
     def compact(self):
         folders = json.decode(self.folders)
         
@@ -1311,11 +1323,13 @@ class UserSubscriptionFolders(models.Model):
             return new_folder
         
         new_folders = _compact(folders)
-        logging.info(" ---> Compacting from %s to %s" % (folders, new_folders))
+        compact_msg = " ---> Compacting from %s to %s" % (folders, new_folders)
         new_folders = json.encode(new_folders)
-        logging.info(" ---> Compacting from %s to %s" % (len(self.folders), len(new_folders)))
-        self.folders = new_folders
-        self.save()
+        if len(self.folders) != len(new_folders):
+            logging.info(compact_msg)
+            logging.info(" ---> Compacting from %s bytes to %s bytes" % (len(self.folders), len(new_folders)))
+            self.folders = new_folders
+            self.save()
         
     def add_folder(self, parent_folder, folder):
         if self.folders:
@@ -1622,12 +1636,25 @@ class UserSubscriptionFolders(models.Model):
             for feed_id in missing_subs:
                 feed = Feed.get_by_id(feed_id)
                 if feed:
+                    if feed_id != feed.pk:
+                        logging.debug(" ---> %s doesn't match %s, rewriting to remove %s..." % (
+                                      feed_id, feed.pk, feed_id))
+                        # Clear out duplicate sub in folders before subscribing to feed
+                        duplicate_feed = Feed.get_by_id(feed_id)
+                        duplicate_feed.pk = feed_id
+                        self.rewrite_feed(feed, duplicate_feed)
                     us, _ = UserSubscription.objects.get_or_create(user=self.user, feed=feed, defaults={
                         'needs_unread_recalc': True
                     })
                     if not us.needs_unread_recalc:
                         us.needs_unread_recalc = True
                         us.save()
+                elif feed_id and not feed:
+                    # No feed found for subscription, remove subscription
+                    logging.debug(" ---> %s: No feed found, removing subscription: %s" % (
+                                  self.user, feed_id))
+                    self.delete_feed(feed_id, None, commit_delete=False)
+                    
 
         missing_folder_feeds = set(subs) - set(all_feeds)
         if missing_folder_feeds:

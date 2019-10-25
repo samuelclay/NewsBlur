@@ -8,9 +8,7 @@
 
 #import "PremiumViewController.h"
 #import "NewsBlur-Swift.h"
-
-#define kPremium24ProductIdentifier @"newsblur_premium_auto_renew_24"
-#define kPremium36ProductIdentifier @"newsblur_premium_auto_renew_36"
+#import "PremiumManager.h"
 
 @interface PremiumViewController ()
 
@@ -37,18 +35,6 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    products = [NSArray array];
-    reasons = @[@[@"Enable every site by going premium", @"g_icn_buffer"],
-                         @[@"Sites updated up to 10x more often", @"g_icn_lightning"],
-                         @[@"River of News (reading by folder)", @"g_icn_folder_black"],
-                         @[@"Search sites and folders", @"g_icn_search_black"],
-                         @[@"Save stories with searchable tags", @"g_icn_tag_black"],
-                         @[@"Privacy options for your blurblog", @"g_icn_privacy"],
-                         @[@"Custom RSS feeds for folders and saved stories", @"g_icn_folder_black"],
-                         @[@"Text view conveniently extracts the story", @"g_icn_textview_black"],
-                         @[@"You feed Shiloh, my poor, hungry dog, for a month", @"g_icn_eating"],
-                         ];
-
     UIBarButtonItem *cancelButton = [[UIBarButtonItem alloc] initWithTitle: @"Done"
                                                                      style: UIBarButtonItemStylePlain
                                                                     target: self
@@ -71,6 +57,7 @@
 
     self.navigationItem.title = @"NewsBlur Premium";
     [self loadProducts];
+    [self preparePolicyText];
     [self updateTheme];
     [confettiView setNeedsLayout];
     [confettiView startConfetti];
@@ -91,6 +78,26 @@
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
+- (void)preparePolicyText {
+    NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle defaultParagraphStyle] mutableCopy];
+    paragraphStyle.alignment = NSTextAlignmentCenter;
+    NSDictionary *attributes = @{NSParagraphStyleAttributeName : paragraphStyle};
+    NSMutableAttributedString *policyString = [[NSMutableAttributedString alloc] initWithString:@"See NewsBlur's " attributes:attributes];
+    NSURL *privacyURL = [NSURL URLWithString:@"https://newsblur.com/privacy/"];
+    NSURL *termsURL = [NSURL URLWithString:@"https://newsblur.com/tos/"];
+    NSAttributedString *privacyLink = [[NSAttributedString alloc] initWithString:@"privacy policy"
+                                                                      attributes:@{NSLinkAttributeName : privacyURL}];
+    NSAttributedString *termsLink = [[NSAttributedString alloc] initWithString:@"terms of use"
+                                                                    attributes:@{NSLinkAttributeName : termsURL}];
+    
+    [policyString appendAttributedString:privacyLink];
+    [policyString appendAttributedString:[[NSAttributedString alloc] initWithString:@" and "]];
+    [policyString appendAttributedString:termsLink];
+    [policyString appendAttributedString:[[NSAttributedString alloc] initWithString:@" for details."]];
+    
+    self.policyTextView.attributedText = policyString;
+}
+
 - (void)updateTheme {
     [super updateTheme];
     
@@ -99,6 +106,9 @@
     self.view.backgroundColor = UIColorFromRGB(0xf4f4f4);
     self.labelTitle.textColor = UIColorFromRGB(0x0c0c0c);
     self.labelSubtitle.textColor = UIColorFromRGB(0x0c0c0c);
+    self.policyTextView.textColor = UIColorFromRGB(0x0c0c0c);
+    self.policyTextView.linkTextAttributes = @{NSForegroundColorAttributeName : UIColorFromRGB(NEWSBLUR_LINK_COLOR)};
+
     self.labelPremiumExpire.textColor = UIColorFromRGB(0x0c0c0c);
     self.labelPremiumTitle.textColor = UIColorFromRGB(0x0c0c0c);
     self.labelPremiumExpire.shadowColor = UIColorFromRGB(0xf4f4f4);
@@ -114,17 +124,7 @@
     [spinner startAnimating];
     productsTable.hidden = YES;
     
-    if ([SKPaymentQueue canMakePayments]){
-        SKProductsRequest *productsRequest = [[SKProductsRequest alloc]
-                                              initWithProductIdentifiers:[NSSet setWithObjects:
-                                                                          kPremium24ProductIdentifier,
-                                                                          kPremium36ProductIdentifier, nil]];
-        productsRequest.delegate = self;
-        request = productsRequest;
-        [productsRequest start];
-    } else {
-        NSLog(@"User cannot make payments due to parental controls");
-    }
+    [appDelegate.premiumManager loadProducts];
     
     if (appDelegate.isPremium) {
         freeView.hidden = YES;
@@ -145,144 +145,38 @@
     }
 }
 
-- (void)productsRequest:(SKProductsRequest *)request didReceiveResponse:(SKProductsResponse *)response{
-    SKProduct *validProduct = nil;
-    NSUInteger count = [response.products count];
-    if (count > 0){
-        products = response.products;
-        
-        spinner.hidden = YES;
-        productsTable.hidden = NO;
-        [productsTable reloadData];
-    } else if (!validProduct) {
-        NSLog(@"No products available");
-        //this is called if your product id is not valid, this shouldn't be called unless that happens.
-    }
+- (void)loadedProducts {
+    spinner.hidden = YES;
+    productsTable.hidden = NO;
+    [productsTable reloadData];
 }
 
 - (void)purchase:(SKProduct *)product {
-    SKPayment *payment = [SKPayment paymentWithProduct:product];
-    
-    [[SKPaymentQueue defaultQueue] addTransactionObserver:self];
-    [[SKPaymentQueue defaultQueue] addPayment:payment];
-    
     productsTable.hidden = YES;
     spinner.hidden = NO;
+    
+    [appDelegate.premiumManager purchase:product];
 }
 
 - (IBAction)restorePurchase:(id)sender {
     productsTable.hidden = YES;
     spinner.hidden = NO;
     
-    [[SKPaymentQueue defaultQueue] addTransactionObserver:self];
-    [[SKPaymentQueue defaultQueue] restoreCompletedTransactions];
+    [appDelegate.premiumManager restorePurchase];
 }
 
-- (void) paymentQueueRestoreCompletedTransactionsFinished:(SKPaymentQueue *)queue {
-    NSLog(@"received restored transactions: %lu", (unsigned long)queue.transactions.count);
-    for (SKPaymentTransaction *transaction in queue.transactions) {
-        if (transaction.transactionState == SKPaymentTransactionStateRestored) {
-            NSLog(@"Transaction state -> Restored");
-            
-            //NSString *productID = transaction.payment.productIdentifier;
-            [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
-
-            [self finishTransaction:transaction];
-            return;
-        }
-    }
-    
-    
+- (void)finishedTransaction {
+    productsTable.hidden = NO;
+    spinner.hidden = YES;
 }
 
-- (void)paymentQueue:(SKPaymentQueue *)queue updatedTransactions:(NSArray *)transactions {
-    for (SKPaymentTransaction *transaction in transactions) {
-        switch (transaction.transactionState) {
-            case SKPaymentTransactionStatePurchasing: NSLog(@"Transaction state -> Purchasing");
-                //called when the user is in the process of purchasing, do not add any of your own code here.
-                break;
-            
-            case SKPaymentTransactionStatePurchased:
-                //this is called when the user has successfully purchased the package (Cha-Ching!)
-                
-                [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
-                NSLog(@"Transaction state -> Purchased");
-                
-                [self finishTransaction:transaction];
-                break;
-            
-            case SKPaymentTransactionStateRestored:
-                NSLog(@"Transaction state -> Restored");
-                //add the same code as you did from SKPaymentTransactionStatePurchased here
-                [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
-
-                [self finishTransaction:transaction];
-                break;
-            
-            case SKPaymentTransactionStateDeferred:
-                NSLog(@"Transaction state -> Deferred");
-            case SKPaymentTransactionStateFailed:
-                NSLog(@"Transaction state -> Failed");
-                //called when the transaction does not finish
-                if (transaction.error.code == SKErrorPaymentCancelled) {
-                    NSLog(@"Transaction state -> Cancelled");
-                    //the user cancelled the payment ;(
-                }
-                
-                [self informError:@"Transaction failed!"];
-                productsTable.hidden = NO;
-                spinner.hidden = YES;
-                [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
-                break;
-        }
-    }
+- (void)informError:(id)error {
+    productsTable.hidden = NO;
+    spinner.hidden = YES;
+    
+    [super informError:error];
 }
 
-- (void)finishTransaction:(SKPaymentTransaction *)transaction {
-    productsTable.hidden = YES;
-    spinner.hidden = NO;
-
-    NSURL *receiptURL = [[NSBundle mainBundle] appStoreReceiptURL];
-    NSData *receipt = [NSData dataWithContentsOfURL:receiptURL];
-    if (!receipt) {
-        NSLog(@" No receipt found!");
-        [self informError:@"No receipt found"];
-        return;
-    }
-    
-    NSString *urlString = [NSString stringWithFormat:@"%@/profile/save_ios_receipt/",
-                           appDelegate.url];
-    NSDictionary *params = @{
-                             @"receipt": [receipt base64EncodedStringWithOptions:0],
-                             @"transaction_identifier": transaction.originalTransaction.transactionIdentifier,
-                             @"product_identifier": transaction.payment.productIdentifier,
-                             };
-    
-    [appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-        NSLog(@"Sent iOS receipt: %@", params);
-        productsTable.hidden = NO;
-        spinner.hidden = YES;
-        NSDictionary *results = (NSDictionary *)responseObject;
-        appDelegate.isPremium = [[results objectForKey:@"is_premium"] integerValue] == 1;
-        id premiumExpire = [results objectForKey:@"premium_expire"];
-        if (premiumExpire && ![premiumExpire isKindOfClass:[NSNull class]] && premiumExpire != 0) {
-            appDelegate.premiumExpire = [premiumExpire integerValue];
-        }
-
-        [self loadProducts];
-        [appDelegate reloadFeedsView:YES];
-    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        NSLog(@"Failed to send receipt: %@", params);
-        productsTable.hidden = NO;
-        spinner.hidden = YES;
-
-        NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)task.response;
-        [self informError:error statusCode:httpResponse.statusCode];
-        
-        [self loadProducts];
-    }];
-
-}
 #pragma mark - Table Delegate
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -291,9 +185,9 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     if (tableView == reasonsTable) {
-        return [reasons count];
+        return [appDelegate.premiumManager.reasons count];
     } else if (tableView == productsTable) {
-        return [products count];
+        return [appDelegate.premiumManager.products count];
     }
     
     return 0;
@@ -312,12 +206,12 @@
         
         cell.backgroundColor = UIColorFromRGB(0xf4f4f4);
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
-        cell.textLabel.text = reasons[indexPath.row][0];
+        cell.textLabel.text = appDelegate.premiumManager.reasons[indexPath.row][0];
         cell.textLabel.font = [UIFont systemFontOfSize:14.f weight:UIFontWeightLight];
         cell.textLabel.textColor = UIColorFromRGB(0x0c0c0c);
         cell.textLabel.numberOfLines = 2;
         CGSize itemSize = CGSizeMake(18, 18);
-        cell.imageView.image = [UIImage imageNamed:reasons[indexPath.row][1]];
+        cell.imageView.image = [UIImage imageNamed:appDelegate.premiumManager.reasons[indexPath.row][1]];
         cell.imageView.contentMode = UIViewContentModeScaleAspectFill;
         cell.imageView.clipsToBounds = NO;
         UIGraphicsBeginImageContextWithOptions(itemSize, NO, UIScreen.mainScreen.scale);
@@ -333,7 +227,7 @@
             cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIndentifier];
         }
 
-        SKProduct *product = products[indexPath.row];
+        SKProduct *product = appDelegate.premiumManager.products[indexPath.row];
         cell.selectionStyle = UITableViewCellSelectionStyleBlue;
         cell.backgroundColor = UIColorFromRGB(0xf4f4f4);
         cell.textLabel.textColor = UIColorFromRGB(0x203070);
@@ -390,7 +284,7 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     if (tableView == productsTable) {
-        [self purchase:products[indexPath.row]];
+        [self purchase:appDelegate.premiumManager.products[indexPath.row]];
     }
     
     [tableView deselectRowAtIndexPath:indexPath animated:YES];

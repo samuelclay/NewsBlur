@@ -1,21 +1,19 @@
 package com.newsblur.activity;
 
 import android.os.Bundle;
-import android.app.Activity;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
-import android.util.Log;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.view.Window;
 
 import com.newsblur.R;
 import com.newsblur.fragment.LoginProgressFragment;
 import com.newsblur.util.PrefsUtils;
 
-public class LoginProgress extends Activity {
+public class LoginProgress extends FragmentActivity {
 
 	private FragmentManager fragmentManager;
 	private String currentTag = "fragment";
-	private String TAG = "LoginProgressActivity";
 
 	@Override
 	protected void onCreate(Bundle bundle) {
@@ -25,7 +23,7 @@ public class LoginProgress extends Activity {
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_loginprogress);
 		
-		fragmentManager = getFragmentManager();
+		fragmentManager = getSupportFragmentManager();
 		
 		if (fragmentManager.findFragmentByTag(currentTag ) == null) {
 			String username = getIntent().getStringExtra("username");

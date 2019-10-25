@@ -2390,7 +2390,7 @@ class _HTMLSanitizer(_BaseHTMLProcessor):
       'template', 'title', 'toppadding', 'type', 'unselectable', 'usemap',
       'urn', 'valign', 'value', 'variable', 'volume', 'vspace', 'vrml',
       'width', 'wrap', 'xml:lang',
-      'allowfullscreen'])
+      'allowfullscreen', 'autoplay', 'muted', 'loop', 'playsinline'])
 
     unacceptable_elements_with_end_tag = set(['script', 'applet', 'style'])
 

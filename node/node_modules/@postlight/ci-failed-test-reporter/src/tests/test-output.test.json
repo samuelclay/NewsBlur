@@ -1,0 +1,71 @@
+{
+  "numFailedTestSuites": 1,
+  "numFailedTests": 1,
+  "numPassedTestSuites": 1,
+  "numPassedTests": 1,
+  "numPendingTestSuites": 0,
+  "numPendingTests": 0,
+  "numRuntimeErrorTestSuites": 0,
+  "numTodoTests": 0,
+  "numTotalTestSuites": 2,
+  "numTotalTests": 2,
+  "openHandles": [],
+  "snapshot": {
+    "added": 0,
+    "didUpdate": false,
+    "failure": false,
+    "filesAdded": 0,
+    "filesRemoved": 0,
+    "filesUnmatched": 0,
+    "filesUpdated": 0,
+    "matched": 0,
+    "total": 0,
+    "unchecked": 0,
+    "uncheckedKeysByFile": [],
+    "unmatched": 0,
+    "updated": 0
+  },
+  "startTime": 1552320009030,
+  "success": false,
+  "testResults": [
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [],
+          "failureMessages": [],
+          "fullName": "basic test",
+          "location": null,
+          "status": "passed",
+          "title": "basic test"
+        }
+      ],
+      "endTime": 1552320011114,
+      "message": "",
+      "name": "/Users/frankiesimms/Desktop/nodejs-typescript-kit/src/example.test.js",
+      "startTime": 1552320010357,
+      "status": "passed",
+      "summary": ""
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [],
+          "failureMessages": [
+            "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).toBe(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m16\u001b[39m\nReceived: \u001b[31m11\u001b[39m\n    at Object.<anonymous>.test (/Users/frankiesimms/Desktop/nodejs-typescript-kit/src/index.test.ts:2:21)\n    at Object.asyncJestTest (/Users/frankiesimms/Desktop/nodejs-typescript-kit/node_modules/jest-jasmine2/build/jasmineAsyncInstall.js:102:37)\n    at resolve (/Users/frankiesimms/Desktop/nodejs-typescript-kit/node_modules/jest-jasmine2/build/queueRunner.js:41:12)\n    at new Promise (<anonymous>)\n    at mapper (/Users/frankiesimms/Desktop/nodejs-typescript-kit/node_modules/jest-jasmine2/build/queueRunner.js:26:19)\n    at promise.then (/Users/frankiesimms/Desktop/nodejs-typescript-kit/node_modules/jest-jasmine2/build/queueRunner.js:71:41)\n    at process._tickCallback (internal/process/next_tick.js:68:7)"
+          ],
+          "fullName": "basic test",
+          "location": null,
+          "status": "failed",
+          "title": "basic test"
+        }
+      ],
+      "endTime": 1552320012092,
+      "message": "\u001b[1m\u001b[31m  \u001b[1m● \u001b[1mbasic test\u001b[39m\u001b[22m\n\n    \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).toBe(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\n    Expected: \u001b[32m16\u001b[39m\n    Received: \u001b[31m11\u001b[39m\n\u001b[2m\u001b[22m\n\u001b[2m    \u001b[0m \u001b[90m 1 | \u001b[39mtest(\u001b[32m'basic test'\u001b[39m\u001b[33m,\u001b[39m () \u001b[33m=>\u001b[39m {\u001b[0m\u001b[22m\n\u001b[2m    \u001b[0m\u001b[31m\u001b[1m>\u001b[2m\u001b[39m\u001b[90m 2 | \u001b[39m  expect(\u001b[35m2\u001b[39m \u001b[33m+\u001b[39m \u001b[35m3\u001b[39m \u001b[33m+\u001b[39m \u001b[35m6\u001b[39m)\u001b[33m.\u001b[39mtoBe(\u001b[35m16\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m\u001b[22m\n\u001b[2m    \u001b[0m \u001b[90m   | \u001b[39m                    \u001b[31m\u001b[1m^\u001b[2m\u001b[39m\u001b[0m\u001b[22m\n\u001b[2m    \u001b[0m \u001b[90m 3 | \u001b[39m})\u001b[33m;\u001b[39m\u001b[0m\u001b[22m\n\u001b[2m    \u001b[0m \u001b[90m 4 | \u001b[39m\u001b[0m\u001b[22m\n\u001b[2m\u001b[22m\n\u001b[2m      \u001b[2mat Object.<anonymous>.test (\u001b[2m\u001b[0m\u001b[36msrc/index.test.ts\u001b[39m\u001b[0m\u001b[2m:2:21)\u001b[2m\u001b[22m\n",
+      "name": "/Users/frankiesimms/Desktop/nodejs-typescript-kit/src/index.test.ts",
+      "startTime": 1552320010366,
+      "status": "failed",
+      "summary": ""
+    }
+  ],
+  "wasInterrupted": false
+}

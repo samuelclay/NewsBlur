@@ -149,7 +149,7 @@ static UIFont *textFont = nil;
     UIColor *backgroundColor;
     
     backgroundColor = cell.highlighted || cell.selected ?
-                      UIColorFromLightSepiaMediumDarkRGB(0xFFFFD2, 0xFFFFD2, 0x405060, 0x000022) :
+                      UIColorFromLightSepiaMediumDarkRGB(0xFFFFD2, 0xFFFFD2, 0x304050, 0x000022) :
                       cell.isSocial ? UIColorFromRGB(0xE6ECE8) :
                       cell.isSaved ? UIColorFromRGB(0xE9EBEE) :
                       UIColorFromRGB(0xF7F8F5);
@@ -157,7 +157,7 @@ static UIFont *textFont = nil;
 //    [backgroundColor set];
     self.backgroundColor = backgroundColor;
     cell.backgroundColor = backgroundColor;
-
+    
     if (cell.highlighted || cell.selected) {
 //        [NewsBlurAppDelegate fillGradient:CGRectMake(r.origin.x, r.origin.y + 1, r.size.width, r.size.height - 1) startColor:UIColorFromRGB(0xFFFFD2) endColor:UIColorFromRGB(0xFDED8D)];
         

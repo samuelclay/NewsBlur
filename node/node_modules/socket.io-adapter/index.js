@@ -4,7 +4,6 @@
  */
 
 var Emitter = require('events').EventEmitter;
-var parser = require('socket.io-parser');
 
 /**
  * Module exports.
@@ -23,7 +22,7 @@ function Adapter(nsp){
   this.nsp = nsp;
   this.rooms = {};
   this.sids = {};
-  this.encoder = new parser.Encoder();
+  this.encoder = nsp.server.encoder;
 }
 
 /**
@@ -42,10 +41,26 @@ Adapter.prototype.__proto__ = Emitter.prototype;
  */
 
 Adapter.prototype.add = function(id, room, fn){
-  this.sids[id] = this.sids[id] || {};
-  this.sids[id][room] = true;
-  this.rooms[room] = this.rooms[room] || Room();
-  this.rooms[room].add(id);
+  return this.addAll(id, [ room ], fn);
+};
+
+/**
+ * Adds a socket to a list of room.
+ *
+ * @param {String} socket id
+ * @param {String} rooms
+ * @param {Function} callback
+ * @api public
+ */
+
+Adapter.prototype.addAll = function(id, rooms, fn){
+  for (var i = 0; i < rooms.length; i++) {
+    var room = rooms[i];
+    this.sids[id] = this.sids[id] || {};
+    this.sids[id][room] = true;
+    this.rooms[room] = this.rooms[room] || Room();
+    this.rooms[room].add(id);
+  }
   if (fn) process.nextTick(fn.bind(null, null));
 };
 
@@ -164,19 +179,18 @@ Adapter.prototype.clients = function(rooms, fn){
   rooms = rooms || [];
 
   var ids = {};
-  var self = this;
   var sids = [];
   var socket;
 
   if (rooms.length) {
     for (var i = 0; i < rooms.length; i++) {
-      var room = self.rooms[rooms[i]];
+      var room = this.rooms[rooms[i]];
       if (!room) continue;
       var sockets = room.sockets;
       for (var id in sockets) {
         if (sockets.hasOwnProperty(id)) {
           if (ids[id]) continue;
-          socket = self.nsp.connected[id];
+          socket = this.nsp.connected[id];
           if (socket) {
             sids.push(id);
             ids[id] = true;
@@ -185,9 +199,9 @@ Adapter.prototype.clients = function(rooms, fn){
       }
     }
   } else {
-    for (var id in self.sids) {
-      if (self.sids.hasOwnProperty(id)) {
-        socket = self.nsp.connected[id];
+    for (var id in this.sids) {
+      if (this.sids.hasOwnProperty(id)) {
+        socket = this.nsp.connected[id];
         if (socket) sids.push(id);
       }
     }

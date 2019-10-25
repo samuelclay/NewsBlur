@@ -2,10 +2,12 @@ package com.newsblur.util;
 
 import android.content.Context;
 import android.text.format.DateFormat;
+import android.text.format.DateUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 /**
  * Created by mark on 04/02/2014.
@@ -56,8 +58,8 @@ public class StoryUtils {
         }
     };
 
-    public static String formatLongDate(Context context, Date storyDate) {
-
+    public static String formatLongDate(Context context, long timestamp) {
+        Date storyDate = new Date(timestamp);
         Date midnightToday = midnightToday();
         Date midnightYesterday = midnightYesterday();
         Date beginningOfMonth = beginningOfMonth();
@@ -67,6 +69,20 @@ public class StoryUtils {
         int month = storyCalendar.get(Calendar.DAY_OF_MONTH);
 
         SimpleDateFormat timeFormat = getTimeFormat(context);
+        Locale locale = context.getResources().getConfiguration().locale;
+
+        if(!locale.getLanguage().equals("en")){
+            String pattern = null;
+
+            if (storyDate.getTime() > beginningOfMonth.getTime()) {
+                // localized pattern, without year
+                pattern = android.text.format.DateFormat.getBestDateTimePattern(locale, "EEEE MMMM d");
+            }else {
+                // localized pattern, with year
+                pattern = android.text.format.DateFormat.getBestDateTimePattern(locale, "EEEE MMMM d yyyy");
+            }
+            return DateFormat.format(pattern, storyDate).toString() + " " + timeFormat.format(storyDate);
+        }
 
         if (storyDate.getTime() > midnightToday.getTime()) {
             // Today, January 1st 00:00
@@ -80,6 +96,23 @@ public class StoryUtils {
         } else {
             // Monday, January 1st 2014 00:00
             return monthLongFormat.get().format(storyDate) + getDayOfMonthSuffix(month) + " " + yearLongFormat.get().format(storyDate) + " " + timeFormat.format(storyDate);
+        }
+    }
+
+    public static CharSequence formatRelativeTime(Context context, long timestamp) {
+        Date date = new Date(timestamp);
+        Date sixDaysAgo = new Date(System.currentTimeMillis()
+                - (DateUtils.DAY_IN_MILLIS * 6));
+        if (DateUtils.isToday(timestamp)) {
+            // "3 hours ago"
+            return DateUtils.getRelativeTimeSpanString(timestamp,
+                    System.currentTimeMillis(),
+                    DateUtils.MINUTE_IN_MILLIS);
+        } else if (date.after(sixDaysAgo)){
+            // "Wednesday"
+            return DateFormat.format("EEEE", timestamp);
+        } else {
+            return DateFormat.getDateFormat(context).format(date);
         }
     }
 
@@ -105,7 +138,7 @@ public class StoryUtils {
     }
 
     private static SimpleDateFormat getTimeFormat(Context context) {
-        if (DateFormat.is24HourFormat(context)) {
+        if (android.text.format.DateFormat.is24HourFormat(context)) {
             return twentyFourHourFormat.get();
         } else {
             return twelveHourFormat.get();
@@ -127,12 +160,23 @@ public class StoryUtils {
         }
     }
 
-    public static String formatShortDate(Context context, Date storyDate) {
-
+    public static String formatShortDate(Context context, long timestamp) {
+        Date storyDate = new Date(timestamp);
         Date midnightToday = midnightToday();
         Date midnightYesterday = midnightYesterday();
 
         SimpleDateFormat timeFormat = getTimeFormat(context);
+
+        Locale locale = context.getResources().getConfiguration().locale;
+
+        if(!locale.getLanguage().equals("en")){
+            if (storyDate.getTime() > midnightToday.getTime()) {
+                return timeFormat.format(storyDate);
+            }else {
+                String pattern = android.text.format.DateFormat.getBestDateTimePattern(locale, "d MMM yyyy " + timeFormat.toPattern());
+                return DateFormat.format(pattern, storyDate).toString();
+            }
+        }
 
         if (storyDate.getTime() > midnightToday.getTime()) {
             // 00:00

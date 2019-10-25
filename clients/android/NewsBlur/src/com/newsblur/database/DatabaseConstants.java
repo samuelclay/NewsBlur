@@ -17,6 +17,9 @@ public class DatabaseConstants {
 
     private DatabaseConstants(){} // util class - no instances
 
+    // the largest value that can be queried from an Android DB (config_cursorWindowSize and worst-case encoding overhead)
+    public static final int MAX_TEXT_SIZE = 1024 * 2048 / 4;
+
 	private static final String TEXT = " TEXT";
 	private static final String INTEGER = " INTEGER";
 
@@ -135,21 +138,7 @@ public class DatabaseConstants {
 	public static final String ACTION_ID = BaseColumns._ID;
     public static final String ACTION_TIME = "time";
     public static final String ACTION_TRIED = "tried";
-    public static final String ACTION_TYPE = "action_type";
-    public static final String ACTION_COMMENT_TEXT = "comment_text";
-    public static final String ACTION_REPLY_ID = "reply_id";
-    public static final String ACTION_STORY_HASH = "story_hash";
-    public static final String ACTION_FEED_ID = "feed_id";
-    public static final String ACTION_FEED_SET = "feed_set";
-    public static final String ACTION_MODIFIED_FEED_IDS = "modified_feed_ids";
-    public static final String ACTION_INCLUDE_OLDER = "include_older";
-    public static final String ACTION_INCLUDE_NEWER = "include_newer";
-    public static final String ACTION_STORY_ID = "story_id";
-    public static final String ACTION_SOURCE_USER_ID = "source_user_id";
-    public static final String ACTION_COMMENT_ID = "comment_id";
-    public static final String ACTION_NOTIFY_FILTER = "notify_filter";
-    public static final String ACTION_NOTIFY_TYPES = "notify_types";
-    public static final String ACTION_CLASSIFIER = "classifier";
+    public static final String ACTION_PARAMS = "action_params";
 
     public static final String STARREDCOUNTS_TABLE = "starred_counts";
     public static final String STARREDCOUNTS_COUNT = "count";
@@ -168,6 +157,9 @@ public class DatabaseConstants {
     public static final String FEED_AUTHORS_FEEDID = "feed_id";
     public static final String FEED_AUTHORS_AUTHOR = "author";
 
+    public static final String SYNC_METADATA_TABLE = "sync_metadata";
+    public static final String SYNC_METADATA_KEY = "key";
+    public static final String SYNC_METADATA_VALUE = "value";
 
 	static final String FOLDER_SQL = "CREATE TABLE " + FOLDER_TABLE + " (" +
 		FOLDER_NAME + TEXT + " PRIMARY KEY, " +  
@@ -296,21 +288,7 @@ public class DatabaseConstants {
         ACTION_ID + INTEGER + " PRIMARY KEY AUTOINCREMENT, " +
         ACTION_TIME + INTEGER + " NOT NULL, " +
         ACTION_TRIED + INTEGER + ", " +
-        ACTION_TYPE + TEXT + ", " +
-        ACTION_COMMENT_TEXT + TEXT + ", " +
-        ACTION_STORY_HASH + TEXT + ", " +
-        ACTION_FEED_ID + TEXT + ", " +
-        ACTION_FEED_SET + TEXT + ", " +
-        ACTION_INCLUDE_OLDER + INTEGER + ", " +
-        ACTION_INCLUDE_NEWER + INTEGER + ", " +
-        ACTION_STORY_ID + TEXT + ", " +
-        ACTION_SOURCE_USER_ID + TEXT + ", " +
-        ACTION_COMMENT_ID + TEXT + ", " +
-        ACTION_REPLY_ID + TEXT + ", " +
-        ACTION_MODIFIED_FEED_IDS + TEXT + ", " +
-        ACTION_NOTIFY_FILTER + TEXT + ", " +
-        ACTION_NOTIFY_TYPES + TEXT + ", " +
-        ACTION_CLASSIFIER + TEXT +
+        ACTION_PARAMS + TEXT +
         ")";
 
 	static final String STARREDCOUNTS_SQL = "CREATE TABLE " + STARREDCOUNTS_TABLE + " (" +
@@ -334,6 +312,11 @@ public class DatabaseConstants {
         FEED_AUTHORS_AUTHOR + TEXT +
         ")";
 
+    static final String SYNC_METADATA_SQL = "CREATE TABLE " + SYNC_METADATA_TABLE + " (" +
+        SYNC_METADATA_KEY + TEXT + " PRIMARY KEY, " +
+        SYNC_METADATA_VALUE + TEXT +
+        ")";
+
 	private static final String[] BASE_STORY_COLUMNS = {
 		STORY_AUTHORS, STORY_SHORT_CONTENT, STORY_TIMESTAMP, STORY_SHARED_DATE,
         STORY_TABLE + "." + STORY_FEED_ID, STORY_TABLE + "." + STORY_ID,
@@ -347,7 +330,14 @@ public class DatabaseConstants {
         TextUtils.join(",", BASE_STORY_COLUMNS) + ", " + 
         FEED_TITLE + ", " + FEED_FAVICON_URL + ", " + FEED_FAVICON_COLOR + ", " + FEED_FAVICON_BORDER + ", " + FEED_FAVICON_FADE + ", " + FEED_FAVICON_TEXT;
 
-    public static final String STORY_QUERY_BASE_1 = 
+	public static final String STORY_QUERY_BASE_0 =
+			"SELECT " +
+					STORY_COLUMNS +
+					" FROM " + STORY_TABLE +
+					" INNER JOIN " + FEED_TABLE +
+					" ON " + STORY_TABLE + "." + STORY_FEED_ID + " = " + FEED_TABLE + "." + FEED_ID +
+					" WHERE ";
+	public static final String STORY_QUERY_BASE_1 =
         "SELECT " +
         STORY_COLUMNS +
         " FROM " + STORY_TABLE +
@@ -467,4 +457,6 @@ public class DatabaseConstants {
     public static List<String> unflattenStringList(String flat) {
         return JsonHelper.fromJson(flat, new TypeToken<List<String>>(){}.getType());
     }
+
+    public static final String SYNC_METADATA_KEY_SESSION_FEED_SET = "session_feed_set";
 }

@@ -15,7 +15,8 @@
     UIButton* button = [UIButton buttonWithType:UIButtonTypeCustom];
     [button setImage:image forState:UIControlStateNormal];
     [button addTarget:target action:action forControlEvents:UIControlEventTouchUpInside];
-    [button sizeToFit];
+// iOS 13 crash with sizeToFit.
+//    [button sizeToFit];
 //    button.imageView.contentMode = UIViewContentModeCenter;
     UIBarButtonItem* item = [[self alloc] initWithCustomView:button];
 //    button.layer.borderColor = [[UIColor redColor] CGColor];

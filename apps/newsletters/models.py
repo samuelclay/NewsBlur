@@ -24,7 +24,11 @@ class EmailNewsletter:
         sender_name, sender_username, sender_domain = self._split_sender(params['from'])
         feed_address = self._feed_address(user, "%s@%s" % (sender_username, sender_domain))
         
-        usf = UserSubscriptionFolders.objects.get(user=user)
+        try:
+            usf = UserSubscriptionFolders.objects.get(user=user)
+        except UserSubscriptionFolders.DoesNotExist:
+            logging.user(user, "~FRUser does not have a USF, ignoring newsletter.")
+            return
         usf.add_folder('', 'Newsletters')
         
         try:

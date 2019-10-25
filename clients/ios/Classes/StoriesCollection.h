@@ -44,6 +44,7 @@
 @property (strong, readwrite) NSMutableDictionary * activeClassifiers;
 @property (strong, readwrite) NSArray * activePopularTags;
 @property (strong, readwrite) NSArray * activePopularAuthors;
+@property (nonatomic, readonly) NSString *activeTitle;
 @property (readwrite) int storyCount;
 @property (readwrite) int storyLocationsCount;
 @property (readwrite) int visibleUnreadCount;
@@ -55,6 +56,7 @@
 @property (nonatomic, readwrite) BOOL isSavedView;
 @property (nonatomic, readwrite) BOOL isReadView;
 @property (nonatomic, readwrite) BOOL transferredFromDashboard;
+@property (nonatomic, readwrite) BOOL showHiddenStories;
 @property (nonatomic, readwrite) BOOL inSearch;
 @property (nonatomic) NSString *searchQuery;
 

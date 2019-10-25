@@ -20,7 +20,6 @@
 #import "FeedTableCell.h"
 #import "FeedDetailTableCell.h"
 #import "FeedsMenuViewController.h"
-#import "FeedDetailMenuViewController.h"
 #import "FontSettingsViewController.h"
 #import "AddSiteViewController.h"
 #import "TrainerViewController.h"
@@ -232,6 +231,14 @@
     }];
 }
 
+- (BOOL)prefersStatusBarHidden {
+    if (@available(iOS 11.0, *)) {
+        return self.navigationController.navigationBarHidden && self.view.safeAreaInsets.top > 0.0;
+    } else {
+        return self.navigationController.navigationBarHidden;
+    }
+}
+
 - (void)adjustLayout {
     if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
         return;
@@ -300,20 +307,52 @@
     self.leftBorder.backgroundColor = UIColorFromRGB(0xC2C5BE).CGColor;
     self.rightBorder.backgroundColor = UIColorFromRGB(0xC2C5BE).CGColor;
     
-    self.masterNavigationController.navigationBar.tintColor = UIColorFromRGB(0x8F918B);
-    self.masterNavigationController.navigationBar.barTintColor = UIColorFromRGB(0xE3E6E0);
+    self.masterNavigationController.navigationBar.tintColor = [UINavigationBar appearance].tintColor;
+    self.masterNavigationController.navigationBar.barTintColor = [UINavigationBar appearance].barTintColor;
     
-    self.storyNavigationController.navigationBar.tintColor = UIColorFromRGB(0x8F918B);
-    self.storyNavigationController.navigationBar.barTintColor = UIColorFromRGB(0xE3E6E0);
+    self.storyNavigationController.navigationBar.tintColor = [UINavigationBar appearance].tintColor;
+    self.storyNavigationController.navigationBar.barTintColor = [UINavigationBar appearance].barTintColor;
     
-    self.originalNavigationController.navigationBar.tintColor = UIColorFromRGB(0x8F918B);
-    self.originalNavigationController.navigationBar.barTintColor = UIColorFromRGB(0xE3E6E0);
+    self.originalNavigationController.navigationBar.tintColor = [UINavigationBar appearance].tintColor;
+    self.originalNavigationController.navigationBar.barTintColor = [UINavigationBar appearance].barTintColor;
     
     UIView *titleLabel = [appDelegate makeFeedTitle:appDelegate.storiesCollection.activeFeed];
     self.storyPageControl.navigationItem.titleView = titleLabel;
 }
 
-# pragma mark Modals and Popovers
+#pragma mark -
+#pragma mark State Restoration
+
+- (void)encodeRestorableStateWithCoder:(NSCoder *)coder {
+    [super encodeRestorableStateWithCoder:coder];
+    
+    [coder encodeBool:self.feedDetailIsVisible forKey:@"feedDetailIsVisible"];
+    [coder encodeBool:self.originalViewIsVisible forKey:@"originalViewIsVisible"];
+    
+    if (self.feedDetailIsVisible) {
+        [self.feedDetailViewController encodeRestorableStateWithCoder:coder];
+        [self.storyPageControl encodeRestorableStateWithCoder:coder];
+    }
+}
+
+- (void)decodeRestorableStateWithCoder:(NSCoder *)coder {
+    [super decodeRestorableStateWithCoder:coder];
+    
+    if ([coder decodeBoolForKey:@"feedDetailIsVisible"]) {
+        UIBarButtonItem *newBackButton = [[UIBarButtonItem alloc] initWithTitle: @"All"
+                                                                          style: UIBarButtonItemStylePlain
+                                                                         target: nil
+                                                                         action: nil];
+        [self.feedsViewController.navigationItem setBackBarButtonItem: newBackButton];
+        
+        [self transitionToFeedDetail:YES animated:NO];
+        [self.feedDetailViewController decodeRestorableStateWithCoder:coder];
+        [self.storyPageControl decodeRestorableStateWithCoder:coder];
+    }
+}
+
+#pragma mark -
+#pragma mark Modals and Popovers
 
 - (void)showUserProfilePopover:(id)sender {
     if ([sender class] == [InteractionCell class] ||
@@ -535,7 +574,12 @@
 - (void)transitionToFeedDetail {
     [self transitionToFeedDetail:YES];
 }
+
 - (void)transitionToFeedDetail:(BOOL)resetLayout {
+    [self transitionToFeedDetail:resetLayout animated:YES];
+}
+
+- (void)transitionToFeedDetail:(BOOL)resetLayout animated:(BOOL)animated {
     [self.appDelegate hidePopover];
     if (self.feedDetailIsVisible) resetLayout = NO;
     self.feedDetailIsVisible = YES;
@@ -576,6 +620,8 @@
     CGRect vb = [self.view bounds];
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
 	if (UIInterfaceOrientationIsPortrait(orientation) && !self.storyTitlesOnLeft) {
+        // Force the story page control to load.
+        [storyPageControl view];
         // CASE: story titles on bottom
         if (resetLayout) {
             self.storyPageControl.navigationItem.leftBarButtonItem = self.storyPageControl.buttonBack;
@@ -620,23 +666,28 @@
                                                                    vb.size.height);
             [self.masterNavigationController
              pushViewController:self.feedDetailViewController
-             animated:YES];
+             animated:animated];
             [self interactiveTransitionFromFeedDetail:1];
 
             UIView *titleLabel = [appDelegate makeFeedTitle:appDelegate.storiesCollection.activeFeed];
             self.storyPageControl.navigationItem.titleView = titleLabel;
         }
         self.leftBorder.hidden = NO;
-
-        [UIView animateWithDuration:.35 delay:0
-                            options:UIViewAnimationOptionCurveEaseOut
-                         animations:^{
+        
+        if (animated) {
+            [UIView animateWithDuration:.35 delay:0
+                                options:UIViewAnimationOptionCurveEaseOut
+                             animations:^{
+                [self interactiveTransitionFromFeedDetail:0];
+            } completion:^(BOOL finished) {
+                self.feedDetailIsVisible = YES;
+    //            NSLog(@"Finished hiding dashboard: %d", finished);
+    //            [self.dashboardViewController.view removeFromSuperview];
+            }];
+        } else {
             [self interactiveTransitionFromFeedDetail:0];
-        } completion:^(BOOL finished) {
             self.feedDetailIsVisible = YES;
-//            NSLog(@"Finished hiding dashboard: %d", finished);
-//            [self.dashboardViewController.view removeFromSuperview];
-        }];
+        }
     }
 }
 

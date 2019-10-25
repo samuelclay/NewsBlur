@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         style="?readingBackground"
-     >
+        >
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -18,9 +18,105 @@
             android:orientation="vertical"
             android:focusable="true"
             android:focusableInTouchMode="true"
-        >
+            >
 
-            <include layout="@layout/include_reading_item_metadata" />
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="8dp"
+                style="?rowItemHeaderBackground">
+
+                <RelativeLayout
+                    android:id="@+id/row_item_feed_header"
+                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:minHeight="6dp"
+                    android:paddingTop="4dp"
+                    android:paddingBottom="4dp" >
+
+                    <ImageView
+                        android:id="@+id/reading_feed_icon"
+                        android:layout_width="17dp"
+                        android:layout_height="17dp"
+                        android:layout_alignParentLeft="true"
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginRight="5dp"
+                        android:contentDescription="@string/description_row_folder_icon" />
+
+                    <TextView
+                        android:id="@+id/reading_feed_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_toRightOf="@id/reading_feed_icon"
+                        android:layout_centerVertical="true"
+                        android:ellipsize="end"
+                        android:lines="1"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+
+                </RelativeLayout>
+
+                <View
+                    android:id="@+id/item_feed_border"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_below="@id/row_item_feed_header"
+                    android:background="@color/gray55"/>
+
+                <Button
+                    android:id="@+id/story_context_menu_button"
+                    android:layout_width="34dp"
+                    android:layout_height="34dp"
+                    android:layout_margin="5dp"
+                    android:background="@drawable/ic_menu_moreoverflow"
+                    android:contentDescription="@string/description_menu"
+                    android:layout_below="@id/item_feed_border"
+                    android:layout_alignParentRight="true" />
+
+                <TextView
+                    android:id="@+id/reading_item_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="16dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginLeft="16dp"
+                    android:layout_below="@id/item_feed_border"
+                    android:layout_toLeftOf="@id/story_context_menu_button"
+                    android:textSize="17sp" />
+
+                <TextView
+                    android:id="@+id/reading_item_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/reading_item_title"
+                    android:layout_alignLeft="@id/reading_item_title"
+                    android:layout_marginRight="12dp"
+                    android:layout_marginTop="8dp"
+                    style="?readingItemMetadata"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/reading_item_authors"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignTop="@id/reading_item_date"
+                    android:layout_toRightOf="@id/reading_item_date"
+                    android:maxLines="1"
+                    android:minWidth="80dp"
+                    style="?readingItemMetadata"
+                    android:textSize="12sp"
+                    android:textStyle="bold"/>
+
+                <com.newsblur.view.FlowLayout
+                    android:id="@+id/reading_item_tags"
+                    android:layout_width="match_parent"
+                    android:layout_height="17dp"
+                    android:layout_alignLeft="@id/reading_item_title"
+                    android:layout_below="@id/reading_item_date"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginTop="8dp" />
+
+            </RelativeLayout>
 
             <View
                 android:layout_width="match_parent"
@@ -36,6 +132,34 @@
                 android:layout_height="3dp"
                 style="?divider"
                 android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/reading_textloading"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                style="?readingBackground"
+                android:gravity="center_horizontal"
+                android:text="@string/orig_text_loading"
+                android:textSize="16sp"
+                android:textStyle="italic"
+                android:visibility="gone"
+            />
+
+            <TextView
+                android:id="@+id/reading_textmodefailed"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                style="?readingBackground"
+                android:gravity="center_horizontal"
+                android:text="@string/orig_text_failed"
+                android:textSize="16sp"
+                android:textStyle="italic"
+                android:visibility="gone"
+            />
 
             <com.newsblur.view.NewsblurWebview
                 android:id="@+id/reading_webview"

@@ -2,8 +2,8 @@ package com.newsblur.activity;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
 import android.view.MenuItem;
@@ -36,7 +36,7 @@ public class Profile extends NbActivity {
             userId = savedInstanceState.getString(USER_ID);
         }
 		
-		fragmentManager = getFragmentManager();
+		fragmentManager = getSupportFragmentManager();
 
 		if (fragmentManager.findFragmentByTag(detailsTag) == null) {
 			FragmentTransaction detailsTransaction = fragmentManager.beginTransaction();
@@ -57,6 +57,7 @@ public class Profile extends NbActivity {
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
         if (userId != null) {
             outState.putString(USER_ID, userId);
         }

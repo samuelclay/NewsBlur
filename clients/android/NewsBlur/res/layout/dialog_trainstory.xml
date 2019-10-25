@@ -24,8 +24,8 @@
         android:layout_below="@id/intel_title_header"
         android:layout_alignParentRight="true"
         android:layout_margin="4dp"
-        android:layout_width="28dp"
-        android:layout_height="28dp"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
         android:background="@drawable/ic_clear_gray55"
     />
 
@@ -37,8 +37,8 @@
         android:layout_marginBottom="4dp"
         android:layout_marginRight="4dp"
         android:layout_marginLeft="6dp"
-        android:layout_width="28dp"
-        android:layout_height="28dp"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
         android:background="@drawable/ic_dislike_gray55"
     />
 
@@ -47,8 +47,8 @@
         android:layout_below="@id/intel_title_header"
         android:layout_toLeftOf="@id/intel_title_dislike"
         android:layout_margin="4dp"
-        android:layout_width="28dp"
-        android:layout_height="28dp"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
         android:background="@drawable/ic_like_gray55"
     />
         

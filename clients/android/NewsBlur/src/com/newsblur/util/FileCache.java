@@ -15,13 +15,12 @@ public class FileCache {
     private static final long MIN_FREE_SPACE_BYTES = 250L * 1024L * 1024L;
     private static final Pattern POSTFIX_PATTERN = Pattern.compile("(\\.[a-zA-Z0-9]+)[^\\.]*$");
 
-    private final long maxFileAgeMillis;
     private final int minValidCacheBytes;
 
 	private final File cacheDir;
+    private FileCache chain;
 
-	private FileCache(Context context, String subdir, long maxFileAgeMillis, int minValidCacheBytes) {
-        this.maxFileAgeMillis = maxFileAgeMillis;
+	private FileCache(Context context, String subdir, int minValidCacheBytes) {
         this.minValidCacheBytes = minValidCacheBytes;
         cacheDir = new File(context.getCacheDir(), subdir);
 		if (!cacheDir.exists()) {
@@ -30,22 +29,36 @@ public class FileCache {
 	}
 
     public static FileCache asStoryImageCache(Context context) {
-        FileCache fc = new FileCache(context, "olimages", 30L * 24L * 60L * 60L * 1000L, 512);
+        FileCache fc = new FileCache(context, "olimages", 512);
         return fc;
     }
 
     public static FileCache asIconCache(Context context) {
-        FileCache fc = new FileCache(context, "icons", 45L * 24L * 60L * 60L * 1000L, 128);
+        FileCache fc = new FileCache(context, "icons", 128);
         return fc;
     }
 
     public static FileCache asThumbnailCache(Context context) {
-        FileCache fc = new FileCache(context, "thumbs", 15L * 24L * 60L * 60L * 1000L, 256);
+        FileCache fc = new FileCache(context, "thumbs", 256);
         return fc;
+    }
+
+    /**
+     * Configure a chained cache so that if the provided cache already has a file, it will be used
+     * rather than being cached twice.
+     */
+    public void addChain(FileCache chain) {
+        this.chain = chain;
     }
 
     public void cacheFile(String url) {
         try {
+            // if the chained cache already has this file, don't bother downloading again
+            if (chain != null) {
+                File f = chain.getCachedFile(url);
+                if ((f != null) && (f.exists())) return;
+            }
+            
             // don't be evil and download if the user is low on storage
             if (cacheDir.getFreeSpace() < MIN_FREE_SPACE_BYTES) {
                 Log.w(this.getClass().getName(), "device low on storage, not caching");
@@ -71,6 +84,12 @@ public class FileCache {
 
     public File getCachedFile(String url) {
         try {
+            // if the chained cache already has this file, use that one
+            if (chain != null) {
+                File f = chain.getCachedFile(url);
+                if ((f != null) && (f.exists())) return f;
+            }
+
             String fileName = getFileName(url);
             if (fileName == null) {
                 return null;
@@ -109,22 +128,29 @@ public class FileCache {
         return fileName;
     }
 
-    public void cleanupOld() {
+    public void cleanupOld(long maxFileAgeMillis) {
         try {
+            int cleaned = 0;
             File[] files = cacheDir.listFiles();
             if (files == null) return;
+            com.newsblur.util.Log.i(this, String.format( "have %d files", files.length));
             for (File f : files) {
                 long timestamp = f.lastModified();
                 if (System.currentTimeMillis() > (timestamp + maxFileAgeMillis)) {
                     f.delete();
+                    cleaned++;
                 }
             }
+            com.newsblur.util.Log.i(this, String.format( "cleaned up %d files", cleaned));
         } catch (Exception e) {
-            android.util.Log.e(FileCache.class.getName(), "exception cleaning up cache", e);
+            com.newsblur.util.Log.e(this, "exception cleaning up cache", e);
         }
     }
 
-    public void cleanupUnusedOrOld(Set<String> currentUrls) {
+    /**
+     * Clean up files in this cache that are both unused and past the specified age.
+     */
+    public void cleanupUnusedAndOld(Set<String> currentUrls, long maxFileAgeMillis) {
         // if there appear to be zero images in the system, a DB rebuild probably just
         // occured, so don't trust that data for cleanup
         if (currentUrls.size() == 0) return;
@@ -132,17 +158,21 @@ public class FileCache {
         Set<String> currentFiles = new HashSet<String>(currentUrls.size());
         for (String url : currentUrls) currentFiles.add(getFileName(url));
         try {
+            int cleaned = 0;
             File[] files = cacheDir.listFiles();
             if (files == null) return;
+            com.newsblur.util.Log.i(this, String.format( "have %d files", files.length));
             for (File f : files) {
                 long timestamp = f.lastModified();
-                if ((System.currentTimeMillis() > (timestamp + maxFileAgeMillis)) ||
+                if ((System.currentTimeMillis() > (timestamp + maxFileAgeMillis)) &&
                     (!currentFiles.contains(f.getName()))) {
                     f.delete();
+                    cleaned++;
                 }
             }
+            com.newsblur.util.Log.i(this, String.format( "cleaned up %d files", cleaned));
         } catch (Exception e) {
-            android.util.Log.e(FileCache.class.getName(), "exception cleaning up cache", e);
+            com.newsblur.util.Log.e(this, "exception cleaning up cache", e);
         }
     }
 

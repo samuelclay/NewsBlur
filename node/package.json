@@ -1,0 +1,41 @@
+{
+  "name": "newsblur",
+  "version": "1.0.0",
+  "description": "Servers used in running NewsBlur",
+  "main": "favicons.js",
+  "dependencies": {
+    "@postlight/mercury-parser": "^2.1.1",
+    "connect-busboy": "^0.0.2",
+    "esm": "^3.2.22",
+    "express": "^4.16.4",
+    "mkdirp": "^0.5.1",
+    "mongodb": "^2.2.36",
+    "qs": "^6.7.0",
+    "redis": "^2.8.0",
+    "socket.io": "^2.2.0",
+    "socket.io-client": "^2.2.0",
+    "supervisor": "^0.12.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/samuelclay/NewsBlur.git"
+  },
+  "keywords": [
+    "newsblur",
+    "rss",
+    "news",
+    "socketio",
+    "favicons",
+    "mercury"
+  ],
+  "author": "Samuel Clay",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/samuelclay/NewsBlur/issues"
+  },
+  "homepage": "https://github.com/samuelclay/NewsBlur#readme"
+}

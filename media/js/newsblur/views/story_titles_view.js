@@ -193,12 +193,14 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         $endline.animate({'backgroundColor': '#E1EBFF'}, {'duration': 550, 'easing': 'easeInQuad'})
                 .animate({'backgroundColor': '#5C89C9'}, {'duration': 1550, 'easing': 'easeOutQuad'})
                 .animate({'backgroundColor': '#E1EBFF'}, 1050);
-        _.delay(_.bind(function() {
-            this.feed_stories_loading = setInterval(function() {
-                $endline.animate({'backgroundColor': '#5C89C9'}, {'duration': 650})
-                        .animate({'backgroundColor': '#E1EBFF'}, 1050);
-            }, 1700);
-        }, this), (550+1550+1050) - 1700);
+        if (NEWSBLUR.assets.preference('animations')) {
+            _.delay(_.bind(function() {
+                this.feed_stories_loading = setInterval(function() {
+                    $endline.animate({'backgroundColor': '#5C89C9'}, {'duration': 650})
+                            .animate({'backgroundColor': '#E1EBFF'}, 1050);
+                }, 1700);
+            }, this), (550+1550+1050) - 1700);
+        }
         
         if (options.scroll_to_loadbar) {
             this.pre_load_page_scroll_position = $('#story_titles').scrollTop();

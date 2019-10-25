@@ -1,12 +1,8 @@
 package com.newsblur.activity;
 
 import android.os.Bundle;
-import android.app.FragmentTransaction;
-import android.view.Menu;
-import android.view.MenuInflater;
 
 import com.newsblur.R;
-import com.newsblur.fragment.FolderItemListFragment;
 import com.newsblur.util.UIUtils;
 
 public class FolderItemsList extends ItemsList {
@@ -21,22 +17,6 @@ public class FolderItemsList extends ItemsList {
 		super.onCreate(bundle);
 
         UIUtils.setCustomActionBar(this, R.drawable.g_icn_folder_rss, folderName);
-
-		itemListFragment = (FolderItemListFragment) fragmentManager.findFragmentByTag(FolderItemListFragment.class.getName());
-		if (itemListFragment == null) {
-			itemListFragment = FolderItemListFragment.newInstance();
-			itemListFragment.setRetainInstance(true);
-			FragmentTransaction listTransaction = fragmentManager.beginTransaction();
-			listTransaction.add(R.id.activity_itemlist_container, itemListFragment, FolderItemListFragment.class.getName());
-			listTransaction.commit();
-		}
-	}
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.itemslist, menu);
-		return true;
 	}
 
 }

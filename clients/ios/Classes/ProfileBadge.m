@@ -327,7 +327,7 @@
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
     [params setObject:[self.activeProfile objectForKey:@"user_id"] forKey:@"user_id"];
     
-    [appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [appDelegate POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         if ([self.followButton.currentTitle isEqualToString:@"Follow"]) {
             [self finishFollowing:responseObject];
         } else {

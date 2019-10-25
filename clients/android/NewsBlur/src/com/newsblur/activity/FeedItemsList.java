@@ -1,17 +1,18 @@
 package com.newsblur.activity;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
-import android.app.DialogFragment;
-import android.app.FragmentTransaction;
+import android.support.v4.app.DialogFragment;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import com.newsblur.R;
 import com.newsblur.domain.Feed;
 import com.newsblur.fragment.DeleteFeedFragment;
 import com.newsblur.fragment.FeedIntelTrainerFragment;
-import com.newsblur.fragment.FeedItemListFragment;
+import com.newsblur.fragment.RenameFeedFragment;
+import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.UIUtils;
 
@@ -22,6 +23,15 @@ public class FeedItemsList extends ItemsList {
 	private Feed feed;
 	private String folderName;
 
+    public static void startActivity(Context context, FeedSet feedSet,
+                                     Feed feed, String folderName) {
+        Intent intent = new Intent(context, FeedItemsList.class);
+        intent.putExtra(ItemsList.EXTRA_FEED_SET, feedSet);
+        intent.putExtra(FeedItemsList.EXTRA_FEED, feed);
+        intent.putExtra(FeedItemsList.EXTRA_FOLDER_NAME, folderName);
+        context.startActivity(intent);
+    }
+
 	@Override
 	protected void onCreate(Bundle bundle) {
 		feed = (Feed) getIntent().getSerializableExtra(EXTRA_FEED);
@@ -30,20 +40,11 @@ public class FeedItemsList extends ItemsList {
 		super.onCreate(bundle);
 
         UIUtils.setCustomActionBar(this, feed.faviconUrl, feed.title);
-
-		itemListFragment = (FeedItemListFragment) fragmentManager.findFragmentByTag(FeedItemListFragment.class.getName());
-		if (itemListFragment == null) {
-			itemListFragment = FeedItemListFragment.newInstance(feed);
-			itemListFragment.setRetainInstance(true);
-			FragmentTransaction listTransaction = fragmentManager.beginTransaction();
-			listTransaction.add(R.id.activity_itemlist_container, itemListFragment, FeedItemListFragment.class.getName());
-			listTransaction.commit();
-		}
 	}
 
 	public void deleteFeed() {
 		DialogFragment deleteFeedFragment = DeleteFeedFragment.newInstance(feed, folderName);
-		deleteFeedFragment.show(fragmentManager, "dialog");
+		deleteFeedFragment.show(getSupportFragmentManager(), "dialog");
 	}
 
 	@Override
@@ -74,35 +75,27 @@ public class FeedItemsList extends ItemsList {
         }
         if (item.getItemId() == R.id.menu_intel) {
             FeedIntelTrainerFragment intelFrag = FeedIntelTrainerFragment.newInstance(feed, fs);
-            intelFrag.show(getFragmentManager(), FeedIntelTrainerFragment.class.getName());
+            intelFrag.show(getSupportFragmentManager(), FeedIntelTrainerFragment.class.getName());
             return true;
+        }
+        if (item.getItemId() == R.id.menu_rename_feed) {
+            RenameFeedFragment frag = RenameFeedFragment.newInstance(feed);
+            frag.show(getSupportFragmentManager(), RenameFeedFragment.class.getName());
+            return true;
+            // TODO: since this activity uses a feed object passed as an extra and doesn't query the DB,
+            // the name change won't be reflected until the activity finishes.
         }
         return false;
 	}
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		super.onCreateOptionsMenu(menu);
         if (!feed.active) {
             // there is currently no way for a feed to be un-muted while in this activity, so
             // don't bother creating the menu, which contains no valid options for a muted feed
             return false;
         }
-		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.feed_itemslist, menu);
-        if (feed.isNotifyUnread()) {
-            menu.findItem(R.id.menu_notifications_disable).setChecked(false);
-            menu.findItem(R.id.menu_notifications_unread).setChecked(true);
-            menu.findItem(R.id.menu_notifications_focus).setChecked(false);
-        } else if (feed.isNotifyFocus()) {
-            menu.findItem(R.id.menu_notifications_disable).setChecked(false);
-            menu.findItem(R.id.menu_notifications_unread).setChecked(false);
-            menu.findItem(R.id.menu_notifications_focus).setChecked(true);
-        } else {
-            menu.findItem(R.id.menu_notifications_disable).setChecked(true);
-            menu.findItem(R.id.menu_notifications_unread).setChecked(false);
-            menu.findItem(R.id.menu_notifications_focus).setChecked(false);
-        }
+		super.onCreateOptionsMenu(menu);
 		return true;
 	}
 

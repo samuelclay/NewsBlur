@@ -13,6 +13,9 @@
     <item android:id="@+id/menu_choose_folders"
           android:title="@string/menu_choose_folders" />
 
+    <item android:id="@+id/menu_rename_feed"
+          android:title="@string/menu_rename_feed" />
+
     <item android:id="@+id/menu_notifications"
           android:title="@string/menu_notifications_choose" >
         <menu>

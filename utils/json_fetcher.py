@@ -49,7 +49,7 @@ class JSONFetcher:
             'description': item.get('content_html', item.get('content_text', None)),
             'author_name': item.get('author', {}).get('name', None),
             'categories': item.get('tags', []),
-            'unique_id': item.get('id', item.get('url', None)),
+            'unique_id': unicode(item.get('id', item.get('url', None))),
             'pubdate': date_published,
         }
         

@@ -1,0 +1,13 @@
+{
+    "node": true,
+    "quotmark": "single",
+    "undef": true,
+    "unused": true,
+    "strict": true,
+    "globals": {
+        "test": true,
+        "suite": true,
+        "setup": true,
+		"teardown": true
+    }
+}

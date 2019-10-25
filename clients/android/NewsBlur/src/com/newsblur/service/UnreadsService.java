@@ -1,7 +1,5 @@
 package com.newsblur.service;
 
-import android.util.Log;
-
 import com.newsblur.network.domain.StoriesResponse;
 import com.newsblur.network.domain.UnreadStoryHashesResponse;
 import com.newsblur.util.AppConstants;
@@ -18,7 +16,7 @@ import java.util.Set;
 
 public class UnreadsService extends SubService {
 
-    private static volatile boolean Running = false;
+    public static boolean activelyRunning = false;
 
     private static volatile boolean doMetadata = false;
 
@@ -32,20 +30,25 @@ public class UnreadsService extends SubService {
 
     @Override
     protected void exec() {
-        if (doMetadata) {
-            gotWork();
-            syncUnreadList();
-            doMetadata = false;
-        }
+        activelyRunning = true;
+        try {
+            if (doMetadata) {
+                syncUnreadList();
+                doMetadata = false;
+            }
 
-        if (StoryHashQueue.size() > 0) {
-            getNewUnreadStories();
-            parent.pushNotifications();
+            if (StoryHashQueue.size() > 0) {
+                getNewUnreadStories();
+                parent.pushNotifications();
+            }
+        } finally {
+            activelyRunning = false;
         }
-
     }
 
     private void syncUnreadList() {
+        if (parent.stopSync()) return;
+
         // get unread hashes and dates from the API
         UnreadStoryHashesResponse unreadHashes = parent.apiManager.getUnreadStoryHashes();
         
@@ -56,7 +59,7 @@ public class UnreadsService extends SubService {
         // the set of unreads from the API, we will mark them as read. note that this collection
         // will be searched many times for new unreads, so it should be a Set, not a List.
         Set<String> oldUnreadHashes = parent.dbHelper.getUnreadStoryHashesAsSet();
-        com.newsblur.util.Log.i(this.getClass().getName(), "starting unread count: " + oldUnreadHashes.size());
+        com.newsblur.util.Log.i(this, "starting unread count: " + oldUnreadHashes.size());
 
         // a place to store and then sort unread hashes we aim to fetch. note the member format
         // is made to match the format of the API response (a list of [hash, date] tuples). it
@@ -84,11 +87,9 @@ public class UnreadsService extends SubService {
                 count++;
             }
         }
-        com.newsblur.util.Log.i(this.getClass().getName(), "new unread count:      " + count);
-        com.newsblur.util.Log.i(this.getClass().getName(), "new unreads found:     " + sortationList.size());
-        com.newsblur.util.Log.i(this.getClass().getName(), "unreads to retire:     " + oldUnreadHashes.size());
-
-        if (parent.stopSync()) return;
+        com.newsblur.util.Log.i(this, "new unread count:      " + count);
+        com.newsblur.util.Log.i(this, "new unreads found:     " + sortationList.size());
+        com.newsblur.util.Log.i(this, "unreads to retire:     " + oldUnreadHashes.size());
 
         // any stories that we previously thought to be unread but were not found in the
         // list, mark them read now
@@ -129,13 +130,12 @@ public class UnreadsService extends SubService {
     private void getNewUnreadStories() {
         Set<String> notifyFeeds = parent.dbHelper.getNotifyFeeds();
         unreadsyncloop: while (StoryHashQueue.size() > 0) {
-            if (parent.stopSync()) return;
+            if (parent.stopSync()) break unreadsyncloop;
 
             boolean isOfflineEnabled = PrefsUtils.isOfflineEnabled(parent);
             boolean isEnableNotifications = PrefsUtils.isEnableNotifications(parent);
             if (! (isOfflineEnabled || isEnableNotifications)) return;
 
-            gotWork();
             startExpensiveCycle();
 
             List<String> hashBatch = new ArrayList(AppConstants.UNREAD_FETCH_BATCH_SIZE);
@@ -151,7 +151,7 @@ public class UnreadsService extends SubService {
             }
             StoriesResponse response = parent.apiManager.getStoriesByHash(hashBatch);
             if (! isStoryResponseGood(response)) {
-                Log.e(this.getClass().getName(), "error fetching unreads batch, abandoning sync.");
+                com.newsblur.util.Log.e(this, "error fetching unreads batch, abandoning sync.");
                 break unreadsyncloop;
             }
 
@@ -163,18 +163,18 @@ public class UnreadsService extends SubService {
                 StoryHashQueue.remove(hash);
             } 
 
-            parent.prefetchOriginalText(response, startId);
-            parent.prefetchImages(response, startId);
+            parent.prefetchOriginalText(response);
+            parent.prefetchImages(response);
         }
     }
 
     private boolean isStoryResponseGood(StoriesResponse response) {
         if (response == null) {
-            Log.e(this.getClass().getName(), "Null response received while loading stories.");
+            com.newsblur.util.Log.e(this, "Null response received while loading stories.");
             return false;
         }
         if (response.stories == null) {
-            Log.e(this.getClass().getName(), "Null stories member received while loading stories.");
+            com.newsblur.util.Log.e(this, "Null stories member received while loading stories.");
             return false;
         }
         return true;
@@ -202,18 +202,6 @@ public class UnreadsService extends SubService {
 
     public static boolean isDoMetadata() {
         return doMetadata;
-    }
-
-    public static boolean running() {
-        return Running;
-    }
-    @Override
-    protected void setRunning(boolean running) {
-        Running = running;
-    }
-    @Override
-    protected boolean isRunning() {
-        return Running;
     }
 
 }

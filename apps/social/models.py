@@ -1,3 +1,5 @@
+import os
+import urlparse
 import datetime
 import time
 import zlib
@@ -347,7 +349,7 @@ class MSocialProfile(mongo.Document):
     def email_photo_url(self):
         if self.photo_url:
             if self.photo_url.startswith('//'):
-                self.photo_url = 'http:' + self.photo_url
+                self.photo_url = 'https:' + self.photo_url
             return self.photo_url
         domain = Site.objects.get_current().domain
         return 'https://' + domain + settings.MEDIA_URL + 'img/reader/default_profile_photo.png'
@@ -2131,8 +2133,8 @@ class MSharedStory(mongo.DynamicDocument):
         
         if service == 'twitter':
             posted = social_service.post_to_twitter(self)
-        elif service == 'facebook':
-            posted = social_service.post_to_facebook(self)
+        # elif service == 'facebook':
+        #     posted = social_service.post_to_facebook(self)
         elif service == 'appdotnet':
             posted = social_service.post_to_appdotnet(self)
         
@@ -2290,6 +2292,19 @@ class MSharedStory(mongo.DynamicDocument):
             original_user.username,
             self.decoded_story_title[:30]))
     
+    def extract_image_urls(self, force=False):
+        if not self.story_content_z:
+            return
+
+        if self.image_urls and not force:
+            return
+            
+        soup = BeautifulSoup(zlib.decompress(self.story_content_z))
+        image_sources = [img.get('src') for img in soup.findAll('img') if img and img.get('src')]
+        if len(image_sources) > 0:
+            self.image_urls = image_sources
+            self.save()
+            
     def calculate_image_sizes(self, force=False):
         if not self.story_content_z:
             return
@@ -2305,11 +2320,11 @@ class MSharedStory(mongo.DynamicDocument):
                 settings.NEWSBLUR_URL
             ),
         }
-        soup = BeautifulSoup(zlib.decompress(self.story_content_z))
-        image_sources = [img.get('src') for img in soup.findAll('img')]
+        
+        self.extract_image_urls()
         image_sizes = []
         
-        for image_source in image_sources[:10]:
+        for image_source in self.image_urls[:10]:
             if any(ignore in image_source for ignore in IGNORE_IMAGE_SOURCES):
                 continue
             req = requests.get(image_source, headers=headers, stream=True)
@@ -2320,8 +2335,8 @@ class MSharedStory(mongo.DynamicDocument):
                 logging.debug(" ***> Couldn't read image: %s / %s" % (e, image_source))
                 datastream = StringIO(req.content[:100])
                 _, width, height = image_size(datastream)
-            if width <= 16 or height <= 16:
-                continue
+            # if width <= 16 or height <= 16:
+            #     continue
             image_sizes.append({'src': image_source, 'size': (width, height)})
         
         if image_sizes:
@@ -2332,7 +2347,7 @@ class MSharedStory(mongo.DynamicDocument):
         self.save()
         
         logging.debug(" ---> ~SN~FGFetched image sizes on shared story: ~SB%s/%s images" % 
-                      (self.image_count, len(image_sources)))
+                      (self.image_count, len(self.image_urls)))
         
         return image_sizes
     
@@ -2473,7 +2488,7 @@ class MSocialServices(mongo.Document):
         return api
     
     def facebook_api(self):
-        graph = facebook.GraphAPI(self.facebook_access_token)
+        graph = facebook.GraphAPI(access_token=self.facebook_access_token, version="3.1")
         return graph
     
     def appdotnet_api(self):
@@ -2581,10 +2596,10 @@ class MSocialServices(mongo.Document):
         self.syncing_facebook = False
         self.save()
         
-        facebook_user = graph.request('me', args={'fields':'website,bio,location'})
+        facebook_user = graph.request('me', args={'fields':'website,about,location'})
         profile = MSocialProfile.get_user(self.user_id)
         profile.location = profile.location or (facebook_user.get('location') and facebook_user['location']['name'])
-        profile.bio = profile.bio or facebook_user.get('bio')
+        profile.bio = profile.bio or facebook_user.get('about')
         if not profile.website and facebook_user.get('website'):
             profile.website = facebook_user.get('website').split()[0]
         profile.save()
@@ -2783,19 +2798,43 @@ class MSocialServices(mongo.Document):
         self.set_photo('twitter')
         
     def post_to_twitter(self, shared_story):
-        message = shared_story.generate_post_to_service_message(truncate=140)
+        message = shared_story.generate_post_to_service_message(truncate=280)
         shared_story.calculate_image_sizes()
         
         try:
             api = self.twitter_api()
-            api.update_status(status=message)
+            filename = self.fetch_image_file_for_twitter(shared_story)
+            if filename:
+                api.update_with_media(filename, status=message)
+                os.remove(filename)
+            else:
+                api.update_status(status=message)
         except tweepy.TweepError, e:
             user = User.objects.get(pk=self.user_id)
             logging.user(user, "~FRTwitter error: ~SB%s" % e)
             return
             
         return True
-            
+    
+    def fetch_image_file_for_twitter(self, shared_story):
+        if not shared_story.image_urls: return
+
+        user = User.objects.get(pk=self.user_id)
+        logging.user(user, "~FCFetching image for twitter: ~SB%s" % shared_story.image_urls[0])
+        
+        url = shared_story.image_urls[0]
+        image_filename = os.path.basename(urlparse.urlparse(url).path)
+        req = requests.get(url, stream=True)
+        filename = "/tmp/%s-%s" % (shared_story.story_hash, image_filename)
+        
+        if req.status_code == 200:
+            f = open(filename, "wb")
+            for chunk in req:
+                f.write(chunk)
+            f.close()
+        
+            return filename
+                
     def post_to_facebook(self, shared_story):
         message = shared_story.generate_post_to_service_message(include_url=False)
         shared_story.calculate_image_sizes()

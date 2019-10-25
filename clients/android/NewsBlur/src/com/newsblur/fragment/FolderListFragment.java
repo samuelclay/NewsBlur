@@ -4,13 +4,13 @@ import java.lang.ref.WeakReference;
 import java.util.HashSet;
 import java.util.Set;
 
-import android.app.LoaderManager;
-import android.content.Loader;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.app.DialogFragment;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -38,6 +38,7 @@ import com.newsblur.activity.GlobalSharedStoriesItemsList;
 import com.newsblur.activity.InfrequentItemsList;
 import com.newsblur.activity.ItemsList;
 import com.newsblur.activity.Main;
+import com.newsblur.activity.NbActivity;
 import com.newsblur.activity.ReadStoriesItemsList;
 import com.newsblur.activity.SavedStoriesItemsList;
 import com.newsblur.activity.SocialFeedItemsList;
@@ -79,6 +80,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 		super.onCreate(savedInstanceState);
         currentState = PrefsUtils.getStateFilter(getActivity());
 		adapter = new FolderListAdapter(getActivity(), currentState);
+        FeedUtils.currentFolderName = null;
         // NB: it is by design that loaders are not started until we get a
         // ping from the sync service indicating that it has initialised
 	}
@@ -244,12 +246,12 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
             if (adapter.isRowSavedStories(groupPosition)) break;
             if (currentState == StateFilter.SAVED) break;
             if (adapter.isRowReadStories(groupPosition)) break;
-            if (groupPosition == FolderListAdapter.GLOBAL_SHARED_STORIES_GROUP_POSITION) break;
-            if (groupPosition == FolderListAdapter.ALL_SHARED_STORIES_GROUP_POSITION) break;
-            if (groupPosition == FolderListAdapter.INFREQUENT_SITE_STORIES_GROUP_POSITION) break;
+            if (adapter.isRowGlobalSharedStories(groupPosition)) break;
+            if (adapter.isRowAllSharedStories(groupPosition)) break;
+            if (adapter.isRowInfrequentStories(groupPosition)) break;
             inflater.inflate(R.menu.context_folder, menu);
 
-            if (groupPosition == FolderListAdapter.ALL_STORIES_GROUP_POSITION) {
+            if (adapter.isRowAllStories(groupPosition)) {
                 menu.removeItem(R.id.menu_mute_folder);
                 menu.removeItem(R.id.menu_unmute_folder);
             }
@@ -260,7 +262,8 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
             if (adapter.isRowSavedStories(groupPosition)) break;
             if (currentState == StateFilter.SAVED) break;
 			inflater.inflate(R.menu.context_feed, menu);
-            if (groupPosition == FolderListAdapter.ALL_SHARED_STORIES_GROUP_POSITION) {
+            if (adapter.isRowAllSharedStories(groupPosition)) {
+                // social feeds
                 menu.removeItem(R.id.menu_delete_feed);
                 menu.removeItem(R.id.menu_choose_folders);
                 menu.removeItem(R.id.menu_unmute_feed);
@@ -268,7 +271,9 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
                 menu.removeItem(R.id.menu_notifications);
                 menu.removeItem(R.id.menu_instafetch_feed);
                 menu.removeItem(R.id.menu_intel);
+                menu.removeItem(R.id.menu_rename_feed);
             } else {
+                // normal feeds
                 menu.removeItem(R.id.menu_unfollow);
 
                 Feed feed = adapter.getFeed(groupPosition, childPosition);
@@ -329,7 +334,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 
 		if (item.getItemId() == R.id.menu_delete_feed || item.getItemId() == R.id.menu_unfollow) {
 			DialogFragment deleteFeedFragment;
-            if (groupPosition == FolderListAdapter.ALL_SHARED_STORIES_GROUP_POSITION) {
+            if (adapter.isRowAllSharedStories(groupPosition)) {
                 deleteFeedFragment = DeleteFeedFragment.newInstance(adapter.getSocialFeed(groupPosition, childPosition));
             } else {
                 String folderName = adapter.getGroupFolderName(groupPosition);
@@ -346,8 +351,17 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
             markFeedsAsRead(fs);
 			return true;
 		} else if (item.getItemId() == R.id.menu_choose_folders) {
-            DialogFragment chooseFoldersFragment = ChooseFoldersFragment.newInstance(adapter.getFeed(groupPosition, childPosition));
-            chooseFoldersFragment.show(getFragmentManager(), "dialog");
+            Feed feed = adapter.getFeed(groupPosition, childPosition);
+            if (feed != null) {
+                DialogFragment chooseFoldersFragment = ChooseFoldersFragment.newInstance(feed);
+                chooseFoldersFragment.show(getFragmentManager(), "dialog");
+            }
+        } else if (item.getItemId() == R.id.menu_rename_feed) {
+            Feed feed = adapter.getFeed(groupPosition, childPosition);
+            if (feed != null) {
+                DialogFragment renameFeedFragment = RenameFeedFragment.newInstance(feed);
+                renameFeedFragment.show(getFragmentManager(), "dialog");
+            }
         } else if (item.getItemId() == R.id.menu_mute_feed) {
             Set<String> feedIds = new HashSet<String>();
             feedIds.add(adapter.getFeed(groupPosition, childPosition).feedId);
@@ -371,7 +385,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 	}
 
     private void markFeedsAsRead(FeedSet fs) {
-        FeedUtils.markRead(getActivity(), fs, null, null, R.array.mark_all_read_options, false);
+        FeedUtils.markRead(((NbActivity) getActivity()), fs, null, null, R.array.mark_all_read_options, false);
         adapter.lastFeedViewedId = fs.getSingleFeed();
         adapter.lastFolderViewed = fs.getFolderName();
     }
@@ -417,7 +431,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 	@Override
     public boolean onGroupClick(ExpandableListView list, View group, int groupPosition, long id) {
         Intent i = null;
-        if (groupPosition == FolderListAdapter.ALL_STORIES_GROUP_POSITION) {
+        if (adapter.isRowAllStories(groupPosition)) {
             if (currentState == StateFilter.SAVED) {
                 // the existence of this row in saved mode is something of a framework artifact and may
                 // confuse users. redirect them to the activity corresponding to what they will actually see
@@ -425,11 +439,11 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
             } else {
 			    i = new Intent(getActivity(), AllStoriesItemsList.class);
             }
-        } else if (groupPosition == FolderListAdapter.GLOBAL_SHARED_STORIES_GROUP_POSITION) {
+        } else if (adapter.isRowGlobalSharedStories(groupPosition)) {
             i = new Intent(getActivity(), GlobalSharedStoriesItemsList.class);
-        } else if (groupPosition == FolderListAdapter.ALL_SHARED_STORIES_GROUP_POSITION) {
+        } else if (adapter.isRowAllSharedStories(groupPosition)) {
             i = new Intent(getActivity(), AllSharedStoriesItemsList.class);
-        } else if (groupPosition == FolderListAdapter.INFREQUENT_SITE_STORIES_GROUP_POSITION) {
+        } else if (adapter.isRowInfrequentStories(groupPosition)) {
             i = new Intent(getActivity(), InfrequentItemsList.class);
         } else if (adapter.isRowReadStories(groupPosition)) {
             i = new Intent(getActivity(), ReadStoriesItemsList.class);
@@ -456,7 +470,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
     @Override
     public void onGroupExpand(int groupPosition) {
         // these shouldn't ever be collapsible
-        if (adapter.isFolderRoot(groupPosition)) return;
+        if (adapter.isRowRootFolder(groupPosition)) return;
         if (adapter.isRowReadStories(groupPosition)) return;
 
         String flatGroupName = adapter.getGroupUniqueName(groupPosition);
@@ -474,7 +488,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
     @Override
     public void onGroupCollapse(int groupPosition) {
         // these shouldn't ever be collapsible
-        if (adapter.isFolderRoot(groupPosition)) return;
+        if (adapter.isRowRootFolder(groupPosition)) return;
         if (adapter.isRowReadStories(groupPosition)) return;
 
         String flatGroupName = adapter.getGroupUniqueName(groupPosition);
@@ -489,8 +503,9 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 
 	@Override
     public boolean onChildClick(ExpandableListView list, View childView, int groupPosition, int childPosition, long id) {
+        FeedUtils.currentFolderName = null;
         FeedSet fs = adapter.getChild(groupPosition, childPosition);
-		if (groupPosition == FolderListAdapter.ALL_SHARED_STORIES_GROUP_POSITION) {
+		if (adapter.isRowAllSharedStories(groupPosition)) {
             SocialFeed socialFeed = adapter.getSocialFeed(groupPosition, childPosition);
 			Intent intent = new Intent(getActivity(), SocialFeedItemsList.class);
             intent.putExtra(ItemsList.EXTRA_FEED_SET, fs);
@@ -506,11 +521,13 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
             // a folder name on the FeedSet and making it into a folder-type set.  it is just a single feed,
             // and the folder name is a bit of metadata needed by the UI/API
 			String folderName = adapter.getGroupFolderName(groupPosition);
-			Intent intent = new Intent(getActivity(), FeedItemsList.class);
-            intent.putExtra(ItemsList.EXTRA_FEED_SET, fs);
-			intent.putExtra(FeedItemsList.EXTRA_FEED, feed);
-			intent.putExtra(FeedItemsList.EXTRA_FOLDER_NAME, folderName);
-			getActivity().startActivity(intent);
+			if(folderName == null || folderName.equals(AppConstants.ROOT_FOLDER)){
+                FeedUtils.currentFolderName = null;
+            }else{
+
+                FeedUtils.currentFolderName = folderName;
+            }
+			FeedItemsList.startActivity(getActivity(), fs, feed, folderName);
             adapter.lastFeedViewedId = feed.feedId;
             adapter.lastFolderViewed = null;
 		}

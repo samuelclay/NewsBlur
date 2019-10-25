@@ -28,6 +28,7 @@ import com.newsblur.R;
 import com.newsblur.activity.Login;
 import com.newsblur.domain.UserDetails;
 import com.newsblur.network.APIConstants;
+import com.newsblur.util.PrefConstants.ThemeValue;
 import com.newsblur.service.NBSyncService;
 
 public class PrefsUtils {
@@ -49,7 +50,6 @@ public class PrefsUtils {
 		edit.putString(PrefConstants.PREF_COOKIE, cookie);
 		edit.putString(PrefConstants.PREF_UNIQUE_LOGIN, userName + "_" + System.currentTimeMillis());
 		edit.commit();
-        NBSyncService.resumeFromInterrupt();
 	}
 
     public static boolean checkForUpgrade(Context context) {
@@ -124,8 +124,6 @@ public class PrefsUtils {
         s.append("username: ").append(getUserDetails(context).username);
         s.append("\n");
         s.append("server: ").append(APIConstants.isCustomServer() ? "default" : "custom");
-        s.append("\n");
-        s.append("memory: ").append(NBSyncService.isMemoryLow() ? "low" : "normal");
         s.append("\n");
         s.append("speed: ").append(NBSyncService.getSpeedInfo());
         s.append("\n");
@@ -230,6 +228,11 @@ public class PrefsUtils {
 		saveUserImage(context, profile.photoUrl);
 	}
 
+    public static String getUserId(Context context) {   
+		SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        return preferences.getString(PrefConstants.USER_ID, null);
+    }
+
 	public static UserDetails getUserDetails(Context context) {
 		UserDetails user = new UserDetails();
 
@@ -320,7 +323,12 @@ public class PrefsUtils {
     public static boolean isTimeToCleanup(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
         long lastTime = prefs.getLong(PrefConstants.LAST_CLEANUP_TIME, 1L);
-        return ( (lastTime + AppConstants.CLEANUP_TIME_MILLIS) < (new Date()).getTime() );
+        long nowTime = (new Date()).getTime();
+        if ( (lastTime + AppConstants.CLEANUP_TIME_MILLIS) < nowTime ) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public static void updateLastCleanupTime(Context context) {
@@ -375,7 +383,31 @@ public class PrefsUtils {
         editor.putString(PrefConstants.FEED_READ_FILTER_PREFIX + feedId, newValue.toString());
         editor.commit();
     }
+
+    public static StoryListStyle getStoryListStyleForFeed(Context context, String feedId) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        return StoryListStyle.safeValueOf(prefs.getString(PrefConstants.FEED_STORY_LIST_STYLE_PREFIX + feedId, StoryListStyle.LIST.toString()));
+    }
     
+    public static StoryListStyle getStoryListStyleForFolder(Context context, String folderName) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        return StoryListStyle.safeValueOf(prefs.getString(PrefConstants.FOLDER_STORY_LIST_STYLE_PREFIX + folderName, StoryListStyle.LIST.toString()));
+    }
+    
+    public static void setStoryListStyleForFolder(Context context, String folderName, StoryListStyle newValue) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        Editor editor = prefs.edit();
+        editor.putString(PrefConstants.FOLDER_STORY_LIST_STYLE_PREFIX + folderName, newValue.toString());
+        editor.commit();
+    }
+    
+    public static void setStoryListStyleForFeed(Context context, String feedId, StoryListStyle newValue) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        Editor editor = prefs.edit();
+        editor.putString(PrefConstants.FEED_STORY_LIST_STYLE_PREFIX + feedId, newValue.toString());
+        editor.commit();
+    }
+
     private static StoryOrder getDefaultStoryOrder(SharedPreferences prefs) {
         return StoryOrder.valueOf(prefs.getString(PrefConstants.DEFAULT_STORY_ORDER, StoryOrder.NEWEST.toString()));
     }
@@ -387,6 +419,16 @@ public class PrefsUtils {
     
     private static ReadFilter getDefaultReadFilter(SharedPreferences prefs) {
         return ReadFilter.valueOf(prefs.getString(PrefConstants.DEFAULT_READ_FILTER, ReadFilter.ALL.toString()));
+    }
+
+    public static boolean isEnableRowGlobalShared(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        return prefs.getBoolean(PrefConstants.ENABLE_ROW_GLOBAL_SHARED, true);
+    }
+
+    public static boolean isEnableRowInfrequent(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        return prefs.getBoolean(PrefConstants.ENABLE_ROW_INFREQUENT_STORIES, true);
     }
 
     public static boolean showPublicComments(Context context) {
@@ -573,6 +615,62 @@ public class PrefsUtils {
         }
     } 
 
+    public static StoryListStyle getStoryListStyle(Context context, FeedSet fs) {
+        if (fs.isAllNormal()) {
+            return getStoryListStyleForFolder(context, PrefConstants.ALL_STORIES_FOLDER_NAME);
+        } else if (fs.getSingleFeed() != null) {
+            return getStoryListStyleForFeed(context, fs.getSingleFeed());
+        } else if (fs.getMultipleFeeds() != null) {
+            return getStoryListStyleForFolder(context, fs.getFolderName());
+        } else if (fs.isAllSocial()) {
+            return getStoryListStyleForFolder(context, PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME);
+        } else if (fs.getSingleSocialFeed() != null) {
+            return getStoryListStyleForFeed(context, fs.getSingleSocialFeed().getKey());
+        } else if (fs.getMultipleSocialFeeds() != null) {
+            throw new IllegalArgumentException( "requests for multiple social feeds not supported" );
+        } else if (fs.isAllRead()) {
+            return getStoryListStyleForFolder(context, PrefConstants.READ_STORIES_FOLDER_NAME);
+        } else if (fs.isAllSaved()) {
+            return getStoryListStyleForFolder(context, PrefConstants.SAVED_STORIES_FOLDER_NAME);
+        } else if (fs.getSingleSavedTag() != null) {
+            return getStoryListStyleForFolder(context, PrefConstants.SAVED_STORIES_FOLDER_NAME);
+        } else if (fs.isGlobalShared()) {
+            return getStoryListStyleForFolder(context, PrefConstants.GLOBAL_SHARED_STORIES_FOLDER_NAME);
+        } else if (fs.isInfrequent()) {
+            return getStoryListStyleForFolder(context, PrefConstants.INFREQUENT_FOLDER_NAME);
+        } else {
+            throw new IllegalArgumentException( "unknown type of feed set" );
+        }
+    }
+
+    public static void updateStoryListStyle(Context context, FeedSet fs, StoryListStyle newListStyle) {
+        if (fs.isAllNormal()) {
+            setStoryListStyleForFolder(context, PrefConstants.ALL_STORIES_FOLDER_NAME, newListStyle);
+        } else if (fs.getSingleFeed() != null) {
+            setStoryListStyleForFeed(context, fs.getSingleFeed(), newListStyle);
+        } else if (fs.getMultipleFeeds() != null) {
+            setStoryListStyleForFolder(context, fs.getFolderName(), newListStyle);
+        } else if (fs.isAllSocial()) {
+            setStoryListStyleForFolder(context, PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME, newListStyle);
+        } else if (fs.getSingleSocialFeed() != null) {
+            setStoryListStyleForFeed(context, fs.getSingleSocialFeed().getKey(), newListStyle);
+        } else if (fs.getMultipleSocialFeeds() != null) {
+            throw new IllegalArgumentException( "multiple social feeds not supported" );
+        } else if (fs.isAllRead()) {
+            setStoryListStyleForFolder(context, PrefConstants.READ_STORIES_FOLDER_NAME, newListStyle);
+        } else if (fs.isAllSaved()) {
+            setStoryListStyleForFolder(context, PrefConstants.SAVED_STORIES_FOLDER_NAME, newListStyle);
+        } else if (fs.getSingleSavedTag() != null) {
+            setStoryListStyleForFolder(context, PrefConstants.SAVED_STORIES_FOLDER_NAME, newListStyle);
+        } else if (fs.isGlobalShared()) {
+            setStoryListStyleForFolder(context, PrefConstants.GLOBAL_SHARED_STORIES_FOLDER_NAME, newListStyle);
+        } else if (fs.isInfrequent()) {
+            setStoryListStyleForFolder(context, PrefConstants.INFREQUENT_FOLDER_NAME, newListStyle);
+        } else {
+            throw new IllegalArgumentException( "unknown type of feed set" );
+        }
+    }
+
     private static DefaultFeedView getDefaultFeedView() {
         return DefaultFeedView.STORY;
     }
@@ -587,9 +685,16 @@ public class PrefsUtils {
         return prefs.getBoolean(PrefConstants.STORIES_SHOW_PREVIEWS, true);
     }
 
-    public static boolean isShowThumbnails(Context context) {
+    private static boolean isShowThumbnails(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
         return prefs.getBoolean(PrefConstants.STORIES_SHOW_THUMBNAILS,  true);
+    }
+
+    public static ThumbnailStyle getThumbnailStyle(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        boolean isShowThumbnails = isShowThumbnails(context);
+        ThumbnailStyle defValue = isShowThumbnails ? ThumbnailStyle.LARGE : ThumbnailStyle.OFF;
+        return ThumbnailStyle.valueOf(prefs.getString(PrefConstants.STORIES_THUMBNAILS_STYLE, defValue.toString()));
     }
 
     public static boolean isAutoOpenFirstUnread(Context context) {
@@ -649,26 +754,46 @@ public class PrefsUtils {
         return prefs.getBoolean(PrefConstants.KEEP_OLD_STORIES, false);
     }
 
+    public static long getMaxCachedAgeMillis(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        String val = prefs.getString(PrefConstants.CACHE_AGE_SELECT, PrefConstants.CACHE_AGE_SELECT_30D);
+        if (val.equals(PrefConstants.CACHE_AGE_SELECT_2D)) return PrefConstants.CACHE_AGE_VALUE_2D;
+        if (val.equals(PrefConstants.CACHE_AGE_SELECT_7D)) return PrefConstants.CACHE_AGE_VALUE_7D;
+        if (val.equals(PrefConstants.CACHE_AGE_SELECT_14D)) return PrefConstants.CACHE_AGE_VALUE_14D;
+        if (val.equals(PrefConstants.CACHE_AGE_SELECT_30D)) return PrefConstants.CACHE_AGE_VALUE_30D;
+        return PrefConstants.CACHE_AGE_VALUE_30D;
+    }
+
     public static void applyThemePreference(Activity activity) {
-        SharedPreferences prefs = activity.getSharedPreferences(PrefConstants.PREFERENCES, 0);
-        String theme = prefs.getString(PrefConstants.THEME, "light");
-        if (theme.equals("light")) {
+        ThemeValue value = getSelectedTheme(activity);
+        if (value == ThemeValue.LIGHT) {
             activity.setTheme(R.style.NewsBlurTheme);
-        } else {
+        } else if (value == ThemeValue.DARK) {
             activity.setTheme(R.style.NewsBlurDarkTheme);
+        } else if (value == ThemeValue.BLACK) {
+            activity.setTheme(R.style.NewsBlurBlackTheme);
         }
     }
 
-    public static boolean isLightThemeSelected(Context context) {
+    public static ThemeValue getSelectedTheme(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
-        String theme = prefs.getString(PrefConstants.THEME, "light");
-        return theme.equals("light");
+        String value = prefs.getString(PrefConstants.THEME, ThemeValue.LIGHT.name());
+        // check for legacy hard-coded values. this can go away once installs of v152 or earlier are minimized
+        if (value.equals("light")) {    
+            setSelectedTheme(context, ThemeValue.LIGHT);
+            return ThemeValue.LIGHT;
+        }
+        if (value.equals("dark")) {    
+            setSelectedTheme(context, ThemeValue.DARK);
+            return ThemeValue.DARK;
+        }
+        return ThemeValue.valueOf(value);
     }
 
-    public static void setLightThemeSelected(Context context, boolean lightThemeSelected) {
+    public static void setSelectedTheme(Context context, ThemeValue value) {
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
         Editor editor = prefs.edit();
-        editor.putString(PrefConstants.THEME, (lightThemeSelected ? "light" : "dark"));
+        editor.putString(PrefConstants.THEME, value.name());
         editor.commit();
     }
 
@@ -732,5 +857,33 @@ public class PrefsUtils {
         Editor editor = prefs.edit();
         editor.putString(PrefConstants.READING_FONT, newValue);
         editor.commit();
+    }
+
+
+    public static void setWidgetFeed(Context context, int widgetId, String feedId, String name) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        Editor editor = prefs.edit();
+        editor.putString(PrefConstants.WIDGET_FEED_ID + widgetId, feedId)
+                .putString(PrefConstants.WIDGET_FEED_NAME + widgetId, name);
+        editor.commit();
+    }
+
+    public static String getWidgetFeed(Context context, int widgetId) {
+        SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        String feedId = preferences.getString(PrefConstants.WIDGET_FEED_ID + widgetId, "0");
+        return feedId;
+    }
+    public static String getWidgetFeedName(Context context, int widgetId) {
+        SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        return preferences.getString(PrefConstants.WIDGET_FEED_NAME + widgetId, "-");
+    }
+    public static void removeWidgetFeed(Context context, int widgetId) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        if(prefs.contains(PrefConstants.WIDGET_FEED_ID + widgetId)){
+            Editor editor = prefs.edit();
+            editor.remove(PrefConstants.WIDGET_FEED_ID + widgetId);
+            editor.remove(PrefConstants.WIDGET_FEED_NAME + widgetId);
+            editor.apply();
+        }
     }
 }

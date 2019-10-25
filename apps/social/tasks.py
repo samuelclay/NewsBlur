@@ -69,11 +69,11 @@ class SharePopularStories(Task):
         logging.debug(" ---> Sharing popular stories...")
         MSharedStory.share_popular_stories(interactive=False)
             
-class CleanSpam(Task):
-    name = 'clean-spam'
+class CleanSocialSpam(Task):
+    name = 'clean-social-spam'
 
     def run(self, **kwargs):
-        logging.debug(" ---> Finding spammers...")
+        logging.debug(" ---> Finding social spammers...")
         MSharedStory.count_potential_spammers(destroy=True)
             
 
