@@ -1,6 +1,7 @@
 package com.newsblur.domain;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -100,6 +101,17 @@ public class Story implements Serializable {
     // non-API, but indicates that the story came from the infrequent-feeds river
     public boolean infrequent;
 
+    // these properties are associated with stories, but only available if the record was joined on other tables
+    // when queried and thus are not generally thawed.  calling bindExternValues() immediately after fromCursor()
+    // will populate them iff the cursor was from a joined query
+    public String extern_feedColor;
+    public String extern_feedFade;
+    public int extern_intelTotalScore;
+    public String extern_faviconUrl;
+    public String extern_faviconTextColor;
+    public String extern_faviconBorderColor;
+    public String extern_feedTitle;
+
 	public ContentValues getValues() {
 		final ContentValues values = new ContentValues();
 		values.put(DatabaseConstants.STORY_ID, id);
@@ -163,6 +175,16 @@ public class Story implements Serializable {
 		story.thumbnailUrl = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_THUMBNAIL_URL));
 		return story;
 	}
+
+    public void bindExternValues(Cursor cursor) {
+        extern_feedColor = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_FAVICON_COLOR));
+        extern_feedFade = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_FAVICON_FADE));
+        extern_intelTotalScore = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.STORY_INTELLIGENCE_TOTAL));
+        extern_faviconUrl = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_FAVICON_URL));
+        extern_faviconTextColor = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_FAVICON_TEXT));
+        extern_faviconBorderColor = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_FAVICON_BORDER));
+        extern_feedTitle = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_TITLE));
+    }
 
 	public class Intelligence implements Serializable {
 		private static final long serialVersionUID = -1314486209455376730L;
@@ -237,6 +259,24 @@ public class Story implements Serializable {
         if (this.id == null) { result = 37*result; } else { result = 37*result + this.id.hashCode();}
         if (this.feedId == null) { result = 37*result; } else { result = 37*result + this.feedId.hashCode();}
         return result;
+    }
+
+
+    /**
+     * Detect as quickly as possible if this story is different in any visible way from
+     * the provided story, *assuming it represents the same story*.
+     */
+    public boolean isChanged(Story s) {
+        // only check mutable params
+        if (s.read != read) return false;
+        if (s.starred != starred) return false;
+        if (!Arrays.deepEquals(s.sharedUserIds, sharedUserIds)) return false;
+        if (!Arrays.deepEquals(s.friendUserIds, friendUserIds)) return false;
+        if (!Arrays.deepEquals(s.publicComments, publicComments)) return false;
+        if (!Arrays.deepEquals(s.friendsComments, friendsComments)) return false;
+        if (!Arrays.deepEquals(s.friendsShares, friendsShares)) return false;
+        if (s.intelligence.calcTotalIntel() != intelligence.calcTotalIntel()) return false;
+        return true;
     }
 
     private static final Pattern ytSniff1 = Pattern.compile("youtube\\.com\\/embed\\/([A-Za-z0-9_-]+)", Pattern.CASE_INSENSITIVE);

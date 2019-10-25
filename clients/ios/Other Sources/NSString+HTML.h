@@ -34,6 +34,8 @@
 @interface NSString (HTML)
 
 // Instance Methods
+- (NSString *)convertHTML;
+- (NSString *)stringByDecodingXMLEntities;
 - (NSString *)stringByConvertingHTMLToPlainText;
 - (NSString *)stringByDecodingHTMLEntities;
 - (NSString *)stringByEncodingHTMLEntities;

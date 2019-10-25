@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.newsblur"
-    android:versionCode="147"
-    android:versionName="6.3b1" >
+    android:versionCode="163"
+    android:versionName="9.0.1" >
 
     <uses-sdk
-        android:minSdkVersion="19"
-        android:targetSdkVersion="24" />
+        android:minSdkVersion="21"
+        android:targetSdkVersion="28" />
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -137,7 +137,17 @@
         <activity
             android:name=".activity.SocialFeedReading"/>
 
-        <service android:name=".service.NBSyncService" />
+        <activity android:name=".widget.ConfigureWidgetActivity">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
+            </intent-filter>
+        </activity>
+        <service 
+            android:name=".service.NBSyncService"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+        <service android:name=".widget.BlurWidgetRemoteViewsService"
+            android:permission="android.permission.BIND_REMOTEVIEWS"
+            />
 
         <receiver android:name=".service.BootReceiver">
             <intent-filter>
@@ -145,12 +155,16 @@
             </intent-filter>
         </receiver>
 
-        <receiver android:name=".service.ServiceScheduleReceiver" />
-        
         <receiver android:name=".util.NotifyDismissReceiver" android:exported="false" />
         <receiver android:name=".util.NotifySaveReceiver" android:exported="false" />
         <receiver android:name=".util.NotifyMarkreadReceiver" android:exported="false" />
-
+        <receiver android:name=".widget.NewsBlurWidgetProvider" >
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider"
+                android:resource="@xml/newsblur_appwidget_info" />
+        </receiver>
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="com.newsblur.fileprovider"

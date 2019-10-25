@@ -14,6 +14,15 @@
 #import "IASKAppSettingsViewController.h"
 #import "MCSwipeTableViewCell.h"
 
+// indices in appDelegate.dictFoldersArray and button tags
+// keep in sync with NewsBlurTopSectionNames
+static enum {
+    NewsBlurTopSectionGlobalSharedStories = 0,
+    NewsBlurTopSectionAllSharedStories = 1,
+    NewsBlurTopSectionInfrequentSiteStories = 2,
+    NewsBlurTopSectionAllStories = 3
+} NewsBlurTopSection;
+
 @class NewsBlurAppDelegate;
 
 @interface NewsBlurViewController : BaseViewController
@@ -22,12 +31,13 @@ NSCacheDelegate,
 UIPopoverControllerDelegate,
 IASKSettingsDelegate,
 MCSwipeTableViewCellDelegate,
-UIGestureRecognizerDelegate> {
+UIGestureRecognizerDelegate, UISearchBarDelegate> {
     NewsBlurAppDelegate *appDelegate;
     
     NSMutableDictionary * activeFeedLocations;
     NSMutableDictionary *stillVisibleFeeds;
     NSMutableDictionary *visibleFolders;
+    NSMutableDictionary *indexPathsForFeedIds;
     
     BOOL isOffline;
     BOOL viewShowingAllFeeds;
@@ -69,6 +79,8 @@ UIGestureRecognizerDelegate> {
 @property (nonatomic, readwrite) BOOL interactiveFeedDetailTransition;
 @property (nonatomic, readwrite) BOOL isOffline;
 @property (nonatomic) UIRefreshControl *refreshControl;
+@property (nonatomic) UISearchBar *searchBar;
+@property (nonatomic, strong) NSArray<NSString *> *searchFeedIds;
 @property (nonatomic) NSDate *lastUpdate;
 @property (nonatomic) NSCache *imageCache;
 @property (nonatomic) IBOutlet UISegmentedControl * intelligenceControl;
@@ -116,7 +128,9 @@ UIGestureRecognizerDelegate> {
 - (void)resetToolbar;
 - (void)layoutHeaderCounts:(UIInterfaceOrientation)orientation;
 - (void)refreshHeaderCounts;
+- (void)redrawFeedCounts:(id)feedId;
 
+- (void)resizePreviewSize;
 - (void)resizeFontSize;
 - (void)settingsViewControllerDidEnd:(IASKAppSettingsViewController*)sender;
 - (void)settingDidChange:(NSNotification*)notification;

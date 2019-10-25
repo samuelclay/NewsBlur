@@ -1,9 +1,9 @@
 package com.newsblur.activity;
 
-import android.app.Activity;
+import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 
 import com.newsblur.R;
 import com.newsblur.fragment.RegisterProgressFragment;
@@ -14,7 +14,7 @@ import com.newsblur.util.PrefsUtils;
  * Activity doesn't extend NbActivity because it is one of the few
  * Activities that will be shown while the user is still logged out.
  */
-public class RegisterProgress extends Activity {
+public class RegisterProgress extends FragmentActivity {
 
 	private FragmentManager fragmentManager;
 	private String currentTag = "fragment";
@@ -26,7 +26,7 @@ public class RegisterProgress extends Activity {
 		super.onCreate(bundle);
 		setContentView(R.layout.activity_loginprogress);
 		
-		fragmentManager = getFragmentManager();
+		fragmentManager = getSupportFragmentManager();
 		
 		if (fragmentManager.findFragmentByTag(currentTag ) == null) {
 			final String username = getIntent().getStringExtra("username");

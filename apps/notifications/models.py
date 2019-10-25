@@ -2,7 +2,7 @@ import datetime
 import enum
 import redis
 import mongoengine as mongo
-import boto
+from boto.ses.connection import BotoServerError
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
@@ -193,7 +193,7 @@ class MUserFeedNotification(mongo.Document):
         soup = BeautifulSoup(story['story_content'].strip())
         # print story['story_content']
         body = replace_with_newlines(soup)
-        body = truncate_chars(body.strip(), 1200)
+        body = truncate_chars(body.strip(), 600)
         if not body:
             body = " "
         
@@ -289,8 +289,9 @@ class MUserFeedNotification(mongo.Document):
         msg.attach_alternative(html, "text/html")
         try:
             msg.send()
-        except boto.ses.connection.ResponseError, e:
+        except BotoServerError, e:
             logging.user(usersub.user, '~BMStory notification by email error: ~FR%s' % e)
+            return
         logging.user(usersub.user, '~BMStory notification by email: ~FY~SB%s~SN~BM~FY/~SB%s' % 
                                    (story['story_title'][:50], usersub.feed.feed_title[:50]))
     

@@ -26,6 +26,30 @@
             android:key="keep_old_stories"
             android:title="@string/settings_keep_old_stories" 
             android:summary="@string/settings_keep_old_stories_sum" />
+        <ListPreference
+            android:key="cache_age_select"
+            android:title="@string/menu_cache_age_select"
+            android:dialogTitle="@string/menu_cache_age_select"
+            android:summary="@string/menu_cache_age_select_sum"
+            android:entries="@array/cache_age_select_entries"
+            android:entryValues="@array/cache_age_select_values"
+            android:defaultValue="@string/default_cache_age_select_value" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/settings_cat_feed_list">
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="enable_row_global_shared"
+            android:title="@string/settings_enable_row_global_shared" 
+            android:summary="@string/settings_enable_row_global_shared_sum"
+            />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="enable_row_infrequent_stories"
+            android:title="@string/settings_enable_row_infrequent_stories" 
+            android:summary="@string/settings_enable_row_infrequent_stories_sum"
+            />
     </PreferenceCategory>
 
     <PreferenceCategory 
@@ -64,10 +88,13 @@
             android:defaultValue="true"
             android:key="pref_show_content_preview"
             android:title="@string/settings_show_content_preview" />
-        <CheckBoxPreference
-            android:defaultValue="true"
-            android:key="pref_show_thumbnails"
-            android:title="@string/settings_show_thumbnails" />
+        <ListPreference
+            android:key="pref_thumbnails_style"
+            android:title="@string/settings_thumbnails_style"
+            android:dialogTitle="@string/settings_thumbnails_style"
+            android:entries="@array/thumbnails_style_entries"
+            android:entryValues="@array/thumbnails_style_values"
+            android:defaultValue="@string/thumbnails_style_value" />
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="pref_mark_read_on_scroll"
@@ -106,17 +133,6 @@
             android:key="show_public_comments"
             android:title="@string/settings_show_public_comments" >
         </CheckBoxPreference>
-    </PreferenceCategory>
-
-    <PreferenceCategory
-        android:title="@string/theme">
-        <ListPreference
-            android:key="theme"
-            android:title="@string/theme"
-            android:dialogTitle="@string/theme"
-            android:entries="@array/default_theme_entries"
-            android:entryValues="@array/default_theme_values"
-            android:defaultValue="@string/default_theme_value" />
     </PreferenceCategory>
 
     <PreferenceCategory

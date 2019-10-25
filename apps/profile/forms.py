@@ -181,6 +181,10 @@ class AccountSettingsForm(forms.Form):
         if self.user.email != email:
             self.user.email = email
             self.user.save()
+            
+            sp = MSocialProfile.get_user(self.user.pk)
+            sp.email = email
+            sp.save()
         
         if old_password or new_password:
             change_password(self.user, old_password, new_password)

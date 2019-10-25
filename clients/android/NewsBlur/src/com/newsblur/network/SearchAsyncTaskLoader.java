@@ -3,7 +3,7 @@ package com.newsblur.network;
 import java.util.ArrayList;
 
 import android.content.Context;
-import android.content.AsyncTaskLoader;
+import android.support.v4.content.AsyncTaskLoader;
 
 import com.newsblur.domain.FeedResult;
 

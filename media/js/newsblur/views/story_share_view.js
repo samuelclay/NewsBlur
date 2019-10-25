@@ -257,6 +257,10 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
         if (NEWSBLUR.reader) {
             NEWSBLUR.reader.blur_to_page();
         }
+        
+        if (_.contains(post_to_services, 'facebook')) {
+            NEWSBLUR.reader.open_facebook_modal();
+        }
     },
     
     mark_story_as_unshared: function(options) {
@@ -327,6 +331,8 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
         if (NEWSBLUR.app.story_list) {
             NEWSBLUR.app.story_list.fetch_story_locations_in_feed_view();
         }
+        
+        
     },
     
     post_share_error: function(data, shared) {

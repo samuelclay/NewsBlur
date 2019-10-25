@@ -2,6 +2,7 @@ import re
 import datetime
 import struct
 import dateutil
+from random import randint
 from HTMLParser import HTMLParser
 from lxml.html.diff import tokenize, fixup_ins_del_tags, htmldiff_tokens
 from lxml.etree import ParserError, XMLSyntaxError
@@ -14,6 +15,10 @@ from utils.tornado_escape import linkify as linkify_tornado
 from utils.tornado_escape import xhtml_unescape as xhtml_unescape_tornado
 from vendor import reseekfile
 from utils import feedparser
+
+import hmac
+from binascii import hexlify
+from hashlib import sha1
 
 # COMMENTS_RE = re.compile('\<![ \r\n\t]*(--([^\-]|[\r\n]|-[^\-])*--[ \r\n\t]*)\>')
 COMMENTS_RE = re.compile('\<!--.*?--\>')
@@ -59,6 +64,24 @@ def format_story_link_date__long(date, now=None):
     else:
         return parsed_date.format('l, F jS, Y g:ia').replace('.','')
 
+def relative_date(d):
+    diff = datetime.datetime.utcnow() - d
+    s = diff.seconds
+    if diff.days == 1:
+        return '1 day ago'
+    elif diff.days > 1:
+        return '{} days ago'.format(diff.days)
+    elif s < 60:
+        return 'just now'
+    elif s < 120:
+        return '1 minute ago'
+    elif s < 3600:
+        return '{} minutes ago'.format(s/60)
+    elif s < 7200:
+        return '1 hour ago'
+    else:
+        return '{} hours ago'.format(s/3600)
+
 def _extract_date_tuples(date):
     parsed_date = DateFormat(date)
     date_tuple = datetime.datetime.timetuple(date)[:3]
@@ -69,7 +92,7 @@ def _extract_date_tuples(date):
     return parsed_date, date_tuple, today_tuple, yesterday_tuple
     
 def pre_process_story(entry, encoding):
-    publish_date = entry.get('published_parsed') or entry.get('updated_parsed')
+    publish_date = entry.get('g_parsed') or entry.get('updated_parsed')
     if publish_date:
         publish_date = datetime.datetime(*publish_date[:6])
     if not publish_date and entry.get('published'):
@@ -81,7 +104,7 @@ def pre_process_story(entry, encoding):
     if publish_date:
         entry['published'] = publish_date
     else:
-        entry['published'] = datetime.datetime.utcnow()
+        entry['published'] = datetime.datetime.utcnow() + datetime.timedelta(seconds=randint(0, 59))
     
     if entry['published'] < datetime.datetime(2000, 1, 1):
         entry['published'] = datetime.datetime.utcnow()
@@ -89,7 +112,7 @@ def pre_process_story(entry, encoding):
     # Future dated stories get forced to current date
     # if entry['published'] > datetime.datetime.now() + datetime.timedelta(days=1):
     if entry['published'] > datetime.datetime.now():
-        entry['published'] = datetime.datetime.now()
+        entry['published'] = datetime.datetime.now() + datetime.timedelta(seconds=randint(0, 59))
     
     # entry_link = entry.get('link') or ''
     # protocol_index = entry_link.find("://")
@@ -112,6 +135,8 @@ def pre_process_story(entry, encoding):
         entry['story_content'] = content.strip()
     else:
         entry['story_content'] = summary.strip()
+    if not entry['story_content'] and entry.get('subtitle'):
+        entry['story_content'] = entry.get('subtitle')
     
     if 'summary_detail' in entry and entry['summary_detail'].get('type', None) == 'text/plain':
         try:
@@ -135,6 +160,14 @@ def pre_process_story(entry, encoding):
                         'media_url': media_url, 
                         'media_type': media_type
                     }
+            elif 'video' in media_type and media_url:
+                entry['story_content'] += """<br><br>
+                    <video controls="controls" preload="none">
+                        <source src="%(media_url)s" type="%(media_type)s" />
+                    </video>"""  % {
+                        'media_url': media_url, 
+                        'media_type': media_type
+                    }
             elif 'image' in media_type and media_url and media_url not in entry['story_content']:
                 entry['story_content'] += """<br><br><img src="%s" />"""  % media_url
                 continue
@@ -150,13 +183,8 @@ def pre_process_story(entry, encoding):
     
     entry['guid'] = entry.get('guid') or entry.get('id') or entry.get('link') or str(entry.get('published'))
 
-    if not entry.get('title') and entry.get('story_content'):
-        story_title = strip_tags(entry['story_content'])
-        if len(story_title) > 80:
-            story_title = story_title[:80] + '...'
-        entry['title'] = story_title
-    if not entry.get('title') and entry.get('link'):
-        entry['title'] = entry['link']
+    if not entry.get('title'):
+        entry['title'] = ""
         
     entry['title'] = strip_tags(entry.get('title'))
     entry['author'] = strip_tags(entry.get('author'))
@@ -248,6 +276,10 @@ def linkify(*args, **kwargs):
     return xhtml_unescape_tornado(linkify_tornado(*args, **kwargs))
     
 def truncate_chars(value, max_length):
+    try:
+        value = value.encode('utf-8')
+    except UnicodeDecodeError:
+        pass
     if len(value) <= max_length:
         return value
  
@@ -257,7 +289,7 @@ def truncate_chars(value, max_length):
         if rightmost_space != -1:
             truncd_val = truncd_val[:rightmost_space]
  
-    return truncd_val + "..."
+    return truncd_val.decode('utf-8', 'ignore') + "..."
 
 def image_size(datastream):
     datastream = reseekfile.ReseekFile(datastream)
@@ -332,3 +364,21 @@ def htmldiff(old_html, new_html):
     result = ''.join(result).strip() 
     
     return fixup_ins_del_tags(result)
+
+
+def create_camo_signed_url(base_url, hmac_key, url):
+    """Create a camo signed URL for the specified image URL
+    Args:
+        base_url: Base URL of the camo installation
+        hmac_key: HMAC shared key to be used for signing
+        url: URL of the destination image
+    Returns:
+        str: A full url that can be used to serve the proxied image
+    """
+
+    base_url = base_url.rstrip('/')
+    signature = hmac.HMAC(hmac_key, url.encode(), digestmod=sha1).hexdigest()
+    hex_url = hexlify(url.encode()).decode()
+
+    return ('{base}/{signature}/{hex_url}'
+            .format(base=base_url, signature=signature, hex_url=hex_url))

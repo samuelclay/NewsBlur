@@ -116,11 +116,7 @@
     
     [params setObject:@"social:popular" forKey:@"user_id"];     
 
-    [appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-        [self finishAddSite:responseObject];
-    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        [self informError:error];
-    }];
+    [appDelegate POST:urlString parameters:params target:self success:@selector(finishAddSite:) failure:@selector(informError:)];
 }
 
 - (void)addSite:(NSString *)siteUrl {
@@ -132,11 +128,7 @@
     [params setObject:@"true" forKey:@"auto_active"]; 
     [params setObject:@"true" forKey:@"skip_fetch"]; 
 
-    [appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-        [self finishAddSite:responseObject];
-    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        [self informError:error];
-    }];
+    [appDelegate POST:urlString parameters:params target:self success:@selector(finishAddSite:) failure:@selector(informError:)];
 }
 
 - (void)finishAddSite:(NSDictionary *)results {

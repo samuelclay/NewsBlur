@@ -1,5 +1,4 @@
 import urllib
-import urlparse
 import datetime
 import lxml.html
 import tweepy
@@ -90,8 +89,8 @@ def facebook_connect(request):
     
     args = {
         "client_id": facebook_app_id,
-        "redirect_uri": "http://" + Site.objects.get_current().domain + reverse('facebook-connect'),
-        "scope": "user_website,user_friends,publish_actions",
+        "redirect_uri": "https://" + Site.objects.get_current().domain + '/oauth/facebook_connect',
+        "scope": "user_friends",
         "display": "popup",
     }
 
@@ -102,13 +101,13 @@ def facebook_connect(request):
         uri = "https://graph.facebook.com/oauth/access_token?" + \
                 urllib.urlencode(args)
         response_text = urllib.urlopen(uri).read()
-        response = urlparse.parse_qs(response_text)
-
+        response = json.decode(response_text)
+        
         if "access_token" not in response:
-            logging.user(request, "~BB~FRFailed Facebook connect")
+            logging.user(request, "~BB~FRFailed Facebook connect, no access_token. (%s): %s" % (args, response))
             return dict(error="Facebook has returned an error. Try connecting again.")
 
-        access_token = response["access_token"][-1]
+        access_token = response["access_token"]
 
         # Get the user's profile.
         graph = facebook.GraphAPI(access_token)
@@ -138,7 +137,7 @@ def facebook_connect(request):
         logging.user(request, "~BB~FRFinishing Facebook connect")
         return {}
     elif request.REQUEST.get('error'):
-        logging.user(request, "~BB~FRFailed Facebook connect")
+        logging.user(request, "~BB~FRFailed Facebook connect, error: %s" % request.REQUEST.get('error'))
         return {'error': '%s... Try connecting again.' % request.REQUEST.get('error')}
     else:
         # Start the OAuth process
@@ -153,7 +152,7 @@ def appdotnet_connect(request):
     args = {
         "client_id": settings.APPDOTNET_CLIENTID,
         "client_secret": settings.APPDOTNET_SECRET,
-        "redirect_uri": "http://" + domain +
+        "redirect_uri": "https://" + domain +
                                     reverse('appdotnet-connect'),
         "scope": ["email", "write_post", "follow"],
     }
@@ -284,7 +283,12 @@ def api_user_info(request):
 @json.json_view
 def api_feed_list(request, trigger_slug=None):
     user = request.user
-    usf = UserSubscriptionFolders.objects.get(user=user)
+    try:
+        usf = UserSubscriptionFolders.objects.get(user=user)
+    except UserSubscriptionFolders.DoesNotExist:
+        return {"errors": [{
+            'message': 'Could not find feeds for user.'
+        }]}
     flat_folders = usf.flatten_folders()
     titles = [dict(label=" - Folder: All Site Stories", value="all")]
     feeds = {}

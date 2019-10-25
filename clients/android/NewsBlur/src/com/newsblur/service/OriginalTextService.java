@@ -1,21 +1,24 @@
 package com.newsblur.service;
 
-import android.util.Log;
-
 import com.newsblur.activity.NbActivity;
+import com.newsblur.database.DatabaseConstants;
 import com.newsblur.network.domain.StoryTextResponse;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.FeedUtils;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class OriginalTextService extends SubService {
+
+    public static boolean activelyRunning = false;
 
     // special value for when the API responds that it could fatally could not fetch text
     public static final String NULL_STORY_TEXT = "__NULL_STORY_TEXT__";
 
-    private static volatile boolean Running = false;
+    private static final Pattern imgSniff = Pattern.compile("<img[^>]*src=(['\"])((?:(?!\\1).)*)\\1[^>]*>", Pattern.CASE_INSENSITIVE);
 
     /** story hashes we need to fetch (from newly found stories) */
     private static Set<String> Hashes;
@@ -30,11 +33,15 @@ public class OriginalTextService extends SubService {
 
     @Override
     protected void exec() {
-        while ((Hashes.size() > 0) || (PriorityHashes.size() > 0)) {
-            if (parent.stopSync()) return;
-            gotWork();
-            fetchBatch(PriorityHashes);
-            fetchBatch(Hashes);
+        activelyRunning = true;
+        try {
+            while ((Hashes.size() > 0) || (PriorityHashes.size() > 0)) {
+                if (parent.stopSync()) return;
+                fetchBatch(PriorityHashes);
+                fetchBatch(Hashes);
+            }
+        } finally {
+            activelyRunning = false;
         }
     }
 
@@ -47,21 +54,34 @@ public class OriginalTextService extends SubService {
         }
         try {
             fetchloop: for (String hash : batch) {
-                if (parent.stopSync()) return;
+                if (parent.stopSync()) break fetchloop;
                 fetchedHashes.add(hash);
                 String result = null;
                 StoryTextResponse response = parent.apiManager.getStoryText(FeedUtils.inferFeedId(hash), hash);
                 if (response != null) {
-                    if (response.originalText != null) {
-                        result = response.originalText;
-                    } else {
+                    if (response.originalText == null) {
                         // a null value in an otherwise valid response to this call indicates a fatal
                         // failure to extract text and should be recorded so the UI can inform the
                         // user and switch them back to a valid view mode
                         result = NULL_STORY_TEXT;
+                    } else if (response.originalText.length() >= DatabaseConstants.MAX_TEXT_SIZE) {
+                        // this API can occasionally return story texts that are much too large to query
+                        // from the DB.  stop insertion to prevent poisoning the DB and the cursor lifecycle
+                        com.newsblur.util.Log.w(this, "discarding too-large story text. hash " + hash + " size " + response.originalText.length());
+                        result = NULL_STORY_TEXT;
+                    } else {
+                        result = response.originalText;
                     }
                 }
-                if (result != null) parent.dbHelper.putStoryText(hash, result);
+                if (result != null) {   
+                    // store the fetched text in the DB
+                    parent.dbHelper.putStoryText(hash, result);
+                    // scan for potentially cache-able images in the extracted 'text'
+                    Matcher imgTagMatcher = imgSniff.matcher(result);
+                    while (imgTagMatcher.find()) {
+                        parent.imagePrefetchService.addUrl(imgTagMatcher.group(2));
+                    }
+                }
             }
         } finally {
             gotData(NbActivity.UPDATE_TEXT);
@@ -81,26 +101,9 @@ public class OriginalTextService extends SubService {
         return (Hashes.size() + PriorityHashes.size());
     }
 
-    @Override
-    public boolean haveWork() {
-        return (getPendingCount() > 0);
-    }
-
     public static void clear() {
         Hashes.clear();
         PriorityHashes.clear();
-    }
-
-    public static boolean running() {
-        return Running;
-    }
-    @Override
-    protected void setRunning(boolean running) {
-        Running = running;
-    }
-    @Override
-    public boolean isRunning() {
-        return Running;
     }
 
 }

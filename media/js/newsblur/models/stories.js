@@ -40,7 +40,10 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
     },
     
     content_preview: function(attribute, length) {
-        var content = this.get(attribute || 'story_content');
+        var content = this.get(attribute);
+        if (!attribute || !content) content = this.story_content(); 
+        // First do a naive strip, which is faster than rendering which makes network calls
+        content = content && content.replace(/<(?:.|\n)*?>/gm, '');
         content = content && Inflector.stripTags(content);
         
         return _.string.prune(_.string.trim(content), length || 150, "...");
@@ -49,8 +52,38 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
     image_url: function(index) {
         if (!index) index = 0;
         if (this.get('image_urls').length >= index+1) {
-            return this.get('image_urls')[index];
+            var url = this.get('image_urls')[index];
+            if (window.location.protocol == 'https:' && 
+                NEWSBLUR.Globals.is_staff &&
+                _.str.startsWith(url, "http://")) {
+                var secure_url = this.get('secure_image_urls')[url];
+                if (secure_url) url = secure_url;
+            }
+            return url;
         }
+    },
+    
+    story_content: function() {
+        return this.secure_content('story_content');
+    },
+    
+    original_text: function() {
+        return this.secure_content('original_text');
+    },
+    
+    secure_content: function(content_attr) {
+        var content = this.get(content_attr);
+        
+        if (window.location.protocol == 'https:') {
+            _.each(this.get('secure_image_urls'), function(secure_url, url) {
+                if (_.str.startsWith(url, "http://")) {
+                    console.log(['Securing image url', url, secure_url]);
+                    content = content.split(url).join(secure_url);
+                }
+            });
+        }
+        
+        return content;
     },
     
     story_authors: function() {
@@ -164,6 +197,9 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
                 detail: {background: background}
             });
             var success = !this.story_title_view.$st.find('a')[0].dispatchEvent(event);
+            if (!success) {
+                success = this.story_title_view.$st.hasClass('NB-story-webkit-opened');
+            }
             if (success) {
                 // console.log(['Used safari extension to open link in background', success]);
                 return;
@@ -310,6 +346,7 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
     
     mark_read: function(story, options) {
         options = options || {};
+        var previously_read = story.get('read_status');
         var delay = NEWSBLUR.assets.preference('read_story_delay');
         if (options.skip_delay) {
             delay = 0;
@@ -327,9 +364,11 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
                 if (!feed) {
                     feed = NEWSBLUR.assets.get_feed(story.get('story_feed_id'));
                 }
-                NEWSBLUR.assets.mark_story_hash_as_read(story, _.bind(function(read) {
-                    this.update_read_count(story, {previously_read: read});
+                NEWSBLUR.assets.mark_story_hash_as_read(story, null, _.bind(function() {
+                    this.store_failed_marked_read_story(story);
                 }, this));
+
+                this.update_read_count(story, {previously_read: previously_read});
             }
         }, this);
         
@@ -419,6 +458,39 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
         //     (unread_view == 'negative' && feed.get('ps') == 0 && feed.get('nt') == 0 && feed.get('ng') == 0)) {
         //     story_unread_counter.fall();
         // }
+    },
+    
+    store_failed_marked_read_story: function(story) {
+        console.log(['Failed to mark story as read, storing for later', story, story.get('story_hash')]);
+        
+        var failed_stories = JSON.parse(localStorage.getItem("NB:failed_marked_read_stories")) || [];
+        
+        if (!_.contains(failed_stories, story.get('story_hash'))) {
+            failed_stories.push(story.get('story_hash'));
+        }
+        
+        localStorage.setItem("NB:failed_marked_read_stories", JSON.stringify(failed_stories));
+    },
+    
+    retry_failed_marked_read_stories: function(failed_stories) {
+        if (!failed_stories) {
+            failed_stories = JSON.parse(localStorage.getItem("NB:failed_marked_read_stories")) || [];
+        }
+        if (failed_stories.length == 0) return;
+        
+        var failed_story = _.first(failed_stories);        
+        console.log(['Retrying failed marked read stories', failed_stories, failed_story]);
+        var story = new NEWSBLUR.Models.Story({'story_hash': failed_story, read_status: 0});
+        
+        NEWSBLUR.assets.mark_story_hash_as_read(story, _.bind(function(read) {
+            localStorage.setItem("NB:failed_marked_read_stories", 
+                                 JSON.stringify(_.without(failed_stories, failed_story)));
+            this.retry_failed_marked_read_stories();
+        }, this), _.bind(function() {
+            this.store_failed_marked_read_story(story);
+        }, this), {retrying_failed: true});
+        
+        this.update_read_count(story, {previously_read: story.get('read_status')});
     },
     
     clear_previous_stories_stack: function() {

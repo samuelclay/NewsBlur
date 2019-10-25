@@ -43,20 +43,20 @@
  * @param {number} high the high (signed) 32 bits of the Timestamp.
  */
 function Timestamp(low, high) {
-  if(!(this instanceof Timestamp)) return new Timestamp(low, high);
+  if (!(this instanceof Timestamp)) return new Timestamp(low, high);
   this._bsontype = 'Timestamp';
   /**
    * @type {number}
    * @ignore
    */
-  this.low_ = low | 0;  // force into 32 signed bits.
+  this.low_ = low | 0; // force into 32 signed bits.
 
   /**
    * @type {number}
    * @ignore
    */
-  this.high_ = high | 0;  // force into 32 signed bits.
-};
+  this.high_ = high | 0; // force into 32 signed bits.
+}
 
 /**
  * Return the int value.
@@ -74,8 +74,7 @@ Timestamp.prototype.toInt = function() {
  * @return {number} the closest floating-point representation to this value.
  */
 Timestamp.prototype.toNumber = function() {
-  return this.high_ * Timestamp.TWO_PWR_32_DBL_ +
-         this.getLowBitsUnsigned();
+  return this.high_ * Timestamp.TWO_PWR_32_DBL_ + this.getLowBitsUnsigned();
 };
 
 /**
@@ -86,7 +85,7 @@ Timestamp.prototype.toNumber = function() {
  */
 Timestamp.prototype.toJSON = function() {
   return this.toString();
-}
+};
 
 /**
  * Return the String value.
@@ -122,9 +121,10 @@ Timestamp.prototype.toString = function(opt_radix) {
   // minimize the calls to the very expensive emulated div.
   var radixToPower = Timestamp.fromNumber(Math.pow(radix, 6));
 
-  var rem = this;
+  rem = this;
   var result = '';
-  while (true) {
+
+  while (!rem.isZero()) {
     var remDiv = rem.div(radixToPower);
     var intval = rem.subtract(remDiv.multiply(radixToPower)).toInt();
     var digits = intval.toString(radix);
@@ -168,8 +168,7 @@ Timestamp.prototype.getLowBits = function() {
  * @return {number} the low 32-bits as an unsigned value.
  */
 Timestamp.prototype.getLowBitsUnsigned = function() {
-  return (this.low_ >= 0) ?
-      this.low_ : Timestamp.TWO_PWR_32_DBL_ + this.low_;
+  return this.low_ >= 0 ? this.low_ : Timestamp.TWO_PWR_32_DBL_ + this.low_;
 };
 
 /**
@@ -186,13 +185,13 @@ Timestamp.prototype.getNumBitsAbs = function() {
       return this.negate().getNumBitsAbs();
     }
   } else {
-    var val = this.high_ != 0 ? this.high_ : this.low_;
+    var val = this.high_ !== 0 ? this.high_ : this.low_;
     for (var bit = 31; bit > 0; bit--) {
-      if ((val & (1 << bit)) != 0) {
+      if ((val & (1 << bit)) !== 0) {
         break;
       }
     }
-    return this.high_ != 0 ? bit + 33 : bit + 1;
+    return this.high_ !== 0 ? bit + 33 : bit + 1;
   }
 };
 
@@ -203,7 +202,7 @@ Timestamp.prototype.getNumBitsAbs = function() {
  * @return {boolean} whether this value is zero.
  */
 Timestamp.prototype.isZero = function() {
-  return this.high_ == 0 && this.low_ == 0;
+  return this.high_ === 0 && this.low_ === 0;
 };
 
 /**
@@ -223,7 +222,7 @@ Timestamp.prototype.isNegative = function() {
  * @return {boolean} whether this value is odd.
  */
 Timestamp.prototype.isOdd = function() {
-  return (this.low_ & 1) == 1;
+  return (this.low_ & 1) === 1;
 };
 
 /**
@@ -234,7 +233,7 @@ Timestamp.prototype.isOdd = function() {
  * @return {boolean} whether this Timestamp equals the other
  */
 Timestamp.prototype.equals = function(other) {
-  return (this.high_ == other.high_) && (this.low_ == other.low_);
+  return this.high_ === other.high_ && this.low_ === other.low_;
 };
 
 /**
@@ -245,7 +244,7 @@ Timestamp.prototype.equals = function(other) {
  * @return {boolean} whether this Timestamp does not equal the other.
  */
 Timestamp.prototype.notEquals = function(other) {
-  return (this.high_ != other.high_) || (this.low_ != other.low_);
+  return this.high_ !== other.high_ || this.low_ !== other.low_;
 };
 
 /**
@@ -346,27 +345,30 @@ Timestamp.prototype.add = function(other) {
   // Divide each number into 4 chunks of 16 bits, and then sum the chunks.
 
   var a48 = this.high_ >>> 16;
-  var a32 = this.high_ & 0xFFFF;
+  var a32 = this.high_ & 0xffff;
   var a16 = this.low_ >>> 16;
-  var a00 = this.low_ & 0xFFFF;
+  var a00 = this.low_ & 0xffff;
 
   var b48 = other.high_ >>> 16;
-  var b32 = other.high_ & 0xFFFF;
+  var b32 = other.high_ & 0xffff;
   var b16 = other.low_ >>> 16;
-  var b00 = other.low_ & 0xFFFF;
+  var b00 = other.low_ & 0xffff;
 
-  var c48 = 0, c32 = 0, c16 = 0, c00 = 0;
+  var c48 = 0,
+    c32 = 0,
+    c16 = 0,
+    c00 = 0;
   c00 += a00 + b00;
   c16 += c00 >>> 16;
-  c00 &= 0xFFFF;
+  c00 &= 0xffff;
   c16 += a16 + b16;
   c32 += c16 >>> 16;
-  c16 &= 0xFFFF;
+  c16 &= 0xffff;
   c32 += a32 + b32;
   c48 += c32 >>> 16;
-  c32 &= 0xFFFF;
+  c32 &= 0xffff;
   c48 += a48 + b48;
-  c48 &= 0xFFFF;
+  c48 &= 0xffff;
   return Timestamp.fromBits((c16 << 16) | c00, (c48 << 16) | c32);
 };
 
@@ -405,15 +407,16 @@ Timestamp.prototype.multiply = function(other) {
     if (other.isNegative()) {
       return this.negate().multiply(other.negate());
     } else {
-      return this.negate().multiply(other).negate();
+      return this.negate()
+        .multiply(other)
+        .negate();
     }
   } else if (other.isNegative()) {
     return this.multiply(other.negate()).negate();
   }
 
   // If both Timestamps are small, use float multiplication
-  if (this.lessThan(Timestamp.TWO_PWR_24_) &&
-      other.lessThan(Timestamp.TWO_PWR_24_)) {
+  if (this.lessThan(Timestamp.TWO_PWR_24_) && other.lessThan(Timestamp.TWO_PWR_24_)) {
     return Timestamp.fromNumber(this.toNumber() * other.toNumber());
   }
 
@@ -421,36 +424,39 @@ Timestamp.prototype.multiply = function(other) {
   // We can skip products that would overflow.
 
   var a48 = this.high_ >>> 16;
-  var a32 = this.high_ & 0xFFFF;
+  var a32 = this.high_ & 0xffff;
   var a16 = this.low_ >>> 16;
-  var a00 = this.low_ & 0xFFFF;
+  var a00 = this.low_ & 0xffff;
 
   var b48 = other.high_ >>> 16;
-  var b32 = other.high_ & 0xFFFF;
+  var b32 = other.high_ & 0xffff;
   var b16 = other.low_ >>> 16;
-  var b00 = other.low_ & 0xFFFF;
+  var b00 = other.low_ & 0xffff;
 
-  var c48 = 0, c32 = 0, c16 = 0, c00 = 0;
+  var c48 = 0,
+    c32 = 0,
+    c16 = 0,
+    c00 = 0;
   c00 += a00 * b00;
   c16 += c00 >>> 16;
-  c00 &= 0xFFFF;
+  c00 &= 0xffff;
   c16 += a16 * b00;
   c32 += c16 >>> 16;
-  c16 &= 0xFFFF;
+  c16 &= 0xffff;
   c16 += a00 * b16;
   c32 += c16 >>> 16;
-  c16 &= 0xFFFF;
+  c16 &= 0xffff;
   c32 += a32 * b00;
   c48 += c32 >>> 16;
-  c32 &= 0xFFFF;
+  c32 &= 0xffff;
   c32 += a16 * b16;
   c48 += c32 >>> 16;
-  c32 &= 0xFFFF;
+  c32 &= 0xffff;
   c32 += a00 * b32;
   c48 += c32 >>> 16;
-  c32 &= 0xFFFF;
+  c32 &= 0xffff;
   c48 += a48 * b00 + a32 * b16 + a16 * b32 + a00 * b48;
-  c48 &= 0xFFFF;
+  c48 &= 0xffff;
   return Timestamp.fromBits((c16 << 16) | c00, (c48 << 16) | c32);
 };
 
@@ -469,9 +475,8 @@ Timestamp.prototype.div = function(other) {
   }
 
   if (this.equals(Timestamp.MIN_VALUE)) {
-    if (other.equals(Timestamp.ONE) ||
-        other.equals(Timestamp.NEG_ONE)) {
-      return Timestamp.MIN_VALUE;  // recall that -MIN_VALUE == MIN_VALUE
+    if (other.equals(Timestamp.ONE) || other.equals(Timestamp.NEG_ONE)) {
+      return Timestamp.MIN_VALUE; // recall that -MIN_VALUE == MIN_VALUE
     } else if (other.equals(Timestamp.MIN_VALUE)) {
       return Timestamp.ONE;
     } else {
@@ -494,7 +499,9 @@ Timestamp.prototype.div = function(other) {
     if (other.isNegative()) {
       return this.negate().div(other.negate());
     } else {
-      return this.negate().div(other).negate();
+      return this.negate()
+        .div(other)
+        .negate();
     }
   } else if (other.isNegative()) {
     return this.div(other.negate()).negate();
@@ -506,16 +513,16 @@ Timestamp.prototype.div = function(other) {
   // the approximate value is less than or equal to the real value so that the
   // remainder never becomes negative.
   var res = Timestamp.ZERO;
-  var rem = this;
+  rem = this;
   while (rem.greaterThanOrEqual(other)) {
     // Approximate the result of division. This may be a little greater or
     // smaller than the actual value.
-    var approx = Math.max(1, Math.floor(rem.toNumber() / other.toNumber()));
+    approx = Math.max(1, Math.floor(rem.toNumber() / other.toNumber()));
 
     // We will tweak the approximate result by changing it in the 48-th digit or
     // the smallest non-fractional digit, whichever is larger.
     var log2 = Math.ceil(Math.log(approx) / Math.LN2);
-    var delta = (log2 <= 48) ? 1 : Math.pow(2, log2 - 48);
+    var delta = log2 <= 48 ? 1 : Math.pow(2, log2 - 48);
 
     // Decrease the approximation until it is smaller than the remainder.  Note
     // that if it is too large, the product overflows and is negative.
@@ -602,15 +609,13 @@ Timestamp.prototype.xor = function(other) {
  */
 Timestamp.prototype.shiftLeft = function(numBits) {
   numBits &= 63;
-  if (numBits == 0) {
+  if (numBits === 0) {
     return this;
   } else {
     var low = this.low_;
     if (numBits < 32) {
       var high = this.high_;
-      return Timestamp.fromBits(
-                 low << numBits,
-                 (high << numBits) | (low >>> (32 - numBits)));
+      return Timestamp.fromBits(low << numBits, (high << numBits) | (low >>> (32 - numBits)));
     } else {
       return Timestamp.fromBits(0, low << (numBits - 32));
     }
@@ -626,19 +631,15 @@ Timestamp.prototype.shiftLeft = function(numBits) {
  */
 Timestamp.prototype.shiftRight = function(numBits) {
   numBits &= 63;
-  if (numBits == 0) {
+  if (numBits === 0) {
     return this;
   } else {
     var high = this.high_;
     if (numBits < 32) {
       var low = this.low_;
-      return Timestamp.fromBits(
-                 (low >>> numBits) | (high << (32 - numBits)),
-                 high >> numBits);
+      return Timestamp.fromBits((low >>> numBits) | (high << (32 - numBits)), high >> numBits);
     } else {
-      return Timestamp.fromBits(
-                 high >> (numBits - 32),
-                 high >= 0 ? 0 : -1);
+      return Timestamp.fromBits(high >> (numBits - 32), high >= 0 ? 0 : -1);
     }
   }
 };
@@ -652,16 +653,14 @@ Timestamp.prototype.shiftRight = function(numBits) {
  */
 Timestamp.prototype.shiftRightUnsigned = function(numBits) {
   numBits &= 63;
-  if (numBits == 0) {
+  if (numBits === 0) {
     return this;
   } else {
     var high = this.high_;
     if (numBits < 32) {
       var low = this.low_;
-      return Timestamp.fromBits(
-                 (low >>> numBits) | (high << (32 - numBits)),
-                 high >>> numBits);
-    } else if (numBits == 32) {
+      return Timestamp.fromBits((low >>> numBits) | (high << (32 - numBits)), high >>> numBits);
+    } else if (numBits === 32) {
       return Timestamp.fromBits(high, 0);
     } else {
       return Timestamp.fromBits(high >>> (numBits - 32), 0);
@@ -709,8 +708,9 @@ Timestamp.fromNumber = function(value) {
     return Timestamp.fromNumber(-value).negate();
   } else {
     return new Timestamp(
-               (value % Timestamp.TWO_PWR_32_DBL_) | 0,
-               (value / Timestamp.TWO_PWR_32_DBL_) | 0);
+      (value % Timestamp.TWO_PWR_32_DBL_) | 0,
+      (value / Timestamp.TWO_PWR_32_DBL_) | 0
+    );
   }
 };
 
@@ -735,7 +735,7 @@ Timestamp.fromBits = function(lowBits, highBits) {
  * @return {Timestamp} the corresponding Timestamp value.
  */
 Timestamp.fromString = function(str, opt_radix) {
-  if (str.length == 0) {
+  if (str.length === 0) {
     throw Error('number format error: empty string');
   }
 
@@ -744,7 +744,7 @@ Timestamp.fromString = function(str, opt_radix) {
     throw Error('radix out of range: ' + radix);
   }
 
-  if (str.charAt(0) == '-') {
+  if (str.charAt(0) === '-') {
     return Timestamp.fromString(str.substring(1), radix).negate();
   } else if (str.indexOf('-') >= 0) {
     throw Error('number format error: interior "-" character: ' + str);
@@ -771,7 +771,6 @@ Timestamp.fromString = function(str, opt_radix) {
 
 // NOTE: Common constant values ZERO, ONE, NEG_ONE, etc. are defined below the
 // from* methods on which they depend.
-
 
 /**
  * A cache of the Timestamp representations of small integer values.
@@ -837,8 +836,7 @@ Timestamp.ONE = Timestamp.fromInt(1);
 Timestamp.NEG_ONE = Timestamp.fromInt(-1);
 
 /** @type {Timestamp} */
-Timestamp.MAX_VALUE =
-    Timestamp.fromBits(0xFFFFFFFF | 0, 0x7FFFFFFF | 0);
+Timestamp.MAX_VALUE = Timestamp.fromBits(0xffffffff | 0, 0x7fffffff | 0);
 
 /** @type {Timestamp} */
 Timestamp.MIN_VALUE = Timestamp.fromBits(0, 0x80000000 | 0);

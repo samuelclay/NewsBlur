@@ -77,16 +77,30 @@
         self.storiesModule.storiesCollection = [StoriesCollection new];
 //        NSLog(@"Dashboard story module view: %@ (%@)", self.storiesModule, self.storiesModule.storiesCollection);
         self.storiesModule.view.frame = self.activitiesModule.frame;
+        self.storiesModule.view.translatesAutoresizingMaskIntoConstraints = NO;
         [self.view insertSubview:self.storiesModule.view belowSubview:self.activitiesModule];
         [self addChildViewController:self.storiesModule];
         [self.storiesModule didMoveToParentViewController:self];
+        
+        [NSLayoutConstraint constraintWithItem:self.storiesModule.view attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.topToolbar attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0.0].active = YES;
+        [NSLayoutConstraint constraintWithItem:self.storiesModule.view attribute:NSLayoutAttributeLeading relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeLeading multiplier:1.0 constant:0.0].active = YES;
+        [NSLayoutConstraint constraintWithItem:self.storiesModule.view attribute:NSLayoutAttributeTrailing relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeTrailing multiplier:1.0 constant:0.0].active = YES;
+        [NSLayoutConstraint constraintWithItem:self.storiesModule.view attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self.toolbar attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0.0].active = YES;
     }
     
-    [self updateLogo];
+    [self updateTheme];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
+    
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        if (@available(iOS 11.0, *)) {
+            CGRect frame = self.toolbar.frame;
+            frame.size.height = [NewsBlurAppDelegate sharedAppDelegate].navigationController.toolbar.bounds.size.height; // += self.view.safeAreaInsets.bottom;
+            self.toolbar.frame = frame;
+        }
+    }
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
@@ -111,9 +125,10 @@
 }
 
 - (void)updateTheme {
-    self.topToolbar.barTintColor = UIColorFromRGB(0xE3E6E0);
-    self.toolbar.barTintColor = UIColorFromRGB(0xE3E6E0);
-    self.segmentedButton.tintColor = UIColorFromRGB(0x8F918B);
+    self.topToolbar.barTintColor = [UINavigationBar appearance].barTintColor;
+    self.topToolbar.backgroundColor = [UINavigationBar appearance].backgroundColor;
+    self.toolbar.barTintColor = [UINavigationBar appearance].barTintColor;
+    self.segmentedButton.tintColor = [UINavigationBar appearance].tintColor;
     
     self.storiesModule.searchBar.backgroundColor = UIColorFromRGB(0xE3E6E0);
     self.storiesModule.searchBar.tintColor = UIColorFromRGB(0xffffff);
@@ -130,6 +145,8 @@
     [self.storiesModule.storyTitlesTable reloadData];
     [self.interactionsModule.interactionsTable reloadData];
     [self.activitiesModule.activitiesTable reloadData];
+    
+    [[ThemeManager themeManager] updateSegmentedControl:self.segmentedButton];
     
     [self updateLogo];
 }

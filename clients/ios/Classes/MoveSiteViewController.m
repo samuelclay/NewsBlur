@@ -145,11 +145,7 @@
     [params setObject:fromFolder forKey:@"in_folder"];
     [params setObject:toFolder forKey:@"to_folder"]; 
     [params setObject:[appDelegate.storiesCollection.activeFeed objectForKey:@"id"] forKey:@"feed_id"];
-    [appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-        [self requestFinished:responseObject];
-    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        [self requestFailed:error];
-    }];
+    [appDelegate POST:urlString parameters:params target:self success:@selector(requestFinished:) failure:@selector(requestFailed:)];
 }
 
 - (void)requestFinished:(NSDictionary *)results {
@@ -184,11 +180,7 @@
     [params setObject:fromFolder forKey:@"in_folder"]; 
     [params setObject:toFolder forKey:@"to_folder"]; 
     [params setObject:folderName forKey:@"folder_name"];
-    [appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-        [self finishMoveFolder:responseObject];
-    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        [self requestFailed:error];
-    }];
+    [appDelegate POST:urlString parameters:params target:self success:@selector(finishMoveFolder:) failure:@selector(requestFailed:)];
 }
 
 - (void)finishMoveFolder:(NSDictionary *)results {

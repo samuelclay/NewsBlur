@@ -198,9 +198,12 @@ public class APIManager {
         return response.getResponse(gson, NewsBlurResponse.class);
     }
 
-	public NewsBlurResponse markStoryAsStarred(String storyHash) {
+	public NewsBlurResponse markStoryAsStarred(String storyHash, List<String> userTags) {
 		ValueMultimap values = new ValueMultimap();
 		values.put(APIConstants.PARAMETER_STORY_HASH, storyHash);
+        for (String tag : userTags) {
+            values.put(APIConstants.PAREMETER_USER_TAGS, tag);
+        }
 		APIResponse response = post(buildUrl(APIConstants.PATH_MARK_STORY_AS_STARRED), values);
         return response.getResponse(gson, NewsBlurResponse.class);
 	}
@@ -596,6 +599,14 @@ public class APIManager {
         // this param appears fixed and mandatory for the call to succeed
         values.put(APIConstants.PARAMETER_RESET_FETCH, APIConstants.VALUE_FALSE);
         APIResponse response = post(buildUrl(APIConstants.PATH_INSTA_FETCH), values);
+        return response.getResponse(gson, NewsBlurResponse.class);
+    }
+
+    public NewsBlurResponse renameFeed(String feedId, String newFeedName) {
+        ValueMultimap values = new ValueMultimap();
+        values.put(APIConstants.PARAMETER_FEEDID, feedId);
+        values.put(APIConstants.PARAMETER_FEEDTITLE, newFeedName);
+        APIResponse response = post(buildUrl(APIConstants.PATH_RENAME_FEED), values);
         return response.getResponse(gson, NewsBlurResponse.class);
     }
 

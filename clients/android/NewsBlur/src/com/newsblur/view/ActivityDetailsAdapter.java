@@ -27,7 +27,7 @@ public abstract class ActivityDetailsAdapter extends ArrayAdapter<ActivityDetail
     protected final boolean userIsYou;
 
     public ActivityDetailsAdapter(final Context context, UserDetails user) {
-        super(context, R.id.row_activity_text);
+        super(context, R.layout.row_activity); // final argument seems unused since we override getView()
         inflater = LayoutInflater.from(context);
 
         currentUserDetails = user;

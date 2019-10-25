@@ -11,6 +11,7 @@ import hashlib
 import redis
 import pymongo
 import HTMLParser
+import urlparse
 from collections import defaultdict
 from operator import itemgetter
 from bson.objectid import ObjectId
@@ -36,6 +37,7 @@ from apps.search.models import SearchStory, SearchFeed
 from apps.statistics.rstats import RStats
 from utils import json_functions as json
 from utils import feedfinder2 as feedfinder
+from utils import feedfinder as feedfinder_old
 from utils import urlnorm
 from utils import log as logging
 from utils.fields import AutoOneToOneField
@@ -45,6 +47,7 @@ from utils.feed_functions import relative_timesince
 from utils.feed_functions import seconds_timesince
 from utils.story_functions import strip_tags, htmldiff, strip_comments, strip_comments__lxml
 from utils.story_functions import prep_for_search
+from utils.story_functions import create_camo_signed_url
 
 ENTRY_NEW, ENTRY_UPDATED, ENTRY_SAME, ENTRY_ERR = range(4)
 
@@ -155,8 +158,8 @@ class Feed(models.Model):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         current_time = int(time.time() + 60*60*24)
         unread_cutoff = self.unread_cutoff.strftime('%s')
-        print " ---> zrevrangebyscore zF:%s %s %s" % (self.pk, current_time, unread_cutoff)
         story_hashes = r.zrevrangebyscore('zF:%s' % self.pk, current_time, unread_cutoff)
+
         return story_hashes
         
     @classmethod
@@ -399,15 +402,18 @@ class Feed(models.Model):
     @property
     def favicon_fetching(self):
         return bool(not (self.favicon_not_found or self.favicon_color))
-        
+    
     @classmethod
-    def get_feed_from_url(cls, url, create=True, aggressive=False, fetch=True, offset=0, user=None):
+    def get_feed_from_url(cls, url, create=True, aggressive=False, fetch=True, offset=0, user=None, interactive=False):
         feed = None
         without_rss = False
+        original_url = url
         
         if url and url.startswith('newsletter:'):
             return cls.objects.get(feed_address=url)
         if url and re.match('(https?://)?twitter.com/\w+/?$', url):
+            without_rss = True
+        if url and re.match(r'(https?://)?(www\.)?facebook.com/\w+/?$', url):
             without_rss = True
         if url and 'youtube.com/user/' in url:
             username = re.search('youtube.com/user/(\w+)', url).group(1)
@@ -443,19 +449,44 @@ class Feed(models.Model):
                 
             return feed
         
+        @timelimit(10)
+        def _feedfinder(url):
+            found_feed_urls = feedfinder.find_feeds(url)
+            return found_feed_urls
+
+        @timelimit(10)
+        def _feedfinder_old(url):
+            found_feed_urls = feedfinder_old.feeds(url)
+            return found_feed_urls
+        
         # Normalize and check for feed_address, dupes, and feed_link
         url = urlnorm.normalize(url)
         if not url:
+            logging.debug(" ---> ~FRCouldn't normalize url: ~SB%s" % url)
             return
         
         feed = by_url(url)
         found_feed_urls = []
         
+        if interactive:
+            import pdb; pdb.set_trace()
+        
         # Create if it looks good
         if feed and len(feed) > offset:
             feed = feed[offset]
         else:
-            found_feed_urls = feedfinder.find_feeds(url)
+            try:
+                found_feed_urls = _feedfinder(url)
+            except TimeoutError:
+                logging.debug('   ---> Feed finder timed out...')
+                found_feed_urls = []
+            if not found_feed_urls:
+                try:
+                    found_feed_urls = _feedfinder_old(url)
+                except TimeoutError:
+                    logging.debug('   ---> Feed finder old timed out...')
+                    found_feed_urls = []
+                
             if len(found_feed_urls):
                 feed_finder_url = found_feed_urls[0]
                 logging.debug(" ---> Found feed URLs for %s: %s" % (url, found_feed_urls))
@@ -469,14 +500,17 @@ class Feed(models.Model):
                     feed = cls.objects.create(feed_address=feed_finder_url)
                     feed = feed.update()
             elif without_rss:
-                logging.debug(" ---> Found without_rss feed: %s" % (url))
-                feed = cls.objects.create(feed_address=url)
+                logging.debug(" ---> Found without_rss feed: %s / %s" % (url, original_url))
+                feed = cls.objects.create(feed_address=url, feed_link=original_url)
                 feed = feed.update(requesting_user_id=user.pk if user else None)
                 
         # Check for JSON feed
         if not feed and fetch and create:
-            r = requests.get(url)
-            if 'application/json' in r.headers.get('Content-Type'):
+            try:
+                r = requests.get(url)
+            except (requests.ConnectionError, requests.models.InvalidURL):
+                r = None
+            if r and 'application/json' in r.headers.get('Content-Type'):
                 feed = cls.objects.create(feed_address=url)
                 feed = feed.update()
         
@@ -492,6 +526,7 @@ class Feed(models.Model):
         
         # Not created and not within bounds, so toss results.
         if isinstance(feed, QuerySet):
+            logging.debug(" ---> ~FRNot created and not within bounds, tossing: ~SB%s" % feed)
             return
         
         return feed
@@ -1001,7 +1036,8 @@ class Feed(models.Model):
                         start = True
                         months.append((key, dates.get(key, 0)))
                         total += dates.get(key, 0)
-                        month_count += 1
+                        if dates.get(key, 0) > 0:
+                            month_count += 1 # Only count months that have stories for the average
         original_story_count_history = self.data.story_count_history
         self.data.story_count_history = json.encode({'months': months, 'hours': hours, 'days': days})
         if self.data.story_count_history != original_story_count_history:
@@ -1069,6 +1105,12 @@ class Feed(models.Model):
     
     @property
     def user_agent(self):
+        feed_parts = urlparse.urlparse(self.feed_address)
+        if feed_parts.netloc.find('.tumblr.com') != -1:
+            # Certain tumblr feeds will redirect to tumblr's login page when fetching.
+            # A known workaround is using facebook's user agent.
+            return 'facebookexternalhit/1.0 (+http://www.facebook.com/externalhit_uatext.php)'
+
         ua = ('NewsBlur Feed Fetcher - %s subscriber%s - %s '
               '(Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_3) '
               'AppleWebKit/537.36 (KHTML, like Gecko) '
@@ -1096,7 +1138,11 @@ class Feed(models.Model):
         return headers
         
     def update(self, **kwargs):
-        from utils import feed_fetcher
+        try:
+            from utils import feed_fetcher
+        except ImportError, e:
+            logging.info(" ***> ~BR~FRImportError: %s" % e)
+            pass
         r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
         original_feed_id = int(self.pk)
 
@@ -1119,7 +1165,6 @@ class Feed(models.Model):
         
         if getattr(settings, 'TEST_DEBUG', False):
             print " ---> Testing feed fetch: %s" % self.log_title
-            options['force'] = False
             # options['force_fp'] = True # No, why would this be needed?
             original_feed_address = self.feed_address
             original_feed_link = self.feed_link
@@ -1207,8 +1252,6 @@ class Feed(models.Model):
                               self.log_title[:30],
                               story.get('title'),
                               story.get('guid')))
-            if not story.get('title'):
-                continue
                 
             story_content = story.get('story_content')
             if error_count:
@@ -1240,7 +1283,6 @@ class Feed(models.Model):
                        story_guid = story.get('guid'),
                        story_tags = story_tags
                 )
-                s.extract_image_urls()
                 try:
                     s.save()
                     ret_values['new'] += 1
@@ -1310,7 +1352,7 @@ class Feed(models.Model):
                 # Leads to incorrect unread story counts.
                 if replace_story_date:
                     existing_story.story_date = story.get('published') # Really shouldn't do this.
-                existing_story.extract_image_urls()                
+                existing_story.extract_image_urls(force=True)
                 try:
                     existing_story.save()
                     ret_values['updated'] += 1
@@ -1472,6 +1514,9 @@ class Feed(models.Model):
             except ValueError, e:
                 logging.debug("   ***> [%-30s] Error trimming: %s" % (self.log_title[:30], e))
                 pass
+        
+        if getattr(settings, 'OVERRIDE_STORY_COUNT_MAX', None):
+            cutoff = settings.OVERRIDE_STORY_COUNT_MAX
         
         return cutoff
                 
@@ -1821,17 +1866,31 @@ class Feed(models.Model):
             has_changes = True
         if not show_changes and latest_story_content:
             story_content = latest_story_content
-            
+        
+        story_title = story_db.story_title
+        blank_story_title = False
+        if not story_title:
+            blank_story_title = True
+            if story_content:
+                story_title = strip_tags(story_content)
+            if not story_title and story_db.story_permalink:
+                story_title = story_db.story_permalink
+            if len(story_title) > 80:
+                story_title = story_title[:80] + '...'
+        
         story                     = {}
         story['story_hash']       = getattr(story_db, 'story_hash', None)
         story['story_tags']       = story_db.story_tags or []
         story['story_date']       = story_db.story_date.replace(tzinfo=None)
         story['story_timestamp']  = story_db.story_date.strftime('%s')
         story['story_authors']    = story_db.story_author_name or ""
-        story['story_title']      = story_db.story_title
+        story['story_title']      = story_title
+        if blank_story_title:
+            story['story_title_blank'] = True
         story['story_content']    = story_content
         story['story_permalink']  = story_db.story_permalink
         story['image_urls']       = story_db.image_urls
+        story['secure_image_urls']= cls.secure_image_urls(story_db.image_urls)
         story['story_feed_id']    = feed_id or story_db.story_feed_id
         story['has_modifications']= has_changes
         story['comment_count']    = story_db.comment_count if hasattr(story_db, 'comment_count') else 0
@@ -1863,6 +1922,13 @@ class Feed(models.Model):
         
         return story
     
+    @classmethod
+    def secure_image_urls(cls, urls):
+        signed_urls = [create_camo_signed_url(settings.IMAGES_URL, 
+                                              settings.IMAGES_SECRET_KEY, 
+                                              url) for url in urls]
+        return dict(zip(urls, signed_urls))
+        
     def get_tags(self, entry):
         fcat = []
         if entry.has_key('tags'):
@@ -2029,12 +2095,12 @@ class Feed(models.Model):
         # SpD = 0  Subs > 1:  t = 60 * 3    # 30158  * 1440/(60*3) =  241264
         # SpD = 0  Subs = 1:  t = 60 * 24   # 514131 * 1440/(60*24) = 514131
         if spd >= 1:
-            if subs > 10:
+            if subs >= 10:
                 total = 6
             elif subs > 1:
                 total = 15
             else:
-                total = 60
+                total = 45
         elif spd > 0:
             if subs > 1:
                 total = 60 - (spd * 60)
@@ -2071,9 +2137,9 @@ class Feed(models.Model):
             if len(fetch_history['push_history']):
                 total = total * 12
         
-        # 12 hour max for premiums, 48 hour max for free
+        # 3 hour max for premiums, 48 hour max for free
         if subs >= 1:
-            total = min(total, 60*12*1)
+            total = min(total, 60*4*1)
         else:
             total = min(total, 60*24*2)
         
@@ -2363,6 +2429,8 @@ class MStory(mongo.Document):
         story_title_max = MStory._fields['story_title'].max_length
         story_content_type_max = MStory._fields['story_content_type'].max_length
         self.story_hash = self.feed_guid_hash
+        
+        self.extract_image_urls()
         
         if self.story_content:
             self.story_content_z = zlib.compress(smart_str(self.story_content))
@@ -2675,7 +2743,10 @@ class MStory(mongo.Document):
             else:
                 return
         
-        image_urls = []
+        image_urls = self.image_urls
+        if not image_urls:
+            image_urls = []
+            
         for image in images:
             image_url = image.get('src')
             if not image_url:
@@ -2683,14 +2754,32 @@ class MStory(mongo.Document):
             if image_url and len(image_url) >= 1024:
                 continue
             image_urls.append(image_url)
-
+                
         if not image_urls:
             if not text:
                 return self.extract_image_urls(force=force, text=True)
             else:
                 return
         
-        self.image_urls = image_urls
+        if text:
+            urls = []
+            for url in image_urls:
+                if 'http://' in url[1:] or 'https://' in url[1:]:
+                    continue
+                urls.append(url)
+            image_urls = urls
+        
+        ordered_image_urls = []
+        for image_url in list(set(image_urls)):
+            if 'feedburner' in image_url:
+                ordered_image_urls.append(image_url)
+            else:
+                ordered_image_urls.insert(0, image_url)
+        image_urls = ordered_image_urls
+        
+        if len(image_urls):
+            self.image_urls = [u for u in image_urls if u]
+        
         return self.image_urls
 
     def fetch_original_text(self, force=False, request=None, debug=False):
@@ -2701,10 +2790,7 @@ class MStory(mongo.Document):
             ti = TextImporter(self, feed=feed, request=request, debug=debug)
             original_doc = ti.fetch(return_document=True)
             original_text = original_doc.get('content') if original_doc else None
-            if original_doc and original_doc.get('image', False):
-                self.image_urls = [original_doc['image']]
-            else:
-                self.extract_image_urls(force=force, text=True)
+            self.extract_image_urls(force=force, text=True)
             self.save()
         else:
             logging.user(request, "~FYFetching ~FGoriginal~FY story text, ~SBfound.")
@@ -2856,6 +2942,9 @@ class MStarredStory(mongo.DynamicDocument):
             original_text = zlib.decompress(original_text_z)
         
         return original_text
+    
+    def fetch_original_page(self, force=False, request=None, debug=False):
+        return None
         
 class MStarredStoryCounts(mongo.Document):
     user_id = mongo.IntField()
@@ -2964,8 +3053,10 @@ class MStarredStoryCounts(mongo.Document):
         if user_feeds.get(0, False):
             user_feeds[-1] = user_feeds.get(0, 0)
             del user_feeds[0]
-
+        
+        too_many_feeds = False if len(user_feeds) < 1000 else True
         for feed_id, count in user_feeds.items():
+            if too_many_feeds and count <= 1: continue
             cls.objects(user_id=user_id, 
                         feed_id=feed_id, 
                         slug="feed:%s" % feed_id).update_one(set__count=count, 

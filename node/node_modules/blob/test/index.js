@@ -90,5 +90,11 @@ describe('blob', function() {
       var b = new Blob(['hi', 'hello'], { type: 'text/html' });
       expect(b.type).to.be('text/html');
     });
+
+    it('should be an instance of constructor', function() {
+      var b = new Blob(['hi']);
+      expect(b).to.be.a(Blob);
+      expect(b).to.be.a(global.Blob);
+    });
   }
 });

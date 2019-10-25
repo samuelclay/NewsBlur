@@ -8,9 +8,9 @@ import java.util.Set;
 import android.app.SearchManager;
 import android.content.Intent;
 import android.os.Bundle;
-import android.app.DialogFragment;
-import android.app.LoaderManager.LoaderCallbacks;
-import android.content.Loader;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.LoaderManager.LoaderCallbacks;
+import android.support.v4.content.Loader;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -55,7 +55,7 @@ public class SearchForFeeds extends NbActivity implements LoaderCallbacks<Search
 		resultsList.setEmptyView(emptyView);
 		resultsList.setOnItemClickListener(this);
 		resultsList.setItemsCanFocus(false);
-		searchLoader = getLoaderManager().initLoader(0, new Bundle(), this);
+		searchLoader = getSupportLoaderManager().initLoader(0, new Bundle(), this);
 		
 		onSearchRequested();
 	}
@@ -83,7 +83,7 @@ public class SearchForFeeds extends NbActivity implements LoaderCallbacks<Search
 			
 			Bundle bundle = new Bundle();
 			bundle.putString(SearchAsyncTaskLoader.SEARCH_TERM, query);
-			searchLoader = getLoaderManager().restartLoader(0, bundle, this);
+			searchLoader = getSupportLoaderManager().restartLoader(0, bundle, this);
 			
 			searchLoader.forceLoad();
 		}
@@ -105,7 +105,7 @@ public class SearchForFeeds extends NbActivity implements LoaderCallbacks<Search
         if ((u.getHost() == null) || (u.getHost().trim().isEmpty())) { return false; }
 
 		DialogFragment addFeedFragment = AddFeedFragment.newInstance(s, s);
-		addFeedFragment.show(getFragmentManager(), "dialog");
+		addFeedFragment.show(getSupportFragmentManager(), "dialog");
         return true;
     }
 
@@ -147,7 +147,7 @@ public class SearchForFeeds extends NbActivity implements LoaderCallbacks<Search
 	public void onItemClick(AdapterView<?> arg0, View view, int position, long id) {
 		FeedResult result = adapter.getItem(position);
 		DialogFragment addFeedFragment = AddFeedFragment.newInstance(result.url, result.label);
-		addFeedFragment.show(getFragmentManager(), "dialog");
+		addFeedFragment.show(getSupportFragmentManager(), "dialog");
 	}
 
     @Override

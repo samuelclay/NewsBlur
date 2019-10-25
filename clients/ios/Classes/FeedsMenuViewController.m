@@ -40,7 +40,7 @@
 }
 
 - (void)rebuildOptions {
-    if ([appDelegate.activeUsername isEqualToString:@"samuel"]) {
+    if ([appDelegate.activeUsername isEqualToString:@"samuel"] || [appDelegate.activeUsername isEqualToString:@"Dejal"]) {
         self.menuOptions = [[NSArray alloc]
                             initWithObjects:[@"Preferences" uppercaseString],
                                             [@"Mute Sites" uppercaseString],
@@ -130,7 +130,7 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section 
 {
-    return [self.menuOptions count] + 3;
+    return [self.menuOptions count] + 2;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -145,7 +145,7 @@
         return [self makeThemeTableCell];
     }
     
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIndentifier]; 
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIndentifier];
     
     if (cell == nil) {
         cell = [[MenuTableViewCell alloc]
@@ -264,11 +264,12 @@
         NSString *urlString = [NSString stringWithFormat:@"%@/reader/login_as?user=%@",
                           self.appDelegate.url, username];
 
-        [appDelegate.networkManager GET:urlString parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        [appDelegate GET:urlString parameters:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
             NSLog(@"Login as %@ successful", username);
-            [MBProgressHUD hideHUDForView:self.view animated:YES];
+            [MBProgressHUD hideHUDForView:appDelegate.feedsViewController.view animated:YES];
             [appDelegate reloadFeedsView:YES];
         } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+            [MBProgressHUD hideHUDForView:appDelegate.feedsViewController.view animated:YES];
             [self informError:error];
         }];
         
@@ -301,6 +302,8 @@
     [self.fontSizeSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:2];
     [self.fontSizeSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:3];
     [self.fontSizeSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:4];
+    
+    [[ThemeManager themeManager] updateSegmentedControl:self.fontSizeSegment];
     
     [cell addSubview:self.fontSizeSegment];
     
@@ -352,6 +355,10 @@
     [self.themeSegmentedControl setDividerImage:blankImage forLeftSegmentState:UIControlStateNormal rightSegmentState:UIControlStateNormal barMetrics:UIBarMetricsDefault];
     self.themeSegmentedControl.tintColor = [UIColor clearColor];
     self.themeSegmentedControl.backgroundColor = [UIColor clearColor];
+    
+    if (@available(iOS 13.0, *)) {
+        self.themeSegmentedControl.selectedSegmentTintColor = [UIColor clearColor];
+    }
     
     [cell addSubview:self.themeSegmentedControl];
     

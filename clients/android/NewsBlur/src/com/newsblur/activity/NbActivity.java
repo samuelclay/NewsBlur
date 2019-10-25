@@ -1,15 +1,14 @@
 package com.newsblur.activity;
 
-import android.app.Activity;
-import android.content.Intent;
+import android.appwidget.AppWidgetManager;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.v4.app.FragmentActivity;
 import android.widget.Toast;
 
-import com.newsblur.service.NBSyncService;
-import com.newsblur.util.AppConstants;
+import com.newsblur.R;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
+import com.newsblur.util.PrefConstants.ThemeValue;
 import com.newsblur.util.UIUtils;
 
 import java.util.ArrayList;
@@ -18,7 +17,7 @@ import java.util.ArrayList;
  * The base class for all Activities in the NewsBlur app.  Handles enforcement of
  * login state and tracking of sync/update broadcasts.
  */
-public class NbActivity extends Activity {
+public class NbActivity extends FragmentActivity {
 
     public static final int UPDATE_DB_READY = (1<<0);
     public static final int UPDATE_METADATA = (1<<1);
@@ -32,6 +31,8 @@ public class NbActivity extends Activity {
 	private final static String UNIQUE_LOGIN_KEY = "uniqueLoginKey";
 	private String uniqueLoginKey;
 
+    private ThemeValue lastTheme = null;
+
     /**
      * Keep track of all activie activities so they can be notified when the sync service
      * has updated the DB. This is essentially an ultra-lightweight implementation of a
@@ -42,9 +43,20 @@ public class NbActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle bundle) {
         com.newsblur.util.Log.offerContext(this);
-        if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "onCreate");
+        com.newsblur.util.Log.d(this, "onCreate");
 
+        // this is not redundant to the applyThemePreference() call in onResume. the theme needs to be set
+        // before onCreate() in order to work
         PrefsUtils.applyThemePreference(this);
+        lastTheme = PrefsUtils.getSelectedTheme(this);
+
+        // in rare cases of process interruption or DB corruption, an activity can launch without valid
+        // login creds.  redirect the user back to the loging workflow.
+        if (PrefsUtils.getUserId(this) == null) {
+            com.newsblur.util.Log.e(this, "post-login activity launched without valid login.");
+            PrefsUtils.logout(this);
+            finish();
+        }
 
 		super.onCreate(bundle);
 
@@ -61,9 +73,16 @@ public class NbActivity extends Activity {
 
 	@Override
 	protected void onResume() {
-        com.newsblur.util.Log.d(this.getClass().getName(), "onResume" + UIUtils.getMemoryUsageDebug(this));
+        com.newsblur.util.Log.d(this, "onResume" + UIUtils.getMemoryUsageDebug(this));
 		super.onResume();
 		finishIfNotLoggedIn();
+
+        // is is possible that another activity changed the theme while we were on the backstack
+        if (lastTheme != PrefsUtils.getSelectedTheme(this)) {
+            lastTheme = PrefsUtils.getSelectedTheme(this);
+            PrefsUtils.applyThemePreference(this);
+            UIUtils.restartActivity(this);
+        }
 
         synchronized (AllActivities) {
             AllActivities.add(this);
@@ -72,7 +91,7 @@ public class NbActivity extends Activity {
 
 	@Override
 	protected void onPause() {
-        if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "onPause");
+        com.newsblur.util.Log.d(this.getClass().getName(), "onPause");
 		super.onPause();
 
         synchronized (AllActivities) {
@@ -83,14 +102,14 @@ public class NbActivity extends Activity {
 	protected void finishIfNotLoggedIn() {
 		String currentLoginKey = PrefsUtils.getUniqueLoginKey(this);
 		if(currentLoginKey == null || !currentLoginKey.equals(uniqueLoginKey)) {
-			com.newsblur.util.Log.d( this.getClass().getName(), "This activity was for a different login. finishing it.");
+			com.newsblur.util.Log.d(this.getClass().getName(), "This activity was for a different login. finishing it.");
 			finish();
 		}
 	}
 	
 	@Override
 	protected void onSaveInstanceState(Bundle savedInstanceState) {
-        if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "onSave");
+        com.newsblur.util.Log.d(this, "onSave");
 		savedInstanceState.putString(UNIQUE_LOGIN_KEY, uniqueLoginKey);
 		super.onSaveInstanceState(savedInstanceState);
 	}
@@ -99,8 +118,7 @@ public class NbActivity extends Activity {
      * Pokes the sync service to perform any pending sync actions.
      */
     protected void triggerSync() {
-        Intent i = new Intent(this, NBSyncService.class);
-        startService(i);
+        FeedUtils.triggerSync(this);
 	}
 
     /**
@@ -110,7 +128,7 @@ public class NbActivity extends Activity {
      *        type of update being broadcast.
      */
     protected void handleUpdate(int updateType) {
-        Log.w(this.getClass().getName(), "activity doesn't implement handleUpdate");
+        com.newsblur.util.Log.w(this, "activity doesn't implement handleUpdate");
     }
 
     private void _handleUpdate(final int updateType) {

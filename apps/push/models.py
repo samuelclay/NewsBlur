@@ -60,7 +60,7 @@ class PushSubscriptionManager(models.Manager):
                 'hub.verify_token'  : subscription.generate_token('subscribe'),
                 'hub.lease_seconds' : lease_seconds,
             })
-        except requests.ConnectionError:
+        except (requests.ConnectionError, requests.exceptions.MissingSchema):
             response = None
 
         if response and response.status_code == 204:
@@ -162,7 +162,7 @@ class PushSubscription(models.Model):
                     PushSubscription.objects.subscribe(
                         self_url, feed=self.feed, hub=hub_url,
                         lease_seconds=seconds)
-                except TimeoutError, e:
+                except TimeoutError:
                     logging.debug(u'   ---> [%-30s] ~FR~BKTimed out updating PuSH hub/topic: %s / %s' % (
                                   unicode(self.feed)[:30], hub_url, self_url))
                     

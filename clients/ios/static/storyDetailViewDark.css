@@ -39,6 +39,9 @@ body {
 .NB-story-permalink {
     color: lightgray;
 }
+.NB-story-toggle-changes {
+    color: #818776;
+}
 .NB-story-date {
     color: #818776;
 }
@@ -113,6 +116,25 @@ a:active {
 .NB-story blockquote {
     border-left-color: #404040;
     background-color: #2f2f2f;
+}
+
+ins {
+    background-color: #475D49;
+    text-decoration: none;
+}
+
+del {
+    background-color: #685253
+    /*display: none;*/
+}
+
+.NB-story ins {
+    background-color: #475D49;
+    text-decoration: none
+}
+
+.NB-story del {
+    background-color: #685253
 }
 
 /* Comments */

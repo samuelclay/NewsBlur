@@ -42,11 +42,15 @@ extern NSString * const ThemeStyleDark;
 
 - (UIImage *)themedImage:(UIImage *)image;
 
+- (void)updateSegmentedControl:(UISegmentedControl *)segmentedControl;
+- (void)updateThemeSegmentedControl:(UISegmentedControl *)segmentedControl;
+
 - (void)prepareForWindow:(UIWindow *)window;
 - (void)updateTheme;
 - (void)updatePreferencesTheme;
 - (BOOL)autoChangeTheme;
 - (UIGestureRecognizer *)addThemeGestureRecognizerToView:(UIView *)view;
+- (void)systemAppearanceDidChange:(BOOL)isDark;
 
 @end
 

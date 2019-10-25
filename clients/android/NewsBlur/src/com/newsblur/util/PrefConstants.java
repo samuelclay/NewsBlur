@@ -35,8 +35,10 @@ public class PrefConstants {
 	
     public static final String FEED_STORY_ORDER_PREFIX = "feed_order_";
     public static final String FEED_READ_FILTER_PREFIX = "feed_read_filter_";
+    public static final String FEED_STORY_LIST_STYLE_PREFIX = "feed_list_style_";
     public static final String FOLDER_STORY_ORDER_PREFIX = "folder_order_";
     public static final String FOLDER_READ_FILTER_PREFIX = "folder_read_filter_";
+    public static final String FOLDER_STORY_LIST_STYLE_PREFIX = "folder_list_style_";
 	public static final String ALL_STORIES_FOLDER_NAME = "all_stories";
     public static final String ALL_SHARED_STORIES_FOLDER_NAME = "all_shared_stories";
     public static final String GLOBAL_SHARED_STORIES_FOLDER_NAME = "global_shared_stories";
@@ -57,17 +59,36 @@ public class PrefConstants {
     public static final String STORIES_MARK_READ_ON_SCROLL = "pref_mark_read_on_scroll";
     public static final String STORIES_SHOW_PREVIEWS = "pref_show_content_preview";
     public static final String STORIES_SHOW_THUMBNAILS = "pref_show_thumbnails";
+    public static final String STORIES_THUMBNAILS_STYLE = "pref_thumbnails_style";
 
     public static final String ENABLE_OFFLINE = "enable_offline";
     public static final String ENABLE_IMAGE_PREFETCH = "enable_image_prefetch";
     public static final String NETWORK_SELECT = "offline_network_select";
     public static final String KEEP_OLD_STORIES = "keep_old_stories";
+    public static final String CACHE_AGE_SELECT = "cache_age_select";
 
     public static final String NETWORK_SELECT_ANY = "ANY";
     public static final String NETWORK_SELECT_NOMO = "NOMO";
     public static final String NETWORK_SELECT_NOMONONME = "NOMONONME";
 
+    public static final String CACHE_AGE_SELECT_2D = "CACHE_AGE_2D";
+    public static final String CACHE_AGE_SELECT_7D = "CACHE_AGE_7D";
+    public static final String CACHE_AGE_SELECT_14D = "CACHE_AGE_14D";
+    public static final String CACHE_AGE_SELECT_30D = "CACHE_AGE_30D";
+    public static final long CACHE_AGE_VALUE_2D = 1000L * 60L * 60L * 24L * 2L;
+    public static final long CACHE_AGE_VALUE_7D = 1000L * 60L * 60L * 24L * 7L;
+    public static final long CACHE_AGE_VALUE_14D = 1000L * 60L * 60L * 24L * 14L;
+    public static final long CACHE_AGE_VALUE_30D = 1000L * 60L * 60L * 24L * 30L;
+
+    public static final String ENABLE_ROW_GLOBAL_SHARED = "enable_row_global_shared";
+    public static final String ENABLE_ROW_INFREQUENT_STORIES = "enable_row_infrequent_stories";
+
     public static final String THEME = "theme";
+    public enum ThemeValue {
+        LIGHT,
+        DARK,
+        BLACK;
+    }
 
     public static final String STATE_FILTER = "state_filter";
 
@@ -85,4 +106,6 @@ public class PrefConstants {
     public static final String ENABLE_NOTIFICATIONS = "enable_notifications";
 
     public static final String READING_FONT = "reading_font";
+    public static final String WIDGET_FEED_ID = "WIDGET_FEED_ID";
+    public static final String WIDGET_FEED_NAME = "WIDGET_FEED_NAME";
 }

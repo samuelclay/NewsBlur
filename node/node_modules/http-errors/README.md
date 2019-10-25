@@ -44,8 +44,11 @@ All errors inherit from JavaScript `Error` and the exported `createError.HttpErr
 - `headers` - can be an object of header names to values to be sent to the
   client, defaulting to `undefined`. When defined, the key names should all
   be lower-cased
-- `message`
-- `status` and `statusCode` - the status code of the error, defaulting to `500`
+- `message` - the traditional error message, which should be kept short and all
+  single line
+- `status` - the status code of the error, mirroring `statusCode` for general
+  compatibility
+- `statusCode` - the status code of the error, defaulting to `500`
 
 ### createError([status], [message], [properties])
 

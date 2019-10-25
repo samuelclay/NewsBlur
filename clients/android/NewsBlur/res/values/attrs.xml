@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <attr name="flow" format="string" />
-    <attr name="imageViewSize" format="integer" />
     <attr name="selectorFolderBackground" format="string" />
     <attr name="selectorFeedBackground" format="string" />
     <attr name="feedRowNeutCountText" format="string" />
@@ -41,8 +39,15 @@
     <attr name="selectorOverlayBackgroundText" format="string" />
     <attr name="muteicon" format="string" />
     
+    <attr name="flow" format="string" />
+    <attr name="imageViewSize" format="integer" />
     <declare-styleable name="FlowLayout">
         <attr name="flow" />
         <attr name="imageViewSize" />
+    </declare-styleable>
+
+    <attr name="addedHeight" format="integer" />
+    <declare-styleable name="SquaredRelativeLayout">
+        <attr name="addedHeight" />
     </declare-styleable>
 </resources>

@@ -2,6 +2,7 @@ fs     = require 'fs'
 redis  = require 'redis'
 log    = require './log.js'
 
+DEV = process.env.NODE_ENV == 'development'
 REDIS_SERVER = if process.env.NODE_ENV == 'development' then 'localhost' else 'db_redis_pubsub'
 SECURE = !!process.env.NODE_SSL
 # client = redis.createClient 6379, REDIS_SERVER
@@ -11,6 +12,17 @@ SECURE = !!process.env.NODE_SSL
 # rsub        = redis.createClient 6379, REDIS_SERVER
 # rclient     = redis.createClient 6379, REDIS_SERVER
 
+
+log.debug "Starting NewsBlur unread count server..."
+if !DEV and !process.env.NODE_ENV
+    log.debug "Specify NODE_ENV=<development,production>"
+    return
+else if DEV
+    log.debug "Running as development server"
+else
+    log.debug "Running as production server"
+    
+    
 if SECURE
     privateKey = fs.readFileSync('/srv/newsblur/config/certificates/newsblur.com.key').toString()
     certificate = fs.readFileSync('/srv/newsblur/config/certificates/newsblur.com.crt').toString()
@@ -22,12 +34,14 @@ if SECURE
     app = require('https').createServer options
     io = require('socket.io')(app, path: "/v2/socket.io")
     app.listen options.port
+    log.debug "Listening securely on port #{options.port}"
 else
     options = 
         port: 8888
     app = require('http').createServer()
     io = require('socket.io')(app, path: "/v2/socket.io")
     app.listen options.port
+    log.debug "Listening on port #{options.port}"
 
 # io.set('transports', ['websocket'])
 
@@ -48,7 +62,7 @@ io.on 'connection', (socket) ->
             return
         
         socket.on "error", (err) ->
-            console.log " ---> Error (socket): #{err}"
+            log.debug "Error (socket): #{err}"
         socket.subscribe?.quit()
         socket.subscribe = redis.createClient 6379, REDIS_SERVER
         socket.subscribe.on "error", (err) =>
@@ -79,4 +93,4 @@ io.on 'connection', (socket) ->
                     " #{if SECURE then "(SSL)" else "(non-SSL)"}"
 
 io.sockets.on 'error', (err) ->
-    console.log " ---> Error (sockets): #{err}"
+    log.debug "Error (sockets): #{err}"

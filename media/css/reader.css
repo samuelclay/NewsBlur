@@ -80,6 +80,7 @@ a img {
 }
 #NB-splash {
     display: block;
+    background-color: #F6F8F0;
 }
 .NB-show-reader #NB-splash {
     display: none;
@@ -1320,14 +1321,14 @@ a img {
 
 .NB-feedbar .NB-feedbar-mark-feed-read-container {
     position: relative;
-    margin: 0 10px 0 6px;
+    margin: 0 0 0 16px;
     font-size: 9px;
     line-height: 15px;
     font-weight: bold;
     float: right;
 }
 .NB-intelligence-starred .NB-feedbar .NB-feedbar-mark-feed-read-container,
-.NB-searching .NB-feedbar-mark-feed-read-container {
+.NB-searching .NB-feedbar-options-container {
     display: none;
 }
 .NB-feedbar .NB-feedbar-mark-feed-read,
@@ -2704,6 +2705,10 @@ body {
     z-index: 2;
     line-height: 18px;
 }
+
+.NB-narrow-content .NB-feed-story-header-feed {
+    padding-right: 28px;
+}
 .NB-feed-story-header-feed.NB-feed-story-river-same-feed {
     z-index: 0;
 }
@@ -2778,6 +2783,11 @@ body {
   
   /* See http://www.newsblur.com/site/1031643/le-21me for width: auto, height: auto */
 }
+
+.NB-feed-story .NB-feed-story-content video {
+    max-width: 100%;
+}
+
 .NB-feed-story {
     position: relative;
 }
@@ -5258,8 +5268,8 @@ form.opml_import_form input {
   background: transparent url('/media/embed/reader/github.png') no-repeat 0 6px;
   background-size: 16px;
 }
-.NB-splash-info .NB-splash-links .NB-splash-link-getsatisfaction a:hover {
-  background: transparent url('/media/embed/reader/getsatisfaction.png') no-repeat 0 6px;
+.NB-splash-info .NB-splash-links .NB-splash-link-discourse a:hover {
+  background: transparent url('/media/embed/reader/discourse.png') no-repeat 0 6px;
   background-size: 16px;
 }
 .NB-splash-info .NB-splash-links .NB-splash-link-blog a:hover {
@@ -7498,9 +7508,6 @@ form.opml_import_form input {
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-diigo {
     background: transparent url('/media/embed/reader/diigo.png') no-repeat 0 0;
 }
-.NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-kippt {
-    background: transparent url('/media/embed/reader/kippt.png') no-repeat 0 0;
-}
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-evernote {
     background: transparent url('/media/embed/reader/evernote.png') no-repeat 0 0;
 }
@@ -7535,7 +7542,6 @@ form.opml_import_form input {
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-pinterest .NB-menu-manage-thirdparty-email,
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-buffer .NB-menu-manage-thirdparty-email,
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-diigo .NB-menu-manage-thirdparty-email,
-.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-kippt .NB-menu-manage-thirdparty-email,
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-evernote .NB-menu-manage-thirdparty-email,
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-googleplus .NB-menu-manage-thirdparty-email,
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-instapaper .NB-menu-manage-thirdparty-email {
@@ -7569,9 +7575,6 @@ form.opml_import_form input {
   opacity: 1;
 }
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-diigo .NB-menu-manage-thirdparty-diigo {
-  opacity: 1;
-}
-.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-kippt .NB-menu-manage-thirdparty-kippt {
   opacity: 1;
 }
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-evernote .NB-menu-manage-thirdparty-evernote {
@@ -8055,7 +8058,6 @@ form.opml_import_form input {
   padding: 14px 1px 0;
 }
 .NB-modal.NB-modal-email .NB-error {
-  float: right;
   font-size: 12px;
   margin-top: 8px;
 }
@@ -8144,29 +8146,16 @@ form.opml_import_form input {
   top: 24px;
   position: relative;
 }
-.NB-modal-tutorial .NB-page-3 {
-  position: static;
-  float: right;
-  display: block;
-  overflow: hidden;
-  width: 240px;
-  height: 122px;
-}
-.NB-modal-tutorial .NB-page-3 .story {
-  padding-right: 0;
-}
-.NB-modal-tutorial .NB-page-3 .story:last-child {
-  border-bottom: 1px solid #E7EDF6;
-}
-.NB-modal-tutorial .NB-page-3 ul img.NB-trainer-bullet {
-  vertical-align: middle;
-}
 .NB-modal-tutorial .NB-page-3 .NB-tutorial-train-1 {
   margin-bottom: 12px;
 }
 .NB-modal-tutorial .NB-page-3 .NB-tutorial-train-1 img {
   margin-right: 24px;
   border: 1px solid #505050;
+}
+.NB-modal-tutorial .NB-page-3 ul img.NB-trainer-bullet {
+  width: 8px;
+  margin: 0px 8px 2px 0;
 }
 .NB-modal-tutorial .NB-page-4 ul li {
   clear: both;
@@ -10037,9 +10026,6 @@ form.opml_import_form input {
 }
 .NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-diigo] {
     background: transparent url('/media/embed/reader/diigo.png') no-repeat 0 0;
-}
-.NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-kippt] {
-    background: transparent url('/media/embed/reader/kippt.png') no-repeat 0 0;
 }
 .NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-evernote] {
     background: transparent url('/media/embed/reader/evernote.png') no-repeat 0 0;

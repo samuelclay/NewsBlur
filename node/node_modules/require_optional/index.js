@@ -6,6 +6,7 @@ var path = require('path'),
 
 var exists = fs.existsSync || path.existsSync;
 
+// Find the location of a package.json file near or above the given location
 var find_package_json = function(location) {
   var found = false;
 
@@ -22,34 +23,52 @@ var find_package_json = function(location) {
   return location;
 }
 
+// Find the package.json object of the module closest up the module call tree that contains name in that module's peerOptionalDependencies
+var find_package_json_with_name = function(name) {
+  // Walk up the module call tree until we find a module containing name in its peerOptionalDependencies
+  var currentModule = module;
+  var found = false;
+  while (currentModule) {
+    // Check currentModule has a package.json
+    location = currentModule.filename;
+    var location = find_package_json(location)
+    if (!location) {
+      currentModule = currentModule.parent;
+      continue;
+    }
+
+    // Read the package.json file
+    var object = JSON.parse(fs.readFileSync(f('%s/package.json', location)));
+    // Is the name defined by interal file references
+    var parts = name.split(/\//);
+
+    // Check whether this package.json contains peerOptionalDependencies containing the name we're searching for
+    if (!object.peerOptionalDependencies || (object.peerOptionalDependencies && !object.peerOptionalDependencies[parts[0]])) {
+      currentModule = currentModule.parent;
+      continue;
+    }
+    found = true;
+    break;
+  }
+
+  // Check whether name has been found in currentModule's peerOptionalDependencies
+  if (!found) {
+    throw new Error(f('no optional dependency [%s] defined in peerOptionalDependencies in any package.json', parts[0]));
+  }
+
+  return {
+    object: object,
+    parts: parts
+  }
+}
+
 var require_optional = function(name, options) {
   options = options || {};
   options.strict = typeof options.strict == 'boolean' ? options.strict : true;
 
-  // Current location
-  var location = __dirname;
-  // Check if we have a parent
-  if(module.parent) {
-    location = module.parent.filename;
-  }
-
-  // Locate this module's package.json file
-  var location = find_package_json(location);
-  if(!location) {
-    throw new Error('package.json can not be located');
-  }
-
-  // Read the package.json file
-  var object = JSON.parse(fs.readFileSync(f('%s/package.json', location)));
-  // Is the name defined by interal file references
-  var parts = name.split(/\//);
-
-  // Optional dependencies exist
-  if(!object.peerOptionalDependencies) {
-    throw new Error(f('no optional dependency [%s] defined in peerOptionalDependencies in package.json', parts[0]));
-  } else if(object.peerOptionalDependencies && !object.peerOptionalDependencies[parts[0]]) {
-    throw new Error(f('no optional dependency [%s] defined in peerOptionalDependencies in package.json', parts[0]));
-  }
+  var res = find_package_json_with_name(name)
+  var object = res.object;
+  var parts = res.parts;
 
   // Unpack the expected version
   var expectedVersions = object.peerOptionalDependencies[parts[0]];

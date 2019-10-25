@@ -1,0 +1,7 @@
+language: node_js
+node_js:
+  - "node"
+install: 
+  - yarn install
+after_failure:
+  - yarn ciftr /test-report.json

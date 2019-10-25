@@ -231,7 +231,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             <div class="NB-story-content-wrapper <% if (truncatable) { %>NB-story-content-truncatable<% } %>">\
                 <div class="NB-feed-story-content">\
                     <% if (!options.skip_content) { %>\
-                        <%= story.get("story_content") %>\
+                        <%= story.story_content() %>\
                     <% } %>\
                 </div>\
                 <div class="NB-story-content-expander">\
@@ -328,7 +328,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     
     render_story_content: function() {
         this.$(".NB-feed-story-show-changes-text").text((this.model.get('showing_diff') ? "Hide" : "Show") + " story changes");
-        this.$(".NB-feed-story-content").html(this.model.get('story_content'));
+        this.$(".NB-feed-story-content").html(this.model.story_content());
         
         this.attach_handlers();
     },

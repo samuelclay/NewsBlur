@@ -215,7 +215,7 @@
     [params setObject:@"login" forKey:@"submit"];
     [params setObject:@"1" forKey:@"api"];
 
-    [appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [appDelegate POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [MBProgressHUD hideHUDForView:self.view animated:YES];
 
         int code = [[responseObject valueForKey:@"code"] intValue];
@@ -260,7 +260,7 @@
     [params setObject:@"login" forKey:@"submit"];
     [params setObject:@"1" forKey:@"api"];
     
-    [appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [appDelegate POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [MBProgressHUD hideHUDForView:self.view animated:YES];
 
         int code = [[responseObject valueForKey:@"code"] intValue];
@@ -294,7 +294,7 @@
 }
 
 - (IBAction)forgotPassword:(id)sender {
-    NSURL *url = [NSURL URLWithString:@"http://www.newsblur.com/folder_rss/forgot_password"];
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@/folder_rss/forgot_password", appDelegate.url]];
     SFSafariViewController *safariViewController = [[SFSafariViewController alloc] initWithURL:url];
     [self presentViewController:safariViewController animated:YES completion:nil];
 }

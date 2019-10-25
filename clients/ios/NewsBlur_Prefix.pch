@@ -11,15 +11,15 @@
 //#define PROD_DEBUG 1
 
 #ifdef DEBUG
-    #define BACKGROUND_REFRESH_SECONDS -5
+    #define BACKGROUND_REFRESH_SECONDS 5
     #define DEFAULT_NEWSBLUR_URL [NSString stringWithFormat:@"http://nb.local.com"]
     #define DEFAULT_ICONS_HOST [NSString stringWithFormat:@"http://nb.local.com/rss_feeds/icon"]
 #elif PROD_DEBUG
-    #define BACKGROUND_REFRESH_SECONDS -5
+    #define BACKGROUND_REFRESH_SECONDS 5
     #define DEFAULT_NEWSBLUR_URL [NSString stringWithFormat:@"http://debug.newsblur.com"]
     #define DEFAULT_ICONS_HOST [NSString stringWithFormat:@"https://s3.amazonaws.com/icons.newsblur.com"]
 #else
-    #define BACKGROUND_REFRESH_SECONDS -10*60
+    #define BACKGROUND_REFRESH_SECONDS 10*60
     #define DEFAULT_NEWSBLUR_URL [NSString stringWithFormat:@"https://www.newsblur.com"]
     #define DEFAULT_ICONS_HOST [NSString stringWithFormat:@"https://s3.amazonaws.com/icons.newsblur.com"]
 #endif
