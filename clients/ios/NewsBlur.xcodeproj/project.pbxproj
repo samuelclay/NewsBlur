@@ -10,6 +10,7 @@
 		010EDEFA1B2386B7003B79DE /* OnePasswordExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = 010EDEF81B2386B7003B79DE /* OnePasswordExtension.m */; };
 		010EDEFC1B238722003B79DE /* 1Password.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 010EDEFB1B238722003B79DE /* 1Password.xcassets */; };
 		1715D02B2166B3F900227731 /* PremiumManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 1715D02A2166B3F900227731 /* PremiumManager.m */; };
+		17362ADD23639B4E00A0FCCC /* OfflineFetchText.m in Sources */ = {isa = PBXBuildFile; fileRef = 17362ADC23639B4E00A0FCCC /* OfflineFetchText.m */; };
 		1740C6881C10FD75005EA453 /* theme_color_dark.png in Resources */ = {isa = PBXBuildFile; fileRef = 1740C6841C10FD75005EA453 /* theme_color_dark.png */; };
 		1740C6891C10FD75005EA453 /* theme_color_light.png in Resources */ = {isa = PBXBuildFile; fileRef = 1740C6851C10FD75005EA453 /* theme_color_light.png */; };
 		1740C68A1C10FD75005EA453 /* theme_color_medium.png in Resources */ = {isa = PBXBuildFile; fileRef = 1740C6861C10FD75005EA453 /* theme_color_medium.png */; };
@@ -643,6 +644,8 @@
 		010EDEFB1B238722003B79DE /* 1Password.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = 1Password.xcassets; path = "Other Sources/OnePasswordExtension/1Password.xcassets"; sourceTree = "<group>"; };
 		1715D0292166B3F900227731 /* PremiumManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PremiumManager.h; sourceTree = "<group>"; };
 		1715D02A2166B3F900227731 /* PremiumManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PremiumManager.m; sourceTree = "<group>"; };
+		17362ADB23639B4E00A0FCCC /* OfflineFetchText.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = OfflineFetchText.h; path = offline/OfflineFetchText.h; sourceTree = "<group>"; };
+		17362ADC23639B4E00A0FCCC /* OfflineFetchText.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = OfflineFetchText.m; path = offline/OfflineFetchText.m; sourceTree = "<group>"; };
 		1740C6841C10FD75005EA453 /* theme_color_dark.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = theme_color_dark.png; sourceTree = "<group>"; };
 		1740C6851C10FD75005EA453 /* theme_color_light.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = theme_color_light.png; sourceTree = "<group>"; };
 		1740C6861C10FD75005EA453 /* theme_color_medium.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = theme_color_medium.png; sourceTree = "<group>"; };
@@ -2470,6 +2473,8 @@
 				FF855B5A1794B0670098D48A /* OfflineSyncUnreads.m */,
 				FF855B5C1794B0760098D48A /* OfflineFetchStories.h */,
 				FF855B5D1794B0760098D48A /* OfflineFetchStories.m */,
+				17362ADB23639B4E00A0FCCC /* OfflineFetchText.h */,
+				17362ADC23639B4E00A0FCCC /* OfflineFetchText.m */,
 				FF855B5F1794B0830098D48A /* OfflineFetchImages.h */,
 				FF855B601794B0830098D48A /* OfflineFetchImages.m */,
 				FF0FAEAF17B0846C008651F9 /* OfflineCleanImages.h */,
@@ -2724,7 +2729,7 @@
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 1100;
+				LastUpgradeCheck = 1110;
 				ORGANIZATIONNAME = NewsBlur;
 				TargetAttributes = {
 					1749390F1C251BFE003D98AA = {
@@ -3391,6 +3396,7 @@
 				FF855B5B1794B0670098D48A /* OfflineSyncUnreads.m in Sources */,
 				FF34FD6A1E9D93CB0062F8ED /* IASKPSSliderSpecifierViewCell.m in Sources */,
 				FF855B5E1794B0760098D48A /* OfflineFetchStories.m in Sources */,
+				17362ADD23639B4E00A0FCCC /* OfflineFetchText.m in Sources */,
 				FF855B611794B0830098D48A /* OfflineFetchImages.m in Sources */,
 				FF8D1EA71BAA304E00725D8A /* Reachability.m in Sources */,
 				FFCDD90117F65A71000C6483 /* NBSwipeableCell.m in Sources */,
