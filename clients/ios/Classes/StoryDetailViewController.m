@@ -2489,25 +2489,20 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     self.inTextView = YES;
 //    NSLog(@"Fetching Text: %@", [self.activeStory objectForKey:@"story_title"]);
     if (self.activeStory == appDelegate.storyPageControl.currentPage.activeStory) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self.appDelegate.storyPageControl showFetchingTextNotifier];
-        });
+        [self.appDelegate.storyPageControl showFetchingTextNotifier];
     }
-    
-    NSString *urlString = [NSString stringWithFormat:@"%@/rss_feeds/original_text",
-                           self.appDelegate.url];
-    NSMutableDictionary *params = [NSMutableDictionary dictionary];
-    [params setObject:[self.activeStory objectForKey:@"id"] forKey:@"story_id"];
-    [params setObject:[self.activeStory objectForKey:@"story_feed_id"] forKey:@"feed_id"];
     NSString *storyId = [self.activeStory objectForKey:@"id"];
-    [appDelegate POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-        [self finishFetchTextView:responseObject storyId:storyId];
-    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        [self failedFetchText:error];
+    
+    [appDelegate fetchTextForStory:[self.activeStory objectForKey:@"story_hash"] inFeed:[self.activeStory objectForKey:@"story_feed_id"] checkCache:YES withCallback:^(NSString *text) {
+        if (text != nil) {
+            [self finishFetchText:text storyId:storyId];
+        } else {
+            [self failedFetchText];
+        }
     }];
 }
 
-- (void)failedFetchText:(NSError *)error {
+- (void)failedFetchText {
     [self.appDelegate.storyPageControl hideNotifier];
     [MBProgressHUD hideHUDForView:self.webView animated:YES];
     if (self.activeStory == appDelegate.storyPageControl.currentPage.activeStory) {
@@ -2517,12 +2512,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     [appDelegate.storyPageControl setTextButton:self];
 }
 
-- (void)finishFetchTextView:(NSDictionary *)results storyId:(NSString *)storyId {
-    if ([[results objectForKey:@"failed"] boolValue]) {
-        [self failedFetchText:nil];
-        return;
-    }
-    
+- (void)finishFetchText:(NSString *)text storyId:(NSString *)storyId {
     if (![storyId isEqualToString:[self.activeStory objectForKey:@"id"]]) {
         [self.appDelegate.storyPageControl hideNotifier];
         [MBProgressHUD hideHUDForView:self.webView animated:YES];
@@ -2532,7 +2522,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     }
     
     NSMutableDictionary *newActiveStory = [self.activeStory mutableCopy];
-    [newActiveStory setObject:[results objectForKey:@"original_text"] forKey:@"original_text"];
+    [newActiveStory setObject:text forKey:@"original_text"];
     if ([[self.activeStory objectForKey:@"story_hash"] isEqualToString:[appDelegate.activeStory objectForKey:@"story_hash"]]) {
         appDelegate.activeStory = newActiveStory;
     }
@@ -2583,7 +2573,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 - (void)finishFetchStoryChanges:(NSDictionary *)results storyId:(NSString *)storyId {
     if ([results[@"failed"] boolValue]) {
-        [self failedFetchText:nil];
+        [self failedFetchText];
         return;
     }
     

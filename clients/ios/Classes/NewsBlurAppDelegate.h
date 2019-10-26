@@ -230,9 +230,12 @@ SFSafariViewControllerDelegate>  {
 @property (readwrite) NSInteger savedStoriesCount;
 @property (readwrite) NSInteger totalUnfetchedStoryCount;
 @property (readwrite) NSInteger remainingUnfetchedStoryCount;
+@property (readwrite) NSInteger totalUncachedTextCount;
+@property (readwrite) NSInteger remainingUncachedTextCount;
 @property (readwrite) NSInteger totalUncachedImagesCount;
 @property (readwrite) NSInteger remainingUncachedImagesCount;
 @property (readwrite) NSInteger latestFetchedStoryDate;
+@property (readwrite) NSInteger latestCachedTextDate;
 @property (readwrite) NSInteger latestCachedImageDate;
 @property (readwrite) NSInteger selectedIntelligence;
 @property (readwrite) NSMutableDictionary * recentlyReadStories;
@@ -447,6 +450,7 @@ SFSafariViewControllerDelegate>  {
 - (void)cancelOfflineQueue;
 - (void)startOfflineQueue;
 - (void)startOfflineFetchStories;
+- (void)startOfflineFetchText;
 - (void)startOfflineFetchImages;
 - (BOOL)isReachableForOffline;
 - (void)storeUserProfiles:(NSArray *)userProfiles;
@@ -456,6 +460,7 @@ SFSafariViewControllerDelegate>  {
 - (void)flushQueuedReadStories:(BOOL)forceCheck withCallback:(void(^)(void))callback;
 - (void)syncQueuedReadStories:(FMDatabase *)db withStories:(NSDictionary *)hashes withCallback:(void(^)(void))callback;
 - (void)queueSavedStory:(NSDictionary *)story;
+- (void)fetchTextForStory:(NSString *)storyHash inFeed:(NSString *)feedId checkCache:(BOOL)checkCache withCallback:(void(^)(NSString *))callback;
 - (void)prepareActiveCachedImages:(FMDatabase *)db;
 - (void)cleanImageCache;
 - (void)deleteAllCachedImages;
