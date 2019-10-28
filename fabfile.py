@@ -12,10 +12,11 @@ from vendor import yaml
 from pprint import pprint
 from collections import defaultdict
 from contextlib import contextmanager as _contextmanager
+import getpass
 import os
-import time
-import sys
 import re
+import sys
+import time
 
 try:
     import digitalocean
@@ -37,7 +38,7 @@ except ImportError:
 env.NEWSBLUR_PATH = "/srv/newsblur"
 env.SECRETS_PATH = "/srv/secrets-newsblur"
 env.VENDOR_PATH   = "/srv/code"
-env.user = 'sclay'
+env.user = getpass.getuser()
 env.key_filename = os.path.join(env.SECRETS_PATH, 'keys/newsblur.key')
 env.connection_attempts = 10
 env.do_ip_to_hostname = {}
@@ -177,7 +178,8 @@ def ec2task():
 
 def ec2():
     env.user = 'ubuntu'
-    env.key_filename = ['/Users/sclay/.ec2/sclay.pem']
+    env.key_filename = '/Users/%(user)s/.ec2/$(user).pem' % {
+        'user': getpass.getuser()}
     assign_digitalocean_roledefs()
 
 def all():
@@ -388,7 +390,7 @@ def change_shell():
         run('git clone git://github.com/robbyrussell/oh-my-zsh.git ~/.oh-my-zsh')
     sudo('chsh %s -s /bin/zsh' % env.user)
 
-def setup_user():
+def setup_user(username=getpass.getuser()):
     # run('useradd -c "NewsBlur" -m newsblur -s /bin/zsh')
     # run('openssl rand -base64 8 | tee -a ~conesus/.password | passwd -stdin conesus')
     run('mkdir -p ~/.ssh && chmod 700 ~/.ssh')
@@ -396,11 +398,11 @@ def setup_user():
     run('ssh-keygen -t dsa -f ~/.ssh/id_dsa -N ""')
     run('touch ~/.ssh/authorized_keys')
     put("~/.ssh/id_dsa.pub", "authorized_keys")
-    run("echo \"\n\" >> ~sclay/.ssh/authorized_keys")
-    run('echo `cat authorized_keys` >> ~sclay/.ssh/authorized_keys')
+    run("echo \"\n\" >> ~%s/.ssh/authorized_keys" % username)
+    run('echo `cat authorized_keys` >> ~%s/.ssh/authorized_keys' % username)
     run('rm authorized_keys')
 
-def copy_ssh_keys(username='sclay', private=False):
+def copy_ssh_keys(username=getpass.getuser(), private=False):
     sudo('mkdir -p ~%s/.ssh' % username)
     
     put(os.path.join(env.SECRETS_PATH, 'keys/newsblur.key.pub'), 'local.key.pub')
@@ -677,7 +679,7 @@ def setup_logrotate(clear=True):
     sudo('chown root.root /etc/logrotate.d/{newsblur,mongodb,nginx}')
     sudo('chmod 644 /etc/logrotate.d/{newsblur,mongodb,nginx}')
     with settings(warn_only=True):
-        sudo('chown sclay.sclay /srv/newsblur/logs/*.log')
+        sudo('chown %s /srv/newsblur/logs/*.log' % getpass.getuser())
     sudo('logrotate -f /etc/logrotate.d/newsblur')
     sudo('logrotate -f /etc/logrotate.d/nginx')
     sudo('logrotate -f /etc/logrotate.d/mongodb')
@@ -712,8 +714,8 @@ def setup_syncookies():
     sudo('sudo /sbin/sysctl -w net.ipv4.tcp_syncookies=1')
 
 def setup_sudoers(user=None):
-    sudo('echo "%s ALL=(ALL) NOPASSWD: ALL" | sudo tee /etc/sudoers.d/sclay' % (user or env.user))
-    sudo('chmod 0440 /etc/sudoers.d/sclay')
+    sudo('echo "%s ALL=(ALL) NOPASSWD: ALL" | sudo tee /etc/sudoers.d/newsblur' % (user or env.user))
+    sudo('chmod 0440 /etc/sudoers.d/newsblur')
 
 def setup_nginx():
     NGINX_VERSION = '1.15.8'
@@ -1511,7 +1513,7 @@ def do_name(name):
     
 def add_user_to_do():
     env.user = "root"
-    repo_user = "sclay"
+    repo_user = getpass.getuser()
     with settings(warn_only=True):
         run('useradd -m %s' % (repo_user))
         setup_sudoers("%s" % (repo_user))
