@@ -1938,7 +1938,7 @@ class Feed(models.Model):
                     term = tcat.label
                 elif hasattr(tcat, 'term') and tcat.term:
                     term = tcat.term
-                if not term:
+                if not term or "CDATA" in term:
                     continue
                 qcat = term.strip()
                 if ',' in qcat or '/' in qcat:
