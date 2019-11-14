@@ -460,6 +460,16 @@
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 			<key>Title</key>
+			<string>Download text</string>
+			<key>Key</key>
+			<string>offline_text_download</string>
+			<key>DefaultValue</key>
+			<true/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
 			<string>Download images</string>
 			<key>Key</key>
 			<string>offline_image_download</string>

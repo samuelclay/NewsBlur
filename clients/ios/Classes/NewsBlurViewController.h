@@ -138,8 +138,8 @@ UIGestureRecognizerDelegate, UISearchBarDelegate> {
 - (void)showRefreshNotifier;
 - (void)showCountingNotifier;
 - (void)showSyncingNotifier;
-- (void)showSyncingNotifier:(float)progress hoursBack:(NSInteger)days;
-- (void)showCachingNotifier:(float)progress hoursBack:(NSInteger)hours;
+- (void)showSyncingNotifier:(float)progress hoursBack:(NSInteger)hours;
+- (void)showCachingNotifier:(NSString *)prefix progress:(float)progress hoursBack:(NSInteger)hours;
 - (void)showOfflineNotifier;
 - (void)showDoneNotifier;
 - (void)hideNotifier;
