@@ -50,6 +50,7 @@
 #import "IASKAppSettingsViewController.h"
 #import "OfflineSyncUnreads.h"
 #import "OfflineFetchStories.h"
+#import "OfflineFetchText.h"
 #import "OfflineFetchImages.h"
 #import "OfflineCleanImages.h"
 #import "NBBarButtonItem.h"
@@ -80,7 +81,7 @@
 
 @implementation NewsBlurAppDelegate
 
-#define CURRENT_DB_VERSION 36
+#define CURRENT_DB_VERSION 37
 
 #define CURRENT_STATE_VERSION 1
 
@@ -3596,6 +3597,10 @@
             [db executeUpdate:@"drop table if exists `queued_saved_hashes`"];
         }
         
+        if (databaseVersion < 37) {
+            [db executeUpdate:@"drop table if exists `cached_text`"];
+        }
+        
         NSLog(@"Dropped db: %@", [db lastErrorMessage]);
         sqlite3_exec(db.sqliteHandle, [[NSString stringWithFormat:@"PRAGMA user_version = %d", CURRENT_DB_VERSION] UTF8String], NULL, NULL, NULL);
     }
@@ -3675,6 +3680,19 @@
                                  ")"];
     [db executeUpdate:createSavedTable];
     
+    NSString *createTextTable = [NSString stringWithFormat:@"create table if not exists cached_text "
+                                 "("
+                                 " story_feed_id varchar(20),"
+                                 " story_hash varchar(24),"
+                                 " story_timestamp number,"
+                                 " text_json text"
+                                 ")"];
+    [db executeUpdate:createTextTable];
+    NSString *indexTextFeedId = @"CREATE INDEX IF NOT EXISTS cached_text_story_feed_id ON cached_text (story_feed_id)";
+    [db executeUpdate:indexTextFeedId];
+    NSString *indexTextStoryHash = @"CREATE INDEX IF NOT EXISTS cached_text_story_hash ON cached_text (story_hash)";
+    [db executeUpdate:indexTextStoryHash];
+    
     NSString *createImagesTable = [NSString stringWithFormat:@"create table if not exists cached_images "
                                    "("
                                    " story_feed_id varchar(20),"
@@ -3745,6 +3763,12 @@
     [offlineQueue addOperation:operationFetchStories];
     
 //    NSLog(@"Done start offline fetch stories");
+}
+
+- (void)startOfflineFetchText {
+    OfflineFetchText *operationFetchText = [[OfflineFetchText alloc] init];
+    
+    [offlineQueue addOperation:operationFetchText];
 }
 
 - (void)startOfflineFetchImages {
@@ -4041,6 +4065,76 @@
     }];
 }
 
+- (void)fetchTextForStory:(NSString *)storyHash inFeed:(NSString *)feedId checkCache:(BOOL)checkCache withCallback:(void(^)(NSString *))callback {
+    if (checkCache) {
+        [self privateGetCachedTextForStory:storyHash inFeed:feedId withCallback:^(NSString *text) {
+            if (text != nil) {
+                if (callback) {
+                    callback(text);
+                }
+            } else {
+                [self privateFetchTextForStory:storyHash inFeed:feedId withCallback:callback];
+            }
+        }];
+    } else {
+        [self privateFetchTextForStory:storyHash inFeed:feedId withCallback:callback];
+    }
+}
+
+- (void)privateGetCachedTextForStory:(NSString *)storyHash inFeed:(NSString *)feedId withCallback:(void(^)(NSString *))callback {
+    [self.database inDatabase:^(FMDatabase *db) {
+        NSString *text = nil;
+        FMResultSet *cursor = [db executeQuery:@"SELECT * FROM cached_text "
+                               "WHERE story_hash = ? AND story_feed_id = ? LIMIT 1",
+                               storyHash, feedId];
+        while ([cursor next]) {
+            NSDictionary *textCache = [cursor resultDictionary];
+            NSString *json = [textCache objectForKey:@"text_json"];
+            
+            if (json.length > 0) {
+                NSDictionary *results = [NSJSONSerialization
+                                         JSONObjectWithData:[json
+                                                             dataUsingEncoding:NSUTF8StringEncoding]
+                                         options:0 error:nil];
+                text = results[@"text"];
+                
+                if (text) {
+                    NSLog(@"Found cached text: %@ bytes", @(text.length));
+                } else {
+                    NSLog(@"Found cached failure");
+                }
+            }
+        }
+        [cursor close];
+        
+        if (callback) {
+            callback(text);
+        }
+    }];
+}
+
+- (void)privateFetchTextForStory:(NSString *)storyHash inFeed:(NSString *)feedId withCallback:(void(^)(NSString *))callback {
+    NSString *urlString = [NSString stringWithFormat:@"%@/rss_feeds/original_text", self.url];
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    [params setObject:storyHash forKey:@"story_id"];
+    [params setObject:feedId forKey:@"feed_id"];
+    
+    [self POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        NSString *text = [responseObject objectForKey:@"original_text"];
+        
+        if ([[responseObject objectForKey:@"failed"] boolValue]) {
+            text = nil;
+        }
+        
+        if (callback) {
+            callback(text);
+        }
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        if (callback) {
+            callback(nil);
+        }
+    }];
+}
 
 - (void)prepareActiveCachedImages:(FMDatabase *)db {
     activeCachedImages = [NSMutableDictionary dictionary];
