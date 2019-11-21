@@ -14,6 +14,7 @@ import com.newsblur.domain.Story;
 import com.newsblur.network.APIManager;
 import com.newsblur.network.domain.StoriesResponse;
 import com.newsblur.util.FeedSet;
+import com.newsblur.util.FeedUtils;
 import com.newsblur.util.Log;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadFilter;
@@ -36,7 +37,6 @@ public class BlurWidgetRemoteViewsService extends RemoteViewsService {
 
 class BlurWidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
     private Context context;
-    private String feedId;
     private static String TAG = "BlurWidgetRemoteViewsFactory";
     private List<Story> storyItems = new ArrayList<Story>();
     private FeedSet fs;
@@ -46,9 +46,20 @@ class BlurWidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFact
         this.context = context;
         int appWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
                 AppWidgetManager.INVALID_APPWIDGET_ID);
-        feedId = PrefsUtils.getWidgetFeed(context, appWidgetId);
+        final String feedId = PrefsUtils.getWidgetFeed(context, appWidgetId);
+        final String feedName = PrefsUtils.getWidgetFeedName(context, appWidgetId);
+
         apiManager = new APIManager(context);
         Log.d(TAG, "Feed ID: " + feedId);
+
+        if(feedId != null){
+            // this is a single feed
+            fs = FeedSet.singleFeed(feedId);
+        }else{
+            // this is a folder
+            fs = FeedUtils.feedSetFromFolderName(feedName);
+        }
+
     }
     /**
      * The system calls onCreate() when creating your factory for the first time.
@@ -61,7 +72,6 @@ class BlurWidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFact
     @Override
     public void onCreate() {
         Log.d(TAG, "onCreate");
-        fs = FeedSet.singleFeed(feedId);
     }
 
     private void fetchStories() {
