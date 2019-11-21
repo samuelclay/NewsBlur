@@ -16,18 +16,26 @@ import android.widget.RemoteViews;
 import com.newsblur.R;
 import com.newsblur.activity.NbActivity;
 import com.newsblur.domain.Feed;
+import com.newsblur.domain.Folder;
+import com.newsblur.network.APIManager;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.Log;
 import com.newsblur.util.PrefsUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class ConfigureWidgetActivity extends NbActivity {
+
     private int appWidgetId;
     private List<Feed> feeds = new ArrayList<>();
+    private List<Folder> folders = new ArrayList<>();
     private static String TAG = "ConfigureWidgetActivity";
     private Feed selectedFeed = null;
+    private Folder selectedFolder = null;
+
     @Override
     protected void onCreate(Bundle bundle) {
         super.onCreate(bundle);
@@ -43,14 +51,17 @@ public class ConfigureWidgetActivity extends NbActivity {
 
         PrefsUtils.removeWidgetFeed(this, appWidgetId);
 
+        folders = null;
+        feeds = null;
         getAllFeeds();
+        getAllFolders();
         // set result as cancelled in the case that we don't finish config
         Intent resultValue = new Intent();
         resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
         setResult(RESULT_CANCELED, resultValue);
     }
 
-    private void getAllFeeds(){
+    private void getAllFeeds() {
         Loader<Cursor> loader = FeedUtils.dbHelper.getFeedsLoader();
         loader.registerListener(loader.getId(), new Loader.OnLoadCompleteListener<Cursor>() {
             @Override
@@ -61,6 +72,34 @@ public class ConfigureWidgetActivity extends NbActivity {
         loader.startLoading();
     }
 
+    private void getAllFolders() {
+        Loader<Cursor> loader = FeedUtils.dbHelper.getFoldersLoader();
+        loader.registerListener(loader.getId(), new Loader.OnLoadCompleteListener<Cursor>() {
+            @Override
+            public void onLoadComplete(@NonNull Loader<Cursor> loader, @Nullable Cursor data) {
+                processFolders(data);
+            }
+        });
+        loader.startLoading();
+    }
+
+    private void processFolders(Cursor cursor) {
+        List<Folder> folders = new ArrayList<>();
+        while (cursor.moveToNext()) {
+            Folder f = Folder.fromCursor(cursor);
+            folders.add(f);
+        }
+        Collections.sort(folders, new Comparator<Folder>() {
+            @Override
+            public int compare(Folder o1, Folder o2) {
+                return o1.name.compareTo(o2.name);
+            }
+        });
+        this.folders = new ArrayList<>();
+        this.folders.addAll(folders);
+        requestFeedFromUser();
+    }
+
     private void processFeeds(Cursor cursor) {
         List<Feed> feeds = new ArrayList<>();
         while (cursor.moveToNext()) {
@@ -69,15 +108,21 @@ public class ConfigureWidgetActivity extends NbActivity {
                 feeds.add(f);
             }
         }
-        this.feeds.clear();
+        this.feeds = new ArrayList<>();
         this.feeds.addAll(feeds);
         requestFeedFromUser();
     }
 
-    private void requestFeedFromUser(){
+    private void requestFeedFromUser() {
+        if (feeds == null || folders == null) {
+            return;
+        }
         ArrayList<String> feedTitles = new ArrayList<>();
+        for (Folder folder : folders) {
+            feedTitles.add(String.format("Folder: %s", folder.name));
+        }
         for (Feed feed : feeds) {
-            feedTitles.add(feed.title);
+            feedTitles.add(String.format("Feed: %s", feed.title));
         }
         AlertDialog.Builder builder = new AlertDialog.Builder(this)
                 .setTitle("Select a feed")
@@ -85,22 +130,23 @@ public class ConfigureWidgetActivity extends NbActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         Log.d(TAG, "Selected " + which);
-                        selectedFeed = feeds.get(which);
+                        if (which < folders.size()) {
+                            selectedFolder = folders.get(which);
+                        } else {
+                            selectedFeed = feeds.get(which);
+                        }
                         saveWidget();
                     }
                 });
         builder.create().show();
     }
 
-
-    private void saveWidget(){
-        if (selectedFeed == null) {
+    private void saveWidget() {
+        if (selectedFeed == null && selectedFolder == null) {
             toastError("Please select a feed");
             return;
         }
         //update widget
-        Log.d(TAG, String.format("saving widget with feed id %s - %s",
-                selectedFeed.feedId, selectedFeed.title));
         AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
         RemoteViews rv = new RemoteViews(getPackageName(),
                 R.layout.newsblur_widget);
@@ -110,9 +156,16 @@ public class ConfigureWidgetActivity extends NbActivity {
         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
         intent.setData(Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME)));
 
-        PrefsUtils.setWidgetFeed(this, appWidgetId, selectedFeed.feedId, selectedFeed.title);
+        String title;
+        if (selectedFeed != null) {
+            PrefsUtils.setWidgetFeed(this, appWidgetId, selectedFeed.feedId, selectedFeed.title);
+            title = selectedFeed.title;
+        } else {
+            PrefsUtils.setWidgetFolderName(this, appWidgetId, selectedFolder.name);
+            title = selectedFolder.name;
+        }
 
-        rv.setTextViewText(R.id.txt_feed_name, selectedFeed.title);
+        rv.setTextViewText(R.id.txt_feed_name, title);
         rv.setRemoteAdapter(R.id.widget_list, intent);
         rv.setEmptyView(R.id.widget_list, R.id.empty_view);
 
