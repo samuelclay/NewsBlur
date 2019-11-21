@@ -881,7 +881,7 @@ public class PrefsUtils {
     }
     public static String getWidgetFeed(Context context, int widgetId) {
         SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
-        String feedId = preferences.getString(PrefConstants.WIDGET_FEED_ID + widgetId, "0");
+        String feedId = preferences.getString(PrefConstants.WIDGET_FEED_ID + widgetId, null);
         return feedId;
     }
     public static String getWidgetFeedName(Context context, int widgetId) {
