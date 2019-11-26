@@ -1147,6 +1147,9 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
             [appDelegate.database inDatabase:^(FMDatabase *db) {
                 [db executeUpdate:@"VACUUM"];
                 [appDelegate setupDatabase:db force:YES];
+                [db executeUpdate:@"DELETE FROM stories"];
+                [db executeUpdate:@"DELETE FROM text"];
+                [db executeUpdate:@"DELETE FROM cached_images"];
                 [appDelegate deleteAllCachedImages];
                 dispatch_sync(dispatch_get_main_queue(), ^{
                     [[NSUserDefaults standardUserDefaults] setObject:@"Cleared all stories and images!"
