@@ -86,7 +86,6 @@ def get_user(request):
             try:
                 user = User.objects.get(profile__secret_token=secret_token)
                 request.user = user
-                print(" Secret token: %s / %s %s" % (secret_token, user, user.is_anonymous()))
             except User.DoesNotExist:
                 pass
         
