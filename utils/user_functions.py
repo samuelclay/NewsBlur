@@ -79,6 +79,17 @@ def get_user(request):
     else:
         user = request.user
         
+    if user.is_anonymous() and hasattr(request, 'POST'):
+        # Check secret_token parameter
+        secret_token = request.POST.get('secret_token', None) or request.GET.get('secret_token', None)
+        if secret_token:
+            try:
+                user = User.objects.get(profile__secret_token=secret_token)
+                request.user = user
+                print(" Secret token: %s / %s %s" % (secret_token, user, user.is_anonymous()))
+            except User.DoesNotExist:
+                pass
+        
     if user.is_anonymous():
         user = cache.get('user:%s' % settings.HOMEPAGE_USERNAME, None)
         if not user:
