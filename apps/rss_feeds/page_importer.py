@@ -234,7 +234,7 @@ class PageImporter(object):
         except:
             # response = response.decode('latin1').encode('utf-8')
             # html = BASE_RE.sub(r'<head\1 '+base_code, response)
-            return ""
+            return None
         
         if '<base href' not in html:
             html = "%s %s" % (base_code, html)
