@@ -572,7 +572,15 @@
         }
         
         [self popToRoot];
-        [self loadFeed:feedId withStory:storyHash animated:NO];
+        
+        self.inFindingStoryMode = YES;
+        [storiesCollection reset];
+        storiesCollection.isRiverView = YES;
+        
+        self.tryFeedStoryId = storyHash;
+        storiesCollection.activeFolder = @"everything";
+        
+        [self loadRiverFeedDetailView:self.feedDetailViewController withFolder:storiesCollection.activeFolder];
         
         return YES;
     }

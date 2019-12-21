@@ -136,29 +136,7 @@ class WidgetExtensionViewController: UITableViewController, NCWidgetProviding {
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
         
-        let updatedVisibleCellCount = numberOfTableRowsToDisplay
-        let currentVisibleCellCount = self.tableView.visibleCells.count
-        let cellCountDifference = updatedVisibleCellCount - currentVisibleCellCount
-        
-        // If the number of visible cells has changed, animate them in/out along with the resize animation.
-        if cellCountDifference != 0 {
-            coordinator.animate(alongsideTransition: { [unowned self] (UIViewControllerTransitionCoordinatorContext) in
-                self.tableView.performBatchUpdates({ [unowned self] in
-                    // Build an array of IndexPath objects representing the rows to be inserted or deleted.
-                    let range = (1...abs(cellCountDifference))
-                    let indexPaths = range.map({ (index) -> IndexPath in
-                        return IndexPath(row: index, section: 0)
-                    })
-                    
-                    // Animate the insertion or deletion of the rows.
-                    if cellCountDifference > 0 {
-                        self.tableView.insertRows(at: indexPaths, with: .fade)
-                    } else {
-                        self.tableView.deleteRows(at: indexPaths, with: .fade)
-                    }
-                }, completion: nil)
-            }, completion: nil)
-        }
+        tableView.reloadData()
     }
     
     // MARK: - Table view data source
@@ -179,7 +157,7 @@ class WidgetExtensionViewController: UITableViewController, NCWidgetProviding {
             case .notLoggedIn:
                 cell.errorLabel.text = "Please log in to NewsBlur"
             case .loading:
-                cell.errorLabel.text = "On its way..."
+                cell.errorLabel.text = "Tap to set up in NewsBlur"
             case .noFeeds:
                 cell.errorLabel.text = "Please choose sites to show"
             case .noStories:
@@ -330,13 +308,16 @@ private extension WidgetExtensionViewController {
             error = .noStories
         }
         
+        // Keep a local copy, since the property will be cleared before the async closure is called.
+        let localCompletion = widgetCompletion
+        
         DispatchQueue.main.async {
             self.extensionContext?.widgetLargestAvailableDisplayMode = self.error == nil ? .expanded : .compact
             
             self.tableView.reloadData()
             self.tableView.setNeedsDisplay()
             
-            self.widgetCompletion?(.newData)
+            localCompletion?(.newData)
         }
     }
     
