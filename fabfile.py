@@ -827,7 +827,10 @@ def copy_certificates():
     put(os.path.join(env.SECRETS_PATH, 'certificates/comodo/newsblur.com.pem'), cert_path)
     put(os.path.join(env.SECRETS_PATH, 'certificates/comodo/dhparams.pem'), cert_path)
     put(os.path.join(env.SECRETS_PATH, 'certificates/ios/aps_development.pem'), cert_path)
+    # openssl x509 -in aps.cer -inform DER -outform PEM -out aps.pem
     put(os.path.join(env.SECRETS_PATH, 'certificates/ios/aps.pem'), cert_path)
+    # Export aps.p12 from aps.cer using Keychain Assistant
+    # openssl pkcs12 -in aps.p12 -out aps.p12.pem -nodes
     put(os.path.join(env.SECRETS_PATH, 'certificates/ios/aps.p12.pem'), cert_path)
     run('cat %s/newsblur.com.pem > %s/newsblur.pem' % (cert_path, cert_path))
     run('echo "\n" >> %s/newsblur.pem' % (cert_path))
