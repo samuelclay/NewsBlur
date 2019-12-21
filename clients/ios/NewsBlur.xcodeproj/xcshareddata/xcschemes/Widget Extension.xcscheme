@@ -16,7 +16,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "177551D2238E228A00E27818"
-               BuildableName = "NewsBlur Stories.appex"
+               BuildableName = "NewsBlur Latest.appex"
                BlueprintName = "Widget Extension"
                ReferencedContainer = "container:NewsBlur.xcodeproj">
             </BuildableReference>
@@ -60,7 +60,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "177551D2238E228A00E27818"
-            BuildableName = "NewsBlur Stories.appex"
+            BuildableName = "NewsBlur Latest.appex"
             BlueprintName = "Widget Extension"
             ReferencedContainer = "container:NewsBlur.xcodeproj">
          </BuildableReference>
