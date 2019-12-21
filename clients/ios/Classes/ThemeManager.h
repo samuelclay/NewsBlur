@@ -50,6 +50,7 @@ extern NSString * const ThemeStyleDark;
 - (void)updatePreferencesTheme;
 - (BOOL)autoChangeTheme;
 - (UIGestureRecognizer *)addThemeGestureRecognizerToView:(UIView *)view;
+- (void)updateForSystemAppearance;
 - (void)systemAppearanceDidChange:(BOOL)isDark;
 
 @end
