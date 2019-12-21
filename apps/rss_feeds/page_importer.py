@@ -225,11 +225,11 @@ class PageImporter(object):
     def rewrite_page(self, response):
         BASE_RE = re.compile(r'<head(.*?\>)', re.I)
         base_code = u'<base href="%s" />' % (self.feed.feed_link,)
-        try:
-            html = BASE_RE.sub(r'<head\1 '+base_code, response)
-        except:
-            response = response.decode('latin1').encode('utf-8')
-            html = BASE_RE.sub(r'<head\1 '+base_code, response)
+        # try:
+        html = BASE_RE.sub(r'<head\1 '+base_code, response)
+        # except:
+        #     response = response.decode('latin1').encode('utf-8')
+        #     html = BASE_RE.sub(r'<head\1 '+base_code, response)
         
         if '<base href' not in html:
             html = "%s %s" % (base_code, html)
