@@ -52,7 +52,7 @@
 		176129631C630AEB00702FE4 /* mute_feed_on@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1761295F1C630AEB00702FE4 /* mute_feed_on@2x.png */; };
 		177551D5238E228A00E27818 /* NotificationCenter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 177551D4238E228A00E27818 /* NotificationCenter.framework */; };
 		177551DB238E228A00E27818 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 177551D9238E228A00E27818 /* MainInterface.storyboard */; };
-		177551DF238E228A00E27818 /* NewsBlur Latest.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 177551D3238E228A00E27818 /* NewsBlur Latest.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		177551DF238E228A00E27818 /* NewsBlur.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 177551D3238E228A00E27818 /* NewsBlur.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		17813FB723AC6E450057FB16 /* WidgetErrorTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 17CE3F0523AC529B003152EF /* WidgetErrorTableViewCell.xib */; };
 		17876B9E1C9911D40055DD15 /* g_icn_folder_rss_sm.png in Resources */ = {isa = PBXBuildFile; fileRef = 17876B9A1C9911D40055DD15 /* g_icn_folder_rss_sm.png */; };
 		17876B9F1C9911D40055DD15 /* g_icn_folder_rss_sm@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 17876B9B1C9911D40055DD15 /* g_icn_folder_rss_sm@2x.png */; };
@@ -651,7 +651,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
-				177551DF238E228A00E27818 /* NewsBlur Latest.appex in Embed App Extensions */,
+				177551DF238E228A00E27818 /* NewsBlur.appex in Embed App Extensions */,
 				1749391B1C251BFE003D98AA /* Share Extension.appex in Embed App Extensions */,
 			);
 			name = "Embed App Extensions";
@@ -713,7 +713,7 @@
 		1761295D1C630AEB00702FE4 /* mute_feed_off@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "mute_feed_off@2x.png"; sourceTree = "<group>"; };
 		1761295E1C630AEB00702FE4 /* mute_feed_on.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = mute_feed_on.png; sourceTree = "<group>"; };
 		1761295F1C630AEB00702FE4 /* mute_feed_on@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "mute_feed_on@2x.png"; sourceTree = "<group>"; };
-		177551D3238E228A00E27818 /* NewsBlur Latest.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "NewsBlur Latest.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		177551D3238E228A00E27818 /* NewsBlur.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = NewsBlur.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		177551D4238E228A00E27818 /* NotificationCenter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = NotificationCenter.framework; path = System/Library/Frameworks/NotificationCenter.framework; sourceTree = SDKROOT; };
 		177551DA238E228A00E27818 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
 		177551DC238E228A00E27818 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -1638,7 +1638,7 @@
 				1D6058910D05DD3D006BFB54 /* NewsBlur.app */,
 				174939101C251BFE003D98AA /* Share Extension.appex */,
 				FF8A94971DE3BB77000A4C31 /* Story Notification Service Extension.appex */,
-				177551D3238E228A00E27818 /* NewsBlur Latest.appex */,
+				177551D3238E228A00E27818 /* NewsBlur.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -2766,7 +2766,7 @@
 			);
 			name = "Widget Extension";
 			productName = widget;
-			productReference = 177551D3238E228A00E27818 /* NewsBlur Latest.appex */;
+			productReference = 177551D3238E228A00E27818 /* NewsBlur.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
 		1D6058900D05DD3D006BFB54 /* NewsBlur */ = {
@@ -3729,7 +3729,7 @@
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.newsblur.NewsBlur.widget;
-				PRODUCT_NAME = "NewsBlur Latest";
+				PRODUCT_NAME = NewsBlur;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -3770,7 +3770,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.newsblur.NewsBlur.widget;
-				PRODUCT_NAME = "NewsBlur Latest";
+				PRODUCT_NAME = NewsBlur;
 				SKIP_INSTALL = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
