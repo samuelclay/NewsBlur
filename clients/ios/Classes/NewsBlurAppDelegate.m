@@ -515,15 +515,7 @@
         }];
     } else if ([action isEqualToString:@"VIEW_STORY_IDENTIFIER"] ||
                [action isEqualToString:@"com.apple.UNNotificationDefaultActionIdentifier"]) {
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-            [masterContainerViewController dismissViewControllerAnimated:NO completion:nil];
-            [self.navigationController
-             popToViewController:[self.navigationController.viewControllers
-                                  objectAtIndex:0]
-             animated:YES];
-        } else {
-            [self.navigationController popToRootViewControllerAnimated:NO];
-        }
+        [self popToRoot];
         [self loadFeed:feedIdStr withStory:storyHash animated:NO];
         if (completionHandler) completionHandler();
     } else if ([action isEqualToString:@"DISMISS_IDENTIFIER"]) {
@@ -555,6 +547,36 @@
             openURL:(NSURL *)url
   sourceApplication:(NSString *)sourceApplication
          annotation:(id)annotation {
+    if (self.activeUsername && [url.scheme isEqualToString:@"newsblurwidget"]) {
+        NSMutableDictionary *query = [NSMutableDictionary dictionary];
+        
+        for (NSString *component in [url.query componentsSeparatedByString:@"&"]) {
+            NSArray *keyAndValue = [component componentsSeparatedByString:@"="];
+            
+            [query setObject:keyAndValue.lastObject forKey:keyAndValue.firstObject];
+        }
+        
+        NSString *feedId = query[@"feedId"];
+        NSString *storyHash = query[@"storyHash"];
+        NSString *error = query[@"error"];
+        
+        if (error.length) {
+            [self popToRoot];
+            [self showWidgetSites];
+            
+            return YES;
+        }
+        
+        if (!feedId.length || !storyHash.length) {
+            return NO;
+        }
+        
+        [self popToRoot];
+        [self loadFeed:feedId withStory:storyHash animated:NO];
+        
+        return YES;
+    }
+    
     return NO;
 }
 
@@ -720,6 +742,17 @@
     [feedsViewController resizeFontSize];
 }
 
+- (void)popToRoot {
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        [masterContainerViewController dismissViewControllerAnimated:NO completion:nil];
+        [self.navigationController
+         popToViewController:[self.navigationController.viewControllers objectAtIndex:0]
+         animated:YES];
+    } else {
+        [self.navigationController popToRootViewControllerAnimated:NO];
+    }
+}
+
 - (void)showPremiumDialog {
     UINavigationController *navController = self.navigationController;
     if (self.premiumNavigationController == nil) {
@@ -823,6 +856,10 @@
 
 - (void)showOrganizeSites {
     [self showFeedChooserForOperation:FeedChooserOperationOrganizeSites];
+}
+
+- (void)showWidgetSites {
+    [self showFeedChooserForOperation:FeedChooserOperationWidgetSites];
 }
 
 - (void)showFindFriends {

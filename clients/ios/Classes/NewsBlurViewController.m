@@ -566,9 +566,10 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     
     NSUserDefaults *defaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.com.newsblur.NewsBlur-Group"];
     [defaults setObject:[results objectForKey:@"share_ext_token"] forKey:@"share:token"];
-    [defaults setObject:DEFAULT_NEWSBLUR_URL forKey:@"share:host"];
+    [defaults setObject:self.appDelegate.url forKey:@"share:host"];
+    [self validateWidgetFeedsForGroupDefaults:defaults usingResults:results];
     [defaults synchronize];
-
+    
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
                                              (unsigned long)NULL), ^(void) {
         [appDelegate.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
@@ -1158,6 +1159,25 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
             }];
         });
 	}
+}
+
+- (void)validateWidgetFeedsForGroupDefaults:(NSUserDefaults *)groupDefaults usingResults:(NSDictionary *)results {
+    NSMutableDictionary *feeds = [groupDefaults objectForKey:@"widget:feeds"];
+    
+    if (feeds == nil) {
+        feeds = [NSMutableDictionary dictionary];
+        
+        NSDictionary *resultsFeeds = results[@"feeds"];
+        
+        [resultsFeeds enumerateKeysAndObjectsUsingBlock:^(id key, NSDictionary *obj, BOOL *stop) {
+            NSString *identifier = [NSString stringWithFormat:@"%@", key];
+            NSString *title = obj[@"feed_title"];
+            
+            feeds[identifier] = title;
+        }];
+        
+        [groupDefaults setObject:feeds forKey:@"widget:feeds"];
+    }
 }
 
 #pragma mark -

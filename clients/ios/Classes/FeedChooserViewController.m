@@ -31,6 +31,8 @@ static const CGFloat kFolderTitleHeight = 36.0;
 @property (nonatomic) BOOL ascending;
 @property (nonatomic) BOOL flat;
 @property (nonatomic, readonly) NewsBlurAppDelegate *appDelegate;
+@property (nonatomic, strong) NSUserDefaults *groupDefaults;
+@property (nonatomic, readonly) NSDictionary *widgetFeeds;
 
 @end
 
@@ -45,10 +47,21 @@ static const CGFloat kFolderTitleHeight = 36.0;
 
     appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
     
+    if (self.operation == FeedChooserOperationWidgetSites) {
+        self.groupDefaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.com.newsblur.NewsBlur-Group"];
+    }
+    
     UIBarButtonItem *doneItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(done)];
     self.optionsItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"nav_icn_settings.png"] style:UIBarButtonItemStylePlain target:self action:@selector(showOptionsMenu)];
     
-    if (self.operation == FeedChooserOperationOrganizeSites) {
+    if (self.operation == FeedChooserOperationMuteSites) {
+        UIBarButtonItem *cancelItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(cancel)];
+        
+        self.navigationItem.leftBarButtonItem = cancelItem;
+        self.navigationItem.rightBarButtonItems = @[doneItem, self.optionsItem];
+        
+        self.tableView.editing = NO;
+    } else if (self.operation == FeedChooserOperationOrganizeSites) {
         self.moveItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"menu_icn_move.png"] style:UIBarButtonItemStylePlain target:self action:@selector(showMoveMenu)];
         self.deleteItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"menu_icn_delete.png"] style:UIBarButtonItemStylePlain target:self action:@selector(deleteFeeds)];
         
@@ -57,12 +70,10 @@ static const CGFloat kFolderTitleHeight = 36.0;
         
         self.tableView.editing = YES;
     } else {
-        UIBarButtonItem *cancelItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(cancel)];
-        
-        self.navigationItem.leftBarButtonItem = cancelItem;
+        self.navigationItem.leftBarButtonItems = nil;
         self.navigationItem.rightBarButtonItems = @[doneItem, self.optionsItem];
         
-        self.tableView.editing = NO;
+        self.tableView.editing = YES;
     }
     
     self.tableView.backgroundColor = UIColorFromRGB(0xECEEEA);
@@ -76,9 +87,13 @@ static const CGFloat kFolderTitleHeight = 36.0;
     
     if (self.operation == FeedChooserOperationMuteSites) {
         [self performGetInactiveFeeds];
+    } else if (self.operation == FeedChooserOperationOrganizeSites) {
+        [self updateDictFolders];
+        [self rebuildItemsAnimated:NO];
     } else {
         [self updateDictFolders];
         [self rebuildItemsAnimated:NO];
+        [self updateSelectedWidgets];
     }
 }
 
@@ -315,6 +330,10 @@ static const CGFloat kFolderTitleHeight = 36.0;
         } else {
             [self.tableView deselectRowAtIndexPath:[NSIndexPath indexPathForRow:row inSection:section] animated:YES];
         }
+        
+        if (self.operation == FeedChooserOperationWidgetSites) {
+            [self setWidgetIncludes:select item:item];
+        }
     }];
     
     [self updateControls];
@@ -331,8 +350,18 @@ static const CGFloat kFolderTitleHeight = 36.0;
         } else {
             self.navigationItem.title = [NSString stringWithFormat:@"Mute %@ Sites", @(count)];
         }
-    } else {
+    } else if (self.operation == FeedChooserOperationOrganizeSites) {
         self.navigationItem.title = @"Organize Sites";
+    } else {
+        NSUInteger count = self.tableView.indexPathsForSelectedRows.count;
+        
+        if (count == 0) {
+            self.navigationItem.title = @"No Widget Sites";
+        } else if (count == 1) {
+            self.navigationItem.title = @"1 Widget Site";
+        } else {
+            self.navigationItem.title = [NSString stringWithFormat:@"%@ Widget Sites", @(count)];
+        }
     }
 }
 
@@ -343,6 +372,42 @@ static const CGFloat kFolderTitleHeight = 36.0;
     self.deleteItem.enabled = hasSelection;
     
     [self updateTitle];
+}
+
+- (NSDictionary *)widgetFeeds {
+    NSMutableDictionary *feeds = [self.groupDefaults objectForKey:@"widget:feeds"];
+    
+    if (feeds == nil) {
+        feeds = [NSMutableDictionary dictionary];
+        
+        [self enumerateAllRowsUsingBlock:^(NSIndexPath *indexPath, FeedChooserItem *item) {
+            [feeds setObject:item.title forKey:item.identifierString];
+        }];
+        
+        [self.groupDefaults setObject:feeds forKey:@"widget:feeds"];
+    }
+    
+    return feeds;
+}
+
+- (BOOL)widgetIncludesFeed:(NSString *)feedId {
+    return [self.widgetFeeds objectForKey:feedId] != nil;
+}
+
+- (void)setWidgetIncludes:(BOOL)include item:(FeedChooserItem *)item {
+    NSMutableDictionary *feeds = [self.widgetFeeds mutableCopy];
+    
+    if (include) {
+        [feeds setObject:item.title forKey:item.identifierString];
+    } else {
+        [feeds removeObjectForKey:item.identifierString];
+    }
+    
+    [self.groupDefaults setObject:feeds forKey:@"widget:feeds"];
+}
+
+- (void)setWidgetIncludes:(BOOL)include itemForIndexPath:(NSIndexPath *)indexPath {
+    [self setWidgetIncludes:include item:[self itemForIndexPath:indexPath]];
 }
 
 #pragma mark - Title delegate methods
@@ -416,8 +481,7 @@ static const CGFloat kFolderTitleHeight = 36.0;
         [self rebuildItemsAnimated:YES];
         [self selectItemsWithIdentifiers:identifiers animated:NO];
     }];
-
-
+    
     MenuItemHandler selectAllHandler = ^{
         [self enumerateSectionsUsingBlock:^(NSUInteger section, FeedChooserItem *folder) {
             [self select:YES section:section];
@@ -427,6 +491,7 @@ static const CGFloat kFolderTitleHeight = 36.0;
             [self select:NO section:section];
         }];
     };
+    
     if (isMute) {
         [viewController addTitle:@"Mute All" iconName:@"mute_feed_off.png" selectionShouldDismiss:YES handler:selectAllHandler];
         [viewController addTitle:@"Unmute All" iconName:@"mute_feed_on.png" selectionShouldDismiss:YES handler:selectNoneHandler];
@@ -549,6 +614,20 @@ static const CGFloat kFolderTitleHeight = 36.0;
     }
     
     self.dictFolders = folders;
+}
+
+- (void)updateSelectedWidgets {
+    NSMutableArray *identifiers = [NSMutableArray array];
+    NSDictionary *feeds = self.widgetFeeds;
+    NSArray *feedIds = feeds.allKeys;
+    
+    [self enumerateAllRowsUsingBlock:^(NSIndexPath *indexPath, FeedChooserItem *item) {
+        if ([feedIds containsObject:item.identifierString]) {
+            [identifiers addObject:item.identifier];
+        }
+    }];
+    
+    [self selectItemsWithIdentifiers:identifiers animated:NO];
 }
 
 - (void)performSaveActiveFeeds {
@@ -685,10 +764,18 @@ static const CGFloat kFolderTitleHeight = 36.0;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    if (self.operation == FeedChooserOperationWidgetSites) {
+        [self setWidgetIncludes:YES itemForIndexPath:indexPath];
+    }
+    
     [self updateControls];
 }
 
 - (void)tableView:(UITableView *)tableView didDeselectRowAtIndexPath:(NSIndexPath *)indexPath {
+    if (self.operation == FeedChooserOperationWidgetSites) {
+        [self setWidgetIncludes:NO itemForIndexPath:indexPath];
+    }
+    
     [self updateControls];
 }
 

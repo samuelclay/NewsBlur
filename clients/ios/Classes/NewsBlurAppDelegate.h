@@ -307,11 +307,13 @@ SFSafariViewControllerDelegate>  {
 - (void)showFindFriends;
 - (void)showMuteSites;
 - (void)showOrganizeSites;
+- (void)showWidgetSites;
 - (void)showPremiumDialog;
 - (void)showPreferences;
 - (void)setHiddenPreferencesAnimated:(BOOL)animated;
 - (void)resizePreviewSize;
 - (void)resizeFontSize;
+- (void)popToRoot;
 
 - (void)showMoveSite;
 - (void)openTrainSite;
