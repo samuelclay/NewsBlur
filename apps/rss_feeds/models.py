@@ -1142,7 +1142,7 @@ class Feed(models.Model):
             from utils import feed_fetcher
         except ImportError, e:
             logging.info(" ***> ~BR~FRImportError: %s" % e)
-            pass
+            return
         r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
         original_feed_id = int(self.pk)
 
