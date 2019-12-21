@@ -45,6 +45,7 @@
                             initWithObjects:[@"Preferences" uppercaseString],
                                             [@"Mute Sites" uppercaseString],
                                             [@"Organize Sites" uppercaseString],
+                                            [@"Widget Sites" uppercaseString],
                                             [@"Notifications" uppercaseString],
                                             [@"Find Friends" uppercaseString],
                                             [appDelegate.isPremium ? @"Premium Account": @"Upgrade to Premium" uppercaseString],
@@ -56,6 +57,7 @@
                             initWithObjects:[@"Preferences" uppercaseString],
                                             [@"Mute Sites" uppercaseString],
                                             [@"Organize Sites" uppercaseString],
+                                            [@"Widget Sites" uppercaseString],
                                             [@"Notifications" uppercaseString],
                                             [@"Find Friends" uppercaseString],
                                             [appDelegate.isPremium ? @"Premium Account": @"Upgrade to Premium" uppercaseString],
@@ -171,22 +173,26 @@
             break;
         
         case 3:
+            image = [UIImage imageNamed:@"menu_icn_widget.png"];
+            break;
+            
+        case 4:
             image = [UIImage imageNamed:@"menu_icn_notifications.png"];
             break;
         
-        case 4:
+        case 5:
             image = [UIImage imageNamed:@"menu_icn_followers.png"];
             break;
             
-        case 5:
+        case 6:
             image = [UIImage imageNamed:@"g_icn_greensun.png"];
             break;
         
-        case 6:
+        case 7:
             image = [UIImage imageNamed:@"menu_icn_fetch_subscribers.png"];
             break;
             
-        case 7:
+        case 8:
             image = [UIImage imageNamed:@"barbutton_sendto.png"];
             break;
             
@@ -225,22 +231,26 @@
             break;
             
         case 3:
+            [appDelegate showWidgetSites];
+            break;
+            
+        case 4:
             [appDelegate openNotificationsWithFeed:nil];
             break;
         
-        case 4:
+        case 5:
             [appDelegate showFindFriends];
             break;
             
-        case 5:
+        case 6:
             [appDelegate showPremiumDialog];
             break;
             
-        case 6:
+        case 7:
             [appDelegate confirmLogout];
             break;
             
-        case 7:
+        case 8:
             [self showLoginAsDialog];
             break;
             

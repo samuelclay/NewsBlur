@@ -56,6 +56,16 @@
 				<string>pocketapp16638</string>
 			</array>
 		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>com.newsblur.NewsBlur.widget</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>newsblurwidget</string>
+			</array>
+		</dict>
 	</array>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
