@@ -141,7 +141,7 @@ def welcome(request, **kwargs):
             signup_form = SignupForm(request.POST, prefix='signup')
             return {
                 "form": signup_form
-            }, "accounts/signup.xhtml"
+            }, "accounts/signup.html"
     else:
         login_form  = LoginForm(prefix='login')
         signup_form = SignupForm(prefix='signup')
