@@ -511,15 +511,25 @@ private extension WidgetExtensionViewController {
     }
     
     func scale(image: UIImage) -> UIImage {
-        guard image.size.width > Constant.storyImageSize || image.size.height > Constant.storyImageSize else {
+        let oldSize = image.size
+        
+        guard oldSize.width > Constant.storyImageSize || oldSize.height > Constant.storyImageSize else {
             return image
         }
         
-        let size = CGSize(width: Constant.storyImageSize, height: Constant.storyImageSize)
+        let scale: CGFloat
         
-        UIGraphicsBeginImageContextWithOptions(size, true, 1)
+        if oldSize.width < oldSize.height {
+            scale = Constant.storyImageSize / oldSize.width
+        } else {
+            scale = Constant.storyImageSize / oldSize.height
+        }
         
-        image.draw(in: CGRect(origin: .zero, size: size))
+        let newSize = CGSize(width: oldSize.width * scale, height: oldSize.height * scale)
+        
+        UIGraphicsBeginImageContextWithOptions(newSize, true, 1)
+        
+        image.draw(in: CGRect(origin: .zero, size: newSize))
         
         defer {
             UIGraphicsEndImageContext()
