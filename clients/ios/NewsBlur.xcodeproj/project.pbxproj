@@ -50,6 +50,8 @@
 		176129611C630AEB00702FE4 /* mute_feed_off@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1761295D1C630AEB00702FE4 /* mute_feed_off@2x.png */; };
 		176129621C630AEB00702FE4 /* mute_feed_on.png in Resources */ = {isa = PBXBuildFile; fileRef = 1761295E1C630AEB00702FE4 /* mute_feed_on.png */; };
 		176129631C630AEB00702FE4 /* mute_feed_on@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1761295F1C630AEB00702FE4 /* mute_feed_on@2x.png */; };
+		1763E2A123B1BCC900BA080C /* WidgetFeed.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1763E2A023B1BCC900BA080C /* WidgetFeed.swift */; };
+		1763E2A323B1CEB600BA080C /* WidgetBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1763E2A223B1CEB600BA080C /* WidgetBarView.swift */; };
 		177551D5238E228A00E27818 /* NotificationCenter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 177551D4238E228A00E27818 /* NotificationCenter.framework */; };
 		177551DB238E228A00E27818 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 177551D9238E228A00E27818 /* MainInterface.storyboard */; };
 		177551DF238E228A00E27818 /* NewsBlur Latest.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 177551D3238E228A00E27818 /* NewsBlur Latest.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -713,6 +715,8 @@
 		1761295D1C630AEB00702FE4 /* mute_feed_off@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "mute_feed_off@2x.png"; sourceTree = "<group>"; };
 		1761295E1C630AEB00702FE4 /* mute_feed_on.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = mute_feed_on.png; sourceTree = "<group>"; };
 		1761295F1C630AEB00702FE4 /* mute_feed_on@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "mute_feed_on@2x.png"; sourceTree = "<group>"; };
+		1763E2A023B1BCC900BA080C /* WidgetFeed.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetFeed.swift; sourceTree = "<group>"; };
+		1763E2A223B1CEB600BA080C /* WidgetBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetBarView.swift; sourceTree = "<group>"; };
 		177551D3238E228A00E27818 /* NewsBlur Latest.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "NewsBlur Latest.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		177551D4238E228A00E27818 /* NotificationCenter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = NotificationCenter.framework; path = System/Library/Frameworks/NotificationCenter.framework; sourceTree = SDKROOT; };
 		177551DA238E228A00E27818 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
@@ -1622,6 +1626,8 @@
 				17E86ED3238E444B00863EC8 /* WidgetTableViewCell.xib */,
 				17CE3F0623AC529E003152EF /* WidgetErrorTableViewCell.swift */,
 				17CE3F0523AC529B003152EF /* WidgetErrorTableViewCell.xib */,
+				1763E2A223B1CEB600BA080C /* WidgetBarView.swift */,
+				1763E2A023B1BCC900BA080C /* WidgetFeed.swift */,
 				17042DB82391D68A001BCD32 /* WidgetStory.swift */,
 				17042DBA23922A4D001BCD32 /* WidgetLoader.swift */,
 				177551D9238E228A00E27818 /* MainInterface.storyboard */,
@@ -3357,9 +3363,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				17CE3F0723AC529E003152EF /* WidgetErrorTableViewCell.swift in Sources */,
+				1763E2A123B1BCC900BA080C /* WidgetFeed.swift in Sources */,
 				17E86ED6238E444B00863EC8 /* WidgetTableViewCell.swift in Sources */,
 				17F363F2238E417300D5379D /* WidgetExtensionViewController.swift in Sources */,
 				17042DB92391D68A001BCD32 /* WidgetStory.swift in Sources */,
+				1763E2A323B1CEB600BA080C /* WidgetBarView.swift in Sources */,
 				17042DBB23922A4D001BCD32 /* WidgetLoader.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

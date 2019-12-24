@@ -23,11 +23,8 @@ class WidgetExtensionViewController: UITableViewController, NCWidgetProviding {
     /// The secret token for authentication.
     var token: String?
     
-    /// Dictionary of feed IDs and names.
-    typealias FeedsDictionary = [String : String]
-    
-    /// A dictionary of feed IDs and names to fetch.
-    var feeds = FeedsDictionary()
+    /// An array of feeds to load.
+    var feeds = [Feed]()
     
     /// Loaded stories.
     var stories = [Story]()
@@ -35,11 +32,22 @@ class WidgetExtensionViewController: UITableViewController, NCWidgetProviding {
     /// An error to display instead of the stories, or `nil` if the stories should be displayed.
     var error: WidgetError?
     
+    /// Paragraph style for title and content labels.
+    lazy var paragraphStyle: NSParagraphStyle = {
+        let paragraph = NSMutableParagraphStyle()
+        
+        paragraph.lineBreakMode = .byTruncatingTail
+        paragraph.alignment = .left
+        paragraph.lineHeightMultiple = 0.95
+        
+        return paragraph
+    }()
+    
     struct Constant {
         static let group = "group.com.newsblur.NewsBlur-Group"
         static let token = "share:token"
         static let host = "share:host"
-        static let feeds = "widget:feeds"
+        static let feeds = "widget:feeds_array"
         static let widgetFolder = "Widget"
         static let storiesFilename = "Stories.json"
         static let imageExtension = "png"
@@ -105,7 +113,8 @@ class WidgetExtensionViewController: UITableViewController, NCWidgetProviding {
             return
         }
         
-        let combinedFeeds = feeds.keys.joined(separator: "&f=")
+        let feedIds = feeds.map { $0.id }
+        let combinedFeeds = feedIds.joined(separator: "&f=")
         
         guard let url = hostURL(with: "/reader/river_stories/?include_hidden=false&page=1&infrequent=false&order=newest&read_filter=unread&limit=\(Constant.limit)&f=\(combinedFeeds)") else {
             completionHandler(.failed)
@@ -173,6 +182,19 @@ class WidgetExtensionViewController: UITableViewController, NCWidgetProviding {
         }
         
         let story = stories[indexPath.row]
+        let feed = feeds.first(where: { $0.id == story.feed })
+        
+        let baseDescriptor = UIFontDescriptor.preferredFontDescriptor(withTextStyle: .caption1)
+        let sizedDescriptor = baseDescriptor.withSize(13)
+        let boldDescriptor = sizedDescriptor.withSymbolicTraits(.traitBold) ?? sizedDescriptor
+        let titleFont = UIFont(descriptor: boldDescriptor, size: sizedDescriptor.pointSize)
+        let titleColor = UIColor.label
+        let contentFont = UIFont(descriptor: sizedDescriptor, size: 0)
+        let contentColor = UIColor.secondaryLabel
+        
+        cell.barView.leftColor = feed?.leftColor
+        cell.barView.rightColor = feed?.rightColor
+        cell.barView.setNeedsDisplay()
         
         cell.feedImageView.image = nil
         
@@ -183,16 +205,19 @@ class WidgetExtensionViewController: UITableViewController, NCWidgetProviding {
             }
         }
         
-        if let name = feeds[story.feed] {
-            cell.feedLabel.text = name
+        if let title = feed?.title {
+            cell.feedLabel.text = title
         } else {
             cell.feedLabel.text = ""
         }
         
-        cell.titleLabel.text = cleaned(story.title)
-        cell.contentLabel.text = cleaned(story.content)
+        cell.feedLabel.textColor = UIColor.secondaryLabel
+        cell.titleLabel.attributedText = attributed(story.title, with: titleFont, color: titleColor)
+        cell.contentLabel.attributedText = attributed(story.content, with: contentFont, color: contentColor)
         cell.authorLabel.text = cleaned(story.author).uppercased()
+        cell.authorLabel.textColor = UIColor.tertiaryLabel
         cell.dateLabel.text = story.date
+        cell.dateLabel.textColor = UIColor.secondaryLabel
         cell.thumbnailImageView.image = nil
         
         storyImage(for: story.id, imageURL: story.imageURL) { (image, id) in
@@ -249,11 +274,16 @@ private extension WidgetExtensionViewController {
     
     func cleaned(_ string: String) -> String {
         let clean = string.prefix(1000).replacingOccurrences(of: "\n", with: "")
-            .replacingOccurrences(of: "<[^>]+>", with: "", options: .regularExpression, range: nil)
-            .replacingOccurrences(of: "&[^;]+;", with: " ", options: .regularExpression, range: nil)
+            .replacingOccurrences(of: "<[^>]+>|&[^;]+;", with: " ", options: .regularExpression, range: nil)
             .trimmingCharacters(in: .whitespaces)
         
         return clean.isEmpty ? " " : clean
+    }
+    
+    func attributed(_ string: String, with font: UIFont, color: UIColor) -> NSAttributedString {
+        let attributes: [NSAttributedString.Key : Any] = [.font : font, .foregroundColor: color, .paragraphStyle: paragraphStyle]
+        
+        return NSAttributedString(string: cleaned(string), attributes: attributes)
     }
     
     func hostURL(with path: String) -> URL? {
@@ -342,6 +372,7 @@ private extension WidgetExtensionViewController {
     }
     
     func loadCachedStories() {
+        feeds = []
         stories = []
         
         guard let defaults = UserDefaults.init(suiteName: Constant.group) else {
@@ -351,8 +382,8 @@ private extension WidgetExtensionViewController {
         host = defaults.string(forKey: Constant.host)
         token = defaults.string(forKey: Constant.token)
         
-        if let dict = defaults.dictionary(forKey: Constant.feeds) as? FeedsDictionary {
-            feeds = dict
+        if let array = defaults.array(forKey: Constant.feeds) as? [Feed.Dictionary] {
+            feeds = array.map { Feed(from: $0) }
         }
         
         guard let url = storiesURL else {

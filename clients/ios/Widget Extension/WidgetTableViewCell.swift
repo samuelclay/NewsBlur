@@ -12,6 +12,7 @@ class WidgetTableViewCell: UITableViewCell {
     /// The reuse identifier for this table view cell.
     static let reuseIdentifier = "WidgetTableViewCell"
     
+    @IBOutlet var barView: BarView!
     @IBOutlet var feedImageView: UIImageView!
     @IBOutlet var feedLabel: UILabel!
     @IBOutlet var titleLabel: UILabel!
