@@ -1162,21 +1162,25 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 }
 
 - (void)validateWidgetFeedsForGroupDefaults:(NSUserDefaults *)groupDefaults usingResults:(NSDictionary *)results {
-    NSMutableDictionary *feeds = [groupDefaults objectForKey:@"widget:feeds"];
+    NSMutableArray *feeds = [groupDefaults objectForKey:@"widget:feeds_array"];
     
     if (feeds == nil) {
-        feeds = [NSMutableDictionary dictionary];
+        feeds = [NSMutableArray array];
         
         NSDictionary *resultsFeeds = results[@"feeds"];
         
         [resultsFeeds enumerateKeysAndObjectsUsingBlock:^(id key, NSDictionary *obj, BOOL *stop) {
             NSString *identifier = [NSString stringWithFormat:@"%@", key];
             NSString *title = obj[@"feed_title"];
+            NSString *fade = obj[@"favicon_fade"];
+            NSString *color = obj[@"favicon_color"];
             
-            feeds[identifier] = title;
+            NSDictionary *feed = @{@"id" : identifier, @"feed_title" : title, @"favicon_fade": fade, @"favicon_color" : color};
+            
+            [feeds addObject:feed];
         }];
         
-        [groupDefaults setObject:feeds forKey:@"widget:feeds"];
+        [groupDefaults setObject:feeds forKey:@"widget:feeds_array"];
     }
 }
 
