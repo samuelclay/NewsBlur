@@ -572,7 +572,15 @@
         }
         
         [self popToRoot];
-        [self loadFeed:feedId withStory:storyHash animated:NO];
+        
+        self.inFindingStoryMode = YES;
+        [storiesCollection reset];
+        storiesCollection.isRiverView = YES;
+        
+        self.tryFeedStoryId = storyHash;
+        storiesCollection.activeFolder = @"everything";
+        
+        [self loadRiverFeedDetailView:self.feedDetailViewController withFolder:storiesCollection.activeFolder];
         
         return YES;
     }
@@ -819,6 +827,7 @@
         BOOL theme_follow_system = [[NSUserDefaults standardUserDefaults] boolForKey:@"theme_follow_system"];
         if (theme_follow_system) {
             [hiddenSet addObjectsFromArray:@[@"theme_auto_toggle", @"theme_auto_brightness", @"theme_style", @"theme_gesture"]];
+            [[ThemeManager themeManager] updateForSystemAppearance];
         }
     }
     BOOL theme_auto_toggle = [[NSUserDefaults standardUserDefaults] boolForKey:@"theme_auto_toggle"];

@@ -32,7 +32,7 @@ static const CGFloat kFolderTitleHeight = 36.0;
 @property (nonatomic) BOOL flat;
 @property (nonatomic, readonly) NewsBlurAppDelegate *appDelegate;
 @property (nonatomic, strong) NSUserDefaults *groupDefaults;
-@property (nonatomic, readonly) NSDictionary *widgetFeeds;
+@property (nonatomic, readonly) NSArray *widgetFeeds;
 
 @end
 
@@ -374,36 +374,47 @@ static const CGFloat kFolderTitleHeight = 36.0;
     [self updateTitle];
 }
 
-- (NSDictionary *)widgetFeeds {
-    NSMutableDictionary *feeds = [self.groupDefaults objectForKey:@"widget:feeds"];
+- (NSArray *)widgetFeeds {
+    NSMutableArray *feeds = [self.groupDefaults objectForKey:@"widget:feeds_array"];
     
     if (feeds == nil) {
-        feeds = [NSMutableDictionary dictionary];
+        feeds = [NSMutableArray array];
         
         [self enumerateAllRowsUsingBlock:^(NSIndexPath *indexPath, FeedChooserItem *item) {
-            [feeds setObject:item.title forKey:item.identifierString];
+            [feeds addObject:[self widgetFeedForItem:item]];
         }];
         
-        [self.groupDefaults setObject:feeds forKey:@"widget:feeds"];
+        [self.groupDefaults setObject:feeds forKey:@"widget:feeds_array"];
     }
     
     return feeds;
 }
 
-- (BOOL)widgetIncludesFeed:(NSString *)feedId {
-    return [self.widgetFeeds objectForKey:feedId] != nil;
+- (NSDictionary *)widgetFeedForItem:(FeedChooserItem *)item {
+    return @{@"id" : item.identifierString, @"feed_title" : item.title, @"favicon_fade" : item.info[@"favicon_fade"], @"favicon_color" : item.info[@"favicon_color"]};
+}
+
+- (NSInteger)widgetIndexOfFeed:(NSString *)feedId {
+    return [self.widgetFeeds indexOfObjectPassingTest:^BOOL(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        return [obj[@"id"] isEqualToString:feedId];
+    }];
 }
 
 - (void)setWidgetIncludes:(BOOL)include item:(FeedChooserItem *)item {
-    NSMutableDictionary *feeds = [self.widgetFeeds mutableCopy];
+    NSMutableArray *feeds = [self.widgetFeeds mutableCopy];
+    NSInteger feedIndex = [self widgetIndexOfFeed:item.identifierString];
     
     if (include) {
-        [feeds setObject:item.title forKey:item.identifierString];
+        if (feedIndex == NSNotFound) {
+            [feeds addObject:[self widgetFeedForItem:item]];
+        }
     } else {
-        [feeds removeObjectForKey:item.identifierString];
+        if (feedIndex != NSNotFound) {
+            [feeds removeObjectAtIndex:feedIndex];
+        }
     }
     
-    [self.groupDefaults setObject:feeds forKey:@"widget:feeds"];
+    [self.groupDefaults setObject:feeds forKey:@"widget:feeds_array"];
 }
 
 - (void)setWidgetIncludes:(BOOL)include itemForIndexPath:(NSIndexPath *)indexPath {
@@ -618,11 +629,9 @@ static const CGFloat kFolderTitleHeight = 36.0;
 
 - (void)updateSelectedWidgets {
     NSMutableArray *identifiers = [NSMutableArray array];
-    NSDictionary *feeds = self.widgetFeeds;
-    NSArray *feedIds = feeds.allKeys;
     
     [self enumerateAllRowsUsingBlock:^(NSIndexPath *indexPath, FeedChooserItem *item) {
-        if ([feedIds containsObject:item.identifierString]) {
+        if ([self widgetIndexOfFeed:item.identifierString] != NSNotFound) {
             [identifiers addObject:item.identifier];
         }
     }];

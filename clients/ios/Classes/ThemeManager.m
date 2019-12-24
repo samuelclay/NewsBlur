@@ -53,6 +53,15 @@ NSString * const ThemeStyleDark = @"dark";
 }
 
 - (void)setTheme:(NSString *)theme {
+    // Automatically turn off following the system appearance when manually changing the theme.
+    [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"theme_follow_system"];
+    
+    [self reallySetTheme:theme];
+    
+    NSLog(@"Manually changed to theme: %@", self.themeDisplayName);  // log
+}
+
+- (void)reallySetTheme:(NSString *)theme {
     if ([self isValidTheme:theme]) {
         [[NSUserDefaults standardUserDefaults] setObject:theme forKey:@"theme_style"];
         [self updateTheme];
@@ -385,6 +394,14 @@ NSString * const ThemeStyleDark = @"dark";
     AudioServicesPlaySystemSound(1105);
 }
 
+- (void)updateForSystemAppearance {
+    if (@available(iOS 12.0, *)) {
+        BOOL isDark = self.appDelegate.window.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark;
+        
+        [self systemAppearanceDidChange:isDark];
+    }
+}
+
 - (void)systemAppearanceDidChange:(BOOL)isDark {
     NSUserDefaults *prefs = [NSUserDefaults standardUserDefaults];
     NSString *wantTheme = nil;
@@ -400,11 +417,9 @@ NSString * const ThemeStyleDark = @"dark";
     }
     
     if (self.theme != wantTheme) {
-        self.theme = wantTheme;
+        [self reallySetTheme:wantTheme];
         
         NSLog(@"System changed to theme: %@", self.themeDisplayName);  // log
-        
-        [self updateTheme];
     }
 }
 
