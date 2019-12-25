@@ -1194,8 +1194,7 @@ class MEmailUnsubscribe(mongo.Document):
         'allow_inheritance': False,
         'indexes': ['user_id', 
                     {'fields': ['user_id', 'email_type'], 
-                     'unique': True,
-                     'types': False}],
+                     'unique': True}],
     }
     
     def __unicode__(self):

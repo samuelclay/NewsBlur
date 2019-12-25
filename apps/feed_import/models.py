@@ -189,16 +189,20 @@ class OPMLImporter(Importer):
                 if user_feed_title == feed_db.feed_title:
                     user_feed_title = None
                 
-                us, _ = UserSubscription.objects.get_or_create(
-                    feed=feed_db, 
-                    user=self.user,
-                    defaults={
-                        'needs_unread_recalc': True,
-                        'mark_read_date': datetime.datetime.utcnow() - datetime.timedelta(days=1),
-                        'active': self.user.profile.is_premium,
-                        'user_title': user_feed_title
-                    }
-                )
+                try:
+                    us = UserSubscription.objects.get(
+                        feed=feed_db, 
+                        user=self.user)
+                except UserSubscription.DoesNotExist:
+                    us = UserSubscription(
+                        feed=feed_db, 
+                        user=self.user,
+                        needs_unread_recalc=True,
+                        mark_read_date=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+                        active=self.user.profile.is_premium,
+                        user_title=user_feed_title)
+                    us.save()
+                
                 if self.user.profile.is_premium and not us.active:
                     us.active = True
                     us.save()
