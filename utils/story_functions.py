@@ -396,7 +396,7 @@ def create_imageproxy_signed_url(base_url, hmac_key, url, options=None):
         str: A full url that can be used to serve the proxied image
     """
     if not options: options = []
-    if isinstance(options, str): options = [options]
+    if not isinstance(options, list): options = [options]
     base_url = base_url.rstrip('/')
     signature = base64.urlsafe_b64encode(hmac.new(hmac_key, msg=url, digestmod=hashlib.sha256).digest())
     options.append(signature)
