@@ -29,7 +29,7 @@ isodate==0.5.4
 lxml==3.6.4
 mock==2.0.0
 mongoengine==0.10.7
-mysql-python==1.2.5
+PyMySQL==0.9.3
 ndg-httpsclient==0.4.2
 nltk==3.2.1
 numpy==1.11.2

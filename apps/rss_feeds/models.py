@@ -350,7 +350,7 @@ class Feed(models.Model):
         return feed_ids
         
     @classmethod
-    def find_or_create(cls, feed_address, feed_link, *args, **kwargs):
+    def find_or_create(cls, feed_address, feed_link, defaults=None, **kwargs):
         feeds = cls.objects.filter(feed_address=feed_address, feed_link=feed_link)
         if feeds:
             return feeds[0], False
@@ -360,7 +360,13 @@ class Feed(models.Model):
             if feeds:
                 return feeds[0], False
         
-        return cls.objects.get_or_create(feed_address=feed_address, feed_link=feed_link, *args, **kwargs)
+        try:
+            feed = cls.objects.get(feed_address=feed_address, feed_link=feed_link)
+            return feed, False
+        except cls.DoesNotExist:
+            feed = cls(**defaults)
+            feed.save()
+            return feed, True
         
     @classmethod
     def merge_feeds(cls, *args, **kwargs):
@@ -2393,8 +2399,7 @@ class MStory(mongo.Document):
         'collection': 'stories',
         'indexes': [('story_feed_id', '-story_date'),
                     {'fields': ['story_hash'], 
-                     'unique': True,
-                     'types': False, }],
+                     'unique': True, }],
         'ordering': ['-story_date'],
         'allow_inheritance': False,
         'cascade': False,
@@ -3090,8 +3095,7 @@ class MSavedSearch(mongo.Document):
         'collection': 'saved_searches',
         'indexes': ['user_id',
                     {'fields': ['user_id', 'feed_id', 'query'], 
-                     'unique': True,
-                     'types': False, }],
+                     'unique': True, }],
         'ordering': ['query'],
         'allow_inheritance': False,
     }

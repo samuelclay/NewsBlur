@@ -87,7 +87,7 @@ class UserSubscription(models.Model):
                     super(UserSubscription, self).save(*args, **kwargs)
                     break
             else:
-                if self: self.delete()
+                if self and self.id: self.delete()
     
     @classmethod
     def subs_for_feeds(cls, user_id, feed_ids=None, read_filter="unread"):

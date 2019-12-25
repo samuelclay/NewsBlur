@@ -92,7 +92,8 @@ def _extract_date_tuples(date):
     return parsed_date, date_tuple, today_tuple, yesterday_tuple
     
 def pre_process_story(entry, encoding):
-    publish_date = entry.get('g_parsed') or entry.get('published_parsed')
+    # Do not switch to published_parsed or every story will be dated the fetch time
+    publish_date = entry.get('g_parsed') or entry.get('updated_parsed') 
     if publish_date:
         publish_date = datetime.datetime(*publish_date[:6])
     if not publish_date and entry.get('published'):
