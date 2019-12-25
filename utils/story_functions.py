@@ -401,8 +401,7 @@ def create_imageproxy_signed_url(base_url, hmac_key, url, options=None):
     base_url = base_url.rstrip('/')
     signature = base64.urlsafe_b64encode(hmac.new(hmac_key, msg=url, digestmod=hashlib.sha256).digest())
     options.append(signature)
-    hex_url = hexlify(url.encode()).decode()
 
-    return ('{base}/{options}/{hex_url}'
-            .format(base=base_url, options=','.join(options), hex_url=hex_url))
+    return ('{base}/{options}/{url}'
+            .format(base=base_url, options=','.join(options), url=url))
             
