@@ -1376,11 +1376,14 @@ def setup_imageproxy():
     #     sudo('ln -s /srv/code/go/bin/go /usr/bin/go')
     # with cd(os.path.join(env.VENDOR_PATH, 'imageproxy')):
     #     run('go get willnorris.com/go/imageproxy/cmd/imageproxy')
+    put(os.path.join(env.SECRETS_PATH, 'settings/imageproxy.key'), 
+        '/etc/imageproxy.key', use_sudo=True)
     put('config/supervisor_imageproxy.conf', '/etc/supervisor/conf.d/supervisor_imageproxy.conf', use_sudo=True)
     sudo('supervisorctl reread')
     sudo('supervisorctl update')
     put("config/camo.nginx.conf", "/usr/local/nginx/conf/sites-enabled/camo.conf", use_sudo=True)
     sudo("/etc/init.d/nginx restart")
+    
     
     
 @parallel
