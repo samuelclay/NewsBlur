@@ -2,6 +2,8 @@ import re
 import datetime
 import struct
 import dateutil
+import hashlib
+import base64
 from random import randint
 from HTMLParser import HTMLParser
 from lxml.html.diff import tokenize, fixup_ins_del_tags, htmldiff_tokens
@@ -383,3 +385,23 @@ def create_camo_signed_url(base_url, hmac_key, url):
 
     return ('{base}/{signature}/{hex_url}'
             .format(base=base_url, signature=signature, hex_url=hex_url))
+            
+def create_imageproxy_signed_url(base_url, hmac_key, url, options=None):
+    """Create a imageproxy signed URL for the specified image URL
+    Args:
+        base_url: Base URL of the imageproxy installation
+        hmac_key: HMAC shared key to be used for signing
+        url: URL of the destination image
+    Returns:
+        str: A full url that can be used to serve the proxied image
+    """
+    if not options: options = []
+    if isinstance(options, str): options = [options]
+    base_url = base_url.rstrip('/')
+    signature = base64.urlsafe_b64encode(hmac.new(hmac_key, msg=url, digestmod=hashlib.sha256).digest())
+    options.append(signature)
+    hex_url = hexlify(url.encode()).decode()
+
+    return ('{base}/{options}/{hex_url}'
+            .format(base=base_url, options=','.join(options), hex_url=hex_url))
+            
