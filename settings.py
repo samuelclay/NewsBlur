@@ -48,7 +48,7 @@ SERVER_NAME  = 'newsblur'
 SERVER_EMAIL = 'server@newsblur.com'
 HELLO_EMAIL  = 'hello@newsblur.com'
 NEWSBLUR_URL = 'http://www.newsblur.com'
-IMAGES_URL   = 'https://images.newsblur.com'
+IMAGES_URL   = 'https://imageproxy.newsblur.com'
 SECRET_KEY            = 'YOUR_SECRET_KEY'
 IMAGES_SECRET_KEY = "YOUR_SECRET_IMAGE_KEY"
 

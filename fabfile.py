@@ -1363,6 +1363,26 @@ def setup_db_search():
     sudo('supervisorctl reread')
     sudo('supervisorctl update')
 
+def setup_imageproxy():
+    # sudo('apt-get update')
+    # sudo('apt-get install -y golang')
+    # with cd(env.VENDOR_PATH):
+    #     with settings(warn_only=True):
+    #         run('git clone https://github.com/willnorris/imageproxy.git')
+    #     run('wget https://dl.google.com/go/go1.13.3.linux-amd64.tar.gz')
+    #     run('tar -xzf go1.13.3.linux-amd64.tar.gz')
+    #     run('rm go1.13.3.linux-amd64.tar.gz')
+    #     sudo('rm /usr/bin/go')
+    #     sudo('ln -s /srv/code/go/bin/go /usr/bin/go')
+    # with cd(os.path.join(env.VENDOR_PATH, 'imageproxy')):
+    #     run('go get willnorris.com/go/imageproxy/cmd/imageproxy')
+    put('config/supervisor_imageproxy.conf', '/etc/supervisor/conf.d/supervisor_imageproxy.conf', use_sudo=True)
+    sudo('supervisorctl reread')
+    sudo('supervisorctl update')
+    put("config/camo.nginx.conf", "/usr/local/nginx/conf/sites-enabled/camo.conf", use_sudo=True)
+    sudo("/etc/init.d/nginx restart")
+    
+    
 @parallel
 def setup_usage_monitor():
     sudo('ln -fs %s/utils/monitor_disk_usage.py /etc/cron.daily/monitor_disk_usage' % env.NEWSBLUR_PATH)
