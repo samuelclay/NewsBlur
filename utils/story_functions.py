@@ -400,6 +400,7 @@ def create_imageproxy_signed_url(base_url, hmac_key, url, options=None):
     if not isinstance(options, list): options = [options]
     base_url = base_url.rstrip('/')
     signature = base64.urlsafe_b64encode(hmac.new(hmac_key, msg=url, digestmod=hashlib.sha256).digest())
+    options.append('sc')
     options.append('s'+signature)
 
     return ('{base}/{options}/{url}'
