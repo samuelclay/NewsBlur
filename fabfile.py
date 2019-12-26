@@ -1363,19 +1363,20 @@ def setup_db_search():
     sudo('supervisorctl reread')
     sudo('supervisorctl update')
 
-def setup_imageproxy():
+def setup_imageproxy(install_go=False):
     # sudo('apt-get update')
     # sudo('apt-get install -y golang')
-    # with cd(env.VENDOR_PATH):
-    #     with settings(warn_only=True):
-    #         run('git clone https://github.com/willnorris/imageproxy.git')
-    #     run('wget https://dl.google.com/go/go1.13.3.linux-amd64.tar.gz')
-    #     run('tar -xzf go1.13.3.linux-amd64.tar.gz')
-    #     run('rm go1.13.3.linux-amd64.tar.gz')
-    #     sudo('rm /usr/bin/go')
-    #     sudo('ln -s /srv/code/go/bin/go /usr/bin/go')
-    # with cd(os.path.join(env.VENDOR_PATH, 'imageproxy')):
-    #     run('go get willnorris.com/go/imageproxy/cmd/imageproxy')
+    if install_go:
+        with cd(env.VENDOR_PATH):
+            with settings(warn_only=True):
+                run('git clone https://github.com/willnorris/imageproxy.git')
+            run('wget https://dl.google.com/go/go1.13.3.linux-amd64.tar.gz')
+            run('tar -xzf go1.13.3.linux-amd64.tar.gz')
+            run('rm go1.13.3.linux-amd64.tar.gz')
+            sudo('rm /usr/bin/go')
+            sudo('ln -s /srv/code/go/bin/go /usr/bin/go')
+        with cd(os.path.join(env.VENDOR_PATH, 'imageproxy')):
+            run('go get willnorris.com/go/imageproxy/cmd/imageproxy')
     put(os.path.join(env.SECRETS_PATH, 'settings/imageproxy.key'), 
         '/etc/imageproxy.key', use_sudo=True)
     put('config/supervisor_imageproxy.conf', '/etc/supervisor/conf.d/supervisor_imageproxy.conf', use_sudo=True)
