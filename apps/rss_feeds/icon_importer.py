@@ -58,6 +58,8 @@ class IconImporter(object):
                 color = self.determine_dominant_color_in_image(image)
             except IndexError:
                 return
+            except MemoryError:
+                return
             try:
                 image_str = self.string_from_image(image)
             except TypeError:

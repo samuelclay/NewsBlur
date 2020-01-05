@@ -492,4 +492,7 @@
 
     <string name="story_notification_channel_id">story_notification_channel</string>
     <string name="story_notification_channel_name">New Stories</string>
+    <string name="save_widget">Save Widget</string>
+    <string name="select_feed">Select Feed</string>
+    <string name="go_to_feed">Go to feed</string>
 </resources>

@@ -858,4 +858,43 @@ public class PrefsUtils {
         editor.putString(PrefConstants.READING_FONT, newValue);
         editor.commit();
     }
+
+
+    public static void setWidgetFeed(Context context, int widgetId, String feedId, String name) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        Editor editor = prefs.edit();
+        editor.putString(PrefConstants.WIDGET_FEED_ID + widgetId, feedId)
+                .putString(PrefConstants.WIDGET_FEED_NAME + widgetId, name);
+        editor.commit();
+    }
+
+    /**
+     * sets only the name, no id when it is a folder
+     */
+    public static void setWidgetFolderName(Context context, int widgetId, String folderName) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        Editor editor = prefs.edit();
+        editor.remove(PrefConstants.WIDGET_FEED_ID + widgetId)
+                .putString(PrefConstants.WIDGET_FEED_NAME + widgetId, folderName);
+        editor.commit();
+
+    }
+    public static String getWidgetFeed(Context context, int widgetId) {
+        SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        String feedId = preferences.getString(PrefConstants.WIDGET_FEED_ID + widgetId, null);
+        return feedId;
+    }
+    public static String getWidgetFeedName(Context context, int widgetId) {
+        SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        return preferences.getString(PrefConstants.WIDGET_FEED_NAME + widgetId, "-");
+    }
+    public static void removeWidgetFeed(Context context, int widgetId) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        if(prefs.contains(PrefConstants.WIDGET_FEED_ID + widgetId)){
+            Editor editor = prefs.edit();
+            editor.remove(PrefConstants.WIDGET_FEED_ID + widgetId);
+            editor.remove(PrefConstants.WIDGET_FEED_NAME + widgetId);
+            editor.apply();
+        }
+    }
 }

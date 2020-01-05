@@ -81,6 +81,24 @@
     // Subclasses should override this, calling super, to update their nav bar, table, etc
 }
 
+- (void)tableView:(UITableView *)tableView redisplayCellAtIndexPath:(NSIndexPath *)indexPath {
+    [[tableView cellForRowAtIndexPath:indexPath] setNeedsDisplay];
+}
+
+- (void)tableView:(UITableView *)tableView selectRowAtIndexPath:(NSIndexPath *)indexPath animated:(BOOL)animated {
+    [self tableView:tableView selectRowAtIndexPath:indexPath animated:animated scrollPosition:UITableViewScrollPositionNone];
+}
+
+- (void)tableView:(UITableView *)tableView selectRowAtIndexPath:(NSIndexPath *)indexPath animated:(BOOL)animated scrollPosition:(UITableViewScrollPosition)scrollPosition {
+    [tableView selectRowAtIndexPath:indexPath animated:animated scrollPosition:scrollPosition];
+    [self tableView:tableView redisplayCellAtIndexPath:indexPath];
+}
+
+- (void)tableView:(UITableView *)tableView deselectRowAtIndexPath:(NSIndexPath *)indexPath animated:(BOOL)animated {
+    [tableView deselectRowAtIndexPath:indexPath animated:animated];
+    [self tableView:tableView redisplayCellAtIndexPath:indexPath];
+}
+
 #pragma mark -
 #pragma mark Keyboard support
 - (void)addKeyCommandWithInput:(NSString *)input modifierFlags:(UIKeyModifierFlags)modifierFlags action:(SEL)action discoverabilityTitle:(NSString *)discoverabilityTitle {
@@ -103,6 +121,10 @@
 	[super viewDidLoad];
     
     [[ThemeManager themeManager] addThemeGestureRecognizerToView:self.view];
+    
+    if (@available(iOS 13.0, *)) {
+        [[ThemeManager themeManager] systemAppearanceDidChange:self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark];
+    }
 }
 
 - (void) viewDidUnload {
@@ -115,6 +137,16 @@
     if ([self presentedViewController]) {
         [[self presentedViewController] viewWillTransitionToSize:size
                                        withTransitionCoordinator:coordinator];
+    }
+}
+
+- (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection {
+    [super traitCollectionDidChange:previousTraitCollection];
+    
+    if (@available(iOS 13.0, *)) {
+        if ([previousTraitCollection hasDifferentColorAppearanceComparedToTraitCollection:self.traitCollection]) {
+            [[ThemeManager themeManager] systemAppearanceDidChange:self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark];
+        }
     }
 }
 

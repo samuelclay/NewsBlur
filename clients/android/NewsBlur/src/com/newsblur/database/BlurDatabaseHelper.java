@@ -1106,6 +1106,28 @@ public class BlurDatabaseHelper {
         };
     }
 
+    public Loader<Cursor> getStoriesLoader(final FeedSet fs) {
+//        final StoryOrder order = PrefsUtils.getStoryOrder(context, fs);
+        return new QueryCursorLoader(context) {
+            @Override
+            protected Cursor createCursor() {
+                return getStoriesCursor(fs, cancellationSignal);
+            }
+        };
+    }
+
+    private Cursor getStoriesCursor(FeedSet fs, CancellationSignal cancellationSignal) {
+        StringBuilder q = new StringBuilder(DatabaseConstants.STORY_QUERY_BASE_0);
+
+        q.append(DatabaseConstants.STORY_FEED_ID);
+        q.append(" = ");
+        q.append(fs.getSingleFeed());
+        q.append(" ORDER BY ");
+        q.append(DatabaseConstants.STORY_TIMESTAMP);
+        q.append(" DESC LIMIT 10");
+        return rawQuery(q.toString(), null, cancellationSignal);
+    }
+
     private Cursor getActiveStoriesCursor(FeedSet fs, StoryOrder order, CancellationSignal cancellationSignal) {
         // get the stories for this FS
         Cursor result = getActiveStoriesCursorNoPrep(fs, order, cancellationSignal);

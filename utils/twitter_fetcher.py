@@ -154,6 +154,11 @@ class TwitterFetcher:
                               (self.feed.log_title[:30], self.address, e))
                 self.feed.save_feed_history(560, "Twitter Error: User not found")
                 return []
+            elif '429' in message:
+                logging.debug(u'   ***> [%-30s] ~FRTwitter rate limited: %s: %s' % 
+                              (self.feed.log_title[:30], self.address, e))
+                self.feed.save_feed_history(560, "Twitter Error: Rate limited")
+                return []
             elif 'blocked from viewing' in message:
                 logging.debug(u'   ***> [%-30s] ~FRTwitter user blocked, ignoring: %s' % 
                               (self.feed.log_title[:30], e))

@@ -827,7 +827,11 @@ def copy_certificates():
     put(os.path.join(env.SECRETS_PATH, 'certificates/comodo/newsblur.com.pem'), cert_path)
     put(os.path.join(env.SECRETS_PATH, 'certificates/comodo/dhparams.pem'), cert_path)
     put(os.path.join(env.SECRETS_PATH, 'certificates/ios/aps_development.pem'), cert_path)
+    # openssl x509 -in aps.cer -inform DER -outform PEM -out aps.pem
     put(os.path.join(env.SECRETS_PATH, 'certificates/ios/aps.pem'), cert_path)
+    # Export aps.p12 from aps.cer using Keychain Assistant
+    # openssl pkcs12 -in aps.p12 -out aps.p12.pem -nodes
+    put(os.path.join(env.SECRETS_PATH, 'certificates/ios/aps.p12.pem'), cert_path)
     run('cat %s/newsblur.com.pem > %s/newsblur.pem' % (cert_path, cert_path))
     run('echo "\n" >> %s/newsblur.pem' % (cert_path))
     run('cat %s/newsblur.com.key >> %s/newsblur.pem' % (cert_path, cert_path))
@@ -1359,6 +1363,30 @@ def setup_db_search():
     sudo('supervisorctl reread')
     sudo('supervisorctl update')
 
+def setup_imageproxy(install_go=False):
+    # sudo('apt-get update')
+    # sudo('apt-get install -y golang')
+    if install_go:
+        with cd(env.VENDOR_PATH):
+            with settings(warn_only=True):
+                run('git clone https://github.com/willnorris/imageproxy.git')
+            run('wget https://dl.google.com/go/go1.13.3.linux-amd64.tar.gz')
+            run('tar -xzf go1.13.3.linux-amd64.tar.gz')
+            run('rm go1.13.3.linux-amd64.tar.gz')
+            sudo('rm /usr/bin/go')
+            sudo('ln -s /srv/code/go/bin/go /usr/bin/go')
+        with cd(os.path.join(env.VENDOR_PATH, 'imageproxy')):
+            run('go get willnorris.com/go/imageproxy/cmd/imageproxy')
+    put(os.path.join(env.SECRETS_PATH, 'settings/imageproxy.key'), 
+        '/etc/imageproxy.key', use_sudo=True)
+    put('config/supervisor_imageproxy.conf', '/etc/supervisor/conf.d/supervisor_imageproxy.conf', use_sudo=True)
+    sudo('supervisorctl reread')
+    sudo('supervisorctl update')
+    put("config/camo.nginx.conf", "/usr/local/nginx/conf/sites-enabled/camo.conf", use_sudo=True)
+    sudo("/etc/init.d/nginx restart")
+    
+    
+    
 @parallel
 def setup_usage_monitor():
     sudo('ln -fs %s/utils/monitor_disk_usage.py /etc/cron.daily/monitor_disk_usage' % env.NEWSBLUR_PATH)
