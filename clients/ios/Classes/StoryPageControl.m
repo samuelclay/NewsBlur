@@ -227,6 +227,8 @@
                                                    fontSettingsButton, nil];
     }
     
+    [self updateTheme];
+    
     [self.scrollView addObserver:self forKeyPath:@"contentOffset"
                          options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld
                          context:nil];
@@ -779,6 +781,11 @@
 - (void)updateTheme {
     [super updateTheme];
     
+    self.navigationController.navigationBar.tintColor = [UINavigationBar appearance].tintColor;
+    self.navigationController.navigationBar.barTintColor = [UINavigationBar appearance].barTintColor;
+    self.navigationController.navigationBar.backgroundColor = [UINavigationBar appearance].backgroundColor;
+    self.view.backgroundColor = UIColorFromRGB(0xe0e0e0);
+    
     [self updateAutoscrollButtons];
     [self updateTraverseBackground];
     [self setNextPreviousButtons];
@@ -813,11 +820,12 @@
     if (self.restoringStoryId.length > 0) {
         NSInteger pageIndex = [appDelegate.storiesCollection indexOfStoryId:self.restoringStoryId];
         
-        if (pageIndex < 0) {
-            [appDelegate hideStoryDetailView];
-//            [self doNextUnreadStory:nil];
-        } else {
+        if (pageIndex >= 0) {
             [self changePage:pageIndex animated:NO];
+        } else if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+            [self doNextUnreadStory:nil];
+        } else {
+            [appDelegate hideStoryDetailView];
         }
         
         self.restoringStoryId = nil;

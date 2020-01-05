@@ -37,6 +37,7 @@ from apps.search.models import SearchStory, SearchFeed
 from apps.statistics.rstats import RStats
 from utils import json_functions as json
 from utils import feedfinder2 as feedfinder
+from utils import feedfinder as feedfinder_old
 from utils import urlnorm
 from utils import log as logging
 from utils.fields import AutoOneToOneField
@@ -46,7 +47,7 @@ from utils.feed_functions import relative_timesince
 from utils.feed_functions import seconds_timesince
 from utils.story_functions import strip_tags, htmldiff, strip_comments, strip_comments__lxml
 from utils.story_functions import prep_for_search
-from utils.story_functions import create_camo_signed_url
+from utils.story_functions import create_imageproxy_signed_url
 
 ENTRY_NEW, ENTRY_UPDATED, ENTRY_SAME, ENTRY_ERR = range(4)
 
@@ -349,7 +350,7 @@ class Feed(models.Model):
         return feed_ids
         
     @classmethod
-    def find_or_create(cls, feed_address, feed_link, *args, **kwargs):
+    def find_or_create(cls, feed_address, feed_link, defaults=None, **kwargs):
         feeds = cls.objects.filter(feed_address=feed_address, feed_link=feed_link)
         if feeds:
             return feeds[0], False
@@ -359,7 +360,13 @@ class Feed(models.Model):
             if feeds:
                 return feeds[0], False
         
-        return cls.objects.get_or_create(feed_address=feed_address, feed_link=feed_link, *args, **kwargs)
+        try:
+            feed = cls.objects.get(feed_address=feed_address, feed_link=feed_link)
+            return feed, False
+        except cls.DoesNotExist:
+            feed = cls(**defaults)
+            feed.save()
+            return feed, True
         
     @classmethod
     def merge_feeds(cls, *args, **kwargs):
@@ -452,6 +459,11 @@ class Feed(models.Model):
         def _feedfinder(url):
             found_feed_urls = feedfinder.find_feeds(url)
             return found_feed_urls
+
+        @timelimit(10)
+        def _feedfinder_old(url):
+            found_feed_urls = feedfinder_old.feeds(url)
+            return found_feed_urls
         
         # Normalize and check for feed_address, dupes, and feed_link
         url = urlnorm.normalize(url)
@@ -474,6 +486,12 @@ class Feed(models.Model):
             except TimeoutError:
                 logging.debug('   ---> Feed finder timed out...')
                 found_feed_urls = []
+            if not found_feed_urls:
+                try:
+                    found_feed_urls = _feedfinder_old(url)
+                except TimeoutError:
+                    logging.debug('   ---> Feed finder old timed out...')
+                    found_feed_urls = []
                 
             if len(found_feed_urls):
                 feed_finder_url = found_feed_urls[0]
@@ -1126,7 +1144,11 @@ class Feed(models.Model):
         return headers
         
     def update(self, **kwargs):
-        from utils import feed_fetcher
+        try:
+            from utils import feed_fetcher
+        except ImportError, e:
+            logging.info(" ***> ~BR~FRImportError: %s" % e)
+            return
         r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
         original_feed_id = int(self.pk)
 
@@ -1875,6 +1897,7 @@ class Feed(models.Model):
         story['story_permalink']  = story_db.story_permalink
         story['image_urls']       = story_db.image_urls
         story['secure_image_urls']= cls.secure_image_urls(story_db.image_urls)
+        story['secure_image_thumbnails']= cls.secure_image_thumbnails(story_db.image_urls)
         story['story_feed_id']    = feed_id or story_db.story_feed_id
         story['has_modifications']= has_changes
         story['comment_count']    = story_db.comment_count if hasattr(story_db, 'comment_count') else 0
@@ -1910,9 +1933,17 @@ class Feed(models.Model):
     
     @classmethod
     def secure_image_urls(cls, urls):
-        signed_urls = [create_camo_signed_url(settings.IMAGES_URL, 
-                                              settings.IMAGES_SECRET_KEY, 
-                                              url) for url in urls]
+        signed_urls = [create_imageproxy_signed_url(settings.IMAGES_URL, 
+                                                    settings.IMAGES_SECRET_KEY, 
+                                                    url) for url in urls]
+        return dict(zip(urls, signed_urls))
+    
+    @classmethod
+    def secure_image_thumbnails(cls, urls, size=200):
+        signed_urls = [create_imageproxy_signed_url(settings.IMAGES_URL, 
+                                                    settings.IMAGES_SECRET_KEY, 
+                                                    url,
+                                                    size) for url in urls]
         return dict(zip(urls, signed_urls))
         
     def get_tags(self, entry):
@@ -1924,7 +1955,7 @@ class Feed(models.Model):
                     term = tcat.label
                 elif hasattr(tcat, 'term') and tcat.term:
                     term = tcat.term
-                if not term:
+                if not term or "CDATA" in term:
                     continue
                 qcat = term.strip()
                 if ',' in qcat or '/' in qcat:

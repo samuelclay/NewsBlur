@@ -144,12 +144,16 @@ static UIFont *textFont = nil;
 @synthesize cell;
 
 - (void)drawRect:(CGRect)r {
+    if (!cell) {
+        return;
+    }
+    
     CGContextRef context = UIGraphicsGetCurrentContext();
     
     UIColor *backgroundColor;
     
     backgroundColor = cell.highlighted || cell.selected ?
-                      UIColorFromLightSepiaMediumDarkRGB(0xFFFFD2, 0xFFFFD2, 0x405060, 0x000022) :
+                      UIColorFromLightSepiaMediumDarkRGB(0xFFFFD2, 0xFFFFD2, 0x304050, 0x000022) :
                       cell.isSocial ? UIColorFromRGB(0xE6ECE8) :
                       cell.isSaved ? UIColorFromRGB(0xE9EBEE) :
                       UIColorFromRGB(0xF7F8F5);

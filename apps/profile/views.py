@@ -1,8 +1,9 @@
 import stripe
+import requests
 import datetime
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
-from django.views.decorators.csrf import csrf_protect
+from django.views.decorators.csrf import csrf_protect, csrf_exempt
 from django.contrib.auth import logout as logout_user
 from django.contrib.auth import login as login_user
 from django.db.models.aggregates import Sum
@@ -101,13 +102,26 @@ def login(request):
         'next': request.REQUEST.get('next', "")
     }, context_instance=RequestContext(request))
     
-@csrf_protect
+@csrf_exempt
 def signup(request):
-    form = SignupForm()
+    form = SignupForm(prefix="signup")
+    recaptcha = request.POST.get('g-recaptcha-response', None)
+    recaptcha_error = None
+    
+    if not recaptcha:
+        recaptcha_error = "Please hit the \"I'm not a robot\" button."
+    else:
+        response = requests.post('https://www.google.com/recaptcha/api/siteverify', {
+            'secret': settings.RECAPTCHA_SECRET_KEY,
+            'response': recaptcha,
+        })
+        result = response.json()
+        if not result['success']:
+            recaptcha_error = "Really, please hit the \"I'm not a robot\" button."
 
     if request.method == "POST":
-        form = SignupForm(data=request.POST)
-        if form.is_valid():
+        form = SignupForm(data=request.POST, prefix="signup")
+        if form.is_valid() and not recaptcha_error:
             new_user = form.save()
             login_user(request, new_user)
             logging.user(new_user, "~FG~SB~BBNEW SIGNUP: ~FW%s" % new_user.email)
@@ -116,6 +130,7 @@ def signup(request):
 
     return render_to_response('accounts/signup.html', {
         'form': form,
+        'recaptcha_error': recaptcha_error,
         'next': request.REQUEST.get('next', "")
     }, context_instance=RequestContext(request))
 
@@ -550,7 +565,7 @@ def never_expire_premium(request):
 def update_payment_history(request):
     user_id = request.REQUEST.get('user_id')
     user = User.objects.get(pk=user_id)
-    user.profile.setup_premium_history(check_premium=False)
+    user.profile.setup_premium_history(set_premium_expire=False)
     
     return {'code': 1}
     
@@ -671,4 +686,15 @@ def email_optout(request):
     return {
         "user": user,
     }
+
+@json.json_view
+def ios_subscription_status(request):
+    logging.debug(" ---> iOS Subscription Status: %s" % request.POST)
     
+    subject = "iOS Subscription Status"
+    message = """%s""" % (request.POST)
+    mail_admins(subject, message)
+    
+    return {
+        "code": 1
+    }

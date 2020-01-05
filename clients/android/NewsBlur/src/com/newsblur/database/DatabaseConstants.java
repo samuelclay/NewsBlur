@@ -330,7 +330,14 @@ public class DatabaseConstants {
         TextUtils.join(",", BASE_STORY_COLUMNS) + ", " + 
         FEED_TITLE + ", " + FEED_FAVICON_URL + ", " + FEED_FAVICON_COLOR + ", " + FEED_FAVICON_BORDER + ", " + FEED_FAVICON_FADE + ", " + FEED_FAVICON_TEXT;
 
-    public static final String STORY_QUERY_BASE_1 = 
+	public static final String STORY_QUERY_BASE_0 =
+			"SELECT " +
+					STORY_COLUMNS +
+					" FROM " + STORY_TABLE +
+					" INNER JOIN " + FEED_TABLE +
+					" ON " + STORY_TABLE + "." + STORY_FEED_ID + " = " + FEED_TABLE + "." + FEED_ID +
+					" WHERE ";
+	public static final String STORY_QUERY_BASE_1 =
         "SELECT " +
         STORY_COLUMNS +
         " FROM " + STORY_TABLE +

@@ -177,6 +177,8 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     
     [[ThemeManager themeManager] addThemeGestureRecognizerToView:self.feedTitlesTable];
     
+    [self updateTheme];
+    
     self.notifier = [[NBNotifier alloc] initWithTitle:@"Fetching stories..."
                                            withOffset:CGPointMake(0, 0)];
     [self.view insertSubview:self.notifier belowSubview:self.feedViewToolbar];
@@ -316,9 +318,8 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 - (void)fadeSelectedCell {
     NSIndexPath *indexPath = [self.feedTitlesTable indexPathForSelectedRow];
     if (!indexPath) return;
-    [self.feedTitlesTable deselectRowAtIndexPath:indexPath
-                                        animated:YES];
-
+    [self tableView:self.feedTitlesTable deselectRowAtIndexPath:indexPath animated:YES];
+    
     NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:indexPath.section];
     id feedId = [[appDelegate.dictFolders objectForKey:folderName] objectAtIndex:indexPath.row];
     NSString *feedIdStr = [NSString stringWithFormat:@"%@", feedId];
@@ -350,8 +351,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 
 - (void)fadeFeed:(id)feedId {
     NSString *feedIdStr = [NSString stringWithFormat:@"%@", feedId];
-    [self.feedTitlesTable deselectRowAtIndexPath:[self.feedTitlesTable indexPathForSelectedRow]
-                                        animated:YES];
+    [self tableView:self.feedTitlesTable deselectRowAtIndexPath:[self.feedTitlesTable indexPathForSelectedRow] animated:YES];
     for (NSIndexPath *indexPath in [self.feedTitlesTable indexPathsForVisibleRows]) {
         NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:indexPath.section];
         id cellFeedId = [[appDelegate.dictFolders objectForKey:folderName] objectAtIndex:indexPath.row];
@@ -399,6 +399,17 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 //        self.feedViewToolbar.frame = (CGRect){CGPointMake(0.f, CGRectGetHeight(self.view.frame) - toolbarSize.height), toolbarSize};
 //    }
 //    self.innerView.frame = (CGRect){CGPointZero, CGSizeMake(CGRectGetWidth(self.view.frame), CGRectGetMinY(self.feedViewToolbar.frame))};
+    
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad && !appDelegate.isCompactWidth) {
+        CGRect navFrame = appDelegate.navigationController.view.frame;
+        CGFloat limit = appDelegate.masterContainerViewController.rightBorder.frame.origin.x + 1;
+        
+        if (navFrame.size.width > limit) {
+            navFrame.size.width = limit;
+            appDelegate.navigationController.view.frame = navFrame;
+        }
+    }
+    
     self.notifier.offset = CGPointMake(0, 0);
     
     [self updateIntelligenceControlForOrientation:interfaceOrientation];
@@ -489,7 +500,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
         urlFeedList = [urlFeedList stringByAppendingString:@"&background_ios=true"];
     }
     
-    [appDelegate.networkManager GET:urlFeedList parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [appDelegate GET:urlFeedList parameters:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self finishLoadingFeedList:responseObject];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)task.response;
@@ -555,9 +566,10 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     
     NSUserDefaults *defaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.com.newsblur.NewsBlur-Group"];
     [defaults setObject:[results objectForKey:@"share_ext_token"] forKey:@"share:token"];
-    [defaults setObject:DEFAULT_NEWSBLUR_URL forKey:@"share:host"];
+    [defaults setObject:self.appDelegate.url forKey:@"share:host"];
+    [self validateWidgetFeedsForGroupDefaults:defaults usingResults:results];
     [defaults synchronize];
-
+    
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
                                              (unsigned long)NULL), ^(void) {
         [appDelegate.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
@@ -710,6 +722,17 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     [appDelegate populateDictUnreadCounts];
     [appDelegate populateDictTextFeeds];
     
+    NSString *sortOrder = [userPreferences stringForKey:@"feed_list_sort_order"];
+    BOOL sortByMostUsed = [sortOrder isEqualToString:@"usage"];
+    
+    NSMutableArray *sortDescriptors = [NSMutableArray array];
+    
+    if (sortByMostUsed) {
+        [sortDescriptors addObject:[NSSortDescriptor sortDescriptorWithKey:@"feed_opens" ascending:NO]];
+    }
+    
+    [sortDescriptors addObject:[NSSortDescriptor sortDescriptorWithKey:@"feed_title" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]];
+    
     // sort all the folders
     appDelegate.dictFoldersArray = [NSMutableArray array];
     for (id f in appDelegate.dictFolders) {
@@ -721,27 +744,30 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
             folderTitle = f;
         }
         [appDelegate.dictFoldersArray addObject:folderTitle];
-        sortedArray = [folder sortedArrayUsingComparator:^NSComparisonResult(id id1, id id2) {
-            NSString *feedTitleA;
-            NSString *feedTitleB;
+        
+        NSMutableArray *feeds = [NSMutableArray array];
+        
+        for (id feedId in folder) {
+            NSString *feedIdStr = [NSString stringWithFormat:@"%@", feedId];
+            NSDictionary *feed;
             
-            if ([appDelegate isSocialFeed:[NSString stringWithFormat:@"%@", id1]]) {
-                feedTitleA = [[appDelegate.dictSocialFeeds 
-                               objectForKey:[NSString stringWithFormat:@"%@", id1]] 
-                              objectForKey:@"feed_title"];
-                feedTitleB = [[appDelegate.dictSocialFeeds 
-                               objectForKey:[NSString stringWithFormat:@"%@", id2]] 
-                              objectForKey:@"feed_title"];
+            if ([appDelegate isSavedFeed:feedIdStr]) {
+                feed = @{@"id" : feedId};
+            } else if ([appDelegate isSocialFeed:feedIdStr]) {
+                feed = appDelegate.dictSocialFeeds[feedIdStr];
             } else {
-                feedTitleA = [[appDelegate.dictFeeds 
-                                         objectForKey:[NSString stringWithFormat:@"%@", id1]] 
-                                        objectForKey:@"feed_title"];
-                feedTitleB = [[appDelegate.dictFeeds 
-                                         objectForKey:[NSString stringWithFormat:@"%@", id2]] 
-                                        objectForKey:@"feed_title"];
+                feed = appDelegate.dictFeeds[feedIdStr];
             }
-            return [feedTitleA caseInsensitiveCompare:feedTitleB];
-        }];
+            
+            if (feed != nil) {
+                [feeds addObject:feed];
+            }
+        }
+        
+        NSArray *sortedFeeds = [feeds sortedArrayUsingDescriptors:sortDescriptors];
+        
+        sortedArray = [sortedFeeds valueForKey:@"id"];
+        
         [sortedFolders setValue:sortedArray forKey:folderTitle];
     }
     appDelegate.dictFolders = sortedFolders;
@@ -1045,11 +1071,12 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     self.feedViewToolbar.tintColor = [UINavigationBar appearance].tintColor;
     self.feedViewToolbar.barTintColor = [UINavigationBar appearance].barTintColor;
     self.addBarButton.tintColor = UIColorFromRGB(0x8F918B);
-    self.intelligenceControl.tintColor = UIColorFromRGB(0x8F918B);
     self.settingsBarButton.tintColor = UIColorFromRGB(0x8F918B);
     self.refreshControl.tintColor = UIColorFromLightDarkRGB(0x0, 0xffffff);
     self.refreshControl.backgroundColor = UIColorFromRGB(0xE3E6E0);
     self.view.backgroundColor = UIColorFromRGB(0xf4f4f4);
+    
+    [[ThemeManager themeManager] updateSegmentedControl:self.intelligenceControl];
     
     NBBarButtonItem *barButton = self.addBarButton.customView;
     [barButton setImage:[[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"nav_icn_add.png"]] forState:UIControlStateNormal];
@@ -1090,23 +1117,14 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 - (void)settingDidChange:(NSNotification*)notification {
     NSString *identifier = notification.object;
     
-	if ([identifier isEqual:@"offline_allowed"]) {
-		BOOL enabled = [[notification.userInfo objectForKey:@"offline_allowed"] boolValue];
-		[appDelegate.preferencesViewController setHiddenKeys:enabled ? nil :
-         [NSSet setWithObjects:@"offline_image_download",
-          @"offline_download_connection",
-          @"offline_store_limit",
-          nil] animated:YES];
-	} else if ([identifier isEqual:@"use_system_font_size"]) {
-		BOOL enabled = [[notification.userInfo objectForKey:@"use_system_font_size"] boolValue];
-		[appDelegate.preferencesViewController setHiddenKeys:!enabled ? nil :
-         [NSSet setWithObjects:@"feed_list_font_size",
-          nil] animated:YES];
+    if (![identifier isKindOfClass:[NSString class]]) {
+        identifier = notification.userInfo.allKeys.firstObject;
+    }
+    
+    if ([identifier isEqualToString:@"feed_list_sort_order"]) {
+        [self.appDelegate reloadFeedsView:YES];
     } else if ([identifier isEqual:@"feed_list_font_size"]) {
         [self resizeFontSize];
-    } else if ([identifier isEqual:@"theme_auto_toggle"]) {
-        BOOL enabled = [[notification.userInfo objectForKey:@"theme_auto_toggle"] boolValue];
-        [appDelegate.preferencesViewController setHiddenKeys:!enabled ? [NSSet setWithObject:@"theme_auto_brightness"] : [NSSet setWithObjects:@"theme_style", @"theme_gesture", nil] animated:YES];
     } else if ([identifier isEqual:@"theme_auto_brightness"]) {
         [self updateThemeBrightness];
     } else if ([identifier isEqual:@"theme_style"]) {
@@ -1116,6 +1134,8 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
             [appDelegate.dashboardViewController.storiesModule reloadData];
         }
     }
+    
+    [appDelegate setHiddenPreferencesAnimated:YES];
 }
 
 - (void)settingsViewController:(IASKAppSettingsViewController*)sender buttonTappedForSpecifier:(IASKSpecifier*)specifier {
@@ -1128,6 +1148,9 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
             [appDelegate.database inDatabase:^(FMDatabase *db) {
                 [db executeUpdate:@"VACUUM"];
                 [appDelegate setupDatabase:db force:YES];
+                [db executeUpdate:@"DELETE FROM stories"];
+                [db executeUpdate:@"DELETE FROM text"];
+                [db executeUpdate:@"DELETE FROM cached_images"];
                 [appDelegate deleteAllCachedImages];
                 dispatch_sync(dispatch_get_main_queue(), ^{
                     [[NSUserDefaults standardUserDefaults] setObject:@"Cleared all stories and images!"
@@ -1136,6 +1159,29 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
             }];
         });
 	}
+}
+
+- (void)validateWidgetFeedsForGroupDefaults:(NSUserDefaults *)groupDefaults usingResults:(NSDictionary *)results {
+    NSMutableArray *feeds = [groupDefaults objectForKey:@"widget:feeds_array"];
+    
+    if (feeds == nil) {
+        feeds = [NSMutableArray array];
+        
+        NSDictionary *resultsFeeds = results[@"feeds"];
+        
+        [resultsFeeds enumerateKeysAndObjectsUsingBlock:^(id key, NSDictionary *obj, BOOL *stop) {
+            NSString *identifier = [NSString stringWithFormat:@"%@", key];
+            NSString *title = obj[@"feed_title"];
+            NSString *fade = obj[@"favicon_fade"];
+            NSString *color = obj[@"favicon_color"];
+            
+            NSDictionary *feed = @{@"id" : identifier, @"feed_title" : title, @"favicon_fade": fade, @"favicon_color" : color};
+            
+            [feeds addObject:feed];
+        }];
+        
+        [groupDefaults setObject:feeds forKey:@"widget:feeds_array"];
+    }
 }
 
 #pragma mark -
@@ -1268,6 +1314,8 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 //        [preferences boolForKey:@"show_feeds_after_being_read"]) {
         [self.stillVisibleFeeds setObject:indexPath forKey:feedIdStr];
     }
+    
+    [[tableView cellForRowAtIndexPath:indexPath] setNeedsDisplay];
     
     [appDelegate loadFolder:folderName feedID:feedIdStr];
 }
@@ -1539,7 +1587,7 @@ heightForHeaderInSection:(NSInteger)section {
                        forKey:@"cutoff_timestamp"];
     }
     
-    [appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [appDelegate POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self finishMarkAllAsRead:params];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         [self requestFailedMarkStoryRead:error withParams:params];
@@ -1576,7 +1624,7 @@ heightForHeaderInSection:(NSInteger)section {
         [params setObject:infrequent forKey:@"infrequent"];
     }
 
-    [appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [appDelegate POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self finishMarkAllAsRead:params];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         [self requestFailedMarkStoryRead:error withParams:params];
@@ -1600,7 +1648,7 @@ heightForHeaderInSection:(NSInteger)section {
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
     [params setObject:[feedsStories JSONRepresentation] forKey:@"feeds_stories"];
     
-    [appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [appDelegate POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self finishMarkAllAsRead:params];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         [self requestFailedMarkStoryRead:error withParams:params];
@@ -1887,11 +1935,7 @@ heightForHeaderInSection:(NSInteger)section {
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/favicons",
                            self.appDelegate.url];
 
-    [appDelegate.networkManager GET:urlString parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-        [self saveAndDrawFavicons:responseObject];
-    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        [self requestFailed:error];
-    }];
+    [appDelegate GET:urlString parameters:nil target:self success:@selector(saveAndDrawFavicons:) failure:@selector(requestFailed:)];
 }
 
 - (void)loadAvatars {
@@ -2048,7 +2092,7 @@ heightForHeaderInSection:(NSInteger)section {
         [self.appDelegate cancelOfflineQueue];
     }
     
-    [appDelegate.networkManager GET:urlString parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [appDelegate GET:urlString parameters:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self finishRefreshingFeedList:responseObject feedId:feedId];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)task.response;
@@ -2176,7 +2220,7 @@ heightForHeaderInSection:(NSInteger)section {
     NSURL *imageURL = [NSURL URLWithString:[NSString stringWithFormat:@"%@",
                                             [appDelegate.dictSocialProfile
                                              objectForKey:@"large_photo_url"]]];
-    userAvatarButton = [UIBarButtonItem barItemWithImage:[UIImage alloc]
+    userAvatarButton = [UIBarButtonItem barItemWithImage:[UIImage imageNamed:@"user"]
                                                   target:self
                                                   action:@selector(showUserProfile)];
     userAvatarButton.customView.frame = CGRectMake(0, yOffset + 1, 32, 32);
@@ -2361,17 +2405,17 @@ heightForHeaderInSection:(NSInteger)section {
     [self.notifier show];
 }
 
-- (void)showCachingNotifier:(float)progress hoursBack:(NSInteger)hours {
+- (void)showCachingNotifier:(NSString *)prefix progress:(float)progress hoursBack:(NSInteger)hours {
     //    [self.notifier hide];
     self.notifier.style = NBSyncingProgressStyle;
     if (hours < 2) {
-        self.notifier.title = @"Images from last hour";
+        self.notifier.title = [NSString stringWithFormat:@"%@ from last hour", prefix];
     } else if (hours < 24) {
-        self.notifier.title = [NSString stringWithFormat:@"Images from %ld hours ago", (long)hours];
+        self.notifier.title = [NSString stringWithFormat:@"%@ from %ld hours ago", prefix, (long)hours];
     } else if (hours < 48) {
-        self.notifier.title = @"Images from yesterday";
+        self.notifier.title = [NSString stringWithFormat:@"%@ from yesterday", prefix];
     } else {
-        self.notifier.title = [NSString stringWithFormat:@"Images from %d days ago", (int)round(hours / 24.f)];
+        self.notifier.title = [NSString stringWithFormat:@"%@ from %d days ago", prefix, (int)round(hours / 24.f)];
     }
     [self.notifier setProgress:progress];
     [self.notifier show];

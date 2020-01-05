@@ -53,6 +53,15 @@ NSString * const ThemeStyleDark = @"dark";
 }
 
 - (void)setTheme:(NSString *)theme {
+    // Automatically turn off following the system appearance when manually changing the theme.
+    [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"theme_follow_system"];
+    
+    [self reallySetTheme:theme];
+    
+    NSLog(@"Manually changed to theme: %@", self.themeDisplayName);  // log
+}
+
+- (void)reallySetTheme:(NSString *)theme {
     if ([self isValidTheme:theme]) {
         [[NSUserDefaults standardUserDefaults] setObject:theme forKey:@"theme_style"];
         [self updateTheme];
@@ -196,6 +205,40 @@ NSString * const ThemeStyleDark = @"dark";
     }
 }
 
+- (void)updateTextAttributesForSegmentedControl:(UISegmentedControl *)segmentedControl forState:(UIControlState)state foregroundColor:(UIColor *)foregroundColor {
+    NSMutableDictionary *attributes = [NSMutableDictionary dictionary];
+    NSDictionary *oldAttributes = [segmentedControl titleTextAttributesForState:state];
+    
+    if (oldAttributes != nil) {
+        [attributes addEntriesFromDictionary:oldAttributes];
+    }
+    
+    attributes[NSForegroundColorAttributeName] = foregroundColor;
+    
+    [segmentedControl setTitleTextAttributes:attributes forState:state];
+}
+
+- (void)updateSegmentedControl:(UISegmentedControl *)segmentedControl {
+    segmentedControl.tintColor = UIColorFromRGB(0x8F918B);
+    
+    if (@available(iOS 13.0, *)) {
+        segmentedControl.backgroundColor = UIColorFromLightDarkRGB(0xe7e6e7, 0x303030);
+        segmentedControl.selectedSegmentTintColor = UIColorFromLightDarkRGB(0xffffff, 0x6f6f75);
+        
+        [self updateTextAttributesForSegmentedControl:segmentedControl forState:UIControlStateNormal foregroundColor:UIColorFromLightDarkRGB(0x909090, 0xaaaaaa)];
+        [self updateTextAttributesForSegmentedControl:segmentedControl forState:UIControlStateSelected foregroundColor:UIColorFromLightDarkRGB(0x0, 0xffffff)];
+    }
+}
+
+- (void)updateThemeSegmentedControl:(UISegmentedControl *)segmentedControl {
+    segmentedControl.tintColor = [UIColor clearColor];
+    
+    if (@available(iOS 13.0, *)) {
+        segmentedControl.backgroundColor = [UIColor clearColor];
+        segmentedControl.selectedSegmentTintColor = [UIColor clearColor];
+    }
+}
+
 - (void)debugColor:(NSInteger)rgbValue {
     static NSMutableSet *colors = nil;
     
@@ -218,8 +261,9 @@ NSString * const ThemeStyleDark = @"dark";
 
 - (void)setupTheme {
     [UINavigationBar appearance].tintColor = UIColorFromLightSepiaMediumDarkRGB(0x0, 0x0, 0x9a8f73, 0x9a8f73);
-    [UINavigationBar appearance].barTintColor = UIColorFromLightSepiaMediumDarkRGB(0xE3E6E0, 0xFFFFC5, 0x6A6A6A, 0x424242);
-    [UIToolbar appearance].barTintColor = UIColorFromLightSepiaMediumDarkRGB(0xE3E6E0, 0xFFFFC5, 0x6A6A6A, 0x424242);
+    [UINavigationBar appearance].barTintColor = UIColorFromLightSepiaMediumDarkRGB(0xE3E6E0, 0xFFFFC5, 0x4A4A4A, 0x222222);
+    [UINavigationBar appearance].backgroundColor = UIColorFromLightSepiaMediumDarkRGB(0xE3E6E0, 0xFFFFC5, 0x4A4A4A, 0x222222);
+    [UIToolbar appearance].barTintColor = UIColorFromLightSepiaMediumDarkRGB(0xE3E6E0, 0xFFFFC5, 0x4A4A4A, 0x222222);
     [UISegmentedControl appearance].tintColor = UIColorFromLightSepiaMediumDarkRGB(0x8F918B, 0x8F918B, 0x8F918B, 0x8F918B);
     
     UIBarStyle style = self.isDarkTheme ? UIBarStyleBlack : UIBarStyleDefault;
@@ -348,6 +392,35 @@ NSString * const ThemeStyleDark = @"dark";
     
     // Play a click sound, like a light switch; might want to use a custom sound instead?
     AudioServicesPlaySystemSound(1105);
+}
+
+- (void)updateForSystemAppearance {
+    if (@available(iOS 12.0, *)) {
+        BOOL isDark = self.appDelegate.window.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark;
+        
+        [self systemAppearanceDidChange:isDark];
+    }
+}
+
+- (void)systemAppearanceDidChange:(BOOL)isDark {
+    NSUserDefaults *prefs = [NSUserDefaults standardUserDefaults];
+    NSString *wantTheme = nil;
+    
+    if (![prefs boolForKey:@"theme_follow_system"]) {
+        return;
+    }
+    
+    if (isDark) {
+        wantTheme = [prefs objectForKey:@"theme_dark"];
+    } else {
+        wantTheme = [prefs objectForKey:@"theme_light"];
+    }
+    
+    if (self.theme != wantTheme) {
+        [self reallySetTheme:wantTheme];
+        
+        NSLog(@"System changed to theme: %@", self.themeDisplayName);  // log
+    }
 }
 
 @end

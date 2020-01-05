@@ -89,7 +89,7 @@ def facebook_connect(request):
     
     args = {
         "client_id": facebook_app_id,
-        "redirect_uri": "http://" + Site.objects.get_current().domain + reverse('facebook-connect'),
+        "redirect_uri": "https://" + Site.objects.get_current().domain + '/oauth/facebook_connect',
         "scope": "user_friends",
         "display": "popup",
     }
@@ -152,7 +152,7 @@ def appdotnet_connect(request):
     args = {
         "client_id": settings.APPDOTNET_CLIENTID,
         "client_secret": settings.APPDOTNET_SECRET,
-        "redirect_uri": "http://" + domain +
+        "redirect_uri": "https://" + domain +
                                     reverse('appdotnet-connect'),
         "scope": ["email", "write_post", "follow"],
     }

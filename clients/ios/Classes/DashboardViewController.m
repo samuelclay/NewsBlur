@@ -88,7 +88,7 @@
         [NSLayoutConstraint constraintWithItem:self.storiesModule.view attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self.toolbar attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0.0].active = YES;
     }
     
-    [self updateLogo];
+    [self updateTheme];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -125,9 +125,10 @@
 }
 
 - (void)updateTheme {
-    self.topToolbar.barTintColor = UIColorFromRGB(0xE3E6E0);
-    self.toolbar.barTintColor = UIColorFromRGB(0xE3E6E0);
-    self.segmentedButton.tintColor = UIColorFromRGB(0x8F918B);
+    self.topToolbar.barTintColor = [UINavigationBar appearance].barTintColor;
+    self.topToolbar.backgroundColor = [UINavigationBar appearance].backgroundColor;
+    self.toolbar.barTintColor = [UINavigationBar appearance].barTintColor;
+    self.segmentedButton.tintColor = [UINavigationBar appearance].tintColor;
     
     self.storiesModule.searchBar.backgroundColor = UIColorFromRGB(0xE3E6E0);
     self.storiesModule.searchBar.tintColor = UIColorFromRGB(0xffffff);
@@ -144,6 +145,8 @@
     [self.storiesModule.storyTitlesTable reloadData];
     [self.interactionsModule.interactionsTable reloadData];
     [self.activitiesModule.activitiesTable reloadData];
+    
+    [[ThemeManager themeManager] updateSegmentedControl:self.segmentedButton];
     
     [self updateLogo];
 }

@@ -11,10 +11,6 @@
 
 @implementation NotificationFeedCell
 
-@synthesize appDelegate;
-@synthesize filterControl;
-@synthesize notificationTypeControl;
-
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
 {
     if ((self = [super initWithStyle:style reuseIdentifier:reuseIdentifier])) {
@@ -43,36 +39,45 @@
         [self.filterControl setTitle:@"Focus Stories" forSegmentAtIndex:1];
         [self.filterControl setImage:[UIImage imageNamed:@"unread_yellow.png"] forSegmentAtIndex:0];
         [self.filterControl setImage:[UIImage imageNamed:@"unread_green.png"] forSegmentAtIndex:1];
-        [self.filterControl setWidth:CGRectGetWidth(self.frame)*0.44 forSegmentAtIndex:0];
-        [self.filterControl setWidth:CGRectGetWidth(self.frame)*0.44 forSegmentAtIndex:1];
         [self.filterControl setTitleTextAttributes:controlAttrs forState:UIControlStateNormal];
         self.filterControl.frame = CGRectMake(36, 38, CGRectGetWidth(self.frame), 28);
         [self.contentView addSubview:self.filterControl];
         
-        self.notificationTypeControl = [[MultiSelectSegmentedControl alloc] initWithItems:@[@"Email",
-                                                                         @"Web",
-                                                                         @"iOS",
-                                                                         @"Android"]];
-        self.notificationTypeControl.delegate = self;
-        self.notificationTypeControl.tintColor = UIColorFromRGB(0x8F918B);
-        [self.notificationTypeControl.subviews objectAtIndex:0].accessibilityLabel = @"Email";
-        [self.notificationTypeControl.subviews objectAtIndex:1].accessibilityLabel = @"Web";
-        [self.notificationTypeControl.subviews objectAtIndex:2].accessibilityLabel = @"iOS";
-        [self.notificationTypeControl.subviews objectAtIndex:3].accessibilityLabel = @"Android";
-        [self.notificationTypeControl setTitle:@"Email" forSegmentAtIndex:0];
-        [self.notificationTypeControl setTitle:@"Web" forSegmentAtIndex:1];
-        [self.notificationTypeControl setTitle:@"iOS" forSegmentAtIndex:2];
-        [self.notificationTypeControl setTitle:@"Android" forSegmentAtIndex:3];
-        [self.notificationTypeControl setWidth:CGRectGetWidth(self.frame)*0.22 forSegmentAtIndex:0];
-        [self.notificationTypeControl setWidth:CGRectGetWidth(self.frame)*0.22 forSegmentAtIndex:1];
-        [self.notificationTypeControl setWidth:CGRectGetWidth(self.frame)*0.22 forSegmentAtIndex:2];
-        [self.notificationTypeControl setWidth:CGRectGetWidth(self.frame)*0.22 forSegmentAtIndex:3];
-        [self.notificationTypeControl setTitleTextAttributes:controlAttrs forState:UIControlStateNormal];
-        self.notificationTypeControl.frame = CGRectMake(36, 76, CGRectGetWidth(self.frame), 28);
-        [self.contentView addSubview:self.notificationTypeControl];
+        CGFloat offset = 0;
+        
+        [[ThemeManager themeManager] updateSegmentedControl:self.filterControl];
+        
+        self.emailNotificationTypeButton = [self makeNotificationTypeControlWithTitle:@"Email" offset:&offset];
+        self.webNotificationTypeButton = [self makeNotificationTypeControlWithTitle:@"Web" offset:&offset];
+        self.iOSNotificationTypeButton = [self makeNotificationTypeControlWithTitle:@"iOS" offset:&offset];
+        self.androidNotificationTypeButton = [self makeNotificationTypeControlWithTitle:@"Android" offset:&offset];
     }
     
     return self;
+}
+
+- (UIButton *)makeNotificationTypeControlWithTitle:(NSString *)title offset:(CGFloat *)offset {
+    CGRect frame = CGRectMake(36 + *offset, 76, CGRectGetWidth(self.frame) * 0.25, 28);
+    UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
+    button.frame = frame;
+    
+    button.layer.borderColor = UIColorFromLightDarkRGB(0xe7e6e7, 0x303030).CGColor;
+    button.layer.borderWidth = 1.5;
+    button.layer.cornerRadius = 8.0;
+    
+    [button setTitleColor:UIColorFromLightDarkRGB(0x909090, 0xaaaaaa) forState:UIControlStateNormal];
+    [button setTitleColor:UIColorFromLightDarkRGB(0x0, 0xffffff) forState:UIControlStateSelected];
+    
+    button.titleLabel.font = [UIFont systemFontOfSize:14];
+    [button setTitle:title forState:UIControlStateNormal];
+    
+    [button addTarget:self action:@selector(changeNotification:) forControlEvents:UIControlEventTouchUpInside];
+    
+    *offset += CGRectGetWidth(button.bounds);
+    
+    [self.contentView addSubview:button];
+    
+    return button;
 }
 
 - (void)layoutSubviews {
@@ -118,23 +123,28 @@
         self.textLabel.frame = textLabelFrame;
     }
     
-    NSDictionary *feed = [appDelegate.dictFeeds objectForKey:self.feedId];
+    NSDictionary *feed = [self.appDelegate.dictFeeds objectForKey:self.feedId];
     if ([[feed objectForKey:@"notification_filter"] isEqualToString:@"focus"]) {
         self.filterControl.selectedSegmentIndex = 1;
     } else {
         self.filterControl.selectedSegmentIndex = 0;
     }
     
-    NSMutableIndexSet *types = [NSMutableIndexSet indexSet];
     NSArray *notificationTypes = [feed objectForKey:@"notification_types"];
-    if ([notificationTypes containsObject:@"email"]) [types addIndex:0];
-    if ([notificationTypes containsObject:@"web"]) [types addIndex:1];
-    if ([notificationTypes containsObject:@"ios"]) [types addIndex:2];
-    if ([notificationTypes containsObject:@"android"]) [types addIndex:3];
-    [self.notificationTypeControl setSelectedSegmentIndexes:types];
+    [self updateNotificationTypeButton:self.emailNotificationTypeButton forCondition:[notificationTypes containsObject:@"email"]];
+    [self updateNotificationTypeButton:self.webNotificationTypeButton forCondition:[notificationTypes containsObject:@"web"]];
+    [self updateNotificationTypeButton:self.iOSNotificationTypeButton forCondition:[notificationTypes containsObject:@"ios"]];
+    [self updateNotificationTypeButton:self.androidNotificationTypeButton forCondition:[notificationTypes containsObject:@"android"]];
 }
 
-- (void)multiSelect:(MultiSelectSegmentedControl *)multiSelectSegmendedControl didChangeValue:(BOOL)value atIndex:(NSUInteger)index {
+- (void)updateNotificationTypeButton:(UIButton *)button forCondition:(BOOL)on {
+    button.selected = on;
+    button.backgroundColor = on ? UIColorFromLightDarkRGB(0xffffff, 0x6f6f75) : UIColorFromLightDarkRGB(0xe7e6e7, 0x3b3b3d);
+}
+
+- (void)changeNotification:(UIButton *)button {
+    [self updateNotificationTypeButton:button forCondition:!button.selected];
+    
     [self saveNotifications];
 }
 
@@ -142,25 +152,25 @@
     NSMutableArray *notificationTypes = [NSMutableArray array];
     NSString *notificationFilter = self.filterControl.selectedSegmentIndex == 0 ? @"unread": @"focus";
     
-    if ([self.notificationTypeControl.selectedSegmentIndexes containsIndex:0])
+    if (self.emailNotificationTypeButton.selected) {
         [notificationTypes addObject:@"email"];
-    if ([self.notificationTypeControl.selectedSegmentIndexes containsIndex:1])
+    }
+    if (self.webNotificationTypeButton.selected) {
         [notificationTypes addObject:@"web"];
-    if ([self.notificationTypeControl.selectedSegmentIndexes containsIndex:2])
+    }
+    if (self.iOSNotificationTypeButton.selected) {
         [notificationTypes addObject:@"ios"];
-    if ([self.notificationTypeControl.selectedSegmentIndexes containsIndex:3])
+    }
+    if (self.androidNotificationTypeButton.selected) {
         [notificationTypes addObject:@"android"];
+    }
     
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
     [params setObject:self.feedId forKey:@"feed_id"];
-    NSMutableArray *notifications = [NSMutableArray array];
-    for (NSString *notificationType in notificationTypes) {
-        [notifications addObject:notificationType];
-    }
-    [params setObject:notifications forKey:@"notification_types"];
+    [params setObject:notificationTypes forKey:@"notification_types"];
     [params setObject:notificationFilter forKey:@"notification_filter"];
-
-    [appDelegate updateNotifications:params feed:self.feedId];
+    
+    [self.appDelegate updateNotifications:params feed:self.feedId];
 }
 
 @end

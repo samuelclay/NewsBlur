@@ -232,7 +232,7 @@ class MUserFeedNotification(mongo.Document):
 
         apns = APNs(use_sandbox=False, 
                     cert_file='/srv/newsblur/config/certificates/aps.pem',
-                    key_file='/srv/newsblur/config/certificates/aps.pem',
+                    key_file='/srv/newsblur/config/certificates/aps.p12.pem',
                     enhanced=True)
         
         tokens = MUserNotificationTokens.get_tokens_for_user(self.user_id)

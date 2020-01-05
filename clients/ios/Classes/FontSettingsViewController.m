@@ -15,6 +15,7 @@
 #import "NBContainerViewController.h"
 #import "StoriesCollection.h"
 #import "FontListViewController.h"
+#import "MenuViewController.h"
 
 @interface FontSettingsViewController ()
 
@@ -132,6 +133,10 @@
     // -[NewsBlurAppDelegate navigationController:willShowViewController:animated:] hides this too late, so this gets mis-measured otherwise
     self.navigationController.navigationBarHidden = YES;
     self.navigationController.preferredContentSize = CGSizeMake(240.0, self.menuTableView.contentSize.height + (self.menuTableView.frame.origin.y * 2));
+    
+    if (@available(iOS 13.0, *)) {
+        self.menuTableView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentAlways;
+    }
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
@@ -278,17 +283,17 @@
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIndentifier];
     NSUInteger iPadOffset = UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone ? 0 : 1;
     
-    if (indexPath.row == 6) {
+    if (indexPath.row == 7) {
         return [self makeFontSizeTableCell];
-    } else if (indexPath.row == 7) {
+    } else if (indexPath.row == 8) {
         return [self makeLineSpacingTableCell];
-    } else if (indexPath.row == 8 && iPadOffset == 0) {
+    } else if (indexPath.row == 9 && iPadOffset == 0) {
         return [self makeFullScreenTableCell];
-    } else if (indexPath.row == 9 - iPadOffset) {
-        return [self makeAutoscrollTableCell];
     } else if (indexPath.row == 10 - iPadOffset) {
-        return [self makeScrollOrientationTableCell];
+        return [self makeAutoscrollTableCell];
     } else if (indexPath.row == 11 - iPadOffset) {
+        return [self makeScrollOrientationTableCell];
+    } else if (indexPath.row == 12 - iPadOffset) {
         return [self makeThemeTableCell];
     }
     
@@ -306,6 +311,9 @@
     cell.imageView.tintColor = UIColorFromRGB(0x303030);
 
     if (indexPath.row == 0) {
+        cell.textLabel.text = [@"Delete This Site" uppercaseString];
+        cell.imageView.image = [UIImage imageNamed:@"menu_icn_delete.png"];
+    } else if (indexPath.row == 1) {
         bool isSaved = [[self.appDelegate.activeStory objectForKey:@"starred"] boolValue];
         if (isSaved) {
             cell.textLabel.text = [@"Unsave this story" uppercaseString];
@@ -313,7 +321,7 @@
             cell.textLabel.text = [@"Save this story" uppercaseString];
         }
         cell.imageView.image = [UIImage imageNamed:@"clock.png"];
-    } else if (indexPath.row == 1) {
+    } else if (indexPath.row == 2) {
         bool isRead = [[self.appDelegate.activeStory objectForKey:@"read_status"] boolValue];
         if (isRead) {
             cell.textLabel.text = [@"Mark as unread" uppercaseString];
@@ -321,16 +329,16 @@
             cell.textLabel.text = [@"Mark as read" uppercaseString];
         }
         cell.imageView.image = [UIImage imageNamed:@"g_icn_unread.png"];
-    } else if (indexPath.row == 2) {
+    } else if (indexPath.row == 3) {
         cell.textLabel.text = [@"Send to..." uppercaseString];
         cell.imageView.image = [UIImage imageNamed:@"menu_icn_mail.png"];
-    } else if (indexPath.row == 3) {
+    } else if (indexPath.row == 4) {
         cell.textLabel.text = [@"Train this story" uppercaseString];
         cell.imageView.image = [UIImage imageNamed:@"menu_icn_train.png"];
-    } else if (indexPath.row == 4) {
+    } else if (indexPath.row == 5) {
         cell.textLabel.text = [@"Share this story" uppercaseString];
         cell.imageView.image = [UIImage imageNamed:@"menu_icn_share.png"];
-    } else if (indexPath.row == 5) {
+    } else if (indexPath.row == 6) {
         NSString *fontStyle = [[NSUserDefaults standardUserDefaults] stringForKey:@"fontStyle"];
         if (!fontStyle) {
             fontStyle = @"GothamNarrow-Book";
@@ -356,32 +364,34 @@
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (indexPath.row >= 6) {
+    if (indexPath.row >= 7) {
         return nil;
     }
     return indexPath;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (indexPath.row != 5) {
-        [self dismissViewControllerAnimated:indexPath.row != 2 && indexPath.row != 3 completion:nil];
+    if (indexPath.row != 0 && indexPath.row != 6) {
+        [self dismissViewControllerAnimated:indexPath.row != 3 && indexPath.row != 4 completion:nil];
     }
     
     if (indexPath.row == 0) {
+        [self confirmDeleteSite:self.navigationController];
+    } else if (indexPath.row == 1) {
         [self.appDelegate.storiesCollection toggleStorySaved];
         [self.appDelegate.feedDetailViewController reloadData];
         [self.appDelegate.storyPageControl refreshHeaders];
-    } else if (indexPath.row == 1) {
+    } else if (indexPath.row == 2) {
         [self.appDelegate.storiesCollection toggleStoryUnread];
         [self.appDelegate.feedDetailViewController reloadData];
         [self.appDelegate.storyPageControl refreshHeaders];
-    } else if (indexPath.row == 2) {
-        [self.appDelegate.storyPageControl openSendToDialog:self.appDelegate.storyPageControl.fontSettingsButton];
     } else if (indexPath.row == 3) {
-        [self.appDelegate openTrainStory:self.appDelegate.storyPageControl.fontSettingsButton];
+        [self.appDelegate.storyPageControl openSendToDialog:self.appDelegate.storyPageControl.fontSettingsButton];
     } else if (indexPath.row == 4) {
-        [self.appDelegate.storyPageControl.currentPage openShareDialog];
+        [self.appDelegate openTrainStory:self.appDelegate.storyPageControl.fontSettingsButton];
     } else if (indexPath.row == 5) {
+        [self.appDelegate.storyPageControl.currentPage openShareDialog];
+    } else if (indexPath.row == 6) {
         [self showFontList];
     }
     
@@ -397,6 +407,42 @@
 //    }
 //    
 //    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+}
+
+- (void)confirmDeleteSite:(UINavigationController *)menuNavigationController {
+    MenuViewController *controller = [MenuViewController new];
+    controller.title = @"Positive?";
+    
+    [controller addTitle:@"Delete This Site" iconName:@"menu_icn_delete.png" destructive:YES selectionShouldDismiss:YES handler:^{
+        [self deleteSite];
+    }];
+    
+    [self.navigationController pushViewController:controller animated:YES];
+}
+
+- (void)deleteSite {
+    [MBProgressHUD hideHUDForView:self.view animated:YES];
+    MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    HUD.labelText = @"Deleting...";
+    
+    NSString *urlString = [NSString stringWithFormat:@"%@/reader/delete_feed",
+                           self.appDelegate.url];
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    [params setObject:[self.appDelegate.storiesCollection.activeFeed objectForKey:@"id"] forKey:@"feed_id"];
+    [params setObject:[self.appDelegate extractFolderName:self.appDelegate.storiesCollection.activeFolder] forKey:@"in_folder"];
+    
+    [self.appDelegate POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        [self.appDelegate reloadFeedsView:YES];
+        [self.appDelegate.navigationController
+         popToViewController:[self.appDelegate.navigationController.viewControllers
+                              objectAtIndex:0]
+         animated:YES];
+        [MBProgressHUD hideHUDForView:self.view animated:YES];
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        [MBProgressHUD hideHUDForView:self.view animated:YES];
+        NSLog(@"Error: %@", error);
+        [self.appDelegate informError:error];
+    }];
 }
 
 - (void)showFontList {
@@ -428,6 +474,8 @@
     [self.fontSizeSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:3];
     [self.fontSizeSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:4];
     
+    [[ThemeManager themeManager] updateSegmentedControl:self.fontSizeSegment];
+    
     [cell addSubview:self.fontSizeSegment];
     
     return cell;
@@ -447,6 +495,8 @@
     [self.lineSpacingSegment setImage:[UIImage imageNamed:@"line_spacing_l"] forSegmentAtIndex:3];
     [self.lineSpacingSegment setImage:[UIImage imageNamed:@"line_spacing_xl"] forSegmentAtIndex:4];
     self.lineSpacingSegment.backgroundColor = UIColorFromRGB(0xeeeeee);
+    
+    [[ThemeManager themeManager] updateSegmentedControl:self.lineSpacingSegment];
     
     [cell addSubview:self.lineSpacingSegment];
     
@@ -468,6 +518,8 @@
     [self.fullscreenSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:0];
     [self.fullscreenSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:1];
     
+    [[ThemeManager themeManager] updateSegmentedControl:self.fullscreenSegment];
+    
     [cell addSubview:self.fullscreenSegment];
     
     return cell;
@@ -488,6 +540,8 @@
     [self.autoscrollSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:0];
     [self.autoscrollSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:1];
     
+    [[ThemeManager themeManager] updateSegmentedControl:self.autoscrollSegment];
+    
     [cell addSubview:self.autoscrollSegment];
     
     return cell;
@@ -507,6 +561,8 @@
     [self.scrollOrientationSegment setTitleTextAttributes:@{NSFontAttributeName:[UIFont fontWithName:@"Helvetica-Bold" size:11.0f]} forState:UIControlStateNormal];
     [self.scrollOrientationSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:0];
     [self.scrollOrientationSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:1];
+    
+    [[ThemeManager themeManager] updateSegmentedControl:self.scrollOrientationSegment];
     
     [cell addSubview:self.scrollOrientationSegment];
     
@@ -538,6 +594,8 @@
     [self.themeSegment setDividerImage:blankImage forLeftSegmentState:UIControlStateNormal rightSegmentState:UIControlStateNormal barMetrics:UIBarMetricsDefault];
     self.themeSegment.tintColor = [UIColor clearColor];
     self.themeSegment.backgroundColor = [UIColor clearColor];
+    
+    [[ThemeManager themeManager] updateThemeSegmentedControl:self.themeSegment];
     
     [cell addSubview:self.themeSegment];
     

@@ -508,14 +508,11 @@
     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:location inSection:0];
     
     if (indexPath && location >= 0) {
-        [self.storyTitlesTable selectRowAtIndexPath:indexPath
-                                           animated:NO
-                                     scrollPosition:UITableViewScrollPositionNone];
+        [self tableView:self.storyTitlesTable selectRowAtIndexPath:indexPath animated:NO];
         if (deselect) {
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW,  0.1 * NSEC_PER_SEC),
                            dispatch_get_main_queue(), ^(void) {
-                [self.storyTitlesTable deselectRowAtIndexPath:indexPath
-                                                     animated:YES];
+                [self tableView:self.storyTitlesTable deselectRowAtIndexPath:indexPath animated:YES];
             });
         }
     }
@@ -573,9 +570,10 @@
 - (void)finishedLoadingFeedsNotification:(NSNotification *)notification {
     if (self.restoringFeedID.length > 0) {
         NSDictionary *feed = [appDelegate getFeed:self.restoringFeedID];
+        BOOL isSocial = [appDelegate isSocialFeed:self.restoringFeedID];
         
         if (feed != nil) {
-            appDelegate.storiesCollection.isSocialView = NO;
+            appDelegate.storiesCollection.isSocialView = isSocial;
             appDelegate.storiesCollection.activeFeed = feed;
             [appDelegate loadFeedDetailView:NO];
             [self viewWillAppear:NO];
@@ -825,7 +823,7 @@
     NSString *feedId = [NSString stringWithFormat:@"%@", [[storiesCollection activeFeed] objectForKey:@"id"]];
     NSInteger feedPage = storiesCollection.feedPage;
     NSLog(@" ---> Loading feed url: %@", theFeedDetailURL);
-    [appDelegate.networkManager GET:theFeedDetailURL parameters:nil progress:nil success:^(NSURLSessionTask *task, id responseObject) {
+    [appDelegate GET:theFeedDetailURL parameters:nil success:^(NSURLSessionTask *task, id responseObject) {
         if (!storiesCollection.activeFeed) return;
         [self finishedLoadingFeed:responseObject feedPage:feedPage feedId:feedId];
         if (callback) {
@@ -1044,7 +1042,7 @@
 //    [self cancelRequests];
     
     
-    [appDelegate.networkManager GET:theFeedDetailURL parameters:nil progress:nil success:^(NSURLSessionTask *task, id responseObject) {
+    [appDelegate GET:theFeedDetailURL parameters:nil success:^(NSURLSessionTask *task, id responseObject) {
         [self finishedLoadingFeed:responseObject feedPage:storiesCollection.feedPage feedId:nil];
         if (callback) {
             callback();
@@ -1141,7 +1139,7 @@
         newUserProfiles = [results objectForKey:@"user_profiles"];
     }
     // add self to user profiles
-    if (storiesCollection.feedPage == 1) {
+    if (storiesCollection.feedPage == 1 && appDelegate.dictSocialProfile != nil) {
         newUserProfiles = [newUserProfiles arrayByAddingObject:appDelegate.dictSocialProfile];
     }
     
@@ -1334,9 +1332,10 @@
             }
             NSIndexPath *indexPath = [NSIndexPath indexPathForRow:locationOfStoryId inSection:0];
             
-            [self.storyTitlesTable selectRowAtIndexPath:indexPath
+            [self tableView:self.storyTitlesTable selectRowAtIndexPath:indexPath
                                                animated:NO
                                          scrollPosition:UITableViewScrollPositionMiddle];
+            [[self.storyTitlesTable cellForRowAtIndexPath:indexPath] setNeedsDisplay];
             
             dispatch_async(dispatch_get_main_queue(), ^{
                 FeedDetailTableCell *cell = (FeedDetailTableCell *)[self.storyTitlesTable cellForRowAtIndexPath:indexPath];
@@ -1615,8 +1614,8 @@
     if (!self.isPhoneOrCompact && !self.isDashboardModule) {
         NSInteger rowIndex = [storiesCollection locationOfActiveStory];
         if (rowIndex == indexPath.row) {
-            [tableView selectRowAtIndexPath:indexPath animated:NO scrollPosition:UITableViewScrollPositionNone];
-        } 
+            [self tableView:tableView selectRowAtIndexPath:indexPath animated:NO];
+        }
     }
     
     [cell setupGestures];
@@ -1700,6 +1699,15 @@
     if (indexPath.row < storiesCollection.storyLocationsCount) {
         // mark the cell as read
         appDelegate.feedsViewController.currentRowAtIndexPath = nil;
+        
+        NSInteger location = storiesCollection.locationOfActiveStory;
+        NSIndexPath *oldIndexPath = [NSIndexPath indexPathForRow:location inSection:0];
+        
+        if (![oldIndexPath isEqual:indexPath]) {
+            [self tableView:tableView deselectRowAtIndexPath:oldIndexPath animated:YES];
+        }
+        
+        [self tableView:tableView redisplayCellAtIndexPath:indexPath];
         
         if (self.isDashboardModule) {
             NSInteger storyIndex = [storiesCollection indexFromLocation:indexPath.row];
@@ -2061,7 +2069,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         [params setObject:infrequent forKey:@"infrequent"];
     }
 
-    [appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionTask *task, id responseObject) {
+    [appDelegate POST:urlString parameters:params success:^(NSURLSessionTask *task, id responseObject) {
         [appDelegate markFeedReadInCache:feedIds cutoffTimestamp:cutoffTimestamp older:older];
         // is there a better way to refresh the detail view?
         [self reloadStories];
@@ -2252,7 +2260,9 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     
     [viewController addThemeSegmentedControl];
     
-    [viewController showFromNavigationController:self.navigationController barButtonItem:self.settingsBarButton];
+    UINavigationController *navController = self.navigationController ?: appDelegate.storyPageControl.navigationController;
+    
+    [viewController showFromNavigationController:navController barButtonItem:self.settingsBarButton];
 }
 
 - (void)confirmDeleteSite:(UINavigationController *)menuNavigationController {
@@ -2302,7 +2312,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         [params setObject:newTitle forKey:@"feed_title"];
     }
 
-    [appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [appDelegate POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [appDelegate reloadFeedsView:YES];
         if (storiesCollection.isRiverView) {
             [appDelegate renameFolder:newTitle];
@@ -2333,7 +2343,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     [params setObject:[storiesCollection.activeFeed objectForKey:@"id"] forKey:@"feed_id"];
     [params setObject:[appDelegate extractFolderName:storiesCollection.activeFolder] forKey:@"in_folder"];
 
-    [appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [appDelegate POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [appDelegate reloadFeedsView:YES];
         [appDelegate.navigationController
          popToViewController:[appDelegate.navigationController.viewControllers
@@ -2359,7 +2369,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
                                                       extractParentFolderName:storiesCollection.activeFolder]]
                forKey:@"in_folder"];
     
-    [appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [appDelegate POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [appDelegate reloadFeedsView:YES];
         [appDelegate.navigationController
          popToViewController:[appDelegate.navigationController.viewControllers
@@ -2384,7 +2394,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/save_feed_chooser", self.appDelegate.url];
 
     [params setObject:activeIdentifiers forKey:@"approved_feeds"];
-    [appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [appDelegate POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self.appDelegate reloadFeedsView:YES];
         [self.appDelegate.navigationController popToViewController:[appDelegate.navigationController.viewControllers objectAtIndex:0]
                                                           animated:YES];
@@ -2422,7 +2432,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         [params setObject:feedIdentifier forKey:@"feed_id"];
     }
     
-    [appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [appDelegate POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [MBProgressHUD hideHUDForView:self.view animated:YES];
         
         int code = [[responseObject valueForKey:@"code"] intValue];
@@ -2530,13 +2540,13 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         offset = 0;
     }
     if (offset > rowIndex) offset = rowIndex;
-                    
+    
     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:rowIndex inSection:0];
     NSIndexPath *offsetIndexPath = [NSIndexPath indexPathForRow:(rowIndex - offset) inSection:0];
-
-    [storyTitlesTable selectRowAtIndexPath:indexPath 
-                                  animated:YES 
-                            scrollPosition:UITableViewScrollPositionNone];
+    NSIndexPath *oldIndexPath = storyTitlesTable.indexPathForSelectedRow;
+    
+    [self tableView:storyTitlesTable deselectRowAtIndexPath:oldIndexPath animated:YES];
+    [self tableView:storyTitlesTable selectRowAtIndexPath:indexPath animated:YES];
     
     // check to see if the cell is completely visible
     CGRect cellRect = [storyTitlesTable rectForRowAtIndexPath:indexPath];
@@ -2554,10 +2564,10 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 - (void)updateTheme {
     [super updateTheme];
     
-    self.navigationController.navigationBar.tintColor = UIColorFromRGB(0x8F918B);
+    self.navigationController.navigationBar.tintColor = [UINavigationBar appearance].tintColor;
     self.navigationController.navigationBar.backItem.backBarButtonItem.tintColor = UIColorFromRGB(0x8F918B);
-    self.navigationController.navigationBar.barTintColor = UIColorFromRGB(0xE3E6E0);
-    self.navigationController.toolbar.barTintColor = UIColorFromRGB(0xE3E6E0);
+    self.navigationController.navigationBar.barTintColor = [UINavigationBar appearance].barTintColor;
+    self.navigationController.toolbar.barTintColor = [UINavigationBar appearance].barTintColor;
     
     self.searchBar.backgroundColor = UIColorFromRGB(0xE3E6E0);
     self.searchBar.tintColor = UIColorFromRGB(0xffffff);
@@ -2620,7 +2630,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
                            self.appDelegate.url,
                            [storiesCollection.activeFeed objectForKey:@"id"]];
 //    [self cancelRequests];
-    [appDelegate.networkManager GET:urlString parameters:nil progress:nil success:^(NSURLSessionTask *task, id responseObject) {
+    [appDelegate GET:urlString parameters:nil success:^(NSURLSessionTask *task, id responseObject) {
         [self renderStories:[responseObject objectForKey:@"stories"]];
     } failure:^(NSURLSessionTask *operation, NSError *error) {
         NSLog(@"Fail: %@", error);
@@ -2652,7 +2662,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
                            self.appDelegate.url,
                            feedIdsQuery];
 
-    [appDelegate.networkManager GET:urlString parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [appDelegate GET:urlString parameters:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self saveAndDrawFavicons:responseObject];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         [self requestFailed:error];

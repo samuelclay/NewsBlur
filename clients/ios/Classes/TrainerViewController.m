@@ -81,7 +81,7 @@
         NSString *feedId = [self feedId];
         NSString *urlString = [NSString stringWithFormat:@"%@/reader/feeds_trainer?feed_id=%@",
                                self.appDelegate.url, feedId];
-        [appDelegate.networkManager GET:urlString parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        [appDelegate GET:urlString parameters:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
             [MBProgressHUD hideHUDForView:self.view animated:YES];
             NSArray *resultsArray = responseObject;
             if (resultsArray.count) {

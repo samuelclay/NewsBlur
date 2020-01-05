@@ -194,7 +194,7 @@
 			<key>Key</key>
 			<string>story_list_preview_text_size</string>
 			<key>DefaultValue</key>
-			<string>short</string>
+			<string>medium</string>
 		</dict>
 		<dict>
 			<key>Type</key>
@@ -216,13 +216,33 @@
 			<key>Key</key>
 			<string>story_list_preview_images_size</string>
 			<key>DefaultValue</key>
-			<string>large</string>
+			<string>small</string>
 		</dict>
 		<dict>
 			<key>Title</key>
 			<string>Feed list</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Feed list order</string>
+			<key>Titles</key>
+			<array>
+				<string>Alphabetical</string>
+				<string>Most used then alphabetical</string>
+			</array>
+			<key>DefaultValue</key>
+			<string>title</string>
+			<key>Values</key>
+			<array>
+				<string>title</string>
+				<string>usage</string>
+			</array>
+			<key>Key</key>
+			<string>feed_list_sort_order</string>
 		</dict>
 		<dict>
 			<key>Type</key>
@@ -309,6 +329,16 @@
 			<string>Switch between both light themes and both dark themes by swiping up or down repeatedly with two fingers, like a light switch.</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Follow system appearance</string>
+			<key>Key</key>
+			<string>theme_follow_system</string>
+			<key>DefaultValue</key>
+			<true/>
 		</dict>
 		<dict>
 			<key>Type</key>
@@ -423,6 +453,16 @@
 			<string>Download stories</string>
 			<key>Key</key>
 			<string>offline_allowed</string>
+			<key>DefaultValue</key>
+			<true/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Download text</string>
+			<key>Key</key>
+			<string>offline_text_download</string>
 			<key>DefaultValue</key>
 			<true/>
 		</dict>
@@ -767,16 +807,6 @@
 			<false/>
 			<key>Key</key>
 			<string>story_autoscroll</string>
-		</dict>
-		<dict>
-			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
-			<key>Title</key>
-			<string>Scroll horizontally</string>
-			<key>DefaultValue</key>
-			<string>YES</string>
-			<key>Key</key>
-			<string>scroll_stories_horizontally</string>
 		</dict>
 		<dict>
 			<key>Title</key>

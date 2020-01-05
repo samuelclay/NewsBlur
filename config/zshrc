@@ -12,7 +12,8 @@ source $ZSH/oh-my-zsh.sh
 
 export PYTHONSTARTUP=$HOME/.pystartup
 export LSCOLORS='gxgxcxdxBxegedabagacad'
-
+export GOROOT=/srv/code/go
+export GOPATH=/srv/code/go
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
 zstyle ':completion:*' list-colors "=(#b) #([0-9]#)*=36=31"
 setopt  COMPLETE_IN_WORD

@@ -37,6 +37,7 @@ import butterknife.Bind;
 import butterknife.OnClick;
 
 import com.newsblur.R;
+import com.newsblur.activity.FeedItemsList;
 import com.newsblur.activity.NbActivity;
 import com.newsblur.activity.Reading;
 import com.newsblur.domain.Classifier;
@@ -375,6 +376,10 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
             StoryIntelTrainerFragment intelFrag = StoryIntelTrainerFragment.newInstance(story, fs);
             intelFrag.show(getActivity().getSupportFragmentManager(), StoryIntelTrainerFragment.class.getName());
             return true;
+        } else if(item.getItemId() == R.id.menu_go_to_feed){
+            FeedItemsList.startActivity(getContext(), fs,
+                    FeedUtils.getFeed(story.feedId), null);
+            return true;
         } else {
 			return super.onOptionsItemSelected(item);
 		}
@@ -452,7 +457,7 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
 			itemFeed.setText(feedTitle);
 		}
 
-        itemDate.setText(StoryUtils.formatLongDate(getActivity(), new Date(story.timestamp)));
+        itemDate.setText(StoryUtils.formatLongDate(getActivity(), story.timestamp));
 
         if (story.tags.length <= 0) {
             tagContainer.setVisibility(View.GONE);

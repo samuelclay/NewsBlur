@@ -12,7 +12,8 @@
 typedef NS_ENUM(NSUInteger, FeedChooserOperation)
 {
     FeedChooserOperationMuteSites = 0,
-    FeedChooserOperationOrganizeSites = 1
+    FeedChooserOperationOrganizeSites = 1,
+    FeedChooserOperationWidgetSites = 2
 };
 
 

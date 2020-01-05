@@ -48,7 +48,7 @@ SERVER_NAME  = 'newsblur'
 SERVER_EMAIL = 'server@newsblur.com'
 HELLO_EMAIL  = 'hello@newsblur.com'
 NEWSBLUR_URL = 'http://www.newsblur.com'
-IMAGES_URL   = 'https://images.newsblur.com'
+IMAGES_URL   = 'https://imageproxy.newsblur.com'
 SECRET_KEY            = 'YOUR_SECRET_KEY'
 IMAGES_SECRET_KEY = "YOUR_SECRET_IMAGE_KEY"
 
@@ -486,7 +486,7 @@ CELERYBEAT_SCHEDULE = {
     },
     'clean-spam': {
         'task': 'clean-spam',
-        'schedule': datetime.timedelta(hours=6),
+        'schedule': datetime.timedelta(hours=1),
         'options': {'queue': 'beat_tasks'},
     },
     'clean-social-spam': {

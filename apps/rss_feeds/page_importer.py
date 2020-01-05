@@ -118,7 +118,11 @@ class PageImporter(object):
                     return
             if data:
                 html = self.rewrite_page(data)
-                self.save_page(html)
+                if html:
+                    self.save_page(html)
+                else:
+                    self.save_no_page()
+                    return
             else:
                 self.save_no_page()
                 return
@@ -228,8 +232,9 @@ class PageImporter(object):
         try:
             html = BASE_RE.sub(r'<head\1 '+base_code, response)
         except:
-            response = response.decode('latin1').encode('utf-8')
-            html = BASE_RE.sub(r'<head\1 '+base_code, response)
+            # response = response.decode('latin1').encode('utf-8')
+            # html = BASE_RE.sub(r'<head\1 '+base_code, response)
+            return None
         
         if '<base href' not in html:
             html = "%s %s" % (base_code, html)

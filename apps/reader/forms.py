@@ -88,7 +88,8 @@ class SignupForm(forms.Form):
                              label=_(u'Email'),
                              required=True,
                              error_messages={'required': 'Please enter an email.'})
-    password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'NB-input'}),
+    password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'NB-input'}, 
+                                                          render_value=True,),
                                label=_(u'Password'),
                                required=False)
                                # error_messages={'required': 'Please enter a password.'})
@@ -123,11 +124,13 @@ class SignupForm(forms.Form):
         username = self.cleaned_data.get('username', '')
         password = self.cleaned_data.get('password', '')
         email = self.cleaned_data.get('email', None)
+        
         exists = User.objects.filter(username__iexact=username).count()
         if exists:
             user_auth = authenticate(username=username, password=password)
             if not user_auth:
                 raise forms.ValidationError(_(u'Someone is already using that username.'))
+                
         return self.cleaned_data
         
     def save(self, profile_callback=None):
