@@ -23,7 +23,7 @@ class JSONFetcher:
         
         data = {}
         data['title'] = json_feed.get('title', '[Untitled]')
-        data['link'] = json_feed.get('home_page_url', None)
+        data['link'] = json_feed.get('home_page_url', "")
         data['description'] = json_feed.get('title', "")
         data['lastBuildDate'] = datetime.datetime.utcnow()
         data['generator'] = 'NewsBlur JSON Feed - %s' % settings.NEWSBLUR_URL
@@ -44,12 +44,12 @@ class JSONFetcher:
         if pubdate:
             date_published = dateutil.parser.parse(pubdate)
         story = {
-            'title': item.get('title', None),
-            'link': item.get('external_url', item.get('url', None)),
-            'description': item.get('content_html', item.get('content_text', None)),
-            'author_name': item.get('author', {}).get('name', None),
+            'title': item.get('title', ""),
+            'link': item.get('external_url', item.get('url', "")),
+            'description': item.get('content_html', item.get('content_text', "")),
+            'author_name': item.get('author', {}).get('name', ""),
             'categories': item.get('tags', []),
-            'unique_id': unicode(item.get('id', item.get('url', None))),
+            'unique_id': unicode(item.get('id', item.get('url', ""))),
             'pubdate': date_published,
         }
         
