@@ -439,7 +439,8 @@
             $save.addClass('NB-disabled').text('Saving...');
             this.feed = this.feed || {};
             
-            var scheme = {% if debug %}'http'{% else %}'https'{% endif %};
+            // var scheme = {% if debug %}'http'{% else %}'https'{% endif %};
+            var scheme = 'https';
             var url = scheme + '://' + this.domain + "{% url "api-save-story" token %}";
             
             $.ajax({
@@ -473,7 +474,7 @@
                 'Saved'
             ]));
             setTimeout(function() {
-                $.modal.close();
+                // $.modal.close();
             }, 2000);
 
         },
@@ -539,7 +540,7 @@
                 'Shared'
             ]));
             setTimeout(function() {
-                $.modal.close();
+                // $.modal.close();
             }, 2000);
 
         },
