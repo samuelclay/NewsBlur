@@ -1,0 +1,36 @@
+{% load utils_tags %}
+<!DOCTYPE html>
+<html>
+<head>
+  <title>{% block title %}NewsBlur{% endblock %}</title>
+  {% include_stylesheets "common" %}
+  <meta name="viewport" content="width=625, maximum-scale=1">
+  
+  <script>
+    window.NEWSBLUR = {};
+    NEWSBLUR.Models = {};
+    NEWSBLUR.Collections = {};
+    NEWSBLUR.Globals = {
+      'is_authenticated'        : {{ user.is_authenticated|yesno:"true,false" }},
+      'is_anonymous'            : {{ user.is_anonymous|yesno:"true,false" }},
+      'is_premium'              : {{ user.profile.is_premium|yesno:"true,false" }}
+    };
+    NEWSBLUR.stats = {{ stats|safe }};
+  </script>
+
+  {% include_javascripts "statistics" %}
+  
+</head>
+
+<body class="NB-embedded-statistics {% if user.profile.is_premium %}NB-premium{% endif %}">
+  
+  <div class="NB-embedded-stats"></div>
+
+  <script>
+    NEWSBLUR.stats_feed = new NEWSBLUR.Models.Feed({{ feed_js|safe }});
+    NEWSBLUR.stats_dialog = new NEWSBLUR.ReaderStatistics({{ feed.pk }}, {embedded: true});
+    NEWSBLUR.stats_dialog.populate_stats(null, NEWSBLUR.stats);
+  </script>
+  
+</body>
+</html>
