@@ -159,6 +159,27 @@ def feed_autocomplete(request):
 @json.json_view
 def load_feed_statistics(request, feed_id):
     user = get_user(request)
+    feed = get_object_or_404(Feed, pk=feed_id)
+    stats = assemble_statistics(user, feed_id)
+    
+    logging.user(request, "~FBStatistics: ~SB%s" % (feed))
+
+    return stats
+
+def load_feed_statistics_embedded(request, feed_id):
+    user = get_user(request)
+    feed = get_object_or_404(Feed, pk=feed_id)
+    stats = assemble_statistics(user, feed_id)
+    
+    logging.user(request, "~FBStatistics (~FCembedded~FB): ~SB%s" % (feed))
+    
+    return render_to_response('rss_feeds/statistics.xhtml', {
+        'stats': json.json_encode(stats),
+        'feed_js': json.json_encode(feed.canonical()),
+        'feed': feed,
+    }, context_instance=RequestContext(request))    
+    
+def assemble_statistics(user, feed_id):
     timezone = user.profile.timezone
     stats = dict()
     feed = get_object_or_404(Feed, pk=feed_id)
@@ -232,8 +253,6 @@ def load_feed_statistics(request, feed_id):
     stats['page_fetch_history'] = fetch_history['page_fetch_history']
     stats['feed_push_history'] = fetch_history['push_history']
     
-    logging.user(request, "~FBStatistics: ~SB%s" % (feed))
-
     return stats
 
 @json.json_view

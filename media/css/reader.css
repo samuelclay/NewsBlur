@@ -7645,6 +7645,9 @@ form.opml_import_form input {
 /* = Statistics Modal = */
 /* ==================== */
 
+.NB-embedded-statistics {
+    overflow: visible;
+}
 .NB-modal-statistics {
 }
 
@@ -7654,6 +7657,7 @@ form.opml_import_form input {
     margin: 24px 0 0;
     overflow: hidden;
     padding: 10px 0 0;
+    text-align: center;
 }
 
 .NB-modal-statistics .NB-statistics-stat .NB-statistics-label {
@@ -7740,6 +7744,8 @@ form.opml_import_form input {
 .NB-modal-statistics .NB-statistics-stat .NB-statistics-history-hours-chart {
   margin: 12px 24px 18px;
   width: 524px;
+  margin-left: auto;
+  margin-right: auto;
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
