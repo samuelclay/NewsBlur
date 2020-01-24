@@ -50,10 +50,13 @@ class WidgetExtensionViewController: UITableViewController, NCWidgetProviding {
         static let feeds = "widget:feeds_array"
         static let widgetFolder = "Widget"
         static let storiesFilename = "Stories.json"
+        static let feedImagesFilename = "Feed Images"
+        static let storyImagesFilename = "Story Images"
         static let imageExtension = "png"
         static let limit = 5
         static let defaultRowHeight: CGFloat = 110
         static let storyImageSize: CGFloat = 64 * 3
+        static let storyImageLimit: CGFloat = 200
     }
     
     // MARK: - View lifecycle
@@ -85,7 +88,8 @@ class WidgetExtensionViewController: UITableViewController, NCWidgetProviding {
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         
-        imageCache.removeAll()
+        feedImageCache.removeAll()
+        storyImageCache.removeAll()
     }
     
     // MARK: - Widget provider protocol
@@ -97,7 +101,8 @@ class WidgetExtensionViewController: UITableViewController, NCWidgetProviding {
     private var widgetCompletion: WidgetCompletion?
     
     private typealias ImageDictionary = [String : UIImage]
-    private var imageCache = ImageDictionary()
+    private var feedImageCache = ImageDictionary()
+    private var storyImageCache = ImageDictionary()
     
     private typealias LoaderDictionary = [String : Loader]
     private var loaders = LoaderDictionary()
@@ -333,6 +338,7 @@ private extension WidgetExtensionViewController {
         }
         
         saveStories()
+        flushStoryImages()
         
         if stories.isEmpty, error == nil {
             error = .noStories
@@ -363,8 +369,16 @@ private extension WidgetExtensionViewController {
         return widgetFolderURL?.appendingPathComponent(Constant.storiesFilename)
     }
     
-    func createWidgetFolder() {
-        guard let url = widgetFolderURL else {
+    var feedImagesURL: URL? {
+        return widgetFolderURL?.appendingPathComponent(Constant.feedImagesFilename)
+    }
+    
+    var storyImagesURL: URL? {
+        return widgetFolderURL?.appendingPathComponent(Constant.storyImagesFilename)
+    }
+    
+    func createWidgetFolder(url: URL? = nil) {
+        guard let url = url ?? widgetFolderURL else {
             return
         }
         
@@ -423,41 +437,22 @@ private extension WidgetExtensionViewController {
         }
     }
     
-    func cachedImage(for identifier: String) -> UIImage? {
-        if let image = imageCache[identifier] {
-            return image
-        }
-        
-        guard let folderURL = widgetFolderURL else {
-            return nil
-        }
-        
-        do {
-            let imageURL = folderURL.appendingPathComponent(identifier).appendingPathExtension(Constant.imageExtension)
-            let data = try Data(contentsOf: imageURL)
-            
-            guard let image = UIImage(data: data) else {
-                return nil
-            }
-            
-            imageCache[identifier] = image
-            
-            return image
-        } catch {
-            print("Image error: \(error)")
-        }
-        
-        return nil
+    func save(feedImage: UIImage, for identifier: String) {
+        feedImageCache[identifier] = feedImage
+        save(image: feedImage, to: feedImagesURL, for: identifier)
     }
     
-    func save(image: UIImage, for identifier: String) {
-        guard let folderURL = widgetFolderURL else {
+    func save(storyImage: UIImage, for identifier: String) {
+        storyImageCache[identifier] = storyImage
+        save(image: storyImage, to: storyImagesURL, for: identifier)
+    }
+    
+    func save(image: UIImage, to folderURL: URL?, for identifier: String) {
+        guard let folderURL = folderURL else {
             return
         }
         
-        imageCache[identifier] = image
-        
-        createWidgetFolder()
+        createWidgetFolder(url: folderURL)
         
         do {
             let imageURL = folderURL.appendingPathComponent(identifier).appendingPathExtension(Constant.imageExtension)
@@ -465,6 +460,30 @@ private extension WidgetExtensionViewController {
             try image.pngData()?.write(to: imageURL)
         } catch {
             print("Image error: \(error)")
+        }
+    }
+    
+    func flushStoryImages() {
+        guard let folderURL = storyImagesURL else {
+            return
+        }
+        
+        do {
+            let manager = FileManager.default
+            let contents = try manager.contentsOfDirectory(at: folderURL, includingPropertiesForKeys: [], options: .skipsHiddenFiles)
+            
+            for imageURL in contents {
+                let identifier = imageURL.deletingPathExtension().lastPathComponent
+                
+                if stories.contains(where: { $0.id == identifier }) {
+                    continue
+                }
+                
+                try manager.removeItem(at: imageURL)
+                storyImageCache[identifier] = nil
+            }
+        } catch {
+            print("Flush story images error: \(error)")
         }
     }
     
@@ -476,7 +495,7 @@ private extension WidgetExtensionViewController {
             return
         }
         
-        if let image = cachedImage(for: feed) {
+        if let image = cachedFeedImage(for: feed) {
             completion(image, feed)
             return
         }
@@ -497,7 +516,7 @@ private extension WidgetExtensionViewController {
                         return
                     }
                     
-                    self.save(image: image, for: feed)
+                    self.save(feedImage: image, for: feed)
                     completion(image, feed)
                 case .failure:
                     completion(nil, feed)
@@ -512,7 +531,7 @@ private extension WidgetExtensionViewController {
             return
         }
         
-        if let image = cachedImage(for: identifier) {
+        if let image = cachedStoryImage(for: identifier) {
             completion(image, identifier)
             return
         }
@@ -532,7 +551,7 @@ private extension WidgetExtensionViewController {
                     
                     let scaledImage = self.scale(image: loadedImage)
                     
-                    self.save(image: scaledImage, for: identifier)
+                    self.save(storyImage: scaledImage, for: identifier)
                     completion(scaledImage, identifier)
                 case .failure:
                     completion(nil, identifier)
@@ -541,10 +560,59 @@ private extension WidgetExtensionViewController {
         }
     }
     
+    func cachedFeedImage(for feed: String) -> UIImage? {
+        if let image = feedImageCache[feed] {
+            return image
+        }
+        
+        guard let image = loadCachedImage(folderURL: feedImagesURL, identifier: feed) else {
+            return nil
+        }
+        
+        feedImageCache[feed] = image
+        
+        return image
+    }
+    
+    func cachedStoryImage(for identifier: String) -> UIImage? {
+        if let image = storyImageCache[identifier] {
+            return image
+        }
+        
+        guard let image = loadCachedImage(folderURL: storyImagesURL, identifier: identifier) else {
+            return nil
+        }
+        
+        storyImageCache[identifier] = image
+        
+        return image
+    }
+    
+    func loadCachedImage(folderURL: URL?, identifier: String) -> UIImage? {
+        guard let folderURL = folderURL else {
+            return nil
+        }
+        
+        do {
+            let imageURL = folderURL.appendingPathComponent(identifier).appendingPathExtension(Constant.imageExtension)
+            let data = try Data(contentsOf: imageURL)
+            
+            guard let image = UIImage(data: data) else {
+                return nil
+            }
+            
+            return image
+        } catch {
+            print("Image error: \(error)")
+        }
+        
+        return nil
+    }
+    
     func scale(image: UIImage) -> UIImage {
         let oldSize = image.size
         
-        guard oldSize.width > Constant.storyImageSize || oldSize.height > Constant.storyImageSize else {
+        guard oldSize.width > Constant.storyImageLimit || oldSize.height > Constant.storyImageLimit else {
             return image
         }
         

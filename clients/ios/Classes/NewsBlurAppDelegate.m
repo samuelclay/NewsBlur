@@ -515,8 +515,9 @@
         }];
     } else if ([action isEqualToString:@"VIEW_STORY_IDENTIFIER"] ||
                [action isEqualToString:@"com.apple.UNNotificationDefaultActionIdentifier"]) {
-        [self popToRoot];
-        [self loadFeed:feedIdStr withStory:storyHash animated:NO];
+        [self popToRootWithCompletion:^{
+            [self loadFeed:feedIdStr withStory:storyHash animated:NO];
+        }];
         if (completionHandler) completionHandler();
     } else if ([action isEqualToString:@"DISMISS_IDENTIFIER"]) {
         if (completionHandler) completionHandler();
@@ -561,8 +562,9 @@
         NSString *error = query[@"error"];
         
         if (error.length) {
-            [self popToRoot];
-            [self showWidgetSites];
+            [self popToRootWithCompletion:^{
+                [self showWidgetSites];
+            }];
             
             return YES;
         }
@@ -571,16 +573,16 @@
             return NO;
         }
         
-        [self popToRoot];
-        
-        self.inFindingStoryMode = YES;
-        [storiesCollection reset];
-        storiesCollection.isRiverView = YES;
-        
-        self.tryFeedStoryId = storyHash;
-        storiesCollection.activeFolder = @"everything";
-        
-        [self loadRiverFeedDetailView:self.feedDetailViewController withFolder:storiesCollection.activeFolder];
+        [self popToRootWithCompletion:^{
+            self.inFindingStoryMode = YES;
+            [storiesCollection reset];
+            storiesCollection.isRiverView = YES;
+            
+            self.tryFeedStoryId = storyHash;
+            storiesCollection.activeFolder = @"everything";
+            
+            [self loadRiverFeedDetailView:self.feedDetailViewController withFolder:storiesCollection.activeFolder];
+        }];
         
         return YES;
     }
@@ -750,14 +752,25 @@
     [feedsViewController resizeFontSize];
 }
 
-- (void)popToRoot {
+- (void)popToRootWithCompletion:(void (^)(void))completion {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        if (completion) {
+            [CATransaction begin];
+            [CATransaction setCompletionBlock:completion];
+        }
+        
         [masterContainerViewController dismissViewControllerAnimated:NO completion:nil];
-        [self.navigationController
-         popToViewController:[self.navigationController.viewControllers objectAtIndex:0]
-         animated:YES];
+        [self.navigationController popToViewController:[self.navigationController.viewControllers objectAtIndex:0] animated:YES];
+        
+        if (completion) {
+            [CATransaction commit];
+        }
     } else {
         [self.navigationController popToRootViewControllerAnimated:NO];
+        
+        if (completion) {
+            completion();
+        }
     }
 }
 

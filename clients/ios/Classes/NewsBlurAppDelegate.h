@@ -313,7 +313,7 @@ SFSafariViewControllerDelegate>  {
 - (void)setHiddenPreferencesAnimated:(BOOL)animated;
 - (void)resizePreviewSize;
 - (void)resizeFontSize;
-- (void)popToRoot;
+- (void)popToRootWithCompletion:(void (^)(void))completion;
 
 - (void)showMoveSite;
 - (void)openTrainSite;
