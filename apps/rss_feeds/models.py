@@ -1937,7 +1937,7 @@ class Feed(models.Model):
         return dict(zip(urls, signed_urls))
     
     @classmethod
-    def secure_image_thumbnails(cls, urls, size=200):
+    def secure_image_thumbnails(cls, urls, size=192):
         signed_urls = [create_imageproxy_signed_url(settings.IMAGES_URL, 
                                                     settings.IMAGES_SECRET_KEY, 
                                                     url,
