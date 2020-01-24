@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="15702" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="15705" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15704"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15706"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -81,12 +81,12 @@
                                 <string key="content">&lt;content&gt;
 </string>
                                 <attributes>
-                                    <font key="NSFont" metaFont="cellTitle"/>
+                                    <font key="NSFont" metaFont="label" size="12"/>
                                 </attributes>
                             </fragment>
                             <fragment content="(2 lines)">
                                 <attributes>
-                                    <font key="NSFont" metaFont="cellTitle"/>
+                                    <font key="NSFont" metaFont="label" size="12"/>
                                     <paragraphStyle key="NSParagraphStyle" alignment="natural" lineBreakMode="truncatingTail" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
                                 </attributes>
                             </fragment>
@@ -128,6 +128,7 @@
                 <outlet property="feedImageView" destination="el3-VK-r6t" id="6PP-TY-Z1u"/>
                 <outlet property="feedLabel" destination="pv8-bs-3wb" id="XEb-j4-JNA"/>
                 <outlet property="thumbnailImageView" destination="QWb-zc-x4f" id="OKC-XS-7wv"/>
+                <outlet property="thumbnailTrailingConstraint" destination="0AJ-OQ-qEF" id="MiX-vG-H4N"/>
                 <outlet property="titleLabel" destination="I7A-fd-pwi" id="9Ic-sM-Ypk"/>
             </connections>
             <point key="canvasLocation" x="33.600000000000001" y="85.457271364317847"/>
