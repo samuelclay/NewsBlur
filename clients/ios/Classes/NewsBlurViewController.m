@@ -1170,12 +1170,20 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
         NSDictionary *resultsFeeds = results[@"feeds"];
         
         [resultsFeeds enumerateKeysAndObjectsUsingBlock:^(id key, NSDictionary *obj, BOOL *stop) {
-            NSString *identifier = [NSString stringWithFormat:@"%@", key];
-            NSString *title = obj[@"feed_title"];
+            NSMutableDictionary *feed = [NSMutableDictionary dictionary];
             NSString *fade = obj[@"favicon_fade"];
             NSString *color = obj[@"favicon_color"];
             
-            NSDictionary *feed = @{@"id" : identifier, @"feed_title" : title, @"favicon_fade": fade, @"favicon_color" : color};
+            feed[@"id"] = [NSString stringWithFormat:@"%@", key];
+            feed[@"feed_title"] = [NSString stringWithFormat:@"%@", obj[@"feed_title"]];
+            
+            if (fade != nil && ![fade isKindOfClass:[NSNull class]]) {
+                feed[@"favicon_fade"] = fade;
+            }
+            
+            if (color != nil && ![color isKindOfClass:[NSNull class]]) {
+                feed[@"favicon_color"] = color;
+            }
             
             [feeds addObject:feed];
         }];
