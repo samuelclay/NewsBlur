@@ -57,6 +57,8 @@ class WidgetExtensionViewController: UITableViewController, NCWidgetProviding {
         static let defaultRowHeight: CGFloat = 110
         static let storyImageSize: CGFloat = 64 * 3
         static let storyImageLimit: CGFloat = 200
+        static let thumbnailHiddenConstant: CGFloat = -50
+        static let thumbnailShownConstant: CGFloat = 20
     }
     
     // MARK: - View lifecycle
@@ -189,12 +191,13 @@ class WidgetExtensionViewController: UITableViewController, NCWidgetProviding {
         let story = stories[indexPath.row]
         let feed = feeds.first(where: { $0.id == story.feed })
         
+        let isSmall = rowHeight < Constant.defaultRowHeight
         let baseDescriptor = UIFontDescriptor.preferredFontDescriptor(withTextStyle: .caption1)
-        let sizedDescriptor = baseDescriptor.withSize(13)
+        let sizedDescriptor = baseDescriptor.withSize(isSmall ? 12 : 13)
         let boldDescriptor = sizedDescriptor.withSymbolicTraits(.traitBold) ?? sizedDescriptor
         let titleFont = UIFont(descriptor: boldDescriptor, size: sizedDescriptor.pointSize)
         let titleColor = UIColor.label
-        let contentFont = UIFont(descriptor: sizedDescriptor, size: 0)
+        let contentFont = UIFont(descriptor: sizedDescriptor, size: isSmall ? 11 : 0)
         let contentColor = UIColor.secondaryLabel
         
         cell.barView.leftColor = feed?.leftColor
@@ -224,10 +227,17 @@ class WidgetExtensionViewController: UITableViewController, NCWidgetProviding {
         cell.dateLabel.text = story.date
         cell.dateLabel.textColor = UIColor.secondaryLabel
         cell.thumbnailImageView.image = nil
+        cell.thumbnailImageView.isHidden = true
+        cell.thumbnailTrailingConstraint.constant = Constant.thumbnailHiddenConstant
+        cell.setNeedsLayout()
         
         storyImage(for: story.id, imageURL: story.imageURL) { (image, id) in
             if story.id == id {
                 cell.thumbnailImageView.image = image
+                cell.thumbnailImageView.isHidden = image == nil
+                cell.thumbnailTrailingConstraint.constant = image == nil ? Constant.thumbnailHiddenConstant : Constant.thumbnailShownConstant
+                cell.setNeedsLayout()
+                cell.setNeedsDisplay()
             }
         }
         
@@ -266,15 +276,35 @@ private extension WidgetExtensionViewController {
         
         if error != nil {
             return 1
-        } else if extensionContext?.widgetActiveDisplayMode == NCWidgetDisplayMode.compact {
+        } else if isCompact {
             return 1
         } else {
             return min(stories.count, Constant.limit)
         }
     }
     
+    var isCompact: Bool {
+        return extensionContext?.widgetActiveDisplayMode == NCWidgetDisplayMode.compact
+    }
+    
     var rowHeight: CGFloat {
-        return extensionContext?.widgetMaximumSize(for: .compact).height ?? Constant.defaultRowHeight
+        guard let context = extensionContext else {
+            return Constant.defaultRowHeight
+        }
+        
+        let height = context.widgetMaximumSize(for: .compact).height
+        
+        if isCompact {
+            return height
+        }
+        
+        let expandedHeight = context.widgetMaximumSize(for: .expanded).height
+        
+        if height * CGFloat(Constant.limit) > expandedHeight {
+            return expandedHeight / CGFloat(Constant.limit)
+        }
+        
+        return height
     }
     
     func cleaned(_ string: String) -> String {
