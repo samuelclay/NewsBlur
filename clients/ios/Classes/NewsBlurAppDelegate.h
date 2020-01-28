@@ -357,6 +357,7 @@ SFSafariViewControllerDelegate>  {
 - (void)reloadFeedsView:(BOOL)showLoader;
 - (void)setTitle:(NSString *)title;
 - (void)showOriginalStory:(NSURL *)url;
+- (void)showSafariViewControllerWithURL:(NSURL *)url useReader:(BOOL)useReader;
 - (void)closeOriginalStory;
 - (void)hideStoryDetailView;
 - (void)changeActiveFeedDetailRow;
