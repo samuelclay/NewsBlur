@@ -2062,18 +2062,9 @@
         NSString *firefoxURL = [NSString stringWithFormat:@"%@%@", @"firefox://open-url?url=", encodedURL];
         [[UIApplication sharedApplication] openURL:[NSURL URLWithString:firefoxURL] options:@{} completionHandler:nil];
     } else if ([storyBrowser isEqualToString:@"inappsafari"]) {
-        self.safariViewController = [[SFSafariViewController alloc] initWithURL:url];
-        self.safariViewController.delegate = self;
-        [self.storyPageControl setNavigationBarHidden:NO];
-//        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-//            self.safariViewController.modalPresentationStyle = UIModalPresentationPageSheet;
-//        }
-        [navigationController presentViewController:self.safariViewController animated:YES completion:nil];
+        [self showSafariViewControllerWithURL:url useReader:NO];
     } else if ([storyBrowser isEqualToString:@"inappsafarireader"]) {
-        self.safariViewController = [[SFSafariViewController alloc] initWithURL:url entersReaderIfAvailable:YES];
-        self.safariViewController.delegate = self;
-        [self.storyPageControl setNavigationBarHidden:NO];
-        [navigationController presentViewController:self.safariViewController animated:YES completion:nil];
+        [self showSafariViewControllerWithURL:url useReader:YES];
     } else {
         if (!originalStoryViewController) {
             originalStoryViewController = [[OriginalStoryViewController alloc] init];
@@ -2094,6 +2085,13 @@
             [originalStoryViewController loadInitialStory];
         }
     }
+}
+
+- (void)showSafariViewControllerWithURL:(NSURL *)url useReader:(BOOL)useReader {
+    self.safariViewController = [[SFSafariViewController alloc] initWithURL:url entersReaderIfAvailable:useReader];
+    self.safariViewController.delegate = self;
+    [self.storyPageControl setNavigationBarHidden:NO];
+    [navigationController presentViewController:self.safariViewController animated:YES completion:nil];
 }
 
 - (BOOL)showingSafariViewController {
