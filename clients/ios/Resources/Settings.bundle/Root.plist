@@ -850,6 +850,28 @@
 			<key>Key</key>
 			<string>custom_domain</string>
 		</dict>
+        <dict>
+            <key>Title</key>
+            <string>Import and Export</string>
+            <key>Type</key>
+            <string>PSGroupSpecifier</string>
+        </dict>
+        <dict>
+            <key>Type</key>
+            <string>IASKButtonSpecifier</string>
+            <key>Title</key>
+            <string>Import Preferences...</string>
+            <key>Key</key>
+            <string>import_prefs</string>
+        </dict>
+        <dict>
+            <key>Type</key>
+            <string>IASKButtonSpecifier</string>
+            <key>Title</key>
+            <string>Export Preferences...</string>
+            <key>Key</key>
+            <string>export_prefs</string>
+        </dict>
 		<dict>
 			<key>Title</key>
 			<string>About NewsBlur</string>
