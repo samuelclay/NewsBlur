@@ -35,6 +35,7 @@
 #import "UISearchBar+Field.h"
 #import "StoriesCollection.h"
 #import "PremiumManager.h"
+#import "NewsBlur-Swift.h"
 
 static const CGFloat kPhoneTableViewRowHeight = 6.0f;
 static const CGFloat kTableViewRowHeight = 6.0f;
@@ -1158,7 +1159,11 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
                 });
             }];
         });
-	}
+	} else if ([specifier.key isEqualToString:@"import_prefs"]) {
+        [ImportExportPreferences importFromController:sender];
+    } else if ([specifier.key isEqualToString:@"export_prefs"]) {
+        [ImportExportPreferences exportFromController:sender];
+    }
 }
 
 - (void)validateWidgetFeedsForGroupDefaults:(NSUserDefaults *)groupDefaults usingResults:(NSDictionary *)results {
