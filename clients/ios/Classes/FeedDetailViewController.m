@@ -2196,7 +2196,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
              openNotificationsWithFeed:[NSString stringWithFormat:@"%@", [appDelegate.storiesCollection.activeFeed objectForKey:@"id"]]];
         }];
         
-        [viewController addTitle:@"Statistics" iconName:@"menu_icn_notifications.png" selectionShouldDismiss:YES handler:^{
+        [viewController addTitle:@"Statistics" iconName:@"menu_icn_statistics.png" selectionShouldDismiss:YES handler:^{
             [self
              openStatisticsWithFeed:[NSString stringWithFormat:@"%@", [appDelegate.storiesCollection.activeFeed objectForKey:@"id"]]];
         }];
