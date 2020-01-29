@@ -2066,24 +2066,35 @@
     } else if ([storyBrowser isEqualToString:@"inappsafarireader"]) {
         [self showSafariViewControllerWithURL:url useReader:YES];
     } else {
-        if (!originalStoryViewController) {
-            originalStoryViewController = [[OriginalStoryViewController alloc] init];
-        }
-        
-        self.activeOriginalStoryURL = url;
-        
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-            [self.masterContainerViewController transitionToOriginalView];
-        } else {
-            if ([[navigationController viewControllers]
-                 containsObject:originalStoryViewController]) {
-                return;
-            }
-            [navigationController pushViewController:originalStoryViewController
-                                            animated:YES];
+        [self showInAppBrowser:url withCustomTitle:nil fromBarButtonItem:nil];
+    }
+}
+
+- (void)showInAppBrowser:(NSURL *)url withCustomTitle:(NSString *)customTitle fromBarButtonItem:(UIBarButtonItem *)barButtonItem {
+    if (!originalStoryViewController) {
+        originalStoryViewController = [[OriginalStoryViewController alloc] init];
+    }
+    
+    self.activeOriginalStoryURL = url;
+    originalStoryViewController.customPageTitle = customTitle;
+    
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        if (barButtonItem) {
             [originalStoryViewController view]; // Force viewDidLoad
             [originalStoryViewController loadInitialStory];
+            [self showPopoverWithViewController:originalStoryViewController contentSize:CGSizeMake(600.0, 1000.0) barButtonItem:barButtonItem];
+        } else {
+            [self.masterContainerViewController transitionToOriginalView];
         }
+    } else {
+        if ([[navigationController viewControllers]
+             containsObject:originalStoryViewController]) {
+            return;
+        }
+        [navigationController pushViewController:originalStoryViewController
+                                        animated:YES];
+        [originalStoryViewController view]; // Force viewDidLoad
+        [originalStoryViewController loadInitialStory];
     }
 }
 
