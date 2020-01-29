@@ -34,6 +34,7 @@ UIGestureRecognizerDelegate> {
 @property (nonatomic) IBOutlet WKWebView *webView;
 //@property (strong, nonatomic) SloppySwiper *swiper;
 @property (nonatomic) NJKWebViewProgressView *progressView;
+@property (nonatomic, strong) NSString *customPageTitle;
 
 - (void)resetProgressBar;
 - (void)loadInitialStory;

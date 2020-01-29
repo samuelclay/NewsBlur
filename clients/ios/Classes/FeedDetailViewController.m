@@ -2502,8 +2502,9 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 - (void)openStatisticsWithFeed:(NSString *)feedId {
     NSString *urlString = [NSString stringWithFormat:@"%@/rss_feeds/statistics_embedded/%@", appDelegate.url, feedId];
     NSURL *url = [NSURL URLWithString:urlString];
+    NSString *title = appDelegate.storiesCollection.activeFeed[@"feed_title"];
     
-    [appDelegate showSafariViewControllerWithURL:url useReader:NO];
+    [appDelegate showInAppBrowser:url withCustomTitle:title fromBarButtonItem:settingsBarButton];
 }
 
 - (void)openRenameSite {
