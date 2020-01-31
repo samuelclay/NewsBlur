@@ -1553,12 +1553,18 @@ heightForHeaderInSection:(NSInteger)section {
             appDelegate.activeUserProfileId = [NSString stringWithFormat:@"%@", [feed objectForKey:@"user_id"]];
             appDelegate.activeUserProfileName = [NSString stringWithFormat:@"%@", [feed objectForKey:@"username"]];
             [appDelegate showUserProfileModal:cell];
-        } else if ([[preferences stringForKey:@"feed_swipe_left"] isEqualToString:@"notifications"]) {
-            [appDelegate openNotificationsWithFeed:feedId sender:cell];
         } else {
-            // Train
-            appDelegate.storiesCollection.activeFeed = [appDelegate.dictFeeds objectForKey:feedId];
-            [appDelegate openTrainSiteWithFeedLoaded:NO from:cell];
+            NSString *swipe = [preferences stringForKey:@"feed_swipe_left"];
+            
+            if ([swipe isEqualToString:@"notifications"]) {
+                [appDelegate openNotificationsWithFeed:feedId sender:cell];
+            } else if ([swipe isEqualToString:@"statistics"]) {
+                [appDelegate openStatisticsWithFeed:feedId sender:cell];
+            } else {
+                // Train
+                appDelegate.storiesCollection.activeFeed = [appDelegate.dictFeeds objectForKey:feedId];
+                [appDelegate openTrainSiteWithFeedLoaded:NO from:cell];
+            }
         }
     } else if (state == MCSwipeTableViewCellState3) {
         // Mark read

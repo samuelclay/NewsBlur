@@ -1272,6 +1272,15 @@
     }];
 }
 
+- (void)openStatisticsWithFeed:(NSString *)feedId sender:(id)sender {
+    NSString *urlString = [NSString stringWithFormat:@"%@/rss_feeds/statistics_embedded/%@", self.url, feedId];
+    NSURL *url = [NSURL URLWithString:urlString];
+    NSDictionary *feed = self.dictFeeds[feedId];
+    NSString *title = feed[@"feed_title"];
+    
+    [self showInAppBrowser:url withCustomTitle:title fromSender:sender];
+}
+
 - (void)openUserTagsStory:(id)sender {
     if (!self.userTagsViewController) {
         self.userTagsViewController = [[UserTagsViewController alloc] init];
@@ -2066,11 +2075,11 @@
     } else if ([storyBrowser isEqualToString:@"inappsafarireader"]) {
         [self showSafariViewControllerWithURL:url useReader:YES];
     } else {
-        [self showInAppBrowser:url withCustomTitle:nil fromBarButtonItem:nil];
+        [self showInAppBrowser:url withCustomTitle:nil fromSender:nil];
     }
 }
 
-- (void)showInAppBrowser:(NSURL *)url withCustomTitle:(NSString *)customTitle fromBarButtonItem:(UIBarButtonItem *)barButtonItem {
+- (void)showInAppBrowser:(NSURL *)url withCustomTitle:(NSString *)customTitle fromSender:(id)sender {
     if (!originalStoryViewController) {
         originalStoryViewController = [[OriginalStoryViewController alloc] init];
     }
@@ -2079,10 +2088,16 @@
     originalStoryViewController.customPageTitle = customTitle;
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        if (barButtonItem) {
+        if ([sender isKindOfClass:[UIBarButtonItem class]]) {
             [originalStoryViewController view]; // Force viewDidLoad
             [originalStoryViewController loadInitialStory];
-            [self showPopoverWithViewController:originalStoryViewController contentSize:CGSizeMake(600.0, 1000.0) barButtonItem:barButtonItem];
+            [self showPopoverWithViewController:originalStoryViewController contentSize:CGSizeMake(600.0, 1000.0) barButtonItem:sender];
+        } else if ([sender isKindOfClass:[UITableViewCell class]]) {
+            UITableViewCell *cell = (UITableViewCell *)sender;
+            
+            [originalStoryViewController view]; // Force viewDidLoad
+            [originalStoryViewController loadInitialStory];
+            [self showPopoverWithViewController:originalStoryViewController contentSize:CGSizeMake(600.0, 1000.0) sourceView:cell sourceRect:cell.bounds];
         } else {
             [self.masterContainerViewController transitionToOriginalView];
         }
