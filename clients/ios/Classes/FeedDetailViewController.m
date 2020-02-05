@@ -2196,6 +2196,11 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
              openNotificationsWithFeed:[NSString stringWithFormat:@"%@", [appDelegate.storiesCollection.activeFeed objectForKey:@"id"]]];
         }];
         
+        [viewController addTitle:@"Statistics" iconName:@"menu_icn_statistics.png" selectionShouldDismiss:YES handler:^{
+            [self
+             openStatisticsWithFeed:[NSString stringWithFormat:@"%@", [appDelegate.storiesCollection.activeFeed objectForKey:@"id"]]];
+        }];
+        
         [viewController addTitle:@"Insta-fetch stories" iconName:@"menu_icn_fetch.png" selectionShouldDismiss:YES handler:^{
             [self instafetchFeed];
         }];
@@ -2492,6 +2497,10 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 
 - (void)openNotificationsWithFeed:(NSString *)feedId {
     [appDelegate openNotificationsWithFeed:feedId];
+}
+
+- (void)openStatisticsWithFeed:(NSString *)feedId {
+    [appDelegate openStatisticsWithFeed:feedId sender:settingsBarButton];
 }
 
 - (void)openRenameSite {

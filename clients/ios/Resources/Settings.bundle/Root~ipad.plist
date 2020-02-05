@@ -693,13 +693,15 @@
 			<array>
 				<string>Train intelligence</string>
 				<string>Notifications</string>
+                <string>Statistics</string>
 			</array>
 			<key>DefaultValue</key>
 			<string>notifications</string>
 			<key>Values</key>
 			<array>
 				<string>trainer</string>
-				<string>notifications</string>
+                <string>notifications</string>
+				<string>statistics</string>
 			</array>
 			<key>Key</key>
 			<string>feed_swipe_left</string>
