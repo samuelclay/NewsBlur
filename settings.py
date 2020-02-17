@@ -131,7 +131,7 @@ OAUTH2_PROVIDER = {
     'SCOPES': {
         'read': 'View new unread stories, saved stories, and shared stories.',
         'write': 'Create new saved stories, shared stories, and subscriptions.',
-        'ifttt': 'Pair your NewsBlur account with other IFTTT channels.',
+        'ifttt': 'Pair your NewsBlur account with other services.',
     },
     'CLIENT_ID_GENERATOR_CLASS': 'oauth2_provider.generators.ClientIdGenerator',
     'ACCESS_TOKEN_EXPIRE_SECONDS': 60*60*24*365*10, # 10 years
