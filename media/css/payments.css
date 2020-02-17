@@ -70,7 +70,7 @@
     -moz-box-sizing: border-box;
     box-sizing: border-box;
 }
-.NB-static-form .controls input {
+.NB-static-oauth .NB-static-form .controls input {
     width: 180px;
 }
 .NB-static-form .NB-label-right {
