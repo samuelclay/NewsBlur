@@ -30,7 +30,7 @@
                         <nil key="highlightedColor"/>
                     </label>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="252" horizontalCompressionResistancePriority="745" verticalCompressionResistancePriority="745" usesAttributedText="YES" lineBreakMode="wordWrap" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="232" translatesAutoresizingMaskIntoConstraints="NO" id="I7A-fd-pwi">
-                        <rect key="frame" x="20" y="29" width="208" height="33"/>
+                        <rect key="frame" x="20" y="26" width="208" height="33.5"/>
                         <attributedString key="attributedText">
                             <fragment>
                                 <string key="content">&lt;title&gt;
@@ -75,7 +75,7 @@
                         </constraints>
                     </imageView>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="751" usesAttributedText="YES" lineBreakMode="wordWrap" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="232" translatesAutoresizingMaskIntoConstraints="NO" id="YTq-d7-IZe">
-                        <rect key="frame" x="20" y="62" width="208" height="29"/>
+                        <rect key="frame" x="20" y="59.5" width="208" height="31.5"/>
                         <attributedString key="attributedText">
                             <fragment>
                                 <string key="content">&lt;content&gt;
@@ -104,7 +104,7 @@
                     <constraint firstItem="QWb-zc-x4f" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="Cbg-Kp-Sw2"/>
                     <constraint firstAttribute="bottom" secondItem="Wai-eu-jJp" secondAttribute="bottom" constant="7" id="FBY-7w-ZZz"/>
                     <constraint firstItem="02U-BY-b7a" firstAttribute="firstBaseline" secondItem="Wai-eu-jJp" secondAttribute="firstBaseline" id="FQl-bS-Fk3"/>
-                    <constraint firstItem="I7A-fd-pwi" firstAttribute="top" secondItem="pv8-bs-3wb" secondAttribute="bottom" constant="8" id="KH6-H3-6wb"/>
+                    <constraint firstItem="I7A-fd-pwi" firstAttribute="top" secondItem="pv8-bs-3wb" secondAttribute="bottom" constant="5" id="KH6-H3-6wb"/>
                     <constraint firstItem="pv8-bs-3wb" firstAttribute="centerY" secondItem="el3-VK-r6t" secondAttribute="centerY" id="LfK-hl-HxZ"/>
                     <constraint firstItem="pv8-bs-3wb" firstAttribute="leading" secondItem="el3-VK-r6t" secondAttribute="trailing" constant="8" symbolic="YES" id="SD9-74-HqO"/>
                     <constraint firstAttribute="trailing" secondItem="02U-BY-b7a" secondAttribute="trailing" constant="20" symbolic="YES" id="VzJ-zb-5QT"/>
