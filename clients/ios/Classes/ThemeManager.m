@@ -22,6 +22,24 @@ NSString * const ThemeStyleSepia = @"sepia";
 NSString * const ThemeStyleMedium = @"medium";
 NSString * const ThemeStyleDark = @"dark";
 
+@interface UINavigationController (Theme)
+
+@end
+
+@implementation UINavigationController (Theme)
+
+- (UIStatusBarStyle)preferredStatusBarStyle {
+    if ([ThemeManager themeManager].isDarkTheme) {
+        return UIStatusBarStyleLightContent;
+    } else if (@available(iOS 13.0, *)) {
+        return UIStatusBarStyleDarkContent;
+    } else {
+        return UIStatusBarStyleDefault;
+    }
+}
+
+@end
+
 @interface ThemeManager ()
 
 @property (nonatomic, readonly) NewsBlurAppDelegate *appDelegate;
@@ -263,6 +281,7 @@ NSString * const ThemeStyleDark = @"dark";
     [UINavigationBar appearance].tintColor = UIColorFromLightSepiaMediumDarkRGB(0x0, 0x0, 0x9a8f73, 0x9a8f73);
     [UINavigationBar appearance].barTintColor = UIColorFromLightSepiaMediumDarkRGB(0xE3E6E0, 0xFFFFC5, 0x4A4A4A, 0x222222);
     [UINavigationBar appearance].backgroundColor = UIColorFromLightSepiaMediumDarkRGB(0xE3E6E0, 0xFFFFC5, 0x4A4A4A, 0x222222);
+    [UINavigationBar appearance].titleTextAttributes = @{NSForegroundColorAttributeName : UIColorFromLightSepiaMediumDarkRGB(0x8F918B, 0x8F918B, 0x8F918B, 0x8F918B)};
     [UIToolbar appearance].barTintColor = UIColorFromLightSepiaMediumDarkRGB(0xE3E6E0, 0xFFFFC5, 0x4A4A4A, 0x222222);
     [UISegmentedControl appearance].tintColor = UIColorFromLightSepiaMediumDarkRGB(0x8F918B, 0x8F918B, 0x8F918B, 0x8F918B);
     
@@ -271,6 +290,8 @@ NSString * const ThemeStyleDark = @"dark";
     [UINavigationBar appearance].barStyle = style;
     [UINavigationBar appearance].translucent = YES;
     self.appDelegate.navigationController.navigationBar.barStyle = style;
+    
+    [self.appDelegate.navigationController setNeedsStatusBarAppearanceUpdate];
 }
 
 - (void)updateTheme {
