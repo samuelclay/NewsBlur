@@ -8,7 +8,7 @@
 
 body {
     color: #eeeeee;
-    background-color: gray;
+    background-color: #444444;
 }
 
 /* ========== */
@@ -17,7 +17,7 @@ body {
 
 .NB-header {
     color: #bbbbbb;
-    background-image: -webkit-gradient(linear, left top, left bottom, from(#777777), to(#606060));
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#606060), to(#404040));
     border-bottom: 1px solid #535353;
     text-shadow: 0 1px 0 rgba(28, 28, 28, .1);
 
