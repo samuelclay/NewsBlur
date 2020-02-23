@@ -214,6 +214,15 @@
     } completion:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
         //    leftBorder.frame = CGRectMake(0, 0, 1, CGRectGetHeight(self.view.bounds));
         
+        CGFloat currentMasterWidth = self.masterNavigationController.view.frame.size.width;
+        BOOL isInvalid = currentMasterWidth < 100.0;
+        
+        if (isInvalid) {
+            NSLog(@"Invalid width detected: %@; correcting", @(currentMasterWidth));  // log
+            
+            self.masterNavigationController.view.frame = CGRectMake(0, 0, self.masterWidth, self.view.bounds.size.height);
+        }
+        
         if (!self.feedDetailIsVisible) {
             [self adjustLayoutCompleted:YES];
         }
