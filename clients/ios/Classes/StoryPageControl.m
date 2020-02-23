@@ -782,9 +782,9 @@
     [super updateTheme];
     
     self.navigationController.navigationBar.tintColor = [UINavigationBar appearance].tintColor;
-    self.navigationController.navigationBar.barTintColor = [UINavigationBar appearance].barTintColor;
+    self.navigationController.navigationBar.barTintColor = UIColorFromLightSepiaMediumDarkRGB(0xE3E6E0, 0xFFFFC5, 0x222222, 0x111111);
     self.navigationController.navigationBar.backgroundColor = [UINavigationBar appearance].backgroundColor;
-    self.view.backgroundColor = UIColorFromRGB(0xe0e0e0);
+    self.view.backgroundColor = UIColorFromLightDarkRGB(0xe0e0e0, 0x111111);
     
     [self updateAutoscrollButtons];
     [self updateTraverseBackground];
