@@ -1430,6 +1430,29 @@
     }];
 }
 
+- (NSHTTPCookie *)sessionIdCookie {
+    NSURL *url = [NSURL URLWithString:self.url];
+    NSArray *cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookiesForURL: url];
+    
+    for (NSHTTPCookie *cookie in cookies) {
+        if ([cookie.name isEqualToString:@"newsblur_sessionid"]) {
+            return cookie;
+        }
+    }
+    
+    return nil;
+}
+
+- (void)prepareWebView:(WKWebView *)webView completionHandler:(void (^)(void))completion {
+    NSHTTPCookie *cookie = self.sessionIdCookie;
+    
+    if (cookie != nil) {
+        [webView.configuration.websiteDataStore.httpCookieStore setCookie:cookie completionHandler:completion];
+    } else {
+        completion();
+    }
+}
+
 #pragma mark -
 
 - (void)loadFolder:(NSString *)folder feedID:(NSString *)feedIdStr {
@@ -1887,7 +1910,7 @@
 }
 
 - (void)adjustStoryDetailWebView {
-    // change UIWebView
+    // change the web view
     [storyPageControl.currentPage changeWebViewWidth];
     [storyPageControl.nextPage changeWebViewWidth];
     [storyPageControl.previousPage changeWebViewWidth];
@@ -2114,7 +2137,9 @@
 }
 
 - (void)showSafariViewControllerWithURL:(NSURL *)url useReader:(BOOL)useReader {
-    self.safariViewController = [[SFSafariViewController alloc] initWithURL:url entersReaderIfAvailable:useReader];
+    SFSafariViewControllerConfiguration *config = [SFSafariViewControllerConfiguration new];
+    config.entersReaderIfAvailable = useReader;
+    self.safariViewController = [[SFSafariViewController alloc] initWithURL:url configuration:config];
     self.safariViewController.delegate = self;
     [self.storyPageControl setNavigationBarHidden:NO];
     [navigationController presentViewController:self.safariViewController animated:YES completion:nil];
