@@ -23,6 +23,7 @@
 #import "THCircularProgressView.h"
 #import "FMDatabase.h"
 #import "StoriesCollection.h"
+@import WebKit;
 
 @interface StoryPageControl ()
 
@@ -1632,7 +1633,7 @@
 }
 
 - (void)autoscroll:(NSTimer *)timer {
-    UIWebView *webView = self.currentPage.webView;
+    WKWebView *webView = self.currentPage.webView;
     CGFloat position = webView.scrollView.contentOffset.y + 0.5;
     CGFloat maximum = webView.scrollView.contentSize.height - webView.frame.size.height;
     

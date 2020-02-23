@@ -52,6 +52,7 @@
 @class PINCache;
 @class PremiumManager;
 @class PremiumViewController;
+@class WKWebView;
 
 @interface NewsBlurAppDelegate : BaseViewController
 <UIApplicationDelegate, UINavigationControllerDelegate, UIPopoverPresentationControllerDelegate,
@@ -207,6 +208,7 @@ SFSafariViewControllerDelegate>  {
 @property (nonatomic, readonly) NSString *url;
 @property (nonatomic, readonly) NSString *host;
 
+@property (nonatomic, readonly) NSHTTPCookie *sessionIdCookie;
 @property (readwrite) NSString * activeUsername;
 @property (readwrite) NSString * activeUserProfileId;
 @property (readwrite) NSString * activeUserProfileName;
@@ -353,6 +355,8 @@ SFSafariViewControllerDelegate>  {
 - (void)POST:(NSString *)urlString parameters:(id)parameters target:(id)target
      success:(SEL)success
      failure:(SEL)failure;
+
+- (void)prepareWebView:(WKWebView *)webView completionHandler:(void (^)(void))completion;
 
 - (void)loadFolder:(NSString *)folder feedID:(NSString *)feedIdStr;
 - (void)reloadFeedsView:(BOOL)showLoader;

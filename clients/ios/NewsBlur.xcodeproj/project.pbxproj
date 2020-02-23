@@ -484,7 +484,6 @@
 		FFA045B519CA49D700618DC4 /* SSWAnimator.m in Sources */ = {isa = PBXBuildFile; fileRef = FFA045B119CA49D700618DC4 /* SSWAnimator.m */; };
 		FFA045B619CA49D700618DC4 /* SSWDirectionalPanGestureRecognizer.m in Sources */ = {isa = PBXBuildFile; fileRef = FFA045B319CA49D700618DC4 /* SSWDirectionalPanGestureRecognizer.m */; };
 		FFA0483E19CA5B8400618DC4 /* EventWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = FFA0483D19CA5B8400618DC4 /* EventWindow.m */; };
-		FFA0484119CA5F5B00618DC4 /* UIWebView+Offsets.m in Sources */ = {isa = PBXBuildFile; fileRef = FFA0484019CA5F5B00618DC4 /* UIWebView+Offsets.m */; };
 		FFA0484419CA73B700618DC4 /* UIView+ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FFA0484319CA73B700618DC4 /* UIView+ViewController.m */; };
 		FFAD4971144A386100BA6919 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FFAD4970144A386100BA6919 /* libz.dylib */; };
 		FFAD89C218AC45A100D68567 /* StoriesCollection.m in Sources */ = {isa = PBXBuildFile; fileRef = FFAD89C118AC45A100D68567 /* StoriesCollection.m */; };
@@ -1312,8 +1311,6 @@
 		FFA045B319CA49D700618DC4 /* SSWDirectionalPanGestureRecognizer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SSWDirectionalPanGestureRecognizer.m; sourceTree = "<group>"; };
 		FFA0483C19CA5B8400618DC4 /* EventWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EventWindow.h; sourceTree = "<group>"; };
 		FFA0483D19CA5B8400618DC4 /* EventWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EventWindow.m; sourceTree = "<group>"; };
-		FFA0483F19CA5F5B00618DC4 /* UIWebView+Offsets.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIWebView+Offsets.h"; path = "Other Sources/UIWebView+Offsets.h"; sourceTree = "<group>"; };
-		FFA0484019CA5F5B00618DC4 /* UIWebView+Offsets.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UIWebView+Offsets.m"; path = "Other Sources/UIWebView+Offsets.m"; sourceTree = "<group>"; };
 		FFA0484219CA73B700618DC4 /* UIView+ViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIView+ViewController.h"; path = "Other Sources/UIView+ViewController.h"; sourceTree = "<group>"; };
 		FFA0484319CA73B700618DC4 /* UIView+ViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UIView+ViewController.m"; path = "Other Sources/UIView+ViewController.m"; sourceTree = "<group>"; };
 		FFAD4970144A386100BA6919 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
@@ -1718,8 +1715,6 @@
 				17C4954A1C129863004805A7 /* UISearchBar+Field.m */,
 				FF1F13D618AAC97900FDA816 /* UIImage+Resize.h */,
 				FF1F13D718AAC97900FDA816 /* UIImage+Resize.m */,
-				FFA0483F19CA5F5B00618DC4 /* UIWebView+Offsets.h */,
-				FFA0484019CA5F5B00618DC4 /* UIWebView+Offsets.m */,
 				FFFF683B19D628000081904A /* NBURLCache.h */,
 				FFFF683C19D628000081904A /* NBURLCache.m */,
 				FFD6604A1BACA45D006E4B8D /* THCircularProgressView.h */,
@@ -3529,7 +3524,6 @@
 				FF83FF051FB52565008DAC0F /* PremiumViewController.m in Sources */,
 				FF03B00A19F987E00063002A /* NJKWebViewProgressView.m in Sources */,
 				FF11045F176950F900502C29 /* NBLoadingCell.m in Sources */,
-				FFA0484119CA5F5B00618DC4 /* UIWebView+Offsets.m in Sources */,
 				FF34FD701E9D93CB0062F8ED /* IASKTextViewCell.m in Sources */,
 				FFAD89C218AC45A100D68567 /* StoriesCollection.m in Sources */,
 				FF34FD6F1E9D93CB0062F8ED /* IASKTextView.m in Sources */,
@@ -3833,7 +3827,6 @@
 				GCC_VERSION = "";
 				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_FILE = "NewsBlur-iPhone-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3882,7 +3875,6 @@
 				GCC_VERSION = "";
 				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_FILE = "NewsBlur-iPhone-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3940,7 +3932,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "$(BUILT_PRODUCTS_DIR)/**";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MARKETING_VERSION = 9.1.1;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "-ObjC";
@@ -3988,7 +3980,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "$(BUILT_PRODUCTS_DIR)/**";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MARKETING_VERSION = 9.1.1;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
