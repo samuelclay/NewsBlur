@@ -7,10 +7,11 @@
 //
 
 #import <UIKit/UIKit.h>
+@import WebKit;
 
 @class NewsBlurAppDelegate;
 
-@interface AuthorizeServicesViewController : UIViewController <UIWebViewDelegate> {
+@interface AuthorizeServicesViewController : UIViewController <WKNavigationDelegate> {
     NewsBlurAppDelegate *appDelegate;
     NSString *url;
     NSString *type;
@@ -22,7 +23,7 @@
 @property (nonatomic) NSString *type;
 @property (nonatomic, readwrite) BOOL fromStory;
 
-@property (weak, nonatomic) IBOutlet UIWebView *webView;
+@property (weak, nonatomic) IBOutlet WKWebView *webView;
 
 - (void)doCancelButton;
 - (void)showError:(NSString *)error;
