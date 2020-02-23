@@ -9,18 +9,19 @@
 #import <UIKit/UIKit.h>
 #import <QuartzCore/QuartzCore.h>
 #import "BaseViewController.h"
+@import WebKit;
 
 @class NewsBlurAppDelegate;
 
 @interface StoryDetailViewController : BaseViewController
 <UIScrollViewDelegate, UIGestureRecognizerDelegate,
-UIActionSheetDelegate> {
+UIActionSheetDelegate, WKNavigationDelegate> {
     NewsBlurAppDelegate *appDelegate;
     
     NSString *activeStoryId;
     NSMutableDictionary *activeStory;
     UIView *innerView;
-    UIWebView *webView;
+    WKWebView *webView;
     NSInteger pageIndex;
     BOOL pullingScrollview;
     BOOL inTextView;
@@ -37,7 +38,7 @@ UIActionSheetDelegate> {
 @property (nonatomic) NSString *activeStoryId;
 @property (nonatomic, readwrite) NSMutableDictionary *activeStory;
 @property (nonatomic) IBOutlet UIView *innerView;
-@property (nonatomic) IBOutlet UIWebView *webView;
+@property (nonatomic) IBOutlet WKWebView *webView;
 @property (nonatomic) IBOutlet UIView *feedTitleGradient;
 @property (nonatomic) IBOutlet UIView *noStoryMessage;
 @property (nonatomic) IBOutlet UIActivityIndicatorView *activityIndicator;
