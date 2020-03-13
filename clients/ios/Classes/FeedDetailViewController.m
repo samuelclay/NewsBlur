@@ -43,6 +43,7 @@
 @interface FeedDetailViewController ()
 
 @property (nonatomic) NSUInteger scrollingMarkReadRow;
+@property (nonatomic, readonly) BOOL isMarkReadOnScroll;
 @property (nonatomic, strong) NSString *restoringFolder;
 @property (nonatomic, strong) NSString *restoringFeedID;
 
@@ -1762,7 +1763,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     if (storyCount && indexPath.row == storyCount) {
         if (!self.pageFinished) return 40;
         
-        BOOL markReadOnScroll = [[NSUserDefaults standardUserDefaults] boolForKey:@"default_scroll_read_filter"];
+        BOOL markReadOnScroll = self.isMarkReadOnScroll;
         if (markReadOnScroll) {
             return CGRectGetHeight(self.view.frame) - 40;
         }
@@ -1847,6 +1848,16 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
         !self.isDashboardModule;
 }
 
+- (BOOL)isMarkReadOnScroll {
+    NSNumber *markRead = [[NSUserDefaults standardUserDefaults] objectForKey:appDelegate.storiesCollection.scrollReadFilterKey];
+    
+    if (markRead != nil) {
+        return markRead.boolValue;
+    }
+    
+    return [[NSUserDefaults standardUserDefaults] boolForKey:@"default_scroll_read_filter"];
+}
+
 - (void)checkScroll {
     NSInteger currentOffset = self.storyTitlesTable.contentOffset.y;
     NSInteger maximumOffset = self.storyTitlesTable.contentSize.height - self.storyTitlesTable.frame.size.height;
@@ -1865,7 +1876,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     CGPoint topRowPoint = self.storyTitlesTable.contentOffset;
     topRowPoint.y = topRowPoint.y + 80.f;
     NSIndexPath *indexPath = [self.storyTitlesTable indexPathForRowAtPoint:topRowPoint];
-    BOOL markReadOnScroll = [[NSUserDefaults standardUserDefaults] boolForKey:@"default_scroll_read_filter"];
+    BOOL markReadOnScroll = self.isMarkReadOnScroll;
     
     if (indexPath && markReadOnScroll) {
         NSUInteger topRow = indexPath.row;
@@ -2225,6 +2236,10 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
             }
             
             [self reloadStories];
+        }];
+        
+        [viewController addSegmentedControlWithTitles:@[@"Mark read", @"Leave unread"] selectIndex:self.isMarkReadOnScroll ? 0 : 1 selectionShouldDismiss:YES handler:^(NSUInteger selectedIndex) {
+            [userPreferences setBool:selectedIndex == 0 forKey:appDelegate.storiesCollection.scrollReadFilterKey];
         }];
     }
     
