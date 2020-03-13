@@ -288,6 +288,14 @@
     }
 }
 
+- (NSString *)scrollReadFilterKey {
+    if (self.isRiverView) {
+        return [NSString stringWithFormat:@"folder:%@:scroll_read_filter", self.activeFolder];
+    } else {
+        return [NSString stringWithFormat:@"%@:scroll_read_filter", [self.activeFeed objectForKey:@"id"]];
+    }
+}
+
 - (NSString *)storyViewKey {
     if (self.isRiverView) {
         return [NSString stringWithFormat:@"folder:%@:story_view", self.activeFolder];
