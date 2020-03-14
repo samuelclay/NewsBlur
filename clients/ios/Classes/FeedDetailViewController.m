@@ -1849,13 +1849,17 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 }
 
 - (BOOL)isMarkReadOnScroll {
-    NSNumber *markRead = [[NSUserDefaults standardUserDefaults] objectForKey:appDelegate.storiesCollection.scrollReadFilterKey];
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     
-    if (markRead != nil) {
-        return markRead.boolValue;
+    if ([userPreferences boolForKey:@"override_scroll_read_filter"]) {
+        NSNumber *markRead = [userPreferences objectForKey:appDelegate.storiesCollection.scrollReadFilterKey];
+        
+        if (markRead != nil) {
+            return markRead.boolValue;
+        }
     }
     
-    return [[NSUserDefaults standardUserDefaults] boolForKey:@"default_scroll_read_filter"];
+    return [userPreferences boolForKey:@"default_scroll_read_filter"];
 }
 
 - (void)checkScroll {

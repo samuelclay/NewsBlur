@@ -152,6 +152,16 @@
 			<key>Key</key>
 			<string>default_scroll_read_filter</string>
 		</dict>
+        <dict>
+            <key>Type</key>
+            <string>PSToggleSwitchSpecifier</string>
+            <key>Title</key>
+            <string>Override scroll read per feed/folder</string>
+            <key>DefaultValue</key>
+            <string>YES</string>
+            <key>Key</key>
+            <string>override_scroll_read_filter</string>
+        </dict>
 		<dict>
 			<key>Type</key>
 			<string>PSMultiValueSpecifier</string>
