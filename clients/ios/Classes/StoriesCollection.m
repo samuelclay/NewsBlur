@@ -289,7 +289,12 @@
 }
 
 - (NSString *)scrollReadFilterKey {
-    if (self.isRiverView) {
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+    BOOL shouldOverride = [userPreferences boolForKey:@"override_scroll_read_filter"];
+    
+    if (!shouldOverride) {
+        return @"default_scroll_read_filter";
+    } else if (self.isRiverView) {
         return [NSString stringWithFormat:@"folder:%@:scroll_read_filter", self.activeFolder];
     } else {
         return [NSString stringWithFormat:@"%@:scroll_read_filter", [self.activeFeed objectForKey:@"id"]];
