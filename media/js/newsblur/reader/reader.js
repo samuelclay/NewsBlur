@@ -4888,7 +4888,7 @@
                 this.socket.removeAllListeners('feed:update');
                 this.socket.on('feed:update', _.bind(function(feed_id, message) {
                     NEWSBLUR.log(['Real-time feed update', feed_id, message]);
-                    let feed = this.model.get_feed(feed_id);
+                    var feed = this.model.get_feed(feed_id);
                     if (feed && !feed.get('fetched_once')) {
                         this.force_feed_refresh(feed_id);
                     } else {
