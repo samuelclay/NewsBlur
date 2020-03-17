@@ -283,7 +283,8 @@ NEWSBLUR.Collections.Feeds = Backbone.Collection.extend({
     
     fetch: function(options) {
         var data = {
-            'v': 2
+            'v': 2,
+            'update_counts': false
         };
 
         options = _.extend({
