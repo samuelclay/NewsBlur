@@ -4888,10 +4888,14 @@
                 this.socket.removeAllListeners('feed:update');
                 this.socket.on('feed:update', _.bind(function(feed_id, message) {
                     NEWSBLUR.log(['Real-time feed update', feed_id, message]);
-                    this.feed_unread_count(feed_id, {
-                        realtime: true
-                    });
-                    
+                    let feed = this.model.get_feed(feed_id);
+                    if (feed && !feed.get('fetched_once')) {
+                        this.force_feed_refresh(feed_id);
+                    } else {
+                        this.feed_unread_count(feed_id, {
+                            realtime: true
+                        });
+                    }
                 }, this));
 
                 this.socket.removeAllListeners('feed:story:new');
