@@ -80,6 +80,7 @@
 - (NSString *)activeStoryView;
 - (NSString *)orderKey;
 - (NSString *)readFilterKey;
+- (NSString *)scrollReadFilterKey;
 - (NSString *)storyViewKey;
 
 - (void)setStories:(NSArray *)activeFeedStoriesValue;
