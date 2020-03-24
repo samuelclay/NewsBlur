@@ -76,6 +76,7 @@ def load_feed_favicon(request, feed_id):
     try:
         feed_icon = MFeedIcon.objects.get(feed_id=feed_id)
     except MFeedIcon.DoesNotExist:
+        logging.user(request, "~FBNo feed icon found: %s" % feed_id)
         not_found = True
         
     if not_found or not feed_icon.data:
@@ -270,7 +271,7 @@ def load_feed_settings(request, feed_id):
     
     return stats
 
-@ratelimit(minutes=5, requests=30)
+@ratelimit(minutes=1, requests=30)
 @json.json_view
 def exception_retry(request):
     user = get_user(request)
