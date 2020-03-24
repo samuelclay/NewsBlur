@@ -51,6 +51,7 @@ from apps.social.views import load_social_page
 from apps.rss_feeds.tasks import ScheduleImmediateFetches
 from utils import json_functions as json
 from utils.user_functions import get_user, ajax_login_required
+from utils.user_functions import extract_user_agent
 from utils.feed_functions import relative_timesince
 from utils.story_functions import format_story_link_date__short
 from utils.story_functions import format_story_link_date__long
@@ -240,7 +241,7 @@ def load_feeds(request):
     feeds            = {}
     include_favicons = is_true(request.REQUEST.get('include_favicons', False))
     flat             = is_true(request.REQUEST.get('flat', False))
-    update_counts    = is_true(request.REQUEST.get('update_counts', False))
+    update_counts    = is_true(request.REQUEST.get('update_counts', True))
     version          = int(request.REQUEST.get('v', 1))
     
     if include_favicons == 'false': include_favicons = False
@@ -249,6 +250,12 @@ def load_feeds(request):
     
     if flat: return load_feeds_flat(request)
     
+    platform = extract_user_agent(request)
+    if platform in ['iPhone', 'iPad', 'Androd']:
+        # Remove this check once the iOS and Android updates go out which have update_counts=False
+        # and then guarantee a refresh_feeds call
+        update_counts = False
+        
     try:
         folders = UserSubscriptionFolders.objects.get(user=user)
     except UserSubscriptionFolders.DoesNotExist:
@@ -442,7 +449,14 @@ def load_feeds_flat(request):
     }
     return data
 
-@ratelimit(minutes=1, requests=30)
+class ratelimit_refresh_feeds(ratelimit):
+    def should_ratelimit(self, request):
+        feed_ids = request.POST.getlist('feed_id') or request.POST.getlist('feed_id[]')
+        if len(feed_ids) == 1:
+            return False
+        return True
+
+@ratelimit_refresh_feeds(minutes=1, requests=30)
 @never_cache
 @json.json_view
 def refresh_feeds(request):
