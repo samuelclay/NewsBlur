@@ -579,6 +579,13 @@ private extension WidgetExtensionViewController {
                         return
                     }
                     
+                    let size = loadedImage.size
+                    
+                    guard size.width >= 50, size.height >= 50 else {
+                        completion(nil, identifier)
+                        return
+                    }
+                    
                     let scaledImage = self.scale(image: loadedImage)
                     
                     self.save(storyImage: scaledImage, for: identifier)
