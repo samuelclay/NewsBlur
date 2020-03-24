@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
-    <device id="retina5_9" orientation="portrait">
-        <adaptation id="fullscreen"/>
-    </device>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="15705" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina5_9" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14490.49"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15706"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -218,7 +216,6 @@
                             </state>
                             <connections>
                                 <action selector="autoscrollDisable:" destination="-1" eventType="touchUpInside" id="AUl-NG-nw2"/>
-                                <action selector="beginTouchDown:" destination="-1" eventType="touchDown" id="UFg-jO-mRy"/>
                             </connections>
                         </button>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Uu8-vD-eak">
@@ -238,7 +235,6 @@
                             </state>
                             <connections>
                                 <action selector="autoscrollPauseResume:" destination="-1" eventType="touchUpInside" id="HdM-KI-fRH"/>
-                                <action selector="beginTouchDown:" destination="-1" eventType="touchDown" id="nz0-kE-cwQ"/>
                             </connections>
                         </button>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Qah-Lp-ocZ">
@@ -258,7 +254,6 @@
                             </state>
                             <connections>
                                 <action selector="autoscrollSlower:" destination="-1" eventType="touchUpInside" id="zFg-8j-Xa1"/>
-                                <action selector="beginTouchDown:" destination="-1" eventType="touchDown" id="8HO-L0-Mc7"/>
                             </connections>
                         </button>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="DHS-JI-8yT">
@@ -278,7 +273,6 @@
                             </state>
                             <connections>
                                 <action selector="autoscrollFaster:" destination="-1" eventType="touchUpInside" id="Bak-TC-duJ"/>
-                                <action selector="beginTouchDown:" destination="-1" eventType="touchDown" id="8Jz-7M-FtT"/>
                             </connections>
                         </button>
                     </subviews>

@@ -117,7 +117,9 @@ NSString * const MenuHandler = @"handler";
     [self addSegmentedControlWithTitles:titles selectIndex:valueIndex selectionShouldDismiss:selectionShouldDismiss handler:^(NSUInteger selectedIndex) {
         [userPreferences setObject:values[selectedIndex] forKey:preferenceKey];
         
-        handler(selectedIndex);
+        if (handler != nil) {
+            handler(selectedIndex);
+        }
     }];
 }
 
