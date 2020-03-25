@@ -823,7 +823,8 @@
         if (pageIndex >= 0) {
             [self changePage:pageIndex animated:NO];
         } else if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-            [self doNextUnreadStory:nil];
+            // If the story can't be found, don't show anything; uncomment this to instead show the first unread story:
+//            [self doNextUnreadStory:nil];
         } else {
             [appDelegate hideStoryDetailView];
         }
