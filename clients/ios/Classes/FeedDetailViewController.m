@@ -2242,7 +2242,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
             [self reloadStories];
         }];
         
-        [viewController addSegmentedControlWithTitles:@[@"Mark read", @"Leave unread"] selectIndex:self.isMarkReadOnScroll ? 0 : 1 selectionShouldDismiss:YES handler:^(NSUInteger selectedIndex) {
+        [viewController addSegmentedControlWithTitles:@[@"Read on scroll", @"Leave unread"] selectIndex:self.isMarkReadOnScroll ? 0 : 1 selectionShouldDismiss:YES handler:^(NSUInteger selectedIndex) {
             [userPreferences setBool:selectedIndex == 0 forKey:appDelegate.storiesCollection.scrollReadFilterKey];
         }];
     }
