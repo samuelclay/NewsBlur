@@ -238,7 +238,6 @@
 		43C3D40A15D468BA0066D36D /* all.png in Resources */ = {isa = PBXBuildFile; fileRef = 43C3D40915D468BA0066D36D /* all.png */; };
 		43C3D40C15D469010066D36D /* unread_yellow.png in Resources */ = {isa = PBXBuildFile; fileRef = 43C3D40B15D469010066D36D /* unread_yellow.png */; };
 		43C3D41215D46D330066D36D /* all@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 43C3D41115D46D330066D36D /* all@2x.png */; };
-		43C95C49158BEC450086C69B /* GoogleReaderViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43C95C47158BEC440086C69B /* GoogleReaderViewController.xib */; };
 		43CE0F5F15DADB7F00608ED8 /* SiteCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 43CE0F5E15DADB7F00608ED8 /* SiteCell.m */; };
 		43D818A315B940C200733444 /* DataUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 43D818A215B940C200733444 /* DataUtilities.m */; };
 		43E8381E15BC73EB000553BE /* FirstTimeUserAddFriendsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 43E8381615BC73EA000553BE /* FirstTimeUserAddFriendsViewController.m */; };
@@ -936,7 +935,6 @@
 		43C3D40915D468BA0066D36D /* all.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = all.png; sourceTree = "<group>"; };
 		43C3D40B15D469010066D36D /* unread_yellow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = unread_yellow.png; sourceTree = "<group>"; };
 		43C3D41115D46D330066D36D /* all@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "all@2x.png"; sourceTree = "<group>"; };
-		43C95C47158BEC440086C69B /* GoogleReaderViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = GoogleReaderViewController.xib; path = Classes/GoogleReaderViewController.xib; sourceTree = "<group>"; };
 		43CE0F5D15DADB7E00608ED8 /* SiteCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SiteCell.h; sourceTree = "<group>"; };
 		43CE0F5E15DADB7F00608ED8 /* SiteCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SiteCell.m; sourceTree = "<group>"; };
 		43D0451F1565BC150085F811 /* MainWindow~ipad.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "MainWindow~ipad.xib"; path = "Resources-iPad/MainWindow~ipad.xib"; sourceTree = "<group>"; };
@@ -2296,7 +2294,6 @@
 			isa = PBXGroup;
 			children = (
 				433323B5158901A40025064D /* Images */,
-				43C95C47158BEC440086C69B /* GoogleReaderViewController.xib */,
 				43D045241565BC150085F811 /* LoginViewController~ipad.xib */,
 				FF1660C916D6E9B400AF8541 /* DashboardViewController~ipad.xib */,
 				43D0451F1565BC150085F811 /* MainWindow~ipad.xib */,
@@ -2992,7 +2989,6 @@
 				FF9DC9EB1C860944006097E1 /* bar_separator_dark.png in Resources */,
 				433323CE158968ED0025064D /* FirstTimeUserViewController.xib in Resources */,
 				FFB7050D1925921F0052101C /* line_spacing_xl.png in Resources */,
-				43C95C49158BEC450086C69B /* GoogleReaderViewController.xib in Resources */,
 				43763AD2158F90B100B3DBE2 /* FontSettingsViewController.xib in Resources */,
 				439DAB211590DA350019B0EB /* FeedsMenuViewController.xib in Resources */,
 				010EDEFC1B238722003B79DE /* 1Password.xcassets in Resources */,
@@ -3942,7 +3938,6 @@
 				STRIP_INSTALLED_PRODUCT = NO;
 				SWIFT_OBJC_BRIDGING_HEADER = "Other Sources/BridgingHeader.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				VALID_ARCHS = "armv7s armv7 arm64";
 			};
 			name = Debug;
 		};
@@ -3990,7 +3985,6 @@
 				STRIP_INSTALLED_PRODUCT = NO;
 				SWIFT_OBJC_BRIDGING_HEADER = "Other Sources/BridgingHeader.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
-				VALID_ARCHS = "armv7s armv7 arm64";
 			};
 			name = Release;
 		};
