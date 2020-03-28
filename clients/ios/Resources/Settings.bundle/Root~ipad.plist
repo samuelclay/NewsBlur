@@ -152,16 +152,16 @@
 			<key>Key</key>
 			<string>default_scroll_read_filter</string>
 		</dict>
-        <dict>
-            <key>Type</key>
-            <string>PSToggleSwitchSpecifier</string>
-            <key>Title</key>
-            <string>Override scroll read per feed/folder</string>
-            <key>DefaultValue</key>
-            <string>YES</string>
-            <key>Key</key>
-            <string>override_scroll_read_filter</string>
-        </dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Show override mark read on scroll</string>
+			<key>DefaultValue</key>
+			<string>YES</string>
+			<key>Key</key>
+			<string>override_scroll_read_filter</string>
+		</dict>
 		<dict>
 			<key>Type</key>
 			<string>PSMultiValueSpecifier</string>
@@ -703,14 +703,14 @@
 			<array>
 				<string>Train intelligence</string>
 				<string>Notifications</string>
-                <string>Statistics</string>
+				<string>Statistics</string>
 			</array>
 			<key>DefaultValue</key>
 			<string>notifications</string>
 			<key>Values</key>
 			<array>
 				<string>trainer</string>
-                <string>notifications</string>
+				<string>notifications</string>
 				<string>statistics</string>
 			</array>
 			<key>Key</key>
@@ -872,28 +872,28 @@
 			<key>Key</key>
 			<string>custom_domain</string>
 		</dict>
-        <dict>
-            <key>Title</key>
-            <string>Import and Export</string>
-            <key>Type</key>
-            <string>PSGroupSpecifier</string>
-        </dict>
-        <dict>
-            <key>Type</key>
-            <string>IASKButtonSpecifier</string>
-            <key>Title</key>
-            <string>Import Preferences...</string>
-            <key>Key</key>
-            <string>import_prefs</string>
-        </dict>
-        <dict>
-            <key>Type</key>
-            <string>IASKButtonSpecifier</string>
-            <key>Title</key>
-            <string>Export Preferences...</string>
-            <key>Key</key>
-            <string>export_prefs</string>
-        </dict>
+		<dict>
+			<key>Title</key>
+			<string>Import and Export</string>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>IASKButtonSpecifier</string>
+			<key>Title</key>
+			<string>Import Preferences...</string>
+			<key>Key</key>
+			<string>import_prefs</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>IASKButtonSpecifier</string>
+			<key>Title</key>
+			<string>Export Preferences...</string>
+			<key>Key</key>
+			<string>export_prefs</string>
+		</dict>
 		<dict>
 			<key>Title</key>
 			<string>About NewsBlur</string>
