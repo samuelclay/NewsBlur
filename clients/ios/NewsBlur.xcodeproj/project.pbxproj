@@ -315,7 +315,6 @@
 		FF22FE7316E554FD0046165A /* barbutton_sendto@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF22FE7116E554FD0046165A /* barbutton_sendto@2x.png */; };
 		FF22FE7616E557D80046165A /* toolbar_tall_background.png in Resources */ = {isa = PBXBuildFile; fileRef = FF22FE7416E557D80046165A /* toolbar_tall_background.png */; };
 		FF22FE7716E557D80046165A /* toolbar_tall_background@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF22FE7516E557D80046165A /* toolbar_tall_background@2x.png */; };
-		FF26125418C00FEC0055FF4D /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FF26125318C00FEC0055FF4D /* AddressBook.framework */; };
 		FF265F12187B6D4F0080C332 /* fitvid.js in Resources */ = {isa = PBXBuildFile; fileRef = FF265F10187B6B230080C332 /* fitvid.js */; };
 		FF2924E51E932D2900FCFA63 /* PINCache.m in Sources */ = {isa = PBXBuildFile; fileRef = FF2924DF1E932D2900FCFA63 /* PINCache.m */; };
 		FF2924E61E932D2900FCFA63 /* PINDiskCache.m in Sources */ = {isa = PBXBuildFile; fileRef = FF2924E21E932D2900FCFA63 /* PINDiskCache.m */; };
@@ -333,7 +332,6 @@
 		FF2D8B351487250C00057B80 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FF2D8B341487250C00057B80 /* MessageUI.framework */; };
 		FF2D8C6C1487F05100057B80 /* Twitter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FF2D8C6B1487F05100057B80 /* Twitter.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		FF2D8CE514893BC000057B80 /* MoveSiteViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FF2D8CE314893BBF00057B80 /* MoveSiteViewController.m */; };
-		FF308A7B18C01014009F986A /* AssetsLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FF308A7A18C01014009F986A /* AssetsLibrary.framework */; };
 		FF308A7D18C01025009F986A /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FF308A7C18C01025009F986A /* CoreMotion.framework */; };
 		FF308A7F18C01037009F986A /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FF308A7E18C01037009F986A /* CoreLocation.framework */; };
 		FF308A8118C01043009F986A /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FF308A8018C01043009F986A /* MediaPlayer.framework */; };
@@ -1505,8 +1503,6 @@
 				FF308A7F18C01037009F986A /* CoreLocation.framework in Frameworks */,
 				FF83FF011FB51628008DAC0F /* StoreKit.framework in Frameworks */,
 				FF308A7D18C01025009F986A /* CoreMotion.framework in Frameworks */,
-				FF308A7B18C01014009F986A /* AssetsLibrary.framework in Frameworks */,
-				FF26125418C00FEC0055FF4D /* AddressBook.framework in Frameworks */,
 				FF468E3817FCFB970080325C /* AVFoundation.framework in Frameworks */,
 				78095E45128EF37E00230C8E /* SystemConfiguration.framework in Frameworks */,
 				FF4EE9A4175EC9CF005891B5 /* libsqlite3.dylib in Frameworks */,
@@ -2836,7 +2832,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 1120;
-				LastUpgradeCheck = 1130;
+				LastUpgradeCheck = 1140;
 				ORGANIZATIONNAME = NewsBlur;
 				TargetAttributes = {
 					1749390F1C251BFE003D98AA = {
