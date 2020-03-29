@@ -276,8 +276,6 @@
 		FF03B00119F881380063002A /* ARChromeActivity@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF03AFFA19F881380063002A /* ARChromeActivity@3x.png */; };
 		FF03B00219F881380063002A /* ARChromeActivity@3x~ipad.png in Resources */ = {isa = PBXBuildFile; fileRef = FF03AFFB19F881380063002A /* ARChromeActivity@3x~ipad.png */; };
 		FF03B00319F881380063002A /* ARChromeActivity~ipad.png in Resources */ = {isa = PBXBuildFile; fileRef = FF03AFFC19F881380063002A /* ARChromeActivity~ipad.png */; };
-		FF03B00919F987E00063002A /* NJKWebViewProgress.m in Sources */ = {isa = PBXBuildFile; fileRef = FF03B00619F987E00063002A /* NJKWebViewProgress.m */; };
-		FF03B00A19F987E00063002A /* NJKWebViewProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = FF03B00819F987E00063002A /* NJKWebViewProgressView.m */; };
 		FF0FAEB117B084D2008651F9 /* OfflineCleanImages.m in Sources */ = {isa = PBXBuildFile; fileRef = FF0FAEB017B0846C008651F9 /* OfflineCleanImages.m */; };
 		FF11045F176950F900502C29 /* NBLoadingCell.m in Sources */ = {isa = PBXBuildFile; fileRef = FF11045E176950F900502C29 /* NBLoadingCell.m */; };
 		FF1104611769695A00502C29 /* g_icn_offline@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF1104601769695A00502C29 /* g_icn_offline@2x.png */; };
@@ -994,10 +992,6 @@
 		FF03AFFA19F881380063002A /* ARChromeActivity@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ARChromeActivity@3x.png"; sourceTree = "<group>"; };
 		FF03AFFB19F881380063002A /* ARChromeActivity@3x~ipad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ARChromeActivity@3x~ipad.png"; sourceTree = "<group>"; };
 		FF03AFFC19F881380063002A /* ARChromeActivity~ipad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ARChromeActivity~ipad.png"; sourceTree = "<group>"; };
-		FF03B00519F987E00063002A /* NJKWebViewProgress.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NJKWebViewProgress.h; sourceTree = "<group>"; };
-		FF03B00619F987E00063002A /* NJKWebViewProgress.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NJKWebViewProgress.m; sourceTree = "<group>"; };
-		FF03B00719F987E00063002A /* NJKWebViewProgressView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NJKWebViewProgressView.h; sourceTree = "<group>"; };
-		FF03B00819F987E00063002A /* NJKWebViewProgressView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NJKWebViewProgressView.m; sourceTree = "<group>"; };
 		FF0FAEAF17B0846C008651F9 /* OfflineCleanImages.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = OfflineCleanImages.h; path = offline/OfflineCleanImages.h; sourceTree = "<group>"; };
 		FF0FAEB017B0846C008651F9 /* OfflineCleanImages.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = OfflineCleanImages.m; path = offline/OfflineCleanImages.m; sourceTree = "<group>"; };
 		FF11045D176950F900502C29 /* NBLoadingCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NBLoadingCell.h; sourceTree = "<group>"; };
@@ -1674,7 +1668,6 @@
 			children = (
 				FFC579831FB67752004677F1 /* SAConfettiView */,
 				010EDEF41B238635003B79DE /* OnePasswordExtension */,
-				FF03B00419F987E00063002A /* NJKWebViewProgress */,
 				FF03AFF419F881380063002A /* ARChromeActivity */,
 				FF03AFE619F87F2E0063002A /* TUSafariActivity */,
 				FFA045AD19CA49D700618DC4 /* SloppySwiper */,
@@ -2340,18 +2333,6 @@
 			);
 			name = ARChromeActivity;
 			path = "Other Sources/ARChromeActivity";
-			sourceTree = "<group>";
-		};
-		FF03B00419F987E00063002A /* NJKWebViewProgress */ = {
-			isa = PBXGroup;
-			children = (
-				FF03B00519F987E00063002A /* NJKWebViewProgress.h */,
-				FF03B00619F987E00063002A /* NJKWebViewProgress.m */,
-				FF03B00719F987E00063002A /* NJKWebViewProgressView.h */,
-				FF03B00819F987E00063002A /* NJKWebViewProgressView.m */,
-			);
-			name = NJKWebViewProgress;
-			path = "Other Sources/NJKWebViewProgress";
 			sourceTree = "<group>";
 		};
 		FF22FE5216E52BAD0046165A /* Foundation */ = {
@@ -3461,7 +3442,6 @@
 				43F6A79D15B0CDC60092EE91 /* ActivityCell.m in Sources */,
 				FF3FA88D1BB2677C001F7C32 /* NBCopyLinkActivity.m in Sources */,
 				17432C831C53438D003F8FD6 /* FeedChooserViewController.m in Sources */,
-				FF03B00919F987E00063002A /* NJKWebViewProgress.m in Sources */,
 				010EDEFA1B2386B7003B79DE /* OnePasswordExtension.m in Sources */,
 				43ABBCAA15B53A1400EA3111 /* InteractionCell.m in Sources */,
 				FF34FD611E9D93CB0062F8ED /* IASKAppSettingsWebViewController.m in Sources */,
@@ -3518,7 +3498,6 @@
 				FF6618C8176184560039913B /* NBNotifier.m in Sources */,
 				FF03AFF319F87F2E0063002A /* TUSafariActivity.m in Sources */,
 				FF83FF051FB52565008DAC0F /* PremiumViewController.m in Sources */,
-				FF03B00A19F987E00063002A /* NJKWebViewProgressView.m in Sources */,
 				FF11045F176950F900502C29 /* NBLoadingCell.m in Sources */,
 				FF34FD701E9D93CB0062F8ED /* IASKTextViewCell.m in Sources */,
 				FFAD89C218AC45A100D68567 /* StoriesCollection.m in Sources */,
