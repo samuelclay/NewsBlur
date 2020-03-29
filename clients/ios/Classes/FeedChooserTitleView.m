@@ -78,7 +78,7 @@
     UIImage *folderImage = [UIImage imageNamed:@"g_icn_folder"];
     CGFloat folderImageViewX = 10.0;
     
-    if (UI_USER_INTERFACE_IDIOM() != UIUserInterfaceIdiomPad) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] != UIUserInterfaceIdiomPad) {
         folderImageViewX = 7.0;
     }
     

@@ -88,7 +88,7 @@
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
     // Return YES for supported orientations
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         return YES;
     } else if (UIInterfaceOrientationIsPortrait(interfaceOrientation)) {
         return YES;
@@ -125,7 +125,7 @@
 }
 
 - (IBAction)doCancelButton {
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         [appDelegate hidePopover];
     } else {
         [appDelegate hidePopoverAnimated:YES];
@@ -265,7 +265,7 @@
             [self.errorLabel setText:[responseObject valueForKey:@"message"]];
             [self.errorLabel setHidden:NO];
         } else {
-            if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+            if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
                 [appDelegate hidePopover];
             } else {
                 [appDelegate hidePopoverAnimated:YES];

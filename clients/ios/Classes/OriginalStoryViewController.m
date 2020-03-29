@@ -32,7 +32,7 @@
     self.view.layer.shadowOpacity = 0.5;
     self.view.layer.shadowPath = [UIBezierPath bezierPathWithRect:self.view.bounds].CGPath;
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         closeButton = [UIBarButtonItem barItemWithImage:[UIImage imageNamed:@"ios7_back_button"]
                                                  target:self
                                                  action:@selector(closeOriginalView)];
@@ -70,7 +70,7 @@
 //    UIGestureRecognizer *themeGesture = [[ThemeManager themeManager] addThemeGestureRecognizerToView:self.webView];
 //    [self.webView.scrollView.panGestureRecognizer requireGestureRecognizerToFail:themeGesture];
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         UIPanGestureRecognizer *gesture = [[UIPanGestureRecognizer alloc]
                                            initWithTarget:self action:@selector(handlePanGesture:)];
         gesture.delegate = self;
@@ -215,7 +215,7 @@
                              center.y);
         self.view.center = center;
         [recognizer setTranslation:CGPointZero inView:self.view];
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
             [appDelegate.masterContainerViewController interactiveTransitionFromOriginalView:percentage];
         } else {
             
@@ -231,7 +231,7 @@
             [self transitionToFeedDetail:recognizer];
         } else {
 //            NSLog(@"Original velocity: %f (at %.2f%%)", velocity, percentage*100);
-            if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+            if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
                 [appDelegate.masterContainerViewController transitionToOriginalView:NO];
             } else {
                 
@@ -241,7 +241,7 @@
 }
 
 - (void)transitionToFeedDetail:(UIGestureRecognizer *)recognizer {
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         [appDelegate.masterContainerViewController transitionFromOriginalView];
     } else {
         

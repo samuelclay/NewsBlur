@@ -38,7 +38,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         self.interactionsModule.hidden = YES;
     } else {
         self.interactionsModule.hidden = NO;
@@ -55,7 +55,7 @@
     topToolbarFrame.size.height += 20;
     self.topToolbar.frame = topToolbarFrame;
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         self.storiesModule = [FeedDetailViewController new];
         self.storiesModule.isDashboardModule = YES;
         self.storiesModule.storiesCollection = [StoriesCollection new];
@@ -78,7 +78,7 @@
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         if (@available(iOS 11.0, *)) {
             CGRect frame = self.toolbar.frame;
             frame.size.height = [NewsBlurAppDelegate sharedAppDelegate].navigationController.toolbar.bounds.size.height; // += self.view.safeAreaInsets.bottom;
@@ -141,7 +141,7 @@
 - (IBAction)tapSegmentedButton:(id)sender {
     NSInteger selectedSegmentIndex = [self.segmentedButton selectedSegmentIndex];
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         if (selectedSegmentIndex == 0) {
             self.storiesModule.view.hidden = NO;
             self.interactionsModule.hidden = YES;

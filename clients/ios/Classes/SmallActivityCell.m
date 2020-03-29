@@ -62,7 +62,7 @@
     labelFrame.size.height = contentRect.size.height;
     self.activityLabel.frame = labelFrame;
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         self.activityLabel.backgroundColor = UIColorFromRGB(0xd7dadf);
     } else {
         self.activityLabel.backgroundColor = UIColorFromRGB(0xf6f6f6);

@@ -161,7 +161,7 @@
     self.storyTitle.textColor = UIColorFromRGB(0x404040);
     self.storyTitle.shadowColor = UIColorFromRGB(0xF0F0F0);
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
         self.storyTitle.text = [[appDelegate.activeStory objectForKey:@"story_title"]
                                 stringByDecodingHTMLEntities];
         [self.commentField becomeFirstResponder];
@@ -210,11 +210,11 @@
     int stOffset = 6;
     int stHeight = 0;
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
         self.storyTitle.frame = CGRectMake(20, 8, v.width - 20*2, 24);
         stOffset = self.storyTitle.frame.origin.y + self.storyTitle.frame.size.height;
         stHeight = self.storyTitle.frame.size.height;
-    } else if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    } else if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         k = 0;
     }
     NSLog(@"Share type: %@", self.currentType);

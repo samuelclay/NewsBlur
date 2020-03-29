@@ -67,7 +67,7 @@
     self.categoriesTable.opaque = NO;
     self.categoriesTable.backgroundView = nil;
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
         self.instructionLabel.font = [UIFont systemFontOfSize:20];
     }
     
@@ -98,7 +98,7 @@
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
     // Return YES for supported orientations
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         return YES;
     } else if (UIInterfaceOrientationIsPortrait(interfaceOrientation)) {
         return YES;

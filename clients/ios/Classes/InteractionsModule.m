@@ -154,7 +154,7 @@
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     NSInteger userInteractions = [appDelegate.userInteractionsArray count];
     int minimumHeight;
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         minimumHeight = MINIMUM_INTERACTION_HEIGHT_IPAD;
     } else {
         minimumHeight = MINIMUM_INTERACTION_HEIGHT_IPHONE;
@@ -165,7 +165,7 @@
     }
     
     InteractionCell *interactionCell;
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         interactionCell = [[InteractionCell alloc] init];
     } else {
         interactionCell = [[SmallInteractionCell alloc] init];
@@ -190,7 +190,7 @@
     InteractionCell *cell = [tableView
                              dequeueReusableCellWithIdentifier:@"InteractionCell"];
     if (cell == nil) {
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
             cell = [[InteractionCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"InteractionCell"];
         } else {
             cell = [[SmallInteractionCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"InteractionCell"];
@@ -276,7 +276,7 @@
         UIImageView *fleuron = [[UIImageView alloc] initWithImage:img];
         
         int height;
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
             height = MINIMUM_INTERACTION_HEIGHT_IPAD;
         } else {
             height = MINIMUM_INTERACTION_HEIGHT_IPHONE;

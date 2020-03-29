@@ -58,7 +58,7 @@
     labelFrame.size.height = contentRect.size.height;
     self.interactionLabel.frame = labelFrame;
 
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         self.interactionLabel.backgroundColor = UIColorFromRGB(0xd7dadf);
     } else {
         self.interactionLabel.backgroundColor = UIColorFromRGB(0xf6f6f6);

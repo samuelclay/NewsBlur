@@ -60,7 +60,7 @@
         [self.webView loadRequest:requestObj];
     }];
     
-    if (self.fromStory && UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if (self.fromStory && [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         UIBarButtonItem *cancelButton = [[UIBarButtonItem alloc]
                                          initWithTitle: @"Cancel"
                                          style: UIBarButtonItemStylePlain
@@ -93,7 +93,7 @@
             
             if (self.fromStory) {
                 [appDelegate refreshUserProfile:^{
-                    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+                    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
                         [appDelegate.shareNavigationController viewWillAppear:YES];
                         [appDelegate.modalNavigationController dismissViewControllerAnimated:YES completion:nil];
                     } else {

@@ -45,7 +45,7 @@
             self.localizationTable = [[[[plistFilePath stringByDeletingPathExtension] // removes '.plist'
                                         stringByDeletingPathExtension] // removes potential '.inApp'
                                        lastPathComponent] // strip absolute path
-                                      stringByReplacingOccurrencesOfString:[self platformSuffixForInterfaceIdiom:UI_USER_INTERFACE_IDIOM()] withString:@""]; // removes potential '~device' (~ipad, ~iphone)
+                                      stringByReplacingOccurrencesOfString:[self platformSuffixForInterfaceIdiom:[[UIDevice currentDevice] userInterfaceIdiom]] withString:@""]; // removes potential '~device' (~ipad, ~iphone)
             if([self.settingsBundle pathForResource:self.localizationTable ofType:@"strings"] == nil){
                 // Could not find the specified localization: use default
                 self.localizationTable = @"Root";
@@ -168,7 +168,7 @@
                 [dataSource addObject:[NSMutableArray array]];
             }
             
-            if ([newSpecifier.userInterfaceIdioms containsObject:@(UI_USER_INTERFACE_IDIOM())]) {
+            if ([newSpecifier.userInterfaceIdioms containsObject:@([[UIDevice currentDevice] userInterfaceIdiom])]) {
                 [(NSMutableArray*)dataSource.lastObject addObject:newSpecifier];
             }
         }
@@ -315,7 +315,7 @@
     
     NSArray *extensions = @[@".inApp.plist", @".plist"];
     
-    NSArray *plattformSuffixes = @[[self platformSuffixForInterfaceIdiom:UI_USER_INTERFACE_IDIOM()],
+    NSArray *plattformSuffixes = @[[self platformSuffixForInterfaceIdiom:[[UIDevice currentDevice] userInterfaceIdiom]],
                                    @""];
     
     NSArray *preferredLanguages = [NSLocale preferredLanguages];

@@ -90,6 +90,8 @@
 	<string>230426707030569</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
+	<key>LSApplicationCategoryType</key>
+	<string>public.app-category.news</string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>newsblur</string>
@@ -99,7 +101,7 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>LSSupportsOpeningDocumentsInPlace</key>
-	<false/>
+	<true/>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsArbitraryLoads</key>

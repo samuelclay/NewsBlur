@@ -205,7 +205,7 @@
     self.navigationController.viewControllers = [NSArray arrayWithObject:self.feedsViewController];
     self.storiesCollection = [StoriesCollection new];
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         self.window.rootViewController = self.masterContainerViewController;
     } else {
         self.window.rootViewController = self.navigationController;
@@ -224,7 +224,7 @@
                                              (unsigned long)NULL), ^(void) {
         [self setupReachability];
         cacheImagesOperationQueue = [NSOperationQueue new];
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
             cacheImagesOperationQueue.maxConcurrentOperationCount = 2;
         } else {
             cacheImagesOperationQueue.maxConcurrentOperationCount = 1;
@@ -705,7 +705,7 @@
     newUserProfile.navigationItem.title = self.activeUserProfileName;
     newUserProfile.navigationItem.backBarButtonItem.title = self.activeUserProfileName;
     [newUserProfile getUserProfile];
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         [self.masterContainerViewController showUserProfilePopover:sender];
     } else {
         [self.navigationController presentViewController:navController animated:YES completion:nil];
@@ -737,7 +737,7 @@
 }
 
 - (void)hideUserProfileModal {
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         [self hidePopover];
     } else {
         [self.navigationController dismissViewControllerAnimated:YES completion:nil];
@@ -753,7 +753,7 @@
 }
 
 - (void)popToRootWithCompletion:(void (^)(void))completion {
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         if (completion) {
             [CATransaction begin];
             [CATransaction setCompletionBlock:completion];
@@ -782,7 +782,7 @@
     }
     self.premiumNavigationController.navigationBar.translucent = NO;
 
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         [masterContainerViewController dismissViewControllerAnimated:NO completion:nil];
         premiumNavigationController.modalPresentationStyle = UIModalPresentationFormSheet;
         [masterContainerViewController presentViewController:premiumNavigationController animated:YES completion:nil];
@@ -814,7 +814,7 @@
     self.modalNavigationController = navController;
     self.modalNavigationController.navigationBar.translucent = NO;
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         [masterContainerViewController dismissViewControllerAnimated:NO completion:nil];
         self.modalNavigationController.modalPresentationStyle = UIModalPresentationFormSheet;
         [masterContainerViewController presentViewController:modalNavigationController animated:YES completion:nil];
@@ -864,7 +864,7 @@
     self.modalNavigationController = nav;
     self.modalNavigationController.navigationBar.translucent = NO;
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         self.modalNavigationController.modalPresentationStyle = UIModalPresentationFormSheet;
         [masterContainerViewController presentViewController:modalNavigationController animated:YES completion:nil];
     } else {
@@ -894,7 +894,7 @@
     self.modalNavigationController = friendsNav;
     self.modalNavigationController.navigationBar.translucent = NO;
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         [masterContainerViewController dismissViewControllerAnimated:NO completion:nil];
         self.modalNavigationController.modalPresentationStyle = UIModalPresentationFormSheet;
         [masterContainerViewController presentViewController:modalNavigationController animated:YES completion:nil];
@@ -996,7 +996,7 @@
         }
     }];
 
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         BOOL fromPopover = [self hidePopoverAnimated:NO];
         [self.masterContainerViewController presentViewController:activityViewController animated:!fromPopover completion:nil];
         activityViewController.modalPresentationStyle = UIModalPresentationPopover;
@@ -1036,7 +1036,7 @@
       setReplyId:(NSString *)replyId {
     
     [self.shareViewController setCommentType:type];
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         [self.masterContainerViewController transitionToShareView];
         [self.shareViewController setSiteInfo:type setUserId:userId setUsername:username setReplyId:replyId];
     } else {
@@ -1058,7 +1058,7 @@
         self.shareViewController.currentType = nil;
     }
         
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {        
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {        
         [self.masterContainerViewController transitionFromShareView];
         [self.storyPageControl becomeFirstResponder];
     } else if (!self.showingSafariViewController) {
@@ -1097,7 +1097,7 @@
     [userPreferences setInteger:-1 forKey:@"selectedIntelligence"];
     [userPreferences synchronize];
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         if (self.masterContainerViewController.presentedViewController == loginViewController) {
             NSLog(@"Already showing login!");
             return;
@@ -1124,7 +1124,7 @@
     self.ftuxNavigationController = ftux;
     self.ftuxNavigationController.navigationBar.translucent = NO;
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         [masterContainerViewController dismissViewControllerAnimated:NO completion:nil];
         self.ftuxNavigationController.modalPresentationStyle = UIModalPresentationFullScreen;
         [self.masterContainerViewController presentViewController:self.ftuxNavigationController animated:YES completion:nil];
@@ -1145,7 +1145,7 @@
 - (void)showMoveSite {
     UINavigationController *navController = self.navigationController;
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         [masterContainerViewController dismissViewControllerAnimated:NO completion:nil];
         moveSiteViewController.modalPresentationStyle=UIModalPresentationFormSheet;
         [navController presentViewController:moveSiteViewController animated:YES completion:nil];
@@ -1172,7 +1172,7 @@
     trainerViewController.storyTrainer = NO;
     trainerViewController.feedLoaded = feedLoaded;
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
 //        trainerViewController.modalPresentationStyle=UIModalPresentationFormSheet;
 //        [navController presentViewController:trainerViewController animated:YES completion:nil];
         [self.masterContainerViewController showTrainingPopover:sender];
@@ -1191,7 +1191,7 @@
     trainerViewController.feedTrainer = NO;
     trainerViewController.storyTrainer = YES;
     trainerViewController.feedLoaded = YES;
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         [self.masterContainerViewController showTrainingPopover:sender];
     } else {
         if (self.trainNavigationController == nil) {
@@ -1214,7 +1214,7 @@
 - (void)openNotificationsWithFeed:(NSString *)feedId sender:(id)sender {
     UINavigationController *navController = self.navigationController;
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         [self.masterContainerViewController showNotificationsPopoverWithFeed:feedId sender:sender];
     } else {
         if (self.notificationsNavigationController == nil) {
@@ -1322,7 +1322,7 @@
     NSString *currentiPhoneVersion = [[[NSBundle mainBundle] infoDictionary]
                                       objectForKey:@"CFBundleVersion"];
     NSString *UA;
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         UA = [NSString stringWithFormat:@"NewsBlur iPad App v%@", currentiPhoneVersion];
     } else {
         UA = [NSString stringWithFormat:@"NewsBlur iPhone App v%@", currentiPhoneVersion];
@@ -1448,7 +1448,7 @@
     
     if (cookie != nil) {
         [webView.configuration.websiteDataStore.httpCookieStore setCookie:cookie completionHandler:completion];
-    } else {
+    } else if (completion) {
         completion();
     }
 }
@@ -1509,7 +1509,7 @@
                                           action: nil];
         [feedsViewController.navigationItem setBackBarButtonItem:newBackButton];
 
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
             [self.masterContainerViewController transitionToFeedDetail];
         } else {
             [navigationController pushViewController:feedDetailViewController
@@ -1551,9 +1551,9 @@
     storiesCollection.activeFeed = feed;
     storiesCollection.activeFolder = nil;
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         [self loadFeedDetailView];
-    } else if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+    } else if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
         [self.navigationController popToRootViewControllerAnimated:NO];
         [self hidePopoverAnimated:NO completion:^{
             if (self.navigationController.presentedViewController) {
@@ -1596,9 +1596,9 @@
     storiesCollection.activeFeed = feed;
     storiesCollection.activeFolder = nil;
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         [self loadFeedDetailView];
-    } else if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+    } else if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
         [self.navigationController popToRootViewControllerAnimated:NO];
         [self hidePopoverAnimated:YES completion:^{
             if (self.navigationController.presentedViewController) {
@@ -1614,7 +1614,7 @@
 
 - (void)loadStarredDetailViewWithStory:(NSString *)contentId
                       showFindingStory:(BOOL)showHUD {
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
         [self.navigationController popToRootViewControllerAnimated:NO];
         [self.navigationController dismissViewControllerAnimated:YES completion:nil];
         [self hidePopoverAnimated:NO];
@@ -1630,7 +1630,7 @@
     [self loadRiverFeedDetailView:feedDetailViewController withFolder:@"saved_stories"];
     
     if (showHUD) {
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
             [self.storyPageControl showShareHUD:@"Finding story..."];
         } else {
             MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.feedDetailViewController.view animated:YES];
@@ -1724,7 +1724,7 @@
     serviceVC.url = [NSString stringWithFormat:@"/oauth/%@_connect", serviceName];
     serviceVC.type = serviceName;
     serviceVC.fromStory = YES;
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         UINavigationController *connectNav = [[UINavigationController alloc]
                                               initWithRootViewController:serviceVC];
         self.modalNavigationController = connectNav;
@@ -1739,7 +1739,7 @@
 }
 
 - (void)showAlert:(UIAlertController *)alert withViewController:(UIViewController *)vc {
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         [self.masterContainerViewController presentViewController:alert animated:YES completion:nil];
     } else {
         [vc presentViewController:alert animated:YES completion:nil];
@@ -1861,7 +1861,7 @@
                                                                          target: nil
                                                                          action: nil];
         [feedsViewController.navigationItem setBackBarButtonItem: newBackButton];
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
             [self.masterContainerViewController transitionToFeedDetail];
         } else {
             UINavigationController *navController = self.navigationController;
@@ -1884,7 +1884,7 @@
 
 - (void)openDashboardRiverForStory:(NSString *)contentId
                   showFindingStory:(BOOL)showHUD {
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
         [self.navigationController popToRootViewControllerAnimated:NO];
         [self.navigationController dismissViewControllerAnimated:YES completion:nil];
         [self hidePopoverAnimated:NO];
@@ -1900,7 +1900,7 @@
     [self loadRiverFeedDetailView:feedDetailViewController withFolder:@"river_dashboard"];
     
     if (showHUD) {
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
             [self.storyPageControl showShareHUD:@"Finding story..."];
         } else {
             MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.feedDetailViewController.view animated:YES];
@@ -1997,14 +1997,14 @@
 }
 
 - (void)loadStoryDetailView {
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone || self.isCompactWidth) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone || self.isCompactWidth) {
         [navigationController pushViewController:storyPageControl animated:YES];
         navigationController.navigationItem.hidesBackButton = YES;
     }
 
     NSInteger activeStoryLocation = [storiesCollection locationOfActiveStory];
     if (activeStoryLocation >= 0) {
-        BOOL animated = (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad &&
+        BOOL animated = ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad &&
                          !self.tryFeedCategory);
         [self.storyPageControl view];
         [self.storyPageControl.view setNeedsLayout];
@@ -2110,7 +2110,7 @@
     self.activeOriginalStoryURL = url;
     originalStoryViewController.customPageTitle = customTitle;
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         if ([sender isKindOfClass:[UIBarButtonItem class]]) {
             [originalStoryViewController view]; // Force viewDidLoad
             [originalStoryViewController loadInitialStory];
@@ -2157,7 +2157,7 @@
 }
 
 - (void)deferredSafariCleanup {
-//    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+//    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
 //        self.navigationController.view.frame = CGRectMake(self.navigationController.view.frame.origin.x, self.navigationController.view.frame.origin.y, self.isPortrait ? 270.0 : 370.0, self.navigationController.view.frame.size.height);
 //    }
     
@@ -2191,7 +2191,7 @@
 }
 
 - (void)closeOriginalStory {
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         [self.masterContainerViewController transitionFromOriginalView];
     } else {
         if ([[navigationController viewControllers] containsObject:originalStoryViewController]) {
@@ -2201,7 +2201,7 @@
 }
 
 - (void)hideStoryDetailView {
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         [self.masterContainerViewController transitionFromFeedDetail];
     } else {
         [self.navigationController popViewControllerAnimated:YES];
@@ -3041,7 +3041,7 @@
 }
 
 - (UINavigationController *)navigationControllerForPopover {
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         return self.masterContainerViewController.masterNavigationController;
     } else {
         return self.navigationController;
@@ -3313,7 +3313,7 @@
                [storiesCollection.activeFolder isEqualToString:@"infrequent"]) {
         titleLabel.text = [NSString stringWithFormat:@"     Infrequent Site Stories"];
     } else if (storiesCollection.isSavedView && storiesCollection.activeSavedStoryTag) {
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
             titleLabel.text = [NSString stringWithFormat:@"     %@", storiesCollection.activeSavedStoryTag];
         } else {
             titleLabel.text = [NSString stringWithFormat:@"     Saved Stories - %@", storiesCollection.activeSavedStoryTag];
@@ -4286,8 +4286,13 @@
 
 - (void)deleteAllCachedImages {
     NSUInteger memorySize = 1024 * 1024 * 64;
-    NSURLCache *sharedCache = [[NSURLCache alloc] initWithMemoryCapacity:memorySize diskCapacity:memorySize diskPath:nil];
-    [NSURLCache setSharedURLCache:sharedCache];
+#if TARGET_OS_MACCATALYST
+        NSURLCache *sharedCache = [[NSURLCache alloc] initWithMemoryCapacity:memorySize diskCapacity:memorySize directoryURL:nil];
+        [NSURLCache setSharedURLCache:sharedCache];
+#else
+        NSURLCache *sharedCache = [[NSURLCache alloc] initWithMemoryCapacity:memorySize diskCapacity:memorySize diskPath:nil];
+        [NSURLCache setSharedURLCache:sharedCache];
+#endif
     NSLog(@"cap: %ld", (unsigned long)[[NSURLCache sharedURLCache] diskCapacity]);
     
     NSInteger sizeInteger = [[NSURLCache sharedURLCache] currentDiskUsage];

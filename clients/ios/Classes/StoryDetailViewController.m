@@ -84,11 +84,11 @@
     [self.webView.scrollView setAlwaysBounceVertical:appDelegate.storyPageControl.isHorizontal];
     [self.webView.scrollView setDelaysContentTouches:NO];
     [self.webView.scrollView setDecelerationRate:UIScrollViewDecelerationRateNormal];
-    [self.webView.scrollView setAutoresizesSubviews:(UIViewAutoresizingFlexibleWidth |
+    [self.webView.scrollView setAutoresizingMask:(UIViewAutoresizingFlexibleWidth |
                                                      UIViewAutoresizingFlexibleHeight)];
     
     if (@available(iOS 11.0, *)) {
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
             self.webView.scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
         }
     }
@@ -125,7 +125,7 @@
     doubleDoubleTapGesture.delegate = self;
     [self.webView addGestureRecognizer:doubleDoubleTapGesture];
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
         UIPinchGestureRecognizer *pinchGesture = [[UIPinchGestureRecognizer alloc]
                                                   initWithTarget:self action:@selector(pinchGesture:)];
         [self.webView addGestureRecognizer:pinchGesture];
@@ -369,7 +369,7 @@
 }
 
 - (BOOL)isPhoneOrCompact {
-    return UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone || self.appDelegate.isCompactWidth;
+    return [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone || self.appDelegate.isCompactWidth;
 }
 
 // allow keyboard comands
@@ -465,6 +465,10 @@
     NSString *contentWidthClass;
 //    NSLog(@"Drawing story: %@ / %d", [self.activeStory objectForKey:@"story_title"], contentWidth);
     
+#if TARGET_OS_MACCATALYST
+    // CATALYST: probably will want to add custom CSS for Macs.
+    contentWidthClass = @"NB-ipad-wide NB-ipad-pro-12-wide NB-width-768";
+#else
     if (UIInterfaceOrientationIsLandscape(orientation) && !self.isPhoneOrCompact) {
         if (iPadPro12) {
             contentWidthClass = @"NB-ipad-wide NB-ipad-pro-12-wide";
@@ -489,6 +493,7 @@
     
     contentWidthClass = [NSString stringWithFormat:@"%@ NB-width-%d",
                          contentWidthClass, (int)floorf(CGRectGetWidth(self.view.frame))];
+#endif
     
     // Replace image urls that are locally cached, even when online
 //    NSString *storyHash = [self.activeStory objectForKey:@"story_hash"];
@@ -635,7 +640,7 @@
     [self.webView insertSubview:feedTitleGradient aboveSubview:self.webView.scrollView];
     
     if (@available(iOS 11.0, *)) {
-        if (self.view.safeAreaInsets.top > 0.0 && UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        if (self.view.safeAreaInsets.top > 0.0 && [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
             feedTitleGradient.alpha = self.navigationController.navigationBarHidden ? 1 : 0;
             
             [UIView animateWithDuration:0.3 animations:^{
@@ -1889,7 +1894,7 @@
 }
 
 - (BOOL)canHideNavigationBar {
-    if (UI_USER_INTERFACE_IDIOM() != UIUserInterfaceIdiomPhone || self.presentedViewController != nil) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] != UIUserInterfaceIdiomPhone || self.presentedViewController != nil) {
         return NO;
     }
     
@@ -2380,6 +2385,10 @@
     UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
     NSString *contentWidthClass;
 
+#if TARGET_OS_MACCATALYST
+    // CATALYST: probably will want to add custom CSS for Macs.
+    contentWidthClass = @"NB-ipad-wide NB-ipad-pro-12-wide NB-width-768";
+#else
     if (UIInterfaceOrientationIsLandscape(orientation) && !self.isPhoneOrCompact) {
         if (iPadPro12) {
             contentWidthClass = @"NB-ipad-wide NB-ipad-pro-12-wide";
@@ -2402,6 +2411,10 @@
         contentWidthClass = @"NB-iphone";
     }
     
+    contentWidthClass = [NSString stringWithFormat:@"%@ NB-width-%d",
+                         contentWidthClass, (int)floorf(CGRectGetWidth(webView.scrollView.bounds))];
+#endif
+    
     NSString *alternateViewClass = @"";
     if (!self.isPhoneOrCompact) {
         if (appDelegate.masterContainerViewController.storyTitlesOnLeft) {
@@ -2410,9 +2423,6 @@
             alternateViewClass = @"NB-titles-left";
         }
     }
-    
-    contentWidthClass = [NSString stringWithFormat:@"%@ NB-width-%d",
-                         contentWidthClass, (int)floorf(CGRectGetWidth(webView.scrollView.bounds))];
     
     NSString *riverClass = (appDelegate.storiesCollection.isRiverView ||
                             appDelegate.storiesCollection.isSocialView ||

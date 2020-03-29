@@ -173,7 +173,7 @@
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         [self checkSize:self.view.bounds.size];
     }
     
@@ -196,7 +196,7 @@
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
     [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         [self checkSize:size];
     }
     
@@ -705,7 +705,7 @@
 }
 
 - (void)handleOriginalNavGesture:(UIScreenEdgePanGestureRecognizer *)gesture {
-    if (UI_USER_INTERFACE_IDIOM() != UIUserInterfaceIdiomPad) return;
+    if ([[UIDevice currentDevice] userInterfaceIdiom] != UIUserInterfaceIdiomPad) return;
     
     self.interactiveOriginalTransition = YES;
     
