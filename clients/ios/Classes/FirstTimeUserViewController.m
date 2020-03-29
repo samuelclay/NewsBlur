@@ -54,7 +54,7 @@
     self.nextButton = next;
     self.navigationItem.rightBarButtonItem = next;
         
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
         header.font = [UIFont systemFontOfSize:22];
         footer.font = [UIFont systemFontOfSize:22];
     }
@@ -86,7 +86,7 @@
     UIImageView *logoView = [[UIImageView alloc] initWithImage:logoImg];
     CGFloat width = CGRectGetWidth(self.view.frame);
     CGFloat height = CGRectGetHeight(self.view.frame);
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
         logoView.frame = CGRectMake((width-220)/2, (height-220)/2-50, 220, 220);
     } else {
         logoView.frame = CGRectMake((width-240)/2, (height-240)/2-50, 240, 240);
@@ -109,7 +109,7 @@
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
     // Return YES for supported orientations
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         return YES;
     } else if (UIInterfaceOrientationIsPortrait(interfaceOrientation)) {
         return YES;

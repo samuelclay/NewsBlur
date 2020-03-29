@@ -65,7 +65,7 @@
 
     //[self.onePasswordButton setHidden:![[OnePasswordExtension sharedExtension] isAppExtensionAvailable]];
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         [self updateControls];
         [self rearrangeViews];
     }
@@ -78,7 +78,7 @@
 }
 
 - (void)rearrangeViews {
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         CGSize viewSize = self.view.bounds.size;
         CGFloat viewWidth = viewSize.width;
         CGFloat yOffset = 0;
@@ -113,7 +113,7 @@
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
     // Return YES for supported orientations
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         return YES;
     }
     return NO;
@@ -123,7 +123,6 @@
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     [super viewDidAppear:animated];
 }
-
 
 - (void)didReceiveMemoryWarning {
 	// Releases the view if it doesn't have a superview.
@@ -146,7 +145,7 @@
     self.errorLabel.hidden = !hasError;
     self.forgotPasswordButton.hidden = !hasError;
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         self.loginOptionalLabel.hidden = hasError;
     }
 }
@@ -171,7 +170,7 @@
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
     [textField resignFirstResponder];
-    if  (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if  ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         if(textField == usernameInput) {
             [passwordInput becomeFirstResponder];
         } else if (textField == passwordInput) {
@@ -249,7 +248,7 @@
      setCookieAcceptPolicy:NSHTTPCookieAcceptPolicyAlways];
 
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         [params setObject:[signUpUsernameInput text] forKey:@"username"];
         [params setObject:[signUpPasswordInput text] forKey:@"password"];
     } else {

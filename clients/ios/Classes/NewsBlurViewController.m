@@ -211,7 +211,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     
     [self resetRowHeights];
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad &&
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad &&
         !self.interactiveFeedDetailTransition) {
         
         [appDelegate.masterContainerViewController transitionFromFeedDetail];
@@ -286,7 +286,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 }
 
 - (void)handleGesture:(UIScreenEdgePanGestureRecognizer *)gesture {
-    if (UI_USER_INTERFACE_IDIOM() != UIUserInterfaceIdiomPad) return;
+    if ([[UIDevice currentDevice] userInterfaceIdiom] != UIUserInterfaceIdiomPad) return;
     
     self.interactiveFeedDetailTransition = YES;
     
@@ -392,7 +392,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 
 - (void)layoutForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
 //    CGSize toolbarSize = [self.feedViewToolbar sizeThatFits:self.view.frame.size];
-//    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+//    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
 //        self.feedViewToolbar.frame = CGRectMake(-10.0f,
 //                                                CGRectGetHeight(self.view.frame) - toolbarSize.height,
 //                                                toolbarSize.width + 20, toolbarSize.height);
@@ -401,7 +401,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 //    }
 //    self.innerView.frame = (CGRect){CGPointZero, CGSizeMake(CGRectGetWidth(self.view.frame), CGRectGetMinY(self.feedViewToolbar.frame))};
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad && !appDelegate.isCompactWidth) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad && !appDelegate.isCompactWidth) {
         CGRect navFrame = appDelegate.navigationController.view.frame;
         CGFloat limit = appDelegate.masterContainerViewController.rightBorder.frame.origin.x + 1;
         
@@ -423,7 +423,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
         orientation = [UIApplication sharedApplication].statusBarOrientation;
     }
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad && !UIInterfaceOrientationIsLandscape(orientation)) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad && !UIInterfaceOrientationIsLandscape(orientation)) {
         [self.intelligenceControl setImage:[UIImage imageNamed:@"unread_yellow_icn.png"] forSegmentAtIndex:1];
         [self.intelligenceControl setImage:[UIImage imageNamed:@"unread_green_icn.png"] forSegmentAtIndex:2];
         [self.intelligenceControl setImage:[UIImage imageNamed:@"unread_blue_icn.png"] forSegmentAtIndex:3];
@@ -446,7 +446,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     [self.intelligenceControl sizeToFit];
     
 //    NSInteger height = 16;
-//    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone && UIInterfaceOrientationIsLandscape(orientation)) {
+//    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone && UIInterfaceOrientationIsLandscape(orientation)) {
 //        height = 8;
 //    }
 //
@@ -533,7 +533,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
         self.isOffline = YES;
         [self showOfflineNotifier];
         
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
             [appDelegate.dashboardViewController refreshStories];
         }
         return;
@@ -546,7 +546,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     
     self.isOffline = YES;
 
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         [appDelegate.dashboardViewController refreshStories];
     }
 
@@ -648,7 +648,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 //    settingsButton.accessibilityLabel = @"Settings";
 //    [settingsBarButton setCustomView:settingsButton];
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
         UIImage *activityImage = [UIImage imageNamed:@"nav_icn_activity_hover.png"];
         NBBarButtonItem *activityButton = [NBBarButtonItem buttonWithType:UIButtonTypeCustom];
         activityButton.accessibilityLabel = @"Activities";
@@ -827,7 +827,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     [self refreshHeaderCounts];
     [appDelegate checkForFeedNotifications];
 
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad && finished) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad && finished) {
         [appDelegate.dashboardViewController refreshStories];
         [self cacheFeedRowLocations];
     }
@@ -917,7 +917,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 - (IBAction)tapAddSite:(id)sender {
     [self.appDelegate.addSiteNavigationController popToRootViewControllerAnimated:NO];
     
-//    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+//    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
     [self.appDelegate showPopoverWithViewController:self.appDelegate.addSiteNavigationController contentSize:CGSizeMake(320, 96) barButtonItem:self.addBarButton];
 //        [self.appDelegate showPopoverWithViewController:self.appDelegate.addSiteNavigationController contentSize:CGSizeMake(320, 96) sourceView:self.addBarButton sourceRect:CGRectMake(35.0, 0.0, 0.0, 0.0) permittedArrowDirections:UIPopoverArrowDirectionDown];
 //    } else {
@@ -1026,7 +1026,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 }
 
 - (void)settingsViewControllerDidEnd:(IASKAppSettingsViewController*)sender {
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         [appDelegate.masterContainerViewController dismissViewControllerAnimated:YES completion:nil];
     } else {
         [appDelegate.navigationController dismissViewControllerAnimated:YES completion:nil];
@@ -1040,7 +1040,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     [self reloadFeedTitlesTable];
     
     [appDelegate.feedDetailViewController reloadData];
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         [appDelegate.dashboardViewController.storiesModule reloadData];
     }
 }
@@ -1051,17 +1051,18 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     
     appDelegate.feedDetailViewController.invalidateFontCache = YES;
     [appDelegate.feedDetailViewController reloadData];
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         [appDelegate.dashboardViewController.storiesModule reloadData];
     }
 }
 
 - (void)updateTheme {
     [super updateTheme];
-    
-    if (![self.presentedViewController isKindOfClass:[UINavigationController class]] || (((UINavigationController *)self.presentedViewController).topViewController != (UIViewController *)self.appDelegate.fontSettingsViewController && ![((UINavigationController *)self.presentedViewController).topViewController conformsToProtocol:@protocol(IASKViewController)])) {
-        [self.presentedViewController dismissViewControllerAnimated:YES completion:nil];
-    }
+   
+    // CATALYST: This prematurely dismisses the login view controller; is it really appropriate?
+//    if (![self.presentedViewController isKindOfClass:[UINavigationController class]] || (((UINavigationController *)self.presentedViewController).topViewController != (UIViewController *)self.appDelegate.fontSettingsViewController && ![((UINavigationController *)self.presentedViewController).topViewController conformsToProtocol:@protocol(IASKViewController)])) {
+//        [self.presentedViewController dismissViewControllerAnimated:YES completion:nil];
+//    }
     
     [self.appDelegate hidePopoverAnimated:YES];
     
@@ -1131,7 +1132,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     } else if ([identifier isEqual:@"theme_style"]) {
         [self updateThemeStyle];
     } else if ([identifier isEqual:@"story_list_preview_images_size"]) {
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
             [appDelegate.dashboardViewController.storiesModule reloadData];
         }
     }
@@ -1307,7 +1308,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
         return;
     }
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         [appDelegate.dashboardViewController.storiesModule.view endEditing:YES];
     }
 
@@ -1354,7 +1355,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 
 - (CGFloat)calculateHeightForRowAtIndexPath:(NSIndexPath *)indexPath {
     if (appDelegate.hasNoSites) {
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
             return kBlurblogTableViewRowHeight;            
         } else {
             return kPhoneBlurblogTableViewRowHeight;
@@ -1384,13 +1385,13 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     
     if ([folderName isEqualToString:@"river_blurblogs"] ||
         [folderName isEqualToString:@"river_global"]) { // blurblogs
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
             height = kBlurblogTableViewRowHeight;
         } else {
             height = kPhoneBlurblogTableViewRowHeight;
         }
     } else {
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
             height = kTableViewRowHeight;
         } else {
             height = kPhoneTableViewRowHeight;
@@ -1514,7 +1515,7 @@ heightForHeaderInSection:(NSInteger)section {
         folder = [NSString stringWithFormat:@"%ld", (long)tag];
     }
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         [appDelegate.dashboardViewController.storiesModule.view endEditing:YES];
     }
     
@@ -1856,7 +1857,7 @@ heightForHeaderInSection:(NSInteger)section {
 	[hud hide:YES afterDelay:0.5];
     [self showExplainerOnEmptyFeedlist];
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         FeedDetailViewController *storiesModule = self.appDelegate.dashboardViewController.storiesModule;
         
         storiesModule.storiesCollection.feedPage = 0;
@@ -2225,7 +2226,7 @@ heightForHeaderInSection:(NSInteger)section {
     }
     
     BOOL isShort = NO;
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone &&
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone &&
         UIInterfaceOrientationIsLandscape(orientation)) {
         isShort = YES;
     }

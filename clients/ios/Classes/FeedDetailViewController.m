@@ -90,7 +90,7 @@
     self.storyTitlesTable.backgroundColor = UIColorFromRGB(0xf4f4f4);
     self.storyTitlesTable.separatorColor = UIColorFromRGB(0xE9E8E4);
     if (@available(iOS 11.0, *)) {
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
             self.storyTitlesTable.dragDelegate = self;
             self.storyTitlesTable.dragInteractionEnabled = YES;
         }
@@ -149,12 +149,16 @@
     tableLongPress.minimumPressDuration = 1.0;
     tableLongPress.delegate = self;
     [self.storyTitlesTable addGestureRecognizer:tableLongPress];
-
+    
+#if TARGET_OS_MACCATALYST
+    // CATALYST: support double-click; doing the following breaks clicking on rows in Catalyst.
+#else
     UITapGestureRecognizer *doubleTapGesture = [[UITapGestureRecognizer alloc]
                                                 initWithTarget:self action:nil];
     doubleTapGesture.numberOfTapsRequired = 2;
     [self.storyTitlesTable addGestureRecognizer:doubleTapGesture];
     doubleTapGesture.delegate = self;
+#endif
     
     [[ThemeManager themeManager] addThemeGestureRecognizerToView:self.storyTitlesTable];
     
@@ -540,7 +544,7 @@
 }
 
 - (BOOL)isPhoneOrCompact {
-    return UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone || self.appDelegate.isCompactWidth;
+    return [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone || self.appDelegate.isCompactWidth;
 }
 
 #pragma mark -

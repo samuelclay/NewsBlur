@@ -466,7 +466,7 @@ static NSString *const AppExtensionWebViewPageDetails = @"pageDetails";
 }
 
 - (UIActivityViewController *)activityViewControllerForItem:(nonnull NSDictionary *)item viewController:(nonnull UIViewController*)viewController sender:(nullable id)sender typeIdentifier:(nonnull NSString *)typeIdentifier {
-	NSAssert(NO == (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad && sender == nil), @"sender must not be nil on iPad.");
+	NSAssert(NO == ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad && sender == nil), @"sender must not be nil on iPad.");
 
 	NSItemProvider *itemProvider = [[NSItemProvider alloc] initWithItem:item typeIdentifier:typeIdentifier];
 

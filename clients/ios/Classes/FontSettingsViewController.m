@@ -270,7 +270,7 @@
 #pragma mark - Table view data source
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
         return 12;
     } else {
         return 11;
@@ -281,7 +281,7 @@
     static NSString *CellIndentifier = @"Cell";
     
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIndentifier];
-    NSUInteger iPadOffset = UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone ? 0 : 1;
+    NSUInteger iPadOffset = [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone ? 0 : 1;
     
     if (indexPath.row == 7) {
         return [self makeFontSizeTableCell];
@@ -396,7 +396,7 @@
     }
     
     
-//    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+//    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
 //        if (indexPath.row != 2 && indexPath.row != 3) {
 //            // if we're opening another popover, then don't animate out - it looks strange
 //            [self.appDelegate.masterContainerViewController hidePopover];

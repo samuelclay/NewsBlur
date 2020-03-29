@@ -108,7 +108,7 @@
     [self.scrollView setAlwaysBounceVertical:!self.isHorizontal];
     
     if (@available(iOS 11.0, *)) {
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
             self.scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
         }
     }
@@ -221,7 +221,7 @@
     [self.view addConstraint:self.notifier.topOffsetConstraint];
     [self.notifier hideNow];
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
         self.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects:
                                                    originalStoryButton,
                                                    separatorBarButton,
@@ -431,7 +431,7 @@
 }
 
 - (void)layoutForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-//    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad &&
+//    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad &&
 //        appDelegate.masterContainerViewController.originalViewIsVisible) {
 //        return;
 //    }
@@ -659,7 +659,7 @@
     
     // Scroll back to preserved index
     CGRect frame = self.scrollView.bounds;
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         frame = self.scrollView.bounds;
     }
     
@@ -667,7 +667,7 @@
         frame.origin.x = frame.size.width * currentIndex;
         frame.origin.y = 0;
         
-//        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+//        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
 //            if (@available(iOS 11.0, *)) {
 //                frame.origin.y -= self.view.safeAreaInsets.bottom;
 //            }
@@ -754,7 +754,7 @@
 }
 
 - (BOOL)isPhoneOrCompact {
-    return UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone || appDelegate.isCompactWidth;
+    return [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone || appDelegate.isCompactWidth;
 }
 
 - (void)updateAutoscrollButtons {
@@ -823,7 +823,7 @@
         
         if (pageIndex >= 0) {
             [self changePage:pageIndex animated:NO];
-        } else if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        } else if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
             // If the story can't be found, don't show anything; uncomment this to instead show the first unread story:
 //            [self doNextUnreadStory:nil];
         } else {
@@ -1260,7 +1260,7 @@
     
 //    [self.view setNeedsLayout];
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         if (appDelegate.masterContainerViewController.storyTitlesOnLeft) {
             self.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects:
                                                        originalStoryButton,

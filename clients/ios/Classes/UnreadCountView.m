@@ -54,7 +54,7 @@ const int COUNT_HEIGHT = 15;
         CGRect rr;
         
         if (listType == NBFeedListSocial) {
-            if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+            if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
                 rr = CGRectMake(rect.size.width + rect.origin.x - psOffset, CGRectGetMidY(r)-COUNT_HEIGHT/2-1, psWidth, COUNT_HEIGHT);
             } else {
                 rr = CGRectMake(rect.size.width + rect.origin.x - psOffset, CGRectGetMidY(r)-COUNT_HEIGHT/2-1, psWidth, COUNT_HEIGHT);
@@ -106,7 +106,7 @@ const int COUNT_HEIGHT = 15;
     if (nt > 0 && appDelegate.selectedIntelligence <= 0) {        
         CGRect rr;
         if (listType == NBFeedListSocial) {
-            if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+            if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
                 rr = CGRectMake(rect.size.width + rect.origin.x - psWidth - psPadding - ntOffset, CGRectGetMidY(r)-COUNT_HEIGHT/2-1, ntWidth, COUNT_HEIGHT);
             } else {
                 rr = CGRectMake(rect.size.width + rect.origin.x - psWidth - psPadding - ntOffset, CGRectGetMidY(r)-COUNT_HEIGHT/2-1, ntWidth, COUNT_HEIGHT);

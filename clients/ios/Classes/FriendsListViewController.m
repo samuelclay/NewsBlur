@@ -287,7 +287,7 @@ viewForHeaderInSection:(NSInteger)section {
             
             // add a NO FRIENDS TO SUGGEST message on either the first or second row depending on iphone/ipad
             int row = 0;
-            if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+            if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
                 row = 1;
             }
             
@@ -313,7 +313,7 @@ viewForHeaderInSection:(NSInteger)section {
 //        if (!userCount) {
 //            // add a NO FRIENDS TO SUGGEST message on either the first or second row depending on iphone/ipad
 //            int row = 0;
-//            if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+//            if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
 //                row = 1;
 //            }
 //            

@@ -122,7 +122,7 @@ CGRect IASKCGRectSwap(CGRect rect);
 - (BOOL)isPad {
 	BOOL isPad = NO;
 #if (__IPHONE_OS_VERSION_MAX_ALLOWED >= 30200)
-	isPad = UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad;
+	isPad = [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad;
 #endif
 	return isPad;
 }

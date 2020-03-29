@@ -216,7 +216,7 @@ static UIFont *textFont = nil;
     paragraphStyle.alignment = NSTextAlignmentLeft;
     NSInteger faviconSize;
     if (cell.isSocial) {
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
             faviconSize = 28;
             [cell.feedFavicon drawInRect:CGRectMake(9.0, CGRectGetMidY(r)-faviconSize/2, faviconSize, faviconSize)];
             [cell.feedTitle drawInRect:CGRectMake(46, titleOffsetY, r.size.width - ([cell.unreadCount offsetWidth] + 36) - 10 - 16, font.pointSize*1.4)
@@ -233,7 +233,7 @@ static UIFont *textFont = nil;
         }
     } else {
         faviconSize = 16;
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
             [cell.feedFavicon drawInRect:CGRectMake(12.0, CGRectGetMidY(r)-faviconSize/2, faviconSize, faviconSize)];
             [cell.feedTitle drawInRect:CGRectMake(36.0, titleOffsetY, r.size.width - ([cell.unreadCount offsetWidth] + 36) - 10, font.pointSize*1.4)
                    withAttributes:@{NSFontAttributeName: font,
