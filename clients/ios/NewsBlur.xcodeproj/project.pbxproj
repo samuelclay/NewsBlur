@@ -335,7 +335,6 @@
 		FF322235185BC1AA004078AA /* logo_58.png in Resources */ = {isa = PBXBuildFile; fileRef = FF322234185BC1AA004078AA /* logo_58.png */; };
 		FF322237185BC1CE004078AA /* logo_80.png in Resources */ = {isa = PBXBuildFile; fileRef = FF322236185BC1CE004078AA /* logo_80.png */; };
 		FF34FD601E9D93CB0062F8ED /* IASKAppSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FF34FD2D1E9D93CB0062F8ED /* IASKAppSettingsViewController.m */; };
-		FF34FD611E9D93CB0062F8ED /* IASKAppSettingsWebViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FF34FD2F1E9D93CB0062F8ED /* IASKAppSettingsWebViewController.m */; };
 		FF34FD621E9D93CB0062F8ED /* IASKMultipleValueSelection.m in Sources */ = {isa = PBXBuildFile; fileRef = FF34FD311E9D93CB0062F8ED /* IASKMultipleValueSelection.m */; };
 		FF34FD631E9D93CB0062F8ED /* IASKSpecifierValuesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FF34FD331E9D93CB0062F8ED /* IASKSpecifierValuesViewController.m */; };
 		FF34FD641E9D93CB0062F8ED /* IASKSettingsReader.m in Sources */ = {isa = PBXBuildFile; fileRef = FF34FD371E9D93CB0062F8ED /* IASKSettingsReader.m */; };
@@ -514,7 +513,6 @@
 		FFC0E5C01F7AC00A0023B9D9 /* UIImageView+AFNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = FFC0E59F1F7ABF4B0023B9D9 /* UIImageView+AFNetworking.m */; };
 		FFC0E5C31F7AC00A0023B9D9 /* UIProgressView+AFNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = FFC0E5A21F7ABF4B0023B9D9 /* UIProgressView+AFNetworking.m */; };
 		FFC0E5C51F7AC00A0023B9D9 /* UIRefreshControl+AFNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = FFC0E5A41F7ABF4B0023B9D9 /* UIRefreshControl+AFNetworking.m */; };
-		FFC0E5C71F7AC00A0023B9D9 /* UIWebView+AFNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = FFC0E5A61F7ABF4B0023B9D9 /* UIWebView+AFNetworking.m */; };
 		FFC486A719CA40B700F4758F /* logo_144.png in Resources */ = {isa = PBXBuildFile; fileRef = FFC486A619CA40B700F4758F /* logo_144.png */; };
 		FFC486A919CA40DA00F4758F /* logo_72.png in Resources */ = {isa = PBXBuildFile; fileRef = FFC486A819CA40DA00F4758F /* logo_72.png */; };
 		FFC486AC19CA410000F4758F /* logo_50.png in Resources */ = {isa = PBXBuildFile; fileRef = FFC486AA19CA410000F4758F /* logo_50.png */; };
@@ -1071,8 +1069,6 @@
 		FF322236185BC1CE004078AA /* logo_80.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logo_80.png; sourceTree = "<group>"; };
 		FF34FD2C1E9D93CB0062F8ED /* IASKAppSettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IASKAppSettingsViewController.h; sourceTree = "<group>"; };
 		FF34FD2D1E9D93CB0062F8ED /* IASKAppSettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IASKAppSettingsViewController.m; sourceTree = "<group>"; };
-		FF34FD2E1E9D93CB0062F8ED /* IASKAppSettingsWebViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IASKAppSettingsWebViewController.h; sourceTree = "<group>"; };
-		FF34FD2F1E9D93CB0062F8ED /* IASKAppSettingsWebViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IASKAppSettingsWebViewController.m; sourceTree = "<group>"; };
 		FF34FD301E9D93CB0062F8ED /* IASKMultipleValueSelection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IASKMultipleValueSelection.h; sourceTree = "<group>"; };
 		FF34FD311E9D93CB0062F8ED /* IASKMultipleValueSelection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IASKMultipleValueSelection.m; sourceTree = "<group>"; };
 		FF34FD321E9D93CB0062F8ED /* IASKSpecifierValuesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IASKSpecifierValuesViewController.h; sourceTree = "<group>"; };
@@ -1355,8 +1351,6 @@
 		FFC0E5A21F7ABF4B0023B9D9 /* UIProgressView+AFNetworking.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UIProgressView+AFNetworking.m"; sourceTree = "<group>"; };
 		FFC0E5A31F7ABF4B0023B9D9 /* UIRefreshControl+AFNetworking.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UIRefreshControl+AFNetworking.h"; sourceTree = "<group>"; };
 		FFC0E5A41F7ABF4B0023B9D9 /* UIRefreshControl+AFNetworking.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UIRefreshControl+AFNetworking.m"; sourceTree = "<group>"; };
-		FFC0E5A51F7ABF4B0023B9D9 /* UIWebView+AFNetworking.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UIWebView+AFNetworking.h"; sourceTree = "<group>"; };
-		FFC0E5A61F7ABF4B0023B9D9 /* UIWebView+AFNetworking.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UIWebView+AFNetworking.m"; sourceTree = "<group>"; };
 		FFC486A619CA40B700F4758F /* logo_144.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logo_144.png; sourceTree = "<group>"; };
 		FFC486A819CA40DA00F4758F /* logo_72.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logo_72.png; sourceTree = "<group>"; };
 		FFC486AA19CA410000F4758F /* logo_50.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logo_50.png; sourceTree = "<group>"; };
@@ -2438,8 +2432,6 @@
 			children = (
 				FF34FD2C1E9D93CB0062F8ED /* IASKAppSettingsViewController.h */,
 				FF34FD2D1E9D93CB0062F8ED /* IASKAppSettingsViewController.m */,
-				FF34FD2E1E9D93CB0062F8ED /* IASKAppSettingsWebViewController.h */,
-				FF34FD2F1E9D93CB0062F8ED /* IASKAppSettingsWebViewController.m */,
 				FF34FD301E9D93CB0062F8ED /* IASKMultipleValueSelection.h */,
 				FF34FD311E9D93CB0062F8ED /* IASKMultipleValueSelection.m */,
 				FF34FD321E9D93CB0062F8ED /* IASKSpecifierValuesViewController.h */,
@@ -2664,8 +2656,6 @@
 				FFC0E5A21F7ABF4B0023B9D9 /* UIProgressView+AFNetworking.m */,
 				FFC0E5A31F7ABF4B0023B9D9 /* UIRefreshControl+AFNetworking.h */,
 				FFC0E5A41F7ABF4B0023B9D9 /* UIRefreshControl+AFNetworking.m */,
-				FFC0E5A51F7ABF4B0023B9D9 /* UIWebView+AFNetworking.h */,
-				FFC0E5A61F7ABF4B0023B9D9 /* UIWebView+AFNetworking.m */,
 			);
 			name = AFNetworking;
 			path = "Other Sources/AFNetworking";
@@ -3375,7 +3365,6 @@
 				FFC0E5C01F7AC00A0023B9D9 /* UIImageView+AFNetworking.m in Sources */,
 				FFC0E5C31F7AC00A0023B9D9 /* UIProgressView+AFNetworking.m in Sources */,
 				FFC0E5C51F7AC00A0023B9D9 /* UIRefreshControl+AFNetworking.m in Sources */,
-				FFC0E5C71F7AC00A0023B9D9 /* UIWebView+AFNetworking.m in Sources */,
 				17EB50601BE46A900021358B /* FontListViewController.m in Sources */,
 				FF0FAEB117B084D2008651F9 /* OfflineCleanImages.m in Sources */,
 				43F44B1C159D8DBC00F48F8A /* FeedTableCell.m in Sources */,
@@ -3444,7 +3433,6 @@
 				17432C831C53438D003F8FD6 /* FeedChooserViewController.m in Sources */,
 				010EDEFA1B2386B7003B79DE /* OnePasswordExtension.m in Sources */,
 				43ABBCAA15B53A1400EA3111 /* InteractionCell.m in Sources */,
-				FF34FD611E9D93CB0062F8ED /* IASKAppSettingsWebViewController.m in Sources */,
 				FF8D1ECF1BAA311000725D8A /* SBJson4StreamTokeniser.m in Sources */,
 				FF8D1ED81BAA33BA00725D8A /* NSObject+SBJSON.m in Sources */,
 				FF34FD651E9D93CB0062F8ED /* IASKSettingsStore.m in Sources */,
