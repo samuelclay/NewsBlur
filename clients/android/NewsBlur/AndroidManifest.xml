@@ -137,7 +137,7 @@
         <activity
             android:name=".activity.SocialFeedReading"/>
 
-        <activity android:name=".widget.ConfigureWidgetActivity">
+        <activity android:name=".widget.WidgetConfigActivity">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
             </intent-filter>
@@ -145,9 +145,8 @@
         <service 
             android:name=".service.NBSyncService"
             android:permission="android.permission.BIND_JOB_SERVICE" />
-        <service android:name=".widget.BlurWidgetRemoteViewsService"
-            android:permission="android.permission.BIND_REMOTEVIEWS"
-            />
+        <service android:name=".widget.WidgetRemoteViewsService"
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
 
         <receiver android:name=".service.BootReceiver">
             <intent-filter>
@@ -158,7 +157,7 @@
         <receiver android:name=".util.NotifyDismissReceiver" android:exported="false" />
         <receiver android:name=".util.NotifySaveReceiver" android:exported="false" />
         <receiver android:name=".util.NotifyMarkreadReceiver" android:exported="false" />
-        <receiver android:name=".widget.NewsBlurWidgetProvider" >
+        <receiver android:name=".widget.WidgetProvider" >
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>

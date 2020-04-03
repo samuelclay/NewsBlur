@@ -7,24 +7,22 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.widget.RemoteViews;
-import android.widget.Toast;
 
 import com.newsblur.R;
 import com.newsblur.activity.FeedReading;
 import com.newsblur.activity.Reading;
-import com.newsblur.database.BlurDatabaseHelper;
 import com.newsblur.util.FeedSet;
-import com.newsblur.util.FeedUtils;
 import com.newsblur.util.Log;
 import com.newsblur.util.PrefsUtils;
-import com.newsblur.util.UIUtils;
 
-public class NewsBlurWidgetProvider extends AppWidgetProvider {
+public class WidgetProvider extends AppWidgetProvider {
+
     public static String ACTION_OPEN_STORY = "ACTION_OPEN_STORY";
     public static String EXTRA_ITEM_ID = "EXTRA_ITEM_ID";
     public static String EXTRA_FEED_ID = "EXTRA_FEED_ID";
 
-    private static String TAG = "NewsBlurWidgetProvider";
+    private static String TAG = "WidgetProvider";
+
     // Called when the BroadcastReceiver receives an Intent broadcast.
     // Checks to see whether the intent's action is TOAST_ACTION. If it is, the app widget
     // displays a Toast message for the current item.
@@ -47,8 +45,9 @@ public class NewsBlurWidgetProvider extends AppWidgetProvider {
         }
         super.onReceive(context, intent);
     }
+
     /**
-     * Called to update at regular interval
+     * This is called to update the App Widget at intervals defined by the updatePeriodMillis attribute
      */
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
@@ -57,16 +56,15 @@ public class NewsBlurWidgetProvider extends AppWidgetProvider {
         for (int i = 0; i < appWidgetIds.length; ++i) {
 
             Log.d(TAG, "onUpdate iteration #" + i);
-            // Set up the intent that starts the BlurWidgetRemoteViewService, which will
+            // Set up the intent that starts the WidgetRemoteViewService, which will
             // provide the views for this collection.
-            Intent intent = new Intent(context, BlurWidgetRemoteViewsService.class);
+            Intent intent = new Intent(context, WidgetRemoteViewsService.class);
             // Add the app widget ID to the intent extras.
             intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetIds[i]);
             intent.setData(Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME)));
 
-
             // Instantiate the RemoteViews object for the app widget layout.
-            RemoteViews rv = new RemoteViews(context.getPackageName(), R.layout.newsblur_widget);
+            RemoteViews rv = new RemoteViews(context.getPackageName(), R.layout.view_app_widget);
             // Set up the RemoteViews object to use a RemoteViews adapter.
             // This adapter connects
             // to a RemoteViewsService  through the specified intent.
@@ -76,7 +74,8 @@ public class NewsBlurWidgetProvider extends AppWidgetProvider {
             // The empty view is displayed when the collection has no items.
             // It should be in the same layout used to instantiate the RemoteViews
             // object above.
-            rv.setEmptyView(R.id.widget_list, R.id.empty_view);
+            //TODO: create and show empty view if/when needed
+//            rv.setEmptyView(R.id.widget_list, R.id.empty_view);
 
             rv.setTextViewText(R.id.txt_feed_name,
                     PrefsUtils.getWidgetFeedName(context, appWidgetIds[i]));
@@ -89,24 +88,19 @@ public class NewsBlurWidgetProvider extends AppWidgetProvider {
             // cannot set up their own pending intents. Instead, the collection as a whole sets
             // up a pending intent template, and the individual items set a fillInIntent
             // to create unique behavior on an item-by-item basis.
-            Intent touchIntent = new Intent(context, NewsBlurWidgetProvider.class);
+            Intent touchIntent = new Intent(context, WidgetProvider.class);
             // Set the action for the intent.
             // When the user touches a particular view, it will have the effect of
-            // broadcasting TOAST_ACTION.
-            touchIntent.setAction(NewsBlurWidgetProvider.ACTION_OPEN_STORY);
+            // broadcasting ACTION_OPEN_STORY.
+            touchIntent.setAction(WidgetProvider.ACTION_OPEN_STORY);
             touchIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetIds[i]);
             intent.setData(Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME)));
             PendingIntent touchIntentTemplate = PendingIntent.getBroadcast(context, 0, touchIntent,
                     PendingIntent.FLAG_UPDATE_CURRENT);
             rv.setPendingIntentTemplate(R.id.widget_list, touchIntentTemplate);
 
-
             appWidgetManager.updateAppWidget(appWidgetIds[i], rv);
         }
-
-
         super.onUpdate(context, appWidgetManager, appWidgetIds);
     }
-
-
 }
