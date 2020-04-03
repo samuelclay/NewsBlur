@@ -39,7 +39,7 @@ import com.newsblur.util.ReadingAction;
 import com.newsblur.util.ReadFilter;
 import com.newsblur.util.StateFilter;
 import com.newsblur.util.StoryOrder;
-import com.newsblur.widget.NewsBlurWidgetProvider;
+import com.newsblur.widget.WidgetProvider;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -47,7 +47,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ExecutorService;
@@ -285,7 +284,7 @@ public class NBSyncService extends JobService {
             housekeeping();
 
             AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
-            int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(this, NewsBlurWidgetProvider.class));
+            int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(this, WidgetProvider.class));
             appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.widget_list);
 
             // check to see if we are on an allowable network only after ensuring we have CPU

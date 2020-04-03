@@ -17,7 +17,6 @@ import com.newsblur.R;
 import com.newsblur.activity.NbActivity;
 import com.newsblur.domain.Feed;
 import com.newsblur.domain.Folder;
-import com.newsblur.network.APIManager;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.Log;
 import com.newsblur.util.PrefsUtils;
@@ -27,12 +26,13 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-public class ConfigureWidgetActivity extends NbActivity {
+public class WidgetConfigActivity extends NbActivity {
+
+    private static String TAG = "WidgetConfigActivity";
 
     private int appWidgetId;
     private List<Feed> feeds = new ArrayList<>();
     private List<Folder> folders = new ArrayList<>();
-    private static String TAG = "ConfigureWidgetActivity";
     private Feed selectedFeed = null;
     private Folder selectedFolder = null;
 
@@ -149,9 +149,9 @@ public class ConfigureWidgetActivity extends NbActivity {
         //update widget
         AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
         RemoteViews rv = new RemoteViews(getPackageName(),
-                R.layout.newsblur_widget);
+                R.layout.view_app_widget);
 
-        Intent intent = new Intent(this, BlurWidgetRemoteViewsService.class);
+        Intent intent = new Intent(this, WidgetRemoteViewsService.class);
         // Add the app widget ID to the intent extras.
         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
         intent.setData(Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME)));
@@ -170,17 +170,16 @@ public class ConfigureWidgetActivity extends NbActivity {
         rv.setEmptyView(R.id.widget_list, R.id.empty_view);
 
 
-        Intent touchIntent = new Intent(this, NewsBlurWidgetProvider.class);
+        Intent touchIntent = new Intent(this, WidgetProvider.class);
         // Set the action for the intent.
         // When the user touches a particular view, it will have the effect of
         // broadcasting TOAST_ACTION.
-        touchIntent.setAction(NewsBlurWidgetProvider.ACTION_OPEN_STORY);
+        touchIntent.setAction(WidgetProvider.ACTION_OPEN_STORY);
         touchIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
         intent.setData(Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME)));
         PendingIntent touchIntentTemplate = PendingIntent.getBroadcast(this, 0, touchIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT);
         rv.setPendingIntentTemplate(R.id.widget_list, touchIntentTemplate);
-
 
 
         appWidgetManager.updateAppWidget(appWidgetId, rv);
