@@ -6,13 +6,13 @@ import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.util.Log;
 import android.widget.RemoteViews;
 
 import com.newsblur.R;
 import com.newsblur.activity.FeedReading;
 import com.newsblur.activity.Reading;
 import com.newsblur.util.FeedSet;
-import com.newsblur.util.Log;
 import com.newsblur.util.PrefsUtils;
 
 public class WidgetProvider extends AppWidgetProvider {
