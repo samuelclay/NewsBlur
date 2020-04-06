@@ -3,24 +3,27 @@ package com.newsblur.widget;
 import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.content.Loader;
+import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
 import com.newsblur.R;
 import com.newsblur.domain.Story;
 import com.newsblur.network.APIManager;
-import com.newsblur.network.domain.StoriesResponse;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
-import com.newsblur.util.Log;
 import com.newsblur.util.PrefsUtils;
-import com.newsblur.util.ReadFilter;
-import com.newsblur.util.StoryOrder;
 import com.newsblur.util.StoryUtils;
+import com.newsblur.util.ThumbnailStyle;
+import com.newsblur.util.UIUtils;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
@@ -31,17 +34,19 @@ public class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsF
     private List<Story> storyItems = new ArrayList<>();
     private FeedSet fs;
     private APIManager apiManager;
+    private Cursor cursor;
+    private int appWidgetId;
 
     public WidgetRemoteViewsFactory(Context context, Intent intent) {
         Log.d(TAG, "Constructor");
         this.context = context;
-        int appWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
+        appWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
                 AppWidgetManager.INVALID_APPWIDGET_ID);
         final String feedId = PrefsUtils.getWidgetFeed(context, appWidgetId);
         final String feedName = PrefsUtils.getWidgetFeedName(context, appWidgetId);
 
         apiManager = new APIManager(context);
-        Log.d(TAG, "Feed ID: " + feedId);
+//        Log.d(TAG, "Feed ID: " + feedId);
 
         if (feedId != null) {
             // this is a single feed
@@ -63,26 +68,59 @@ public class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsF
     @Override
     public void onCreate() {
         Log.d(TAG, "onCreate");
+        //TODO: sometimes the dbHelper can be null on init
+        Loader<Cursor> loader = FeedUtils.dbHelper.getActiveStoriesLoader(fs);
+        loader.registerListener(loader.getId(), new Loader.OnLoadCompleteListener<Cursor>() {
+            @Override
+            public void onLoadComplete(@NonNull Loader<Cursor> loader, @Nullable Cursor cursor) {
+                WidgetRemoteViewsFactory.this.cursor = cursor;
+                onDataSetChanged();
+                android.util.Log.d(TAG, "loader completed");
+            }
+        });
+        loader.startLoading();
     }
 
     private void fetchStories() {
-        Log.d(TAG, String.format("Fetching stories %s", fs.hashCode()));
-        StoriesResponse response =
-                apiManager.getStories(fs, 1, StoryOrder.NEWEST, ReadFilter.ALL);
-
-        if (response == null) {
-            Log.e(TAG, "Response is null");
-            return;
-        } else if (response.stories == null) {
-            Log.e(TAG, "Stories are empty");
-            return;
-        } else if (response.isError()) {
-            String err = String.format("response error for feed %s", fs.hashCode());
-            Log.e(TAG, response.getErrorMessage(err));
+        android.util.Log.d(TAG,"fetch widget stories");
+        final List<Story> newStories;
+        try {
+            if (cursor == null) {
+                newStories = new ArrayList<>(0);
+            } else {
+                if (cursor.isClosed()) return;
+                newStories = new ArrayList<>(cursor.getCount());
+                cursor.moveToPosition(-1);
+                while (cursor.moveToNext()) {
+                    if (cursor.isClosed()) return;
+                    Story s = Story.fromCursor(cursor);
+                    s.bindExternValues(cursor);
+                    newStories.add(s);
+                }
+            }
+        } catch (Exception e) {
+            com.newsblur.util.Log.e(this, "error thawing story list: " + e.getMessage(), e);
             return;
         }
+
+//        Log.d(TAG, String.format("Fetching stories %s", fs.hashCode()));
+//        StoriesResponse response =
+//                apiManager.getStories(fs, 1, StoryOrder.NEWEST, ReadFilter.ALL);
+//
+//        if (response == null) {
+//            Log.e(TAG, "Response is null");
+//            return;
+//        } else if (response.stories == null) {
+//            Log.e(TAG, "Stories are empty");
+//            return;
+//        } else if (response.isError()) {
+//            String err = String.format("response error for feed %s", fs.hashCode());
+//            Log.e(TAG, response.getErrorMessage(err));
+//            return;
+//        }
+
         storyItems.clear();
-        storyItems.addAll(Arrays.asList(response.stories));
+        storyItems.addAll(newStories);
     }
 
     /**
@@ -90,14 +128,29 @@ public class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsF
      */
     @Override
     public RemoteViews getViewAt(int position) {
-        Log.d(TAG, "getViewAt " + position);
+//        Log.d(TAG, "getViewAt " + position);
         Story story = storyItems.get(position);
 
-        RemoteViews rv = new RemoteViews(context.getPackageName(), R.layout.view_widget_item);
-        rv.setTextViewText(R.id.widget_item_title, story.title);
+        WidgetRemoteViews rv = new WidgetRemoteViews(context.getPackageName(), R.layout.view_widget_story_item);
+        rv.setTextViewText(R.id.story_item_title, story.title);
+        rv.setTextViewText(R.id.story_item_content, story.shortContent);
+        rv.setTextViewText(R.id.story_item_author, story.authors);
+        rv.setTextViewText(R.id.story_item_feedtitle, story.extern_feedTitle);
 
+        FeedUtils.iconLoader.displayWidgetImage(appWidgetId, AppWidgetManager.getInstance(context), story.extern_faviconUrl, rv, R.id.story_item_feedicon);
+        if (PrefsUtils.getThumbnailStyle(context) != ThumbnailStyle.OFF && story.thumbnailUrl != null) {
+//            int thumbSize = UIUtils.dp2px(context, 64);
+            FeedUtils.thumbnailLoader.displayWidgetImage(appWidgetId, AppWidgetManager.getInstance(context), story.thumbnailUrl, rv, R.id.story_item_thumbnail);
+//            FeedUtils.thumbnailLoader.
+//            FeedUtils.thumbnailLoader.displayImage(story.thumbnailUrl, vh.thumbView, 0, true, thumbSize, true);
+        }
+
+        //TODO: authors and dates don't get along
         CharSequence time = StoryUtils.formatRelativeTime(context, story.timestamp);
-        rv.setTextViewText(R.id.widget_item_time, time);
+        rv.setTextViewText(R.id.story_item_date, time);
+
+        rv.setViewBackgroundColor(R.id.story_item_favicon_borderbar_1, UIUtils.decodeColourValue(story.extern_feedColor, Color.GRAY));
+        rv.setViewBackgroundColor(R.id.story_item_favicon_borderbar_2, UIUtils.decodeColourValue(story.extern_feedFade, Color.LTGRAY));
 
         // set fill-intent which is used to fill in the pending intent template
         // set on the collection view in WidgetProvider
@@ -169,7 +222,7 @@ public class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsF
      */
     @Override
     public int getCount() {
-        Log.d(TAG, "getCount: " + Math.min(storyItems.size(), 10));
+//        Log.d(TAG, "getCount: " + Math.min(storyItems.size(), 10));
         return Math.min(storyItems.size(), 10);
     }
 }
