@@ -2152,7 +2152,11 @@ class Feed(models.Model):
             if len(fetch_history['push_history']):
                 total = total * 12
         
-        # 3 hour max for premiums, 48 hour max for free
+        # Craigslist feeds get 6 hours minimum
+        if 'craigslist' in self.feed_address:
+            total = max(total, 60*6)
+        
+        # 4 hour max for premiums, 48 hour max for free
         if subs >= 1:
             total = min(total, 60*4*1)
         else:

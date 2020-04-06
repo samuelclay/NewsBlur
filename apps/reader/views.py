@@ -184,19 +184,21 @@ def login(request):
 @render_to('accounts/signup.html')
 def signup(request):
     if request.method == "POST":
-        signup_form = SignupForm(request.POST, prefix='signup')
-        return {
-            "form": signup_form
-        }
-        # form = SignupForm(prefix='signup', data=request.POST)
-        # if form.is_valid():
-        #     new_user = form.save()
-        #     login_user(request, new_user)
-        #     logging.user(new_user, "~FG~SB~BBNEW SIGNUP: ~FW%s" % new_user.email)
-        #     if not new_user.is_active:
-        #         url = "https://%s%s" % (Site.objects.get_current().domain,
-        #                                  reverse('stripe-form'))
-        #         return HttpResponseRedirect(url)
+        if settings.ENFORCE_SIGNUP_CAPTCHA:
+            signup_form = SignupForm(request.POST, prefix='signup')
+            return {
+                "form": signup_form
+            }
+
+        form = SignupForm(prefix='signup', data=request.POST)
+        if form.is_valid():
+            new_user = form.save()
+            login_user(request, new_user)
+            logging.user(new_user, "~FG~SB~BBNEW SIGNUP: ~FW%s" % new_user.email)
+            if not new_user.is_active:
+                url = "https://%s%s" % (Site.objects.get_current().domain,
+                                         reverse('stripe-form'))
+                return HttpResponseRedirect(url)
     
     return index(request)
         
