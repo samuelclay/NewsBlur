@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:background="@drawable/app_widget_background"
     android:clipChildren="false">
 
@@ -15,7 +16,7 @@
         android:paddingTop="9dp"
         android:paddingEnd="8dp"
         android:paddingBottom="9dp"
-        android:textColor="@color/white"
+        android:textColor="@color/black"
         android:textStyle="bold"
         tools:text="Coding Horror" />
 
@@ -23,10 +24,9 @@
         android:id="@+id/widget_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="46dp"
-        tools:listitem="@layout/view_widget_item" />
+        tools:listitem="@layout/view_widget_story_item" />
 
     <!--    Note that empty views must be siblings of the collection view
             for which the empty view represents empty state.-->
 
-</FrameLayout>
+</LinearLayout>
