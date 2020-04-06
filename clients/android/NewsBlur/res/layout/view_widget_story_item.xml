@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <RelativeLayout
+        android:id="@+id/view_widget_item"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/story_item_favicon_borderbar_1"
+            android:layout_width="5dp"
+            android:layout_height="match_parent" />
+
+        <ImageView
+            android:id="@+id/story_item_favicon_borderbar_2"
+            android:layout_width="5dp"
+            android:layout_height="match_parent"
+            android:layout_toRightOf="@id/story_item_favicon_borderbar_1" />
+
+        <ImageView
+            android:id="@+id/story_item_feedicon"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:layout_marginStart="24dp"
+            android:layout_alignParentLeft="true"
+            android:layout_toRightOf="@+id/story_item_favicon_borderbar_2" />
+
+        <TextView
+            android:id="@+id/story_item_feedtitle"
+            style="?storyFeedTitleText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="6dp"
+            android:layout_toRightOf="@id/story_item_feedicon"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:textColor="@android:color/holo_orange_dark" />
+
+        <TextView
+            android:id="@+id/story_item_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/story_item_feedicon"
+            android:layout_marginLeft="16dp"
+            android:layout_toRightOf="@id/story_item_favicon_borderbar_2"
+            android:layout_toLeftOf="@+id/story_item_thumbnail"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:paddingTop="4dp"
+            android:paddingRight="4dp"
+            android:paddingBottom="4dp"
+            android:textColor="@color/tag_red" />
+
+        <TextView
+            android:id="@+id/story_item_content"
+            style="?storySnippetText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/story_item_title"
+            android:layout_marginLeft="16dp"
+            android:layout_toRightOf="@id/story_item_favicon_borderbar_2"
+            android:layout_toLeftOf="@+id/story_item_thumbnail"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:paddingRight="4dp"
+            android:paddingBottom="4dp"
+            android:textColor="@color/tag_green" />
+
+        <ImageView
+            android:src="@drawable/ic_arrow_back_gray46"
+            android:id="@+id/story_item_thumbnail"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_marginTop="1dp"
+            android:layout_marginBottom="1dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/story_item_author"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/story_item_content"
+            android:layout_marginLeft="16dp"
+            android:layout_toRightOf="@id/story_item_favicon_borderbar_2"
+            android:ellipsize="end"
+            android:paddingBottom="2dp"
+            android:singleLine="true"
+            android:textColor="@color/story_author_text" />
+
+        <TextView
+            android:id="@+id/story_item_date"
+            style="?storyDateText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/story_item_content"
+            android:layout_alignParentRight="true"
+            android:layout_toRightOf="@id/story_item_author"
+            android:gravity="end"
+            android:maxLines="1"
+            android:paddingRight="8dp"
+            android:paddingBottom="2dp"
+            android:textColor="@color/facebook_blue" />
+
+    </RelativeLayout>
+</LinearLayout>

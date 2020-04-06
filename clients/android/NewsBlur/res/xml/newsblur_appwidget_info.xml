@@ -4,7 +4,7 @@
     android:minHeight="100dp"
     android:minResizeWidth="100dp"
     android:minResizeHeight="60dp"
-    android:updatePeriodMillis="14400000"
+    android:updatePeriodMillis="3600000"
     android:initialLayout="@layout/view_app_widget"
     android:configure="com.newsblur.widget.WidgetConfigActivity"
     android:resizeMode="horizontal|vertical"
