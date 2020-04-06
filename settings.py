@@ -80,6 +80,7 @@ HOMEPAGE_USERNAME     = 'popular'
 ALLOWED_HOSTS         = ['*']
 AUTO_PREMIUM_NEW_USERS = False
 AUTO_ENABLE_NEW_USERS = True
+ENFORCE_SIGNUP_CAPTCHA = True
 PAYPAL_TEST           = False
 
 # Uncomment below to force all feeds to store this many stories. Default is to cut 
