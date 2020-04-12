@@ -6,6 +6,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -55,6 +58,18 @@ public class FeedUtils {
         if (thumbnailLoader == null) {
             thumbnailLoader = ImageLoader.asThumbnailLoader(context.getApplicationContext(), storyImageCache);
         }
+    }
+
+    public static void triggerSyncFromBackground(Context c) {
+        // direct start service is not allowed when the app is in background
+        com.newsblur.util.Log.d(FeedUtils.class.getName(), "Trigger sync from background");
+        JobInfo.Builder builder = new JobInfo.Builder(1, new ComponentName(c, NBSyncService.class));
+        builder.setOverrideDeadline(0);
+        builder.setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY);
+        JobScheduler scheduler = (JobScheduler) c.getSystemService(Context.JOB_SCHEDULER_SERVICE);
+
+        int result = scheduler.schedule(builder.build());
+        com.newsblur.util.Log.d(FeedUtils.class.getName(), String.format("Sync scheduling %s", result == 0 ? "failed" : "successful"));
     }
 
     public static void triggerSync(Context c) {

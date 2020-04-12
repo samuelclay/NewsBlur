@@ -13,6 +13,7 @@ import com.newsblur.R;
 import com.newsblur.activity.FeedReading;
 import com.newsblur.activity.Reading;
 import com.newsblur.util.FeedSet;
+import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
 
 public class WidgetProvider extends AppWidgetProvider {
@@ -24,8 +25,6 @@ public class WidgetProvider extends AppWidgetProvider {
     private static String TAG = "WidgetProvider";
 
     // Called when the BroadcastReceiver receives an Intent broadcast.
-    // Checks to see whether the intent's action is TOAST_ACTION. If it is, the app widget
-    // displays a Toast message for the current item.
     @Override
     public void onReceive(Context context, Intent intent) {
         Log.d(TAG, "onReceive");
@@ -41,7 +40,6 @@ public class WidgetProvider extends AppWidgetProvider {
             i.putExtra(Reading.EXTRA_STORY_HASH, storyHash);
             i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.getApplicationContext().startActivity(i);
-
         }
         super.onReceive(context, intent);
     }
@@ -53,6 +51,8 @@ public class WidgetProvider extends AppWidgetProvider {
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         // update each of the app widgets with the remote adapter
         Log.d(TAG, "onUpdate");
+        Log.d(TAG, "Trigger sync from background");
+        FeedUtils.triggerSyncFromBackground(context);
         for (int i = 0; i < appWidgetIds.length; ++i) {
 
             Log.d(TAG, "onUpdate iteration #" + i);
