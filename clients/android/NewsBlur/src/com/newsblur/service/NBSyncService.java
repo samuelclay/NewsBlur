@@ -283,11 +283,10 @@ public class NBSyncService extends JobService {
             // on all devices
             housekeeping();
 
-            android.util.Log.d("widget data changed", "Notify app widget data changed");
+            Log.d(this.getClass().getName(), "Notify app widget data changed");
             AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
             int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(this, WidgetProvider.class));
             appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.widget_list);
-            android.util.Log.d("widget ids", appWidgetIds.length + " widget ids");
 
             // check to see if we are on an allowable network only after ensuring we have CPU
             if (!( (NbActivity.getActiveActivityCount() > 0) ||

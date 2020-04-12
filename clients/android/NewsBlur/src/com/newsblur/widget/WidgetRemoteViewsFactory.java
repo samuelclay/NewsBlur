@@ -15,7 +15,6 @@ import android.widget.RemoteViewsService;
 
 import com.newsblur.R;
 import com.newsblur.domain.Story;
-import com.newsblur.network.APIManager;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
@@ -33,9 +32,9 @@ public class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsF
     private Context context;
     private List<Story> storyItems = new ArrayList<>();
     private FeedSet fs;
-    private APIManager apiManager;
     private Cursor cursor;
     private int appWidgetId;
+    private boolean skipCursorUpdate;
 
     public WidgetRemoteViewsFactory(Context context, Intent intent) {
         Log.d(TAG, "Constructor");
@@ -44,9 +43,6 @@ public class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsF
                 AppWidgetManager.INVALID_APPWIDGET_ID);
         final String feedId = PrefsUtils.getWidgetFeed(context, appWidgetId);
         final String feedName = PrefsUtils.getWidgetFeedName(context, appWidgetId);
-
-        apiManager = new APIManager(context);
-//        Log.d(TAG, "Feed ID: " + feedId);
 
         if (feedId != null) {
             // this is a single feed
@@ -68,21 +64,14 @@ public class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsF
     @Override
     public void onCreate() {
         Log.d(TAG, "onCreate");
-        //TODO: sometimes the dbHelper can be null on init
-        Loader<Cursor> loader = FeedUtils.dbHelper.getActiveStoriesLoader(fs);
-        loader.registerListener(loader.getId(), new Loader.OnLoadCompleteListener<Cursor>() {
-            @Override
-            public void onLoadComplete(@NonNull Loader<Cursor> loader, @Nullable Cursor cursor) {
-                WidgetRemoteViewsFactory.this.cursor = cursor;
-                onDataSetChanged();
-                android.util.Log.d(TAG, "loader completed");
-            }
-        });
-        loader.startLoading();
+        while (FeedUtils.dbHelper == null) {
+            // widget could be created before app init
+            // wait for the dbHelper to be ready for use
+        }
     }
 
     private void fetchStories() {
-        android.util.Log.d(TAG,"fetch widget stories");
+        com.newsblur.util.Log.d(TAG, "Fetching widget stories");
         final List<Story> newStories;
         try {
             if (cursor == null) {
@@ -103,22 +92,6 @@ public class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsF
             return;
         }
 
-//        Log.d(TAG, String.format("Fetching stories %s", fs.hashCode()));
-//        StoriesResponse response =
-//                apiManager.getStories(fs, 1, StoryOrder.NEWEST, ReadFilter.ALL);
-//
-//        if (response == null) {
-//            Log.e(TAG, "Response is null");
-//            return;
-//        } else if (response.stories == null) {
-//            Log.e(TAG, "Stories are empty");
-//            return;
-//        } else if (response.isError()) {
-//            String err = String.format("response error for feed %s", fs.hashCode());
-//            Log.e(TAG, response.getErrorMessage(err));
-//            return;
-//        }
-
         storyItems.clear();
         storyItems.addAll(newStories);
     }
@@ -128,7 +101,7 @@ public class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsF
      */
     @Override
     public RemoteViews getViewAt(int position) {
-//        Log.d(TAG, "getViewAt " + position);
+        Log.d(TAG, "getViewAt " + position);
         Story story = storyItems.get(position);
 
         WidgetRemoteViews rv = new WidgetRemoteViews(context.getPackageName(), R.layout.view_widget_story_item);
@@ -139,10 +112,7 @@ public class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsF
 
         FeedUtils.iconLoader.displayWidgetImage(appWidgetId, AppWidgetManager.getInstance(context), story.extern_faviconUrl, rv, R.id.story_item_feedicon);
         if (PrefsUtils.getThumbnailStyle(context) != ThumbnailStyle.OFF && story.thumbnailUrl != null) {
-//            int thumbSize = UIUtils.dp2px(context, 64);
-            FeedUtils.thumbnailLoader.displayWidgetImage(appWidgetId, AppWidgetManager.getInstance(context), story.thumbnailUrl, rv, R.id.story_item_thumbnail);
-//            FeedUtils.thumbnailLoader.
-//            FeedUtils.thumbnailLoader.displayImage(story.thumbnailUrl, vh.thumbView, 0, true, thumbSize, true);
+//            FeedUtils.thumbnailLoader.displayWidgetImage(appWidgetId, AppWidgetManager.getInstance(context), story.thumbnailUrl, rv, R.id.story_item_thumbnail);
         }
 
         //TODO: authors and dates don't get along
@@ -201,11 +171,27 @@ public class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsF
         return true;
     }
 
-
     @Override
     public void onDataSetChanged() {
-        Log.d(TAG, "onDataSetChanged");
-        fetchStories();
+        if (skipCursorUpdate) {
+            com.newsblur.util.Log.d(TAG, "onDataSetChanged - skip cursor update");
+            skipCursorUpdate = false;
+            fetchStories();
+        } else {
+            com.newsblur.util.Log.d(TAG, "onDataSetChanged - do update cursor");
+            Loader<Cursor> loader = FeedUtils.dbHelper.getStoriesLoader(fs);
+            loader.registerListener(loader.getId(), new Loader.OnLoadCompleteListener<Cursor>() {
+                @Override
+                public void onLoadComplete(@NonNull Loader<Cursor> loader, @Nullable Cursor cursor) {
+                    com.newsblur.util.Log.d(TAG, "onDataSetChanged - update cursor completed");
+                    WidgetRemoteViewsFactory.this.cursor = cursor;
+                    skipCursorUpdate = true;
+                    fetchStories();
+                    invalidate();
+                }
+            });
+            loader.startLoading();
+        }
     }
 
     /**
@@ -222,7 +208,12 @@ public class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsF
      */
     @Override
     public int getCount() {
-//        Log.d(TAG, "getCount: " + Math.min(storyItems.size(), 10));
         return Math.min(storyItems.size(), 10);
+    }
+
+    private void invalidate() {
+        com.newsblur.util.Log.d(TAG, "Invalidate app widget with id: " + appWidgetId);
+        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+        appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetId, R.id.widget_list);
     }
 }
