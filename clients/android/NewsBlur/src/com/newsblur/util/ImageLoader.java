@@ -8,7 +8,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import android.app.Activity;
-import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -74,21 +73,34 @@ public class ImageLoader {
         }
     }
 
-    public WidgetPhotoToLoad displayWidgetImage(int widgetId, AppWidgetManager appWidgetManager, String url, RemoteViews remoteViews, int imageViewId) {
-        if (url == null) {
-            remoteViews.setImageViewResource(imageViewId, emptyRID);
-            return null;
+    /**
+     * Synchronous background call coming from app widget on home screen
+     */
+    public void displayWidgetImage(String url, int imageViewId, int maxDimPX, RemoteViews remoteViews) {
+        url = buildUrlIfNeeded(url);
+
+        // try from memory
+        Bitmap bitmap = memoryCache.get(url);
+        if (bitmap != null) {
+            remoteViews.setImageViewBitmap(imageViewId, bitmap);
+            remoteViews.setViewVisibility(imageViewId, View.VISIBLE);
+            return;
         }
 
-        if (url.startsWith("/")) {
-            url = APIConstants.buildUrl(url);
+        // try from disk
+        bitmap = getImageFromDisk(url, maxDimPX, false, 0f);
+        if (bitmap == null) {
+            // try for network
+            bitmap = getImageFromNetwork(url, maxDimPX,false, 0f);
         }
 
-        WidgetPhotoToLoad widgetPhotoToLoad = new WidgetPhotoToLoad(widgetId, appWidgetManager, url, remoteViews, imageViewId);
-//        PhotoToLoad photoToLoad = new PhotoToLoad(url, imageView, roundRadius, cropSquare, maxDimPX, allowDelay);
-
-        executorService.submit(new WidgetPhotoLoader(widgetPhotoToLoad));
-        return widgetPhotoToLoad;
+        if (bitmap != null) {
+            memoryCache.put(url, bitmap);
+            remoteViews.setImageViewBitmap(imageViewId, bitmap);
+            remoteViews.setViewVisibility(imageViewId, View.VISIBLE);
+        } else {
+            remoteViews.setViewVisibility(imageViewId, View.GONE);
+        }
     }
 
 	public PhotoToLoad displayImage(String url, ImageView imageView, float roundRadius, boolean cropSquare, int maxDimPX, boolean allowDelay) {
@@ -97,9 +109,7 @@ public class ImageLoader {
             return null;
         }
 
-        if (url.startsWith("/")) {
-            url = APIConstants.buildUrl(url);
-        }
+        url = buildUrlIfNeeded(url);
 
 		imageViewMappings.put(imageView, url);
         PhotoToLoad photoToLoad = new PhotoToLoad(url, imageView, roundRadius, cropSquare, maxDimPX, allowDelay);
@@ -107,21 +117,6 @@ public class ImageLoader {
         executorService.submit(new PhotosLoader(photoToLoad));
         return photoToLoad;
 	}
-
-	public static class WidgetPhotoToLoad {
-        public int widgetId;
-        public AppWidgetManager appWidgetManager;
-        public String url;
-        public RemoteViews remoteViews;
-        public int imageViewId;
-        public WidgetPhotoToLoad(int widgetId, final AppWidgetManager appWidgetManager, final String url, final RemoteViews remoteViews, final int imageViewId){
-            WidgetPhotoToLoad.this.widgetId = widgetId;
-            WidgetPhotoToLoad.this.appWidgetManager = appWidgetManager;
-            WidgetPhotoToLoad.this.url = url;
-            WidgetPhotoToLoad.this.remoteViews = remoteViews;
-            WidgetPhotoToLoad.this.imageViewId = imageViewId;
-        }
-    }
 
 	public class PhotoToLoad {
 		public String url;
@@ -141,71 +136,6 @@ public class ImageLoader {
             PhotoToLoad.this.cancel = false;
 		}
 	}
-
-	private class WidgetPhotoLoader implements Runnable {
-        WidgetPhotoToLoad widgetPhotoToLoad;
-
-        public WidgetPhotoLoader(WidgetPhotoToLoad widgetPhotoToLoad) {
-            this.widgetPhotoToLoad = widgetPhotoToLoad;
-        }
-
-        @Override
-        public void run() {
-            Process.setThreadPriority(Process.THREAD_PRIORITY_DEFAULT + Process.THREAD_PRIORITY_LESS_FAVORABLE);
-//            if (photoToLoad.cancel) return;
-
-            // try from memory
-            Bitmap bitmap = memoryCache.get(widgetPhotoToLoad.url);
-
-            if (bitmap != null) {
-                widgetPhotoToLoad.remoteViews.setImageViewBitmap(widgetPhotoToLoad.imageViewId, bitmap);
-//                widgetPhotoToLoad.appWidgetManager.updateAppWidget(widgetPhotoToLoad.widgetId, widgetPhotoToLoad.remoteViews);
-                return;
-            }
-
-            // this not only sets a theoretical cap on how frequently we will churn against memory, storage, CPU,
-            // and the UI handler, it also ensures that if the loader gets very behind (as happens during fast
-            // scrolling, the caller has a few cycles to raise the cancellation flag, saving many resources.
-//            if (photoToLoad.allowDelay) {
-//                try {
-//                    Thread.sleep(20);
-//                } catch (InterruptedException ie) {
-//                    return;
-//                }
-//            }
-
-//            if (photoToLoad.cancel) return;
-
-            // ensure this imageview even still wants this image
-//            if (!isUrlMapped(photoToLoad.imageView, photoToLoad.url)) return;
-
-            // callers frequently might botch this due to lazy view measuring
-//            if (photoToLoad.maxDimPX < 1) {
-//                photoToLoad.maxDimPX = Integer.MAX_VALUE;
-//            }
-
-            // try from disk
-            File f = fileCache.getCachedFile(widgetPhotoToLoad.url);
-            // the only reliable way to check a cached file is to try decoding it. the util method will
-            // return null if it fails
-//            bitmap = UIUtils.decodeImage(f, photoToLoad.maxDimPX, photoToLoad.cropSquare, photoToLoad.roundRadius);
-            bitmap = UIUtils.decodeImage(f, 50, false, 4f);
-            // try for network
-            if (bitmap == null) {
-//                if (widgetPhotoToLoad.cancel) return;
-                fileCache.cacheFile(widgetPhotoToLoad.url);
-                f = fileCache.getCachedFile(widgetPhotoToLoad.url);
-//                bitmap = UIUtils.decodeImage(f, photoToLoad.maxDimPX, photoToLoad.cropSquare, photoToLoad.roundRadius);
-                bitmap = UIUtils.decodeImage(f, 50, false, 4f);
-            }
-
-            if (bitmap != null) {
-                memoryCache.put(widgetPhotoToLoad.url, bitmap);
-            }
-            widgetPhotoToLoad.remoteViews.setImageViewBitmap(widgetPhotoToLoad.imageViewId, bitmap);
-//            setViewImage(bitmap, photoToLoad);
-        }
-    }
 
 	private class PhotosLoader implements Runnable {
 		PhotoToLoad photoToLoad;
@@ -249,16 +179,11 @@ public class ImageLoader {
             }
             
             // try from disk
-            File f = fileCache.getCachedFile(photoToLoad.url);
-            // the only reliable way to check a cached file is to try decoding it. the util method will
-            // return null if it fails
-            bitmap = UIUtils.decodeImage(f, photoToLoad.maxDimPX, photoToLoad.cropSquare, photoToLoad.roundRadius);
-            // try for network
+            bitmap = getImageFromDisk(photoToLoad.url, photoToLoad.maxDimPX, photoToLoad.cropSquare, photoToLoad.roundRadius);
             if (bitmap == null) {
+                // try for network
                 if (photoToLoad.cancel) return;
-                fileCache.cacheFile(photoToLoad.url);
-                f = fileCache.getCachedFile(photoToLoad.url);
-                bitmap = UIUtils.decodeImage(f, photoToLoad.maxDimPX, photoToLoad.cropSquare, photoToLoad.roundRadius);
+                bitmap = getImageFromNetwork(photoToLoad.url, photoToLoad.maxDimPX, photoToLoad.cropSquare, photoToLoad.roundRadius);
             }
 
             if (bitmap != null) {
@@ -326,4 +251,23 @@ public class ImageLoader {
         return true;
     }
 
+    private String buildUrlIfNeeded(String url) {
+        if (url.startsWith("/")) {
+            url = APIConstants.buildUrl(url);
+        }
+        return url;
+    }
+
+    private Bitmap getImageFromDisk(String url, int maxDimPX, boolean cropSquare, float roundRadius) {
+        // the only reliable way to check a cached file is to try decoding it. the util method will
+        // return null if it fails
+        File f = fileCache.getCachedFile(url);
+        return UIUtils.decodeImage(f, maxDimPX, cropSquare, roundRadius);
+    }
+
+    private Bitmap getImageFromNetwork(String url, int maxDimPX, boolean cropSquare, float roundRadius) {
+        fileCache.cacheFile(url);
+        File f = fileCache.getCachedFile(url);
+        return UIUtils.decodeImage(f, maxDimPX, cropSquare, roundRadius);
+    }
 }

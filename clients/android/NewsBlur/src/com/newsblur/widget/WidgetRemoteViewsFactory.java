@@ -9,7 +9,8 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.Loader;
-import android.util.Log;
+import android.text.TextUtils;
+import android.view.View;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
@@ -17,6 +18,7 @@ import com.newsblur.R;
 import com.newsblur.domain.Story;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
+import com.newsblur.util.Log;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.StoryUtils;
 import com.newsblur.util.ThumbnailStyle;
@@ -36,8 +38,8 @@ public class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsF
     private int appWidgetId;
     private boolean skipCursorUpdate;
 
-    public WidgetRemoteViewsFactory(Context context, Intent intent) {
-        Log.d(TAG, "Constructor");
+    WidgetRemoteViewsFactory(Context context, Intent intent) {
+        com.newsblur.util.Log.d(TAG, "Constructor");
         this.context = context;
         appWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
                 AppWidgetManager.INVALID_APPWIDGET_ID);
@@ -101,7 +103,7 @@ public class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsF
      */
     @Override
     public RemoteViews getViewAt(int position) {
-        Log.d(TAG, "getViewAt " + position);
+        com.newsblur.util.Log.d(TAG, "getViewAt " + position);
         Story story = storyItems.get(position);
 
         WidgetRemoteViews rv = new WidgetRemoteViews(context.getPackageName(), R.layout.view_widget_story_item);
@@ -110,9 +112,12 @@ public class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsF
         rv.setTextViewText(R.id.story_item_author, story.authors);
         rv.setTextViewText(R.id.story_item_feedtitle, story.extern_feedTitle);
 
-        FeedUtils.iconLoader.displayWidgetImage(appWidgetId, AppWidgetManager.getInstance(context), story.extern_faviconUrl, rv, R.id.story_item_feedicon);
-        if (PrefsUtils.getThumbnailStyle(context) != ThumbnailStyle.OFF && story.thumbnailUrl != null) {
-//            FeedUtils.thumbnailLoader.displayWidgetImage(appWidgetId, AppWidgetManager.getInstance(context), story.thumbnailUrl, rv, R.id.story_item_thumbnail);
+        // image dimensions same as R.layout.view_widget_story_item
+        FeedUtils.iconLoader.displayWidgetImage(story.extern_faviconUrl, R.id.story_item_feedicon, UIUtils.dp2px(context, 18), rv);
+        if (PrefsUtils.getThumbnailStyle(context) != ThumbnailStyle.OFF && !TextUtils.isEmpty(story.thumbnailUrl)) {
+            FeedUtils.thumbnailLoader.displayWidgetImage(story.thumbnailUrl, R.id.story_item_thumbnail, UIUtils.dp2px(context, 64), rv);
+        } else {
+            rv.setViewVisibility(R.id.story_item_thumbnail, View.GONE);
         }
 
         //TODO: authors and dates don't get along
@@ -200,7 +205,11 @@ public class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsF
      */
     @Override
     public void onDestroy() {
-        Log.d(TAG, "onDestroy");
+        com.newsblur.util.Log.d(TAG, "onDestroy");
+        if (cursor != null) {
+            cursor.close();
+        }
+        PrefsUtils.removeWidgetFeed(context, appWidgetId);
     }
 
     /**
