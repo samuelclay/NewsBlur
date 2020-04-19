@@ -77,12 +77,7 @@ public class WidgetProvider extends AppWidgetProvider {
             //TODO: create and show empty view if/when needed
 //            rv.setEmptyView(R.id.widget_list, R.id.empty_view);
 
-            rv.setTextViewText(R.id.txt_feed_name,
-                    PrefsUtils.getWidgetFeedName(context, appWidgetIds[i]));
 
-            //
-            // Do additional processing specific to this app widget...
-            //
             // This section makes it possible for items to have individualized behavior.
             // It does this by setting up a pending intent template. Individuals items of a collection
             // cannot set up their own pending intents. Instead, the collection as a whole sets
