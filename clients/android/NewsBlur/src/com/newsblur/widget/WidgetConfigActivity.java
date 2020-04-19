@@ -112,11 +112,9 @@ public class WidgetConfigActivity extends NbActivity {
         intent.setData(Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME)));
 
         PrefsUtils.setWidgetFeed(this, appWidgetId, selectedFeed.feedId, selectedFeed.title);
-        String title = selectedFeed.title;
 
-        rv.setTextViewText(R.id.txt_feed_name, title);
         rv.setRemoteAdapter(R.id.widget_list, intent);
-        rv.setEmptyView(R.id.widget_list, R.id.empty_view);
+//        rv.setEmptyView(R.id.widget_list, R.id.empty_view);
 
         Intent touchIntent = new Intent(this, WidgetProvider.class);
         // Set the action for the intent.
