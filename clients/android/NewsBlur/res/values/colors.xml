@@ -130,4 +130,6 @@
     <color name="refresh_3">#e9a941</color>
     <color name="refresh_4">#fae576</color>
 
+    <color name="widget_background">#C8000000</color>
+
 </resources>

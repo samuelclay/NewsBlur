@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/app_widget_background"
+    android:background="@color/widget_background"
     android:orientation="vertical">
 
     <FrameLayout
@@ -26,7 +26,8 @@
             android:layout_marginStart="32dp"
             android:lines="1"
             android:text="@string/newsblur"
-            android:textColor="@color/black"
+            android:textAllCaps="true"
+            android:textColor="@color/dark_story_feed_title_text"
             android:textStyle="bold" />
 
     </FrameLayout>
@@ -35,7 +36,17 @@
         android:id="@+id/widget_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:listitem="@layout/view_widget_story_item" />
+        tools:listitem="@layout/view_widget_story_item"
+        android:divider="@color/dark_story_comment_divider"
+        android:dividerHeight="0.5dp"/>
+
+    <TextView
+        android:id="@+id/widget_empty_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:text="Empty feed"
+        android:textColor="@color/dark_story_feed_title_text" />
 
     <!--    Note that empty views must be siblings of the collection view
             for which the empty view represents empty state.-->
