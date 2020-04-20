@@ -111,18 +111,16 @@ public class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsF
         rv.setTextViewText(R.id.story_item_content, story.shortContent);
         rv.setTextViewText(R.id.story_item_author, story.authors);
         rv.setTextViewText(R.id.story_item_feedtitle, story.extern_feedTitle);
+        CharSequence time = StoryUtils.formatRelativeTime(context, story.timestamp);
+        rv.setTextViewText(R.id.story_item_date, time);
 
         // image dimensions same as R.layout.view_widget_story_item
-        FeedUtils.iconLoader.displayWidgetImage(story.extern_faviconUrl, R.id.story_item_feedicon, UIUtils.dp2px(context, 18), rv);
+        FeedUtils.iconLoader.displayWidgetImage(story.extern_faviconUrl, R.id.story_item_feedicon, UIUtils.dp2px(context, 19), rv);
         if (PrefsUtils.getThumbnailStyle(context) != ThumbnailStyle.OFF && !TextUtils.isEmpty(story.thumbnailUrl)) {
             FeedUtils.thumbnailLoader.displayWidgetImage(story.thumbnailUrl, R.id.story_item_thumbnail, UIUtils.dp2px(context, 64), rv);
         } else {
             rv.setViewVisibility(R.id.story_item_thumbnail, View.GONE);
         }
-
-        //TODO: authors and dates don't get along
-        CharSequence time = StoryUtils.formatRelativeTime(context, story.timestamp);
-        rv.setTextViewText(R.id.story_item_date, time);
 
         rv.setViewBackgroundColor(R.id.story_item_favicon_borderbar_1, UIUtils.decodeColourValue(story.extern_feedColor, Color.GRAY));
         rv.setViewBackgroundColor(R.id.story_item_favicon_borderbar_2, UIUtils.decodeColourValue(story.extern_feedFade, Color.LTGRAY));
