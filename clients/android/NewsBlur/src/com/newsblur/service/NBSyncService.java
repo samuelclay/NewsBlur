@@ -291,7 +291,8 @@ public class NBSyncService extends JobService {
             // check to see if we are on an allowable network only after ensuring we have CPU
             if (!( (NbActivity.getActiveActivityCount() > 0) ||
                    PrefsUtils.isEnableNotifications(this) || 
-                   PrefsUtils.isBackgroundNetworkAllowed(this) )) {
+                   PrefsUtils.isBackgroundNetworkAllowed(this) ||
+                    PrefsUtils.hasActiveAppWidget(this)) ) {
                 Log.d(this.getClass().getName(), "Abandoning sync: app not active and network type not appropriate for background sync.");
                 return;
             }

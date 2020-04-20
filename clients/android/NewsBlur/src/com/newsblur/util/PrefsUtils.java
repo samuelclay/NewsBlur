@@ -10,6 +10,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import android.app.Activity;
+import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -21,6 +23,7 @@ import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
+import android.support.annotation.Nullable;
 import android.support.v4.content.FileProvider;
 import android.util.Log;
 
@@ -30,6 +33,7 @@ import com.newsblur.domain.UserDetails;
 import com.newsblur.network.APIConstants;
 import com.newsblur.util.PrefConstants.ThemeValue;
 import com.newsblur.service.NBSyncService;
+import com.newsblur.widget.WidgetProvider;
 
 public class PrefsUtils {
 
@@ -712,6 +716,12 @@ public class PrefsUtils {
         return prefs.getBoolean(PrefConstants.ENABLE_OFFLINE, false);
     }
 
+    public static boolean hasActiveAppWidget(Context context) {
+        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+        int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(context, WidgetProvider.class));
+        return appWidgetIds.length > 0;
+    }
+
     public static boolean isImagePrefetchEnabled(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
         return prefs.getBoolean(PrefConstants.ENABLE_IMAGE_PREFETCH, false);
@@ -840,7 +850,7 @@ public class PrefsUtils {
     }
 
     public static boolean isBackgroundNeeded(Context context) {
-        return (isEnableNotifications(context) || isOfflineEnabled(context));
+        return (isEnableNotifications(context) || isOfflineEnabled(context) || hasActiveAppWidget(context));
     }
 
     public static Font getFont(Context context) {
@@ -859,41 +869,24 @@ public class PrefsUtils {
         editor.commit();
     }
 
-
-    public static void setWidgetFeed(Context context, int widgetId, String feedId, String name) {
+    public static void setWidgetFeed(Context context, int widgetId, @Nullable String feedId) {
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
         Editor editor = prefs.edit();
-        editor.putString(PrefConstants.WIDGET_FEED_ID + widgetId, feedId)
-                .putString(PrefConstants.WIDGET_FEED_NAME + widgetId, name);
+        editor.putString(PrefConstants.WIDGET_FEED_ID + widgetId, feedId);
         editor.commit();
     }
 
-    /**
-     * sets only the name, no id when it is a folder
-     */
-    public static void setWidgetFolderName(Context context, int widgetId, String folderName) {
-        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
-        Editor editor = prefs.edit();
-        editor.remove(PrefConstants.WIDGET_FEED_ID + widgetId)
-                .putString(PrefConstants.WIDGET_FEED_NAME + widgetId, folderName);
-        editor.commit();
-
-    }
     public static String getWidgetFeed(Context context, int widgetId) {
         SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
         String feedId = preferences.getString(PrefConstants.WIDGET_FEED_ID + widgetId, null);
         return feedId;
     }
-    public static String getWidgetFeedName(Context context, int widgetId) {
-        SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
-        return preferences.getString(PrefConstants.WIDGET_FEED_NAME + widgetId, "-");
-    }
+
     public static void removeWidgetFeed(Context context, int widgetId) {
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
         if(prefs.contains(PrefConstants.WIDGET_FEED_ID + widgetId)){
             Editor editor = prefs.edit();
             editor.remove(PrefConstants.WIDGET_FEED_ID + widgetId);
-            editor.remove(PrefConstants.WIDGET_FEED_NAME + widgetId);
             editor.apply();
         }
     }
