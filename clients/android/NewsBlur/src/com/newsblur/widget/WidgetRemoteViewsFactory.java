@@ -44,14 +44,13 @@ public class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsF
         appWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
                 AppWidgetManager.INVALID_APPWIDGET_ID);
         final String feedId = PrefsUtils.getWidgetFeed(context, appWidgetId);
-        final String feedName = PrefsUtils.getWidgetFeedName(context, appWidgetId);
 
         if (feedId != null) {
-            // this is a single feed
+            // single feed
             fs = FeedSet.singleFeed(feedId);
         } else {
-            // this is a folder
-            fs = FeedUtils.feedSetFromFolderName(feedName);
+            // all the feeds
+            fs = FeedSet.allFeeds();
         }
     }
 
@@ -215,7 +214,7 @@ public class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsF
      */
     @Override
     public int getCount() {
-        return Math.min(storyItems.size(), 10);
+        return Math.min(storyItems.size(), 20);
     }
 
     private void invalidate() {

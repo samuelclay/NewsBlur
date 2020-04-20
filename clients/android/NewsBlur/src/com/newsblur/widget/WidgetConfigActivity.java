@@ -17,7 +17,6 @@ import com.newsblur.R;
 import com.newsblur.activity.NbActivity;
 import com.newsblur.domain.Feed;
 import com.newsblur.util.FeedUtils;
-import com.newsblur.util.Log;
 import com.newsblur.util.PrefsUtils;
 
 import java.util.ArrayList;
@@ -26,6 +25,7 @@ import java.util.List;
 public class WidgetConfigActivity extends NbActivity {
 
     private static String TAG = "WidgetConfigActivity";
+    private static String ALL_STORIES = "ALL Stories";
 
     private int appWidgetId;
     private List<Feed> feeds = new ArrayList<>();
@@ -75,32 +75,33 @@ public class WidgetConfigActivity extends NbActivity {
         }
         this.feeds = new ArrayList<>();
         this.feeds.addAll(feeds);
+        //TODO: what if there are no feeds
         requestFeedFromUser();
     }
 
     private void requestFeedFromUser() {
         ArrayList<String> feedTitles = new ArrayList<>();
+        if (feeds.size() > 0) {
+            feedTitles.add(ALL_STORIES);
+        }
         for (Feed feed : feeds) {
-            feedTitles.add(String.format("Feed: %s", feed.title));
+            feedTitles.add(feed.title);
         }
         AlertDialog.Builder builder = new AlertDialog.Builder(this)
                 .setTitle("Select a feed")
                 .setItems(feedTitles.toArray(new String[feedTitles.size()]), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        Log.d(TAG, "Selected " + which);
-                        selectedFeed = feeds.get(which);
-                        saveWidget();
+                        String feedId = null;
+                        if (which > 0) feedId = feeds.get(which - 1).feedId;
+                        saveWidget(feedId);
                     }
-                });
+                })
+                .setCancelable(false);
         builder.create().show();
     }
 
-    private void saveWidget() {
-        if (selectedFeed == null) {
-            toastError("Please select a feed");
-            return;
-        }
+    private void saveWidget(@Nullable String feedId) {
         //update widget
         AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
         RemoteViews rv = new RemoteViews(getPackageName(),
@@ -111,10 +112,10 @@ public class WidgetConfigActivity extends NbActivity {
         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
         intent.setData(Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME)));
 
-        PrefsUtils.setWidgetFeed(this, appWidgetId, selectedFeed.feedId, selectedFeed.title);
+        PrefsUtils.setWidgetFeed(this, appWidgetId, feedId);
 
         rv.setRemoteAdapter(R.id.widget_list, intent);
-//        rv.setEmptyView(R.id.widget_list, R.id.empty_view);
+        rv.setEmptyView(R.id.widget_list, R.id.widget_empty_view);
 
         Intent touchIntent = new Intent(this, WidgetProvider.class);
         // Set the action for the intent.

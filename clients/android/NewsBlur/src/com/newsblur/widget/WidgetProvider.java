@@ -14,7 +14,6 @@ import com.newsblur.activity.FeedReading;
 import com.newsblur.activity.Reading;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
-import com.newsblur.util.PrefsUtils;
 
 public class WidgetProvider extends AppWidgetProvider {
 
@@ -74,9 +73,7 @@ public class WidgetProvider extends AppWidgetProvider {
             // The empty view is displayed when the collection has no items.
             // It should be in the same layout used to instantiate the RemoteViews
             // object above.
-            //TODO: create and show empty view if/when needed
-//            rv.setEmptyView(R.id.widget_list, R.id.empty_view);
-
+            rv.setEmptyView(R.id.widget_list, R.id.widget_empty_view);
 
             // This section makes it possible for items to have individualized behavior.
             // It does this by setting up a pending intent template. Individuals items of a collection
