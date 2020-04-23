@@ -804,6 +804,16 @@
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 			<key>Title</key>
+			<string>Hide status bar</string>
+			<key>DefaultValue</key>
+			<true/>
+			<key>Key</key>
+			<string>story_hide_status_bar</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
 			<string>Show autoscroll</string>
 			<key>DefaultValue</key>
 			<false/>
