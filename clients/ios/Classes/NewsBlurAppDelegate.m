@@ -850,6 +850,11 @@
         [hiddenSet addObjectsFromArray:@[@"theme_auto_brightness"]];
     }
     
+    BOOL story_full_screen = [[NSUserDefaults standardUserDefaults] boolForKey:@"story_full_screen"];
+    if (!story_full_screen) {
+        [hiddenSet addObjectsFromArray:@[@"story_hide_status_bar"]];
+    }
+    
     [preferencesViewController setHiddenKeys:hiddenSet animated:animated];
 }
 
@@ -3201,6 +3206,18 @@
     CGContextDrawLinearGradient(context, gradient, startPoint, endPoint, 0);
     CGGradientRelease(gradient);
     UIGraphicsPopContext();
+}
+
++ (UIView *)makeSimpleGradientView:(CGRect)rect startColor:(UIColor *)startColor endColor:(UIColor *)endColor {
+    UIView *gradientView = [[UIView alloc] initWithFrame:rect];
+    
+    CAGradientLayer *gradient = [CAGradientLayer layer];
+    gradient.frame = CGRectMake(0, 0, rect.size.width, rect.size.height);
+    gradient.colors = @[(id)[startColor CGColor], (id)[endColor CGColor]];
+    
+    [gradientView.layer addSublayer:gradient];
+    
+    return gradientView;
 }
 
 + (UIColor *)faviconColor:(NSString *)colorString {

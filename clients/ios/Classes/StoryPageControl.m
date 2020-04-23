@@ -421,6 +421,8 @@
     } completion:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
 //        NSLog(@"---> Story page control did re-orient: %@ / %@", NSStringFromCGSize(self.scrollView.bounds.size), NSStringFromCGSize(size));
         inRotation = NO;
+        
+        [self updateStatusBarState];
 
         [self.view setNeedsLayout];
         [self.view layoutIfNeeded];
@@ -451,8 +453,24 @@
     [self adjustDragBar:orientation];
 }
 
+- (void)updateStatusBarState {
+    NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
+    BOOL shouldHideStatusBar = [preferences boolForKey:@"story_hide_status_bar"];
+    BOOL isNavBarHidden = self.navigationController.navigationBarHidden;
+    
+    self.statusBarGradientView.hidden = shouldHideStatusBar || !isNavBarHidden || !appDelegate.isPortrait;
+    
+    NSLog(@"updateStatusBarState: %@", self.statusBarGradientView.hidden ? @"hidden" : @"shown");  // log
+}
+
 - (BOOL)prefersStatusBarHidden {
-    return self.navigationController.navigationBarHidden;
+    NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
+    BOOL shouldHideStatusBar = [preferences boolForKey:@"story_hide_status_bar"];
+    BOOL isNavBarHidden = self.navigationController.navigationBarHidden;
+    
+    [self updateStatusBarState];
+    
+    return shouldHideStatusBar && isNavBarHidden;
 }
 
 - (BOOL)wantNavigationBarHidden {
@@ -551,6 +569,7 @@
         [self setNeedsStatusBarAppearanceUpdate];
     } completion:^(BOOL finished) {
         self.currentlyTogglingNavigationBar = NO;
+        [self updateStatusBarState];
     }];
 }
 
@@ -792,6 +811,7 @@
     [self setNextPreviousButtons];
     [self setTextButton];
     [self updateStoriesTheme];
+    [self updateStatusBarTheme];
 }
 
 // allow keyboard comands
@@ -1551,6 +1571,21 @@
     [self.currentPage updateStoryTheme];
     [self.nextPage updateStoryTheme];
     [self.previousPage updateStoryTheme];
+}
+
+- (void)updateStatusBarTheme {
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        [self.statusBarGradientView removeFromSuperview];
+        
+        CGRect statusRect = CGRectMake(0, 0, self.view.bounds.size.width, 70);
+        
+        self.statusBarGradientView = [NewsBlurAppDelegate makeSimpleGradientView:statusRect startColor:UIColorFromRGB(0xffffff) endColor:[UIColorFromRGB(0xffffff) colorWithAlphaComponent:0.0]];
+        
+        [self.view addSubview:self.statusBarGradientView];
+        self.statusBarGradientView.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin;
+        
+        [self updateStatusBarState];
+    }
 }
 
 - (void)backToDashboard:(id)sender {
