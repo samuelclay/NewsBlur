@@ -1457,9 +1457,14 @@
 
 - (IBAction)showOriginalSubview:(id)sender {
     [appDelegate hidePopover];
-
-    NSURL *url = [NSURL URLWithString:[appDelegate.activeStory
-                                       objectForKey:@"story_permalink"]];
+    
+    NSString *permalink = [appDelegate.activeStory objectForKey:@"story_permalink"];
+    NSURL *url = [NSURL URLWithString:permalink];
+    
+    if (url == nil) {
+        url = [NSURL URLWithDataRepresentation:[permalink dataUsingEncoding:NSUTF8StringEncoding] relativeToURL:nil];
+    }
+    
     [appDelegate showOriginalStory:url];
 }
 
