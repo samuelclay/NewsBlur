@@ -74,6 +74,7 @@
 @property (nonatomic) IBOutlet UIImageView *dragBarImageView;
 @property (nonatomic) IBOutlet NSLayoutConstraint *traverseBottomConstraint;
 @property (nonatomic) IBOutlet NSLayoutConstraint *scrollBottomConstraint;
+@property (nonatomic) IBOutlet UIView *statusBarGradientView;
 @property (nonatomic) BOOL autoscrollAvailable;
 @property (nonatomic) BOOL autoscrollActive;
 @property (nonatomic) NSTimeInterval autoscrollSpeed;
