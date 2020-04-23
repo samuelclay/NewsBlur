@@ -263,6 +263,7 @@
     [self updateTraverseBackground];
     [self setNextPreviousButtons];
     [self setTextButton];
+    [self updateStatusBarState];
     
     self.currentlyTogglingNavigationBar = NO;
     
@@ -459,8 +460,6 @@
     BOOL isNavBarHidden = self.navigationController.navigationBarHidden;
     
     self.statusBarGradientView.hidden = shouldHideStatusBar || !isNavBarHidden || !appDelegate.isPortrait;
-    
-    NSLog(@"updateStatusBarState: %@", self.statusBarGradientView.hidden ? @"hidden" : @"shown");  // log
 }
 
 - (BOOL)prefersStatusBarHidden {
