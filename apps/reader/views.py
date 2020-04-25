@@ -425,6 +425,8 @@ def load_feeds_flat(request):
     if not user_subs:
         categories = MCategory.serialize()
 
+    saved_searches = MSavedSearch.user_searches(user.pk)
+
     logging.user(request, "~FB~SBLoading ~FY%s~FB/~FM%s~FB/~FR%s~FB feeds/socials/inactive ~FMflat~FB%s%s" % (
             len(feeds.keys()), len(social_feeds), len(inactive_feeds), '. ~FCUpdating counts.' if update_counts else '',
             ' ~BB(background fetch)' if background_ios else ''))
@@ -447,6 +449,7 @@ def load_feeds_flat(request):
         "categories": categories,
         'starred_count': starred_count,
         'starred_counts': starred_counts,
+        'saved_searches': saved_searches,
         'share_ext_token': user.profile.secret_token,
     }
     return data
