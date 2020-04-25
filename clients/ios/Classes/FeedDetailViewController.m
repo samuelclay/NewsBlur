@@ -2536,6 +2536,8 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
             if ([title isEqualToString:@"everything"]) {
                 title = @"Top Level";
                 iconName = @"menu_icn_all.png";
+            } else if ([title isEqualToString:@"infrequent"]) {
+                continue;
             } else {
                 NSArray *components = [title componentsSeparatedByString:@" - "];
                 title = components.lastObject;
