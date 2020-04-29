@@ -66,6 +66,14 @@ public class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsF
     public void onCreate() {
         Log.d(TAG, "onCreate");
         while (FeedUtils.dbHelper == null) {
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            if (FeedUtils.dbHelper == null) {
+                FeedUtils.offerInitContext(context);
+            }
             // widget could be created before app init
             // wait for the dbHelper to be ready for use
         }
@@ -214,7 +222,7 @@ public class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsF
      */
     @Override
     public int getCount() {
-        return Math.min(storyItems.size(), 20);
+        return Math.min(storyItems.size(), WidgetProvider.MAX_ENTRIES);
     }
 
     private void invalidate() {

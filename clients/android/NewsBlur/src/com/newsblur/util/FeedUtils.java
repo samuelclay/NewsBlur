@@ -12,6 +12,8 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.text.TextUtils;
 
 import com.newsblur.R;
@@ -26,6 +28,7 @@ import com.newsblur.fragment.ReadingActionConfirmationFragment;
 import com.newsblur.network.APIManager;
 import com.newsblur.network.domain.NewsBlurResponse;
 import com.newsblur.service.NBSyncService;
+import com.newsblur.widget.WidgetProvider;
 
 public class FeedUtils {
 
@@ -60,13 +63,16 @@ public class FeedUtils {
         }
     }
 
-    public static void triggerSyncFromBackground(Context c) {
+    public static void triggerAppWidgetSync(Context context, int appWidgetId) {
         // direct start service is not allowed when the app is in background
+        PersistableBundle bundle = new PersistableBundle();
+        bundle.putInt(WidgetProvider.EXTRA_WIDGET_ID, appWidgetId);
         com.newsblur.util.Log.d(FeedUtils.class.getName(), "Trigger sync from background");
-        JobInfo.Builder builder = new JobInfo.Builder(1, new ComponentName(c, NBSyncService.class));
+        JobInfo.Builder builder = new JobInfo.Builder(  1, new ComponentName(context, NBSyncService.class));
         builder.setOverrideDeadline(0);
         builder.setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY);
-        JobScheduler scheduler = (JobScheduler) c.getSystemService(Context.JOB_SCHEDULER_SERVICE);
+        builder.setExtras(bundle);
+        JobScheduler scheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
 
         int result = scheduler.schedule(builder.build());
         com.newsblur.util.Log.d(FeedUtils.class.getName(), String.format("Sync scheduling %s", result == 0 ? "failed" : "successful"));
