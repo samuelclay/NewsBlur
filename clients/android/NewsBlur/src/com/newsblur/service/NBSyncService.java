@@ -138,6 +138,7 @@ public class NBSyncService extends JobService {
     UnreadsService unreadsService;
     ImagePrefetchService imagePrefetchService;
     private boolean forceHalted = false;
+    private int appWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
 
 	APIManager apiManager;
     BlurDatabaseHelper dbHelper;
@@ -216,6 +217,7 @@ public class NBSyncService extends JobService {
         // only perform a sync if the app is actually running or background syncs are enabled
         if ((NbActivity.getActiveActivityCount() > 0) || PrefsUtils.isBackgroundNeeded(this)) {
             HaltNow = false;
+            appWidgetId = params.getExtras().getInt(WidgetProvider.EXTRA_WIDGET_ID);
             // Services actually get invoked on the main system thread, and are not
             // allowed to do tangible work.  We spawn a thread to do so.
             Runnable r = new Runnable() {
@@ -283,11 +285,6 @@ public class NBSyncService extends JobService {
             // on all devices
             housekeeping();
 
-            Log.d(this.getClass().getName(), "Notify app widget data changed");
-            AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
-            int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(this, WidgetProvider.class));
-            appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.widget_list);
-
             // check to see if we are on an allowable network only after ensuring we have CPU
             if (!( (NbActivity.getActiveActivityCount() > 0) ||
                    PrefsUtils.isEnableNotifications(this) || 
@@ -299,6 +296,12 @@ public class NBSyncService extends JobService {
 
             // ping activities to indicate that housekeeping is done, and the DB is safe to use
             NbActivity.updateAllActivities(NbActivity.UPDATE_DB_READY);
+
+            if (isAppWidgetSync()) {
+                syncAppWidgetFeedStories();
+                notifyAppWidgetsDataChanged();
+                return;
+            }
 
             // async text requests might have been queued up and are being waiting on by the live UI. give them priority
             originalTextService.start();
@@ -325,6 +328,9 @@ public class NBSyncService extends JobService {
             // almost all notifications will be pushed after the unreadsService gets new stories, but double-check
             // here in case some made it through the feed sync loop first
             pushNotifications();
+
+            // notify app widgets data set changed
+            notifyAppWidgetsDataChanged();
 
             Log.d(this, "finishing primary sync");
 
@@ -701,6 +707,19 @@ public class NBSyncService extends JobService {
     }
 
     /**
+     * Fetch stories needed only for the app widget
+     */
+    private void syncAppWidgetFeedStories() {
+        String feedId = PrefsUtils.getWidgetFeed(this, appWidgetId);
+        FeedSet fs = feedId != null ? FeedSet.singleFeed(feedId) : FeedSet.allFeeds();
+
+        StoriesResponse apiResponse = apiManager.getStories(fs, 1, StoryOrder.NEWEST, ReadFilter.ALL);
+        if (isStoryResponseGood(apiResponse)) {
+            insertStories(apiResponse, fs);
+        }
+    }
+
+    /**
      * Fetch stories needed because the user is actively viewing a feed or folder.
      */
     private void syncPendingFeedStories() {
@@ -994,6 +1013,21 @@ public class NBSyncService extends JobService {
         if (System.currentTimeMillis() > (lastAPIFailure + AppConstants.API_BACKGROUND_BACKOFF_MILLIS)) return false;
         com.newsblur.util.Log.i(this.getClass().getName(), "abandoning background sync due to recent API failures.");
         return true;
+    }
+
+    private boolean isAppWidgetSync() {
+        return appWidgetId != AppWidgetManager.INVALID_APPWIDGET_ID;
+    }
+
+    private void notifyAppWidgetsDataChanged() {
+        Log.d(this.getClass().getName(), "Notify app widget data changed");
+        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
+        if (appWidgetId != AppWidgetManager.INVALID_APPWIDGET_ID) {
+            appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetId, R.id.widget_list);
+        } else{
+            int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(this, WidgetProvider.class));
+            appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.widget_list);
+        }
     }
 
     /**

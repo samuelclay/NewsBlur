@@ -20,6 +20,8 @@ public class WidgetProvider extends AppWidgetProvider {
     public static String ACTION_OPEN_STORY = "ACTION_OPEN_STORY";
     public static String EXTRA_ITEM_ID = "EXTRA_ITEM_ID";
     public static String EXTRA_FEED_ID = "EXTRA_FEED_ID";
+    public static String EXTRA_WIDGET_ID = "EXTRA_WIDGET_ID";
+    public static int MAX_ENTRIES = 20;
 
     private static String TAG = "WidgetProvider";
 
@@ -50,11 +52,10 @@ public class WidgetProvider extends AppWidgetProvider {
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         // update each of the app widgets with the remote adapter
         Log.d(TAG, "onUpdate");
-        Log.d(TAG, "Trigger sync from background");
-        FeedUtils.triggerSyncFromBackground(context);
         for (int i = 0; i < appWidgetIds.length; ++i) {
+            Log.d(TAG, "Trigger sync for #" + i);
+            FeedUtils.triggerAppWidgetSync(context, i);
 
-            Log.d(TAG, "onUpdate iteration #" + i);
             // Set up the intent that starts the WidgetRemoteViewService, which will
             // provide the views for this collection.
             Intent intent = new Intent(context, WidgetRemoteViewsService.class);
