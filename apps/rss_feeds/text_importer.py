@@ -18,6 +18,7 @@ from urlparse import urljoin
  
 BROKEN_URLS = [
     "gamespot.com",
+    'thedailyskip.com',
 ]
 
 
