@@ -27,6 +27,8 @@ class TextImporter:
     def __init__(self, story=None, feed=None, story_url=None, request=None, debug=False):
         self.story = story
         self.story_url = story_url
+        if self.story and not self.story_url:
+            self.story_url = self.story.story_permalink
         self.feed = feed
         self.request = request
         self.debug = debug
@@ -190,8 +192,6 @@ class TextImporter:
     def fetch_request(self, use_mercury=True):
         headers = self.headers
         url = self.story_url
-        if self.story and not url:
-            url = self.story.story_permalink
         
         if use_mercury:
             mercury_api_key = getattr(settings, 'MERCURY_PARSER_API_KEY', 'abc123')
