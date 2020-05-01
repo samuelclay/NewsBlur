@@ -15,16 +15,23 @@ import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
 import com.newsblur.R;
+import com.newsblur.domain.Feed;
 import com.newsblur.domain.Story;
+import com.newsblur.network.APIManager;
+import com.newsblur.network.domain.StoriesResponse;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.Log;
 import com.newsblur.util.PrefsUtils;
+import com.newsblur.util.ReadFilter;
+import com.newsblur.util.StoryOrder;
 import com.newsblur.util.StoryUtils;
 import com.newsblur.util.ThumbnailStyle;
 import com.newsblur.util.UIUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 public class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
@@ -32,11 +39,11 @@ public class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsF
     private static String TAG = "WidgetRemoteViewsFactory";
 
     private Context context;
+    private APIManager apiManager;
     private List<Story> storyItems = new ArrayList<>();
     private FeedSet fs;
-    private Cursor cursor;
     private int appWidgetId;
-    private boolean skipCursorUpdate;
+    private boolean dataCompleted;
 
     WidgetRemoteViewsFactory(Context context, Intent intent) {
         com.newsblur.util.Log.d(TAG, "Constructor");
@@ -65,6 +72,7 @@ public class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsF
     @Override
     public void onCreate() {
         Log.d(TAG, "onCreate");
+        this.apiManager = new APIManager(context);
         while (FeedUtils.dbHelper == null) {
             try {
                 Thread.sleep(500);
@@ -77,32 +85,6 @@ public class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsF
             // widget could be created before app init
             // wait for the dbHelper to be ready for use
         }
-    }
-
-    private void fetchStories() {
-        com.newsblur.util.Log.d(TAG, "Fetching widget stories");
-        final List<Story> newStories;
-        try {
-            if (cursor == null) {
-                newStories = new ArrayList<>(0);
-            } else {
-                if (cursor.isClosed()) return;
-                newStories = new ArrayList<>(cursor.getCount());
-                cursor.moveToPosition(-1);
-                while (cursor.moveToNext()) {
-                    if (cursor.isClosed()) return;
-                    Story s = Story.fromCursor(cursor);
-                    s.bindExternValues(cursor);
-                    newStories.add(s);
-                }
-            }
-        } catch (Exception e) {
-            com.newsblur.util.Log.e(this, "error thawing story list: " + e.getMessage(), e);
-            return;
-        }
-
-        storyItems.clear();
-        storyItems.addAll(newStories);
     }
 
     /**
@@ -183,24 +165,21 @@ public class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsF
 
     @Override
     public void onDataSetChanged() {
-        if (skipCursorUpdate) {
-            com.newsblur.util.Log.d(TAG, "onDataSetChanged - skip cursor update");
-            skipCursorUpdate = false;
-            fetchStories();
+        com.newsblur.util.Log.d(TAG, "onDataSetChanged");
+        if (dataCompleted) {
+            // we have all the stories data, just let the widget redraw
+            com.newsblur.util.Log.d(TAG, "onDataSetChanged - redraw widget");
+            dataCompleted = false;
         } else {
-            com.newsblur.util.Log.d(TAG, "onDataSetChanged - do update cursor");
-            Loader<Cursor> loader = FeedUtils.dbHelper.getStoriesLoader(fs);
-            loader.registerListener(loader.getId(), new Loader.OnLoadCompleteListener<Cursor>() {
-                @Override
-                public void onLoadComplete(@NonNull Loader<Cursor> loader, @Nullable Cursor cursor) {
-                    com.newsblur.util.Log.d(TAG, "onDataSetChanged - update cursor completed");
-                    WidgetRemoteViewsFactory.this.cursor = cursor;
-                    skipCursorUpdate = true;
-                    fetchStories();
-                    invalidate();
-                }
-            });
-            loader.startLoading();
+            com.newsblur.util.Log.d(TAG, "onDataSetChanged - fetch stories");
+            StoriesResponse response = apiManager.getStories(fs, 1, StoryOrder.NEWEST, ReadFilter.ALL);
+
+            if (response == null || response.stories == null) {
+                com.newsblur.util.Log.d(TAG, "Error fetching widget stories");
+            } else {
+                com.newsblur.util.Log.d(TAG, "Fetched widget stories");
+                processStories(response.stories);
+            }
         }
     }
 
@@ -211,9 +190,6 @@ public class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsF
     @Override
     public void onDestroy() {
         com.newsblur.util.Log.d(TAG, "onDestroy");
-        if (cursor != null) {
-            cursor.close();
-        }
         PrefsUtils.removeWidgetFeed(context, appWidgetId);
     }
 
@@ -223,6 +199,49 @@ public class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsF
     @Override
     public int getCount() {
         return Math.min(storyItems.size(), WidgetProvider.MAX_ENTRIES);
+    }
+
+    private void processStories(final Story[] stories) {
+        com.newsblur.util.Log.d(TAG, "processStories");
+        final HashMap<String, Feed> feedMap = new HashMap<>();
+        Loader<Cursor> loader = FeedUtils.dbHelper.getFeedsLoader();
+        loader.registerListener(loader.getId(), new Loader.OnLoadCompleteListener<Cursor>() {
+            @Override
+            public void onLoadComplete(@NonNull Loader<Cursor> loader, @Nullable Cursor cursor) {
+                while (cursor != null && cursor.moveToNext()) {
+                    Feed feed = Feed.fromCursor(cursor);
+                    if (feed.active) {
+                        feedMap.put(feed.feedId, feed);
+                    }
+                }
+                setStories(stories, feedMap);
+            }
+        });
+        loader.startLoading();
+    }
+
+    private void setStories(Story[] stories, HashMap<String, Feed> feedMap) {
+        com.newsblur.util.Log.d(TAG, "setStories");
+        for (Story story : stories) {
+            Feed storyFeed = feedMap.get(story.feedId);
+            if (storyFeed != null) {
+                bindStoryValues(story, storyFeed);
+            }
+        }
+        this.storyItems.clear();
+        this.storyItems.addAll(Arrays.asList(stories));
+        // we have the data, notify data set changed
+        dataCompleted = true;
+        invalidate();
+    }
+
+    private void bindStoryValues(Story story, Feed feed) {
+        story.thumbnailUrl = Story.guessStoryThumbnailURL(story);
+        story.extern_faviconBorderColor = feed.faviconBorder;
+        story.extern_faviconUrl = feed.faviconUrl;
+        story.extern_feedTitle = feed.title;
+        story.extern_feedFade = feed.faviconFade;
+        story.extern_feedColor = feed.faviconColor;
     }
 
     private void invalidate() {
