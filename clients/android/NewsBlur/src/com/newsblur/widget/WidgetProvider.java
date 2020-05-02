@@ -13,7 +13,6 @@ import com.newsblur.R;
 import com.newsblur.activity.FeedReading;
 import com.newsblur.activity.Reading;
 import com.newsblur.util.FeedSet;
-import com.newsblur.util.FeedUtils;
 
 public class WidgetProvider extends AppWidgetProvider {
 
@@ -21,7 +20,6 @@ public class WidgetProvider extends AppWidgetProvider {
     public static String EXTRA_ITEM_ID = "EXTRA_ITEM_ID";
     public static String EXTRA_FEED_ID = "EXTRA_FEED_ID";
     public static String EXTRA_WIDGET_ID = "EXTRA_WIDGET_ID";
-    public static int MAX_ENTRIES = 20;
 
     private static String TAG = "WidgetProvider";
 
@@ -29,10 +27,7 @@ public class WidgetProvider extends AppWidgetProvider {
     @Override
     public void onReceive(Context context, Intent intent) {
         Log.d(TAG, "onReceive");
-        AppWidgetManager mgr = AppWidgetManager.getInstance(context);
         if (intent.getAction().equals(ACTION_OPEN_STORY)) {
-            int appWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
-                    AppWidgetManager.INVALID_APPWIDGET_ID);
             String storyHash = intent.getStringExtra(EXTRA_ITEM_ID);
             String feedId = intent.getStringExtra(EXTRA_FEED_ID);
             FeedSet fs = FeedSet.singleFeed(feedId);
@@ -52,15 +47,13 @@ public class WidgetProvider extends AppWidgetProvider {
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         // update each of the app widgets with the remote adapter
         Log.d(TAG, "onUpdate");
-        for (int i = 0; i < appWidgetIds.length; ++i) {
-            Log.d(TAG, "Trigger sync for #" + i);
-            FeedUtils.triggerAppWidgetSync(context, i);
+        for (int appWidgetId : appWidgetIds) {
 
             // Set up the intent that starts the WidgetRemoteViewService, which will
             // provide the views for this collection.
             Intent intent = new Intent(context, WidgetRemoteViewsService.class);
             // Add the app widget ID to the intent extras.
-            intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetIds[i]);
+            intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
             intent.setData(Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME)));
 
             // Instantiate the RemoteViews object for the app widget layout.
@@ -86,13 +79,14 @@ public class WidgetProvider extends AppWidgetProvider {
             // When the user touches a particular view, it will have the effect of
             // broadcasting ACTION_OPEN_STORY.
             touchIntent.setAction(WidgetProvider.ACTION_OPEN_STORY);
-            touchIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetIds[i]);
+            touchIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
             intent.setData(Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME)));
             PendingIntent touchIntentTemplate = PendingIntent.getBroadcast(context, 0, touchIntent,
                     PendingIntent.FLAG_UPDATE_CURRENT);
             rv.setPendingIntentTemplate(R.id.widget_list, touchIntentTemplate);
 
-            appWidgetManager.updateAppWidget(appWidgetIds[i], rv);
+            appWidgetManager.updateAppWidget(appWidgetId, rv);
+            appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetId, R.id.widget_list);
         }
         super.onUpdate(context, appWidgetManager, appWidgetIds);
     }

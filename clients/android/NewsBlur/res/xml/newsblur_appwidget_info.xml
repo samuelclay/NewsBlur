@@ -6,7 +6,6 @@
     android:minResizeHeight="60dp"
     android:updatePeriodMillis="1800000"
     android:initialLayout="@layout/view_app_widget"
-    android:configure="com.newsblur.widget.WidgetConfigActivity"
     android:resizeMode="horizontal|vertical"
     android:widgetCategory="home_screen">
 </appwidget-provider>
