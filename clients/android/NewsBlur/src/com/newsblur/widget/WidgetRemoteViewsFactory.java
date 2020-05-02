@@ -52,13 +52,7 @@ public class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsF
                 AppWidgetManager.INVALID_APPWIDGET_ID);
         final String feedId = PrefsUtils.getWidgetFeed(context, appWidgetId);
 
-        if (feedId != null) {
-            // single feed
-            fs = FeedSet.singleFeed(feedId);
-        } else {
-            // all the feeds
-            fs = FeedSet.allFeeds();
-        }
+        fs = feedId != null ? FeedSet.singleFeed(feedId) : FeedSet.allFeeds();
     }
 
     /**
@@ -73,6 +67,8 @@ public class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsF
     public void onCreate() {
         Log.d(TAG, "onCreate");
         this.apiManager = new APIManager(context);
+        // widget could be created before app init
+        // wait for the dbHelper to be ready for use
         while (FeedUtils.dbHelper == null) {
             try {
                 Thread.sleep(500);
@@ -82,8 +78,6 @@ public class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsF
             if (FeedUtils.dbHelper == null) {
                 FeedUtils.offerInitContext(context);
             }
-            // widget could be created before app init
-            // wait for the dbHelper to be ready for use
         }
     }
 
@@ -172,6 +166,7 @@ public class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsF
             dataCompleted = false;
         } else {
             com.newsblur.util.Log.d(TAG, "onDataSetChanged - fetch stories");
+            this.storyItems.clear();
             StoriesResponse response = apiManager.getStories(fs, 1, StoryOrder.NEWEST, ReadFilter.ALL);
 
             if (response == null || response.stories == null) {
@@ -198,7 +193,7 @@ public class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsF
      */
     @Override
     public int getCount() {
-        return Math.min(storyItems.size(), WidgetProvider.MAX_ENTRIES);
+        return Math.min(storyItems.size(), 5);
     }
 
     private void processStories(final Story[] stories) {
