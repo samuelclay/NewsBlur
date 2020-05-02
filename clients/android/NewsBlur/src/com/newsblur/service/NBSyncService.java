@@ -37,6 +37,7 @@ import com.newsblur.util.ReadingAction;
 import com.newsblur.util.ReadFilter;
 import com.newsblur.util.StateFilter;
 import com.newsblur.util.StoryOrder;
+import com.newsblur.widget.WidgetUtils;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -284,7 +285,7 @@ public class NBSyncService extends JobService {
             if (!( (NbActivity.getActiveActivityCount() > 0) ||
                    PrefsUtils.isEnableNotifications(this) || 
                    PrefsUtils.isBackgroundNetworkAllowed(this) ||
-                    PrefsUtils.hasActiveAppWidget(this)) ) {
+                    WidgetUtils.hasActiveAppWidgets(this)) ) {
                 Log.d(this.getClass().getName(), "Abandoning sync: app not active and network type not appropriate for background sync.");
                 return;
             }

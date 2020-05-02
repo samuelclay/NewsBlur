@@ -10,8 +10,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import android.app.Activity;
-import android.appwidget.AppWidgetManager;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -33,7 +31,7 @@ import com.newsblur.domain.UserDetails;
 import com.newsblur.network.APIConstants;
 import com.newsblur.util.PrefConstants.ThemeValue;
 import com.newsblur.service.NBSyncService;
-import com.newsblur.widget.WidgetProvider;
+import com.newsblur.widget.WidgetUtils;
 
 public class PrefsUtils {
 
@@ -716,12 +714,6 @@ public class PrefsUtils {
         return prefs.getBoolean(PrefConstants.ENABLE_OFFLINE, false);
     }
 
-    public static boolean hasActiveAppWidget(Context context) {
-        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
-        int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(context, WidgetProvider.class));
-        return appWidgetIds.length > 0;
-    }
-
     public static boolean isImagePrefetchEnabled(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
         return prefs.getBoolean(PrefConstants.ENABLE_IMAGE_PREFETCH, false);
@@ -850,7 +842,7 @@ public class PrefsUtils {
     }
 
     public static boolean isBackgroundNeeded(Context context) {
-        return (isEnableNotifications(context) || isOfflineEnabled(context) || hasActiveAppWidget(context));
+        return (isEnableNotifications(context) || isOfflineEnabled(context) || WidgetUtils.hasActiveAppWidgets(context));
     }
 
     public static Font getFont(Context context) {
@@ -869,28 +861,16 @@ public class PrefsUtils {
         editor.commit();
     }
 
-    public static void setWidgetFeed(Context context, int widgetId, @Nullable String feedId) {
+    public static void setWidgetFeed(Context context, @Nullable String feedId) {
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
         Editor editor = prefs.edit();
-        editor.putString(PrefConstants.WIDGET_FEED_ID + widgetId, feedId);
+        editor.putString(PrefConstants.WIDGET_FEED_ID, feedId);
         editor.commit();
     }
 
-    public static String getWidgetFeed(Context context, int widgetId) {
+    public static String getWidgetFeed(Context context) {
         SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
-        return preferences.getString(PrefConstants.WIDGET_FEED_ID + widgetId, null);
-    }
-
-    public static void setWidgetId(Context context, int widgetId) {
-        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
-        Editor editor = prefs.edit();
-        editor.putInt(PrefConstants.WIDGET_ID, widgetId);
-        editor.commit();
-    }
-
-    public static int getWidgetId(Context context) {
-        SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
-        return preferences.getInt(PrefConstants.WIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
+        return preferences.getString(PrefConstants.WIDGET_FEED_ID, null);
     }
 
     public static void removeWidgetFeed(Context context, int widgetId) {
