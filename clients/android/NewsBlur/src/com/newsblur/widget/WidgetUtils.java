@@ -1,0 +1,55 @@
+package com.newsblur.widget;
+
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.appwidget.AppWidgetManager;
+import android.content.Context;
+import android.content.Intent;
+import android.os.SystemClock;
+
+import com.newsblur.util.Log;
+import com.newsblur.util.PrefsUtils;
+
+public class WidgetUtils {
+
+    private static String TAG = "WidgetUtils";
+
+    public static String ACTION_UPDATE_WIDGET = "ACTION_UPDATE_WIDGET";
+    public static String ACTION_OPEN_STORY = "ACTION_OPEN_STORY";
+    public static String EXTRA_ITEM_ID = "EXTRA_ITEM_ID";
+    public static String EXTRA_FEED_ID = "EXTRA_FEED_ID";
+    public static String EXTRA_WIDGET_ID = "EXTRA_WIDGET_ID";
+    public static int RC_WIDGET_UPDATE = 1;
+
+    static void setUpdateAlarm(Context context, int appWidgetId) {
+        Log.d(TAG, "setUpdateAlarm");
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        Intent intent = getUpdateIntent(context);
+        intent.putExtra(EXTRA_WIDGET_ID, appWidgetId);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, RC_WIDGET_UPDATE, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        int widgetUpdateInterval = 1000 * 60 * 5;
+        long startAlarmAt = SystemClock.currentThreadTimeMillis() + widgetUpdateInterval;
+        alarmManager.setInexactRepeating(AlarmManager.RTC, startAlarmAt, widgetUpdateInterval, pendingIntent);
+    }
+
+    static void removeUpdateAlarm(Context context) {
+        Log.d(TAG, "removeUpdateAlarm");
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, RC_WIDGET_UPDATE, getUpdateIntent(context), PendingIntent.FLAG_UPDATE_CURRENT);
+        alarmManager.cancel(pendingIntent);
+    }
+
+    public static void resetUpdateAlarm(Context context) {
+        int widgetId = PrefsUtils.getWidgetId(context);
+        if (widgetId != AppWidgetManager.INVALID_APPWIDGET_ID) {
+            WidgetUtils.setUpdateAlarm(context, widgetId);
+        }
+    }
+
+    private static Intent getUpdateIntent(Context context) {
+        Intent intent = new Intent(context, WidgetUpdateReceiver.class);
+        intent.setAction(ACTION_UPDATE_WIDGET);
+        return intent;
+    }
+}

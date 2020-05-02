@@ -106,5 +106,6 @@ public class PrefConstants {
     public static final String ENABLE_NOTIFICATIONS = "enable_notifications";
 
     public static final String READING_FONT = "reading_font";
-    public static final String WIDGET_FEED_ID = "WIDGET_FEED_ID";
+    public static final String WIDGET_FEED_ID = "widget_feed_id";
+    public static final String WIDGET_ID = "widget_id";
 }
