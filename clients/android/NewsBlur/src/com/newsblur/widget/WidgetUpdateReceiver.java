@@ -2,6 +2,7 @@ package com.newsblur.widget;
 
 import android.appwidget.AppWidgetManager;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.Nullable;
@@ -16,11 +17,9 @@ public class WidgetUpdateReceiver extends BroadcastReceiver {
         if (intent != null && intent.getAction() != null &&
                 intent.getAction().equals(WidgetUtils.ACTION_UPDATE_WIDGET)) {
             Log.d(this.getClass().getName(), "Received " + WidgetUtils.ACTION_UPDATE_WIDGET);
-            int widgetId = intent.getIntExtra(WidgetUtils.EXTRA_WIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
-            if (widgetId != AppWidgetManager.INVALID_APPWIDGET_ID) {
-                AppWidgetManager widgetManager = AppWidgetManager.getInstance(context);
-                widgetManager.notifyAppWidgetViewDataChanged(widgetId, R.id.widget_list);
-            }
+            AppWidgetManager widgetManager = AppWidgetManager.getInstance(context);
+            int[] appWidgetIds = widgetManager.getAppWidgetIds(new ComponentName(context, WidgetProvider.class));
+            widgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.widget_list);
         }
     }
 }

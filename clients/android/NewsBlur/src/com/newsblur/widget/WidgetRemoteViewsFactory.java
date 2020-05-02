@@ -50,7 +50,7 @@ public class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsF
         this.context = context;
         appWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
                 AppWidgetManager.INVALID_APPWIDGET_ID);
-        final String feedId = PrefsUtils.getWidgetFeed(context, appWidgetId);
+        final String feedId = PrefsUtils.getWidgetFeed(context);
 
         fs = feedId != null ? FeedSet.singleFeed(feedId) : FeedSet.allFeeds();
     }
@@ -80,7 +80,7 @@ public class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsF
             }
         }
 
-        WidgetUtils.setUpdateAlarm(context, appWidgetId);
+        WidgetUtils.setUpdateAlarm(context);
     }
 
     /**
