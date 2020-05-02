@@ -8,10 +8,11 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.newsblur.util.AppConstants;
+import com.newsblur.widget.WidgetUtils;
 
 /**
  * First receiver in the chain that starts with the device.  Simply schedules another broadcast
- * that will periodicaly start the sync service.
+ * that will periodically start the sync service.
  */
 public class BootReceiver extends BroadcastReceiver {
 
@@ -19,6 +20,7 @@ public class BootReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         com.newsblur.util.Log.d(this, "triggering sync service from device boot");
         scheduleSyncService(context);
+        resetWidgetSync(context);
     }
 
     public static void scheduleSyncService(Context context) {
@@ -32,5 +34,9 @@ public class BootReceiver extends BroadcastReceiver {
         int result = sched.schedule(builder.build());
         com.newsblur.util.Log.d("BootReceiver", String.format("Scheduling result: %s - %s", result, result == 0 ? "Failure" : "Success"));
     }
-        
+
+    private static void resetWidgetSync(Context context) {
+        com.newsblur.util.Log.d(BootReceiver.class.getName(), "Received " + Intent.ACTION_BOOT_COMPLETED + " - reset widget sync");
+        WidgetUtils.resetUpdateAlarm(context);
+    }
 }

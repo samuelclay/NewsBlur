@@ -79,6 +79,8 @@ public class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsF
                 FeedUtils.offerInitContext(context);
             }
         }
+
+        WidgetUtils.setUpdateAlarm(context, appWidgetId);
     }
 
     /**
@@ -111,8 +113,8 @@ public class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsF
         // set fill-intent which is used to fill in the pending intent template
         // set on the collection view in WidgetProvider
         Bundle extras = new Bundle();
-        extras.putString(WidgetProvider.EXTRA_ITEM_ID, story.storyHash);
-        extras.putString(WidgetProvider.EXTRA_FEED_ID, story.feedId);
+        extras.putString(WidgetUtils.EXTRA_ITEM_ID, story.storyHash);
+        extras.putString(WidgetUtils.EXTRA_FEED_ID, story.feedId);
         Intent fillInIntent = new Intent();
         fillInIntent.putExtras(extras);
 
@@ -185,6 +187,7 @@ public class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsF
     @Override
     public void onDestroy() {
         com.newsblur.util.Log.d(TAG, "onDestroy");
+        WidgetUtils.removeUpdateAlarm(context);
         PrefsUtils.removeWidgetFeed(context, appWidgetId);
     }
 

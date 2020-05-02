@@ -16,20 +16,15 @@ import com.newsblur.util.FeedSet;
 
 public class WidgetProvider extends AppWidgetProvider {
 
-    public static String ACTION_OPEN_STORY = "ACTION_OPEN_STORY";
-    public static String EXTRA_ITEM_ID = "EXTRA_ITEM_ID";
-    public static String EXTRA_FEED_ID = "EXTRA_FEED_ID";
-    public static String EXTRA_WIDGET_ID = "EXTRA_WIDGET_ID";
-
     private static String TAG = "WidgetProvider";
 
     // Called when the BroadcastReceiver receives an Intent broadcast.
     @Override
     public void onReceive(Context context, Intent intent) {
         Log.d(TAG, "onReceive");
-        if (intent.getAction().equals(ACTION_OPEN_STORY)) {
-            String storyHash = intent.getStringExtra(EXTRA_ITEM_ID);
-            String feedId = intent.getStringExtra(EXTRA_FEED_ID);
+        if (intent.getAction().equals(WidgetUtils.ACTION_OPEN_STORY)) {
+            String storyHash = intent.getStringExtra(WidgetUtils.EXTRA_ITEM_ID);
+            String feedId = intent.getStringExtra(WidgetUtils.EXTRA_FEED_ID);
             FeedSet fs = FeedSet.singleFeed(feedId);
             Intent i = new Intent(context, FeedReading.class);
             i.putExtra(Reading.EXTRA_FEEDSET, fs);
@@ -78,7 +73,7 @@ public class WidgetProvider extends AppWidgetProvider {
             // Set the action for the intent.
             // When the user touches a particular view, it will have the effect of
             // broadcasting ACTION_OPEN_STORY.
-            touchIntent.setAction(WidgetProvider.ACTION_OPEN_STORY);
+            touchIntent.setAction(WidgetUtils.ACTION_OPEN_STORY);
             touchIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
             intent.setData(Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME)));
             PendingIntent touchIntentTemplate = PendingIntent.getBroadcast(context, 0, touchIntent,

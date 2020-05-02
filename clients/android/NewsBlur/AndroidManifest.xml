@@ -152,12 +152,23 @@
         <receiver android:name=".util.NotifyDismissReceiver" android:exported="false" />
         <receiver android:name=".util.NotifySaveReceiver" android:exported="false" />
         <receiver android:name=".util.NotifyMarkreadReceiver" android:exported="false" />
-        <receiver android:name=".widget.WidgetProvider" >
+        <receiver android:name=".widget.WidgetProvider"
+            android:exported="false">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
             <meta-data android:name="android.appwidget.provider"
                 android:resource="@xml/newsblur_appwidget_info" />
+        </receiver>
+        <receiver android:name=".service.TimeChangeReceiver">
+            <intent-filter >
+                <action android:name="android.intent.action.TIME_SET"/>
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name=".widget.WidgetUpdateReceiver"
+            android:enabled="true"
+            android:exported="false">
         </receiver>
         <provider
             android:name="android.support.v4.content.FileProvider"

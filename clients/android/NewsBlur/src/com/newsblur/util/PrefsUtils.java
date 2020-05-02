@@ -878,8 +878,19 @@ public class PrefsUtils {
 
     public static String getWidgetFeed(Context context, int widgetId) {
         SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
-        String feedId = preferences.getString(PrefConstants.WIDGET_FEED_ID + widgetId, null);
-        return feedId;
+        return preferences.getString(PrefConstants.WIDGET_FEED_ID + widgetId, null);
+    }
+
+    public static void setWidgetId(Context context, int widgetId) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        Editor editor = prefs.edit();
+        editor.putInt(PrefConstants.WIDGET_ID, widgetId);
+        editor.commit();
+    }
+
+    public static int getWidgetId(Context context) {
+        SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        return preferences.getInt(PrefConstants.WIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
     }
 
     public static void removeWidgetFeed(Context context, int widgetId) {
