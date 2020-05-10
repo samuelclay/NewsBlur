@@ -232,6 +232,7 @@
     
     <string name="settings">Preferences</string>
     <string name="widget">Widget</string>
+    <string name="title_widget_setup">Tap to setup in NewsBlur</string>
 
     <string name="settings_cat_offline">Offline</string>
     <string name="settings_enable_offline">Download Stories</string>
