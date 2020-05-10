@@ -17,9 +17,12 @@ public class WidgetUtils {
 
     public static String ACTION_UPDATE_WIDGET = "ACTION_UPDATE_WIDGET";
     public static String ACTION_OPEN_STORY = "ACTION_OPEN_STORY";
+    public static String ACTION_OPEN_CONFIG = "ACTION_OPEN_CONFIG";
     public static String EXTRA_ITEM_ID = "EXTRA_ITEM_ID";
     public static String EXTRA_FEED_ID = "EXTRA_FEED_ID";
     public static int RC_WIDGET_UPDATE = 1;
+    public static int RC_WIDGET_STORY = 2;
+    public static int RC_WIDGET_CONFIG = 3;
 
     static void setUpdateAlarm(Context context) {
         Log.d(TAG, "setUpdateAlarm");

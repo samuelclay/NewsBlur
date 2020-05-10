@@ -51,7 +51,6 @@ public class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsF
         this.context = context;
         appWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
                 AppWidgetManager.INVALID_APPWIDGET_ID);
-        setFeedSet();
     }
 
     /**
@@ -167,8 +166,13 @@ public class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsF
             dataCompleted = false;
         } else {
             setFeedSet();
+            if (fs == null) {
+                com.newsblur.util.Log.d(TAG, "onDataSetChanged - null feed set. Show empty view");
+                setStories(new Story[]{}, new HashMap<String, Feed>(0));
+                return;
+            }
+
             com.newsblur.util.Log.d(TAG, "onDataSetChanged - fetch stories");
-            this.storyItems.clear();
             StoriesResponse response = apiManager.getStories(fs, 1, StoryOrder.NEWEST, ReadFilter.ALL);
 
             if (response == null || response.stories == null) {
@@ -250,10 +254,14 @@ public class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsF
 
     private void setFeedSet() {
         Set<String> feedIds = PrefsUtils.getWidgetFeedIds(context);
-        if (feedIds == null || feedIds.isEmpty()) {
+        if (feedIds == null) {
+            // show all feeds by default
             fs = FeedSet.allFeeds();
-        } else {
+        } else if (!feedIds.isEmpty()) {
             fs = FeedSet.multipleFeeds(feedIds);
+        } else {
+            // no feeds selected. Widget will show tap to config view
+            fs = null;
         }
     }
 }

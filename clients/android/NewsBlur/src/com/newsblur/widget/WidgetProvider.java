@@ -12,6 +12,7 @@ import android.widget.RemoteViews;
 import com.newsblur.R;
 import com.newsblur.activity.FeedReading;
 import com.newsblur.activity.Reading;
+import com.newsblur.activity.WidgetConfig;
 import com.newsblur.util.FeedSet;
 
 public class WidgetProvider extends AppWidgetProvider {
@@ -29,6 +30,10 @@ public class WidgetProvider extends AppWidgetProvider {
             Intent i = new Intent(context, FeedReading.class);
             i.putExtra(Reading.EXTRA_FEEDSET, fs);
             i.putExtra(Reading.EXTRA_STORY_HASH, storyHash);
+            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.getApplicationContext().startActivity(i);
+        } else if (intent.getAction().equals(WidgetUtils.ACTION_OPEN_CONFIG)) {
+            Intent i = new Intent(context, WidgetConfig.class);
             i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.getApplicationContext().startActivity(i);
         }
@@ -64,6 +69,12 @@ public class WidgetProvider extends AppWidgetProvider {
             // object above.
             rv.setEmptyView(R.id.widget_list, R.id.widget_empty_view);
 
+            Intent configIntent = new Intent(context, WidgetProvider.class);
+            configIntent.setAction(WidgetUtils.ACTION_OPEN_CONFIG);
+            PendingIntent configIntentTemplate = PendingIntent.getBroadcast(context, WidgetUtils.RC_WIDGET_CONFIG, configIntent,
+                    PendingIntent.FLAG_UPDATE_CURRENT);
+            rv.setOnClickPendingIntent(R.id.widget_empty_view, configIntentTemplate);
+
             // This section makes it possible for items to have individualized behavior.
             // It does this by setting up a pending intent template. Individuals items of a collection
             // cannot set up their own pending intents. Instead, the collection as a whole sets
@@ -76,7 +87,7 @@ public class WidgetProvider extends AppWidgetProvider {
             touchIntent.setAction(WidgetUtils.ACTION_OPEN_STORY);
             touchIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
             intent.setData(Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME)));
-            PendingIntent touchIntentTemplate = PendingIntent.getBroadcast(context, 0, touchIntent,
+            PendingIntent touchIntentTemplate = PendingIntent.getBroadcast(context, WidgetUtils.RC_WIDGET_STORY, touchIntent,
                     PendingIntent.FLAG_UPDATE_CURRENT);
             rv.setPendingIntentTemplate(R.id.widget_list, touchIntentTemplate);
 

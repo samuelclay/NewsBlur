@@ -869,9 +869,10 @@ public class PrefsUtils {
         editor.commit();
     }
 
+    @Nullable
     public static Set<String> getWidgetFeedIds(Context context) {
         SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
-        return preferences.getStringSet(PrefConstants.WIDGET_FEED_SET, Collections.<String>emptySet());
+        return preferences.getStringSet(PrefConstants.WIDGET_FEED_SET, null);
     }
 
     public static void removeWidgetFeed(Context context) {

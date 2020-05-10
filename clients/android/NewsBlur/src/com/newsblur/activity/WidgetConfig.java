@@ -93,12 +93,21 @@ public class WidgetConfig extends NbActivity {
         ArrayList<Feed> feedList = new ArrayList<>();
         while (cursor != null && cursor.moveToNext()) {
             Feed feed = Feed.fromCursor(cursor);
-            if (!feed.feedId.equals("0")) {
+            if (!feed.feedId.equals("0") && feed.active) {
                 feedList.add(feed);
             }
         }
         this.feedList = feedList;
-        adapter.replaceAll(this.feedList, PrefsUtils.getWidgetFeedIds(this));
+
+        Set<String> feedIds = PrefsUtils.getWidgetFeedIds(this);
+        if (feedIds == null) {
+            // default config. Show all feeds
+            feedIds = new HashSet<>(this.feedList.size());
+            for (Feed feed : this.feedList) {
+                feedIds.add(feed.feedId);
+            }
+        }
+        adapter.replaceAll(this.feedList, feedIds);
     }
 
     private void selectAllFeeds() {
