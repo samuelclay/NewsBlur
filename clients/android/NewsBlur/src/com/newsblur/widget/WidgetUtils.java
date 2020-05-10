@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.SystemClock;
 
+import com.newsblur.R;
 import com.newsblur.util.Log;
 
 public class WidgetUtils {
@@ -50,6 +51,12 @@ public class WidgetUtils {
         AppWidgetManager widgetManager = AppWidgetManager.getInstance(context);
         int[] appWidgetIds = widgetManager.getAppWidgetIds(new ComponentName(context, WidgetProvider.class));
         return appWidgetIds.length > 0;
+    }
+
+    public static void notifyViewDataChanged(Context context) {
+        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+        int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(context, WidgetProvider.class));
+        appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.widget_list);
     }
 
     private static Intent getUpdateIntent(Context context) {

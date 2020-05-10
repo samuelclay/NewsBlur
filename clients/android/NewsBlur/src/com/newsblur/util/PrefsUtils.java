@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -861,24 +862,34 @@ public class PrefsUtils {
         editor.commit();
     }
 
-    public static void setWidgetFeed(Context context, @Nullable String feedId) {
+    public static void setWidgetFeedIds(Context context, Set<String> feedIds) {
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
         Editor editor = prefs.edit();
-        editor.putString(PrefConstants.WIDGET_FEED_ID, feedId);
+        editor.putStringSet(PrefConstants.WIDGET_FEED_SET, feedIds);
         editor.commit();
     }
 
-    public static String getWidgetFeed(Context context) {
+    public static Set<String> getWidgetFeedIds(Context context) {
         SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
-        return preferences.getString(PrefConstants.WIDGET_FEED_ID, null);
+        return preferences.getStringSet(PrefConstants.WIDGET_FEED_SET, Collections.<String>emptySet());
     }
 
-    public static void removeWidgetFeed(Context context, int widgetId) {
+    public static void removeWidgetFeed(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
-        if(prefs.contains(PrefConstants.WIDGET_FEED_ID + widgetId)){
+        if (prefs.contains(PrefConstants.WIDGET_FEED_SET)) {
             Editor editor = prefs.edit();
-            editor.remove(PrefConstants.WIDGET_FEED_ID + widgetId);
+            editor.remove(PrefConstants.WIDGET_FEED_SET);
             editor.apply();
         }
+    }
+
+    public static int getSortByForWidgetConfig(Context context) {
+        SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        return preferences.getInt(PrefConstants.WIDGET_CONFIG_SORT_BY, R.id.menu_sort_by_name);
+    }
+
+    public static int getSortOrderForWidgetConfig(Context context) {
+        SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        return preferences.getInt(PrefConstants.WIDGET_CONFIG_SORT_ORDER, R.id.menu_sort_order_ascending);
     }
 }
