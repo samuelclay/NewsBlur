@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 public class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 
@@ -50,9 +51,7 @@ public class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsF
         this.context = context;
         appWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
                 AppWidgetManager.INVALID_APPWIDGET_ID);
-        final String feedId = PrefsUtils.getWidgetFeed(context);
-
-        fs = feedId != null ? FeedSet.singleFeed(feedId) : FeedSet.allFeeds();
+        setFeedSet();
     }
 
     /**
@@ -167,6 +166,7 @@ public class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsF
             com.newsblur.util.Log.d(TAG, "onDataSetChanged - redraw widget");
             dataCompleted = false;
         } else {
+            setFeedSet();
             com.newsblur.util.Log.d(TAG, "onDataSetChanged - fetch stories");
             this.storyItems.clear();
             StoriesResponse response = apiManager.getStories(fs, 1, StoryOrder.NEWEST, ReadFilter.ALL);
@@ -188,7 +188,7 @@ public class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsF
     public void onDestroy() {
         com.newsblur.util.Log.d(TAG, "onDestroy");
         WidgetUtils.removeUpdateAlarm(context);
-        PrefsUtils.removeWidgetFeed(context, appWidgetId);
+        PrefsUtils.removeWidgetFeed(context);
     }
 
     /**
@@ -246,5 +246,14 @@ public class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsF
         com.newsblur.util.Log.d(TAG, "Invalidate app widget with id: " + appWidgetId);
         AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
         appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetId, R.id.widget_list);
+    }
+
+    private void setFeedSet() {
+        Set<String> feedIds = PrefsUtils.getWidgetFeedIds(context);
+        if (feedIds == null || feedIds.isEmpty()) {
+            fs = FeedSet.allFeeds();
+        } else {
+            fs = FeedSet.multipleFeeds(feedIds);
+        }
     }
 }

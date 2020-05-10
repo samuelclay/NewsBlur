@@ -73,6 +73,17 @@ public class FeedSet implements Serializable {
         return fs;
     }
 
+    /**
+     * Convenience constructor for multiple feeds with IDs
+     */
+    public static FeedSet multipleFeeds(Set<String> feedIds) {
+        FeedSet fs = new FeedSet();
+        fs.feeds = new HashSet<>(feedIds.size());
+        fs.feeds.addAll(feedIds);
+        fs.feeds = Collections.unmodifiableSet(fs.feeds);
+        return fs;
+    }
+
     /** 
      * Convenience constructor for all (non-social) feeds.
      */
