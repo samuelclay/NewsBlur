@@ -77,6 +77,11 @@ public class ImageLoader {
      * Synchronous background call coming from app widget on home screen
      */
     public void displayWidgetImage(String url, int imageViewId, int maxDimPX, RemoteViews remoteViews) {
+        if (url == null) {
+            remoteViews.setViewVisibility(imageViewId, View.GONE);
+            return;
+        }
+
         url = buildUrlIfNeeded(url);
 
         // try from memory
