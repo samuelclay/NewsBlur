@@ -884,13 +884,27 @@ public class PrefsUtils {
         }
     }
 
-    public static int getSortByForWidgetConfig(Context context) {
+    public static FeedOrderFilter getWidgetConfigSortBy(Context context) {
         SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
-        return preferences.getInt(PrefConstants.WIDGET_CONFIG_SORT_BY, R.id.menu_sort_by_name);
+        return FeedOrderFilter.valueOf(preferences.getString(PrefConstants.WIDGET_CONFIG_SORT_BY, FeedOrderFilter.NAME.toString()));
     }
 
-    public static int getSortOrderForWidgetConfig(Context context) {
+    public static void setWidgetConfigSortBy(Context context, FeedOrderFilter feedOrderFilter) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        Editor editor = prefs.edit();
+        editor.putString(PrefConstants.WIDGET_CONFIG_SORT_BY, feedOrderFilter.toString());
+        editor.commit();
+    }
+
+    public static ListOrderFilter getWidgetConfigSortOrder(Context context) {
         SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
-        return preferences.getInt(PrefConstants.WIDGET_CONFIG_SORT_ORDER, R.id.menu_sort_order_ascending);
+        return ListOrderFilter.valueOf(preferences.getString(PrefConstants.WIDGET_CONFIG_SORT_ORDER, ListOrderFilter.ASCENDING.name()));
+    }
+
+    public static void setWidgetConfigSortOrder(Context context, ListOrderFilter listOrderFilter) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        Editor editor = prefs.edit();
+        editor.putString(PrefConstants.WIDGET_CONFIG_SORT_ORDER, listOrderFilter.toString());
+        editor.commit();
     }
 }
