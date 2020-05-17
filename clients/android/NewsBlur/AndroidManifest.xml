@@ -77,6 +77,7 @@
 
         <activity
             android:name=".activity.WidgetConfig"
+            android:launchMode="singleTask"
             android:label="@string/widget" />
         
         <activity

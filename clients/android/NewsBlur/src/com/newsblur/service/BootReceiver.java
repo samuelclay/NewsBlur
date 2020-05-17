@@ -37,6 +37,6 @@ public class BootReceiver extends BroadcastReceiver {
 
     private static void resetWidgetSync(Context context) {
         com.newsblur.util.Log.d(BootReceiver.class.getName(), "Received " + Intent.ACTION_BOOT_COMPLETED + " - reset widget sync");
-        WidgetUtils.resetUpdateAlarm(context);
+        WidgetUtils.resetWidgetUpdate(context);
     }
 }

@@ -99,8 +99,7 @@ public class WidgetConfigAdapter extends RecyclerView.Adapter<WidgetConfigAdapte
         diffResult.dispatchUpdatesTo(this);
     }
 
-    void replaceAll(Context context, ArrayList<Feed> feedList) {
-        Set<String> feedIds = PrefsUtils.getWidgetFeedIds(context);
+    void replaceAll(Context context, ArrayList<Feed> feedList, Set<String> feedIds) {
         this.feedOrderFilter = PrefsUtils.getWidgetConfigSortBy(context);
         this.feedIds.clear();
         this.feedIds.addAll(feedIds);

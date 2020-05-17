@@ -38,7 +38,7 @@
             android:layout_toRightOf="@id/story_item_feedicon"
             android:ellipsize="end"
             android:singleLine="true"
-            android:textColor="@color/dark_story_feed_title_text"
+            android:textColor="@color/widget_feed_title"
             android:textStyle="bold" />
 
         <TextView
@@ -54,7 +54,7 @@
             android:ellipsize="end"
             android:lines="2"
             android:maxLines="2"
-            android:textColor="@color/dark_story_content_text"
+            android:textColor="@color/widget_story_title"
             android:textStyle="bold" />
 
         <TextView
@@ -70,7 +70,7 @@
             android:ellipsize="end"
             android:lines="2"
             android:maxLines="2"
-            android:textColor="@color/dark_story_feed_title_text"
+            android:textColor="@color/widget_story_content"
             android:textSize="13sp" />
 
         <ImageView
@@ -96,7 +96,7 @@
             android:ellipsize="end"
             android:maxLines="1"
             android:textAllCaps="true"
-            android:textColor="@color/story_content_text"
+            android:textColor="@color/widget_story_author"
             android:textSize="12sp"
             android:textStyle="bold" />
 
@@ -109,7 +109,7 @@
             android:layout_marginBottom="2dp"
             android:gravity="end"
             android:maxLines="1"
-            android:textColor="@color/dark_story_date_text"
+            android:textColor="@color/widget_story_date_time"
             android:textSize="12sp" />
 
     </RelativeLayout>

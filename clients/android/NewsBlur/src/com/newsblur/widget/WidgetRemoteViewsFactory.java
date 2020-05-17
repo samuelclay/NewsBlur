@@ -78,7 +78,7 @@ public class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsF
             }
         }
 
-        WidgetUtils.setUpdateAlarm(context);
+        WidgetUtils.enableWidgetUpdate(context);
     }
 
     /**
@@ -160,6 +160,12 @@ public class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsF
     @Override
     public void onDataSetChanged() {
         com.newsblur.util.Log.d(TAG, "onDataSetChanged");
+        // if user logged out don't try to update widget
+        if (!WidgetUtils.isLoggedIn(context)) {
+            com.newsblur.util.Log.d(TAG, "onDataSetChanged - not logged in");
+            return;
+        }
+
         if (dataCompleted) {
             // we have all the stories data, just let the widget redraw
             com.newsblur.util.Log.d(TAG, "onDataSetChanged - redraw widget");
@@ -191,8 +197,8 @@ public class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsF
     @Override
     public void onDestroy() {
         com.newsblur.util.Log.d(TAG, "onDestroy");
-        WidgetUtils.removeUpdateAlarm(context);
-        PrefsUtils.removeWidgetFeed(context);
+        WidgetUtils.disableWidgetUpdate(context);
+        PrefsUtils.removeWidgetData(context);
     }
 
     /**

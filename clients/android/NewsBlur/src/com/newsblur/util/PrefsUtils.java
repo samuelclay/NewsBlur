@@ -5,7 +5,6 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -163,6 +162,9 @@ public class PrefsUtils {
 
         // wipe the local DB
         FeedUtils.dropAndRecreateTables();
+
+        // disable widget
+        WidgetUtils.disableWidgetUpdate(context);
 
         // reset custom server
         APIConstants.unsetCustomServer();
@@ -875,13 +877,19 @@ public class PrefsUtils {
         return preferences.getStringSet(PrefConstants.WIDGET_FEED_SET, null);
     }
 
-    public static void removeWidgetFeed(Context context) {
+    public static void removeWidgetData(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        Editor editor = prefs.edit();
         if (prefs.contains(PrefConstants.WIDGET_FEED_SET)) {
-            Editor editor = prefs.edit();
             editor.remove(PrefConstants.WIDGET_FEED_SET);
-            editor.apply();
         }
+        if (prefs.contains(PrefConstants.WIDGET_CONFIG_SORT_BY)) {
+            editor.remove(PrefConstants.WIDGET_CONFIG_SORT_BY);
+        }
+        if (prefs.contains(PrefConstants.WIDGET_CONFIG_SORT_ORDER)) {
+            editor.remove(PrefConstants.WIDGET_CONFIG_SORT_ORDER);
+        }
+        editor.apply();
     }
 
     public static FeedOrderFilter getWidgetConfigSortBy(Context context) {
