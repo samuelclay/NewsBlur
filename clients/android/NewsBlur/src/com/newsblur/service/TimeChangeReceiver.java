@@ -14,7 +14,7 @@ public class TimeChangeReceiver extends BroadcastReceiver {
         if (intent != null && intent.getAction() != null
                 && intent.getAction().equals(Intent.ACTION_TIME_CHANGED)) {
             com.newsblur.util.Log.d(TimeChangeReceiver.class.getName(), "Received " + Intent.ACTION_TIME_CHANGED + " - reset widget sync");
-            WidgetUtils.resetUpdateAlarm(context);
+            WidgetUtils.resetWidgetUpdate(context);
         }
     }
 }

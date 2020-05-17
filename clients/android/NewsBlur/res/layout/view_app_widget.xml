@@ -27,7 +27,7 @@
             android:lines="1"
             android:text="@string/newsblur"
             android:textAllCaps="true"
-            android:textColor="@color/dark_story_feed_title_text"
+            android:textColor="@color/widget_title"
             android:textStyle="bold" />
 
     </FrameLayout>
@@ -37,7 +37,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:listitem="@layout/view_widget_story_item"
-        android:divider="@color/dark_story_comment_divider"
+        android:divider="@color/widget_divider"
         android:dividerHeight="0.5dp"/>
 
     <TextView
@@ -46,7 +46,7 @@
         android:layout_height="match_parent"
         android:gravity="center"
         android:text="@string/title_widget_setup"
-        android:textColor="@color/dark_story_feed_title_text" />
+        android:textColor="@color/widget_feed_title" />
 
     <!--    Note that empty views must be siblings of the collection view
             for which the empty view represents empty state.-->

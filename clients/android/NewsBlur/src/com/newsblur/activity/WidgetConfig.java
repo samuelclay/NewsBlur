@@ -9,6 +9,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 
 import com.newsblur.R;
 import com.newsblur.domain.Feed;
@@ -36,6 +38,8 @@ public class WidgetConfig extends NbActivity {
 
     @Bind(R.id.recycler_view)
     RecyclerView recyclerView;
+    @Bind(R.id.text_no_subscriptions)
+    TextView textNoSubscriptions;
 
     private WidgetConfigAdapter adapter;
     private ArrayList<Feed> feeds = new ArrayList<>();
@@ -159,8 +163,11 @@ public class WidgetConfig extends NbActivity {
                 feedIds.add(feed.feedId);
             }
         }
-        adapter.replaceAll(this, this.feeds);
+        adapter.replaceAll(this, this.feeds, feedIds);
         updateListOrder();
+
+        recyclerView.setVisibility(adapter.getItemCount() > 0 ? View.VISIBLE : View.GONE);
+        textNoSubscriptions.setVisibility(adapter.getItemCount() > 0 ? View.GONE : View.VISIBLE);
     }
 
     private void selectAllFeeds() {
@@ -173,7 +180,7 @@ public class WidgetConfig extends NbActivity {
 
     private void setWidgetFeedIds(Set<String> feedIds) {
         PrefsUtils.setWidgetFeedIds(this, feedIds);
-        adapter.replaceAll(this, this.feeds);
+        adapter.replaceAll(this, this.feeds, feedIds);
     }
 
     private void setSortBy(FeedOrderFilter feedOrderFilter) {
