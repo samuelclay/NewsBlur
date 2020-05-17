@@ -1,31 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
-    <FrameLayout
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recycler_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        app:layoutManager="android.support.v7.widget.LinearLayoutManager" />
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/recycler_view"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:nestedScrollingEnabled="false"
-            android:orientation="vertical"
-            app:layoutManager="android.support.v7.widget.LinearLayoutManager" />
+    <TextView
+        android:id="@+id/text_no_subscriptions"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:padding="32dp"
+        android:text="@string/title_no_subscriptions"
+        android:visibility="gone" />
 
-        <TextView
-            android:id="@+id/text_no_subscriptions"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:padding="32dp"
-            android:text="@string/title_no_subscriptions"
-            android:visibility="gone" />
-
-    </FrameLayout>
-
-</android.support.v4.widget.NestedScrollView>
+</FrameLayout>

@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.Loader;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -218,23 +219,9 @@ public class WidgetConfig extends NbActivity {
                 } else if (feedOrderFilter == FeedOrderFilter.OPENS && listOrderFilter == ListOrderFilter.DESCENDING) {
                     return Integer.compare(o2.feedOpens, o1.feedOpens);
                 } else if (feedOrderFilter == FeedOrderFilter.RECENT_STORY && listOrderFilter == ListOrderFilter.ASCENDING) {
-                    try {
-                        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
-                        Date firstDate = dateFormat.parse(o1.lastStoryDate);
-                        Date secondDate = dateFormat.parse(o2.lastStoryDate);
-                        return secondDate.compareTo(firstDate);
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                    }
+                    return compareLastStoryDateTimes(o1.lastStoryDate, o2.lastStoryDate, listOrderFilter);
                 } else if (feedOrderFilter == FeedOrderFilter.RECENT_STORY && listOrderFilter == ListOrderFilter.DESCENDING) {
-                    try {
-                        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
-                        Date firstDate = dateFormat.parse(o1.lastStoryDate);
-                        Date secondDate = dateFormat.parse(o2.lastStoryDate);
-                        return firstDate.compareTo(secondDate);
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                    }
+                    return compareLastStoryDateTimes(o1.lastStoryDate, o2.lastStoryDate, listOrderFilter);
                 } else if (feedOrderFilter == FeedOrderFilter.STORIES_MONTH && listOrderFilter == ListOrderFilter.ASCENDING) {
                     return Integer.compare(o1.storiesPerMonth, o2.storiesPerMonth);
                 } else if (feedOrderFilter == FeedOrderFilter.STORIES_MONTH && listOrderFilter == ListOrderFilter.DESCENDING) {
@@ -243,5 +230,29 @@ public class WidgetConfig extends NbActivity {
                 return o1.title.compareTo(o2.title);
             }
         };
+    }
+
+    private int compareLastStoryDateTimes(String firstDateTime, String secondDateTime, ListOrderFilter listOrderFilter) {
+        try {
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+            // found null last story date times on feeds
+            if (TextUtils.isEmpty(firstDateTime)) {
+                firstDateTime = "2000-01-01 00:00:00";
+            }
+            if (TextUtils.isEmpty(secondDateTime)) {
+                secondDateTime = "2000-01-01 00:00:00";
+            }
+
+            Date firstDate = dateFormat.parse(firstDateTime);
+            Date secondDate = dateFormat.parse(secondDateTime);
+            if (listOrderFilter == ListOrderFilter.ASCENDING) {
+                return firstDate.compareTo(secondDate);
+            } else {
+                return secondDate.compareTo(firstDate);
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return 0;
+        }
     }
 }
