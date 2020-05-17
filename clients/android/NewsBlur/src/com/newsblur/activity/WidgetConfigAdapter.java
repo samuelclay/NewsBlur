@@ -63,7 +63,7 @@ public class WidgetConfigAdapter extends RecyclerView.Adapter<WidgetConfigAdapte
                 Date dateTime = dateFormat.parse(feed.lastStoryDate);
                 CharSequence relativeTimeString = DateUtils.getRelativeTimeSpanString(dateTime.getTime(), System.currentTimeMillis(), DateUtils.MINUTE_IN_MILLIS);
                 holder.textDetails.setText(relativeTimeString);
-            } catch (ParseException e) {
+            } catch (Exception e) {
                 holder.textDetails.setText(feed.lastStoryDate);
             }
         }
