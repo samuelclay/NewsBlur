@@ -112,7 +112,6 @@ public class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsF
         // set on the collection view in WidgetProvider
         Bundle extras = new Bundle();
         extras.putString(WidgetUtils.EXTRA_ITEM_ID, story.storyHash);
-        extras.putString(WidgetUtils.EXTRA_FEED_ID, story.feedId);
         Intent fillInIntent = new Intent();
         fillInIntent.putExtras(extras);
 

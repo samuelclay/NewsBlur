@@ -10,8 +10,8 @@ import android.util.Log;
 import android.widget.RemoteViews;
 
 import com.newsblur.R;
-import com.newsblur.activity.FeedReading;
-import com.newsblur.activity.Reading;
+import com.newsblur.activity.AllStoriesItemsList;
+import com.newsblur.activity.ItemsList;
 import com.newsblur.activity.WidgetConfig;
 import com.newsblur.util.FeedSet;
 
@@ -25,11 +25,10 @@ public class WidgetProvider extends AppWidgetProvider {
         Log.d(TAG, "onReceive");
         if (intent.getAction().equals(WidgetUtils.ACTION_OPEN_STORY)) {
             String storyHash = intent.getStringExtra(WidgetUtils.EXTRA_ITEM_ID);
-            String feedId = intent.getStringExtra(WidgetUtils.EXTRA_FEED_ID);
-            FeedSet fs = FeedSet.singleFeed(feedId);
-            Intent i = new Intent(context, FeedReading.class);
-            i.putExtra(Reading.EXTRA_FEEDSET, fs);
-            i.putExtra(Reading.EXTRA_STORY_HASH, storyHash);
+            Intent i = new Intent(context, AllStoriesItemsList.class);
+            i.putExtra(ItemsList.EXTRA_FEED_SET, FeedSet.allFeeds());
+            i.putExtra(ItemsList.EXTRA_STORY_HASH, storyHash);
+            i.putExtra(ItemsList.EXTRA_WIDGET_STORY, true);
             i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.getApplicationContext().startActivity(i);
         } else if (intent.getAction().equals(WidgetUtils.ACTION_OPEN_CONFIG)) {
