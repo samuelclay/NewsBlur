@@ -35,8 +35,9 @@ frontend public
   bind :443 ssl crt newsblur.pem ciphers ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-SHA256:ECDHE-RSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-RSA-AES256-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES128-SHA:AES256-SHA256:AES256-SHA no-sslv3
   rspadd Strict-Transport-Security:\ max-age=0;\ includeSubDomains
   option http-server-close
+
   # Redirect all HTTP traffic to HTTPS
-  # redirect scheme https if !{ ssl_fc }
+  redirect scheme https code 301 if !{ ssl_fc }
 
   acl gunicorn_dead nbsrv(gunicorn) lt 1
   acl nginx_dead nbsrv(nginx) lt 1
