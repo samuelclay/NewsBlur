@@ -27,6 +27,7 @@
 
 @interface StoryPageControl ()
 
+@property (nonatomic) CGFloat statusBarHeight;
 @property (nonatomic, strong) NSTimer *autoscrollTimer;
 @property (nonatomic, strong) NSTimer *autoscrollViewTimer;
 @property (nonatomic, strong) NSString *restoringStoryId;
@@ -117,6 +118,12 @@
 //    NSLog(@"Scroll view parent: %@", NSStringFromCGRect(currentPage.view.frame));
     [self.scrollView sizeToFit];
 //    NSLog(@"Scroll view frame post 2: %@", NSStringFromCGRect(self.scrollView.frame));
+    
+    if (@available(iOS 13.0, *)) {
+        self.statusBarHeight = appDelegate.window.windowScene.statusBarManager.statusBarFrame.size.height;
+    } else {
+        self.statusBarHeight = [UIApplication sharedApplication].statusBarFrame.size.height;
+    }
     
     // adding HUD for progress bar
     CGFloat radius = 8;
@@ -263,6 +270,7 @@
     [self updateTraverseBackground];
     [self setNextPreviousButtons];
     [self setTextButton];
+    [self updateStatusBarState];
     
     self.currentlyTogglingNavigationBar = NO;
     
@@ -421,6 +429,8 @@
     } completion:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
 //        NSLog(@"---> Story page control did re-orient: %@ / %@", NSStringFromCGSize(self.scrollView.bounds.size), NSStringFromCGSize(size));
         inRotation = NO;
+        
+        [self updateStatusBarState];
 
         [self.view setNeedsLayout];
         [self.view layoutIfNeeded];
@@ -451,8 +461,22 @@
     [self adjustDragBar:orientation];
 }
 
+- (void)updateStatusBarState {
+    NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
+    BOOL shouldHideStatusBar = [preferences boolForKey:@"story_hide_status_bar"];
+    BOOL isNavBarHidden = self.navigationController.navigationBarHidden;
+    
+    self.statusBarBackgroundView.hidden = shouldHideStatusBar || !isNavBarHidden || !appDelegate.isPortrait;
+}
+
 - (BOOL)prefersStatusBarHidden {
-    return self.navigationController.navigationBarHidden;
+    NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
+    BOOL shouldHideStatusBar = [preferences boolForKey:@"story_hide_status_bar"];
+    BOOL isNavBarHidden = self.navigationController.navigationBarHidden;
+    
+    [self updateStatusBarState];
+    
+    return shouldHideStatusBar && isNavBarHidden;
 }
 
 - (BOOL)wantNavigationBarHidden {
@@ -551,6 +575,7 @@
         [self setNeedsStatusBarAppearanceUpdate];
     } completion:^(BOOL finished) {
         self.currentlyTogglingNavigationBar = NO;
+        [self updateStatusBarState];
     }];
 }
 
@@ -792,6 +817,7 @@
     [self setNextPreviousButtons];
     [self setTextButton];
     [self updateStoriesTheme];
+    [self updateStatusBarTheme];
 }
 
 // allow keyboard comands
@@ -1438,9 +1464,14 @@
 
 - (IBAction)showOriginalSubview:(id)sender {
     [appDelegate hidePopover];
-
-    NSURL *url = [NSURL URLWithString:[appDelegate.activeStory
-                                       objectForKey:@"story_permalink"]];
+    
+    NSString *permalink = [appDelegate.activeStory objectForKey:@"story_permalink"];
+    NSURL *url = [NSURL URLWithString:permalink];
+    
+    if (url == nil) {
+        url = [NSURL URLWithDataRepresentation:[permalink dataUsingEncoding:NSUTF8StringEncoding] relativeToURL:nil];
+    }
+    
     [appDelegate showOriginalStory:url];
 }
 
@@ -1551,6 +1582,22 @@
     [self.currentPage updateStoryTheme];
     [self.nextPage updateStoryTheme];
     [self.previousPage updateStoryTheme];
+}
+
+- (void)updateStatusBarTheme {
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        [self.statusBarBackgroundView removeFromSuperview];
+        
+        CGRect statusRect = CGRectMake(0, 0, self.view.bounds.size.width, self.statusBarHeight);
+        
+        self.statusBarBackgroundView = [[UIView alloc] initWithFrame:statusRect];
+        self.statusBarBackgroundView.backgroundColor = self.navigationController.navigationBar.barTintColor;
+        
+        [self.view addSubview:self.statusBarBackgroundView];
+        self.statusBarBackgroundView.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin;
+        
+        [self updateStatusBarState];
+    }
 }
 
 - (void)backToDashboard:(id)sender {

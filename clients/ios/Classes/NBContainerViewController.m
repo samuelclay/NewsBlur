@@ -243,6 +243,12 @@
 }
 
 - (BOOL)prefersStatusBarHidden {
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+    
+    if (![userPreferences boolForKey:@"story_hide_status_bar"]) {
+        return NO;
+    }
+    
     if (@available(iOS 11.0, *)) {
         return self.navigationController.navigationBarHidden && self.view.safeAreaInsets.top > 0.0;
     } else {

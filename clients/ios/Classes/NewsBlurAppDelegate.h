@@ -439,6 +439,7 @@ SFSafariViewControllerDelegate>  {
 - (NSDictionary *)getStory:(NSString *)storyHash;
 
 + (void)fillGradient:(CGRect)r startColor:(UIColor *)startColor endColor:(UIColor *)endColor;
++ (UIView *)makeSimpleGradientView:(CGRect)rect startColor:(UIColor *)startColor endColor:(UIColor *)endColor;
 + (UIColor *)faviconColor:(NSString *)colorString;
 + (UIView *)makeGradientView:(CGRect)rect startColor:(NSString *)start endColor:(NSString *)end borderColor:(NSString *)borderColor;
 - (UIView *)makeFeedTitleGradient:(NSDictionary *)feed withRect:(CGRect)rect;
