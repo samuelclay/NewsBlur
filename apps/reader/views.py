@@ -184,19 +184,21 @@ def login(request):
 @render_to('accounts/signup.html')
 def signup(request):
     if request.method == "POST":
-        signup_form = SignupForm(request.POST, prefix='signup')
-        return {
-            "form": signup_form
-        }
-        # form = SignupForm(prefix='signup', data=request.POST)
-        # if form.is_valid():
-        #     new_user = form.save()
-        #     login_user(request, new_user)
-        #     logging.user(new_user, "~FG~SB~BBNEW SIGNUP: ~FW%s" % new_user.email)
-        #     if not new_user.is_active:
-        #         url = "https://%s%s" % (Site.objects.get_current().domain,
-        #                                  reverse('stripe-form'))
-        #         return HttpResponseRedirect(url)
+        if settings.ENFORCE_SIGNUP_CAPTCHA:
+            signup_form = SignupForm(request.POST, prefix='signup')
+            return {
+                "form": signup_form
+            }
+
+        form = SignupForm(prefix='signup', data=request.POST)
+        if form.is_valid():
+            new_user = form.save()
+            login_user(request, new_user)
+            logging.user(new_user, "~FG~SB~BBNEW SIGNUP: ~FW%s" % new_user.email)
+            if not new_user.is_active:
+                url = "https://%s%s" % (Site.objects.get_current().domain,
+                                         reverse('stripe-form'))
+                return HttpResponseRedirect(url)
     
     return index(request)
         
@@ -423,6 +425,8 @@ def load_feeds_flat(request):
     if not user_subs:
         categories = MCategory.serialize()
 
+    saved_searches = MSavedSearch.user_searches(user.pk)
+
     logging.user(request, "~FB~SBLoading ~FY%s~FB/~FM%s~FB/~FR%s~FB feeds/socials/inactive ~FMflat~FB%s%s" % (
             len(feeds.keys()), len(social_feeds), len(inactive_feeds), '. ~FCUpdating counts.' if update_counts else '',
             ' ~BB(background fetch)' if background_ios else ''))
@@ -445,6 +449,7 @@ def load_feeds_flat(request):
         "categories": categories,
         'starred_count': starred_count,
         'starred_counts': starred_counts,
+        'saved_searches': saved_searches,
         'share_ext_token': user.profile.secret_token,
     }
     return data
@@ -941,7 +946,7 @@ def load_starred_stories(request):
             story['story_feed_id'] = saved_story.story_feed_id
             saved_story.save()
             logging.user(request, "~FCSaving new feed for starred story: ~SB%s -> %s" % (story['story_hash'], feed_id))
-        except (MStarredStory.DoesNotExist):
+        except (MStarredStory.DoesNotExist, MStarredStory.MultipleObjectsReturned):
             logging.user(request, "~FCCan't find feed for starred story: ~SB%s" % (story['story_hash']))
             continue
     
