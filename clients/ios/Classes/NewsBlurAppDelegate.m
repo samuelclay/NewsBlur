@@ -2098,6 +2098,17 @@
         NSString *encodedURL = [url.absoluteString stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLHostAllowedCharacterSet]];
         NSString *firefoxURL = [NSString stringWithFormat:@"%@%@", @"firefox://open-url?url=", encodedURL];
         [[UIApplication sharedApplication] openURL:[NSURL URLWithString:firefoxURL] options:@{} completionHandler:nil];
+    } else if ([storyBrowser isEqualToString:@"edge"]){
+        NSString *edgeURL;
+        NSRange prefix = [[url absoluteString] rangeOfString: @"http"];
+        
+        if (NSNotFound != prefix.location) {
+            edgeURL = [[url absoluteString]
+                        stringByReplacingCharactersInRange: prefix
+                        withString: @"microsoft-edge-http"];
+        }
+        
+        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:edgeURL] options:@{} completionHandler:nil];
     } else if ([storyBrowser isEqualToString:@"inappsafari"]) {
         [self showSafariViewControllerWithURL:url useReader:NO];
     } else if ([storyBrowser isEqualToString:@"inappsafarireader"]) {

@@ -10,7 +10,7 @@ from apps.profile.tasks import EmailNewUser
 from apps.social.models import MActivity
 from apps.profile.models import blank_authenticate, RNewUserQueue
 from utils import log as logging
-from dns.resolver import query, NXDOMAIN, NoNameservers
+from dns.resolver import query, NXDOMAIN, NoNameservers, NoAnswer
 
 class LoginForm(forms.Form):
     username = forms.CharField(label=_("Username or Email"), max_length=30,
@@ -116,7 +116,7 @@ class SignupForm(forms.Form):
                 domain = email.rsplit('@', 1)[-1]
                 if not query(domain, 'MX'):
                     raise forms.ValidationError('Sorry, that email is invalid.')
-            except (NXDOMAIN, NoNameservers):
+            except (NXDOMAIN, NoNameservers, NoAnswer):
                 raise forms.ValidationError('Sorry, that email is invalid.')
         return self.cleaned_data['email']
     
