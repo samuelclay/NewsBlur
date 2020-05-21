@@ -736,6 +736,7 @@
 				<string>Chrome</string>
 				<string>Opera Mini</string>
 				<string>Firefox</string>
+				<string>Edge</string>
 			</array>
 			<key>DefaultValue</key>
 			<string>inappsafari</string>
@@ -748,6 +749,7 @@
 				<string>chrome</string>
 				<string>opera_mini</string>
 				<string>firefox</string>
+				<string>edge</string>
 			</array>
 			<key>Key</key>
 			<string>story_browser</string>
