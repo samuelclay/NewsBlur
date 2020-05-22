@@ -43,6 +43,7 @@ struct Story: Codable, Identifiable {
         static let title = "story_title"
         static let content = "story_content"
         static let imageURLs = "image_urls"
+        static let secureImageURLs = "secure_image_thumbnails"
     }
     
     /// Initializer from a dictionary.
@@ -56,8 +57,8 @@ struct Story: Codable, Identifiable {
         title = dictionary[DictionaryKeys.title] as? String ?? ""
         content = dictionary[DictionaryKeys.content] as? String ?? ""
         
-        if let images = dictionary[DictionaryKeys.imageURLs] as? [String], let first = images.first {
-            imageURL = URL(string: first)
+        if let imageURLs = dictionary[DictionaryKeys.imageURLs] as? [String], let first = imageURLs.first, let secureImages = dictionary[DictionaryKeys.secureImageURLs] as? [String : String], let url = secureImages[first] {
+            imageURL = URL(string: url)
         } else {
             imageURL = nil
         }

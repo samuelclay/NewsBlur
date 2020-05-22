@@ -1,11 +1,17 @@
 NEWSBLUR.ReaderStatistics = function(feed_id, options) {
-    var defaults = {};
+    var defaults = {
+      embedded: false
+    };
     
     this.options = $.extend({}, defaults, options);
     this.model = NEWSBLUR.assets;
     this.feed_id = feed_id;
-    this.feed = this.model.get_feed(feed_id);
-    this.feeds = this.model.get_feeds();
+    if (this.options.embedded) {
+      this.feed = NEWSBLUR.stats_feed;
+    } else {
+      this.feed = this.model.get_feed(feed_id);
+      this.feeds = this.model.get_feeds();
+    }
     this.first_load = true;
     this.runner();
 };
@@ -20,24 +26,28 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
         
         this.initialize_feed(this.feed_id);
         this.make_modal();
-        this.open_modal();
-        setTimeout(function() {
-            self.get_stats();
-        }, 50);
+        if (this.options.embedded) {
+          $(".NB-embedded-stats").html(this.$modal);   
+        } else {
+          this.open_modal();
+          setTimeout(function() {
+              self.get_stats();
+          }, 50);
         
-        this.$modal.bind('click', $.rescope(this.handle_click, this));
-        this.$modal.bind('change', $.rescope(this.handle_change, this));
+          this.$modal.bind('click', $.rescope(this.handle_click, this));
+          this.$modal.bind('change', $.rescope(this.handle_change, this));
+        }
     },
     
     make_modal: function() {
         var self = this;
         
         this.$modal = $.make('div', { className: 'NB-modal-statistics NB-modal' }, [
-            $.make('div', { className: 'NB-modal-feed-chooser-container'}, [
+            (!this.options.embedded && $.make('div', { className: 'NB-modal-feed-chooser-container'}, [
                 this.make_feed_chooser({skip_starred: true})
-            ]),
+            ])),
             $.make('div', { className: 'NB-modal-loading' }),
-            $.make('h2', { className: 'NB-modal-title' }, 'Statistics &amp; History'),
+            (!this.options.embedded && $.make('h2', { className: 'NB-modal-title' }, 'Statistics &amp; History')),
             $.make('h2', { className: 'NB-modal-subtitle' }, [
                 $.make('img', { className: 'NB-modal-feed-image feed_favicon', src: $.favicon(this.feed) }),
                 $.make('div', { className: 'NB-modal-feed-heading' }, [
@@ -90,9 +100,11 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
             self.make_chart_days(data);
         }, this.first_load ? 200 : 50);
         
-        setTimeout(function() {
-            $.modal.impl.resize(self.$modal);
-        }, 100);
+        if (!this.options.embedded) {
+          setTimeout(function() {
+              $.modal.impl.resize(self.$modal);
+          }, 100);
+        }
     },
     
     make_stats: function(data) {

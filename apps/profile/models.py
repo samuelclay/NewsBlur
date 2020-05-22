@@ -117,7 +117,7 @@ class Profile(models.Model):
                 follower_profile = MSocialProfile.objects.get(user_id=follower)
                 follower_profile.unfollow_user(self.user.pk)
             social_profile.delete()
-        except MSocialProfile.DoesNotExist:
+        except (MSocialProfile.DoesNotExist, IndexError):
             logging.user(self.user, " ***> No social profile found. S'ok, moving on.")
             pass
         

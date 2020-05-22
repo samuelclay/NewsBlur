@@ -313,7 +313,7 @@ SFSafariViewControllerDelegate>  {
 - (void)setHiddenPreferencesAnimated:(BOOL)animated;
 - (void)resizePreviewSize;
 - (void)resizeFontSize;
-- (void)popToRoot;
+- (void)popToRootWithCompletion:(void (^)(void))completion;
 
 - (void)showMoveSite;
 - (void)openTrainSite;
@@ -321,6 +321,7 @@ SFSafariViewControllerDelegate>  {
 - (void)openNotificationsWithFeed:(NSString *)feedId sender:(id)sender;
 - (void)updateNotifications:(NSDictionary *)params feed:(NSString *)feedId;
 - (void)checkForFeedNotifications;
+- (void)openStatisticsWithFeed:(NSString *)feedId sender:(id)sender;
 - (void)openTrainSiteWithFeedLoaded:(BOOL)feedLoaded from:(id)sender;
 - (void)openTrainStory:(id)sender;
 - (void)openUserTagsStory:(id)sender;
@@ -357,6 +358,8 @@ SFSafariViewControllerDelegate>  {
 - (void)reloadFeedsView:(BOOL)showLoader;
 - (void)setTitle:(NSString *)title;
 - (void)showOriginalStory:(NSURL *)url;
+- (void)showInAppBrowser:(NSURL *)url withCustomTitle:(NSString *)customTitle fromSender:(id)sender;
+- (void)showSafariViewControllerWithURL:(NSURL *)url useReader:(BOOL)useReader;
 - (void)closeOriginalStory;
 - (void)hideStoryDetailView;
 - (void)changeActiveFeedDetailRow;

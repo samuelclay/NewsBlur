@@ -35,6 +35,7 @@
 #import "UISearchBar+Field.h"
 #import "StoriesCollection.h"
 #import "PremiumManager.h"
+#import "NewsBlur-Swift.h"
 
 static const CGFloat kPhoneTableViewRowHeight = 6.0f;
 static const CGFloat kTableViewRowHeight = 6.0f;
@@ -1158,7 +1159,11 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
                 });
             }];
         });
-	}
+	} else if ([specifier.key isEqualToString:@"import_prefs"]) {
+        [ImportExportPreferences importFromController:sender];
+    } else if ([specifier.key isEqualToString:@"export_prefs"]) {
+        [ImportExportPreferences exportFromController:sender];
+    }
 }
 
 - (void)validateWidgetFeedsForGroupDefaults:(NSUserDefaults *)groupDefaults usingResults:(NSDictionary *)results {
@@ -1170,12 +1175,20 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
         NSDictionary *resultsFeeds = results[@"feeds"];
         
         [resultsFeeds enumerateKeysAndObjectsUsingBlock:^(id key, NSDictionary *obj, BOOL *stop) {
-            NSString *identifier = [NSString stringWithFormat:@"%@", key];
-            NSString *title = obj[@"feed_title"];
+            NSMutableDictionary *feed = [NSMutableDictionary dictionary];
             NSString *fade = obj[@"favicon_fade"];
             NSString *color = obj[@"favicon_color"];
             
-            NSDictionary *feed = @{@"id" : identifier, @"feed_title" : title, @"favicon_fade": fade, @"favicon_color" : color};
+            feed[@"id"] = [NSString stringWithFormat:@"%@", key];
+            feed[@"feed_title"] = [NSString stringWithFormat:@"%@", obj[@"feed_title"]];
+            
+            if (fade != nil && ![fade isKindOfClass:[NSNull class]]) {
+                feed[@"favicon_fade"] = fade;
+            }
+            
+            if (color != nil && ![color isKindOfClass:[NSNull class]]) {
+                feed[@"favicon_color"] = color;
+            }
             
             [feeds addObject:feed];
         }];
@@ -1540,12 +1553,18 @@ heightForHeaderInSection:(NSInteger)section {
             appDelegate.activeUserProfileId = [NSString stringWithFormat:@"%@", [feed objectForKey:@"user_id"]];
             appDelegate.activeUserProfileName = [NSString stringWithFormat:@"%@", [feed objectForKey:@"username"]];
             [appDelegate showUserProfileModal:cell];
-        } else if ([[preferences stringForKey:@"feed_swipe_left"] isEqualToString:@"notifications"]) {
-            [appDelegate openNotificationsWithFeed:feedId sender:cell];
         } else {
-            // Train
-            appDelegate.storiesCollection.activeFeed = [appDelegate.dictFeeds objectForKey:feedId];
-            [appDelegate openTrainSiteWithFeedLoaded:NO from:cell];
+            NSString *swipe = [preferences stringForKey:@"feed_swipe_left"];
+            
+            if ([swipe isEqualToString:@"notifications"]) {
+                [appDelegate openNotificationsWithFeed:feedId sender:cell];
+            } else if ([swipe isEqualToString:@"statistics"]) {
+                [appDelegate openStatisticsWithFeed:feedId sender:cell];
+            } else {
+                // Train
+                appDelegate.storiesCollection.activeFeed = [appDelegate.dictFeeds objectForKey:feedId];
+                [appDelegate openTrainSiteWithFeedLoaded:NO from:cell];
+            }
         }
     } else if (state == MCSwipeTableViewCellState3) {
         // Mark read

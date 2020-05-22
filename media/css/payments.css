@@ -55,6 +55,10 @@
     width: 360px;
 }
 
+.NB-stripe-form {
+    overflow: hidden;
+}
+
 .NB-static-form input,
 .NB-static-form select {
     font-size: 14px;
@@ -69,6 +73,10 @@
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
+}
+.NB-static-oauth .NB-static-form .controls input,
+.NB-stripe-form.NB-static-form .controls input {
+    width: 180px;
 }
 .NB-static-form .NB-label-right {
     margin: 0 0 24px 206px;

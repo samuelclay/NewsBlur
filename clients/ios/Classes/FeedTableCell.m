@@ -90,12 +90,21 @@ static UIFont *textFont = nil;
     }
     
     NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
-    BOOL isNotifications = [[preferences stringForKey:@"feed_swipe_left"]
-                            isEqualToString:@"notifications"];
+    NSString *swipe = [preferences stringForKey:@"feed_swipe_left"];
+    NSString *iconName;
+    
+    if (self.isSocial) {
+        iconName = @"menu_icn_fetch_subscribers.png";
+    } else if ([swipe isEqualToString:@"notifications"]) {
+        iconName = @"menu_icn_notifications.png";
+    } else if ([swipe isEqualToString:@"statistics"]) {
+        iconName = @"menu_icn_statistics.png";
+    } else {
+        iconName = @"train.png";
+    }
+    
     [self setDelegate:(NewsBlurViewController <MCSwipeTableViewCellDelegate> *)appDelegate.feedsViewController];
-    [self setFirstStateIconName:(self.isSocial ? @"menu_icn_fetch_subscribers.png" :
-                                 isNotifications ? @"menu_icn_notifications.png" :
-                                 @"train.png")
+    [self setFirstStateIconName:(iconName)
                      firstColor:UIColorFromRGB(0xA4D97B)
             secondStateIconName:nil
                     secondColor:nil

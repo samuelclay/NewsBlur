@@ -32,32 +32,12 @@
     self.view.layer.shadowOpacity = 0.5;
     self.view.layer.shadowPath = [UIBezierPath bezierPathWithRect:self.view.bounds].CGPath;
     
-    UIImage *separatorImage = [UIImage imageNamed:@"bar-separator.png"];
-    if ([ThemeManager themeManager].isDarkTheme) {
-        separatorImage = [UIImage imageNamed:@"bar_separator_dark"];
-    }
-    UIBarButtonItem *separatorBarButton = [UIBarButtonItem barItemWithImage:separatorImage
-                                                                     target:nil
-                                                                     action:nil];
-    [separatorBarButton setEnabled:NO];
-    
-    UIBarButtonItem *sendToBarButton = [UIBarButtonItem
-                                        barItemWithImage:[UIImage imageNamed:@"barbutton_sendto"]
-                                        target:self
-                                        action:@selector(doOpenActionSheet:)];
-    
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         closeButton = [UIBarButtonItem barItemWithImage:[UIImage imageNamed:@"ios7_back_button"]
                                                  target:self
                                                  action:@selector(closeOriginalView)];
         self.navigationItem.leftBarButtonItem = closeButton;
     }
-    
-    backBarButton = [UIBarButtonItem
-                     barItemWithImage:[UIImage imageNamed:@"barbutton_back"]
-                     target:self
-                     action:@selector(webViewGoBack:)];
-    backBarButton.enabled = NO;
     
     titleView = [[UILabel alloc] init];
     titleView.textColor = UIColorFromRGB(0x303030);
@@ -67,11 +47,6 @@
     titleView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     self.navigationItem.titleView = titleView;
     
-    self.navigationItem.rightBarButtonItems = @[sendToBarButton,
-                                                separatorBarButton,
-                                                backBarButton
-                                                ];
-
     webView = [[WKWebView alloc] initWithFrame:self.view.frame];
     [webView sizeToFit];
     webView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
@@ -207,6 +182,9 @@
 }
 
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer{
+    if (self.customPageTitle != nil) {
+        return NO;
+    }
     CGPoint velocity = CGPointMake(0, 0);
     if ([gestureRecognizer isKindOfClass:[UIPanGestureRecognizer class]]) {
         velocity = [(UIPanGestureRecognizer *)gestureRecognizer velocityInView:self.view];
@@ -285,9 +263,43 @@
     }
 }
 
+- (void)updateBarItems {
+    if (self.customPageTitle != nil) {
+        self.navigationItem.rightBarButtonItems = nil;
+    } else {
+        UIBarButtonItem *sendToBarButton = [UIBarButtonItem
+                                            barItemWithImage:[UIImage imageNamed:@"barbutton_sendto"]
+                                            target:self
+                                            action:@selector(doOpenActionSheet:)];
+        
+        UIImage *separatorImage = [UIImage imageNamed:@"bar-separator.png"];
+        if ([ThemeManager themeManager].isDarkTheme) {
+            separatorImage = [UIImage imageNamed:@"bar_separator_dark"];
+        }
+        
+        UIBarButtonItem *separatorBarButton = [UIBarButtonItem barItemWithImage:separatorImage
+                                                                         target:nil
+                                                                         action:nil];
+        [separatorBarButton setEnabled:NO];
+        
+        backBarButton = [UIBarButtonItem
+                         barItemWithImage:[UIImage imageNamed:@"barbutton_back"]
+                         target:self
+                         action:@selector(webViewGoBack:)];
+        backBarButton.enabled = NO;
+        
+        self.navigationItem.rightBarButtonItems = @[sendToBarButton,
+                                                    separatorBarButton,
+                                                    backBarButton
+        ];
+    }
+}
+
 - (void)loadInitialStory {
     finishedLoading = NO;
     activeUrl = nil;
+    
+    [self updateBarItems];
     
     [MBProgressHUD hideHUDForView:self.webView animated:YES];
     MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.webView animated:YES];
@@ -366,8 +378,13 @@
 
 - (void)updateTitle:(WKWebView*)aWebView
 {
-    NSString *pageTitleValue = webView.title;
-    titleView.text = [pageTitleValue stringByDecodingHTMLEntities];
+    if (self.customPageTitle != nil) {
+        titleView.text = self.customPageTitle;
+    } else {
+        NSString *pageTitleValue = webView.title;
+        titleView.text = [pageTitleValue stringByDecodingHTMLEntities];
+    }
+    
     [titleView sizeToFit];
 }
 

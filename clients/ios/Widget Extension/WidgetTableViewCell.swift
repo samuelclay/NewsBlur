@@ -20,4 +20,5 @@ class WidgetTableViewCell: UITableViewCell {
     @IBOutlet var authorLabel: UILabel!
     @IBOutlet var dateLabel: UILabel!
     @IBOutlet var thumbnailImageView: UIImageView!
+    @IBOutlet var thumbnailTrailingConstraint: NSLayoutConstraint!
 }

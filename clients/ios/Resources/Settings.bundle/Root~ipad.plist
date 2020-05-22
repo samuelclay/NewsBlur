@@ -154,6 +154,16 @@
 		</dict>
 		<dict>
 			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Show override mark read on scroll</string>
+			<key>DefaultValue</key>
+			<string>YES</string>
+			<key>Key</key>
+			<string>override_scroll_read_filter</string>
+		</dict>
+		<dict>
+			<key>Type</key>
 			<string>PSMultiValueSpecifier</string>
 			<key>Title</key>
 			<string>Story titles layout</string>
@@ -693,6 +703,7 @@
 			<array>
 				<string>Train intelligence</string>
 				<string>Notifications</string>
+				<string>Statistics</string>
 			</array>
 			<key>DefaultValue</key>
 			<string>notifications</string>
@@ -700,6 +711,7 @@
 			<array>
 				<string>trainer</string>
 				<string>notifications</string>
+				<string>statistics</string>
 			</array>
 			<key>Key</key>
 			<string>feed_swipe_left</string>
@@ -744,6 +756,7 @@
 				<string>Chrome</string>
 				<string>Opera Mini</string>
 				<string>Firefox</string>
+				<string>Edge</string>
 			</array>
 			<key>DefaultValue</key>
 			<string>inappsafari</string>
@@ -756,6 +769,7 @@
 				<string>chrome</string>
 				<string>opera_mini</string>
 				<string>firefox</string>
+				<string>edge</string>
 			</array>
 			<key>Key</key>
 			<string>story_browser</string>
@@ -859,6 +873,28 @@
 			<string>URL</string>
 			<key>Key</key>
 			<string>custom_domain</string>
+		</dict>
+		<dict>
+			<key>Title</key>
+			<string>Import and Export</string>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>IASKButtonSpecifier</string>
+			<key>Title</key>
+			<string>Import Preferences...</string>
+			<key>Key</key>
+			<string>import_prefs</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>IASKButtonSpecifier</string>
+			<key>Title</key>
+			<string>Export Preferences...</string>
+			<key>Key</key>
+			<string>export_prefs</string>
 		</dict>
 		<dict>
 			<key>Title</key>

@@ -124,7 +124,11 @@ NEWSBLUR.Modal.prototype = {
     
     initialize_feed: function(feed_id) {
         this.feed_id = feed_id;
-        this.feed = this.model.get_feed(feed_id);
+        if (this.options.embedded) {
+          this.feed = NEWSBLUR.stats_feed;
+        } else {
+          this.feed = this.model.get_feed(feed_id);
+        }
         this.options.social_feed = this.feed && this.feed.is_social();
         
         $('.NB-modal-subtitle .NB-modal-feed-image', this.$modal).attr('src', $.favicon(this.feed));

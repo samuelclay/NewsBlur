@@ -76,6 +76,7 @@ def load_feed_favicon(request, feed_id):
     try:
         feed_icon = MFeedIcon.objects.get(feed_id=feed_id)
     except MFeedIcon.DoesNotExist:
+        logging.user(request, "~FBNo feed icon found: %s" % feed_id)
         not_found = True
         
     if not_found or not feed_icon.data:
@@ -159,6 +160,27 @@ def feed_autocomplete(request):
 @json.json_view
 def load_feed_statistics(request, feed_id):
     user = get_user(request)
+    feed = get_object_or_404(Feed, pk=feed_id)
+    stats = assemble_statistics(user, feed_id)
+    
+    logging.user(request, "~FBStatistics: ~SB%s" % (feed))
+
+    return stats
+
+def load_feed_statistics_embedded(request, feed_id):
+    user = get_user(request)
+    feed = get_object_or_404(Feed, pk=feed_id)
+    stats = assemble_statistics(user, feed_id)
+    
+    logging.user(request, "~FBStatistics (~FCembedded~FB): ~SB%s" % (feed))
+    
+    return render_to_response('rss_feeds/statistics.xhtml', {
+        'stats': json.json_encode(stats),
+        'feed_js': json.json_encode(feed.canonical()),
+        'feed': feed,
+    }, context_instance=RequestContext(request))    
+    
+def assemble_statistics(user, feed_id):
     timezone = user.profile.timezone
     stats = dict()
     feed = get_object_or_404(Feed, pk=feed_id)
@@ -232,8 +254,6 @@ def load_feed_statistics(request, feed_id):
     stats['page_fetch_history'] = fetch_history['page_fetch_history']
     stats['feed_push_history'] = fetch_history['push_history']
     
-    logging.user(request, "~FBStatistics: ~SB%s" % (feed))
-
     return stats
 
 @json.json_view
@@ -251,7 +271,7 @@ def load_feed_settings(request, feed_id):
     
     return stats
 
-@ratelimit(minutes=5, requests=30)
+@ratelimit(minutes=1, requests=30)
 @json.json_view
 def exception_retry(request):
     user = get_user(request)
