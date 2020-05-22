@@ -515,8 +515,9 @@
         }];
     } else if ([action isEqualToString:@"VIEW_STORY_IDENTIFIER"] ||
                [action isEqualToString:@"com.apple.UNNotificationDefaultActionIdentifier"]) {
-        [self popToRoot];
-        [self loadFeed:feedIdStr withStory:storyHash animated:NO];
+        [self popToRootWithCompletion:^{
+            [self loadFeed:feedIdStr withStory:storyHash animated:NO];
+        }];
         if (completionHandler) completionHandler();
     } else if ([action isEqualToString:@"DISMISS_IDENTIFIER"]) {
         if (completionHandler) completionHandler();
@@ -561,8 +562,9 @@
         NSString *error = query[@"error"];
         
         if (error.length) {
-            [self popToRoot];
-            [self showWidgetSites];
+            [self popToRootWithCompletion:^{
+                [self showWidgetSites];
+            }];
             
             return YES;
         }
@@ -571,16 +573,16 @@
             return NO;
         }
         
-        [self popToRoot];
-        
-        self.inFindingStoryMode = YES;
-        [storiesCollection reset];
-        storiesCollection.isRiverView = YES;
-        
-        self.tryFeedStoryId = storyHash;
-        storiesCollection.activeFolder = @"everything";
-        
-        [self loadRiverFeedDetailView:self.feedDetailViewController withFolder:storiesCollection.activeFolder];
+        [self popToRootWithCompletion:^{
+            self.inFindingStoryMode = YES;
+            [storiesCollection reset];
+            storiesCollection.isRiverView = YES;
+            
+            self.tryFeedStoryId = storyHash;
+            storiesCollection.activeFolder = @"everything";
+            
+            [self loadRiverFeedDetailView:self.feedDetailViewController withFolder:storiesCollection.activeFolder];
+        }];
         
         return YES;
     }
@@ -750,14 +752,25 @@
     [feedsViewController resizeFontSize];
 }
 
-- (void)popToRoot {
+- (void)popToRootWithCompletion:(void (^)(void))completion {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        if (completion) {
+            [CATransaction begin];
+            [CATransaction setCompletionBlock:completion];
+        }
+        
         [masterContainerViewController dismissViewControllerAnimated:NO completion:nil];
-        [self.navigationController
-         popToViewController:[self.navigationController.viewControllers objectAtIndex:0]
-         animated:YES];
+        [self.navigationController popToViewController:[self.navigationController.viewControllers objectAtIndex:0] animated:YES];
+        
+        if (completion) {
+            [CATransaction commit];
+        }
     } else {
         [self.navigationController popToRootViewControllerAnimated:NO];
+        
+        if (completion) {
+            completion();
+        }
     }
 }
 
@@ -1257,6 +1270,15 @@
         
         return [feed1Title compare:feed2Title];
     }];
+}
+
+- (void)openStatisticsWithFeed:(NSString *)feedId sender:(id)sender {
+    NSString *urlString = [NSString stringWithFormat:@"%@/rss_feeds/statistics_embedded/%@", self.url, feedId];
+    NSURL *url = [NSURL URLWithString:urlString];
+    NSDictionary *feed = self.dictFeeds[feedId];
+    NSString *title = feed[@"feed_title"];
+    
+    [self showInAppBrowser:url withCustomTitle:title fromSender:sender];
 }
 
 - (void)openUserTagsStory:(id)sender {
@@ -2048,39 +2070,65 @@
         NSString *encodedURL = [url.absoluteString stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLHostAllowedCharacterSet]];
         NSString *firefoxURL = [NSString stringWithFormat:@"%@%@", @"firefox://open-url?url=", encodedURL];
         [[UIApplication sharedApplication] openURL:[NSURL URLWithString:firefoxURL] options:@{} completionHandler:nil];
-    } else if ([storyBrowser isEqualToString:@"inappsafari"]) {
-        self.safariViewController = [[SFSafariViewController alloc] initWithURL:url];
-        self.safariViewController.delegate = self;
-        [self.storyPageControl setNavigationBarHidden:NO];
-//        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-//            self.safariViewController.modalPresentationStyle = UIModalPresentationPageSheet;
-//        }
-        [navigationController presentViewController:self.safariViewController animated:YES completion:nil];
-    } else if ([storyBrowser isEqualToString:@"inappsafarireader"]) {
-        self.safariViewController = [[SFSafariViewController alloc] initWithURL:url entersReaderIfAvailable:YES];
-        self.safariViewController.delegate = self;
-        [self.storyPageControl setNavigationBarHidden:NO];
-        [navigationController presentViewController:self.safariViewController animated:YES completion:nil];
-    } else {
-        if (!originalStoryViewController) {
-            originalStoryViewController = [[OriginalStoryViewController alloc] init];
+    } else if ([storyBrowser isEqualToString:@"edge"]){
+        NSString *edgeURL;
+        NSRange prefix = [[url absoluteString] rangeOfString: @"http"];
+        
+        if (NSNotFound != prefix.location) {
+            edgeURL = [[url absoluteString]
+                        stringByReplacingCharactersInRange: prefix
+                        withString: @"microsoft-edge-http"];
         }
         
-        self.activeOriginalStoryURL = url;
-        
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-            [self.masterContainerViewController transitionToOriginalView];
-        } else {
-            if ([[navigationController viewControllers]
-                 containsObject:originalStoryViewController]) {
-                return;
-            }
-            [navigationController pushViewController:originalStoryViewController
-                                            animated:YES];
+        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:edgeURL] options:@{} completionHandler:nil];
+    } else if ([storyBrowser isEqualToString:@"inappsafari"]) {
+        [self showSafariViewControllerWithURL:url useReader:NO];
+    } else if ([storyBrowser isEqualToString:@"inappsafarireader"]) {
+        [self showSafariViewControllerWithURL:url useReader:YES];
+    } else {
+        [self showInAppBrowser:url withCustomTitle:nil fromSender:nil];
+    }
+}
+
+- (void)showInAppBrowser:(NSURL *)url withCustomTitle:(NSString *)customTitle fromSender:(id)sender {
+    if (!originalStoryViewController) {
+        originalStoryViewController = [[OriginalStoryViewController alloc] init];
+    }
+    
+    self.activeOriginalStoryURL = url;
+    originalStoryViewController.customPageTitle = customTitle;
+    
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        if ([sender isKindOfClass:[UIBarButtonItem class]]) {
             [originalStoryViewController view]; // Force viewDidLoad
             [originalStoryViewController loadInitialStory];
+            [self showPopoverWithViewController:originalStoryViewController contentSize:CGSizeMake(600.0, 1000.0) barButtonItem:sender];
+        } else if ([sender isKindOfClass:[UITableViewCell class]]) {
+            UITableViewCell *cell = (UITableViewCell *)sender;
+            
+            [originalStoryViewController view]; // Force viewDidLoad
+            [originalStoryViewController loadInitialStory];
+            [self showPopoverWithViewController:originalStoryViewController contentSize:CGSizeMake(600.0, 1000.0) sourceView:cell sourceRect:cell.bounds];
+        } else {
+            [self.masterContainerViewController transitionToOriginalView];
         }
+    } else {
+        if ([[navigationController viewControllers]
+             containsObject:originalStoryViewController]) {
+            return;
+        }
+        [navigationController pushViewController:originalStoryViewController
+                                        animated:YES];
+        [originalStoryViewController view]; // Force viewDidLoad
+        [originalStoryViewController loadInitialStory];
     }
+}
+
+- (void)showSafariViewControllerWithURL:(NSURL *)url useReader:(BOOL)useReader {
+    self.safariViewController = [[SFSafariViewController alloc] initWithURL:url entersReaderIfAvailable:useReader];
+    self.safariViewController.delegate = self;
+    [self.storyPageControl setNavigationBarHidden:NO];
+    [navigationController presentViewController:self.safariViewController animated:YES completion:nil];
 }
 
 - (BOOL)showingSafariViewController {

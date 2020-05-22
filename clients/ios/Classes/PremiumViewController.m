@@ -232,6 +232,7 @@
         cell.backgroundColor = UIColorFromRGB(0xf4f4f4);
         cell.textLabel.textColor = UIColorFromRGB(0x203070);
         cell.textLabel.numberOfLines = 2;
+        cell.detailTextLabel.font = [UIFont systemFontOfSize:18.f weight:UIFontWeightBold];
         cell.detailTextLabel.textColor = UIColorFromRGB(0x0c0c0c);
         NSNumberFormatter *formatter = [[NSNumberFormatter alloc] init];
         [formatter setFormatterBehavior:NSNumberFormatterBehavior10_4];

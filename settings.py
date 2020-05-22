@@ -80,6 +80,7 @@ HOMEPAGE_USERNAME     = 'popular'
 ALLOWED_HOSTS         = ['*']
 AUTO_PREMIUM_NEW_USERS = False
 AUTO_ENABLE_NEW_USERS = True
+ENFORCE_SIGNUP_CAPTCHA = True
 PAYPAL_TEST           = False
 
 # Uncomment below to force all feeds to store this many stories. Default is to cut 
@@ -131,7 +132,7 @@ OAUTH2_PROVIDER = {
     'SCOPES': {
         'read': 'View new unread stories, saved stories, and shared stories.',
         'write': 'Create new saved stories, shared stories, and subscriptions.',
-        'ifttt': 'Pair your NewsBlur account with other IFTTT channels.',
+        'ifttt': 'Pair your NewsBlur account with other services.',
     },
     'CLIENT_ID_GENERATOR_CLASS': 'oauth2_provider.generators.ClientIdGenerator',
     'ACCESS_TOKEN_EXPIRE_SECONDS': 60*60*24*365*10, # 10 years

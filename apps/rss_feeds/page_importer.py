@@ -38,6 +38,7 @@ BROKEN_PAGE_URLS = [
     'rankexploits',
     'gamespot.com',
     'espn.com',
+    'royalroad.com',
 ]
 
 class PageImporter(object):
@@ -208,6 +209,8 @@ class PageImporter(object):
             data = data.replace("\xc2\xa0", " ") # Non-breaking space, is mangled when encoding is not utf-8
             data = data.replace("\u00a0", " ") # Non-breaking space, is mangled when encoding is not utf-8
             html = self.rewrite_page(data)
+            if not html:
+                return
             self.save_story(html)
         
         return html

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="15702" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="15705" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15704"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15706"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -30,7 +30,7 @@
                         <nil key="highlightedColor"/>
                     </label>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="252" horizontalCompressionResistancePriority="745" verticalCompressionResistancePriority="745" usesAttributedText="YES" lineBreakMode="wordWrap" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="232" translatesAutoresizingMaskIntoConstraints="NO" id="I7A-fd-pwi">
-                        <rect key="frame" x="20" y="29" width="208" height="33"/>
+                        <rect key="frame" x="20" y="26" width="208" height="33.5"/>
                         <attributedString key="attributedText">
                             <fragment>
                                 <string key="content">&lt;title&gt;
@@ -75,18 +75,18 @@
                         </constraints>
                     </imageView>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="751" usesAttributedText="YES" lineBreakMode="wordWrap" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="232" translatesAutoresizingMaskIntoConstraints="NO" id="YTq-d7-IZe">
-                        <rect key="frame" x="20" y="62" width="208" height="29"/>
+                        <rect key="frame" x="20" y="59.5" width="208" height="31.5"/>
                         <attributedString key="attributedText">
                             <fragment>
                                 <string key="content">&lt;content&gt;
 </string>
                                 <attributes>
-                                    <font key="NSFont" metaFont="cellTitle"/>
+                                    <font key="NSFont" metaFont="label" size="12"/>
                                 </attributes>
                             </fragment>
                             <fragment content="(2 lines)">
                                 <attributes>
-                                    <font key="NSFont" metaFont="cellTitle"/>
+                                    <font key="NSFont" metaFont="label" size="12"/>
                                     <paragraphStyle key="NSParagraphStyle" alignment="natural" lineBreakMode="truncatingTail" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
                                 </attributes>
                             </fragment>
@@ -104,7 +104,7 @@
                     <constraint firstItem="QWb-zc-x4f" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="Cbg-Kp-Sw2"/>
                     <constraint firstAttribute="bottom" secondItem="Wai-eu-jJp" secondAttribute="bottom" constant="7" id="FBY-7w-ZZz"/>
                     <constraint firstItem="02U-BY-b7a" firstAttribute="firstBaseline" secondItem="Wai-eu-jJp" secondAttribute="firstBaseline" id="FQl-bS-Fk3"/>
-                    <constraint firstItem="I7A-fd-pwi" firstAttribute="top" secondItem="pv8-bs-3wb" secondAttribute="bottom" constant="8" id="KH6-H3-6wb"/>
+                    <constraint firstItem="I7A-fd-pwi" firstAttribute="top" secondItem="pv8-bs-3wb" secondAttribute="bottom" constant="5" id="KH6-H3-6wb"/>
                     <constraint firstItem="pv8-bs-3wb" firstAttribute="centerY" secondItem="el3-VK-r6t" secondAttribute="centerY" id="LfK-hl-HxZ"/>
                     <constraint firstItem="pv8-bs-3wb" firstAttribute="leading" secondItem="el3-VK-r6t" secondAttribute="trailing" constant="8" symbolic="YES" id="SD9-74-HqO"/>
                     <constraint firstAttribute="trailing" secondItem="02U-BY-b7a" secondAttribute="trailing" constant="20" symbolic="YES" id="VzJ-zb-5QT"/>
@@ -128,6 +128,7 @@
                 <outlet property="feedImageView" destination="el3-VK-r6t" id="6PP-TY-Z1u"/>
                 <outlet property="feedLabel" destination="pv8-bs-3wb" id="XEb-j4-JNA"/>
                 <outlet property="thumbnailImageView" destination="QWb-zc-x4f" id="OKC-XS-7wv"/>
+                <outlet property="thumbnailTrailingConstraint" destination="0AJ-OQ-qEF" id="MiX-vG-H4N"/>
                 <outlet property="titleLabel" destination="I7A-fd-pwi" id="9Ic-sM-Ypk"/>
             </connections>
             <point key="canvasLocation" x="33.600000000000001" y="85.457271364317847"/>

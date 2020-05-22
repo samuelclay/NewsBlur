@@ -1939,7 +1939,7 @@ class Feed(models.Model):
         return dict(zip(urls, signed_urls))
     
     @classmethod
-    def secure_image_thumbnails(cls, urls, size=200):
+    def secure_image_thumbnails(cls, urls, size=192):
         signed_urls = [create_imageproxy_signed_url(settings.IMAGES_URL, 
                                                     settings.IMAGES_SECRET_KEY, 
                                                     url,
@@ -2154,12 +2154,16 @@ class Feed(models.Model):
             if len(fetch_history['push_history']):
                 total = total * 12
         
-        # 3 hour max for premiums, 48 hour max for free
+        # 4 hour max for premiums, 48 hour max for free
         if subs >= 1:
             total = min(total, 60*4*1)
         else:
             total = min(total, 60*24*2)
-        
+
+        # Craigslist feeds get 6 hours minimum
+        if 'craigslist' in self.feed_address:
+            total = max(total, 60*6)
+                
         if verbose:
             logging.debug("   ---> [%-30s] Fetched every %s min - Subs: %s/%s/%s Stories/day: %s" % (
                                                 self.log_title[:30], total, 

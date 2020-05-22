@@ -82,6 +82,18 @@ javascripts:
         - media/js/newsblur/views/*.js
         - media/js/newsblur/reader/*.js
         - media/js/newsblur/welcome/*.js
+    statistics:
+        - media/js/vendor/jquery-2.2.4.min.js
+        - media/js/vendor/jquery.newsblur.js
+        - media/js/vendor/jquery.simplemodal-1.3.js
+        - media/js/vendor/inflector.js
+        - media/js/vendor/underscore-*.js
+        - media/js/vendor/backbone-*.js
+        - media/js/vendor/chart.js
+        - media/js/newsblur/common/modal.js
+        - media/js/newsblur/reader/reader_statistics.js
+        - media/js/newsblur/reader/reader_utils.js
+        - media/js/newsblur/models/feeds.js
     payments:
         - media/js/newsblur/payments/paypal_return.js
         - media/js/newsblur/payments/stripe_form.js

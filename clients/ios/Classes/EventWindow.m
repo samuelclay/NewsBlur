@@ -77,6 +77,8 @@
                 [contextualMenuTimer invalidate];
                 contextualMenuTimer = nil;
                 break;
+            default:
+                break;
         }
     } else {                    // Multiple fingers are touching the screen
         unmoved = NO;

@@ -51,6 +51,7 @@ from apps.social.views import load_social_page
 from apps.rss_feeds.tasks import ScheduleImmediateFetches
 from utils import json_functions as json
 from utils.user_functions import get_user, ajax_login_required
+from utils.user_functions import extract_user_agent
 from utils.feed_functions import relative_timesince
 from utils.story_functions import format_story_link_date__short
 from utils.story_functions import format_story_link_date__long
@@ -183,19 +184,21 @@ def login(request):
 @render_to('accounts/signup.html')
 def signup(request):
     if request.method == "POST":
-        signup_form = SignupForm(request.POST, prefix='signup')
-        return {
-            "form": signup_form
-        }
-        # form = SignupForm(prefix='signup', data=request.POST)
-        # if form.is_valid():
-        #     new_user = form.save()
-        #     login_user(request, new_user)
-        #     logging.user(new_user, "~FG~SB~BBNEW SIGNUP: ~FW%s" % new_user.email)
-        #     if not new_user.is_active:
-        #         url = "https://%s%s" % (Site.objects.get_current().domain,
-        #                                  reverse('stripe-form'))
-        #         return HttpResponseRedirect(url)
+        if settings.ENFORCE_SIGNUP_CAPTCHA:
+            signup_form = SignupForm(request.POST, prefix='signup')
+            return {
+                "form": signup_form
+            }
+
+        form = SignupForm(prefix='signup', data=request.POST)
+        if form.is_valid():
+            new_user = form.save()
+            login_user(request, new_user)
+            logging.user(new_user, "~FG~SB~BBNEW SIGNUP: ~FW%s" % new_user.email)
+            if not new_user.is_active:
+                url = "https://%s%s" % (Site.objects.get_current().domain,
+                                         reverse('stripe-form'))
+                return HttpResponseRedirect(url)
     
     return index(request)
         
@@ -240,7 +243,7 @@ def load_feeds(request):
     feeds            = {}
     include_favicons = is_true(request.REQUEST.get('include_favicons', False))
     flat             = is_true(request.REQUEST.get('flat', False))
-    update_counts    = is_true(request.REQUEST.get('update_counts', False))
+    update_counts    = is_true(request.REQUEST.get('update_counts', True))
     version          = int(request.REQUEST.get('v', 1))
     
     if include_favicons == 'false': include_favicons = False
@@ -249,6 +252,12 @@ def load_feeds(request):
     
     if flat: return load_feeds_flat(request)
     
+    platform = extract_user_agent(request)
+    if platform in ['iPhone', 'iPad', 'Androd']:
+        # Remove this check once the iOS and Android updates go out which have update_counts=False
+        # and then guarantee a refresh_feeds call
+        update_counts = False
+        
     try:
         folders = UserSubscriptionFolders.objects.get(user=user)
     except UserSubscriptionFolders.DoesNotExist:
@@ -416,6 +425,8 @@ def load_feeds_flat(request):
     if not user_subs:
         categories = MCategory.serialize()
 
+    saved_searches = MSavedSearch.user_searches(user.pk)
+
     logging.user(request, "~FB~SBLoading ~FY%s~FB/~FM%s~FB/~FR%s~FB feeds/socials/inactive ~FMflat~FB%s%s" % (
             len(feeds.keys()), len(social_feeds), len(inactive_feeds), '. ~FCUpdating counts.' if update_counts else '',
             ' ~BB(background fetch)' if background_ios else ''))
@@ -438,11 +449,19 @@ def load_feeds_flat(request):
         "categories": categories,
         'starred_count': starred_count,
         'starred_counts': starred_counts,
+        'saved_searches': saved_searches,
         'share_ext_token': user.profile.secret_token,
     }
     return data
 
-@ratelimit(minutes=1, requests=30)
+class ratelimit_refresh_feeds(ratelimit):
+    def should_ratelimit(self, request):
+        feed_ids = request.POST.getlist('feed_id') or request.POST.getlist('feed_id[]')
+        if len(feed_ids) == 1:
+            return False
+        return True
+
+@ratelimit_refresh_feeds(minutes=1, requests=30)
 @never_cache
 @json.json_view
 def refresh_feeds(request):
@@ -927,7 +946,7 @@ def load_starred_stories(request):
             story['story_feed_id'] = saved_story.story_feed_id
             saved_story.save()
             logging.user(request, "~FCSaving new feed for starred story: ~SB%s -> %s" % (story['story_hash'], feed_id))
-        except (MStarredStory.DoesNotExist):
+        except (MStarredStory.DoesNotExist, MStarredStory.MultipleObjectsReturned):
             logging.user(request, "~FCCan't find feed for starred story: ~SB%s" % (story['story_hash']))
             continue
     

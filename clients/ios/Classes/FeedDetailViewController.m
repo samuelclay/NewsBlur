@@ -43,6 +43,7 @@
 @interface FeedDetailViewController ()
 
 @property (nonatomic) NSUInteger scrollingMarkReadRow;
+@property (nonatomic, readonly) BOOL isMarkReadOnScroll;
 @property (nonatomic, strong) NSString *restoringFolder;
 @property (nonatomic, strong) NSString *restoringFeedID;
 
@@ -1762,7 +1763,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     if (storyCount && indexPath.row == storyCount) {
         if (!self.pageFinished) return 40;
         
-        BOOL markReadOnScroll = [[NSUserDefaults standardUserDefaults] boolForKey:@"default_scroll_read_filter"];
+        BOOL markReadOnScroll = self.isMarkReadOnScroll;
         if (markReadOnScroll) {
             return CGRectGetHeight(self.view.frame) - 40;
         }
@@ -1847,6 +1848,20 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
         !self.isDashboardModule;
 }
 
+- (BOOL)isMarkReadOnScroll {
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+    
+    if ([userPreferences boolForKey:@"override_scroll_read_filter"]) {
+        NSNumber *markRead = [userPreferences objectForKey:appDelegate.storiesCollection.scrollReadFilterKey];
+        
+        if (markRead != nil) {
+            return markRead.boolValue;
+        }
+    }
+    
+    return [userPreferences boolForKey:@"default_scroll_read_filter"];
+}
+
 - (void)checkScroll {
     NSInteger currentOffset = self.storyTitlesTable.contentOffset.y;
     NSInteger maximumOffset = self.storyTitlesTable.contentSize.height - self.storyTitlesTable.frame.size.height;
@@ -1865,7 +1880,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     CGPoint topRowPoint = self.storyTitlesTable.contentOffset;
     topRowPoint.y = topRowPoint.y + 80.f;
     NSIndexPath *indexPath = [self.storyTitlesTable indexPathForRowAtPoint:topRowPoint];
-    BOOL markReadOnScroll = [[NSUserDefaults standardUserDefaults] boolForKey:@"default_scroll_read_filter"];
+    BOOL markReadOnScroll = self.isMarkReadOnScroll;
     
     if (indexPath && markReadOnScroll) {
         NSUInteger topRow = indexPath.row;
@@ -2196,6 +2211,11 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
              openNotificationsWithFeed:[NSString stringWithFormat:@"%@", [appDelegate.storiesCollection.activeFeed objectForKey:@"id"]]];
         }];
         
+        [viewController addTitle:@"Statistics" iconName:@"menu_icn_statistics.png" selectionShouldDismiss:YES handler:^{
+            [self
+             openStatisticsWithFeed:[NSString stringWithFormat:@"%@", [appDelegate.storiesCollection.activeFeed objectForKey:@"id"]]];
+        }];
+        
         [viewController addTitle:@"Insta-fetch stories" iconName:@"menu_icn_fetch.png" selectionShouldDismiss:YES handler:^{
             [self instafetchFeed];
         }];
@@ -2220,6 +2240,10 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
             }
             
             [self reloadStories];
+        }];
+        
+        [viewController addSegmentedControlWithTitles:@[@"Read on scroll", @"Leave unread"] selectIndex:self.isMarkReadOnScroll ? 0 : 1 selectionShouldDismiss:YES handler:^(NSUInteger selectedIndex) {
+            [userPreferences setBool:selectedIndex == 0 forKey:appDelegate.storiesCollection.scrollReadFilterKey];
         }];
     }
     
@@ -2492,6 +2516,10 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 
 - (void)openNotificationsWithFeed:(NSString *)feedId {
     [appDelegate openNotificationsWithFeed:feedId];
+}
+
+- (void)openStatisticsWithFeed:(NSString *)feedId {
+    [appDelegate openStatisticsWithFeed:feedId sender:settingsBarButton];
 }
 
 - (void)openRenameSite {

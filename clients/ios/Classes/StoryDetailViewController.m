@@ -1878,6 +1878,8 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
                           [ThemeManager themeManager].themeCSSSuffix];
     
     [self.webView stringByEvaluatingJavaScriptFromString:jsString];
+    
+    self.webView.backgroundColor = UIColorFromLightDarkRGB(0x707070, 0x404040);
 }
 
 - (BOOL)canHideNavigationBar {
