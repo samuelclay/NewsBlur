@@ -19,7 +19,6 @@ import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
 
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -100,7 +99,7 @@ public class WidgetConfigAdapter extends RecyclerView.Adapter<WidgetConfigAdapte
     }
 
     void replaceAll(Context context, ArrayList<Feed> feedList, Set<String> feedIds) {
-        this.feedOrderFilter = PrefsUtils.getWidgetConfigSortBy(context);
+        this.feedOrderFilter = PrefsUtils.getWidgetConfigFeedOrder(context);
         this.feedIds.clear();
         this.feedIds.addAll(feedIds);
         this.feedList.clear();

@@ -5,31 +5,29 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.Loader;
-import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ExpandableListView;
 import android.widget.TextView;
 
 import com.newsblur.R;
 import com.newsblur.domain.Feed;
+import com.newsblur.domain.Folder;
 import com.newsblur.util.FeedOrderFilter;
 import com.newsblur.util.FeedUtils;
+import com.newsblur.util.FolderViewFilter;
 import com.newsblur.util.ListOrderFilter;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.widget.WidgetUtils;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 import butterknife.Bind;
@@ -37,13 +35,17 @@ import butterknife.ButterKnife;
 
 public class WidgetConfig extends NbActivity {
 
-    @Bind(R.id.recycler_view)
-    RecyclerView recyclerView;
+    @Bind(R.id.list_view)
+    ExpandableListView listView;
     @Bind(R.id.text_no_subscriptions)
     TextView textNoSubscriptions;
 
-    private WidgetConfigAdapter adapter;
-    private ArrayList<Feed> feeds = new ArrayList<>();
+    private WidgetAdapter adapter;
+    private ArrayList<Feed> feeds;
+    private ArrayList<Folder> folders;
+    private Map<String, Feed> feedMap = new HashMap<>();
+    private ArrayList<String> folderNames = new ArrayList<>();
+    private ArrayList<ArrayList<Feed>> folderChildren = new ArrayList<>();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -51,11 +53,9 @@ public class WidgetConfig extends NbActivity {
         setContentView(R.layout.activity_widget_config);
         ButterKnife.bind(this);
         getActionBar().setDisplayHomeAsUpEnabled(true);
-
-        adapter = new WidgetConfigAdapter();
-        recyclerView.setAdapter(adapter);
-
+        setupList();
         loadFeeds();
+        loadFolders();
     }
 
     @Override
@@ -75,14 +75,14 @@ public class WidgetConfig extends NbActivity {
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
-        ListOrderFilter listOrderFilter = PrefsUtils.getWidgetConfigSortOrder(this);
+        ListOrderFilter listOrderFilter = PrefsUtils.getWidgetConfigListOrder(this);
         if (listOrderFilter == ListOrderFilter.ASCENDING) {
             menu.findItem(R.id.menu_sort_order_ascending).setChecked(true);
         } else if (listOrderFilter == ListOrderFilter.DESCENDING) {
             menu.findItem(R.id.menu_sort_order_descending).setChecked(true);
         }
 
-        FeedOrderFilter feedOrderFilter = PrefsUtils.getWidgetConfigSortBy(this);
+        FeedOrderFilter feedOrderFilter = PrefsUtils.getWidgetConfigFeedOrder(this);
         if (feedOrderFilter == FeedOrderFilter.NAME) {
             menu.findItem(R.id.menu_sort_by_name).setChecked(true);
         } else if (feedOrderFilter == FeedOrderFilter.SUBSCRIBERS) {
@@ -94,6 +94,13 @@ public class WidgetConfig extends NbActivity {
         } else if (feedOrderFilter == FeedOrderFilter.OPENS) {
             menu.findItem(R.id.menu_sort_by_number_opens).setChecked(true);
         }
+
+        FolderViewFilter folderViewFilter = PrefsUtils.getWidgetConfigFolderView(this);
+        if (folderViewFilter == FolderViewFilter.NESTED) {
+            menu.findItem(R.id.menu_folder_view_nested).setChecked(true);
+        } else if (folderViewFilter == FolderViewFilter.FLAT) {
+            menu.findItem(R.id.menu_folder_view_flat).setChecked(true);
+        }
         return true;
     }
 
@@ -104,25 +111,31 @@ public class WidgetConfig extends NbActivity {
                 finish();
                 return true;
             case R.id.menu_sort_order_ascending:
-                setSortOrder(ListOrderFilter.ASCENDING);
+                replaceListOrderFilter(ListOrderFilter.ASCENDING);
                 return true;
             case R.id.menu_sort_order_descending:
-                setSortOrder(ListOrderFilter.DESCENDING);
+                replaceListOrderFilter(ListOrderFilter.DESCENDING);
                 return true;
             case R.id.menu_sort_by_name:
-                setSortBy(FeedOrderFilter.NAME);
+                replaceFeedOrderFilter(FeedOrderFilter.NAME);
                 return true;
             case R.id.menu_sort_by_subs:
-                setSortBy(FeedOrderFilter.SUBSCRIBERS);
+                replaceFeedOrderFilter(FeedOrderFilter.SUBSCRIBERS);
                 return true;
             case R.id.menu_sort_by_recent_story:
-                setSortBy(FeedOrderFilter.RECENT_STORY);
+                replaceFeedOrderFilter(FeedOrderFilter.RECENT_STORY);
                 return true;
             case R.id.menu_sort_by_stories_month:
-                setSortBy(FeedOrderFilter.STORIES_MONTH);
+                replaceFeedOrderFilter(FeedOrderFilter.STORIES_MONTH);
                 return true;
             case R.id.menu_sort_by_number_opens:
-                setSortBy(FeedOrderFilter.OPENS);
+                replaceFeedOrderFilter(FeedOrderFilter.OPENS);
+                return true;
+            case R.id.menu_folder_view_nested:
+                replaceFolderView(FolderViewFilter.NESTED);
+                return true;
+            case R.id.menu_folder_view_flat:
+                replaceFolderView(FolderViewFilter.FLAT);
                 return true;
             case R.id.menu_select_all:
                 selectAllFeeds();
@@ -135,40 +148,88 @@ public class WidgetConfig extends NbActivity {
         }
     }
 
+    private void setupList() {
+        adapter = new WidgetAdapter(this);
+        listView.setAdapter(adapter);
+
+        Set<String> feedIds = PrefsUtils.getWidgetFeedIds(this);
+        // by default select all feeds
+        if (feedIds != null) {
+            adapter.setFeedIds(feedIds);
+        } else {
+            selectAllFeeds();
+        }
+    }
+
     private void loadFeeds() {
         Loader<Cursor> loader = FeedUtils.dbHelper.getFeedsLoader();
         loader.registerListener(loader.getId(), new Loader.OnLoadCompleteListener<Cursor>() {
             @Override
             public void onLoadComplete(@NonNull Loader<Cursor> loader, @Nullable Cursor cursor) {
-                showFeeds(cursor);
+                processFeeds(cursor);
             }
         });
         loader.startLoading();
     }
 
-    private void showFeeds(Cursor cursor) {
+    private void loadFolders() {
+        Loader<Cursor> loader = FeedUtils.dbHelper.getFoldersLoader();
+        loader.registerListener(loader.getId(), new Loader.OnLoadCompleteListener<Cursor>() {
+            @Override
+            public void onLoadComplete(@NonNull Loader<Cursor> loader, @Nullable Cursor cursor) {
+                processFolders(cursor);
+            }
+        });
+        loader.startLoading();
+    }
+
+    private void processFeeds(Cursor cursor) {
         ArrayList<Feed> feeds = new ArrayList<>();
         while (cursor != null && cursor.moveToNext()) {
             Feed feed = Feed.fromCursor(cursor);
             if (!feed.feedId.equals("0") && feed.active) {
                 feeds.add(feed);
+                feedMap.put(feed.feedId, feed);
             }
         }
         this.feeds = feeds;
+        processData();
+    }
 
-        Set<String> feedIds = PrefsUtils.getWidgetFeedIds(this);
-        if (feedIds == null) {
-            // default config. Show all feeds
-            feedIds = new HashSet<>(this.feeds.size());
-            for (Feed feed : this.feeds) {
-                feedIds.add(feed.feedId);
+    private void processFolders(Cursor cursor) {
+        ArrayList<Folder> folders = new ArrayList<>();
+        while (cursor != null && cursor.moveToNext()) {
+            Folder folder = Folder.fromCursor(cursor);
+            if (!folder.feedIds.isEmpty()) {
+                folders.add(folder);
             }
         }
-        adapter.replaceAll(this, this.feeds, feedIds);
-        updateListOrder();
+        this.folders = folders;
+        Collections.sort(this.folders, new Comparator<Folder>() {
+            @Override
+            public int compare(Folder o1, Folder o2) {
+                return Folder.compareFolderNames(o1.flatName(), o2.flatName());
+            }
+        });
+        processData();
+    }
 
-        recyclerView.setVisibility(adapter.getItemCount() > 0 ? View.VISIBLE : View.GONE);
-        textNoSubscriptions.setVisibility(adapter.getItemCount() > 0 ? View.GONE : View.VISIBLE);
+    private void processData() {
+        if (folders != null && feeds != null) {
+            for (Folder folder : folders) {
+                ArrayList<Feed> activeFeeds = new ArrayList<>();
+                for (String feedId : folder.feedIds) {
+                    Feed feed = feedMap.get(feedId);
+                    if (feed != null && feed.active && !activeFeeds.contains(feed)) {
+                        activeFeeds.add(feed);
+                    }
+                }
+                folderNames.add(folder.flatName());
+                folderChildren.add(activeFeeds);
+            }
+
+            setAdapterData();
+        }
     }
 
     private void selectAllFeeds() {
@@ -181,78 +242,29 @@ public class WidgetConfig extends NbActivity {
 
     private void setWidgetFeedIds(Set<String> feedIds) {
         PrefsUtils.setWidgetFeedIds(this, feedIds);
-        adapter.replaceAll(this, this.feeds, feedIds);
+        adapter.setFeedIds(feedIds);
     }
 
-    private void setSortBy(FeedOrderFilter feedOrderFilter) {
-        PrefsUtils.setWidgetConfigSortBy(this, feedOrderFilter);
-        updateListOrder();
+    private void replaceFeedOrderFilter(FeedOrderFilter feedOrderFilter) {
+        PrefsUtils.setWidgetConfigFeedOrder(this, feedOrderFilter);
+        adapter.replaceFeedOrder(feedOrderFilter);
     }
 
-    private void setSortOrder(ListOrderFilter listOrderFilter) {
-        PrefsUtils.setWidgetConfigSortOrder(this, listOrderFilter);
-        updateListOrder();
+    private void replaceListOrderFilter(ListOrderFilter listOrderFilter) {
+        PrefsUtils.setWidgetConfigListOrder(this, listOrderFilter);
+        adapter.replaceListOrder(listOrderFilter);
     }
 
-    private void updateListOrder() {
-        Collections.sort(this.feeds, getListComparator());
-        FeedOrderFilter feedOrder = PrefsUtils.getWidgetConfigSortBy(this);
-        adapter.diffAll(this.feeds, feedOrder);
+    private void replaceFolderView(FolderViewFilter folderViewFilter) {
+        PrefsUtils.setWidgetConfigFolderView(this, folderViewFilter);
+        adapter.replaceFolderView(folderViewFilter);
+        setAdapterData();
     }
 
-    private Comparator<Feed> getListComparator() {
-        return new Comparator<Feed>() {
-            @Override
-            public int compare(Feed o1, Feed o2) {
-                ListOrderFilter listOrderFilter = PrefsUtils.getWidgetConfigSortOrder(WidgetConfig.this);
-                FeedOrderFilter feedOrderFilter = PrefsUtils.getWidgetConfigSortBy(WidgetConfig.this);
-                if (feedOrderFilter == FeedOrderFilter.NAME && listOrderFilter == ListOrderFilter.ASCENDING) {
-                    return o1.title.compareTo(o2.title);
-                } else if (feedOrderFilter == FeedOrderFilter.NAME && listOrderFilter == ListOrderFilter.DESCENDING) {
-                    return o2.title.compareTo(o1.title);
-                } else if (feedOrderFilter == FeedOrderFilter.SUBSCRIBERS && listOrderFilter == ListOrderFilter.ASCENDING) {
-                    return Integer.valueOf(o1.subscribers).compareTo(Integer.valueOf(o2.subscribers));
-                } else if (feedOrderFilter == FeedOrderFilter.SUBSCRIBERS && listOrderFilter == ListOrderFilter.DESCENDING) {
-                    return Integer.valueOf(o2.subscribers).compareTo(Integer.valueOf(o1.subscribers));
-                } else if (feedOrderFilter == FeedOrderFilter.OPENS && listOrderFilter == ListOrderFilter.ASCENDING) {
-                    return Integer.compare(o1.feedOpens, o2.feedOpens);
-                } else if (feedOrderFilter == FeedOrderFilter.OPENS && listOrderFilter == ListOrderFilter.DESCENDING) {
-                    return Integer.compare(o2.feedOpens, o1.feedOpens);
-                } else if (feedOrderFilter == FeedOrderFilter.RECENT_STORY && listOrderFilter == ListOrderFilter.ASCENDING) {
-                    return compareLastStoryDateTimes(o1.lastStoryDate, o2.lastStoryDate, listOrderFilter);
-                } else if (feedOrderFilter == FeedOrderFilter.RECENT_STORY && listOrderFilter == ListOrderFilter.DESCENDING) {
-                    return compareLastStoryDateTimes(o1.lastStoryDate, o2.lastStoryDate, listOrderFilter);
-                } else if (feedOrderFilter == FeedOrderFilter.STORIES_MONTH && listOrderFilter == ListOrderFilter.ASCENDING) {
-                    return Integer.compare(o1.storiesPerMonth, o2.storiesPerMonth);
-                } else if (feedOrderFilter == FeedOrderFilter.STORIES_MONTH && listOrderFilter == ListOrderFilter.DESCENDING) {
-                    return Integer.compare(o2.storiesPerMonth, o1.storiesPerMonth);
-                }
-                return o1.title.compareTo(o2.title);
-            }
-        };
-    }
+    private void setAdapterData() {
+        adapter.setData(this.folderNames, this.folderChildren, this.feeds);
 
-    private int compareLastStoryDateTimes(String firstDateTime, String secondDateTime, ListOrderFilter listOrderFilter) {
-        try {
-            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
-            // found null last story date times on feeds
-            if (TextUtils.isEmpty(firstDateTime)) {
-                firstDateTime = "2000-01-01 00:00:00";
-            }
-            if (TextUtils.isEmpty(secondDateTime)) {
-                secondDateTime = "2000-01-01 00:00:00";
-            }
-
-            Date firstDate = dateFormat.parse(firstDateTime);
-            Date secondDate = dateFormat.parse(secondDateTime);
-            if (listOrderFilter == ListOrderFilter.ASCENDING) {
-                return firstDate.compareTo(secondDate);
-            } else {
-                return secondDate.compareTo(firstDate);
-            }
-        } catch (ParseException e) {
-            e.printStackTrace();
-            return 0;
-        }
+        listView.setVisibility(this.feeds.isEmpty() ? View.GONE : View.VISIBLE);
+        textNoSubscriptions.setVisibility(this.feeds.isEmpty() ? View.VISIBLE : View.GONE);
     }
 }

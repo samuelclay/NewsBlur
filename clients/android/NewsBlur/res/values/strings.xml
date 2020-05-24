@@ -28,12 +28,13 @@
     <string name="description_login_logo">NewsBlur Logo</string>
 	<string name="description_profile_picture">The user\'s profile picture</string>
 	<string name="description_row_folder_icon">folder icon</string>
-	<string name="description_activity_icon">An icon illustrating the user\'s activity</string>
-	<string name="description_follow_button">Follow or unfollow a user</string>
-	<string name="description_comment_user">Comment user image</string>
-	<string name="description_empty_list_image">Empty list placeholder</string>
+    <string name="description_row_feed_icon">feed icon</string>
+    <string name="description_activity_icon">An icon illustrating the user\'s activity</string>
+    <string name="description_follow_button">Follow or unfollow a user</string>
+    <string name="description_comment_user">Comment user image</string>
+    <string name="description_empty_list_image">Empty list placeholder</string>
     <string name="description_menu">Menu</string>
-    
+
     <string name="title_choose_folders">Choose Folders for Feed %s</string>
     <string name="title_rename_feed">Rename Feed %s</string>
 	
@@ -174,6 +175,9 @@
     <string name="menu_sort_order">Sort Order</string>
     <string name="menu_sort_order_ascending">Ascending</string>
     <string name="menu_sort_order_descending">Descending</string>
+    <string name="menu_folder_view">Folder View</string>
+    <string name="menu_folder_view_nested">Nested</string>
+    <string name="menu_folder_view_flat">Flat</string>
     <string name="menu_select_all">Select All</string>
     <string name="menu_select_none">Select None</string>
     

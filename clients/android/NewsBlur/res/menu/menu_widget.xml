@@ -40,6 +40,21 @@
         </menu>
     </item>
     <item
+        android:id="@+id/menu_folder_view"
+        android:showAsAction="never"
+        android:title="@string/menu_folder_view">
+        <menu>
+            <group android:checkableBehavior="single">
+                <item
+                    android:id="@+id/menu_folder_view_nested"
+                    android:title="@string/menu_folder_view_nested" />
+                <item
+                    android:id="@+id/menu_folder_view_flat"
+                    android:title="@string/menu_folder_view_flat" />
+            </group>
+        </menu>
+    </item>
+    <item
         android:id="@+id/menu_select_all"
         android:title="@string/menu_select_all" />
     <item

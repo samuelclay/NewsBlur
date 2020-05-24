@@ -2,17 +2,18 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginStart="8dp"
-    android:layout_marginEnd="8dp"
     android:orientation="horizontal"
+    android:paddingStart="8dp"
     android:paddingTop="4dp"
+    android:paddingEnd="8dp"
     android:paddingBottom="4dp">
 
     <CheckBox
         android:id="@+id/check_box"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:clickable="false" />
+        android:clickable="false"
+        android:focusable="false" />
 
     <ImageView
         android:id="@+id/img"
@@ -20,6 +21,7 @@
         android:layout_height="19dp"
         android:layout_gravity="center_vertical"
         android:layout_marginStart="4dp"
+        android:contentDescription="@string/description_row_feed_icon"
         android:scaleType="centerCrop" />
 
     <TextView
