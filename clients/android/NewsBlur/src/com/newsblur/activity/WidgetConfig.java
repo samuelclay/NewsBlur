@@ -40,7 +40,7 @@ public class WidgetConfig extends NbActivity {
     @Bind(R.id.text_no_subscriptions)
     TextView textNoSubscriptions;
 
-    private WidgetAdapter adapter;
+    private WidgetConfigAdapter adapter;
     private ArrayList<Feed> feeds;
     private ArrayList<Folder> folders;
     private Map<String, Feed> feedMap = new HashMap<>();
@@ -141,7 +141,7 @@ public class WidgetConfig extends NbActivity {
                 selectAllFeeds();
                 return true;
             case R.id.menu_select_none:
-                setWidgetFeedIds(Collections.<String>emptySet());
+                replaceWidgetFeedIds(Collections.<String>emptySet());
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -149,16 +149,8 @@ public class WidgetConfig extends NbActivity {
     }
 
     private void setupList() {
-        adapter = new WidgetAdapter(this);
+        adapter = new WidgetConfigAdapter(this);
         listView.setAdapter(adapter);
-
-        Set<String> feedIds = PrefsUtils.getWidgetFeedIds(this);
-        // by default select all feeds
-        if (feedIds != null) {
-            adapter.setFeedIds(feedIds);
-        } else {
-            selectAllFeeds();
-        }
     }
 
     private void loadFeeds() {
@@ -228,6 +220,7 @@ public class WidgetConfig extends NbActivity {
                 folderChildren.add(activeFeeds);
             }
 
+            setSelectedFeeds();
             setAdapterData();
         }
     }
@@ -237,12 +230,12 @@ public class WidgetConfig extends NbActivity {
         for (Feed feed : this.feeds) {
             feedIds.add(feed.feedId);
         }
-        setWidgetFeedIds(feedIds);
+        replaceWidgetFeedIds(feedIds);
     }
 
-    private void setWidgetFeedIds(Set<String> feedIds) {
+    private void replaceWidgetFeedIds(Set<String> feedIds) {
         PrefsUtils.setWidgetFeedIds(this, feedIds);
-        adapter.setFeedIds(feedIds);
+        adapter.replaceFeedIds(feedIds);
     }
 
     private void replaceFeedOrderFilter(FeedOrderFilter feedOrderFilter) {
@@ -259,6 +252,18 @@ public class WidgetConfig extends NbActivity {
         PrefsUtils.setWidgetConfigFolderView(this, folderViewFilter);
         adapter.replaceFolderView(folderViewFilter);
         setAdapterData();
+    }
+
+    private void setSelectedFeeds() {
+        Set<String> feedIds = PrefsUtils.getWidgetFeedIds(this);
+        // by default select all feeds
+        if (feedIds == null) {
+            feedIds = new HashSet<>(this.feeds.size());
+            for (Feed feed : this.feeds) {
+                feedIds.add(feed.feedId);
+            }
+        }
+        adapter.setFeedIds(feedIds);
     }
 
     private void setAdapterData() {
