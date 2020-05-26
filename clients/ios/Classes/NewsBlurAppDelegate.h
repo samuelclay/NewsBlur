@@ -342,6 +342,8 @@ SFSafariViewControllerDelegate>  {
 - (void)recalculateIntelligenceScores:(id)feedId;
 
 - (void)cancelRequests;
+- (NSString *)beginNetworkOperation;
+- (void)endNetworkOperation:(NSString *)networkOperationIdentifier;
 
 - (void)GET:(NSString *)urlString parameters:(id)parameters
     success:(void (^)(NSURLSessionDataTask *, id))success
