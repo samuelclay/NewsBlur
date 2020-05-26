@@ -37,7 +37,7 @@ frontend public
   option http-server-close
 
   # Redirect all HTTP traffic to HTTPS
-  # redirect scheme https code 301 if !{ ssl_fc }
+  redirect scheme https code 301 if !{ ssl_fc }
 
   acl gunicorn_dead nbsrv(gunicorn) lt 1
   acl nginx_dead nbsrv(nginx) lt 1
