@@ -602,6 +602,11 @@
 }
 
 - (void)drawFeedGradient {
+    NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
+    BOOL shouldHideStatusBar = [preferences boolForKey:@"story_hide_status_bar"];
+    UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
+    BOOL shouldOffsetFeedGradient = UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone && !UIInterfaceOrientationIsLandscape(orientation) && self.navigationController.navigationBarHidden && !shouldHideStatusBar;
+    CGFloat yOffset = shouldOffsetFeedGradient ? appDelegate.storyPageControl.statusBarBackgroundView.bounds.size.height - 1 : -1;
     NSString *feedIdStr = [NSString stringWithFormat:@"%@",
                            [self.activeStory
                             objectForKey:@"story_feed_id"]];
@@ -614,7 +619,7 @@
     
     self.feedTitleGradient = [appDelegate
                               makeFeedTitleGradient:feed
-                              withRect:CGRectMake(0, -1, CGRectGetWidth(self.view.bounds), 21)]; // 1024 hack for self.webView.frame.size.width
+                              withRect:CGRectMake(0, yOffset, CGRectGetWidth(self.view.bounds), 21)]; // 1024 hack for self.webView.frame.size.width
     self.feedTitleGradient.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     self.feedTitleGradient.tag = FEED_TITLE_GRADIENT_TAG; // Not attached yet. Remove old gradients, first.
     
@@ -635,7 +640,7 @@
     [self.webView insertSubview:feedTitleGradient aboveSubview:self.webView.scrollView];
     
     if (@available(iOS 11.0, *)) {
-        if (self.view.safeAreaInsets.top > 0.0 && UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        if (self.view.safeAreaInsets.top > 0.0 && UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone && shouldHideStatusBar) {
             feedTitleGradient.alpha = self.navigationController.navigationBarHidden ? 1 : 0;
             
             [UIView animateWithDuration:0.3 animations:^{
@@ -1404,7 +1409,11 @@
 //                appDelegate.storyPageControl.traverseView.frame = CGRectMake(tvf.origin.x,
 //                                                                             (webpageHeight - topPosition) - tvf.size.height - safeBottomMargin,
 //                                                                             tvf.size.width, tvf.size.height);
-                appDelegate.storyPageControl.traverseBottomConstraint.constant = viewportHeight - (webpageHeight - topPosition) + safeBottomMargin;
+                if (webpageHeight > 0) {
+                    appDelegate.storyPageControl.traverseBottomConstraint.constant = viewportHeight - (webpageHeight - topPosition) + safeBottomMargin;
+                } else {
+                    appDelegate.storyPageControl.traverseBottomConstraint.constant = safeBottomMargin;
+                }
 //                appDelegate.storyPageControl.traverseBottomConstraint.constant = safeBottomMargin;
             }
         } else if (!singlePage && (atTop && !atBottom)) {
