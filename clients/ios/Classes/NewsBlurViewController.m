@@ -713,6 +713,9 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     [allFolders setValue:socialFolder forKey:@"river_blurblogs"];
     [allFolders setValue:[[NSMutableArray alloc] init] forKey:@"river_global"];
     
+    NSArray *savedSearches = [appDelegate updateSavedSearches:results];
+    [allFolders setValue:savedSearches forKey:@"saved_searches"];
+    
     NSArray *savedStories = [appDelegate updateStarredStoryCounts:results];
     [allFolders setValue:savedStories forKey:@"saved_stories"];
 
@@ -750,9 +753,9 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
         
         for (id feedId in folder) {
             NSString *feedIdStr = [NSString stringWithFormat:@"%@", feedId];
-            NSDictionary *feed;
+            NSDictionary *feed = nil;
             
-            if ([appDelegate isSavedFeed:feedIdStr]) {
+            if (/*[appDelegate isSavedSearch:feedIdStr] ||*/ [appDelegate isSavedFeed:feedIdStr]) {
                 feed = @{@"id" : feedId};
             } else if ([appDelegate isSocialFeed:feedIdStr]) {
                 feed = appDelegate.dictSocialFeeds[feedIdStr];
@@ -783,7 +786,13 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     // Add Read Stories folder to bottom
     [appDelegate.dictFoldersArray removeObject:@"read_stories"];
     [appDelegate.dictFoldersArray insertObject:@"read_stories" atIndex:appDelegate.dictFoldersArray.count];
-
+    
+    // Add Saved Searches folder to bottom
+    [appDelegate.dictFoldersArray removeObject:@"saved_searches"];
+    if (savedSearches.count > 0) {
+        [appDelegate.dictFoldersArray insertObject:@"saved_searches" atIndex:appDelegate.dictFoldersArray.count];
+    }
+    
     // Add Saved Stories folder to bottom
     [appDelegate.dictFoldersArray removeObject:@"saved_stories"];
     if (appDelegate.savedStoriesCount) {
@@ -1226,6 +1235,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:indexPath.section];
     id feedId = [[appDelegate.dictFolders objectForKey:folderName] objectAtIndex:indexPath.row];
     NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
+    BOOL isSavedSearch = [folderName isEqualToString:@"saved_searches"];
     BOOL isSocial = [appDelegate isSocialFeed:feedIdStr];
     BOOL isSaved = [appDelegate isSavedFeed:feedIdStr];
     BOOL isSavedStoriesFeed = self.appDelegate.isSavedStoriesIntelligenceMode && [self.appDelegate savedStoriesCountForFeed:feedIdStr] > 0;
@@ -1272,12 +1282,20 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     cell.feedTitle     = [feed objectForKey:@"feed_title"];
     cell.isSocial      = isSocial;
     cell.isSaved       = isSaved;
+    cell.searchQuery   = nil;
     
     if (newCell) {
         [cell setupGestures];
     }
     
-    if (isSavedStoriesFeed) {
+    if (isSavedSearch) {
+        cell.positiveCount = 0;
+        cell.neutralCount = 0;
+        cell.negativeCount = 0;
+        cell.savedStoriesCount = 0;
+        cell.searchQuery = appDelegate.dictSavedSearches[feedIdStr][@"query"];
+        cell.feedTitle = [NSString stringWithFormat:@"\"%@\" in %@", cell.searchQuery, cell.feedTitle];
+    } else if (isSavedStoriesFeed) {
         cell.positiveCount = 0;
         cell.neutralCount = 0;
         cell.negativeCount = 0;
@@ -1472,6 +1490,7 @@ heightForHeaderInSection:(NSInteger)section {
     
     BOOL visibleFeeds = [[self.visibleFolders objectForKey:folderName] boolValue];
     if (!visibleFeeds && section != NewsBlurTopSectionInfrequentSiteStories && section != NewsBlurTopSectionAllStories && section != NewsBlurTopSectionGlobalSharedStories &&
+        ![folderName isEqualToString:@"saved_searches"] &&
         ![folderName isEqualToString:@"saved_stories"] &&
         ![folderName isEqualToString:@"read_stories"]) {
         return 0;
@@ -1899,6 +1918,11 @@ heightForHeaderInSection:(NSInteger)section {
                            cellForRowAtIndexPath:self.currentRowAtIndexPath];
     if (cell) {
         NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:self.currentRowAtIndexPath.section];
+        
+        if ([folderName isEqualToString:@"saved_searches"]) {
+            return;
+        }
+        
         id feedId = [[appDelegate.dictFolders objectForKey:folderName] objectAtIndex:self.currentRowAtIndexPath.row];
         NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
         NSDictionary *unreadCounts = [appDelegate.dictUnreadCounts objectForKey:feedIdStr];
