@@ -1656,6 +1656,8 @@
                 feedTitle = @"Read Stories";
             } else if ([storiesCollection.activeFolder isEqualToString:@"saved_stories"]) {
                 feedTitle = @"Saved Stories";
+            } else if ([storiesCollection.activeFolder isEqualToString:@"saved_searches"]) {
+                feedTitle = @"Saved Searches";
             } else {
                 feedTitle = storiesCollection.activeFolder;
             }

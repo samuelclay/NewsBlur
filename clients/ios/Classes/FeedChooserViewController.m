@@ -162,7 +162,7 @@ static const CGFloat kFolderTitleHeight = 36.0;
     NSArray *folderArray = [self.dictFolders.allKeys sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)];
     
     for (NSString *folderName in folderArray) {
-        if (![folderName hasPrefix:@"river_"] && ![folderName isEqualToString:@"read_stories"] && ![folderName isEqualToString:@"saved_stories"]) {
+        if (![folderName hasPrefix:@"river_"] && ![folderName isEqualToString:@"read_stories"] && ![folderName isEqualToString:@"saved_searches"] && ![folderName isEqualToString:@"saved_stories"]) {
             FeedChooserItem *folder = [FeedChooserItem makeFolderWithTitle:folderName];
             [folders addObject:folder];
             
