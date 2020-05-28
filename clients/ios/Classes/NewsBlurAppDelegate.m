@@ -1654,6 +1654,10 @@
     return NO;
 }
 
+//- (BOOL)isSavedSearch:(NSString *)feedIdStr {
+//    return [feedIdStr startsWith:@"search:"];
+//}
+
 - (BOOL)isSavedFeed:(NSString *)feedIdStr {
     return [feedIdStr startsWith:@"saved:"];
 }
@@ -1664,6 +1668,10 @@
 
 - (BOOL)isSavedStoriesIntelligenceMode {
     return self.selectedIntelligence == 2;
+}
+
+- (NSInteger)savedSearchesCount {
+    return self.dictSavedSearches.count;
 }
 
 - (NSArray *)allFeedIds {
@@ -1817,6 +1825,7 @@
             for (NSString *folderName in self.feedsViewController.activeFeedLocations) {
                 if ([folderName isEqualToString:@"river_blurblogs"]) continue;
                 if ([folderName isEqualToString:@"read_stories"]) continue;
+                if ([folderName isEqualToString:@"saved_searches"]) continue;
                 if ([folderName isEqualToString:@"saved_stories"]) continue;
                 NSArray *originalFolder = [self.dictFolders objectForKey:folderName];
                 NSArray *folderFeeds = [self.feedsViewController.activeFeedLocations objectForKey:folderName];
@@ -1832,6 +1841,9 @@
             if ([folder isEqualToString:@"saved_stories"] || [folderName isEqualToString:@"saved_stories"]) {
                 feedDetailView.storiesCollection.isSavedView = YES;
                 [feedDetailView.storiesCollection setActiveFolder:@"saved_stories"];
+            } else if ([folder isEqualToString:@"saved_searches"] || [folderName isEqualToString:@"saved_searches"]) {
+                feedDetailView.storiesCollection.isSavedView = YES;
+                [feedDetailView.storiesCollection setActiveFolder:@"saved_searches"];
             } else if ([folder isEqualToString:@"read_stories"] || [folderName isEqualToString:@"read_stories"]) {
                 feedDetailView.storiesCollection.isReadView = YES;
                 [feedDetailView.storiesCollection setActiveFolder:@"read_stories"];
@@ -2287,6 +2299,8 @@
         activity.title = [NSString stringWithFormat:@"Read %@", storiesCollection.activeSavedStoryTag];
     } else if ([folder isEqualToString:@"read_stories"]) {
         activity.title = @"Re-read Stories";
+    } else if ([folder isEqualToString:@"saved_searches"]) {
+        activity.title = @"Re-read Saved Searches";
     } else if ([folder isEqualToString:@"saved_stories"]) {
         activity.title = @"Re-read Saved Stories";
     } else {
@@ -2939,6 +2953,28 @@
     return savedStories;
 }
 
+- (NSArray *)updateSavedSearches:(NSDictionary *)results {
+    NSArray *savedSearches = results[@"saved_searches"];
+    NSMutableDictionary *savedSearchesDict = [NSMutableDictionary dictionary];
+    NSMutableArray *feedIds = [NSMutableArray arrayWithCapacity:savedSearches.count];
+    
+    for (NSDictionary *search in savedSearches) {
+        NSString *feedId = search[@"feed_id"];
+        NSString *prefix = @"feed:";
+        
+        if ([feedId hasPrefix:prefix]) {
+            feedId = [feedId substringFromIndex:prefix.length];
+        }
+        
+        [feedIds addObject:feedId];
+        savedSearchesDict[feedId] = search;
+    }
+    
+    self.dictSavedSearches = savedSearchesDict;
+    
+    return feedIds;
+}
+
 - (void)renameFeed:(NSString *)newTitle {
     NSMutableDictionary *newActiveFeed = [storiesCollection.activeFeed mutableCopy];
     [newActiveFeed setObject:newTitle forKey:@"feed_title"];
@@ -3348,6 +3384,8 @@
         }
     } else if ([storiesCollection.activeFolder isEqualToString:@"read_stories"]) {
         titleLabel.text = [NSString stringWithFormat:@"     Read Stories"];
+    } else if ([storiesCollection.activeFolder isEqualToString:@"saved_searches"]) {
+        titleLabel.text = [NSString stringWithFormat:@"     Saved Searches"];
     } else if ([storiesCollection.activeFolder isEqualToString:@"saved_stories"]) {
         titleLabel.text = [NSString stringWithFormat:@"     Saved Stories"];
     } else if (storiesCollection.isSocialView) {
@@ -3386,6 +3424,8 @@
             titleImage = [UIImage imageNamed:@"tag.png"];
         } else if ([storiesCollection.activeFolder isEqualToString:@"read_stories"]) {
             titleImage = [UIImage imageNamed:@"g_icn_folder_read.png"];
+        } else if ([storiesCollection.activeFolder isEqualToString:@"saved_searches"]) {
+            titleImage = [[UIImage imageNamed:@"g_icn_search_black.png"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
         } else if ([storiesCollection.activeFolder isEqualToString:@"saved_stories"]) {
             titleImage = [UIImage imageNamed:@"clock.png"];
         } else if (storiesCollection.isRiverView) {

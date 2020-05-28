@@ -229,6 +229,7 @@ SFSafariViewControllerDelegate>  {
 @property (readwrite) NSString * activeShareType;
 @property (readwrite) NSInteger feedDetailPortraitYCoordinate;
 @property (readwrite) NSInteger originalStoryCount;
+@property (readonly) NSInteger savedSearchesCount;
 @property (readwrite) NSInteger savedStoriesCount;
 @property (readwrite) NSInteger totalUnfetchedStoryCount;
 @property (readwrite) NSInteger remainingUnfetchedStoryCount;
@@ -254,6 +255,7 @@ SFSafariViewControllerDelegate>  {
 @property (nonatomic, strong) NSMutableDictionary *dictFeeds;
 @property (nonatomic) NSMutableDictionary *dictActiveFeeds;
 @property (nonatomic) NSDictionary *dictSocialFeeds;
+@property (nonatomic) NSDictionary *dictSavedSearches;
 @property (nonatomic) NSDictionary *dictSavedStoryTags;
 @property (nonatomic, strong) NSDictionary *dictSavedStoryFeedCounts;
 @property (nonatomic) NSDictionary *dictSocialProfile;
@@ -373,6 +375,7 @@ SFSafariViewControllerDelegate>  {
 - (void)hideShareView:(BOOL)resetComment;
 - (void)resetShareComments;
 - (BOOL)isSocialFeed:(NSString *)feedIdStr;
+//- (BOOL)isSavedSearch:(NSString *)feedIdStr;
 - (BOOL)isSavedFeed:(NSString *)feedIdStr;
 - (NSInteger)savedStoriesCountForFeed:(NSString *)feedIdStr;
 - (BOOL)isSavedStoriesIntelligenceMode;
@@ -418,6 +421,7 @@ SFSafariViewControllerDelegate>  {
 - (void)failedMarkAsUnsaved:(NSDictionary *)params;
 - (NSInteger)adjustSavedStoryCount:(NSString *)tagName direction:(NSInteger)direction;
 - (NSArray *)updateStarredStoryCounts:(NSDictionary *)results;
+- (NSArray *)updateSavedSearches:(NSDictionary *)results;
 - (void)renameFeed:(NSString *)newTitle;
 - (void)renameFolder:(NSString *)newTitle;
 
