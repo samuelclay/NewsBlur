@@ -94,7 +94,7 @@ public class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsF
         rv.setTextViewText(R.id.story_item_content, story.shortContent);
         rv.setTextViewText(R.id.story_item_author, story.authors);
         rv.setTextViewText(R.id.story_item_feedtitle, story.extern_feedTitle);
-        CharSequence time = StoryUtils.formatRelativeTime(context, story.timestamp);
+        CharSequence time = StoryUtils.formatShortDate(context, story.timestamp);
         rv.setTextViewText(R.id.story_item_date, time);
 
         // image dimensions same as R.layout.view_widget_story_item
@@ -205,7 +205,7 @@ public class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsF
      */
     @Override
     public int getCount() {
-        return Math.min(storyItems.size(), 5);
+        return Math.min(storyItems.size(), WidgetUtils.STORIES_LIMIT);
     }
 
     private void processStories(final Story[] stories) {
@@ -259,11 +259,8 @@ public class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsF
 
     private void setFeedSet() {
         Set<String> feedIds = PrefsUtils.getWidgetFeedIds(context);
-        if (feedIds == null) {
-            // show all feeds by default
-            fs = FeedSet.allFeeds();
-        } else if (!feedIds.isEmpty()) {
-            fs = FeedSet.multipleFeeds(feedIds);
+        if (feedIds == null || !feedIds.isEmpty()) {
+            fs = FeedSet.widgetFeeds(feedIds);
         } else {
             // no feeds selected. Widget will show tap to config view
             fs = null;

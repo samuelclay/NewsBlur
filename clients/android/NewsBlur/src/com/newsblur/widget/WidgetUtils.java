@@ -24,6 +24,7 @@ public class WidgetUtils {
     public static int RC_WIDGET_UPDATE = 1;
     public static int RC_WIDGET_STORY = 2;
     public static int RC_WIDGET_CONFIG = 3;
+    public static int STORIES_LIMIT = 5;
 
     static void enableWidgetUpdate(Context context) {
         Log.d(TAG, "enableWidgetUpdate");
