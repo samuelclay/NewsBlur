@@ -179,7 +179,7 @@ public class WidgetConfig extends NbActivity {
         ArrayList<Feed> feeds = new ArrayList<>();
         while (cursor != null && cursor.moveToNext()) {
             Feed feed = Feed.fromCursor(cursor);
-            if (!feed.feedId.equals("0") && feed.active) {
+            if (feed.active) {
                 feeds.add(feed);
                 feedMap.put(feed.feedId, feed);
             }
