@@ -800,18 +800,29 @@ def copy_certificates():
     run('mkdir -p %s' % cert_path)
     put(os.path.join(env.SECRETS_PATH, 'certificates/newsblur.com.crt'), cert_path)
     put(os.path.join(env.SECRETS_PATH, 'certificates/newsblur.com.key'), cert_path)
-    put(os.path.join(env.SECRETS_PATH, 'certificates/comodo/newsblur.com.pem'), cert_path)
-    put(os.path.join(env.SECRETS_PATH, 'certificates/comodo/dhparams.pem'), cert_path)
+    # put(os.path.join(env.SECRETS_PATH, 'certificates/comodo/newsblur.com.pem'), cert_path)
+    # put(os.path.join(env.SECRETS_PATH, 'certificates/comodo/dhparams.pem'), cert_path)
     put(os.path.join(env.SECRETS_PATH, 'certificates/ios/aps_development.pem'), cert_path)
     # openssl x509 -in aps.cer -inform DER -outform PEM -out aps.pem
     put(os.path.join(env.SECRETS_PATH, 'certificates/ios/aps.pem'), cert_path)
     # Export aps.p12 from aps.cer using Keychain Assistant
     # openssl pkcs12 -in aps.p12 -out aps.p12.pem -nodes
     put(os.path.join(env.SECRETS_PATH, 'certificates/ios/aps.p12.pem'), cert_path)
-    run('cat %s/newsblur.com.pem > %s/newsblur.pem' % (cert_path, cert_path))
+    run('cat %s/newsblur.com.crt > %s/newsblur.pem' % (cert_path, cert_path))
     run('echo "\n" >> %s/newsblur.pem' % (cert_path))
     run('cat %s/newsblur.com.key >> %s/newsblur.pem' % (cert_path, cert_path))
 
+def setup_certbot():
+    sudo('add-apt-repository -y universe')
+    sudo('add-apt-repository -y ppa:certbot/certbot')
+    sudo('apt-get update')
+    sudo('apt-get install -y certbot')
+    sudo('apt-get install -y python3-certbot-dns-dnsimple')
+    run('echo "dns_dnsimple_token = %s" > dnsimple.ini')
+    run('chmod 0400 dnsimple.ini')
+    sudo('certbot certonly -n --agree-tos --email samuel@newsblur.com --domains "*.newsblur.com" --dns-dnsimple --dns-dnsimple-credentials %s' % (settings.DNSIMPLE_TOKEN))
+    run('rm dnsimple.ini')
+    
 @parallel
 def maintenance_on():
     role = role_for_host()
