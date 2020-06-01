@@ -1122,6 +1122,38 @@
           desc: "Object with folders and feed ids."
           required: true
           example: "[12, 24, 36, <br>{'Blogs': [56, 67, 78,<br />{'Photoblogs': [42]}]}]"
+
+    - url: /reader/save_search
+      method: POST
+      short_desc: "Add a new saved search feed."
+      long_desc: 
+        - "Add a new saved search feed, which is a shortcut to a search query on a specific feed."
+      params:
+        - key: feed_id
+          desc: "A single feed id of feed to search."
+          required: true
+          example: "42"
+        - key: query
+          desc: >
+            Search for a keyword or phrase in the feed. Note that only premium users can search feeds.
+          required: true
+          example: "pizza"
+          
+    - url: /reader/delete_search
+      method: POST
+      short_desc: "Removes a saved search feed."
+      long_desc: 
+        - "Deletes a saved search feed."
+      params:
+        - key: feed_id
+          desc: "A single feed id of feed to search."
+          required: true
+          example: "42"
+        - key: query
+          desc: >
+            The query originally used to save the search.
+          required: true
+          example: "pizza"
           
           
 - "intelligence classifiers":
