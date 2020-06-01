@@ -212,7 +212,6 @@ def setup_common():
     # setup_pymongo_repo()
     setup_logrotate()
     setup_nginx()
-    # setup_imaging()
     setup_munin()
 
 def setup_all():
@@ -458,25 +457,6 @@ def setup_libxml_code():
 def setup_psycopg():
     sudo('easy_install -U psycopg2')
 
-# def setup_python():
-#     # sudo('easy_install -U $(<%s)' %
-#     #      os.path.join(env.NEWSBLUR_PATH, 'config/requirements.txt'))
-#     pip()
-#     put('config/pystartup.py', '.pystartup')
-#
-#     # with cd(os.path.join(env.NEWSBLUR_PATH, 'vendor/cjson')):
-#     #     sudo('python setup.py install')
-#
-#     with settings(warn_only=True):
-#         sudo('echo "import sys; sys.setdefaultencoding(\'utf-8\')" | sudo tee /usr/lib/python2.7/sitecustomize.py')
-#         sudo("chmod a+r /usr/local/lib/python2.7/dist-packages/httplib2-0.8-py2.7.egg/EGG-INFO/top_level.txt")
-#         sudo("chmod a+r /usr/local/lib/python2.7/dist-packages/python_dateutil-2.1-py2.7.egg/EGG-INFO/top_level.txt")
-#         sudo("chmod a+r /usr/local/lib/python2.7/dist-packages/httplib2-0.8-py2.7.egg/httplib2/cacerts.txt")
-#
-#     if env.user == 'ubuntu':
-#         with settings(warn_only=True):
-#             sudo('chown -R ubuntu.ubuntu /home/ubuntu/.python-eggs')
-
 def setup_virtualenv():
     sudo('rm -fr ~/.cache') # Clean `sudo pip`
     sudo('pip install --upgrade virtualenv')
@@ -529,10 +509,6 @@ def solo_pip(role):
         pip()
         celery()
     
-# PIL - Only if python-imaging didn't install through apt-get, like on Mac OS X.
-def setup_imaging():
-    sudo('easy_install --always-unzip pil')
-
 def setup_supervisor():
     sudo('apt-get -y install supervisor')
     put('config/supervisord.conf', '/etc/supervisor/supervisord.conf', use_sudo=True)
