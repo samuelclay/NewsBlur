@@ -14,15 +14,17 @@ def main():
     device, size, used, available, percent, mountpoint = output.split("\n")[1].split()
     hostname = socket.gethostname()
     percent = int(percent.strip('%'))
+    admin_email = settings.ADMINS[0][1]
     
     if percent > 95:
         requests.post(
                 "https://api.mailgun.net/v2/%s/messages" % settings.MAILGUN_SERVER_NAME,
                 auth=("api", settings.MAILGUN_ACCESS_KEY),
-                data={"from": "NewsBlur Monitor: %s <admin@%s.newsblur.com>" % (hostname, hostname),
-                      "to": [settings.ADMINS[0][1]],
+                data={"from": "NewsBlur Monitor: %s <%s>" % (hostname, hostname, admin_email),
+                      "to": [admin_email],
                       "subject": "%s hit %s%% disk usage!" % (hostname, percent),
                       "text": "Usage on %s: %s" % (hostname, output)})
+        print " ---> Disk usage is NOT fine: %s / %s%% used" % (hostname, percent)
     else:
         print " ---> Disk usage is fine: %s / %s%% used" % (hostname, percent)
         
