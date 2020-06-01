@@ -796,12 +796,12 @@ def assemble_certificates():
         local('cat STAR_newsblur_com.crt EssentialSSLCA_2.crt ComodoUTNSGCCA.crt UTNAddTrustSGCCA.crt AddTrustExternalCARoot.crt > newsblur.com.crt')
         
 def copy_certificates():
-    cert_path = '%s/config/certificates' % env.NEWSBLUR_PATH
+    cert_path = os.path.join(env.NEWSBLUR_PATH, 'config/certificates')
     run('mkdir -p %s' % cert_path)
     put(os.path.join(env.SECRETS_PATH, 'certificates/newsblur.com.crt'), cert_path)
     put(os.path.join(env.SECRETS_PATH, 'certificates/newsblur.com.key'), cert_path)
-    # put(os.path.join(env.SECRETS_PATH, 'certificates/comodo/newsblur.com.pem'), cert_path)
-    # put(os.path.join(env.SECRETS_PATH, 'certificates/comodo/dhparams.pem'), cert_path)
+    put(os.path.join(env.SECRETS_PATH, 'certificates/comodo/newsblur.com.crt'), os.path.join(cert_path, 'newsblur.com.pem')) # For backwards compatibility with hard-coded nginx configs
+    put(os.path.join(env.SECRETS_PATH, 'certificates/comodo/dhparams.pem'), cert_path)
     put(os.path.join(env.SECRETS_PATH, 'certificates/ios/aps_development.pem'), cert_path)
     # openssl x509 -in aps.cer -inform DER -outform PEM -out aps.pem
     put(os.path.join(env.SECRETS_PATH, 'certificates/ios/aps.pem'), cert_path)
