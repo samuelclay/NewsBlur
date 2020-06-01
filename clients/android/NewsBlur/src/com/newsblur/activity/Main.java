@@ -44,6 +44,7 @@ import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.StateFilter;
 import com.newsblur.util.UIUtils;
 import com.newsblur.view.StateToggleButton.StateChangedListener;
+import com.newsblur.widget.WidgetUtils;
 
 public class Main extends NbActivity implements StateChangedListener, SwipeRefreshLayout.OnRefreshListener, AbsListView.OnScrollListener, PopupMenu.OnMenuItemClickListener, OnSeekBarChangeListener {
 
@@ -294,6 +295,8 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         } else if (themeValue == ThemeValue.BLACK) {
             menu.findItem(R.id.menu_theme_black).setChecked(true);
         }
+        
+        menu.findItem(R.id.menu_widget).setVisible(WidgetUtils.hasActiveAppWidgets(this));
 
         pm.setOnMenuItemClickListener(this);
         pm.show();
@@ -324,7 +327,11 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
             Intent settingsIntent = new Intent(this, Settings.class);
             startActivity(settingsIntent);
             return true;
-        } else if (item.getItemId() == R.id.menu_feedback_email) {
+        } else if (item.getItemId() == R.id.menu_widget) {
+            Intent widgetIntent = new Intent(this, WidgetConfig.class);
+            startActivity(widgetIntent);
+            return true;
+		} else if (item.getItemId() == R.id.menu_feedback_email) {
             PrefsUtils.sendLogEmail(this);
             return true;
         } else if (item.getItemId() == R.id.menu_feedback_post) {

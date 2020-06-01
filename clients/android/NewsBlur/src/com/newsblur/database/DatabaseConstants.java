@@ -35,6 +35,9 @@ public class DatabaseConstants {
 	public static final String FEED_LINK = "link";
 	public static final String FEED_ADDRESS = "address";
 	public static final String FEED_SUBSCRIBERS = "subscribers";
+	public static final String FEED_OPENS = "opens";
+	public static final String FEED_LAST_STORY_DATE = "last_story_date";
+	public static final String FEED_AVERAGE_STORIES_PER_MONTH = "average_stories_per_month";
 	public static final String FEED_UPDATED_SECONDS = "updated_seconds";
 	public static final String FEED_FAVICON_FADE = "favicon_fade";
 	public static final String FEED_FAVICON_COLOR = "favicon_color";
@@ -183,6 +186,9 @@ public class DatabaseConstants {
 		FEED_LINK + TEXT + ", " + 
 		FEED_SUBSCRIBERS + TEXT + ", " +
 		FEED_TITLE + TEXT + ", " + 
+		FEED_OPENS + INTEGER + ", " +
+		FEED_AVERAGE_STORIES_PER_MONTH + INTEGER + ", " +
+		FEED_LAST_STORY_DATE + TEXT + ", " +
 		FEED_UPDATED_SECONDS + INTEGER + ", " +
         FEED_NOTIFICATION_TYPES + TEXT + ", " +
         FEED_NOTIFICATION_FILTER + TEXT + ", " +
