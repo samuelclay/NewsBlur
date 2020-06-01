@@ -40,7 +40,8 @@ import com.newsblur.util.UIUtils;
 public abstract class ItemsList extends NbActivity implements StoryOrderChangedListener, ReadFilterChangedListener, OnSeekBarChangeListener {
 
     public static final String EXTRA_FEED_SET = "feed_set";
-
+    public static final String EXTRA_STORY_HASH = "story_hash";
+    public static final String EXTRA_WIDGET_STORY = "widget_story";
 	private static final String STORY_ORDER = "storyOrder";
 	private static final String READ_FILTER = "readFilter";
     private static final String DEFAULT_FEED_VIEW = "defaultFeedView";
@@ -67,7 +68,10 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
         // reduce UI lag, or in case somehow we got redisplayed in a zero-story state
         FeedUtils.prepareReadingSession(fs, false);
 
-        if (PrefsUtils.isAutoOpenFirstUnread(this)) {
+        if (getIntent().getBooleanExtra(EXTRA_WIDGET_STORY, false)) {
+            String hash = (String) getIntent().getSerializableExtra(EXTRA_STORY_HASH);
+            UIUtils.startReadingActivity(fs, hash, this);
+        } else if (PrefsUtils.isAutoOpenFirstUnread(this)) {
             if (FeedUtils.dbHelper.getUnreadCount(fs, intelState) > 0) {
                 UIUtils.startReadingActivity(fs, Reading.FIND_FIRST_UNREAD, this);
             }
