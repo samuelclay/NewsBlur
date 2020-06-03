@@ -31,7 +31,7 @@ def main():
                 data={"from": "NewsBlur Monitor: %s <%s>" % (hostname, admin_email),
                       "to": [admin_email],
                       "subject": "%s newsletters bounced: %s > %s > %s" % (hostname, accepted, delivered, bounced),
-                      "text": "Usage on %s: %s" % (hostname, output)})
+                      "text": "Newsletters are not being delivered! %s delivered, %s bounced" % (delivered, bounced)})
         print " ---> %s newsletters bounced: %s > %s > %s" % (hostname, accepted, delivered, bounced)
     else:
         print " ---> %s newsletters OK: %s > %s > %s" % (hostname, accepted, delivered, bounced)
