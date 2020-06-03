@@ -1380,6 +1380,16 @@ def setup_usage_monitor():
     sudo('/etc/cron.daily/monitor_disk_usage')
     
 @parallel
+def setup_feeds_fetched_monitor():
+    sudo('ln -fs %s/utils/monitor_task_fetches.py /etc/cron.hourly/monitor_task_fetches' % env.NEWSBLUR_PATH)
+    sudo('/etc/cron.hourly/monitor_task_fetches')
+    
+@parallel
+def setup_newsletter_monitor():
+    sudo('ln -fs %s/utils/monitor_newsletter_delivery.py /etc/cron.hourly/monitor_newsletter_delivery' % env.NEWSBLUR_PATH)
+    sudo('/etc/cron.hourly/monitor_newsletter_delivery')
+    
+@parallel
 def setup_redis_monitor():
     run('sleep 5') # Wait for redis to startup so the log file is there
     sudo('ln -fs %s/utils/monitor_redis_bgsave.py /etc/cron.daily/monitor_redis_bgsave' % env.NEWSBLUR_PATH)
