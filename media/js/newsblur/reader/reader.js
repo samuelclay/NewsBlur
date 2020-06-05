@@ -6726,6 +6726,12 @@
                     self.reload_feed();
                 }
             });
+            $document.bind('keydown', 'shift+r', function(e) {
+                e.preventDefault();
+                if (self.active_feed) {
+                    self.force_instafetch_stories();
+                }
+            });
             $document.bind('keydown', 'enter', function(e) {
                 e.preventDefault();
                 if (self.flags['feed_view_showing_story_view']) {

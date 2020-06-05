@@ -14,6 +14,7 @@ import android.graphics.BitmapFactory;
 import android.os.Process;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.RemoteViews;
 
 import com.newsblur.R;
 import com.newsblur.network.APIConstants;
@@ -72,15 +73,48 @@ public class ImageLoader {
         }
     }
 
+    /**
+     * Synchronous background call coming from app widget on home screen
+     */
+    public void displayWidgetImage(String url, int imageViewId, int maxDimPX, RemoteViews remoteViews) {
+        if (url == null) {
+            remoteViews.setViewVisibility(imageViewId, View.GONE);
+            return;
+        }
+
+        url = buildUrlIfNeeded(url);
+
+        // try from memory
+        Bitmap bitmap = memoryCache.get(url);
+        if (bitmap != null) {
+            remoteViews.setImageViewBitmap(imageViewId, bitmap);
+            remoteViews.setViewVisibility(imageViewId, View.VISIBLE);
+            return;
+        }
+
+        // try from disk
+        bitmap = getImageFromDisk(url, maxDimPX, false, 0f);
+        if (bitmap == null) {
+            // try for network
+            bitmap = getImageFromNetwork(url, maxDimPX,false, 0f);
+        }
+
+        if (bitmap != null) {
+            memoryCache.put(url, bitmap);
+            remoteViews.setImageViewBitmap(imageViewId, bitmap);
+            remoteViews.setViewVisibility(imageViewId, View.VISIBLE);
+        } else {
+            remoteViews.setViewVisibility(imageViewId, View.GONE);
+        }
+    }
+
 	public PhotoToLoad displayImage(String url, ImageView imageView, float roundRadius, boolean cropSquare, int maxDimPX, boolean allowDelay) {
         if (url == null) {
 			imageView.setImageResource(emptyRID);
             return null;
         }
 
-        if (url.startsWith("/")) {
-            url = APIConstants.buildUrl(url);
-        }
+        url = buildUrlIfNeeded(url);
 
 		imageViewMappings.put(imageView, url);
         PhotoToLoad photoToLoad = new PhotoToLoad(url, imageView, roundRadius, cropSquare, maxDimPX, allowDelay);
@@ -150,16 +184,11 @@ public class ImageLoader {
             }
             
             // try from disk
-            File f = fileCache.getCachedFile(photoToLoad.url);
-            // the only reliable way to check a cached file is to try decoding it. the util method will
-            // return null if it fails
-            bitmap = UIUtils.decodeImage(f, photoToLoad.maxDimPX, photoToLoad.cropSquare, photoToLoad.roundRadius);
-            // try for network
+            bitmap = getImageFromDisk(photoToLoad.url, photoToLoad.maxDimPX, photoToLoad.cropSquare, photoToLoad.roundRadius);
             if (bitmap == null) {
+                // try for network
                 if (photoToLoad.cancel) return;
-                fileCache.cacheFile(photoToLoad.url);
-                f = fileCache.getCachedFile(photoToLoad.url);
-                bitmap = UIUtils.decodeImage(f, photoToLoad.maxDimPX, photoToLoad.cropSquare, photoToLoad.roundRadius);
+                bitmap = getImageFromNetwork(photoToLoad.url, photoToLoad.maxDimPX, photoToLoad.cropSquare, photoToLoad.roundRadius);
             }
 
             if (bitmap != null) {
@@ -227,4 +256,23 @@ public class ImageLoader {
         return true;
     }
 
+    private String buildUrlIfNeeded(String url) {
+        if (url.startsWith("/")) {
+            url = APIConstants.buildUrl(url);
+        }
+        return url;
+    }
+
+    private Bitmap getImageFromDisk(String url, int maxDimPX, boolean cropSquare, float roundRadius) {
+        // the only reliable way to check a cached file is to try decoding it. the util method will
+        // return null if it fails
+        File f = fileCache.getCachedFile(url);
+        return UIUtils.decodeImage(f, maxDimPX, cropSquare, roundRadius);
+    }
+
+    private Bitmap getImageFromNetwork(String url, int maxDimPX, boolean cropSquare, float roundRadius) {
+        fileCache.cacheFile(url);
+        File f = fileCache.getCachedFile(url);
+        return UIUtils.decodeImage(f, maxDimPX, cropSquare, roundRadius);
+    }
 }

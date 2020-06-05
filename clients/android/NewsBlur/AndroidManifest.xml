@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.newsblur"
-    android:versionCode="163"
-    android:versionName="9.0.1" >
+    android:versionCode="164"
+    android:versionName="10.0" >
 
     <uses-sdk
         android:minSdkVersion="21"
@@ -74,6 +74,11 @@
         <activity
             android:name=".activity.Settings"
             android:label="@string/settings"/>
+
+        <activity
+            android:name=".activity.WidgetConfig"
+            android:launchMode="singleTask"
+            android:label="@string/widget" />
         
         <activity
             android:name=".activity.FeedItemsList" />
@@ -137,17 +142,11 @@
         <activity
             android:name=".activity.SocialFeedReading"/>
 
-        <activity android:name=".widget.ConfigureWidgetActivity">
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
-            </intent-filter>
-        </activity>
         <service 
             android:name=".service.NBSyncService"
             android:permission="android.permission.BIND_JOB_SERVICE" />
-        <service android:name=".widget.BlurWidgetRemoteViewsService"
-            android:permission="android.permission.BIND_REMOTEVIEWS"
-            />
+        <service android:name=".widget.WidgetRemoteViewsService"
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
 
         <receiver android:name=".service.BootReceiver">
             <intent-filter>
@@ -158,12 +157,23 @@
         <receiver android:name=".util.NotifyDismissReceiver" android:exported="false" />
         <receiver android:name=".util.NotifySaveReceiver" android:exported="false" />
         <receiver android:name=".util.NotifyMarkreadReceiver" android:exported="false" />
-        <receiver android:name=".widget.NewsBlurWidgetProvider" >
+        <receiver android:name=".widget.WidgetProvider"
+            android:exported="false">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
             <meta-data android:name="android.appwidget.provider"
                 android:resource="@xml/newsblur_appwidget_info" />
+        </receiver>
+        <receiver android:name=".service.TimeChangeReceiver">
+            <intent-filter >
+                <action android:name="android.intent.action.TIME_SET"/>
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name=".widget.WidgetUpdateReceiver"
+            android:enabled="true"
+            android:exported="false">
         </receiver>
         <provider
             android:name="android.support.v4.content.FileProvider"
