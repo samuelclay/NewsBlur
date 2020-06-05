@@ -3,8 +3,6 @@ package com.newsblur.service;
 import android.app.Service;
 import android.app.job.JobParameters;
 import android.app.job.JobService;
-import android.appwidget.AppWidgetManager;
-import android.content.ComponentName;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -39,7 +37,7 @@ import com.newsblur.util.ReadingAction;
 import com.newsblur.util.ReadFilter;
 import com.newsblur.util.StateFilter;
 import com.newsblur.util.StoryOrder;
-import com.newsblur.widget.NewsBlurWidgetProvider;
+import com.newsblur.widget.WidgetUtils;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -47,7 +45,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ExecutorService;
@@ -284,14 +281,11 @@ public class NBSyncService extends JobService {
             // on all devices
             housekeeping();
 
-            AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
-            int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(this, NewsBlurWidgetProvider.class));
-            appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.widget_list);
-
             // check to see if we are on an allowable network only after ensuring we have CPU
             if (!( (NbActivity.getActiveActivityCount() > 0) ||
                    PrefsUtils.isEnableNotifications(this) || 
-                   PrefsUtils.isBackgroundNetworkAllowed(this) )) {
+                   PrefsUtils.isBackgroundNetworkAllowed(this) ||
+                    WidgetUtils.hasActiveAppWidgets(this)) ) {
                 Log.d(this.getClass().getName(), "Abandoning sync: app not active and network type not appropriate for background sync.");
                 return;
             }
