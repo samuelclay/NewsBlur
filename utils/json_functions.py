@@ -2,7 +2,7 @@
 from django.db import models
 from django.utils.functional import Promise
 from django.utils.encoding import force_unicode, smart_unicode
-from django.utils import simplejson as json
+import json
 from decimal import Decimal
 from django.core import serializers
 from django.conf import settings
@@ -161,7 +161,7 @@ def json_response(request, response=None):
             print '\n'.join(traceback.format_exception(*exc_info))
 
     json = json_encode(response)
-    return HttpResponse(json, mimetype='application/json', status=code)
+    return HttpResponse(json, content_type='application/json', status=code)
 
 
 def main():

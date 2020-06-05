@@ -1,1 +1,0 @@
-class PayPalFailure(Exception): pass

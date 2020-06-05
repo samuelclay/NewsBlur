@@ -187,7 +187,7 @@ class PayPalStandardBase(Model):
     # unique_id_x = models.CharField(max_length=13, blank=True)
 
     # Non-PayPal Variables - full IPN/PDT query and time fields.
-    ipaddress = models.IPAddressField(blank=True)
+    ipaddress = models.GenericIPAddressField(blank=True, null=True)
     flag = models.BooleanField(default=False, blank=True)
     flag_code = models.CharField(max_length=16, blank=True)
     flag_info = models.TextField(blank=True)
