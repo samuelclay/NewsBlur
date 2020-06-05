@@ -3,8 +3,8 @@
 from django.http import HttpResponse, QueryDict
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
-from paypal.standard.ipn.forms import PayPalIPNForm
-from paypal.standard.ipn.models import PayPalIPN
+from vendor.paypal.standard.ipn.forms import PayPalIPNForm
+from vendor.paypal.standard.ipn.models import PayPalIPN
 
 
 @require_POST

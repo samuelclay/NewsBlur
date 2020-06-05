@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 from django.contrib import admin
-from paypal.standard.ipn.models import PayPalIPN
+from vendor.paypal.standard.ipn.models import PayPalIPN
 
 
 class PayPalIPNAdmin(admin.ModelAdmin):

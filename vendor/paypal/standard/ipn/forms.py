@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from paypal.standard.forms import PayPalStandardBaseForm
-from paypal.standard.ipn.models import PayPalIPN
+from vendor.paypal.standard.forms import PayPalStandardBaseForm
+from vendor.paypal.standard.ipn.models import PayPalIPN
 
 
 class PayPalIPNForm(PayPalStandardBaseForm):
@@ -14,4 +14,4 @@ class PayPalIPNForm(PayPalStandardBaseForm):
 
     class Meta:
         model = PayPalIPN
-        exclude = []
+        fields = "__all__"

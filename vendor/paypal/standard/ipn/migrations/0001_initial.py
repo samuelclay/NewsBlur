@@ -11,7 +11,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='PayPalPDT',
+            name='PayPalIPN',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('business', models.CharField(help_text=b'Email where the money was sent.', max_length=127, blank=True)),
@@ -123,16 +123,10 @@ class Migration(migrations.Migration):
                 ('response', models.TextField(blank=True)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('updated_at', models.DateTimeField(auto_now=True)),
-                ('from_view', models.CharField(max_length=6, null=True, blank=True)),
-                ('amt', models.DecimalField(default=0, null=True, max_digits=64, decimal_places=2, blank=True)),
-                ('cm', models.CharField(max_length=255, blank=True)),
-                ('sig', models.CharField(max_length=255, blank=True)),
-                ('tx', models.CharField(max_length=255, blank=True)),
-                ('st', models.CharField(max_length=32, blank=True)),
             ],
             options={
-                'db_table': 'paypal_pdt',
-                'verbose_name': 'PayPal PDT',
+                'db_table': 'paypal_ipn',
+                'verbose_name': 'PayPal IPN',
             },
             bases=(models.Model,),
         ),

@@ -20,8 +20,8 @@ from django.contrib.auth.models import User
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden, Http404, UnreadablePostError
 from django.conf import settings
 from django.core.mail import mail_admins
-from django.core.validators import email_re
 from django.core.mail import EmailMultiAlternatives
+from django.core.validators import validate_email
 from django.contrib.sites.models import Site
 from django.utils import feedgenerator
 from django.utils.encoding import smart_unicode
@@ -2525,6 +2525,14 @@ def starred_counts(request):
 @ajax_login_required
 @json.json_view
 def send_story_email(request):
+
+    def validate_email_as_bool(email):
+        try:
+            validate_email(email)
+            return True
+        except:
+            return False
+
     code       = 1
     message    = 'OK'
     user       = get_user(request)
@@ -2551,10 +2559,10 @@ def send_story_email(request):
     elif not to_addresses:
         code = -1
         message = 'Please provide at least one email address.'
-    elif not all(email_re.match(to_address) for to_address in to_addresses if to_addresses):
+    elif not all(validate_email_as_bool(to_address) for to_address in to_addresses if to_addresses):
         code = -1
         message = 'You need to send the email to a valid email address.'
-    elif not email_re.match(from_email):
+    elif not validate_email_as_bool(from_email):
         code = -1
         message = 'You need to provide your email address.'
     elif not from_name:

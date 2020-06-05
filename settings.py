@@ -56,7 +56,7 @@ IMAGES_SECRET_KEY = "YOUR_SECRET_IMAGE_KEY"
 # = Global Settings =
 # ===================
 
-DEBUG                 = False
+DEBUG                 = True
 TEST_DEBUG            = False
 SEND_BROKEN_LINK_EMAILS = False
 DEBUG_QUERIES         = False
@@ -78,9 +78,9 @@ CIPHER_USERNAMES      = False
 DEBUG_ASSETS          = DEBUG
 HOMEPAGE_USERNAME     = 'popular'
 ALLOWED_HOSTS         = ['*']
-AUTO_PREMIUM_NEW_USERS = False
+AUTO_PREMIUM_NEW_USERS = True
 AUTO_ENABLE_NEW_USERS = True
-ENFORCE_SIGNUP_CAPTCHA = True
+ENFORCE_SIGNUP_CAPTCHA = False
 PAYPAL_TEST           = False
 
 # Uncomment below to force all feeds to store this many stories. Default is to cut 
@@ -328,8 +328,7 @@ INSTALLED_APPS = (
     'apps.oauth',
     'apps.search',
     'apps.categories',
-    'south',
-    'utils',
+    'utils', # missing models so no migrations
     'vendor',
     'vendor.typogrify',
     'vendor.zebra',
@@ -551,16 +550,16 @@ class MasterSlaveRouter(object):
 # =========
 
 REDIS = {
-    'host': 'db_redis',
+    'host': '127.0.0.1',
 }
 REDIS_PUBSUB = {
-    'host': 'db_redis_pubsub',
+    'host': '127.0.0.1',
 }
 REDIS_STORY = {
-    'host': 'db_redis_story',
+    'host': '127.0.0.1',
 }
 REDIS_SESSIONS = {
-    'host': 'db_redis_sessions',
+    'host': '127.0.0.1',
 }
 
 CELERY_REDIS_DB_NUM = 4
