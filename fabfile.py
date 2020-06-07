@@ -17,6 +17,8 @@ import time
 import sys
 import re
 
+django.setup()
+
 try:
     import digitalocean
 except ImportError:
