@@ -29,7 +29,7 @@ class Command(NoArgsCommand):
     )
     help = "Like the 'shell' command but autoloads the models of all installed Django apps."
 
-    requires_model_validation = True
+    requires_system_checks = True
 
     def handle_noargs(self, **options):
         use_notebook = options.get('notebook', False)
