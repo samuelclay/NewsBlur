@@ -265,7 +265,7 @@ apps. [There is an explanation of WPP in the PayPal Forums](http://www.pdncommun
         PAYPAL_WPP_PASSWORD = "???"
         PAYPAL_WPP_SIGNATURE = "???"
 
-1. Run `python manage.py syncdb` to add the required tables.
+1. Run `python manage.py migrate` to add the required tables.
 
 1. Write a wrapper view for `paypal.pro.views.PayPalPro`:
 

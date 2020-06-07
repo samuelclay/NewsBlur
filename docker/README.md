@@ -15,7 +15,7 @@ Missing from template : REDIS_SESSIONS, postgresql_psycopg2
 ## One time setup
 
 On newsblur :
-docker-compose run newsblur ./manage.py syncdb --all --noinput
+docker-compose run newsblur ./manage.py migrate
 
 docker-compose run newsblur ./manage.py loaddata docker/data.json
 
