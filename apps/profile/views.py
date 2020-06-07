@@ -99,7 +99,7 @@ def login(request):
 
     return render_to_response('accounts/login.html', {
         'form': form,
-        'next': request.REQUEST.get('next', "")
+        'next': request.POST.get('next', "")
     }, context_instance=RequestContext(request))
     
 @csrf_exempt
@@ -131,7 +131,7 @@ def signup(request):
     return render_to_response('accounts/signup.html', {
         'form': form,
         'recaptcha_error': recaptcha_error,
-        'next': request.REQUEST.get('next', "")
+        'next': request.POST.get('next', "")
     }, context_instance=RequestContext(request))
 
 @login_required
@@ -150,8 +150,8 @@ def redeem_code(request):
 
     return render_to_response('accounts/redeem_code.html', {
         'form': form,
-        'code': request.REQUEST.get('code', ""),
-        'next': request.REQUEST.get('next', "")
+        'code': request.POST.get('code', ""),
+        'next': request.POST.get('next', "")
     }, context_instance=RequestContext(request))
     
 
@@ -328,7 +328,7 @@ def profile_is_premium(request):
 @ajax_login_required
 @json.json_view
 def save_ios_receipt(request):
-    receipt = request.REQUEST.get('receipt')
+    receipt = request.POST.get('receipt')
     product_identifier = request.POST.get('product_identifier')
     transaction_identifier = request.POST.get('transaction_identifier')
     
