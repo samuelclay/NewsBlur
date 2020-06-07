@@ -42,13 +42,13 @@ def load_social_stories(request, user_id, username=None):
     user           = get_user(request)
     social_user_id = int(user_id)
     social_user    = get_object_or_404(User, pk=social_user_id)
-    offset         = int(request.REQUEST.get('offset', 0))
-    limit          = int(request.REQUEST.get('limit', 6))
-    page           = request.REQUEST.get('page')
-    order          = request.REQUEST.get('order', 'newest')
-    read_filter    = request.REQUEST.get('read_filter', 'all')
-    query          = request.REQUEST.get('query', '').strip()
-    include_story_content = is_true(request.REQUEST.get('include_story_content', True))
+    offset         = int(request.GET.get('offset', 0))
+    limit          = int(request.GET.get('limit', 6))
+    page           = request.GET.get('page')
+    order          = request.GET.get('order', 'newest')
+    read_filter    = request.GET.get('read_filter', 'all')
+    query          = request.GET.get('query', '').strip()
+    include_story_content = is_true(request.GET.get('include_story_content', True))
     stories        = []
     message        = None
     
@@ -191,14 +191,14 @@ def load_river_blurblog(request):
     limit             = 10
     start             = time.time()
     user              = get_user(request)
-    social_user_ids   = request.REQUEST.getlist('social_user_ids') or request.REQUEST.getlist('social_user_ids[]')
+    social_user_ids   = request.GET.getlist('social_user_ids') or request.GET.getlist('social_user_ids[]')
     social_user_ids   = [int(uid) for uid in social_user_ids if uid]
     original_user_ids = list(social_user_ids)
-    page              = int(request.REQUEST.get('page', 1))
-    order             = request.REQUEST.get('order', 'newest')
-    read_filter       = request.REQUEST.get('read_filter', 'unread')
-    relative_user_id  = request.REQUEST.get('relative_user_id', None)
-    global_feed       = request.REQUEST.get('global_feed', None)
+    page              = int(request.GET.get('page', 1))
+    order             = request.GET.get('order', 'newest')
+    read_filter       = request.GET.get('read_filter', 'unread')
+    relative_user_id  = request.GET.get('relative_user_id', None)
+    global_feed       = request.GET.get('global_feed', None)
     now               = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
 
     if global_feed:
@@ -344,15 +344,15 @@ def load_social_page(request, user_id, username=None, **kwargs):
     user = get_user(request.user)
     social_user_id = int(user_id)
     social_user = get_object_or_404(User, pk=social_user_id)
-    offset = int(request.REQUEST.get('offset', 0))
-    limit = int(request.REQUEST.get('limit', 6))
+    offset = int(request.GET.get('offset', 0))
+    limit = int(request.GET.get('limit', 6))
     try:
-        page = int(request.REQUEST.get('page', 1))
+        page = int(request.GET.get('page', 1))
     except ValueError:
         page = 1
-    format = request.REQUEST.get('format', None)
+    format = request.GET.get('format', None)
     has_next_page = False
-    feed_id = kwargs.get('feed_id') or request.REQUEST.get('feed_id')
+    feed_id = kwargs.get('feed_id') or request.GET.get('feed_id')
     if page: 
         offset = limit * (page-1)
     social_services = None
@@ -510,10 +510,10 @@ def load_social_page(request, user_id, username=None, **kwargs):
 
 @required_params('story_id', feed_id=int)
 def story_public_comments(request):
-    format           = request.REQUEST.get('format', 'json')
-    relative_user_id = request.REQUEST.get('user_id', None)
-    feed_id          = int(request.REQUEST['feed_id'])
-    story_id         = request.REQUEST['story_id']
+    format           = request.GET.get('format', 'json')
+    relative_user_id = request.GET.get('user_id', None)
+    feed_id          = int(request.GET.get('feed_id'))
+    story_id         = request.GET.get('story_id')
   
     if not relative_user_id:
         relative_user_id = get_user(request).pk
@@ -550,7 +550,7 @@ def mark_story_as_shared(request):
     source_user_id = request.POST.get('source_user_id')
     relative_user_id = request.POST.get('relative_user_id') or request.user.pk
     post_to_services = request.POST.getlist('post_to_services') or request.POST.getlist('post_to_services[]')
-    format = request.REQUEST.get('format', 'json')    
+    format = request.POST.get('format', 'json')    
     now = datetime.datetime.now()
     nowtz = localtime_for_timezone(now, request.user.profile.timezone)
     
@@ -689,7 +689,7 @@ def mark_story_as_unshared(request):
     feed_id  = int(request.POST['feed_id'])
     story_id = request.POST['story_id']
     relative_user_id = request.POST.get('relative_user_id') or request.user.pk
-    format = request.REQUEST.get('format', 'json')
+    format = request.POST.get('format', 'json')
     original_story_found = True
     
     story, original_story_found = MStory.find_story(story_feed_id=feed_id, 
@@ -734,7 +734,7 @@ def save_comment_reply(request):
     comment_user_id = request.POST['comment_user_id']
     reply_comments = request.POST.get('reply_comments')
     reply_id = request.POST.get('reply_id')
-    format = request.REQUEST.get('format', 'json')
+    format = request.POST.get('format', 'json')
     original_message = None
     
     if not reply_comments:
@@ -841,7 +841,7 @@ def remove_comment_reply(request):
     story_id = request.POST['story_id']
     comment_user_id = request.POST['comment_user_id']
     reply_id = request.POST.get('reply_id')
-    format = request.REQUEST.get('format', 'json')
+    format = request.POST.get('format', 'json')
     original_message = None
     
     shared_story = MSharedStory.objects.get(user_id=comment_user_id, 
@@ -920,7 +920,7 @@ def profile(request):
     user = get_user(request.user)
     user_id = int(request.GET.get('user_id', user.pk))
     categories = request.GET.getlist('category') or request.GET.getlist('category[]')
-    include_activities_html = request.REQUEST.get('include_activities_html', None)
+    include_activities_html = request.GET.get('include_activities_html', None)
 
     user_profile = MSocialProfile.get_user(user_id)
     user_profile.count_follows()
@@ -1216,7 +1216,7 @@ def like_comment(request):
     feed_id  = int(request.POST['story_feed_id'])
     story_id = request.POST['story_id']
     comment_user_id = int(request.POST['comment_user_id'])
-    format = request.REQUEST.get('format', 'json')
+    format = request.POST.get('format', 'json')
     
     if comment_user_id == request.user.pk:
         return json.json_response(request, {'code': -1, 'message': 'You cannot favorite your own shared story comment.'})
@@ -1268,7 +1268,7 @@ def remove_like_comment(request):
     feed_id  = int(request.POST['story_feed_id'])
     story_id = request.POST['story_id']
     comment_user_id = request.POST['comment_user_id']
-    format = request.REQUEST.get('format', 'json')
+    format = request.POST.get('format', 'json')
     
     shared_story = MSharedStory.objects.get(user_id=comment_user_id, 
                                             story_feed_id=feed_id, 
@@ -1373,7 +1373,7 @@ def shared_stories_rss_feed(request, user_id, username):
 @required_params('user_id')
 @json.json_view
 def social_feed_trainer(request):
-    social_user_id = request.REQUEST['user_id']
+    social_user_id = request.GET['user_id']
     social_profile = MSocialProfile.get_user(social_user_id)
     social_user = get_object_or_404(User, pk=social_user_id)
     user = get_user(request)
@@ -1431,15 +1431,15 @@ def load_social_settings(request, social_user_id, username=None):
 
 @ajax_login_required
 def load_interactions(request):
-    user_id = request.REQUEST.get('user_id', None)
+    user_id = request.GET.get('user_id', None)
     categories = request.GET.getlist('category') or request.GET.getlist('category[]')
     if not user_id or 'null' in user_id:
         user_id = get_user(request).pk
-    page = max(1, int(request.REQUEST.get('page', 1)))
-    limit = request.REQUEST.get('limit')
+    page = max(1, int(request.GET.get('page', 1)))
+    limit = request.GET.get('limit')
     interactions, has_next_page = MInteraction.user(user_id, page=page, limit=limit,
                                                     categories=categories)
-    format = request.REQUEST.get('format', None)
+    format = request.GET.get('format', None)
     
     data = {
         'interactions': interactions,
@@ -1457,7 +1457,7 @@ def load_interactions(request):
 
 @ajax_login_required
 def load_activities(request):
-    user_id = request.REQUEST.get('user_id', None)
+    user_id = request.GET.get('user_id', None)
     categories = request.GET.getlist('category') or request.GET.getlist('category[]')
     if user_id and 'null' not in user_id:
         user_id = int(user_id)
@@ -1467,11 +1467,11 @@ def load_activities(request):
         user_id = user.pk
         
     public = user_id != request.user.pk
-    page = max(1, int(request.REQUEST.get('page', 1)))
-    limit = request.REQUEST.get('limit', 4)
+    page = max(1, int(request.GET.get('page', 1)))
+    limit = request.GET.get('limit', 4)
     activities, has_next_page = MActivity.user(user_id, page=page, limit=limit, public=public,
                                                categories=categories)
-    format = request.REQUEST.get('format', None)
+    format = request.GET.get('format', None)
     
     data = {
         'activities': activities,

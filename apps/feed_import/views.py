@@ -77,8 +77,8 @@ def opml_upload(request):
 def opml_export(request):
     user     = get_user(request)
     now      = datetime.datetime.now()
-    if request.REQUEST.get('user_id') and user.is_staff:
-        user = User.objects.get(pk=request.REQUEST['user_id'])
+    if request.GET.get('user_id') and user.is_staff:
+        user = User.objects.get(pk=request.GET['user_id'])
     exporter = OPMLExporter(user)
     opml     = exporter.process()
     

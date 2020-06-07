@@ -119,7 +119,7 @@ def add_site_load_script(request, token):
         'new_folder_image': new_folder_image,
     }, 
     context_instance=RequestContext(request),
-    mimetype='application/javascript')
+    content_type='application/javascript')
 
 def add_site(request, token):
     code       = 0
@@ -281,12 +281,12 @@ def check_share_on_site(request, token):
 @required_params('story_url', 'comments', 'title')
 def share_story(request, token=None):
     code      = 0
-    story_url = request.REQUEST['story_url']
-    comments  = request.REQUEST['comments']
-    title     = request.REQUEST['title']
-    content   = request.REQUEST.get('content', None)
-    rss_url   = request.REQUEST.get('rss_url', None)
-    feed_id   = request.REQUEST.get('feed_id', None) or 0
+    story_url = request.POST['story_url']
+    comments  = request.POST['comments']
+    title     = request.POST['title']
+    content   = request.POST.get('content', None)
+    rss_url   = request.POST.get('rss_url', None)
+    feed_id   = request.POST.get('feed_id', None) or 0
     feed      = None
     message   = None
     profile   = None

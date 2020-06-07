@@ -96,4 +96,4 @@ class required_params(object):
         return HttpResponse(json.encode({
             'message': message,
             'code': -1,
-        }), mimetype="application/json", status=status_code)
+        }), content_type="application/json", status=status_code)
