@@ -51,6 +51,10 @@ class CredentialsField(models.Field):
       return None
     return base64.b64encode(pickle.dumps(value))
 
+  def deconstruct(self):
+    name, path, args, kwargs = super().deconstruct()
+    del kwargs['null']
+    return name, path, args, kwargs
 
 class FlowField(models.Field):
 
@@ -76,6 +80,10 @@ class FlowField(models.Field):
       return None
     return base64.b64encode(pickle.dumps(value))
 
+  def deconstruct(self):
+    name, path, args, kwargs = super().deconstruct()
+    del kwargs['null']
+    return name, path, args, kwargs
 
 class Storage(BaseStorage):
   """Store and retrieve a single credential to and from
