@@ -18,7 +18,7 @@ django-redis-sessions==0.5.6
 django-ses==0.7.1
 django-subdomains==2.1.0
 django-timezone-field==2.0
-Django==1.6
+Django==1.7
 dnspython==1.15.0
 Fabric==1.14.0
 gunicorn==19.7
