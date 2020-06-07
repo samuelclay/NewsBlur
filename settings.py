@@ -265,7 +265,6 @@ DAYS_OF_STORY_HASHES    = 30
 
 SUBSCRIBER_EXPIRE       = 7
 
-AUTH_PROFILE_MODULE     = 'newsblur.UserProfile'
 TEST_DATABASE_COLLATION = 'utf8_general_ci'
 TEST_DATABASE_NAME      = 'newsblur_test'
 ROOT_URLCONF            = 'urls'
