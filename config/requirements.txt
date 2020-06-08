@@ -56,5 +56,4 @@ six==1.10.0
 stripe==1.43.0
 tweepy==3.5.0
 # -e git://github.com/tweepy/tweepy.git#egg=tweepy
-South==1.0.2
 xlsxwriter==0.9.6
