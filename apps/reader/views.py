@@ -176,7 +176,7 @@ def login(request):
             message = form.errors.items()[0][1][0]
 
     if request.POST.get('api'):
-        return HttpResponse(json.encode(dict(code=code, message=message)), mimetype='application/json')
+        return HttpResponse(json.encode(dict(code=code, message=message)), content_type='application/json')
     else:
         return index(request)
     
@@ -208,7 +208,7 @@ def logout(request):
     logout_user(request)
     
     if request.GET.get('api'):
-        return HttpResponse(json.encode(dict(code=1)), mimetype='application/json')
+        return HttpResponse(json.encode(dict(code=1)), content_type='application/json')
     else:
         return HttpResponseRedirect(reverse('index'))
 
@@ -837,7 +837,7 @@ def load_feed_page(request, feed_id):
             except requests.ConnectionError:
                 page_response = None
             if page_response and page_response.status_code == 200:
-                response = HttpResponse(page_response.content, mimetype="text/html; charset=utf-8")
+                response = HttpResponse(page_response.content, content_type="text/html; charset=utf-8")
                 response['Content-Encoding'] = 'gzip'
                 response['Last-Modified'] = page_response.headers.get('Last-modified')
                 response['Etag'] = page_response.headers.get('Etag')
@@ -851,7 +851,7 @@ def load_feed_page(request, feed_id):
                 key = settings.S3_CONN.get_bucket(settings.S3_PAGES_BUCKET_NAME).get_key(feed.s3_pages_key)
                 if key:
                     compressed_data = key.get_contents_as_string()
-                    response = HttpResponse(compressed_data, mimetype="text/html; charset=utf-8")
+                    response = HttpResponse(compressed_data, content_type="text/html; charset=utf-8")
                     response['Content-Encoding'] = 'gzip'
             
                     logging.user(request, "~FYLoading original page, proxied: ~SB%s bytes" %
@@ -871,7 +871,7 @@ def load_feed_page(request, feed_id):
             status=404)
     
     logging.user(request, "~FYLoading original page, from the db")
-    return HttpResponse(data, mimetype="text/html; charset=utf-8")
+    return HttpResponse(data, content_type="text/html; charset=utf-8")
 
 @json.json_view
 def load_starred_stories(request):
@@ -2473,7 +2473,7 @@ def mark_story_hash_as_unstarred(request):
 def _mark_story_as_unstarred(request):
     code     = 1
     story_id = request.POST.get('story_id', None)
-    story_hash = request.REQUEST.get('story_hash', None)
+    story_hash = request.POST.get('story_hash', None)
     starred_counts = None
     starred_story = None
     
