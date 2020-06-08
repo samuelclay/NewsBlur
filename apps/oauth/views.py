@@ -31,9 +31,9 @@ def twitter_connect(request):
     twitter_consumer_key = settings.TWITTER_CONSUMER_KEY
     twitter_consumer_secret = settings.TWITTER_CONSUMER_SECRET
     
-    oauth_token = request.REQUEST.get('oauth_token')
-    oauth_verifier = request.REQUEST.get('oauth_verifier')
-    denied = request.REQUEST.get('denied')
+    oauth_token = request.POST.get('oauth_token')
+    oauth_verifier = request.POST.get('oauth_verifier')
+    denied = request.POST.get('denied')
     if denied:
         logging.user(request, "~BB~FRDenied Twitter connect")
         return {'error': 'Denied! Try connecting again.'}
@@ -94,7 +94,7 @@ def facebook_connect(request):
         "display": "popup",
     }
 
-    verification_code = request.REQUEST.get('code')
+    verification_code = request.POST.get('code')
     if verification_code:
         args["client_secret"] = facebook_secret
         args["code"] = verification_code
@@ -136,71 +136,14 @@ def facebook_connect(request):
         
         logging.user(request, "~BB~FRFinishing Facebook connect")
         return {}
-    elif request.REQUEST.get('error'):
-        logging.user(request, "~BB~FRFailed Facebook connect, error: %s" % request.REQUEST.get('error'))
-        return {'error': '%s... Try connecting again.' % request.REQUEST.get('error')}
+    elif request.POST.get('error'):
+        logging.user(request, "~BB~FRFailed Facebook connect, error: %s" % request.POST.get('error'))
+        return {'error': '%s... Try connecting again.' % request.POST.get('error')}
     else:
         # Start the OAuth process
         logging.user(request, "~BB~FRStarting Facebook connect")
         url = "https://www.facebook.com/dialog/oauth?" + urllib.urlencode(args)
         return {'next': url}
-
-@login_required
-@render_to('social/social_connect.xhtml')
-def appdotnet_connect(request):
-    domain = Site.objects.get_current().domain
-    args = {
-        "client_id": settings.APPDOTNET_CLIENTID,
-        "client_secret": settings.APPDOTNET_SECRET,
-        "redirect_uri": "https://" + domain +
-                                    reverse('appdotnet-connect'),
-        "scope": ["email", "write_post", "follow"],
-    }
-
-    oauth_code = request.REQUEST.get('code')
-    denied = request.REQUEST.get('denied')
-    if denied:
-        logging.user(request, "~BB~FRDenied App.net connect")
-        return {'error': 'Denied! Try connecting again.'}
-    elif oauth_code:
-        try:
-            adn_auth = appdotnet.Appdotnet(**args)
-            response = adn_auth.getAuthResponse(oauth_code)
-            adn_resp = json.decode(response)
-            access_token = adn_resp['access_token']
-            adn_userid = adn_resp['user_id']
-        except (IOError):
-            logging.user(request, "~BB~FRFailed App.net connect")
-            return dict(error="App.net has returned an error. Try connecting again.")
-
-        # Be sure that two people aren't using the same Twitter account.
-        existing_user = MSocialServices.objects.filter(appdotnet_uid=unicode(adn_userid))
-        if existing_user and existing_user[0].user_id != request.user.pk:
-            try:
-                user = User.objects.get(pk=existing_user[0].user_id)
-                logging.user(request, "~BB~FRFailed App.net connect, another user: %s" % user.username)
-                return dict(error=("Another user (%s, %s) has "
-                                   "already connected with those App.net credentials."
-                                   % (user.username, user.email or "no email")))
-            except User.DoesNotExist:
-                existing_user.delete()
-        
-        social_services = MSocialServices.get_user(request.user.pk)
-        social_services.appdotnet_uid = unicode(adn_userid)
-        social_services.appdotnet_access_token = access_token
-        social_services.syncing_appdotnet = True
-        social_services.save()
-        
-        SyncAppdotnetFriends.delay(user_id=request.user.pk)
-        
-        logging.user(request, "~BB~FRFinishing App.net connect")
-        return {}
-    else:
-        # Start the OAuth process
-        adn_auth = appdotnet.Appdotnet(**args)
-        auth_url = adn_auth.generateAuthUrl()
-        logging.user(request, "~BB~FRStarting App.net connect")
-        return {'next': auth_url}
 
 @ajax_login_required
 def twitter_disconnect(request):
