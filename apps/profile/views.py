@@ -286,7 +286,7 @@ def paypal_form(request):
     logging.user(request, "~FBLoading paypal/feedchooser")
 
     # Output the button.
-    return HttpResponse(form.render(), mimetype='text/html')
+    return HttpResponse(form.render(), content_type='text/html')
 
 def paypal_return(request):
 
