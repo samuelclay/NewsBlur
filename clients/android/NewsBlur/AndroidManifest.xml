@@ -84,7 +84,8 @@
             android:name=".activity.FeedItemsList" />
         
         <activity
-            android:name=".activity.AllStoriesItemsList" />
+            android:name=".activity.AllStoriesItemsList"
+            android:launchMode="singleTask"/>
 
         <activity
             android:name=".activity.InfrequentItemsList" />
