@@ -24,7 +24,7 @@ def main():
     accepted = stats['delivered']['total']
     bounced = stats['failed']['permanent']['total'] + stats['failed']['temporary']['total']
     
-    if bounced / float(delivered) > 0.2:
+    if bounced / float(delivered) > 0.5:
         requests.post(
                 "https://api.mailgun.net/v2/%s/messages" % settings.MAILGUN_SERVER_NAME,
                 auth=("api", settings.MAILGUN_ACCESS_KEY),
