@@ -24,6 +24,9 @@ from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds
 from apps.analyzer.tfidf import tfidf
 from utils.feed_functions import add_object_to_folder, chunks
 
+def unread_cutoff_default():
+    return datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
+    
 class UserSubscription(models.Model):
     """
     A feed which a user has subscribed to. Carries all of the cached information
@@ -32,14 +35,13 @@ class UserSubscription(models.Model):
     Also has a dirty flag (needs_unread_recalc) which means that the unread counts
     are not accurate and need to be calculated with `self.calculate_feed_scores()`.
     """
-    UNREAD_CUTOFF = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
     
     user = models.ForeignKey(User, related_name='subscriptions')
     feed = models.ForeignKey(Feed, related_name='subscribers')
     user_title = models.CharField(max_length=255, null=True, blank=True)
     active = models.BooleanField(default=False)
-    last_read_date = models.DateTimeField(default=UNREAD_CUTOFF)
-    mark_read_date = models.DateTimeField(default=UNREAD_CUTOFF)
+    last_read_date = models.DateTimeField(default=unread_cutoff_default)
+    mark_read_date = models.DateTimeField(default=unread_cutoff_default)
     unread_count_neutral = models.IntegerField(default=0)
     unread_count_positive = models.IntegerField(default=0)
     unread_count_negative = models.IntegerField(default=0)

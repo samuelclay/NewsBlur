@@ -80,9 +80,6 @@ DATABASES = {
         'USER': 'newsblur',
         'PASSWORD': '',
         'HOST': '127.0.0.1',
-        'OPTIONS': {
-            "autocommit": True,
-        },
     },
 }
 
