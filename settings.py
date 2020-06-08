@@ -97,9 +97,9 @@ PAYPAL_TEST           = False
 
 TEMPLATE_CONTEXT_PROCESSORS = (
     "django.contrib.auth.context_processors.auth",
-    "django.core.context_processors.debug",
-    "django.core.context_processors.media",
-    'django.core.context_processors.request',
+    "django.template.context_processors.debug",
+    "django.template.context_processors.media",
+    'django.template.context_processors.request',
 )
 
 MIDDLEWARE_CLASSES = (
