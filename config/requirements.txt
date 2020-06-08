@@ -36,7 +36,7 @@ numpy==1.11.2
 oauth2==1.9.0.post1
 pillow==3.4.2
 psutil==5.0.0
-#psycopg2==2.8.3
+psycopg2==2.8.3
 pyasn1==0.1.9
 pyes==0.99.6
 pyflakes==1.3.0
