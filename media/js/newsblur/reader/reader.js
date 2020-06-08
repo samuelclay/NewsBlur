@@ -113,9 +113,6 @@
             this.load_javascript_elements_on_page();
             this.apply_resizable_layout();
             this.add_body_classes();
-            if (NEWSBLUR.Flags['start_import_from_google_reader']) {
-                this.start_import_from_google_reader();
-            }
             NEWSBLUR.app.sidebar_header = new NEWSBLUR.Views.SidebarHeader({
                 feed_collection: NEWSBLUR.assets.feeds,
                 socialfeed_collection: NEWSBLUR.assets.social_feeds
@@ -5470,59 +5467,6 @@
         // =============================
         // = Import from Google Reader =
         // =============================
-        
-        post_google_reader_connect: function(data) {
-            if (NEWSBLUR.intro) {
-                NEWSBLUR.intro.start_import_from_google_reader(data);
-            } else {
-                this.start_import_from_google_reader();
-            }
-        },
-        
-        start_import_from_google_reader: function() {
-            var self = this;
-            var $progress = this.$s.$feeds_progress;
-            var $bar = $('.NB-progress-bar', $progress);
-            var percentage = 0;
-            this.flags['import_from_google_reader_working'] = true;
-            
-            $('.NB-progress-title', $progress).text('Importing from Google Reader');
-            $('.NB-progress-counts', $progress).hide();
-            $('.NB-progress-percentage', $progress).hide();
-            $bar.progressbar({
-                value: percentage
-            });
-            
-            this.animate_progress_bar($bar, 5);
-            
-            this.model.start_import_from_google_reader(
-                $.rescope(this.finish_import_from_google_reader, this));
-            this.show_progress_bar();
-        },
-
-        finish_import_from_google_reader: function(e, data) {
-            var $progress = this.$s.$feeds_progress;
-            var $bar = $('.NB-progress-bar', $progress);
-            this.flags['import_from_google_reader_working'] = false;
-            clearTimeout(this.locks['animate_progress_bar']);
-            
-            if (data.code >= 1) {
-                $bar.progressbar({value: 100});
-                NEWSBLUR.assets.load_feeds();
-                $('.NB-progress-title', $progress).text('');
-                $('.NB-progress-link', $progress).html('');
-            } else {
-                NEWSBLUR.log(['Import Error!', data]);
-                this.$s.$feed_link_loader.fadeOut(250);
-                $progress.addClass('NB-progress-error');
-                $('.NB-progress-title', $progress).text('Error importing Google Reader');
-                $('.NB-progress-link', $progress).html($.make('a', { 
-                    className: 'NB-modal-submit-button NB-modal-submit-green',
-                    href: NEWSBLUR.URLs['google-reader-authorize']
-                }, ['Try importing again']));
-                $('.left-center-footer').css('height', 'auto');
-            }
-        },
 
         start_count_unreads_after_import: function() {
             var self = this;
