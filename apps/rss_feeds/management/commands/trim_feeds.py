@@ -1,12 +1,11 @@
 from django.core.management.base import BaseCommand
 from apps.rss_feeds.models import Feed
-from optparse import make_option
 import gc
 
 class Command(BaseCommand):
-    option_list = BaseCommand.option_list + (
-        make_option("-f", "--feed", dest="feed", default=None),
-    )
+
+    def add_arguments(self, parser):
+        parser.add_argument("-f", "--feed", dest="feed", default=None),
 
     def handle(self, *args, **options):
         if not options['feed']:

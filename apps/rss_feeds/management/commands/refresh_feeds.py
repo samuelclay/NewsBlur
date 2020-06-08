@@ -12,21 +12,21 @@ import datetime
 
 
 class Command(BaseCommand):
-    option_list = BaseCommand.option_list + (
-        make_option("-f", "--feed", default=None),
-        make_option("-d", "--daemon", dest="daemonize", action="store_true"),
-        make_option("-F", "--force", dest="force", action="store_true"),
-        make_option("-s", "--single_threaded", dest="single_threaded", action="store_true"),
-        make_option('-t', '--timeout', type='int', default=10,
-            help='Wait timeout in seconds when connecting to feeds.'),
-        make_option('-u', '--username', type='str', dest='username'),
-        make_option('-V', '--verbose', action='store_true',
-            dest='verbose', default=False, help='Verbose output.'),
-        make_option('-S', '--skip', type='int',
-            dest='skip', default=0, help='Skip stories per month < #.'),
-        make_option('-w', '--workerthreads', type='int', default=4,
-            help='Worker threads that will fetch feeds in parallel.'),
-    )
+
+    def add_arguments(self, parser):
+        parser.add_argument("-f", "--feed", default=None)
+        parser.add_argument("-d", "--daemon", dest="daemonize", action="store_true")
+        parser.add_argument("-F", "--force", dest="force", action="store_true")
+        parser.add_argument("-s", "--single_threaded", dest="single_threaded", action="store_true")
+        parser.add_argument('-t', '--timeout', type=int, default=10,
+            help='Wait timeout in seconds when connecting to feeds.')
+        parser.add_argument('-u', '--username', type=str, dest='username')
+        parser.add_argument('-V', '--verbose', action='store_true',
+            dest='verbose', default=False, help='Verbose output.')
+        parser.add_argument('-S', '--skip', type=int,
+            dest='skip', default=0, help='Skip stories per month < #.')
+        parser.add_argument('-w', '--workerthreads', type=int, default=4,
+            help='Worker threads that will fetch feeds in parallel.')
 
     def handle(self, *args, **options):
         if options['daemonize']:
