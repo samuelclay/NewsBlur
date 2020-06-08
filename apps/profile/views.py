@@ -521,8 +521,8 @@ def cancel_premium(request):
 @ajax_login_required
 @json.json_view
 def refund_premium(request):
-    user_id = request.REQUEST.get('user_id')
-    partial = request.REQUEST.get('partial', False)
+    user_id = request.POST.get('user_id')
+    partial = request.POST.get('partial', False)
     user = User.objects.get(pk=user_id)
     try:
         refunded = user.profile.refund_premium(partial=partial)
@@ -537,7 +537,7 @@ def refund_premium(request):
 @ajax_login_required
 @json.json_view
 def upgrade_premium(request):
-    user_id = request.REQUEST.get('user_id')
+    user_id = request.POST.get('user_id')
     user = User.objects.get(pk=user_id)
     
     gift = MGiftCode.add(gifting_user_id=User.objects.get(username='samuel').pk, 
