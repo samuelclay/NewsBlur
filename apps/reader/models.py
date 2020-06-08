@@ -1289,7 +1289,7 @@ class UserSubscriptionFolders(models.Model):
     is a recursive descent of feeds and folders in folders. Used to layout
     the feeds and folders in the Reader's feed navigation pane.
     """
-    user = models.ForeignKey(User, unique=True)
+    user = models.OneToOneField(User)
     folders = models.TextField(default="[]")
     
     def __unicode__(self):
