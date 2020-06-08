@@ -550,7 +550,7 @@ def upgrade_premium(request):
 @ajax_login_required
 @json.json_view
 def never_expire_premium(request):
-    user_id = request.REQUEST.get('user_id')
+    user_id = request.POST.get('user_id')
     user = User.objects.get(pk=user_id)
     if user.profile.is_premium:
         user.profile.premium_expire = None
@@ -563,7 +563,7 @@ def never_expire_premium(request):
 @ajax_login_required
 @json.json_view
 def update_payment_history(request):
-    user_id = request.REQUEST.get('user_id')
+    user_id = request.POST.get('user_id')
     user = User.objects.get(pk=user_id)
     user.profile.setup_premium_history(set_premium_expire=False)
     
