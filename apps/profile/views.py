@@ -458,7 +458,7 @@ def stripe_form(request):
 @render_to('reader/activities_module.xhtml')
 def load_activities(request):
     user = get_user(request)
-    page = max(1, int(request.REQUEST.get('page', 1)))
+    page = max(1, int(request.GET.get('page', 1)))
     activities, has_next_page = MActivity.user(user.pk, page=page)
 
     return {
@@ -473,7 +473,7 @@ def load_activities(request):
 def payment_history(request):
     user = request.user
     if request.user.is_staff:
-        user_id = request.REQUEST.get('user_id', request.user.pk)
+        user_id = request.GET.get('user_id', request.user.pk)
         user = User.objects.get(pk=user_id)
 
     history = PaymentHistory.objects.filter(user=user)
