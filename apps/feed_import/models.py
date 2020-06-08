@@ -18,10 +18,6 @@ from utils import log as logging
 from utils.feed_functions import timelimit
 from utils.feed_functions import add_object_to_folder
 
-from south.modelsinspector import add_introspection_rules
-add_introspection_rules([], ["^oauth2client\.django_orm\.FlowField"])
-add_introspection_rules([], ["^oauth2client\.django_orm\.CredentialsField"])
-
 
 class OAuthToken(models.Model):
     user = models.OneToOneField(User, null=True, blank=True)
