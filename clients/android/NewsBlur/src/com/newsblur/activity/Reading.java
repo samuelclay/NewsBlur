@@ -53,6 +53,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
     public static final String EXTRA_FEEDSET = "feed_set";
 	public static final String EXTRA_POSITION = "feed_position";
     public static final String EXTRA_STORY_HASH = "story_hash";
+    public static final String EXTRA_WAIT_REFRESH = "wait_refresh";
     private static final String BUNDLE_POSITION = "position";
     private static final String BUNDLE_STARTING_UNREAD = "starting_unread";
     private static final String BUNDLE_SELECTED_FEED_VIEW = "selectedFeedView";
@@ -104,6 +105,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
     private int lastVScrollPos = 0;
 
     private boolean unreadSearchActive = false;
+    private boolean waitRefresh = false;
 
     private List<Story> pageHistory;
 
@@ -124,6 +126,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 
         try {
             fs = (FeedSet)getIntent().getSerializableExtra(EXTRA_FEEDSET);
+            waitRefresh = getIntent().getBooleanExtra(EXTRA_WAIT_REFRESH, false);
         } catch (RuntimeException re) {
             // in the wild, the notification system likes to pass us an Intent that has missing or very stale
             // Serializable extras.
@@ -314,6 +317,11 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
             pager.setVisibility(View.VISIBLE);
             emptyViewText.setVisibility(View.INVISIBLE);
             storyHash = null;
+            return;
+        } else if (waitRefresh) {
+            // when deep linking from app widget the db might not have the latest stories
+            // that we're looking to read so return and wait for updated cursor
+            waitRefresh = false;
             return;
         }
 
