@@ -703,8 +703,11 @@
 				s.d.iframe && s.d.iframe.hide().remove();
 				s.d.overlay.remove();
 
-				// reset the dialog object
-				s.d = {};
+				setTimeout(function(){
+					// reset the dialog object
+					s.d = {};
+					$.isFunction(callback) && callback();
+				}, 10);
 			}
 		}
 	};
