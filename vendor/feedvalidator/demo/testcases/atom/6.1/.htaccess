@@ -1,5 +1,0 @@
-IndexOptions DescriptionWidth=80
-IndexOptions +SuppressHTMLPreamble
-IndexIgnore header.html
-HeaderName ../header.html
-ReadmeName ../footer.html

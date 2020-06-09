@@ -103,6 +103,11 @@ NEWSBLUR.Welcome = Backbone.View.extend({
         this.flags.on_header_caption = true;
         this.flags.on_signin = true;
         
+        var add_url = $.getQueryString('add') || $.getQueryString('url');
+        if (add_url) {
+            this.$("input[name=next]").val("/?add=" + add_url);
+        }
+        
         this.$el.scrollTo(0, 500, {queue: false, easing: 'easeInOutQuint'});
         
         _.delay(_.bind(function() {

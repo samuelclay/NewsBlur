@@ -228,14 +228,14 @@
     [self.view addConstraint:self.notifier.topOffsetConstraint];
     [self.notifier hideNow];
     
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
+    self.traverseBottomConstraint.constant = 50;
+    
+    if ([UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
         self.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects:
                                                    originalStoryButton,
                                                    separatorBarButton,
                                                    fontSettingsButton, nil];
     }
-    
-    [self updateTheme];
     
     [self.scrollView addObserver:self forKeyPath:@"contentOffset"
                          options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld
@@ -265,6 +265,8 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
+    
+    [self updateTheme];
     
     [self updateAutoscrollButtons];
     [self updateTraverseBackground];
@@ -500,7 +502,7 @@
     
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     BOOL swipeEnabled = [[userPreferences stringForKey:@"story_detail_swipe_left_edge"]
-                         isEqualToString:@"pop_to_story_list"];;
+                         isEqualToString:@"pop_to_story_list"];
     self.navigationController.interactivePopGestureRecognizer.enabled = swipeEnabled;
     
     if (hide) {
@@ -1239,7 +1241,10 @@
     }
     self.scrollView.scrollsToTop = NO;
     
-    NSInteger topPosition = currentPage.webView.scrollView.contentOffset.y;
+    NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
+    BOOL shouldHideStatusBar = [preferences boolForKey:@"story_hide_status_bar"];
+    NSInteger statusBarOffset = shouldHideStatusBar ? 0 : self.statusBarHeight;
+    NSInteger topPosition = currentPage.webView.scrollView.contentOffset.y + statusBarOffset;
     BOOL canHide = currentPage.canHideNavigationBar && topPosition >= 0;
     
     if (!canHide && self.isHorizontal && self.navigationController.navigationBarHidden) {
