@@ -212,7 +212,6 @@ def setup_common():
     # setup_pymongo_repo()
     setup_logrotate()
     setup_nginx()
-    # setup_imaging()
     setup_munin()
 
 def setup_all():
@@ -458,25 +457,6 @@ def setup_libxml_code():
 def setup_psycopg():
     sudo('easy_install -U psycopg2')
 
-# def setup_python():
-#     # sudo('easy_install -U $(<%s)' %
-#     #      os.path.join(env.NEWSBLUR_PATH, 'config/requirements.txt'))
-#     pip()
-#     put('config/pystartup.py', '.pystartup')
-#
-#     # with cd(os.path.join(env.NEWSBLUR_PATH, 'vendor/cjson')):
-#     #     sudo('python setup.py install')
-#
-#     with settings(warn_only=True):
-#         sudo('echo "import sys; sys.setdefaultencoding(\'utf-8\')" | sudo tee /usr/lib/python2.7/sitecustomize.py')
-#         sudo("chmod a+r /usr/local/lib/python2.7/dist-packages/httplib2-0.8-py2.7.egg/EGG-INFO/top_level.txt")
-#         sudo("chmod a+r /usr/local/lib/python2.7/dist-packages/python_dateutil-2.1-py2.7.egg/EGG-INFO/top_level.txt")
-#         sudo("chmod a+r /usr/local/lib/python2.7/dist-packages/httplib2-0.8-py2.7.egg/httplib2/cacerts.txt")
-#
-#     if env.user == 'ubuntu':
-#         with settings(warn_only=True):
-#             sudo('chown -R ubuntu.ubuntu /home/ubuntu/.python-eggs')
-
 def setup_virtualenv():
     sudo('rm -fr ~/.cache') # Clean `sudo pip`
     sudo('pip install --upgrade virtualenv')
@@ -529,10 +509,6 @@ def solo_pip(role):
         pip()
         celery()
     
-# PIL - Only if python-imaging didn't install through apt-get, like on Mac OS X.
-def setup_imaging():
-    sudo('easy_install --always-unzip pil')
-
 def setup_supervisor():
     sudo('apt-get -y install supervisor')
     put('config/supervisord.conf', '/etc/supervisor/supervisord.conf', use_sudo=True)
@@ -820,11 +796,11 @@ def assemble_certificates():
         local('cat STAR_newsblur_com.crt EssentialSSLCA_2.crt ComodoUTNSGCCA.crt UTNAddTrustSGCCA.crt AddTrustExternalCARoot.crt > newsblur.com.crt')
         
 def copy_certificates():
-    cert_path = '%s/config/certificates' % env.NEWSBLUR_PATH
+    cert_path = os.path.join(env.NEWSBLUR_PATH, 'config/certificates')
     run('mkdir -p %s' % cert_path)
     put(os.path.join(env.SECRETS_PATH, 'certificates/newsblur.com.crt'), cert_path)
     put(os.path.join(env.SECRETS_PATH, 'certificates/newsblur.com.key'), cert_path)
-    put(os.path.join(env.SECRETS_PATH, 'certificates/comodo/newsblur.com.pem'), cert_path)
+    put(os.path.join(env.SECRETS_PATH, 'certificates/comodo/newsblur.com.crt'), os.path.join(cert_path, 'newsblur.com.pem')) # For backwards compatibility with hard-coded nginx configs
     put(os.path.join(env.SECRETS_PATH, 'certificates/comodo/dhparams.pem'), cert_path)
     put(os.path.join(env.SECRETS_PATH, 'certificates/ios/aps_development.pem'), cert_path)
     # openssl x509 -in aps.cer -inform DER -outform PEM -out aps.pem
@@ -832,10 +808,21 @@ def copy_certificates():
     # Export aps.p12 from aps.cer using Keychain Assistant
     # openssl pkcs12 -in aps.p12 -out aps.p12.pem -nodes
     put(os.path.join(env.SECRETS_PATH, 'certificates/ios/aps.p12.pem'), cert_path)
-    run('cat %s/newsblur.com.pem > %s/newsblur.pem' % (cert_path, cert_path))
+    run('cat %s/newsblur.com.crt > %s/newsblur.pem' % (cert_path, cert_path))
     run('echo "\n" >> %s/newsblur.pem' % (cert_path))
     run('cat %s/newsblur.com.key >> %s/newsblur.pem' % (cert_path, cert_path))
 
+def setup_certbot():
+    sudo('add-apt-repository -y universe')
+    sudo('add-apt-repository -y ppa:certbot/certbot')
+    sudo('apt-get update')
+    sudo('apt-get install -y certbot')
+    sudo('apt-get install -y python3-certbot-dns-dnsimple')
+    run('echo "dns_dnsimple_token = %s" > dnsimple.ini')
+    run('chmod 0400 dnsimple.ini')
+    sudo('certbot certonly -n --agree-tos --email samuel@newsblur.com --domains "*.newsblur.com" --dns-dnsimple --dns-dnsimple-credentials %s' % (settings.DNSIMPLE_TOKEN))
+    run('rm dnsimple.ini')
+    
 @parallel
 def maintenance_on():
     role = role_for_host()
@@ -1391,6 +1378,16 @@ def setup_imageproxy(install_go=False):
 def setup_usage_monitor():
     sudo('ln -fs %s/utils/monitor_disk_usage.py /etc/cron.daily/monitor_disk_usage' % env.NEWSBLUR_PATH)
     sudo('/etc/cron.daily/monitor_disk_usage')
+    
+@parallel
+def setup_feeds_fetched_monitor():
+    sudo('ln -fs %s/utils/monitor_task_fetches.py /etc/cron.hourly/monitor_task_fetches' % env.NEWSBLUR_PATH)
+    sudo('/etc/cron.hourly/monitor_task_fetches')
+    
+@parallel
+def setup_newsletter_monitor():
+    sudo('ln -fs %s/utils/monitor_newsletter_delivery.py /etc/cron.hourly/monitor_newsletter_delivery' % env.NEWSBLUR_PATH)
+    sudo('/etc/cron.hourly/monitor_newsletter_delivery')
     
 @parallel
 def setup_redis_monitor():

@@ -66,6 +66,14 @@
     <color name="dark_story_content_text">#CECECE</color>
     <color name="story_author_text">#959595</color>
 
+    <color name="widget_title">#8C8C8C</color>
+    <color name="widget_divider">#42453E</color>
+    <color name="widget_feed_title">#8C8C8C</color>
+    <color name="widget_story_title">#CECECE</color>
+    <color name="widget_story_content">#8C8C8C</color>
+    <color name="widget_story_author">#404040</color>
+    <color name="widget_story_date_time">#BDBDBD</color>
+
     <color name="story_comment_divider">#F0F0F0</color>
     <color name="dark_story_comment_divider">#42453E</color>
     
@@ -129,5 +137,7 @@
     <color name="refresh_2">#db8d36</color>
     <color name="refresh_3">#e9a941</color>
     <color name="refresh_4">#fae576</color>
+
+    <color name="widget_background">#C8000000</color>
 
 </resources>
