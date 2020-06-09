@@ -211,6 +211,7 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
         registerForContextMenu(web);
         web.setCustomViewLayout(webviewCustomViewLayout);
         web.setWebviewWrapperLayout(fragmentScrollview);
+        web.setBackgroundColor(Color.TRANSPARENT);
         web.fragment = this;
         web.activity = activity;
 

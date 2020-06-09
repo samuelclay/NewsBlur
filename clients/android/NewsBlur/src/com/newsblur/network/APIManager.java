@@ -52,6 +52,7 @@ import com.newsblur.util.PrefConstants;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadFilter;
 import com.newsblur.util.StoryOrder;
+import com.newsblur.widget.WidgetUtils;
 
 import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
@@ -296,7 +297,13 @@ public class APIManager {
         ValueMultimap values = new ValueMultimap();
     
         // create the URI and populate request params depending on what kind of stories we want
-        if (fs.getSingleFeed() != null) {
+        if (fs.isForWidget()) {
+            uri = Uri.parse(buildUrl(APIConstants.PATH_RIVER_STORIES));
+            for (String feedId : fs.getAllFeeds()) values.put(APIConstants.PARAMETER_FEEDS, feedId);
+            values.put(APIConstants.PARAMETER_INCLUDE_HIDDEN, APIConstants.VALUE_FALSE);
+            values.put(APIConstants.PARAMETER_INFREQUENT, APIConstants.VALUE_FALSE);
+            values.put(APIConstants.PARAMETER_LIMIT, String.valueOf(WidgetUtils.STORIES_LIMIT));
+        } else if (fs.getSingleFeed() != null) {
             uri = Uri.parse(buildUrl(APIConstants.PATH_FEED_STORIES)).buildUpon().appendPath(fs.getSingleFeed()).build();
             values.put(APIConstants.PARAMETER_FEEDS, fs.getSingleFeed());
             values.put(APIConstants.PARAMETER_INCLUDE_HIDDEN, APIConstants.VALUE_TRUE);

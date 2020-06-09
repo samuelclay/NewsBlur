@@ -171,6 +171,9 @@ def login(request):
                 code = 1
             else:
                 logging.user(form.get_user(), "~FG~BBLogin~FW")
+                next_url = request.POST.get('next', '')
+                if next_url:
+                    return HttpResponseRedirect(next_url)
                 return HttpResponseRedirect(reverse('index'))
         else:
             message = form.errors.items()[0][1][0]
