@@ -1,8 +1,0 @@
-<!--
-  Description: This document does not contain any XML declaration.
-  Expect:      MissingEncoding{}
--->
-<rss>
- <channel>
- </channel>
-</rss>

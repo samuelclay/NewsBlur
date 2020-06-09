@@ -349,7 +349,7 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 return;
             }
             if (gestureL2R || gestureR2L) return;
-            UIUtils.startReadingActivity(fs, story.storyHash, context);
+            UIUtils.startReadingActivity(fs, story.storyHash, false, context);
         }
 
         @Override
