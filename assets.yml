@@ -38,16 +38,17 @@ javascripts:
         - media/js/vendor/jquery.ajaxmanager.3.js
         - media/js/vendor/jquery.simplemodal-1.4.js
         - media/js/vendor/jquery.color.js
-        - media/js/vendor/jquery.ui.core.js
-        - media/js/vendor/jquery.ui.widget.js
-        - media/js/vendor/jquery.ui.mouse.js
-        - media/js/vendor/jquery.ui.position.js
-        - media/js/vendor/jquery.ui.draggable.js
-        - media/js/vendor/jquery.ui.sortable.js
-        - media/js/vendor/jquery.ui.slider.js
-        - media/js/vendor/jquery.ui.menu.js
-        - media/js/vendor/jquery.ui.autocomplete.js
-        - media/js/vendor/jquery.ui.progressbar.js
+        - media/js/vendor/jquery-ui-1.12.1.js
+        # - media/js/vendor/jquery.ui.autocomplete.js
+        # - media/js/vendor/jquery.ui.core.js
+        # - media/js/vendor/jquery.ui.draggable.js
+        # - media/js/vendor/jquery.ui.menu.js
+        # - media/js/vendor/jquery.ui.mouse.js
+        # - media/js/vendor/jquery.ui.position.js
+        # - media/js/vendor/jquery.ui.progressbar.js
+        # - media/js/vendor/jquery.ui.slider.js
+        # - media/js/vendor/jquery.ui.sortable.js
+        # - media/js/vendor/jquery.ui.widget.js
         - media/js/vendor/jquery.cookie.js
         - media/js/vendor/jquery.layout.js
         - media/js/vendor/jquery.tinysort.js
