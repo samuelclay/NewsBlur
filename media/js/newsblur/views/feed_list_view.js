@@ -305,8 +305,10 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
         var url = $.getQueryString('url') || $.getQueryString('add');
         if (url) {
             NEWSBLUR.reader.open_add_feed_modal({url: url});
+            route_found = true;
         }
 
+        // This removes the query string from the URL.
         if (!route_found && window.history.replaceState && !$.getQueryString('test')) {
             // In case this needs to be found again: window.location.href = BACKBONE
             window.history.replaceState({}, null, '/');
