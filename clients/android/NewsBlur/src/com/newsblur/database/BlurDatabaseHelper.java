@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.CancellationSignal;
+import android.support.annotation.Nullable;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
 import android.text.TextUtils;
@@ -1106,8 +1107,7 @@ public class BlurDatabaseHelper {
         };
     }
 
-    public Loader<Cursor> getStoriesLoader(final FeedSet fs) {
-//        final StoryOrder order = PrefsUtils.getStoryOrder(context, fs);
+    public Loader<Cursor> getStoriesLoader(@Nullable final FeedSet fs) {
         return new QueryCursorLoader(context) {
             @Override
             protected Cursor createCursor() {
@@ -1116,15 +1116,21 @@ public class BlurDatabaseHelper {
         };
     }
 
-    private Cursor getStoriesCursor(FeedSet fs, CancellationSignal cancellationSignal) {
+    private Cursor getStoriesCursor(@Nullable FeedSet fs, CancellationSignal cancellationSignal) {
         StringBuilder q = new StringBuilder(DatabaseConstants.STORY_QUERY_BASE_0);
 
-        q.append(DatabaseConstants.STORY_FEED_ID);
-        q.append(" = ");
-        q.append(fs.getSingleFeed());
+        if (fs != null && !TextUtils.isEmpty(fs.getSingleFeed())) {
+            q.append(DatabaseConstants.STORY_FEED_ID);
+            q.append(" = ");
+            q.append(fs.getSingleFeed());
+        } else {
+            q.append(DatabaseConstants.FEED_ACTIVE);
+            q.append(" = 1");
+        }
+
         q.append(" ORDER BY ");
         q.append(DatabaseConstants.STORY_TIMESTAMP);
-        q.append(" DESC LIMIT 10");
+        q.append(" DESC LIMIT 20");
         return rawQuery(q.toString(), null, cancellationSignal);
     }
 

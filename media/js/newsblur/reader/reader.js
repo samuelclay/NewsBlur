@@ -1537,11 +1537,15 @@
             this.flags['loaded_next_after_load'] = true;
             
             var next = $.getQueryString('next') || $.getQueryString('test');
+            var add_url = $.getQueryString('add') || $.getQueryString('url');
             var story = $.getQueryString('story');
             if (next == 'notifications') {
                 _.defer(function() {
                     NEWSBLUR.reader.open_notifications_modal(NEWSBLUR.assets.active_feed && NEWSBLUR.assets.active_feed.id);
                 });
+            }
+            if (add_url) {
+              NEWSBLUR.reader.open_add_feed_modal({url: url});
             }
             if (story) {
                 this.flags['select_story_in_feed'] = story;
@@ -3180,7 +3184,11 @@
             clearInterval(this.flags['bouncing_callout']);
             $.modal.close();
             
-            NEWSBLUR.add_feed = NEWSBLUR.ReaderAddFeed.create(options);
+            if (NEWSBLUR.Globals.is_anonymous && NEWSBLUR.welcome) {
+              NEWSBLUR.welcome.show_signin_form();
+            } else {
+              NEWSBLUR.add_feed = NEWSBLUR.ReaderAddFeed.create(options);
+            }
         },
         
         open_manage_feed_modal: function(feed_id) {
@@ -6724,6 +6732,12 @@
                 e.preventDefault();
                 if (self.active_feed) {
                     self.reload_feed();
+                }
+            });
+            $document.bind('keydown', 'shift+r', function(e) {
+                e.preventDefault();
+                if (self.active_feed) {
+                    self.force_instafetch_stories();
                 }
             });
             $document.bind('keydown', 'enter', function(e) {
