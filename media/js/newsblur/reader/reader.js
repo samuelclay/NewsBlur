@@ -3180,7 +3180,11 @@
             clearInterval(this.flags['bouncing_callout']);
             $.modal.close();
             
-            NEWSBLUR.add_feed = NEWSBLUR.ReaderAddFeed.create(options);
+            if (NEWSBLUR.Globals.is_anonymous && NEWSBLUR.welcome) {
+              NEWSBLUR.welcome.show_signin_form();
+            } else {
+              NEWSBLUR.add_feed = NEWSBLUR.ReaderAddFeed.create(options);
+            }
         },
         
         open_manage_feed_modal: function(feed_id) {
