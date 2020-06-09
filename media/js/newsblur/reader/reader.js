@@ -1537,11 +1537,15 @@
             this.flags['loaded_next_after_load'] = true;
             
             var next = $.getQueryString('next') || $.getQueryString('test');
+            var add_url = $.getQueryString('add') || $.getQueryString('url');
             var story = $.getQueryString('story');
             if (next == 'notifications') {
                 _.defer(function() {
                     NEWSBLUR.reader.open_notifications_modal(NEWSBLUR.assets.active_feed && NEWSBLUR.assets.active_feed.id);
                 });
+            }
+            if (add_url) {
+              NEWSBLUR.reader.open_add_feed_modal({url: url});
             }
             if (story) {
                 this.flags['select_story_in_feed'] = story;
