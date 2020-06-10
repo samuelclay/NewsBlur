@@ -682,7 +682,13 @@ color: #a85b40;
     text-shadow: 0 1px 0 rgba(0,0,0,.8);
     /*border: 1px solid #90928b;*/
 }
-
+.NB-dark .NB-modal h5,
+.NB-dark .NB-module h5,
+.NB-dark .NB-module-header {
+    background-image: -moz-linear-gradient(top, #31383a, #232729); /* FF3.6 */
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#31383a), to(#232729)); /* Saf4+, Chrome */
+    background-image: linear-gradient(top, #31383a, #232729);
+}
 /* Error text on bottom bar */
 .NB-dark #story_taskbar .NB-river-progress .NB-river-progress-text,
 .NB-dark #story_taskbar .NB-feed-error .NB-feed-error-text {
