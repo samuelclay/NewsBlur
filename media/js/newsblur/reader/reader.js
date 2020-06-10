@@ -221,6 +221,9 @@
         },
         
         adjust_for_narrow_window: function() {
+            // Check if layout is ready or still being assembled
+            if (!NEWSBLUR.reader.layout.contentLayout) return;
+            
             var north, center, west;
             var story_layout = NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout');
             var content_width;
