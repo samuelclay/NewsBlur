@@ -63,7 +63,7 @@
                 'count_unreads_after_import_working': false,
                 'import_from_google_reader_working': false,
                 'sidebar_closed': this.options.hide_sidebar,
-                'splash_page_frontmost': false
+                'splash_page_frontmost': true
             };
             this.locks = {};
             this.counts = {
