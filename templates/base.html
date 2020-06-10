@@ -30,7 +30,6 @@
       'debug'                   : {{ debug|yesno:"true,false" }}
     };
     NEWSBLUR.Flags = {
-      'start_import_from_google_reader': {{ start_import_from_google_reader|yesno:"true,false" }}
     };
     NEWSBLUR.Preferences = {
       'unread_view'             : 0,
@@ -96,7 +95,6 @@
       'story_share_email'       : true
     };
     NEWSBLUR.URLs = {
-      'google-reader-authorize' : "{% url "google-reader-authorize" %}",
       'upload-avatar'           : "{% url "upload-avatar" %}",
       'opml-upload'             : "{% url "opml-upload" %}",
       'opml-export'             : "{% url "opml-export" %}",

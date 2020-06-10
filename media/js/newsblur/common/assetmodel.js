@@ -1578,14 +1578,6 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         });
     },
     
-    start_import_from_google_reader: function(callback) {
-        this.make_request('/import/import_from_google_reader/', {}, callback);
-    },
-    
-    start_import_starred_stories_from_google_reader: function(callback) {
-        this.make_request('/import/import_starred_stories_from_google_reader/', {}, callback);
-    },
-    
     save_recommended_site: function(data, callback) {
         if (NEWSBLUR.Globals.is_authenticated) {
             this.make_request('/recommendations/save_recommended_feed', data, callback);

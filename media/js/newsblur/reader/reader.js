@@ -61,7 +61,6 @@
                 'bouncing_callout': false,
                 'has_unfetched_feeds': false,
                 'count_unreads_after_import_working': false,
-                'import_from_google_reader_working': false,
                 'sidebar_closed': this.options.hide_sidebar,
                 'splash_page_frontmost': true
             };
@@ -114,9 +113,6 @@
             this.load_javascript_elements_on_page();
             this.apply_resizable_layout();
             this.add_body_classes();
-            if (NEWSBLUR.Flags['start_import_from_google_reader']) {
-                this.start_import_from_google_reader();
-            }
             NEWSBLUR.app.sidebar_header = new NEWSBLUR.Views.SidebarHeader({
                 feed_collection: NEWSBLUR.assets.feeds,
                 socialfeed_collection: NEWSBLUR.assets.social_feeds
@@ -237,6 +233,7 @@
             } else {
                 center = NEWSBLUR.reader.layout.rightLayout.panes.center;
             }
+
             if (center) {
                 var center_width = center.width();
                 var narrow = center_width < 780;
@@ -3410,6 +3407,19 @@
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-preferences' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Preferences')
+                    ]),
+                    $.make('li', { className: 'NB-menu-item NB-menu-manage-theme' }, [
+                        $.make('div', { className: 'NB-menu-manage-image' }),
+                        $.make('ul', { className: 'segmented-control NB-options-theme' }, [
+                            $.make('li', { className: 'NB-single-story-option NB-options-theme-light NB-active' }, [
+                                $.make('div', { className: 'NB-icon' }),
+                                'Light'
+                            ]),
+                            $.make('li', { className: 'NB-single-story-option NB-options-theme-dark' }, [
+                                $.make('div', { className: 'NB-icon' }),
+                                'Dark'
+                            ])
+                        ])
                     ])
                 ]);
                 $manage_menu.addClass('NB-menu-manage-notop');
@@ -5484,59 +5494,6 @@
         // = Import from Google Reader =
         // =============================
         
-        post_google_reader_connect: function(data) {
-            if (NEWSBLUR.intro) {
-                NEWSBLUR.intro.start_import_from_google_reader(data);
-            } else {
-                this.start_import_from_google_reader();
-            }
-        },
-        
-        start_import_from_google_reader: function() {
-            var self = this;
-            var $progress = this.$s.$feeds_progress;
-            var $bar = $('.NB-progress-bar', $progress);
-            var percentage = 0;
-            this.flags['import_from_google_reader_working'] = true;
-            
-            $('.NB-progress-title', $progress).text('Importing from Google Reader');
-            $('.NB-progress-counts', $progress).hide();
-            $('.NB-progress-percentage', $progress).hide();
-            $bar.progressbar({
-                value: percentage
-            });
-            
-            this.animate_progress_bar($bar, 5);
-            
-            this.model.start_import_from_google_reader(
-                $.rescope(this.finish_import_from_google_reader, this));
-            this.show_progress_bar();
-        },
-
-        finish_import_from_google_reader: function(e, data) {
-            var $progress = this.$s.$feeds_progress;
-            var $bar = $('.NB-progress-bar', $progress);
-            this.flags['import_from_google_reader_working'] = false;
-            clearTimeout(this.locks['animate_progress_bar']);
-            
-            if (data.code >= 1) {
-                $bar.progressbar({value: 100});
-                NEWSBLUR.assets.load_feeds();
-                $('.NB-progress-title', $progress).text('');
-                $('.NB-progress-link', $progress).html('');
-            } else {
-                NEWSBLUR.log(['Import Error!', data]);
-                this.$s.$feed_link_loader.fadeOut(250);
-                $progress.addClass('NB-progress-error');
-                $('.NB-progress-title', $progress).text('Error importing Google Reader');
-                $('.NB-progress-link', $progress).html($.make('a', { 
-                    className: 'NB-modal-submit-button NB-modal-submit-green',
-                    href: NEWSBLUR.URLs['google-reader-authorize']
-                }, ['Try importing again']));
-                $('.left-center-footer').css('height', 'auto');
-            }
-        },
-
         start_count_unreads_after_import: function() {
             var self = this;
             var $progress = this.$s.$feeds_progress;
@@ -6281,6 +6238,9 @@
                         self.open_preferences_modal();
                     });
                 }
+            });  
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-theme' }, function($t, $p){
+                e.preventDefault();
             });  
             $.targetIs(e, { tagSelector: '.NB-menu-manage-logout' }, function($t, $p){
                 e.preventDefault();
