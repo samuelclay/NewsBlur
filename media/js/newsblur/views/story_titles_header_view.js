@@ -168,6 +168,14 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
         this.search_view.focus_search();
     },
     
+    watch_toggled_sidebar: function() {
+        if (NEWSBLUR.reader.flags['sidebar_closed']) {
+            $(".NB-feedbar").addClass("NB-sidebar-closed");
+        } else {
+            $(".NB-feedbar").removeClass("NB-sidebar-closed");
+        }
+    },
+    
     // ===========
     // = Actions =
     // ===========

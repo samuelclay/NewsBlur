@@ -62,7 +62,8 @@
                 'has_unfetched_feeds': false,
                 'count_unreads_after_import_working': false,
                 'import_from_google_reader_working': false,
-                'sidebar_closed': this.options.hide_sidebar
+                'sidebar_closed': this.options.hide_sidebar,
+                'splash_page_frontmost': false
             };
             this.locks = {};
             this.counts = {
@@ -297,6 +298,7 @@
                     west__size:             this.model.preference('feed_pane_size'),
                     west__minSize:          this.constants.MIN_FEED_LIST_SIZE,
                     west__onresize_end:     _.bind(this.save_feed_pane_size, this),
+                    west__onopen:           _.bind(this.resize_window, this),
                     // west__initHidden:       this.options.hide_sidebar,
                     west__spacing_open:     this.options.hide_sidebar ? 1 : 1,
                     resizerDragOpacity:     0.6,
@@ -304,11 +306,6 @@
                     enableCursorHotkey:     false,
                     togglerLength_open:     0
                 }); 
-                
-                // What the hell is this handling?
-                // if (this.model.preference('feed_pane_size') < 242) {
-                //     this.layout.outerLayout.resizeAll();
-                // }
 
                 this.layout.leftLayout = $('.left-pane').layout({
                     closable:               false,
@@ -543,6 +540,7 @@
                 resize = true;
             }
             this.$s.$body.addClass('NB-show-reader');
+            this.flags['splash_page_frontmost'] = false;
 
             if (resize) {
                 this.$s.$layout.layout().resizeAll();
@@ -557,8 +555,10 @@
         
         show_splash_page: function(skip_router) {
             this.reset_feed();
+            this.open_sidebar();
             this.$s.$body.removeClass('NB-show-reader');
-
+            this.flags['splash_page_frontmost'] = true;
+            
             if (!skip_router) {
                 NEWSBLUR.log(["Navigating to splash"]);
                 NEWSBLUR.router.navigate('');
@@ -3278,15 +3278,17 @@
         },
         
         close_sidebar: function() {
-            this.$s.$layout.layout().hide('west');
+            this.layout.outerLayout.hide('west');
             this.resize_window();
             this.flags['sidebar_closed'] = true;
+            NEWSBLUR.app.story_titles_header.watch_toggled_sidebar();            
         },
         
         open_sidebar: function() {
-            this.$s.$layout.layout().open('west');
+            this.layout.outerLayout.open('west');
             this.resize_window();
             this.flags['sidebar_closed'] = false;
+            NEWSBLUR.app.story_titles_header.watch_toggled_sidebar();
         },
         
         toggle_story_titles_pane: function(update_layout) {
@@ -5859,6 +5861,10 @@
                         self.show_manage_menu('site', $item, {inverse: true, right: true, body: true});
                     }
                 }
+            });
+            $.targetIs(e, { tagSelector: '.NB-story-titles-expand-sidebar' }, function($t, $p){
+                e.preventDefault();
+                self.open_sidebar();
             });  
             
             // = Context Menu ================================================
