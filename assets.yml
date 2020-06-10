@@ -137,6 +137,7 @@ stylesheets:
         - media/css/reader.css
         - media/css/modals.css
         - media/css/status.css
+        - media/css/darkmode.css
         - media/css/jquery-ui/jquery.theme.css
         - media/css/jquery.tipsy.css
         - media/css/vendor/bootstrap-progressbar.css
