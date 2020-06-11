@@ -2165,7 +2165,7 @@ a img {
 }
 .NB-layout-grid .NB-story-titles {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, 30%);
     grid-gap: 2rem;
     padding: 2rem;
 }
@@ -2200,22 +2200,29 @@ a img {
 .NB-story-grid.NB-story-title-hide-preview {
     height: 296px;
 }
-.NB-layout-grid.NB-grid-columns-1 .NB-story-grid,
-.NB-extra-narrow-content .NB-story-grid {
-    width: 94%;
+
+.NB-layout-grid.NB-grid-columns-1 .NB-story-titles,
+.NB-extra-narrow-content .NB-story-titles,
+.NB-extra-narrow-content.NB-narrow-content .NB-story-titles {
+    grid-template-columns: none;
+    grid-template-columns: repeat(1, 96%);
 }
-.NB-layout-grid.NB-grid-columns-2 .NB-story-grid,
-.NB-narrow-content .NB-story-grid {
-    width: 44%;
+.NB-layout-grid.NB-grid-columns-2 .NB-story-titles,
+.NB-narrow-content .NB-story-titles {
+    grid-template-columns: none;
+    grid-template-columns: repeat(2, 46%);
 }
-.NB-layout-grid.NB-grid-columns-3 .NB-story-grid,
-.NB-wide-content .NB-story-grid {
-/*    width: 29%;*/
+.NB-layout-grid.NB-grid-columns-3 .NB-story-titles,
+.NB-wide-content .NB-story-titles {
+    grid-template-columns: none;
+    grid-template-columns: repeat(3, 30%);
 }
-.NB-layout-grid.NB-grid-columns-4 .NB-story-grid,
-.NB-extra-wide-content .NB-story-grid {
-    width: 21%;
+.NB-layout-grid.NB-grid-columns-4 .NB-story-titles,
+.NB-extra-wide-content .NB-story-titles {
+    grid-template-columns: none;
+    grid-template-columns: repeat(4, 22%);
 }
+
 .NB-view-river .NB-story-grid {
     padding-left: 0;
     border: 1px solid rgba(0, 0, 0, .2);
