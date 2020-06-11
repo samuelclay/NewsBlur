@@ -2250,6 +2250,7 @@ a img {
     font-size: 16px;
     line-height: 1.3em;
     padding: 0;
+    word-break: break-word;
 }
 .NB-theme-feed-size-xs .NB-story-grid .NB-storytitles-title {
     font-size: 14px;
@@ -2266,6 +2267,7 @@ a img {
 
 .NB-story-grid .NB-storytitles-content-preview {
     margin: 12px 0 0 0;
+    word-break: break-word;
 }
 .NB-story-grid .NB-storytitles-story-image-container {
     margin-left: 8px;
