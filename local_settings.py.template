@@ -80,6 +80,10 @@ DATABASES = {
         'USER': 'newsblur',
         'PASSWORD': '',
         'HOST': '127.0.0.1',
+        'TEST': {
+            'NAME': 'newsblur_test',
+            'COLLATION': 'utf8_general_ci'
+        }
     },
 }
 
