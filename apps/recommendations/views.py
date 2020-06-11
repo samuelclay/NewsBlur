@@ -13,11 +13,11 @@ from utils.user_functions import get_user, ajax_login_required, admin_only
 
 def load_recommended_feed(request):
     user        = get_user(request)
-    page        = max(int(request.REQUEST.get('page', 0)), 0)
+    page        = max(int(request.GET.get('page', 0)), 0)
     usersub     = None
-    refresh     = request.REQUEST.get('refresh')
+    refresh     = request.GET.get('refresh')
     now         = datetime.datetime.now
-    unmoderated = request.REQUEST.get('unmoderated', False) == 'true'
+    unmoderated = request.GET.get('unmoderated', False) == 'true'
     
     if unmoderated:
         recommended_feeds = RecommendedFeed.objects.filter(is_public=False, declined_date__isnull=True)[page:page+2]
@@ -102,7 +102,7 @@ def approve_feed(request):
 @admin_only
 @ajax_login_required
 def decline_feed(request):
-    feed_id = request.POST['feed_id']
+    feed_id = request.GET['feed_id']
     feed    = get_object_or_404(Feed, pk=int(feed_id))
     recommended_feeds = RecommendedFeed.objects.filter(feed=feed)
     

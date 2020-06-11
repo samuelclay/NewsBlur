@@ -540,9 +540,9 @@ def original_text(request):
 
 @required_params('story_hash')
 def original_story(request):
-    story_hash = request.REQUEST.get('story_hash')
-    force = request.REQUEST.get('force', False)
-    debug = request.REQUEST.get('debug', False)
+    story_hash = request.GET.get('story_hash')
+    force = request.GET.get('force', False)
+    debug = request.GET.get('debug', False)
 
     story, _ = MStory.find_story(story_hash=story_hash)
 
