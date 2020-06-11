@@ -129,7 +129,7 @@ def json_response(request, response=None):
             response = dict(response)
             if 'result' not in response:
                 response['result'] = 'ok'
-            authenticated = request.user.is_authenticated()
+            authenticated = request.user.is_authenticated
             response['authenticated'] = authenticated
             if authenticated:
                 response['user_id'] = request.user.pk

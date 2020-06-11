@@ -360,7 +360,7 @@ def load_social_page(request, user_id, username=None, **kwargs):
     user_social_services = None
     user_following_social_profile = None
     relative_user_id = user_id
-    if user.is_authenticated():
+    if user.is_authenticated:
         user_social_profile = MSocialProfile.get_user(user.pk)
         user_social_services = MSocialServices.get_user(user.pk)
         user_following_social_profile = user_social_profile.is_following_user(social_user_id)
@@ -376,7 +376,7 @@ def load_social_page(request, user_id, username=None, **kwargs):
         current_tab = "global"
         global_feed = True
     
-    if social_profile.private and (not user.is_authenticated() or 
+    if social_profile.private and (not user.is_authenticated or 
                                    not social_profile.is_followed_by_user(user.pk)):
         stories = []
     elif global_feed:
@@ -386,7 +386,7 @@ def load_social_page(request, user_id, username=None, **kwargs):
                                                  offset=offset, limit=limit+1,
                                                  # order=order, read_filter=read_filter,
                                                  relative_user_id=relative_user_id,
-                                                 cache=request.user.is_authenticated(),
+                                                 cache=request.user.is_authenticated,
                                                  cutoff_date=user.profile.unread_cutoff)
         if len(story_ids) > limit:
             has_next_page = True
@@ -439,7 +439,7 @@ def load_social_page(request, user_id, username=None, **kwargs):
     stories, profiles = MSharedStory.stories_with_comments_and_profiles(stories, social_user.pk, 
                                                                         check_all=True)
 
-    if user.is_authenticated():
+    if user.is_authenticated:
         for story in stories:
             if user.pk in story['share_user_ids']:
                 story['shared_by_user'] = True

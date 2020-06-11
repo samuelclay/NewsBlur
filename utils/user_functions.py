@@ -11,7 +11,7 @@ from django.conf import settings
 def ajax_login_required(function=None):
     def _dec(view_func):
         def _view(request, *args, **kwargs):
-            if request.user.is_anonymous():
+            if request.user.is_anonymous:
                 return HttpResponseForbidden()
             else:
                 return view_func(request, *args, **kwargs)
@@ -30,7 +30,7 @@ def ajax_login_required(function=None):
 def oauth_login_required(function=None):
     def _dec(view_func):
         def _view(request, *args, **kwargs):
-            if request.user.is_anonymous():
+            if request.user.is_anonymous:
                 return HttpResponse(content=json.encode({
                     "message": "You must have a valid OAuth token.",
                 }), status=401)
@@ -79,7 +79,7 @@ def get_user(request):
     else:
         user = request.user
         
-    if user.is_anonymous() and hasattr(request, 'POST'):
+    if user.is_anonymous and hasattr(request, 'POST'):
         # Check secret_token parameter
         secret_token = request.POST.get('secret_token', None) or request.GET.get('secret_token', None)
         if secret_token:
@@ -89,7 +89,7 @@ def get_user(request):
             except User.DoesNotExist:
                 pass
         
-    if user.is_anonymous():
+    if user.is_anonymous:
         user = cache.get('user:%s' % settings.HOMEPAGE_USERNAME, None)
         if not user:
             try:

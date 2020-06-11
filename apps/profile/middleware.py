@@ -18,7 +18,7 @@ class LastSeenMiddleware(object):
              request.path.startswith('/reader/load_feeds') or
              request.path.startswith('/reader/feeds'))
             and hasattr(request, 'user')
-            and request.user.is_authenticated()): 
+            and request.user.is_authenticated): 
             hour_ago = datetime.datetime.utcnow() - datetime.timedelta(minutes=60)
             ip = request.META.get('HTTP_X_FORWARDED_FOR', None) or request.META['REMOTE_ADDR']
             # SUBSCRIBER_EXPIRE = datetime.datetime.utcnow() - datetime.timedelta(days=settings.SUBSCRIBER_EXPIRE)
@@ -287,7 +287,7 @@ class UserAgentBanMiddleware:
             
             return HttpResponse(json.encode(data), status=403, mimetype='text/json')
 
-        if request.user.is_authenticated() and any(username == request.user.username for username in BANNED_USERNAMES):
+        if request.user.is_authenticated and any(username == request.user.username for username in BANNED_USERNAMES):
             data = {
                 'error': 'User banned: %s' % request.user.username,
                 'code': -1

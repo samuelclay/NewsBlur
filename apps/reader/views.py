@@ -85,7 +85,7 @@ def index(request, **kwargs):
                 reverse('index')))
         return load_social_page(request, user_id=user.pk, username=request.subdomain, **kwargs)
 
-    if request.user.is_anonymous():
+    if request.user.is_anonymous:
         return welcome(request, **kwargs)
     else:
         return dashboard(request, **kwargs)
@@ -288,7 +288,7 @@ def load_feeds(request):
         elif sub.feed.next_scheduled_update < day_ago:
             scheduled_feeds.append(sub.feed.pk)
     
-    if len(scheduled_feeds) > 0 and request.user.is_authenticated():
+    if len(scheduled_feeds) > 0 and request.user.is_authenticated:
         logging.user(request, "~SN~FMTasking the scheduling immediate fetch of ~SB%s~SN feeds..." % 
                      len(scheduled_feeds))
         ScheduleImmediateFetches.apply_async(kwargs=dict(feed_ids=scheduled_feeds, user_id=user.pk))
@@ -362,7 +362,7 @@ def load_feeds_flat(request):
     if include_favicons == 'false': include_favicons = False
     if update_counts == 'false': update_counts = False
     
-    if not user.is_authenticated():
+    if not user.is_authenticated:
         return HttpResponseForbidden()
     
     try:
@@ -397,7 +397,7 @@ def load_feeds_flat(request):
         for sub in inactive_subs:
             inactive_feeds[sub.feed_id] = sub.canonical(include_favicon=include_favicons)
     
-    if len(scheduled_feeds) > 0 and request.user.is_authenticated():
+    if len(scheduled_feeds) > 0 and request.user.is_authenticated:
         logging.user(request, "~SN~FMTasking the scheduling immediate fetch of ~SB%s~SN feeds..." % 
                      len(scheduled_feeds))
         ScheduleImmediateFetches.apply_async(kwargs=dict(feed_ids=scheduled_feeds, user_id=user.pk))
@@ -1943,9 +1943,9 @@ def mark_feed_as_read(request):
 def _parse_user_info(user):
     return {
         'user_info': {
-            'is_anonymous': json.encode(user.is_anonymous()),
-            'is_authenticated': json.encode(user.is_authenticated()),
-            'username': json.encode(user.username if user.is_authenticated() else 'Anonymous')
+            'is_anonymous': json.encode(user.is_anonymous),
+            'is_authenticated': json.encode(user.is_authenticated),
+            'username': json.encode(user.username if user.is_authenticated else 'Anonymous')
         }
     }
 
