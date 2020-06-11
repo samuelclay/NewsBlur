@@ -1,8 +1,8 @@
 from django.db.models import OneToOneField
-from django.db.models.fields.related import SingleRelatedObjectDescriptor
+from django.db.models.fields.related import ReverseOneToOneDescriptor
 
 
-class AutoSingleRelatedObjectDescriptor(SingleRelatedObjectDescriptor):
+class AutoSingleRelatedObjectDescriptor(ReverseOneToOneDescriptor):
     def __get__(self, instance, instance_type=None):
         try:
             return super(AutoSingleRelatedObjectDescriptor, self).__get__(instance, instance_type)
