@@ -51,7 +51,6 @@
                 $read_header: $('.NB-feeds-header-read'),
                 $tryfeed_header: $('.NB-feeds-header-tryfeed'),
                 $taskbar: $('.NB-taskbar-view'),
-                $feed_floater: $('.NB-feed-story-view-floater'),
                 $feedbar: $('.NB-feedbar'),
                 $add_button: $('.NB-task-add'),
                 $taskbar_options: $('.NB-taskbar-options'),
