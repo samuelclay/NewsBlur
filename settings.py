@@ -190,8 +190,8 @@ LOGGING = {
         # },
     },
     'loggers': {
-        'django.request': {
-            'handlers': ['console', 'log_file'],
+        'django': {
+            'handlers': ['console', 'mail_admins'],
             'level': 'ERROR',
             'propagate': True,
         },
@@ -296,6 +296,8 @@ LOG_TO_STREAM = False
 # ===============
 # = Django Apps =
 # ===============
+
+OAUTH2_PROVIDER_APPLICATION_MODEL = 'oauth2_provider.Application'
 
 INSTALLED_APPS = (
     'django.contrib.auth',
