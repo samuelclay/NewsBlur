@@ -1,6 +1,6 @@
 import json
 from django.http import HttpResponse
-from django.db.models import get_model
+from django.apps import apps
 import stripe
 from zebra.conf import options
 from zebra.signals import *
@@ -13,7 +13,7 @@ stripe.api_key = options.STRIPE_SECRET
 
 def _try_to_get_customer_from_customer_id(stripe_customer_id):
     if options.ZEBRA_CUSTOMER_MODEL:
-        m = get_model(*options.ZEBRA_CUSTOMER_MODEL.split('.'))
+        m = apps.get_model(*options.ZEBRA_CUSTOMER_MODEL.split('.'))
         try:
             return m.objects.get(stripe_customer_id=stripe_customer_id)
         except:
