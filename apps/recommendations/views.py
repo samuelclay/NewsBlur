@@ -23,7 +23,7 @@ def load_recommended_feed(request):
         recommended_feeds = RecommendedFeed.objects.filter(is_public=False, declined_date__isnull=True)[page:page+2]
     else:
         recommended_feeds = RecommendedFeed.objects.filter(is_public=True, approved_date__lte=now)[page:page+2]
-    if recommended_feeds and request.user.is_authenticated():
+    if recommended_feeds and request.user.is_authenticated:
         usersub = UserSubscription.objects.filter(user=user, feed=recommended_feeds[0].feed)
     if refresh != 'true' and page > 0:
         logging.user(request, "~FBBrowse recommended feed: ~SBPage #%s" % (page+1))
@@ -53,7 +53,7 @@ def load_recommended_feed(request):
 def load_feed_info(request, feed_id):
     feed = get_object_or_404(Feed, pk=feed_id)
     previous_recommendation = None
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         recommended_feed = RecommendedFeed.objects.filter(user=request.user, feed=feed)
         if recommended_feed:
             previous_recommendation = recommended_feed[0].created_date

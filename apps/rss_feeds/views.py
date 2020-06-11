@@ -44,7 +44,7 @@ def search_feed(request):
     logging.user(request.user, "~FBFinding feed (search_feed): %s" % address)
     ip = request.META.get('HTTP_X_FORWARDED_FOR', None) or request.META['REMOTE_ADDR']
     logging.user(request.user, "~FBIP: %s" % ip)
-    aggressive = request.user.is_authenticated()
+    aggressive = request.user.is_authenticated
     feed = Feed.get_feed_from_url(address, create=False, aggressive=aggressive, offset=offset)
     if feed:
         return feed.canonical()
