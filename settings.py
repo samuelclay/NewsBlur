@@ -7,8 +7,6 @@ import os
 
 CURRENT_DIR   = os.path.dirname(__file__)
 NEWSBLUR_DIR  = CURRENT_DIR
-TEMPLATE_DIRS = (os.path.join(CURRENT_DIR, 'templates'),
-                 os.path.join(CURRENT_DIR, 'vendor/zebra/templates'))
 MEDIA_ROOT    = os.path.join(CURRENT_DIR, 'media')
 STATIC_ROOT   = os.path.join(CURRENT_DIR, 'static')
 UTILS_ROOT    = os.path.join(CURRENT_DIR, 'utils')
@@ -95,12 +93,6 @@ PAYPAL_TEST           = False
 # = Django-specific Modules =
 # ===========================
 
-TEMPLATE_CONTEXT_PROCESSORS = (
-    "django.contrib.auth.context_processors.auth",
-    "django.template.context_processors.debug",
-    "django.template.context_processors.media",
-    'django.template.context_processors.request',
-)
 
 MIDDLEWARE_CLASSES = (
     'django.middleware.gzip.GZipMiddleware',
@@ -618,7 +610,6 @@ if not DEBUG:
     RAVEN_CLIENT = raven.Client(SENTRY_DSN)
     
 COMPRESS = not DEBUG
-TEMPLATE_DEBUG = DEBUG
 ACCOUNT_ACTIVATION_DAYS = 30
 AWS_ACCESS_KEY_ID = S3_ACCESS_KEY
 AWS_SECRET_ACCESS_KEY = S3_SECRET
@@ -636,18 +627,38 @@ DEBUG_TOOLBAR_CONFIG = {
 }
 
 if DEBUG:
-    TEMPLATE_LOADERS = (
+    template_loaders = (
         'django.template.loaders.filesystem.Loader',
         'django.template.loaders.app_directories.Loader',
     )
 else:
-    TEMPLATE_LOADERS = (
+    template_loaders = (
         ('django.template.loaders.cached.Loader', (
             'django.template.loaders.filesystem.Loader',
             'django.template.loaders.app_directories.Loader',
         )),
     )
 
+
+BASE_DIR = 'NewsBlur'
+
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'TEMPLATE_DIRS': [os.path.join(CURRENT_DIR, 'templates'),
+                 os.path.join(CURRENT_DIR, 'vendor/zebra/templates')],
+        'APP_DIRS': True,
+        'TEMPLATE_CONTEXT_PROCESSORS': (
+            "django.contrib.auth.context_processors.auth",
+            "django.template.context_processors.debug",
+            "django.template.context_processors.media",
+            'django.template.context_processors.request',
+        ),
+        'TEMPLATE_LOADERS': template_loaders,
+        'TEMPLATE_DEBUG': DEBUG
+
+    }
+]
 # =========
 # = Mongo =
 # =========
