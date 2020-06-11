@@ -109,7 +109,7 @@ def invalidate_template_cache(fragment_name, *variables):
 def generate_secret_token(phrase, size=12):
     """Generate a (SHA1) security hash from the provided info."""
     info = (phrase, settings.SECRET_KEY)
-    return hashlib.sha1("".join(info)).hexdigest()[:size]
+    return hashlib.sha256("".join(info)).hexdigest()[:size]
 
 def extract_user_agent(request):
     user_agent = request.environ.get('HTTP_USER_AGENT', '').lower()
