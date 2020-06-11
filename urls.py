@@ -64,7 +64,7 @@ urlpatterns = [
     url(r'^ipad/?',         static_views.ios),
     url(r'^android/?',      static_views.android, name='android-static'),
     url(r'^firefox/?',      static_views.firefox, name='firefox'),
-    url(r'zebra/',          include('zebra.urls',  namespace="zebra",  app_name='zebra')),
+    url(r'zebra/',          include('zebra.urls',  namespace="zebra")),
     url(r'^account/redeem_code/?$', profile_views.redeem_code, name='redeem-code'),
     url(r'^account/login/?$', profile_views.login, name='login'),
     url(r'^account/signup/?$', profile_views.signup, name='signup'),
