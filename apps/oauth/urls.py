@@ -1,4 +1,4 @@
-from django.conf.urls import url, patterns
+from django.conf.urls import url
 from apps.oauth import views
 from oauth2_provider import views as op_views
 

@@ -1,4 +1,4 @@
-from django.conf.urls import url, patterns
+from django.conf.urls import url
 from apps.rss_feeds import views
 
 urlpatterns = [
