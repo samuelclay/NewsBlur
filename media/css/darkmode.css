@@ -21,6 +21,16 @@
 /* = Global = */
 /* ========== */
 
+.NB-theme-transitioning div,
+.NB-theme-transitioning span,
+.NB-theme-transitioning a,
+.NB-theme-transitioning ul,
+.NB-theme-transitioning li,
+body.NB-theme-transitioning {
+    transition: color 1s ease-out, 
+                background-color 1s ease-out, 
+                border-color 1s ease-out;
+}
 body.NB-dark {
     background-color: #191b1c;
     color: #ccc;
@@ -197,7 +207,7 @@ color: #a85b40;
 /* Manage menu on splash page & cogwheel pop-up */
 .NB-dark .NB-menu-manage-container,
 .NB-dark .NB-menu-manage .NB-menu-manage-site-info, /* Preferences title background */
-.NB-dark .NB-menu-item, /* Icon background */
+.NB-dark .NB-menu-manage li.NB-menu-item, /* Icon background */
 .NB-dark .NB-menu-manage-title /* Title text background */ {
     background-color: #303739;
     border-radius: 4px;
@@ -841,11 +851,6 @@ border-bottom-color: #303739;
 .NB-dark .NB-feedlist .folder.NB-selected>.folder_title {
     color: #777;
     text-shadow: 0 1px 0 rgba(0,0,0,.8);
-}
-
-/* Feed text for unread feeds*/
-.NB-dark .unread_view_neutral .unread_neutral {
-    font-weight: normal;
 }
 
 /* "All Site Stories" text*/
