@@ -76,6 +76,8 @@ class LoginForm(forms.Form):
 
 
 class SignupForm(forms.Form):
+    use_required_attribute = False
+
     username = forms.RegexField(regex=r'^\w+$',
                                 max_length=30,
                                 widget=forms.TextInput(attrs={'class': 'NB-input'}),
@@ -172,6 +174,8 @@ class SignupForm(forms.Form):
         return new_user
 
 class FeatureForm(forms.Form):
+    use_required_attribute = False
+
     description = forms.CharField(required=True)
     
     def save(self):

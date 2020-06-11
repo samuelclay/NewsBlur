@@ -94,6 +94,7 @@ class ForgotPasswordReturnForm(forms.Form):
                                required=False)
 
 class AccountSettingsForm(forms.Form):
+    use_required_attribute = False
     username = forms.RegexField(regex=r'^\w+$',
                                 max_length=30,
                                 widget=forms.TextInput(attrs={'class': 'NB-input'}),
@@ -192,6 +193,7 @@ class AccountSettingsForm(forms.Form):
         MCustomStyling.save_user(self.user.pk, custom_css, custom_js)
         
 class RedeemCodeForm(forms.Form):
+    use_required_attribute = False
     gift_code = forms.CharField(widget=forms.TextInput(),
                                label="Gift code",
                                required=True)
