@@ -551,8 +551,8 @@ def interactions_count(request):
 def feed_unread_count(request):
     start = time.time()
     user = request.user
-    feed_ids = request.REQUEST.getlist('feed_id') or request.REQUEST.getlist('feed_id[]')
-    force = request.REQUEST.get('force', False)
+    feed_ids = request.GET.getlist('feed_id') or request.GET.getlist('feed_id[]')
+    force = request.GET.get('force', False)
     social_feed_ids = [feed_id for feed_id in feed_ids if 'social:' in feed_id]
     feed_ids = list(set(feed_ids) - set(social_feed_ids))
     
@@ -2231,7 +2231,7 @@ def add_feature(request):
 @json.json_view
 def load_features(request):
     user = get_user(request)
-    page = max(int(request.REQUEST.get('page', 0)), 0)
+    page = max(int(request.GET.get('page', 0)), 0)
     if page > 1:
         logging.user(request, "~FBBrowse features: ~SBPage #%s" % (page+1))
     features = Feature.objects.all()[page*3:(page+1)*3+1].values()
@@ -2612,7 +2612,7 @@ def send_story_email(request):
 
 @json.json_view
 def load_tutorial(request):
-    if request.REQUEST.get('finished'):
+    if request.GET.get('finished'):
         logging.user(request, '~BY~FW~SBFinishing Tutorial')
         return {}
     else:
