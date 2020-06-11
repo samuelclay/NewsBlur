@@ -340,7 +340,9 @@ color: #a85b40;
 }
 
 /* Style Font family active */
-.NB-dark .segmented-control-vertical li.NB-active, .segmented-control-vertical li.NB-active:active, .segmented-control-vertical-active li {
+.NB-dark .segmented-control-vertical li.NB-active, 
+.NB-dark .segmented-control-vertical li.NB-active:active, 
+.NB-dark .segmented-control-vertical-active li {
     color: #ccc;
     background-color: #252D30;
     background-image: none;
@@ -637,7 +639,9 @@ color: #a85b40;
 }
 
 /* Username color */
-.NB-dark .NB-splash-info .NB-splash-links a, .NB-static a, .NB-splash-link {
+.NB-dark .NB-splash-info .NB-splash-links a, 
+.NB-dark .NB-static a, 
+.NB-dark .NB-splash-link {
     color: #83B4E0;
 }
 
@@ -1430,7 +1434,8 @@ a.mention, a.mention-group {
 }
 
 /* Hamburger menu dropdown menu category titles */
-.NB-dark .menu-panel ul.menu-links li a, .menu-panel ul li.heading a {
+.NB-dark .menu-panel ul.menu-links li a, 
+.NB-dark .menu-panel ul li.heading a {
     color: #ccc;
 }
 
