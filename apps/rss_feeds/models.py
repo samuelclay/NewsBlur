@@ -65,7 +65,7 @@ class Feed(models.Model):
     active_subscribers = models.IntegerField(default=-1, db_index=True)
     premium_subscribers = models.IntegerField(default=-1)
     active_premium_subscribers = models.IntegerField(default=-1)
-    branch_from_feed = models.ForeignKey('Feed', blank=True, null=True, db_index=True)
+    branch_from_feed = models.ForeignKey('Feed', blank=True, null=True, db_index=True, on_delete=models.CASCADE)
     last_update = models.DateTimeField(db_index=True)
     next_scheduled_update = models.DateTimeField()
     last_story_date = models.DateTimeField(null=True, blank=True)

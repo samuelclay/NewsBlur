@@ -37,7 +37,7 @@ from zebra.signals import zebra_webhook_customer_subscription_created
 from zebra.signals import zebra_webhook_charge_succeeded
 
 class Profile(models.Model):
-    user              = models.OneToOneField(User, unique=True, related_name="profile")
+    user              = models.OneToOneField(User, unique=True, related_name="profile", on_delete=models.CASCADE)
     is_premium        = models.BooleanField(default=False)
     premium_expire    = models.DateTimeField(blank=True, null=True)
     send_emails       = models.BooleanField(default=True)
@@ -1051,7 +1051,7 @@ class Profile(models.Model):
         
 
 class StripeIds(models.Model):
-    user = models.ForeignKey(User, related_name='stripe_ids')
+    user = models.ForeignKey(User, related_name='stripe_ids', on_delete=models.CASCADE)
     stripe_id = models.CharField(max_length=24, blank=True, null=True)
 
     def __unicode__(self):
@@ -1233,7 +1233,7 @@ class MSentEmail(mongo.Document):
                            sending_user_id=sending_user_id)
 
 class PaymentHistory(models.Model):
-    user = models.ForeignKey(User, related_name='payments')
+    user = models.ForeignKey(User, related_name='payments', on_delete=models.CASCADE)
     payment_date = models.DateTimeField()
     payment_amount = models.IntegerField()
     payment_provider = models.CharField(max_length=20)

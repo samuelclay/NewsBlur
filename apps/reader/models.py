@@ -36,8 +36,8 @@ class UserSubscription(models.Model):
     are not accurate and need to be calculated with `self.calculate_feed_scores()`.
     """
     
-    user = models.ForeignKey(User, related_name='subscriptions')
-    feed = models.ForeignKey(Feed, related_name='subscribers')
+    user = models.ForeignKey(User, related_name='subscriptions', on_delete=models.CASCADE)
+    feed = models.ForeignKey(Feed, related_name='subscribers', on_delete=models.CASCADE)
     user_title = models.CharField(max_length=255, null=True, blank=True)
     active = models.BooleanField(default=False)
     last_read_date = models.DateTimeField(default=unread_cutoff_default)
@@ -1291,7 +1291,7 @@ class UserSubscriptionFolders(models.Model):
     is a recursive descent of feeds and folders in folders. Used to layout
     the feeds and folders in the Reader's feed navigation pane.
     """
-    user = models.OneToOneField(User)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     folders = models.TextField(default="[]")
     
     def __unicode__(self):
