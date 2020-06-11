@@ -2395,6 +2395,7 @@ class MSocialServices(mongo.Document):
         'collection': 'social_services',
         'indexes': ['user_id', 'twitter_friend_ids', 'facebook_friend_ids', 'twitter_uid', 'facebook_uid'],
         'allow_inheritance': False,
+        'strict': False,
     }
     
     def __unicode__(self):
