@@ -1,7 +1,7 @@
-from django.conf.urls import *
+from django.conf.urls import url
 from apps.api import views
 
-urlpatterns = patterns('',
+urlpatterns = [
     url(r'^logout', views.logout, name='api-logout'),
     url(r'^login', views.login, name='api-login'),
     url(r'^signup', views.signup, name='api-signup'),
@@ -11,4 +11,4 @@ urlpatterns = patterns('',
     url(r'^check_share_on_site/(?P<token>\w+)', views.check_share_on_site, name='api-check-share-on-site'),
     url(r'^share_story/(?P<token>\w+)', views.share_story, name='api-share-story'),
     url(r'^share_story/?$', views.share_story),
-)
+]

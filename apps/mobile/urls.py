@@ -1,6 +1,6 @@
-from django.conf.urls import *
+from django.conf.urls import url
 from apps.mobile import views
 
-urlpatterns = patterns('apps.mobile.views',
+urlpatterns = [
     url(r'^$', views.index, name='mobile-index'),
-)
+]

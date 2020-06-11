@@ -1,7 +1,7 @@
 from django.conf.urls import *
 from apps.profile import views
 
-urlpatterns = patterns('',
+urlpatterns = [
     url(r'^get_preferences?/?', views.get_preference),
     url(r'^set_preference/?', views.set_preference),
     url(r'^set_account_settings/?', views.set_account_settings),
@@ -30,4 +30,4 @@ urlpatterns = patterns('',
     url(r'^delete_all_sites/?', views.delete_all_sites, name='profile-delete-all-sites'),
     url(r'^email_optout/?', views.email_optout, name='profile-email-optout'),
     url(r'^ios_subscription_status/?', views.ios_subscription_status, name='profile-ios-subscription-status'),
-)
+]
