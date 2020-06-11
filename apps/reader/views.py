@@ -812,7 +812,10 @@ def load_single_feed(request, feed_id):
         # time.sleep(random.randint(2, 7) / 10.0)
         # time.sleep(random.randint(1, 10))
         time.sleep(delay)
-    
+    # if page == 1:
+    #     time.sleep(1)
+    # else:
+    #     time.sleep(20)
     # if page == 2:
     #     assert False
 

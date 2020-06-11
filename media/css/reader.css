@@ -2164,32 +2164,32 @@ a img {
     background-color: #F7F8F5;
 }
 .NB-layout-grid .NB-story-titles {
-    overflow: hidden;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-gap: 2rem;
+    padding: 2rem;
 }
 .NB-layout-grid .NB-story-content-container {
     background-color: white;
 }
 .NB-layout-grid .NB-end-line {
-    margin-top: 24px;
-    float: left;
-    width: 100%;
+    margin: 0 -2rem -2rem;
+    
+    grid-column-start: 1;
+    grid-column-end: 4;
 }
 .NB-layout-grid .NB-story-title-container {
+    
 }
 .NB-layout-grid .NB-story-title-container.NB-selected {
-    clear: both;
-    overflow: hidden;
-}
-.NB-layout-grid .NB-story-title-container.NB-selected .NB-story-title {
-    margin-top: 24px;
+    grid-column-start: 1;
+    grid-column-end: 4;
+    margin: 0 -2rem;
 }
 
 .NB-story-grid {
-    margin: 3% 0 0 3%;
+    margin: 0;
     border: 1px solid rgba(0, 0, 0, .2);
-    position: relative;
-    float: left;
-    width: 42%;
     height: 360px;
     padding: 0;
     border-radius: 2px;
@@ -2210,7 +2210,7 @@ a img {
 }
 .NB-layout-grid.NB-grid-columns-3 .NB-story-grid,
 .NB-wide-content .NB-story-grid {
-    width: 29%;
+/*    width: 29%;*/
 }
 .NB-layout-grid.NB-grid-columns-4 .NB-story-grid,
 .NB-extra-wide-content .NB-story-grid {
@@ -2226,7 +2226,6 @@ a img {
 }
 
 .NB-story-grid.NB-selected {
-    clear: both;
 }
 
 .NB-story-grid .NB-storytitles-content {
@@ -2697,7 +2696,6 @@ body {
     list-style: none;
     background-color: white;
     position: relative;
-    overflow: hidden;
 }
 
 .NB-feed-story .NB-feed-story-header {
@@ -2746,7 +2744,8 @@ body {
         rgb(55,55,55) 84%
     );
     padding: 2px 200px 2px 28px;
-    position: relative;
+    position: sticky;
+    top: 0;
     border-bottom: 1px solid #000;
     border-top: 1px solid #707070;
     z-index: 2;
@@ -3750,7 +3749,6 @@ body {
 .NB-feed-story {
     margin: 0;
     clear: both;
-    overflow: hidden;
 }
 
 .NB-feed-stories.NB-feed-view-story .NB-feed-story {
