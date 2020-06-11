@@ -11,8 +11,8 @@ from apps.analyzer.tasks import EmailPopularityQuery
 from utils import log as logging
 
 class FeatureCategory(models.Model):
-    user = models.ForeignKey(User)
-    feed = models.ForeignKey(Feed)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    feed = models.ForeignKey(Feed, on_delete=models.CASCADE)
     feature = models.CharField(max_length=255)
     category = models.CharField(max_length=255)
     count = models.IntegerField(default=0)
@@ -21,8 +21,8 @@ class FeatureCategory(models.Model):
         return '%s - %s (%s)' % (self.feature, self.category, self.count)
 
 class Category(models.Model):
-    user = models.ForeignKey(User)
-    feed = models.ForeignKey(Feed)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    feed = models.ForeignKey(Feed, on_delete=models.CASCADE)
     category = models.CharField(max_length=255)
     count = models.IntegerField(default=0)
     

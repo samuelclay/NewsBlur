@@ -20,7 +20,7 @@ from utils.feed_functions import add_object_to_folder
 
 
 class OAuthToken(models.Model):
-    user = models.OneToOneField(User, null=True, blank=True)
+    user = models.OneToOneField(User, null=True, blank=True, on_delete=models.CASCADE)
     session_id = models.CharField(max_length=50, null=True, blank=True)
     uuid = models.CharField(max_length=50, null=True, blank=True)
     remote_ip = models.CharField(max_length=50, null=True, blank=True)

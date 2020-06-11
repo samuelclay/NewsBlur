@@ -7,8 +7,8 @@ from utils import json_functions as json
 from collections import defaultdict
 
 class RecommendedFeed(models.Model):
-    feed          = models.ForeignKey(Feed, related_name='recommendations')
-    user          = models.ForeignKey(User, related_name='recommendations')
+    feed          = models.ForeignKey(Feed, related_name='recommendations', on_delete=models.CASCADE)
+    user          = models.ForeignKey(User, related_name='recommendations', on_delete=models.CASCADE)
     description   = models.TextField(null=True, blank=True)
     is_public     = models.BooleanField(default=False)
     created_date  = models.DateField(auto_now_add=True)
