@@ -29,7 +29,6 @@ from apps.rss_feeds.text_importer import TextImporter
 from apps.rss_feeds.page_importer import PageImporter
 from apps.profile.models import Profile, MSentEmail
 from vendor import facebook
-from vendor import appdotnet
 from vendor import pynliner
 from utils import log as logging
 from utils import json_functions as json
@@ -2133,10 +2132,8 @@ class MSharedStory(mongo.DynamicDocument):
         
         if service == 'twitter':
             posted = social_service.post_to_twitter(self)
-        # elif service == 'facebook':
-        #     posted = social_service.post_to_facebook(self)
-        elif service == 'appdotnet':
-            posted = social_service.post_to_appdotnet(self)
+        elif service == 'facebook':
+            posted = social_service.post_to_facebook(self)
         
         if posted:
             self.posted_to_services.append(service)
@@ -2390,25 +2387,19 @@ class MSocialServices(mongo.Document):
     facebook_friend_ids   = mongo.ListField(mongo.StringField())
     facebook_picture_url  = mongo.StringField()
     facebook_refresh_date = mongo.DateTimeField()
-    appdotnet_uid         = mongo.StringField()
-    appdotnet_access_token= mongo.StringField()
-    appdotnet_friend_ids  = mongo.ListField(mongo.StringField())
-    appdotnet_picture_url = mongo.StringField()
-    appdotnet_refresh_date= mongo.DateTimeField()
     upload_picture_url    = mongo.StringField()
     syncing_twitter       = mongo.BooleanField(default=False)
     syncing_facebook      = mongo.BooleanField(default=False)
-    syncing_appdotnet     = mongo.BooleanField(default=False)
     
     meta = {
         'collection': 'social_services',
-        'indexes': ['user_id', 'twitter_friend_ids', 'facebook_friend_ids', 'twitter_uid', 'facebook_uid', 'appdotnet_uid'],
+        'indexes': ['user_id', 'twitter_friend_ids', 'facebook_friend_ids', 'twitter_uid', 'facebook_uid'],
         'allow_inheritance': False,
     }
     
     def __unicode__(self):
         user = User.objects.get(pk=self.user_id)
-        return "%s (Twitter: %s, FB: %s, ADN: %s)" % (user.username, self.twitter_uid, self.facebook_uid, self.appdotnet_uid)
+        return "%s (Twitter: %s, FB: %s)" % (user.username, self.twitter_uid, self.facebook_uid)
         
     def canonical(self):
         user = User.objects.get(pk=self.user_id)
@@ -2423,11 +2414,6 @@ class MSocialServices(mongo.Document):
                 'facebook_uid': self.facebook_uid,
                 'facebook_picture_url': self.facebook_picture_url,
                 'syncing': self.syncing_facebook,
-            },
-            'appdotnet': {
-                'appdotnet_uid': self.appdotnet_uid,
-                'appdotnet_picture_url': self.appdotnet_picture_url,
-                'syncing': self.syncing_appdotnet,
             },
             'gravatar': {
                 'gravatar_picture_url': "https://www.gravatar.com/avatar/" + \
@@ -2491,10 +2477,6 @@ class MSocialServices(mongo.Document):
         graph = facebook.GraphAPI(access_token=self.facebook_access_token, version="3.1")
         return graph
     
-    def appdotnet_api(self):
-        adn_api = appdotnet.Appdotnet(access_token=self.appdotnet_access_token)
-        return adn_api
-
     def sync_twitter_friends(self):
         user = User.objects.get(pk=self.user_id)
         logging.user(user, "~BG~FMTwitter import starting...")
@@ -2638,84 +2620,6 @@ class MSocialServices(mongo.Document):
         
         return following
     
-    def sync_appdotnet_friends(self):
-        user = User.objects.get(pk=self.user_id)
-        logging.user(user, "~BG~FMApp.net import starting...")
-        
-        api = self.appdotnet_api()
-        if not api:
-            logging.user(user, "~BG~FMApp.net import ~SBfailed~SN: no api access.")
-            self.syncing_appdotnet = False
-            self.save()
-            return
-        
-        friend_ids = []
-        has_more_friends = True
-        before_id = None
-        since_id = None
-        while has_more_friends:
-            friends_resp = api.getUserFollowingIds(self.appdotnet_uid, 
-                                                   before_id=before_id, 
-                                                   since_id=since_id)
-            friends = json.decode(friends_resp)
-            before_id = friends['meta'].get('min_id')
-            since_id = friends['meta'].get('max_id')
-            has_more_friends = friends['meta'].get('more')
-            friend_ids.extend([fid for fid in friends['data']])
-
-        if not friend_ids:
-            logging.user(user, "~BG~FMApp.net import ~SBfailed~SN: no friend_ids.")
-            self.syncing_appdotnet = False
-            self.save()
-            return
-        
-        adn_user = json.decode(api.getUser(self.appdotnet_uid))['data']
-        self.appdotnet_picture_url = adn_user['avatar_image']['url']
-        self.appdotnet_username = adn_user['username']
-        self.appdotnet_friend_ids = friend_ids
-        self.appdotnet_refreshed_date = datetime.datetime.utcnow()
-        self.syncing_appdotnet = False
-        self.save()
-        
-        profile = MSocialProfile.get_user(self.user_id)
-        profile.bio = profile.bio or adn_user['description']['text']
-        profile.save()
-        profile.count_follows()
-        
-        if not profile.photo_url or not profile.photo_service:
-            self.set_photo('appdotnet')
-        
-        self.follow_appdotnet_friends()
-        
-    def follow_appdotnet_friends(self):
-        social_profile = MSocialProfile.get_user(self.user_id)
-        following = []
-        followers = 0
-        
-        if not self.autofollow:
-            return following
-
-        # Follow any friends already on NewsBlur
-        user_social_services = MSocialServices.objects.filter(appdotnet_uid__in=self.appdotnet_friend_ids)
-        for user_social_service in user_social_services:
-            followee_user_id = user_social_service.user_id
-            socialsub = social_profile.follow_user(followee_user_id)
-            if socialsub:
-                following.append(followee_user_id)
-    
-        # Friends already on NewsBlur should follow back
-        # following_users = MSocialServices.objects.filter(appdotnet_friend_ids__contains=self.appdotnet_uid)
-        # for following_user in following_users:
-        #     if following_user.autofollow:
-        #         following_user_profile = MSocialProfile.get_user(following_user.user_id)
-        #         following_user_profile.follow_user(self.user_id, check_unfollowed=True)
-        #         followers += 1
-        
-        user = User.objects.get(pk=self.user_id)
-        logging.user(user, "~BG~FMApp.net import: %s users, now following ~SB%s~SN with ~SB%s~SN follower-backs" % (len(self.appdotnet_friend_ids), len(following), followers))
-        
-        return following
-    
     def disconnect_twitter(self):
         self.syncing_twitter = False
         self.twitter_uid = None
@@ -2724,11 +2628,6 @@ class MSocialServices(mongo.Document):
     def disconnect_facebook(self):
         self.syncing_facebook = False
         self.facebook_uid = None
-        self.save()
-    
-    def disconnect_appdotnet(self):
-        self.syncing_appdotnet = False
-        self.appdotnet_uid = None
         self.save()
     
     def set_photo(self, service):
@@ -2854,21 +2753,6 @@ class MSocialServices(mongo.Document):
         except facebook.GraphAPIError, e:
             logging.debug("---> ~SN~FMFacebook posting error, disconnecting: ~SB~FR%s" % e)
             self.disconnect_facebook()
-            return
-            
-        return True
-
-    def post_to_appdotnet(self, shared_story):
-        message = shared_story.generate_post_to_service_message(truncate=256)
-        
-        try:
-            api = self.appdotnet_api()
-            api.createPost(text=message, links=[{
-                'text': shared_story.decoded_story_title,
-                'url': shared_story.blurblog_permalink()
-            }])
-        except Exception, e:
-            print e
             return
             
         return True

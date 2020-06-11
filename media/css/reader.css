@@ -4023,8 +4023,7 @@ body {
     overflow: hidden;
 }
 .NB-sideoption-share .NB-sideoption-share-crosspost-twitter,
-.NB-sideoption-share .NB-sideoption-share-crosspost-facebook,
-.NB-sideoption-share .NB-sideoption-share-crosspost-appdotnet {
+.NB-sideoption-share .NB-sideoption-share-crosspost-facebook {
     float: left;
     width: 32px;
     height: 24px;
@@ -4041,10 +4040,6 @@ body {
     background: transparent url('/media/embed/reader/facebook_service_off.png') no-repeat center center;
     background-size: 12px;
 }
-.NB-sideoption-share .NB-sideoption-share-crosspost-appdotnet {
-    background: transparent url('/media/embed/reader/appdotnet_service_off.png') no-repeat center center;
-    background-size: 12px;
-}
 .NB-sideoption-share .NB-sideoption-share-crosspost-twitter.NB-active,
 .NB-sideoption-share .NB-sideoption-share-crosspost-twitter:hover {
     background: transparent url('/media/embed/reader/twitter_service.png') no-repeat center center;
@@ -4058,13 +4053,6 @@ body {
     background-size: 12px;
     border-color: #6884CD;
     background-color: rgba(104, 132, 205, .1);
-}
-.NB-sideoption-share .NB-sideoption-share-crosspost-appdotnet.NB-active,
-.NB-sideoption-share .NB-sideoption-share-crosspost-appdotnet:hover {
-    background: transparent url('/media/embed/reader/appdotnet_service.png') no-repeat center center;
-    background-size: 12px;
-    border-color: #D16857;
-    background-color: rgba(209, 104, 87, .1);
 }
 .NB-sideoption-share .NB-sideoption-share-crosspost-text {
     font-size: 9px;
