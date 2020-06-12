@@ -86,7 +86,7 @@
     self.activeClassifiers = fromCollection.activeClassifiers;
     self.inSearch = fromCollection.inSearch;
     self.searchQuery = fromCollection.searchQuery;
-    
+    self.savedSearchQuery = fromCollection.savedSearchQuery;
 }
 
 #pragma mark - Story Traversal
