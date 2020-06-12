@@ -153,10 +153,9 @@ color: #a85b40;
 
 /* Title colors of
 "Premium Account", "Manage", "Past Day" & "Past Day by Hour* */
-.NB-dark .NB-menu-manage-title,
 .NB-dark .NB-module-stats-count-number {
     color: #ccc;
-    text-shadow: 1px 1px 1px rgba(0,0,0,0.5);
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.2);
 }
 
 /* Graph color */
@@ -197,7 +196,17 @@ color: #a85b40;
     border-right: 1px solid #101111;
 }
 
+.NB-dark .NB-feeds-header-user-dashboard img, 
+.NB-dark .NB-feeds-header-user-interactions img, 
+.NB-dark .NB-feeds-header-collapse-sidebar img {
+    opacity: 0.9;
+}
 
+.NB-dark .NB-feeds-header-user-dashboard:hover img, 
+.NB-dark .NB-feeds-header-user-interactions:hover img, 
+.NB-dark .NB-feeds-header-collapse-sidebar:hover img {
+    opacity: 1.0;
+}
 
 
 /* ================ */
@@ -209,11 +218,21 @@ color: #a85b40;
 .NB-dark .NB-menu-manage .NB-menu-manage-site-info, /* Preferences title background */
 .NB-dark .NB-menu-manage li.NB-menu-item, /* Icon background */
 .NB-dark .NB-menu-manage-title /* Title text background */ {
-    background-color: #303739;
-    border-radius: 4px;
     box-shadow: none;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.2);
 }
 
+.NB-dark .NB-menu-manage li.NB-menu-item {
+    background-color: #303739;
+}
+.NB-dark .NB-menu-manage li.NB-menu-item:hover:not(.NB-disabled):not(.NB-active), 
+.NB-dark .NB-menu-manage li.NB-menu-item.NB-hover:not(.NB-disabled):not(.NB-active) {
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.2);
+    background-color: #3d4649;    
+}
+.NB-dark .NB-menu-manage li.NB-menu-item:hover:not(.NB-disabled) .NB-menu-manage-title {
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.2);
+}
 /* Subtitle color for manage menu on cogwheel pop-up */
 .NB-dark .NB-menu-manage-subtitle {
     color: gray;
@@ -228,7 +247,7 @@ color: #a85b40;
 /* Dividers */
 .NB-dark .NB-popover-section,
 .NB-dark .NB-menu-manage li.NB-menu-separator {
-    border-bottom: 1px solid #90928b;
+    border-bottom: 1px solid #252623;
 }
 
 /* Dividers: No bottom divider on last element */
@@ -354,7 +373,7 @@ color: #a85b40;
 .NB-dark .segmented-control-vertical li.NB-active:active, 
 .NB-dark .segmented-control-vertical-active li {
     color: #ccc;
-    background-color: #252D30;
+    background-color: #6D6D74;
     background-image: none;
 }
 
@@ -691,9 +710,9 @@ color: #a85b40;
 .NB-dark ul.segmented-control,
 .NB-dark ul.segmented-control li {
     background: none;
-    background-color: #303739;
+    background-color: #363739;
     color: #ccc;
-    text-shadow: 0 1px 0 rgba(0,0,0,.8);
+    text-shadow: 0 1px 0 rgba(0,0,0,.4);
     /*border: 1px solid #90928b;*/
 }
 .NB-dark .NB-modal h5,
@@ -702,6 +721,9 @@ color: #a85b40;
     background-image: -moz-linear-gradient(top, #31383a, #232729); /* FF3.6 */
     background-image: -webkit-gradient(linear, left top, left bottom, from(#31383a), to(#232729)); /* Saf4+, Chrome */
     background-image: linear-gradient(top, #31383a, #232729);
+}
+.NB-dark #story_taskbar {
+    border-top: 1px solid #32352E;
 }
 /* Error text on bottom bar */
 .NB-dark #story_taskbar .NB-river-progress .NB-river-progress-text,
@@ -712,18 +734,17 @@ color: #a85b40;
 }
 
 /* "Unread/Oldest" & "Style" border color */
-.NB-dark .NB-feedbar .NB-feedbar-options,
-.NB-dark #story_taskbar .NB-taskbar-options {
-    border: 1px solid rgba(255, 255, 255, .2);
-}
-
 /* Story Titles Hidden Count */
+.NB-dark .NB-feedbar .NB-feedbar-options,
+.NB-dark #story_taskbar .NB-taskbar-options,
 .NB-dark .NB-feedbar .NB-story-title-indicator {
     color: #ccc;
-    border: 1px solid rgba(255, 255, 255, .2);
+    border: 1px solid rgba(0, 0, 0, .3);
     background-color: #303739;
 }
 
+.NB-dark .NB-feedbar .NB-feedbar-options:hover,
+.NB-dark #story_taskbar .NB-taskbar-options:hover,
 .NB-dark .NB-feedbar .NB-story-title-indicator:hover {
     background-color: rgba(204, 204, 204, .3);
 }
@@ -787,15 +808,40 @@ text-shadow: none;
 */
 
 /* Selected tabs on bottom task bar */
+
+.NB-dark ul.segmented-control {
+    box-shadow: none;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;    
+}
+.NB-dark ul.segmented-control li {
+    box-shadow: none;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    color: #9A9B9C;
+    border: none;
+    border-radius: 4px;
+}
+.NB-dark #story_taskbar .NB-taskbar .NB-taskbar-button {
+    padding-left: 14px;
+    padding-right: 14px;
+}
 .NB-dark .segmented-control li.NB-active, 
 .NB-dark .segmented-control li.NB-active:active, 
 .NB-dark .segmented-control-active li {
     background: none;
-    background-color: #252D30;
-    color: #ccc;
+    background-color: #6D6D74;
+    color: #FCFDFE;
+    text-shadow: 0 1px 0 rgba(0,0,0,0.1);
 }
 
-
+.NB-dark .segmented-control li:active:not(.NB-disabled), 
+.NB-dark .segmented-control-active li:active {
+    background: none;
+    background-color: #545459;
+    color: #FCFDFE;
+    text-shadow: 0 1px 0 rgba(0,0,0,0.1);    
+}
 
 
 /* ============= */
@@ -804,14 +850,14 @@ text-shadow: none;
 
 .NB-dark .left-pane,
 .NB-dark .NB-feedlist {
-    background-color: #303739;
+    background-color: #434543;
 }
 
 .NB-dark .NB-feedlist .feed {
-    border-top: 1px solid #303739;
-    border-bottom: 1px solid #303739;
+    border-top: 1px solid #434543;
+    border-bottom: 1px solid #434543;
     padding-right: 2px;
-    background-color: #303739;
+    background-color: #434543;
 }
 
 /* Selected Feed */
@@ -820,9 +866,9 @@ text-shadow: none;
 .NB-dark .NB-feeds-header.NB-selected, 
 .NB-dark .NB-feedlist .folder.NB-selected>.folder_title {
     background: none;
-    background-color: #40492F;
-    border-top: 1px solid #515A3F;
-    border-bottom: 1px solid #282E1C;
+    background-color: #313E4E;
+    border-top: 1px solid #2C305D;
+    border-bottom: 1px solid #2C305D;
 }
 
 /* Shared Stories*/
@@ -842,28 +888,35 @@ border-bottom-color: #303739;
 .NB-dark .NB-feeds-header .NB-feeds-header-title,
 .NB-dark .NB-feedlists .NB-socialfeeds .feed .feed_title,
 .NB-dark .NB-feedlist .feed_title {
-    color: #bbb;
+    color: #E2E3E4;
     text-shadow: 0 1px 0 rgba(0,0,0,.8);
 }
 
 /* Feed folder text */
 .NB-dark .NB-feedlist .folder_title,
 .NB-dark .NB-feedlist .folder.NB-selected>.folder_title {
-    color: #777;
+    color: #D8D9DB;
     text-shadow: 0 1px 0 rgba(0,0,0,.8);
 }
 
 /* "All Site Stories" text*/
 .NB-dark .NB-feeds-header {
     background: none;
-    background-color: #49666f;
-    border-color: #303739;
+    background-color: #646566;
+    border-top-color: #797D7D;
+    border-bottom-color: #4C4D4E;
 }
-
+.NB-feeds-header:hover:not(.NB-selected) {
+    background: none;
+    background-color: #5c5e60;
+    border-top-color: #797D7D;
+    border-bottom-color: #4C4D4E;    
+}
 /* Unread feed count badge */
 .NB-dark .unread_count_neutral {
-    background-color: #49666f;
-    text-shadow: none;
+    background-color: #9EA49A;
+    color: #FDFEFE;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, .3);
 }
 
 
@@ -874,13 +927,21 @@ border-bottom-color: #303739;
 /* ================ */
 
 /* Stories background for grid view and other views */
-.NB-dark .NB-layout-grid,
-.NB-dark .NB-storytitles-grid-bottom,
-.NB-dark #story_titles .NB-story-title {
-    color: #ccc;
+.NB-dark .NB-layout-grid {
     background-color: #191b1c;
-    border-top: 1px solid #232526;
-    border-bottom: 1px solid #101111;
+}
+.NB-dark .NB-story-title {
+    color: #ccc;
+    background-color: #292b2c;
+    border-top: 1px solid #333536;
+    border-bottom: 1px solid #232526;
+}
+.NB-dark .NB-story-grid.NB-story-title .NB-storytitles-grid-bottom {
+    background-color: #292b2c;    
+}
+.NB-dark .NB-story-title:hover:not(.NB-selected),
+.NB-dark .NB-story-title:hover:not(.NB-selected) .NB-storytitles-grid-bottom {
+    background-color: #232526;
 }
 
 /* Feed title text */
@@ -902,12 +963,12 @@ border-bottom-color: #303739;
 }
 
 /* Selected stories highlight */
-.NB-dark #story_titles .NB-story-title.NB-selected {
+.NB-dark .NB-story-title.NB-selected {
     color: #eee;
     border-top: 1px solid #101111;
     border-bottom: 1px solid #101111;
     background: none;
-    background-color: #303739;
+    background-color: #30393F;
 }
 
 /* Bottom banner (NB logo) */
@@ -962,10 +1023,9 @@ background-color: #5d8392;
 
 /* Background for grid view and other views */
 .NB-dark .NB-feed-stories,
-.NB-dark .NB-story-content-container,
-.NB-dark .NB-story-content-container *[style]{
+.NB-dark .NB-story-content-container {
     color: #ccc;
-    background-color: #191b1c;
+    background-color: #292b2c;
 }
 
 /* Quote blocks found in stories */
@@ -1034,13 +1094,13 @@ color: #fff;
 .NB-dark .NB-sideoption {
     border: none;
     text-shadow: none;
-    background-color: #232526;
+    background-color: #393b3c;
 }
 
 
 /* Story button text color (Train, Save, Share) */
 .NB-dark .NB-sideoption .NB-sideoption-title {
-    color: #777;
+    color: rgba(255, 255, 255, 0.2);
 }
 
 /* Save story and share window. Tag/Comment title */
