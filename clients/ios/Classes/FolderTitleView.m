@@ -247,7 +247,7 @@
         }
         allowLongPress = NO;
     } else if ([folderName isEqual:@"saved_searches"]) {
-        folderImage = [[UIImage imageNamed:@"g_icn_search_black.png"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+        folderImage = [UIImage imageNamed:@"g_icn_search.png"];
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
             folderImageViewX = 10;
         } else {

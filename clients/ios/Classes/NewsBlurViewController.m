@@ -755,7 +755,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
             NSString *feedIdStr = [NSString stringWithFormat:@"%@", feedId];
             NSDictionary *feed = nil;
             
-            if (/*[appDelegate isSavedSearch:feedIdStr] ||*/ [appDelegate isSavedFeed:feedIdStr]) {
+            if ([appDelegate isSavedSearch:feedIdStr] || [appDelegate isSavedFeed:feedIdStr]) {
                 feed = @{@"id" : feedId};
             } else if ([appDelegate isSocialFeed:feedIdStr]) {
                 feed = appDelegate.dictSocialFeeds[feedIdStr];
@@ -789,7 +789,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     
     // Add Saved Searches folder to bottom
     [appDelegate.dictFoldersArray removeObject:@"saved_searches"];
-    if (savedSearches.count > 0) {
+    if (appDelegate.savedSearchesCount) {
         [appDelegate.dictFoldersArray insertObject:@"saved_searches" atIndex:appDelegate.dictFoldersArray.count];
     }
     
@@ -1235,7 +1235,9 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:indexPath.section];
     id feedId = [[appDelegate.dictFolders objectForKey:folderName] objectAtIndex:indexPath.row];
     NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
-    BOOL isSavedSearch = [folderName isEqualToString:@"saved_searches"];
+    NSString *searchQuery = [appDelegate searchQueryForFeedId:feedIdStr];
+    NSString *searchFolder = [appDelegate searchFolderForFeedId:feedIdStr];
+    feedIdStr = [appDelegate feedIdWithoutSearchQuery:feedIdStr];
     BOOL isSocial = [appDelegate isSocialFeed:feedIdStr];
     BOOL isSaved = [appDelegate isSavedFeed:feedIdStr];
     BOOL isSavedStoriesFeed = self.appDelegate.isSavedStoriesIntelligenceMode && [self.appDelegate savedStoriesCountForFeed:feedIdStr] > 0;
@@ -1282,19 +1284,23 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     cell.feedTitle     = [feed objectForKey:@"feed_title"];
     cell.isSocial      = isSocial;
     cell.isSaved       = isSaved;
-    cell.searchQuery   = nil;
+    cell.searchQuery   = searchQuery;
     
     if (newCell) {
         [cell setupGestures];
     }
     
-    if (isSavedSearch) {
+    if (searchQuery != nil) {
         cell.positiveCount = 0;
         cell.neutralCount = 0;
         cell.negativeCount = 0;
         cell.savedStoriesCount = 0;
-        cell.searchQuery = appDelegate.dictSavedSearches[feedIdStr][@"query"];
         cell.feedTitle = [NSString stringWithFormat:@"\"%@\" in %@", cell.searchQuery, cell.feedTitle];
+        
+        if (searchFolder != nil) {
+            cell.feedFavicon = [appDelegate folderIcon:searchFolder];
+            cell.feedTitle = [NSString stringWithFormat:@"\"%@\" in %@", cell.searchQuery, [appDelegate folderTitle:searchFolder]];
+        }
     } else if (isSavedStoriesFeed) {
         cell.positiveCount = 0;
         cell.neutralCount = 0;
@@ -1338,6 +1344,9 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     NSString *folderName = appDelegate.dictFoldersArray[indexPath.section];
     id feedId = [[appDelegate.dictFolders objectForKey:folderName] objectAtIndex:indexPath.row];
     NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
+    NSString *searchQuery = [appDelegate searchQueryForFeedId:feedIdStr];
+    NSString *searchFolder = [appDelegate searchFolderForFeedId:feedIdStr];
+    feedIdStr = [appDelegate feedIdWithoutSearchQuery:feedIdStr];
     
     // If all feeds are already showing, no need to remember this one.
 //    NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
@@ -1348,7 +1357,17 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     
     [[tableView cellForRowAtIndexPath:indexPath] setNeedsDisplay];
     
-    [appDelegate loadFolder:folderName feedID:feedIdStr];
+    if (searchFolder != nil) {
+        [appDelegate loadRiverFeedDetailView:appDelegate.feedDetailViewController withFolder:searchFolder];
+    } else {
+        [appDelegate loadFolder:folderName feedID:feedIdStr];
+    }
+    
+    if (searchQuery != nil) {
+        appDelegate.storiesCollection.inSearch = YES;
+        appDelegate.storiesCollection.searchQuery = searchQuery;
+        appDelegate.storiesCollection.savedSearchQuery = searchQuery;
+    }
 }
 
 - (CGFloat)tableView:(UITableView *)tableView
@@ -1563,7 +1582,8 @@ heightForHeaderInSection:(NSInteger)section {
     NSString *feedId = [NSString stringWithFormat:@"%@",
                         [[appDelegate.dictFolders objectForKey:folderName]
                          objectAtIndex:indexPath.row]];
-
+    feedId = [appDelegate feedIdWithoutSearchQuery:feedId];
+    
     if (state == MCSwipeTableViewCellState1) {
         
         if (indexPath.section == 1) {
