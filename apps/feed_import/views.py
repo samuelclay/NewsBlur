@@ -12,9 +12,8 @@ from django.contrib.auth.models import User
 from django.http import HttpResponse, HttpResponseRedirect
 from django.conf import settings
 from django.core.urlresolvers import reverse
-from django.template import RequestContext
 from django.contrib.auth import login as login_user
-from django.shortcuts import render_to_response
+from django.shortcuts import render
 from apps.reader.forms import SignupForm
 from apps.reader.models import UserSubscription
 from apps.feed_import.models import OAuthToken, GoogleReaderImporter

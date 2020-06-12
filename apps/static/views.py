@@ -3,48 +3,38 @@ import yaml
 import redis
 from django.conf import settings
 from django.http import HttpResponse
-from django.shortcuts import render_to_response
-from django.template import RequestContext
+from django.shortcuts import render
 from apps.rss_feeds.models import Feed, MStory
 from apps.search.models import SearchFeed
 from utils import log as logging
 
 def about(request):
-    return render_to_response('static/about.xhtml', {}, 
-                              context_instance=RequestContext(request))
+    return render(request, 'static/about.xhtml')
                               
 def faq(request):
-    return render_to_response('static/faq.xhtml', {}, 
-                              context_instance=RequestContext(request))
+    return render(request, 'static/faq.xhtml')
                               
 def api(request):
     filename     = settings.TEMPLATE_DIRS[0] + '/static/api.yml'
     api_yml_file = open(filename).read()
     data         = yaml.load(api_yml_file)
 
-    return render_to_response('static/api.xhtml', {
-        'data': data
-    }, context_instance=RequestContext(request))
+    return render(request, 'static/api.xhtml', {'data': data})
                               
 def press(request):
-    return render_to_response('static/press.xhtml', {}, 
-                              context_instance=RequestContext(request))
+    return render(request, 'static/press.xhtml')
 
 def privacy(request):
-    return render_to_response('static/privacy.xhtml', {}, 
-                              context_instance=RequestContext(request))
+    return render(request, 'static/privacy.xhtml')
 
 def tos(request):
-    return render_to_response('static/tos.xhtml', {}, 
-                              context_instance=RequestContext(request))
+    return render(request, 'static/tos.xhtml')
                         
 def apple_app_site_assoc(request):
-    return render_to_response('static/apple_app_site_assoc.xhtml', {}, 
-                              context_instance=RequestContext(request))
+    return render(request, 'static/apple_app_site_assoc.xhtml')
                                                       
 def feedback(request):
-    return render_to_response('static/feedback.xhtml', {}, 
-                              context_instance=RequestContext(request))
+    return render(request, 'static/feedback.xhtml')
 
 def firefox(request):
     filename = settings.MEDIA_ROOT + '/extensions/firefox/manifest.json'
@@ -53,16 +43,13 @@ def firefox(request):
     return HttpResponse(manifest, content_type='application/x-web-app-manifest+json')
 
 def ios(request):
-    return render_to_response('static/ios.xhtml', {},
-                              context_instance=RequestContext(request))
+    return render(request, 'static/ios.xhtml')
     
 def android(request):
-    return render_to_response('static/android.xhtml', {},
-                              context_instance=RequestContext(request))
+    return render(request, 'static/android.xhtml')
     
 def ios_download(request):
-    return render_to_response('static/ios_download.xhtml', {},
-                              context_instance=RequestContext(request))
+    return render(request, 'static/ios_download.xhtml')
                               
 def ios_plist(request):
     filename = os.path.join(settings.NEWSBLUR_DIR, 'clients/ios/NewsBlur.plist')

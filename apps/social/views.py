@@ -5,14 +5,13 @@ import random
 import re
 from bson.objectid import ObjectId
 from mongoengine.queryset import NotUniqueError
-from django.shortcuts import get_object_or_404, render_to_response
+from django.shortcuts import get_object_or_404, render
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
 from django.template.loader import render_to_string
 from django.http import HttpResponse, HttpResponseRedirect, Http404, HttpResponseForbidden
 from django.conf import settings
-from django.template import RequestContext
 from django.utils import feedgenerator
 from apps.rss_feeds.models import MStory, Feed, MStarredStory
 from apps.social.models import MSharedStory, MSocialServices, MSocialProfile, MSocialSubscription, MCommentReply
@@ -424,7 +423,7 @@ def load_social_page(request, user_id, username=None, **kwargs):
             'user_following_social_profile': user_following_social_profile,
         }
         template = 'social/social_page.xhtml'
-        return render_to_response(template, params, context_instance=RequestContext(request))
+        return render(request, template, params)
 
     story_feed_ids = list(set(s['story_feed_id'] for s in stories))
     feeds = Feed.objects.filter(pk__in=story_feed_ids)
@@ -506,7 +505,7 @@ def load_social_page(request, user_id, username=None, **kwargs):
     else:
         template = 'social/social_page.xhtml'
         
-    return render_to_response(template, params, context_instance=RequestContext(request))
+    return render(request, template, params)
 
 @required_params('story_id', feed_id=int)
 def story_public_comments(request):
@@ -532,9 +531,9 @@ def story_public_comments(request):
     
     if format == 'html':
         stories = MSharedStory.attach_users_to_stories(stories, profiles)
-        return render_to_response('social/story_comments.xhtml', {
+        return render(request, 'social/story_comments.xhtml', {
             'story': stories[0],
-        }, context_instance=RequestContext(request))
+        })
     else:
         return json.json_response(request, {
             'comments': stories[0]['public_comments'], 
@@ -674,9 +673,9 @@ def mark_story_as_shared(request):
     
     if format == 'html':
         stories = MSharedStory.attach_users_to_stories(stories, profiles)
-        return render_to_response('social/social_story.xhtml', {
+        return render(request, 'social/social_story.xhtml', {
             'story': story,
-        }, context_instance=RequestContext(request))
+        })
     else:
         return json.json_response(request, {
             'code': code, 
@@ -715,9 +714,9 @@ def mark_story_as_unshared(request):
 
     if format == 'html':
         stories = MSharedStory.attach_users_to_stories(stories, profiles)
-        return render_to_response('social/social_story.xhtml', {
+        return render(request, 'social/social_story.xhtml', {
             'story': stories[0],
-        }, context_instance=RequestContext(request))
+        })
     else:
         return json.json_response(request, {
             'code': 1, 
@@ -823,9 +822,9 @@ def save_comment_reply(request):
     
     if format == 'html':
         comment = MSharedStory.attach_users_to_comment(comment, profiles)
-        return render_to_response('social/story_comment.xhtml', {
+        return render(request, 'social/story_comment.xhtml', {
             'comment': comment,
-        }, context_instance=RequestContext(request))
+        })
     else:
         return json.json_response(request, {
             'code': code, 
@@ -887,9 +886,9 @@ def remove_comment_reply(request):
     
     if format == 'html':
         comment = MSharedStory.attach_users_to_comment(comment, profiles)
-        return render_to_response('social/story_comment.xhtml', {
+        return render(request, 'social/story_comment.xhtml', {
             'comment': comment,
-        }, context_instance=RequestContext(request))
+        })
     else:
         return json.json_response(request, {
             'code': code, 
@@ -1252,9 +1251,9 @@ def like_comment(request):
                                        
     if format == 'html':
         comment = MSharedStory.attach_users_to_comment(comment, profiles)
-        return render_to_response('social/story_comment.xhtml', {
+        return render(request, 'social/story_comment.xhtml', {
             'comment': comment,
-        }, context_instance=RequestContext(request))
+        })
     else:
         return json.json_response(request, {
             'code': code, 
@@ -1283,9 +1282,9 @@ def remove_like_comment(request):
     
     if format == 'html':
         comment = MSharedStory.attach_users_to_comment(comment, profiles)
-        return render_to_response('social/story_comment.xhtml', {
+        return render(request, 'social/story_comment.xhtml', {
             'comment': comment,
-        }, context_instance=RequestContext(request))
+        })
     else:
         return json.json_response(request, {
             'code': code, 
@@ -1450,8 +1449,7 @@ def load_interactions(request):
     logging.user(request, "~FBLoading interactions ~SBp/%s" % page)
     
     if format == 'html':
-        return render_to_response('reader/interactions_module.xhtml', data,
-                                  context_instance=RequestContext(request))
+        return render(request, 'reader/interactions_module.xhtml', data)
     else:
         return json.json_response(request, data)
 
@@ -1483,8 +1481,8 @@ def load_activities(request):
     logging.user(request, "~FBLoading activities ~SBp/%s" % page)
     
     if format == 'html':
-        return render_to_response('reader/activities_module.xhtml', data,
-                                  context_instance=RequestContext(request))
+        return render(request, 'reader/activities_module.xhtml', data,
+                                  )
     else:
         return json.json_response(request, data)
 

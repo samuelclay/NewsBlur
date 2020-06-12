@@ -12,8 +12,7 @@ from django.contrib.sites.models import Site
 from django.contrib.auth.models import User
 from django.contrib.admin.views.decorators import staff_member_required
 from django.core.urlresolvers import reverse
-from django.template import RequestContext
-from django.shortcuts import render_to_response
+from django.shortcuts import render
 from django.core.mail import mail_admins
 from django.conf import settings
 from apps.profile.models import Profile, PaymentHistory, RNewUserQueue, MRedeemedCode, MGiftCode
@@ -97,10 +96,9 @@ def login(request):
             logging.user(form.get_user(), "~FG~BBOAuth Login~FW")
             return HttpResponseRedirect(request.POST['next'] or reverse('index'))
 
-    return render_to_response('accounts/login.html', {
+    return render('accounts/login.html', {
         'form': form,
-        'next': request.POST.get('next', "")
-    }, context_instance=RequestContext(request))
+        'next': request.POST.get('next', "")})
     
 @csrf_exempt
 def signup(request):
@@ -128,11 +126,11 @@ def signup(request):
             new_user.profile.activate_free()
             return HttpResponseRedirect(request.POST['next'] or reverse('index'))
 
-    return render_to_response('accounts/signup.html', {
+    return render(request, 'accounts/signup.html', {
         'form': form,
         'recaptcha_error': recaptcha_error,
         'next': request.POST.get('next', "")
-    }, context_instance=RequestContext(request))
+    })
 
 @login_required
 @csrf_protect
@@ -145,14 +143,13 @@ def redeem_code(request):
         if form.is_valid():
             gift_code = request.POST['gift_code']
             MRedeemedCode.redeem(user=request.user, gift_code=gift_code)
-            return render_to_response('reader/paypal_return.xhtml', 
-                                      {}, context_instance=RequestContext(request))
+            return render(request, 'reader/paypal_return.xhtml')
 
-    return render_to_response('accounts/redeem_code.html', {
+    return render(request, 'accounts/redeem_code.html', {
         'form': form,
         'code': request.POST.get('code', ""),
         'next': request.POST.get('next', "")
-    }, context_instance=RequestContext(request))
+    })
     
 
 @ajax_login_required
@@ -290,8 +287,8 @@ def paypal_form(request):
 
 def paypal_return(request):
 
-    return render_to_response('reader/paypal_return.xhtml', {
-    }, context_instance=RequestContext(request))
+    return render(request, 'reader/paypal_return.xhtml', {
+    })
     
 @login_required
 def activate_premium(request):
@@ -424,8 +421,7 @@ def stripe_form(request):
         zebra_form = StripePlusPaymentForm(email=user.email, plan=plan)
     
     if success_updating:
-        return render_to_response('reader/paypal_return.xhtml', 
-                                  {}, context_instance=RequestContext(request))
+        return render(request, 'reader/paypal_return.xhtml')
     
     new_user_queue_count = RNewUserQueue.user_count()
     new_user_queue_position = RNewUserQueue.user_position(request.user.pk)
@@ -440,7 +436,7 @@ def stripe_form(request):
     
     logging.user(request, "~BM~FBLoading Stripe form")
 
-    return render_to_response('profile/stripe_form.xhtml',
+    return render(request, 'profile/stripe_form.xhtml',
         {
           'zebra_form': zebra_form,
           'publishable': settings.STRIPE_PUBLISHABLE,
@@ -451,8 +447,7 @@ def stripe_form(request):
           'renew': renew,
           'immediate_charge': immediate_charge,
           'error': error,
-        },
-        context_instance=RequestContext(request)
+        }
     )
 
 @render_to('reader/activities_module.xhtml')

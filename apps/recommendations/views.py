@@ -2,8 +2,7 @@ import re
 import datetime
 from utils import log as logging
 from django.http import HttpResponse
-from django.template import RequestContext
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import render, get_object_or_404
 from apps.recommendations.models import RecommendedFeed
 from apps.reader.models import UserSubscription
 from apps.rss_feeds.models import Feed, MFeedIcon
@@ -35,7 +34,7 @@ def load_recommended_feed(request):
     feed_icon = MFeedIcon.objects(feed_id=recommended_feed.feed_id)
     
     if recommended_feed:
-        return render_to_response('recommendations/render_recommended_feed.xhtml', {
+        return render(request, 'recommendations/render_recommended_feed.xhtml', {
             'recommended_feed'  : recommended_feed,
             'description'       : recommended_feed.description or recommended_feed.feed.data.feed_tagline,
             'usersub'           : usersub,
@@ -45,7 +44,7 @@ def load_recommended_feed(request):
             'unmoderated'       : unmoderated,
             'today'             : datetime.datetime.now(),
             'page'              : page,
-        }, context_instance=RequestContext(request))
+        })
     else:
         return HttpResponse("")
         
