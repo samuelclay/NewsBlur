@@ -13,7 +13,6 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.contrib.auth import login as login_user
-from django.shortcuts import render
 from apps.reader.forms import SignupForm
 from apps.reader.models import UserSubscription
 from apps.feed_import.models import OAuthToken, GoogleReaderImporter
