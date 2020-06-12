@@ -55,7 +55,7 @@ NEWSBLUR.Welcome = Backbone.View.extend({
         if (this.$('.NB-welcome-header-account').hasClass('NB-active')) {
             this.show_signin_form();
         }
-        this.$('.NB-welcome-header-image img').eq(0).load(_.bind(function() {
+        this.$('.NB-welcome-header-image img').eq(0).on('load', _.bind(function() {
             setInterval(_.bind(this.rotate_screenshots, this), 3000);
         }, this));
     },
