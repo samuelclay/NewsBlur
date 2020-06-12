@@ -7,7 +7,7 @@ from utils import log as logging
 from django.http import HttpResponse
 from django.conf import settings
 from django.db import connection
-from django.template import Template, Context
+from django.template import Template
 from apps.statistics.rstats import round_time
 from utils import json_functions as json
 
@@ -119,11 +119,11 @@ class SQLLogToConsoleMiddleware:
                     query['sql'] = re.sub(r'DELETE', '~FR~SBDELETE', query['sql'])
             t = Template("{% for sql in sqllog %}{% if not forloop.first %}                  {% endif %}[{{forloop.counter}}] ~FC{{sql.time}}s~FW: {{sql.sql|safe}}{% if not forloop.last %}\n{% endif %}{% endfor %}")
             if settings.DEBUG:
-                logging.debug(t.render(Context({
+                logging.debug(t.render({
                     'sqllog': queries,
                     'count': len(queries),
                     'time': time_elapsed,
-                })))
+                }))
             times_elapsed = {
                 'sql': sum([float(q['time']) 
                            for q in queries if not q.get('mongo') and 
