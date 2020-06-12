@@ -3875,7 +3875,7 @@ body {
 
 .NB-sideoption .NB-sideoption-title {
     padding: 9px 30px 8px 8px;
-    color: white;
+    color: rgba(0,0,0,0.1);
     text-shadow: none;
     height: 32px;
     -webkit-box-sizing: border-box;
@@ -7063,7 +7063,7 @@ form.opml_import_form input {
 
 .NB-menu-manage li.NB-menu-separator {
     background-color: rgba(0, 0, 0, .01);
-    border-bottom: 1px solid rgba(0, 0, 0, .4);
+    border-bottom: 1px solid rgba(0, 0, 0, .1);
     padding: 0;
     height: 1px;
 }
