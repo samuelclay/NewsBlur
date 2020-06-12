@@ -229,7 +229,7 @@ SFSafariViewControllerDelegate>  {
 @property (readwrite) NSString * activeShareType;
 @property (readwrite) NSInteger feedDetailPortraitYCoordinate;
 @property (readwrite) NSInteger originalStoryCount;
-@property (readonly) NSInteger savedSearchesCount;
+@property (readwrite) NSInteger savedSearchesCount;
 @property (readwrite) NSInteger savedStoriesCount;
 @property (readwrite) NSInteger totalUnfetchedStoryCount;
 @property (readwrite) NSInteger remainingUnfetchedStoryCount;
@@ -255,7 +255,6 @@ SFSafariViewControllerDelegate>  {
 @property (nonatomic, strong) NSMutableDictionary *dictFeeds;
 @property (nonatomic) NSMutableDictionary *dictActiveFeeds;
 @property (nonatomic) NSDictionary *dictSocialFeeds;
-@property (nonatomic) NSDictionary *dictSavedSearches;
 @property (nonatomic) NSDictionary *dictSavedStoryTags;
 @property (nonatomic, strong) NSDictionary *dictSavedStoryFeedCounts;
 @property (nonatomic) NSDictionary *dictSocialProfile;
@@ -375,7 +374,7 @@ SFSafariViewControllerDelegate>  {
 - (void)hideShareView:(BOOL)resetComment;
 - (void)resetShareComments;
 - (BOOL)isSocialFeed:(NSString *)feedIdStr;
-//- (BOOL)isSavedSearch:(NSString *)feedIdStr;
+- (BOOL)isSavedSearch:(NSString *)feedIdStr;
 - (BOOL)isSavedFeed:(NSString *)feedIdStr;
 - (NSInteger)savedStoriesCountForFeed:(NSString *)feedIdStr;
 - (BOOL)isSavedStoriesIntelligenceMode;
@@ -440,6 +439,9 @@ SFSafariViewControllerDelegate>  {
 - (NSString *)extractFolderName:(NSString *)folderName;
 - (NSString *)extractParentFolderName:(NSString *)folderName;
 - (NSArray *)parentFoldersForFeed:(NSString *)feedId;
+- (NSString *)feedIdWithoutSearchQuery:(NSString *)feedId;
+- (NSString *)searchQueryForFeedId:(NSString *)feedId;
+- (NSString *)searchFolderForFeedId:(NSString *)feedId;
 - (NSDictionary *)getFeedWithId:(id)feedId;
 - (NSDictionary *)getFeed:(NSString *)feedId;
 - (NSDictionary *)getStory:(NSString *)storyHash;
@@ -450,6 +452,8 @@ SFSafariViewControllerDelegate>  {
 + (UIView *)makeGradientView:(CGRect)rect startColor:(NSString *)start endColor:(NSString *)end borderColor:(NSString *)borderColor;
 - (UIView *)makeFeedTitleGradient:(NSDictionary *)feed withRect:(CGRect)rect;
 - (UIView *)makeFeedTitle:(NSDictionary *)feed;
+- (NSString *)folderTitle:(NSString *)folder;
+- (UIImage *)folderIcon:(NSString *)folder;
 - (void)saveFavicon:(UIImage *)image feedId:(NSString *)filename;
 - (UIImage *)getFavicon:(NSString *)filename;
 - (UIImage *)getFavicon:(NSString *)filename isSocial:(BOOL)isSocial;
