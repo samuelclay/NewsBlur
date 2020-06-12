@@ -59,6 +59,7 @@
 @property (nonatomic, readwrite) BOOL showHiddenStories;
 @property (nonatomic, readwrite) BOOL inSearch;
 @property (nonatomic) NSString *searchQuery;
+@property (nonatomic) NSString *savedSearchQuery;
 
 - (id)initForDashboard;
 - (void)reset;

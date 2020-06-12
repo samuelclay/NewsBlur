@@ -174,6 +174,7 @@ static const CGFloat kFolderTitleHeight = 36.0;
             
             for (id feedId in self.dictFolders[folderName]) {
                 NSString *feedIdStr = [NSString stringWithFormat:@"%@", feedId];
+                feedIdStr = [appDelegate feedIdWithoutSearchQuery:feedIdStr];
                 NSDictionary *info = appDelegate.dictFeeds[feedIdStr];
                 
                 if (!info) {
