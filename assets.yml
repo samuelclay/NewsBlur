@@ -102,7 +102,7 @@ javascripts:
         - media/js/vendor/jquery.browser.js
         - media/js/vendor/jquery.newsblur.js
         - media/js/vendor/jquery.tinysort.js
-        - media/js/vendor/jquery.simplemodal-1.3.js
+        - media/js/vendor/jquery.simplemodal-1.4.js
         - media/js/vendor/jquery.corners.js
         - media/js/vendor/jquery.hotkeys.js
         - media/js/vendor/jquery.easing.js
