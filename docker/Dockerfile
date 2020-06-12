@@ -9,7 +9,6 @@ CMD       ["gunicorn", "--bind", "0.0.0.0:8000", "wsgi"]
 EXPOSE    8000
 
 COPY      config/requirements.txt /srv/newsblur/
-COPY      docker/startup.py /srv/newsblur/startup.py
 RUN       set -ex \
           && rundDeps=' \
                   libpq5 \
