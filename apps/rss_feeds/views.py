@@ -173,11 +173,15 @@ def load_feed_statistics_embedded(request, feed_id):
     
     logging.user(request, "~FBStatistics (~FCembedded~FB): ~SB%s" % (feed))
     
-    return render(request, 'rss_feeds/statistics.xhtml', {
-        'stats': json.json_encode(stats),
-        'feed_js': json.json_encode(feed.canonical()),
-        'feed': feed,
-    }    
+    return render(
+        request,
+        'rss_feeds/statistics.xhtml',
+        {
+            'stats': json.json_encode(stats),
+            'feed_js': json.json_encode(feed.canonical()),
+            'feed': feed,
+        }
+    )
     
 def assemble_statistics(user, feed_id):
     timezone = user.profile.timezone
