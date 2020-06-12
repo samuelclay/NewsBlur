@@ -1,7 +1,6 @@
 import datetime
 from django.http import HttpResponse
-from django.template import RequestContext
-from django.shortcuts import render_to_response
+from django.shortcuts import render
 from django.utils import feedgenerator
 from apps.statistics.models import MStatistics, MFeedback
 from apps.profile.models import PaymentHistory
@@ -10,15 +9,19 @@ from utils import log as logging
 
 def dashboard_graphs(request):
     statistics = MStatistics.all()
-    return render_to_response('statistics/render_statistics_graphs.xhtml', {
-        'statistics': statistics,
-    }, context_instance=RequestContext(request))
+    return render(
+        request,
+        'statistics/render_statistics_graphs.xhtml', 
+        {'statistics': statistics}
+    )
 
 def feedback_table(request):
     feedbacks = MFeedback.all()
-    return render_to_response('statistics/render_feedback_table.xhtml', {
-        'feedbacks': feedbacks,
-    }, context_instance=RequestContext(request))
+    return render(
+        request, 
+        'statistics/render_feedback_table.xhtml',
+        {'feedbacks': feedbacks}
+    )
 
 def revenue(request):
     data = {}

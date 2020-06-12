@@ -1,12 +1,11 @@
 import datetime
 from urlparse import urlparse
 from utils import log as logging
-from django.shortcuts import get_object_or_404, render_to_response
+from django.shortcuts import get_object_or_404, render
 from django.views.decorators.http import condition
 from django.http import HttpResponseForbidden, HttpResponseRedirect, HttpResponse, Http404
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
-from django.template import RequestContext
 # from django.db import IntegrityError
 from apps.rss_feeds.models import Feed, merge_feeds
 from apps.rss_feeds.models import MFetchHistory
@@ -174,11 +173,11 @@ def load_feed_statistics_embedded(request, feed_id):
     
     logging.user(request, "~FBStatistics (~FCembedded~FB): ~SB%s" % (feed))
     
-    return render_to_response('rss_feeds/statistics.xhtml', {
+    return render(request, 'rss_feeds/statistics.xhtml', {
         'stats': json.json_encode(stats),
         'feed_js': json.json_encode(feed.canonical()),
         'feed': feed,
-    }, context_instance=RequestContext(request))    
+    }    
     
 def assemble_statistics(user, feed_id):
     timezone = user.profile.timezone
@@ -505,9 +504,9 @@ def status(request):
     now      = datetime.datetime.now()
     hour_ago = now - datetime.timedelta(minutes=minutes)
     feeds    = Feed.objects.filter(last_update__gte=hour_ago).order_by('-last_update')
-    return render_to_response('rss_feeds/status.xhtml', {
+    return render(request, 'rss_feeds/status.xhtml', {
         'feeds': feeds
-    }, context_instance=RequestContext(request))
+    })
 
 @json.json_view
 def original_text(request):

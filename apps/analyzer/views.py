@@ -3,8 +3,7 @@ from utils import log as logging
 from django.shortcuts import get_object_or_404
 from django.views.decorators.http import require_POST
 from django.conf import settings
-from django.template import RequestContext
-from django.shortcuts import render_to_response
+from django.shortcuts import render
 from mongoengine.queryset import NotUniqueError
 from apps.rss_feeds.models import Feed
 from apps.reader.models import UserSubscription
@@ -132,10 +131,10 @@ def popularity_query(request):
                                                     query=request.POST['query'])
             query.queue_email()
             
-            response = render_to_response('analyzer/popularity_query.xhtml', {
+            response = render(request, 'analyzer/popularity_query.xhtml', {
                 'success': True,
                 'popularity_query_form': form,
-            }, context_instance=RequestContext(request))
+            })
             response.set_cookie('newsblur_popularity_query', request.POST['query'])
             
             return response
@@ -145,8 +144,8 @@ def popularity_query(request):
         logging.user(request.user, "~BC~FRPopularity query form loading")
         form = PopularityQueryForm(initial={'query': request.COOKIES.get('newsblur_popularity_query', "")})
     
-    response = render_to_response('analyzer/popularity_query.xhtml', {
+    response = render(request, 'analyzer/popularity_query.xhtml', {
         'popularity_query_form': form,
-    }, context_instance=RequestContext(request))
+    })
 
     return response

@@ -6,8 +6,7 @@ import lxml.html
 from django import forms
 from django.conf import settings
 from django.http import HttpResponse
-from django.shortcuts import render_to_response
-from django.template import RequestContext
+from django.shortcuts import render
 from django.contrib.auth import login as login_user
 from django.contrib.auth import logout as logout_user
 from apps.reader.forms import SignupForm, LoginForm
@@ -107,7 +106,7 @@ def add_site_load_script(request, token):
     except UserSubscriptionFolders.DoesNotExist:
         code = -1
     
-    return render_to_response('api/share_bookmarklet.js', {
+    return render(request, 'api/share_bookmarklet.js', {
         'code': code,
         'token': token,
         'folders': (usf and usf.folders) or [],
@@ -117,8 +116,7 @@ def add_site_load_script(request, token):
         'error_image': error_image,
         'add_image': add_image,
         'new_folder_image': new_folder_image,
-    }, 
-    context_instance=RequestContext(request),
+    },
     content_type='application/javascript')
 
 def add_site(request, token):
