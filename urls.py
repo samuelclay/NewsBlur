@@ -6,7 +6,7 @@ from apps.static import views as static_views
 from apps.profile import views as profile_views
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.contrib.auth.views import logout
+from django.contrib.auth.views import LogoutView
 
 admin.autodiscover()
 
@@ -69,7 +69,7 @@ urlpatterns = [
     url(r'^account/login/?$', profile_views.login, name='login'),
     url(r'^account/signup/?$', profile_views.signup, name='signup'),
     url(r'^account/logout/?$', 
-                            logout, 
+                            LogoutView, 
                             {'next_page': '/'}, name='logout'),
     url(r'^account/ifttt/v1/', include('apps.oauth.urls')),
     url(r'^account/',       include('oauth2_provider.urls', namespace='oauth2_provider')),
