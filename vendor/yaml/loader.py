@@ -1,12 +1,12 @@
 
 __all__ = ['BaseLoader', 'SafeLoader', 'Loader']
 
-from reader import *
-from scanner import *
-from parser import *
-from composer import *
-from constructor import *
-from resolver import *
+from vendor.yaml.reader import *
+from vendor.yaml.scanner import *
+from vendor.yaml.parser import *
+from vendor.yaml.composer import *
+from vendor.yaml.constructor import *
+from vendor.yaml.resolver import *
 
 class BaseLoader(Reader, Scanner, Parser, Composer, BaseConstructor, BaseResolver):
 

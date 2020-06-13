@@ -1,17 +1,17 @@
 
-from error import *
+from vendor.yaml.error import *
 
-from tokens import *
-from events import *
-from nodes import *
+from vendor.yaml.tokens import *
+from vendor.yaml.events import *
+from vendor.yaml.nodes import *
 
-from loader import *
-from dumper import *
+from vendor.yaml.loader import *
+from vendor.dumper import *
 
 __version__ = '3.10'
 
 try:
-    from cyaml import *
+    from vendor.yaml.cyaml import *
     __with_libyaml__ = True
 except ImportError:
     __with_libyaml__ = False
