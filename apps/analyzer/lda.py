@@ -1,4 +1,4 @@
-from BeautifulSoup import BeautifulSoup
+from bs4 import BeautifulSoup
 from glob import glob
 from collections import defaultdict
 from math import log, exp
