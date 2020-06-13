@@ -663,7 +663,7 @@
     }
 
     [self.storyTitlesTable reloadData];
-    [storyTitlesTable scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:YES];
+    [storyTitlesTable scrollRectToVisible:CGRectMake(0, CGRectGetHeight(self.searchBar.frame), 1, 1) animated:YES];
 }
 
 - (void)beginOfflineTimer {
@@ -774,7 +774,7 @@
     NSInteger storyCount = storiesCollection.storyCount;
     if (storyCount == 0) {
         [self.storyTitlesTable reloadData];
-        [storyTitlesTable scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:YES];
+        [storyTitlesTable scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:NO];
     }
     if (storiesCollection.feedPage == 1) {
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
@@ -970,7 +970,7 @@
     NSInteger storyCount = storiesCollection.storyCount;
     if (storyCount == 0) {
         [self.storyTitlesTable reloadData];
-        [storyTitlesTable scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:YES];
+       [storyTitlesTable scrollRectToVisible:CGRectMake(0, 0, CGRectGetHeight(self.searchBar.frame), 1) animated:YES];
 //            [self.notifier initWithTitle:@"Loading more..." inView:self.view];
 
     }
@@ -2802,7 +2802,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     storiesCollection.feedPage = 1;
     self.pageFetching = YES;
     [self.storyTitlesTable reloadData];
-    [storyTitlesTable scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:YES];
+    [storyTitlesTable scrollRectToVisible:CGRectMake(0, CGRectGetHeight(self.searchBar.frame), 1, 1) animated:YES];
 }
 
 #pragma mark -
