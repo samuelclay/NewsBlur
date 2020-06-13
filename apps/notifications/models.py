@@ -18,7 +18,7 @@ from utils import log as logging
 from utils import mongoengine_fields
 from HTMLParser import HTMLParser
 from vendor.apns import APNs, Payload
-from BeautifulSoup import BeautifulSoup, Tag
+from bs4 import BeautifulSoup, Tag
 import types
 import urlparse
 
