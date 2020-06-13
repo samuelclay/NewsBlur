@@ -14,11 +14,11 @@ PLANS = [
     ("newsblur-premium-36", mark_safe("$36 / year <span class='NB-small'>($3/month)</span>")),
 ]
 
-class HorizRadioRenderer(forms.RadioSelect.renderer):
+class HorizRadioRenderer(forms.RadioSelect):
     """ this overrides widget method to put radio buttons horizontally
         instead of vertically.
     """
-    def render(self):
+    def render(self, name, value, attrs=None, renderer=None):
             """Outputs radios"""
             choices = '\n'.join(['%s\n' % w for w in self])
             return mark_safe('<div class="NB-stripe-plan-choice">%s</div>' % choices)
@@ -35,7 +35,7 @@ class StripePlusPaymentForm(StripePaymentForm):
     email = forms.EmailField(widget=forms.TextInput(attrs=dict(maxlength=75)),
                              label='Email address',
                              required=False)
-    plan = forms.ChoiceField(required=False, widget=forms.RadioSelect(renderer=HorizRadioRenderer),
+    plan = forms.ChoiceField(required=False, widget=HorizRadioRenderer,
                              choices=PLANS, label='Plan')
 
 
