@@ -1,7 +1,7 @@
 #-*- coding: utf-8 -*-
 from django.db import models
 from django.utils.functional import Promise
-from django.utils.encoding import force_unicode, smart_unicode
+from django.utils.encoding import force_unicode, smart_text
 import json
 from decimal import Decimal
 from django.core import serializers
@@ -62,10 +62,10 @@ def json_encode(data, *args, **kwargs):
         elif isinstance(data, models.Model):
             ret = _model(data)
         # here we need to encode the string as unicode (otherwise we get utf-16 in the json-response)
-        elif isinstance(data, basestring):
-            ret = smart_unicode(data)
+        elif isinstance(data, str):
+            ret = smart_text(data)
         elif isinstance(data, Exception):
-            ret = unicode(data)
+            ret = str(data)
         # see http://code.djangoproject.com/ticket/5868
         elif isinstance(data, Promise):
             ret = force_unicode(data)
@@ -83,7 +83,7 @@ def json_encode(data, *args, **kwargs):
         for f in data._meta.fields:
             ret[f.attname] = _any(getattr(data, f.attname))
         # And additionally encode arbitrary properties that had been added.
-        fields = dir(data.__class__) + ret.keys()
+        fields = dir(data.__class__) + list(ret.keys())
         add_ons = [k for k in dir(data) if k not in fields]
         for k in add_ons:
             ret[k] = _any(getattr(data, k))
@@ -97,7 +97,7 @@ def json_encode(data, *args, **kwargs):
 
     def _dict(data):
         ret = {}
-        for k, v in data.items():
+        for k, v in list(data.items()):
             ret[str(k)] = _any(v)
         return ret
 
@@ -138,7 +138,7 @@ def json_response(request, response=None):
         raise
     except Http404:
         raise Http404
-    except Exception, e:
+    except Exception as e:
         # Mail the admins with the error
         exc_info = sys.exc_info()
         subject = 'JSON view error: %s' % request.path
@@ -153,12 +153,12 @@ def json_response(request, response=None):
             )
 
         response = {'result': 'error',
-                    'text': unicode(e)}
+                    'text': str(e)}
         code = 500
         if not settings.DEBUG:
             mail_admins(subject, message, fail_silently=True)
         else:
-            print '\n'.join(traceback.format_exception(*exc_info))
+            print('\n'.join(traceback.format_exception(*exc_info)))
 
     json = json_encode(response)
     return HttpResponse(json, content_type='application/json', status=code)
@@ -167,13 +167,13 @@ def json_response(request, response=None):
 def main():
     test = {
         1: True,
-        2: u"string",
+        2: "string",
         3: 30,
-        4: u"юнікод, ўўў, © ™ ® ё ² § $ ° ќо́",
+        4: "юнікод, ўўў, © ™ ® ё ² § $ ° ќо́",
         5: "utf-8: \xd1\x9e, \xc2\xa9 \xe2\x84\xa2 \xc2\xae \xd1\x91 \xd0\xba\xcc\x81\xd0\xbe\xcc\x81",
     }
     json_test = json_encode(test)
-    print test, json_test
+    print(test, json_test)
 
 
 if __name__ == '__main__':
