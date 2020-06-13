@@ -8,7 +8,7 @@
 # Parser does not use it for any other purposes.
 #
 #   Reader(source, data)
-# Reader determines the encoding of `data` and converts it to unicode.
+# Reader determines the encoding of `data` and converts it to str.
 # Reader provides the following methods and attributes:
 #   reader.peek(length=1) - return the next `length` characters
 #   reader.forward(length=1) - move the current position to `length` characters.
@@ -17,7 +17,7 @@
 
 __all__ = ['Reader', 'ReaderError']
 
-from error import YAMLError, Mark
+from vendor.yaml.error import YAMLError, Mark
 
 import codecs, re
 
@@ -31,7 +31,7 @@ class ReaderError(YAMLError):
         self.reason = reason
 
     def __str__(self):
-        if isinstance(self.character, str):
+        if isinstance(self.character, bytes):
             return "'%s' codec can't decode byte #x%02x: %s\n"  \
                     "  in \"%s\", position %d"    \
                     % (self.encoding, ord(self.character), self.reason,
@@ -44,15 +44,15 @@ class ReaderError(YAMLError):
 
 class Reader(object):
     # Reader:
-    # - determines the data encoding and converts it to unicode,
+    # - determines the data encoding and converts it to str,
     # - checks if characters are in allowed range,
     # - adds '\0' to the end.
 
     # Reader accepts
+    #  - a `bytes` object,
     #  - a `str` object,
-    #  - a `unicode` object,
-    #  - a file-like object with its `read` method returning `str`,
-    #  - a file-like object with its `read` method returning `unicode`.
+    #  - a file-like object with its `read` method returning `bytes`,
+    #  - a file-like object with its `read` method returning `str`.
 
     # Yeah, it's ugly and slow.
 
@@ -69,11 +69,11 @@ class Reader(object):
         self.index = 0
         self.line = 0
         self.column = 0
-        if isinstance(stream, unicode):
+        if isinstance(stream, str):
             self.name = "<unicode string>"
             self.check_printable(stream)
             self.buffer = stream+u'\0'
-        elif isinstance(stream, str):
+        elif isinstance(stream, bytes):
             self.name = "<string>"
             self.raw_buffer = stream
             self.determine_encoding()
@@ -122,7 +122,7 @@ class Reader(object):
     def determine_encoding(self):
         while not self.eof and len(self.raw_buffer) < 2:
             self.update_raw()
-        if not isinstance(self.raw_buffer, unicode):
+        if not isinstance(self.raw_buffer, str):
             if self.raw_buffer.startswith(codecs.BOM_UTF16_LE):
                 self.raw_decode = codecs.utf_16_le_decode
                 self.encoding = 'utf-16-le'
@@ -141,7 +141,7 @@ class Reader(object):
             character = match.group()
             position = self.index+(len(self.buffer)-self.pointer)+match.start()
             raise ReaderError(self.name, position, ord(character),
-                    'unicode', "special characters are not allowed")
+                    'str', "special characters are not allowed")
 
     def update(self, length):
         if self.raw_buffer is None:
@@ -155,7 +155,7 @@ class Reader(object):
                 try:
                     data, converted = self.raw_decode(self.raw_buffer,
                             'strict', self.eof)
-                except UnicodeDecodeError, exc:
+                except UnicodeDecodeError as exc:
                     character = exc.object[exc.start]
                     if self.stream is not None:
                         position = self.stream_pointer-len(self.raw_buffer)+exc.start
