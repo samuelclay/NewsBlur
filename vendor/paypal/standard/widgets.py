@@ -28,7 +28,7 @@ class ReservedValueHiddenInput(ValueHiddenInput):
     def render(self, name, value, attrs=None):
         if value is None:
             value = ''
-        final_attrs = self.build_attrs(attrs, type=self.input_type)
+        final_attrs = self.build_attrs(attrs, {"type": self.input_type})
         if value != '':
             final_attrs['value'] = force_text(value)
         return mark_safe(u'<input%s />' % flatatt(final_attrs))
