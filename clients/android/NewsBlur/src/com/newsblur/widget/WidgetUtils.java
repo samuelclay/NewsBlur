@@ -66,6 +66,15 @@ public class WidgetUtils {
         return PrefsUtils.getUniqueLoginKey(context) != null;
     }
 
+    public static void updateWidget(Context context) {
+        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+        int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(context, WidgetProvider.class));
+        Intent intent = new Intent(context, WidgetProvider.class);
+        intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidgetIds);
+        context.sendBroadcast(intent);
+    }
+
     private static Intent getUpdateIntent(Context context) {
         Intent intent = new Intent(context, WidgetUpdateReceiver.class);
         intent.setAction(ACTION_UPDATE_WIDGET);

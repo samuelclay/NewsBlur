@@ -5,15 +5,18 @@ import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
-import android.widget.RemoteViews;
 
 import com.newsblur.R;
 import com.newsblur.activity.AllStoriesItemsList;
 import com.newsblur.activity.ItemsList;
 import com.newsblur.activity.WidgetConfig;
 import com.newsblur.util.FeedSet;
+import com.newsblur.util.PrefsUtils;
+import com.newsblur.util.WidgetBackground;
 
 public class WidgetProvider extends AppWidgetProvider {
 
@@ -46,6 +49,7 @@ public class WidgetProvider extends AppWidgetProvider {
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         // update each of the app widgets with the remote adapter
         Log.d(TAG, "onUpdate");
+        WidgetBackground widgetBackground = PrefsUtils.getWidgetBackground(context);
         for (int appWidgetId : appWidgetIds) {
 
             // Set up the intent that starts the WidgetRemoteViewService, which will
@@ -56,7 +60,13 @@ public class WidgetProvider extends AppWidgetProvider {
             intent.setData(Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME)));
 
             // Instantiate the RemoteViews object for the app widget layout.
-            RemoteViews rv = new RemoteViews(context.getPackageName(), R.layout.view_app_widget);
+            WidgetRemoteViews rv = new WidgetRemoteViews(context.getPackageName(), R.layout.view_app_widget);
+
+            if (widgetBackground == WidgetBackground.DEFAULT) {
+                rv.setViewBackgroundColor(R.id.container_widget, ContextCompat.getColor(context, R.color.widget_background));
+            } else if (widgetBackground == WidgetBackground.TRANSPARENT) {
+                rv.setViewBackgroundColor(R.id.container_widget, Color.TRANSPARENT);
+            }
             // Set up the RemoteViews object to use a RemoteViews adapter.
             // This adapter connects
             // to a RemoteViewsService  through the specified intent.
