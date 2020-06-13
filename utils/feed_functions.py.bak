@@ -253,8 +253,8 @@ class Counter(dict):
 
         '''        
         if n is None:
-            return sorted(iter(list(self.items())), key=itemgetter(1), reverse=True)
-        return nlargest(n, iter(list(self.items())), key=itemgetter(1))
+            return sorted(iter(self.items()), key=itemgetter(1), reverse=True)
+        return nlargest(n, iter(self.items()), key=itemgetter(1))
 
     def elements(self):
         '''Iterator over elements repeating each as many times as its count.
@@ -267,7 +267,7 @@ class Counter(dict):
         elements() will ignore it.
 
         '''
-        for elem, count in list(self.items()):
+        for elem, count in self.items():
             for _ in repeat(None, count):
                 yield elem
 
@@ -295,7 +295,7 @@ class Counter(dict):
             if hasattr(iterable, 'iteritems'):
                 if self:
                     self_get = self.get
-                    for elem, count in list(iterable.items()):
+                    for elem, count in iterable.items():
                         self[elem] = self_get(elem, 0) + count
                 else:
                     dict.update(self, iterable) # fast path when counter is empty
@@ -402,7 +402,7 @@ class Counter(dict):
 
 if __name__ == '__main__':
     import doctest
-    print((doctest.testmod()))
+    print(doctest.testmod())
 ## end of http://code.activestate.com/recipes/576611/ }}}
 
 def chunks(l, n):

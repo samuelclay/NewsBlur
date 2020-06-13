@@ -338,25 +338,25 @@ def test():
         count += 1
         links = getLinks(data, uri)
         if not links:
-            print(('\n*** FAILED ***', uri, 'could not find link'))
+            print('\n*** FAILED ***', uri, 'could not find link')
             failed.append(uri)
         elif len(links) > 1:
-            print(('\n*** FAILED ***', uri, 'found too many links'))
+            print('\n*** FAILED ***', uri, 'found too many links')
             failed.append(uri)
         else:
             atomdata = urllib.request.urlopen(links[0]).read()
             if atomdata.find('<link rel="alternate"') == -1:
-                print(('\n*** FAILED ***', uri, 'retrieved something that is not a feed'))
+                print('\n*** FAILED ***', uri, 'retrieved something that is not a feed')
                 failed.append(uri)
             else:
                 backlink = atomdata.split('href="').pop().split('"')[0]
                 if backlink != uri:
-                    print(('\n*** FAILED ***', uri, 'retrieved wrong feed'))
+                    print('\n*** FAILED ***', uri, 'retrieved wrong feed')
                     failed.append(uri)
         if data.find('<link rel="next" href="') == -1: break
         uri = urllib.parse.urljoin(uri, data.split('<link rel="next" href="').pop().split('"')[0])
     print()
-    print((count, 'tests executed,', len(failed), 'failed'))
+    print(count, 'tests executed,', len(failed), 'failed')
         
 if __name__ == '__main__':
     args = sys.argv[1:]
@@ -370,4 +370,4 @@ if __name__ == '__main__':
     if uri == 'test':
         test()
     else:
-        print(("\n".join(getFeeds(uri))))
+        print("\n".join(getFeeds(uri)))
