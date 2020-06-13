@@ -9,7 +9,7 @@ import random
 import warnings
 from django.core.mail import mail_admins
 from django.utils.translation import ungettext
-from django.utils.encoding import smart_unicode
+from django.utils.encoding import smart_text
 from utils import log as logging
 
 
@@ -49,9 +49,9 @@ def timelimit(timeout):
 def utf8encode(tstr):
     """ Encodes a unicode string in utf-8
     """
-    msg = "utf8encode is deprecated. Use django.utils.encoding.smart_unicode instead."
+    msg = "utf8encode is deprecated. Use django.utils.encoding.smart_text instead."
     warnings.warn(msg, DeprecationWarning)
-    return smart_unicode(tstr)
+    return smart_text(tstr)
 
 # From: http://www.poromenos.org/node/87
 def levenshtein_distance(first, second):
