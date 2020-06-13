@@ -26,8 +26,8 @@
 
 __all__ = ['Scanner', 'ScannerError']
 
-from error import MarkedYAMLError
-from tokens import *
+from vendor.yaml.error import MarkedYAMLError
+from vendor.yaml.tokens import *
 
 class ScannerError(MarkedYAMLError):
     pass
@@ -1423,8 +1423,8 @@ class Scanner(object):
             bytes.append(chr(int(self.prefix(2), 16)))
             self.forward(2)
         try:
-            value = unicode(''.join(bytes), 'utf-8')
-        except UnicodeDecodeError, exc:
+            value = str(''.join(bytes), 'utf-8')
+        except UnicodeDecodeError as exc:
             raise ScannerError("while scanning a %s" % name, start_mark, str(exc), mark)
         return value
 
