@@ -9,7 +9,7 @@ def import_objects(options, style):
     # models from installed apps. (this is fixed by now, but leaving it here
     # for people using 0.96 or older trunk (pre [5919]) versions.
     from django.apps import apps
-    loaded_models = get_models()  # NOQA
+    loaded_models = apps.get_models()  # NOQA
 
     from django.conf import settings
     imported_objects = {'settings': settings}
