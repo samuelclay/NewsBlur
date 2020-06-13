@@ -76,9 +76,9 @@ The latest version of this code can be found at
 
 def memory_backed_tempfile():
     try:
-        from cStringIO import StringIO
+        from io import StringIO
     except ImportError:
-        from StringIO import StringIO
+        from io import StringIO
     return StringIO()
 
 def file_backed_tempfile():
@@ -267,7 +267,7 @@ def test_reads(test_s, file, seek0):
 
     
 def _test(ReseekFileFactory):
-    from cStringIO import StringIO
+    from io import StringIO
     s = "This is a test.\n1234567890\n"
     file = StringIO(s)
     # Test with a normal file
@@ -419,12 +419,12 @@ def test():
     if not was_called[0]:
         raise AssertionError("file_backed_tempfile was not called")
 
-    import cStringIO
-    f = cStringIO.StringIO("Andrew")
+    import io
+    f = io.StringIO("Andrew")
     g = ReseekFile(f, file_backed_tempfile)
     if not hasattr(g.buffer_file, "name"):
         raise AssertionError("backend file not created")
     
 if __name__ == "__main__":
     test()
-    print "All tests passed."
+    print("All tests passed.")
