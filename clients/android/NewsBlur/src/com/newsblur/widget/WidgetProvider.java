@@ -49,6 +49,7 @@ public class WidgetProvider extends AppWidgetProvider {
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         // update each of the app widgets with the remote adapter
         Log.d(TAG, "onUpdate");
+        WidgetUtils.checkWidgetUpdateAlarm(context);
         WidgetBackground widgetBackground = PrefsUtils.getWidgetBackground(context);
         for (int appWidgetId : appWidgetIds) {
 

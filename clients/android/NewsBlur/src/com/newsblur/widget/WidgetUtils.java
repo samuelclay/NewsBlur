@@ -6,7 +6,6 @@ import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.SystemClock;
 
 import com.newsblur.R;
@@ -73,6 +72,13 @@ public class WidgetUtils {
         intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidgetIds);
         context.sendBroadcast(intent);
+    }
+
+    public static void checkWidgetUpdateAlarm(Context context) {
+        boolean hasActiveUpdates = PendingIntent.getBroadcast(context, RC_WIDGET_UPDATE, getUpdateIntent(context), PendingIntent.FLAG_NO_CREATE) != null;
+        if (!hasActiveUpdates) {
+            enableWidgetUpdate(context);
+        }
     }
 
     private static Intent getUpdateIntent(Context context) {
