@@ -4,16 +4,15 @@ import os
 # ===========================
 # = Directory Declaractions =
 # ===========================
-
-CURRENT_DIR   = os.path.dirname(__file__)
-NEWSBLUR_DIR  = CURRENT_DIR
-MEDIA_ROOT    = os.path.join(CURRENT_DIR, 'media')
-STATIC_ROOT   = os.path.join(CURRENT_DIR, 'static')
-UTILS_ROOT    = os.path.join(CURRENT_DIR, 'utils')
-VENDOR_ROOT   = os.path.join(CURRENT_DIR, 'vendor')
-LOG_FILE      = os.path.join(CURRENT_DIR, 'logs/newsblur.log')
-IMAGE_MASK    = os.path.join(CURRENT_DIR, 'media/img/mask.png')
-
+BASE_DIR = os.path.dirname(__file__)
+NEWSBLUR_DIR  = BASE_DIR
+MEDIA_ROOT    = os.path.join(BASE_DIR, 'media')
+STATIC_ROOT   = os.path.join(BASE_DIR, 'static')
+UTILS_ROOT    = os.path.join(BASE_DIR, 'utils')
+VENDOR_ROOT   = os.path.join(BASE_DIR, 'vendor')
+LOG_FILE      = os.path.join(BASE_DIR, 'logs/newsblur.log')
+IMAGE_MASK    = os.path.join(BASE_DIR, 'media/img/mask.png')
+LOG_PATH = os.path.join(BASE_DIR, 'log')
 # ==============
 # = PYTHONPATH =
 # ==============
@@ -175,7 +174,7 @@ LOGGING = {
             'level': 'DEBUG',
             'class': 'logging.handlers.RotatingFileHandler',
             'filename': LOG_FILE,
-            'maxBytes': '16777216', # 16megabytes
+            'maxBytes': 16777216, # 16megabytes
             'formatter': 'verbose'
         },
         'mail_admins': {
@@ -640,13 +639,11 @@ else:
     )
 
 
-BASE_DIR = 'NewsBlur'
-
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'TEMPLATE_DIRS': [os.path.join(CURRENT_DIR, 'templates'),
-                 os.path.join(CURRENT_DIR, 'vendor/zebra/templates')],
+        'TEMPLATE_DIRS': [os.path.join(BASE_DIR, 'templates'),
+                 os.path.join(BASE_DIR, 'vendor/zebra/templates')],
         'APP_DIRS': True,
         'TEMPLATE_CONTEXT_PROCESSORS': (
             "django.contrib.auth.context_processors.auth",
