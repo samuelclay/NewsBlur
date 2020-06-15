@@ -1,8 +1,8 @@
 
 __all__ = ['BaseResolver', 'Resolver']
 
-from error import *
-from nodes import *
+from vendor.yaml.error import *
+from vendor.yaml.nodes import *
 
 import re
 
@@ -166,14 +166,14 @@ class Resolver(BaseResolver):
 
 Resolver.add_implicit_resolver(
         u'tag:yaml.org,2002:bool',
-        re.compile(ur'''^(?:yes|Yes|YES|no|No|NO
+        re.compile(r'''^(?:yes|Yes|YES|no|No|NO
                     |true|True|TRUE|false|False|FALSE
                     |on|On|ON|off|Off|OFF)$''', re.X),
         list(u'yYnNtTfFoO'))
 
 Resolver.add_implicit_resolver(
         u'tag:yaml.org,2002:float',
-        re.compile(ur'''^(?:[-+]?(?:[0-9][0-9_]*)\.[0-9_]*(?:[eE][-+][0-9]+)?
+        re.compile(r'''^(?:[-+]?(?:[0-9][0-9_]*)\.[0-9_]*(?:[eE][-+][0-9]+)?
                     |\.[0-9_]+(?:[eE][-+][0-9]+)?
                     |[-+]?[0-9][0-9_]*(?::[0-5]?[0-9])+\.[0-9_]*
                     |[-+]?\.(?:inf|Inf|INF)
@@ -182,7 +182,7 @@ Resolver.add_implicit_resolver(
 
 Resolver.add_implicit_resolver(
         u'tag:yaml.org,2002:int',
-        re.compile(ur'''^(?:[-+]?0b[0-1_]+
+        re.compile(r'''^(?:[-+]?0b[0-1_]+
                     |[-+]?0[0-7_]+
                     |[-+]?(?:0|[1-9][0-9_]*)
                     |[-+]?0x[0-9a-fA-F_]+
@@ -191,19 +191,19 @@ Resolver.add_implicit_resolver(
 
 Resolver.add_implicit_resolver(
         u'tag:yaml.org,2002:merge',
-        re.compile(ur'^(?:<<)$'),
+        re.compile(r'^(?:<<)$'),
         [u'<'])
 
 Resolver.add_implicit_resolver(
         u'tag:yaml.org,2002:null',
-        re.compile(ur'''^(?: ~
+        re.compile(r'''^(?: ~
                     |null|Null|NULL
                     | )$''', re.X),
         [u'~', u'n', u'N', u''])
 
 Resolver.add_implicit_resolver(
         u'tag:yaml.org,2002:timestamp',
-        re.compile(ur'''^(?:[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]
+        re.compile(r'''^(?:[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]
                     |[0-9][0-9][0-9][0-9] -[0-9][0-9]? -[0-9][0-9]?
                      (?:[Tt]|[ \t]+)[0-9][0-9]?
                      :[0-9][0-9] :[0-9][0-9] (?:\.[0-9]*)?
@@ -212,13 +212,13 @@ Resolver.add_implicit_resolver(
 
 Resolver.add_implicit_resolver(
         u'tag:yaml.org,2002:value',
-        re.compile(ur'^(?:=)$'),
+        re.compile(r'^(?:=)$'),
         [u'='])
 
 # The following resolver is only for documentation purposes. It cannot work
 # because plain scalars cannot start with '!', '&', or '*'.
 Resolver.add_implicit_resolver(
         u'tag:yaml.org,2002:yaml',
-        re.compile(ur'^(?:!|&|\*)$'),
+        re.compile(r'^(?:!|&|\*)$'),
         list(u'!&*'))
 

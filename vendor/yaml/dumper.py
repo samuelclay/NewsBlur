@@ -1,10 +1,10 @@
 
 __all__ = ['BaseDumper', 'SafeDumper', 'Dumper']
 
-from emitter import *
-from serializer import *
-from representer import *
-from resolver import *
+from vendor.yaml.emitter import *
+from vendor.yaml.serializer import *
+from vendor.yaml.representer import *
+from vendor.yaml.resolver import *
 
 class BaseDumper(Emitter, Serializer, BaseRepresenter, BaseResolver):
 

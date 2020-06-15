@@ -6,7 +6,7 @@ from vendor.yaml.events import *
 from vendor.yaml.nodes import *
 
 from vendor.yaml.loader import *
-from vendor.dumper import *
+from vendor.yaml.dumper import *
 
 __version__ = '3.10'
 
