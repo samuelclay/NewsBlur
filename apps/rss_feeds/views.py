@@ -1,5 +1,5 @@
 import datetime
-from urlparse import urlparse
+from urllib.parse import urlparse
 from utils import log as logging
 from django.shortcuts import get_object_or_404, render
 from django.views.decorators.http import condition
@@ -235,7 +235,7 @@ def assemble_statistics(user, feed_id):
     localoffset = timezone.utcoffset(datetime.datetime.utcnow())
     hours_offset = int(localoffset.total_seconds() / 3600)
     rotated_hours = {}
-    for hour, value in stats['story_hours_history'].items():
+    for hour, value in list(stats['story_hours_history'].items()):
         rotated_hours[str(int(hour)+hours_offset)] = value
     stats['story_hours_history'] = rotated_hours
     

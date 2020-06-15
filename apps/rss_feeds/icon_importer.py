@@ -1,20 +1,20 @@
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 import lxml.html
 import numpy
 import scipy
 import scipy.misc
 import scipy.cluster
-import urlparse
+import urllib.parse
 import struct
 import operator
 import gzip
 import datetime
 import requests
-import httplib
+import http.client
 from PIL import BmpImagePlugin, PngImagePlugin, Image
 from socket import error as SocketError
 from boto.s3.key import Key
-from StringIO import StringIO
+from io import StringIO
 from django.conf import settings
 from apps.rss_feeds.models import MFeedPage, MFeedIcon
 from utils.facebook_fetcher import FacebookFetcher
@@ -127,7 +127,7 @@ class IconImporter(object):
         try:
             image_file.seek(0)
             header = struct.unpack('<3H', image_file.read(6))
-        except Exception, e:
+        except Exception as e:
             return
 
         # Check magic
@@ -136,9 +136,9 @@ class IconImporter(object):
 
         # Collect icon directories
         directories = []
-        for i in xrange(header[2]):
+        for i in range(header[2]):
             directory = list(struct.unpack('<4B2H2I', image_file.read(16)))
-            for j in xrange(3):
+            for j in range(3):
                 if not directory[j]:
                     directory[j] = 256
 
@@ -222,9 +222,9 @@ class IconImporter(object):
                     requests.models.InvalidURL,
                     requests.models.ChunkedEncodingError,
                     requests.models.ContentDecodingError,
-                    httplib.IncompleteRead,
+                    http.client.IncompleteRead,
                     LocationParseError, OpenSSLError, PyAsn1Error,
-                    ValueError), e:
+                    ValueError) as e:
                 logging.debug(" ---> ~SN~FRFailed~FY to fetch ~FGfeed icon~FY: %s" % e)
         if url:
             image, image_file = self.get_image_from_url(url)
@@ -244,7 +244,7 @@ class IconImporter(object):
             url = self.feed_icon.icon_url
         if not url and self.feed.feed_link and len(self.feed.feed_link) > 6:
             try:
-                url = urlparse.urljoin(self.feed.feed_link, 'favicon.ico')
+                url = urllib.parse.urljoin(self.feed.feed_link, 'favicon.ico')
             except ValueError:
                 url = None
         if not url:
@@ -252,7 +252,7 @@ class IconImporter(object):
 
         image, image_file = self.get_image_from_url(url)
         if not image:
-            url = urlparse.urljoin(self.feed.feed_link, '/favicon.ico')
+            url = urllib.parse.urljoin(self.feed.feed_link, '/favicon.ico')
             image, image_file = self.get_image_from_url(url)
         # print 'Found: %s - %s' % (url, image)
         return image, image_file, url
@@ -262,7 +262,7 @@ class IconImporter(object):
         url = facebook_fetcher.favicon_url()
         image, image_file = self.get_image_from_url(url)
         if not image:
-            url = urlparse.urljoin(self.feed.feed_link, '/favicon.ico')
+            url = urllib.parse.urljoin(self.feed.feed_link, '/favicon.ico')
             image, image_file = self.get_image_from_url(url)
         # print 'Found: %s - %s' % (url, image)
         return image, image_file, url
@@ -288,8 +288,8 @@ class IconImporter(object):
                 'Accept': 'image/png,image/x-icon,image/*;q=0.9,*/*;q=0.8'
             }
             try:
-                request = urllib2.Request(url, headers=headers)
-                icon = urllib2.urlopen(request).read()
+                request = urllib.request.Request(url, headers=headers)
+                icon = urllib.request.urlopen(request).read()
             except Exception:
                 return None
             return icon
@@ -311,7 +311,7 @@ class IconImporter(object):
         if not content:
             return url
         try:
-            if isinstance(content, unicode):
+            if isinstance(content, str):
                 content = content.encode('utf-8')
             icon_path = lxml.html.fromstring(content).xpath(
                 '//link[@rel="icon" or @rel="shortcut icon"]/@href'
@@ -323,7 +323,7 @@ class IconImporter(object):
             if str(icon_path[0]).startswith('http'):
                 url = icon_path[0]
             else:
-                url = urlparse.urljoin(self.feed.feed_link, icon_path[0])
+                url = urllib.parse.urljoin(self.feed.feed_link, icon_path[0])
         return url
 
     def normalize_image(self, image):

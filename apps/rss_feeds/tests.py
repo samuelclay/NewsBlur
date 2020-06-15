@@ -37,12 +37,12 @@ class FeedTest(TestCase):
 
         feed = Feed.objects.get(feed_link__contains='gawker')
         stories = MStory.objects(story_feed_id=feed.pk)
-        self.assertEquals(stories.count(), 0)
+        self.assertEqual(stories.count(), 0)
 
         feed.update(force=True)
 
         stories = MStory.objects(story_feed_id=feed.pk)
-        self.assertEquals(stories.count(), 38)
+        self.assertEqual(stories.count(), 38)
 
         management.call_command('loaddata', 'gawker2.json', verbosity=0, skip_checks=False)
 
@@ -50,12 +50,12 @@ class FeedTest(TestCase):
 
         # Test: 1 changed char in content
         stories = MStory.objects(story_feed_id=feed.pk)
-        self.assertEquals(stories.count(), 38)
+        self.assertEqual(stories.count(), 38)
 
         url = reverse('load-single-feed', kwargs=dict(feed_id=1))
         response = self.client.get(url)
         feed = json.decode(response.content)
-        self.assertEquals(len(feed['stories']), 6)
+        self.assertEqual(len(feed['stories']), 6)
 
     def test_load_feeds__gothamist(self):
         self.client.login(username='conesus', password='test')
@@ -63,30 +63,30 @@ class FeedTest(TestCase):
         management.call_command('loaddata', 'gothamist_aug_2009_1.json', verbosity=0, skip_checks=False)
         feed = Feed.objects.get(feed_link__contains='gothamist')
         stories = MStory.objects(story_feed_id=feed.pk)
-        self.assertEquals(stories.count(), 0)
+        self.assertEqual(stories.count(), 0)
 
         feed.update(force=True)
 
         stories = MStory.objects(story_feed_id=feed.pk)
-        self.assertEquals(stories.count(), 42)
+        self.assertEqual(stories.count(), 42)
 
         url = reverse('load-single-feed', kwargs=dict(feed_id=4))
         response = self.client.get(url)
         content = json.decode(response.content)
-        self.assertEquals(len(content['stories']), 6)
+        self.assertEqual(len(content['stories']), 6)
 
         management.call_command('loaddata', 'gothamist_aug_2009_2.json', verbosity=0, skip_checks=False)
         feed.update(force=True)
 
         stories = MStory.objects(story_feed_id=feed.pk)
-        self.assertEquals(stories.count(), 42)
+        self.assertEqual(stories.count(), 42)
 
         url = reverse('load-single-feed', kwargs=dict(feed_id=4))
         response = self.client.get(url)
         # print [c['story_title'] for c in json.decode(response.content)]
         content = json.decode(response.content)
         # Test: 1 changed char in title
-        self.assertEquals(len(content['stories']), 6)
+        self.assertEqual(len(content['stories']), 6)
 
     def test_load_feeds__slashdot(self):
         self.client.login(username='conesus', password='test')
@@ -97,28 +97,28 @@ class FeedTest(TestCase):
 
         feed = Feed.objects.get(feed_link__contains='slashdot')
         stories = MStory.objects(story_feed_id=feed.pk)
-        self.assertEquals(stories.count(), 0)
+        self.assertEqual(stories.count(), 0)
 
         management.call_command('refresh_feed', force=1, feed=5, single_threaded=True, daemonize=False, skip_checks=False)
 
         stories = MStory.objects(story_feed_id=feed.pk)
-        self.assertEquals(stories.count(), 38)
+        self.assertEqual(stories.count(), 38)
 
         response = self.client.get(reverse('load-feeds'))
         content = json.decode(response.content)
-        self.assertEquals(content['feeds']['5']['nt'], 38)
+        self.assertEqual(content['feeds']['5']['nt'], 38)
 
         self.client.post(reverse('mark-story-as-read'), {'story_id': old_story_guid, 'feed_id': 5})
 
         response = self.client.get(reverse('refresh-feeds'))
         content = json.decode(response.content)
-        self.assertEquals(content['feeds']['5']['nt'], 37)
+        self.assertEqual(content['feeds']['5']['nt'], 37)
 
         management.call_command('loaddata', 'slashdot2.json', verbosity=0, skip_checks=False)
         management.call_command('refresh_feed', force=1, feed=5, single_threaded=True, daemonize=False, skip_checks=False)
 
         stories = MStory.objects(story_feed_id=feed.pk)
-        self.assertEquals(stories.count(), 38)
+        self.assertEqual(stories.count(), 38)
 
         url = reverse('load-single-feed', kwargs=dict(feed_id=5))
         response = self.client.get(url)
@@ -127,11 +127,11 @@ class FeedTest(TestCase):
         feed = json.decode(response.content)
 
         # Test: 1 changed char in title
-        self.assertEquals(len(feed['stories']), 6)
+        self.assertEqual(len(feed['stories']), 6)
 
         response = self.client.get(reverse('refresh-feeds'))
         content = json.decode(response.content)
-        self.assertEquals(content['feeds']['5']['nt'], 37)
+        self.assertEqual(content['feeds']['5']['nt'], 37)
 
     def test_load_feeds__motherjones(self):
         self.client.login(username='conesus', password='test')
@@ -140,28 +140,28 @@ class FeedTest(TestCase):
 
         feed = Feed.objects.get(feed_link__contains='motherjones')
         stories = MStory.objects(story_feed_id=feed.pk)
-        self.assertEquals(stories.count(), 0)
+        self.assertEqual(stories.count(), 0)
 
         management.call_command('refresh_feed', force=1, feed=feed.pk, single_threaded=True, daemonize=False, skip_checks=False)
 
         stories = MStory.objects(story_feed_id=feed.pk)
-        self.assertEquals(stories.count(), 10)
+        self.assertEqual(stories.count(), 10)
 
         response = self.client.get(reverse('load-feeds'))
         content = json.decode(response.content)
-        self.assertEquals(content['feeds'][str(feed.pk)]['nt'], 10)
+        self.assertEqual(content['feeds'][str(feed.pk)]['nt'], 10)
 
         self.client.post(reverse('mark-story-as-read'), {'story_id': stories[0].story_guid, 'feed_id': feed.pk})
 
         response = self.client.get(reverse('refresh-feeds'))
         content = json.decode(response.content)
-        self.assertEquals(content['feeds'][str(feed.pk)]['nt'], 9)
+        self.assertEqual(content['feeds'][str(feed.pk)]['nt'], 9)
 
         management.call_command('loaddata', 'motherjones2.json', verbosity=0, skip_checks=False)
         management.call_command('refresh_feed', force=1, feed=feed.pk, single_threaded=True, daemonize=False, skip_checks=False)
 
         stories = MStory.objects(story_feed_id=feed.pk)
-        self.assertEquals(stories.count(), 10)
+        self.assertEqual(stories.count(), 10)
 
         url = reverse('load-single-feed', kwargs=dict(feed_id=feed.pk))
         response = self.client.get(url)
@@ -170,11 +170,11 @@ class FeedTest(TestCase):
         feed = json.decode(response.content)
 
         # Test: 1 changed char in title
-        self.assertEquals(len(feed['stories']), 6)
+        self.assertEqual(len(feed['stories']), 6)
 
         response = self.client.get(reverse('refresh-feeds'))
         content = json.decode(response.content)
-        self.assertEquals(content['feeds'][str(feed['feed_id'])]['nt'], 9)
+        self.assertEqual(content['feeds'][str(feed['feed_id'])]['nt'], 9)
 
     def test_load_feeds__google(self):
         # Freezegun the date to 2017-04-30
@@ -183,33 +183,33 @@ class FeedTest(TestCase):
         old_story_guid = "blog.google:443/topics/inside-google/google-earths-incredible-3d-imagery-explained/"
 
         management.call_command('loaddata', 'google1.json', verbosity=1, skip_checks=False)
-        print Feed.objects.all()
+        print(Feed.objects.all())
         feed = Feed.objects.get(pk=766)
-        print " Testing test_load_feeds__google: %s" % feed
+        print(" Testing test_load_feeds__google: %s" % feed)
         stories = MStory.objects(story_feed_id=feed.pk)
-        self.assertEquals(stories.count(), 0)
+        self.assertEqual(stories.count(), 0)
 
         management.call_command('refresh_feed', force=False, feed=766, single_threaded=True, daemonize=False, skip_checks=False)
 
         stories = MStory.objects(story_feed_id=feed.pk)
-        self.assertEquals(stories.count(), 20)
+        self.assertEqual(stories.count(), 20)
 
         response = self.client.get(reverse('load-feeds')+"?update_counts=true")
         content = json.decode(response.content)
-        self.assertEquals(content['feeds']['766']['nt'], 20)
+        self.assertEqual(content['feeds']['766']['nt'], 20)
 
         old_story = MStory.objects.get(story_feed_id=feed.pk, story_guid__contains=old_story_guid)
         self.client.post(reverse('mark-story-hashes-as-read'), {'story_hash': old_story.story_hash})
 
         response = self.client.get(reverse('refresh-feeds'))
         content = json.decode(response.content)
-        self.assertEquals(content['feeds']['766']['nt'], 19)
+        self.assertEqual(content['feeds']['766']['nt'], 19)
 
         management.call_command('loaddata', 'google2.json', verbosity=1, skip_checks=False)
         management.call_command('refresh_feed', force=False, feed=766, single_threaded=True, daemonize=False, skip_checks=False)
 
         stories = MStory.objects(story_feed_id=feed.pk)
-        self.assertEquals(stories.count(), 20)
+        self.assertEqual(stories.count(), 20)
 
         url = reverse('load-single-feed', kwargs=dict(feed_id=766))
         response = self.client.get(url)
@@ -218,11 +218,11 @@ class FeedTest(TestCase):
         feed = json.decode(response.content)
 
         # Test: 1 changed char in title
-        self.assertEquals(len(feed['stories']), 6)
+        self.assertEqual(len(feed['stories']), 6)
 
         response = self.client.get(reverse('refresh-feeds'))
         content = json.decode(response.content)
-        self.assertEquals(content['feeds']['766']['nt'], 19)
+        self.assertEqual(content['feeds']['766']['nt'], 19)
         
     def test_load_feeds__brokelyn__invalid_xml(self):
         self.client.login(username='conesus', password='test')
@@ -237,7 +237,7 @@ class FeedTest(TestCase):
         feed = json.decode(response.content)
 
         # Test: 1 changed char in title
-        self.assertEquals(len(feed['stories']), 6)
+        self.assertEqual(len(feed['stories']), 6)
 
     def test_all_feeds(self):
         pass

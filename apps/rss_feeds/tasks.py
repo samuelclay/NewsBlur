@@ -167,7 +167,7 @@ class UpdateFeeds(Task):
                 continue
             try:
                 feed.update(**options)
-            except SoftTimeLimitExceeded, e:
+            except SoftTimeLimitExceeded as e:
                 feed.save_feed_history(505, 'Timeout', e)
                 logging.info(" ---> [%-30s] ~BR~FWTime limit hit!~SB~FR Moving on to next feed..." % feed)
             if profiler_activated: profiler.process_celery_finished()

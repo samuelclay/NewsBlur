@@ -1,11 +1,11 @@
 import requests
 import re
-import urlparse
+import urllib.parse
 import traceback
 import feedparser
 import time
-import urllib2
-import httplib
+import urllib.request, urllib.error, urllib.parse
+import http.client
 import zlib
 from mongoengine.queryset import NotUniqueError
 from socket import error as SocketError
@@ -86,8 +86,8 @@ class PageImporter(object):
                 return
             elif feed_link.startswith('http'):
                 if urllib_fallback:
-                    request = urllib2.Request(feed_link, headers=self.headers)
-                    response = urllib2.urlopen(request)
+                    request = urllib.request.Request(feed_link, headers=self.headers)
+                    response = urllib.request.urlopen(request)
                     time.sleep(0.01) # Grrr, GIL.
                     data = response.read()
                 else:
@@ -96,7 +96,7 @@ class PageImporter(object):
                         response.connection.close()
                     except requests.exceptions.TooManyRedirects:
                         response = requests.get(feed_link)
-                    except (AttributeError, SocketError, OpenSSLError, PyAsn1Error, TypeError), e:
+                    except (AttributeError, SocketError, OpenSSLError, PyAsn1Error, TypeError) as e:
                         logging.debug('   ***> [%-30s] Page fetch failed using requests: %s' % (self.feed.log_title[:30], e))
                         self.save_no_page()
                         return
@@ -127,23 +127,23 @@ class PageImporter(object):
             else:
                 self.save_no_page()
                 return
-        except (ValueError, urllib2.URLError, httplib.BadStatusLine, httplib.InvalidURL,
-                requests.exceptions.ConnectionError), e:
+        except (ValueError, urllib.error.URLError, http.client.BadStatusLine, http.client.InvalidURL,
+                requests.exceptions.ConnectionError) as e:
             self.feed.save_page_history(401, "Bad URL", e)
             fp = feedparser.parse(self.feed.feed_address)
             feed_link = fp.feed.get('link', "")
             self.feed.save()
             logging.debug('   ***> [%-30s] Page fetch failed: %s' % (self.feed.log_title[:30], e))
-        except (urllib2.HTTPError), e:
+        except (urllib.error.HTTPError) as e:
             self.feed.save_page_history(e.code, e.msg, e.fp.read())
-        except (httplib.IncompleteRead), e:
+        except (http.client.IncompleteRead) as e:
             self.feed.save_page_history(500, "IncompleteRead", e)
         except (requests.exceptions.RequestException, 
-                requests.packages.urllib3.exceptions.HTTPError), e:
+                requests.packages.urllib3.exceptions.HTTPError) as e:
             logging.debug('   ***> [%-30s] Page fetch failed using requests: %s' % (self.feed.log_title[:30], e))
             # mail_feed_error_to_admin(self.feed, e, local_vars=locals())
             return self.fetch_page(urllib_fallback=True, requests_exception=e)
-        except Exception, e:
+        except Exception as e:
             logging.debug('[%d] ! -------------------------' % (self.feed.id,))
             tb = traceback.format_exc()
             logging.debug(tb)
@@ -188,10 +188,10 @@ class PageImporter(object):
         try:
             response = requests.get(story_permalink, headers=self.headers)
             response.connection.close()
-        except (AttributeError, SocketError, OpenSSLError, PyAsn1Error, requests.exceptions.ConnectionError, requests.exceptions.TooManyRedirects), e:
+        except (AttributeError, SocketError, OpenSSLError, PyAsn1Error, requests.exceptions.ConnectionError, requests.exceptions.TooManyRedirects) as e:
             try:
                 response = requests.get(story_permalink)
-            except (AttributeError, SocketError, OpenSSLError, PyAsn1Error, requests.exceptions.ConnectionError, requests.exceptions.TooManyRedirects), e:
+            except (AttributeError, SocketError, OpenSSLError, PyAsn1Error, requests.exceptions.ConnectionError, requests.exceptions.TooManyRedirects) as e:
                 logging.debug('   ***> [%-30s] Original story fetch failed using requests: %s' % (self.feed.log_title[:30], e))
                 return
         try:
@@ -207,7 +207,7 @@ class PageImporter(object):
 
         if data:
             data = data.replace("\xc2\xa0", " ") # Non-breaking space, is mangled when encoding is not utf-8
-            data = data.replace("\u00a0", " ") # Non-breaking space, is mangled when encoding is not utf-8
+            data = data.replace("\\u00a0", " ") # Non-breaking space, is mangled when encoding is not utf-8
             html = self.rewrite_page(data)
             if not html:
                 return
@@ -231,7 +231,7 @@ class PageImporter(object):
 
     def rewrite_page(self, response):
         BASE_RE = re.compile(r'<head(.*?\>)', re.I)
-        base_code = u'<base href="%s" />' % (self.feed.feed_link,)
+        base_code = '<base href="%s" />' % (self.feed.feed_link,)
         try:
             html = BASE_RE.sub(r'<head\1 '+base_code, response)
         except:
@@ -258,9 +258,9 @@ class PageImporter(object):
             url = match.group(2)
             if url[0] in "\"'":
                 url = url.strip(url[0])
-            parsed = urlparse.urlparse(url)
+            parsed = urllib.parse.urlparse(url)
             if parsed.scheme == parsed.netloc == '': #relative to domain
-                url = urlparse.urljoin(self.feed.feed_link, url)
+                url = urllib.parse.urljoin(self.feed.feed_link, url)
                 ret.append(document[last_end:match.start(2)])
                 ret.append('"%s"' % (url,))
                 last_end = match.end(2)

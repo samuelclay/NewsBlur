@@ -20,4 +20,4 @@ class Command(BaseCommand):
         for feed in feeds:
             feed.count_stories(verbose=options['verbose'])
         
-        print "\nCounted %s feeds" % feeds.count()
+        print("\nCounted %s feeds" % feeds.count())

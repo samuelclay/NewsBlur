@@ -37,12 +37,12 @@ class Command(BaseCommand):
                 usersubs = UserSubscription.objects.filter(user=u, active=True)
             else:
                 usersubs = UserSubscription.objects.filter(user=u, needs_unread_recalc=True)
-            print " ---> %s has %s feeds (%s/%s)" % (u.username, usersubs.count(), i+1, user_count)
+            print(" ---> %s has %s feeds (%s/%s)" % (u.username, usersubs.count(), i+1, user_count))
             for sub in usersubs:
                 try:
                     sub.calculate_feed_scores(silent=options['silent'])
-                except Exception, e:
-                    print " ***> Exception: %s" % e
+                except Exception as e:
+                    print(" ***> Exception: %s" % e)
                     continue
         
 def daemonize():
@@ -56,12 +56,12 @@ def daemonize():
     os.setsid()
     if os.fork():   # launch child and...
         os._exit(0) # kill off parent again.
-    os.umask(077)
+    os.umask(0o77)
     null = os.open("/dev/null", os.O_RDWR)
     for i in range(3):
         try:
             os.dup2(null, i)
-        except OSError, e:
+        except OSError as e:
             if e.errno != errno.EBADF:
                 raise
     os.close(null)
