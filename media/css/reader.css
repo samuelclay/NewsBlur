@@ -2707,9 +2707,6 @@ body {
     position: relative;
 }
 
-.NB-feed-story .NB-feed-story-header {
-    padding: 3px 0 0 0;
-}
 .NB-feed-story.NB-river-story .NB-feed-story-header,
 .NB-feed-story:first-child .NB-feed-story-header {
     padding-top: 0;
@@ -4010,7 +4007,7 @@ body {
     margin: 0;
 }
 .NB-sideoption-share {
-    padding: 4px 12px 6px;
+    padding: 9px 12px;
     border: 1px solid #DBE6EA;
 }
 .NB-sideoption-share .NB-sideoption-share-title {
