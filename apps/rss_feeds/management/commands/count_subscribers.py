@@ -19,16 +19,16 @@ class Command(BaseCommand):
             
         feeds_count = feeds.count()
         
-        for i in xrange(0, feeds_count, 100):
+        for i in range(0, feeds_count, 100):
             feeds = Feed.objects.all()[i:i+100]
             for feed in feeds.iterator():
                 feed.count_subscribers(verbose=options['verbose'])
         
         if options['delete']:
-            print "# Deleting old feeds..."
+            print("# Deleting old feeds...")
             old_feeds = Feed.objects.filter(num_subscribers=0)
             for feed in old_feeds:
                 feed.count_subscribers(verbose=True)
                 if feed.num_subscribers == 0:
-                    print ' ---> Deleting: [%s] %s' % (feed.pk, feed)
+                    print(' ---> Deleting: [%s] %s' % (feed.pk, feed))
                     feed.delete()

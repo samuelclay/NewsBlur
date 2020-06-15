@@ -56,11 +56,11 @@ class Command(BaseCommand):
                         execution_time = time.time() - starttime
                         raw_sql = self.db.ops.last_executed_query(self.cursor, sql, params)
                         if sqlparse:
-                            print(sqlparse.format(raw_sql, reindent=True))
+                            print((sqlparse.format(raw_sql, reindent=True)))
                         else:
                             print(raw_sql)
                         print("")
-                        print('Execution time: %.6fs [Database: %s]' % (execution_time, self.db.alias))
+                        print(('Execution time: %.6fs [Database: %s]' % (execution_time, self.db.alias)))
                         print("")
 
             util.CursorDebugWrapper = PrintQueryWrapper
@@ -154,7 +154,7 @@ class Command(BaseCommand):
             except ImportError:
                 import traceback
                 traceback.print_exc()
-                print(self.style.ERROR("Could not load '%s' Python environment." % SETTINGS_SHELL_PLUS))
+                print((self.style.ERROR("Could not load '%s' Python environment." % SETTINGS_SHELL_PLUS)))
         else:
             for shell_name, func in shells:
                 try:
@@ -166,5 +166,5 @@ class Command(BaseCommand):
             else:
                 import traceback
                 traceback.print_exc()
-                print(self.style.ERROR("Could not load any interactive Python environment."))
+                print((self.style.ERROR("Could not load any interactive Python environment.")))
 

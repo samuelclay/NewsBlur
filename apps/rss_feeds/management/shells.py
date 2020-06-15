@@ -21,7 +21,7 @@ def import_objects(options, style):
 
     model_aliases = getattr(settings, 'SHELL_PLUS_MODEL_ALIASES', {})
 
-    for app_mod in apps.app_configs.items():
+    for app_mod in list(apps.app_configs.items()):
         app_models = apps.get_models(app_mod)
         if not app_models:
             continue
@@ -50,9 +50,9 @@ def import_objects(options, style):
 
             except AttributeError as e:
                 if not quiet_load:
-                    print(style.ERROR("Failed to import '%s' from '%s' reason: %s" % (model.__name__, app_name, str(e))))
+                    print((style.ERROR("Failed to import '%s' from '%s' reason: %s" % (model.__name__, app_name, str(e)))))
                 continue
         if not quiet_load:
-            print(style.SQL_COLTYPE("From '%s' autoload: %s" % (app_mod.__name__.split('.')[-2], ", ".join(model_labels))))
+            print((style.SQL_COLTYPE("From '%s' autoload: %s" % (app_mod.__name__.split('.')[-2], ", ".join(model_labels)))))
 
     return imported_objects

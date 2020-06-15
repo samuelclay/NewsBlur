@@ -39,10 +39,10 @@ class Command(BaseCommand):
             feeds = Feed.objects.filter(next_scheduled_update__lte=now,
                                         average_stories_per_month__lt=options['skip'],
                                         active=True)
-            print " ---> Skipping %s feeds" % feeds.count()
+            print(" ---> Skipping %s feeds" % feeds.count())
             for feed in feeds:
                 feed.set_next_scheduled_update()
-                print '.',
+                print('.', end=' ')
             return
             
         socket.setdefaulttimeout(options['timeout'])
@@ -82,5 +82,5 @@ class Command(BaseCommand):
         
         django.db.connection.close()
         
-        print " ---> Fetching %s feeds..." % feeds.count()
+        print(" ---> Fetching %s feeds..." % feeds.count())
         disp.run_jobs()
