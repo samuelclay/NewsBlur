@@ -93,7 +93,7 @@ console.time('deflate');
 for(let i = 0; i < 30000; ++i) {
   deflate(payload, function (err, buffer) {});
 }
-q.onDone(function() {
+t.onDone(function() {
   console.timeEnd('deflate');
 });
 ```
@@ -110,23 +110,23 @@ q.onDone(function() {
 
 ### `var t = new Limiter([opts])`
 Constructor. `opts` may contain inital values for:
-* `q.concurrency`
+* `t.concurrency`
 
 ## Instance methods
 
-### `q.onDone(fn)`
+### `t.onDone(fn)`
 `fn` will be called once and only once, when the queue is empty.
 
 ## Instance methods mixed in from `Array`
 Mozilla has docs on how these methods work [here](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array).
-### `q.push(element1, ..., elementN)`
-### `q.unshift(element1, ..., elementN)`
-### `q.splice(index , howMany[, element1[, ...[, elementN]]])`
+### `t.push(element1, ..., elementN)`
+### `t.unshift(element1, ..., elementN)`
+### `t.splice(index , howMany[, element1[, ...[, elementN]]])`
 
 ## Properties
-### `q.concurrency`
+### `t.concurrency`
 Max number of jobs the queue should process concurrently, defaults to `Infinity`.
 
-### `q.length`
+### `t.length`
 Jobs pending + jobs to process (readonly).
 
