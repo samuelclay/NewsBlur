@@ -27,7 +27,7 @@ image==1.5.27
 isodate==0.5.4
 lxml==4.5.1
 mock==2.0.0
-mongoengine==0.20.0
+mongoengine==3.4.0
 PyMySQL==0.9.3
 ndg-httpsclient==0.4.2
 nltk==3.2.1
