@@ -151,8 +151,8 @@ class MUserSearch(mongo.Document):
         for user_search in user_searches:
             try:
                 user_search.remove()
-            except Exception, e:
-                print " ****> Error on search removal: %s" % e
+            except Exception as e:
+                print(" ****> Error on search removal: %s" % e)
         
     def remove(self):
         from apps.rss_feeds.models import Feed
@@ -289,7 +289,7 @@ class SearchStory:
         
         try:
             result_ids = [r.get_id() for r in results]
-        except pyes.InvalidQuery, e:
+        except pyes.InvalidQuery as e:
             logging.info(" ---> ~FRInvalid search query \"%s\": %s" % (query, e))
             return []
         
@@ -316,7 +316,7 @@ class SearchStory:
         
         try:
             result_ids = [r.get_id() for r in results]
-        except pyes.InvalidQuery, e:
+        except pyes.InvalidQuery as e:
             logging.info(" ---> ~FRInvalid search query \"%s\": %s" % (query, e))
             return []
         
