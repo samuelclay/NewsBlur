@@ -19,16 +19,4 @@ module.exports = function (grunt) {
 
 	/* test task */
 	grunt.registerTask('test', 'mochaTest');
-
-	/* documentation generation task */
-	grunt.registerTask('documentation', function () {
-		var markdox = require('markdox');
-		var done = this.async();
-
-		var files = [
-			'./index.js'
-		];
-
-		markdox.process(files, 'documentation.md', done);
-	});
 };
