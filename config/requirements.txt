@@ -1,4 +1,4 @@
-bleach==3.1.0
+bleach==3.1.4
 BeautifulSoup==3.2.1
 beautifulsoup4==4.8.0
 boto==2.43.0
@@ -34,8 +34,8 @@ ndg-httpsclient==0.4.2
 nltk==3.4.5
 numpy==1.11.2
 oauth2==1.9.0.post1
-pillow==3.4.2
-psutil==5.0.0
+pillow==6.2.2
+psutil==5.6.6
 psycopg2==2.8.3
 pyasn1==0.1.9
 pyes==0.99.6
