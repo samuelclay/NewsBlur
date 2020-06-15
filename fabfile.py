@@ -762,7 +762,7 @@ def setup_staging():
 
 def setup_node_app():
     sudo('curl -sL https://deb.nodesource.com/setup_14.x | sudo bash -')
-    sudo('apt-get install -y nodejs npm')
+    sudo('apt-get install -y nodejs')
     # run('curl -L https://npmjs.org/install.sh | sudo sh')
     # sudo('apt-get install npm')
     sudo('sudo npm install -g npm')
