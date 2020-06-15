@@ -146,6 +146,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     
     render_header: function(model, value, options) {
         var params = this.get_render_params();
+        this.$('.NB-feed-story-header-feed').remove();
         this.$('.NB-feed-story-header').replaceWith($(this.story_header_template(params)));
         this.generate_gradients();
     },

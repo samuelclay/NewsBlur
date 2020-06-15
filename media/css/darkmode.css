@@ -184,7 +184,10 @@ color: #a85b40;
 
 /* "All Site Stories" color of titles */
 .NB-dark .NB-storytitles-title {
-    color: #ccc;
+    color: #c0c0c0;
+}
+.NB-dark .read .NB-storytitles-title {
+    color: #595b5c;
 }
 
 /* "All Site Stories" background color */
@@ -888,14 +891,14 @@ border-bottom-color: #303739;
 .NB-dark .NB-feeds-header .NB-feeds-header-title,
 .NB-dark .NB-feedlists .NB-socialfeeds .feed .feed_title,
 .NB-dark .NB-feedlist .feed_title {
-    color: #E2E3E4;
+    color: #b2b3b4;
     text-shadow: 0 1px 0 rgba(0,0,0,.8);
 }
 
 /* Feed folder text */
 .NB-dark .NB-feedlist .folder_title,
 .NB-dark .NB-feedlist .folder.NB-selected>.folder_title {
-    color: #D8D9DB;
+    color: #a8a9aB;
     text-shadow: 0 1px 0 rgba(0,0,0,.8);
 }
 
@@ -1024,8 +1027,8 @@ background-color: #5d8392;
 /* Background for grid view and other views */
 .NB-dark .NB-feed-stories,
 .NB-dark .NB-story-content-container {
-    color: #ccc;
-    background-color: #292b2c;
+    color: #c0c0c0;
+    background-color: #191b1c;
 }
 
 /* Quote blocks found in stories */
@@ -1082,11 +1085,15 @@ color: #fff;
     background-color: #303739;
 }
 
+.NB-dark .NB-feed-story .NB-feed-story-tag {
+  border-color: rgba(255, 255, 255, 0.05) transparent rgba(0, 0, 0, 0.4);
+  
+}
 
 /* Story title text color */
 .NB-dark .NB-feed-story a.NB-feed-story-title,
 .NB-dark .NB-feed-story.read a.NB-feed-story-title {
-    color: #ddd;
+    color: #d0d0d0;
 }
 
 
@@ -1103,17 +1110,25 @@ color: #fff;
     color: rgba(255, 255, 255, 0.2);
 }
 
+.NB-dark .NB-sideoption-save,
+.NB-dark .NB-sideoption-share {
+  border: 1px solid #303739;
+}
+
 /* Save story and share window. Tag/Comment title */
 .NB-dark .NB-sideoption-save .NB-sideoption-save-title,
 .NB-dark .NB-sideoption-share .NB-sideoption-share-title{
     text-shadow: none;
-    color: #ccc;
+    color: #c0c0c0;
 }
 
+.NB-dark ul.tagit {
+  border-color: #303739;
+}
 /* Tag button and "Add 1 story tag" button */
 .NB-dark ul.tagit li.tagit-choice,
 .NB-dark .NB-sideoption-save .NB-sideoption-save-populate{
-    color: #ccc;
+    color: #c0c0c0;
     background-color: #303739;
 }
 
@@ -1157,15 +1172,13 @@ color: #fff;
 }
 
 
-/*
 .NB-dark .NB-sideoption:hover, 
 .NB-dark .NB-sideoption.NB-active, 
 .NB-dark .NB-story-starred 
 .NB-dark .NB-sideoption.NB-feed-story-save, 
 .NB-dark .NB-story-shared .NB-sideoption.NB-feed-story-share {
-background-color: #303739;
+  background-color: #303739;
 }
-*/
 
 /* Story comment teaser (Top of story) and story comment (bottom of story) color */
 .NB-dark .NB-story-comments-shares-teaser,
