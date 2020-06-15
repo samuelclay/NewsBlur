@@ -280,6 +280,7 @@ class Scanner(object):
         # - should be no longer than 1024 characters.
         # Disabling this procedure will allow simple keys of any length and
         # height (may cause problems if indentation is broken though).
+        keys_to_remove = []
         for level in self.possible_simple_keys.keys():
             key = self.possible_simple_keys[level]
             if key.line != self.line  \
@@ -287,7 +288,9 @@ class Scanner(object):
                 if key.required:
                     raise ScannerError("while scanning a simple key", key.mark,
                             "could not found expected ':'", self.get_mark())
-                del self.possible_simple_keys[level]
+                keys_to_remove.append(self.possible_simple_keys[level])
+        for key in keys_to_remove:
+            del key
 
     def save_possible_simple_key(self):
         # The next token may start a simple key. We check if it's possible
