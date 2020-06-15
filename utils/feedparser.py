@@ -1633,7 +1633,7 @@ class _FeedParserMixin:
                 self._addTag(term.strip(), None, None)
 
     def _start_itunes_category(self, attrsD):
-        self._addTag(attrsD.get('text'), u'http://www.itunes.com/', None)
+        self._addTag(attrsD.get('text'), 'http://www.itunes.com/', None)
         self.push('category', 1)
 
     def _end_category(self):
