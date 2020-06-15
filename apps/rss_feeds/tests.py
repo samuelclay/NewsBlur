@@ -183,9 +183,9 @@ class FeedTest(TestCase):
         old_story_guid = "blog.google:443/topics/inside-google/google-earths-incredible-3d-imagery-explained/"
 
         management.call_command('loaddata', 'google1.json', verbosity=1, skip_checks=False)
-        print(Feed.objects.all())
+        print((Feed.objects.all()))
         feed = Feed.objects.get(pk=766)
-        print(" Testing test_load_feeds__google: %s" % feed)
+        print((" Testing test_load_feeds__google: %s" % feed))
         stories = MStory.objects(story_feed_id=feed.pk)
         self.assertEqual(stories.count(), 0)
 

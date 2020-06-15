@@ -30,5 +30,5 @@ class Command(BaseCommand):
             for feed in old_feeds:
                 feed.count_subscribers(verbose=True)
                 if feed.num_subscribers == 0:
-                    print(' ---> Deleting: [%s] %s' % (feed.pk, feed))
+                    print((' ---> Deleting: [%s] %s' % (feed.pk, feed)))
                     feed.delete()

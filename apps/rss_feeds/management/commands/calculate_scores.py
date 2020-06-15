@@ -37,12 +37,12 @@ class Command(BaseCommand):
                 usersubs = UserSubscription.objects.filter(user=u, active=True)
             else:
                 usersubs = UserSubscription.objects.filter(user=u, needs_unread_recalc=True)
-            print(" ---> %s has %s feeds (%s/%s)" % (u.username, usersubs.count(), i+1, user_count))
+            print((" ---> %s has %s feeds (%s/%s)" % (u.username, usersubs.count(), i+1, user_count)))
             for sub in usersubs:
                 try:
                     sub.calculate_feed_scores(silent=options['silent'])
                 except Exception as e:
-                    print(" ***> Exception: %s" % e)
+                    print((" ***> Exception: %s" % e))
                     continue
         
 def daemonize():
