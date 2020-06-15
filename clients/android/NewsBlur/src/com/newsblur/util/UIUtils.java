@@ -270,7 +270,7 @@ public class UIUtils {
         });
     }
 
-    public static void startReadingActivity(FeedSet fs, String startingHash, boolean waitRefresh, Context context) {
+    public static void startReadingActivity(FeedSet fs, String startingHash, Context context) {
         Class activityClass;
 		if (fs.isAllSaved()) {
             activityClass = SavedStoriesReading.class;
@@ -299,7 +299,6 @@ public class UIUtils {
         Intent i = new Intent(context, activityClass);
         i.putExtra(Reading.EXTRA_FEEDSET, fs);
         i.putExtra(Reading.EXTRA_STORY_HASH, startingHash);
-        i.putExtra(Reading.EXTRA_WAIT_REFRESH, waitRefresh);
         context.startActivity(i);
     }
 
