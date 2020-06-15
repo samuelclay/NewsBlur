@@ -115,11 +115,11 @@ class RStats:
         
         keys_count = len(keys)
         total_size = float(sum([k for k in sizes.values()]))
-        print " ---> %s total keys" % keys_count
+        print(" ---> %s total keys" % keys_count)
         for prefix, rest in prefixes.items():
             total_expiring = sum([k for p, k in dict(prefixes_ttls[prefix]).items() if p != "-"])
-            print " ---> %4s: (%.4s%% keys - %.4s%% space) %s keys (%s expiring: %s)" % (prefix, 100. * (len(rest) / float(keys_count)), 100 * (sizes[prefix] / total_size), len(rest), total_expiring, dict(prefixes_ttls[prefix]))
-        print " ---> %s errors: %s" % (len(errors), errors)
+            print(" ---> %s: (%s keys - %s space) %s keys (%s expiring: %s)" % (str(prefix, 100. * (len(rest) / float(keys_count)))[:4], str(100 * (sizes[prefix] / total_size))[:4], str(len(rest))[:4], total_expiring, dict(prefixes_ttls[prefix])))
+        print(" ---> %s errors: %s" % (len(errors), errors))
 
 def round_time(dt=None, round_to=60):
    """Round a datetime object to any time laps in seconds
