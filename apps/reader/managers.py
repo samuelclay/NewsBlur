@@ -33,4 +33,4 @@ class UserSubscriptionManager(models.Manager):
                 return super(UserSubscriptionManager, self).get(*args, **kwargs)
             else:
                 exc_info = sys.exc_info()
-                raise exc_info[0], None, exc_info[2]
+                raise exc_info[0].with_traceback(exc_info[2])

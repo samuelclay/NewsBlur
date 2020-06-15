@@ -120,7 +120,7 @@ def dashboard(request, **kwargs):
         'user_profile'      : user.profile,
         'feed_count'        : feed_count,
         'custom_styling'    : custom_styling,
-        'account_images'    : range(1, 4),
+        'account_images'    : list(range(1, 4)),
         'recommended_feeds' : recommended_feeds,
         'unmoderated_feeds' : unmoderated_feeds,
         'statistics'        : statistics,
@@ -173,7 +173,7 @@ def login(request):
                 logging.user(form.get_user(), "~FG~BBLogin~FW")
                 return HttpResponseRedirect(reverse('index'))
         else:
-            message = form.errors.items()[0][1][0]
+            message = list(form.errors.items())[0][1][0]
 
     if request.POST.get('api'):
         return HttpResponse(json.encode(dict(code=code, message=message)), content_type='application/json')
@@ -313,10 +313,10 @@ def load_feeds(request):
         categories = MCategory.serialize()
 
     logging.user(request, "~FB~SBLoading ~FY%s~FB/~FM%s~FB feeds/socials%s" % (
-            len(feeds.keys()), len(social_feeds), '. ~FCUpdating counts.' if update_counts else ''))
+            len(list(feeds.keys())), len(social_feeds), '. ~FCUpdating counts.' if update_counts else ''))
 
     data = {
-        'feeds': feeds.values() if version == 2 else feeds,
+        'feeds': list(feeds.values()) if version == 2 else feeds,
         'social_feeds': social_feeds,
         'social_profile': social_profile,
         'social_services': social_services,
@@ -428,7 +428,7 @@ def load_feeds_flat(request):
     saved_searches = MSavedSearch.user_searches(user.pk)
 
     logging.user(request, "~FB~SBLoading ~FY%s~FB/~FM%s~FB/~FR%s~FB feeds/socials/inactive ~FMflat~FB%s%s" % (
-            len(feeds.keys()), len(social_feeds), len(inactive_feeds), '. ~FCUpdating counts.' if update_counts else '',
+            len(list(feeds.keys())), len(social_feeds), len(inactive_feeds), '. ~FCUpdating counts.' if update_counts else '',
             ' ~BB(background fetch)' if background_ios else ''))
 
     data = {
@@ -488,7 +488,7 @@ def refresh_feeds(request):
     feed_icons = {}
     if favicons_fetching:
         feed_icons = dict([(i.feed_id, i) for i in MFeedIcon.objects(feed_id__in=favicons_fetching)])
-        for feed_id, feed in feeds.items():
+        for feed_id, feed in list(feeds.items()):
             if feed_id in favicons_fetching and feed_id in feed_icons:
                 feeds[feed_id]['favicon'] = feed_icons[feed_id].data
                 feeds[feed_id]['favicon_color'] = feed_icons[feed_id].color
@@ -521,7 +521,7 @@ def refresh_feeds(request):
         if check_fetch_status or favicons_fetching:
             extra_fetch = "(%s/%s)" % (check_fetch_status, len(favicons_fetching))
         logging.user(request, "~FBRefreshing %s+%s feeds %s (%.4s/%.4s/%.4s)" % (
-            len(feeds.keys()), len(social_feeds.keys()), extra_fetch, 
+            len(list(feeds.keys())), len(list(social_feeds.keys())), extra_fetch, 
             (checkpoint1-start).total_seconds(),
             (checkpoint2-start).total_seconds(),
             (end-start).total_seconds(),
@@ -987,7 +987,7 @@ def load_starred_stories(request):
     return {
         "stories": stories,
         "user_profiles": user_profiles,
-        'feeds': unsub_feeds.values() if version == 2 else unsub_feeds,
+        'feeds': list(unsub_feeds.values()) if version == 2 else unsub_feeds,
         "message": message,
     }
 
@@ -1711,7 +1711,7 @@ def mark_feed_stories_as_read(request):
         'message': 'Nothing was marked as read'
     }
     
-    for feed_id, story_ids in feeds_stories.items():
+    for feed_id, story_ids in list(feeds_stories.items()):
         try:
             feed_id = int(feed_id)
         except ValueError:
@@ -1745,14 +1745,14 @@ def mark_social_stories_as_read(request):
     users_feeds_stories = request.POST.get('users_feeds_stories', "{}")
     users_feeds_stories = json.decode(users_feeds_stories)
 
-    for social_user_id, feeds in users_feeds_stories.items():
-        for feed_id, story_ids in feeds.items():
+    for social_user_id, feeds in list(users_feeds_stories.items()):
+        for feed_id, story_ids in list(feeds.items()):
             feed_id = int(feed_id)
             try:
                 socialsub = MSocialSubscription.objects.get(user_id=request.user.pk, 
                                                             subscription_user_id=social_user_id)
                 data = socialsub.mark_story_ids_as_read(story_ids, feed_id, request=request)
-            except OperationError, e:
+            except OperationError as e:
                 code = -1
                 errors.append("Already read story: %s" % e)
             except MSocialSubscription.DoesNotExist:
@@ -1885,7 +1885,7 @@ def mark_feed_as_read(request):
     
     if infrequent:
         feed_ids = Feed.low_volume_feeds(feed_ids, stories_per_month=infrequent)
-        feed_ids = [unicode(f) for f in feed_ids] # This method expects strings
+        feed_ids = [str(f) for f in feed_ids] # This method expects strings
     
     if cutoff_date:
         logging.user(request, "~FMMark %s feeds read, %s - cutoff: %s/%s" % 
@@ -1909,10 +1909,10 @@ def mark_feed_as_read(request):
                 sub = UserSubscription.objects.get(feed=feed, user=request.user)
                 if not multiple:
                     logging.user(request, "~FMMarking feed as read: ~SB%s" % (feed,))
-            except (Feed.DoesNotExist, UserSubscription.DoesNotExist), e:
+            except (Feed.DoesNotExist, UserSubscription.DoesNotExist) as e:
                 errors.append("User not subscribed: %s" % e)
                 continue
-            except (ValueError), e:
+            except (ValueError) as e:
                 errors.append("Invalid feed_id: %s" % e)
                 continue
 
@@ -1927,7 +1927,7 @@ def mark_feed_as_read(request):
                 marked_read = sub.mark_newer_stories_read(cutoff_date=cutoff_date)
             if marked_read and not multiple:
                 r.publish(request.user.username, 'feed:%s' % feed_id)
-        except IntegrityError, e:
+        except IntegrityError as e:
             errors.append("Could not mark feed as read: %s" % e)
             code = -1
             
@@ -2234,7 +2234,7 @@ def load_features(request):
     page = max(int(request.GET.get('page', 0)), 0)
     if page > 1:
         logging.user(request, "~FBBrowse features: ~SBPage #%s" % (page+1))
-    features = Feature.objects.all()[page*3:(page+1)*3+1].values()
+    features = list(Feature.objects.all()[page*3:(page+1)*3+1].values())
     features = [{
         'description': f['description'], 
         'date': localtime_for_timezone(f['date'], user.profile.timezone).strftime("%b %d, %Y")
@@ -2346,7 +2346,7 @@ def activate_premium_account(request):
             if sub.feed.premium_subscribers <= 0:
                 sub.feed.count_subscribers()
                 sub.feed.schedule_feed_fetch_immediately()
-    except Exception, e:
+    except Exception as e:
         subject = "Premium activation failed"
         message = "%s -- %s\n\n%s" % (request.user, usersubs, e)
         mail_admins(subject, message, fail_silently=True)
@@ -2400,7 +2400,7 @@ def _mark_story_as_starred(request):
     if not story:
         return {'code': -1, 'message': "Could not find story to save."}
         
-    story_db = dict([(k, v) for k, v in story._data.items() 
+    story_db = dict([(k, v) for k, v in list(story._data.items()) 
                             if k is not None and v is not None])
     story_db.pop('user_id', None)
     story_db.pop('starred_date', None)
@@ -2414,11 +2414,11 @@ def _mark_story_as_starred(request):
     removed_user_tags = []
     if not starred_story:
         params.update(story_values)
-        if params.has_key('story_latest_content_z'):
+        if 'story_latest_content_z' in params:
             params.pop('story_latest_content_z')
         try:
             starred_story = MStarredStory.objects.create(**params)
-        except OperationError, e:
+        except OperationError as e:
             logging.user(request, "~FCStarring ~FRfailed~FC: ~SB%s (~FM~SB%s~FC~SN)" % (story.story_title[:32], e))        
             return {'code': -1, 'message': "Could not save story due to: %s" % e}
             
@@ -2598,7 +2598,7 @@ def send_story_email(request):
         msg.attach_alternative(html, "text/html")
         try:
             msg.send()
-        except boto.ses.connection.BotoServerError, e:
+        except boto.ses.connection.BotoServerError as e:
             code = -1
             message = "Email error: %s" % str(e)
         
