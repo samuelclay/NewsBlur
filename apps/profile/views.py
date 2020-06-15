@@ -692,7 +692,7 @@ def ios_subscription_status(request):
     logging.debug(" ---> iOS Subscription Status: %s" % request.POST)
     
     subject = "iOS Subscription Status"
-    message = """%s""" % (request.POST)
+    message = """%s""" % (request.__dict__)
     mail_admins(subject, message)
     
     return {
