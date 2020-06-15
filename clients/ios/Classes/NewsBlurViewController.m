@@ -489,6 +489,14 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     NSLog(@"Fetching feed list");
     [appDelegate cancelOfflineQueue];
     
+    //TODO: want to include inactive for #1325 (show muted sites in All feeds view)
+//    if (self.inPullToRefresh_) {
+//        urlFeedList = [NSString stringWithFormat:@"%@/reader/feeds?flat=true&update_counts=true&include_inactive=true",
+//                       self.appDelegate.url];
+//    } else {
+//        urlFeedList = [NSString stringWithFormat:@"%@/reader/feeds?flat=true&update_counts=false&include_inactive=true",
+//                       self.appDelegate.url];
+//    }
     if (self.inPullToRefresh_) {
         urlFeedList = [NSString stringWithFormat:@"%@/reader/feeds?flat=true&update_counts=true",
                       self.appDelegate.url];
@@ -706,6 +714,10 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     // set up dictFolders
     NSMutableDictionary * allFolders = [[NSMutableDictionary alloc] init];
     
+    //TODO: want to include inactive for #1325 (show muted sites in All feeds view)
+//    if (![[results objectForKey:@"flat_folders_with_inactive"] isKindOfClass:[NSArray class]]) {
+//        allFolders = [[results objectForKey:@"flat_folders_with_inactive"] mutableCopy];
+//    }
     if (![[results objectForKey:@"flat_folders"] isKindOfClass:[NSArray class]]) {
         allFolders = [[results objectForKey:@"flat_folders"] mutableCopy];
     }

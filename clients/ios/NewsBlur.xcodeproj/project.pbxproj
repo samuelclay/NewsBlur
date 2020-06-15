@@ -12,6 +12,7 @@
 		17042DB92391D68A001BCD32 /* WidgetStory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17042DB82391D68A001BCD32 /* WidgetStory.swift */; };
 		17042DBB23922A4D001BCD32 /* WidgetLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17042DBA23922A4D001BCD32 /* WidgetLoader.swift */; };
 		1715D02B2166B3F900227731 /* PremiumManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 1715D02A2166B3F900227731 /* PremiumManager.m */; };
+		1721C9D12497F91A00B0EDC4 /* mute_gray.png in Resources */ = {isa = PBXBuildFile; fileRef = 1721C9D02497F91900B0EDC4 /* mute_gray.png */; };
 		17362ADD23639B4E00A0FCCC /* OfflineFetchText.m in Sources */ = {isa = PBXBuildFile; fileRef = 17362ADC23639B4E00A0FCCC /* OfflineFetchText.m */; };
 		1740C6881C10FD75005EA453 /* theme_color_dark.png in Resources */ = {isa = PBXBuildFile; fileRef = 1740C6841C10FD75005EA453 /* theme_color_dark.png */; };
 		1740C6891C10FD75005EA453 /* theme_color_light.png in Resources */ = {isa = PBXBuildFile; fileRef = 1740C6851C10FD75005EA453 /* theme_color_light.png */; };
@@ -666,6 +667,7 @@
 		17042DBA23922A4D001BCD32 /* WidgetLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetLoader.swift; sourceTree = "<group>"; };
 		1715D0292166B3F900227731 /* PremiumManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PremiumManager.h; sourceTree = "<group>"; };
 		1715D02A2166B3F900227731 /* PremiumManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PremiumManager.m; sourceTree = "<group>"; };
+		1721C9D02497F91900B0EDC4 /* mute_gray.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = mute_gray.png; sourceTree = "<group>"; };
 		17362ADB23639B4E00A0FCCC /* OfflineFetchText.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = OfflineFetchText.h; path = offline/OfflineFetchText.h; sourceTree = "<group>"; };
 		17362ADC23639B4E00A0FCCC /* OfflineFetchText.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = OfflineFetchText.m; path = offline/OfflineFetchText.m; sourceTree = "<group>"; };
 		1740C6841C10FD75005EA453 /* theme_color_dark.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = theme_color_dark.png; sourceTree = "<group>"; };
@@ -1930,6 +1932,7 @@
 				1761295D1C630AEB00702FE4 /* mute_feed_off@2x.png */,
 				1761295E1C630AEB00702FE4 /* mute_feed_on.png */,
 				1761295F1C630AEB00702FE4 /* mute_feed_on@2x.png */,
+				1721C9D02497F91900B0EDC4 /* mute_gray.png */,
 				FF1104601769695A00502C29 /* g_icn_offline@2x.png */,
 				FFC518B81768E59F00542719 /* g_icn_offline.png */,
 				17AACFD822279A3900DE6EA4 /* autoscroll_off.png */,
@@ -3082,6 +3085,7 @@
 				FF5F3A87162B834E008DBE3E /* bin_closed.png in Resources */,
 				17AACFE622279A3C00DE6EA4 /* autoscroll_faster.png in Resources */,
 				FF5F3A89162B8377008DBE3E /* arrow_branch.png in Resources */,
+				1721C9D12497F91A00B0EDC4 /* mute_gray.png in Resources */,
 				FF5F3A8B162B8390008DBE3E /* car.png in Resources */,
 				FF41309D162CEC7100DDB6A7 /* time.png in Resources */,
 				FF4130A0162CECAE00DDB6A7 /* email.png in Resources */,
