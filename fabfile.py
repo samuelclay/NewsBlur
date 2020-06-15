@@ -468,7 +468,7 @@ def setup_virtualenv():
                 # sudo('rmvirtualenv newsblur')
                 # sudo('rm -fr venv')
                 with settings(warn_only=True):
-                    run('mkvirtualenv --no-site-packages newsblur')
+                    run('mkvirtualenv newsblur')
                 run('echo "import sys; sys.setdefaultencoding(\'utf-8\')" | sudo tee venv/newsblur/lib/python2.7/sitecustomize.py')
                 run('echo "/srv/newsblur" | sudo tee venv/newsblur/lib/python2.7/site-packages/newsblur.pth')
     
@@ -761,8 +761,8 @@ def setup_staging():
         run('touch logs/newsblur.log')
 
 def setup_node_app():
-    sudo('curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -')
-    sudo('apt-get install -y nodejs')
+    sudo('curl -sL https://deb.nodesource.com/setup_14.x | sudo bash -')
+    sudo('apt-get install -y nodejs npm')
     # run('curl -L https://npmjs.org/install.sh | sudo sh')
     # sudo('apt-get install npm')
     sudo('sudo npm install -g npm')
