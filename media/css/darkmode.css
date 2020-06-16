@@ -52,20 +52,23 @@ body.NB-dark {
 /* = Scrollbars = */
 /* ============== */
 
+.NB-dark {
+/*    scrollbar-color:  rgb(24,29,33) rgb(52,59,61);*/
+}
 .NB-dark ::-webkit-scrollbar {
-    width: 12px;
+    width: 8px;
 }
 
 .NB-dark ::-webkit-scrollbar-thumb {
-    background-color: rgb(24,29,33);
+    background-color: #4A4C4A;
 }
 
 .NB-dark ::-webkit-scrollbar-track {
-    background-color: rgb(52,59,61);
+    background-color: #1a1b1d;
 }
 
 .NB-dark .ui-layout-resizer-west {
-    background-color: rgb(52,59,61);
+    background-color: #232526;
     border-left: 1px solid rgba(0,0,0,0);
 }
 
@@ -1105,9 +1108,13 @@ color: #fff;
 .NB-dark .NB-feed-story.read .NB-feed-story-header-info {
     background-color: #202729;
 }
+.NB-dark .NB-feed-story .NB-feed-story-header .NB-feed-story-date,
+.NB-dark .NB-feed-story .NB-feed-story-header .NB-feed-story-author-wrapper {
+    color: #A2B3BF;
+}
 .NB-dark .NB-feed-story.read .NB-feed-story-header .NB-feed-story-date,
 .NB-dark .NB-feed-story.read .NB-feed-story-header .NB-feed-story-author-wrapper {
-    color: #656B5B;
+    color: #636D74;
 }
 .NB-dark .NB-feed-story .NB-feed-story-tag {
   border-color: rgba(255, 255, 255, 0.05) transparent rgba(0, 0, 0, 0.4);
