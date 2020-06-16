@@ -192,7 +192,10 @@ static UIFont *textFont = nil;
         CGContextStrokePath(context);
     }
     
-    if (cell.savedStoriesCount > 0) {
+    if (cell.isInactive) {
+        CGRect imageRect = CGRectMake(CGRectGetMaxX(r) - 25, CGRectGetMidY(r) - 8, 16, 16);
+        [[UIImage imageNamed:@"mute_gray.png"] drawInRect:imageRect];
+    } else if (cell.savedStoriesCount > 0) {
         [cell.unreadCount drawInRect:r ps:cell.savedStoriesCount nt:0 listType:NBFeedListSaved];
     } else {
         [cell.unreadCount drawInRect:r ps:cell.positiveCount nt:cell.neutralCount
