@@ -960,11 +960,20 @@ border-bottom-color: #303739;
     border-top-color: #797D7D;
     border-bottom-color: #4C4D4E;
 }
-.NB-feeds-header:hover:not(.NB-selected) {
+.NB-dark .NB-feeds-header:hover:not(.NB-selected) {
     background: none;
     background-color: #5c5e60;
     border-top-color: #797D7D;
     border-bottom-color: #4C4D4E;    
+}
+.NB-dark .NB-feeds-header-read.NB-feeds-header, 
+.NB-dark .NB-feeds-header-searches.NB-feeds-header, 
+.NB-dark .NB-feeds-header-starred.NB-feeds-header, 
+.NB-dark .NB-searches-folder {
+    border-bottom: 1px solid #333536;
+}
+.NB-dark .NB-feeds-header-read-container.NB-feeds-header-container {
+    border-top: 1px solid #333536;
 }
 /* Unread feed count badge */
 .NB-dark .unread_count_neutral {
