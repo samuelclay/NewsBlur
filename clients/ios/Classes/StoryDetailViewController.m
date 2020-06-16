@@ -76,6 +76,17 @@
     [audioSession setCategory:AVAudioSessionCategoryPlayback
                         error:nil];
     
+    WKWebViewConfiguration *configuration = [WKWebViewConfiguration new];
+    NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
+    NSString *videoPlayback = [preferences stringForKey:@"video_playback"];
+    
+    configuration.allowsInlineMediaPlayback = ![videoPlayback isEqualToString:@"fullscreen"];
+    
+    self.webView = [[WKWebView alloc] initWithFrame:self.view.frame configuration:configuration];
+    
+    [self.view addSubview:self.webView];
+    
+    self.webView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     self.webView.navigationDelegate = self;
 //    self.webView.scalesPageToFit = YES;
     self.webView.allowsLinkPreview = YES;
@@ -98,6 +109,7 @@
                                  context:nil];
     
     [self.appDelegate prepareWebView:self.webView completionHandler:nil];
+    
     [self clearWebView];
 
 //    UIPinchGestureRecognizer *pinchGesture = [[UIPinchGestureRecognizer alloc]
@@ -588,8 +600,6 @@
     
     dispatch_async(dispatch_get_main_queue(), ^{
 //        NSLog(@"Drawing Story: %@", [self.activeStory objectForKey:@"story_title"]);
-//        [self.webView setMediaPlaybackRequiresUserAction:NO];
-//        self.webView.allowsInlineMediaPlayback = YES;
         [self loadHTMLString:htmlTopAndBottom];
         [self.appDelegate.storyPageControl setTextButton:self];
     });
