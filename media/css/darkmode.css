@@ -52,19 +52,16 @@ body.NB-dark {
 /* = Scrollbars = */
 /* ============== */
 
-.NB-dark {
-/*    scrollbar-color:  rgb(24,29,33) rgb(52,59,61);*/
-}
 .NB-dark ::-webkit-scrollbar {
     width: 8px;
 }
 
 .NB-dark ::-webkit-scrollbar-thumb {
-    background-color: #4A4C4A;
+    background-color: #1a1b1d;
 }
 
 .NB-dark ::-webkit-scrollbar-track {
-    background-color: #1a1b1d;
+    background-color: #4A4C4A;
 }
 
 .NB-dark .ui-layout-resizer-west {
@@ -730,17 +727,18 @@ color: #a85b40;
 .NB-dark .NB-module-header,
 .NB-dark .NB-module-recommended-date,
 .NB-dark .NB-taskbar-options,
-.NB-dark .NB-feedbar-options,
-.NB-dark ul.segmented-control,
-.NB-dark ul.segmented-control li {
+.NB-dark .NB-feedbar-options {
     background: none;
     background-color: #565759;
     color: #c0c0c0;
-    text-shadow: 0 1px 0 rgba(0,0,0,.4);
+    text-shadow: 0 1px 0 rgba(0,0,0,.1);
     /*border: 1px solid #90928b;*/
 }
 .NB-dark ul.segmented-control,
 .NB-dark ul.segmented-control li {
+    background: none;
+    color: #c0c0c0;
+    text-shadow: 0 1px 0 rgba(0,0,0,.1);
     background-color: #52555E;
 }
 .NB-dark #story_taskbar {
@@ -990,8 +988,8 @@ border-bottom-color: #303739;
 /* Selected stories highlight */
 .NB-dark .NB-story-title.NB-selected {
     color: #eee;
-    border-top: 1px solid #101111;
-    border-bottom: 1px solid #101111;
+    border-top: 1px solid #414545;
+    border-bottom: 1px solid #202121;
     background: none;
     background-color: #30393F;
 }
