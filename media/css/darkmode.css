@@ -1266,7 +1266,9 @@ height: 0px;
 }
 */
 
-
+.NB-dark .NB-modal-statistics .NB-statistics-stat {
+    border-color: #404040;
+}
 
 
 /* ================= */
