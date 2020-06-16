@@ -33,11 +33,11 @@ body.NB-theme-transitioning {
 }
 body.NB-dark {
     background-color: #191b1c;
-    color: #ccc;
+    color: #c0c0c0;
 }
 
 .NB-dark .NB-static-alert {
-    color: #ccc;
+    color: #c0c0c0;
 }
 
 .NB-dark a:-webkit-any-link {
@@ -92,7 +92,7 @@ color: #a85b40;
 .NB-dark .NB-module-content-header,
 .NB-dark .NB-module-recommended .NB-recommended-description,
 .NB-dark .NB-module-features .NB-module-feature .NB-module-feature-description {
-    color: #ccc;
+    color: #c0c0c0;
 }
 
 /* Divider color */
@@ -154,7 +154,7 @@ color: #a85b40;
 /* Title colors of
 "Premium Account", "Manage", "Past Day" & "Past Day by Hour* */
 .NB-dark .NB-module-stats-count-number {
-    color: #ccc;
+    color: #c0c0c0;
     text-shadow: 0 1px 0 rgba(0, 0, 0, 0.2);
 }
 
@@ -171,7 +171,7 @@ color: #a85b40;
 
 /* Search input field color */
 .NB-dark .NB-module-search-input input {
-    color: #ccc;
+    color: #c0c0c0;
     background-color: #505050;
     border: solid 1px #505050;
 }
@@ -187,12 +187,20 @@ color: #a85b40;
     color: #c0c0c0;
 }
 .NB-dark .read .NB-storytitles-title {
+    color: #797b7c;
+}
+.NB-dark .NB-story-title.read .NB-storytitles-author {
+    color: #696b6c;
+}
+.NB-dark .read .NB-storytitles-content-preview {
     color: #595b5c;
 }
-
+.NB-dark .NB-story-title.read .story_date {
+    color: #696b6c;
+}
 /* "All Site Stories" background color */
 .NB-dark .NB-story-title {
-    color: #ccc;
+    color: #c0c0c0;
     background-color: #191b1c;
     border-top: 1px solid #232526;
     border-bottom: 1px solid #101111;
@@ -217,22 +225,29 @@ color: #a85b40;
 /* ================ */
 
 /* Manage menu on splash page & cogwheel pop-up */
+.NB-dark .NB-menu-manage-container {
+  background-color: #151613;
+}
+.NB-dark .NB-menu-manage li.NB-menu-item {
+    background-color: #303739;
+}
 .NB-dark .NB-menu-manage-container,
 .NB-dark .NB-menu-manage .NB-menu-manage-site-info, /* Preferences title background */
 .NB-dark .NB-menu-manage li.NB-menu-item, /* Icon background */
 .NB-dark .NB-menu-manage-title /* Title text background */ {
     box-shadow: none;
     text-shadow: 0 1px 0 rgba(0, 0, 0, 0.2);
-}
-
-.NB-dark .NB-menu-manage li.NB-menu-item {
-    background-color: #303739;
+    border-color: #10120b;
 }
 .NB-dark .NB-menu-manage li.NB-menu-item:hover:not(.NB-disabled):not(.NB-active), 
 .NB-dark .NB-menu-manage li.NB-menu-item.NB-hover:not(.NB-disabled):not(.NB-active) {
     text-shadow: 0 1px 0 rgba(0, 0, 0, 0.2);
     background-color: #3d4649;    
 }
+.NB-dark .NB-menu-manage li.NB-menu-item:hover .NB-menu-manage-subtitle {
+    color: rgba(255, 255, 255, .4);
+}
+
 .NB-dark .NB-menu-manage li.NB-menu-item:hover:not(.NB-disabled) .NB-menu-manage-title {
     text-shadow: 0 1px 0 rgba(0, 0, 0, 0.2);
 }
@@ -244,7 +259,7 @@ color: #a85b40;
 /* Title colors and Folder titles when moving a feed to another folder */
 .NB-dark .NB-popover-section-title,
 .NB-dark .NB-folder-option-title {
-    color: #ccc;
+    color: #c0c0c0;
 }
 
 /* Dividers */
@@ -258,7 +273,10 @@ color: #a85b40;
 .NB-dark .NB-menu-manage li.NB-menu-separator-inverse {
     border-bottom: none;
 }
-
+.NB-dark .NB-menu-manage .NB-menu-manage-feed-info, 
+.NB-dark .NB-menu-manage .NB-menu-manage-site-info {
+    background-color: #252623;
+}
 .NB-dark .popover {
     box-shadow: none;
 }
@@ -267,6 +285,7 @@ color: #a85b40;
 .NB-dark .NB-menu-manage-arrow {
     background-image: none;
     background-color: #303739;
+    border-color: #10120b;
 }
 
 
@@ -295,16 +314,13 @@ color: #a85b40;
 /* Add new site border color */
 .NB-dark .NB-popover {
     background-color: #303739;
-    border-top: 1px solid #90928b;
-    border-left: 1px solid #90928b;
-    border-right: 1px solid #90928b;
-    border-bottom: 1px solid #90928b;
+    border: 2px solid #404040;
     padding: 1px;
 }
 
 /* Add new site color */
 .NB-dark .NB-add-form {
-    color: #ccc;
+    color: #c0c0c0;
     background-color: #303739;
     border: none;
     padding: 0px;
@@ -313,8 +329,10 @@ color: #a85b40;
 /* Add new site input field and drop down menu */
 .NB-dark .NB-input,
 .NB-dark .NB-add input[type=text].ui-autocomplete-loading,
+.NB-dark textarea,
+.NB-dark textarea.NB-modal-email-comments,
 .NB-dark .NB-add-form .NB-folders{
-    color: #ccc;
+    color: #c0c0c0;
     background: none;
     background-color: #505050;
     border: solid 1px #505050;
@@ -327,7 +345,7 @@ color: #a85b40;
     border: 1px solid #90928b;
     background-color: #505050;
     background: none;
-    color: #ccc;
+    color: #c0c0c0;
 }
 
 /* Input field suggestions window (2 of 6) */
@@ -338,7 +356,7 @@ color: #a85b40;
     border-radius: 4px;
     border-right: none;
     background: #303739;
-    color: #ccc;
+    color: #c0c0c0;
 }
 
 /* Input field suggestions window (3 of 6) */
@@ -348,12 +366,12 @@ color: #a85b40;
     border-right: none;
     display: inline-block;
     background: #252D30;
-    color: #ccc;
+    color: #c0c0c0;
 }
 
 /* Input field suggestions window (4 of 6) */
 .NB-dark .NB-add-form .ui-autocomplete li a .NB-add-autocomplete-title  {
-    color: #ccc;
+    color: #c0c0c0;
 }
 
 /* Input field suggestions window (5 of 6) */
@@ -368,21 +386,21 @@ color: #a85b40;
 
 /* Unread/Oldest text color */
 .NB-dark .NB-feedbar-options-stat .NB-stat {
-    color: #ccc;
+    color: #c0c0c0;
 }
 
 /* Style Font family active */
 .NB-dark .segmented-control-vertical li.NB-active, 
 .NB-dark .segmented-control-vertical li.NB-active:active, 
 .NB-dark .segmented-control-vertical-active li {
-    color: #ccc;
+    color: #c0c0c0;
     background-color: #6D6D74;
     background-image: none;
 }
 
 /* Style Font family non-active */
 .NB-dark .segmented-control-vertical li {
-    color: #ccc;
+    color: #c0c0c0;
     text-shadow: none;
     background-color: #303739;
     background-image: none;
@@ -392,7 +410,7 @@ color: #a85b40;
 .NB-dark #simplemodal-container {
     background-color: #252D30;
     box-shadow: none;    
-    border: 1px solid #90928b;
+    border: 2px solid #404040;
 }
 
 /* Title color */
@@ -401,13 +419,13 @@ color: #a85b40;
 .NB-dark .NB-modal .NB-feed-title,
 .NB-dark .NB-modal .NB-modal-feed-heading,
 .NB-dark .NB-modal-trainer .NB-trainer-points li b{
-    color: #ccc;
+    color: #c0c0c0;
     text-shadow: none;
 }
 
 /* Header boxes */
 .NB-dark fieldset legend {
-    color: #ccc;
+    color: #c0c0c0;
     background-color: #303739;
     border: 1px solid #777;
 }
@@ -421,7 +439,7 @@ color: #a85b40;
 
 /* Selected tab */
 .NB-dark .NB-modal .NB-modal-tab.NB-active {
-    color: #ccc;
+    color: #c0c0c0;
     text-shadow: none;
     background-color: #252D30;
     border-bottom: 1px solid #252D30;
@@ -429,7 +447,7 @@ color: #a85b40;
 
 /* Non-selected tab */
 .NB-dark .NB-modal .NB-modal-tab {
-    color: #ccc;
+    color: #c0c0c0;
     text-shadow: none;
     background-color: #303739;
     border-bottom: 1px solid #777;
@@ -444,7 +462,7 @@ color: #a85b40;
 
 /* Center window */
 .NB-dark .NB-modal .NB-tab {
-    color: #ccc;
+    color: #c0c0c0;
     border-top: 1px solid #777;
 }
 
@@ -457,12 +475,12 @@ color: #a85b40;
 /* Text color for labels (Full, split, list, etc.) in preferences */
 .NB-dark .NB-view-settings.NB-preference-options label,
 .NB-dark .NB-modal-preferences .NB-preference-password label {
-    color: #ccc;
+    color: #c0c0c0;
 }
 
 /* Drop down menus */
 .NB-dark select {
-    color: #ccc;
+    color: #c0c0c0;
     background-color: #505050;
     border: solid 1px #505050;
 }
@@ -471,7 +489,7 @@ color: #a85b40;
 .NB-dark .NB-modal-profile-editor .NB-profile-blurblog-css,
 .NB-dark .NB-modal-account .NB-account-custom-css,
 .NB-dark .NB-modal-account .NB-account-custom-javascript {
-    color: #ccc;
+    color: #c0c0c0;
     background-color: #505050;
     border: solid 1px #505050;
 }
@@ -480,7 +498,7 @@ color: #a85b40;
 .NB-dark .NB-modal-account .NB-preference-username input,
 .NB-dark .NB-modal-account .NB-preference-email input,
 .NB-dark .NB-modal-account .NB-preference-password input {
-    color: #ccc;
+    color: #c0c0c0;
     background: none;
     background-color: #505050;
     border: solid 1px #505050;
@@ -491,7 +509,7 @@ color: #a85b40;
 /* Goodies & Extras: Section "blobs" */
 .NB-dark .NB-goodies-group,
 .NB-dark .NB-modal-goodies .NB-goodies-title {
-    color: #ccc;
+    color: #c0c0c0;
     text-shadow: none;
     background-color: #303739;
 }
@@ -503,14 +521,14 @@ color: #a85b40;
 
 /* Goodies & Extras: Custom URLs input field */
 .NB-dark .NB-modal-goodies .NB-goodies-custom-input {
-    color: #ccc;
+    color: #c0c0c0;
     background-color: #505050;
     border: solid 1px #505050;
 }
 
 /* Tips & Tricks: Text color */
 .NB-dark .NB-modal-tutorial {
-    color: #ccc;
+    color: #c0c0c0;
 }
 
 /* Import or upload sites: Text color */
@@ -522,7 +540,7 @@ color: #a85b40;
 .NB-dark .NB-modal-intro .NB-intro-module,
 .NB-dark .NB-modal-intro .NB-intro-uptodate-follow,
 .NB-dark .NB-modal-intro .NB-intro-services-stats-count-number {
-    color: #ccc;
+    color: #c0c0c0;
     text-shadow: none;
 }
 
@@ -543,20 +561,20 @@ color: #a85b40;
 
 /* Email Newsletters: Email field */
 .NB-dark .NB-modal-newsletters .NB-newsletters-email {
-    color: #ccc;
+    color: #c0c0c0;
     background-color: #505050;
     border: solid 1px #505050;
 }
 
 /* Email Newsletters: Body text color */
 .NB-dark .NB-newsletters-group {
-    color: #ccc;
+    color: #c0c0c0;
 }
 
 /* Keyboard shortcuts: Section "blobs" */
 .NB-dark .NB-keyboard-group,
 .NB-dark .NB-keyboard-shortcut-explanation {
-    color: #ccc;
+    color: #c0c0c0;
     text-shadow: none;
     background-color: #303739;
 }
@@ -569,7 +587,7 @@ color: #a85b40;
 .NB-dark .NB-feed-organizer-laststory,
 .NB-dark .NB-feed-organizer-monthlycount,
 .NB-dark .NB-feed-organizer-opens {
-    color: #ccc;
+    color: #c0c0c0;
 }
 
 /* Organize sites: Sorting categories text color */
@@ -608,14 +626,14 @@ color: #a85b40;
 /* Site Settings: Text color */
 .NB-dark .NB-preference-label,
 .NB-dark .NB-modal-exception .NB-exception-label {
-    color: #ccc;
+    color: #c0c0c0;
 }
 
 /* Site Statistics: Text color */
 .NB-dark .NB-modal-statistics .NB-statistics-stat .NB-statistics-label ,
 .NB-dark .NB-statistics-count,
 .NB-dark .NB-modal-statistics .NB-statistics-classifiers {
-    color: #ccc;
+    color: #c0c0c0;
     text-shadow: none;
 }
 
@@ -628,7 +646,7 @@ color: #a85b40;
 /* Interactions / Activities text color and thickness */
 .NB-dark .NB-interactions-popover.NB-active-interactions .NB-tab-interactions,
 .NB-dark .NB-interactions-popover.NB-active-activities .NB-tab-activities {
-    color: #ccc;
+    color: #c0c0c0;
     font-weight: bold;
 }
 
@@ -679,7 +697,7 @@ color: #a85b40;
 
 /* "replied to your reply" text color */
 .NB-dark .NB-interaction-title {
-    color: #ccc;
+    color: #c0c0c0;
 }
 
 
@@ -697,10 +715,10 @@ color: #a85b40;
 .NB-dark .left-south {
     color: #ddd;
     text-shadow: 0 1px 0 rgba(0,0,0,.8);
-    background: #191b1c;
-    background-color: #191b1c;
+    background: #393b3c;
+    background-color: #393b3c;
     background-image: none;
-    border-color: #303739;
+    border-color: #101719;
 }
 
 /* Buttons on bottom & top bar */
@@ -713,17 +731,14 @@ color: #a85b40;
 .NB-dark ul.segmented-control,
 .NB-dark ul.segmented-control li {
     background: none;
-    background-color: #363739;
-    color: #ccc;
+    background-color: #565759;
+    color: #c0c0c0;
     text-shadow: 0 1px 0 rgba(0,0,0,.4);
     /*border: 1px solid #90928b;*/
 }
-.NB-dark .NB-modal h5,
-.NB-dark .NB-module h5,
-.NB-dark .NB-module-header {
-    background-image: -moz-linear-gradient(top, #31383a, #232729); /* FF3.6 */
-    background-image: -webkit-gradient(linear, left top, left bottom, from(#31383a), to(#232729)); /* Saf4+, Chrome */
-    background-image: linear-gradient(top, #31383a, #232729);
+.NB-dark ul.segmented-control,
+.NB-dark ul.segmented-control li {
+    background-color: #52555E;
 }
 .NB-dark #story_taskbar {
     border-top: 1px solid #32352E;
@@ -732,7 +747,7 @@ color: #a85b40;
 .NB-dark #story_taskbar .NB-river-progress .NB-river-progress-text,
 .NB-dark #story_taskbar .NB-feed-error .NB-feed-error-text {
     background-color: #191b1c;
-    color: #ccc;
+    color: #c0c0c0;
     text-shadow: 0 1px 0 rgba(0,0,0,.8);
 }
 
@@ -741,7 +756,7 @@ color: #a85b40;
 .NB-dark .NB-feedbar .NB-feedbar-options,
 .NB-dark #story_taskbar .NB-taskbar-options,
 .NB-dark .NB-feedbar .NB-story-title-indicator {
-    color: #ccc;
+    color: #c0c0c0;
     border: 1px solid rgba(0, 0, 0, .3);
     background-color: #303739;
 }
@@ -790,7 +805,7 @@ width: 19px;
 
 /* Expanded "Mark read" text color (14D, 7D, 3D, 1D)*/
 .NB-dark .NB-feedbar .NB-feedbar-mark-feed-read-time {
-    color: #ccc;
+    color: #c0c0c0;
 }
 
 /* Search input field */
@@ -798,7 +813,7 @@ width: 19px;
     border: 1px solid rgba(255, 255, 255, .2);
     background: none;
     background-color: #303739;
-    color: #ccc;
+    color: #c0c0c0;
     text-shadow: 0 1px 0 rgba(0,0,0,.8);
     box-shadow: none;
 }
@@ -825,6 +840,7 @@ text-shadow: none;
     border: none;
     border-radius: 4px;
 }
+
 .NB-dark #story_taskbar .NB-taskbar .NB-taskbar-button {
     padding-left: 14px;
     padding-right: 14px;
@@ -833,7 +849,7 @@ text-shadow: none;
 .NB-dark .segmented-control li.NB-active:active, 
 .NB-dark .segmented-control-active li {
     background: none;
-    background-color: #6D6D74;
+    background-color: #868689;
     color: #FCFDFE;
     text-shadow: 0 1px 0 rgba(0,0,0,0.1);
 }
@@ -934,7 +950,7 @@ border-bottom-color: #303739;
     background-color: #191b1c;
 }
 .NB-dark .NB-story-title {
-    color: #ccc;
+    color: #c0c0c0;
     background-color: #292b2c;
     border-top: 1px solid #333536;
     border-bottom: 1px solid #232526;
@@ -950,7 +966,7 @@ border-bottom-color: #303739;
 /* Feed title text */
 .NB-dark .NB-feedbar .feed .feed_title,
 .NB-dark .NB-feedbar .folder_title_text {
-    color: #ccc;
+    color: #c0c0c0;
     text-shadow: 0 1px 0 rgba(0,0,0,.8);
 }
 
@@ -985,7 +1001,7 @@ border-bottom-color: #303739;
 
 /* Search header */
 .NB-dark .NB-search-header {
-    color: #ccc;
+    color: #c0c0c0;
     background-color: #303739;
     border-bottom: none;
     background-image: none;
@@ -994,7 +1010,7 @@ border-bottom-color: #303739;
 .NB-dark .NB-search-header .NB-search-header-save,
 .NB-dark .NB-search-header .NB-search-header-save:hover,
 .NB-dark .NB-search-header .NB-search-header-save.NB-active {
-    color: #ccc;
+    color: #c0c0c0;
     background-color: rgb(43,49,51);
 }
 
@@ -1033,19 +1049,19 @@ background-color: #5d8392;
 
 /* Quote blocks found in stories */
 .NB-dark .NB-feed-story blockquote {
-    color: #ccc;
+    color: #c0c0c0;
     background: none;
-    border-left: 2px solid #ccc;
+    border-left: 2px solid #c0c0c0;
 }
 
 /* Quote blocks found in stories (font) */
 .NB-dark .NB-feed-story blockquote font {
-    color: #ccc;
+    color: #c0c0c0;
 }
 
 /* Special text box */
 .NB-dark .hljs {
-    color: #ccc;
+    color: #c0c0c0;
     background-color: #1b2325;
 }
 
@@ -1080,11 +1096,16 @@ color: #fff;
 */
 
 /* Story title background */
-.NB-dark .NB-feed-story .NB-feed-story-header-info,
-.NB-dark .NB-feed-story.read .NB-feed-story-header-info {
+.NB-dark .NB-feed-story .NB-feed-story-header-info {
     background-color: #303739;
 }
-
+.NB-dark .NB-feed-story.read .NB-feed-story-header-info {
+    background-color: #202729;
+}
+.NB-dark .NB-feed-story.read .NB-feed-story-header .NB-feed-story-date,
+.NB-dark .NB-feed-story.read .NB-feed-story-header .NB-feed-story-author-wrapper {
+    color: #656B5B;
+}
 .NB-dark .NB-feed-story .NB-feed-story-tag {
   border-color: rgba(255, 255, 255, 0.05) transparent rgba(0, 0, 0, 0.4);
   
@@ -1134,7 +1155,7 @@ color: #fff;
 
 /* Tag window when saving story. Input box */
 .NB-dark ul.tagit input[type="text"] {
-    color: #ccc;
+    color: #c0c0c0;
     background: none;
     background-color: #505050;
     border: solid 1px #505050;
@@ -1153,7 +1174,7 @@ color: #fff;
     /* 	border: 1px solid #90928b; */
     background-color: #303739;
     background: #303739;
-    color: #ccc;
+    color: #c0c0c0;
 }
 
 /* Tag window when saving story. Input box suggestions (3 of 3) */
@@ -1162,7 +1183,7 @@ color: #fff;
     /* 	border: 1px solid #90928b; */
     background-color: #303739;
     background: #252D30;
-    color: #ccc;
+    color: #c0c0c0;
 }
 
 .NB-dark .NB-sideoption-share-comments{
@@ -1204,7 +1225,7 @@ background: #191b1c;
 /* Story comment text color*/
 .NB-dark .NB-story-comment-content,
 .NB-dark .NB-story-comment-reply-content {
-    color: #ccc;
+    color: #c0c0c0;
 }
 
 
@@ -1255,7 +1276,7 @@ height: 0px;
 /* Background color and text color */
 .NB-dark .TextPost {
     background-color: #191b1c;
-    color: #ccc;
+    color: #c0c0c0;
     border-top: none;
 }
 
@@ -1264,13 +1285,13 @@ height: 0px;
 .NB-dark .PostTitle a:link,
 .NB-dark .PostTitle a:hover,
 .NB-dark .PostTitle a:visited {
-    color: #ccc;
+    color: #c0c0c0;
     border-bottom: none;
 }
 
 /* Divider line dividing article and footer */
 .NB-dark .FooterLine {
-    background-color: #ccc;
+    background-color: #c0c0c0;
 }
 
 /* Footer that contains article date, etc. */
@@ -1292,7 +1313,7 @@ height: 0px;
 .NB-dark .modal-footer,
 .NB-dark .modal-inner-container,
 .NB-dark .modal .modal-body label{
-    color: #ccc;
+    color: #c0c0c0;
     background-color: #303739;
     border:none;
 }
@@ -1314,13 +1335,13 @@ height: 0px;
 
 /* Sorting titles ("Category", "Replies", "Activity") */
 .NB-dark .topic-list .sortable:hover {
-    color: #ccc;
+    color: #c0c0c0;
     background-color: #0088cc ;
 }
 
 /* Thread excerpt */
 .NB-dark .topic-excerpt {
-    color: #ccc;
+    color: #c0c0c0;
 }
 
 /* Topic fade-in */
@@ -1352,13 +1373,13 @@ height: 0px;
 /* Quote box */
 aside.quote .title,
 blockquote {
-    border-left: 5px solid #ccc;
+    border-left: 5px solid #c0c0c0;
     background-color: #191b1c;
 }
 
 /* Link box border */
 aside.onebox {
-    border-left: 5px solid #ccc;
+    border-left: 5px solid #c0c0c0;
     border-right: none;
     border-top: none;
     border-bottom: none;
@@ -1374,7 +1395,7 @@ a.mention, a.mention-group {
 .NB-dark p > code, 
 .NB-dark li > code, 
 .NB-dark pre > code {
-    color: #ccc;
+    color: #c0c0c0;
     background: #303739;
 }
 
@@ -1414,7 +1435,7 @@ a.mention, a.mention-group {
 
 /* "All categories" dropdown menu - Category font */
 .NB-dark .badge-wrapper.bullet span.badge-category {
-    color: #ccc;
+    color: #c0c0c0;
     font-weight: bold;
 }
 
@@ -1426,7 +1447,7 @@ a.mention, a.mention-group {
 
 /* "All categories" dropdown menu - Highlighted element text */
 .NB-dark .select-kit.combo-box.category-drop .select-kit-row .category-desc {
-    color: #ccc;
+    color: #c0c0c0;
 }
 
 /* "Latest", "Top, "Categories", "Category", "Replies", "Activity" */
@@ -1468,7 +1489,7 @@ a.mention, a.mention-group {
 .NB-dark input[type="search"],
 .NB-dark input[type="tel"],
 .NB-dark input[type="color"] {
-    color: #ccc;
+    color: #c0c0c0;
     background: none;
     background-color: #505050;
     border: solid 1px #505050;
@@ -1476,7 +1497,7 @@ a.mention, a.mention-group {
 
 /* Search result text */
 .NB-dark .search-link .blurb {
-    color: #ccc;
+    color: #c0c0c0;
 }
 
 /* Search term in search result text */
@@ -1514,7 +1535,7 @@ a.mention, a.mention-group {
 /* Hamburger menu dropdown menu category titles */
 .NB-dark .menu-panel ul.menu-links li a, 
 .NB-dark .menu-panel ul li.heading a {
-    color: #ccc;
+    color: #c0c0c0;
 }
 
 /* Advanced search - Title box */
@@ -1534,7 +1555,7 @@ a.mention, a.mention-group {
 /* Advanced search - Dropdown menus */
 .NB-dark .select-kit .select-kit-collection,
 .NB-dark .select-kit.combo-box .select-kit-header {
-    color: #ccc;
+    color: #c0c0c0;
     background-color: #505050;
     border: none;
 }
