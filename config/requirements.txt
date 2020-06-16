@@ -51,6 +51,7 @@ redis==2.10.5
 requests==2.20.0
 scipy==1.4.1
 seacucumber==1.5.2
+sgmllib3k==1.0.0
 simplejson==3.10.0
 six==1.10.0
 stripe==1.43.0
