@@ -1257,6 +1257,10 @@
     NSMutableArray *foundNotificationFeedIds = [NSMutableArray array];
     
     for (NSDictionary *feed in self.dictFeeds.allValues) {
+        if (![feed isKindOfClass:[NSDictionary class]]) {
+            continue;
+        }
+        
         NSArray *types = [feed objectForKey:@"notification_types"];
         if (types) {
             for (NSString *notificationType in types) {
