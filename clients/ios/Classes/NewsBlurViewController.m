@@ -489,20 +489,12 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     NSLog(@"Fetching feed list");
     [appDelegate cancelOfflineQueue];
     
-    //TODO: want to include inactive for #1325 (show muted sites in All feeds view)
-//    if (self.inPullToRefresh_) {
-//        urlFeedList = [NSString stringWithFormat:@"%@/reader/feeds?flat=true&update_counts=true&include_inactive=true",
-//                       self.appDelegate.url];
-//    } else {
-//        urlFeedList = [NSString stringWithFormat:@"%@/reader/feeds?flat=true&update_counts=false&include_inactive=true",
-//                       self.appDelegate.url];
-//    }
     if (self.inPullToRefresh_) {
-        urlFeedList = [NSString stringWithFormat:@"%@/reader/feeds?flat=true&update_counts=true",
-                      self.appDelegate.url];
+        urlFeedList = [NSString stringWithFormat:@"%@/reader/feeds?flat=true&update_counts=true&include_inactive=true",
+                       self.appDelegate.url];
     } else {
-        urlFeedList = [NSString stringWithFormat:@"%@/reader/feeds?flat=true&update_counts=false",
-                        self.appDelegate.url];
+        urlFeedList = [NSString stringWithFormat:@"%@/reader/feeds?flat=true&update_counts=false&include_inactive=true",
+                       self.appDelegate.url];
     }
     
     if (appDelegate.backgroundCompletionHandler) {
@@ -714,14 +706,10 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     // set up dictFolders
     NSMutableDictionary * allFolders = [[NSMutableDictionary alloc] init];
     
-    //TODO: want to include inactive for #1325 (show muted sites in All feeds view)
-//    if (![[results objectForKey:@"flat_folders_with_inactive"] isKindOfClass:[NSArray class]]) {
-//        allFolders = [[results objectForKey:@"flat_folders_with_inactive"] mutableCopy];
-//    }
-    if (![[results objectForKey:@"flat_folders"] isKindOfClass:[NSArray class]]) {
-        allFolders = [[results objectForKey:@"flat_folders"] mutableCopy];
+    if (![[results objectForKey:@"flat_folders_with_inactive"] isKindOfClass:[NSArray class]]) {
+        allFolders = [[results objectForKey:@"flat_folders_with_inactive"] mutableCopy];
     }
-
+    
     [allFolders setValue:socialFolder forKey:@"river_blurblogs"];
     [allFolders setValue:[[NSMutableArray alloc] init] forKey:@"river_global"];
     
@@ -733,8 +721,11 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 
     appDelegate.dictFolders = allFolders;
     
+    appDelegate.dictInactiveFeeds = [results[@"inactive_feeds"] mutableCopy];
+    
     // set up dictFeeds
     appDelegate.dictFeeds = [[results objectForKey:@"feeds"] mutableCopy];
+    [appDelegate.dictFeeds addEntriesFromDictionary:appDelegate.dictInactiveFeeds];
     [appDelegate populateDictUnreadCounts];
     [appDelegate populateDictTextFeeds];
     
@@ -1253,6 +1244,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     BOOL isSocial = [appDelegate isSocialFeed:feedIdStr];
     BOOL isSaved = [appDelegate isSavedFeed:feedIdStr];
     BOOL isSavedStoriesFeed = self.appDelegate.isSavedStoriesIntelligenceMode && [self.appDelegate savedStoriesCountForFeed:feedIdStr] > 0;
+    BOOL isInactive = appDelegate.dictInactiveFeeds[feedIdStr] != nil;
     BOOL isOmitted = false;
     NSString *CellIdentifier;
     
@@ -1296,6 +1288,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     cell.feedTitle     = [feed objectForKey:@"feed_title"];
     cell.isSocial      = isSocial;
     cell.isSaved       = isSaved;
+    cell.isInactive    = isInactive;
     cell.searchQuery   = searchQuery;
     
     if (newCell) {
@@ -1313,6 +1306,11 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
             cell.feedFavicon = [appDelegate folderIcon:searchFolder];
             cell.feedTitle = [NSString stringWithFormat:@"\"%@\" in %@", cell.searchQuery, [appDelegate folderTitle:searchFolder]];
         }
+    } else if (isInactive) {
+        cell.positiveCount = 0;
+        cell.neutralCount = 0;
+        cell.negativeCount = 0;
+        cell.savedStoriesCount = 0;
     } else if (isSavedStoriesFeed) {
         cell.positiveCount = 0;
         cell.neutralCount = 0;
@@ -1806,6 +1804,10 @@ heightForHeaderInSection:(NSInteger)section {
                !self.viewShowingAllFeeds &&
                ([[unreadCounts objectForKey:@"ps"] intValue] <= 0 &&
                 [[unreadCounts objectForKey:@"nt"] intValue] <= 0)) {
+        return NO;
+    } else if (!stillVisible &&
+               !self.viewShowingAllFeeds &&
+               appDelegate.dictInactiveFeeds[feedId] != nil) {
         return NO;
     }
 
