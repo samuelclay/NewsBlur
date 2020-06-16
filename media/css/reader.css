@@ -2097,12 +2097,10 @@ a img {
 
 .NB-story-title:hover:not(.NB-selected) {
     background-color: #F7F7F6;
-    border-top: 1px solid transparent;
+/*    border-top: 1px solid transparent;*/
 }
 .NB-story-title.read:hover:not(.NB-selected) {
     background-color: #FDFCFA;
-/*    border-top: 1px solid transparent;*/
-/*    border-bottom: 1px solid white;*/
 }
 
 .NB-interaction:active:not(.NB-disabled) {
