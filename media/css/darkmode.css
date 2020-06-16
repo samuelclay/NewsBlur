@@ -846,7 +846,7 @@ text-shadow: none;
     padding-right: 14px;
 }
 .NB-dark .segmented-control li.NB-active, 
-.NB-dark .segmented-control li.NB-active:active, 
+.NB-dark .segmented-control li.NB-active:active:not(.NB-disabled), 
 .NB-dark .segmented-control-active li {
     background: none;
     background-color: #868689;
@@ -857,8 +857,8 @@ text-shadow: none;
 .NB-dark .segmented-control li:active:not(.NB-disabled), 
 .NB-dark .segmented-control-active li:active {
     background: none;
-    background-color: #545459;
-    color: #FCFDFE;
+    background-color: #868689;
+    color: #D3D4D5;
     text-shadow: 0 1px 0 rgba(0,0,0,0.1);    
 }
 
@@ -961,6 +961,9 @@ border-bottom-color: #303739;
 .NB-dark .NB-story-title:hover:not(.NB-selected),
 .NB-dark .NB-story-title:hover:not(.NB-selected) .NB-storytitles-grid-bottom {
     background-color: #232526;
+}
+.NB-dark .NB-story-title.read:hover:not(.NB-selected) {
+    background-color: #292b2c;
 }
 
 /* Feed title text */
@@ -1269,7 +1272,9 @@ height: 0px;
 .NB-dark .NB-modal-statistics .NB-statistics-stat {
     border-color: #404040;
 }
-
+.NB-dark .NB-modal-statistics .NB-statistics-history-chart-hours-row {
+    background-color: #252D30;
+}
 
 /* ================= */
 /* = NewsBlur Blog = */
