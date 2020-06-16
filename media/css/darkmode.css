@@ -288,33 +288,48 @@ color: #a85b40;
     border-color: #10120b;
 }
 
-
-/* Pop-up menu arrows */
-.NB-dark .popover .arrow,
-.NB-dark .popover .arrow:after,
-.NB-dark .popover.left .arrow,
-.NB-dark .popover.left .arrow:after,
-.NB-dark .popover.right .arrow ,
-.NB-dark .popover.right .arrow:after,
-.NB-dark .popover.top .arrow,
-.NB-dark .popover.top .arrow:after,
 .NB-dark .popover.top-left .arrow,
-.NB-dark .popover.top-left .arrow:after,
 .NB-dark .popover.top-right .arrow,
+.NB-dark .popover.top .arrow {
+    border-top-color: #999;
+    border-top-color: #10120b;
+}
+.NB-dark .popover.top-left .arrow:after,
 .NB-dark .popover.top-right .arrow:after,
+.NB-dark .popover.top .arrow:after {
+    border-top-color: #303739;
+    border-bottom-width: 2px;
+}
+.NB-dark .popover.right .arrow {
+    border-right-color: #999;
+    border-right-color: #10120b;
+}
+.NB-dark .popover.right .arrow:after {
+    border-right-color: #303739;
+}
 .NB-dark .popover.bottom .arrow,
-.NB-dark .popover.bottom .arrow:after,
 .NB-dark .popover.bottom-left .arrow,
+.NB-dark .popover.bottom-right .arrow {
+    border-bottom-color: #10120b;
+}
+.NB-dark .popover.bottom .arrow:after,
 .NB-dark .popover.bottom-left .arrow:after,
-.NB-dark .popover.bottom-right .arrow,
 .NB-dark .popover.bottom-right .arrow:after {
-    display: none;
+    border-bottom-color: #303739;
+    border-top-width: 2px;
+}
+.NB-dark .popover.left .arrow {
+    border-left-color: #999;
+    border-left-color: #10120b;
+}
+.NB-dark .popover.left .arrow:after {
+    border-left-color: #303739;
 }
 
 /* Add new site border color */
 .NB-dark .NB-popover {
     background-color: #303739;
-    border: 2px solid #404040;
+    border: 3px solid #10120b;
     padding: 1px;
 }
 
@@ -643,6 +658,25 @@ color: #a85b40;
     border-bottom: none!important;
 }
 
+.NB-dark .NB-modal-statistics .NB-statistics-stat {
+    border-color: #404040;
+}
+.NB-dark .NB-modal-statistics .NB-statistics-history-chart-hours-row {
+    background-color: #252D30;
+}
+
+.NB-dark .NB-classifiers .NB-classifier {
+    background-color: #59656D;
+}
+
+.NB-dark .NB-classifiers .NB-classifier label b {
+    color: rgba(255, 255, 255, 0.4);
+}
+.NB-dark .NB-classifiers .NB-classifier label span {
+    color: #c0c0c0;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.2)
+}
+
 /* Interactions / Activities text color and thickness */
 .NB-dark .NB-interactions-popover.NB-active-interactions .NB-tab-interactions,
 .NB-dark .NB-interactions-popover.NB-active-activities .NB-tab-activities {
@@ -800,8 +834,8 @@ width: 19px;
 .NB-dark .NB-feedbar .NB-feedbar-mark-feed-read,
 .NB-dark .NB-feedbar .NB-feedbar-mark-feed-read-expand,
 .NB-dark .NB-feedbar .NB-feedbar-mark-feed-read-time {
-    border: 1px solid rgba(255, 255, 255, .2);
     background: rgba(48, 55, 57, 1);
+    border: 1px solid rgba(0, 0, 0, 0.3);
 }
 
 /* Expanded "Mark read" text color (14D, 7D, 3D, 1D)*/
@@ -1274,13 +1308,6 @@ height: 0px;
 }
 */
 
-.NB-dark .NB-modal-statistics .NB-statistics-stat {
-    border-color: #404040;
-}
-.NB-dark .NB-modal-statistics .NB-statistics-history-chart-hours-row {
-    background-color: #252D30;
-}
-
 /* ================= */
 /* = NewsBlur Blog = */
 /* ================= */
@@ -1575,4 +1602,11 @@ a.mention, a.mention-group {
 /* Advanced search - "All categories" dropdown menu search field */
 .NB-dark .select-kit.is-expanded .select-kit-body {
     background-color: #505050;
+}
+
+.NB-dark .NB-history-fetch.NB-ok {
+    color: #499433;
+}
+.NB-dark .NB-history-fetch.NB-errorcode {
+    color: #953524;
 }

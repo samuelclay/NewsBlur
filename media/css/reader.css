@@ -6017,7 +6017,7 @@ form.opml_import_form input {
 }
 
 .NB-classifiers .NB-classifier label span {
-    text-shadow: 1px 1px 0 rgba(255,255,255,0.5);
+    text-shadow: 0 1px 0 rgba(255,255,255,0.5);
 }
 
 .NB-classifiers .NB-classifier.NB-classifier-facet-disabled {

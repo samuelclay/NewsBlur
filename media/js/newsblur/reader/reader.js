@@ -3446,6 +3446,9 @@
                     ])
                 ]);
                 $manage_menu.addClass('NB-menu-manage-notop');
+                var theme = this.model.preference('theme');
+                $(".NB-options-theme-light", $manage_menu).toggleClass('NB-active', theme == 'light');
+                $(".NB-options-theme-dark", $manage_menu).toggleClass('NB-active', theme == 'dark');
             } else if (type == 'feed') {
                 var feed = this.model.get_feed(feed_id);
                 if (!feed) return;
