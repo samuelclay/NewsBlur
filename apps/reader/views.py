@@ -249,7 +249,7 @@ def load_feeds(request):
     if flat == 'false': flat = False
     
     if flat: return load_feeds_flat(request)
-    
+    import time; time.sleep(15)
     platform = extract_user_agent(request)
     if platform in ['iPhone', 'iPad', 'Androd']:
         # Remove this check once the iOS and Android updates go out which have update_counts=False
