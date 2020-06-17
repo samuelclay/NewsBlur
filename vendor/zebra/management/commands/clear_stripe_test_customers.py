@@ -17,26 +17,26 @@ class Command(BaseCommand):
         customer_chunk = [0]
 
         if verbosity > 0:
-            print "Clearing stripe test customers:"
+            print("Clearing stripe test customers:")
         
         num_checked = 0
         while len(customer_chunk) is not 0:
             customer_chunk = stripe.Customer.all(count=CLEAR_CHUNK_SIZE, offset=num_checked).data
 
             if verbosity > 1:     
-                print "Processing records %s-%s" % (num_checked, num_checked+len(customer_chunk))
+                print("Processing records %s-%s" % (num_checked, num_checked+len(customer_chunk)))
 
             for c in customer_chunk:
                 if verbosity > 2:
-                    print "Deleting %s..." % (c.description),
+                    print("Deleting %s..." % (c.description), end=' ')
 
                 if not c.livemode:
                     c.delete()
 
                     if verbosity > 2:
-                        print "done"
+                        print("done")
             
             num_checked = num_checked + len(customer_chunk)
         
         if verbosity > 0:
-            print "Finished clearing stripe test customers."
+            print("Finished clearing stripe test customers.")

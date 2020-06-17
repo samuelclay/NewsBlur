@@ -19,7 +19,7 @@ class Command(BaseCommand):
             except User.DoesNotExist:
                 user = User.objects.get(email__iexact=username)
             except User.DoesNotExist:
-                print " ---> No user found at: %s" % username
+                print(" ---> No user found at: %s" % username)
         elif email:
             try:
                 user = User.objects.get(email__icontains=email)
@@ -29,12 +29,12 @@ class Command(BaseCommand):
                 users = User.objects.filter(email__iexact=email)
                 user = users[0]
             except User.DoesNotExist:
-                print " ---> No email found at: %s" % email
+                print(" ---> No email found at: %s" % email)
             
         if user:
             email = options.get("email") or user.email
             user.profile.send_forgot_password_email(email)
         else:
-            print " ---> No user/email found at: %s/%s" % (username, email)
+            print(" ---> No user/email found at: %s/%s" % (username, email))
             
         
