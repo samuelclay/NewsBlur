@@ -39,7 +39,7 @@ class SendEmailTask(Task):
                 destinations=recipients,
                 raw_message=message,
             )
-        except Exception, exc:
+        except Exception as exc:
             self.retry(exc=exc)
 
         # We shouldn't ever block long enough to see this, but here it is
