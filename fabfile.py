@@ -22,14 +22,14 @@ django.setup()
 try:
     import digitalocean
 except ImportError:
-    print "Digital Ocean's API not loaded. Install python-digitalocean."
+    print("Digital Ocean's API not loaded. Install python-digitalocean.")
 
 
 django.settings_module('settings')
 try:
     from django.conf import settings as django_settings
 except ImportError:
-    print " ---> Django not installed yet."
+    print(" ---> Django not installed yet.")
     django_settings = None
 
 # ============
@@ -52,12 +52,12 @@ env.colorize_errors = True
 try:
     hosts_path = os.path.expanduser(os.path.join(env.SECRETS_PATH, 'configs/hosts.yml'))
     roles = yaml.load(open(hosts_path))
-    for role_name, hosts in roles.items():
+    for role_name, hosts in list(roles.items()):
         if isinstance(hosts, dict):
-            roles[role_name] = [host for host in hosts.keys()]
+            roles[role_name] = [host for host in list(hosts.keys())]
     env.roledefs = roles
 except:
-    print " ***> No role definitions found in %s. Using default roles." % hosts_path
+    print(" ***> No role definitions found in %s. Using default roles." % hosts_path)
     env.roledefs = {
         'app'   : ['app01.newsblur.com'],
         'db'    : ['db01.newsblur.com'],
@@ -101,19 +101,19 @@ def list_do():
         role_costs[roledef] += cost
         total_cost += cost
     
-    print "\n\n Costs:"
+    print("\n\n Costs:")
     pprint(dict(role_costs))
-    print " ---> Total cost: $%s/month" % total_cost
+    print(" ---> Total cost: $%s/month" % total_cost)
     
 def host(*names):
     env.hosts = []
     env.doname = ','.join(names)
     hostnames = assign_digitalocean_roledefs(split=True)
-    for role, hosts in hostnames.items():
+    for role, hosts in list(hostnames.items()):
         for host in hosts:
             if isinstance(host, dict) and host['name'] in names:
                 env.hosts.append(host['address'])
-    print " ---> Using %s as hosts" % env.hosts
+    print(" ---> Using %s as hosts" % env.hosts)
     
 # ================
 # = Environments =
@@ -127,7 +127,7 @@ def assign_digitalocean_roledefs(split=False):
     server()
     droplets = do_roledefs(split=split)
     if split:
-        for roledef, hosts in env.roledefs.items():
+        for roledef, hosts in list(env.roledefs.items()):
             if roledef not in droplets:
                 droplets[roledef] = hosts
     
@@ -317,9 +317,9 @@ def setup_task_image():
 # ==================
 
 def done():
-    print "\n\n\n\n-----------------------------------------------------"
-    print "\n\n    %s / %s IS SUCCESSFULLY BOOTSTRAPPED" % (env.get('doname') or env.host_string, env.host_string)
-    print "\n\n-----------------------------------------------------\n\n\n\n"
+    print("\n\n\n\n-----------------------------------------------------")
+    print("\n\n    %s / %s IS SUCCESSFULLY BOOTSTRAPPED" % (env.get('doname') or env.host_string, env.host_string))
+    print("\n\n-----------------------------------------------------\n\n\n\n")
 
 def setup_installs():
     packages = [
@@ -890,7 +890,7 @@ def config_haproxy(debug=False):
     if haproxy_check.return_code == 0:
         sudo('/etc/init.d/haproxy reload')
     else:
-        print " !!!> Uh-oh, HAProxy config doesn't check out: %s" % haproxy_check.return_code
+        print(" !!!> Uh-oh, HAProxy config doesn't check out: %s" % haproxy_check.return_code)
 
 def build_haproxy():
     droplets = assign_digitalocean_roledefs(split=True)
@@ -912,7 +912,7 @@ def build_haproxy():
             check_inter = 3000
             
             if server['name'] in ignore_servers:
-                print " ---> Ignoring %s" % server['name']
+                print(" ---> Ignoring %s" % server['name'])
                 continue
             if server_type == 'www':
                 port = 81
@@ -943,7 +943,7 @@ def build_haproxy():
     
     h = open(os.path.join(env.NEWSBLUR_PATH, 'config/haproxy.conf.template'), 'r')
     haproxy_template = h.read()
-    for sub, server_list in servers.items():
+    for sub, server_list in list(servers.items()):
         sorted_servers = '\n'.join(sorted(server_list))
         haproxy_template = haproxy_template.replace("{{ %s }}" % sub, sorted_servers)
     f = open(os.path.join(env.SECRETS_PATH, 'configs/haproxy.conf'), 'w')
@@ -1479,11 +1479,11 @@ def setup_do(name, size=1, image=None):
             image = images["app-2018-02"]
         else:
             images = dict((s.name, s.id) for s in doapi.get_all_images())
-            print images
+            print(images)
             
     name = do_name(name)
     env.doname = name
-    print "Creating droplet: %s" % name
+    print("Creating droplet: %s" % name)
     instance = digitalocean.Droplet(token=django_settings.DO_TOKEN_FABRIC,
                                     name=name,
                                     size_slug=instance_size,
@@ -1495,22 +1495,22 @@ def setup_do(name, size=1, image=None):
     instance.create()
     time.sleep(2)
     instance = digitalocean.Droplet.get_object(django_settings.DO_TOKEN_FABRIC, instance.id)
-    print "Booting droplet: %s / %s (size: %s)" % (instance.name, instance.ip_address, instance_size)
+    print("Booting droplet: %s / %s (size: %s)" % (instance.name, instance.ip_address, instance_size))
 
     i = 0
     while True:
         if instance.status == 'active':
-            print "...booted: %s" % instance.ip_address
+            print("...booted: %s" % instance.ip_address)
             time.sleep(5)
             break
         elif instance.status == 'new':
-            print ".",
+            print(".", end=' ')
             sys.stdout.flush()
             instance = digitalocean.Droplet.get_object(django_settings.DO_TOKEN_FABRIC, instance.id)
             i += 1
             time.sleep(i)
         else:
-            print "!!! Error: %s" % instance.status
+            print("!!! Error: %s" % instance.status)
             return
 
     host = instance.ip_address
@@ -1521,7 +1521,7 @@ def setup_do(name, size=1, image=None):
 
 def do_name(name):
     if re.search(r"[0-9]", name):
-        print " ---> Using %s as hostname" % name
+        print(" ---> Using %s as hostname" % name)
         return name
     else:
         hosts = do_roledefs(split=False)
@@ -1530,8 +1530,8 @@ def do_name(name):
         for i in range(1, 100):
             try_host = "%s%02d" % (name, i)
             if try_host not in existing_hosts:
-                print " ---> %s hosts in %s (%s). %s is unused." % (len(existing_hosts), name, 
-                                                                    ', '.join(existing_hosts), try_host)
+                print(" ---> %s hosts in %s (%s). %s is unused." % (len(existing_hosts), name, 
+                                                                    ', '.join(existing_hosts), try_host))
                 return try_host
         
     
@@ -1562,21 +1562,21 @@ def setup_ec2():
                                      key_name=env.user,
                                      security_groups=['db-mongo'])
     instance = reservation.instances[0]
-    print "Booting reservation: %s/%s (size: %s)" % (reservation, instance, INSTANCE_TYPE)
+    print("Booting reservation: %s/%s (size: %s)" % (reservation, instance, INSTANCE_TYPE))
     i = 0
     while True:
         if instance.state == 'pending':
-            print ".",
+            print(".", end=' ')
             sys.stdout.flush()
             instance.update()
             i += 1
             time.sleep(i)
         elif instance.state == 'running':
-            print "...booted: %s" % instance.public_dns_name
+            print("...booted: %s" % instance.public_dns_name)
             time.sleep(5)
             break
         else:
-            print "!!! Error: %s" % instance.state
+            print("!!! Error: %s" % instance.state)
             return
 
     host = instance.public_dns_name
@@ -1599,7 +1599,7 @@ def post_deploy():
     cleanup_assets()
 
 def role_for_host():
-    for role, hosts in env.roledefs.items():
+    for role, hosts in list(env.roledefs.items()):
         if env.host in hosts:
             return role
 
@@ -1751,8 +1751,8 @@ def compress_assets(bundle=False):
             if not success:
                 raise Exception("Ack!")
             break
-        except Exception, e:
-            print " ***> %s. Trying %s more time%s..." % (e, tries_left, '' if tries_left == 1 else 's')
+        except Exception as e:
+            print(" ***> %s. Trying %s more time%s..." % (e, tries_left, '' if tries_left == 1 else 's'))
             tries_left -= 1
             if tries_left <= 0: break
 
@@ -1855,7 +1855,7 @@ if django_settings:
         SECRET      = django_settings.S3_SECRET
         BUCKET_NAME = django_settings.S3_BACKUP_BUCKET  # Note that you need to create this bucket first
     except:
-        print " ---> You need to fix django's settings. Enter python and type `import settings`."
+        print(" ---> You need to fix django's settings. Enter python and type `import settings`.")
 
 def save_file_in_s3(filename):
     conn   = S3Connection(ACCESS_KEY, SECRET)
@@ -1878,7 +1878,7 @@ def list_backup_in_s3():
     bucket = conn.get_bucket(BUCKET_NAME)
 
     for i, key in enumerate(bucket.get_all_keys()):
-        print "[%s] %s" % (i, key.name)
+        print("[%s] %s" % (i, key.name))
 
 def delete_all_backups():
     #FIXME: validate filename exists
@@ -1886,7 +1886,7 @@ def delete_all_backups():
     bucket = conn.get_bucket(BUCKET_NAME)
 
     for i, key in enumerate(bucket.get_all_keys()):
-        print "deleting %s" % (key.name)
+        print("deleting %s" % (key.name))
         key.delete()
 
 def add_revsys_keys():
@@ -1896,7 +1896,7 @@ def add_revsys_keys():
 
 def upgrade_to_virtualenv(role=None):
     if not role:
-        print " ---> You must specify a role!"
+        print(" ---> You must specify a role!")
         return
     setup_virtualenv()
     if role == "task" or role == "search":
