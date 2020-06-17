@@ -47,7 +47,7 @@ urlpatterns = [
     url(r'^_dbcheck/mongo',    static_views.mongo_check),
     url(r'^_dbcheck/redis',    static_views.redis_check),
     url(r'^_dbcheck/elasticsearch', static_views.elasticsearch_check),
-    url(r'^admin/',         include(admin.site.urls)),
+    url(r'^admin/',         admin.site.urls),
     url(r'^about/?',        static_views.about, name='about'),
     url(r'^faq/?',          static_views.faq, name='faq'),
     url(r'^api/?',          static_views.api, name='api'),
