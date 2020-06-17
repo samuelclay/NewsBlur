@@ -62,8 +62,8 @@ public class WidgetConfig extends NbActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        // notify widget to refresh next time it's viewed
-        WidgetUtils.notifyViewDataChanged(this);
+        // notify widget to update next time it's viewed
+        WidgetUtils.updateWidget(this);
     }
 
     @Override

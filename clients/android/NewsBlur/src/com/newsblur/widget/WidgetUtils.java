@@ -55,12 +55,6 @@ public class WidgetUtils {
         return appWidgetIds.length > 0;
     }
 
-    public static void notifyViewDataChanged(Context context) {
-        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
-        int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(context, WidgetProvider.class));
-        appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.widget_list);
-    }
-
     public static boolean isLoggedIn(Context context) {
         return PrefsUtils.getUniqueLoginKey(context) != null;
     }
