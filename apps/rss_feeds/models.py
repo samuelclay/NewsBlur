@@ -2286,7 +2286,7 @@ class Feed(models.Model):
 #     phrase = models.CharField(max_length=500)
         
 class FeedData(models.Model):
-    feed = AutoOneToOneField(Feed, related_name='data')
+    feed = AutoOneToOneField(Feed, related_name='data', on_delete=models.CASCADE)
     feed_tagline = models.CharField(max_length=1024, blank=True, null=True)
     story_count_history = models.TextField(blank=True, null=True)
     feed_classifier_counts = models.TextField(blank=True, null=True)
@@ -3251,7 +3251,7 @@ class DuplicateFeed(models.Model):
     duplicate_address = models.CharField(max_length=764, db_index=True)
     duplicate_link = models.CharField(max_length=764, null=True, db_index=True)
     duplicate_feed_id = models.CharField(max_length=255, null=True, db_index=True)
-    feed = models.ForeignKey(Feed, related_name='duplicate_addresses')
+    feed = models.ForeignKey(Feed, related_name='duplicate_addresses', on_delete=models.CASCADE)
    
     def __unicode__(self):
         return "%s: %s / %s" % (self.feed, self.duplicate_address, self.duplicate_link)

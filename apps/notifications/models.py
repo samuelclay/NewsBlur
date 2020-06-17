@@ -16,11 +16,11 @@ from apps.analyzer.models import compute_story_score
 from utils.story_functions import truncate_chars
 from utils import log as logging
 from utils import mongoengine_fields
-from HTMLParser import HTMLParser
+from html.parser import HTMLParser
 from vendor.apns import APNs, Payload
 from bs4 import BeautifulSoup, Tag
 import types
-import urlparse
+import urllib.parse
 
 class NotificationFrequency(enum.Enum):
     immediately = 1
@@ -177,7 +177,7 @@ class MUserFeedNotification(mongo.Document):
         def replace_with_newlines(element):
             text = ''
             for elem in element.recursiveChildGenerator():
-                if isinstance(elem, types.StringTypes):
+                if isinstance(elem, (str,)):
                     text += elem
                 elif elem.name == 'br':
                     text += '\n'
@@ -289,7 +289,7 @@ class MUserFeedNotification(mongo.Document):
         msg.attach_alternative(html, "text/html")
         try:
             msg.send()
-        except BotoServerError, e:
+        except BotoServerError as e:
             logging.user(usersub.user, '~BMStory notification by email error: ~FR%s' % e)
             return
         logging.user(usersub.user, '~BMStory notification by email: ~FY~SB%s~SN~BM~FY/~SB%s' % 
@@ -310,13 +310,13 @@ class MUserFeedNotification(mongo.Document):
             else:
                 iframe.extract()
         
-        return unicode(soup)
+        return str(soup)
     
     def extract_youtube_id(self, url):
         youtube_id = None
 
         if 'youtube.com' in url:
-            youtube_parts = urlparse.urlparse(url)
+            youtube_parts = urllib.parse.urlparse(url)
             if '/embed/' in youtube_parts.path:
                 youtube_id = youtube_parts.path.replace('/embed/', '')
                 

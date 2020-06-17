@@ -3,7 +3,7 @@ import mongoengine as mongo
 import httplib2
 import pickle
 import base64
-from StringIO import StringIO
+from io import StringIO
 from oauth2client.client import Error as OAuthError
 from xml.etree.ElementTree import Element, SubElement, Comment, tostring
 from lxml import etree
@@ -76,14 +76,14 @@ class OPMLExporter(Importer):
             if isinstance(obj, int) and obj in self.feeds:
                 feed = self.feeds[obj]
                 if verbose:
-                    print "     ---> Adding feed: %s - %s" % (feed['id'],
-                                                              feed['feed_title'][:30])
+                    print("     ---> Adding feed: %s - %s" % (feed['id'],
+                                                              feed['feed_title'][:30]))
                 feed_attrs = self.make_feed_row(feed)
                 body.append(Element('outline', feed_attrs))
             elif isinstance(obj, dict):
-                for folder_title, folder_objs in obj.items():
+                for folder_title, folder_objs in list(obj.items()):
                     if verbose:
-                        print " ---> Adding folder: %s" % folder_title
+                        print(" ---> Adding folder: %s" % folder_title)
                     folder_element = Element('outline', {'text': folder_title, 'title': folder_title})
                     body.append(self.process_outline(folder_element, folder_objs, verbose=verbose))
         return body
@@ -349,7 +349,7 @@ class GoogleReaderImporter(Importer):
             folders = add_object_to_folder(feed_db.pk, category, folders)
             # if feed_db.pk not in folders[category]:
             #     folders[category].append(feed_db.pk)
-        except Exception, e:
+        except Exception as e:
             logging.info(' *** -> Exception: %s: %s' % (e, item))
 
         return folders

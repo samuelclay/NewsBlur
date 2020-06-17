@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
+
 
 from six import b
 from six.moves.urllib.request import urlopen
@@ -11,7 +11,7 @@ from vendor.paypal.standard.ipn.signals import payment_was_flagged, payment_was_
 
 class PayPalIPN(PayPalStandardBase):
     """Logs PayPal IPN interactions."""
-    format = u"<IPN: %s %s>"
+    format = "<IPN: %s %s>"
 
     class Meta:
         db_table = "paypal_ipn"
