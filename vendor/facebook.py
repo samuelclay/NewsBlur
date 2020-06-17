@@ -35,8 +35,8 @@ import re
 try:
     from urllib.parse import parse_qs, urlencode, urlparse
 except ImportError:
-    from urlparse import parse_qs, urlparse
-    from urllib import urlencode
+    from urllib.parse import parse_qs, urlparse
+    from urllib.parse import urlencode
 
 
 
@@ -473,7 +473,7 @@ def parse_signed_request(signed_request, app_secret):
 
     """
     try:
-        encoded_sig, payload = map(str, signed_request.split(".", 1))
+        encoded_sig, payload = list(map(str, signed_request.split(".", 1)))
 
         sig = base64.urlsafe_b64decode(
             encoded_sig + "=" * ((4 - len(encoded_sig) % 4) % 4)

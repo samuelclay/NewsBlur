@@ -72,10 +72,10 @@ class Appdotnet:
 
         #if there are any extra get parameters aside from the access_token, append to the url
         if getParameters != {}:
-            for key, value in getParameters.iteritems():
+            for key, value in getParameters.items():
                 if not value: continue
-                url = url + "&" + key + "=" + unicode(value)
-        print url
+                url = url + "&" + key + "=" + str(value)
+        print(url)
         r = requests.get(url)
         if r.status_code == requests.codes.ok:
             return r.text
@@ -183,7 +183,7 @@ class Appdotnet:
                             'message' : j['error']['message']}
                 return resp
             except: #generic error
-                print r.text
+                print(r.text)
                 return "{'error':'There was an error'}"
 
 
@@ -233,7 +233,7 @@ class Appdotnet:
                             'message' : j['error']['message']}
                 return resp
             except: #generic error
-                print r.text
+                print(r.text)
                 return "{'error':'There was an error'}"
 
     def deletePost(self, post_id):
