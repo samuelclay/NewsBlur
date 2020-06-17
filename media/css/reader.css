@@ -50,6 +50,15 @@ a img {
   line-height: 12px;
 }
 
+hr {
+    border: none;
+    background-color: rgba(0, 0, 0, 0.3);
+    height: 1px;
+    width: 72%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
 /* ================ */
 /* = Restrictions = */
 /* ================ */
@@ -3054,57 +3063,51 @@ body {
 }
 .NB-feed-story .NB-feed-story-tag.NB-score-1 {
     /* Green */
-    background-color: #34912E;
+    background-color: #A3CA87;
     color: white;
-    text-shadow: 0 1px 0 rgba(0, 0, 0, .7);
-    opacity: .4;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, .3);
 }
 .NB-feed-story .NB-feed-story-tag.NB-score--1 {
     /* Red */
-    background-color: #A90103;
+    background-color: #D58586;
     color: white;
     text-shadow: 0 1px 0 rgba(0, 0, 0, .7);
-    opacity: .4;
 }
 .NB-feed-story .NB-feed-story-tag:hover {
     /* Gray, active -> [Light] Green */
-    background-color: #89AE6E;
-    text-shadow: 0 1px 0 rgba(0, 0, 0, .7);
+    background-color: #9CB987;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, .3);
     color: white;
-    opacity: .4;
 }
 .NB-feed-story .NB-feed-story-tag.NB-score-1:hover {
     /* Green, active -> [Light] Red */
     background-color: #E35356;
     color: white;
-    text-shadow: 0 1px 0 rgba(0, 0, 0, .7);
+    text-shadow: 0 1px 0 rgba(0, 0, 0, .3);
 }
 .NB-feed-story .NB-feed-story-tag.NB-score--1:hover {
     /* Red, active -> [Light] Grey */
     background-color: #E2E2E2;
     color: #A7A399;
     text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
-    opacity: 1;
 }
 .NB-feed-story .NB-feed-story-tag.NB-score-now-0:hover {
     /* Grey, active */
     background-color: rgba(0, 0, 0, .1);
     color: #9D9A95;
     text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
-    opacity: 1;
 }
 .NB-feed-story .NB-feed-story-tag.NB-score-now-1.NB-score-1:hover {
     /* Green, active */
     background-color: #34912E;
     color: white;
-    text-shadow: 0 1px 0 rgba(0, 0, 0, .7);
+    text-shadow: 0 1px 0 rgba(0, 0, 0, .3);
 }
 .NB-feed-story .NB-feed-story-tag.NB-score-now--1.NB-score--1:hover {
     /* Red, active */
     background-color: #A90103;
     color: white;
-    text-shadow: 0 1px 0 rgba(0, 0, 0, .7);
-    opacity: .4;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, .3);
 }
 
 .NB-feed-story .NB-feed-story-title .NB-score-1 {
