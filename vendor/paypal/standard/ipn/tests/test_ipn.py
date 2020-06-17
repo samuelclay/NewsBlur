@@ -139,7 +139,7 @@ class IPNTest(IPNTestBase):
     def test_correct_ipn(self):
         ipn_obj = self.assertGotSignal(payment_was_successful, False)
         # Check some encoding issues:
-        self.assertEqual(ipn_obj.first_name, u"J\u00f6rg")
+        self.assertEqual(ipn_obj.first_name, "J\\u00f6rg")
 
     def test_failed_ipn(self):
         PayPalIPN._postback = lambda self: b("INVALID")
@@ -185,7 +185,7 @@ class IPNTest(IPNTestBase):
 
     def test_invalid_payment_status(self):
         update = {"payment_status": "Failure"}
-        flag_info = u"Invalid payment_status. (Failure)"
+        flag_info = "Invalid payment_status. (Failure)"
         self.assertFlagged(update, flag_info)
 
     def test_vaid_payment_status_cancelled(self):
@@ -321,7 +321,7 @@ class IPNTest(IPNTestBase):
         self.paypal_post(params)
         ipn = PayPalIPN.objects.get()
         self.assertEqual(ipn.posted_data_dict['quantity1'], '3')
-        self.assertEqual(ipn.posted_data_dict['first_name'], u"J\u00f6rg")
+        self.assertEqual(ipn.posted_data_dict['first_name'], "J\\u00f6rg")
 
 class IPNPostbackTest(IPNTestBase):
     """
@@ -329,4 +329,4 @@ class IPNPostbackTest(IPNTestBase):
     """
     def test_postback(self):
         # Incorrect signature means we will always get failure
-        self.assertFlagged({}, u'Invalid postback. (INVALID)')
+        self.assertFlagged({}, 'Invalid postback. (INVALID)')
