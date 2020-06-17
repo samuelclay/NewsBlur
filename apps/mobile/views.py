@@ -1,6 +1,5 @@
 import os
 import base64
-from vendor import yaml
 from django.conf import settings
 from django.http import HttpResponse
 from django.shortcuts import render
