@@ -21,12 +21,8 @@ we get a simplejson module from.
 __author__ = 'jcgregorio@google.com (Joe Gregorio)'
 
 
-try: # pragma: no cover
-  # Should work for Python2.6 and higher.
-  import json as simplejson
-except ImportError: # pragma: no cover
-  try:
-    import simplejson
-  except ImportError:
-    # Try to import from django, should work on App Engine
-    from django.utils import simplejson
+try:
+  import simplejson
+except ImportError:
+  # Try to import from django, should work on App Engine
+  from django.utils import simplejson
