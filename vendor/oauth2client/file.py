@@ -24,9 +24,9 @@ import os
 import stat
 import threading
 
-from anyjson import simplejson
-from client import Storage as BaseStorage
-from client import Credentials
+from .anyjson import simplejson
+from .client import Storage as BaseStorage
+from .client import Credentials
 
 
 class Storage(BaseStorage):
@@ -79,7 +79,7 @@ class Storage(BaseStorage):
     simple version of "touch" to ensure the file has been created.
     """
     if not os.path.exists(self._filename):
-      old_umask = os.umask(0177)
+      old_umask = os.umask(0o177)
       try:
         open(self._filename, 'a+b').close()
       finally:
