@@ -29,6 +29,7 @@
 body.NB-theme-transitioning {
     transition: color 1s ease-out, 
                 background-color 1s ease-out, 
+                text-shadow 1s ease-out, 
                 border-color 1s ease-out;
 }
 body.NB-dark {
@@ -48,6 +49,10 @@ body.NB-dark {
     background: rgba(16,16,28,0.3);
 }
 
+.NB-dark hr {
+    background-color: rgba(255, 255, 255, 0.4);
+}
+
 /* ============== */
 /* = Scrollbars = */
 /* ============== */
@@ -57,11 +62,11 @@ body.NB-dark {
 }
 
 .NB-dark ::-webkit-scrollbar-thumb {
-    background-color: #1a1b1d;
+    background-color: #565859;
 }
 
 .NB-dark ::-webkit-scrollbar-track {
-    background-color: #4A4C4A;
+    background-color: #262829;
 }
 
 .NB-dark .ui-layout-resizer-west {
@@ -1158,16 +1163,46 @@ color: #fff;
     color: #636D74;
 }
 .NB-dark .NB-feed-story .NB-feed-story-tag {
-  border-color: rgba(255, 255, 255, 0.05) transparent rgba(0, 0, 0, 0.4);
-  
+    border-color: rgba(255, 255, 255, 0.05) transparent rgba(0, 0, 0, 0.4);
 }
+.NB-dark .NB-feed-story .NB-feed-story-tag.NB-score-1 {
+    /* Green */
+    opacity: .7;
+}
+.NB-dark .NB-feed-story .NB-feed-story-tag.NB-score--1 {
+    /* Red */
+    opacity: .7;
+}
+.NB-dark .NB-feed-story .NB-feed-story-tag.NB-score--1:hover {
+    /* Red, active -> [Light] Grey */
+    background-color: rgba(0, 0, 0, .1);
+    text-shadow: 0 1px 0 rgba(0, 0, 0, .3);
+}
+.NB-dark .NB-feed-story .NB-feed-story-tag.NB-score-now-0:hover {
+    /* Grey, active */
+    text-shadow: 0 1px 0 rgba(0, 0, 0, .3);
+}
+.NB-dark .NB-feed-story .NB-feed-story-tag.NB-score-now-1.NB-score-1:hover {
+    /* Green, active */
+    background-color: #34912E;
+    color: white;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, .3);
+}
+.NB-dark .NB-feed-story .NB-feed-story-tag.NB-score-now--1.NB-score--1:hover {
+    /* Red, active */
+    background-color: #A90103;
+    color: white;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, .3);
+}
+
 
 /* Story title text color */
-.NB-dark .NB-feed-story a.NB-feed-story-title,
-.NB-dark .NB-feed-story.read a.NB-feed-story-title {
+.NB-dark .NB-feed-story a.NB-feed-story-title {
     color: #d0d0d0;
 }
-
+.NB-dark .NB-feed-story.read a.NB-feed-story-title {
+    color: #c0c0c0;
+}
 
 /* Story buttons (Train, Save, Share) */
 .NB-dark .NB-sideoption {
@@ -1202,6 +1237,7 @@ color: #fff;
 .NB-dark .NB-sideoption-save .NB-sideoption-save-populate{
     color: #c0c0c0;
     background-color: #303739;
+    border-color: rgba(255, 255, 255, .1) transparent rgba(0, 0, 0, .1);
 }
 
 /* Tag window when saving story. Input box */
