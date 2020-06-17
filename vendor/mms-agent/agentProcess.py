@@ -54,7 +54,7 @@ class AgentProcess( threading.Thread ):
             self.mmsAgent.done = True
             self.mmsAgent.stopAll()
 
-        except Exception, fe:
+        except Exception as fe:
             self.logger.error( traceback.format_exc( fe ) )
 
     def run( self ):
@@ -75,7 +75,7 @@ class AgentProcess( threading.Thread ):
                     try:
                         self.mmsAgent.sendDataToMms()
 
-                    except Exception, e:
+                    except Exception as e:
                         self.logger.error( traceback.format_exc( e ) )
                 finally:
                     try:
@@ -83,7 +83,7 @@ class AgentProcess( threading.Thread ):
                     except:
                         pass
 
-        except Exception, e:
+        except Exception as e:
             self.logger.error( traceback.format_exc( e ) )
 
 class ParentProcessMonitor( threading.Thread ):
@@ -105,7 +105,7 @@ class ParentProcessMonitor( threading.Thread ):
             time.sleep( 2 )
             try:
                 self._check()
-            except Exception, ex:
+            except Exception as ex:
                 self.logger.error( traceback.format_exc( ex ) )
                 raise
 
@@ -151,7 +151,7 @@ class ParentMsgReader( threading.Thread ):
                 time.sleep( 1 )
                 self._readParentMessage()
 
-            except Exception, exc:
+            except Exception as exc:
                 self.logger.error( traceback.format_exc( exc ) )
 
     def _readParentMessage( self ):
@@ -186,7 +186,7 @@ class MonitorHostState( threading.Thread ):
         while True:
             try:
                 self.mmsAgent.cleanHostState()
-            except Exception, e:
+            except Exception as e:
                 self.logger.error( traceback.format_exc( e ) )
 
             time.sleep( 10 )
@@ -265,7 +265,7 @@ if __name__ == "__main__":
 
             writeTmpFile( parentPid, currentState )
 
-    except Exception, ec:
+    except Exception as ec:
         logger.error( traceback.format_exc( ec ) )
 
     try:
@@ -284,6 +284,6 @@ if __name__ == "__main__":
 
         logger.info( 'Started agent process - parent pid: %s - version: %s'  % ( str( parentPid ), _agentVersion ) )
 
-    except Exception, ec:
+    except Exception as ec:
         logger.error( traceback.format_exc( ec ) )
 

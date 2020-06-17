@@ -59,7 +59,7 @@ class BlockingMongoStatsThread( threading.Thread ):
                 if not self._collectBlockingStats( passes, monitorConn ):
                     monitorConn = self.mmsAgent.closeDbConnection( self.hostKey, monitorConn )
 
-            except Exception, e:
+            except Exception as e:
                 monitorConn = self.mmsAgent.closeDbConnection( self.hostKey, monitorConn )
                 self.logger.error( 'Problem collecting blocking data from: ' + self.hostKey + " - exception: " + traceback.format_exc( e ) )
 
@@ -82,7 +82,7 @@ class BlockingMongoStatsThread( threading.Thread ):
 
             try:
                 stats['hostIpAddr'] = socket.gethostbyname(self.hostKey[0 : self.hostKey.find( ':' )])
-            except Exception, e:
+            except Exception as e:
                 self.mmsAgent.handleOperationFailure( self.hostKey, 'hostIpAddr', e )
 
             stats['host'] = self.host
@@ -96,7 +96,7 @@ class BlockingMongoStatsThread( threading.Thread ):
 
             return True
 
-        except Exception, e:
+        except Exception as e:
             self.logger.error( 'Problem collecting blocking data from (check if it is up and DNS): ' + self.hostKey + " - exception: " + traceback.format_exc( e ) )
             return False
 
@@ -122,26 +122,26 @@ class BlockingMongoStatsThread( threading.Thread ):
                 # Pull from config.locks
                 try:
                     root['locks'] = list( monitorConn.config.locks.find( limit=200, sort=[ ( "$natural" , pymongo.DESCENDING ) ]) )
-                except Exception, e:
+                except Exception as e:
                     self.mmsAgent.handleOperationFailure( self.hostKey, 'config.locks.find', e )
 
                 # Pull from config.collections if enabled
                 try:
                     if self.mmsAgent.settings.configCollectionsEnabled:
                         root['configCollections'] = list( monitorConn.config.collections.find( limit=200, sort=[ ( "$natural" , pymongo.DESCENDING ) ] ) )
-                except Exception, e:
+                except Exception as e:
                     self.mmsAgent.handleOperationFailure( self.hostKey, 'config.collections.find', e )
 
                 # Pull from config.databases if enabled
                 try:
                     if self.mmsAgent.settings.configDatabasesEnabled:
                         root['configDatabases'] = list( monitorConn.config.databases.find( limit=200, sort=[ ( "$natural" , pymongo.DESCENDING ) ] ) )
-                except Exception, e:
+                except Exception as e:
                     self.mmsAgent.handleOperationFailure( self.hostKey, 'config.databases.find', e )
 
                 try:
                     root['configLockpings'] = list( monitorConn.config.lockpings.find( limit=200, sort=[ ( "$natural" , pymongo.DESCENDING ) ] ) )
-                except Exception, e:
+                except Exception as e:
                     self.mmsAgent.handleOperationFailure( self.hostKey, 'config.lockpings.find', e )
 
                 # Look at the mongos instances - only pull hosts that have a ping time
@@ -195,7 +195,7 @@ class BlockingMongoStatsThread( threading.Thread ):
 
             try:
                 root['localSystemReplSet'] = monitorConn.local.system.replset.find_one()
-            except pymongo.errors.OperationFailure, e:
+            except pymongo.errors.OperationFailure as e:
                 self.mmsAgent.handleOperationFailure( self.hostKey, 'local.system.replset.findOne', e )
 
             localConn = monitorConn.local
@@ -214,7 +214,7 @@ class BlockingMongoStatsThread( threading.Thread ):
 
                     oplogStats['rsStats'] = localConn.command( {'collstats' : 'oplog.rs' } )
 
-                except pymongo.errors.OperationFailure, e:
+                except pymongo.errors.OperationFailure as e:
                     self.mmsAgent.handleOperationFailure( self.hostKey, 'local.' + oplog + '.find', e )
             else:
                 # Slave
@@ -222,7 +222,7 @@ class BlockingMongoStatsThread( threading.Thread ):
                     oplogStats["sources"] = {}
                     for s in localConn.sources.find():
                         oplogStats["sources"][s["host"]] = s
-                except pymongo.errors.OperationFailure, e:
+                except pymongo.errors.OperationFailure as e:
                     self.mmsAgent.handleOperationFailure( self.hostKey, 'local.sources.find', e )
 
             root["oplog"] = oplogStats
@@ -231,7 +231,7 @@ class BlockingMongoStatsThread( threading.Thread ):
         if not isArbiter:
             try:
                 root['configSettings'] = list( monitorConn.config.settings.find() )
-            except Exception, e:
+            except Exception as e:
                 self.mmsAgent.handleOperationFailure( self.hostKey, 'config.settings.find', e )
 
         # per db info - mongos doesn't allow calls to local
@@ -263,7 +263,7 @@ class BlockingMongoStatsThread( threading.Thread ):
                             # work around Python 2.4 and older bug
                             for f in temp:
                                 # this is super hacky b/c of Python 2.4
-                                if isinstance( temp[f] , (int, long, float, complex)) and str(temp[f]) == "-inf":
+                                if isinstance( temp[f] , (int, float, complex)) and str(temp[f]) == "-inf":
                                     temp[f] = 0
                             root['databases'][x] = temp
 
@@ -282,7 +282,7 @@ class BlockingMongoStatsThread( threading.Thread ):
 
                             if len( profileData ) > 0:
                                 root['dbProfileData'][x] = profileData
-                        except Exception, e:
+                        except Exception as e:
                             self.mmsAgent.handleOperationFailure( self.hostKey, 'system.profile.find-' + x, e )
 
                     # Check to see if the profiler is enabled

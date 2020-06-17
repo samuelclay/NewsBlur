@@ -11,7 +11,7 @@ import pymongo, munin, nonBlockingStats, blockingStats, getLogs, traceback
 import bson
 
 # Python
-import threading, urllib, urllib2, socket, zlib, time, sets, re, gc
+import threading, urllib.request, urllib.parse, urllib.error, urllib.request, urllib.error, urllib.parse, socket, zlib, time, sets, re, gc
 
 mmsAgentVersion = "1.5.7"
 
@@ -134,7 +134,7 @@ class MmsAgent( object ):
 
             res = None
             try:
-                res = urllib2.urlopen( self.operationFailureUrl, bson.binary.Binary( bson.BSON.encode( msg, check_keys=False ) ) )
+                res = urllib.request.urlopen( self.operationFailureUrl, bson.binary.Binary( bson.BSON.encode( msg, check_keys=False ) ) )
                 res.read()
             finally:
                 if res is not None:
@@ -178,7 +178,7 @@ class MmsAgent( object ):
         try:
             self.hostStateLock.acquire()
 
-            for hostKey in self.hostState.keys():
+            for hostKey in list(self.hostState.keys()):
                 if hostname == self.extractHostname( hostKey ):
                     state['port'] = self.extractPort( hostKey )
                     self._setHostStateValue( hostKey, 'munin', stateData )
@@ -320,7 +320,7 @@ class MmsAgent( object ):
 
         availableCmds = sets.Set()
 
-        for field, value in connection.admin.command( 'listCommands' )['commands'].items():
+        for field, value in list(connection.admin.command( 'listCommands' )['commands'].items()):
             availableCmds.add( field.lower() )
 
         hostDef['availableCmds'] = availableCmds
@@ -404,8 +404,8 @@ class MmsAgent( object ):
 
             # Assemble the credentials string.
             credentials = '%(username)s:%(password)s' % {
-                'username' : urllib.quote_plus( self.settings.globalAuthUsername ),
-                'password' : urllib.quote_plus( self.settings.globalAuthPassword )
+                'username' : urllib.parse.quote_plus( self.settings.globalAuthUsername ),
+                'password' : urllib.parse.quote_plus( self.settings.globalAuthPassword )
             }
 
             if not '@' in mongoUri:
@@ -468,7 +468,7 @@ class MmsAgent( object ):
             res = None
 
             try:
-                res = urllib2.urlopen( self.pingUrl, req )
+                res = urllib.request.urlopen( self.pingUrl, req )
                 res.read()
             finally:
                 if res is not None:
@@ -524,7 +524,7 @@ class MmsAgent( object ):
         """ Stop all the threads """
         try:
             self.serverHostDefsLock.acquire()
-            for hostKey in self.serverHostDefs.keys():
+            for hostKey in list(self.serverHostDefs.keys()):
                 self.stopAndClearHost( hostKey )
         finally:
             self.serverHostDefsLock.release()
@@ -557,7 +557,7 @@ class MmsAgent( object ):
 
             foundCount = 0
 
-            for hostKey in self.serverHostDefs.keys():
+            for hostKey in list(self.serverHostDefs.keys()):
                 if self.serverHostDefs[hostKey]['hostname'] == hostname:
                     foundCount = foundCount + 1
 
