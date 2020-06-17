@@ -26,7 +26,7 @@ except:
 
 
 class PayPalPDT(PayPalStandardBase):
-    format = u"<PDT: %s %s>"
+    format = "<PDT: %s %s>"
 
     amt = models.DecimalField(max_digits=64, decimal_places=2, default=0, blank=True, null=True)
     cm = models.CharField(max_length=255, blank=True)

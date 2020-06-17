@@ -16,7 +16,7 @@ from django.conf import settings
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from django.core.mail import EmailMultiAlternatives
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.template.loader import render_to_string
 from apps.rss_feeds.models import Feed, MStory, MStarredStory
 from apps.rss_feeds.tasks import SchedulePremiumSetup
@@ -91,11 +91,11 @@ class Profile(models.Model):
         try:
             super(Profile, self).save(*args, **kwargs)
         except DatabaseError:
-            print " ---> Profile not saved. Table isn't there yet."
+            print(" ---> Profile not saved. Table isn't there yet.")
     
     def delete_user(self, confirm=False, fast=False):
         if not confirm:
-            print " ---> You must pass confirm=True to delete this user."
+            print(" ---> You must pass confirm=True to delete this user.")
             return
         
         logging.user(self.user, "Deleting user: %s / %s" % (self.user.email, self.user.profile.last_seen_ip))
@@ -340,7 +340,7 @@ class Profile(models.Model):
             customers = [c['customer'] for c in charges if 'customer' in c]
             for customer in customers:
                 if not customer:
-                    print " ***> No customer!"
+                    print(" ***> No customer!")
                     continue
                 try:
                     profile = Profile.objects.get(stripe_id=customer)
@@ -530,15 +530,15 @@ class Profile(models.Model):
                 has_profile = user.profile.last_seen_ip
             except Profile.DoesNotExist:
                 usernames.add(user.username)
-                print " ---> Missing profile: %-20s %-30s %-6s %-6s" % (user.username, user.email, opens, reads)
+                print(" ---> Missing profile: %-20s %-30s %-6s %-6s" % (user.username, user.email, opens, reads))
                 continue
 
             if opens is None and not reads and has_numbers:
                 usernames.add(user.username)
-                print " ---> Numerics: %-20s %-30s %-6s %-6s" % (user.username, user.email, opens, reads)
+                print(" ---> Numerics: %-20s %-30s %-6s %-6s" % (user.username, user.email, opens, reads))
             elif not has_profile:
                 usernames.add(user.username)
-                print " ---> No IP: %-20s %-30s %-6s %-6s" % (user.username, user.email, opens, reads)
+                print(" ---> No IP: %-20s %-30s %-6s %-6s" % (user.username, user.email, opens, reads))
         
         if not confirm: return usernames
         
@@ -586,7 +586,7 @@ class Profile(models.Model):
             else:
                 user_ids = dict([(us.user_id, us.active) 
                                  for us in UserSubscription.objects.filter(feed_id=feed_id).only('user', 'active')])
-            profiles = Profile.objects.filter(user_id__in=user_ids.keys()).values('user_id', 'last_seen_on', 'is_premium')
+            profiles = Profile.objects.filter(user_id__in=list(user_ids.keys())).values('user_id', 'last_seen_on', 'is_premium')
             feed = Feed.get_by_id(feed_id)
             
             if entire_feed_counted:
@@ -776,7 +776,7 @@ class Profile(models.Model):
     
     def send_forgot_password_email(self, email=None):
         if not self.user.email and not email:
-            print "Please provide an email address."
+            print("Please provide an email address.")
             return
         
         if not self.user.email and email:
@@ -797,7 +797,7 @@ class Profile(models.Model):
     
     def send_new_user_queue_email(self, force=False):
         if not self.user.email:
-            print "Please provide an email address."
+            print("Please provide an email address.")
             return
         
         params = dict(receiver_user_id=self.user.pk, email_type='new_user_queue')
@@ -823,7 +823,7 @@ class Profile(models.Model):
     
     def send_upload_opml_finished_email(self, feed_count):
         if not self.user.email:
-            print "Please provide an email address."
+            print("Please provide an email address.")
             return
         
         user    = self.user
@@ -840,7 +840,7 @@ class Profile(models.Model):
     
     def send_import_reader_finished_email(self, feed_count):
         if not self.user.email:
-            print "Please provide an email address."
+            print("Please provide an email address.")
             return
         
         user    = self.user
@@ -857,7 +857,7 @@ class Profile(models.Model):
     
     def send_import_reader_starred_finished_email(self, feed_count, starred_count):
         if not self.user.email:
-            print "Please provide an email address."
+            print("Please provide an email address.")
             return
         
         user    = self.user
@@ -1270,7 +1270,7 @@ class PaymentHistory(models.Model):
             return payments, output
 
         output += "\nMonthly Totals:\n"
-        for m in reversed(range(months)):
+        for m in reversed(list(range(months))):
             now = datetime.datetime.now()
             start_date = datetime.datetime(now.year, now.month, 1) - dateutil.relativedelta.relativedelta(months=m)
             end_time = start_date + datetime.timedelta(days=31)
@@ -1286,7 +1286,7 @@ class PaymentHistory(models.Model):
         this_mtd_sum = 0
         last_mtd_count = 0
         this_mtd_count = 0
-        for y in reversed(range(years)):
+        for y in reversed(list(range(years))):
             now = datetime.datetime.now()
             start_date = datetime.datetime(now.year, now.month, 1) - dateutil.relativedelta.relativedelta(years=y)
             end_date = now - dateutil.relativedelta.relativedelta(years=y)
@@ -1306,7 +1306,7 @@ class PaymentHistory(models.Model):
         last_month_avg = 0
         last_month_sum = 0
         last_month_count = 0
-        for y in reversed(range(years)):
+        for y in reversed(list(range(years))):
             now = datetime.datetime.now()
             start_date = datetime.datetime(now.year, now.month, 1) - dateutil.relativedelta.relativedelta(years=y)
             end_time = start_date + datetime.timedelta(days=31)
@@ -1330,7 +1330,7 @@ class PaymentHistory(models.Model):
         last_ytd_sum = 0
         this_ytd_count = 0
         last_ytd_count = 0
-        for y in reversed(range(years)):
+        for y in reversed(list(range(years))):
             now = datetime.datetime.now()
             start_date = datetime.datetime(now.year, 1, 1) - dateutil.relativedelta.relativedelta(years=y)
             end_date = now - dateutil.relativedelta.relativedelta(years=y)
@@ -1350,7 +1350,7 @@ class PaymentHistory(models.Model):
         last_year_sum = 0
         last_year_count = 0
         annual = 0
-        for y in reversed(range(years)):
+        for y in reversed(list(range(years))):
             now = datetime.datetime.now()
             start_date = datetime.datetime(now.year, 1, 1) - dateutil.relativedelta.relativedelta(years=y)
             end_date = datetime.datetime(now.year, 1, 1) - dateutil.relativedelta.relativedelta(years=y-1) - datetime.timedelta(seconds=1)
@@ -1370,7 +1370,7 @@ class PaymentHistory(models.Model):
         total = cls.objects.all().aggregate(sum=Sum('payment_amount'))
         output += "\nTotal: $%s\n" % total['sum']
         
-        print output
+        print(output)
         
         return {'annual': annual, 'output': output}
 
@@ -1399,7 +1399,7 @@ class MGiftCode(mongo.Document):
     
     @staticmethod
     def create_code(gift_code=None):
-        u = unicode(uuid.uuid4())
+        u = str(uuid.uuid4())
         code = u[:8] + u[9:13]
         if gift_code:
             code = gift_code + code[len(gift_code):]
