@@ -760,7 +760,7 @@ class MSocialProfile(mongo.Document):
             scores = []
             res = cls.objects(social_user_id=self.user_id).map_reduce(map_f, reduce_f, output='inline')
             for r in res:
-                facet_values = dict([(k, int(v)) for k,v in r.value.items()])
+                facet_values = dict([(k, int(v)) for k,v in list(r.value.items())])
                 facet_values[facet] = r.key
                 scores.append(facet_values)
             scores = sorted(scores, key=lambda v: v['neg'] - v['pos'])
@@ -1774,7 +1774,7 @@ class MSharedStory(mongo.DynamicDocument):
             
             if interactive:
                 feed = Feed.get_by_id(story.story_feed_id)
-                accept_story = input("%s / %s [Y/n]: " % (story.decoded_story_title, feed.title))
+                accept_story = eval(input("%s / %s [Y/n]: " % (story.decoded_story_title, feed.title)))
                 if accept_story in ['n', 'N']: continue
                 
             story_db = dict([(k, v) for k, v in list(story._data.items()) 

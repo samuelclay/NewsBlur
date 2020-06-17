@@ -6,7 +6,7 @@ import re
 from bson.objectid import ObjectId
 from mongoengine.queryset import NotUniqueError
 from django.shortcuts import get_object_or_404, render
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
 from django.template.loader import render_to_string
@@ -225,11 +225,11 @@ def load_river_blurblog(request):
                                                     socialsubs=socialsubs,
                                                     cutoff_date=user.profile.unread_cutoff)
     mstories = MStory.find_by_story_hashes(story_hashes)
-    story_hashes_to_dates = dict(zip(story_hashes, story_dates))
+    story_hashes_to_dates = dict(list(zip(story_hashes, story_dates)))
     def sort_stories_by_hash(a, b):
         return (int(story_hashes_to_dates[str(b.story_hash)]) -
                 int(story_hashes_to_dates[str(a.story_hash)]))
-    sorted_mstories = sorted(mstories, cmp=sort_stories_by_hash)
+    sorted_mstories = sorted(mstories, key=sort_stories_by_hash)
     stories = Feed.format_stories(sorted_mstories)
     for s, story in enumerate(stories):
         timestamp = story_hashes_to_dates[story['story_hash']]
@@ -391,10 +391,10 @@ def load_social_page(request, user_id, username=None, **kwargs):
             has_next_page = True
             story_ids = story_ids[:-1]
         mstories = MStory.find_by_story_hashes(story_ids)
-        story_id_to_dates = dict(zip(story_ids, story_dates))
+        story_id_to_dates = dict(list(zip(story_ids, story_dates)))
         def sort_stories_by_id(a, b):
             return int(story_id_to_dates[str(b.story_hash)]) - int(story_id_to_dates[str(a.story_hash)])
-        sorted_mstories = sorted(mstories, cmp=sort_stories_by_id)
+        sorted_mstories = sorted(mstories, key=sort_stories_by_id)
         stories = Feed.format_stories(sorted_mstories)
         for story in stories:
             story['shared_date'] = story['story_date']
@@ -402,7 +402,7 @@ def load_social_page(request, user_id, username=None, **kwargs):
         params = dict(user_id=social_user.pk)
         if feed_id:
             params['story_feed_id'] = feed_id
-        if params.has_key('story_db_id'):
+        if 'story_db_id' in params:
             params.pop('story_db_id')
         mstories = MSharedStory.objects(**params).order_by('-shared_date')[offset:offset+limit+1]
         stories = Feed.format_stories(mstories, include_permalinks=True)
