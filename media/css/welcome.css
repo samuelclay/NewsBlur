@@ -443,7 +443,7 @@
 /* ============ */
 
 .NB-welcome-features {
-    margin: 48px 0;
+    margin: 64px 0;
     overflow: hidden;
 }
 
@@ -457,6 +457,7 @@
 .NB-welcome-features img {
     width: 200px;
     height: 175px;
+    object-fit: cover;
     box-shadow: 0 0 3px rgba(30, 30, 30, 0.3);
 }
 .NB-welcome-features .NB-feature-caption {
@@ -466,7 +467,39 @@
 }
 .NB-welcome-features .NB-feature-text {
     color: #808080;
-    margin: 24px 0 0;
+    margin: 8px 0 0;
+    font-size: 15px;
+    line-height: 22px;
+}
+
+.NB-welcome-subfeatures {
+    margin: 48px 0;
+    overflow: hidden;
+}
+
+.NB-welcome-subfeatures .NB-feature {
+    float: left;
+    width: 46%;
+    margin: 0 4% 48px 0;
+    text-align: left;
+}
+
+.NB-welcome-subfeatures img {
+    float: left;
+    width: 120px;
+    height: 100px;
+    margin: 0 24px 0 0;
+    object-fit: contain;
+    box-shadow: 0 0 3px rgba(30, 30, 30, 0.3);
+}
+.NB-welcome-subfeatures .NB-feature-caption {
+    font-weight: bold;
+    font-size: 22px;
+    margin: 0px 0 0;
+}
+.NB-welcome-subfeatures .NB-feature-text {
+    color: #808080;
+    margin: 8px 0 0;
     font-size: 15px;
     line-height: 22px;
 }
