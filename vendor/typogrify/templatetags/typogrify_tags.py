@@ -4,7 +4,7 @@ from django.conf import settings
 from django import template
 from django.utils.html import conditional_escape
 from django.utils.safestring import mark_safe
-from django.utils.encoding import smart_str, force_unicode
+from django.utils.encoding import smart_bytes, force_text
 
 import vendor.typogrify.smartypants as _smartypants
 import vendor.typogrify.titlecase as _titlecase
@@ -28,7 +28,7 @@ def textile_restricted(value):
         import textile
     except ImportError:
         if settings.DEBUG:
-            raise template.TemplateSyntaxError, "Error in {% textile %} filter: The Python textile library isn't installed."
+            raise template.TemplateSyntaxError("Error in {% textile %} filter: The Python textile library isn't installed.")
         return force_unicode(value)
     else:
         return mark_safe(force_unicode(textile.textile_restricted(smart_str(value), noimage=False)))
