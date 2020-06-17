@@ -20,11 +20,11 @@ class DummyPayPalPDT(object):
         self.response = ''
 
     def update_with_get_params(self, get_params):
-        if get_params.has_key('tx'):
+        if 'tx' in get_params:
             self.context_dict['txn_id'] = get_params.get('tx')
-        if get_params.has_key('amt'):
+        if 'amt' in get_params:
             self.context_dict['mc_gross'] = get_params.get('amt')
-        if get_params.has_key('cm'):
+        if 'cm' in get_params:
             self.context_dict['custom'] = get_params.get('cm')
 
     def _postback(self, test=True):
