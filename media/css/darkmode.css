@@ -910,10 +910,21 @@ text-shadow: none;
     text-shadow: 0 1px 0 rgba(0,0,0,0.1);    
 }
 
+.NB-dark .NB-splash-blurred-logo {
+  background: transparent url('/media/embed/logo_newsblur_blur_dark.png') no-repeat center center;
+  background-size: contain;
+}
 
 /* ============= */
 /* = Feed Pane = */
 /* ============= */
+
+.NB-dark #NB-feeds-list-loader {
+    color: rgba(255, 255, 255, .4);
+    text-shadow: 0 1px 0 rgba(0, 0, 0, .3);
+    background: transparent url("/media/embed/reader/sun_loader_dark.svg") no-repeat 0 0;
+    background-size: 52px;
+}
 
 .NB-dark .left-pane,
 .NB-dark .NB-feedlist {

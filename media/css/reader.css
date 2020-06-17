@@ -408,6 +408,8 @@ hr {
 }
 .NB-feedlists .NB-socialfeeds .feed .feed_title {
     text-shadow: 0 1px 0 rgba(250, 250, 250, .4);
+    color: #F7E4DB;
+    color: #F5F0D9;
 }
 .NB-feedlists .NB-socialfeeds img.feed_favicon {
     border-radius: 3px;
@@ -417,7 +419,8 @@ hr {
 /* ============= */
 
 #NB-feeds-list-loader {
-  background: transparent url("/media/embed/reader/big_spinner.gif?v2") no-repeat 0 0;
+  background: transparent url("/media/embed/reader/sun_loader_light.svg") no-repeat 0 0;
+  background-size: 52px;
   color: rgba(0, 0, 0, .2);
   font-size: 16px;
   height: 51px;
@@ -5290,6 +5293,13 @@ form.opml_import_form input {
 .NB-body-main .NB-splash-info .NB-splash-link-logo {
     float: right;
     display: block;
+    opacity: 0.4;
+}
+.NB-splash-blurred-logo {
+  background: transparent url('/media/embed/logo_newsblur_blur.png') no-repeat center center;
+  background-size: contain;
+  width: 146px;
+  height: 30px;
 }
 .NB-splash-info .NB-splash-links .NB-splash-link.NB-splash-link-logo a {
     padding-top: 0;
