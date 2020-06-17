@@ -8,7 +8,7 @@ from fabric.state import connections
 from boto.s3.connection import S3Connection
 from boto.s3.key import Key
 from boto.ec2.connection import EC2Connection
-from vendor import yaml
+import yaml
 from pprint import pprint
 from collections import defaultdict
 from contextlib import contextmanager as _contextmanager
