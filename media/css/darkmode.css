@@ -70,10 +70,15 @@ body.NB-dark {
 }
 
 .NB-dark .ui-layout-resizer-west {
-    background-color: #232526;
-    border-left: 1px solid rgba(0,0,0,0);
+    background-color: rgb(52,59,61);
+    border-left: 1px solid #0B0F20;
 }
-
+.NB-dark .right-pane .ui-layout-resizer-south, 
+.NB-dark .right-pane .ui-layout-resizer-north {
+    background-color: rgb(52,59,61);
+    border-top: 1px solid #0B0F20;
+    border-bottom: 1px solid #0B0F20;    
+}
 
 
 
