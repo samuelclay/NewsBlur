@@ -4,11 +4,11 @@
 # License as published by the Free Software Foundation.
 #
 
-from __future__ import generators
-from Tkinter import *
-import tkFileDialog
-import tkSimpleDialog
-import tkMessageBox
+
+from tkinter import *
+import tkinter.filedialog
+import tkinter.simpledialog
+import tkinter.messagebox
 import os
 import time
 
@@ -64,13 +64,13 @@ class TestView(Frame):
     def runTest(self):
         # TODO - This is nasty re-write
         if len(self.guesser) == 0:
-            tkMessageBox.showwarning('Underprepared for examination!',
+            tkinter.messagebox.showwarning('Underprepared for examination!',
                                      'Your guesser has had no training. Please train and retry.')
             return
-        path = tkFileDialog.askdirectory()
+        path = tkinter.filedialog.askdirectory()
         if not path:
             return
-        answer = tkSimpleDialog.askstring('Which Pool do these items belong to?', 'Pool name?',
+        answer = tkinter.simpledialog.askstring('Which Pool do these items belong to?', 'Pool name?',
                                           parent=self.app)
 
         if not answer:
