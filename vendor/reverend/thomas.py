@@ -8,6 +8,7 @@ import operator
 import re
 import math
 from sets import Set
+from functools import reduce
 
 class BayesData(dict):
 
@@ -77,7 +78,7 @@ class Bayes(object):
         """
         sp = self.pools[sourcePool]
         dp = self.pools[destPool]
-        for tok, count in sp.items():
+        for tok, count in list(sp.items()):
             if dp.get(tok):
                 dp[tok] += count
             else:
@@ -88,7 +89,7 @@ class Bayes(object):
     def poolData(self, poolName):
         """Return a list of the (token, count) tuples.
         """
-        return self.pools[poolName].items()
+        return list(self.pools[poolName].items())
 
     def poolTokens(self, poolName):
         """Return a list of the tokens in this pool.
@@ -96,13 +97,13 @@ class Bayes(object):
         return [tok for tok, count in self.poolData(poolName)]
 
     def save(self, fname='bayesdata.dat'):
-        from cPickle import dump
+        from pickle import dump
         fp = open(fname, 'wb')
         dump(self.pools, fp)
         fp.close()
 
     def load(self, fname='bayesdata.dat'):
-        from cPickle import load
+        from pickle import load
         fp = open(fname, 'rb')
         self.pools = load(fp)
         fp.close()
@@ -113,7 +114,7 @@ class Bayes(object):
         """Return a sorted list of Pool names.
         Does not include the system pool '__Corpus__'.
         """
-        pools = self.pools.keys()
+        pools = list(self.pools.keys())
         pools.remove('__Corpus__')
         pools = [pool for pool in pools]
         pools.sort()
@@ -123,7 +124,7 @@ class Bayes(object):
         """ merges corpora and computes probabilities
         """
         self.cache = {}
-        for pname, pool in self.pools.items():
+        for pname, pool in list(self.pools.items()):
             # skip our special pool
             if pname == '__Corpus__':
                 continue
@@ -132,7 +133,7 @@ class Bayes(object):
             themCount = max(self.corpus.tokenCount - poolCount, 1)
             cacheDict = self.cache.setdefault(pname, self.dataClass(pname))
 
-            for word, totCount in self.corpus.items():
+            for word, totCount in list(self.corpus.items()):
                 # for every word in the copus
                 # check to see if this pool contains this word
                 thisCount = float(pool.get(word, 0.0))
@@ -173,12 +174,14 @@ class Bayes(object):
         instance creation.
         """
         return self._tokenizer.tokenize(obj)
+    def cmp_(a, b):
+        return (a > b) - (a < b) 
 
     def getProbs(self, pool, words):
         """ extracts the probabilities of tokens in a message
         """
         probs = [(word, pool[word]) for word in words if word in pool]
-        probs.sort(lambda x,y: cmp(y[1],x[1]))
+        probs.sort(lambda x,y: cmp_(y[1],x[1]))
         return probs[:2048]
 
     def train(self, pool, item, uid=None):
@@ -238,7 +241,7 @@ class Bayes(object):
                 self.corpus.tokenCount -= 1
 
     def trainedOn(self, msg):            
-        for p in self.cache.values():
+        for p in list(self.cache.values()):
             if msg in p.training:
                 return True
         return False
@@ -248,12 +251,12 @@ class Bayes(object):
         pools = self.poolProbs()
 
         res = {}
-        for pname, pprobs in pools.items():
+        for pname, pprobs in list(pools.items()):
             p = self.getProbs(pprobs, tokens)
             if len(p) != 0:
                 res[pname]=self.combiner(p, pname)
-        res = res.items()
-        res.sort(lambda x,y: cmp(y[1], x[1]))
+        res = list(res.items())
+        res.sort(lambda x,y: cmp_(y[1], x[1]))
         return res        
 
     def robinson(self, probs, ignore):
@@ -265,8 +268,8 @@ class Bayes(object):
         """
         
         nth = 1./len(probs)
-        P = 1.0 - reduce(operator.mul, map(lambda p: 1.0-p[1], probs), 1.0) ** nth
-        Q = 1.0 - reduce(operator.mul, map(lambda p: p[1], probs)) ** nth
+        P = 1.0 - reduce(operator.mul, [1.0-p[1] for p in probs], 1.0) ** nth
+        Q = 1.0 - reduce(operator.mul, [p[1] for p in probs]) ** nth
         S = (P - Q) / (P + Q)
         return (1 + S) / 2
 
@@ -279,9 +282,9 @@ class Bayes(object):
             Courtesy of http://christophe.delord.free.fr/en/index.html
         """
         n = len(probs)
-        try: H = chi2P(-2.0 * math.log(reduce(operator.mul, map(lambda p: p[1], probs), 1.0)), 2*n)
+        try: H = chi2P(-2.0 * math.log(reduce(operator.mul, [p[1] for p in probs], 1.0)), 2*n)
         except OverflowError: H = 0.0
-        try: S = chi2P(-2.0 * math.log(reduce(operator.mul, map(lambda p: 1.0-p[1], probs), 1.0)), 2*n)
+        try: S = chi2P(-2.0 * math.log(reduce(operator.mul, [1.0-p[1] for p in probs], 1.0)), 2*n)
         except OverflowError: S = 0.0
         return (1 + H - S) / 2
 
