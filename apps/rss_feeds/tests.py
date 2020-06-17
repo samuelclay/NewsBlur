@@ -3,7 +3,7 @@ from utils import json_functions as json
 from django.test.client import Client
 from django.test import TestCase
 from django.core import management
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.conf import settings
 from apps.rss_feeds.models import Feed, MStory
 from mongoengine.connection import connect, disconnect
