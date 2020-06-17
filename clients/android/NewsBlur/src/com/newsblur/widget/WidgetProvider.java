@@ -18,6 +18,8 @@ import com.newsblur.util.FeedSet;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.WidgetBackground;
 
+import java.util.Set;
+
 public class WidgetProvider extends AppWidgetProvider {
 
     private static String TAG = "WidgetProvider";
@@ -51,6 +53,7 @@ public class WidgetProvider extends AppWidgetProvider {
         Log.d(TAG, "onUpdate");
         WidgetUtils.checkWidgetUpdateAlarm(context);
         WidgetBackground widgetBackground = PrefsUtils.getWidgetBackground(context);
+        Set<String> feedIds = PrefsUtils.getWidgetFeedIds(context);
         for (int appWidgetId : appWidgetIds) {
 
             // Set up the intent that starts the WidgetRemoteViewService, which will
@@ -78,6 +81,10 @@ public class WidgetProvider extends AppWidgetProvider {
             // It should be in the same layout used to instantiate the RemoteViews
             // object above.
             rv.setEmptyView(R.id.widget_list, R.id.widget_empty_view);
+
+            if (feedIds != null && feedIds.isEmpty()) {
+                rv.setTextViewText(R.id.widget_empty_view, context.getString(R.string.title_widget_setup));
+            }
 
             Intent configIntent = new Intent(context, WidgetProvider.class);
             configIntent.setAction(WidgetUtils.ACTION_OPEN_CONFIG);
