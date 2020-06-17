@@ -857,7 +857,7 @@ if __name__ == "__main__":
 	from docutils.core import publish_string
 	docstring_html = publish_string(__doc__, writer_name='html')
 
-	print docstring_html
+	print(docstring_html)
 
 
 	# Unit test output goes out stderr.  No worries.
