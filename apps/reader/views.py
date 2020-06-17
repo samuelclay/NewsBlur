@@ -13,7 +13,7 @@ from django.template.loader import render_to_string
 from django.db import IntegrityError
 from django.db.models import Q
 from django.views.decorators.cache import never_cache
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.contrib.auth import login as login_user
 from django.contrib.auth import logout as logout_user
 from django.contrib.auth.models import User
@@ -24,7 +24,7 @@ from django.core.mail import EmailMultiAlternatives
 from django.core.validators import validate_email
 from django.contrib.sites.models import Site
 from django.utils import feedgenerator
-from django.utils.encoding import smart_unicode
+from django.utils.encoding import smart_str
 from mongoengine.queryset import OperationError
 from mongoengine.queryset import NotUniqueError
 from apps.recommendations.models import RecommendedFeed
@@ -67,10 +67,19 @@ BANNED_URLS = [
     "brentozar.com",
 ]
 
+def get_subdomain(request):
+    host = request.META.get('HTTP_HOST')
+    if host.count(".") == 2:
+        return host.split(".")[0]
+    else:
+        return None
+
 @never_cache
 @render_to('reader/dashboard.xhtml')
 def index(request, **kwargs):
-    if request.method == "GET" and request.subdomain and request.subdomain not in ['dev', 'www', 'debug']:
+    
+    subdomain = get_subdomain(request)
+    if request.method == "GET" and subdomain and subdomain not in ['dev', 'www', 'debug']:
         username = request.subdomain
         if '.' in username:
             username = username.split('.')[0]
@@ -84,7 +93,6 @@ def index(request, **kwargs):
                 Site.objects.get_current().domain,
                 reverse('index')))
         return load_social_page(request, user_id=user.pk, username=request.subdomain, **kwargs)
-
     if request.user.is_anonymous:
         return welcome(request, **kwargs)
     else:
@@ -1163,7 +1171,7 @@ def folder_rss_feed(request, user_id, secret_token, unread_filter, folder_slug):
     for story in stories:
         feed = Feed.get_by_id(story['story_feed_id'])
         story_content = """%s<br><br><img src="//%s/rss_feeds/icon/%s" width="16" height="16"> %s""" % (
-            smart_unicode(story['story_content']),
+            smart_str(story['story_content']),
             Site.objects.get_current().domain,
             story['story_feed_id'],
             feed.feed_title if feed else ""
