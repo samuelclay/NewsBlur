@@ -1291,13 +1291,19 @@ def remove_like_comment(request):
             'comment': comment, 
             'user_profiles': profiles,
         })
-        
+def get_subdomain(request):
+    host = request.META.get('HTTP_HOST')
+    if host.count(".") == 2:
+        return host.split(".")[0]
+    else:
+        return None
+
 def shared_stories_rss_feed_noid(request):
     index = HttpResponseRedirect('http://%s%s' % (
                                  Site.objects.get_current().domain,
                                  reverse('index')))
-    if request.subdomain:
-        username = request.subdomain
+    if get_subdomain(request):
+        username = get_subdomain(request)
         try:
             if '.' in username:
                 username = username.split('.')[0]
