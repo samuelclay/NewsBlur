@@ -3,7 +3,7 @@
 
 import os
 import re
-import urllib2
+import urllib.request
 from vendor.munin import MuninPlugin
 
 class DDWrtPlugin(MuninPlugin):
@@ -15,7 +15,7 @@ class DDWrtPlugin(MuninPlugin):
         self.url = self.root_url + "/Info.live.htm"
 
     def get_info(self):
-        res = urllib2.urlopen(self.url)
+        res = urllib.request.urlopen(self.url)
         text = res.read()
         return dict(
             x[1:-1].split('::')
