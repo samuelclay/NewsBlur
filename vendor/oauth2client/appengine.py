@@ -25,7 +25,7 @@ import logging
 import pickle
 import time
 
-import clientsecrets
+from . import clientsecrets
 
 from google.appengine.api import app_identity
 from google.appengine.api import users
@@ -102,7 +102,7 @@ class AppAssertionCredentials(AssertionCredentials):
     """
     try:
       (token, _) = app_identity.get_access_token(self.scope)
-    except app_identity.Error, e:
+    except app_identity.Error as e:
       raise AccessTokenRefreshError(str(e))
     self.access_token = token
 

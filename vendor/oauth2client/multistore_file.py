@@ -37,11 +37,11 @@ import logging
 import os
 import threading
 
-from anyjson import simplejson
+from .anyjson import simplejson
 from oauth2client.client import Storage as BaseStorage
 from oauth2client.client import Credentials
 from oauth2client import util
-from locked_file import LockedFile
+from .locked_file import LockedFile
 
 logger = logging.getLogger(__name__)
 
@@ -179,7 +179,7 @@ class _MultiStore(object):
     simple version of "touch" to ensure the file has been created.
     """
     if not os.path.exists(self._file.filename()):
-      old_umask = os.umask(0177)
+      old_umask = os.umask(0o177)
       try:
         open(self._file.filename(), 'a+b').close()
       finally:
@@ -309,7 +309,7 @@ class _MultiStore(object):
     raw_data = {'file_version': 1}
     raw_creds = []
     raw_data['data'] = raw_creds
-    for (cred_key, cred) in self._data.items():
+    for (cred_key, cred) in list(self._data.items()):
       raw_key = {
           'clientId': cred_key[0],
           'userAgent': cred_key[1],

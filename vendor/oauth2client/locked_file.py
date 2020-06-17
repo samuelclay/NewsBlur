@@ -99,7 +99,7 @@ class _PosixOpener(_Opener):
 
     try:
       self._fh = open(self._filename, self._mode)
-    except IOError, e:
+    except IOError as e:
       # If we can't access with _mode, try _fallback_mode and don't lock.
       if e.errno == errno.EACCES:
         self._fh = open(self._filename, self._fallback_mode)
@@ -114,7 +114,7 @@ class _PosixOpener(_Opener):
         self._locked = True
         break
 
-      except OSError, e:
+      except OSError as e:
         if e.errno != errno.EEXIST:
           raise
         if (time.time() - start_time) >= timeout:
@@ -167,7 +167,7 @@ try:
 
       try:
         self._fh = open(self._filename, self._mode)
-      except IOError, e:
+      except IOError as e:
         # If we can't access with _mode, try _fallback_mode and don't lock.
         if e.errno == errno.EACCES:
           self._fh = open(self._filename, self._fallback_mode)
@@ -179,7 +179,7 @@ try:
           fcntl.lockf(self._fh.fileno(), fcntl.LOCK_EX)
           self._locked = True
           return
-        except IOError, e:
+        except IOError as e:
           # If not retrying, then just pass on the error.
           if timeout == 0:
             raise e
@@ -240,7 +240,7 @@ try:
 
       try:
         self._fh = open(self._filename, self._mode)
-      except IOError, e:
+      except IOError as e:
         # If we can't access with _mode, try _fallback_mode and don't lock.
         if e.errno == errno.EACCES:
           self._fh = open(self._filename, self._fallback_mode)
@@ -257,7 +257,7 @@ try:
               pywintypes.OVERLAPPED())
           self._locked = True
           return
-        except pywintypes.error, e:
+        except pywintypes.error as e:
           if timeout == 0:
             raise e
 
@@ -281,7 +281,7 @@ try:
         try:
           hfile = win32file._get_osfhandle(self._fh.fileno())
           win32file.UnlockFileEx(hfile, 0, -0x10000, pywintypes.OVERLAPPED())
-        except pywintypes.error, e:
+        except pywintypes.error as e:
           if e[0] != _Win32Opener.FILE_ALREADY_UNLOCKED_ERROR:
             raise
       self._locked = False
