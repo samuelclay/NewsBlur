@@ -1,6 +1,6 @@
 import os
 from fnmatch import fnmatch
-from vendor import yaml
+import yaml
 from django.conf import settings
 
 DATA_URI_START = "<!--[if (!IE)|(gte IE 8)]><!-->"
@@ -26,8 +26,9 @@ class JammitAssets:
         Read the assets from the YAML and store it as a lookup dictionary.
         """
         filepath = os.path.join(self.assets_dir, self.ASSET_FILENAME)
-        f = open(filepath, 'r')
-        return yaml.load(f.read())
+
+        with open(filepath, 'r') as yaml_file:
+            return yaml.safe_load(yaml_file)
     
     def render_tags(self, asset_type, asset_package):
         """
