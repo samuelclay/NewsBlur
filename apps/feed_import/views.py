@@ -11,7 +11,7 @@ from django.contrib.auth.models import User
 # from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.conf import settings
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.contrib.auth import login as login_user
 from apps.reader.forms import SignupForm
 from apps.reader.models import UserSubscription
