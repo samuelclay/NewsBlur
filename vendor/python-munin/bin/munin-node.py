@@ -2,7 +2,7 @@
 
 import os
 import socket
-import SocketServer
+import socketserver
 import sys
 import threading
 import time
@@ -29,13 +29,13 @@ def execute_plugin(path, cmd=""):
 
 if os.name == 'posix':
     def become_daemon(our_home_dir='.', out_log='/dev/null',
-                      err_log='/dev/null', umask=022):
+                      err_log='/dev/null', umask=0o22):
         "Robustly turn into a UNIX daemon, running in our_home_dir."
         # First fork
         try:
             if os.fork() > 0:
                 sys.exit(0)     # kill off parent
-        except OSError, e:
+        except OSError as e:
             sys.stderr.write("fork #1 failed: (%d) %s\n" % (e.errno, e.strerror))
             sys.exit(1)
         os.setsid()
@@ -46,7 +46,7 @@ if os.name == 'posix':
         try:
             if os.fork() > 0:
                 os._exit(0)
-        except OSError, e:
+        except OSError as e:
             sys.stderr.write("fork #2 failed: (%d) %s\n" % (e.errno, e.strerror))
             os._exit(1)
 
@@ -59,7 +59,7 @@ if os.name == 'posix':
         # Set custom file descriptors so that they get proper buffering.
         sys.stdout, sys.stderr = so, se
 else:
-    def become_daemon(our_home_dir='.', out_log=None, err_log=None, umask=022):
+    def become_daemon(our_home_dir='.', out_log=None, err_log=None, umask=0o22):
         """
         If we're not running under a POSIX system, just simulate the daemon
         mode by doing redirections and directory changing.
@@ -83,7 +83,7 @@ else:
         def write(self, s):
             pass
 
-class MuninRequestHandler(SocketServer.StreamRequestHandler):
+class MuninRequestHandler(socketserver.StreamRequestHandler):
     def handle(self):
         # self.rfile is a file-like object created by the handler;
         # we can now use e.g. readline() instead of raw recv() calls
@@ -129,7 +129,7 @@ class MuninRequestHandler(SocketServer.StreamRequestHandler):
                 self.wfile.write("# Unknown command. Try list, nodes, config, fetch, version or quit\n")
 
 
-class MuninServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
+class MuninServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
     pass
 
 if __name__ == "__main__":
