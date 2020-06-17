@@ -1,6 +1,6 @@
 import os
 import base64
-import urlparse
+import urllib.parse
 import datetime
 import lxml.html
 from django import forms
@@ -61,7 +61,7 @@ def signup(request):
                 login_user(request, new_user)
                 logging.user(request, "~FG~SB~BBAPI NEW SIGNUP: ~FW%s / %s" % (new_user.email, ip))
                 code = 1
-            except forms.ValidationError, e:
+            except forms.ValidationError as e:
                 errors = [e.args[0]]
     else:
         errors = dict(method="Invalid method. Use POST. You used %s" % request.method)
@@ -217,7 +217,7 @@ def check_share_on_site(request, token):
         logging.user(request.user, "~FBFinding feed (check_share_on_site): %s" % story_url)
         feed = Feed.get_feed_from_url(story_url, create=False, fetch=False)
     if not feed:
-        parsed_url = urlparse.urlparse(story_url)
+        parsed_url = urllib.parse.urlparse(story_url)
         base_url = "%s://%s%s" % (parsed_url.scheme, parsed_url.hostname, parsed_url.path)
         logging.user(request.user, "~FBFinding feed (check_share_on_site): %s" % base_url)
         feed = Feed.get_feed_from_url(base_url, create=False, fetch=False)
