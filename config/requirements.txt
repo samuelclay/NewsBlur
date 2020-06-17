@@ -15,7 +15,6 @@ django-qurl==0.1.1
 django-redis-cache==1.5.5
 django-redis-sessions==0.5.6
 django-ses==0.7.1
-django-subdomains==2.1.0
 django-timezone-field==2.0
 Django==2.0
 dnspython==1.15.0
@@ -27,7 +26,7 @@ image==1.5.27
 isodate==0.5.4
 lxml==4.5.1
 mock==2.0.0
-mongoengine==3.4.0
+mongoengine==0.20.0
 PyMySQL==0.9.3
 ndg-httpsclient==0.4.2
 nltk==3.2.1
@@ -55,6 +54,7 @@ sgmllib3k==1.0.0
 simplejson==3.10.0
 six==1.10.0
 stripe==1.43.0
-tweepy==3.5.0
+subdomains==3.0.1
+tweepy==3.8.0
 # -e git://github.com/tweepy/tweepy.git#egg=tweepy
 xlsxwriter==0.9.6
