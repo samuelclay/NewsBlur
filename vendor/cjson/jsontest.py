@@ -82,7 +82,7 @@ class JsonTest(unittest.TestCase):
         obj = cjson.decode(r'"\u000A"')
         self.assertEqual("\n", obj)
         obj = cjson.decode(r'"\u1001"')
-        self.assertEqual(u'\u1001', obj)
+        self.assertEqual('\u1001', obj)
 
     def testWriteEscapedQuotationMark(self):
         s = cjson.encode(r'"')
@@ -122,14 +122,14 @@ class JsonTest(unittest.TestCase):
         self.assertEqual(r'"\t"', _removeWhitespace(s))
 
     def testWriteEscapedHexCharacter(self):
-        s = cjson.encode(u'\u1001')
+        s = cjson.encode('\u1001')
         self.assertEqual(r'"\u1001"', _removeWhitespace(s))
 
     def testReadBadEscapedHexCharacter(self):
         self.assertRaises(_exception, self.doReadBadEscapedHexCharacter)
 
     def doReadBadEscapedHexCharacter(self):
-        cjson.decode('"\u10K5"')
+        cjson.decode('"\\u10K5"')
 
     def testReadBadObjectKey(self):
         self.assertRaises(_exception, self.doReadBadObjectKey)
@@ -290,7 +290,7 @@ class JsonTest(unittest.TestCase):
 
     def testStringEncoding(self):
         s = cjson.encode([1, 2, 3])
-        self.assertEqual(unicode("[1,2,3]", "utf-8"), _removeWhitespace(s))
+        self.assertEqual(str("[1,2,3]", "utf-8"), _removeWhitespace(s))
 
     def testReadEmptyObjectAtEndOfArray(self):
         self.assertEqual(["a","b","c",{}],
@@ -346,16 +346,16 @@ class JsonTest(unittest.TestCase):
             {"1": "str 1", "1": "int 1", "3.1415": "pi"})
 
     def testUnicodeEncode(self):
-        self.assertEqual(cjson.encode({u'b':2}), '{"b": 2}')
-        self.assertEqual(cjson.encode({'o"':u'öõüû'}), r'{"o\"": "\u00f6\u0151\u00fc\u0171"}')
+        self.assertEqual(cjson.encode({'b':2}), '{"b": 2}')
+        self.assertEqual(cjson.encode({'o"':'öõüû'}), r'{"o\"": "\u00f6\u0151\u00fc\u0171"}')
         self.assertEqual(cjson.encode('öõüû', encoding='latin2'), r'"\u00f6\u0151\u00fc\u0171"') 
         self.assertRaises(cjson.EncodeError, lambda: cjson.encode('öõüû', encoding='ascii'))
 
     def testUnicodeDecode(self):
-        self.assertEqual(cjson.decode('{"b": 2}', all_unicode=True), {u'b':2})
-        self.assertEqual(cjson.decode(r'{"o\"": "\u00f6\u0151\u00fc\u0171"}'), {'o"':u'öõüû'})
+        self.assertEqual(cjson.decode('{"b": 2}', all_unicode=True), {'b':2})
+        self.assertEqual(cjson.decode(r'{"o\"": "\u00f6\u0151\u00fc\u0171"}'), {'o"':'öõüû'})
         self.assertEqual(cjson.decode(r'{"o\"": "\u00f6\u0151\u00fc\u0171"}', encoding='latin2'), {'o"':'öõüû'})
-        self.assertEqual(cjson.decode(ur'"\u00f6\u0151\u00fc\u0171"', all_unicode=True), u'öõüû')
+        self.assertEqual(cjson.decode(r'"\u00f6\u0151\u00fc\u0171"', all_unicode=True), 'öõüû')
         self.assertEqual(cjson.decode(r'"\u00f6\u0151\u00fc\u0171"', encoding='latin2'), 'öõüû')
         self.assertRaises(cjson.DecodeError, lambda: cjson.decode('"öõüû"', encoding='ascii'))
             
@@ -395,16 +395,16 @@ def measureThroughput():
                 None, False, True, 0, 1,
                 x+y, x*y, math.pi, math.pi*x*y,
                 'str(%d,%d)%s'%(x,y,'#'*(x/10)),
-                u'unicode[%04X]:%s'%(x*y,unichr(x*y)),
+                'unicode[%04X]:%s'%(x*y,chr(x*y)),
             ))
-            for x in xrange(y)
+            for x in range(y)
         ])
-        for y in xrange(1,100)
+        for y in range(1,100)
     ]
     json=cjson.encode(data)
-    print 'Test data: tuples in dicts in a list, %d bytes as JSON string'%len(json)
-    print 'Encoder throughput: ~%d kbyte/s'%measureEncoderThroughput(data)
-    print 'Decoder throughput: ~%d kbyte/s'%measureDecoderThroughput(data)
+    print('Test data: tuples in dicts in a list, %d bytes as JSON string'%len(json))
+    print('Encoder throughput: ~%d kbyte/s'%measureEncoderThroughput(data))
+    print('Decoder throughput: ~%d kbyte/s'%measureDecoderThroughput(data))
 
 def main():
     try:
