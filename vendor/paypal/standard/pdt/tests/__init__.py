@@ -1,1 +1,1 @@
-from test_pdt import *
+from .test_pdt import *
