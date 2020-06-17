@@ -9,7 +9,7 @@ import settings as _settings
 import logConfig
 
 # Python
-import sys, socket, time, os, hmac, urllib2, threading, subprocess, traceback
+import sys, socket, time, os, hmac, urllib.request, urllib.error, urllib.parse, threading, subprocess, traceback
 
 try:
     import hashlib
@@ -51,11 +51,11 @@ pyv = pymongo.version
 if "partition" in dir( pyv ):
     pyv = pyv.partition( "+" )[0]
     _pymongoVersion = pyv
-    if map( int, pyv.split('.') ) < [ 1, 9]:
+    if list(map( int, pyv.split('.') )) < [ 1, 9]:
         sys.exit( 'ERROR - The MMS agent requires pymongo 1.9 or higher: easy_install -U pymongo' )
 
     if _settings.useSslForAllConnections:
-        if map( int, pyv.split('.') ) < [ 2, 1, 1]:
+        if list(map( int, pyv.split('.') )) < [ 2, 1, 1]:
             sys.exit( 'ERROR - The MMS agent requires pymongo 2.1.1 or higher to use SSL: easy_install -U pymongo' )
 
 _pymongoVersion = pymongo.version
@@ -112,7 +112,7 @@ class AgentShutdownListenerThread( threading.Thread ):
         try:
             sock = socket.socket( socket.AF_INET,  socket.SOCK_DGRAM )
             sock.bind( ( self.settings.shutdownAgentBindAddr, self.settings.shutdownAgentBindPort ) )
-        except Exception, e:
+        except Exception as e:
             self.logger.error( traceback.format_exc( e ) )
 
         self.logger.info( 'Shutdown listener bound to address %s on port %d' % ( self.settings.shutdownAgentBindAddr, self.settings.shutdownAgentBindPort ) )
@@ -149,7 +149,7 @@ class AgentProcessMonitorThread( threading.Thread ):
             try:
                 time.sleep( 5 )
                 self._monitorProcess()
-            except Exception, e:
+            except Exception as e:
                 self.logger.error( traceback.format_exc( e ) )
 
     def _monitorProcess( self ):
@@ -159,7 +159,7 @@ class AgentProcessMonitorThread( threading.Thread ):
             try:
                 if self.processContainer.agent is None or self.processContainer.agent.poll() is not None:
                     self.processContainer.agent = self._launchAgentProcess()
-            except Exception, e:
+            except Exception as e:
                 self.logger.error( traceback.format_exc( e ) )
         finally:
             self.processContainer.lock.release()
@@ -181,13 +181,13 @@ class AgentUpdateThread( threading.Thread ):
             try:
                 time.sleep( 300 )
                 self._checkForUpdate()
-            except Exception, e:
+            except Exception as e:
                 self.logger.error( 'Problem with upgrade check: ' + traceback.format_exc( e ) )
 
     def _checkForUpdate( self ):
         """ Update the agent if possible """
 
-        res = urllib2.urlopen( self.settings.version_url % { 'key' : self.settings.mms_key } )
+        res = urllib.request.urlopen( self.settings.version_url % { 'key' : self.settings.mms_key } )
 
         resBson = None
         try:
@@ -226,7 +226,7 @@ class AgentUpdateThread( threading.Thread ):
                     return True
                 if int( l ) > int( r ):
                     return False
-        except StandardError:
+        except Exception:
             self.logger.error( "Upgrade problem with versions - local: '%s' - remote: '%s'" % ( localVersion, remoteVersion ) )
 
         return False
@@ -234,7 +234,7 @@ class AgentUpdateThread( threading.Thread ):
     def _upgradeAgent( self, newAgentVersion ):
         """ Pull down the files, verify  and then stop the current process """
 
-        res = urllib2.urlopen( self.settings.upgrade_url % { 'key' : self.settings.mms_key } )
+        res = urllib.request.urlopen( self.settings.upgrade_url % { 'key' : self.settings.mms_key } )
 
         resBson = None
         try:
@@ -287,7 +287,7 @@ class AgentUpdateThread( threading.Thread ):
             self.processContainer.stopAgentProcess()
             self.settings.settingsAgentVersion = newAgentVersion
             self.logger.info( 'Agent upgraded to version: ' + newAgentVersion + ' - there is up to a five minute timeout before data will be sent again' )
-        except Exception, e:
+        except Exception as e:
             self.logger.error( 'Problem restarting agent process: ' + traceback.format_exc( e ) )
 
 #
@@ -326,11 +326,11 @@ if __name__ == "__main__":
             try:
                 time.sleep( 2 )
                 processContainer.pingAgentProcess()
-            except Exception, exc:
+            except Exception as exc:
                 _logger.error( traceback.format_exc( exc ) )
 
     except KeyboardInterrupt:
         processContainer.stopAgentProcess()
-    except Exception, ex:
+    except Exception as ex:
         _logger.error( traceback.format_exc( ex )  )
 

@@ -11,7 +11,7 @@ import settings as _settings
 import pymongo, bson
 
 # Python
-import logging, threading, time, logging.handlers, urllib2, platform, socket, Queue
+import logging, threading, time, logging.handlers, urllib.request, urllib.error, urllib.parse, platform, socket, queue
 
 socket.setdefaulttimeout( _settings.socket_timeout )
 
@@ -79,7 +79,7 @@ class LogRelayThread( threading.Thread ):
                 if len( records ) >= 10:
                     break
 
-        except Queue.Empty:
+        except queue.Empty:
             pass
 
         if len( records ) == 0:
@@ -88,7 +88,7 @@ class LogRelayThread( threading.Thread ):
         # Send the data back to mms.
         res = None
         try:
-            res = urllib2.urlopen( self.logUrl, bson.BSON.encode( { 'records' : records }, check_keys=False ) )
+            res = urllib.request.urlopen( self.logUrl, bson.BSON.encode( { 'records' : records }, check_keys=False ) )
             res.read()
         finally:
             if res is not None:
@@ -99,7 +99,7 @@ class MmsRemoteHandler( logging.Handler ):
     def __init__( self ):
         """ Construct a new object """
         logging.Handler.__init__( self )
-        self.recordQueue = Queue.Queue( 250 )
+        self.recordQueue = queue.Queue( 250 )
         self.logRelay = LogRelayThread( self.recordQueue )
         self.logRelay.setName( 'LogRelay' )
         self.logRelay.start()
