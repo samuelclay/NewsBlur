@@ -854,13 +854,16 @@ width: 19px;
 }
 
 /* Search input field */
-.NB-dark .NB-search-input {
-    border: 1px solid rgba(255, 255, 255, .2);
+.NB-dark input.NB-search-input[type="text"] {
+    border: 1px solid rgba(0, 0, 0, 0.3);
     background: none;
     background-color: #303739;
     color: #c0c0c0;
     text-shadow: 0 1px 0 rgba(0,0,0,.8);
     box-shadow: none;
+}
+.NB-dark .NB-searching input.NB-search-input[type="text"] {
+    background-color: #505050;
 }
 
 /*
@@ -1358,6 +1361,10 @@ height: 0px;
 }
 */
 
+.NB-dark .NB-story-list-empty {
+    color: rgba(255, 255, 255, .6);
+    text-shadow: 0 1px 0 rgba(0, 0, 0, .3);
+}
 /* ================= */
 /* = NewsBlur Blog = */
 /* ================= */
