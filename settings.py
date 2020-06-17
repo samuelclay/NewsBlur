@@ -70,8 +70,8 @@ USE_I18N              = False
 LOGIN_REDIRECT_URL    = '/'
 LOGIN_URL             = '/account/login'
 MEDIA_URL             = '/media/'
-STATIC_URL             = '/media/'
-STATIC_ROOT             = '/media/'
+STATIC_URL             = '/static/'
+STATIC_ROOT             = '/static/'
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
 # trailing slash.
 # Examples: "http://foo.com/media/", "/media/".
@@ -93,12 +93,7 @@ PAYPAL_TEST           = False
 # ===========================
 
 
-MIDDLEWARE_CLASSES = (
-    'django.middleware.gzip.GZipMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
+MIDDLEWARE = [
     'apps.profile.middleware.TimingMiddleware',
     'apps.profile.middleware.LastSeenMiddleware',
     'apps.profile.middleware.UserAgentBanMiddleware',
@@ -112,12 +107,19 @@ MIDDLEWARE_CLASSES = (
     'apps.profile.middleware.SQLLogToConsoleMiddleware',
     'utils.mongo_raw_log_middleware.MongoDumpMiddleware',
     'utils.redis_raw_log_middleware.RedisDumpMiddleware',
-)
+    'django.middleware.security.SecurityMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware'
+]
 
-AUTHENTICATION_BACKENDS = (
+AUTHENTICATION_BACKENDS = [
     'oauth2_provider.backends.OAuth2Backend',
     'django.contrib.auth.backends.AllowAllUsersModelBackend'
-)
+]
 
 CORS_ORIGIN_ALLOW_ALL = True
 # CORS_ORIGIN_REGEX_WHITELIST = ('^(https?://)?(\w+\.)?newsblur\.com$', )
@@ -295,6 +297,7 @@ LOG_TO_STREAM = False
 # ===============
 
 OAUTH2_PROVIDER_APPLICATION_MODEL = 'oauth2_provider.Application'
+AUTH_USER_MODEL = 'auth.User'
 
 INSTALLED_APPS = (
     'django.contrib.auth',
@@ -303,6 +306,7 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.admin',
     'django_extensions',
+    'django.contrib.staticfiles',
     'djcelery',
     # 'kombu.transport.django',
     'vendor.paypal.standard.ipn',
@@ -642,18 +646,18 @@ else:
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'TEMPLATE_DIRS': [os.path.join(BASE_DIR, 'templates'),
+        'DIRS': [os.path.join(BASE_DIR, 'templates'),
                  os.path.join(BASE_DIR, 'vendor/zebra/templates')],
-        'APP_DIRS': True,
-        'TEMPLATE_CONTEXT_PROCESSORS': (
-            "django.contrib.auth.context_processors.auth",
-            "django.template.context_processors.debug",
-            "django.template.context_processors.media",
-            'django.template.context_processors.request',
-        ),
-        'TEMPLATE_LOADERS': template_loaders,
-        'TEMPLATE_DEBUG': DEBUG
-
+        'OPTIONS': {
+            "context_processors": (
+                "django.contrib.auth.context_processors.auth",
+                "django.template.context_processors.debug",
+                "django.template.context_processors.media",
+                'django.template.context_processors.request',
+            ),
+            "loaders": template_loaders,
+            "debug": DEBUG
+        },
     }
 ]
 # =========
@@ -737,8 +741,8 @@ CELERY_ACCEPT_CONTENT = ['pickle', 'json', 'msgpack', 'yaml']
 JAMMIT = jammit.JammitAssets(NEWSBLUR_DIR)
 
 if DEBUG:
-    MIDDLEWARE_CLASSES += ('utils.request_introspection_middleware.DumpRequestMiddleware',)
-    MIDDLEWARE_CLASSES += ('utils.exception_middleware.ConsoleExceptionMiddleware',)
+    MIDDLEWARE += ('utils.request_introspection_middleware.DumpRequestMiddleware',)
+    MIDDLEWARE += ('utils.exception_middleware.ConsoleExceptionMiddleware',)
 
 # =======
 # = AWS =
