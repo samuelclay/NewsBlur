@@ -92,37 +92,13 @@ is_solaris = ('solar==' in str(sys.platform).lower())   # Complete guess.
 # ---------
 
 
-if is_py2:
-    #noinspection PyUnresolvedReferences,PyCompatibility
-    from urllib import quote, unquote, urlencode
-    #noinspection PyUnresolvedReferences,PyCompatibility
-    from urlparse import urlparse, urlunparse, urljoin, urlsplit
-    #noinspection PyUnresolvedReferences,PyCompatibility
-    from urllib2 import parse_http_list
-    #noinspection PyUnresolvedReferences,PyCompatibility
-    import cookielib
-    #noinspection PyUnresolvedReferences,PyCompatibility
-    from Cookie import Morsel
-    #noinspection PyUnresolvedReferences,PyCompatibility
-    from StringIO import StringIO
-
-    bytes = str
-    #noinspection PyUnresolvedReferences,PyCompatibility
-    str = unicode
-    #noinspection PyUnresolvedReferences,PyCompatibility,PyUnboundLocalVariable
-    basestring = basestring
-elif is_py3:
-    #noinspection PyUnresolvedReferences,PyCompatibility
-    from urllib.parse import urlparse, urlunparse, urljoin, urlsplit, urlencode, quote, unquote
-    #noinspection PyUnresolvedReferences,PyCompatibility
-    from urllib.request import parse_http_list
-    #noinspection PyUnresolvedReferences,PyCompatibility
-    from http import cookiejar as cookielib
-    #noinspection PyUnresolvedReferences,PyCompatibility
-    from http.cookies import Morsel
-    #noinspection PyUnresolvedReferences,PyCompatibility
-    from io import StringIO
-
-    str = str
-    bytes = bytes
-    basestring = (str, bytes)
+#noinspection PyUnresolvedReferences,PyCompatibility
+from urllib.parse import urlparse, urlunparse, urljoin, urlsplit, urlencode, quote, unquote
+#noinspection PyUnresolvedReferences,PyCompatibility
+from urllib.request import parse_http_list
+#noinspection PyUnresolvedReferences,PyCompatibility
+from http import cookiejar as cookielib
+#noinspection PyUnresolvedReferences,PyCompatibility
+from http.cookies import Morsel
+#noinspection PyUnresolvedReferences,PyCompatibility
+from io import StringIO

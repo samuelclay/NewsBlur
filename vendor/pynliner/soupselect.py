@@ -51,7 +51,7 @@ def attribute_checker(operator, attribute, value=''):
         # attribute is either exactly value or starts with value-
         '|': lambda el: el.get(attribute, '') == value \
             or el.get(attribute, '').startswith('%s-' % value),
-    }.get(operator, lambda el: el.has_key(attribute))
+    }.get(operator, lambda el: attribute in el)
 
 
 def select(soup, selector):

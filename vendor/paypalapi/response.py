@@ -8,13 +8,7 @@ from pprint import pformat
 
 from vendor.paypalapi.compat import is_py3
 
-if is_py3:
-    #noinspection PyUnresolvedReferences
-    from urllib.parse import parse_qs
-else:
-    # Python 2.6 and up (but not 3.0) have urlparse.parse_qs, which is copied
-    # from Python 2.5's cgi.parse_qs.
-    from urlparse import parse_qs
+from urllib.parse import parse_qs
 
 logger = logging.getLogger('paypal.response')
 
@@ -98,12 +92,12 @@ class PayPalResponse(object):
         
     def items(self):
         items_list = []
-        for key in self.raw.keys():
+        for key in list(self.raw.keys()):
             items_list.append((key, self.__getitem__(key)))
         return items_list
         
     def iteritems(self):
-        for key in self.raw.keys():
+        for key in list(self.raw.keys()):
             yield (key, self.__getitem__(key))
 
     def success(self):

@@ -17,10 +17,10 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 __version__ = "0.4.0"
 
-import urllib2
+import urllib.request
 import cssutils
-from BeautifulSoup import BeautifulSoup
-from soupselect import select
+from bs4 import BeautifulSoup
+from .soupselect import select
 
 class Pynliner(object):
     """Pynliner class"""
@@ -77,9 +77,9 @@ class Pynliner(object):
         <pynliner.Pynliner object at 0x2ca810>
         """
         if not self.style_string:
-            self.style_string = cssString + u'\n'
+            self.style_string = cssString + '\n'
         else:
-            self.style_string += cssString + u'\n'
+            self.style_string += cssString + '\n'
         return self
 
     def run(self):
@@ -102,7 +102,7 @@ class Pynliner(object):
     def _get_url(self, url):
         """Returns the response content from the given url
         """
-        return urllib2.urlopen(url).read()
+        return urllib.request.urlopen(url).read()
 
     def _get_soup(self):
         """Convert source string to BeautifulSoup object. Sets it to self.soup.
@@ -132,9 +132,9 @@ class Pynliner(object):
         """Gets <link> element styles
         """
         if not self.style_string:
-            self.style_string = u''
+            self.style_string = ''
         else:
-            self.style_string += u'\n'
+            self.style_string += '\n'
 
         link_tags = self.soup.findAll('link', {'rel': 'stylesheet'})
         for tag in link_tags:
@@ -152,13 +152,13 @@ class Pynliner(object):
         """Gets <style> element styles
         """
         if not self.style_string:
-            self.style_string = u''
+            self.style_string = ''
         else:
-            self.style_string += u'\n'
+            self.style_string += '\n'
 
         style_tags = self.soup.findAll('style')
         for tag in style_tags:
-            self.style_string += u'\n'.join(tag.contents) + u'\n'
+            self.style_string += '\n'.join(tag.contents) + '\n'
             tag.extract()
 
     def _get_specificity_from_list(self, lst):
@@ -201,21 +201,21 @@ class Pynliner(object):
                 })
 
         # build up another property list using selector specificity
-        for elem, props in elem_prop_map.items():
+        for elem, props in list(elem_prop_map.items()):
             if elem not in elem_style_map:
                 elem_style_map[elem] = cssutils.css.CSSStyleDeclaration()
             # ascending sort of prop_lists based on specificity
             props = sorted(props, key=lambda p: p['specificity'])
             # for each prop_list, apply to CSSStyleDeclaration
-            for prop_list in map(lambda obj: obj['props'], props):
+            for prop_list in [obj['props'] for obj in props]:
                 for prop in prop_list:
                     elem_style_map[elem][prop.name] = prop.value
 
 
         # apply rules to elements
-        for elem, style_declaration in elem_style_map.items():
-            if elem.has_key('style'):
-                elem['style'] = u'%s; %s' % (style_declaration.cssText.replace('\n', ' '), elem['style'])
+        for elem, style_declaration in list(elem_style_map.items()):
+            if 'style' in elem:
+                elem['style'] = '%s; %s' % (style_declaration.cssText.replace('\n', ' '), elem['style'])
             else:
                 elem['style'] = style_declaration.cssText.replace('\n', ' ')
 
@@ -224,7 +224,7 @@ class Pynliner(object):
 
         Returns self.output
         """
-        self.output = unicode(str(self.soup))
+        self.output = str(self.soup)
         return self.output
 
 def fromURL(url, log=None):
