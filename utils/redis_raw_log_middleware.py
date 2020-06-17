@@ -4,7 +4,11 @@ from django.db import connection
 from redis.connection import Connection
 from time import time
 
-class RedisDumpMiddleware(object):    
+class RedisDumpMiddleware(object):  
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
     def activated(self, request):
         return (settings.DEBUG_QUERIES or 
                 (hasattr(request, 'activated_segments') and
@@ -45,6 +49,7 @@ class RedisDumpMiddleware(object):
             })
             return result
         return instrumented_method
+    
     def process_message(self, *args, **kwargs):
         query = []
         for a, arg in enumerate(args):
@@ -55,3 +60,7 @@ class RedisDumpMiddleware(object):
             query.append(str(arg).replace('\n', ''))
         return { 'query': ' '.join(query) }
 
+    def __call__(self, request):
+        response = self.get_response(request)
+
+        return response

@@ -9,6 +9,10 @@ import bson
 from bson.errors import InvalidBSON
 
 class MongoDumpMiddleware(object):    
+
+    def __init__(self, get_response):
+            self.get_response = get_response
+
     def activated(self, request):
         return (settings.DEBUG_QUERIES or 
                 (hasattr(request, 'activated_segments') and
@@ -69,6 +73,11 @@ class MongoDumpMiddleware(object):
             })
             return result
         return instrumented_method
+
+    def __call__(self, request):
+        response = self.get_response(request)
+
+        return response
 
 def _mongodb_decode_wire_protocol(message):
     """ http://www.mongodb.org/display/DOCS/Mongo+Wire+Protocol """

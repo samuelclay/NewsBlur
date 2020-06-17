@@ -39,7 +39,12 @@ class LastSeenMiddleware(object):
             request.user.profile.save()
         
         return response
-        
+
+    def __call__(self, request):
+        response = self.get_response(request)
+
+        return response
+
 class DBProfilerMiddleware:
     def __init__(self, get_response):
             self.get_response = get_response
@@ -100,6 +105,10 @@ class DBProfilerMiddleware:
                 pipe.expireat("%s:t" % key, (minute + datetime.timedelta(days=2)).strftime("%s"))
         pipe.execute()
 
+    def __call__(self, request):
+        response = self.get_response(request)
+
+        return response
 
 class SQLLogToConsoleMiddleware:
     def __init__(self, get_response):
@@ -145,6 +154,11 @@ class SQLLogToConsoleMiddleware:
         
     def process_celery(self, profiler):
         self.process_response(profiler, None)
+
+    def __call__(self, request):
+        response = self.get_response(request)
+
+        return response
 
 SIMPSONS_QUOTES = [
     ("Homer", "D'oh."),
@@ -332,4 +346,10 @@ class UserAgentBanMiddleware:
             logging.user(request, "~FB~SN~BBBanned Username: ~SB%s / %s (%s)" % (request.user, request.path, request.META))
             
             return HttpResponse(json.encode(data), status=403, mimetype='text/json')
+    
+    def __call__(self, request):
+
+        response = self.get_response(request)
+
+        return response
 
