@@ -70,10 +70,10 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
 
         if (getIntent().getBooleanExtra(EXTRA_WIDGET_STORY, false)) {
             String hash = (String) getIntent().getSerializableExtra(EXTRA_STORY_HASH);
-            UIUtils.startReadingActivity(fs, hash, true, this);
+            UIUtils.startReadingActivity(fs, hash, this);
         } else if (PrefsUtils.isAutoOpenFirstUnread(this)) {
             if (FeedUtils.dbHelper.getUnreadCount(fs, intelState) > 0) {
-                UIUtils.startReadingActivity(fs, Reading.FIND_FIRST_UNREAD, false,this);
+                UIUtils.startReadingActivity(fs, Reading.FIND_FIRST_UNREAD, this);
             }
         }
 

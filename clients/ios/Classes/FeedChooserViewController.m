@@ -122,14 +122,16 @@ static const CGFloat kFolderTitleHeight = 36.0;
     
     [self rebuildItemsAnimated:NO];
     
-    [self enumerateAllRowsUsingBlock:^(NSIndexPath *indexPath, FeedChooserItem *item) {
-        if (![item.info[@"active"] boolValue]) {
-            [self.tableView selectRowAtIndexPath:indexPath animated:NO scrollPosition:UITableViewScrollPositionNone];
-        }
-    }];
-    
-    [self updateControls];
-    [MBProgressHUD hideHUDForView:self.view animated:YES];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self enumerateAllRowsUsingBlock:^(NSIndexPath *indexPath, FeedChooserItem *item) {
+            if (![item.info[@"active"] boolValue]) {
+                [self.tableView selectRowAtIndexPath:indexPath animated:NO scrollPosition:UITableViewScrollPositionNone];
+            }
+        }];
+        
+        [self updateControls];
+        [MBProgressHUD hideHUDForView:self.view animated:YES];
+    });
 }
 
 - (void)finishedWithError:(NSError *)error {
@@ -162,7 +164,7 @@ static const CGFloat kFolderTitleHeight = 36.0;
     NSArray *folderArray = [self.dictFolders.allKeys sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)];
     
     for (NSString *folderName in folderArray) {
-        if (![folderName hasPrefix:@"river_"] && ![folderName isEqualToString:@"read_stories"] && ![folderName isEqualToString:@"saved_stories"]) {
+        if (![folderName hasPrefix:@"river_"] && ![folderName isEqualToString:@"read_stories"] && ![folderName isEqualToString:@"saved_searches"] && ![folderName isEqualToString:@"saved_stories"]) {
             FeedChooserItem *folder = [FeedChooserItem makeFolderWithTitle:folderName];
             [folders addObject:folder];
             
@@ -174,6 +176,7 @@ static const CGFloat kFolderTitleHeight = 36.0;
             
             for (id feedId in self.dictFolders[folderName]) {
                 NSString *feedIdStr = [NSString stringWithFormat:@"%@", feedId];
+                feedIdStr = [appDelegate feedIdWithoutSearchQuery:feedIdStr];
                 NSDictionary *info = appDelegate.dictFeeds[feedIdStr];
                 
                 if (!info) {

@@ -301,6 +301,8 @@
                 titleImage = [UIImage imageNamed:@"tag.png"];
             } else if ([appDelegate.storiesCollection.activeFolder isEqualToString:@"read_stories"]) {
                 titleImage = [UIImage imageNamed:@"g_icn_folder_read.png"];
+            } else if ([appDelegate.storiesCollection.activeFolder isEqualToString:@"saved_searches"]) {
+                titleImage = [UIImage imageNamed:@"g_icn_search.png"];
             } else if ([appDelegate.storiesCollection.activeFolder isEqualToString:@"saved_stories"]) {
                 titleImage = [UIImage imageNamed:@"clock.png"];
             } else if (appDelegate.storiesCollection.isRiverView) {

@@ -55,6 +55,19 @@
         [self addSubview:unreadCount];
         
         accessibilityCount = [NSString stringWithFormat:@", %@ stories", @(appDelegate.savedStoriesCount)];
+    } else if ([folderName isEqual:@"saved_searches"]) {
+        NSInteger count = appDelegate.savedSearchesCount;
+        unreadCount = [[UnreadCountView alloc] initWithFrame:CGRectInset(rect, 0, 2)];
+        unreadCount.appDelegate = appDelegate;
+        unreadCount.opaque = NO;
+        unreadCount.psCount = count;
+        unreadCount.blueCount = count;
+        
+        [unreadCount calculateOffsets:count nt:0];
+        countWidth = [unreadCount offsetWidth];
+        [self addSubview:unreadCount];
+        
+        accessibilityCount = [NSString stringWithFormat:@", %@ searches", @(count)];
     } else if (isFolderCollapsed) {
         UnreadCounts *counts = [appDelegate splitUnreadCountForFolder:folderName];
         unreadCount = [[UnreadCountView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(rect), CGRectGetHeight(rect))];
@@ -120,6 +133,8 @@
         folderTitle = [@"Read Stories" uppercaseString];
     } else if ([folderName isEqual:@"saved_stories"]) {
         folderTitle = [@"Saved Stories" uppercaseString];
+    } else if ([folderName isEqual:@"saved_searches"]) {
+        folderTitle = [@"Saved Searches" uppercaseString];
     } else {
         folderTitle = [[appDelegate.dictFoldersArray objectAtIndex:section] uppercaseString];
     }
@@ -231,6 +246,13 @@
             folderImageViewX = 7;
         }
         allowLongPress = NO;
+    } else if ([folderName isEqual:@"saved_searches"]) {
+        folderImage = [UIImage imageNamed:@"g_icn_search.png"];
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+            folderImageViewX = 10;
+        } else {
+            folderImageViewX = 7;
+        }
     } else if ([folderName isEqual:@"saved_stories"]) {
         folderImage = [UIImage imageNamed:@"clock.png"];
         if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {

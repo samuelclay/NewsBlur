@@ -253,6 +253,7 @@
     [self.searchBar resignFirstResponder];
     storiesCollection.inSearch = NO;
     storiesCollection.searchQuery = nil;
+    storiesCollection.savedSearchQuery = nil;
     [self reloadStories];
 }
 
@@ -268,10 +269,16 @@
     if ([searchText length]) {
         storiesCollection.inSearch = YES;
         storiesCollection.searchQuery = searchText;
+        
+        if (![searchText isEqualToString:storiesCollection.savedSearchQuery]) {
+            storiesCollection.savedSearchQuery = nil;
+        }
+        
         [self reloadStories];
     } else {
         storiesCollection.inSearch = NO;
         storiesCollection.searchQuery = nil;
+        storiesCollection.savedSearchQuery = nil;
         [self reloadStories];
     }
 }
@@ -426,7 +433,9 @@
     if (storiesCollection.inSearch && storiesCollection.searchQuery) {
         [self.searchBar setText:storiesCollection.searchQuery];
         [self.storyTitlesTable setContentOffset:CGPointMake(0, 0)];
-        [self.searchBar becomeFirstResponder];
+        if (storiesCollection.savedSearchQuery == nil) {
+            [self.searchBar becomeFirstResponder];
+        }
     } else {
         [self.searchBar setText:@""];
     }
@@ -435,6 +444,8 @@
     } else {
         [self.searchBar setShowsCancelButton:NO animated:YES];
     }
+    
+    [self updateTheme];
     
     if (storiesCollection.activeFeed != nil) {
         [appDelegate donateFeed];
@@ -627,6 +638,7 @@
     }
     storiesCollection.inSearch = NO;
     storiesCollection.searchQuery = nil;
+    storiesCollection.savedSearchQuery = nil;
     [self.searchBar setText:@""];
     [self.notifier hideIn:0];
 //    [self cancelRequests];
@@ -655,7 +667,7 @@
     }
 
     [self.storyTitlesTable reloadData];
-    [storyTitlesTable scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:YES];
+    [storyTitlesTable scrollRectToVisible:CGRectMake(0, CGRectGetHeight(self.searchBar.frame), 1, 1) animated:YES];
 }
 
 - (void)beginOfflineTimer {
@@ -766,7 +778,7 @@
     NSInteger storyCount = storiesCollection.storyCount;
     if (storyCount == 0) {
         [self.storyTitlesTable reloadData];
-        [storyTitlesTable scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:YES];
+        [storyTitlesTable scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:NO];
     }
     if (storiesCollection.feedPage == 1) {
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
@@ -962,7 +974,7 @@
     NSInteger storyCount = storiesCollection.storyCount;
     if (storyCount == 0) {
         [self.storyTitlesTable reloadData];
-        [storyTitlesTable scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:YES];
+       [storyTitlesTable scrollRectToVisible:CGRectMake(0, 0, CGRectGetHeight(self.searchBar.frame), 1) animated:YES];
 //            [self.notifier initWithTitle:@"Loading more..." inView:self.view];
 
     }
@@ -1519,6 +1531,7 @@
     
     id feedId = [story objectForKey:@"story_feed_id"];
     NSString *feedIdStr = [NSString stringWithFormat:@"%@", feedId];
+    feedIdStr = [appDelegate feedIdWithoutSearchQuery:feedIdStr];
     
     if (storiesCollection.isSocialView ||
         storiesCollection.isSocialRiverView) {
@@ -1660,6 +1673,8 @@
                 feedTitle = @"Read Stories";
             } else if ([storiesCollection.activeFolder isEqualToString:@"saved_stories"]) {
                 feedTitle = @"Saved Stories";
+            } else if ([storiesCollection.activeFolder isEqualToString:@"saved_searches"]) {
+                feedTitle = @"Saved Searches";
             } else {
                 feedTitle = storiesCollection.activeFolder;
             }
@@ -2170,6 +2185,18 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     BOOL read = appDelegate.storiesCollection.isReadView;
     BOOL saved = appDelegate.storiesCollection.isSavedView;
     
+    if (storiesCollection.inSearch) {
+        if (storiesCollection.savedSearchQuery == nil) {
+            [viewController addTitle:@"Save search" iconName:@"g_icn_search.png" selectionShouldDismiss:YES handler:^{
+                [self saveSearch];
+            }];
+        } else {
+            [viewController addTitle:@"Delete saved search" iconName:@"g_icn_search.png" selectionShouldDismiss:YES handler:^{
+                [self deleteSavedSearch];
+            }];
+        }
+    }
+    
     if (!everything && !infrequent && !read && !saved) {
         NSString *deleteText = [NSString stringWithFormat:@"Delete %@",
                                 appDelegate.storiesCollection.isRiverView ?
@@ -2291,6 +2318,56 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     UINavigationController *navController = self.navigationController ?: appDelegate.storyPageControl.navigationController;
     
     [viewController showFromNavigationController:navController barButtonItem:self.settingsBarButton];
+}
+
+- (NSString *)feedIdForSearch {
+    if (storiesCollection.activeFeed != nil) {
+        return [NSString stringWithFormat:@"feed:%@", [storiesCollection.activeFeed objectForKey:@"id"]];
+    } else if ([storiesCollection.activeFolder isEqualToString:@"everything"]) {
+        return @"river:";
+    } else {
+        return [NSString stringWithFormat:@"river:%@", storiesCollection.activeFolder];
+    }
+}
+
+- (void)saveSearch {
+    [MBProgressHUD hideHUDForView:self.view animated:YES];
+    MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    HUD.labelText = @"Saving search...";
+    
+    NSString *urlString = [NSString stringWithFormat:@"%@/reader/save_search",
+                           self.appDelegate.url];
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    [params setObject:[self feedIdForSearch] forKey:@"feed_id"];
+    [params setObject:storiesCollection.searchQuery forKey:@"query"];
+    
+    [appDelegate POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        storiesCollection.savedSearchQuery = storiesCollection.searchQuery;
+        [appDelegate reloadFeedsView:YES];
+        [MBProgressHUD hideHUDForView:self.view animated:YES];
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        [self requestFailed:error];
+    }];
+}
+
+- (void)deleteSavedSearch {
+    [MBProgressHUD hideHUDForView:self.view animated:YES];
+    MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    HUD.labelText = @"Deleting saved search...";
+    
+    NSString *urlString = [NSString stringWithFormat:@"%@/reader/delete_search",
+                           self.appDelegate.url];
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    [params setObject:[self feedIdForSearch] forKey:@"feed_id"];
+    [params setObject:storiesCollection.searchQuery forKey:@"query"];
+    
+    [appDelegate POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        storiesCollection.savedSearchQuery = nil;
+        [appDelegate reloadFeedsView:YES];
+        [MBProgressHUD hideHUDForView:self.view animated:YES];
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        [self requestFailed:error];
+    }];
 }
 
 - (void)confirmDeleteSite:(UINavigationController *)menuNavigationController {
@@ -2729,7 +2806,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     storiesCollection.feedPage = 1;
     self.pageFetching = YES;
     [self.storyTitlesTable reloadData];
-    [storyTitlesTable scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:YES];
+    [storyTitlesTable scrollRectToVisible:CGRectMake(0, CGRectGetHeight(self.searchBar.frame), 1, 1) animated:YES];
 }
 
 #pragma mark -

@@ -21,7 +21,7 @@ public class AllStoriesItemsList extends ItemsList {
 		setIntent(intent);
 		if (getIntent().getBooleanExtra(EXTRA_WIDGET_STORY, false)) {
 			String hash = (String) getIntent().getSerializableExtra(EXTRA_STORY_HASH);
-			UIUtils.startReadingActivity(fs, hash, true,this);
+			UIUtils.startReadingActivity(fs, hash, this);
 		}
 	}
 }
