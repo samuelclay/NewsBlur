@@ -78,7 +78,7 @@ Base64Id.prototype.getRandomBytes = function(bytes) {
  */
 
 Base64Id.prototype.generateId = function () {
-  var rand = new Buffer(15); // multiple of 3 for base64
+  var rand = Buffer.alloc(15); // multiple of 3 for base64
   if (!rand.writeInt32BE) {
     return Math.abs(Math.random() * Math.random() * Date.now() | 0).toString()
       + Math.abs(Math.random() * Math.random() * Date.now() | 0).toString();
