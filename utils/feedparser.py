@@ -440,7 +440,7 @@ def _urljoin(base, uri):
     try:
         uri = urllib.parse.urljoin(base, uri)
     except ValueError:
-        uri = ''"
+        uri = ''
     if not isinstance(uri, str):
         return uri.decode('utf-8', 'ignore')
     return uri
