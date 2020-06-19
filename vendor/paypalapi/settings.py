@@ -9,7 +9,6 @@ import logging
 import os
 from pprint import pformat
 
-from vendor.paypalapi.compat import str
 from vendor.paypalapi.exceptions import PayPalConfigError
 
 logger = logging.getLogger('paypal.settings')

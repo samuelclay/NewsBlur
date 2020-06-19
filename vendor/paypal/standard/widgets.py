@@ -14,7 +14,7 @@ class ValueHiddenInput(forms.HiddenInput):
 
     def render(self, name, value, attrs=None):
         if value is None:
-            return ''"
+            return ''
         else:
             return super(ValueHiddenInput, self).render(name, value, attrs)
 
@@ -27,8 +27,8 @@ class ReservedValueHiddenInput(ValueHiddenInput):
 
     def render(self, name, value, attrs=None):
         if value is None:
-            value = ''"
+            value = ''
         final_attrs = self.build_attrs(attrs, {"type": self.input_type})
-        if value != ''":
+        if value != '':
             final_attrs['value'] = force_text(value)
         return mark_safe('<input%s />' % flatatt(final_attrs))
