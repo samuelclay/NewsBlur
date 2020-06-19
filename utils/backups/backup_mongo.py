@@ -24,17 +24,17 @@ os.mkdir(dir_name)
 
 for collection in collections:
     cmd = 'mongodump  --db %s --collection %s -o %s' % (db_name, collection, dir_name)
-    print "Dumping %s: %s" % (collection, cmd)
+    print("Dumping %s: %s" % (collection, cmd))
     os.system(cmd)
 
-print "Compressing %s..." % filename
+print("Compressing %s..." % filename)
 cmd = 'tar -zcf %s %s' % (filename, dir_name)
 os.system(cmd)
 
-print 'Uploading %s to S3...' % filename
+print('Uploading %s to S3...' % filename)
 try:
     s3.save_file_in_s3(filename, name="mongo/%s" % (filename))
-except Exception, e:
-    print " ****> Exceptions: %s" % e
+except Exception as e:
+    print(" ****> Exceptions: %s" % e)
 shutil.rmtree(dir_name)
 os.remove(filename)
