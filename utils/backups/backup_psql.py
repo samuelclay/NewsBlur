@@ -16,9 +16,9 @@ db_pass = settings.DATABASES['default']['PASSWORD']
 os.environ['PGPASSWORD'] = db_pass
 filename = 'backup_postgresql_%s.sql.gz' % time.strftime('%Y-%m-%d-%H-%M')
 cmd      = '/usr/lib/postgresql/9.4/bin/pg_dump -U newsblur -h 127.0.0.1 -Fc %s > %s' % (db_name, filename)
-print 'Backing up PostgreSQL: %s' % cmd
+print('Backing up PostgreSQL: %s' % cmd)
 os.system(cmd)
 
-print 'Uploading %s to S3...' % filename
+print('Uploading %s to S3...' % filename)
 s3.save_file_in_s3(filename, name="postgres/%s" % filename)
 os.remove(filename)

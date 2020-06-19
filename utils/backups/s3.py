@@ -35,7 +35,7 @@ def list_backup_in_s3():
     bucket = conn.get_bucket(BUCKET_NAME)
 
     for i, key in enumerate(bucket.get_all_keys()):
-        print "[%s] %s" % (i, key.name)
+        print("[%s] %s" % (i, key.name))
 
 def delete_all_backups():
     #FIXME: validate filename exists
@@ -43,13 +43,13 @@ def delete_all_backups():
     bucket = conn.get_bucket(BUCKET_NAME)
 
     for i, key in enumerate(bucket.get_all_keys()):
-        print "deleting %s" % (key.name)
+        print("deleting %s" % (key.name))
         key.delete()
 
 if __name__ == '__main__':
     import sys
     if len(sys.argv) < 3:
-        print 'Usage: %s <get/set/list/delete> <backup_filename>' % (sys.argv[0])
+        print('Usage: %s <get/set/list/delete> <backup_filename>' % (sys.argv[0]))
     else:
         if sys.argv[1] == 'set':
             save_file_in_s3(sys.argv[2])
@@ -60,4 +60,4 @@ if __name__ == '__main__':
         elif sys.argv[1] == 'delete':
             delete_all_backups()
         else:
-            print 'Usage: %s <get/set/list/delete> <backup_filename>' % (sys.argv[0])
+            print('Usage: %s <get/set/list/delete> <backup_filename>' % (sys.argv[0]))

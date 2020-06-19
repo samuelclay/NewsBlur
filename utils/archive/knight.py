@@ -78,7 +78,7 @@ def find_entries():
     entries = []
 
     while True:
-        print " ---> Found %s entries so far. Now on page: %s" % (len(entries), page)
+        print(" ---> Found %s entries so far. Now on page: %s" % (len(entries), page))
     
         knight_url = "http://newschallenge.tumblr.com/page/%s" % (page)
         html = requests.get(knight_url).content
@@ -135,16 +135,16 @@ def find_entries():
     for i, entry in enumerate(entries):
         is_winner = entry['url'] in winners
         if is_winner: winner_count += 1
-        print " * %s#%s: %s likes - [%s](%s)%s" % (
+        print(" * %s#%s: %s likes - [%s](%s)%s" % (
             "**" if is_winner else "",
             i + 1,
             entry['likes'], entry['title'], 
             entry['url'],
-            "**" if is_winner else "")
+            "**" if is_winner else ""))
         found_entries.append(entry)
         
-    print " ***> Found %s active entries among %s total applications with %s/%s winners." % (
-        active_entry_count, total_entry_count, winner_count, len(winners))
+    print(" ***> Found %s active entries among %s total applications with %s/%s winners." % (
+        active_entry_count, total_entry_count, winner_count, len(winners)))
     return found_entries
 
 if __name__ == '__main__':
