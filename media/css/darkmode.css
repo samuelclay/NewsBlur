@@ -126,6 +126,9 @@ color: #a85b40;
     color: #c0c0c0;
 }
 
+.NB-dark .NB-module-recommended .NB-recommended-added {
+    color: #69ac4b;
+}
 /* Divider color */
 .NB-dark .NB-module.NB-module-features .NB-module-content-header,
 .NB-dark .NB-module-recommended .NB-recommended-description,
@@ -538,6 +541,11 @@ color: #a85b40;
     color: #c0c0c0;
     background-color: #505050;
     border: solid 1px #505050;
+}
+
+.NB-dark .NB-modal-profile .NB-profile-followers {
+    background-color: #464646;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.3);
 }
 
 /*Account input fields */
