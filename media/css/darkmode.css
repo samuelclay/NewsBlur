@@ -42,7 +42,7 @@ body.NB-dark {
 }
 
 .NB-dark a:-webkit-any-link {
-    color: #6385a4;
+    color: #83b4e0;
 }
 
 .NB-dark .NB-overlay {
@@ -141,7 +141,7 @@ color: #a85b40;
 /* Link color */
 .NB-dark a.NB-splash-link,
 .NB-dark .NB-module-features .NB-module-feature .NB-module-feature-description a {
-    color: #6385a4;
+    color: #83b4e0;
 }
 
 /* Background color of "Upgrade" box (only visible for free users */
@@ -191,7 +191,7 @@ color: #a85b40;
 
 /* Graph color */
 .NB-dark .NB-graph-value .NB-graph-bar {
-    background-color: #6385a4;
+    background-color: #83b4e0;
 }
 
 /* Graph hover text color */
@@ -209,7 +209,7 @@ color: #a85b40;
 
 /* Bottom splash links color */
 .NB-dark .NB-splash-info .NB-splash-links a {
-    color: #6385a4;
+    color: #83b4e0;
     text-shadow: none;
 }
 
@@ -422,7 +422,7 @@ color: #a85b40;
 
 /* Input field suggestions window (5 of 6) */
 .NB-dark .NB-add-form .ui-autocomplete li a .NB-add-autocomplete-address {
-    color: #6385a4;
+    color: #83b4e0;
 }
 
 /* Input field suggestions window (6 of 6) */
@@ -640,7 +640,7 @@ color: #a85b40;
 .NB-dark .NB-modal-organizer .NB-organizer-action,
 .NB-dark .NB-modal-organizer .NB-organizer-action.NB-active,
 .NB-dark .NB-modal-organizer .NB-organizer-action.NB-active:hover {
-    color: #6385a4;
+    color: #83b4e0;
 }
 
 /* Organize sites: Container color */
@@ -757,7 +757,7 @@ color: #a85b40;
 .NB-dark .NB-splash-info .NB-splash-links a, 
 .NB-dark .NB-static a, 
 .NB-dark .NB-splash-link {
-    color: #6385a4;
+    color: #83B4E0;
 }
 
 /* "replied to your reply" text color */
@@ -1191,7 +1191,7 @@ background-color: #5d8392;
 
 /* Link color */
 .NB-dark .NB-feed-story a {
-    color: #6385a4;
+    color: #83b4e0;
 }
 
 /*
@@ -1380,7 +1380,7 @@ background: #191b1c;
 
 /* Story commenter username color */
 .NB-dark .NB-story-comment .NB-story-comment-username {
-    color: #6385a4;
+    color: #83b4e0;
     text-shadow: 0 -1px 0 rgba(0,0,0,.5);
 }
 
@@ -1464,7 +1464,7 @@ background: #191b1c;
 
 /* Category names */
 .NB-dark .category-name {
-    color: #6385a4;
+    color: #83b4e0;
 }
 
 .NB-dark .selected-name .category-name {
@@ -1593,7 +1593,7 @@ a.mention, a.mention-group {
 .NB-dark .category.sortable,
 .NB-dark .posts.sortable.num,
 .NB-dark .activity.sortable.num {
-    color: #6385a4;
+    color: #83b4e0;
 }
 
 /* "Latest", "Top, "Categories", "Category", "Replies", "Activity" button hover */
