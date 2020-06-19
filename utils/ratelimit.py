@@ -27,7 +27,7 @@ class ratelimit(object):
         if not self.should_ratelimit(request):
             return fn(request, *args, **kwargs)
         
-        counts = self.get_counters(request).values()
+        counts = list(self.get_counters(request).values())
         
         # Increment rate limiting counter
         self.cache_incr(self.current_key(request))

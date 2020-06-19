@@ -17,7 +17,7 @@ class JSONFetcher:
         
         json_feed = decode(raw_feed.content)
         if not json_feed:
-            logging.debug(u'   ***> [%-30s] ~FRJSON fetch failed: %s' % 
+            logging.debug('   ***> [%-30s] ~FRJSON fetch failed: %s' % 
                           (self.feed.log_title[:30], address))
             return
         
@@ -49,7 +49,7 @@ class JSONFetcher:
             'description': item.get('content_html', item.get('content_text', "")),
             'author_name': item.get('author', {}).get('name', ""),
             'categories': item.get('tags', []),
-            'unique_id': unicode(item.get('id', item.get('url', ""))),
+            'unique_id': str(item.get('id', item.get('url', ""))),
             'pubdate': date_published,
         }
         

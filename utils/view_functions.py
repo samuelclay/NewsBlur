@@ -1,5 +1,5 @@
 from django.http import Http404, HttpResponse
-from django.shortcuts import render_to_response
+from django.shortcuts import render
 from utils import json_functions as json
 import functools
 
@@ -39,7 +39,7 @@ def render_to(template):
 def is_true(value):
     if value == 1:
         return True
-    return bool(value) and isinstance(value, basestring) and value.lower() not in ('false', '0')
+    return bool(value) and isinstance(value, str) and value.lower() not in ('false', '0')
     
 class required_params(object):
     "Instances of this class can be used as decorators"
@@ -62,20 +62,20 @@ class required_params(object):
         # Check if parameter is included
         for param in self.params:
             if getattr(request, self.method).get(param) is None:
-                print " Unnamed parameter not found: %s" % param
+                print(" Unnamed parameter not found: %s" % param)
                 return self.disallowed(param)
 
         # Check if parameter is correct type
-        for param, param_type in self.named_params.items():
+        for param, param_type in list(self.named_params.items()):
             if getattr(request, self.method).get(param) is None:
-                print " Typed parameter not found: %s" % param
+                print(" Typed parameter not found: %s" % param)
                 return self.disallowed(param)
             try:
                 if param_type(getattr(request, self.method).get(param)) is None:
-                    print " Typed parameter wrong: %s" % param
+                    print(" Typed parameter wrong: %s" % param)
                     return self.disallowed(param, param_type)
-            except (TypeError, ValueError), e:
-                print " %s -> %s" % (param, e)
+            except (TypeError, ValueError) as e:
+                print(" %s -> %s" % (param, e))
                 return self.disallowed(param, param_type)
                 
         return fn(request, *args, **kwargs)

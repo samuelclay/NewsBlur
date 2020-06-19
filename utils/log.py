@@ -5,9 +5,9 @@ import time
 
 from django.core.handlers.wsgi import WSGIRequest
 from django.conf import settings
-from django.utils.encoding import smart_str
+from django.utils.encoding import smart_str, smart_text
 
-from user_functions import extract_user_agent
+from .user_functions import extract_user_agent
 from apps.statistics.rstats import RStats
 
 
@@ -48,7 +48,7 @@ def user(u, msg, request=None, warn_color=True):
             )
     is_premium = u.is_authenticated and u.profile.is_premium
     premium = '*' if is_premium else ''
-    username = cipher(unicode(u)) if settings.CIPHER_USERNAMES else unicode(u)
+    username = cipher(str(u)) if settings.CIPHER_USERNAMES else str(u)
     info(' ---> [~FB~SN%-6s~SB] %s[%s%s] %s' % (platform, time_elapsed, username, premium, msg))
     page_load_paths = [
         "/reader/feed/",
@@ -64,7 +64,7 @@ def user(u, msg, request=None, warn_color=True):
 
 def cipher(msg):
     shift = len(msg)
-    in_alphabet = unicode(string.ascii_lowercase)
+    in_alphabet = str(string.ascii_lowercase)
     out_alphabet = in_alphabet[shift:] + in_alphabet[:shift]
     translation_table = dict((ord(ic), oc) for ic, oc in zip(in_alphabet, out_alphabet))
 
@@ -123,11 +123,11 @@ def colorize(msg):
         '~BW': Back.WHITE,
         '~BT': Back.RESET,
     }
-    for k, v in params.items():
+    for k, v in list(params.items()):
         msg = re.sub(k, v, msg)
     msg = msg + '~ST~FW~BT'
     # msg = re.sub(r'(~[A-Z]{2})', r'%(\1)s', msg)
-    for k, v in colors.items():
+    for k, v in list(colors.items()):
         msg = msg.replace(k, v)
     return msg
     

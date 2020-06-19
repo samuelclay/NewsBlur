@@ -12,5 +12,5 @@ if __name__ == '__main__':
     droplets = doapi.get_all_droplets()
     for droplet in droplets:
         if sys.argv[1] == droplet.name:
-            print droplet.ip_address
+            print(droplet.ip_address)
             break

@@ -51,7 +51,7 @@ def main():
                     sys.stdout.write(combination_message)
                     break
     except KeyboardInterrupt:
-        print " --- End of Logging ---"
+        print(" --- End of Logging ---")
 
 if __name__ == "__main__":
     main()

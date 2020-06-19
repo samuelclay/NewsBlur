@@ -24,9 +24,9 @@ def main():
                       "to": [admin_email],
                       "subject": "%s hit %s%% disk usage!" % (hostname, percent),
                       "text": "Usage on %s: %s" % (hostname, output)})
-        print " ---> Disk usage is NOT fine: %s / %s%% used" % (hostname, percent)
+        print(" ---> Disk usage is NOT fine: %s / %s%% used" % (hostname, percent))
     else:
-        print " ---> Disk usage is fine: %s / %s%% used" % (hostname, percent)
+        print(" ---> Disk usage is fine: %s / %s%% used" % (hostname, percent))
         
 if __name__ == '__main__':
     main()

@@ -20,23 +20,14 @@ Also includes a few other miscellaneous string manipulation functions that
 have crept in over time.
 """
 
-from __future__ import absolute_import, division, with_statement
 
-import htmlentitydefs
+
+import html.entities
 import re
 import sys
-import urllib
+import  urllib.parse
 
-# Python3 compatibility:  On python2.5, introduce the bytes alias from 2.6
-try:
-    bytes
-except Exception:
-    bytes = str
-
-try:
-    from urlparse import parse_qs  # Python 2.6+
-except ImportError:
-    from cgi import parse_qs
+from cgi import parse_qs
 
 # json module is in the standard library as of python 2.6; fall back to
 # simplejson if present for older versions.
@@ -102,7 +93,7 @@ def squeeze(value):
 
 def url_escape(value):
     """Returns a valid URL-encoded version of the given value."""
-    return urllib.quote_plus(utf8(value))
+    return urllib.parse.quote_plus(utf8(value))
 
 # python 3 changed things around enough that we need two separate
 # implementations of url_unescape.  We also need our own implementation
@@ -117,9 +108,9 @@ if sys.version_info[0] < 3:
         the result is a unicode string in the specified encoding.
         """
         if encoding is None:
-            return urllib.unquote_plus(utf8(value))
+            return urllib.parse.unquote_plus(utf8(value))
         else:
-            return unicode(urllib.unquote_plus(utf8(value)), encoding)
+            return str(urllib.parse.unquote_plus(utf8(value)), encoding)
 
     parse_qs_bytes = parse_qs
 else:
@@ -134,7 +125,7 @@ else:
         if encoding is None:
             return urllib.parse.unquote_to_bytes(value)
         else:
-            return urllib.unquote_plus(to_basestring(value), encoding=encoding)
+            return urllib.parse.unquote_plus(to_basestring(value), encoding=encoding)
 
     def parse_qs_bytes(qs, keep_blank_values=False, strict_parsing=False):
         """Parses a query string like urlparse.parse_qs, but returns the
@@ -149,7 +140,7 @@ else:
         result = parse_qs(qs, keep_blank_values, strict_parsing,
                           encoding='latin1', errors='strict')
         encoded = {}
-        for k, v in result.iteritems():
+        for k, v in result.items():
             encoded[k] = [i.encode('latin1') for i in v]
         return encoded
 
@@ -165,10 +156,10 @@ def utf8(value):
     """
     if isinstance(value, _UTF8_TYPES):
         return value
-    assert isinstance(value, unicode)
+    assert isinstance(value, str)
     return value.encode("utf-8")
 
-_TO_UNICODE_TYPES = (unicode, type(None))
+_TO_UNICODE_TYPES = (str, type(None))
 
 
 def to_unicode(value):
@@ -188,12 +179,12 @@ _unicode = to_unicode
 
 # When dealing with the standard library across python 2 and 3 it is
 # sometimes useful to have a direct conversion to the native string type
-if str is unicode:
+if str is str:
     native_str = to_unicode
 else:
     native_str = utf8
 
-_BASESTRING_TYPES = (basestring, type(None))
+_BASESTRING_TYPES = (str, type(None))
 
 
 def to_basestring(value):
@@ -217,7 +208,7 @@ def recursive_unicode(obj):
     Supports lists, tuples, and dictionaries.
     """
     if isinstance(obj, dict):
-        return dict((recursive_unicode(k), recursive_unicode(v)) for (k, v) in obj.iteritems())
+        return dict((recursive_unicode(k), recursive_unicode(v)) for (k, v) in obj.items())
     elif isinstance(obj, list):
         return list(recursive_unicode(i) for i in obj)
     elif isinstance(obj, tuple):
@@ -232,7 +223,7 @@ def recursive_unicode(obj):
 # but it gets all exponential on certain patterns (such as too many trailing
 # dots), causing the regex matcher to never return.
 # This regex should avoid those problems.
-_URL_RE = re.compile(ur"""\b((?:([\w-]+):(/{1,3})|www[.])(?:(?:(?:[^\s&()]|&amp;|&quot;)*(?:[^!"#$%&'()*+,.:;<=>?@\[\]^`{|}~\s]))|(?:\((?:[^\s&()]|&amp;|&quot;)*\)))+)""")
+_URL_RE = re.compile(r"""\b((?:([\w-]+):(/{1,3})|www[.])(?:(?:(?:[^\s&()]|&amp;|&quot;)*(?:[^!"#$%&'()*+,.:;<=>?@\[\]^`{|}~\s]))|(?:\((?:[^\s&()]|&amp;|&quot;)*\)))+)""")
 
 
 def linkify(text, shorten=False, extra_params="",
@@ -321,7 +312,7 @@ def linkify(text, shorten=False, extra_params="",
                     # have a status bar, such as Safari by default)
                     params += ' title="%s"' % href
 
-        return u'<a href="%s"%s>%s</a>' % (href, params, url)
+        return '<a href="%s"%s>%s</a>' % (href, params, url)
 
     # First HTML-escape so that our strings are all safe.
     # The regex is modified to avoid character entites other than &amp; so
@@ -333,7 +324,7 @@ def linkify(text, shorten=False, extra_params="",
 def _convert_entity(m):
     if m.group(1) == "#":
         try:
-            return unichr(int(m.group(2)))
+            return chr(int(m.group(2)))
         except ValueError:
             return "&#%s;" % m.group(2)
     try:
@@ -344,8 +335,8 @@ def _convert_entity(m):
 
 def _build_unicode_map():
     unicode_map = {}
-    for name, value in htmlentitydefs.name2codepoint.iteritems():
-        unicode_map[name] = unichr(value)
+    for name, value in html.entities.name2codepoint.items():
+        unicode_map[name] = chr(value)
     return unicode_map
 
 _HTML_UNICODE_MAP = _build_unicode_map()

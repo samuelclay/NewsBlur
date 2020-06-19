@@ -99,7 +99,7 @@ def render_footer(context, page=None):
 
 @register.filter
 def get(h, key):
-    print h, key
+    print(h, key)
     return h[key]
 
 @register.filter
@@ -139,7 +139,7 @@ def get_range( value ):
 
     Instead of 3 one may use the variable set in the views
     """
-    return range( value )
+    return list(range( value))
 
 @register.filter
 def commify(n):
