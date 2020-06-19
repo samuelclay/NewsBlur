@@ -408,8 +408,6 @@ hr {
 }
 .NB-feedlists .NB-socialfeeds .feed .feed_title {
     text-shadow: 0 1px 0 rgba(250, 250, 250, .4);
-    color: #F7E4DB;
-    color: #F5F0D9;
 }
 .NB-feedlists .NB-socialfeeds img.feed_favicon {
     border-radius: 3px;
@@ -7513,7 +7511,7 @@ form.opml_import_form input {
     margin: 2px 0 0 36px;
 }
 .NB-menu-manage .NB-menu-manage-theme .segmented-control li {
-    padding: 4px 18px;
+    padding: 4px 8px;
 }
 .NB-menu-manage .NB-menu-manage-account .NB-menu-manage-image {
     background: transparent url('/media/embed/icons/circular/menu_icn_profile.png') no-repeat  0 0;

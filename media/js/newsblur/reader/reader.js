@@ -3270,11 +3270,33 @@
         
         load_theme: function() {
             var theme = this.model.preference('theme');
+            var is_auto = theme == 'auto';
+            
+            if (is_auto) {
+                if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                    // dark mode
+                    theme = "dark";
+                } else {
+                    theme = "light";
+                }
+            }
+            
+            if (!this.flags.watching_system_theme) {
+                window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+                    this.load_theme();
+                });
+                this.flags.watching_system_theme = true;
+            }
             
             $('.NB-theme-option').removeClass('NB-active');
-            $('.NB-options-theme-'+theme).addClass('NB-active');  
+            if (is_auto) {
+                $('.NB-options-theme-auto').addClass('NB-active');  
+            } else {
+                $('.NB-options-theme-'+theme).addClass('NB-active');  
+            }
             
             $("body").addClass('NB-theme-transitioning');
+            
             if (theme == 'dark') {
                 $("body").addClass('NB-dark');
             } else {
@@ -3434,13 +3456,17 @@
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-theme' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('ul', { className: 'segmented-control NB-options-theme' }, [
-                            $.make('li', { className: 'NB-theme-option NB-options-theme-light NB-active' }, [
+                            $.make('li', { className: 'NB-theme-option NB-options-theme-light' }, [
                                 $.make('div', { className: 'NB-icon' }),
                                 'Light'
                             ]),
                             $.make('li', { className: 'NB-theme-option NB-options-theme-dark' }, [
                                 $.make('div', { className: 'NB-icon' }),
                                 'Dark'
+                            ]),
+                            $.make('li', { className: 'NB-theme-option NB-options-theme-auto' }, [
+                                $.make('div', { className: 'NB-icon' }),
+                                'Auto'
                             ])
                         ])
                     ])
@@ -3449,6 +3475,7 @@
                 var theme = this.model.preference('theme');
                 $(".NB-options-theme-light", $manage_menu).toggleClass('NB-active', theme == 'light');
                 $(".NB-options-theme-dark", $manage_menu).toggleClass('NB-active', theme == 'dark');
+                $(".NB-options-theme-auto", $manage_menu).toggleClass('NB-active', theme == 'auto');
             } else if (type == 'feed') {
                 var feed = this.model.get_feed(feed_id);
                 if (!feed) return;
@@ -6275,6 +6302,10 @@
             $.targetIs(e, { tagSelector: '.NB-options-theme-dark' }, function($t, $p){
                 e.preventDefault();
                 self.switch_theme('dark');
+            });  
+            $.targetIs(e, { tagSelector: '.NB-options-theme-auto' }, function($t, $p){
+                e.preventDefault();
+                self.switch_theme('auto');
             });  
             $.targetIs(e, { tagSelector: '.NB-menu-manage-logout' }, function($t, $p){
                 e.preventDefault();
