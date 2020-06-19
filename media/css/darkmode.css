@@ -766,16 +766,20 @@ color: #a85b40;
 }
 
 .NB-dark .NB-module-features .NB-module-feature .NB-module-feature-tag.NB-tag-problem {
-    background-color: #BC7114;
+    background-color: #c18025;
+    color: rgb(217, 217, 217);
 }
 .NB-dark .NB-module-features .NB-module-feature .NB-module-feature-tag.NB-tag-praise {
     background-color: #D7B806;
+    color: rgb(255, 255, 255);
 }
 .NB-dark .NB-module-features .NB-module-feature .NB-module-feature-tag.NB-tag-idea {
     background-color: #5C9A1E;
+    color: rgb(224, 224, 244);
 }
 .NB-dark .NB-module-features .NB-module-feature .NB-module-feature-tag.NB-tag-question {
     background-color: #4981A9;
+    color: rgb(224, 224, 244);
 }
 
 
