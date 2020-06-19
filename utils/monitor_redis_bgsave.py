@@ -27,7 +27,7 @@ def main():
                       "subject": "%s hasn't bgsave'd redis in %s!" % (hostname, modified_minutes),
                       "text": "Last modified %s: %s ago\n\n----\n\n%s" % (hostname, modified_minutes, log_tail)})
     else:
-        print " ---> Redis bgsave fine: %s / %s ago" % (hostname, modified_minutes)
+        print(" ---> Redis bgsave fine: %s / %s ago" % (hostname, modified_minutes))
         
 if __name__ == '__main__':
     main()

@@ -22,7 +22,7 @@ def main():
     try:
         client = pymongo.MongoClient('mongodb://%s' % settings.MONGO_DB['host'])
         feeds_fetched = client.newsblur.statistics.find_one({"key": "feeds_fetched"})['value']
-    except Exception, e:
+    except Exception as e:
         failed = e
     
     if feeds_fetched < 5000000:

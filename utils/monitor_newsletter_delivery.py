@@ -32,9 +32,9 @@ def main():
                       "to": [admin_email],
                       "subject": "%s newsletters bounced: %s > %s > %s" % (hostname, accepted, delivered, bounced),
                       "text": "Newsletters are not being delivered! %s delivered, %s bounced" % (delivered, bounced)})
-        print " ---> %s newsletters bounced: %s > %s > %s" % (hostname, accepted, delivered, bounced)
+        print(" ---> %s newsletters bounced: %s > %s > %s" % (hostname, accepted, delivered, bounced))
     else:
-        print " ---> %s newsletters OK: %s > %s > %s" % (hostname, accepted, delivered, bounced)
+        print(" ---> %s newsletters OK: %s > %s > %s" % (hostname, accepted, delivered, bounced))
         
 if __name__ == '__main__':
     main()

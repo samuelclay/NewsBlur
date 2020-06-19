@@ -6,7 +6,7 @@ class TestRunner(DiscoverRunner):
     def setup_databases(self, **kwargs):
         db_name = 'newsblur_test'
         connect(db_name)
-        print 'Creating test-database: ' + db_name
+        print('Creating test-database: ' + db_name)
 
         return setup_databases(**kwargs)
 

@@ -73,13 +73,13 @@ class URLGatekeeper:
     """a class to track robots.txt rules across multiple servers"""
     def __init__(self):
         self.rpcache = {} # a dictionary of RobotFileParser objects, by domain
-        self.urlopener = urllib.request.FancyURLopener()
+        self.urlopener = urllib.request.build_opener()
         self.urlopener.version = "NewsBlur Feed Finder (Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_1) AppleWebKit/534.48.3 (KHTML, like Gecko) Version/5.1 Safari/534.48.3)"
         _debuglog(self.urlopener.version)
         self.urlopener.addheaders = [('User-Agent', self.urlopener.version)]
         # self.urlopener.addheaders = [('User-Agent', self.urlopener.version), ('Accept', '*')]
-        urllib.robotparser.URLopener.version = self.urlopener.version
-        urllib.robotparser.URLopener.addheaders = self.urlopener.addheaders
+        #urllib.robotparser.URLopener.version = self.urlopener.version
+        #urllib.robotparser.URLopener.addheaders = self.urlopener.addheaders
         
     def _getrp(self, url):
         protocol, domain = urllib.parse.urlparse(url)[:2]
@@ -227,8 +227,11 @@ def isFeed(uri):
     count = couldBeFeedData(data)
     return count
 
+def cmp_(a, b):
+    return (a > b) - (a < b) 
+
 def sortFeeds(feed1Info, feed2Info):
-    return cmp(feed2Info['headlines_rank'], feed1Info['headlines_rank'])
+    return cmp_(feed2Info['headlines_rank'], feed1Info['headlines_rank'])
 
 def getFeedsFromSyndic8(uri):
     feeds = []

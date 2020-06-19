@@ -102,14 +102,14 @@ def get_user(request):
     return user
     
 def invalidate_template_cache(fragment_name, *variables):
-    args = hashlib.md5(u':'.join([urlquote(var) for var in variables]))
+    args = hashlib.md5(':'.join([urlquote(var) for var in variables]))
     cache_key = 'template.cache.%s.%s' % (fragment_name, args.hexdigest())
     cache.delete(cache_key)
     
 def generate_secret_token(phrase, size=12):
     """Generate a (SHA1) security hash from the provided info."""
-    info = (phrase, settings.SECRET_KEY)
-    return hashlib.sha256("".join(info)).hexdigest()[:size]
+    info = f"{phrase} {settings.SECRET_KEY}".encode('utf-8')
+    return hashlib.sha256(info).hexdigest()[:size]
 
 def extract_user_agent(request):
     user_agent = request.environ.get('HTTP_USER_AGENT', '').lower()

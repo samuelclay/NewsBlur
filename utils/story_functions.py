@@ -5,7 +5,7 @@ import dateutil
 import hashlib
 import base64
 from random import randint
-from HTMLParser import HTMLParser
+from html.parser import HTMLParser
 from lxml.html.diff import tokenize, fixup_ins_del_tags, htmldiff_tokens
 from lxml.etree import ParserError, XMLSyntaxError
 import lxml.html, lxml.etree
@@ -125,7 +125,7 @@ def pre_process_story(entry, encoding):
     # else:
     #     entry['link'] = urlquote(entry_link)
     if isinstance(entry.get('guid'), dict):
-        entry['guid'] = unicode(entry['guid'])
+        entry['guid'] = str(entry['guid'])
 
     # Normalize story content/summary
     summary = entry.get('summary') or ""
@@ -144,7 +144,7 @@ def pre_process_story(entry, encoding):
     if 'summary_detail' in entry and entry['summary_detail'].get('type', None) == 'text/plain':
         try:
             entry['story_content'] = feedparser._sanitizeHTML(entry['story_content'], encoding, 'text/plain')
-            if encoding and not isinstance(entry['story_content'], unicode):
+            if encoding and not isinstance(entry['story_content'], str):
                 entry['story_content'] = entry['story_content'].decode(encoding, 'ignore')
         except UnicodeEncodeError:
             pass

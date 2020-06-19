@@ -1,7 +1,7 @@
 #-*- coding: utf-8 -*-
 from django.db import models
 from django.utils.functional import Promise
-from django.utils.encoding import force_text, smart_bytes
+from django.utils.encoding import force_text, smart_str
 import json
 from decimal import Decimal
 from django.core import serializers
@@ -63,7 +63,7 @@ def json_encode(data, *args, **kwargs):
             ret = _model(data)
         # here we need to encode the string as unicode (otherwise we get utf-16 in the json-response)
         elif isinstance(data, str):
-            ret = smart_byes(data)
+            ret = smart_str(data)
         elif isinstance(data, Exception):
             ret = str(data)
         # see http://code.djangoproject.com/ticket/5868

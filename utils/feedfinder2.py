@@ -15,7 +15,7 @@ if not __FEEDFINDER2_SETUP__:
 
     import logging
     import requests
-    from BeautifulSoup import BeautifulSoup
+    from bs4 import BeautifulSoup
     from six.moves.urllib import parse as urlparse
 
 

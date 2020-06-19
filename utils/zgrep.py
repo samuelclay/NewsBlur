@@ -23,10 +23,10 @@ def main(role="app", role2="work", command=None):
     while True:
         try:
             streams = create_streams_for_roles(role, role2, command=command)
-            print " --- Loading %s App Log Tails ---" % len(streams)
+            print(" --- Loading %s App Log Tails ---" % len(streams))
             read_streams(streams)
         except (UnicodeDecodeError, ConnectionError, KeyboardInterrupt):
-            print " --- End of Logging ---"
+            print(" --- End of Logging ---")
             break
 
 def create_streams_for_roles(role, role2, command=None):
@@ -95,5 +95,5 @@ if __name__ == "__main__":
     command = "zgrep \"%s\" %s" % (find, path)
     if exclude:
         command += " | zgrep -v \"%s\"" % exclude
-    print command
+    print(command)
     main(role=role, command=command)

@@ -58,7 +58,7 @@ class ImageOps:
         if hasattr(image, '_getexif'):
             exif = image._getexif()
             if exif:
-                for tag, value in exif.items():
+                for tag, value in list(exif.items()):
                     decoded = TAGS.get(tag, tag)
                     if decoded == 'Orientation':
                         if value == 6:
