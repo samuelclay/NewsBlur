@@ -2491,6 +2491,10 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     NSString *thisIdentifier = [NSString stringWithFormat:@"%@", storiesCollection.activeFeed[@"id"]];
     [activeIdentifiers removeObject:thisIdentifier];
     
+    for (NSString *feedId in self.appDelegate.dictInactiveFeeds.allKeys) {
+        [activeIdentifiers removeObject:feedId];
+    }
+    
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/save_feed_chooser", self.appDelegate.url];
 
