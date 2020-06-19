@@ -3281,10 +3281,24 @@
                 }
             }
             
-            if (!this.flags.watching_system_theme) {
-                window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
-                    this.load_theme();
-                });
+            if (!this.flags.watching_system_theme && window.matchMedia) {
+                const darkMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+
+                try {
+                    // Chrome & Firefox
+                    darkMediaQuery.addEventListener('change', (e) => {
+                        this.load_theme();
+                    });
+                } catch (e1) {
+                    try {
+                        // Safari
+                        darkMediaQuery.addListener((e) => {
+                            this.load_theme();
+                        });
+                    } catch (e2) {
+                        console.error(e2);
+                    }
+                }
                 this.flags.watching_system_theme = true;
             }
             
