@@ -1931,7 +1931,7 @@ class Feed(models.Model):
         signed_urls = [create_imageproxy_signed_url(settings.IMAGES_URL, 
                                                     settings.IMAGES_SECRET_KEY, 
                                                     url) for url in urls]
-        return dict(list(zip(urls, signed_urls)))
+        return dict(zip(urls, signed_urls)))
     
     @classmethod
     def secure_image_thumbnails(cls, urls, size=192):
@@ -1939,7 +1939,7 @@ class Feed(models.Model):
                                                     settings.IMAGES_SECRET_KEY, 
                                                     url,
                                                     size) for url in urls]
-        return dict(list(zip(urls, signed_urls)))
+        return dict(zip(urls, signed_urls)))
         
     def get_tags(self, entry):
         fcat = []
