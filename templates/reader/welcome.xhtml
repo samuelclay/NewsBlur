@@ -58,10 +58,14 @@
                     </div>
                 </div>
             </div>
-            <div class="NB-welcome-header-image {% if not post_request %}NB-active{% endif %}">
-                <img src="{{ MEDIA_URL }}img/welcome/header-web.png" class="NB-1">
-                <img src="{{ MEDIA_URL }}img/welcome/header-ios.png" class="NB-2">
-                <img src="{{ MEDIA_URL }}img/welcome/header-android.png" class="NB-3">
+            <div class="NB-welcome-header-image NB-1 {% if not post_request %}NB-active{% endif %}">
+                <img src="{{ MEDIA_URL }}img/welcome/header-web.png">
+            </div>
+            <div class="NB-welcome-header-image NB-2">
+                <img src="{{ MEDIA_URL }}img/welcome/header-ios.png">
+            </div>
+            <div class="NB-welcome-header-image NB-3">
+                <img src="{{ MEDIA_URL }}img/welcome/header-android.png">
             </div>
 
             <div class="NB-welcome-header-account {% if post_request %}NB-active{% endif %}">
