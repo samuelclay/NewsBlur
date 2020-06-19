@@ -641,7 +641,8 @@ hr {
   color: #A0A0A0;
 }
 .NB-feedlist .feed .NB-feed-unfetched-icon {
-  background: url('/media/embed/reader/recycle_spinner.gif') no-repeat 0 0;
+    background: transparent url('/media/embed/reader/ring_spinner.svg') no-repeat 0 0;
+    background-size: 16px;
   opacity: .1;
   width: 16px;
   height: 16px;
@@ -3661,8 +3662,8 @@ body {
     opacity: .8;
 }
 .NB-story-comments-expand-icon.NB-loading {
-    background: transparent url("/media/embed/reader/recycle_spinner.gif") no-repeat center center;
-    background-size: 16px;    
+    background: transparent url('/media/embed/reader/ring_spinner.svg') no-repeat center center;
+    background-size: 16px;
 }
 .NB-story-comments-public-teaser-wrapper:hover .NB-story-comments-expand-icon {
     opacity: 1;
@@ -5722,7 +5723,7 @@ form.opml_import_form input {
     float: right;
     width: 16px;
     height: 16px;
-    margin: 10px 0 0;
+    margin: 10px 8px 0;
 }
 .NB-add .NB-add-form .NB-add-url-submit,
 .NB-add .NB-add-form .NB-add-folder-submit {
@@ -5769,7 +5770,8 @@ form.opml_import_form input {
 }
 
 .NB-add input[type=text].ui-autocomplete-loading {
-  background: white url('/media/embed/reader/recycle_spinner.gif') no-repeat right 3px;
+    background: transparent url('/media/embed/reader/ring_spinner.svg') no-repeat right 3px top 3px;
+    background-size: 16px;
 }
 
 .chzn-drop {
@@ -6285,7 +6287,8 @@ form.opml_import_form input {
     float: right;
 }
 .NB-module .NB-spinner {
-    background: transparent url('/media/embed/reader/recycle_spinner.gif') no-repeat 0 0;
+    background: transparent url('/media/embed/reader/ring_spinner.svg') no-repeat center center;
+    background-size: 16px;
     width: 16px;
     height: 16px;
     margin: 0 6px;
@@ -10233,7 +10236,8 @@ form.opml_import_form input {
 }
 .NB-account-payments .NB-payments-loading {
     padding: 0 0 0 20px;
-    background: transparent url('/media/embed/reader/recycle_spinner.gif') no-repeat left 3px;
+    background: transparent url('/media/embed/reader/ring_spinner.svg') no-repeat left 3px top 3px;
+    background-size: 16px;
 }
 .NB-account-payments .NB-account-payment-date {
     float: left;
@@ -11031,7 +11035,8 @@ form.opml_import_form input {
 }
 .NB-friends-service.NB-friends-service-syncing .NB-friends-service-title {
     padding-right: 28px;
-    background: transparent url('/media/embed/reader/recycle_spinner.gif') no-repeat right 3px;
+    background: transparent url('/media/embed/reader/ring_spinner.svg') no-repeat right 3px top 3px;
+    background-size: 16px;
     margin-right: 8px;
 }
 
@@ -11622,7 +11627,8 @@ form.opml_import_form input {
 }
 .NB-interactions-popover .NB-loading {
     margin: 12px auto;
-    background: transparent url('/media/img/reader/spinner_ball.gif') no-repeat 0 0;
+    background: transparent url('/media/img/reader/worm_spinner.svg') no-repeat 0 0;
+    background-size: 16px;
     width: 16px;
     height: 16px;
 }
@@ -12604,7 +12610,8 @@ form.opml_import_form input {
 }
 
 .NB-module-search-input input.NB-active {
-    background: white url('/media/embed/reader/recycle_spinner.gif') no-repeat right 4px;
+    background: transparent url('/media/embed/reader/ring_spinner.svg') no-repeat right 4px top 4px;
+    background-size: 16px;
 }
 .NB-module-search-input label img {
     width: 16px;
