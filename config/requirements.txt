@@ -1,3 +1,4 @@
+anyjson==0.3.3
 bleach==3.1.0
 beautifulsoup4==4.8.0
 boto==2.43.0
@@ -45,9 +46,10 @@ python-dateutil==2.6.0
 python-digitalocean==1.13.2
 python-gflags==3.1.0
 pytz==2018.3
+pyyaml==5.3.1
 raven==6.10.0
 redis==3.2.0
-requests==2.20.0
+requests==2.24.0
 scipy==1.4.1
 seacucumber==1.5.2
 sgmllib3k==1.0.0
