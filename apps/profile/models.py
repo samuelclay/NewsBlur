@@ -1051,7 +1051,7 @@ class Profile(models.Model):
         
 
 class StripeIds(models.Model):
-    user = models.ForeignKey(User, related_name='stripe_ids', on_delete=models.CASCADE)
+    user = models.ForeignKey(User, related_name='stripe_ids', on_delete=models.CASCADE, null=True)
     stripe_id = models.CharField(max_length=24, blank=True, null=True)
 
     def __unicode__(self):
