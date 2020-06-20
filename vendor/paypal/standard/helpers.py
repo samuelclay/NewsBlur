@@ -7,7 +7,7 @@ from django.utils.encoding import smart_str
 
 
 def get_sha1_hexdigest(salt, raw_password):
-    return hashlib.sha1(smart_str(salt) + smart_str(raw_password)).hexdigest()
+    return hashlib.sha1((smart_str(salt) + smart_str(raw_password)).encode('utf-8')).hexdigest()
 
 
 def duplicate_txn_id(ipn_obj):

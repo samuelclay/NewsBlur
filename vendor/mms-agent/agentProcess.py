@@ -200,7 +200,7 @@ def generateSessionKey( *args ):
     except:
         a = random.random()*100000000000000000
 
-    return hashlib.md5( ( '%(time)s %(random)s %(host)s %(args)s' % {'time' : t, 'random': r, 'host' : a, 'args' : str( args ) } ) ).hexdigest()
+    return hashlib.md5( ( '%(time)s %(random)s %(host)s %(args)s' % {'time' : t, 'random': r, 'host' : a, 'args' : str( args ) } ).encode('utf-8') ).hexdigest()
 
 def readTmpFile( processPid ):
     """ Read the temp file """
