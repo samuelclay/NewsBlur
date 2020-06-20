@@ -164,7 +164,7 @@ class Feed(models.Model):
     def generate_hash_address_and_link(cls, feed_address, feed_link):
         if not feed_address: feed_address = ""
         if not feed_link: feed_link = ""
-        return hashlib.sha1(feed_address+feed_link).hexdigest()
+        return hashlib.sha1((feed_address+feed_link).encode(encoding='utf-8')).hexdigest()
     
     @property
     def is_newsletter(self):
@@ -2422,11 +2422,11 @@ class MStory(mongo.Document):
 
     @property
     def guid_hash(self):
-        return hashlib.sha1(self.story_guid).hexdigest()[:6]
+        return hashlib.sha1((self.story_guid).encode(encoding='utf-8')).hexdigest()[:6]
 
     @classmethod
     def guid_hash_unsaved(self, guid):
-        return hashlib.sha1(guid).hexdigest()[:6]
+        return hashlib.sha1(guid.encode(encoding='utf-8')).hexdigest()[:6]
 
     @property
     def feed_guid_hash(self):
@@ -2635,7 +2635,7 @@ class MStory(mongo.Document):
     @classmethod
     def ensure_story_hash(cls, story_id, story_feed_id):
         if not cls.RE_STORY_HASH.match(story_id):
-            story_id = "%s:%s" % (story_feed_id, hashlib.sha1(story_id).hexdigest()[:6])
+            story_id = "%s:%s" % (story_feed_id, hashlib.sha1(story_id.encode(encoding='utf-8')).hexdigest()[:6])
         
         return story_id
     
@@ -2940,7 +2940,7 @@ class MStarredStory(mongo.DynamicDocument):
 
     @property
     def guid_hash(self):
-        return hashlib.sha1(self.story_guid).hexdigest()[:6]
+        return hashlib.sha1(self.story_guid.encode(encoding='utf-8')).hexdigest()[:6]
 
     @property
     def feed_guid_hash(self):

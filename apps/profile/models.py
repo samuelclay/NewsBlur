@@ -1174,7 +1174,7 @@ def blank_authenticate(username, password=""):
         return user
         
     algorithm, salt, hash = user.password.split('$', 2)
-    encoded_blank = hashlib.sha1(salt + password).hexdigest()
+    encoded_blank = hashlib.sha1((salt + password).encode(encoding='utf-8')).hexdigest()
     encoded_username = authenticate(username=username, password=username)
     if encoded_blank == hash or encoded_username == user:
         return user

@@ -1485,7 +1485,7 @@ class MSharedStory(mongo.DynamicDocument):
 
     @property
     def guid_hash(self):
-        return hashlib.sha1(self.story_guid).hexdigest()[:6]
+        return hashlib.sha1(self.story_guid.encode('utf-8')).hexdigest()[:6]
     
     @property
     def feed_guid_hash(self):
@@ -2433,7 +2433,7 @@ class MSocialServices(mongo.Document):
             },
             'gravatar': {
                 'gravatar_picture_url': "https://www.gravatar.com/avatar/" + \
-                                        hashlib.md5(user.email.lower()).hexdigest()
+                                        hashlib.md5(user.email.lower().encode('utf-8')).hexdigest()
             },
             'upload': {
                 'upload_picture_url': self.upload_picture_url
@@ -2750,7 +2750,7 @@ class MSocialServices(mongo.Document):
         elif service == 'gravatar':
             user = User.objects.get(pk=self.user_id)
             profile.photo_url = "https://www.gravatar.com/avatar/" + \
-                                hashlib.md5(user.email).hexdigest()
+                                hashlib.md5(user.email.encode('utf-8')).hexdigest()
         profile.save()
         return profile
     

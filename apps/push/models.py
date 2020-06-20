@@ -122,8 +122,8 @@ class PushSubscription(models.Model):
     def generate_token(self, mode):
         assert self.pk is not None, \
             'Subscription must be saved before generating token'
-        token = mode[:20] + hashlib.sha1('%s%i%s' % (
-                settings.SECRET_KEY, self.pk, mode)).hexdigest()
+        token = mode[:20] + hashlib.sha1(('%s%i%s' % (
+                settings.SECRET_KEY, self.pk, mode)).encode(encoding='utf-8')).hexdigest()
         self.verify_token = token
         self.save()
         return token
