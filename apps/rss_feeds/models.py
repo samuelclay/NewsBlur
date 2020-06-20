@@ -2410,7 +2410,7 @@ class MStory(mongo.Document):
         'indexes': [('story_feed_id', '-story_date'),
                     {'fields': ['story_hash'], 
                      'unique': True,
-                     'types': False, }],
+                    }],
         'ordering': ['-story_date'],
         'allow_inheritance': False,
         'cascade': False,
@@ -3107,7 +3107,7 @@ class MSavedSearch(mongo.Document):
         'indexes': ['user_id',
                     {'fields': ['user_id', 'feed_id', 'query'], 
                      'unique': True,
-                     'types': False, }],
+                    }],
         'ordering': ['query'],
         'allow_inheritance': False,
     }

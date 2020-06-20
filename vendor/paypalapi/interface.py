@@ -5,7 +5,6 @@ in this module. Configuration, querying, and manipulation can all be done
 with it.
 """
 
-import types
 import logging
 from pprint import pformat
 import warnings
