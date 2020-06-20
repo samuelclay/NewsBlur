@@ -304,6 +304,7 @@ class TimingMiddleware:
         setattr(request, 'start_time', time.time())
 
     def __call__(self, request):
+        self.process_request(request)
         response = self.get_response(request)
 
         return response
