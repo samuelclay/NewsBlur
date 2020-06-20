@@ -19,7 +19,6 @@ from utils import mongoengine_fields
 from html.parser import HTMLParser
 from vendor.apns import APNs, Payload
 from bs4 import BeautifulSoup, Tag
-import types
 import urllib.parse
 
 class NotificationFrequency(enum.Enum):
@@ -38,7 +37,7 @@ class MUserNotificationTokens(mongo.Document):
         'collection': 'notification_tokens',
         'indexes': [{'fields': ['user_id'], 
                      'unique': True,
-                     'types': False, }],
+                    }],
         'allow_inheritance': False,
     }
     
@@ -70,7 +69,7 @@ class MUserFeedNotification(mongo.Document):
         'indexes': ['feed_id',
                     {'fields': ['user_id', 'feed_id'], 
                      'unique': True,
-                     'types': False, }],
+                    }],
         'allow_inheritance': False,
     }
     
