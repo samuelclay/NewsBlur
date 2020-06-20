@@ -566,8 +566,13 @@ SESSION_REDIS_DB = 5
 # = Elasticsearch =
 # =================
 
-ELASTICSEARCH_FEED_HOSTS = ['db_search_feed:9200']
-ELASTICSEARCH_STORY_HOSTS = ['db_search_story:9200']
+if os.getenv("DOCKERBUILD"):
+    ELASTICSEARCH_FEED_HOSTS = ['db_search_feed:9200']
+    ELASTICSEARCH_STORY_HOSTS = ['db_search_story:9200']
+else:
+    ELASTICSEARCH_FEED_HOSTS = ['127.0.0.1:9200']
+    ELASTICSEARCH_STORY_HOSTS = ['127.0.0.1:9200']
+
 
 # ===============
 # = Social APIs =
@@ -663,12 +668,19 @@ TEMPLATES = [
 # =========
 # = Mongo =
 # =========
+if os.getenv("DOCKERBUILD"):
+    MONGO_DB_DEFAULTS = {
+        'name': 'newsblur',
+        'host': '127.0.0.1:27017',
+        'alias': 'default',
+    }
+else:
+    MONGO_DB_DEFAULTS = {
+        'name': 'newsblur',
+        'host': 'db_mongo:27017',
+        'alias': 'default',
+    }
 
-MONGO_DB_DEFAULTS = {
-    'name': 'newsblur',
-    'host': 'db_mongo:27017',
-    'alias': 'default',
-}
 MONGO_DB = dict(MONGO_DB_DEFAULTS, **MONGO_DB)
 # MONGO_URI = 'mongodb://%s' % (MONGO_DB.pop('host'),)
 
@@ -682,11 +694,19 @@ MONGO_DB = dict(MONGO_DB_DEFAULTS, **MONGO_DB)
 MONGODB = connect(MONGO_DB.pop('name'), **MONGO_DB)
 # MONGODB = connect(host="mongodb://localhost:27017/newsblur", connect=False)
 
-MONGO_ANALYTICS_DB_DEFAULTS = {
-    'name': 'nbanalytics',
-    'host': 'db_mongo_analytics:27017',
-    'alias': 'nbanalytics',
-}
+if os.getenv("DOCKERBUILD"):
+    MONGO_ANALYTICS_DB_DEFAULTS = {
+        'name': 'nbanalytics',
+        'host': 'db_mongo_analytics:27017',
+        'alias': 'nbanalytics',
+    }
+else:
+    MONGO_ANALYTICS_DB_DEFAULTS = {
+        'name': 'nbanalytics',
+        'host': '127.0.0.1:27017',
+        'alias': 'nbanalytics',
+    }
+
 MONGO_ANALYTICS_DB = dict(MONGO_ANALYTICS_DB_DEFAULTS, **MONGO_ANALYTICS_DB)
 # MONGO_ANALYTICS_URI = 'mongodb://%s' % (MONGO_ANALYTICS_DB.pop('host'),)
 # MONGOANALYTICSDB = connect(MONGO_ANALYTICS_DB.pop('name'), host=MONGO_ANALYTICS_URI, **MONGO_ANALYTICS_DB)

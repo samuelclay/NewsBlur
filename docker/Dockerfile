@@ -1,10 +1,10 @@
-FROM       python:2.7-slim
+FROM       python:3.7-slim
 MAINTAINER julien@rottenberg.info
 
 
 WORKDIR   /srv/newsblur
 ENV       PYTHONPATH=/opt/newsblur
-
+ENV       DOCKERBUILD=True
 CMD       ["gunicorn", "--bind", "0.0.0.0:8000", "wsgi"]
 EXPOSE    8000
 
