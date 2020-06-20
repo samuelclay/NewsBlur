@@ -1866,8 +1866,10 @@ class MSharedStory(mongo.DynamicDocument):
         
         r.sadd('B:%s' % self.user_id, self.feed_guid_hash)
         # r2.sadd('B:%s' % self.user_id, self.feed_guid_hash)
-        r.zadd('zB:%s' % self.user_id, self.feed_guid_hash,
-               time.mktime(self.shared_date.timetuple()))
+        redis_data = {
+            self.feed_guid_hash : time.mktime(self.shared_date.timetuple())
+        }
+        r.zadd('zB:%s' % self.user_id, redis_data)
         # r2.zadd('zB:%s' % self.user_id, self.feed_guid_hash,
         #        time.mktime(self.shared_date.timetuple()))
         r.expire('B:%s' % self.user_id, settings.DAYS_OF_STORY_HASHES*24*60*60)

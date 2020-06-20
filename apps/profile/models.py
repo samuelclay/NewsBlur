@@ -600,10 +600,10 @@ class Profile(models.Model):
                     muted_feed = not bool(user_ids[profile['user_id']])
                     if muted_feed:
                         last_seen_on = 0
-                    pipeline.zadd(key, profile['user_id'], last_seen_on)
+                    pipeline.zadd(key, { profile['user_id']: last_seen_on })
                     total += 1
                     if profile['is_premium']:
-                        pipeline.zadd(premium_key, profile['user_id'], last_seen_on)
+                        pipeline.zadd(premium_key, { profile['user_id']: last_seen_on })
                         premium += 1
                     else:
                         pipeline.zrem(premium_key, profile['user_id'])
@@ -616,9 +616,9 @@ class Profile(models.Model):
             
             if entire_feed_counted:
                 now = int(datetime.datetime.now().strftime('%s'))
-                r.zadd(key, -1, now)
+                r.zadd(key, { -1: now })
                 r.expire(key, settings.SUBSCRIBER_EXPIRE*24*60*60)
-                r.zadd(premium_key, -1, now)
+                r.zadd(premium_key, { -1, now })
                 r.expire(premium_key, settings.SUBSCRIBER_EXPIRE*24*60*60)
             
             logging.info("   ---> [%-30s] ~SN~FBCounting subscribers, storing in ~SBredis~SN: ~FMt:~SB~FM%s~SN a:~SB%s~SN p:~SB%s~SN ap:~SB%s" % 
@@ -644,9 +644,9 @@ class Profile(models.Model):
                     last_seen_on = int(user.profile.last_seen_on.strftime('%s'))
                     if feed_ids is muted_feed_ids:
                         last_seen_on = 0
-                    pipeline.zadd(key, user.pk, last_seen_on)
+                    pipeline.zadd(key, { user.pk: last_seen_on })
                     if user.profile.is_premium:
-                        pipeline.zadd(premium_key, user.pk, last_seen_on)
+                        pipeline.zadd(premium_key, { user.pk: last_seen_on })
                     else:
                         pipeline.zrem(premium_key, user.pk)
                 pipeline.execute()
@@ -1535,7 +1535,7 @@ class RNewUserQueue:
         r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
         now = time.time()
         
-        r.zadd(cls.KEY, user_id, now)
+        r.zadd(cls.KEY, { user_id: now })
     
     @classmethod
     def user_count(cls):
