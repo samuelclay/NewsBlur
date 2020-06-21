@@ -47,7 +47,6 @@ UIActionSheetDelegate, WKNavigationDelegate> {
 @property (nonatomic, assign) BOOL inTextView;
 @property (nonatomic, assign) BOOL isRecentlyUnread;
 @property (nonatomic) BOOL hasStory;
-@property (nonatomic,  readonly) BOOL canHideNavigationBar;
 @property (nonatomic,  readonly) BOOL isSinglePage;
 
 @property NSInteger pageIndex;

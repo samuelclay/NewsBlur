@@ -276,11 +276,17 @@
     
     self.currentlyTogglingNavigationBar = NO;
     
+    if (self.standardInteractivePopGestureDelegate == nil) {
+        self.standardInteractivePopGestureDelegate = self.navigationController.interactivePopGestureRecognizer.delegate;
+    }
+    
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     BOOL swipeEnabled = [[userPreferences stringForKey:@"story_detail_swipe_left_edge"]
                          isEqualToString:@"pop_to_story_list"];;
+    self.navigationController.hidesBarsOnSwipe = self.allowFullscreen;
     self.navigationController.interactivePopGestureRecognizer.enabled = swipeEnabled;
-
+    self.navigationController.interactivePopGestureRecognizer.delegate = self;
+    
     if (self.isPhoneOrCompact) {
         if (!appDelegate.storiesCollection.isSocialView) {
             UIImage *titleImage;
@@ -398,7 +404,9 @@
     [super viewWillDisappear:animated];
     
     previousPage.view.hidden = YES;
+    self.navigationController.hidesBarsOnSwipe = NO;
     self.navigationController.interactivePopGestureRecognizer.enabled = YES;
+    self.navigationController.interactivePopGestureRecognizer.delegate = self.standardInteractivePopGestureDelegate;
     self.autoscrollActive = NO;
 }
 
@@ -470,7 +478,9 @@
     BOOL shouldHideStatusBar = [preferences boolForKey:@"story_hide_status_bar"];
     BOOL isNavBarHidden = self.navigationController.navigationBarHidden;
     
-    self.statusBarBackgroundView.hidden = shouldHideStatusBar || !isNavBarHidden || !appDelegate.isPortrait;
+    self.statusBarBackgroundView.hidden = YES; shouldHideStatusBar || !isNavBarHidden || !appDelegate.isPortrait;
+    
+    NSLog(@"⚠️ updateStatusBarState: %@", isNavBarHidden ? @"nav hidden" : @"nav shown");  // log
 }
 
 - (BOOL)prefersStatusBarHidden {
@@ -483,7 +493,11 @@
     return shouldHideStatusBar && isNavBarHidden;
 }
 
-- (BOOL)wantNavigationBarHidden {
+- (BOOL)allowFullscreen {
+    if (UI_USER_INTERFACE_IDIOM() != UIUserInterfaceIdiomPhone || self.presentedViewController != nil) {
+        return NO;
+    }
+    
     NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
     
     return ([preferences boolForKey:@"story_full_screen"] || self.autoscrollAvailable) && !self.forceNavigationBarShown;
@@ -501,17 +515,6 @@
     self.currentlyTogglingNavigationBar = YES;
     
     [self.navigationController setNavigationBarHidden:hide animated:YES];
-    
-    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
-    BOOL swipeEnabled = [[userPreferences stringForKey:@"story_detail_swipe_left_edge"]
-                         isEqualToString:@"pop_to_story_list"];
-    self.navigationController.interactivePopGestureRecognizer.enabled = swipeEnabled;
-    
-    if (hide) {
-        self.navigationController.interactivePopGestureRecognizer.delegate = self;
-    } else if (appDelegate.feedDetailViewController.standardInteractivePopGestureDelegate != nil) {
-        self.navigationController.interactivePopGestureRecognizer.delegate = appDelegate.feedDetailViewController.standardInteractivePopGestureDelegate;
-    }
     
     CGPoint oldOffset = currentPage.webView.scrollView.contentOffset;
     CGFloat navHeight = self.navigationController.navigationBar.bounds.size.height;
@@ -1243,16 +1246,6 @@
     }
     self.scrollView.scrollsToTop = NO;
     
-    NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
-    BOOL shouldHideStatusBar = [preferences boolForKey:@"story_hide_status_bar"];
-    NSInteger statusBarOffset = shouldHideStatusBar ? 0 : self.statusBarHeight;
-    NSInteger topPosition = currentPage.webView.scrollView.contentOffset.y + statusBarOffset;
-    BOOL canHide = currentPage.canHideNavigationBar && topPosition >= 0;
-    
-    if (!canHide && self.isHorizontal && self.navigationController.navigationBarHidden) {
-        [self setNavigationBarHidden:NO];
-    }
-    
     if (self.isDraggingScrollview || self.scrollingToPage == currentPage.pageIndex) {
         if (currentPage.pageIndex == -2) return;
         self.scrollingToPage = -1;
@@ -1567,12 +1560,11 @@
 }
 
 - (void)changedFullscreen {
-    BOOL wantHidden = self.wantNavigationBarHidden;
-    BOOL isHidden = self.navigationController.navigationBarHidden;
+    BOOL wantHidden = self.allowFullscreen;
     
-    if (self.currentPage.webView.scrollView.contentOffset.y > 10 || isHidden) {
-        [self setNavigationBarHidden:wantHidden alsoTraverse:YES];
-    }
+    self.navigationController.hidesBarsOnSwipe = self.allowFullscreen;
+    
+    [self setNavigationBarHidden:wantHidden alsoTraverse:YES];
 }
 
 - (void)changedAutoscroll {
@@ -1699,6 +1691,14 @@
         [webView.scrollView setContentOffset:CGPointMake(0, position) animated:NO];
     } else {
         self.autoscrollActive = NO;
+    }
+}
+
+- (void)tappedStory {
+    if (self.autoscrollAvailable) {
+        [self showAutoscrollBriefly:YES];
+    } else {
+        [self setNavigationBarHidden: !self.navigationController.navigationBarHidden];
     }
 }
 
