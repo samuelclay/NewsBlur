@@ -332,10 +332,6 @@
     
     self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];
     
-    if (self.standardInteractivePopGestureDelegate == nil) {
-        self.standardInteractivePopGestureDelegate = self.navigationController.interactivePopGestureRecognizer.delegate;
-    }
-    
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
     [self setUserAvatarLayout:orientation];
     self.finishedAnimatingIn = NO;
@@ -452,10 +448,6 @@
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-    
-    if (self.navigationController.interactivePopGestureRecognizer.delegate != self.standardInteractivePopGestureDelegate) {
-        self.navigationController.interactivePopGestureRecognizer.delegate = self.standardInteractivePopGestureDelegate;
-    }
     
     if (appDelegate.inStoryDetail && self.isPhoneOrCompact) {
         appDelegate.inStoryDetail = NO;

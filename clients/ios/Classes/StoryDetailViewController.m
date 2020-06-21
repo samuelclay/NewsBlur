@@ -185,7 +185,7 @@
 - (void)tap:(UITapGestureRecognizer *)gestureRecognizer {
 //    NSLog(@"Gesture tap: %ld (%ld) - %d", (long)gestureRecognizer.state, (long)UIGestureRecognizerStateEnded, inDoubleTap);
     
-    if (gestureRecognizer.state == UIGestureRecognizerStateEnded && gestureRecognizer.numberOfTouches == 1 && appDelegate.storyPageControl.autoscrollAvailable && self.presentedViewController == nil) {
+    if (gestureRecognizer.state == UIGestureRecognizerStateEnded && gestureRecognizer.numberOfTouches == 1 && self.presentedViewController == nil) {
         CGPoint pt = [self pointForGesture:gestureRecognizer];
         if (pt.x == CGPointZero.x && pt.y == CGPointZero.y) return;
         if (inDoubleTap) return;
@@ -196,7 +196,7 @@
                 [webView evaluateJavaScript:[NSString stringWithFormat:@"linkAt(%li, %li, 'id');", (long)pt.x,(long)pt.y] completionHandler:^(NSString *identifier, NSError *error) {
                     [webView evaluateJavaScript:[NSString stringWithFormat:@"linkAt(%li, %li, 'outerHTML');", (long)pt.x,(long)pt.y] completionHandler:^(NSString *outerHTML, NSError *error) {
                         if ([identifier isEqualToString:@"NB-story"] || ![outerHTML containsString:@"NB-"]) {
-                            [appDelegate.storyPageControl showAutoscrollBriefly:YES];
+                            [appDelegate.storyPageControl tappedStory];
                         }
                     }];
                 }];
@@ -206,7 +206,7 @@
             
             // Ignore links, videos, and iframes (e.g. embedded YouTube videos).
             if (![@[@"A", @"VIDEO", @"IFRAME"] containsObject:tagName]) {
-                [appDelegate.storyPageControl showAutoscrollBriefly:YES];
+                [appDelegate.storyPageControl tappedStory];
             }
         }];
     }
@@ -613,9 +613,10 @@
 
 - (void)drawFeedGradient {
     NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
+    BOOL navigationBarHidden = self.navigationController.navigationBarHidden;
     BOOL shouldHideStatusBar = [preferences boolForKey:@"story_hide_status_bar"];
     UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
-    BOOL shouldOffsetFeedGradient = UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone && !UIInterfaceOrientationIsLandscape(orientation) && self.navigationController.navigationBarHidden && !shouldHideStatusBar;
+    BOOL shouldOffsetFeedGradient = NO; //UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone && !UIInterfaceOrientationIsLandscape(orientation) && navigationBarHidden && !shouldHideStatusBar;
     CGFloat yOffset = shouldOffsetFeedGradient ? appDelegate.storyPageControl.statusBarBackgroundView.bounds.size.height - 1 : -1;
     NSString *feedIdStr = [NSString stringWithFormat:@"%@",
                            [self.activeStory
@@ -632,6 +633,8 @@
                               withRect:CGRectMake(0, yOffset, CGRectGetWidth(self.view.bounds), 21)]; // 1024 hack for self.webView.frame.size.width
     self.feedTitleGradient.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     self.feedTitleGradient.tag = FEED_TITLE_GRADIENT_TAG; // Not attached yet. Remove old gradients, first.
+    
+    NSLog(@"⚠️ nav hidden: %@, should offset: %@, frame: %@, feedTitleGradient: %@", navigationBarHidden ? @"yes" : @"no", shouldOffsetFeedGradient ? @"yes" : @"no", NSStringFromCGRect(self.webView.scrollView.frame), @(yOffset));  // log
     
     for (UIView *subview in self.webView.subviews) {
         if (subview.tag == FEED_TITLE_GRADIENT_TAG) {
@@ -650,7 +653,7 @@
     [self.webView insertSubview:feedTitleGradient aboveSubview:self.webView.scrollView];
     
     if (@available(iOS 11.0, *)) {
-        if (self.view.safeAreaInsets.top > 0.0 && UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone && shouldHideStatusBar) {
+        if (self.view.safeAreaInsets.top > 0.0 && UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone /*&& shouldHideStatusBar*/) {
             feedTitleGradient.alpha = self.navigationController.navigationBarHidden ? 1 : 0;
             
             [UIView animateWithDuration:0.3 animations:^{
@@ -1384,11 +1387,14 @@
         BOOL isHorizontal = appDelegate.storyPageControl.isHorizontal;
         BOOL isNavBarHidden = self.navigationController.navigationBarHidden;
         
-        if (!isHorizontal && appDelegate.storyPageControl.previousPage.pageIndex < 0) {
-            [appDelegate.storyPageControl setNavigationBarHidden:NO];
-        } else if (isHorizontal && topPosition <= minimumTopPositionWhenHidden && isNavBarHidden) {
-            [appDelegate.storyPageControl setNavigationBarHidden:NO];
-        } else if (!nearTop && !isNavBarHidden && self.canHideNavigationBar) {
+//        if (!isHorizontal && appDelegate.storyPageControl.previousPage.pageIndex < 0) {
+//            [appDelegate.storyPageControl setNavigationBarHidden:NO];
+//        } else if (isHorizontal && topPosition <= minimumTopPositionWhenHidden && isNavBarHidden) {
+//            [appDelegate.storyPageControl setNavigationBarHidden:NO];
+//        } else if (!isNavBarHidden && self.canHideNavigationBar) {
+//            [appDelegate.storyPageControl setNavigationBarHidden:YES];
+//        }
+        if (!isNavBarHidden && self.canHideNavigationBar && !nearTop && appDelegate.storyPageControl.autoscrollActive) {
             [appDelegate.storyPageControl setNavigationBarHidden:YES];
         }
         
@@ -1910,20 +1916,12 @@
 }
 
 - (BOOL)canHideNavigationBar {
-    if (UI_USER_INTERFACE_IDIOM() != UIUserInterfaceIdiomPhone || self.presentedViewController != nil) {
-        return NO;
-    }
-    
-    if (!appDelegate.storyPageControl.wantNavigationBarHidden) {
+    if (!appDelegate.storyPageControl.allowFullscreen) {
         NSLog(@"canHideNavigationBar: no, toggle is off");  // log
         return NO;
     }
     
-    BOOL canHide = !self.isSinglePage;
-    
-    NSLog(@"canHideNavigationBar: %@", canHide ? @"yes" : @"no");  // log
-    
-    return canHide;
+    return YES;
 }
 
 - (BOOL)isSinglePage {
