@@ -16,6 +16,7 @@ import static com.newsblur.database.BlurDatabaseHelper.closeQuietly;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.domain.Feed;
 import com.newsblur.domain.Folder;
+import com.newsblur.domain.SavedSearch;
 import com.newsblur.domain.SocialFeed;
 import com.newsblur.domain.StarredCount;
 import com.newsblur.domain.Story;
@@ -586,6 +587,12 @@ public class NBSyncService extends JobService {
             for (StarredCount sc : feedResponse.starredCounts) {
                 starredCountValues.add(sc.getValues());
             }
+
+            // saved searches table
+            List<ContentValues> savedSearchesValues = new ArrayList<>();
+            for (SavedSearch savedSearch : feedResponse.savedSearches) {
+                savedSearchesValues.add(savedSearch.getValues());
+            }
             // the API vends the starred total as a different element, roll it into
             // the starred counts table using a special tag
             StarredCount totalStarred = new StarredCount();
@@ -593,7 +600,7 @@ public class NBSyncService extends JobService {
             totalStarred.tag = StarredCount.TOTAL_STARRED;
             starredCountValues.add(totalStarred.getValues());
 
-            dbHelper.setFeedsFolders(folderValues, feedValues, socialFeedValues, starredCountValues);
+            dbHelper.setFeedsFolders(folderValues, feedValues, socialFeedValues, starredCountValues, savedSearchesValues);
 
             lastFFWriteMillis = System.currentTimeMillis() - startTime;
             lastFeedCount = feedValues.size();

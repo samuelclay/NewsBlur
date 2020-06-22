@@ -75,17 +75,6 @@ public class FeedSet implements Serializable {
         return fs;
     }
 
-    /**
-     * Convenience constructor for multiple feeds with IDs
-     */
-    public static FeedSet multipleFeeds(Set<String> feedIds) {
-        FeedSet fs = new FeedSet();
-        fs.feeds = new HashSet<>(feedIds.size());
-        fs.feeds.addAll(feedIds);
-        fs.feeds = Collections.unmodifiableSet(fs.feeds);
-        return fs;
-    }
-
     /** 
      * Convenience constructor for all (non-social) feeds.
      */
@@ -130,6 +119,15 @@ public class FeedSet implements Serializable {
         fs.savedTags = new HashSet<String>(1);
         fs.savedTags.add(tag);
         fs.savedTags = Collections.unmodifiableSet(fs.savedTags);
+        return fs;
+    }
+
+    /**
+     * Convenience constructor for a single saved search.
+     */
+    public static FeedSet singleSavedSearch(String feedId, String searchQuery) {
+        FeedSet fs = singleFeed(feedId.replaceAll("\\D+",""));
+        fs.setSearchQuery(searchQuery);
         return fs;
     }
 

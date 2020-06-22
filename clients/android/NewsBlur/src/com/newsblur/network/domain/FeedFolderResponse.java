@@ -15,6 +15,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.newsblur.domain.Feed;
 import com.newsblur.domain.Folder;
+import com.newsblur.domain.SavedSearch;
 import com.newsblur.domain.SocialFeed;
 import com.newsblur.domain.StarredCount;
 import com.newsblur.util.AppConstants;
@@ -30,6 +31,7 @@ public class FeedFolderResponse {
 	public Set<Feed> feeds;
 	public Set<SocialFeed> socialFeeds;
     public Set<StarredCount> starredCounts;
+    public Set<SavedSearch> savedSearches;
 	
 	public boolean isAuthenticated;
     public boolean isPremium;
@@ -106,6 +108,16 @@ public class FeedFolderResponse {
                 JsonElement jsonElement = starredCountsArray.get(i);
                 StarredCount sc = gson.fromJson(jsonElement, StarredCount.class);
                 starredCounts.add(sc);
+            }
+        }
+
+        savedSearches = new HashSet<>();
+        JsonArray savedSearchesArray = (JsonArray) asJsonObject.get("saved_searches");
+        if (savedSearchesArray != null) {
+            for (int i=0; i<savedSearchesArray.size(); i++) {
+                JsonElement jsonElement = savedSearchesArray.get(i);
+                SavedSearch savedSearch = gson.fromJson(jsonElement, SavedSearch.class);
+                savedSearches.add(savedSearch);
             }
         }
 
