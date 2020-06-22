@@ -1,3 +1,16 @@
+### `0.5.26` _2019-06-06_
+* Updated data to IANA TZDB `2019b`
+* Fix: stabilize Array.sort [#762](https://github.com/moment/moment-timezone/pull/762)
+
+### `0.5.25` _2019-04-17_
+* Fix `moment.tz.dataVersion` to return `2019a` [#742](https://github.com/moment/moment-timezone/issues/742)
+* Update path in bower.json
+
+### `0.5.24` _2019-04-17_
+* Updated data to IANA TZDB `2019a` [#737](https://github.com/moment/moment-timezone/issues/737)
+* Start shipping both a 1970-1930 file and a rolling 10-year file [#614](https://github.com/moment/moment-timezone/issues/614) [#697](https://github.com/moment/moment-timezone/issues/697)
+* Fixed bug where `_z` time zone name was not cleared with `.local()` or `.utcOffset(offset)` [#738](https://github.com/moment/moment-timezone/issues/738)
+
 ### `0.5.23` _2018-10-28_
 * Fix minor issue with tz guessing in Russia [#691](https://github.com/moment/moment-timezone/pull/691)
 
@@ -15,7 +28,7 @@
 * Revert: moved moment to peerDependencies
 
 ### `0.5.18` _2018-06-18_
-* Return error when timezone name is not a string. 
+* Return error when timezone name is not a string.
 * Moved moment to peerDependencies [#628](https://github.com/moment/moment-timezone/pull/628)
 * Prefer nodejs to amd declaration [#573](https://github.com/moment/moment-timezone/pull/573)
 

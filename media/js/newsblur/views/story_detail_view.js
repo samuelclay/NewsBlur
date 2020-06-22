@@ -495,7 +495,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         this.truncate_delay = 100;
         this.images_to_load = this.$('img').length;
         if (is_truncatable) this.truncate_story_height();
-        this.$('img').load(_.bind(function() {
+        this.$('img').on('load', _.bind(function() {
             this.images_to_load -= 1;
             if (is_truncatable) this.truncate_story_height();
             if (this.images_to_load <= 0) {

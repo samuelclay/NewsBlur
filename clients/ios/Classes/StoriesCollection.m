@@ -86,7 +86,7 @@
     self.activeClassifiers = fromCollection.activeClassifiers;
     self.inSearch = fromCollection.inSearch;
     self.searchQuery = fromCollection.searchQuery;
-    
+    self.savedSearchQuery = fromCollection.savedSearchQuery;
 }
 
 #pragma mark - Story Traversal
@@ -323,6 +323,8 @@
             return activeSavedStoryTag;
         } else if ([activeFolder isEqualToString:@"read_stories"]) {
             return @"Read Stories";
+        } else if ([activeFolder isEqualToString:@"saved_searches"]) {
+            return @"Saved Searches";
         } else if ([activeFolder isEqualToString:@"saved_stories"]) {
             return @"Saved Stories";
         } else {

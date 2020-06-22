@@ -669,6 +669,8 @@ class SymbolTree {
                 removeNode.parent = null;
                 removeNode.previousSibling = null;
                 removeNode.nextSibling = null;
+                removeNode.cachedIndex = -1;
+                removeNode.cachedIndexVersion = NaN;
 
                 if (parentNode) {
                         parentNode.childrenChanged();
