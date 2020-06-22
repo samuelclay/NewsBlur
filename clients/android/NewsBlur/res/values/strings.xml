@@ -50,6 +50,7 @@
 	<string name="read_stories_title">Read Stories</string>
 	<string name="saved_stories_row_title">SAVED STORIES</string>
 	<string name="saved_stories_title">Saved Stories</string>
+    <string name="saved_searches_row_title">SAVED SEARCHES</string>
 
     <string name="top_level">TOP LEVEL</string>
 	

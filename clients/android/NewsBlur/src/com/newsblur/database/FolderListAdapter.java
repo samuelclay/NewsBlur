@@ -27,6 +27,7 @@ import android.widget.TextView;
 import com.newsblur.R;
 import com.newsblur.domain.Feed;
 import com.newsblur.domain.Folder;
+import com.newsblur.domain.SavedSearch;
 import com.newsblur.domain.StarredCount;
 import com.newsblur.domain.SocialFeed;
 import com.newsblur.util.AppConstants;
@@ -34,14 +35,15 @@ import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.StateFilter;
+import com.newsblur.util.UIUtils;
 
 /**
  * Custom adapter to display a nested folder/feed list in an ExpandableListView.
  */
 public class FolderListAdapter extends BaseExpandableListAdapter {
 
-    private enum GroupType { GLOBAL_SHARED_STORIES, ALL_SHARED_STORIES, INFREQUENT_STORIES, ALL_STORIES, FOLDER, READ_STORIES, SAVED_STORIES }
-    private enum ChildType { SOCIAL_FEED, FEED, SAVED_BY_TAG }
+    private enum GroupType { GLOBAL_SHARED_STORIES, ALL_SHARED_STORIES, INFREQUENT_STORIES, ALL_STORIES, FOLDER, READ_STORIES, SAVED_SEARCHES, SAVED_STORIES }
+    private enum ChildType { SOCIAL_FEED, FEED, SAVED_BY_TAG, SAVED_SEARCH }
 
     // The following keys are used to mark the position of the special meta-folders within
     // the folders array.  Since the ExpandableListView doesn't handle collapsing of views
@@ -56,6 +58,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
     private static final String INFREQUENT_SITE_STORIES_GROUP_KEY = "INFREQUENT_SITE_STORIES_GROUP_KEY";
     private static final String READ_STORIES_GROUP_KEY = "READ_STORIES_GROUP_KEY";
     private static final String SAVED_STORIES_GROUP_KEY = "SAVED_STORIES_GROUP_KEY";
+    private static final String SAVED_SEARCHES_GROUP_KEY = "SAVED_SEARCHES_GROUP_KEY";
 
     private final static float defaultTextSize_childName = 14;
     private final static float defaultTextSize_groupName = 13;
@@ -101,6 +104,8 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 
     /** Starred story sets in display order. */
     private List<StarredCount> starredCountsByTag = Collections.emptyList();
+    /** Saved Searches */
+    private List<SavedSearch> savedSearches = Collections.emptyList();
 
     private int savedStoriesTotalCount;
 
@@ -162,6 +167,8 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 			if (v == null) v =  inflater.inflate(R.layout.row_infrequent_stories, null, false);
         } else if (isRowReadStories(groupPosition)) {
             if (v == null) v = inflater.inflate(R.layout.row_read_stories, null, false);
+        } else if (isRowSavedSearches(groupPosition)) {
+            if (v == null) v = inflater.inflate(R.layout.row_saved_searches, null, false);
         } else if (isRowSavedStories(groupPosition)) {
             if (v == null) v = inflater.inflate(R.layout.row_saved_stories, null, false);
             TextView savedSum = ((TextView) v.findViewById(R.id.row_foldersum));
@@ -268,7 +275,15 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
             TextView savedCounter =((TextView) v.findViewById(R.id.row_saved_tag_sum));
             savedCounter.setText(Integer.toString(checkNegativeUnreads(sc.count)));
             savedCounter.setTextSize(textSize * defaultTextSize_count);
-		} else {
+		} else if (isRowSavedSearches(groupPosition)) {
+            if (v == null) v = inflater.inflate(R.layout.row_saved_search_child, parent, false);
+            SavedSearch ss = savedSearches.get(childPosition);
+            TextView nameView = v.findViewById(R.id.row_saved_search_title);
+            nameView.setText(UIUtils.fromHtml(ss.feedTitle));
+            ImageView iconView = v.findViewById(R.id.row_saved_search_icon);
+            FeedUtils.iconLoader.preCheck(ss.faviconUrl, iconView);
+            FeedUtils.iconLoader.displayImage(ss.faviconUrl, iconView, 0 , false);
+        } else {
             if (v == null) v = inflater.inflate(R.layout.row_feed, parent, false);
             Feed f = activeFolderChildren.get(groupPosition).get(childPosition);
             TextView nameView =((TextView) v.findViewById(R.id.row_feedname));
@@ -409,7 +424,9 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 			return socialFeedsActive.size();
         } else if (isRowSavedStories(groupPosition)) {
             return starredCountsByTag.size();
-		} else {
+		} else if (isRowSavedSearches(groupPosition)) {
+		    return savedSearches.size();
+        } else {
             return activeFolderChildren.get(groupPosition).size();
 		}
 	}
@@ -421,6 +438,9 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
             return FeedSet.singleSocialFeed(socialFeed.userId, socialFeed.username);
         } else if (isRowSavedStories(groupPosition)) {
             return FeedSet.singleSavedTag(starredCountsByTag.get(childPosition).tag);
+        } else if (isRowSavedSearches(groupPosition)) {
+		    SavedSearch savedSearch = savedSearches.get(childPosition);
+		    return FeedSet.singleSavedSearch(savedSearch.feedId, savedSearch.query);
         } else {
             Feed feed = activeFolderChildren.get(groupPosition).get(childPosition);
             FeedSet fs = FeedSet.singleFeed(feed.feedId);
@@ -463,6 +483,10 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 
     public boolean isRowSavedStories(int groupPosition) {
         return SAVED_STORIES_GROUP_KEY.equals(activeFolderNames.get(groupPosition));
+    }
+
+    public boolean isRowSavedSearches(int groupPosition) {
+        return SAVED_SEARCHES_GROUP_KEY.equals(activeFolderNames.get(groupPosition));
     }
 
     /**
@@ -564,6 +588,16 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
         recountFeeds();
         notifyDataSetChanged();
 	}
+
+	public synchronized void setSavedSearchesCursor(Cursor cursor) {
+        if (!cursor.isBeforeFirst()) return;
+        savedSearches = new ArrayList<>();
+        while (cursor.moveToNext()) {
+            SavedSearch savedSearch = SavedSearch.fromCursor(cursor);
+            savedSearches.add(savedSearch);
+        }
+        notifyDataSetChanged();
+    }
     
     private void recountFeeds() {
         if ((folders == null) || (feeds == null)) return;
@@ -619,6 +653,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
         }
         // add the always-present (if enabled) special rows/folders that got at the bottom of the list
         addSpecialRow(READ_STORIES_GROUP_KEY);
+        addSpecialRow(SAVED_SEARCHES_GROUP_KEY);
         addSpecialRow(SAVED_STORIES_GROUP_KEY);
         recountChildren();
     }
@@ -728,6 +763,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
             totalNeutCount = 0;
             totalPosCount = 0;
 
+            safeClear(savedSearches);
             safeClear(starredCountsByTag);
             safeClear(closedFolders);
 
@@ -804,6 +840,8 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
             return GroupType.INFREQUENT_STORIES.ordinal();
         } else if (isRowReadStories(groupPosition)) {
             return GroupType.READ_STORIES.ordinal();
+        } else if (isRowSavedSearches(groupPosition)) {
+		    return GroupType.SAVED_SEARCHES.ordinal();
         } else if (isRowSavedStories(groupPosition)) {
             return GroupType.SAVED_STORIES.ordinal();
         } else {
@@ -817,7 +855,9 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 			return ChildType.SOCIAL_FEED.ordinal();
         } else if (isRowSavedStories(groupPosition)) {
             return ChildType.SAVED_BY_TAG.ordinal();
-		} else {
+		} else if (isRowSavedSearches(groupPosition)) {
+		    return ChildType.SAVED_SEARCH.ordinal();
+        } else {
 			return ChildType.FEED.ordinal();
 		}
 	}

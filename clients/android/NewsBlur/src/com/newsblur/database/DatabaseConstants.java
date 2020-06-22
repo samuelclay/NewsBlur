@@ -45,6 +45,7 @@ public class DatabaseConstants {
     public static final String FEED_FAVICON_TEXT = "favicon_text_color";
 	public static final String FEED_ACTIVE = "active";
 	public static final String FEED_FAVICON_URL = "favicon_url";
+	public static final String FEED_FOLDER_TITLE = "folder_title";
 	public static final String FEED_POSITIVE_COUNT = "ps";
 	public static final String FEED_NEUTRAL_COUNT = "nt";
 	public static final String FEED_NEGATIVE_COUNT = "ng";
@@ -148,6 +149,13 @@ public class DatabaseConstants {
     public static final String STARREDCOUNTS_TAG = "tag";
     public static final String STARREDCOUNTS_FEEDID = "feed_id";
 
+    public static final String SAVED_SEARCH_TABLE = "saved_search";
+    public static final String SAVED_SEARCH_FEED_TITLE = "saved_search_title";
+    public static final String SAVED_SEARCH_FAVICON = "saved_search_favicon";
+    public static final String SAVED_SEARCH_ADDRESS = "saved_search_address";
+    public static final String SAVED_SEARCH_QUERY = "saved_search_query";
+    public static final String SAVED_SEARCH_FEED_ID = "saved_search_feed_id";
+
     public static final String NOTIFY_DISMISS_TABLE = "notify_dimiss";
     public static final String NOTIFY_DISMISS_STORY_HASH = "story_hash";
     public static final String NOTIFY_DISMISS_TIME = "time";
@@ -185,7 +193,8 @@ public class DatabaseConstants {
 		FEED_FAVICON_BORDER + TEXT + ", " +
 		FEED_LINK + TEXT + ", " + 
 		FEED_SUBSCRIBERS + TEXT + ", " +
-		FEED_TITLE + TEXT + ", " + 
+		FEED_TITLE + TEXT + ", " +
+		FEED_FOLDER_TITLE + TEXT + ", " +
 		FEED_OPENS + INTEGER + ", " +
 		FEED_AVERAGE_STORIES_PER_MONTH + INTEGER + ", " +
 		FEED_LAST_STORY_DATE + TEXT + ", " +
@@ -302,6 +311,14 @@ public class DatabaseConstants {
 	    STARREDCOUNTS_TAG + TEXT + ", " +
 	    STARREDCOUNTS_FEEDID + TEXT +
         ")";
+
+	static final String SAVED_SEARCH_SQL = "CREATE TABLE " + SAVED_SEARCH_TABLE + " (" +
+			SAVED_SEARCH_FEED_TITLE + TEXT + ", " +
+			SAVED_SEARCH_FAVICON + TEXT + ", " +
+			SAVED_SEARCH_ADDRESS + TEXT + ", " +
+			SAVED_SEARCH_QUERY + TEXT + ", " +
+			SAVED_SEARCH_FEED_ID +
+			")";
 
     static final String NOTIFY_DISMISS_SQL = "CREATE TABLE " + NOTIFY_DISMISS_TABLE + " (" +
         NOTIFY_DISMISS_STORY_HASH + TEXT + ", " +

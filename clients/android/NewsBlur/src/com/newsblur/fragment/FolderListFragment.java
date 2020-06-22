@@ -64,6 +64,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
     private static final int FOLDERS_LOADER = 2;
     private static final int FEEDS_LOADER = 3;
     private static final int SAVEDCOUNT_LOADER = 4;
+    private static final int SAVED_SEARCH_LOADER = 5;
 
 	private FolderListAdapter adapter;
 	public StateFilter currentState = StateFilter.SOME;
@@ -112,6 +113,8 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
                 return FeedUtils.dbHelper.getFeedsLoader();
             case SAVEDCOUNT_LOADER:
                 return FeedUtils.dbHelper.getSavedStoryCountsLoader();
+            case SAVED_SEARCH_LOADER:
+                return FeedUtils.dbHelper.getSavedSearchLoader();
             default:
                 throw new IllegalArgumentException("unknown loader created");
         }
@@ -140,6 +143,9 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
                 case SAVEDCOUNT_LOADER:
                     adapter.setStarredCountCursor(cursor);
                     break;
+                case SAVED_SEARCH_LOADER:
+                    adapter.setSavedSearchesCursor(cursor);
+                    break;
                 default:
                     throw new IllegalArgumentException("unknown loader created");
             }
@@ -163,6 +169,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
                 getLoaderManager().restartLoader(FOLDERS_LOADER, null, this);
                 getLoaderManager().restartLoader(FEEDS_LOADER, null, this);
                 getLoaderManager().restartLoader(SAVEDCOUNT_LOADER, null, this);
+                getLoaderManager().restartLoader(SAVED_SEARCH_LOADER, null, this);
             } catch (Exception e) {
                 // on heavily loaded devices, the time between isAdded() going false
                 // and the loader subsystem shutting down can be nontrivial, causing
@@ -179,6 +186,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
                 getLoaderManager().initLoader(FOLDERS_LOADER, null, this);
                 getLoaderManager().initLoader(FEEDS_LOADER, null, this);
                 getLoaderManager().initLoader(SAVEDCOUNT_LOADER, null, this);
+                getLoaderManager().initLoader(SAVED_SEARCH_LOADER, null, this);
             }
         }
     }
@@ -249,6 +257,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
             if (adapter.isRowGlobalSharedStories(groupPosition)) break;
             if (adapter.isRowAllSharedStories(groupPosition)) break;
             if (adapter.isRowInfrequentStories(groupPosition)) break;
+            if (adapter.isRowSavedSearches(groupPosition)) break;
             inflater.inflate(R.menu.context_folder, menu);
 
             if (adapter.isRowAllStories(groupPosition)) {
@@ -260,6 +269,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 
 		case ExpandableListView.PACKED_POSITION_TYPE_CHILD: 
             if (adapter.isRowSavedStories(groupPosition)) break;
+            if (adapter.isRowSavedSearches(groupPosition)) break;
             if (currentState == StateFilter.SAVED) break;
 			inflater.inflate(R.menu.context_feed, menu);
             if (adapter.isRowAllSharedStories(groupPosition)) {
@@ -449,6 +459,9 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
             i = new Intent(getActivity(), ReadStoriesItemsList.class);
         } else if (adapter.isRowSavedStories(groupPosition)) {
             i = new Intent(getActivity(), SavedStoriesItemsList.class);
+        } else if (adapter.isRowSavedSearches(groupPosition)) {
+            // group not clickable
+            return true;
         } else {
             i = new Intent(getActivity(), FolderItemsList.class);
             String canonicalFolderName = adapter.getGroupFolderName(groupPosition);
@@ -472,6 +485,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
         // these shouldn't ever be collapsible
         if (adapter.isRowRootFolder(groupPosition)) return;
         if (adapter.isRowReadStories(groupPosition)) return;
+        if (adapter.isRowSavedSearches(groupPosition)) return;
 
         String flatGroupName = adapter.getGroupUniqueName(groupPosition);
         // save the expanded preference, since the widget likes to forget it
@@ -490,6 +504,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
         // these shouldn't ever be collapsible
         if (adapter.isRowRootFolder(groupPosition)) return;
         if (adapter.isRowReadStories(groupPosition)) return;
+        if (adapter.isRowSavedSearches(groupPosition)) return;
 
         String flatGroupName = adapter.getGroupUniqueName(groupPosition);
         // save the collapsed preference, since the widget likes to forget it
@@ -505,6 +520,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
     public boolean onChildClick(ExpandableListView list, View childView, int groupPosition, int childPosition, long id) {
         FeedUtils.currentFolderName = null;
         FeedSet fs = adapter.getChild(groupPosition, childPosition);
+        fs.setSearchQuery("tesla");
 		if (adapter.isRowAllSharedStories(groupPosition)) {
             SocialFeed socialFeed = adapter.getSocialFeed(groupPosition, childPosition);
 			Intent intent = new Intent(getActivity(), SocialFeedItemsList.class);
@@ -515,7 +531,11 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
             Intent intent = new Intent(getActivity(), SavedStoriesItemsList.class);
             intent.putExtra(ItemsList.EXTRA_FEED_SET, fs);
 			getActivity().startActivity(intent);
-		} else {
+		} else if (adapter.isRowSavedSearches(groupPosition)) {
+            Intent intent = new Intent(getActivity(), SavedStoriesItemsList.class);
+            intent.putExtra(ItemsList.EXTRA_FEED_SET, fs);
+            getActivity().startActivity(intent);
+        } else {
             Feed feed = adapter.getFeed(groupPosition, childPosition);
             // NB: FeedItemsList needs the name of the containing folder, but this is not the same as setting
             // a folder name on the FeedSet and making it into a folder-type set.  it is just a single feed,
