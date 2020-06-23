@@ -179,6 +179,9 @@ def login(request):
                 code = 1
             else:
                 logging.user(form.get_user(), "~FG~BBLogin~FW")
+                next_url = request.POST.get('next', '')
+                if next_url:
+                    return HttpResponseRedirect(next_url)
                 return HttpResponseRedirect(reverse('index'))
         else:
             message = list(form.errors.items())[0][1][0]
@@ -442,7 +445,7 @@ def load_feeds_flat(request):
     data = {
         "flat_folders": flat_folders, 
         "flat_folders_with_inactive": flat_folders_with_inactive, 
-        "feeds": feeds if not include_inactive else {"0": "Don't include `include_inactive=true` if you want active feeds."},
+        "feeds": feeds,
         "inactive_feeds": inactive_feeds if include_inactive else {"0": "Include `include_inactive=true`"},
         "social_feeds": social_feeds,
         "social_profile": social_profile,
