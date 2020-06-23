@@ -8,7 +8,16 @@ from django.core.management.base import BaseCommand
 class Command(BaseCommand):
 
     def handle(self, *args, **options):
-        instance = User.objects.create(username=HOMEPAGE_USERNAME)
-        instance.save()
-        create_profile(None, instance, None)
+        try:
+            user = User.objects.get(username=HOMEPAGE_USERNAME)
+            print(f"Found user {HOMEPAGE_USERNAME}")
+        except:
+            user = User.objects.create(username=HOMEPAGE_USERNAME)
+            user.save()
+            print(f"Created user {HOMEPAGE_USERNAME}")
+
+        try:
+            create_profile(None, user, None)
+        except:
+            print(f"Profile already created for user {user.username}")
         print("User {0} created".format(HOMEPAGE_USERNAME))
