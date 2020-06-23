@@ -3282,19 +3282,19 @@
             }
             
             if (!this.flags.watching_system_theme && window.matchMedia) {
-                const darkMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+                var darkMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
 
                 try {
                     // Chrome & Firefox
-                    darkMediaQuery.addEventListener('change', (e) => {
+                    darkMediaQuery.addEventListener('change', _.bind(function(e) {
                         this.load_theme();
-                    });
+                    }));
                 } catch (e1) {
                     try {
                         // Safari
-                        darkMediaQuery.addListener((e) => {
+                        darkMediaQuery.addListener(_.bind(function(e) {
                             this.load_theme();
-                        });
+                        }));
                     } catch (e2) {
                         console.error(e2);
                     }
