@@ -51,7 +51,6 @@ raven==6.10.0
 redis==3.2.0
 requests==2.24.0
 scipy==1.4.1
-seacucumber==1.5.2
 sgmllib3k==1.0.0
 simplejson==3.10.0
 six==1.10.0
