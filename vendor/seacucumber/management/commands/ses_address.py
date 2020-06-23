@@ -3,7 +3,7 @@ Handles management of SES email addresses.
 """
 from django.core.management.base import BaseCommand, CommandError
 from django.core.validators import email_re
-from seacucumber.util import get_boto_ses_connection
+from vendor.seacucumber.util import get_boto_ses_connection
 
 class Command(BaseCommand):
     """

@@ -5,7 +5,7 @@ SendEmailTask, which handles sending a single Django EmailMessage object.
 from django.conf import settings
 from celery.task import Task
 from boto.ses import SESConnection
-from seacucumber.util import get_boto_ses_connection
+from vendor.seacucumber.util import get_boto_ses_connection
 
 class SendEmailTask(Task):
     """
