@@ -845,7 +845,8 @@ color: #a85b40;
 /* Story Titles Hidden Count */
 .NB-dark .NB-feedbar .NB-feedbar-options,
 .NB-dark #story_taskbar .NB-taskbar-options,
-.NB-dark .NB-feedbar .NB-story-title-indicator {
+.NB-dark .NB-feedbar .NB-story-title-indicator,
+.NB-dark .NB-feedbar .NB-feedbar-mark-feed-read {
     color: #c0c0c0;
     border: 1px solid rgba(0, 0, 0, .3);
     background-color: #303739;
@@ -853,8 +854,11 @@ color: #a85b40;
 
 .NB-dark .NB-feedbar .NB-feedbar-options:hover,
 .NB-dark #story_taskbar .NB-taskbar-options:hover,
-.NB-dark .NB-feedbar .NB-story-title-indicator:hover {
-    background-color: rgba(204, 204, 204, .3);
+.NB-dark .NB-feedbar .NB-story-title-indicator:hover,
+.NB-dark .NB-feedbar .NB-feedbar-mark-feed-read:hover,
+.NB-dark .NB-feedbar .NB-feedbar-mark-feed-read-time:hover,
+.NB-dark .NB-feedbar .NB-feedbar-mark-feed-read-expand:hover {
+    background-color: #606466;
 }
 
 /* "Mark read" icon*/
@@ -866,31 +870,17 @@ color: #a85b40;
     height: 100%;
 }
 
-/* Color when hovering over "plus" icon */
-.NB-dark .NB-feedbar .NB-feedbar-mark-feed-read-expand:hover {
-    background-color: rgba(204, 204, 204, 0.3);
-}
-
-
-/* NOT WORKING
-//"Plus" icon
-
-.NB-dark .NB-feedbar .NB-feedbar-mark-feed-read-expand {
-position: absolute;
-right: 20px;
-z-index: 0;
-background: transparent url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAALiIAAC4iAari3ZIAAAAYdEVYdFNvZnR3YXJlAHBhaW50Lm5ldCA0LjAuOWwzfk4AAABMSURBVEhLYyAWnDlz5j8adoBKUQeMWkAQjFpAEIxgC7BopCoetYAgBlngQCRG11wAxNjUoWBoVBMGQMXoFoxmNFQwagFBMFItYGAAAFSuu1vdkb1XAAAAAElFTkSuQmCC") no-repeat 4px center;
-background-size: 6px;
-width: 19px;
-}
-*/
-
 /* "Mark read" + expanded mode background color */
 .NB-dark .NB-feedbar .NB-feedbar-mark-feed-read,
 .NB-dark .NB-feedbar .NB-feedbar-mark-feed-read-expand,
 .NB-dark .NB-feedbar .NB-feedbar-mark-feed-read-time {
     background: rgba(48, 55, 57, 1);
     border: 1px solid rgba(0, 0, 0, 0.3);
+}
+
+.NB-dark .NB-feedbar .NB-feedbar-mark-feed-read-expand {
+    background: transparent url('/media/embed/icons/circular/nav_icn_plus.png') no-repeat 4px center;    
+    background-size: 6px;
 }
 
 /* Expanded "Mark read" text color (14D, 7D, 3D, 1D)*/
