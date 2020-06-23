@@ -307,7 +307,6 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'django_extensions',
     'django.contrib.staticfiles',
-    'djcelery',
     # 'kombu.transport.django',
     'vendor.paypal.standard.ipn',
     'apps.rss_feeds',
@@ -341,16 +340,10 @@ STRIPE_SECRET = "YOUR-SECRET-API-KEY"
 STRIPE_PUBLISHABLE = "YOUR-PUBLISHABLE-API-KEY"
 ZEBRA_ENABLE_APP = True
 
-# ==========
-# = Celery =
-# ==========
-
-import djcelery
-djcelery.setup_loader()
 # from celery import Celery
 # celeryapp = Celery()
 # celeryapp.config_from_object('django.conf:settings')
-CELERY_ROUTES = {
+task_routes = {
     "work-queue": {
         "queue": "work_queue",
         "binding_key": "work_queue"
@@ -380,7 +373,7 @@ CELERY_ROUTES = {
         "binding_key": "search_indexer_tasker"
     },
 }
-CELERY_QUEUES = {
+task_queues = {
     "work_queue": {
         "exchange": "work_queue",
         "exchange_type": "direct",
@@ -422,25 +415,25 @@ CELERY_QUEUES = {
         "binding_key": "search_indexer_tasker"
     },
 }
-CELERY_DEFAULT_QUEUE = "work_queue"
+task_default_queue = "work_queue"
 
-CELERYD_PREFETCH_MULTIPLIER = 1
-CELERY_IMPORTS              = ("apps.rss_feeds.tasks",
+worker_prefetch_multiplier = 1
+imports              = ("apps.rss_feeds.tasks",
                                "apps.social.tasks",
                                "apps.reader.tasks",
                                "apps.profile.tasks",
                                "apps.feed_import.tasks",
                                "apps.search.tasks",
                                "apps.statistics.tasks",)
-CELERYD_CONCURRENCY         = 4
-CELERY_IGNORE_RESULT        = True
-CELERY_ACKS_LATE            = True # Retry if task fails
-CELERYD_MAX_TASKS_PER_CHILD = 10
-CELERYD_TASK_TIME_LIMIT     = 12 * 30
-CELERY_DISABLE_RATE_LIMITS  = True
+worker_concurrency         = 4
+task_ignore_result        = True
+task_acks_late            = True # Retry if task fails
+worker_max_tasks_per_child = 10
+task_time_limit     = 12 * 30
+worker_disable_rate_limits  = True
 SECONDS_TO_DELAY_CELERY_EMAILS = 60
 
-CELERYBEAT_SCHEDULE = {
+beat_schedule = {
     'task-feeds': {
         'task': 'task-feeds',
         'schedule': datetime.timedelta(minutes=1),
@@ -559,7 +552,7 @@ REDIS_SESSIONS = {
     'host': '127.0.0.1',
 }
 
-CELERY_REDIS_DB_NUM = 4
+redis_db_NUM = 4
 SESSION_REDIS_DB = 5
 
 # =================
@@ -717,8 +710,8 @@ MONGOANALYTICSDB = connect(MONGO_ANALYTICS_DB.pop('name'), **MONGO_ANALYTICS_DB)
 # =========
 
 BROKER_BACKEND = "redis"
-BROKER_URL = "redis://%s:6379/%s" % (REDIS['host'], CELERY_REDIS_DB_NUM)
-CELERY_RESULT_BACKEND = BROKER_URL
+broker_url = "redis://%s:6379/%s" % (REDIS['host'], redis_db_NUM)
+result_backend = broker_url
 
 SESSION_REDIS = {
     'host': REDIS_SESSIONS['host'],
@@ -759,7 +752,7 @@ REDIS_PUBSUB_POOL          = redis.ConnectionPool(host=REDIS_PUBSUB['host'], por
 # ==========
 
 # celeryapp.autodiscover_tasks(INSTALLED_APPS)
-CELERY_ACCEPT_CONTENT = ['pickle', 'json', 'msgpack', 'yaml']
+accept_content = ['pickle', 'json', 'msgpack', 'yaml']
 
 # ==========
 # = Assets =
