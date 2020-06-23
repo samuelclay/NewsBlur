@@ -170,7 +170,7 @@ class Feed(models.Model):
     
     @property
     def is_newsletter(self):
-        return self.feed_address.startswith('newsletter:')
+        return self.feed_address.startswith('newsletter:') or self.feed_address.startswith('http://newsletter:')
         
     def canonical(self, full=False, include_favicon=True):
         feed = {

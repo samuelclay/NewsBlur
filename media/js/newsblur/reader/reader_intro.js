@@ -355,7 +355,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
                 this.post_connect({});
             }
         }, this), 1000);
-        _gaq.push(['_trackEvent', 'reader_intro', 'Connect to ' + service.name + ' attempt']);
+        // _gaq.push(['_trackEvent', 'reader_intro', 'Connect to ' + service.name + ' attempt']);
         
         NEWSBLUR.assets.preference('has_found_friends', true);
         NEWSBLUR.reader.check_hide_getting_started();
@@ -364,7 +364,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
     disconnect: function(service) {
         var $service = $('.NB-friends-service-'+service, this.$modal);
         $('.NB-friends-service-connect', $service).text('Disconnecting...');
-        _gaq.push(['_trackEvent', 'reader_intro', 'Disconnect from ' + service.name]);
+        // _gaq.push(['_trackEvent', 'reader_intro', 'Disconnect from ' + service.name]);
         NEWSBLUR.assets.disconnect_social_service(service, _.bind(function(data) {
             this.services = data.services;
             this.make_find_friends_and_services();
@@ -386,10 +386,10 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
             $('.NB-intro-services', this.$modal).append($error);
             $error.animate({'opacity': 1}, {'duration': 1000});
             this.resize();
-            _gaq.push(['_trackEvent', 'reader_intro', 'Connect to service error']);
+            // _gaq.push(['_trackEvent', 'reader_intro', 'Connect to service error']);
         } else {
             this.fetch_friends();
-            _gaq.push(['_trackEvent', 'reader_intro', 'Connect to service success']);
+            // _gaq.push(['_trackEvent', 'reader_intro', 'Connect to service success']);
         }
     },
     
@@ -455,7 +455,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
       
       clearTimeout(this.sync_interval);
       NEWSBLUR.assets.preference('intro_page', page_number);
-      _gaq.push(['_trackEvent', 'reader_intro', 'Page ' + this.page_number]);
+      // _gaq.push(['_trackEvent', 'reader_intro', 'Page ' + this.page_number]);
     },
     
     advance_import_carousel: function(page, options) {
