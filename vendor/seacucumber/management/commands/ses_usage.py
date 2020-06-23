@@ -3,7 +3,7 @@ Shows some usage levels and limits for the last and previous 24 hours.
 """
 import datetime
 from django.core.management.base import BaseCommand
-from seacucumber.util import get_boto_ses_connection
+from vendor.seacucumber.util import get_boto_ses_connection
 
 class Command(BaseCommand):
     """
