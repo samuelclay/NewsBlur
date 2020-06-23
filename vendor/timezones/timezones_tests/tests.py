@@ -82,6 +82,7 @@ class TimeZoneFieldTestCase(TimeZoneTestCase):
         class ProfileForm(forms.ModelForm):
             class Meta:
                 model = test_models.Profile
+                fields = "__all__"
         form = ProfileForm()
         rendered = form.as_p()
         self.assertTrue(
@@ -93,6 +94,7 @@ class TimeZoneFieldTestCase(TimeZoneTestCase):
         class ProfileForm(forms.ModelForm):
             class Meta:
                 model = test_models.Profile
+                fields = "__all__"
         form = ProfileForm({"name": "Brian Rosner", "timezone": "America/Denver"})
         self.assertFormIsValid(form)
     
@@ -100,6 +102,7 @@ class TimeZoneFieldTestCase(TimeZoneTestCase):
         class ProfileForm(forms.ModelForm):
             class Meta:
                 model = test_models.Profile
+                fields = "__all__"
         form = ProfileForm({"name": "Brian Rosner", "timezone": "America/Denver"})
         self.assertFormIsValid(form)
         p = form.save()
