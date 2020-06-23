@@ -55,7 +55,6 @@
 @property (readwrite) BOOL isHidingStory;
 @property (readwrite) BOOL feedDetailIsVisible;
 @property (readwrite) BOOL keyboardIsShown;
-@property (nonatomic) UIBackgroundTaskIdentifier reorientBackgroundTask;
 
 @end
 
@@ -230,11 +229,9 @@
         if (self.feedDetailIsVisible) {
             // Defer this in the background, to avoid misaligning the detail views
             if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive) {
-                self.reorientBackgroundTask = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
-                    [[UIApplication sharedApplication] endBackgroundTask:self.reorientBackgroundTask];
-                    self.reorientBackgroundTask = UIBackgroundTaskInvalid;
-                }];
-                [self performSelector:@selector(delayedReorientPages) withObject:nil afterDelay:0.5];
+                NSString *networkOperationIdentifier = [appDelegate beginNetworkOperation];
+                
+                [self performSelector:@selector(delayedReorientPages:) withObject:networkOperationIdentifier afterDelay:0.5];
             } else {
                 [self.storyPageControl reorientPages];
             }
@@ -243,6 +240,12 @@
 }
 
 - (BOOL)prefersStatusBarHidden {
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+    
+    if (![userPreferences boolForKey:@"story_hide_status_bar"]) {
+        return NO;
+    }
+    
     if (@available(iOS 11.0, *)) {
         return self.navigationController.navigationBarHidden && self.view.safeAreaInsets.top > 0.0;
     } else {
@@ -262,10 +265,9 @@
     }
 }
 
-- (void)delayedReorientPages {
+- (void)delayedReorientPages:(NSString *)identifier {
     [self.storyPageControl reorientPages];
-    [[UIApplication sharedApplication] endBackgroundTask:self.reorientBackgroundTask];
-    self.reorientBackgroundTask = UIBackgroundTaskInvalid;
+    [appDelegate endNetworkOperation:identifier];
 }
 
 - (void)checkSize:(CGSize)size {

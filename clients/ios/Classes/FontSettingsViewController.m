@@ -271,9 +271,9 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        return 12;
+        return 13;
     } else {
-        return 11;
+        return 12;
     }
 }
 

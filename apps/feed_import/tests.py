@@ -4,7 +4,6 @@ from django.test import TestCase
 from django.contrib.auth.models import User
 from django.urls import reverse
 from apps.reader.models import UserSubscription, UserSubscriptionFolders
-from apps.feed_import.models import GoogleReaderImporter
 from utils import json_functions as json
 
 class ImportTest(TestCase):

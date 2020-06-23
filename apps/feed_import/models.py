@@ -1,6 +1,5 @@
 import datetime
 import mongoengine as mongo
-import httplib2
 import pickle
 import base64
 from io import StringIO
