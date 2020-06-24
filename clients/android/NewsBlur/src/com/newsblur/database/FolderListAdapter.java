@@ -791,6 +791,11 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
         return socialFeedsActive.get(childPosition);
     }
 
+    /** Get the cached SavedSearch object at the given saved search list location. */
+    public SavedSearch getSavedSearch(int childPosition) {
+        return savedSearches.get(childPosition);
+    }
+
 	public synchronized void changeState(StateFilter state) {
 		currentState = state;
         lastFeedViewedId = null; // clear when changing modes

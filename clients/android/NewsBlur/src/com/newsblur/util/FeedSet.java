@@ -34,6 +34,7 @@ public class FeedSet implements Serializable {
 
     private String folderName;
     private String searchQuery;
+    private String searchFeedId;
     private boolean isFilterSaved = false;
     private boolean muted = false;
 
@@ -126,8 +127,9 @@ public class FeedSet implements Serializable {
      * Convenience constructor for a single saved search.
      */
     public static FeedSet singleSavedSearch(String feedId, String searchQuery) {
-        FeedSet fs = singleFeed(feedId.replaceAll("\\D+",""));
-        fs.setSearchQuery(searchQuery);
+        FeedSet fs = new FeedSet();
+        fs.searchQuery = searchQuery;
+        fs.searchFeedId = feedId;
         return fs;
     }
 
@@ -277,6 +279,10 @@ public class FeedSet implements Serializable {
 
     public String getSearchQuery() {
         return this.searchQuery;
+    }
+
+    public String getSearchFeedId() {
+        return this.searchFeedId;
     }
 
     public void setFilterSaved(boolean isFilterSaved) {

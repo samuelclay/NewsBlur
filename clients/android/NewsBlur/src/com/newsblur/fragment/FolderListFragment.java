@@ -4,6 +4,7 @@ import java.lang.ref.WeakReference;
 import java.util.HashSet;
 import java.util.Set;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -40,10 +41,12 @@ import com.newsblur.activity.ItemsList;
 import com.newsblur.activity.Main;
 import com.newsblur.activity.NbActivity;
 import com.newsblur.activity.ReadStoriesItemsList;
+import com.newsblur.activity.SavedSearchesItemList;
 import com.newsblur.activity.SavedStoriesItemsList;
 import com.newsblur.activity.SocialFeedItemsList;
 import com.newsblur.database.FolderListAdapter;
 import com.newsblur.domain.Feed;
+import com.newsblur.domain.SavedSearch;
 import com.newsblur.domain.SocialFeed;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.FeedSet;
@@ -520,7 +523,6 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
     public boolean onChildClick(ExpandableListView list, View childView, int groupPosition, int childPosition, long id) {
         FeedUtils.currentFolderName = null;
         FeedSet fs = adapter.getChild(groupPosition, childPosition);
-        fs.setSearchQuery("tesla");
 		if (adapter.isRowAllSharedStories(groupPosition)) {
             SocialFeed socialFeed = adapter.getSocialFeed(groupPosition, childPosition);
 			Intent intent = new Intent(getActivity(), SocialFeedItemsList.class);
@@ -532,9 +534,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
             intent.putExtra(ItemsList.EXTRA_FEED_SET, fs);
 			getActivity().startActivity(intent);
 		} else if (adapter.isRowSavedSearches(groupPosition)) {
-            Intent intent = new Intent(getActivity(), SavedStoriesItemsList.class);
-            intent.putExtra(ItemsList.EXTRA_FEED_SET, fs);
-            getActivity().startActivity(intent);
+		    openSavedSearch(adapter.getSavedSearch(childPosition));
         } else {
             Feed feed = adapter.getFeed(groupPosition, childPosition);
             // NB: FeedItemsList needs the name of the containing folder, but this is not the same as setting
@@ -553,6 +553,53 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 		}
 		return true;
 	}
+
+    private void openSavedSearch(SavedSearch savedSearch) {
+        Intent intent = null;
+        FeedSet fs = null;
+        String feedId = savedSearch.feedId;
+        if (feedId.equals("river:")) {
+            // all site stories
+            intent = new Intent(getActivity(), AllStoriesItemsList.class);
+            fs = FeedSet.allFeeds();
+        } else if (feedId.equals("river:infrequent")) {
+            // infrequent stories
+            intent = new Intent(getActivity(), InfrequentItemsList.class);
+            fs = FeedSet.infrequentFeeds();
+        } else if (feedId.startsWith("river:")) {
+            intent = new Intent(getActivity(), FolderItemsList.class);
+            String folderName = feedId.replace("river:", "");
+            fs = FeedUtils.feedSetFromFolderName(folderName);
+            intent.putExtra(FolderItemsList.EXTRA_FOLDER_NAME, folderName);
+        } else if (feedId.equals("read")) {
+            intent = new Intent(getActivity(), ReadStoriesItemsList.class);
+            fs = FeedSet.allRead();
+        } else if (feedId.equals("starred")) {
+            intent = new Intent(getActivity(), SavedStoriesItemsList.class);
+            fs = FeedSet.allSaved();
+        } else if (feedId.startsWith("starred:")) {
+            intent = new Intent(getActivity(), SavedStoriesItemsList.class);
+            fs = FeedSet.singleFeed(feedId.replace("feed:", ""));
+        } else if (feedId.startsWith("feed:")) {
+            intent = new Intent(getActivity(), FeedItemsList.class);
+            String cleanFeedId = feedId.replace("feed:", "");
+            Feed feed = FeedUtils.getFeed(cleanFeedId);
+            fs = FeedSet.singleFeed(cleanFeedId);
+            intent.putExtra(FeedItemsList.EXTRA_FEED, feed);
+        } else if (feedId.startsWith("social:")) {
+            intent = new Intent(getActivity(), SocialFeedItemsList.class);
+            String cleanFeedId = feedId.replace("social:", "");
+            fs = FeedSet.singleFeed(cleanFeedId);
+            Feed feed = FeedUtils.getFeed(cleanFeedId);
+            intent.putExtra(FeedItemsList.EXTRA_FEED, feed);
+        }
+
+        if (intent != null) {
+            fs.setSearchQuery(savedSearch.query);
+            intent.putExtra(ItemsList.EXTRA_FEED_SET, fs);
+            startActivity(intent);
+        }
+    }
 
     public void setTextSize(Float size) {
         if (adapter != null) {

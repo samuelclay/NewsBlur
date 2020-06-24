@@ -21,9 +21,11 @@
         android:layout_height="match_parent"
         android:layout_centerVertical="true"
         android:layout_toRightOf="@id/row_saved_search_icon"
+        android:ellipsize="end"
+        android:lines="1"
         android:paddingTop="9dp"
-        android:paddingBottom="9dp"
-        android:text="@string/saved_searches_row_title" />
+        android:paddingEnd="9dp"
+        android:paddingBottom="9dp" />
 
     <View
         style="?rowBorderTop"
