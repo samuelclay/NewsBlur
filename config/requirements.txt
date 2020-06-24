@@ -13,6 +13,7 @@ django-extensions==1.6.7
 django-mailgun==0.9.1
 django-oauth-toolkit==0.7.2
 django-qurl==0.1.1
+django-paypal==1.0
 django-redis-cache==1.5.5
 django-redis-sessions==0.6.1
 django-ses==0.7.1
