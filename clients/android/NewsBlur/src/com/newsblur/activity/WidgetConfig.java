@@ -20,6 +20,7 @@ import com.newsblur.util.FeedUtils;
 import com.newsblur.util.FolderViewFilter;
 import com.newsblur.util.ListOrderFilter;
 import com.newsblur.util.PrefsUtils;
+import com.newsblur.util.WidgetBackground;
 import com.newsblur.widget.WidgetUtils;
 
 import java.util.ArrayList;
@@ -61,8 +62,8 @@ public class WidgetConfig extends NbActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        // notify widget to refresh next time it's viewed
-        WidgetUtils.notifyViewDataChanged(this);
+        // notify widget to update next time it's viewed
+        WidgetUtils.updateWidget(this);
     }
 
     @Override
@@ -100,6 +101,13 @@ public class WidgetConfig extends NbActivity {
             menu.findItem(R.id.menu_folder_view_nested).setChecked(true);
         } else if (folderViewFilter == FolderViewFilter.FLAT) {
             menu.findItem(R.id.menu_folder_view_flat).setChecked(true);
+        }
+
+        WidgetBackground widgetBackground = PrefsUtils.getWidgetBackground(this);
+        if (widgetBackground == WidgetBackground.DEFAULT) {
+            menu.findItem(R.id.menu_widget_background_default).setChecked(true);
+        } else if (widgetBackground == WidgetBackground.TRANSPARENT) {
+            menu.findItem(R.id.menu_widget_background_transparent).setChecked(true);
         }
         return true;
     }
@@ -142,6 +150,12 @@ public class WidgetConfig extends NbActivity {
                 return true;
             case R.id.menu_select_none:
                 replaceWidgetFeedIds(Collections.<String>emptySet());
+                return true;
+            case R.id.menu_widget_background_default:
+                setWidgetBackground(WidgetBackground.DEFAULT);
+                return true;
+            case R.id.menu_widget_background_transparent:
+                setWidgetBackground(WidgetBackground.TRANSPARENT);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -252,6 +266,11 @@ public class WidgetConfig extends NbActivity {
         PrefsUtils.setWidgetConfigFolderView(this, folderViewFilter);
         adapter.replaceFolderView(folderViewFilter);
         setAdapterData();
+    }
+
+    private void setWidgetBackground(WidgetBackground widgetBackground) {
+        PrefsUtils.setWidgetBackground(this, widgetBackground);
+        WidgetUtils.updateWidget(this);
     }
 
     private void setSelectedFeeds() {

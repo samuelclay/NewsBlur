@@ -31,7 +31,7 @@ from utils.view_functions import render_to, is_true
 from utils.user_functions import get_user
 from utils import log as logging
 from vendor.paypalapi.exceptions import PayPalAPIResponseError
-from vendor.paypal.standard.forms import PayPalPaymentsForm
+from paypal.standard.forms import PayPalPaymentsForm
 
 SINGLE_FIELD_PREFS = ('timezone','feed_pane_size','hide_mobile','send_emails',
                       'hide_getting_started', 'has_setup_feeds', 'has_found_friends',
@@ -689,10 +689,10 @@ def email_optout(request):
 
 @json.json_view
 def ios_subscription_status(request):
-    logging.debug(" ---> iOS Subscription Status: %s" % request.POST)
+    logging.debug(" ---> iOS Subscription Status: %s" % request.__dict__)
     
     subject = "iOS Subscription Status"
-    message = """%s""" % (request.POST)
+    message = """%s""" % (request.__dict__)
     mail_admins(subject, message)
     
     return {

@@ -117,7 +117,7 @@ NEWSBLUR.Views.SocialPageStory = Backbone.View.extend({
     },
     
     watch_images_for_story_height: function() {
-        this.$('img').load(_.bind(function() {
+        this.$('img').on('load', _.bind(function() {
             this.truncate_story_height();
         }, this));
     },
