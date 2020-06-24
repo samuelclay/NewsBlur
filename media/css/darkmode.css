@@ -834,10 +834,10 @@ color: #a85b40;
     border-top: 1px solid #32352E;
 }
 .NB-dark .NB-feedbar .NB-taskbar .NB-task-story-previous {
-    border-right: 1px solid rgba(0,0,0,0.3);
+    border-right: 1px solid rgba(0,0,0,0.1);
 }
 .NB-dark .NB-feedbar .NB-taskbar .NB-task-story-next {
-    border-left: 1px solid rgba(0,0,0,0.3);
+    border-left: 1px solid rgba(0,0,0,0.1);
 }
 /* Error text on bottom bar */
 .NB-dark #story_taskbar .NB-river-progress .NB-river-progress-text,
@@ -1042,7 +1042,7 @@ border-bottom-color: #303739;
 }
 /* Unread feed count badge */
 .NB-dark .unread_count_neutral {
-    background-color: #9EA49A;
+    background-color: #7a7e77;
     color: #FDFEFE;
     text-shadow: 0 1px 0 rgba(0, 0, 0, .3);
 }
