@@ -14,4 +14,4 @@ class PayPalIPNForm(PayPalStandardBaseForm):
 
     class Meta:
         model = PayPalIPN
-        fields = "__all__"
+        # fields = "__all__"

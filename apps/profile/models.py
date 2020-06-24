@@ -20,7 +20,7 @@ from django.core.urlresolvers import reverse
 from django.template.loader import render_to_string
 from apps.rss_feeds.models import Feed, MStory, MStarredStory
 from apps.rss_feeds.tasks import SchedulePremiumSetup
-from apps.feed_import.models import GoogleReaderImporter, OPMLExporter
+from apps.feed_import.models import OPMLExporter
 from apps.reader.models import UserSubscription
 from apps.reader.models import RUserStory
 from utils import log as logging
@@ -651,10 +651,6 @@ class Profile(models.Model):
                         pipeline.zrem(premium_key, user.pk)
                 pipeline.execute()
     
-    def import_reader_starred_items(self, count=20):
-        importer = GoogleReaderImporter(self.user)
-        importer.import_starred_items(count=count)
-                     
     def send_new_user_email(self):
         if not self.user.email or not self.send_emails:
             return

@@ -10,7 +10,7 @@
 [license-mit-badge]: https://img.shields.io/badge/License-MIT%202.0-blue.svg?style=flat-square
 [license-mit]: https://github.com/postlight/mercury-parser/blob/master/LICENSE-MIT
 
-The Mercury Parser extracts the bits that humans care about from any URL you give it. That includes article content, titles, authors, published dates, excerpts, lead images, and more.
+[Postlight](https://postlight.com)'s Mercury Parser extracts the bits that humans care about from any URL you give it. That includes article content, titles, authors, published dates, excerpts, lead images, and more.
 
 Mercury Parser powers the [Mercury AMP Converter](https://mercury.postlight.com/amp-converter/) and [Mercury Reader](https://mercury.postlight.com/reader/), a Chrome extension that removes ads and distractions, leaving only text and images for a beautiful reading view on any site.
 
@@ -137,6 +137,9 @@ mercury-parser https://postlight.com/trackchanges/mercury-goes-open-source --ext
 
 # Get the value of attributes by adding a pipe to --extend or --extend-list
 mercury-parser https://postlight.com/trackchanges/mercury-goes-open-source --extend-list links=".body a|href"
+
+# Pass optional --add-extractor argument to add a custom extractor at runtime.
+mercury-parser https://postlight.com/trackchanges/mercury-goes-open-source --add-extractor ./src/extractors/fixtures/postlight.com/index.js
 ```
 
 ## License
@@ -153,3 +156,7 @@ Licensed under either of the below, at your preference:
 For details on how to contribute to Mercury, including how to write a custom content extractor for any site, see [CONTRIBUTING.md](./CONTRIBUTING.md)
 
 Unless it is explicitly stated otherwise, any contribution intentionally submitted for inclusion in the work, as defined in the Apache-2.0 license, shall be dual licensed as above without any additional terms or conditions.
+
+---
+
+🔬 A Labs project from your friends at [Postlight](https://postlight.com). Happy coding!
