@@ -11,7 +11,7 @@ from django.conf import settings
 from mongoengine.queryset import NotUniqueError
 from mongoengine.queryset import OperationError
 from apps.social.models import MSocialServices, MSocialSubscription, MSharedStory
-from apps.social.tasks import SyncTwitterFriends, SyncFacebookFriends, SyncAppdotnetFriends
+from apps.social.tasks import SyncTwitterFriends, SyncFacebookFriends
 from apps.reader.models import UserSubscription, UserSubscriptionFolders, RUserStory
 from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifierFeed, MClassifierTag
 from apps.analyzer.models import compute_story_score
@@ -23,7 +23,6 @@ from utils.view_functions import render_to
 from utils import urlnorm
 from utils import json_functions as json
 from vendor import facebook
-from vendor import appdotnet
 
 @login_required
 @render_to('social/social_connect.xhtml')
@@ -160,15 +159,7 @@ def facebook_disconnect(request):
     social_services.disconnect_facebook()
     
     return HttpResponseRedirect(reverse('load-user-friends'))
-    
-@ajax_login_required
-def appdotnet_disconnect(request):
-    logging.user(request, "~BB~FRDisconnecting App.net")
-    social_services = MSocialServices.objects.get(user_id=request.user.pk)
-    social_services.disconnect_appdotnet()
-    
-    return HttpResponseRedirect(reverse('load-user-friends'))
-    
+        
 @ajax_login_required
 @json.json_view
 def follow_twitter_account(request):

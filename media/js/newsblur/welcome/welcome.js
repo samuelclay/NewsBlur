@@ -8,12 +8,14 @@ NEWSBLUR.Welcome = Backbone.View.extend({
         "click .NB-button-login" : "show_signin_form",
         "click .NB-button-tryout" : "show_tryout",
         "click .NB-welcome-header-caption" : "click_header_caption",
+        "focus input" : "stop_rotation",
         "mouseenter .NB-welcome-header-caption" : "enter_header_caption",
         "mouseleave .NB-welcome-header-caption" : "leave_header_caption"
     },
     
     initialize: function() {
         this.start_rotation();
+        this.debug_password_autocomplete();
         NEWSBLUR.reader.$s.$layout.hide();
     },
     
@@ -55,7 +57,7 @@ NEWSBLUR.Welcome = Backbone.View.extend({
         if (this.$('.NB-welcome-header-account').hasClass('NB-active')) {
             this.show_signin_form();
         }
-        this.$('.NB-welcome-header-image img').eq(0).load(_.bind(function() {
+        this.$('.NB-welcome-header-image img').eq(0).on('load', _.bind(function() {
             setInterval(_.bind(this.rotate_screenshots, this), 3000);
         }, this));
     },
@@ -74,26 +76,34 @@ NEWSBLUR.Welcome = Backbone.View.extend({
             this.rotation += 1;
         }
 
-        var $images = $('.NB-welcome-header-image img').add('.NB-welcome-header-account');
+        var $images = $('.NB-welcome-header-image').add('.NB-welcome-header-account');
         var $captions = $('.NB-welcome-header-caption');
         var $in_img = $images.eq(r);
         var $out_img = $images.not($in_img);
         var $in_caption = $captions.eq(r);
         var $out_caption = $captions.not($in_caption);
         
-        $out_img.css({zIndex: 0}).stop(true).animate({
-            bottom: -300,
-            opacity: 0
-        }, {easing: 'easeInOutQuart', queue: false, duration: force ? 650 : 1400, complete: callback});
-        $in_img.css({zIndex: 1}).stop(true).animate({
-            bottom: 0,
-            opacity: 1
-        }, {easing: 'easeInOutQuart', queue: false, duration: force ? 650 : 1400});
+        $out_img.removeClass('NB-active');
+        $in_img.addClass('NB-active');
+
+        // $out_img.css({zIndex: 0}).stop(true).animate({
+        //     bottom: -300,
+        //     opacity: 0
+        // }, {easing: 'easeInOutQuart', queue: false, duration: force ? 650 : 1400, complete: callback});
+        // $in_img.css({zIndex: 1}).stop(true).animate({
+        //     bottom: 0,
+        //     opacity: 1
+        // }, {easing: 'easeInOutQuart', queue: false, duration: force ? 650 : 1400});
         $out_caption.removeClass('NB-active');
         $in_caption.addClass('NB-active');
+        callback && callback();
         if (r < 3) {
             this.$('input').blur();
         }
+    },
+    
+    stop_rotation: function() {
+        this.flags.on_signin = true;
     },
     
     show_signin_form: function() {
@@ -102,6 +112,11 @@ NEWSBLUR.Welcome = Backbone.View.extend({
         
         this.flags.on_header_caption = true;
         this.flags.on_signin = true;
+        
+        var add_url = $.getQueryString('add') || $.getQueryString('url');
+        if (add_url) {
+            this.$("input[name=next]").val("/?add=" + add_url);
+        }
         
         this.$el.scrollTo(0, 500, {queue: false, easing: 'easeInOutQuint'});
         
@@ -148,6 +163,10 @@ NEWSBLUR.Welcome = Backbone.View.extend({
         });
         
         this.$('.NB-welcome-container').removeClass('NB-welcome-tryout');
+    },
+    
+    debug_password_autocomplete: function() {
+        this.$("input[name=login-username]").focus();
     }
     
 });

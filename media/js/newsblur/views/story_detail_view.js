@@ -146,6 +146,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     
     render_header: function(model, value, options) {
         var params = this.get_render_params();
+        this.$('.NB-feed-story-header-feed').remove();
         this.$('.NB-feed-story-header').replaceWith($(this.story_header_template(params)));
         this.generate_gradients();
     },
@@ -171,15 +172,15 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     },
     
     story_header_template: _.template('\
+        <div class="NB-feed-story-header-feed">\
+            <% if (feed) { %>\
+                <div class="NB-feed-story-feed">\
+                    <img class="feed_favicon" src="<%= $.favicon(feed) %>">\
+                    <span class="NB-feed-story-header-title"><%= feed.get("feed_title") %></span>\
+                </div>\
+            <% } %>\
+        </div>\
         <div class="NB-feed-story-header">\
-            <div class="NB-feed-story-header-feed">\
-                <% if (feed) { %>\
-                    <div class="NB-feed-story-feed">\
-                        <img class="feed_favicon" src="<%= $.favicon(feed) %>">\
-                        <span class="NB-feed-story-header-title"><%= feed.get("feed_title") %></span>\
-                    </div>\
-                <% } %>\
-            </div>\
             <div class="NB-feed-story-header-info">\
                 <div class="NB-feed-story-title-container">\
                     <div class="NB-feed-story-sentiment"></div>\
@@ -495,7 +496,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         this.truncate_delay = 100;
         this.images_to_load = this.$('img').length;
         if (is_truncatable) this.truncate_story_height();
-        this.$('img').load(_.bind(function() {
+        this.$('img').on('load', _.bind(function() {
             this.images_to_load -= 1;
             if (is_truncatable) this.truncate_story_height();
             if (this.images_to_load <= 0) {

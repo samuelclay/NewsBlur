@@ -128,7 +128,13 @@
     right: 0;
     bottom: 0;
 }
-.NB-welcome-header-image img.NB-1 {
+.NB-welcome-header-image img {
+    z-index: 0;
+    opacity: 0;
+    transition: bottom 1s ease-in-out, 
+                opacity 1s ease-in-out;
+}
+.NB-welcome-header-image.NB-1 img {
     height: 300px;
     position: absolute;
     bottom: -350px;
@@ -137,10 +143,7 @@
     border-top-left-radius: 4px;
     border-top-right-radius: 4px;
 }
-.NB-welcome-header-image.NB-active img.NB-1 {
-    bottom: 0px;
-}
-.NB-welcome-header-image img.NB-2 {
+.NB-welcome-header-image.NB-2 img {
     opacity: 0;
     height: 300px;
     position: absolute;
@@ -151,7 +154,7 @@
     border-top-left-radius: 4px;
     border-top-right-radius: 4px;
 }
-.NB-welcome-header-image img.NB-3 {
+.NB-welcome-header-image.NB-3 img {
     opacity: 0;
     height: 300px;
     position: absolute;
@@ -161,6 +164,11 @@
     margin-right: 140px;
     border-top-left-radius: 4px;
     border-top-right-radius: 4px;
+}
+.NB-welcome-header-image.NB-active img {
+    z-index: 1;
+    bottom: 0;
+    opacity: 1;
 }
 .NB-welcome-header-captions {
     text-align: center;
@@ -443,7 +451,7 @@
 /* ============ */
 
 .NB-welcome-features {
-    margin: 48px 0;
+    margin: 64px 0;
     overflow: hidden;
 }
 
@@ -457,6 +465,7 @@
 .NB-welcome-features img {
     width: 200px;
     height: 175px;
+    object-fit: cover;
     box-shadow: 0 0 3px rgba(30, 30, 30, 0.3);
 }
 .NB-welcome-features .NB-feature-caption {
@@ -466,7 +475,39 @@
 }
 .NB-welcome-features .NB-feature-text {
     color: #808080;
-    margin: 24px 0 0;
+    margin: 8px 0 0;
+    font-size: 15px;
+    line-height: 22px;
+}
+
+.NB-welcome-subfeatures {
+    margin: 48px 0;
+    overflow: hidden;
+}
+
+.NB-welcome-subfeatures .NB-feature {
+    float: left;
+    width: 46%;
+    margin: 0 4% 48px 0;
+    text-align: left;
+}
+
+.NB-welcome-subfeatures img {
+    float: left;
+    width: 120px;
+    height: 100px;
+    margin: 0 24px 0 0;
+    object-fit: contain;
+    box-shadow: 0 0 3px rgba(30, 30, 30, 0.3);
+}
+.NB-welcome-subfeatures .NB-feature-caption {
+    font-weight: bold;
+    font-size: 22px;
+    margin: 0px 0 0;
+}
+.NB-welcome-subfeatures .NB-feature-text {
+    color: #808080;
+    margin: 8px 0 0;
     font-size: 15px;
     line-height: 22px;
 }

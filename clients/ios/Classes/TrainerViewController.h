@@ -9,9 +9,9 @@
 #import <UIKit/UIKit.h>
 #import "BaseViewController.h"
 #import "NewsBlurAppDelegate.h"
+@import WebKit;
 
-
-@interface TrainerWebView : UIWebView {}
+@interface TrainerWebView : WKWebView {}
 
 - (void)focusTitle:(id)sender;
 - (void)hideTitle:(id)sender;
@@ -19,8 +19,7 @@
 @end
 
 
-@interface TrainerViewController : BaseViewController
-<UIWebViewDelegate> {
+@interface TrainerViewController : BaseViewController <WKNavigationDelegate> {
     NewsBlurAppDelegate *appDelegate;
     
     IBOutlet UIBarButtonItem * closeButton;

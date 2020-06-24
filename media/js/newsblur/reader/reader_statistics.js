@@ -324,8 +324,8 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
         $plot.attr('height', height);
         var myLine = new Chart($plot.get(0).getContext("2d")).Line(points, {
             scaleLabel : "<%= Math.round(value) %>",
-			showTooltips: false,
-			scaleBeginAtZero: true
+            showTooltips: false,
+            scaleBeginAtZero: true
         });
     },
     
@@ -336,7 +336,13 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
                 _.map(_.range(24), function(hour) {
                     var count = data.story_hours_history[hour] || 0;
                     var opacity = 1 - (count * 1.0 / max_count);
-                    return $.make('td', { style: "background-color: rgba(255, 255, 255, " + opacity + ");" });
+                    var theme = NEWSBLUR.assets.preference('theme');
+                    if (theme == 'light') {
+                        return $.make('td', { style: "background-color: rgba(255, 255, 255, " + opacity + ");" });
+                    } else if (theme == 'dark') {
+                        opacity = 1 - opacity;
+                        return $.make('td', { style: "background-color: rgba(151, 187, 205, " + opacity + ");" });
+                    }
                 })
             ]),
             $.make('tr', { className: 'NB-statistics-history-chart-hours-text-row' }, [

@@ -20,6 +20,7 @@ class LoginForm(forms.Form):
                                widget=forms.PasswordInput(attrs={'tabindex': 2, 'class': 'NB-input'}),
                                required=False)    
                                # error_messages={'required': 'Please enter a password.'})
+    add = forms.CharField(required=False, widget=forms.HiddenInput())
 
     def __init__(self, *args, **kwargs):
         self.user_cache = None
