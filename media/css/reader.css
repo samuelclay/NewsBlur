@@ -6201,33 +6201,41 @@ form.opml_import_form input {
     margin-right: -12px;
     padding-right: 8px;
     
-    background: transparent url('/media/embed/icons/silk/control_play.png') no-repeat 4px center;
+    background: transparent url('/media/embed/reader/next_page.png') no-repeat 4px center;
+    background-size: 14px;
 }
 .NB-module .NB-module-next-page.NB-javascript {
   opacity: .2;
 }
 .NB-module .NB-module-next-page:link {
-    background: transparent url('/media/embed/icons/silk/control_play.png') no-repeat 4px center;
+    background: transparent url('/media/embed/reader/next_page.png') no-repeat 4px center;
+    background-size: 14px;
 }
 .NB-module .NB-module-next-page:hover {
-    background: transparent url('/media/embed/icons/silk/control_play_blue.png') no-repeat 4px center;
+    background: transparent url('/media/embed/reader/next_page_active.png') no-repeat 4px center;
+    background-size: 14px;
 }
 .NB-module .NB-module-next-page.NB-disabled:hover {
-    background: transparent url('/media/embed/icons/silk/control_play.png') no-repeat 4px center;
+    background: transparent url('/media/embed/reader/next_page.png') no-repeat 4px center;
+    background-size: 14px;
     cursor: default;
 }
 .NB-module .NB-module-previous-page {
     padding-left: 4px;
-    background: transparent url('/media/embed/icons/silk/control_play_left.png') no-repeat 8px center;
+    background: transparent url('/media/embed/reader/previous_page.png') no-repeat 8px center;
+    background-size: 14px;
 }
 .NB-module .NB-module-previous-page:link {
-    background: transparent url('/media/embed/icons/silk/control_play_left.png') no-repeat 8px center;
+    background: transparent url('/media/embed/reader/previous_page.png') no-repeat 8px center;
+    background-size: 14px;
 }
 .NB-module .NB-module-previous-page:hover {
-    background: transparent url('/media/embed/icons/silk/control_play_left_blue.png') no-repeat 8px center;
+    background: transparent url('/media/embed/reader/previous_page_active.png') no-repeat 8px center;
+    background-size: 14px;
 }
 .NB-module .NB-module-previous-page.NB-disabled:hover {
-    background: transparent url('/media/embed/icons/silk/control_play_left.png') no-repeat 8px center;
+    background: transparent url('/media/embed/reader/previous_page.png') no-repeat 8px center;
+    background-size: 14px;
     cursor: default;
 }
 
@@ -12021,10 +12029,10 @@ form.opml_import_form input {
 
 .NB-search-icon {
     position: absolute;
-    left: 4px;
+    left: 6px;
     top: 4px;
-    background: transparent url('/media/embed/reader/search_icon2.png') no-repeat 0 0;
-    background-size: 12px;
+    background: transparent url('/media/embed/reader/search_light.png') no-repeat 0 0;
+    background-size: 10px;
     width: 12px;
     height: 12px;
 }
@@ -12111,7 +12119,7 @@ form.opml_import_form input {
 }
 
 .NB-search-header .NB-search-header-icon {
-    background: transparent url('/media/embed/reader/search_icon2.png') no-repeat 0 0;
+    background: transparent url('/media/embed/reader/search_light.png') no-repeat 0 0;
     background-size: 16px;
     vertical-align: bottom;
     width: 16px;
@@ -12293,7 +12301,7 @@ form.opml_import_form input {
     clear: both;
     left: 0;
     top: 0;
-    background: transparent url('/media/embed/reader/search_icon2.png') no-repeat 0 0;
+    background: transparent url('/media/embed/reader/search_light.png') no-repeat 0 0;
     background-size: 16px;
     vertical-align: bottom;
     width: 16px;
@@ -12581,7 +12589,7 @@ form.opml_import_form input {
 }
 .NB-module-search .NB-module-search-input.NB-active .NB-search-close {
     display: block;
-    top: 24px;
+    top: 22px;
     right: 16px;
 }
 .NB-module-search .NB-module-search-input.NB-active .NB-search-close {
