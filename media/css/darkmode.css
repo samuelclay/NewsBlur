@@ -833,6 +833,12 @@ color: #a85b40;
 .NB-dark #story_taskbar {
     border-top: 1px solid #32352E;
 }
+.NB-dark .NB-feedbar .NB-taskbar .NB-task-story-previous {
+    border-right: 1px solid rgba(0,0,0,0.3);
+}
+.NB-dark .NB-feedbar .NB-taskbar .NB-task-story-next {
+    border-left: 1px solid rgba(0,0,0,0.3);
+}
 /* Error text on bottom bar */
 .NB-dark #story_taskbar .NB-river-progress .NB-river-progress-text,
 .NB-dark #story_taskbar .NB-feed-error .NB-feed-error-text {
@@ -1227,11 +1233,15 @@ color: #fff;
 }
 .NB-dark .NB-feed-story .NB-feed-story-tag.NB-score-1 {
     /* Green */
-    opacity: .7;
+    background-color: #627c50;
+}
+.NB-dark .NB-feed-story .NB-feed-story-tag.NB-score-1:hover {
+    /* Green, active -> Red */
+    background-color: #905051;
 }
 .NB-dark .NB-feed-story .NB-feed-story-tag.NB-score--1 {
     /* Red */
-    opacity: .7;
+    background-color: #905051;
 }
 .NB-dark .NB-feed-story .NB-feed-story-tag.NB-score--1:hover {
     /* Red, active -> [Light] Grey */
@@ -1244,13 +1254,13 @@ color: #fff;
 }
 .NB-dark .NB-feed-story .NB-feed-story-tag.NB-score-now-1.NB-score-1:hover {
     /* Green, active */
-    background-color: #34912E;
+    background-color: #627c50;
     color: white;
     text-shadow: 0 1px 0 rgba(0, 0, 0, .3);
 }
 .NB-dark .NB-feed-story .NB-feed-story-tag.NB-score-now--1.NB-score--1:hover {
     /* Red, active */
-    background-color: #A90103;
+    background-color: #905051;
     color: white;
     text-shadow: 0 1px 0 rgba(0, 0, 0, .3);
 }
