@@ -45,7 +45,6 @@ public class DatabaseConstants {
     public static final String FEED_FAVICON_TEXT = "favicon_text_color";
 	public static final String FEED_ACTIVE = "active";
 	public static final String FEED_FAVICON_URL = "favicon_url";
-	public static final String FEED_FOLDER_TITLE = "folder_title";
 	public static final String FEED_POSITIVE_COUNT = "ps";
 	public static final String FEED_NEUTRAL_COUNT = "nt";
 	public static final String FEED_NEGATIVE_COUNT = "ng";
@@ -194,7 +193,6 @@ public class DatabaseConstants {
 		FEED_LINK + TEXT + ", " + 
 		FEED_SUBSCRIBERS + TEXT + ", " +
 		FEED_TITLE + TEXT + ", " +
-		FEED_FOLDER_TITLE + TEXT + ", " +
 		FEED_OPENS + INTEGER + ", " +
 		FEED_AVERAGE_STORIES_PER_MONTH + INTEGER + ", " +
 		FEED_LAST_STORY_DATE + TEXT + ", " +

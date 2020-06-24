@@ -66,9 +66,6 @@ public class Feed implements Comparable<Feed>, Serializable {
 	@SerializedName("feed_title")
 	public String title;
 
-	@SerializedName("folder_title")
-    public String folderTitle;
-
 	@SerializedName("updated_seconds_ago")
 	public int lastUpdated;
 
@@ -101,7 +98,6 @@ public class Feed implements Comparable<Feed>, Serializable {
 		values.put(DatabaseConstants.FEED_LAST_STORY_DATE, lastStoryDate);
 		values.put(DatabaseConstants.FEED_AVERAGE_STORIES_PER_MONTH, storiesPerMonth);
 		values.put(DatabaseConstants.FEED_TITLE, title);
-		values.put(DatabaseConstants.FEED_FOLDER_TITLE, folderTitle);
 		values.put(DatabaseConstants.FEED_UPDATED_SECONDS, lastUpdated);
         values.put(DatabaseConstants.FEED_NOTIFICATION_TYPES, DatabaseConstants.flattenStringList(notificationTypes));
         if (isNotifyAndroid()) {
@@ -133,7 +129,6 @@ public class Feed implements Comparable<Feed>, Serializable {
 		feed.storiesPerMonth = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.FEED_AVERAGE_STORIES_PER_MONTH));
 		feed.lastStoryDate = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_LAST_STORY_DATE));
 		feed.title = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_TITLE));
-		feed.folderTitle = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_FOLDER_TITLE));
         feed.lastUpdated = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.FEED_UPDATED_SECONDS));
         feed.notificationTypes = DatabaseConstants.unflattenStringList(cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_NOTIFICATION_TYPES)));
         feed.notificationFilter = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_NOTIFICATION_FILTER));

@@ -92,14 +92,18 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
 			transaction.commit();
 		}
 
+        String activeSearchQuery;
         if (bundle != null) {
-            String activeSearchQuery = bundle.getString(BUNDLE_ACTIVE_SEARCH_QUERY);
-            if (activeSearchQuery != null) {
-                searchQueryInput.setText(activeSearchQuery);
-                searchQueryInput.setVisibility(View.VISIBLE);
-                fs.setSearchQuery(activeSearchQuery);
-            }
+            activeSearchQuery = bundle.getString(BUNDLE_ACTIVE_SEARCH_QUERY);
+        } else {
+            activeSearchQuery = fs.getSearchQuery();
         }
+        if (activeSearchQuery != null) {
+            searchQueryInput.setText(activeSearchQuery);
+            searchQueryInput.setVisibility(View.VISIBLE);
+            fs.setSearchQuery(activeSearchQuery);
+        }
+
         searchQueryInput.setOnKeyListener(new OnKeyListener() {
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if ((keyCode == KeyEvent.KEYCODE_BACK) && (event.getAction() == KeyEvent.ACTION_DOWN)) {

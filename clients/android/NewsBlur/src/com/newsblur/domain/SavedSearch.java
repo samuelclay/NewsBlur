@@ -5,6 +5,7 @@ import android.database.Cursor;
 
 import com.google.gson.annotations.SerializedName;
 import com.newsblur.database.DatabaseConstants;
+import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
 
 public class SavedSearch {
@@ -53,9 +54,9 @@ public class SavedSearch {
         } else if (feedId.equals("river:infrequent")) {
             feedTitle = "Infrequent Site Stories";
         } else if (feedId.startsWith("river:")) {
-            Feed feed = FeedUtils.getFeed(feedId);
-            if (feed == null) return null;
-            feedTitle = feed.folderTitle;
+            String folderName = feedId.replace("river:", "");
+            FeedSet fs = FeedUtils.feedSetFromFolderName(folderName);
+            feedTitle = fs.getFolderName();
         } else if (feedId.equals("read")) {
             feedTitle = "Read Stories";
         } else if (feedId.startsWith("starred")) {
@@ -84,7 +85,7 @@ public class SavedSearch {
     private String getFaviconUrl() {
         String url = null;
         if (feedId.equals("river:") || feedId.equals("river:infrequent")) {
-            url = "https://newsblur.com/media/img/icons/circular/ak-ic on-allstories.png";
+            url = "https://newsblur.com/media/img/icons/circular/ak-icon-allstories.png";
         } else if (feedId.startsWith("river:")) {
             url = "https://newsblur.com/media/img/icons/circular/g_icn_folder.png";
         } else if (feedId.equals("read")) {
@@ -99,7 +100,7 @@ public class SavedSearch {
                 url = feed.faviconUrl;
             }
         } else if (feedId.startsWith("social:")) {
-            Feed feed = FeedUtils.getFeed(feedId);
+            Feed feed = FeedUtils.getFeed(feedId.replace("social:", ""));
             if (feed != null) {
                 url = feed.faviconUrl;
             }
