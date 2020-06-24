@@ -1,7 +1,6 @@
 'use strict'
 
-var url = require('url')
-var tunnel = require('tunnel-agent')
+var tunnel = require('@postman/tunnel-agent')
 
 var defaultProxyHeaderWhiteList = [
   'accept',
@@ -83,7 +82,8 @@ function constructTunnelOptions (request, proxyHeaders) {
     ciphers: request.ciphers,
     rejectUnauthorized: request.rejectUnauthorized,
     secureOptions: request.secureOptions,
-    secureProtocol: request.secureProtocol
+    secureProtocol: request.secureProtocol,
+    extraCA: request.extraCA
   }
 
   return tunnelOptions
@@ -137,7 +137,7 @@ Tunnel.prototype.setup = function (options) {
   options = options || {}
 
   if (typeof request.proxy === 'string') {
-    request.proxy = url.parse(request.proxy)
+    request.proxy = request.urlParser.parse(request.proxy)
   }
 
   if (!request.proxy || !request.tunnel) {

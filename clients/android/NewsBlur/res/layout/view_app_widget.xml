@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container_widget"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/widget_background"
     android:orientation="vertical">
 
     <FrameLayout
@@ -45,7 +45,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
-        android:text="@string/title_widget_setup"
+        android:text="@string/title_widget_loading"
         android:textColor="@color/widget_feed_title" />
 
     <!--    Note that empty views must be siblings of the collection view

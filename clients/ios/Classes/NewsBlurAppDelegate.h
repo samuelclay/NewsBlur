@@ -52,6 +52,7 @@
 @class PINCache;
 @class PremiumManager;
 @class PremiumViewController;
+@class WKWebView;
 
 @interface NewsBlurAppDelegate : BaseViewController
 <UIApplicationDelegate, UINavigationControllerDelegate, UIPopoverPresentationControllerDelegate,
@@ -207,6 +208,7 @@ SFSafariViewControllerDelegate>  {
 @property (nonatomic, readonly) NSString *url;
 @property (nonatomic, readonly) NSString *host;
 
+@property (nonatomic, readonly) NSHTTPCookie *sessionIdCookie;
 @property (readwrite) NSString * activeUsername;
 @property (readwrite) NSString * activeUserProfileId;
 @property (readwrite) NSString * activeUserProfileName;
@@ -227,6 +229,7 @@ SFSafariViewControllerDelegate>  {
 @property (readwrite) NSString * activeShareType;
 @property (readwrite) NSInteger feedDetailPortraitYCoordinate;
 @property (readwrite) NSInteger originalStoryCount;
+@property (readwrite) NSInteger savedSearchesCount;
 @property (readwrite) NSInteger savedStoriesCount;
 @property (readwrite) NSInteger totalUnfetchedStoryCount;
 @property (readwrite) NSInteger remainingUnfetchedStoryCount;
@@ -340,6 +343,8 @@ SFSafariViewControllerDelegate>  {
 - (void)recalculateIntelligenceScores:(id)feedId;
 
 - (void)cancelRequests;
+- (NSString *)beginNetworkOperation;
+- (void)endNetworkOperation:(NSString *)networkOperationIdentifier;
 
 - (void)GET:(NSString *)urlString parameters:(id)parameters
     success:(void (^)(NSURLSessionDataTask *, id))success
@@ -354,6 +359,8 @@ SFSafariViewControllerDelegate>  {
      success:(SEL)success
      failure:(SEL)failure;
 
+- (void)prepareWebView:(WKWebView *)webView completionHandler:(void (^)(void))completion;
+
 - (void)loadFolder:(NSString *)folder feedID:(NSString *)feedIdStr;
 - (void)reloadFeedsView:(BOOL)showLoader;
 - (void)setTitle:(NSString *)title;
@@ -367,6 +374,7 @@ SFSafariViewControllerDelegate>  {
 - (void)hideShareView:(BOOL)resetComment;
 - (void)resetShareComments;
 - (BOOL)isSocialFeed:(NSString *)feedIdStr;
+- (BOOL)isSavedSearch:(NSString *)feedIdStr;
 - (BOOL)isSavedFeed:(NSString *)feedIdStr;
 - (NSInteger)savedStoriesCountForFeed:(NSString *)feedIdStr;
 - (BOOL)isSavedStoriesIntelligenceMode;
@@ -412,6 +420,7 @@ SFSafariViewControllerDelegate>  {
 - (void)failedMarkAsUnsaved:(NSDictionary *)params;
 - (NSInteger)adjustSavedStoryCount:(NSString *)tagName direction:(NSInteger)direction;
 - (NSArray *)updateStarredStoryCounts:(NSDictionary *)results;
+- (NSArray *)updateSavedSearches:(NSDictionary *)results;
 - (void)renameFeed:(NSString *)newTitle;
 - (void)renameFolder:(NSString *)newTitle;
 
@@ -430,15 +439,21 @@ SFSafariViewControllerDelegate>  {
 - (NSString *)extractFolderName:(NSString *)folderName;
 - (NSString *)extractParentFolderName:(NSString *)folderName;
 - (NSArray *)parentFoldersForFeed:(NSString *)feedId;
+- (NSString *)feedIdWithoutSearchQuery:(NSString *)feedId;
+- (NSString *)searchQueryForFeedId:(NSString *)feedId;
+- (NSString *)searchFolderForFeedId:(NSString *)feedId;
 - (NSDictionary *)getFeedWithId:(id)feedId;
 - (NSDictionary *)getFeed:(NSString *)feedId;
 - (NSDictionary *)getStory:(NSString *)storyHash;
 
 + (void)fillGradient:(CGRect)r startColor:(UIColor *)startColor endColor:(UIColor *)endColor;
++ (UIView *)makeSimpleGradientView:(CGRect)rect startColor:(UIColor *)startColor endColor:(UIColor *)endColor;
 + (UIColor *)faviconColor:(NSString *)colorString;
 + (UIView *)makeGradientView:(CGRect)rect startColor:(NSString *)start endColor:(NSString *)end borderColor:(NSString *)borderColor;
 - (UIView *)makeFeedTitleGradient:(NSDictionary *)feed withRect:(CGRect)rect;
 - (UIView *)makeFeedTitle:(NSDictionary *)feed;
+- (NSString *)folderTitle:(NSString *)folder;
+- (UIImage *)folderIcon:(NSString *)folder;
 - (void)saveFavicon:(UIImage *)image feedId:(NSString *)filename;
 - (UIImage *)getFavicon:(NSString *)filename;
 - (UIImage *)getFavicon:(NSString *)filename isSocial:(BOOL)isSocial;

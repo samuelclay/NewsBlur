@@ -188,7 +188,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         this.$('.NB-end-line').remove();
         var $endline = $.make('div', { className: "NB-end-line NB-short" });
         $endline.css({'background': '#FFF'});
-        $story_titles.append($endline);
+        this.$el.append($endline);
         
         $endline.animate({'backgroundColor': '#E1EBFF'}, {'duration': 550, 'easing': 'easeInQuad'})
                 .animate({'backgroundColor': '#5C89C9'}, {'duration': 1550, 'easing': 'easeOutQuad'})
@@ -323,7 +323,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
                 position = scroll+container;
             }
             if (story_layout == 'grid') {
-                position += 21;
+                // position -= 21;
             }
             
             // console.log(["scroll_to_selected_story 3", position]);
