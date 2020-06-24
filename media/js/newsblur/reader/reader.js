@@ -3287,14 +3287,16 @@
                 try {
                     // Chrome & Firefox
                     darkMediaQuery.addEventListener('change', _.bind(function(e) {
+                        console.log(['Chrome/FF switching themes', e]);
                         this.load_theme();
-                    }));
+                    }, this));
                 } catch (e1) {
                     try {
                         // Safari
                         darkMediaQuery.addListener(_.bind(function(e) {
+                            console.log(['Safari switching themes', e]);
                             this.load_theme();
-                        }));
+                        }, this));
                     } catch (e2) {
                         console.error(e2);
                     }
