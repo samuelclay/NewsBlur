@@ -276,9 +276,11 @@ SOUTH_TESTS_MIGRATE     = False
 SESSION_ENGINE          = 'redis_sessions.session'
 TEST_RUNNER             = "utils.testrunner.TestRunner"
 SESSION_COOKIE_NAME     = 'newsblur_sessionid'
-SESSION_COOKIE_AGE      = 60*60*24*365 # 1 year
+SESSION_COOKIE_AGE      = 60*60*24*365*10 # 10 years
 SESSION_COOKIE_DOMAIN   = '.newsblur.com'
+SESSION_COOKIE_HTTPONLY = False
 SENTRY_DSN              = 'https://XXXNEWSBLURXXX@app.getsentry.com/99999999'
+SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
 
 if DEBUG:
     # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
