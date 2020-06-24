@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand
 from django.conf import settings
 from django.contrib.auth.models import User
-from apps.feed_import.models import GoogleReaderImporter
+from optparse import make_option
 from utils.management_functions import daemonize
 
 

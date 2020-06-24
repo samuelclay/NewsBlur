@@ -1,7 +1,6 @@
 import datetime
 import pickle
 import base64
-import httplib2
 from utils import log as logging
 from oauth2client.client import OAuth2WebServerFlow, FlowExchangeError
 from bson.errors import InvalidStringData
@@ -17,9 +16,9 @@ from django.contrib.auth import login as login_user
 from django.shortcuts import render_to_response
 from apps.reader.forms import SignupForm
 from apps.reader.models import UserSubscription
-from apps.feed_import.models import OAuthToken, GoogleReaderImporter
+from apps.feed_import.models import OAuthToken
 from apps.feed_import.models import OPMLImporter, OPMLExporter, UploadedOPML
-from apps.feed_import.tasks import ProcessOPML, ProcessReaderImport, ProcessReaderStarredImport
+from apps.feed_import.tasks import ProcessOPML
 from utils import json_functions as json
 from utils.user_functions import ajax_login_required, get_user
 from utils.feed_functions import TimeoutError
@@ -66,7 +65,6 @@ def opml_upload(request):
                 payload = dict(folders=folders, feeds=feeds)
                 logging.user(request, "~FR~SBOPML Upload: ~SK%s~SN~SB~FR feeds" % (len(feeds)))
             
-            request.session['import_from_google_reader'] = False
         else:
             message = "Attach an .opml file."
             code = -1
@@ -89,3 +87,4 @@ def opml_export(request):
     )
     
     return response
+

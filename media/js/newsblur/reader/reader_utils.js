@@ -6,8 +6,6 @@ NEWSBLUR.utils = {
             return 'Twitter';
             case 'facebook':
             return 'Facebook';
-            case 'appdotnet':
-            return 'App.net';
         }
     },
     
