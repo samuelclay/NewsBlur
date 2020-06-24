@@ -156,7 +156,7 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
             $.make('div', { className: "NB-module-search-input NB-module-search-people" }, [
                 $.make('div', { className: "NB-search-close" }),
                 $.make('label', { 'for': "NB-friends-search-input" }, [
-                    $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + "img/reader/search_icon2.png" })
+                    $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + "img/reader/search_light.png" })
                 ]),
                 $.make('input', { id: "NB-friends-search-input", className: 'NB-input', placeholder: "Username or email..." })
             ]),

@@ -96,11 +96,13 @@ fieldset legend {
 }
 
 .NB-modal .NB-modal-loading.NB-active {
-    background: transparent url('/media/img/reader/recycle_spinner.gif') no-repeat 0 0;
+    background: transparent url('/media/embed/reader/ring_spinner.svg') no-repeat center center;
+    background-size: 16px;
 }
 
 .NB-loading.NB-active {
-    background: transparent url('/media/img/reader/spinner_ball.gif') no-repeat 0 0;
+    background: transparent url('/media/img/reader/worm_spinner.svg') no-repeat 0 0;
+    background-size: 16px;
 }
 
 .NB-modal h2,
