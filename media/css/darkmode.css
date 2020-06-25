@@ -1175,6 +1175,9 @@ background-color: #5d8392;
 .NB-dark .NB-newsletter td {
     color: #c0c0c0 !important;
 }
+.NB-dark .NB-newsletter td {
+    background-color: #191b1c;
+}
 .NB-dark .NB-newsletter h1,
 .NB-dark .NB-newsletter h2,
 .NB-dark .NB-newsletter h3,
