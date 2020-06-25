@@ -15,7 +15,21 @@ body {
     text-rendering: optimizeLegibility;
     background-color: white;
     -webkit-overflow-scrolling: touch;
+    scrollbar-color: #C2C2C2 #FAFAFA;
 }
+
+/*::-webkit-scrollbar {
+    width: 12px;
+}
+*/
+::-webkit-scrollbar-thumb {
+    background-color: #C2C2C2;
+}
+
+::-webkit-scrollbar-track {
+    background-color: #FAFAFA;
+}
+
 .NB-layout {
     overflow: hidden;
     height: 100%;
