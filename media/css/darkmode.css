@@ -1169,7 +1169,10 @@ background-color: #5d8392;
     color: #c0c0c0;
     background-color: #191b1c;
 }
-.NB-dark .NB-newsletter p {
+.NB-dark .NB-newsletter p,
+.NB-dark .NB-newsletter div,
+.NB-dark .NB-newsletter span,
+.NB-dark .NB-newsletter td {
     color: #c0c0c0 !important;
 }
 .NB-dark .NB-newsletter h1,
