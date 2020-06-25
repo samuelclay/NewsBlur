@@ -642,7 +642,7 @@ else:
     )
 
 
-BASE_DIR = 'NewsBlur'
+BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 TEMPLATES = [
     {
