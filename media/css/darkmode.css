@@ -78,15 +78,20 @@ body.NB-dark {
 /* = Scrollbars = */
 /* ============== */
 
+.NB-dark {
+    scrollbar-color: #565859 #262829;
+}
 .NB-dark ::-webkit-scrollbar {
-    width: 8px;
+    width: 12px;
 }
 
-.NB-dark ::-webkit-scrollbar-thumb {
+.NB-dark ::-webkit-scrollbar-thumb,
+.NB-dark::-webkit-scrollbar-thumb {
     background-color: #565859;
 }
 
-.NB-dark ::-webkit-scrollbar-track {
+.NB-dark ::-webkit-scrollbar-track,
+.NB-dark::-webkit-scrollbar-track {
     background-color: #262829;
 }
 
@@ -1163,6 +1168,23 @@ background-color: #5d8392;
 .NB-dark .NB-story-content-container {
     color: #c0c0c0;
     background-color: #191b1c;
+}
+.NB-dark .NB-newsletter p,
+.NB-dark .NB-newsletter div,
+.NB-dark .NB-newsletter span,
+.NB-dark .NB-newsletter td {
+    color: #c0c0c0 !important;
+}
+.NB-dark .NB-newsletter td {
+    background-color: #191b1c;
+}
+.NB-dark .NB-newsletter h1,
+.NB-dark .NB-newsletter h2,
+.NB-dark .NB-newsletter h3,
+.NB-dark .NB-newsletter h4,
+.NB-dark .NB-newsletter h5,
+.NB-dark .NB-newsletter h6 {
+    color: #c0c0c0 !important;
 }
 
 /* Quote blocks found in stories */
