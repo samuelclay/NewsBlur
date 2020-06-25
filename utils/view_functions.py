@@ -49,7 +49,7 @@ class required_params(object):
     def __init__(self, *args, **kwargs):
         self.params = args
         self.named_params = kwargs
-        self.method = kwargs.get('method', 'REQUEST')
+        self.method = kwargs.get('method', 'POST')
         
     def __call__(self, fn):
         def wrapper(request, *args, **kwargs):

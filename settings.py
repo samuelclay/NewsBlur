@@ -629,17 +629,17 @@ DEBUG_TOOLBAR_CONFIG = {
 }
 
 if DEBUG:
-    template_loaders = (
+    template_loaders = [
         'django.template.loaders.filesystem.Loader',
         'django.template.loaders.app_directories.Loader',
-    )
+    ]
 else:
-    template_loaders = (
+    template_loaders = [
         ('django.template.loaders.cached.Loader', (
             'django.template.loaders.filesystem.Loader',
             'django.template.loaders.app_directories.Loader',
         )),
-    )
+    ]
 
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
@@ -647,18 +647,18 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'TEMPLATE_DIRS': [os.path.join(CURRENT_DIR, 'templates'),
+        'DIRS': [os.path.join(CURRENT_DIR, 'templates'),
                  os.path.join(CURRENT_DIR, 'vendor/zebra/templates')],
-        'APP_DIRS': True,
-        'TEMPLATE_CONTEXT_PROCESSORS': (
-            "django.contrib.auth.context_processors.auth",
-            "django.template.context_processors.debug",
-            "django.template.context_processors.media",
-            'django.template.context_processors.request',
-        ),
-        'TEMPLATE_LOADERS': template_loaders,
-        'TEMPLATE_DEBUG': DEBUG
-
+        # 'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                "django.contrib.auth.context_processors.auth",
+                "django.template.context_processors.debug",
+                "django.template.context_processors.media",
+                'django.template.context_processors.request',
+            ],
+            'loaders': template_loaders,
+        },
     }
 ]
 # =========
