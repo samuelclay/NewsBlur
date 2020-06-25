@@ -36,9 +36,12 @@
     {% endif %}
 {% endblock %}
 
-{% block bodyclass %}NB-body-main{% endblock %}
-{% block content %}
+{% block bodyclass %}
+  NB-body-main 
+  {% if preferences.theme == "dark" %}NB-dark{% endif %}
+{% endblock %}
 
+{% block content %}
 
 <h1 class="NB-splash-heading">NewsBlur</h1>
 <h2 class="NB-splash-heading">- The best stories from your friends and favorite blogs, all in one place.</h2>
