@@ -1169,6 +1169,17 @@ background-color: #5d8392;
     color: #c0c0c0;
     background-color: #191b1c;
 }
+.NB-dark .NB-newsletter p {
+    color: #c0c0c0 !important;
+}
+.NB-dark .NB-newsletter h1,
+.NB-dark .NB-newsletter h2,
+.NB-dark .NB-newsletter h3,
+.NB-dark .NB-newsletter h4,
+.NB-dark .NB-newsletter h5,
+.NB-dark .NB-newsletter h6 {
+    color: #c0c0c0 !important;
+}
 
 /* Quote blocks found in stories */
 .NB-dark .NB-feed-story blockquote {
