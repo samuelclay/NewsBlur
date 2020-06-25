@@ -230,7 +230,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         <div class="NB-feed-story-shares-container"></div>\
         <div class="NB-story-content-container">\
             <div class="NB-story-content-wrapper <% if (truncatable) { %>NB-story-content-truncatable<% } %>">\
-                <div class="NB-feed-story-content">\
+                <div class="NB-feed-story-content <% if (feed.is_newsletter) { %>NB-newsletter%< } %>">\
                     <% if (!options.skip_content) { %>\
                         <%= story.story_content() %>\
                     <% } %>\
