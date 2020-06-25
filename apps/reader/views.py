@@ -104,6 +104,7 @@ def dashboard(request, **kwargs):
     statistics        = MStatistics.all()
     social_profile    = MSocialProfile.get_user(user.pk)
     custom_styling    = MCustomStyling.get_user(user.pk)
+    preferences       = json.decode(user.profile.preferences)
     
     if not user.is_active:
         url = "https://%s%s" % (Site.objects.get_current().domain,
@@ -114,6 +115,7 @@ def dashboard(request, **kwargs):
 
     return {
         'user_profile'      : user.profile,
+        'preferences'       : preferences,
         'feed_count'        : feed_count,
         'custom_styling'    : custom_styling,
         'account_images'    : range(1, 4),
