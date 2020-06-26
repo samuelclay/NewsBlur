@@ -177,7 +177,7 @@ def load_feed_statistics_embedded(request, feed_id):
         'stats': json.json_encode(stats),
         'feed_js': json.json_encode(feed.canonical()),
         'feed': feed,
-    }    
+    })
     
 def assemble_statistics(user, feed_id):
     timezone = user.profile.timezone
