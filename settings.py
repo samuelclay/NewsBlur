@@ -117,7 +117,7 @@ MIDDLEWARE_CLASSES = (
 
 AUTHENTICATION_BACKENDS = (
     'oauth2_provider.backends.OAuth2Backend',
-    'django.contrib.auth.backends.AllowAllUsersModelBackend'
+    'django.contrib.auth.backends.ModelBackend',
 )
 
 CORS_ORIGIN_ALLOW_ALL = True
