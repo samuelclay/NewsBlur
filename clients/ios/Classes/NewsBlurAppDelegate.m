@@ -380,6 +380,7 @@
             [self.navigationController popToRootViewControllerAnimated:NO];
             [self.feedsViewController didSelectSectionHeaderWithTag:2];
             self.feedDetailViewController.storiesCollection.searchQuery = @"";
+            self.feedDetailViewController.storiesCollection.savedSearchQuery = nil;
             self.feedDetailViewController.storiesCollection.inSearch = YES;
         } else {
             handled = NO;
@@ -850,6 +851,11 @@
         [hiddenSet addObjectsFromArray:@[@"theme_auto_brightness"]];
     }
     
+    BOOL story_full_screen = [[NSUserDefaults standardUserDefaults] boolForKey:@"story_full_screen"];
+    if (!story_full_screen) {
+        [hiddenSet addObjectsFromArray:@[@"story_hide_status_bar"]];
+    }
+    
     [preferencesViewController setHiddenKeys:hiddenSet animated:animated];
 }
 
@@ -1273,6 +1279,7 @@
 }
 
 - (void)openStatisticsWithFeed:(NSString *)feedId sender:(id)sender {
+    feedId = [self feedIdWithoutSearchQuery:feedId];
     NSString *urlString = [NSString stringWithFormat:@"%@/rss_feeds/statistics_embedded/%@", self.url, feedId];
     NSURL *url = [NSURL URLWithString:urlString];
     NSDictionary *feed = self.dictFeeds[feedId];
@@ -1430,9 +1437,33 @@
     }];
 }
 
+- (NSHTTPCookie *)sessionIdCookie {
+    NSURL *url = [NSURL URLWithString:self.url];
+    NSArray *cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookiesForURL: url];
+    
+    for (NSHTTPCookie *cookie in cookies) {
+        if ([cookie.name isEqualToString:@"newsblur_sessionid"]) {
+            return cookie;
+        }
+    }
+    
+    return nil;
+}
+
+- (void)prepareWebView:(WKWebView *)webView completionHandler:(void (^)(void))completion {
+    NSHTTPCookie *cookie = self.sessionIdCookie;
+    
+    if (cookie != nil) {
+        [webView.configuration.websiteDataStore.httpCookieStore setCookie:cookie completionHandler:completion];
+    } else {
+        completion();
+    }
+}
+
 #pragma mark -
 
 - (void)loadFolder:(NSString *)folder feedID:(NSString *)feedIdStr {
+    feedIdStr = [self feedIdWithoutSearchQuery:feedIdStr];
     NSDictionary *feed;
     storiesCollection.isReadView = NO;
     if ([self isSocialFeed:feedIdStr]) {
@@ -1626,6 +1657,10 @@
     return NO;
 }
 
+- (BOOL)isSavedSearch:(NSString *)feedIdStr {
+    return [feedIdStr containsString:@"?"];
+}
+
 - (BOOL)isSavedFeed:(NSString *)feedIdStr {
     return [feedIdStr startsWith:@"saved:"];
 }
@@ -1789,6 +1824,7 @@
             for (NSString *folderName in self.feedsViewController.activeFeedLocations) {
                 if ([folderName isEqualToString:@"river_blurblogs"]) continue;
                 if ([folderName isEqualToString:@"read_stories"]) continue;
+                if ([folderName isEqualToString:@"saved_searches"]) continue;
                 if ([folderName isEqualToString:@"saved_stories"]) continue;
                 NSArray *originalFolder = [self.dictFolders objectForKey:folderName];
                 NSArray *folderFeeds = [self.feedsViewController.activeFeedLocations objectForKey:folderName];
@@ -1804,6 +1840,9 @@
             if ([folder isEqualToString:@"saved_stories"] || [folderName isEqualToString:@"saved_stories"]) {
                 feedDetailView.storiesCollection.isSavedView = YES;
                 [feedDetailView.storiesCollection setActiveFolder:@"saved_stories"];
+            } else if ([folder isEqualToString:@"saved_searches"] || [folderName isEqualToString:@"saved_searches"]) {
+                feedDetailView.storiesCollection.isSavedView = YES;
+                [feedDetailView.storiesCollection setActiveFolder:@"saved_searches"];
             } else if ([folder isEqualToString:@"read_stories"] || [folderName isEqualToString:@"read_stories"]) {
                 feedDetailView.storiesCollection.isReadView = YES;
                 [feedDetailView.storiesCollection setActiveFolder:@"read_stories"];
@@ -1887,7 +1926,7 @@
 }
 
 - (void)adjustStoryDetailWebView {
-    // change UIWebView
+    // change the web view
     [storyPageControl.currentPage changeWebViewWidth];
     [storyPageControl.nextPage changeWebViewWidth];
     [storyPageControl.previousPage changeWebViewWidth];
@@ -2125,7 +2164,9 @@
 }
 
 - (void)showSafariViewControllerWithURL:(NSURL *)url useReader:(BOOL)useReader {
-    self.safariViewController = [[SFSafariViewController alloc] initWithURL:url entersReaderIfAvailable:useReader];
+    SFSafariViewControllerConfiguration *config = [SFSafariViewControllerConfiguration new];
+    config.entersReaderIfAvailable = useReader;
+    self.safariViewController = [[SFSafariViewController alloc] initWithURL:url configuration:config];
     self.safariViewController.delegate = self;
     [self.storyPageControl setNavigationBarHidden:NO];
     [navigationController presentViewController:self.safariViewController animated:YES completion:nil];
@@ -2257,6 +2298,8 @@
         activity.title = [NSString stringWithFormat:@"Read %@", storiesCollection.activeSavedStoryTag];
     } else if ([folder isEqualToString:@"read_stories"]) {
         activity.title = @"Re-read Stories";
+    } else if ([folder isEqualToString:@"saved_searches"]) {
+        activity.title = @"Re-read Saved Searches";
     } else if ([folder isEqualToString:@"saved_stories"]) {
         activity.title = @"Re-read Saved Stories";
     } else {
@@ -2909,6 +2952,34 @@
     return savedStories;
 }
 
+- (NSArray *)updateSavedSearches:(NSDictionary *)results {
+    NSArray *savedSearches = results[@"saved_searches"];
+    NSInteger count = 0;
+    NSMutableArray *feedIds = [NSMutableArray arrayWithCapacity:savedSearches.count];
+    
+    for (NSDictionary *search in savedSearches) {
+        NSString *feedStr = search[@"feed_id"];
+        NSString *prefix = @"feed:";
+        
+        if ([feedStr hasPrefix:prefix]) {
+            feedStr = [feedStr substringFromIndex:prefix.length];
+        }
+        
+        if ([feedStr isEqualToString:@"river:"]) {
+            feedStr = @"river:everything";
+        }
+        
+        NSString *feedId = [NSString stringWithFormat:@"%@?%@", feedStr, search[@"query"]];
+        
+        [feedIds addObject:feedId];
+        count++;
+    }
+    
+    self.savedSearchesCount = count;
+    
+    return feedIds;
+}
+
 - (void)renameFeed:(NSString *)newTitle {
     NSMutableDictionary *newActiveFeed = [storiesCollection.activeFeed mutableCopy];
     [newActiveFeed setObject:newTitle forKey:@"feed_title"];
@@ -3112,6 +3183,36 @@
     return uniqueFolderNames;
 }
 
+- (NSString *)feedIdWithoutSearchQuery:(NSString *)feedId {
+    NSRange range = [feedId rangeOfString:@"?"];
+    
+    if (range.location == NSNotFound) {
+        return feedId;
+    } else {
+        return [feedId substringToIndex:range.location];
+    }
+}
+
+- (NSString *)searchQueryForFeedId:(NSString *)feedId {
+    NSRange range = [feedId rangeOfString:@"?"];
+    
+    if (range.location == NSNotFound) {
+        return nil;
+    } else {
+        return [feedId substringFromIndex:range.location + range.length];
+    }
+}
+
+- (NSString *)searchFolderForFeedId:(NSString *)feedId {
+    NSString *prefix = @"river:";
+    
+    if (![feedId hasPrefix:prefix]) {
+        return nil;
+    }
+    
+    return [[self feedIdWithoutSearchQuery:feedId] substringFromIndex:prefix.length];
+}
+
 - (NSDictionary *)getFeedWithId:(id)feedId {
      NSString *feedIdStr = [NSString stringWithFormat:@"%@", feedId];
     
@@ -3119,6 +3220,8 @@
 }
 
 - (NSDictionary *)getFeed:(NSString *)feedId {
+    feedId = [self feedIdWithoutSearchQuery:feedId];
+    
     NSDictionary *feed;
     if (storiesCollection.isSocialView ||
         storiesCollection.isSocialRiverView ||
@@ -3176,6 +3279,18 @@
     CGContextDrawLinearGradient(context, gradient, startPoint, endPoint, 0);
     CGGradientRelease(gradient);
     UIGraphicsPopContext();
+}
+
++ (UIView *)makeSimpleGradientView:(CGRect)rect startColor:(UIColor *)startColor endColor:(UIColor *)endColor {
+    UIView *gradientView = [[UIView alloc] initWithFrame:rect];
+    
+    CAGradientLayer *gradient = [CAGradientLayer layer];
+    gradient.frame = CGRectMake(0, 0, rect.size.width, rect.size.height);
+    gradient.colors = @[(id)[startColor CGColor], (id)[endColor CGColor]];
+    
+    [gradientView.layer addSublayer:gradient];
+    
+    return gradientView;
 }
 
 + (UIColor *)faviconColor:(NSString *)colorString {
@@ -3272,7 +3387,7 @@
         [gradientView addSubview:titleImageView];
     } else {
         gradientView = [NewsBlurAppDelegate 
-                        makeGradientView:CGRectMake(0, -1, rect.size.width, 10)
+                        makeGradientView:CGRectMake(0, rect.origin.y, rect.size.width, 10)
                         // hard coding the 1024 as a hack for window.frame.size.width
                         startColor:[feed objectForKey:@"favicon_fade"]
                         endColor:[feed objectForKey:@"favicon_color"]
@@ -3358,6 +3473,46 @@
     [titleLabel sizeToFit];
 
     return titleLabel;
+}
+
+- (NSString *)folderTitle:(NSString *)folder {
+    if ([folder isEqualToString:@"river_blurblogs"]) {
+        return @"All Shared Stories";
+    } else if ([folder isEqualToString:@"river_global"]) {
+        return @"Global Shared Stories";
+    } else if ([folder isEqualToString:@"everything"]) {
+        return @"All Stories";
+    } else if ([folder isEqualToString:@"infrequent"]) {
+        return @"Infrequent Site Stories";
+    } else if ([folder isEqualToString:@"read_stories"]) {
+        return @"Read Stories";
+    } else if ([folder isEqualToString:@"saved_searches"]) {
+        return @"Saved Searches";
+    } else if ([folder isEqualToString:@"saved_stories"]) {
+        return @"Saved Stories";
+    } else {
+        return folder;
+    }
+}
+
+- (UIImage *)folderIcon:(NSString *)folder {
+    if ([folder isEqualToString:@"river_global"]) {
+        return [UIImage imageNamed:@"ak-icon-global.png"];
+    } else if ([folder isEqualToString:@"river_blurblogs"]) {
+        return [UIImage imageNamed:@"ak-icon-blurblogs.png"];
+    } else if ([folder isEqualToString:@"everything"]) {
+        return [UIImage imageNamed:@"ak-icon-allstories.png"];
+    } else if ([folder isEqualToString:@"infrequent"]) {
+        return [UIImage imageNamed:@"ak-icon-allstories.png"];
+    } else if ([folder isEqualToString:@"read_stories"]) {
+        return [UIImage imageNamed:@"g_icn_folder_read.png"];
+    } else if ([folder isEqualToString:@"saved_searches"]) {
+        return [UIImage imageNamed:@"g_icn_search.png"];
+    } else if ([folder isEqualToString:@"saved_stories"]) {
+        return [UIImage imageNamed:@"clock.png"];
+    } else {
+        return [UIImage imageNamed:@"g_icn_folder.png"];
+    }
 }
 
 - (void)saveFavicon:(UIImage *)image feedId:(NSString *)filename {

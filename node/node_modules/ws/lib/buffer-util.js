@@ -1,5 +1,7 @@
 'use strict';
 
+const { EMPTY_BUFFER } = require('./constants');
+
 /**
  * Merges an array of buffers into a new buffer.
  *
@@ -9,14 +11,19 @@
  * @public
  */
 function concat(list, totalLength) {
-  const target = Buffer.allocUnsafe(totalLength);
-  var offset = 0;
+  if (list.length === 0) return EMPTY_BUFFER;
+  if (list.length === 1) return list[0];
 
-  for (var i = 0; i < list.length; i++) {
+  const target = Buffer.allocUnsafe(totalLength);
+  let offset = 0;
+
+  for (let i = 0; i < list.length; i++) {
     const buf = list[i];
-    buf.copy(target, offset);
+    target.set(buf, offset);
     offset += buf.length;
   }
+
+  if (offset < totalLength) return target.slice(0, offset);
 
   return target;
 }
@@ -32,7 +39,7 @@ function concat(list, totalLength) {
  * @public
  */
 function _mask(source, mask, output, offset, length) {
-  for (var i = 0; i < length; i++) {
+  for (let i = 0; i < length; i++) {
     output[offset + i] = source[i] ^ mask[i & 3];
   }
 }
@@ -47,9 +54,51 @@ function _mask(source, mask, output, offset, length) {
 function _unmask(buffer, mask) {
   // Required until https://github.com/nodejs/node/issues/9006 is resolved.
   const length = buffer.length;
-  for (var i = 0; i < length; i++) {
+  for (let i = 0; i < length; i++) {
     buffer[i] ^= mask[i & 3];
   }
+}
+
+/**
+ * Converts a buffer to an `ArrayBuffer`.
+ *
+ * @param {Buffer} buf The buffer to convert
+ * @return {ArrayBuffer} Converted buffer
+ * @public
+ */
+function toArrayBuffer(buf) {
+  if (buf.byteLength === buf.buffer.byteLength) {
+    return buf.buffer;
+  }
+
+  return buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength);
+}
+
+/**
+ * Converts `data` to a `Buffer`.
+ *
+ * @param {*} data The data to convert
+ * @return {Buffer} The buffer
+ * @throws {TypeError}
+ * @public
+ */
+function toBuffer(data) {
+  toBuffer.readOnly = true;
+
+  if (Buffer.isBuffer(data)) return data;
+
+  let buf;
+
+  if (data instanceof ArrayBuffer) {
+    buf = Buffer.from(data);
+  } else if (ArrayBuffer.isView(data)) {
+    buf = Buffer.from(data.buffer, data.byteOffset, data.byteLength);
+  } else {
+    buf = Buffer.from(data);
+    toBuffer.readOnly = false;
+  }
+
+  return buf;
 }
 
 try {
@@ -57,16 +106,24 @@ try {
   const bu = bufferUtil.BufferUtil || bufferUtil;
 
   module.exports = {
+    concat,
     mask(source, mask, output, offset, length) {
       if (length < 48) _mask(source, mask, output, offset, length);
       else bu.mask(source, mask, output, offset, length);
     },
+    toArrayBuffer,
+    toBuffer,
     unmask(buffer, mask) {
       if (buffer.length < 32) _unmask(buffer, mask);
       else bu.unmask(buffer, mask);
-    },
-    concat
+    }
   };
 } catch (e) /* istanbul ignore next */ {
-  module.exports = { concat, mask: _mask, unmask: _unmask };
+  module.exports = {
+    concat,
+    mask: _mask,
+    toArrayBuffer,
+    toBuffer,
+    unmask: _unmask
+  };
 }

@@ -645,6 +645,9 @@ If you want to debug a test you should use `gulp test-without-coverage` to run a
 
 ## Change History
 
+- v4.2.5 (2019-11-03)
+    - Security fix: bumped `request-promise-core` which bumps `lodash` to `^4.17.15`. See [vulnerabilty reports](https://snyk.io/vuln/search?q=lodash&type=npm).
+      *(Thanks to @rishabh-chowdhary for reporting this in pull request [#326](https://github.com/request/promise-core/pull/326).)*
 - v4.2.4 (2019-02-14)
     - Corrected mistakenly set `tough-cookie` version, now `^2.3.3`
       *(Thanks to @evocateur for pointing this out.)*

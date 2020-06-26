@@ -264,9 +264,11 @@ APPEND_SLASH            = False
 SESSION_ENGINE          = 'redis_sessions.session'
 TEST_RUNNER             = "utils.testrunner.TestRunner"
 SESSION_COOKIE_NAME     = 'newsblur_sessionid'
-SESSION_COOKIE_AGE      = 60*60*24*365 # 1 year
+SESSION_COOKIE_AGE      = 60*60*24*365*10 # 10 years
 SESSION_COOKIE_DOMAIN   = '.newsblur.com'
+SESSION_COOKIE_HTTPONLY = False
 SENTRY_DSN              = 'https://XXXNEWSBLURXXX@app.getsentry.com/99999999'
+SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
 
 if DEBUG:
     # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
@@ -306,7 +308,7 @@ INSTALLED_APPS = (
     'django_extensions',
     'djcelery',
     # 'kombu.transport.django',
-    'vendor.paypal.standard.ipn',
+    'paypal.standard.ipn',
     'apps.rss_feeds',
     'apps.reader',
     'apps.analyzer',
@@ -627,36 +629,36 @@ DEBUG_TOOLBAR_CONFIG = {
 }
 
 if DEBUG:
-    template_loaders = (
+    template_loaders = [
         'django.template.loaders.filesystem.Loader',
         'django.template.loaders.app_directories.Loader',
-    )
+    ]
 else:
-    template_loaders = (
+    template_loaders = [
         ('django.template.loaders.cached.Loader', (
             'django.template.loaders.filesystem.Loader',
             'django.template.loaders.app_directories.Loader',
         )),
-    )
+    ]
 
 
-BASE_DIR = 'NewsBlur'
+BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'TEMPLATE_DIRS': [os.path.join(CURRENT_DIR, 'templates'),
+        'DIRS': [os.path.join(CURRENT_DIR, 'templates'),
                  os.path.join(CURRENT_DIR, 'vendor/zebra/templates')],
-        'APP_DIRS': True,
-        'TEMPLATE_CONTEXT_PROCESSORS': (
-            "django.contrib.auth.context_processors.auth",
-            "django.template.context_processors.debug",
-            "django.template.context_processors.media",
-            'django.template.context_processors.request',
-        ),
-        'TEMPLATE_LOADERS': template_loaders,
-        'TEMPLATE_DEBUG': DEBUG
-
+        # 'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                "django.contrib.auth.context_processors.auth",
+                "django.template.context_processors.debug",
+                "django.template.context_processors.media",
+                'django.template.context_processors.request',
+            ],
+            'loaders': template_loaders,
+        },
     }
 ]
 # =========
@@ -698,9 +700,16 @@ MONGOANALYTICSDB = connect(MONGO_ANALYTICS_DB.pop('name'), **MONGO_ANALYTICS_DB)
 BROKER_BACKEND = "redis"
 BROKER_URL = "redis://%s:6379/%s" % (REDIS['host'], CELERY_REDIS_DB_NUM)
 CELERY_RESULT_BACKEND = BROKER_URL
-SESSION_REDIS_HOST = REDIS_SESSIONS['host']
-SESSION_REDIS_RETRY_ON_TIMEOUT = True
-SESSION_REDIS_SOCKET_TIMEOUT = 10
+
+SESSION_REDIS = {
+    'host': REDIS_SESSIONS['host'],
+    'port': 6379,
+    'db': SESSION_REDIS_DB,
+    # 'password': 'password',
+    'prefix': '',
+    'socket_timeout': 10,
+    'retry_on_timeout': True
+}
 
 CACHES = {
     'default': {
@@ -721,9 +730,9 @@ REDIS_FEED_UPDATE_POOL     = redis.ConnectionPool(host=REDIS['host'], port=6379,
 REDIS_STORY_HASH_TEMP_POOL = redis.ConnectionPool(host=REDIS['host'], port=6379, db=10)
 # REDIS_CACHE_POOL         = redis.ConnectionPool(host=REDIS['host'], port=6379, db=6) # Duped in CACHES
 REDIS_STORY_HASH_POOL      = redis.ConnectionPool(host=REDIS_STORY['host'], port=6379, db=1)
-REDIS_FEED_READ_POOL       = redis.ConnectionPool(host=SESSION_REDIS_HOST, port=6379, db=1)
-REDIS_FEED_SUB_POOL        = redis.ConnectionPool(host=SESSION_REDIS_HOST, port=6379, db=2)
-REDIS_SESSION_POOL         = redis.ConnectionPool(host=SESSION_REDIS_HOST, port=6379, db=5)
+REDIS_FEED_READ_POOL       = redis.ConnectionPool(host=REDIS_SESSIONS['host'], port=6379, db=1)
+REDIS_FEED_SUB_POOL        = redis.ConnectionPool(host=REDIS_SESSIONS['host'], port=6379, db=2)
+REDIS_SESSION_POOL         = redis.ConnectionPool(host=REDIS_SESSIONS['host'], port=6379, db=5)
 REDIS_PUBSUB_POOL          = redis.ConnectionPool(host=REDIS_PUBSUB['host'], port=6379, db=0)
 
 # ==========

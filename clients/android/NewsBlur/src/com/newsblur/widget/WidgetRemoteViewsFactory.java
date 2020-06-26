@@ -185,6 +185,7 @@ public class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsF
             } else {
                 com.newsblur.util.Log.d(TAG, "Fetched widget stories");
                 processStories(response.stories);
+                FeedUtils.dbHelper.insertStories(response, true);
             }
         }
     }
