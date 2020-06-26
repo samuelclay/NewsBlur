@@ -104,10 +104,7 @@ def dashboard(request, **kwargs):
     statistics        = MStatistics.all()
     social_profile    = MSocialProfile.get_user(user.pk)
     custom_styling    = MCustomStyling.get_user(user.pk)
-
-    start_import_from_google_reader = request.session.get('import_from_google_reader', False)
-    if start_import_from_google_reader:
-        del request.session['import_from_google_reader']
+    preferences       = json.decode(user.profile.preferences)
     
     if not user.is_active:
         url = "https://%s%s" % (Site.objects.get_current().domain,
@@ -118,6 +115,7 @@ def dashboard(request, **kwargs):
 
     return {
         'user_profile'      : user.profile,
+        'preferences'       : preferences,
         'feed_count'        : feed_count,
         'custom_styling'    : custom_styling,
         'account_images'    : range(1, 4),
@@ -125,7 +123,6 @@ def dashboard(request, **kwargs):
         'unmoderated_feeds' : unmoderated_feeds,
         'statistics'        : statistics,
         'social_profile'    : social_profile,
-        'start_import_from_google_reader': start_import_from_google_reader,
         'debug'             : settings.DEBUG,
     }, "reader/dashboard.xhtml"
     
@@ -254,7 +251,7 @@ def load_feeds(request):
     if flat == 'false': flat = False
     
     if flat: return load_feeds_flat(request)
-    
+
     platform = extract_user_agent(request)
     if platform in ['iPhone', 'iPad', 'Androd']:
         # Remove this check once the iOS and Android updates go out which have update_counts=False
@@ -817,7 +814,10 @@ def load_single_feed(request, feed_id):
         # time.sleep(random.randint(2, 7) / 10.0)
         # time.sleep(random.randint(1, 10))
         time.sleep(delay)
-    
+    # if page == 1:
+    #     time.sleep(1)
+    # else:
+    #     time.sleep(20)
     # if page == 2:
     #     assert False
 
