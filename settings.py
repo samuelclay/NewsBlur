@@ -717,7 +717,8 @@ CACHES = {
         'LOCATION': '%s:6379' % REDIS['host'],
         'OPTIONS': {
             'DB': 6,
-            'PARSER_CLASS': 'redis.connection.HiredisParser'
+            'PARSER_CLASS': 'redis.connection.HiredisParser',
+            'SERIALIZER_CLASS': 'redis_cache.serializers.PickleSerializer'
         },
     },
 }
