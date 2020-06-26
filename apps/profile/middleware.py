@@ -106,6 +106,8 @@ class SQLLogToConsoleMiddleware:
         if connection.queries:
             time_elapsed = sum([float(q['time']) for q in connection.queries])
             queries = connection.queries
+            if getattr(connection, 'queriesx', False):
+                queries.extend(connection.queriesx)
             for query in queries:
                 if query.get('mongo'):
                     query['sql'] = "~FM%s: %s" % (query['mongo']['collection'], query['mongo']['query'])
