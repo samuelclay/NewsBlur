@@ -195,6 +195,13 @@ public class BlurDatabaseHelper {
         synchronized (RW_MUTEX) {dbRW.delete(DatabaseConstants.SOCIALFEED_STORY_MAP_TABLE, DatabaseConstants.SOCIALFEED_STORY_USER_ID + " = ?", selArgs);}
     }
 
+    public void deleteSavedSearch(String feedId, String query) {
+        String q = "DELETE FROM " + DatabaseConstants.SAVED_SEARCH_TABLE +
+                " WHERE " + DatabaseConstants.SAVED_SEARCH_FEED_ID + " = '" + feedId + "'" +
+                " AND " + DatabaseConstants.SAVED_SEARCH_QUERY + " = '" + query + "'";
+        synchronized (RW_MUTEX) {dbRW.execSQL(q);}
+    }
+
     public Feed getFeed(String feedId) {
         Cursor c = dbRO.query(DatabaseConstants.FEED_TABLE, null,  DatabaseConstants.FEED_ID + " = ?", new String[] {feedId}, null, null, null);
         Feed result = null;

@@ -111,6 +111,23 @@ public class FeedUtils {
         }.execute();
     }
 
+    public static void deleteSavedSearch(final String feedId, final String query, final Context context, final APIManager apiManager) {
+        new AsyncTask<Void, Void, NewsBlurResponse>() {
+            @Override
+            protected NewsBlurResponse doInBackground(Void... voids) {
+                return apiManager.deleteSavedSearch(feedId, query);
+            }
+
+            @Override
+            protected void onPostExecute(NewsBlurResponse newsBlurResponse) {
+                if (!newsBlurResponse.isError()) {
+                    dbHelper.deleteSavedSearch(feedId, query);
+                    NbActivity.updateAllActivities(NbActivity.UPDATE_METADATA);
+                }
+            }
+        }.execute();
+    }
+
     public static void deleteFeed(final String feedId, final String folderName, final Context context, final APIManager apiManager) {
         new AsyncTask<Void, Void, NewsBlurResponse>() {
             @Override
