@@ -42,7 +42,7 @@ from StringIO import StringIO
 try:
     from apps.social.spam import detect_spammers
 except ImportError:
-    logging.debug(" ---> ~SN~FRCouldn't find ~SBspam.py~SN.")
+    # logging.debug(" ---> ~SN~FRCouldn't find ~SBspam.py~SN.")
     pass
 
 RECOMMENDATIONS_LIMIT = 5
