@@ -8,6 +8,8 @@ import com.newsblur.database.DatabaseConstants;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
 
+import java.util.Comparator;
+
 public class SavedSearch {
 
     @SerializedName("query")
@@ -110,4 +112,11 @@ public class SavedSearch {
         }
         return url;
     }
+
+    public final static Comparator<SavedSearch> SavedSearchComparatorByTitle = new Comparator<SavedSearch>() {
+        @Override
+        public int compare(SavedSearch ss1, SavedSearch ss2) {
+            return String.CASE_INSENSITIVE_ORDER.compare(ss1.feedTitle, ss2.feedTitle);
+        }
+    };
 }

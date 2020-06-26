@@ -4,9 +4,11 @@ import com.newsblur.R;
 import com.newsblur.activity.ItemsList;
 import com.newsblur.activity.NbActivity;
 import com.newsblur.domain.Feed;
+import com.newsblur.domain.SavedSearch;
 import com.newsblur.domain.SocialFeed;
 import com.newsblur.network.APIManager;
 import com.newsblur.util.FeedUtils;
+import com.newsblur.util.UIUtils;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -22,7 +24,9 @@ public class DeleteFeedFragment extends DialogFragment {
 	private static final String FOLDER_NAME = "folder_name";
     private static final String NORMAL_FEED = "normal";
     private static final String SOCIAL_FEED = "social";
-    
+    private static final String SAVED_SEARCH_FEED = "saved_search";
+    private static final String QUERY = "query";
+
     public static DeleteFeedFragment newInstance(Feed feed, String folderName) {
     	DeleteFeedFragment frag = new DeleteFeedFragment();
 		Bundle args = new Bundle();
@@ -44,11 +48,25 @@ public class DeleteFeedFragment extends DialogFragment {
 		return frag;
 	}
 
+	public static DeleteFeedFragment newInstance(SavedSearch savedSearch) {
+        DeleteFeedFragment frag = new DeleteFeedFragment();
+        Bundle args = new Bundle();
+        args.putString(FEED_TYPE, SAVED_SEARCH_FEED);
+        args.putString(FEED_ID, savedSearch.feedId);
+        args.putString(FEED_NAME, savedSearch.feedTitle);
+        args.putString(QUERY, savedSearch.query);
+        frag.setArguments(args);
+        return frag;
+    }
+
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         if (getArguments().getString(FEED_TYPE).equals(NORMAL_FEED)) {
             builder.setMessage(String.format(getResources().getString(R.string.delete_feed_message), getArguments().getString(FEED_NAME)));
+        } else if (getArguments().getString(FEED_TYPE).equals(SAVED_SEARCH_FEED)) {
+            String message = String.format(getResources().getString(R.string.delete_saved_search_message), getArguments().getString(FEED_NAME));
+            builder.setMessage(UIUtils.fromHtml(message));
         } else {
             builder.setMessage(String.format(getResources().getString(R.string.unfollow_message), getArguments().getString(FEED_NAME)));
         }
@@ -57,6 +75,8 @@ public class DeleteFeedFragment extends DialogFragment {
             public void onClick(DialogInterface dialogInterface, int i) {
                 if (getArguments().getString(FEED_TYPE).equals(NORMAL_FEED)) {
                     FeedUtils.deleteFeed(getArguments().getString(FEED_ID), getArguments().getString(FOLDER_NAME), getActivity(), new APIManager(getActivity()));
+                } else if (getArguments().getString(FEED_TYPE).equals(SAVED_SEARCH_FEED)) {
+                    FeedUtils.deleteSavedSearch(getArguments().getString(FEED_ID), getArguments().getString(QUERY), getActivity(), new APIManager(getActivity()));
                 } else {
                     FeedUtils.deleteSocialFeed(getArguments().getString(FEED_ID), getActivity(), new APIManager(getActivity()));
                 }

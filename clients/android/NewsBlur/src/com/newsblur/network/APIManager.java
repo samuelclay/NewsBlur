@@ -579,6 +579,14 @@ public class APIManager {
 		return response.getResponse(gson, NewsBlurResponse.class);
 	}
 
+	public NewsBlurResponse deleteSavedSearch(String feedId, String query) {
+        ContentValues values = new ContentValues();
+        values.put(APIConstants.PARAMETER_FEEDID, feedId);
+        values.put(APIConstants.PARAMETER_QUERY, query);
+        APIResponse response = post(buildUrl(APIConstants.PATH_DELETE_SEARCH), values);
+        return response.getResponse(gson, NewsBlurResponse.class);
+    }
+
     public NewsBlurResponse saveFeedChooser(Set<String> feeds) {
         ValueMultimap values = new ValueMultimap();
         for (String feed : feeds) {

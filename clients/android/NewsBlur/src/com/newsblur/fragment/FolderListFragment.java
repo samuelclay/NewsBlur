@@ -4,7 +4,6 @@ import java.lang.ref.WeakReference;
 import java.util.HashSet;
 import java.util.Set;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -41,7 +40,6 @@ import com.newsblur.activity.ItemsList;
 import com.newsblur.activity.Main;
 import com.newsblur.activity.NbActivity;
 import com.newsblur.activity.ReadStoriesItemsList;
-import com.newsblur.activity.SavedSearchesItemList;
 import com.newsblur.activity.SavedStoriesItemsList;
 import com.newsblur.activity.SocialFeedItemsList;
 import com.newsblur.database.FolderListAdapter;
@@ -272,7 +270,6 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 
 		case ExpandableListView.PACKED_POSITION_TYPE_CHILD: 
             if (adapter.isRowSavedStories(groupPosition)) break;
-            if (adapter.isRowSavedSearches(groupPosition)) break;
             if (currentState == StateFilter.SAVED) break;
 			inflater.inflate(R.menu.context_feed, menu);
             if (adapter.isRowAllSharedStories(groupPosition)) {
@@ -285,9 +282,22 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
                 menu.removeItem(R.id.menu_instafetch_feed);
                 menu.removeItem(R.id.menu_intel);
                 menu.removeItem(R.id.menu_rename_feed);
+                menu.removeItem(R.id.menu_delete_saved_search);
+            } else if (adapter.isRowSavedSearches(groupPosition)) {
+                menu.removeItem(R.id.menu_mark_feed_as_read);
+                menu.removeItem(R.id.menu_delete_feed);
+                menu.removeItem(R.id.menu_unfollow);
+                menu.removeItem(R.id.menu_choose_folders);
+                menu.removeItem(R.id.menu_rename_feed);
+                menu.removeItem(R.id.menu_notifications);
+                menu.removeItem(R.id.menu_mute_feed);
+                menu.removeItem(R.id.menu_unmute_feed);
+                menu.removeItem(R.id.menu_instafetch_feed);
+                menu.removeItem(R.id.menu_intel);
             } else {
                 // normal feeds
                 menu.removeItem(R.id.menu_unfollow);
+                menu.removeItem(R.id.menu_delete_saved_search);
 
                 Feed feed = adapter.getFeed(groupPosition, childPosition);
                 if (feed.active) {
@@ -392,7 +402,13 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
         } else if (item.getItemId() == R.id.menu_intel) {
             FeedIntelTrainerFragment intelFrag = FeedIntelTrainerFragment.newInstance(adapter.getFeed(groupPosition, childPosition), adapter.getChild(groupPosition, childPosition));
             intelFrag.show(getFragmentManager(), FeedIntelTrainerFragment.class.getName());
-        }
+        } else if (item.getItemId() == R.id.menu_delete_saved_search) {
+		    SavedSearch savedSearch = adapter.getSavedSearch(childPosition);
+		    if (savedSearch != null) {
+                DialogFragment deleteFeedFragment = DeleteFeedFragment.newInstance(savedSearch);
+                deleteFeedFragment.show(getFragmentManager(), "dialog");
+            }
+		}
 
 		return super.onContextItemSelected(item);
 	}

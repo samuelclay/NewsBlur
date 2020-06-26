@@ -596,6 +596,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
             SavedSearch savedSearch = SavedSearch.fromCursor(cursor);
             savedSearches.add(savedSearch);
         }
+        Collections.sort(savedSearches, SavedSearch.SavedSearchComparatorByTitle);
         notifyDataSetChanged();
     }
     
