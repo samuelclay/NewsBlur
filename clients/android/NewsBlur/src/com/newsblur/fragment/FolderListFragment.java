@@ -595,7 +595,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
             fs = FeedSet.allSaved();
         } else if (feedId.startsWith("starred:")) {
             intent = new Intent(getActivity(), SavedStoriesItemsList.class);
-            fs = FeedSet.singleFeed(feedId.replace("feed:", ""));
+            fs = FeedSet.singleSavedTag(feedId.replace("starred:", ""));
         } else if (feedId.startsWith("feed:")) {
             intent = new Intent(getActivity(), FeedItemsList.class);
             String cleanFeedId = feedId.replace("feed:", "");

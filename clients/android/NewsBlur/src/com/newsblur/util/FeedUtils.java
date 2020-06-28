@@ -115,7 +115,7 @@ public class FeedUtils {
         new AsyncTask<Void, Void, NewsBlurResponse>() {
             @Override
             protected NewsBlurResponse doInBackground(Void... voids) {
-                return apiManager.deleteSavedSearch(feedId, query);
+                return apiManager.deleteSearch(feedId, query);
             }
 
             @Override
@@ -123,6 +123,23 @@ public class FeedUtils {
                 if (!newsBlurResponse.isError()) {
                     dbHelper.deleteSavedSearch(feedId, query);
                     NbActivity.updateAllActivities(NbActivity.UPDATE_METADATA);
+                }
+            }
+        }.execute();
+    }
+
+    public static void saveSearch(final String feedId, final String query, final Context context, final APIManager apiManager) {
+        new AsyncTask<Void, Void, NewsBlurResponse>() {
+            @Override
+            protected NewsBlurResponse doInBackground(Void... voids) {
+                return apiManager.saveSearch(feedId, query);
+            }
+
+            @Override
+            protected void onPostExecute(NewsBlurResponse newsBlurResponse) {
+                if (!newsBlurResponse.isError()) {
+                    NBSyncService.forceFeedsFolders();
+                    triggerSync(context);
                 }
             }
         }.execute();
@@ -538,7 +555,7 @@ public class FeedUtils {
     }
 
     @Nullable
-    public static StarredCount getStarredFeed(String feedId) {
-        return dbHelper.getStarredFeed(feedId);
+    public static StarredCount getStarredFeedByTag(String feedId) {
+        return dbHelper.getStarredFeedByTag(feedId);
     }
 }

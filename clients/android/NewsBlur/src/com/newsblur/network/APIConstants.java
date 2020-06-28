@@ -72,6 +72,7 @@ public class APIConstants {
     public static final String PATH_INSTA_FETCH = "/rss_feeds/exception_retry";
     public static final String PATH_RENAME_FEED = "/reader/rename_feed";
     public static final String PATH_DELETE_SEARCH = "/reader/delete_search";
+    public static final String PATH_SAVE_SEARCH = "/reader/save_search";
 
     public static String buildUrl(String path) {
         return CurrentUrlBase + path;

@@ -237,6 +237,7 @@
     <string name="unknown_user">Unknown User</string>
     <string name="delete_feed_message">Delete feed \&quot;%s\&quot;?</string>
     <string name="delete_saved_search_message">Delete saved search %s?</string>
+    <string name="add_saved_search_message">Save search \&quot;%s\&quot;?</string>
     <string name="unfollow_message">Unfollow \&quot;%s\&quot;?</string>
     <string name="feed_subscribers">%s subscribers</string>
     <string name="feed_opens">%d opens</string>

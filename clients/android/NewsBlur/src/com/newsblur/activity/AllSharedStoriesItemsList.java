@@ -14,4 +14,9 @@ public class AllSharedStoriesItemsList extends ItemsList {
         UIUtils.setCustomActionBar(this, R.drawable.ak_icon_blurblogs, getResources().getString(R.string.all_shared_stories_title));
 	}
 
+	@Override
+	String getSaveSearchFeedId() {
+		// doesn't have save search option
+		return null;
+	}
 }

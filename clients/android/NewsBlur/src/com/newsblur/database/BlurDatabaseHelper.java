@@ -1044,8 +1044,8 @@ public class BlurDatabaseHelper {
     }
 
     @Nullable
-    public StarredCount getStarredFeed(String feedId) {
-        Cursor c = dbRO.query(DatabaseConstants.STARREDCOUNTS_TABLE, null, DatabaseConstants.STARREDCOUNTS_FEEDID + " = ?", new String[] {feedId}, null, null, null);
+    public StarredCount getStarredFeedByTag(String tag) {
+        Cursor c = dbRO.query(DatabaseConstants.STARREDCOUNTS_TABLE, null, DatabaseConstants.STARREDCOUNTS_TAG + " = ?", new String[] {tag}, null, null, null);
         StarredCount result = null;
         while (c.moveToNext()) {
             result = StarredCount.fromCursor(c);
