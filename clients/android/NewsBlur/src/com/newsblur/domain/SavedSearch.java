@@ -64,7 +64,7 @@ public class SavedSearch {
         } else if (feedId.startsWith("starred")) {
             feedTitle = "Saved Stories";
             String tag = feedId.replace("starred:", "");
-            StarredCount starredFeed = FeedUtils.getStarredFeed(feedId);
+            StarredCount starredFeed = FeedUtils.getStarredFeedByTag(tag);
             if (starredFeed != null) {
                 String tagSlug = tag.replace(" ", "-");
                 if (starredFeed.tag.equals(tag) || starredFeed.tag.equals(tagSlug)) {
@@ -75,8 +75,8 @@ public class SavedSearch {
             Feed feed = FeedUtils.getFeed(feedId.replace("feed:", ""));
             if (feed == null) return null;
             feedTitle = feed.title;
-        } else if (feedId.equals("social:")) {
-            Feed feed = FeedUtils.getFeed(feedId);
+        } else if (feedId.startsWith("social:")) {
+            Feed feed = FeedUtils.getFeed(feedId.replace("social:", ""));
             if (feed == null) return null;
             feedTitle = feed.title;
         }
