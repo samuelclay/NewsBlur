@@ -15,7 +15,7 @@ from apps.analyzer.models import get_classifiers_for_user
 from apps.reader.models import UserSubscription
 from apps.rss_feeds.models import MStory
 from utils.user_functions import ajax_login_required
-from utils import json_functions as json, feedfinder2 as feedfinder
+from utils import json_functions as json, feedfinder_forman as feedfinder
 from utils.feed_functions import relative_timeuntil, relative_timesince
 from utils.user_functions import get_user
 from utils.view_functions import get_argument_or_404
@@ -182,7 +182,7 @@ def load_feed_statistics_embedded(request, feed_id):
             'feed': feed,
         }
     )
-    
+
 def assemble_statistics(user, feed_id):
     timezone = user.profile.timezone
     stats = dict()

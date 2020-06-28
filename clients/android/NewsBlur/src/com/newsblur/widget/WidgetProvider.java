@@ -5,15 +5,20 @@ import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
-import android.widget.RemoteViews;
 
 import com.newsblur.R;
 import com.newsblur.activity.AllStoriesItemsList;
 import com.newsblur.activity.ItemsList;
 import com.newsblur.activity.WidgetConfig;
 import com.newsblur.util.FeedSet;
+import com.newsblur.util.PrefsUtils;
+import com.newsblur.util.WidgetBackground;
+
+import java.util.Set;
 
 public class WidgetProvider extends AppWidgetProvider {
 
@@ -46,6 +51,9 @@ public class WidgetProvider extends AppWidgetProvider {
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         // update each of the app widgets with the remote adapter
         Log.d(TAG, "onUpdate");
+        WidgetUtils.checkWidgetUpdateAlarm(context);
+        WidgetBackground widgetBackground = PrefsUtils.getWidgetBackground(context);
+        Set<String> feedIds = PrefsUtils.getWidgetFeedIds(context);
         for (int appWidgetId : appWidgetIds) {
 
             // Set up the intent that starts the WidgetRemoteViewService, which will
@@ -56,7 +64,13 @@ public class WidgetProvider extends AppWidgetProvider {
             intent.setData(Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME)));
 
             // Instantiate the RemoteViews object for the app widget layout.
-            RemoteViews rv = new RemoteViews(context.getPackageName(), R.layout.view_app_widget);
+            WidgetRemoteViews rv = new WidgetRemoteViews(context.getPackageName(), R.layout.view_app_widget);
+
+            if (widgetBackground == WidgetBackground.DEFAULT) {
+                rv.setViewBackgroundColor(R.id.container_widget, ContextCompat.getColor(context, R.color.widget_background));
+            } else if (widgetBackground == WidgetBackground.TRANSPARENT) {
+                rv.setViewBackgroundColor(R.id.container_widget, Color.TRANSPARENT);
+            }
             // Set up the RemoteViews object to use a RemoteViews adapter.
             // This adapter connects
             // to a RemoteViewsService  through the specified intent.
@@ -67,6 +81,10 @@ public class WidgetProvider extends AppWidgetProvider {
             // It should be in the same layout used to instantiate the RemoteViews
             // object above.
             rv.setEmptyView(R.id.widget_list, R.id.widget_empty_view);
+
+            if (feedIds != null && feedIds.isEmpty()) {
+                rv.setTextViewText(R.id.widget_empty_view, context.getString(R.string.title_widget_setup));
+            }
 
             Intent configIntent = new Intent(context, WidgetProvider.class);
             configIntent.setAction(WidgetUtils.ACTION_OPEN_CONFIG);

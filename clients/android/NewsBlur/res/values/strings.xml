@@ -171,7 +171,7 @@
     <string name="menu_sort_by_subs">Subscribers</string>
     <string name="menu_sort_by_stories_month">Stories Per Month</string>
     <string name="menu_sort_by_recent_story">Most Recent Story</string>
-    <string name="menu_sort_by_number_opens">Number of opens</string>
+    <string name="menu_sort_by_number_opens">Number Of Opens</string>
     <string name="menu_sort_order">Sort Order</string>
     <string name="menu_sort_order_ascending">Ascending</string>
     <string name="menu_sort_order_descending">Descending</string>
@@ -180,7 +180,10 @@
     <string name="menu_folder_view_flat">Flat</string>
     <string name="menu_select_all">Select All</string>
     <string name="menu_select_none">Select None</string>
-    
+    <string name="menu_widget_background">Widget Background</string>
+    <string name="menu_widget_background_default">Default</string>
+    <string name="menu_widget_background_transparent">Transparent</string>
+
     <string name="toast_hold_to_select">Press and hold to select text</string>
 
     <string name="logout_warning">Are you sure you want to log out?</string>
@@ -240,6 +243,7 @@
     <string name="widget">Widget</string>
     <string name="title_widget_setup">Tap to setup in NewsBlur</string>
     <string name="title_no_subscriptions">No active subscriptions detected</string>
+    <string name="title_widget_loading">Loading...</string>
 
     <string name="settings_cat_offline">Offline</string>
     <string name="settings_enable_offline">Download Stories</string>

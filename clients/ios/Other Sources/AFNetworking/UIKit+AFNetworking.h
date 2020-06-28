@@ -31,7 +31,8 @@
     #import "AFImageDownloader.h"
     #import "AFNetworkActivityIndicatorManager.h"
     #import "UIRefreshControl+AFNetworking.h"
-    #import "UIWebView+AFNetworking.h"
+// DJS: just disabling this, since it isn't used, rather than updating AFNetworking, to avoid potential incompatibilties.
+//    #import "UIWebView+AFNetworking.h"
 #endif
 
     #import "UIActivityIndicatorView+AFNetworking.h"

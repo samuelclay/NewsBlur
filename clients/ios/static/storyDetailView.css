@@ -52,6 +52,21 @@
     font-family: "Helvetica";
 }
 
+@font-face {
+    font-family: "ChronicleSSm-Book";
+    src: url("ChronicleSSm-Book.otf");
+}
+
+@font-face {
+    font-family: "GothamNarrow-Book";
+    src: url("GothamNarrow-Book.otf");
+}
+
+@font-face {
+    font-family: "WhitneySSm-Book";
+    src: url("WhitneySSm-Book-Bas.otf");
+}
+
 /* Line spacing */
 .NB-story {
     line-height: 1.5em;
@@ -210,7 +225,6 @@ body {
     -webkit-text-size-adjust: 100%; /* Prevent font scaling in landscape while allowing user zoom */
     font-size: 14px;
     line-height: 120%;
-    overflow: hidden;
     font-family: Helvetica;
 }
 
@@ -537,7 +551,7 @@ div + p {
     max-width: 100%;
     display: none;
     -webkit-touch-callout: none;
-    -webkit-user-select: none; /* Disable selection/copy in UIWebView */
+    -webkit-user-select: none; /* Disable selection/copy in the web view */
 }
 
 /* Get iOS 11 Smart Invert to leave images and videos alone. */

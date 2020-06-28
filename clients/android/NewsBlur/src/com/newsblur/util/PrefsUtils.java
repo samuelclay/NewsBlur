@@ -892,6 +892,9 @@ public class PrefsUtils {
         if (prefs.contains(PrefConstants.WIDGET_CONFIG_FOLDER_VIEW)) {
             editor.remove(PrefConstants.WIDGET_CONFIG_FOLDER_VIEW);
         }
+        if (prefs.contains(PrefConstants.WIDGET_BACKGROUND)) {
+            editor.remove(PrefConstants.WIDGET_BACKGROUND);
+        }
         editor.apply();
     }
 
@@ -928,6 +931,18 @@ public class PrefsUtils {
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
         Editor editor = prefs.edit();
         editor.putString(PrefConstants.WIDGET_CONFIG_FOLDER_VIEW, folderViewFilter.toString());
+        editor.commit();
+    }
+
+    public static WidgetBackground getWidgetBackground(Context context) {
+        SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        return WidgetBackground.valueOf(preferences.getString(PrefConstants.WIDGET_BACKGROUND, WidgetBackground.DEFAULT.name()));
+    }
+
+    public static void setWidgetBackground(Context context, WidgetBackground widgetBackground) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        Editor editor = prefs.edit();
+        editor.putString(PrefConstants.WIDGET_BACKGROUND, widgetBackground.toString());
         editor.commit();
     }
 }

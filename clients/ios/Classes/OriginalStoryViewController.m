@@ -56,11 +56,13 @@
     [self.view addSubview:webView];
     [self.webView addObserver:self forKeyPath:@"estimatedProgress" options:NSKeyValueObservingOptionNew context:NULL];
     
-    CGFloat progressBarHeight = 2.f;
-    CGRect navigaitonBarBounds = self.navigationController.navigationBar.bounds;
-    CGRect barFrame = CGRectMake(0, navigaitonBarBounds.origin.y + navigaitonBarBounds.size.height - progressBarHeight, navigaitonBarBounds.size.width, progressBarHeight);
-    progressView = [[NJKWebViewProgressView alloc] initWithFrame:barFrame];
+    CGFloat progressBarHeight = 1.f;
+    CGRect navigationBarFrame = self.navigationController.navigationBar.bounds;
+    CGRect barFrame = CGRectMake(0, CGRectGetMaxY(navigationBarFrame) - progressBarHeight - 2, navigationBarFrame.size.width, progressBarHeight);
+    progressView = [[UIProgressView alloc] initWithFrame:barFrame];
+    progressView.progressViewStyle = UIProgressViewStyleBar;
     progressView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin;
+    [self.navigationController.navigationBar addSubview:progressView];
     
     [[ThemeManager themeManager] addThemeGestureRecognizerToView:self.webView];
     
@@ -92,22 +94,11 @@
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     appDelegate.originalStoryViewNavController.navigationBar.hidden = YES;
-//    self.swiper = [[SloppySwiper alloc] initWithNavigationController:self.navigationController];
-//    self.navigationController.delegate = self.swiper;
-
-}
-
-- (void)viewDidAppear:(BOOL)animated {
-    [super viewDidAppear:animated];
-
-    [self.navigationController.navigationBar addSubview:progressView];
     [self resetProgressBar];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
-    self.navigationController.navigationBar.alpha = 1;
-    [progressView removeFromSuperview];
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
@@ -132,24 +123,18 @@
 }
 
 - (void)resetProgressBar {
-    if (finishedLoading) return;
-    
-    progressView.progressBarView.alpha = 0.0f;
+    progressView.alpha = 0.0f;
     [progressView setProgress:0 animated:NO];
-    [progressView setProgress:NJKInitialProgressValue animated:YES];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
     if ([keyPath isEqualToString:@"estimatedProgress"] && object == self.webView) {
+        progressView.alpha = 1.0f;
         [progressView setProgress:webView.estimatedProgress animated:YES];
         
-        if (webView.estimatedProgress == NJKInteractiveProgressValue) {
-            // The web view has finished parsing the document,
-            // but is still loading sub-resources
-        }
-        
-        if (webView.estimatedProgress == NJKFinalProgressValue) {
+        if (webView.estimatedProgress >= 100) {
             finishedLoading = YES;
+            [self resetProgressBar];
         }
     }
     else {
@@ -347,6 +332,7 @@
     [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
     [self updateTitle:self.webView];
     finishedLoading = YES;
+    [self resetProgressBar];
 }
 
 - (void)webView:(WKWebView *)webView didFailLoadWithError:(NSError *)error
@@ -360,6 +346,7 @@
         [self informError:error];   
     }
     finishedLoading = YES;
+    [self resetProgressBar];
 }
 
 # pragma mark -

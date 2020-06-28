@@ -4,7 +4,7 @@ NEWSBLUR.ReaderIntro = function(options) {
     };
     var intro_page = NEWSBLUR.assets.preference('intro_page');
     
-    _.bindAll(this, 'close', 'start_import_from_google_reader', 'post_connect');
+    _.bindAll(this, 'close', 'post_connect');
     this.options = $.extend({
       'page_number': intro_page && _.isNumber(intro_page) && intro_page <= 4 ? intro_page : 1
     }, defaults, options);
@@ -355,7 +355,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
                 this.post_connect({});
             }
         }, this), 1000);
-        _gaq.push(['_trackEvent', 'reader_intro', 'Connect to ' + service.name + ' attempt']);
+        // _gaq.push(['_trackEvent', 'reader_intro', 'Connect to ' + service.name + ' attempt']);
         
         NEWSBLUR.assets.preference('has_found_friends', true);
         NEWSBLUR.reader.check_hide_getting_started();
@@ -364,7 +364,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
     disconnect: function(service) {
         var $service = $('.NB-friends-service-'+service, this.$modal);
         $('.NB-friends-service-connect', $service).text('Disconnecting...');
-        _gaq.push(['_trackEvent', 'reader_intro', 'Disconnect from ' + service.name]);
+        // _gaq.push(['_trackEvent', 'reader_intro', 'Disconnect from ' + service.name]);
         NEWSBLUR.assets.disconnect_social_service(service, _.bind(function(data) {
             this.services = data.services;
             this.make_find_friends_and_services();
@@ -386,10 +386,10 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
             $('.NB-intro-services', this.$modal).append($error);
             $error.animate({'opacity': 1}, {'duration': 1000});
             this.resize();
-            _gaq.push(['_trackEvent', 'reader_intro', 'Connect to service error']);
+            // _gaq.push(['_trackEvent', 'reader_intro', 'Connect to service error']);
         } else {
             this.fetch_friends();
-            _gaq.push(['_trackEvent', 'reader_intro', 'Connect to service success']);
+            // _gaq.push(['_trackEvent', 'reader_intro', 'Connect to service success']);
         }
     },
     
@@ -455,7 +455,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
       
       clearTimeout(this.sync_interval);
       NEWSBLUR.assets.preference('intro_page', page_number);
-      _gaq.push(['_trackEvent', 'reader_intro', 'Page ' + this.page_number]);
+      // _gaq.push(['_trackEvent', 'reader_intro', 'Page ' + this.page_number]);
     },
     
     advance_import_carousel: function(page, options) {
@@ -536,82 +536,6 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
     // ==========
     // = Import =
     // ==========
-    
-    google_reader_connect: function(options) {
-        options = options || {};
-        var window_options = "location=0,status=0,width=800,height=500";
-        var url = "/import/authorize";
-        this.flags.starred_only = !!options.starred_only;
-        $(".NB-page-2-importing", this.$modal).text(options.starred_only ? 
-                                                    "Importing your sites and stories..." : 
-                                                    "Importing your sites...");
-        this.connect_window = window.open(url, '_blank', window_options);
-        clearInterval(this.connect_window_timer);
-        this.connect_window_timer = setInterval(_.bind(function() {
-            console.log(["post connect window?", this.connect_window, this.connect_window.closed, this.connect_window.location]);
-            try {
-                if (!this.connect_window || 
-                    !this.connect_window.location || 
-                    this.connect_window.closed) {
-                    this.start_import_from_google_reader(options);
-                }
-            } catch (err) {
-                this.start_import_from_google_reader(options);
-            }
-        }, this), 1000);
-
-        NEWSBLUR.reader.flags.importing_from_google_reader = true;
-    },
-    
-    start_import_from_google_reader: function(data) {
-        console.log(["start_import_from_google_reader", data]);
-        clearInterval(this.connect_window_timer);
-        data.starred_only = this.flags.starred_only;
-        var $error = $('.NB-intro-import-google .NB-error', this.$modal);
-        var $loading = $('.NB-intro-imports-progress .NB-loading', this.$modal);
-        if (data && data.error) {
-            $error.show().text(data.error);
-            this.advance_import_carousel(0);
-        } else {
-            $error.hide();
-            NEWSBLUR.reader.flags.importing_from_google_reader = false;
-            this.advance_import_carousel(1, data);
-            $loading.addClass('NB-active');
-            if (data && data.starred_only) {
-                    NEWSBLUR.assets.start_import_starred_stories_from_google_reader(
-                        _.bind(this.finish_import_from_google_reader, this));                
-            } else {
-                    NEWSBLUR.assets.start_import_from_google_reader(
-                        _.bind(this.finish_import_from_google_reader, this));
-            }
-        }
-    },
-    
-    finish_import_from_google_reader: function(data) {
-        var self = this;
-        console.log(["finish_import_from_google_reader", data]);
-        var $loading = $('.NB-intro-imports-progress .NB-loading', this.$modal);
-        
-        NEWSBLUR.assets.load_feeds(_.bind(function() {
-            $loading.removeClass('NB-active');
-            this.advance_import_carousel(2);
-            if (data.delayed) {
-                NEWSBLUR.reader.flags.delayed_import = true;
-                self.count_feeds({fake_count: data.feed_count});
-                $('.NB-intro-import-delayed', self.$modal).show();
-                $('.NB-intro-import-restart', self.$modal).hide();
-                $('.NB-intro-import-message', self.$modal).hide();
-            } else if (data.code < 0) {
-                $('.NB-intro-import-delayed', self.$modal).hide();
-                $('.NB-intro-import-restart', self.$modal).hide();
-                $('.NB-intro-import-message', self.$modal).show().addClass('NB-error').text(data.message);
-            } else {
-                $('.NB-intro-import-delayed', self.$modal).hide();
-                $('.NB-intro-import-restart', self.$modal).show();
-                $('.NB-intro-import-message', self.$modal).show().removeClass('NB-error').text("All done!");
-            }
-        }, this));
-    },
     
     handle_opml_upload: function() {
         var self = this;
@@ -746,10 +670,6 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
             self.close_and_load_newsblur_blog();
         });
         
-        $.targetIs(e, { tagSelector: '.NB-google-reader-oauth' }, function($t, $p) {
-            e.preventDefault();
-            self.google_reader_connect();
-        });
         $.targetIs(e, { tagSelector: '.NB-starredimport-button' }, function($t, $p) {
             e.preventDefault();
             // self.google_reader_connect({'starred_only': true});

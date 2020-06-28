@@ -36,8 +36,8 @@ from apps.rss_feeds.text_importer import TextImporter
 from apps.search.models import SearchStory, SearchFeed
 from apps.statistics.rstats import RStats
 from utils import json_functions as json
-from utils import feedfinder2 as feedfinder
-from utils import feedfinder as feedfinder_old
+from utils import feedfinder_forman
+from utils import feedfinder_pilgrim
 from utils import urlnorm
 from utils import log as logging
 from utils.fields import AutoOneToOneField
@@ -170,7 +170,7 @@ class Feed(models.Model):
     
     @property
     def is_newsletter(self):
-        return self.feed_address.startswith('newsletter:')
+        return self.feed_address.startswith('newsletter:') or self.feed_address.startswith('http://newsletter:')
         
     def canonical(self, full=False, include_favicon=True):
         feed = {
@@ -456,13 +456,13 @@ class Feed(models.Model):
             return feed
         
         @timelimit(10)
-        def _feedfinder(url):
-            found_feed_urls = feedfinder.find_feeds(url)
+        def _feedfinder_forman(url):
+            found_feed_urls = feedfinder_forman.find_feeds(url)
             return found_feed_urls
 
         @timelimit(10)
-        def _feedfinder_old(url):
-            found_feed_urls = feedfinder_old.feeds(url)
+        def _feedfinder_pilgrim(url):
+            found_feed_urls = feedfinder_pilgrim.feeds(url)
             return found_feed_urls
         
         # Normalize and check for feed_address, dupes, and feed_link
@@ -482,13 +482,13 @@ class Feed(models.Model):
             feed = feed[offset]
         else:
             try:
-                found_feed_urls = _feedfinder(url)
+                found_feed_urls = _feedfinder_forman(url)
             except TimeoutError:
                 logging.debug('   ---> Feed finder timed out...')
                 found_feed_urls = []
             if not found_feed_urls:
                 try:
-                    found_feed_urls = _feedfinder_old(url)
+                    found_feed_urls = _feedfinder_pilgrim(url)
                 except TimeoutError:
                     logging.debug('   ---> Feed finder old timed out...')
                     found_feed_urls = []
@@ -634,13 +634,13 @@ class Feed(models.Model):
             found_feed_urls = []
             try:
                 logging.debug(" ---> Checking: %s" % self.feed_address)
-                found_feed_urls = feedfinder.find_feeds(self.feed_address)
+                found_feed_urls = feedfinder_forman.find_feeds(self.feed_address)
                 if found_feed_urls:
                     feed_address = found_feed_urls[0]
             except KeyError:
                 pass
             if not len(found_feed_urls) and self.feed_link:
-                found_feed_urls = feedfinder.find_feeds(self.feed_link)
+                found_feed_urls = feedfinder_forman.find_feeds(self.feed_link)
                 if len(found_feed_urls) and found_feed_urls[0] != self.feed_address:
                     feed_address = found_feed_urls[0]
         

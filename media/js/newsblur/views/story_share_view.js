@@ -6,7 +6,6 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
         "click .NB-sideoption-share-unshare"    : "mark_story_as_unshared",
         "click .NB-sideoption-share-crosspost-twitter"  : "toggle_twitter",
         "click .NB-sideoption-share-crosspost-facebook" : "toggle_facebook",
-        "click .NB-sideoption-share-crosspost-appdotnet" : "toggle_appdotnet",
         "keypress .NB-sideoption-share-comments"   : "autosize",
         "keyup .NB-sideoption-share-comments"   : "update_share_button_label",
         "keydown .NB-sideoption-share-comments" : "maybe_close"
@@ -35,8 +34,7 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
             <textarea class="NB-sideoption-share-comments"><%= story.get("shared_comments") %></textarea>\
             <% if (!profile.get("private") && \
                    ((social_services.twitter && social_services.twitter.twitter_uid) || \
-                    (social_services.facebook && social_services.facebook.facebook_uid) || \
-                    (social_services.facebook && social_services.facebook.appdotnet_uid))) { %>\
+                    (social_services.facebook && social_services.facebook.facebook_uid))) { %>\
                 <div class="NB-sideoption-share-crosspost">\
                     <% _.each(social_services, function(service, service_name) { %>\
                         <% if (service[service_name+"_uid"]) { %>\
@@ -64,7 +62,6 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
         var $unshare_button = this.$('.NB-sideoption-share-unshare');
         var $twitter_button = this.$('.NB-sideoption-share-crosspost-twitter');
         var $facebook_button = this.$('.NB-sideoption-share-crosspost-facebook');
-        var $appdotnet_button = this.$('.NB-sideoption-share-crosspost-appdotnet');
         
         if (options.close ||
             ($sideoption.hasClass('NB-active') && !options.resize_open)) {
@@ -82,7 +79,6 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
             $unshare_button.toggleClass('NB-hidden', !this.model.get("shared"));
             $twitter_button.removeClass('NB-active');
             $facebook_button.removeClass('NB-active');
-            $appdotnet_button.removeClass('NB-active');
             this.update_share_button_label();
             this.$('textarea').autosize();
 
@@ -220,7 +216,6 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
         var $share_menu = $share_button_menu.closest('.NB-sideoption-share');
         var $twitter_button = this.$('.NB-sideoption-share-crosspost-twitter');
         var $facebook_button = this.$('.NB-sideoption-share-crosspost-facebook');
-        var $appdotnet_button = this.$('.NB-sideoption-share-crosspost-appdotnet');
         var $comments_sideoptions = this.$('.NB-sideoption-share-comments');
         var $comments_menu = $('.NB-sideoption-share-comments', $share_menu);
         var comments = _.string.trim((options.source == 'menu' ? $comments_menu : $comments_sideoptions).val());
@@ -236,7 +231,6 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
         var post_to_services = _.compact([
             $twitter_button.hasClass('NB-active') && 'twitter',
             $facebook_button.hasClass('NB-active') && 'facebook',
-            $appdotnet_button.hasClass('NB-active') && 'appdotnet'
         ]);
         
         $share_button.addClass('NB-saving').addClass('NB-disabled').text('Sharing...');
@@ -394,13 +388,7 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
         
         $facebook_button.toggleClass('NB-active', !$facebook_button.hasClass('NB-active'));
     },
-    
-    toggle_appdotnet: function() {
-        var $appdotnet_button = this.$('.NB-sideoption-share-crosspost-appdotnet');
         
-        $appdotnet_button.toggleClass('NB-active', !$appdotnet_button.hasClass('NB-active'));
-    },
-    
     maybe_close: function(e) {
         if (e.which == 27) {
             e.preventDefault();

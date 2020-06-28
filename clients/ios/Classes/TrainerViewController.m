@@ -44,6 +44,7 @@
                              action:@selector(doCloseDialog:)];
     self.navigationItem.rightBarButtonItem = done;
     
+    self.webView.navigationDelegate = self;
     [self hideGradientBackground:webView];
     [self.webView.scrollView setDelaysContentTouches:YES];
     [self.webView.scrollView setDecelerationRate:UIScrollViewDecelerationRateNormal];
@@ -140,9 +141,9 @@
     NSString *jsString = [NSString stringWithFormat:@"document.getElementById('NB-trainer').innerHTML = '%@';",
                           headerString];
     
-    [self.webView stringByEvaluatingJavaScriptFromString:jsString];
+    [self.webView evaluateJavaScript:jsString completionHandler:nil];
     
-    [self.webView stringByEvaluatingJavaScriptFromString:@"attachFastClick({skipEvent: true});"];
+    [self.webView evaluateJavaScript:@"attachFastClick({skipEvent: true});" completionHandler:nil];
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
@@ -545,16 +546,13 @@
 - (void)changeTitle:(id)sender score:(int)score {
     NSString *feedId = [NSString stringWithFormat:@"%@", [appDelegate.activeStory
                                                           objectForKey:@"story_feed_id"]];
-    NSString *selectedTitle = [self.webView
-                               stringByEvaluatingJavaScriptFromString:@"window.getSelection().toString()"];
-
-    [self.appDelegate toggleTitleClassifier:selectedTitle feedId:feedId score:score];
+    [self.webView evaluateJavaScript:@"window.getSelection().toString()" completionHandler:^(id result, NSError *error) {
+        [self.appDelegate toggleTitleClassifier:result feedId:feedId score:score];
+    }];
 }
 
-
-- (BOOL)webView:(UIWebView *)webView
-shouldStartLoadWithRequest:(NSURLRequest *)request
- navigationType:(UIWebViewNavigationType)navigationType {
+- (void)webView:(WKWebView *)webView decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler {
+    NSURLRequest *request = navigationAction.request;
     NSURL *url = [request URL];
     NSArray *urlComponents = [url pathComponents];
     NSString *action = @"";
@@ -570,23 +568,22 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         if ([action isEqualToString:@"classify-author"]) {
             NSString *author = [NSString stringWithFormat:@"%@", [urlComponents objectAtIndex:2]];
             [self.appDelegate toggleAuthorClassifier:author feedId:feedId];
-            return NO;
         } else if ([action isEqualToString:@"classify-tag"]) {
             NSString *tag = [NSString stringWithFormat:@"%@", [urlComponents objectAtIndex:2]];
             [self.appDelegate toggleTagClassifier:tag feedId:feedId];
-            return NO;
         } else if ([action isEqualToString:@"classify-title"]) {
             NSString *title = [NSString stringWithFormat:@"%@", [urlComponents objectAtIndex:2]];
             [self.appDelegate toggleTitleClassifier:title feedId:feedId score:0];
-            return NO;
         } else if ([action isEqualToString:@"classify-feed"]) {
             NSString *feedId = [NSString stringWithFormat:@"%@", [urlComponents objectAtIndex:2]];
             [self.appDelegate toggleFeedClassifier:feedId];
-            return NO;
         }
+        
+        decisionHandler(WKNavigationActionPolicyCancel);
+        return;
     }
     
-    return YES;
+    decisionHandler(WKNavigationActionPolicyAllow);
 }
 
 @end

@@ -59,8 +59,8 @@ class DBProfilerMiddleware:
 
     def process_response(self, request, response):
         if hasattr(request, 'sql_times_elapsed'):
-            middleware = SQLLogToConsoleMiddleware()
-            middleware.process_celery(self)
+            # middleware = SQLLogToConsoleMiddleware()
+            # middleware.process_celery(self)
             # logging.debug(" ---> ~FGProfiling~FB app: %s" % request.sql_times_elapsed)
             self._save_times(request.sql_times_elapsed)
         return response
@@ -106,6 +106,8 @@ class SQLLogToConsoleMiddleware:
         if connection.queries:
             time_elapsed = sum([float(q['time']) for q in connection.queries])
             queries = connection.queries
+            if getattr(connection, 'queriesx', False):
+                queries.extend(connection.queriesx)
             for query in queries:
                 if query.get('mongo'):
                     query['sql'] = "~FM%s: %s" % (query['mongo']['collection'], query['mongo']['query'])

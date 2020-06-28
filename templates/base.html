@@ -30,7 +30,6 @@
       'debug'                   : {{ debug|yesno:"true,false" }}
     };
     NEWSBLUR.Flags = {
-      'start_import_from_google_reader': {{ start_import_from_google_reader|yesno:"true,false" }}
     };
     NEWSBLUR.Preferences = {
       'unread_view'             : 0,
@@ -93,7 +92,8 @@
       'story_share_facebook'    : true,
       'story_share_readitlater' : false,
       'story_share_instapaper'  : true,
-      'story_share_email'       : true
+      'story_share_email'       : true,
+      'theme'                   : 'auto'
     };
     NEWSBLUR.URLs = {
       'upload-avatar'           : "{% url "upload-avatar" %}",
@@ -120,22 +120,6 @@
     {% endif %}
   {% endif %}
   
-  <script type="text/javascript">
-    var _gaq = _gaq || [];
-    _gaq.push(['_setAccount', 'UA-8371683-2']);
-    _gaq.push(['_setDomainName', "{% current_domain %}"]);
-    _gaq.push(['_trackPageview']);
-  </script>
-  
-  {% if not debug %}
-  <script type="text/javascript">
-    (function() {
-      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-    })();
-  </script>
-  {% endif %}
 </head>
 
 <body class="{% block bodyclass %}{% endblock %} {% if user.is_staff %}NB-staff{% endif %} {% if user_profile.is_premium %}NB-premium{% endif %}">
@@ -144,7 +128,7 @@
 
   <div class="NB-body-inner">
       <div class="NB-splash-info NB-splash-top">
-        <a href="{% url "index" %}"><img class="NB-splash-title" src="{{ MEDIA_URL }}/img/logo_newsblur_blur.png" /></a>
+        <a href="{% url "index" %}"><div class="NB-splash-title NB-splash-blurred-logo"></div></a>
       </div>
   
       {% block content %}{% endblock %}

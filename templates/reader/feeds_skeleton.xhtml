@@ -17,6 +17,9 @@
                     {% endif %}
                 </div>
                 <div class="NB-feeds-header-user-name">{{ social_profile.username }}</div>
+                <div class="NB-feeds-header-collapse-sidebar">
+                    <img src="{{ MEDIA_URL }}/img/reader/chevron_sq_left.png">
+                </div>
                 <div class="NB-feeds-header-user-interactions">
                     <div class="NB-feeds-header-user-interactions-badge NB-hidden"></div>
                     <img src="{{ MEDIA_URL }}/img/icons/circular/nav_icn_activity_active.png">
@@ -213,6 +216,8 @@
                 </li>
             </ul>
             
+            <div class="NB-story-titles-expand-sidebar"></div>
+            
             <div class="NB-story-titles-header"></div>
             
         </div>
@@ -303,7 +308,6 @@
                 <div class="NB-story-pane-container">
                     <iframe id="feed_iframe" class="NB-feed-iframe"></iframe>
                     <div class="NB-feed-story-view NB-view-hidden">
-                        <div class="NB-feed-story-view-floater"></div>
                         <div class="NB-feed-stories-container">
                             <div class="NB-feed-story-view-header NB-feedbar"></div>
                             <ul class="NB-feed-stories"></ul>

@@ -1,6 +1,6 @@
 # CSSOM
 
-CSSOM.js is a CSS parser written in pure JavaScript. It also a partial implementation of [CSS Object Model](http://dev.w3.org/csswg/cssom/). 
+CSSOM.js is a CSS parser written in pure JavaScript. It is also a partial implementation of [CSS Object Model](http://dev.w3.org/csswg/cssom/). 
 
     CSSOM.parse("body {color: black}")
     -> {
@@ -22,12 +22,11 @@ CSSOM.js is a CSS parser written in pure JavaScript. It also a partial implement
 Works well in Google Chrome 6+, Safari 5+, Firefox 3.6+, Opera 10.63+.
 Doesn't work in IE < 9 because of unsupported getters/setters.
 
-To use CSSOM.js in the browser you might want to build a one-file version that exposes CSSOM global variable:
+To use CSSOM.js in the browser you might want to build a one-file version that exposes a single `CSSOM` global variable:
 
     ➤ git clone https://github.com/NV/CSSOM.git
     ➤ cd CSSOM
-    ➤ npm install -d
-    ➤ ./node_modules/.bin/jake
+    ➤ node build.js
     build/CSSOM.js is done
 
 To use it with Node.js or any other CommonJS loader:
@@ -36,7 +35,7 @@ To use it with Node.js or any other CommonJS loader:
 
 ## Don’t use it if...
 
-You parse CSS to mungle, minify or reformat the following code:
+You parse CSS to mungle, minify or reformat code like this:
 
 ```css
 div {
@@ -47,8 +46,7 @@ div {
 
 This pattern is often used to give browsers that don’t understand linear gradients a fallback solution (e.g. gray color in the example).
 In CSSOM, `background: gray` [gets overwritten](http://nv.github.io/CSSOM/docs/parse.html#css=div%20%7B%0A%20%20%20%20%20%20background%3A%20gray%3B%0A%20%20%20%20background%3A%20linear-gradient(to%20bottom%2C%20white%200%25%2C%20black%20100%25)%3B%0A%7D).
-The last same-name property always overwrites all the previous ones.
-
+It doesn't get preserved.
 
 If you do CSS mungling, minification, image inlining, and such, CSSOM.js is no good for you, considere using one of the following:
 
@@ -58,9 +56,9 @@ If you do CSS mungling, minification, image inlining, and such, CSSOM.js is no g
   * [mensch](https://github.com/brettstimmerman/mensch)
 
 
-## [Specs](http://nv.github.com/CSSOM/spec/)
+## [Tests](http://nv.github.com/CSSOM/spec/)
 
-To run specs locally:
+To run tests locally:
 
     ➤ git submodule init
     ➤ git submodule update

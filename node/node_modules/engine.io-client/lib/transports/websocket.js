@@ -15,7 +15,9 @@ if (typeof WebSocket !== 'undefined') {
   BrowserWebSocket = WebSocket;
 } else if (typeof self !== 'undefined') {
   BrowserWebSocket = self.WebSocket || self.MozWebSocket;
-} else {
+}
+
+if (typeof window === 'undefined') {
   try {
     NodeWebSocket = require('ws');
   } catch (e) { }
@@ -90,19 +92,23 @@ WS.prototype.doOpen = function () {
 
   var uri = this.uri();
   var protocols = this.protocols;
-  var opts = {
-    agent: this.agent,
-    perMessageDeflate: this.perMessageDeflate
-  };
 
-  // SSL options for Node.js client
-  opts.pfx = this.pfx;
-  opts.key = this.key;
-  opts.passphrase = this.passphrase;
-  opts.cert = this.cert;
-  opts.ca = this.ca;
-  opts.ciphers = this.ciphers;
-  opts.rejectUnauthorized = this.rejectUnauthorized;
+  var opts = {};
+
+  if (!this.isReactNative) {
+    opts.agent = this.agent;
+    opts.perMessageDeflate = this.perMessageDeflate;
+
+    // SSL options for Node.js client
+    opts.pfx = this.pfx;
+    opts.key = this.key;
+    opts.passphrase = this.passphrase;
+    opts.cert = this.cert;
+    opts.ca = this.ca;
+    opts.ciphers = this.ciphers;
+    opts.rejectUnauthorized = this.rejectUnauthorized;
+  }
+
   if (this.extraHeaders) {
     opts.headers = this.extraHeaders;
   }
