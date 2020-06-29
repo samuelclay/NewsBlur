@@ -523,6 +523,12 @@
 //        }
 //    }
     
+    NSString *storyClassSuffix = @"";
+    
+    if (appDelegate.storiesCollection.activeFeed[@"is_newsletter"]) {
+        storyClassSuffix = @" NB-newsletter";
+    }
+    
     NSString *riverClass = (appDelegate.storiesCollection.isRiverView ||
                             appDelegate.storiesCollection.isSocialView ||
                             appDelegate.storiesCollection.isSavedView ||
@@ -580,7 +586,7 @@
     
     NSString *htmlContent = [NSString stringWithFormat:@
                              "%@" // header
-                             "        <div id=\"NB-story\" class=\"NB-story\">%@</div>"
+                             "        <div id=\"NB-story\" class=\"NB-story%@\">%@</div>"
                              "        <div class=\"NB-text-view-premium-only\">%@</div>"
                              "        <div id=\"NB-sideoptions-container\">%@</div>"
                              "        <div id=\"NB-comments-wrapper\">"
@@ -589,6 +595,7 @@
                              "        %@"
                              "%@", // footer
                              htmlTop,
+                             storyClassSuffix,
                              storyContent,
                              premiumTextString,
                              sharingHtmlString,
