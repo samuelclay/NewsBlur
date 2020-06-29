@@ -145,6 +145,7 @@ del {
 .NB-newsletter span,
 .NB-newsletter td {
     color: #c0c0c0 !important;
+    background-color: #444444;
 }
 .NB-newsletter td {
     background-color: #191b1c;
@@ -156,6 +157,7 @@ del {
 .NB-newsletter h5,
 .NB-newsletter h6 {
     color: #c0c0c0 !important;
+    background-color: #444444;
 }
 
 /* Comments */
