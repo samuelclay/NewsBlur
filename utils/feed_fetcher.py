@@ -28,6 +28,7 @@ from utils import log as logging
 from utils.feed_functions import timelimit, TimeoutError
 from qurl import qurl
 from BeautifulSoup import BeautifulSoup
+from mongoengine import connect, connection
 from django.utils import feedgenerator
 from django.utils.html import linebreaks
 from django.utils.encoding import smart_unicode
@@ -237,7 +238,7 @@ class FetchFeed:
                 return            
         
         if channel_id:
-            video_ids_xml = requests.get("https://www.youtube.com/feeds/videos.xml?channel_id=%s" % channel_id, verify=False)
+            video_ids_xml = requests.get("https://www.youtube.com/feeds/videos.xml?channel_id=%s" % channel_id)
             channel_json = requests.get("https://www.googleapis.com/youtube/v3/channels?part=snippet&id=%s&key=%s" %
                                        (channel_id, settings.YOUTUBE_API_KEY))
             channel = json.decode(channel_json.content)
@@ -257,7 +258,7 @@ class FetchFeed:
                 return
             channel_url = "https://www.youtube.com/playlist?list=%s" % list_id
         elif username:
-            video_ids_xml = requests.get("https://www.youtube.com/feeds/videos.xml?user=%s" % username, verify=False)
+            video_ids_xml = requests.get("https://www.youtube.com/feeds/videos.xml?user=%s" % username)
             description = "YouTube videos uploaded by %s" % username
         else:
             return
@@ -641,6 +642,12 @@ class Dispatcher:
         return Feed.get_by_id(feed_id)
         
     def process_feed_wrapper(self, feed_queue):
+        connection._connections = {}
+        connection._connection_settings ={}
+        connection._dbs = {}
+        settings.MONGODB = connect(settings.MONGO_DB_NAME, **settings.MONGO_DB)
+        settings.MONGOANALYTICSDB = connect(settings.MONGO_ANALYTICS_DB_NAME, **settings.MONGO_ANALYTICS_DB)
+        
         delta = None
         current_process = multiprocessing.current_process()
         identity = "X"

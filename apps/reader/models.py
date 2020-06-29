@@ -310,7 +310,7 @@ class UserSubscription(models.Model):
         
         pipeline = rt.pipeline()
         for story_hash_group in chunks(story_hashes, 100):
-            pipeline.zadd(ranked_stories_keys, **dict(story_hash_group))
+            pipeline.zadd(ranked_stories_keys, dict(story_hash_group))
         pipeline.execute()
         story_hashes = range_func(ranked_stories_keys, offset, limit)
 
@@ -325,7 +325,7 @@ class UserSubscription(models.Model):
                                                    cutoff_date=cutoff_date)
             if unread_story_hashes:
                 for unread_story_hash_group in chunks(unread_story_hashes, 100):
-                    rt.zadd(unread_ranked_stories_keys, **dict(unread_story_hash_group))
+                    rt.zadd(unread_ranked_stories_keys, dict(unread_story_hash_group))
             unread_feed_story_hashes = range_func(unread_ranked_stories_keys, offset, limit)
         
         rt.expire(ranked_stories_keys, 60*60)
