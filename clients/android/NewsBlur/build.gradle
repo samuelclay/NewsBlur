@@ -22,7 +22,6 @@ repositories {
 
 apply plugin: 'com.android.application'
 apply plugin: 'checkstyle'
-apply plugin: 'findbugs'
 
 dependencies {
     implementation 'com.android.support:support-core-utils:28.0.0'
