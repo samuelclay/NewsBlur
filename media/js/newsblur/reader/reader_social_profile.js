@@ -132,7 +132,7 @@ _.extend(NEWSBLUR.ReaderSocialProfile.prototype, {
     load_images_and_resize: function() {
         var $images = $('img', this.$modal);
         var image_count = $images.length;
-        $images.load(_.bind(function() {
+        $images.on('load', _.bind(function() {
             if (image_count > 1) {
                 image_count -= 1;
             } else {

@@ -36,6 +36,8 @@ so open a PR there if you'd like to add mime types.
 
 ## API
 
+<!-- eslint-disable no-unused-vars -->
+
 ```js
 var mime = require('mime-types')
 ```
@@ -46,11 +48,13 @@ All functions return `false` if input is invalid or not found.
 
 Lookup the content-type associated with a file.
 
+<!-- eslint-disable no-undef -->
+
 ```js
-mime.lookup('json')             // 'application/json'
-mime.lookup('.md')              // 'text/markdown'
-mime.lookup('file.html')        // 'text/html'
-mime.lookup('folder/file.js')   // 'application/javascript'
+mime.lookup('json') // 'application/json'
+mime.lookup('.md') // 'text/markdown'
+mime.lookup('file.html') // 'text/html'
+mime.lookup('folder/file.js') // 'application/javascript'
 mime.lookup('folder/.htaccess') // false
 
 mime.lookup('cats') // false
@@ -64,8 +68,10 @@ content-type, otherwise the given content-type is used. Then if the
 content-type does not already have a `charset` parameter, `mime.charset`
 is used to get the default charset and add to the returned content-type.
 
+<!-- eslint-disable no-undef -->
+
 ```js
-mime.contentType('markdown')  // 'text/x-markdown; charset=utf-8'
+mime.contentType('markdown') // 'text/x-markdown; charset=utf-8'
 mime.contentType('file.json') // 'application/json; charset=utf-8'
 mime.contentType('text/html') // 'text/html; charset=utf-8'
 mime.contentType('text/html; charset=iso-8859-1') // 'text/html; charset=iso-8859-1'
@@ -78,6 +84,8 @@ mime.contentType(path.extname('/path/to/file.json')) // 'application/json; chars
 
 Get the default extension for a content-type.
 
+<!-- eslint-disable no-undef -->
+
 ```js
 mime.extension('application/octet-stream') // 'bin'
 ```
@@ -85,6 +93,8 @@ mime.extension('application/octet-stream') // 'bin'
 ### mime.charset(type)
 
 Lookup the implied default charset of a content-type.
+
+<!-- eslint-disable no-undef -->
 
 ```js
 mime.charset('text/markdown') // 'UTF-8'

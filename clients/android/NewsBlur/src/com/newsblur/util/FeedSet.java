@@ -1,5 +1,6 @@
 package com.newsblur.util;
 
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import java.io.Serializable;
@@ -29,9 +30,11 @@ public class FeedSet implements Serializable {
     private boolean isAllRead;
     private boolean isGlobalShared;
     private boolean isInfrequent;
+    private boolean isForWidget;
 
     private String folderName;
     private String searchQuery;
+    private String searchFeedId;
     private boolean isFilterSaved = false;
     private boolean muted = false;
 
@@ -121,6 +124,16 @@ public class FeedSet implements Serializable {
     }
 
     /**
+     * Convenience constructor for a single saved search.
+     */
+    public static FeedSet singleSavedSearch(String feedId, String searchQuery) {
+        FeedSet fs = new FeedSet();
+        fs.searchQuery = searchQuery;
+        fs.searchFeedId = feedId;
+        return fs;
+    }
+
+    /**
      * Convenience constructor for global shared stories feed.
      */
     public static FeedSet globalShared() {
@@ -135,6 +148,22 @@ public class FeedSet implements Serializable {
     public static FeedSet allSocialFeeds() {
         FeedSet fs = new FeedSet();
         fs.socialFeeds = Collections.EMPTY_MAP;
+        return fs;
+    }
+
+    /**
+     * Convenience constructor for widget feed.
+     */
+    public static FeedSet widgetFeeds(@Nullable Set<String> feedIds){
+        FeedSet fs = new FeedSet();
+        fs.isForWidget = true;
+        if (feedIds != null) {
+            fs.feeds = new HashSet<>(feedIds.size());
+            fs.feeds.addAll(feedIds);
+            fs.feeds = Collections.unmodifiableSet(fs.feeds);
+        } else {
+            fs.feeds = Collections.EMPTY_SET;
+        }
         return fs;
     }
 
@@ -161,6 +190,13 @@ public class FeedSet implements Serializable {
      */
     public Set<String> getMultipleFeeds() {
         if (feeds != null && ((feeds.size() > 1) || (folderName != null))) return feeds; else return null;
+    }
+
+    /**
+     * Gets a set of all feed IDs if there are any or null otherwise.
+     */
+    public Set<String> getAllFeeds() {
+        if (feeds != null) return feeds; else return null;
     }
 
     /**
@@ -201,6 +237,10 @@ public class FeedSet implements Serializable {
         return ((savedTags != null) && (savedTags.size() == 1));
     }
 
+    public boolean isForWidget() {
+        return this.isForWidget;
+    }
+
     /**
      * Gets a single saved tag iff there is only one or null otherwise.
      */
@@ -239,6 +279,10 @@ public class FeedSet implements Serializable {
 
     public String getSearchQuery() {
         return this.searchQuery;
+    }
+
+    public String getSearchFeedId() {
+        return this.searchFeedId;
     }
 
     public void setFilterSaved(boolean isFilterSaved) {

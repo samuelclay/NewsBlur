@@ -54,6 +54,15 @@ public class Feed implements Comparable<Feed>, Serializable {
 	@SerializedName("num_subscribers")
 	public String subscribers;
 
+	@SerializedName("feed_opens")
+    public int feedOpens;
+
+	@SerializedName("last_story_date")
+    public String lastStoryDate;
+
+	@SerializedName("average_stories_per_month")
+    public int storiesPerMonth;
+
 	@SerializedName("feed_title")
 	public String title;
 
@@ -85,6 +94,9 @@ public class Feed implements Comparable<Feed>, Serializable {
 		values.put(DatabaseConstants.FEED_FAVICON_URL, faviconUrl);
 		values.put(DatabaseConstants.FEED_LINK, feedLink);
 		values.put(DatabaseConstants.FEED_SUBSCRIBERS, subscribers);
+		values.put(DatabaseConstants.FEED_OPENS, feedOpens);
+		values.put(DatabaseConstants.FEED_LAST_STORY_DATE, lastStoryDate);
+		values.put(DatabaseConstants.FEED_AVERAGE_STORIES_PER_MONTH, storiesPerMonth);
 		values.put(DatabaseConstants.FEED_TITLE, title);
 		values.put(DatabaseConstants.FEED_UPDATED_SECONDS, lastUpdated);
         values.put(DatabaseConstants.FEED_NOTIFICATION_TYPES, DatabaseConstants.flattenStringList(notificationTypes));
@@ -113,6 +125,9 @@ public class Feed implements Comparable<Feed>, Serializable {
 		feed.neutralCount = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.FEED_NEUTRAL_COUNT));
 		feed.positiveCount = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.FEED_POSITIVE_COUNT));
 		feed.subscribers = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_SUBSCRIBERS));
+		feed.feedOpens = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.FEED_OPENS));
+		feed.storiesPerMonth = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.FEED_AVERAGE_STORIES_PER_MONTH));
+		feed.lastStoryDate = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_LAST_STORY_DATE));
 		feed.title = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_TITLE));
         feed.lastUpdated = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.FEED_UPDATED_SECONDS));
         feed.notificationTypes = DatabaseConstants.unflattenStringList(cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_NOTIFICATION_TYPES)));

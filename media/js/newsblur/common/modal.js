@@ -17,7 +17,7 @@ NEWSBLUR.Modal.prototype = {
     open_modal: function(callback) {
         var self = this;
         
-        this.$modal.modal({
+        this.simplemodal = this.$modal.modal({
             'minWidth': this.options.width || 600,
             'maxWidth': this.options.width || 600,
             'overlayClose': this.options.overlayClose,
@@ -38,7 +38,7 @@ NEWSBLUR.Modal.prototype = {
                         // $(window).resize();
                         self.resize();
                         self.flags.modal_loaded = true;
-                    });
+                    }, 0);
                 });
             },
             'onShow': function(dialog) {

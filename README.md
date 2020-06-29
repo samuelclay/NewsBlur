@@ -137,7 +137,6 @@ these after the installation below.
     the `fabfile.py`. You should also have MySQL/PostgreSQL and MongoDB already installed.
 
         fab -R local setup_python
-        fab -R local setup_imaging
         fab -R local setup_mongoengine
         fab -R local setup_forked_mongoengine
         fab -R local setup_repo_local_settings

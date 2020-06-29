@@ -11,6 +11,8 @@
 
 @interface ShareViewController () <NSURLSessionDelegate>
 
+@property (nonatomic, strong) NSString *itemTitle;
+
 @end
 
 @implementation ShareViewController
@@ -26,6 +28,8 @@
 }
 
 - (void)didSelectPost {
+    self.itemTitle = nil;
+    
     NSItemProvider *itemProvider = [self providerWithURL];
     
     NSLog(@"ShareExt: didSelectPost");
@@ -55,6 +59,12 @@
     for (NSExtensionItem *extensionItem in self.extensionContext.inputItems) {
         for (NSItemProvider *itemProvider in extensionItem.attachments) {
             if ([itemProvider hasItemConformingToTypeIdentifier:(NSString *)kUTTypeURL]) {
+                self.itemTitle = extensionItem.attributedTitle.string;
+                
+                if (!self.itemTitle.length) {
+                    self.itemTitle = extensionItem.attributedContentText.string;
+                }
+                
                 return itemProvider;
             }
         }
@@ -79,7 +89,12 @@
     NSUserDefaults *defaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.com.newsblur.NewsBlur-Group"];
     NSString *host = [defaults objectForKey:@"share:host"];
     NSString *token = [defaults objectForKey:@"share:token"];
+    NSString *title = self.itemTitle;
     NSString *comments = self.contentText;
+    
+    if (title && [comments isEqualToString:title]) {
+        comments = @"";
+    }
     
     if (text && [comments isEqualToString:text]) {
         comments = @"";
@@ -87,6 +102,7 @@
     
     NSCharacterSet *characterSet = [NSCharacterSet URLQueryAllowedCharacterSet];
     NSString *encodedURL = url ? [url.absoluteString stringByAddingPercentEncodingWithAllowedCharacters:characterSet] : @"";
+    NSString *encodedTitle = title ? [title stringByAddingPercentEncodingWithAllowedCharacters:characterSet] : @"";
     NSString *encodedContent = text ? [text stringByAddingPercentEncodingWithAllowedCharacters:characterSet] : @"";
     NSString *encodedComments = [comments stringByAddingPercentEncodingWithAllowedCharacters:characterSet];
     //                        NSInteger time = [[NSDate date] timeIntervalSince1970];
@@ -96,7 +112,7 @@
     NSURL *requestURL = [NSURL URLWithString:[NSString stringWithFormat:@"%@/api/share_story/%@", host, token]];
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:requestURL];
     request.HTTPMethod = @"POST";
-    NSString *postBody = [NSString stringWithFormat:@"story_url=%@&title=&content=%@&comments=%@", encodedURL, encodedContent, encodedComments];
+    NSString *postBody = [NSString stringWithFormat:@"story_url=%@&title=%@&content=%@&comments=%@", encodedURL, encodedTitle, encodedContent, encodedComments];
     request.HTTPBody = [postBody dataUsingEncoding:NSUTF8StringEncoding];
     NSURLSessionTask *myTask = [mySession dataTaskWithRequest:request];
     [myTask resume];

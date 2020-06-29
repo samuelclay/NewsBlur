@@ -280,7 +280,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
             }
         }).attr('src', this.model.image_url(index)).each(function() {
             // fail-safe for cached images which sometimes don't trigger "load" events
-            if (this.complete) $(this).load();
+            if (this.complete) $(this).trigger('load');
         });
     },
     

@@ -118,4 +118,8 @@ public class FeedItemsList extends ItemsList {
 		return true;
 	}
 
+    @Override
+    String getSaveSearchFeedId() {
+        return "feed:" + feed.feedId;
+    }
 }

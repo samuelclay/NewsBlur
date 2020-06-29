@@ -21,6 +21,7 @@ import butterknife.Bind;
 import com.newsblur.R;
 import com.newsblur.fragment.ItemSetFragment;
 import com.newsblur.fragment.ReadFilterDialogFragment;
+import com.newsblur.fragment.SaveSearchFragment;
 import com.newsblur.fragment.StoryOrderDialogFragment;
 import com.newsblur.fragment.TextSizeDialogFragment;
 import com.newsblur.service.NBSyncService;
@@ -40,7 +41,8 @@ import com.newsblur.util.UIUtils;
 public abstract class ItemsList extends NbActivity implements StoryOrderChangedListener, ReadFilterChangedListener, OnSeekBarChangeListener {
 
     public static final String EXTRA_FEED_SET = "feed_set";
-
+    public static final String EXTRA_STORY_HASH = "story_hash";
+    public static final String EXTRA_WIDGET_STORY = "widget_story";
 	private static final String STORY_ORDER = "storyOrder";
 	private static final String READ_FILTER = "readFilter";
     private static final String DEFAULT_FEED_VIEW = "defaultFeedView";
@@ -67,7 +69,10 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
         // reduce UI lag, or in case somehow we got redisplayed in a zero-story state
         FeedUtils.prepareReadingSession(fs, false);
 
-        if (PrefsUtils.isAutoOpenFirstUnread(this)) {
+        if (getIntent().getBooleanExtra(EXTRA_WIDGET_STORY, false)) {
+            String hash = (String) getIntent().getSerializableExtra(EXTRA_STORY_HASH);
+            UIUtils.startReadingActivity(fs, hash, this);
+        } else if (PrefsUtils.isAutoOpenFirstUnread(this)) {
             if (FeedUtils.dbHelper.getUnreadCount(fs, intelState) > 0) {
                 UIUtils.startReadingActivity(fs, Reading.FIND_FIRST_UNREAD, this);
             }
@@ -88,14 +93,18 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
 			transaction.commit();
 		}
 
+        String activeSearchQuery;
         if (bundle != null) {
-            String activeSearchQuery = bundle.getString(BUNDLE_ACTIVE_SEARCH_QUERY);
-            if (activeSearchQuery != null) {
-                searchQueryInput.setText(activeSearchQuery);
-                searchQueryInput.setVisibility(View.VISIBLE);
-                fs.setSearchQuery(activeSearchQuery);
-            }
+            activeSearchQuery = bundle.getString(BUNDLE_ACTIVE_SEARCH_QUERY);
+        } else {
+            activeSearchQuery = fs.getSearchQuery();
         }
+        if (activeSearchQuery != null) {
+            searchQueryInput.setText(activeSearchQuery);
+            searchQueryInput.setVisibility(View.VISIBLE);
+            fs.setSearchQuery(activeSearchQuery);
+        }
+
         searchQueryInput.setOnKeyListener(new OnKeyListener() {
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if ((keyCode == KeyEvent.KEYCODE_BACK) && (event.getAction() == KeyEvent.ACTION_DOWN)) {
@@ -220,6 +229,12 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
             menu.findItem(R.id.menu_theme_black).setChecked(true);
         }
 
+        if (!TextUtils.isEmpty(searchQueryInput.getText())) {
+            menu.findItem(R.id.menu_save_search).setVisible(true);
+        } else {
+            menu.findItem(R.id.menu_save_search).setVisible(false);
+        }
+
 		return true;
 	}
 
@@ -274,6 +289,14 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
         } else if (item.getItemId() == R.id.menu_list_style_grid_c) {
             PrefsUtils.updateStoryListStyle(this, fs, StoryListStyle.GRID_C);
             itemSetFragment.updateStyle();
+        }
+        if (item.getItemId() == R.id.menu_save_search) {
+            String feedId = getSaveSearchFeedId();
+            if (feedId != null) {
+                String query = searchQueryInput.getText().toString();
+                SaveSearchFragment frag = SaveSearchFragment.newInstance(feedId, query);
+                frag.show(getSupportFragmentManager(), SaveSearchFragment.class.getName());
+            }
         }
 	
 		return false;
@@ -391,4 +414,6 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
          */
         overridePendingTransition(R.anim.slide_in_from_left, R.anim.slide_out_to_right);
     }
+
+    abstract String getSaveSearchFeedId();
 }

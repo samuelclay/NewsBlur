@@ -1,4 +1,0 @@
-#RewriteEngine on
-#RewriteCond %{HTTP_REFERER} !^$
-#RewriteCond %{HTTP_REFERER} !^https?://(www\.)?feedvalidator\.org(/|$) [NC]
-#RewriteRule .*\.(gif|jpg|png)$ - [F,L]

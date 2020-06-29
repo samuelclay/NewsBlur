@@ -630,7 +630,7 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
                 // its position (after its own images are loaded).
                 story.set('images_loaded', false);
                 (function(story, image_count) {
-                    story.story_view.$('.NB-feed-story-content img').load(function() {
+                    story.story_view.$('.NB-feed-story-content img').on('load', function() {
                         // NEWSBLUR.log(['Loaded image', story.get('story_title'), image_count]);
                         if (image_count <= 1) {
                             story.set('images_loaded', true);
