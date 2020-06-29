@@ -2185,34 +2185,15 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         }
     }
     
-    if (!everything && !infrequent && !read && !saved) {
-        NSString *deleteText = [NSString stringWithFormat:@"Delete %@",
-                                appDelegate.storiesCollection.isRiverView ?
-                                @"this entire folder" :
-                                @"this site"];
-        
-        [viewController addTitle:deleteText iconName:@"menu_icn_delete.png" selectionShouldDismiss:NO handler:^{
-            [self confirmDeleteSite:weakViewController.navigationController];
-        }];
-        
-        [viewController addTitle:@"Move to another folder" iconName:@"menu_icn_move.png" selectionShouldDismiss:NO handler:^{
-            [self openMoveView:weakViewController.navigationController];
-        }];
-    }
-    
     if (!infrequent && !saved && !read) {
-        NSString *renameText = [NSString stringWithFormat:@"Rename this %@", appDelegate.storiesCollection.isRiverView ? @"folder" : @"site"];
+        NSString *manageText = [NSString stringWithFormat:@"Manage this %@", appDelegate.storiesCollection.isRiverView ? @"folder" : @"site"];
         
-        [viewController addTitle:renameText iconName:@"menu_icn_rename.png" selectionShouldDismiss:YES handler:^{
-            [self openRenameSite];
+        [viewController addTitle:manageText iconName:@"menu_icn_move.png" selectionShouldDismiss:NO handler:^{
+            [self manageSite:weakViewController.navigationController manageText:manageText everything:everything];
         }];
     }
     
     if (!appDelegate.storiesCollection.isRiverView && !infrequent && !saved && !read) {
-        [viewController addTitle:@"Mute this site" iconName:@"menu_icn_mute.png" selectionShouldDismiss:NO handler:^{
-            [self confirmMuteSite:weakViewController.navigationController];
-        }];
-        
         [viewController addTitle:@"Train this site" iconName:@"menu_icn_train.png" selectionShouldDismiss:YES handler:^{
             [self openTrainSite];
         }];
@@ -2356,6 +2337,41 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         [self requestFailed:error];
     }];
+}
+
+- (void)manageSite:(UINavigationController *)menuNavigationController manageText:(NSString *)manageText everything:(BOOL)everything {
+    MenuViewController *viewController = [MenuViewController new];
+    __weak MenuViewController *weakViewController = viewController;
+    viewController.title = manageText;
+    
+    if (!everything) {
+        NSString *deleteText = [NSString stringWithFormat:@"Delete %@",
+                                appDelegate.storiesCollection.isRiverView ?
+                                @"this entire folder" :
+                                @"this site"];
+        
+        [viewController addTitle:deleteText iconName:@"menu_icn_delete.png" selectionShouldDismiss:NO handler:^{
+            [self confirmDeleteSite:weakViewController.navigationController];
+        }];
+        
+        [viewController addTitle:@"Move to another folder" iconName:@"menu_icn_move.png" selectionShouldDismiss:NO handler:^{
+            [self openMoveView:weakViewController.navigationController];
+        }];
+    }
+    
+   NSString *renameText = [NSString stringWithFormat:@"Rename this %@", appDelegate.storiesCollection.isRiverView ? @"folder" : @"site"];
+    
+    [viewController addTitle:renameText iconName:@"menu_icn_rename.png" selectionShouldDismiss:YES handler:^{
+        [self openRenameSite];
+    }];
+    
+    if (!appDelegate.storiesCollection.isRiverView) {
+        [viewController addTitle:@"Mute this site" iconName:@"menu_icn_mute.png" selectionShouldDismiss:NO handler:^{
+            [self confirmMuteSite:weakViewController.navigationController];
+        }];
+    }
+    
+    [menuNavigationController pushViewController:viewController animated:YES];
 }
 
 - (void)confirmDeleteSite:(UINavigationController *)menuNavigationController {
