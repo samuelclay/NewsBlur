@@ -137,6 +137,24 @@ del {
     background-color: #685253
 }
 
+.NB-newsletter p,
+.NB-newsletter div,
+.NB-newsletter span,
+.NB-newsletter td {
+    color: #c0c0c0 !important;
+}
+.NB-newsletter td {
+    background-color: #191b1c;
+}
+.NB-newsletter h1,
+.NB-newsletter h2,
+.NB-newsletter h3,
+.NB-newsletter h4,
+.NB-newsletter h5,
+.NB-newsletter h6 {
+    color: #c0c0c0 !important;
+}
+
 /* Comments */
 
 .NB-story-comments-group:last-child {
