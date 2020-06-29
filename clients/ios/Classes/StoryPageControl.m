@@ -478,9 +478,7 @@
     BOOL shouldHideStatusBar = [preferences boolForKey:@"story_hide_status_bar"];
     BOOL isNavBarHidden = self.navigationController.navigationBarHidden;
     
-    self.statusBarBackgroundView.hidden = YES; shouldHideStatusBar || !isNavBarHidden || !appDelegate.isPortrait;
-    
-    NSLog(@"⚠️ updateStatusBarState: %@", isNavBarHidden ? @"nav hidden" : @"nav shown");  // log
+    self.statusBarBackgroundView.hidden = shouldHideStatusBar || !isNavBarHidden || !appDelegate.isPortrait;
 }
 
 - (BOOL)prefersStatusBarHidden {
@@ -1592,7 +1590,7 @@
         self.statusBarBackgroundView = [[UIView alloc] initWithFrame:statusRect];
         self.statusBarBackgroundView.backgroundColor = self.navigationController.navigationBar.barTintColor;
         
-        [self.view addSubview:self.statusBarBackgroundView];
+        [self.navigationController.view addSubview:self.statusBarBackgroundView];
         self.statusBarBackgroundView.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin;
         
         [self updateStatusBarState];
