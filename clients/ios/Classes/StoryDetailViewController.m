@@ -523,9 +523,13 @@
 //        }
 //    }
     
+    NSString *feedIdStr = [NSString stringWithFormat:@"%@",
+                           [self.activeStory
+                            objectForKey:@"story_feed_id"]];
+    NSDictionary *feed = [appDelegate getFeed:feedIdStr];
     NSString *storyClassSuffix = @"";
     
-    if (appDelegate.storiesCollection.activeFeed[@"is_newsletter"]) {
+    if (feed[@"is_newsletter"]) {
         storyClassSuffix = @" NB-newsletter";
     }
     
