@@ -13,7 +13,7 @@ from utils import json_functions as json
 
 class LastSeenMiddleware(object):
     def __init__(self, get_response):
-            self.get_response = get_response
+        self.get_response = get_response
 
     def process_response(self, request, response):
         if ((request.path == '/' or
@@ -41,16 +41,23 @@ class LastSeenMiddleware(object):
         return response
 
     def __call__(self, request):
-        response = self.get_response(request)
+        response = None
+        if hasattr(self, 'process_request'):
+            response = self.process_request(request)
+        if not response:
+            response = self.get_response(request)
+        if hasattr(self, 'process_response'):
+            response = self.process_response(request, response)
 
         return response
 
 class DBProfilerMiddleware:
     def __init__(self, get_response):
-            self.get_response = get_response
+        self.get_response = get_response
 
     def process_request(self, request): 
         setattr(request, 'activated_segments', [])
+        print(" ---> Setting activated_segments", request.activated_segments)
         if ((request.path.startswith('/reader/feed') or
              request.path.startswith('/reader/river')) and
             random.random() < .01):
@@ -106,13 +113,19 @@ class DBProfilerMiddleware:
         pipe.execute()
 
     def __call__(self, request):
-        response = self.get_response(request)
+        response = None
+        if hasattr(self, 'process_request'):
+            response = self.process_request(request)
+        if not response:
+            response = self.get_response(request)
+        if hasattr(self, 'process_response'):
+            response = self.process_response(request, response)
 
         return response
 
 class SQLLogToConsoleMiddleware:
     def __init__(self, get_response):
-            self.get_response = get_response
+        self.get_response = get_response
 
     def activated(self, request):
         return (settings.DEBUG_QUERIES or 
@@ -158,7 +171,13 @@ class SQLLogToConsoleMiddleware:
         self.process_response(profiler, None)
 
     def __call__(self, request):
-        response = self.get_response(request)
+        response = None
+        if hasattr(self, 'process_request'):
+            response = self.process_request(request)
+        if not response:
+            response = self.get_response(request)
+        if hasattr(self, 'process_response'):
+            response = self.process_response(request, response)
 
         return response
 
@@ -268,7 +287,7 @@ SIMPSONS_QUOTES = [
 
 class SimpsonsMiddleware:
     def __init__(self, get_response):
-            self.get_response = get_response
+        self.get_response = get_response
 
     def process_response(self, request, response):
         quote = random.choice(SIMPSONS_QUOTES)
@@ -278,14 +297,20 @@ class SimpsonsMiddleware:
         return response
 
     def __call__(self, request):
-        response = self.get_response(request)
+        response = None
+        if hasattr(self, 'process_request'):
+            response = self.process_request(request)
+        if not response:
+            response = self.get_response(request)
+        if hasattr(self, 'process_response'):
+            response = self.process_response(request, response)
 
         return response
         
 class ServerHostnameMiddleware:
 
     def __init__(self, get_response):
-            self.get_response = get_response
+        self.get_response = get_response
 
     def process_response(self, request, response):
         response["X-gunicorn-server"] = settings.SERVER_NAME
@@ -293,7 +318,13 @@ class ServerHostnameMiddleware:
         return response
 
     def __call__(self, request):
-        response = self.get_response(request)
+        response = None
+        if hasattr(self, 'process_request'):
+            response = self.process_request(request)
+        if not response:
+            response = self.get_response(request)
+        if hasattr(self, 'process_response'):
+            response = self.process_response(request, response)
 
         return response
 
@@ -306,8 +337,9 @@ class TimingMiddleware:
         setattr(request, 'start_time', time.time())
 
     def __call__(self, request):
-        self.process_request(request)
-        response = self.get_response(request)
+        response = self.process_request(request)
+        if not response:
+            response = self.get_response(request)
 
         return response
 BANNED_USER_AGENTS = (
@@ -320,7 +352,7 @@ BANNED_USERNAMES = (
 
 class UserAgentBanMiddleware:
     def __init__(self, get_response):
-            self.get_response = get_response
+        self.get_response = get_response
 
     def process_request(self, request):
         user_agent = request.environ.get('HTTP_USER_AGENT', 'missing').lower()
@@ -351,8 +383,13 @@ class UserAgentBanMiddleware:
             return HttpResponse(json.encode(data), status=403, mimetype='text/json')
     
     def __call__(self, request):
-
-        response = self.get_response(request)
+        response = None
+        if hasattr(self, 'process_request'):
+            response = self.process_request(request)
+        if not response:
+            response = self.get_response(request)
+        if hasattr(self, 'process_response'):
+            response = self.process_response(request, response)
 
         return response
 

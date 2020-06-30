@@ -12,7 +12,7 @@ from bson.errors import InvalidBSON
 class MongoDumpMiddleware(object):    
 
     def __init__(self, get_response):
-            self.get_response = get_response
+        self.get_response = get_response
 
     def activated(self, request):
         return (settings.DEBUG_QUERIES or 
@@ -80,6 +80,7 @@ class MongoDumpMiddleware(object):
 
     def __call__(self, request):
         response = self.get_response(request)
+        response = self.process_response(request, response)
 
         return response
 
