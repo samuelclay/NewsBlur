@@ -154,7 +154,6 @@ class TwitterFetcher:
                 logging.debug('   ***> [%-30s] ~FRTwitter user expired, disconnecting twitter: %s: %s' % 
                               (self.feed.log_title[:30], self.address, e))
                 self.feed.save_feed_history(560, "Twitter Error: Expired token")
-                social_services.disconnect_twitter()
                 return
             elif 'not found' in message:
                 logging.debug('   ***> [%-30s] ~FRTwitter user not found, disconnecting twitter: %s: %s' % 
@@ -206,7 +205,7 @@ class TwitterFetcher:
     def fetch_list_timeline(self, list_id):
         twitter_api = self.twitter_api()
         if not twitter_api:
-            return
+            return None, None
         
         try:
             list_timeline = twitter_api.list_timeline(list_id=list_id, tweet_mode='extended')
@@ -214,7 +213,7 @@ class TwitterFetcher:
             logging.debug('   ***> [%-30s] ~FRTwitter list fetch failed, disconnecting twitter: %s: %s' % 
                           (self.feed.log_title[:30], self.address, e))
             self.feed.save_feed_history(560, "Twitter Error: %s" % (e))
-            return
+            return None, None
         except tweepy.error.TweepError as e:
             message = str(e).lower()
             if ((len(e.args) >= 2 and e.args[2] == 63) or
@@ -223,28 +222,27 @@ class TwitterFetcher:
                 logging.debug('   ***> [%-30s] ~FRTwitter failed, user suspended, disconnecting twitter: %s: %s' % 
                               (self.feed.log_title[:30], self.address, e))
                 self.feed.save_feed_history(560, "Twitter Error: User suspended")
-                return
+                return None, None
             elif 'suspended' in message:
                 logging.debug('   ***> [%-30s] ~FRTwitter user suspended, disconnecting twitter: %s: %s' % 
                               (self.feed.log_title[:30], self.address, e))
                 self.feed.save_feed_history(560, "Twitter Error: User suspended")
-                return
+                return None, None
             elif 'expired token' in message:
                 logging.debug('   ***> [%-30s] ~FRTwitter user expired, disconnecting twitter: %s: %s' % 
                               (self.feed.log_title[:30], self.address, e))
                 self.feed.save_feed_history(560, "Twitter Error: Expired token")
-                social_services.disconnect_twitter()
-                return
+                return None, None
             elif 'not found' in message:
                 logging.debug('   ***> [%-30s] ~FRTwitter user not found, disconnecting twitter: %s: %s' % 
                               (self.feed.log_title[:30], self.address, e))
                 self.feed.save_feed_history(560, "Twitter Error: User not found")
-                return
+                return None, None
             elif 'over capacity' in message or 'Max retries' in message:
                 logging.debug('   ***> [%-30s] ~FRTwitter over capacity, ignoring... %s: %s' % 
                               (self.feed.log_title[:30], self.address, e))
                 self.feed.save_feed_history(460, "Twitter Error: Over capacity")
-                return
+                return None, None
             else:
                 raise e
         
@@ -253,38 +251,6 @@ class TwitterFetcher:
         if not list_timeline:
             return [], list_info
         return list_timeline, list_info
-    
-    def tweets_from_list(self, list_timeline):
-        try:
-            tweets = twitter_user.timeline(tweet_mode='extended')
-        except tweepy.error.TweepError as e:
-            message = str(e).lower()
-            if 'not authorized' in message:
-                logging.debug('   ***> [%-30s] ~FRTwitter timeline failed, disconnecting twitter: %s: %s' % 
-                              (self.feed.log_title[:30], self.address, e))
-                self.feed.save_feed_history(560, "Twitter Error: Not authorized")
-                return []
-            elif 'user not found' in message:
-                logging.debug('   ***> [%-30s] ~FRTwitter user not found, disconnecting twitter: %s: %s' % 
-                              (self.feed.log_title[:30], self.address, e))
-                self.feed.save_feed_history(560, "Twitter Error: User not found")
-                return []
-            elif '429' in message:
-                logging.debug('   ***> [%-30s] ~FRTwitter rate limited: %s: %s' % 
-                              (self.feed.log_title[:30], self.address, e))
-                self.feed.save_feed_history(560, "Twitter Error: Rate limited")
-                return []
-            elif 'blocked from viewing' in message:
-                logging.debug('   ***> [%-30s] ~FRTwitter user blocked, ignoring: %s' % 
-                              (self.feed.log_title[:30], e))
-                self.feed.save_feed_history(560, "Twitter Error: Blocked from viewing")
-                return []
-            else:
-                raise e
-        
-        if not tweets:
-            return []
-        return tweets
         
     def tweet_story(self, user_tweet):
         categories = set()

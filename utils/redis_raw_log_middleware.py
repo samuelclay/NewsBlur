@@ -43,7 +43,9 @@ class RedisDumpMiddleware(object):
             result = original_method(*args, **kwargs)
             stop = time()
             duration = stop - start
-            connection.queries.append({
+            if not getattr(connection, 'queriesx', False):
+                connection.queriesx = []
+            connection.queriesx.append({
                 'redis': message,
                 'time': '%.3f' % duration,
             })

@@ -63,7 +63,6 @@ def opml_upload(request):
                 payload = dict(folders=folders, feeds=feeds)
                 logging.user(request, "~FR~SBOPML Upload: ~SK%s~SN~SB~FR feeds" % (len(feeds)))
             
-            request.session['import_from_google_reader'] = False
         else:
             message = "Attach an .opml file."
             code = -1
@@ -86,3 +85,4 @@ def opml_export(request):
     )
     
     return response
+
