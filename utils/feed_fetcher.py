@@ -274,7 +274,7 @@ class FetchFeed:
         else:    
             if video_ids_xml.status_code != 200:
                 return
-            video_ids_soup = BeautifulSoup(video_ids_xml.content)
+            video_ids_soup = BeautifulSoup(video_ids_xml.content, features="lxml")
             channel_url = video_ids_soup.find('author').find('uri').getText()
             video_ids = []
             for video_id in video_ids_soup.findAll('yt:videoid'):

@@ -65,6 +65,8 @@ def json_encode(data, *args, **kwargs):
         elif isinstance(data, models.Model):
             ret = _model(data)
         # here we need to encode the string as unicode (otherwise we get utf-16 in the json-response)
+        elif isinstance(data, bytes):
+            ret = smart_str(data)
         elif isinstance(data, str):
             ret = smart_str(data)
         elif isinstance(data, Exception):

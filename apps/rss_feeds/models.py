@@ -1919,7 +1919,7 @@ class Feed(models.Model):
         if include_permalinks and hasattr(story_db, 'blurblog_permalink'):
             story['blurblog_permalink'] = story_db.blurblog_permalink()
         if text:
-            soup = BeautifulSoup(story['story_content'])
+            soup = BeautifulSoup(story['story_content'], features="lxml")
             text = ''.join(soup.findAll(text=True))
             text = re.sub(r'\n+', '\n\n', text)
             text = re.sub(r'\t+', '\t', text)

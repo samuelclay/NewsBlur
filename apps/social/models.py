@@ -2298,7 +2298,7 @@ class MSharedStory(mongo.DynamicDocument):
         if self.image_urls and not force:
             return
             
-        soup = BeautifulSoup(zlib.decompress(self.story_content_z))
+        soup = BeautifulSoup(zlib.decompress(self.story_content_z), features="lxml")
         image_sources = [img.get('src') for img in soup.findAll('img') if img and img.get('src')]
         if len(image_sources) > 0:
             self.image_urls = image_sources
