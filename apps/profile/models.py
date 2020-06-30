@@ -28,9 +28,8 @@ from utils import json_functions as json
 from utils.user_functions import generate_secret_token
 from utils.feed_functions import chunks
 from vendor.timezones.fields import TimeZoneField
-from vendor.paypal.standard.ipn.signals import subscription_signup, payment_was_successful, recurring_payment
-from vendor.paypal.standard.ipn.signals import payment_was_flagged
-from vendor.paypal.standard.ipn.models import PayPalIPN
+from paypal.standard.ipn.signals import valid_ipn_received, invalid_ipn_received
+from paypal.standard.ipn.models import PayPalIPN
 from vendor.paypalapi.interface import PayPalInterface
 from vendor.paypalapi.exceptions import PayPalAPIResponseError
 from zebra.signals import zebra_webhook_customer_subscription_created
@@ -618,7 +617,7 @@ class Profile(models.Model):
                 now = int(datetime.datetime.now().strftime('%s'))
                 r.zadd(key, { -1: now })
                 r.expire(key, settings.SUBSCRIBER_EXPIRE*24*60*60)
-                r.zadd(premium_key, { -1, now })
+                r.zadd(premium_key, {-1: now})
                 r.expire(premium_key, settings.SUBSCRIBER_EXPIRE*24*60*60)
             
             logging.info("   ---> [%-30s] ~SN~FBCounting subscribers, storing in ~SBredis~SN: ~FMt:~SB~FM%s~SN a:~SB%s~SN p:~SB%s~SN ap:~SB%s" % 
@@ -1078,7 +1077,7 @@ def paypal_signup(sender, **kwargs):
     user.profile.activate_premium()
     user.profile.cancel_premium_stripe()
     user.profile.cancel_premium_paypal(second_most_recent_only=True)
-subscription_signup.connect(paypal_signup)
+valid_ipn_received.connect(paypal_signup)
 
 def paypal_payment_history_sync(sender, **kwargs):
     ipn_obj = sender
@@ -1091,7 +1090,7 @@ def paypal_payment_history_sync(sender, **kwargs):
         user.profile.setup_premium_history()
     except:
         return {"code": -1, "message": "User doesn't exist."}
-payment_was_successful.connect(paypal_payment_history_sync)
+valid_ipn_received.connect(paypal_payment_history_sync)
 
 def paypal_payment_was_flagged(sender, **kwargs):
     ipn_obj = sender
@@ -1105,7 +1104,7 @@ def paypal_payment_was_flagged(sender, **kwargs):
         logging.user(user, "~BC~SB~FBPaypal subscription payment flagged")
     except:
         return {"code": -1, "message": "User doesn't exist."}
-payment_was_flagged.connect(paypal_payment_was_flagged)
+invalid_ipn_received.connect(paypal_payment_was_flagged)
 
 def paypal_recurring_payment_history_sync(sender, **kwargs):
     ipn_obj = sender
@@ -1118,7 +1117,7 @@ def paypal_recurring_payment_history_sync(sender, **kwargs):
         user.profile.setup_premium_history()
     except:
         return {"code": -1, "message": "User doesn't exist."}
-recurring_payment.connect(paypal_recurring_payment_history_sync)
+valid_ipn_received.connect(paypal_recurring_payment_history_sync)
 
 def stripe_signup(sender, full_json, **kwargs):
     stripe_id = full_json['data']['object']['customer']

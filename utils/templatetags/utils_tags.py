@@ -7,6 +7,7 @@ from apps.reader.models import Feature
 from apps.social.models import MSocialProfile
 from vendor.timezones.utilities import localtime_for_timezone
 from utils.user_functions import get_user
+from django.utils.safestring import mark_safe
 
 register = template.Library()
 
@@ -186,11 +187,11 @@ def commify(n):
 def include_javascripts(asset_package):
     """Prints out a template of <script> tags based on an asset package name."""
     asset_type = 'javascripts'
-    return settings.JAMMIT.render_tags(asset_type, asset_package)
+    return mark_safe(settings.JAMMIT.render_tags(asset_type, asset_package))
         
         
 @register.simple_tag
 def include_stylesheets(asset_package):
     """Prints out a template of <link> tags based on an asset package name."""
     asset_type = 'stylesheets'
-    return settings.JAMMIT.render_tags(asset_type, asset_package)
+    return mark_safe(settings.JAMMIT.render_tags(asset_type, asset_package))

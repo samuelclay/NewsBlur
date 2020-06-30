@@ -230,4 +230,3 @@ class UploadedOPML(mongo.Document):
         'order': '-upload_date',
         'indexes': ['user_id', '-upload_date'],
     }
-    

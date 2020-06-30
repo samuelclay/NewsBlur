@@ -28,6 +28,7 @@ from django.contrib.sites.models import Site
 from django.template.defaultfilters import slugify
 from django.utils.encoding import smart_bytes, smart_text
 from mongoengine.queryset import OperationError, Q, NotUniqueError
+from mongoengine.errors import ValidationError
 from vendor.timezones.utilities import localtime_for_timezone
 from apps.rss_feeds.tasks import UpdateFeeds, PushFeeds, ScheduleCountTagsForUser
 from apps.rss_feeds.text_importer import TextImporter
@@ -1166,7 +1167,7 @@ class Feed(models.Model):
             'requesting_user_id': kwargs.get('requesting_user_id', None)
         }
         
-        if getattr(settings, 'TEST_DEBUG', False):
+        if getattr(settings, 'TEST_DEBUG', False) and "NEWSBLUR_DIR" in self.feed_address:
             print(" ---> Testing feed fetch: %s" % self.log_title)
             # options['force_fp'] = True # No, why would this be needed?
             original_feed_address = self.feed_address
@@ -2350,11 +2351,6 @@ class MFeedPage(mongo.Document):
         'collection': 'feed_pages',
         'allow_inheritance': False,
     }
-    
-    def save(self, *args, **kwargs):
-        if self.page_data:
-            self.page_data = zlib.compress(self.page_data)
-        return super(MFeedPage, self).save(*args, **kwargs)
     
     def page(self):
         return zlib.decompress(self.page_data)
