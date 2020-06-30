@@ -173,7 +173,7 @@ class TextImporter:
         return content
 
     def rewrite_content(self, content):
-        soup = BeautifulSoup(content)
+        soup = BeautifulSoup(content, features="lxml")
         
         for noscript in soup.findAll('noscript'):
             if len(noscript.contents) > 0:

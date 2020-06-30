@@ -189,7 +189,7 @@ class MUserFeedNotification(mongo.Document):
         title = feed_title
         subtitle = HTMLParser().unescape(story['story_title'])
         # body = HTMLParser().unescape(strip_tags(story['story_content']))
-        soup = BeautifulSoup(story['story_content'].strip())
+        soup = BeautifulSoup(story['story_content'].strip(), features="lxml")
         # print story['story_content']
         body = replace_with_newlines(soup)
         body = truncate_chars(body.strip(), 600)
@@ -295,7 +295,7 @@ class MUserFeedNotification(mongo.Document):
                                    (story['story_title'][:50], usersub.feed.feed_title[:50]))
     
     def sanitize_story(self, story_content):
-        soup = BeautifulSoup(story_content.strip())
+        soup = BeautifulSoup(story_content.strip(), features="lxml")
         fqdn = Site.objects.get_current().domain
         
         for iframe in soup("iframe"):
