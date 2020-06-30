@@ -659,10 +659,10 @@ def mark_story_as_shared(request):
     if post_to_services:
         for service in post_to_services:
             if service not in shared_story.posted_to_services:
-                PostToService.delay(shared_story_id=shared_story.id, service=service)
+                PostToService.delay(shared_story_id=str(shared_story.id), service=service)
     
     if shared_story.source_user_id and shared_story.comments:
-        EmailStoryReshares.apply_async(kwargs=dict(shared_story_id=shared_story.id),
+        EmailStoryReshares.apply_async(kwargs=dict(shared_story_id=str(shared_story.id)),
                                        countdown=settings.SECONDS_TO_DELAY_CELERY_EMAILS)
     
     EmailFirstShare.apply_async(kwargs=dict(user_id=request.user.pk))
@@ -812,8 +812,8 @@ def save_comment_reply(request):
                                          story_feed_id=feed_id,
                                          story_title=shared_story.story_title)
 
-    EmailCommentReplies.apply_async(kwargs=dict(shared_story_id=shared_story.id,
-                                                reply_id=reply.reply_id), 
+    EmailCommentReplies.apply_async(kwargs=dict(shared_story_id=str(shared_story.id),
+                                                reply_id=str(reply.reply_id)), 
                                                 countdown=settings.SECONDS_TO_DELAY_CELERY_EMAILS)
     
     if format == 'html':

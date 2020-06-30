@@ -9,7 +9,7 @@ class PostToService(Task):
     
     def run(self, shared_story_id, service):
         try:
-            shared_story = MSharedStory.objects.get(id=shared_story_id)
+            shared_story = MSharedStory.objects.get(id=ObjectId(shared_story_id))
             shared_story.post_to_service(service)
         except MSharedStory.DoesNotExist:
             logging.debug(" ---> Shared story not found (%s). Can't post to: %s" % (shared_story_id, service))
@@ -35,13 +35,13 @@ class EmailFirstShare(Task):
 class EmailCommentReplies(Task):
     
     def run(self, shared_story_id, reply_id):
-        shared_story = MSharedStory.objects.get(id=shared_story_id)
-        shared_story.send_emails_for_new_reply(reply_id)
+        shared_story = MSharedStory.objects.get(id=ObjectId(shared_story_id))
+        shared_story.send_emails_for_new_reply(ObjectId(reply_id))
         
 class EmailStoryReshares(Task):
     
     def run(self, shared_story_id):
-        shared_story = MSharedStory.objects.get(id=shared_story_id)
+        shared_story = MSharedStory.objects.get(id=ObjectId(shared_story_id))
         shared_story.send_email_for_reshare()
         
 class SyncTwitterFriends(Task):
