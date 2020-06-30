@@ -98,9 +98,9 @@ def _mongodb_decode_wire_protocol(message):
     _, msg_id, _, opcode, _ = struct.unpack('<iiiii', message[:20])
     op = MONGO_OPS.get(opcode, 'unknown')
     zidx = 20
-    collection_name_size = message[zidx:].find('\0')
+    collection_name_size = message[zidx:].find(b'\0')
     collection_name = message[zidx:zidx+collection_name_size]
-    if '.system.' in collection_name:
+    if b'.system.' in collection_name:
         return
     zidx += collection_name_size + 1
     skip, limit = struct.unpack('<ii', message[zidx:zidx+8])

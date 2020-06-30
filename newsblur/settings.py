@@ -94,16 +94,16 @@ PAYPAL_TEST           = False
 # ===========================
 
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = (
     'django.middleware.gzip.GZipMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'subdomains.middleware.SubdomainMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'apps.profile.middleware.TimingMiddleware',
     'apps.profile.middleware.LastSeenMiddleware',
     'apps.profile.middleware.UserAgentBanMiddleware',
-    'subdomains.middleware.SubdomainMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'apps.profile.middleware.SimpsonsMiddleware',
     'apps.profile.middleware.ServerHostnameMiddleware',
@@ -175,7 +175,7 @@ LOGGING = {
             'level': 'DEBUG',
             'class': 'logging.handlers.RotatingFileHandler',
             'filename': LOG_FILE,
-            'maxBytes': '16777216', # 16megabytes
+            'maxBytes': 16777216, # 16megabytes
             'formatter': 'verbose'
         },
         'mail_admins': {
@@ -594,7 +594,7 @@ S3_AVATARS_BUCKET_NAME = 'avatars.newsblur.com'
 # = Configurations =
 # ==================
 
-from local_settings import *
+from .local_settings import *
 
 if not DEBUG:
     INSTALLED_APPS += (
@@ -746,8 +746,8 @@ CELERY_ACCEPT_CONTENT = ['pickle', 'json', 'msgpack', 'yaml']
 JAMMIT = jammit.JammitAssets(ROOT_DIR)
 
 if DEBUG:
-    MIDDLEWARE_CLASSES += ('utils.request_introspection_middleware.DumpRequestMiddleware',)
-    MIDDLEWARE_CLASSES += ('utils.exception_middleware.ConsoleExceptionMiddleware',)
+    MIDDLEWARE += ('utils.request_introspection_middleware.DumpRequestMiddleware',)
+    MIDDLEWARE += ('utils.exception_middleware.ConsoleExceptionMiddleware',)
 
 # =======
 # = AWS =
