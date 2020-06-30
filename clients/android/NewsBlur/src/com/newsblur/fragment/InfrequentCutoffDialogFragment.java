@@ -1,28 +1,22 @@
 package com.newsblur.fragment;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RadioButton;
-
-import butterknife.ButterKnife;
-import butterknife.Bind;
-import butterknife.OnClick;
 
 import com.newsblur.R;
+import com.newsblur.databinding.InfrequentCutoffDialogBinding;
 
 public class InfrequentCutoffDialogFragment extends DialogFragment {
 	
 	private static String CURRENT_CUTOFF = "currentCutoff";
 	private int currentValue;
-    @Bind(R.id.radio_5) RadioButton button5;
-    @Bind(R.id.radio_15) RadioButton button15;
-    @Bind(R.id.radio_30) RadioButton button30;
-    @Bind(R.id.radio_60) RadioButton button60;
-    @Bind(R.id.radio_90) RadioButton button90;
+    private InfrequentCutoffDialogBinding binding;
 
 	public static InfrequentCutoffDialogFragment newInstance(int currentValue) {
 		InfrequentCutoffDialogFragment dialog = new InfrequentCutoffDialogFragment();
@@ -42,13 +36,13 @@ public class InfrequentCutoffDialogFragment extends DialogFragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle bundle) {
 		currentValue = getArguments().getInt(CURRENT_CUTOFF);
 		View v = inflater.inflate(R.layout.infrequent_cutoff_dialog, null);
-        ButterKnife.bind(this, v);
+        binding = InfrequentCutoffDialogBinding.bind(v);
 
-		button5.setChecked(currentValue == 5);
-		button15.setChecked(currentValue == 15);
-		button30.setChecked(currentValue == 30);
-		button60.setChecked(currentValue == 60);
-		button90.setChecked(currentValue == 90);
+		binding.radio5.setChecked(currentValue == 5);
+		binding.radio15.setChecked(currentValue == 15);
+		binding.radio30.setChecked(currentValue == 30);
+		binding.radio60.setChecked(currentValue == 60);
+		binding.radio90.setChecked(currentValue == 90);
 		
 		getDialog().setTitle(R.string.infrequent_choice_title);
 		getDialog().getWindow().getAttributes().gravity = Gravity.BOTTOM;
@@ -56,31 +50,66 @@ public class InfrequentCutoffDialogFragment extends DialogFragment {
 		return v;
 	}
 
-    @OnClick(R.id.radio_5) void select5() {
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        binding.radio5.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                select5();
+            }
+        });
+        binding.radio15.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                select15();
+            }
+        });
+        binding.radio30.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                select30();
+            }
+        });
+        binding.radio60.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                select60();
+            }
+        });
+        binding.radio90.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                select90();
+            }
+        });
+    }
+
+    private void select5() {
         if (currentValue != 5) {
             ((InfrequentCutoffChangedListener) getActivity()).infrequentCutoffChanged(5);
         }
         dismiss();
     }
-    @OnClick(R.id.radio_15) void select15() {
+    private void select15() {
         if (currentValue != 15) {
             ((InfrequentCutoffChangedListener) getActivity()).infrequentCutoffChanged(15);
         }
         dismiss();
     }
-    @OnClick(R.id.radio_30) void select30() {
+    private void select30() {
         if (currentValue != 30) {
             ((InfrequentCutoffChangedListener) getActivity()).infrequentCutoffChanged(30);
         }
         dismiss();
     }
-    @OnClick(R.id.radio_60) void select60() {
+    private void select60() {
         if (currentValue != 60) {
             ((InfrequentCutoffChangedListener) getActivity()).infrequentCutoffChanged(60);
         }
         dismiss();
     }
-    @OnClick(R.id.radio_90) void select90() {
+    private void select90() {
         if (currentValue != 90) {
             ((InfrequentCutoffChangedListener) getActivity()).infrequentCutoffChanged(90);
         }

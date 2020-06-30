@@ -332,6 +332,7 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         boolean gestureL2R = false;
         boolean gestureDebounce = false;
 
+
         public StoryViewHolder(View view) {
             super(view);
             ButterKnife.bind(StoryViewHolder.this, view);
@@ -472,10 +473,12 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     }
 
     public class StoryRowViewHolder extends StoryViewHolder {
-        @Bind(R.id.story_item_author) TextView storyAuthor;
-        @Bind(R.id.story_item_content) TextView storySnippet;
+        TextView storyAuthor;
+        TextView storySnippet;
         public StoryRowViewHolder(View view) {
             super(view);
+            storyAuthor = view.findViewById(R.id.story_item_author);
+            storySnippet = view.findViewById(R.id.story_item_content);
         }
     }
 
@@ -660,12 +663,13 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         }
     }
 
-    public class FooterViewHolder extends RecyclerView.ViewHolder {
-        @Bind(R.id.footer_view_inner) FrameLayout innerView;
+    public static class FooterViewHolder extends RecyclerView.ViewHolder {
+
+        FrameLayout innerView;
 
         public FooterViewHolder(View view) {
             super(view);
-            ButterKnife.bind(FooterViewHolder.this, view);
+            innerView = view.findViewById(R.id.footer_view_inner);
         }
     }
 

@@ -45,6 +45,7 @@ android {
     compileOptions.with {
         sourceCompatibility = JavaVersion.VERSION_1_7
     }
+    viewBinding.enabled = true
 
     // force old processing behaviour that butterknife 7 depends on, until we can afford to upgrade
     android.defaultConfig.javaCompileOptions.annotationProcessorOptions.includeCompileClasspath = true
