@@ -2741,7 +2741,7 @@ class MStory(mongo.Document):
             return
         
         try:
-            soup = BeautifulSoup(story_content)
+            soup = BeautifulSoup(story_content, features="lxml")
         except ValueError:
             if not text:
                 return self.extract_image_urls(force=force, text=True)

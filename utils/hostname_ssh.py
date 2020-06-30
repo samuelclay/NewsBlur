@@ -5,7 +5,7 @@ from django.conf import settings
 
 sys.path.append('/srv/newsblur')
 
-os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
+os.environ['DJANGO_SETTINGS_MODULE'] = 'newsblur.settings'
 
 if __name__ == '__main__':
     doapi = digitalocean.Manager(token=settings.DO_TOKEN_LOG)
