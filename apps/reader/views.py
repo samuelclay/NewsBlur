@@ -79,7 +79,7 @@ def get_subdomain(request):
 def index(request, **kwargs):
     
     subdomain = get_subdomain(request)
-    if request.method == "GET" and subdomain and subdomain not in ['dev', 'www', 'debug']:
+    if request.method == "GET" and subdomain and subdomain not in ['dev', 'www', 'debug', 'nb']:
         username = request.subdomain
         if '.' in username:
             username = username.split('.')[0]
