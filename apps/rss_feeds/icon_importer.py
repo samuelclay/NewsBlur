@@ -58,9 +58,8 @@ class IconImporter(object):
             image = self.normalize_image(image)
             try:
                 color = self.determine_dominant_color_in_image(image)
-            except IndexError:
-                return
-            except MemoryError:
+            except (IndexError, ValueError, MemoryError):
+                logging.debug("   ---> [%-30s] ~SN~FRFailed to measure icon" % self.feed.log_title[:30])
                 return
             try:
                 image_str = self.string_from_image(image)
