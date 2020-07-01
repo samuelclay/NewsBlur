@@ -11,7 +11,7 @@ from django.conf import settings
 from mongoengine.queryset import NotUniqueError
 from mongoengine.queryset import OperationError
 from apps.social.models import MSocialServices, MSocialSubscription, MSharedStory
-from apps.social.tasks import SyncTwitterFriends, SyncFacebookFriends, SyncAppdotnetFriends
+from apps.social.tasks import SyncTwitterFriends, SyncFacebookFriends
 from apps.reader.models import UserSubscription, UserSubscriptionFolders, RUserStory
 from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifierFeed, MClassifierTag
 from apps.analyzer.models import compute_story_score
@@ -23,7 +23,6 @@ from utils.view_functions import render_to
 from utils import urlnorm
 from utils import json_functions as json
 from vendor import facebook
-from vendor import appdotnet
 
 @login_required
 @render_to('social/social_connect.xhtml')
@@ -31,9 +30,9 @@ def twitter_connect(request):
     twitter_consumer_key = settings.TWITTER_CONSUMER_KEY
     twitter_consumer_secret = settings.TWITTER_CONSUMER_SECRET
     
-    oauth_token = request.POST.get('oauth_token')
-    oauth_verifier = request.POST.get('oauth_verifier')
-    denied = request.POST.get('denied')
+    oauth_token = request.GET.get('oauth_token')
+    oauth_verifier = request.GET.get('oauth_verifier')
+    denied = request.GET.get('denied')
     if denied:
         logging.user(request, "~BB~FRDenied Twitter connect")
         return {'error': 'Denied! Try connecting again.'}
@@ -94,7 +93,7 @@ def facebook_connect(request):
         "display": "popup",
     }
 
-    verification_code = request.POST.get('code')
+    verification_code = request.GET.get('code')
     if verification_code:
         args["client_secret"] = facebook_secret
         args["code"] = verification_code
@@ -136,9 +135,9 @@ def facebook_connect(request):
         
         logging.user(request, "~BB~FRFinishing Facebook connect")
         return {}
-    elif request.POST.get('error'):
-        logging.user(request, "~BB~FRFailed Facebook connect, error: %s" % request.POST.get('error'))
-        return {'error': '%s... Try connecting again.' % request.POST.get('error')}
+    elif request.GET.get('error'):
+        logging.user(request, "~BB~FRFailed Facebook connect, error: %s" % request.GET.get('error'))
+        return {'error': '%s... Try connecting again.' % request.GET.get('error')}
     else:
         # Start the OAuth process
         logging.user(request, "~BB~FRStarting Facebook connect")
@@ -160,15 +159,7 @@ def facebook_disconnect(request):
     social_services.disconnect_facebook()
     
     return HttpResponseRedirect(reverse('load-user-friends'))
-    
-@ajax_login_required
-def appdotnet_disconnect(request):
-    logging.user(request, "~BB~FRDisconnecting App.net")
-    social_services = MSocialServices.objects.get(user_id=request.user.pk)
-    social_services.disconnect_appdotnet()
-    
-    return HttpResponseRedirect(reverse('load-user-friends'))
-    
+        
 @ajax_login_required
 @json.json_view
 def follow_twitter_account(request):

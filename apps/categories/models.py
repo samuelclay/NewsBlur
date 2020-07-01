@@ -17,7 +17,7 @@ class MCategory(mongo.Document):
         'allow_inheritance': False,
     }
     
-    def __unicode__(self):
+    def __str__(self):
         return "%s: %s sites" % (self.title, len(self.feed_ids))
     
     @classmethod
@@ -101,7 +101,7 @@ class MCategorySite(mongo.Document):
         'allow_inheritance': False,
     }
     
-    def __unicode__(self):
+    def __str__(self):
         feed = Feed.get_by_id(self.feed_id)
         return "%s: %s" % (self.category_title, feed)
     

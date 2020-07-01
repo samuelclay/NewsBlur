@@ -399,9 +399,9 @@ def create_imageproxy_signed_url(base_url, hmac_key, url, options=None):
     if isinstance(options, int): options = [str(options)]
     if not isinstance(options, list): options = [options]
     base_url = base_url.rstrip('/')
-    signature = base64.urlsafe_b64encode(hmac.new(hmac_key, msg=url, digestmod=hashlib.sha256).digest())
+    signature = base64.urlsafe_b64encode(hmac.new(hmac_key.encode(), msg=url.encode(), digestmod=hashlib.sha256).digest())
     options.append('sc')
-    options.append('s'+signature)
+    options.append('s'+signature.decode())
 
     return ('{base}/{options}/{url}'
             .format(base=base_url, options=','.join(options), url=url))

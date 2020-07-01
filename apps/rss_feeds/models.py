@@ -28,6 +28,7 @@ from django.contrib.sites.models import Site
 from django.template.defaultfilters import slugify
 from django.utils.encoding import smart_bytes, smart_text
 from mongoengine.queryset import OperationError, Q, NotUniqueError
+from mongoengine.errors import ValidationError
 from vendor.timezones.utilities import localtime_for_timezone
 from apps.rss_feeds.tasks import UpdateFeeds, PushFeeds, ScheduleCountTagsForUser
 from apps.rss_feeds.text_importer import TextImporter
@@ -93,7 +94,7 @@ class Feed(models.Model):
         ordering=["feed_title"]
         # unique_together=[('feed_address', 'feed_link')]
     
-    def __unicode__(self):
+    def __str__(self):
         if not self.feed_title:
             self.feed_title = "[Untitled]"
             self.save()
@@ -115,7 +116,7 @@ class Feed(models.Model):
     
     @property
     def log_title(self):
-        return self.__unicode__()
+        return self.__str__()
         
     @property
     def permalink(self):
@@ -1166,7 +1167,7 @@ class Feed(models.Model):
             'requesting_user_id': kwargs.get('requesting_user_id', None)
         }
         
-        if getattr(settings, 'TEST_DEBUG', False):
+        if getattr(settings, 'TEST_DEBUG', False) and "NEWSBLUR_DIR" in self.feed_address:
             print(" ---> Testing feed fetch: %s" % self.log_title)
             # options['force_fp'] = True # No, why would this be needed?
             original_feed_address = self.feed_address
@@ -1918,7 +1919,7 @@ class Feed(models.Model):
         if include_permalinks and hasattr(story_db, 'blurblog_permalink'):
             story['blurblog_permalink'] = story_db.blurblog_permalink()
         if text:
-            soup = BeautifulSoup(story['story_content'])
+            soup = BeautifulSoup(story['story_content'], features="lxml")
             text = ''.join(soup.findAll(text=True))
             text = re.sub(r'\n+', '\n\n', text)
             text = re.sub(r'\t+', '\t', text)
@@ -2351,11 +2352,6 @@ class MFeedPage(mongo.Document):
         'allow_inheritance': False,
     }
     
-    def save(self, *args, **kwargs):
-        if self.page_data:
-            self.page_data = zlib.compress(self.page_data)
-        return super(MFeedPage, self).save(*args, **kwargs)
-    
     def page(self):
         return zlib.decompress(self.page_data)
         
@@ -2745,7 +2741,7 @@ class MStory(mongo.Document):
             return
         
         try:
-            soup = BeautifulSoup(story_content)
+            soup = BeautifulSoup(story_content, features="lxml")
         except ValueError:
             if not text:
                 return self.extract_image_urls(force=force, text=True)
@@ -3253,7 +3249,7 @@ class DuplicateFeed(models.Model):
     duplicate_feed_id = models.CharField(max_length=255, null=True, db_index=True)
     feed = models.ForeignKey(Feed, related_name='duplicate_addresses', on_delete=models.CASCADE)
    
-    def __unicode__(self):
+    def __str__(self):
         return "%s: %s / %s" % (self.feed, self.duplicate_address, self.duplicate_link)
         
     def canonical(self):

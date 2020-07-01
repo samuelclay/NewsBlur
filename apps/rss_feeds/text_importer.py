@@ -148,7 +148,7 @@ class TextImporter:
             original_story_content = ""
         if content and len(content) > len(original_story_content):
             if self.story and not skip_save:
-                self.story.original_text_z = zlib.compress(smart_str(content))
+                self.story.original_text_z = zlib.compress(smart_str(content).encode())
                 try:
                     self.story.save()
                 except NotUniqueError as e:
@@ -173,7 +173,7 @@ class TextImporter:
         return content
 
     def rewrite_content(self, content):
-        soup = BeautifulSoup(content)
+        soup = BeautifulSoup(content, features="lxml")
         
         for noscript in soup.findAll('noscript'):
             if len(noscript.contents) > 0:
@@ -203,7 +203,7 @@ class TextImporter:
                 url = "https://www.newsblur.com/rss_feeds/original_text_fetcher?url=%s" % url
             
         try:
-            r = requests.get(url, headers=headers, verify=False)
+            r = requests.get(url, headers=headers)
             r.connection.close()
         except (AttributeError, SocketError, requests.ConnectionError,
                 requests.models.MissingSchema, requests.sessions.InvalidSchema,
