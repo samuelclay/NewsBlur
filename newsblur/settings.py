@@ -552,7 +552,7 @@ REDIS_SESSIONS = {
     'host': '127.0.0.1',
 }
 
-redis_db_NUM = 4
+CELERY_REDIS_DB_NUM = 4
 SESSION_REDIS_DB = 5
 
 # =================
@@ -594,7 +594,7 @@ S3_AVATARS_BUCKET_NAME = 'avatars.newsblur.com'
 # = Configurations =
 # ==================
 
-from .local_settings import *
+from local_settings import *
 
 if not DEBUG:
     INSTALLED_APPS += (
