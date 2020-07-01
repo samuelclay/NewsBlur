@@ -280,6 +280,12 @@ class _HTMLSanitizer(_BaseHTMLProcessor):
         'width',
         'wrap',
         'xml:lang',
+        # Added by NewsBlur
+        'allowfullscreen', 
+        'autoplay', 
+        'muted', 
+        'loop',
+        'playsinline',
     }
 
     unacceptable_elements_with_end_tag = {
