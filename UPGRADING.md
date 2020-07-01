@@ -21,3 +21,12 @@ pip install -r requirements.txt
 
 pip install -r requirements.txt
 ./manage.py migrate
+
+## Django 1.11
+
+pip install -r requirements.txt
+./manage.py migrate
+
+## Django 2.0 (python 3)
+
+mkvirutalenv -p python3 newsblur3

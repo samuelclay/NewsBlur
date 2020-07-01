@@ -80,8 +80,8 @@ def logout(request):
 def add_site_load_script(request, token):
     code = 0
     usf = None
-    profile = None;
-    user_profile = None;
+    profile = None
+    user_profile = None
     def image_base64(image_name, path='icons/circular/'):
         image_file = open(os.path.join(settings.MEDIA_ROOT, 'img/%s%s' % (path, image_name)))
         return base64.b64encode(image_file.read())

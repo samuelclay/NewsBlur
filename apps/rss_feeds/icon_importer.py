@@ -1,4 +1,6 @@
-import urllib.request, urllib.error, urllib.parse
+import urllib.request
+import urllib.error
+import urllib.parse
 import lxml.html
 import numpy
 import scipy
@@ -9,7 +11,7 @@ import operator
 import gzip
 import datetime
 import requests
-import codecs
+import base64
 import http.client
 from PIL import BmpImagePlugin, PngImagePlugin, Image
 from socket import error as SocketError
@@ -107,7 +109,7 @@ class IconImporter(object):
         k.key = self.feed.s3_icons_key
         k.set_metadata('Content-Type', 'image/png')
         k.set_metadata('Expires', expires)
-        k.set_contents_from_string(image_str.decode('base64'))
+        k.set_contents_from_string(base64.b64decode(image_str))
         k.set_acl('public-read')
 
         self.feed.s3_icon = True
@@ -127,7 +129,7 @@ class IconImporter(object):
         try:
             image_file.seek(0)
             header = struct.unpack('<3H', image_file.read(6))
-        except Exception as e:
+        except Exception:
             return
 
         # Check magic
@@ -382,7 +384,7 @@ class IconImporter(object):
         index_max = scipy.argmax(counts)
         peak = codes.astype(int)[index_max]
         print(f" ---> Color: {peak}")
-        color = codecs.decode(''.join(chr(c) for c in peak), 'hex')
+        color = "{:02x}{:02x}{:02x}".format(peak[0], peak[1], peak[2])
         print(f" ---> Color: {color} {peak}")
 
         return color[:6]
@@ -392,4 +394,4 @@ class IconImporter(object):
         image.save(output, 'png', quality=95)
         contents = output.getvalue()
         output.close()
-        return contents.encode('base64')
+        return base64.b64encode(contents)
