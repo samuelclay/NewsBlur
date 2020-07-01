@@ -1,7 +1,7 @@
 # Adapted from djpubsubhubbub. See License: http://git.participatoryculture.org/djpubsubhubbub/tree/LICENSE
 
 from datetime import datetime, timedelta
-import feedparser
+from vendor import feedparser
 import requests
 import re
 

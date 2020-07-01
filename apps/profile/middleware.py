@@ -12,7 +12,7 @@ from apps.statistics.rstats import round_time
 from utils import json_functions as json
 
 class LastSeenMiddleware(object):
-    def __init__(self, get_response):
+    def __init__(self, get_response=None):
         self.get_response = get_response
 
     def process_response(self, request, response):
@@ -123,7 +123,7 @@ class DBProfilerMiddleware:
         return response
 
 class SQLLogToConsoleMiddleware:
-    def __init__(self, get_response):
+    def __init__(self, get_response=None):
         self.get_response = get_response
 
     def activated(self, request):
@@ -285,7 +285,7 @@ SIMPSONS_QUOTES = [
 ]
 
 class SimpsonsMiddleware:
-    def __init__(self, get_response):
+    def __init__(self, get_response=None):
         self.get_response = get_response
 
     def process_response(self, request, response):
@@ -308,7 +308,7 @@ class SimpsonsMiddleware:
         
 class ServerHostnameMiddleware:
 
-    def __init__(self, get_response):
+    def __init__(self, get_response=None):
         self.get_response = get_response
 
     def process_response(self, request, response):
@@ -329,7 +329,7 @@ class ServerHostnameMiddleware:
 
 class TimingMiddleware:
 
-    def __init__(self, get_response):
+    def __init__(self, get_response=None):
         self.get_response = get_response
 
     def process_request(self, request):
@@ -350,7 +350,7 @@ BANNED_USERNAMES = (
 )
 
 class UserAgentBanMiddleware:
-    def __init__(self, get_response):
+    def __init__(self, get_response=None):
         self.get_response = get_response
 
     def process_request(self, request):

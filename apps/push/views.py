@@ -1,6 +1,6 @@
 # Adapted from djpubsubhubbub. See License: http://git.participatoryculture.org/djpubsubhubbub/tree/LICENSE
 
-import feedparser
+from vendor import feedparser
 import random
 import datetime
 
