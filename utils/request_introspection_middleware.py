@@ -9,7 +9,7 @@ class DumpRequestMiddleware:
             if request_items:
                 logging.debug(" ---> ~FC%s ~SN~FC%s ~SN~BC~FK%s~BK~FC" % (request.method, request.path, dict(request_items)))
 
-    def __init__(self, get_response):
+    def __init__(self, get_response=None):
         self.get_response = get_response
 
     def __call__(self, request):

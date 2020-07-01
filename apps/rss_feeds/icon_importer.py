@@ -383,9 +383,7 @@ class IconImporter(object):
         # Find the most frequent color, based on the counts.
         index_max = scipy.argmax(counts)
         peak = codes.astype(int)[index_max]
-        print(f" ---> Color: {peak}")
         color = "{:02x}{:02x}{:02x}".format(peak[0], peak[1], peak[2])
-        print(f" ---> Color: {color} {peak}")
 
         return color[:6]
 
@@ -394,4 +392,4 @@ class IconImporter(object):
         image.save(output, 'png', quality=95)
         contents = output.getvalue()
         output.close()
-        return base64.b64encode(contents)
+        return base64.b64encode(contents).decode()
