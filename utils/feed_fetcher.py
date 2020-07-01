@@ -162,7 +162,7 @@ class FetchFeed:
                                                 agent=self.feed.user_agent,
                                                 etag=etag,
                                                 modified=modified)
-                except (TypeError, ValueError, KeyError, EOFError, MemoryError) as e:
+                except (TypeError, ValueError, KeyError, EOFError, MemoryError, urllib.error.URLError) as e:
                     logging.debug('   ***> [%-30s] ~FRFeed fetch error: %s' % 
                                   (self.feed.log_title[:30], e))
                     pass
@@ -172,7 +172,7 @@ class FetchFeed:
                 logging.debug('   ***> [%-30s] ~FRTurning off headers...' % 
                               (self.feed.log_title[:30]))
                 self.fpf = feedparser.parse(address, agent=self.feed.user_agent)
-            except (TypeError, ValueError, KeyError, EOFError, MemoryError) as e:
+            except (TypeError, ValueError, KeyError, EOFError, MemoryError, urllib.error.URLError) as e:
                 logging.debug('   ***> [%-30s] ~FRFetch failed: %s.' % 
                               (self.feed.log_title[:30], e))
                 return FEED_ERRHTTP, None
@@ -726,10 +726,10 @@ class Dispatcher:
                         if self.options['verbose']:
                             logging.debug('   ---> [%-30s] ~FBTIME: unread count in ~FM%.4ss' % (
                                           feed.log_title[:30], time.time() - start))
-            except urllib.error.HTTPError as e:
-                logging.debug('   ---> [%-30s] ~FRFeed throws HTTP error: ~SB%s' % (str(feed_id)[:30], e.fp.read()))
-                feed_code = e.code
-                feed.save_feed_history(feed_code, e.msg, e.fp.read())
+            except (urllib.error.HTTPError, urllib.error.URLError) as e:
+                logging.debug('   ---> [%-30s] ~FRFeed throws HTTP error: ~SB%s' % (str(feed_id)[:30], e.reason))
+                feed_code = 404
+                feed.save_feed_history(feed_code, str(e.reason), e)
                 fetched_feed = None
             except Feed.DoesNotExist as e:
                 logging.debug('   ---> [%-30s] ~FRFeed is now gone...' % (str(feed_id)[:30]))
