@@ -9,7 +9,7 @@ import re
 import mongoengine as mongo
 import random
 import requests
-import html.parser
+import html.parser as html_parser
 import tweepy
 from collections import defaultdict
 from bs4 import BeautifulSoup
@@ -1492,7 +1492,7 @@ class MSharedStory(mongo.DynamicDocument):
     
     @property
     def decoded_story_title(self):
-        h = html.parser.HTMLParser()
+        h = html_parser.HTMLParser()
         return h.unescape(self.story_title)
         
     def canonical(self):

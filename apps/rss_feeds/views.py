@@ -1,4 +1,5 @@
 import datetime
+import base64
 from urllib.parse import urlparse
 from utils import log as logging
 from django.shortcuts import get_object_or_404, render
@@ -81,7 +82,7 @@ def load_feed_favicon(request, feed_id):
     if not_found or not feed_icon.data:
         return HttpResponseRedirect(settings.MEDIA_URL + 'img/icons/circular/world.png')
         
-    icon_data = feed_icon.data.decode('base64')
+    icon_data = base64.b64decode(feed_icon.data)
     return HttpResponse(icon_data, content_type='image/png')
 
 @json.json_view

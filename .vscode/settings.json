@@ -1,3 +1,10 @@
 {
-    "python.pythonPath": "venv/bin/python3.7"
+    "python.pythonPath": "/usr/local/bin/python3",
+    "python.linting.enabled": true,
+    "python.linting.pylintEnabled": false,
+    "python.linting.flake8Enabled": true,
+    "python.linting.pylamaEnabled": false,
+    "python.linting.flake8Args": [
+        "--ignore=E501,W293,W503,W504,E302,E722,E226,E221"
+    ]
 }

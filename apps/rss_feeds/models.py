@@ -9,6 +9,7 @@ import mongoengine as mongo
 import zlib
 import hashlib
 import redis
+import base64
 import pymongo
 import html.parser
 import urllib.parse
@@ -286,7 +287,7 @@ class Feed(models.Model):
         
         last_pk = cls.objects.latest('pk').pk
         for f in xrange(offset, last_pk, 1000):
-            print(f" ---> {f} / {last_pk} ({str(float(f)/last_pk*100)[:2]}%")
+            print(" ---> {f} / {last_pk} ({pct}%)".format(f=f, last_pk=last_pk, pct=str(float(f)/last_pk*100)[:2]))
             feeds = Feed.objects.filter(pk__in=range(f, f+1000), 
                                         active=True,
                                         active_subscribers__gte=subscribers)\
@@ -885,7 +886,7 @@ class Feed(models.Model):
         
         if verbose:
             if self.num_subscribers <= 1:
-                print('.', end=' ')
+                print(".", end=" ")
             else:
                 print("\n %s> %s subscriber%s: %s" % (
                     '-' * min(self.num_subscribers, 20),
@@ -1854,7 +1855,7 @@ class Feed(models.Model):
     def format_story(cls, story_db, feed_id=None, text=False, include_permalinks=False,
                      show_changes=False):
         if isinstance(story_db.story_content_z, str):
-            story_db.story_content_z = story_db.story_content_z.decode('base64')
+            story_db.story_content_z = base64.b64decode(story_db.story_content_z)
         
         story_content = ''
         latest_story_content = None
