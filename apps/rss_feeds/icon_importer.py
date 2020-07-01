@@ -4,17 +4,17 @@ import numpy
 import scipy
 import scipy.misc
 import scipy.cluster
-import urllib.parse
 import struct
 import operator
 import gzip
 import datetime
 import requests
+import codecs
 import http.client
 from PIL import BmpImagePlugin, PngImagePlugin, Image
 from socket import error as SocketError
 from boto.s3.key import Key
-from io import StringIO
+from io import BytesIO
 from django.conf import settings
 from apps.rss_feeds.models import MFeedPage, MFeedIcon
 from utils.facebook_fetcher import FacebookFetcher
@@ -203,7 +203,7 @@ class IconImporter(object):
         elif settings.BACKED_BY_AWS.get('pages_on_s3') and self.feed.s3_page:
             key = settings.S3_CONN.get_bucket(settings.S3_PAGES_BUCKET_NAME).get_key(self.feed.s3_pages_key)
             compressed_content = key.get_contents_as_string()
-            stream = StringIO(compressed_content)
+            stream = BytesIO(compressed_content)
             gz = gzip.GzipFile(fileobj=stream)
             try:
                 content = gz.read()
@@ -299,7 +299,7 @@ class IconImporter(object):
             return None, None
 
         try:
-            icon_file = StringIO(icon)
+            icon_file = BytesIO(icon)
             image = Image.open(icon_file)
         except (IOError, ValueError):
             return None, None
@@ -381,12 +381,14 @@ class IconImporter(object):
         # Find the most frequent color, based on the counts.
         index_max = scipy.argmax(counts)
         peak = codes.astype(int)[index_max]
-        color = ''.join(chr(c) for c in peak).encode('hex')
+        print(f" ---> Color: {peak}")
+        color = codecs.decode(''.join(chr(c) for c in peak), 'hex')
+        print(f" ---> Color: {color} {peak}")
 
         return color[:6]
 
     def string_from_image(self, image):
-        output = StringIO()
+        output = BytesIO()
         image.save(output, 'png', quality=95)
         contents = output.getvalue()
         output.close()

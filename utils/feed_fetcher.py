@@ -919,7 +919,7 @@ class Dispatcher:
     @timelimit(10)
     def calculate_feed_scores_with_stories(self, user_subs, stories):
         for sub in user_subs:
-            silent = False if self.options['verbose'] >= 2 else True
+            silent = False if getattr(self.options, 'verbose', 0) >= 2 else True
             sub.calculate_feed_scores(silent=silent, stories=stories)
             
     def add_jobs(self, feeds_queue, feeds_count=1):

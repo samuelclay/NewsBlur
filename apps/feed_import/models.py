@@ -2,7 +2,6 @@ import datetime
 import mongoengine as mongo
 import pickle
 import base64
-from io import StringIO
 from oauth2client.client import Error as OAuthError
 from xml.etree.ElementTree import Element, SubElement, Comment, tostring
 from lxml import etree

@@ -37,7 +37,7 @@ from utils.story_functions import truncate_chars, strip_tags, linkify, image_siz
 from utils.image_functions import ImageOps
 from utils.scrubber import SelectiveScriptScrubber
 from utils import s3_utils
-from io import StringIO
+from io import BytesIO
 
 try:
     from apps.social.spam import detect_spammers
@@ -2328,11 +2328,11 @@ class MSharedStory(mongo.DynamicDocument):
                 continue
             req = requests.get(image_source, headers=headers, stream=True)
             try:
-                datastream = StringIO(req.content)
+                datastream = BytesIO(req.content)
                 width, height = ImageOps.image_size(datastream)
             except IOError as e:
                 logging.debug(" ***> Couldn't read image: %s / %s" % (e, image_source))
-                datastream = StringIO(req.content[:100])
+                datastream = BytesIO(req.content[:100])
                 _, width, height = image_size(datastream)
             # if width <= 16 or height <= 16:
             #     continue
