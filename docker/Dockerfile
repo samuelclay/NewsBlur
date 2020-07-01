@@ -5,7 +5,7 @@ MAINTAINER julien@rottenberg.info
 WORKDIR   /srv/newsblur
 ENV       PYTHONPATH=/opt/newsblur
 ENV       DOCKERBUILD=True
-CMD       ["gunicorn", "--bind", "0.0.0.0:8000", "wsgi"]
+CMD       ["gunicorn", "--bind", "0.0.0.0:8000", "newsblur.wsgi", "--env", "DJANGO_SETTINGS_MODULE=newsblur.settings"]
 EXPOSE    8000
 
 COPY      config/requirements.txt /srv/newsblur/

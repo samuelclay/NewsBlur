@@ -175,7 +175,7 @@ these after the installation below.
     point, please email the resulting output to Samuel Clay at 
     [samuel@newsblur.com](mailto:samuel@newsblur.com).
  
-        ./manage.py runserver
+        ./manage.py runserver --settings=newsblur.settings.py
  
  5. Navigate to: 
 
