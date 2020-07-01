@@ -94,7 +94,7 @@ class Feed(models.Model):
         ordering=["feed_title"]
         # unique_together=[('feed_address', 'feed_link')]
     
-    def __unicode__(self):
+    def __str__(self):
         if not self.feed_title:
             self.feed_title = "[Untitled]"
             self.save()
@@ -116,7 +116,7 @@ class Feed(models.Model):
     
     @property
     def log_title(self):
-        return self.__unicode__()
+        return self.__str__()
         
     @property
     def permalink(self):
@@ -3249,7 +3249,7 @@ class DuplicateFeed(models.Model):
     duplicate_feed_id = models.CharField(max_length=255, null=True, db_index=True)
     feed = models.ForeignKey(Feed, related_name='duplicate_addresses', on_delete=models.CASCADE)
    
-    def __unicode__(self):
+    def __str__(self):
         return "%s: %s / %s" % (self.feed, self.duplicate_address, self.duplicate_link)
         
     def canonical(self):

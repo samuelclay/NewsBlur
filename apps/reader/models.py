@@ -53,7 +53,7 @@ class UserSubscription(models.Model):
     
     objects = UserSubscriptionManager()
 
-    def __unicode__(self):
+    def __str__(self):
         return '[%s (%s): %s (%s)] ' % (self.user.username, self.user.pk, 
                                         self.feed.feed_title, self.feed.pk)
         
@@ -597,7 +597,7 @@ class UserSubscription(models.Model):
                     r.sadd(key, *missing_rs)
                 missing_count += len(missing_rs)
                 missing_rs = []
-            found = feed_re.search(rs)
+            found = feed_re.search(rs.decode('utf-8'))
             if not found:
                 print(" ---> Not found: %s" % rs)
                 continue
@@ -1294,7 +1294,7 @@ class UserSubscriptionFolders(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     folders = models.TextField(default="[]")
     
-    def __unicode__(self):
+    def __str__(self):
         return "[%s]: %s" % (self.user, len(self.folders),)
         
     class Meta:
@@ -1697,7 +1697,7 @@ class Feature(models.Model):
     description = models.TextField(default="")
     date = models.DateTimeField(default=datetime.datetime.now)
     
-    def __unicode__(self):
+    def __str__(self):
         return "[%s] %s" % (self.date, self.description[:50])
     
     class Meta:

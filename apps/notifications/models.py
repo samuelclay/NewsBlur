@@ -73,7 +73,7 @@ class MUserFeedNotification(mongo.Document):
         'allow_inheritance': False,
     }
     
-    def __unicode__(self):
+    def __str__(self):
         notification_types = []
         if self.is_email: notification_types.append('email')
         if self.is_web: notification_types.append('web')

@@ -61,7 +61,7 @@ class MRequestInvite(mongo.Document):
         'allow_inheritance': False,
     }
     
-    def __unicode__(self):
+    def __str__(self):
         return "%s%s" % (self.email, '*' if self.invite_sent else '')
     
     @classmethod
@@ -148,7 +148,7 @@ class MSocialProfile(mongo.Document):
         'allow_inheritance': False,
     }
     
-    def __unicode__(self):
+    def __str__(self):
         return "%s [%s] following %s/%s, shared %s" % (self.username, self.user_id, 
                                   self.following_count, self.follower_count, self.shared_stories_count)
     
@@ -831,7 +831,7 @@ class MSocialSubscription(mongo.Document):
         'allow_inheritance': False,
     }
 
-    def __unicode__(self):
+    def __str__(self):
         user = User.objects.get(pk=self.user_id)
         subscription_user = User.objects.get(pk=self.subscription_user_id)
         return "Socialsub %s:%s" % (user, subscription_user)
@@ -1474,7 +1474,7 @@ class MSharedStory(mongo.DynamicDocument):
         'strict': False,
     }
 
-    def __unicode__(self):
+    def __str__(self):
         user = User.objects.get(pk=self.user_id)
         return "%s: %s (%s)%s%s" % (user.username, 
                                     self.decoded_story_title[:20], 
@@ -2400,7 +2400,7 @@ class MSocialServices(mongo.Document):
         'strict': False,
     }
     
-    def __unicode__(self):
+    def __str__(self):
         user = User.objects.get(pk=self.user_id)
         return "%s (Twitter: %s, FB: %s)" % (user.username, self.twitter_uid, self.facebook_uid)
         
@@ -2779,7 +2779,7 @@ class MInteraction(mongo.Document):
         'ordering': ['-date'],
     }
     
-    def __unicode__(self):
+    def __str__(self):
         user = User.objects.get(pk=self.user_id)
         with_user = self.with_user_id and User.objects.get(pk=self.with_user_id)
         return "<%s> %s on %s: %s - %s" % (user.username, with_user and with_user.username, self.date, 
@@ -3038,7 +3038,7 @@ class MActivity(mongo.Document):
         'ordering': ['-date'],
     }
     
-    def __unicode__(self):
+    def __str__(self):
         user = User.objects.get(pk=self.user_id)
         return "<%s> %s - %s" % (user.username, self.category, self.content and self.content[:20])
     
