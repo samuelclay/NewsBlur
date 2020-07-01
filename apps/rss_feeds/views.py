@@ -182,7 +182,7 @@ def load_feed_statistics_embedded(request, feed_id):
             'feed': feed,
         }
     )
-    
+
 def assemble_statistics(user, feed_id):
     timezone = user.profile.timezone
     stats = dict()

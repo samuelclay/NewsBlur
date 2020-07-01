@@ -58,10 +58,14 @@
                     </div>
                 </div>
             </div>
-            <div class="NB-welcome-header-image {% if not post_request %}NB-active{% endif %}">
-                <img src="{{ MEDIA_URL }}img/welcome/header-web.png" class="NB-1">
-                <img src="{{ MEDIA_URL }}img/welcome/header-ios.png" class="NB-2">
-                <img src="{{ MEDIA_URL }}img/welcome/header-android.png" class="NB-3">
+            <div class="NB-welcome-header-image NB-1 {% if not post_request %}NB-active{% endif %}">
+                <img src="{{ MEDIA_URL }}img/welcome/header-web.png">
+            </div>
+            <div class="NB-welcome-header-image NB-2">
+                <img src="{{ MEDIA_URL }}img/welcome/header-ios.png">
+            </div>
+            <div class="NB-welcome-header-image NB-3">
+                <img src="{{ MEDIA_URL }}img/welcome/header-android.png">
             </div>
 
             <div class="NB-welcome-header-account {% if post_request %}NB-active{% endif %}">
@@ -140,22 +144,22 @@
             <div class="NB-feature">
                 <img src="{{ MEDIA_URL }}img/welcome/feature_1.png">
                 <div class="NB-feature-caption">Real-time RSS</div>
-                <div class="NB-feature-text">Stories are pushed directly to you, so you can read news as it comes in.</div>
+                <div class="NB-feature-text">Stories are pushed directly to you, so you can read news as it comes in</div>
             </div>
             <div class="NB-feature">
                 <img src="{{ MEDIA_URL }}img/welcome/feature_2.png">
-                <div class="NB-feature-caption">Original site</div>
-                <div class="NB-feature-text">Read the content in context, the way it was meant to be seen.</div>
+                <div class="NB-feature-caption">Original Site</div>
+                <div class="NB-feature-text">Read the content in context, the way it was meant to be seen</div>
             </div>
             <div class="NB-feature">
                 <img src="{{ MEDIA_URL }}img/welcome/feature_3.png">
-                <div class="NB-feature-caption">Shared stories</div>
-                <div class="NB-feature-text">Reading news is better with friends. Share stories on your public blurblog.</div>
+                <div class="NB-feature-caption">Shared Stories</div>
+                <div class="NB-feature-text">Reading news is better with friends. Share stories on your public blurblog</div>
             </div>
             <div class="NB-feature">
                 <img src="{{ MEDIA_URL }}img/welcome/feature_4.png">
                 <div class="NB-feature-caption">Training</div>
-                <div class="NB-feature-text">Hide the stories you don't like and highlight the stories you do.</div>
+                <div class="NB-feature-text">Hide the stories you don't like and highlight the stories you do</div>
             </div>
         </div>    
     </div>
@@ -165,24 +169,80 @@
             <div class="NB-feature">
                 <img src="{{ MEDIA_URL }}img/welcome/feature_5.jpg">
                 <div class="NB-feature-caption">Full Text Search</div>
-                <div class="NB-feature-text">Quickly find stories across all of your subscriptions.</div>
+                <div class="NB-feature-text">Quickly find stories across all of your subscriptions</div>
             </div>
             <div class="NB-feature">
                 <img src="{{ MEDIA_URL }}img/welcome/feature_6.png">
                 <div class="NB-feature-caption">Story Tagging</div>
-                <div class="NB-feature-text">Save stories with custom tags for fast references.</div>
+                <div class="NB-feature-text">Save stories with custom tags for fast references</div>
             </div>
             <div class="NB-feature">
                 <img src="{{ MEDIA_URL }}img/welcome/feature_7.jpg">
                 <div class="NB-feature-caption">Blurblog Privacy</div>
-                <div class="NB-feature-text">Share stories with the world or only with your friends.</div>
+                <div class="NB-feature-text">Share stories with the world or only with your friends</div>
             </div>
             <div class="NB-feature">
                 <img src="{{ MEDIA_URL }}img/welcome/feature_8.jpg">
                 <div class="NB-feature-caption">Third-party Apps</div>
-                <div class="NB-feature-text">Supports <a href="http://reederapp.com" class="NB-splash-link" target="_blank">Reeder</a>, <a href="http://readkitapp.com" class="NB-splash-link" target="_blank">ReadKit</a>, <a href="http://supertop.co/unread/" class="NB-splash-link" target="_blank">Unread</a>, and loads more.</div>
+                <div class="NB-feature-text">Supports <a href="http://reederapp.com" class="NB-splash-link" target="_blank">Reeder</a>, <a href="http://readkitapp.com" class="NB-splash-link" target="_blank">ReadKit</a>, <a href="http://supertop.co/unread/" class="NB-splash-link" target="_blank">Unread</a>, and loads more</div>
             </div>
-        </div>    
+        </div>
+    </div>
+    
+    
+    <div class="NB-welcome-subfeatures">
+        <div class="NB-inner">
+            <div class="NB-feature">
+                <img src="{{ MEDIA_URL }}img/welcome/subfeature_1.png">
+                <div class="NB-feature-caption">Saved Searches</div>
+                <div class="NB-feature-text">Regularly used searches are conveniently given their own feeds</div>
+            </div>
+            <div class="NB-feature">
+                <img src="{{ MEDIA_URL }}img/welcome/header-ios.png">
+                <div class="NB-feature-caption">First-class iOS App</div>
+                <div class="NB-feature-text">The NewsBlur iOS app is free and is jam-packed with features</div>
+            </div>
+            <div class="NB-feature">
+                <img src="{{ MEDIA_URL }}img/welcome/subfeature_3.png">
+                <div class="NB-feature-caption">Read the Full Story</div>
+                <div class="NB-feature-text">The original story from truncated RSS feeds is seamlessly expanded</div>
+            </div>
+            <div class="NB-feature">
+                <img src="{{ MEDIA_URL }}img/welcome/header-android.png">
+                <div class="NB-feature-caption">First-class Android App</div>
+                <div class="NB-feature-text">The NewsBlur Android app is free and has it all</div>
+            </div>
+            <div class="NB-feature">
+                <img src="{{ MEDIA_URL }}img/welcome/subfeature_5.png">
+                <div class="NB-feature-caption">Track Changes</div>
+                <div class="NB-feature-text">See how a story evolved since it was first published</div>
+            </div>
+            <div class="NB-feature">
+                <img src="{{ MEDIA_URL }}img/welcome/subfeature_6.png">
+                <div class="NB-feature-caption">IFTTT Support</div>
+                <div class="NB-feature-text">Hook NewsBlur up to nearly every service on the web</div>
+            </div>
+            <div class="NB-feature">
+                <img src="{{ MEDIA_URL }}img/welcome/subfeature_7.png">
+                <div class="NB-feature-caption">Email Newsletters</div>
+                <div class="NB-feature-text">Read your email newsletters where they belong, in a news reader</div>
+            </div>
+            <div class="NB-feature">
+                <img src="{{ MEDIA_URL }}img/welcome/subfeature_8.png">
+                <div class="NB-feature-caption">Grid, List, Split</div>
+                <div class="NB-feature-text">Every site has its own story layout, so you can mix and match</div>
+            </div>
+            <div class="NB-feature">
+                <img src="{{ MEDIA_URL }}img/welcome/subfeature_9.png">
+                <div class="NB-feature-caption">Dark Mode</div>
+                <div class="NB-feature-text">Easy on the eyes and built into the web, iOS, and Android</div>
+            </div>
+            <div class="NB-feature">
+                <img src="{{ MEDIA_URL }}img/welcome/subfeature_10.png">
+                <div class="NB-feature-caption">Twitter & YouTube</div>
+                <div class="NB-feature-text">Even sites that don't publish RSS feeds can be followed</div>
+            </div>
+        </div>
     </div>
 
     <div class="NB-welcome-pricing">

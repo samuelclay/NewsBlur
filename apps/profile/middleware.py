@@ -7,13 +7,13 @@ from utils import log as logging
 from django.http import HttpResponse
 from django.conf import settings
 from django.db import connection
-from django.template import Template
+from django.template import Template, Context
 from apps.statistics.rstats import round_time
 from utils import json_functions as json
 
 class LastSeenMiddleware(object):
     def __init__(self, get_response):
-            self.get_response = get_response
+        self.get_response = get_response
 
     def process_response(self, request, response):
         if ((request.path == '/' or
@@ -41,13 +41,19 @@ class LastSeenMiddleware(object):
         return response
 
     def __call__(self, request):
-        response = self.get_response(request)
+        response = None
+        if hasattr(self, 'process_request'):
+            response = self.process_request(request)
+        if not response:
+            response = self.get_response(request)
+        if hasattr(self, 'process_response'):
+            response = self.process_response(request, response)
 
         return response
 
 class DBProfilerMiddleware:
-    def __init__(self, get_response):
-            self.get_response = get_response
+    def __init__(self, get_response=None):
+        self.get_response = get_response
 
     def process_request(self, request): 
         setattr(request, 'activated_segments', [])
@@ -70,8 +76,8 @@ class DBProfilerMiddleware:
 
     def process_response(self, request, response):
         if hasattr(request, 'sql_times_elapsed'):
-            middleware = SQLLogToConsoleMiddleware()
-            middleware.process_celery(self)
+            # middleware = SQLLogToConsoleMiddleware()
+            # middleware.process_celery(self)
             # logging.debug(" ---> ~FGProfiling~FB app: %s" % request.sql_times_elapsed)
             self._save_times(request.sql_times_elapsed)
         return response
@@ -106,13 +112,19 @@ class DBProfilerMiddleware:
         pipe.execute()
 
     def __call__(self, request):
-        response = self.get_response(request)
+        response = None
+        if hasattr(self, 'process_request'):
+            response = self.process_request(request)
+        if not response:
+            response = self.get_response(request)
+        if hasattr(self, 'process_response'):
+            response = self.process_response(request, response)
 
         return response
 
 class SQLLogToConsoleMiddleware:
     def __init__(self, get_response):
-            self.get_response = get_response
+        self.get_response = get_response
 
     def activated(self, request):
         return (settings.DEBUG_QUERIES or 
@@ -124,6 +136,8 @@ class SQLLogToConsoleMiddleware:
         if connection.queries:
             time_elapsed = sum([float(q['time']) for q in connection.queries])
             queries = connection.queries
+            if getattr(connection, 'queriesx', False):
+                queries.extend(connection.queriesx)
             for query in queries:
                 if query.get('mongo'):
                     query['sql'] = "~FM%s: %s" % (query['mongo']['collection'], query['mongo']['query'])
@@ -137,11 +151,11 @@ class SQLLogToConsoleMiddleware:
                     query['sql'] = re.sub(r'DELETE', '~FR~SBDELETE', query['sql'])
             t = Template("{% for sql in sqllog %}{% if not forloop.first %}                  {% endif %}[{{forloop.counter}}] ~FC{{sql.time}}s~FW: {{sql.sql|safe}}{% if not forloop.last %}\n{% endif %}{% endfor %}")
             if settings.DEBUG:
-                logging.debug(t.render({
+                logging.debug(t.render(Context({
                     'sqllog': queries,
                     'count': len(queries),
                     'time': time_elapsed,
-                }))
+                })))
             times_elapsed = {
                 'sql': sum([float(q['time']) 
                            for q in queries if not q.get('mongo') and 
@@ -156,7 +170,13 @@ class SQLLogToConsoleMiddleware:
         self.process_response(profiler, None)
 
     def __call__(self, request):
-        response = self.get_response(request)
+        response = None
+        if hasattr(self, 'process_request'):
+            response = self.process_request(request)
+        if not response:
+            response = self.get_response(request)
+        if hasattr(self, 'process_response'):
+            response = self.process_response(request, response)
 
         return response
 
@@ -266,7 +286,7 @@ SIMPSONS_QUOTES = [
 
 class SimpsonsMiddleware:
     def __init__(self, get_response):
-            self.get_response = get_response
+        self.get_response = get_response
 
     def process_response(self, request, response):
         quote = random.choice(SIMPSONS_QUOTES)
@@ -276,14 +296,20 @@ class SimpsonsMiddleware:
         return response
 
     def __call__(self, request):
-        response = self.get_response(request)
+        response = None
+        if hasattr(self, 'process_request'):
+            response = self.process_request(request)
+        if not response:
+            response = self.get_response(request)
+        if hasattr(self, 'process_response'):
+            response = self.process_response(request, response)
 
         return response
         
 class ServerHostnameMiddleware:
 
     def __init__(self, get_response):
-            self.get_response = get_response
+        self.get_response = get_response
 
     def process_response(self, request, response):
         response["X-gunicorn-server"] = settings.SERVER_NAME
@@ -291,7 +317,13 @@ class ServerHostnameMiddleware:
         return response
 
     def __call__(self, request):
-        response = self.get_response(request)
+        response = None
+        if hasattr(self, 'process_request'):
+            response = self.process_request(request)
+        if not response:
+            response = self.get_response(request)
+        if hasattr(self, 'process_response'):
+            response = self.process_response(request, response)
 
         return response
 
@@ -304,8 +336,9 @@ class TimingMiddleware:
         setattr(request, 'start_time', time.time())
 
     def __call__(self, request):
-        self.process_request(request)
-        response = self.get_response(request)
+        response = self.process_request(request)
+        if not response:
+            response = self.get_response(request)
 
         return response
 BANNED_USER_AGENTS = (
@@ -318,7 +351,7 @@ BANNED_USERNAMES = (
 
 class UserAgentBanMiddleware:
     def __init__(self, get_response):
-            self.get_response = get_response
+        self.get_response = get_response
 
     def process_request(self, request):
         user_agent = request.environ.get('HTTP_USER_AGENT', 'missing').lower()
@@ -349,8 +382,13 @@ class UserAgentBanMiddleware:
             return HttpResponse(json.encode(data), status=403, mimetype='text/json')
     
     def __call__(self, request):
-
-        response = self.get_response(request)
+        response = None
+        if hasattr(self, 'process_request'):
+            response = self.process_request(request)
+        if not response:
+            response = self.get_response(request)
+        if hasattr(self, 'process_response'):
+            response = self.process_response(request, response)
 
         return response
 

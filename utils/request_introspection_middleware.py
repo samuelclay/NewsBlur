@@ -7,15 +7,14 @@ class DumpRequestMiddleware:
             request_data = request.POST or request.GET
             request_items = list(request_data.items())
             if request_items:
-                logging.debug("~BC~FK%s" % dict(request_items))
-
+                logging.debug(" ---> ~FC%s ~SN~FC%s ~SN~BC~FK%s~BK~FC" % (request.method, request.path, dict(request_items)))
 
     def __init__(self, get_response):
         self.get_response = get_response
 
     def __call__(self, request):
 
+        self.process_request(request)
         response = self.get_response(request)
-
 
         return response

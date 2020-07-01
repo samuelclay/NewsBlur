@@ -28,9 +28,8 @@ from utils import json_functions as json
 from utils.user_functions import generate_secret_token
 from utils.feed_functions import chunks
 from vendor.timezones.fields import TimeZoneField
-from vendor.paypal.standard.ipn.signals import subscription_signup, payment_was_successful, recurring_payment
-from vendor.paypal.standard.ipn.signals import payment_was_flagged
-from vendor.paypal.standard.ipn.models import PayPalIPN
+from paypal.standard.ipn.signals import valid_ipn_received, invalid_ipn_received
+from paypal.standard.ipn.models import PayPalIPN
 from vendor.paypalapi.interface import PayPalInterface
 from vendor.paypalapi.exceptions import PayPalAPIResponseError
 from zebra.signals import zebra_webhook_customer_subscription_created
@@ -58,7 +57,7 @@ class Profile(models.Model):
     stripe_4_digits   = models.CharField(max_length=4, blank=True, null=True)
     stripe_id         = models.CharField(max_length=24, blank=True, null=True)
     
-    def __unicode__(self):
+    def __str__(self):
         return "%s <%s> (Premium: %s)" % (self.user, self.user.email, self.is_premium)
     
     @property
@@ -618,7 +617,7 @@ class Profile(models.Model):
                 now = int(datetime.datetime.now().strftime('%s'))
                 r.zadd(key, { -1: now })
                 r.expire(key, settings.SUBSCRIBER_EXPIRE*24*60*60)
-                r.zadd(premium_key, { -1, now })
+                r.zadd(premium_key, {-1: now})
                 r.expire(premium_key, settings.SUBSCRIBER_EXPIRE*24*60*60)
             
             logging.info("   ---> [%-30s] ~SN~FBCounting subscribers, storing in ~SBredis~SN: ~FMt:~SB~FM%s~SN a:~SB%s~SN p:~SB%s~SN ap:~SB%s" % 
@@ -1050,7 +1049,7 @@ class StripeIds(models.Model):
     user = models.ForeignKey(User, related_name='stripe_ids', on_delete=models.CASCADE, null=True)
     stripe_id = models.CharField(max_length=24, blank=True, null=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s: %s" % (self.user.username, self.stripe_id)
 
         
@@ -1078,7 +1077,7 @@ def paypal_signup(sender, **kwargs):
     user.profile.activate_premium()
     user.profile.cancel_premium_stripe()
     user.profile.cancel_premium_paypal(second_most_recent_only=True)
-subscription_signup.connect(paypal_signup)
+valid_ipn_received.connect(paypal_signup)
 
 def paypal_payment_history_sync(sender, **kwargs):
     ipn_obj = sender
@@ -1091,7 +1090,7 @@ def paypal_payment_history_sync(sender, **kwargs):
         user.profile.setup_premium_history()
     except:
         return {"code": -1, "message": "User doesn't exist."}
-payment_was_successful.connect(paypal_payment_history_sync)
+valid_ipn_received.connect(paypal_payment_history_sync)
 
 def paypal_payment_was_flagged(sender, **kwargs):
     ipn_obj = sender
@@ -1105,7 +1104,7 @@ def paypal_payment_was_flagged(sender, **kwargs):
         logging.user(user, "~BC~SB~FBPaypal subscription payment flagged")
     except:
         return {"code": -1, "message": "User doesn't exist."}
-payment_was_flagged.connect(paypal_payment_was_flagged)
+invalid_ipn_received.connect(paypal_payment_was_flagged)
 
 def paypal_recurring_payment_history_sync(sender, **kwargs):
     ipn_obj = sender
@@ -1118,7 +1117,7 @@ def paypal_recurring_payment_history_sync(sender, **kwargs):
         user.profile.setup_premium_history()
     except:
         return {"code": -1, "message": "User doesn't exist."}
-recurring_payment.connect(paypal_recurring_payment_history_sync)
+valid_ipn_received.connect(paypal_recurring_payment_history_sync)
 
 def stripe_signup(sender, full_json, **kwargs):
     stripe_id = full_json['data']['object']['customer']
@@ -1194,7 +1193,7 @@ class MEmailUnsubscribe(mongo.Document):
                     }],
     }
     
-    def __unicode__(self):
+    def __str__(self):
         return "%s unsubscribed from %s on %s" % (self.user_id, self.email_type, self.date)
     
     @classmethod
@@ -1219,7 +1218,7 @@ class MSentEmail(mongo.Document):
         'indexes': ['sending_user_id', 'receiver_user_id', 'email_type'],
     }
     
-    def __unicode__(self):
+    def __str__(self):
         return "%s sent %s email to %s" % (self.sending_user_id, self.email_type, self.receiver_user_id)
     
     @classmethod
@@ -1235,7 +1234,7 @@ class PaymentHistory(models.Model):
     payment_provider = models.CharField(max_length=20)
     payment_identifier = models.CharField(max_length=100, null=True)
     
-    def __unicode__(self):
+    def __str__(self):
         return "[%s] $%s/%s" % (self.payment_date.strftime("%Y-%m-%d"), self.payment_amount,
                                 self.payment_provider)
     class Meta:
@@ -1385,7 +1384,7 @@ class MGiftCode(mongo.Document):
         'indexes': ['gifting_user_id', 'receiving_user_id', 'created_date'],
     }
     
-    def __unicode__(self):
+    def __str__(self):
         return "%s gifted %s on %s: %s (redeemed %s times)" % (self.gifting_user_id, self.receiving_user_id, self.created_date, self.gift_code, self.redeemed)
     
     @property
@@ -1421,7 +1420,7 @@ class MRedeemedCode(mongo.Document):
         'indexes': ['user_id', 'gift_code', 'redeemed_date'],
     }
     
-    def __unicode__(self):
+    def __str__(self):
         return "%s redeemed %s on %s" % (self.user_id, self.gift_code, self.redeemed_date)
     
     @classmethod
@@ -1461,7 +1460,7 @@ class MCustomStyling(mongo.Document):
         'indexes': ['user_id'],
     }
     
-    def __unicode__(self):
+    def __str__(self):
         return "%s custom style %s/%s %s" % (self.user_id, len(self.custom_css) if self.custom_css else "-", 
                                              len(self.custom_js) if self.custom_js else "-", self.updated_date)
     

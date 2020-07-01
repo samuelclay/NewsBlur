@@ -10,7 +10,7 @@ class StripeCustomer(models.Model, mixins.StripeMixin, mixins.StripeCustomerMixi
     class Meta:
         abstract = True
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s" % self.stripe_customer_id
 
 
@@ -20,7 +20,7 @@ class StripePlan(models.Model, mixins.StripeMixin, mixins.StripePlanMixin):
     class Meta:
         abstract = True
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s" % self.stripe_plan_id
 
 
@@ -52,7 +52,7 @@ if options.ZEBRA_ENABLE_APP:
         customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
         plan = models.ForeignKey(Plan, on_delete=models.CASCADE)
 
-        def __unicode__(self):
+        def __str__(self):
             return "%s: %s" % (self.customer, self.plan)
 
         @property

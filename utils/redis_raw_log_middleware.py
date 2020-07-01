@@ -13,6 +13,7 @@ class RedisDumpMiddleware(object):
         return (settings.DEBUG_QUERIES or 
                 (hasattr(request, 'activated_segments') and
                  'db_profiler' in request.activated_segments))
+
     def process_view(self, request, callback, callback_args, callback_kwargs):
         if not self.activated(request): return
         if not getattr(Connection, '_logging', False):
@@ -20,6 +21,7 @@ class RedisDumpMiddleware(object):
             setattr(Connection, '_logging', True)
             Connection.pack_command = \
                     self._instrument(Connection.pack_command)
+
     def process_celery(self, profiler):
         if not self.activated(profiler): return
         if not getattr(Connection, '_logging', False):
@@ -27,6 +29,7 @@ class RedisDumpMiddleware(object):
             setattr(Connection, '_logging', True)
             Connection.pack_command = \
                     self._instrument(Connection.pack_command)
+
     def process_response(self, request, response):
         # if settings.DEBUG and hasattr(self, 'orig_pack_command'):
         #     # remove instrumentation from redis
@@ -34,6 +37,7 @@ class RedisDumpMiddleware(object):
         #     Connection.pack_command = \
         #             self.orig_pack_command
         return response
+
     def _instrument(self, original_method):
         def instrumented_method(*args, **kwargs):
             message = self.process_message(*args, **kwargs)
@@ -43,7 +47,9 @@ class RedisDumpMiddleware(object):
             result = original_method(*args, **kwargs)
             stop = time()
             duration = stop - start
-            connection.queries.append({
+            if not getattr(connection, 'queriesx', False):
+                connection.queriesx = []
+            connection.queriesx.append({
                 'redis': message,
                 'time': '%.3f' % duration,
             })
@@ -61,6 +67,12 @@ class RedisDumpMiddleware(object):
         return { 'query': ' '.join(query) }
 
     def __call__(self, request):
-        response = self.get_response(request)
+        response = None
+        if hasattr(self, 'process_request'):
+            response = self.process_request(request)
+        if not response:
+            response = self.get_response(request)
+        if hasattr(self, 'process_response'):
+            response = self.process_response(request, response)
 
         return response

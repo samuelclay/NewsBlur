@@ -9,6 +9,7 @@ from django.conf import settings
 from django.http import HttpResponse, HttpResponseForbidden, Http404
 from django.core.mail import mail_admins
 from django.db.models.query import QuerySet
+# from django.utils.deprecation import CallableBool
 from mongoengine.queryset.queryset import QuerySet as MongoQuerySet
 from bson.objectid import ObjectId
 import sys
@@ -50,6 +51,8 @@ def json_encode(data, *args, **kwargs):
         # Same as for lists above.
         elif isinstance(data, dict):
             ret = _dict(data)
+        # elif isinstance(data, CallableBool):
+        #     ret = bool(data)
         elif isinstance(data, (Decimal, ObjectId)):
             # json.dumps() cant handle Decimal
             ret = str(data)
@@ -62,6 +65,8 @@ def json_encode(data, *args, **kwargs):
         elif isinstance(data, models.Model):
             ret = _model(data)
         # here we need to encode the string as unicode (otherwise we get utf-16 in the json-response)
+        elif isinstance(data, bytes):
+            ret = smart_str(data)
         elif isinstance(data, str):
             ret = smart_str(data)
         elif isinstance(data, Exception):

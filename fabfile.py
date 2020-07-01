@@ -25,7 +25,7 @@ except ImportError:
     print("Digital Ocean's API not loaded. Install python-digitalocean.")
 
 
-django.settings_module('settings')
+django.settings_module('newsblur.settings')
 try:
     from django.conf import settings as django_settings
 except ImportError:
