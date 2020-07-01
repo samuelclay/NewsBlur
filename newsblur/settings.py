@@ -594,7 +594,7 @@ S3_AVATARS_BUCKET_NAME = 'avatars.newsblur.com'
 # = Configurations =
 # ==================
 
-from local_settings import *
+from .local_settings import *
 
 if not DEBUG:
     INSTALLED_APPS += (
