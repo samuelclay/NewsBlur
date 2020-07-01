@@ -57,7 +57,7 @@ class Profile(models.Model):
     stripe_4_digits   = models.CharField(max_length=4, blank=True, null=True)
     stripe_id         = models.CharField(max_length=24, blank=True, null=True)
     
-    def __unicode__(self):
+    def __str__(self):
         return "%s <%s> (Premium: %s)" % (self.user, self.user.email, self.is_premium)
     
     @property
@@ -1049,7 +1049,7 @@ class StripeIds(models.Model):
     user = models.ForeignKey(User, related_name='stripe_ids', on_delete=models.CASCADE, null=True)
     stripe_id = models.CharField(max_length=24, blank=True, null=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s: %s" % (self.user.username, self.stripe_id)
 
         
@@ -1193,7 +1193,7 @@ class MEmailUnsubscribe(mongo.Document):
                     }],
     }
     
-    def __unicode__(self):
+    def __str__(self):
         return "%s unsubscribed from %s on %s" % (self.user_id, self.email_type, self.date)
     
     @classmethod
@@ -1218,7 +1218,7 @@ class MSentEmail(mongo.Document):
         'indexes': ['sending_user_id', 'receiver_user_id', 'email_type'],
     }
     
-    def __unicode__(self):
+    def __str__(self):
         return "%s sent %s email to %s" % (self.sending_user_id, self.email_type, self.receiver_user_id)
     
     @classmethod
@@ -1234,7 +1234,7 @@ class PaymentHistory(models.Model):
     payment_provider = models.CharField(max_length=20)
     payment_identifier = models.CharField(max_length=100, null=True)
     
-    def __unicode__(self):
+    def __str__(self):
         return "[%s] $%s/%s" % (self.payment_date.strftime("%Y-%m-%d"), self.payment_amount,
                                 self.payment_provider)
     class Meta:
@@ -1384,7 +1384,7 @@ class MGiftCode(mongo.Document):
         'indexes': ['gifting_user_id', 'receiving_user_id', 'created_date'],
     }
     
-    def __unicode__(self):
+    def __str__(self):
         return "%s gifted %s on %s: %s (redeemed %s times)" % (self.gifting_user_id, self.receiving_user_id, self.created_date, self.gift_code, self.redeemed)
     
     @property
@@ -1420,7 +1420,7 @@ class MRedeemedCode(mongo.Document):
         'indexes': ['user_id', 'gift_code', 'redeemed_date'],
     }
     
-    def __unicode__(self):
+    def __str__(self):
         return "%s redeemed %s on %s" % (self.user_id, self.gift_code, self.redeemed_date)
     
     @classmethod
@@ -1460,7 +1460,7 @@ class MCustomStyling(mongo.Document):
         'indexes': ['user_id'],
     }
     
-    def __unicode__(self):
+    def __str__(self):
         return "%s custom style %s/%s %s" % (self.user_id, len(self.custom_css) if self.custom_css else "-", 
                                              len(self.custom_js) if self.custom_js else "-", self.updated_date)
     

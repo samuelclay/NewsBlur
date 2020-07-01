@@ -344,7 +344,7 @@ class TwitterFetcher:
         
         quote_tweet_content = ""
         if 'quoted_status' in content_tweet:
-            quote_tweet_content = "<blockquote>"+self.tweet_story(content_tweet['quoted_status'])['description']+"</blockquote>"
+            quote_tweet_content = "<blockquote>"+self.tweet_story(content_tweet['quoted_status'].__dict__)['description']+"</blockquote>"
         
         
         created_date = content_tweet['created_at']

@@ -16,7 +16,7 @@ class RecommendedFeed(models.Model):
     declined_date = models.DateField(null=True)
     twitter       = models.CharField(max_length=50, null=True, blank=True)
     
-    def __unicode__(self):
+    def __str__(self):
         return "%s (%s)" % (self.feed, self.approved_date or self.created_date)
         
     class Meta:
@@ -40,7 +40,7 @@ class MFeedFolder(mongo.Document):
         'allow_inheritance': False,
     }
     
-    def __unicode__(self):
+    def __str__(self):
         feed = Feed.get_by_id(self.feed_id)
         return "%s - %s (%s)" % (feed, self.folder, self.count)
     

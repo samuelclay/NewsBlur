@@ -167,7 +167,7 @@ class PushSubscription(models.Model):
                                   unicode(self.feed)[:30], hub_url, self_url))
                     
                     
-    def __unicode__(self):
+    def __str__(self):
         if self.verified:
             verified = u'verified'
         else:

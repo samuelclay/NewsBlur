@@ -23,7 +23,7 @@ class MStatistics(mongo.Document):
         'indexes': ['key'],
     }
     
-    def __unicode__(self):
+    def __str__(self):
         return "%s: %s" % (self.key, self.value)
     
     @classmethod
@@ -261,7 +261,7 @@ class MFeedback(mongo.Document):
         8: 'question',
     }
     
-    def __unicode__(self):
+    def __str__(self):
         return "%s: (%s) %s" % (self.style, self.date, self.subject)
         
     @classmethod
@@ -321,7 +321,7 @@ class MAnalyticsFetcher(mongo.Document):
         'ordering': ['date'],
     }
     
-    def __unicode__(self):
+    def __str__(self):
         return "%s: %.4s+%.4s+%.4s+%.4s = %.4ss" % (self.feed_id, self.feed_fetch,
                                                     self.feed_process,
                                                     self.page, 
@@ -366,7 +366,7 @@ class MAnalyticsLoader(mongo.Document):
         'ordering': ['date'],
     }
     
-    def __unicode__(self):
+    def __str__(self):
         return "%s: %.4ss" % (self.server, self.page_load)
         
     @classmethod

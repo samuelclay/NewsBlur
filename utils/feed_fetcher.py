@@ -27,11 +27,11 @@ from utils.story_functions import pre_process_story, strip_tags, linkify
 from utils import log as logging
 from utils.feed_functions import timelimit, TimeoutError
 from qurl import qurl
-from BeautifulSoup import BeautifulSoup
+from bs4 import BeautifulSoup
 from mongoengine import connect, connection
 from django.utils import feedgenerator
 from django.utils.html import linebreaks
-from django.utils.encoding import smart_unicode
+from django.utils.encoding import smart_text
 from utils import json_functions as json
 from celery.exceptions import SoftTimeLimitExceeded
 from utils.twitter_fetcher import TwitterFetcher
@@ -148,11 +148,11 @@ class FetchFeed:
                 elif raw_feed.content and raw_feed.status_code < 400:
                     response_headers = raw_feed.headers
                     response_headers['Content-Location'] = raw_feed.url
-                    self.raw_feed = smart_unicode(raw_feed.content)
+                    self.raw_feed = smart_text(raw_feed.content)
                     self.fpf = feedparser.parse(self.raw_feed,
                                                 response_headers=response_headers)
                     if self.options.get('debug', False):
-                        logging.debug(" ---> [%-30s] ~FBFeed fetch status %s: %s length / %s" % (self.feed.log_title[:30], raw_feed.status_code, len(smart_unicode(raw_feed.content)), raw_feed.headers))
+                        logging.debug(" ---> [%-30s] ~FBFeed fetch status %s: %s length / %s" % (self.feed.log_title[:30], raw_feed.status_code, len(smart_text(raw_feed.content)), raw_feed.headers))
             except Exception as e:
                 logging.debug("   ***> [%-30s] ~FRFeed failed to fetch with request, trying feedparser: %s" % (self.feed.log_title[:30], str(e)[:100]))
             
@@ -308,11 +308,11 @@ class FetchFeed:
                 hours = (duration_sec / 3600)
                 minutes = (duration_sec - (hours*3600)) / 60
                 seconds = duration_sec - (hours*3600) - (minutes*60)
-                duration = "%s:%s:%s" % (hours, '{0:02d}'.format(minutes), '{0:02d}'.format(seconds))
+                duration = "%s:%s:%s" % (hours, '{0:02d}'.format(round(minutes)), '{0:02d}'.format(round(seconds)))
             else:
                 minutes = duration_sec / 60
                 seconds = duration_sec - (minutes*60)
-                duration = "%s:%s" % ('{0:02d}'.format(minutes), '{0:02d}'.format(seconds))
+                duration = "%s:%s" % ('{0:02d}'.format(round(minutes)), '{0:02d}'.format(round(seconds)))
             content = """<div class="NB-youtube-player"><iframe allowfullscreen="true" src="%s?iv_load_policy=3"></iframe></div>
                          <div class="NB-youtube-stats"><small>
                              <b>From:</b> <a href="%s">%s</a><br />
@@ -471,7 +471,7 @@ class ProcessFeed:
         tagline = self.fpf.feed.get('tagline', self.feed.data.feed_tagline)
         if tagline:
             original_tagline = self.feed.data.feed_tagline
-            self.feed.data.feed_tagline = smart_unicode(tagline)
+            self.feed.data.feed_tagline = smart_text(tagline)
             if self.feed.data.feed_tagline != original_tagline:
                 self.feed.data.save(update_fields=['feed_tagline'])
 

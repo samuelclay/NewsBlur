@@ -220,7 +220,7 @@ class UploadedOPML(mongo.Document):
     opml_file = mongo.StringField()
     upload_date = mongo.DateTimeField(default=datetime.datetime.now)
     
-    def __unicode__(self):
+    def __str__(self):
         user = User.objects.get(pk=self.user_id)
         return "%s: %s characters" % (user.username, len(self.opml_file))
     

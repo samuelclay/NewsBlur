@@ -52,12 +52,11 @@ class LastSeenMiddleware(object):
         return response
 
 class DBProfilerMiddleware:
-    def __init__(self, get_response):
+    def __init__(self, get_response=None):
         self.get_response = get_response
 
     def process_request(self, request): 
         setattr(request, 'activated_segments', [])
-        print(" ---> Setting activated_segments", request.activated_segments)
         if ((request.path.startswith('/reader/feed') or
              request.path.startswith('/reader/river')) and
             random.random() < .01):
