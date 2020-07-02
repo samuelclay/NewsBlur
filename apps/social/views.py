@@ -43,7 +43,7 @@ def load_social_stories(request, user_id, username=None):
     social_user    = get_object_or_404(User, pk=social_user_id)
     offset         = int(request.GET.get('offset', 0))
     limit          = int(request.GET.get('limit', 6))
-    page           = int(request.GET.get('page', 0))
+    page           = int(request.GET.get('page', 1))
     order          = request.GET.get('order', 'newest')
     read_filter    = request.GET.get('read_filter', 'all')
     query          = request.GET.get('query', '').strip()
