@@ -747,7 +747,7 @@ JAMMIT = jammit.JammitAssets(ROOT_DIR)
 
 if DEBUG:
     MIDDLEWARE += ('utils.request_introspection_middleware.DumpRequestMiddleware',)
-    # MIDDLEWARE += ('utils.exception_middleware.ConsoleExceptionMiddleware',)
+    MIDDLEWARE += ('utils.exception_middleware.ConsoleExceptionMiddleware',)
 
 # =======
 # = AWS =
