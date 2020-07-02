@@ -770,6 +770,13 @@ def monkey_patched_get_user(request):
     """
     Return the user model instance associated with the given request session.
     If no user is retrieved, return an instance of `AnonymousUser`.
+
+    Monkey patched for the django 2.0 upgrade because session authenticated,
+    added in 1.7 and required in 1.10, invalidates all existing 1.5 session auth
+    tokens. These tokens need to be refreshed as users login over the year, so
+    until then, leave this moneky patch running until we're ready to invalidate
+    any user who hasn't logged in during the window between the django 2.0 launch
+    and when this monkey patch is removed.
     """
     from django.contrib.auth.models import AnonymousUser
     user = None
