@@ -201,7 +201,7 @@ def signup(request):
         form = SignupForm(prefix='signup', data=request.POST)
         if form.is_valid():
             new_user = form.save()
-            login_user(request, new_user)
+            login_user(request, new_user, backend='django.contrib.auth.backends.ModelBackend')
             logging.user(new_user, "~FG~SB~BBNEW SIGNUP: ~FW%s" % new_user.email)
             if not new_user.is_active:
                 url = "https://%s%s" % (Site.objects.get_current().domain,
