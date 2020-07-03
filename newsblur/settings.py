@@ -71,8 +71,15 @@ USE_I18N              = False
 LOGIN_REDIRECT_URL    = '/'
 LOGIN_URL             = '/account/login'
 MEDIA_URL             = '/media/'
-STATIC_URL             = '/media/'
-STATIC_ROOT             = '/media/'
+
+if DEBUG:
+    STATIC_URL        = '/static/'
+    STATIC_ROOT       = '/static/static_root/'
+else:
+    STATIC_URL        = '/media/'
+    STATIC_ROOT       = '/media/'
+
+
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
 # trailing slash.
 # Examples: "http://foo.com/media/", "/media/".
