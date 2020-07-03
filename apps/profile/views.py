@@ -92,7 +92,7 @@ def login(request):
     if request.method == "POST":
         form = LoginForm(data=request.POST)
         if form.is_valid():
-            login_user(request, form.get_user())
+            login_user(request, form.get_user(), backend='django.contrib.auth.backends.ModelBackend')
             logging.user(form.get_user(), "~FG~BBOAuth Login~FW")
             return HttpResponseRedirect(request.POST['next'] or reverse('index'))
 
@@ -121,7 +121,7 @@ def signup(request):
         form = SignupForm(data=request.POST, prefix="signup")
         if form.is_valid() and not recaptcha_error:
             new_user = form.save()
-            login_user(request, new_user)
+            login_user(request, new_user, backend='django.contrib.auth.backends.ModelBackend')
             logging.user(new_user, "~FG~SB~BBNEW SIGNUP: ~FW%s" % new_user.email)
             new_user.profile.activate_free()
             return HttpResponseRedirect(request.POST['next'] or reverse('index'))

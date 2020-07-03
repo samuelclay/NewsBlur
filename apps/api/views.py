@@ -37,7 +37,7 @@ def login(request):
         if form.errors:
             errors = form.errors
         if form.is_valid():
-            login_user(request, form.get_user())
+            login_user(request, form.get_user(), backend='django.contrib.auth.backends.ModelBackend')
             logging.user(request, "~FG~BB~SKAPI Login~SN~FW: %s / %s" % (user_agent, ip))
             code = 1
     else:
@@ -58,7 +58,7 @@ def signup(request):
         if form.is_valid():
             try:
                 new_user = form.save()
-                login_user(request, new_user)
+                login_user(request, new_user, backend='django.contrib.auth.backends.ModelBackend')
                 logging.user(request, "~FG~SB~BBAPI NEW SIGNUP: ~FW%s / %s" % (new_user.email, ip))
                 code = 1
             except forms.ValidationError as e:
