@@ -170,7 +170,7 @@ def login(request):
     if request.method == "POST":
         form = LoginForm(request.POST, prefix='login')
         if form.is_valid():
-            login_user(request, form.get_user())
+            login_user(request, form.get_user(), backend='django.contrib.auth.backends.ModelBackend')
             if request.POST.get('api'):
                 logging.user(form.get_user(), "~FG~BB~SKiPhone Login~FW")
                 code = 1
@@ -232,7 +232,7 @@ def autologin(request, username, secret):
 
     user = profile[0].user
     user.backend = settings.AUTHENTICATION_BACKENDS[0]
-    login_user(request, user)
+    login_user(request, user, backend='django.contrib.auth.backends.ModelBackend')
     logging.user(user, "~FG~BB~SKAuto-Login. Next stop: %s~FW" % (next if next else 'Homepage',))
     
     if next and not next.startswith('/'):
@@ -2376,7 +2376,7 @@ def login_as(request):
     username = request.GET['user']
     user = get_object_or_404(User, username__iexact=username)
     user.backend = settings.AUTHENTICATION_BACKENDS[0]
-    login_user(request, user)
+    login_user(request, user, backend='django.contrib.auth.backends.ModelBackend')
     return HttpResponseRedirect(reverse('index'))
     
 def iframe_buster(request):
