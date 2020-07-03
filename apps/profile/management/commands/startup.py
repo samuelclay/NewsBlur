@@ -20,4 +20,3 @@ class Command(BaseCommand):
                 print("User {0} created".format(username))
         
         _create(settings.HOMEPAGE_USERNAME)
-        _create('popular')
