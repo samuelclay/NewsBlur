@@ -1,0 +1,5 @@
+Things to talk about with Sam
+
+apps.reader.forms.save errors out because authenticate() rejects inactive users now unless you use a different Auth backend
+why is psycopg2 commented out of requirements?
+newsblur.com css issues on home page
