@@ -156,10 +156,11 @@ class SignupForm(forms.Form):
         new_user.set_password(password)
         new_user.is_active = False
         new_user.email = email
+        new_user.last_login = datetime.datetime.now()
         new_user.save()
         new_user = authenticate(username=username,
                                 password=password)
-        
+        new_user = User.objects.get(username=username)
         MActivity.new_signup(user_id=new_user.pk)
         
         RNewUserQueue.add_user(new_user.pk)
