@@ -15,17 +15,13 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
-
-import butterknife.ButterKnife;
-import butterknife.Bind;
 
 import com.newsblur.R;
 import com.newsblur.activity.ItemsList;
 import com.newsblur.activity.NbActivity;
 import com.newsblur.database.StoryViewAdapter;
+import com.newsblur.databinding.FragmentItemgridBinding;
 import com.newsblur.domain.Story;
 import com.newsblur.service.NBSyncService;
 import com.newsblur.util.FeedSet;
@@ -50,20 +46,16 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
     private final static int GRID_SPACING_DP = 5;
     private int gridSpacingPx;
 
-	@Bind(R.id.itemgridfragment_grid) RecyclerView itemGrid;
     private GridLayoutManager layoutManager;
     private StoryViewAdapter adapter;
     // an optional pending scroll state to restore.
     private Parcelable gridState;
 
     // loading indicator for when stories are absent or stale (at top of list)
-    @Bind(R.id.top_loading_throb) ProgressThrobber topProgressView;
+    // R.id.top_loading_throb
+
     // loading indicator for when stories are present and fresh (at bottom of list)
     protected ProgressThrobber bottomProgressView;
-
-    @Bind(R.id.empty_view) View emptyView;
-    @Bind(R.id.empty_view_text) TextView emptyViewText;
-    @Bind(R.id.empty_view_image) ImageView emptyViewImage;
 
     private View fleuronFooter;
     // the fleuron has padding that can't be calculated until after layout, but only changes
@@ -75,6 +67,8 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
 
     public int indexOfLastUnread = -1;
     public boolean fullFlingComplete = false;
+
+    private FragmentItemgridBinding binding;
 
 	public static ItemSetFragment newInstance() {
 		ItemSetFragment fragment = new ItemSetFragment();
@@ -123,13 +117,13 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View v = inflater.inflate(R.layout.fragment_itemgrid, null);
-        ButterKnife.bind(this, v);
+        binding = FragmentItemgridBinding.bind(v);
 
         // disable the throbbers if animations are going to have a zero time scale
         boolean isDisableAnimations = ViewUtils.isPowerSaveMode(getActivity());
 
-        topProgressView.setEnabled(!isDisableAnimations);
-        topProgressView.setColors(UIUtils.getColor(getActivity(), R.color.refresh_1),
+        binding.topLoadingThrob.setEnabled(!isDisableAnimations);
+        binding.topLoadingThrob.setColors(UIUtils.getColor(getActivity(), R.color.refresh_1),
                                   UIUtils.getColor(getActivity(), R.color.refresh_2),
                                   UIUtils.getColor(getActivity(), R.color.refresh_3),
                                   UIUtils.getColor(getActivity(), R.color.refresh_4));
@@ -145,11 +139,11 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
         fleuronFooter = inflater.inflate(R.layout.row_fleuron, null);
         fleuronFooter.setVisibility(View.INVISIBLE);
 
-        itemGrid.getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
+        binding.itemgridfragmentGrid.getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
-                itemGridWidthPx = itemGrid.getMeasuredWidth();
-                itemGrid.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                itemGridWidthPx = binding.itemgridfragmentGrid.getMeasuredWidth();
+                binding.itemgridfragmentGrid.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                 updateStyle();
             }
         });
@@ -158,11 +152,11 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
 
         calcColumnCount(listStyle);
         layoutManager = new GridLayoutManager(getActivity(), columnCount);
-        itemGrid.setLayoutManager(layoutManager);
+        binding.itemgridfragmentGrid.setLayoutManager(layoutManager);
         setupAnimSpeeds();
 
         calcGridSpacing(listStyle);
-        itemGrid.addItemDecoration(new RecyclerView.ItemDecoration() {
+        binding.itemgridfragmentGrid.addItemDecoration(new RecyclerView.ItemDecoration() {
             @Override
             public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
                 outRect.set(gridSpacingPx, gridSpacingPx, gridSpacingPx, gridSpacingPx);
@@ -172,7 +166,7 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
         adapter = new StoryViewAdapter(((NbActivity) getActivity()), this, getFeedSet(), listStyle);
         adapter.addFooterView(footerView);
         adapter.addFooterView(fleuronFooter);
-        itemGrid.setAdapter(adapter); 
+        binding.itemgridfragmentGrid.setAdapter(adapter);
 
         // the layout manager needs to know that the footer rows span all the way across
         layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
@@ -187,14 +181,14 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
             }
         });
 
-        itemGrid.addOnScrollListener(new RecyclerView.OnScrollListener() {
+        binding.itemgridfragmentGrid.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 ItemSetFragment.this.onScrolled(recyclerView, dx, dy);
             }
         });
 
-        setupGestureDetector(itemGrid);
+        setupGestureDetector(binding.itemgridfragmentGrid);
 
 		return v;
 	}
@@ -281,13 +275,13 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
 	}
 
     protected void updateAdapter(Cursor cursor) {
-        adapter.swapCursor(cursor, itemGrid, gridState);
+        adapter.swapCursor(cursor, binding.itemgridfragmentGrid, gridState);
         gridState = null;
         adapter.updateFeedSet(getFeedSet());
         if ((cursor != null) && (cursor.getCount() > 0)) {
-            emptyView.setVisibility(View.INVISIBLE);
+            binding.emptyView.setVisibility(View.INVISIBLE);
         } else {
-            emptyView.setVisibility(View.VISIBLE);
+            binding.emptyView.setVisibility(View.VISIBLE);
         }
 
         // though we have stories, we might not yet have as many as we want
@@ -305,38 +299,38 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
         calcFleuronPadding();
 
         if (getFeedSet().isMuted()) {
-            emptyViewText.setText(R.string.empty_list_view_muted_feed);
-            emptyViewText.setTypeface(null, Typeface.NORMAL);
-            emptyViewImage.setVisibility(View.VISIBLE);
-            topProgressView.setVisibility(View.INVISIBLE);
+            binding.emptyViewText.setText(R.string.empty_list_view_muted_feed);
+            binding.emptyViewText.setTypeface(null, Typeface.NORMAL);
+            binding.emptyViewImage.setVisibility(View.VISIBLE);
+            binding.topLoadingThrob.setVisibility(View.INVISIBLE);
             bottomProgressView.setVisibility(View.INVISIBLE);
             return;
         }
 
         if ( (!cursorSeenYet) || NBSyncService.isFeedSetSyncing(getFeedSet(), getActivity()) ) {
-            emptyViewText.setText(R.string.empty_list_view_loading);
-            emptyViewText.setTypeface(null, Typeface.ITALIC);
-            emptyViewImage.setVisibility(View.INVISIBLE);
+            binding.emptyViewText.setText(R.string.empty_list_view_loading);
+            binding.emptyViewText.setTypeface(null, Typeface.ITALIC);
+            binding.emptyViewImage.setVisibility(View.INVISIBLE);
 
             if (NBSyncService.isFeedSetStoriesFresh(getFeedSet())) {
-                topProgressView.setVisibility(View.INVISIBLE);
+                binding.topLoadingThrob.setVisibility(View.INVISIBLE);
                 bottomProgressView.setVisibility(View.VISIBLE);
             } else {
-                topProgressView.setVisibility(View.VISIBLE);
+                binding.topLoadingThrob.setVisibility(View.VISIBLE);
                 bottomProgressView.setVisibility(View.GONE);
             }
             fleuronFooter.setVisibility(View.INVISIBLE);
         } else {
             ReadFilter readFilter = PrefsUtils.getReadFilter(getActivity(), getFeedSet());
             if (readFilter == ReadFilter.UNREAD) {
-                emptyViewText.setText(R.string.empty_list_view_no_stories_unread);
+                binding.emptyViewText.setText(R.string.empty_list_view_no_stories_unread);
             } else {
-                emptyViewText.setText(R.string.empty_list_view_no_stories);
+                binding.emptyViewText.setText(R.string.empty_list_view_no_stories);
             }
-            emptyViewText.setTypeface(null, Typeface.NORMAL);
-            emptyViewImage.setVisibility(View.VISIBLE);
+            binding.emptyViewText.setTypeface(null, Typeface.NORMAL);
+            binding.emptyViewImage.setVisibility(View.VISIBLE);
 
-            topProgressView.setVisibility(View.INVISIBLE);
+            binding.topLoadingThrob.setVisibility(View.INVISIBLE);
             bottomProgressView.setVisibility(View.INVISIBLE);
             if (cursorSeenYet && NBSyncService.isFeedSetExhausted(getFeedSet()) && (adapter.getRawStoryCount() > 0)) {
                 fleuronFooter.setVisibility(View.VISIBLE);
@@ -411,7 +405,7 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
             targetMovDuration = 0L;
         }
 
-        RecyclerView.ItemAnimator anim = itemGrid.getItemAnimator();
+        RecyclerView.ItemAnimator anim = binding.itemgridfragmentGrid.getItemAnimator();
         anim.setAddDuration((long) ((anim.getAddDuration() + targetAddDuration)/2L));
         anim.setMoveDuration((long) ((anim.getMoveDuration() + targetMovDuration)/2L));
     }
@@ -429,7 +423,7 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
         // past the last item, which can be confusing to users who don't know about or need the offset
         if ( (!fullFlingComplete) &&
              (layoutManager.findLastCompletelyVisibleItemPosition() >= adapter.getStoryCount()) ) {
-            itemGrid.stopScroll();
+            binding.itemgridfragmentGrid.stopScroll();
             // but after halting at the end once, do allow scrolling past the bottom
             fullFlingComplete = true;
         }
@@ -439,7 +433,7 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
              (layoutManager.findLastCompletelyVisibleItemPosition() >= indexOfLastUnread) ) {
             // but don't interrupt if already past the last unread
             if (indexOfLastUnread >= layoutManager.findFirstCompletelyVisibleItemPosition()) {
-                itemGrid.stopScroll();
+                binding.itemgridfragmentGrid.stopScroll();
             }
             indexOfLastUnread = -1;
         }
@@ -507,7 +501,7 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
      */
     private void calcFleuronPadding() {
         if (fleuronResized) return;
-        int listHeight = itemGrid.getMeasuredHeight();
+        int listHeight = binding.itemgridfragmentGrid.getMeasuredHeight();
         View innerView = fleuronFooter.findViewById(R.id.fleuron);
         ViewGroup.LayoutParams oldLayout = innerView.getLayoutParams();
         ViewGroup.MarginLayoutParams newLayout = new LinearLayout.LayoutParams(oldLayout);
@@ -526,7 +520,7 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
     @Override
     public void onSaveInstanceState (Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelable(BUNDLE_GRIDSTATE, itemGrid.getLayoutManager().onSaveInstanceState());
+        outState.putParcelable(BUNDLE_GRIDSTATE, binding.itemgridfragmentGrid.getLayoutManager().onSaveInstanceState());
     }
 
 }
