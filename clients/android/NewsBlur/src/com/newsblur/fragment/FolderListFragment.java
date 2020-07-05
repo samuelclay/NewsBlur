@@ -26,9 +26,6 @@ import android.widget.ExpandableListView.OnGroupClickListener;
 import android.widget.ExpandableListView.OnGroupCollapseListener;
 import android.widget.ExpandableListView.OnGroupExpandListener;
 
-import butterknife.ButterKnife;
-import butterknife.Bind;
-
 import com.newsblur.R;
 import com.newsblur.activity.AllSharedStoriesItemsList;
 import com.newsblur.activity.AllStoriesItemsList;
@@ -43,6 +40,7 @@ import com.newsblur.activity.ReadStoriesItemsList;
 import com.newsblur.activity.SavedStoriesItemsList;
 import com.newsblur.activity.SocialFeedItemsList;
 import com.newsblur.database.FolderListAdapter;
+import com.newsblur.databinding.FragmentFolderfeedlistBinding;
 import com.newsblur.domain.Feed;
 import com.newsblur.domain.SavedSearch;
 import com.newsblur.domain.SocialFeed;
@@ -70,7 +68,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 	private FolderListAdapter adapter;
 	public StateFilter currentState = StateFilter.SOME;
 	private SharedPreferences sharedPreferences;
-    @Bind(R.id.folderfeed_list) ExpandableListView list;
+	private FragmentFolderfeedlistBinding binding;
     public boolean firstCursorSeenYet = false;
 
     // the two-step context menu for feeds requires us to temp store the feed long-pressed so
@@ -199,20 +197,20 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_folderfeedlist, container);
-        ButterKnife.bind(this, v);
+        binding = FragmentFolderfeedlistBinding.bind(v);
 
-        list.setGroupIndicator(UIUtils.getDrawable(getActivity(), R.drawable.transparent));
-        list.setOnCreateContextMenuListener(this);
-        list.setOnChildClickListener(this);
-        list.setOnGroupClickListener(this);
-        list.setOnGroupCollapseListener(this);
-        list.setOnGroupExpandListener(this);
+        binding.folderfeedList.setGroupIndicator(UIUtils.getDrawable(getActivity(), R.drawable.transparent));
+        binding.folderfeedList.setOnCreateContextMenuListener(this);
+        binding.folderfeedList.setOnChildClickListener(this);
+        binding.folderfeedList.setOnGroupClickListener(this);
+        binding.folderfeedList.setOnGroupCollapseListener(this);
+        binding.folderfeedList.setOnGroupExpandListener(this);
 
-        adapter.listBackref = new WeakReference(list); // see note in adapter about backref
-        list.setAdapter(adapter);
+        adapter.listBackref = new WeakReference(binding.folderfeedList); // see note in adapter about backref
+        binding.folderfeedList.setAdapter(adapter);
 
         // Main activity needs to listen for scrolls to prevent refresh from firing unnecessarily
-        list.setOnScrollListener((android.widget.AbsListView.OnScrollListener) getActivity());
+        binding.folderfeedList.setOnScrollListener((android.widget.AbsListView.OnScrollListener) getActivity());
 
         return v;
     }
@@ -224,18 +222,18 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
      */
 	public void checkOpenFolderPreferences() {
         // make sure we didn't beat construction
-        if ((this.list == null) || (this.sharedPreferences == null)) return;
+        if ((this.binding.folderfeedList == null) || (this.sharedPreferences == null)) return;
 
 		for (int i = 0; i < adapter.getGroupCount(); i++) {
 			String flatGroupName = adapter.getGroupUniqueName(i);
 			if (sharedPreferences.getBoolean(AppConstants.FOLDER_PRE + "_" + flatGroupName, true)) {
-				if (list.isGroupExpanded(i) == false) {
-                    list.expandGroup(i);
+				if (binding.folderfeedList.isGroupExpanded(i) == false) {
+                    binding.folderfeedList.expandGroup(i);
                     adapter.setFolderClosed(flatGroupName, false);
                 }
 			} else {
-				if (list.isGroupExpanded(i) == true) {
-                    list.collapseGroup(i);
+				if (binding.folderfeedList.isGroupExpanded(i) == true) {
+                    binding.folderfeedList.collapseGroup(i);
                     adapter.setFolderClosed(flatGroupName, true);
                 }
 			}
