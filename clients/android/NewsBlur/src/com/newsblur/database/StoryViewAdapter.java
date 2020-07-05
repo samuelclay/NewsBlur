@@ -1,6 +1,5 @@
 package com.newsblur.database;
 
-import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -22,18 +21,13 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import butterknife.Bind;
-import butterknife.ButterKnife;
-
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import com.newsblur.R;
 import com.newsblur.activity.FeedItemsList;
-import com.newsblur.activity.ItemsList;
 import com.newsblur.activity.NbActivity;
 import com.newsblur.domain.Story;
 import com.newsblur.domain.UserDetails;
@@ -313,16 +307,16 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                                             MenuItem.OnMenuItemClickListener,
                                             View.OnTouchListener {
 
-        @Bind(R.id.story_item_favicon_borderbar_1) View leftBarOne;
-        @Bind(R.id.story_item_favicon_borderbar_2) View leftBarTwo;
-        @Bind(R.id.story_item_inteldot) ImageView intelDot;
-        @Bind(R.id.story_item_thumbnail) ImageView thumbView;
-        @Bind(R.id.story_item_feedicon) ImageView feedIconView;
-        @Bind(R.id.story_item_feedtitle) TextView feedTitleView;
-        @Bind(R.id.story_item_title) TextView storyTitleView;
-        @Bind(R.id.story_item_date) TextView storyDate;
-        @Bind(R.id.story_item_saved_icon) View savedView;
-        @Bind(R.id.story_item_shared_icon) View sharedView;
+        View leftBarOne;
+        View leftBarTwo;
+        ImageView intelDot;
+        ImageView thumbView;
+        ImageView feedIconView;
+        TextView feedTitleView;
+        TextView storyTitleView;
+        TextView storyDate;
+        View savedView;
+        View sharedView;
 
         Story story;
         ImageLoader.PhotoToLoad thumbLoader;
@@ -335,7 +329,17 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
         public StoryViewHolder(View view) {
             super(view);
-            ButterKnife.bind(StoryViewHolder.this, view);
+            leftBarOne = view.findViewById(R.id.story_item_favicon_borderbar_1);
+            leftBarTwo = view.findViewById(R.id.story_item_favicon_borderbar_2);
+            intelDot = view.findViewById(R.id.story_item_inteldot);
+            thumbView = view.findViewById(R.id.story_item_thumbnail);
+            feedIconView = view.findViewById(R.id.story_item_feedicon);
+            feedTitleView = view.findViewById(R.id.story_item_feedtitle);
+            storyTitleView = view.findViewById(R.id.story_item_title);
+            storyDate = view.findViewById(R.id.story_item_date);
+            savedView = view.findViewById(R.id.story_item_saved_icon);
+            sharedView = view.findViewById(R.id.story_item_shared_icon);
+
             view.setOnClickListener(StoryViewHolder.this);
             view.setOnCreateContextMenuListener(StoryViewHolder.this);
             view.setOnTouchListener(StoryViewHolder.this);
