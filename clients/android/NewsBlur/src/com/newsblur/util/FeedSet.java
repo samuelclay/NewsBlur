@@ -1,5 +1,6 @@
 package com.newsblur.util;
 
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import java.io.Serializable;
@@ -29,6 +30,7 @@ public class FeedSet implements Serializable {
     private boolean isAllRead;
     private boolean isGlobalShared;
     private boolean isInfrequent;
+    private boolean isForWidget;
 
     private String folderName;
     private String searchQuery;
@@ -70,6 +72,17 @@ public class FeedSet implements Serializable {
         for (String id : userIds) {
             fs.socialFeeds.put(id, "");
         }
+        return fs;
+    }
+
+    /**
+     * Convenience constructor for multiple feeds with IDs
+     */
+    public static FeedSet multipleFeeds(Set<String> feedIds) {
+        FeedSet fs = new FeedSet();
+        fs.feeds = new HashSet<>(feedIds.size());
+        fs.feeds.addAll(feedIds);
+        fs.feeds = Collections.unmodifiableSet(fs.feeds);
         return fs;
     }
 
@@ -138,6 +151,22 @@ public class FeedSet implements Serializable {
         return fs;
     }
 
+    /**
+     * Convenience constructor for widget feed.
+     */
+    public static FeedSet widgetFeeds(@Nullable Set<String> feedIds){
+        FeedSet fs = new FeedSet();
+        fs.isForWidget = true;
+        if (feedIds != null) {
+            fs.feeds = new HashSet<>(feedIds.size());
+            fs.feeds.addAll(feedIds);
+            fs.feeds = Collections.unmodifiableSet(fs.feeds);
+        } else {
+            fs.feeds = Collections.EMPTY_SET;
+        }
+        return fs;
+    }
+
     /** 
      * Convenience constructor for a folder.
      */
@@ -161,6 +190,13 @@ public class FeedSet implements Serializable {
      */
     public Set<String> getMultipleFeeds() {
         if (feeds != null && ((feeds.size() > 1) || (folderName != null))) return feeds; else return null;
+    }
+
+    /**
+     * Gets a set of all feed IDs if there are any or null otherwise.
+     */
+    public Set<String> getAllFeeds() {
+        if (feeds != null) return feeds; else return null;
     }
 
     /**
@@ -199,6 +235,10 @@ public class FeedSet implements Serializable {
 
     public boolean isSingleSavedTag() {
         return ((savedTags != null) && (savedTags.size() == 1));
+    }
+
+    public boolean isForWidget() {
+        return this.isForWidget;
     }
 
     /**

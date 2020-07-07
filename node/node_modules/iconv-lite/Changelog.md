@@ -1,3 +1,12 @@
+# 0.5.0 / 2019-06-26
+
+  * Added UTF-32 encoding, both little-endian and big-endian variants (UTF-32LE, UTF32-BE). If endianness
+    is not provided for decoding, it's deduced automatically from the stream using a heuristic similar to
+    what we use in UTF-16. (great work in #216 by @kshetline)
+  * Several minor updates to README (#217 by @oldj, plus some more)
+  * Added Node versions 10 and 12 to Travis test harness.
+
+
 # 0.4.24 / 2018-08-22
 
   * Added MIK encoding (#196, by @Ivan-Kalatchev)

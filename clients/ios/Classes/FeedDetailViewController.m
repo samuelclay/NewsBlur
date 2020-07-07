@@ -249,6 +249,7 @@
     [self.searchBar resignFirstResponder];
     storiesCollection.inSearch = NO;
     storiesCollection.searchQuery = nil;
+    storiesCollection.savedSearchQuery = nil;
     [self reloadStories];
 }
 
@@ -264,10 +265,16 @@
     if ([searchText length]) {
         storiesCollection.inSearch = YES;
         storiesCollection.searchQuery = searchText;
+        
+        if (![searchText isEqualToString:storiesCollection.savedSearchQuery]) {
+            storiesCollection.savedSearchQuery = nil;
+        }
+        
         [self reloadStories];
     } else {
         storiesCollection.inSearch = NO;
         storiesCollection.searchQuery = nil;
+        storiesCollection.savedSearchQuery = nil;
         [self reloadStories];
     }
 }
@@ -422,7 +429,9 @@
     if (storiesCollection.inSearch && storiesCollection.searchQuery) {
         [self.searchBar setText:storiesCollection.searchQuery];
         [self.storyTitlesTable setContentOffset:CGPointMake(0, 0)];
-        [self.searchBar becomeFirstResponder];
+        if (storiesCollection.savedSearchQuery == nil) {
+            [self.searchBar becomeFirstResponder];
+        }
     } else {
         [self.searchBar setText:@""];
     }
@@ -431,6 +440,8 @@
     } else {
         [self.searchBar setShowsCancelButton:NO animated:YES];
     }
+    
+    [self updateTheme];
     
     if (storiesCollection.activeFeed != nil) {
         [appDelegate donateFeed];
@@ -623,6 +634,7 @@
     }
     storiesCollection.inSearch = NO;
     storiesCollection.searchQuery = nil;
+    storiesCollection.savedSearchQuery = nil;
     [self.searchBar setText:@""];
     [self.notifier hideIn:0];
 //    [self cancelRequests];
@@ -1515,6 +1527,7 @@
     
     id feedId = [story objectForKey:@"story_feed_id"];
     NSString *feedIdStr = [NSString stringWithFormat:@"%@", feedId];
+    feedIdStr = [appDelegate feedIdWithoutSearchQuery:feedIdStr];
     
     if (storiesCollection.isSocialView ||
         storiesCollection.isSocialRiverView) {
@@ -1656,6 +1669,8 @@
                 feedTitle = @"Read Stories";
             } else if ([storiesCollection.activeFolder isEqualToString:@"saved_stories"]) {
                 feedTitle = @"Saved Stories";
+            } else if ([storiesCollection.activeFolder isEqualToString:@"saved_searches"]) {
+                feedTitle = @"Saved Searches";
             } else {
                 feedTitle = storiesCollection.activeFolder;
             }
@@ -2166,6 +2181,18 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     BOOL read = appDelegate.storiesCollection.isReadView;
     BOOL saved = appDelegate.storiesCollection.isSavedView;
     
+    if (storiesCollection.inSearch) {
+        if (storiesCollection.savedSearchQuery == nil) {
+            [viewController addTitle:@"Save search" iconName:@"g_icn_search.png" selectionShouldDismiss:YES handler:^{
+                [self saveSearch];
+            }];
+        } else {
+            [viewController addTitle:@"Delete saved search" iconName:@"g_icn_search.png" selectionShouldDismiss:YES handler:^{
+                [self deleteSavedSearch];
+            }];
+        }
+    }
+    
     if (!everything && !infrequent && !read && !saved) {
         NSString *deleteText = [NSString stringWithFormat:@"Delete %@",
                                 appDelegate.storiesCollection.isRiverView ?
@@ -2287,6 +2314,56 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     UINavigationController *navController = self.navigationController ?: appDelegate.storyPageControl.navigationController;
     
     [viewController showFromNavigationController:navController barButtonItem:self.settingsBarButton];
+}
+
+- (NSString *)feedIdForSearch {
+    if (storiesCollection.activeFeed != nil) {
+        return [NSString stringWithFormat:@"feed:%@", [storiesCollection.activeFeed objectForKey:@"id"]];
+    } else if ([storiesCollection.activeFolder isEqualToString:@"everything"]) {
+        return @"river:";
+    } else {
+        return [NSString stringWithFormat:@"river:%@", storiesCollection.activeFolder];
+    }
+}
+
+- (void)saveSearch {
+    [MBProgressHUD hideHUDForView:self.view animated:YES];
+    MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    HUD.labelText = @"Saving search...";
+    
+    NSString *urlString = [NSString stringWithFormat:@"%@/reader/save_search",
+                           self.appDelegate.url];
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    [params setObject:[self feedIdForSearch] forKey:@"feed_id"];
+    [params setObject:storiesCollection.searchQuery forKey:@"query"];
+    
+    [appDelegate POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        storiesCollection.savedSearchQuery = storiesCollection.searchQuery;
+        [appDelegate reloadFeedsView:YES];
+        [MBProgressHUD hideHUDForView:self.view animated:YES];
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        [self requestFailed:error];
+    }];
+}
+
+- (void)deleteSavedSearch {
+    [MBProgressHUD hideHUDForView:self.view animated:YES];
+    MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    HUD.labelText = @"Deleting saved search...";
+    
+    NSString *urlString = [NSString stringWithFormat:@"%@/reader/delete_search",
+                           self.appDelegate.url];
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    [params setObject:[self feedIdForSearch] forKey:@"feed_id"];
+    [params setObject:storiesCollection.searchQuery forKey:@"query"];
+    
+    [appDelegate POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        storiesCollection.savedSearchQuery = nil;
+        [appDelegate reloadFeedsView:YES];
+        [MBProgressHUD hideHUDForView:self.view animated:YES];
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        [self requestFailed:error];
+    }];
 }
 
 - (void)confirmDeleteSite:(UINavigationController *)menuNavigationController {
@@ -2428,6 +2505,55 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     }];
 }
 
+- (void)performNewFolder {
+    NSString *title = @"Move to New Folder";
+    NSString *subtitle = @"Enter the name of the new folder.";
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:title message:subtitle preferredStyle:UIAlertControllerStyleAlert];
+    [alert setModalPresentationStyle:UIModalPresentationPopover];
+    UIAlertAction *move = [UIAlertAction actionWithTitle:@"Move" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        NSString *name = alert.textFields.firstObject.text;
+        [self addNewFolderWithName:name];
+    }];
+    UIAlertAction *cancel = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
+        
+    }];
+    [alert addTextFieldWithConfigurationHandler:^(UITextField * _Nonnull textField) {
+        textField.autocapitalizationType = UITextAutocapitalizationTypeWords;
+    }];
+    [alert addAction:move];
+    [alert addAction:cancel];
+    
+    if (self.presentedViewController) {
+        [self.presentedViewController dismissViewControllerAnimated:NO completion:^{
+            [self presentViewController:alert animated:YES completion:nil];
+        }];
+    } else {
+        [self presentViewController:alert animated:YES completion:nil];
+    }
+}
+
+- (void)addNewFolderWithName:(NSString *)folderName {
+    [MBProgressHUD hideHUDForView:self.view animated:YES];
+    MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    NSString *urlString;
+    
+    HUD.labelText = @"Adding folder...";
+    urlString = [NSString stringWithFormat:@"%@/reader/add_folder", self.appDelegate.url];
+    [params setObject:folderName forKey:@"folder"];
+    
+    [appDelegate POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        [MBProgressHUD hideHUDForView:self.view animated:YES];
+        
+        int code = [[responseObject valueForKey:@"code"] intValue];
+        if (code != -1) {
+            [self performMoveToFolder:folderName];
+        }
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        [self requestFailed:error];
+    }];
+}
+
 - (void)performMoveToFolder:(id)toFolder {
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
@@ -2475,6 +2601,10 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     
     __weak __typeof(&*self)weakSelf = self;
     
+    [viewController addTitle:@"New Folder" iconName:@"add_tag.png" selectionShouldDismiss:YES handler:^{
+        [weakSelf performNewFolder];
+    }];
+    
     for (NSString *folder in self.appDelegate.dictFoldersArray) {
         NSString *title = folder;
         NSString *iconName = @"menu_icn_move.png";
@@ -2483,6 +2613,8 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
             if ([title isEqualToString:@"everything"]) {
                 title = @"Top Level";
                 iconName = @"menu_icn_all.png";
+            } else if ([title isEqualToString:@"infrequent"]) {
+                continue;
             } else {
                 NSArray *components = [title componentsSeparatedByString:@" - "];
                 title = components.lastObject;

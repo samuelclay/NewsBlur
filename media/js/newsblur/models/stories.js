@@ -24,6 +24,10 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
         this.public_comments = new NEWSBLUR.Collections.Comments(this.get('public_comments'));
     },
     
+    feed: function() {
+        return NEWSBLUR.assets.get_feed(this.get('story_feed_id'));
+    },
+    
     score: function() {
         if (NEWSBLUR.reader.flags['starred_view']) {
             return 2;

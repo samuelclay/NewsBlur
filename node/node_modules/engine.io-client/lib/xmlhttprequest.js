@@ -1,6 +1,7 @@
 // browser shim for xmlhttprequest module
 
 var hasCORS = require('has-cors');
+var globalThis = require('./globalThis');
 
 module.exports = function (opts) {
   var xdomain = opts.xdomain;
@@ -31,7 +32,7 @@ module.exports = function (opts) {
 
   if (!xdomain) {
     try {
-      return new self[['Active'].concat('Object').join('X')]('Microsoft.XMLHTTP');
+      return new globalThis[['Active'].concat('Object').join('X')]('Microsoft.XMLHTTP');
     } catch (e) { }
   }
 };

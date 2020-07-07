@@ -8,9 +8,6 @@
 
 #import <UIKit/UIKit.h>
 #import "BaseViewController.h"
-//#import "SloppySwiper.h"
-#import "NJKWebViewProgressView.h"
-#import "NJKWebViewProgress.h"
 #import <WebKit/WebKit.h>
 
 @class NewsBlurAppDelegate;
@@ -26,14 +23,14 @@ UIGestureRecognizerDelegate> {
     UIBarButtonItem *backBarButton;
     UILabel *titleView;
     UIBarButtonItem *closeButton;
-    NJKWebViewProgressView *progressView;
+    UIProgressView *progressView;
     BOOL finishedLoading;
 }
 
 @property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property (nonatomic) IBOutlet WKWebView *webView;
 //@property (strong, nonatomic) SloppySwiper *swiper;
-@property (nonatomic) NJKWebViewProgressView *progressView;
+@property (nonatomic) UIProgressView *progressView;
 @property (nonatomic, strong) NSString *customPageTitle;
 
 - (void)resetProgressBar;

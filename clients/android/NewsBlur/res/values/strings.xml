@@ -28,12 +28,13 @@
     <string name="description_login_logo">NewsBlur Logo</string>
 	<string name="description_profile_picture">The user\'s profile picture</string>
 	<string name="description_row_folder_icon">folder icon</string>
-	<string name="description_activity_icon">An icon illustrating the user\'s activity</string>
-	<string name="description_follow_button">Follow or unfollow a user</string>
-	<string name="description_comment_user">Comment user image</string>
-	<string name="description_empty_list_image">Empty list placeholder</string>
+    <string name="description_row_feed_icon">feed icon</string>
+    <string name="description_activity_icon">An icon illustrating the user\'s activity</string>
+    <string name="description_follow_button">Follow or unfollow a user</string>
+    <string name="description_comment_user">Comment user image</string>
+    <string name="description_empty_list_image">Empty list placeholder</string>
     <string name="description_menu">Menu</string>
-    
+
     <string name="title_choose_folders">Choose Folders for Feed %s</string>
     <string name="title_rename_feed">Rename Feed %s</string>
 	
@@ -165,6 +166,24 @@
     <string name="list_style_grid_m">Grid (medium)</string>
     <string name="list_style_grid_c">Grid (coarse)</string>
     
+    <string name="menu_sort_by">Sort By</string>
+    <string name="menu_sort_by_name">Name</string>
+    <string name="menu_sort_by_subs">Subscribers</string>
+    <string name="menu_sort_by_stories_month">Stories Per Month</string>
+    <string name="menu_sort_by_recent_story">Most Recent Story</string>
+    <string name="menu_sort_by_number_opens">Number Of Opens</string>
+    <string name="menu_sort_order">Sort Order</string>
+    <string name="menu_sort_order_ascending">Ascending</string>
+    <string name="menu_sort_order_descending">Descending</string>
+    <string name="menu_folder_view">Folder View</string>
+    <string name="menu_folder_view_nested">Nested</string>
+    <string name="menu_folder_view_flat">Flat</string>
+    <string name="menu_select_all">Select All</string>
+    <string name="menu_select_none">Select None</string>
+    <string name="menu_widget_background">Widget Background</string>
+    <string name="menu_widget_background_default">Default</string>
+    <string name="menu_widget_background_transparent">Transparent</string>
+
     <string name="toast_hold_to_select">Press and hold to select text</string>
 
     <string name="logout_warning">Are you sure you want to log out?</string>
@@ -216,8 +235,15 @@
     <string name="unknown_user">Unknown User</string>
     <string name="delete_feed_message">Delete feed \&quot;%s\&quot;?</string>
     <string name="unfollow_message">Unfollow \&quot;%s\&quot;?</string>
+    <string name="feed_subscribers">%s subscribers</string>
+    <string name="feed_opens">%d opens</string>
+    <string name="feed_stories_per_month">%d stories/month</string>
     
     <string name="settings">Preferences</string>
+    <string name="widget">Widget</string>
+    <string name="title_widget_setup">Tap to setup in NewsBlur</string>
+    <string name="title_no_subscriptions">No active subscriptions detected</string>
+    <string name="title_widget_loading">Loading...</string>
 
     <string name="settings_cat_offline">Offline</string>
     <string name="settings_enable_offline">Download Stories</string>

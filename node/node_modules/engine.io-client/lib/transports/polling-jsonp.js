@@ -4,6 +4,7 @@
 
 var Polling = require('./polling');
 var inherit = require('component-inherit');
+var globalThis = require('../globalThis');
 
 /**
  * Module exports.
@@ -31,15 +32,6 @@ var callbacks;
 function empty () { }
 
 /**
- * Until https://github.com/tc39/proposal-global is shipped.
- */
-function glob () {
-  return typeof self !== 'undefined' ? self
-      : typeof window !== 'undefined' ? window
-      : typeof global !== 'undefined' ? global : {};
-}
-
-/**
  * JSONP Polling constructor.
  *
  * @param {Object} opts.
@@ -55,8 +47,7 @@ function JSONPPolling (opts) {
   // we do this here (lazily) to avoid unneeded global pollution
   if (!callbacks) {
     // we need to consider multiple engines in the same page
-    var global = glob();
-    callbacks = global.___eio = (global.___eio || []);
+    callbacks = globalThis.___eio = (globalThis.___eio || []);
   }
 
   // callback identifier
