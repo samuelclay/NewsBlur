@@ -52,6 +52,18 @@
     position: relative;
     height: 100%;
 }
+.NB-welcome .NB-inner-account {
+    width: 960px;
+    margin: 0 auto;
+    overflow: hidden;
+    position: absolute;
+    top: 0;
+    height: 100%;
+    margin-right: -50%;
+    left: 50%;
+    transform: translate(-50%, 0);
+    pointer-events: none;
+}
 .NB-button {
     border: 1px solid #07360F;
     font-size: 12px;
@@ -81,6 +93,7 @@
 /* ========== */
 
 .NB-welcome-header {
+    position: relative;
     background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#3F5354), to(#1B2424));
     background: -moz-linear-gradient(center top , #3F5354 0%, #1B2424 100%) repeat scroll 0 0 transparent;
     height: 420px;
@@ -100,7 +113,7 @@
 }
 .NB-welcome-header .NB-welcome-header-logo img {
     opacity: .9;
-        -webkit-transition: all .15s ease-in-out;
+    -webkit-transition: all .15s ease-in-out;
     -moz-transition: all .15s ease-in-out;
     -o-transition: all .15s ease-in-out;
     -ms-transition: all .15s ease-in-out;
@@ -274,17 +287,19 @@
 /* ================== */
 
 .NB-welcome-header-account {
+    pointer-events: all;
     position: absolute;
+    transition: bottom 1s ease-in-out;
     bottom: -350px;
     right: 12px;
     width: 400px;
     border-top-left-radius: 8px;
     border-top-right-radius: 8px;
     background-color: rgba(245, 245, 245, 0.4);
-    padding: 36px 36px 12px;
+    padding: 36px 36px 12px;    
 }
 .NB-welcome-header-account.NB-active {
-    bottom: 0;
+    bottom: 0px;
 }
 .NB-welcome-header-account .NB-module-header-login {
     width: 142px;
