@@ -28,45 +28,49 @@
     
     <div class="NB-welcome-header">
         <div class="NB-background">
-        <div class="NB-inner">
-            <div class="NB-welcome-header-logo">
-                <a href="/"><img src="{{ MEDIA_URL }}img/logo_512.png" class="NB-module-logo-image" style="height: 128px;" /></a>
-            </div>
-            <div class="NB-welcome-header-tagline">
-                <span style="font-size:24px;">NewsBlur is a personal news reader</span><br /><span style="font-size: 17px;color: #FBDB9B">bringing people together to talk about the world</span>
-            </div>
-            <div class="NB-welcome-header-captions">
-                <div class="NB-welcome-header-caption NB-1 {% if not post_request %}NB-active{% endif %}" data-ss="1"><span>Web</span></div>
-                <div class="NB-welcome-header-caption NB-2" data-ss="2"><span>iPad &amp; iPhone</span></div>
-                <div class="NB-welcome-header-caption NB-3" data-ss="3"><span>Android</span></div>
-                <div class="NB-welcome-header-caption NB-welcome-header-caption-signin {% if post_request %}NB-active{% endif %}"><span>Sign in</span></div>
-            </div>
-            <div class="NB-welcome-header-actions">
-                <div class="NB-welcome-header-action">
-                    <div class="NB-welcome-header-action-subtext">First</div>
-                    <div class="NB-button NB-button-tryout">
-                        <img src="{{ MEDIA_URL }}img/welcome/04-eye@2x.png" style="width: 20px; height: 13px; margin-top: 2px">
-                        Try out NewsBlur
-                    </div>
-                </div>
-                <div class="NB-welcome-header-action">
-                    <div class="NB-welcome-header-action-subtext">Then</div>
-                    <div class="NB-button NB-button-login">
-                        <img src="{{ MEDIA_URL }}img/welcome/09-lightning@2x.png" class="NB-welcome-header-action-bolt" style="width: 12px; height: 18px; margin-bottom: -2px">
-                        <img src="{{ MEDIA_URL }}img/reader/32-Arrow-Right.png" class="NB-welcome-header-action-arrow">
-                        Sign up or Log in
-                    </div>
-                </div>
-            </div>
-            <div class="NB-welcome-header-image NB-1 {% if not post_request %}NB-active{% endif %}">
-                <img src="{{ MEDIA_URL }}img/welcome/header-web.png">
-            </div>
-            <div class="NB-welcome-header-image NB-2">
-                <img src="{{ MEDIA_URL }}img/welcome/header-ios.png">
-            </div>
-            <div class="NB-welcome-header-image NB-3">
-                <img src="{{ MEDIA_URL }}img/welcome/header-android.png">
-            </div>
+          <div class="NB-inner">
+              <div class="NB-welcome-header-logo">
+                  <a href="/"><img src="{{ MEDIA_URL }}img/logo_512.png" class="NB-module-logo-image" style="height: 128px;" /></a>
+              </div>
+              <div class="NB-welcome-header-tagline">
+                  <span style="font-size:24px;">NewsBlur is a personal news reader</span><br /><span style="font-size: 17px;color: #FBDB9B">bringing people together to talk about the world</span>
+              </div>
+              <div class="NB-welcome-header-captions">
+                  <div class="NB-welcome-header-caption NB-1 {% if not post_request %}NB-active{% endif %}" data-ss="1"><span>Web</span></div>
+                  <div class="NB-welcome-header-caption NB-2" data-ss="2"><span>iPad &amp; iPhone</span></div>
+                  <div class="NB-welcome-header-caption NB-3" data-ss="3"><span>Android</span></div>
+                  <div class="NB-welcome-header-caption NB-welcome-header-caption-signin {% if post_request %}NB-active{% endif %}"><span>Sign in</span></div>
+              </div>
+              <div class="NB-welcome-header-actions">
+                  <div class="NB-welcome-header-action">
+                      <div class="NB-welcome-header-action-subtext">First</div>
+                      <div class="NB-button NB-button-tryout">
+                          <img src="{{ MEDIA_URL }}img/welcome/04-eye@2x.png" style="width: 20px; height: 13px; margin-top: 2px">
+                          Try out NewsBlur
+                      </div>
+                  </div>
+                  <div class="NB-welcome-header-action">
+                      <div class="NB-welcome-header-action-subtext">Then</div>
+                      <div class="NB-button NB-button-login">
+                          <img src="{{ MEDIA_URL }}img/welcome/09-lightning@2x.png" class="NB-welcome-header-action-bolt" style="width: 12px; height: 18px; margin-bottom: -2px">
+                          <img src="{{ MEDIA_URL }}img/reader/32-Arrow-Right.png" class="NB-welcome-header-action-arrow">
+                          Sign up or Log in
+                      </div>
+                  </div>
+              </div>
+              <div class="NB-welcome-header-image NB-1 {% if not post_request %}NB-active{% endif %}">
+                  <img src="{{ MEDIA_URL }}img/welcome/header-web.png">
+              </div>
+              <div class="NB-welcome-header-image NB-2">
+                  <img src="{{ MEDIA_URL }}img/welcome/header-ios.png">
+              </div>
+              <div class="NB-welcome-header-image NB-3">
+                  <img src="{{ MEDIA_URL }}img/welcome/header-android.png">
+              </div>
+
+          </div>
+          
+          <div class="NB-inner-account">
 
             <div class="NB-welcome-header-account {% if post_request %}NB-active{% endif %}">
                 <div class="NB-account-header">
@@ -134,8 +138,7 @@
                     {% endif %}
                 </div>
             </div>
-
-        </div>
+          </div>
         </div>
     </div>
     
