@@ -15,13 +15,27 @@ NEWSBLUR.Welcome = Backbone.View.extend({
     
     initialize: function() {
         this.start_rotation();
-        this.debug_password_autocomplete();
+        _.delay(_.bind(function() { 
+            // this.debug_password_autocomplete();
+        }, this), 500);
         NEWSBLUR.reader.$s.$layout.hide();
+    },
+    
+    debug_password_autocomplete: function() {
+        console.log(['Triggering focus']);
+        this.$("input[name=login-username]").trigger('focus');
     },
     
     // ==========
     // = Header =
     // ==========
+    
+    fix_misalignment: function(e) {
+        console.log(['Fixing misalignment', e]);
+        
+        this.flags.on_signin = true;
+        this.show_signin_form();
+    },
     
     click_header_caption: function(e) {
         this.flags.on_signin = false;
@@ -55,11 +69,16 @@ NEWSBLUR.Welcome = Backbone.View.extend({
     
     start_rotation: function() {
         if (this.$('.NB-welcome-header-account').hasClass('NB-active')) {
-            this.show_signin_form();
+            this.stop_rotation();
         }
-        this.$('.NB-welcome-header-image img').eq(0).on('load', _.bind(function() {
-            setInterval(_.bind(this.rotate_screenshots, this), 3000);
-        }, this));
+        var $first_img = this.$('.NB-welcome-header-image img').eq(0);
+        if ($first_img[0].complete) {
+            setInterval(_.bind(this.rotate_screenshots, this), 3000);            
+        } else {
+            $first_img.on('load', _.bind(function() {
+                setInterval(_.bind(this.rotate_screenshots, this), 3000);
+            }, this));
+        }
     },
     
     rotate_screenshots: function(force, callback) {
@@ -82,7 +101,7 @@ NEWSBLUR.Welcome = Backbone.View.extend({
         var $out_img = $images.not($in_img);
         var $in_caption = $captions.eq(r);
         var $out_caption = $captions.not($in_caption);
-        
+        console.log(['Rotate screenshots', force]);
         $out_img.removeClass('NB-active');
         $in_img.addClass('NB-active');
 
@@ -103,6 +122,7 @@ NEWSBLUR.Welcome = Backbone.View.extend({
     },
     
     stop_rotation: function() {
+        console.log(['stop_rotation']);
         this.flags.on_signin = true;
     },
     
@@ -122,7 +142,13 @@ NEWSBLUR.Welcome = Backbone.View.extend({
         
         _.delay(_.bind(function() {
             this.rotate_screenshots(4, _.bind(function() {
-                this.$('input[name=login-username]').focus();
+                _.delay(_.bind(function() {
+                    if (this.$("input:focus").length) {
+                        console.log(['Already focused']);
+                        return;
+                    }
+                    this.$('input[name=login-username]').focus();
+                }), 50);
             }, this));
         }, this), open ? 560 : 0);
 
@@ -138,7 +164,7 @@ NEWSBLUR.Welcome = Backbone.View.extend({
         }
         var open = NEWSBLUR.reader.toggle_sidebar();
 
-        this.$('.NB-inner').animate({
+        this.$('.NB-inner,.NB-inner-account').animate({
             paddingLeft: open ? 240 : 0
         }, {
             queue: false,
@@ -154,7 +180,7 @@ NEWSBLUR.Welcome = Backbone.View.extend({
         
         NEWSBLUR.reader.close_sidebar();
         
-        this.$('.NB-inner').animate({
+        this.$('.NB-inner,.NB-inner-account').animate({
             paddingLeft: 0
         }, {
             queue: false,
@@ -163,10 +189,6 @@ NEWSBLUR.Welcome = Backbone.View.extend({
         });
         
         this.$('.NB-welcome-container').removeClass('NB-welcome-tryout');
-    },
-    
-    debug_password_autocomplete: function() {
-        this.$("input[name=login-username]").focus();
     }
-    
+
 });
