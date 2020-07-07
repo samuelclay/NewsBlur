@@ -33,7 +33,6 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
     self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];
-    self.webView.delegate = self;
 }
 
 - (void)viewDidUnload {
@@ -53,11 +52,14 @@
     } else if ([type isEqualToString:@"twitter"]) {
         self.navigationItem.title = @"Twitter";
     }
-    NSString *urlAddress = [NSString stringWithFormat:@"%@%@", self.appDelegate.url, url];
-    NSURL *fullUrl = [NSURL URLWithString:urlAddress];
-    NSURLRequest *requestObj = [NSURLRequest requestWithURL:fullUrl];
-    [self.webView loadRequest:requestObj];
-
+    
+    [self.appDelegate prepareWebView:self.webView completionHandler:^{
+        NSString *urlAddress = [NSString stringWithFormat:@"%@%@", self.appDelegate.url, url];
+        NSURL *fullUrl = [NSURL URLWithString:urlAddress];
+        NSURLRequest *requestObj = [NSURLRequest requestWithURL:fullUrl];
+        [self.webView loadRequest:requestObj];
+    }];
+    
     if (self.fromStory && UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         UIBarButtonItem *cancelButton = [[UIBarButtonItem alloc]
                                          initWithTitle: @"Cancel"
@@ -79,51 +81,49 @@
     [appDelegate.modalNavigationController dismissViewControllerAnimated:YES completion:nil];
 }
 
-- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
+- (void)webView:(WKWebView *)webView decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler {
+    NSURLRequest *request = navigationAction.request;
     NSString *URLString = [[request URL] absoluteString];
     NSLog(@"URL STRING IS %@", URLString);
     
     // Look at the host & path to cope with http:// or https:// schemes
     if ([request.URL.host isEqualToString:self.appDelegate.host] && [request.URL.path isEqualToString:@"/"]) {
-        NSString *error = [self.webView stringByEvaluatingJavaScriptFromString:@"NEWSBLUR.error"];
-        
-        if (self.fromStory) {
-            [appDelegate refreshUserProfile:^{
-                if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-                    [appDelegate.shareNavigationController viewWillAppear:YES];
-                    [appDelegate.modalNavigationController dismissViewControllerAnimated:YES completion:nil];
-                } else {
-                    [self.navigationController popViewControllerAnimated:YES];
-                }
-            }];
-        } else {
-            [self.navigationController popViewControllerAnimated:YES];
-            if ([type isEqualToString:@"facebook"]) {
-                if (error.length) {
-                    [self showError:error];
-                } else {
-                    [appDelegate.firstTimeUserAddFriendsViewController selectFacebookButton];
-                }
-            } else if ([type isEqualToString:@"twitter"]) {
-                if (error.length) {
-                    [self showError:error];
-                } else {
-                    [appDelegate.firstTimeUserAddFriendsViewController selectTwitterButton];
+        [self.webView evaluateJavaScript:@"NEWSBLUR.error" completionHandler:^(id result, NSError *error) {
+            NSString *errorString = result;
+            
+            if (self.fromStory) {
+                [appDelegate refreshUserProfile:^{
+                    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+                        [appDelegate.shareNavigationController viewWillAppear:YES];
+                        [appDelegate.modalNavigationController dismissViewControllerAnimated:YES completion:nil];
+                    } else {
+                        [self.navigationController popViewControllerAnimated:YES];
+                    }
+                }];
+            } else {
+                [self.navigationController popViewControllerAnimated:YES];
+                if ([type isEqualToString:@"facebook"]) {
+                    if (errorString.length) {
+                        [self showError:errorString];
+                    } else {
+                        [appDelegate.firstTimeUserAddFriendsViewController selectFacebookButton];
+                    }
+                } else if ([type isEqualToString:@"twitter"]) {
+                    if (errorString.length) {
+                        [self showError:errorString];
+                    } else {
+                        [appDelegate.firstTimeUserAddFriendsViewController selectTwitterButton];
+                    }
                 }
             }
-        }
-        return NO;
+            
+            decisionHandler(WKNavigationActionPolicyCancel);
+        }];
+        
+        return;
     }
     
-//    // for failed google reader authorization
-//    if ([URLString hasPrefix:[NSString stringWithFormat:@"%@/import/callback", self.appDelegate.url]]) {
-//        [self.navigationController popViewControllerAnimated:YES];
-//        [appDelegate.firstTimeUserAddSitesViewController importFromGoogleReaderFailed];
-//        return NO;
-//    }
-
-    
-    return YES;
+    decisionHandler(WKNavigationActionPolicyAllow);
 }
 
 - (void)showError:(NSString *)error {

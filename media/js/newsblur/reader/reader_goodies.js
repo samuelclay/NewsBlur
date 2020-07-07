@@ -43,7 +43,7 @@ _.extend(NEWSBLUR.ReaderGoodies.prototype, {
                 $.make('a', {
                     className: 'NB-goodies-mobile-link NB-modal-submit-button NB-modal-submit-green',
                     href: 'https://userstyles.org/styles/124890/newsblur-dark-theme-by-splike'
-                }, 'Download the Dark Theme'),
+                }, 'Download an alternate Dark Theme'),
                 $.make('div', { className: 'NB-goodies-title' }, 'Dark theme for the web'),
                 $.make('div', { className: 'NB-goodies-subtitle' }, [
                     'Use the Stylus browser extension to install a user-contributed dark theme. Note that you should use the Stylus extension and not the Stylish extension due to privacy concerns. ',

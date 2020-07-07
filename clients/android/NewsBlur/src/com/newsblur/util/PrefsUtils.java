@@ -21,6 +21,7 @@ import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
+import android.support.annotation.Nullable;
 import android.support.v4.content.FileProvider;
 import android.util.Log;
 
@@ -30,6 +31,7 @@ import com.newsblur.domain.UserDetails;
 import com.newsblur.network.APIConstants;
 import com.newsblur.util.PrefConstants.ThemeValue;
 import com.newsblur.service.NBSyncService;
+import com.newsblur.widget.WidgetUtils;
 
 public class PrefsUtils {
 
@@ -160,6 +162,9 @@ public class PrefsUtils {
 
         // wipe the local DB
         FeedUtils.dropAndRecreateTables();
+
+        // disable widget
+        WidgetUtils.disableWidgetUpdate(context);
 
         // reset custom server
         APIConstants.unsetCustomServer();
@@ -840,7 +845,7 @@ public class PrefsUtils {
     }
 
     public static boolean isBackgroundNeeded(Context context) {
-        return (isEnableNotifications(context) || isOfflineEnabled(context));
+        return (isEnableNotifications(context) || isOfflineEnabled(context) || WidgetUtils.hasActiveAppWidgets(context));
     }
 
     public static Font getFont(Context context) {
@@ -859,42 +864,85 @@ public class PrefsUtils {
         editor.commit();
     }
 
-
-    public static void setWidgetFeed(Context context, int widgetId, String feedId, String name) {
+    public static void setWidgetFeedIds(Context context, Set<String> feedIds) {
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
         Editor editor = prefs.edit();
-        editor.putString(PrefConstants.WIDGET_FEED_ID + widgetId, feedId)
-                .putString(PrefConstants.WIDGET_FEED_NAME + widgetId, name);
+        editor.putStringSet(PrefConstants.WIDGET_FEED_SET, feedIds);
         editor.commit();
     }
 
-    /**
-     * sets only the name, no id when it is a folder
-     */
-    public static void setWidgetFolderName(Context context, int widgetId, String folderName) {
+    @Nullable
+    public static Set<String> getWidgetFeedIds(Context context) {
+        SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        return preferences.getStringSet(PrefConstants.WIDGET_FEED_SET, null);
+    }
+
+    public static void removeWidgetData(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
         Editor editor = prefs.edit();
-        editor.remove(PrefConstants.WIDGET_FEED_ID + widgetId)
-                .putString(PrefConstants.WIDGET_FEED_NAME + widgetId, folderName);
-        editor.commit();
-
-    }
-    public static String getWidgetFeed(Context context, int widgetId) {
-        SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
-        String feedId = preferences.getString(PrefConstants.WIDGET_FEED_ID + widgetId, null);
-        return feedId;
-    }
-    public static String getWidgetFeedName(Context context, int widgetId) {
-        SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
-        return preferences.getString(PrefConstants.WIDGET_FEED_NAME + widgetId, "-");
-    }
-    public static void removeWidgetFeed(Context context, int widgetId) {
-        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
-        if(prefs.contains(PrefConstants.WIDGET_FEED_ID + widgetId)){
-            Editor editor = prefs.edit();
-            editor.remove(PrefConstants.WIDGET_FEED_ID + widgetId);
-            editor.remove(PrefConstants.WIDGET_FEED_NAME + widgetId);
-            editor.apply();
+        if (prefs.contains(PrefConstants.WIDGET_FEED_SET)) {
+            editor.remove(PrefConstants.WIDGET_FEED_SET);
         }
+        if (prefs.contains(PrefConstants.WIDGET_CONFIG_FEED_ORDER)) {
+            editor.remove(PrefConstants.WIDGET_CONFIG_FEED_ORDER);
+        }
+        if (prefs.contains(PrefConstants.WIDGET_CONFIG_LIST_ORDER)) {
+            editor.remove(PrefConstants.WIDGET_CONFIG_LIST_ORDER);
+        }
+        if (prefs.contains(PrefConstants.WIDGET_CONFIG_FOLDER_VIEW)) {
+            editor.remove(PrefConstants.WIDGET_CONFIG_FOLDER_VIEW);
+        }
+        if (prefs.contains(PrefConstants.WIDGET_BACKGROUND)) {
+            editor.remove(PrefConstants.WIDGET_BACKGROUND);
+        }
+        editor.apply();
+    }
+
+    public static FeedOrderFilter getWidgetConfigFeedOrder(Context context) {
+        SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        return FeedOrderFilter.valueOf(preferences.getString(PrefConstants.WIDGET_CONFIG_FEED_ORDER, FeedOrderFilter.NAME.toString()));
+    }
+
+    public static void setWidgetConfigFeedOrder(Context context, FeedOrderFilter feedOrderFilter) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        Editor editor = prefs.edit();
+        editor.putString(PrefConstants.WIDGET_CONFIG_FEED_ORDER, feedOrderFilter.toString());
+        editor.commit();
+    }
+
+    public static ListOrderFilter getWidgetConfigListOrder(Context context) {
+        SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        return ListOrderFilter.valueOf(preferences.getString(PrefConstants.WIDGET_CONFIG_LIST_ORDER, ListOrderFilter.ASCENDING.name()));
+    }
+
+    public static void setWidgetConfigListOrder(Context context, ListOrderFilter listOrderFilter) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        Editor editor = prefs.edit();
+        editor.putString(PrefConstants.WIDGET_CONFIG_LIST_ORDER, listOrderFilter.toString());
+        editor.commit();
+    }
+
+    public static FolderViewFilter getWidgetConfigFolderView(Context context) {
+        SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        return FolderViewFilter.valueOf(preferences.getString(PrefConstants.WIDGET_CONFIG_FOLDER_VIEW, FolderViewFilter.NESTED.name()));
+    }
+
+    public static void setWidgetConfigFolderView(Context context, FolderViewFilter folderViewFilter) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        Editor editor = prefs.edit();
+        editor.putString(PrefConstants.WIDGET_CONFIG_FOLDER_VIEW, folderViewFilter.toString());
+        editor.commit();
+    }
+
+    public static WidgetBackground getWidgetBackground(Context context) {
+        SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        return WidgetBackground.valueOf(preferences.getString(PrefConstants.WIDGET_BACKGROUND, WidgetBackground.DEFAULT.name()));
+    }
+
+    public static void setWidgetBackground(Context context, WidgetBackground widgetBackground) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        Editor editor = prefs.edit();
+        editor.putString(PrefConstants.WIDGET_BACKGROUND, widgetBackground.toString());
+        editor.commit();
     }
 }

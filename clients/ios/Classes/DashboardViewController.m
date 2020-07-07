@@ -16,15 +16,12 @@
 #import "StoriesCollection.h"
 #import "UISearchBar+Field.h"
 
-#define FEEDBACK_URL @"http://www.newsblur.com/about"
-
 @implementation DashboardViewController
 
 @synthesize appDelegate;
 @synthesize interactionsModule;
 @synthesize activitiesModule;
 @synthesize storiesModule;
-@synthesize feedbackWebView;
 @synthesize topToolbar;
 @synthesize toolbar;
 @synthesize segmentedButton;
@@ -47,25 +44,12 @@
         self.interactionsModule.hidden = NO;
     }
     self.activitiesModule.hidden = YES;
-    self.feedbackWebView.hidden = YES;
-    self.feedbackWebView.delegate = self;
     self.segmentedButton.selectedSegmentIndex = 0;
-    
-    // preload feedback
-    self.feedbackWebView.scalesPageToFit = YES;
     
     [self.segmentedButton
      setTitleTextAttributes:@{NSFontAttributeName:
                                   [UIFont fontWithName:@"Helvetica-Bold" size:11.0f]}
      forState:UIControlStateNormal];
-    
-    NSString *urlAddress = FEEDBACK_URL;
-    //Create a URL object.
-    NSURL *url = [NSURL URLWithString:urlAddress];
-    //URL Requst Object
-    NSURLRequest *requestObj = [NSURLRequest requestWithURL:url];
-    //Load the request in the UIWebView.
-    [self.feedbackWebView loadRequest:requestObj];
     
     CGRect topToolbarFrame = self.topToolbar.frame;
     topToolbarFrame.size.height += 20;
@@ -215,19 +199,4 @@
     [self.activitiesModule fetchActivitiesDetail:1];    
 }
 
-# pragma mark
-# pragma mark Feedback
-
-- (BOOL)webView:(UIWebView *)webView 
-shouldStartLoadWithRequest:(NSURLRequest *)request 
- navigationType:(UIWebViewNavigationType)navigationType {
-    NSURL *url = [request URL];
-    NSString *urlString = [NSString stringWithFormat:@"%@", url];
-
-    if ([urlString isEqualToString: FEEDBACK_URL]){
-        return YES;
-    } else {
-        return NO;
-    }
-}
 @end
