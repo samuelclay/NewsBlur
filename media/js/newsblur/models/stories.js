@@ -96,6 +96,11 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
                                         .replace(/>/g, '&gt;');
     },
     
+    user_highlights: function() {
+        var highlights = this.get('highlights');
+        return highlights;
+    },
+    
     formatted_short_date: function() {
         var timestamp = this.get('story_timestamp');
         var dateformat = NEWSBLUR.assets.preference('dateformat');
@@ -266,7 +271,7 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
     
     update_highlights: function() {
         this.set('user_tags', this.existing_tags(), {silent: true});
-        
+        console.log(['update_highlights', this.get('highlights')]);
         if (!this.get('starred')) {
             NEWSBLUR.assets.starred_count += 1;
             this.set('starred', true);
