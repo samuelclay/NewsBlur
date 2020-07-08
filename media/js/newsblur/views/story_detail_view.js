@@ -718,66 +718,71 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     },
     
     mouseup_check_selection: function(e) {
-        var applier_class = "NB-starred-story-selection-highlight";
         var $doc = this.$(".NB-feed-story-content");
         console.log(['mouseup_check_selection', e, $(e.target)]);
-        if ($(e.target).hasClass(applier_class)) {
+        if ($(e.target).hasClass("NB-highlight")) {
             this.show_unhighlight_tooltip($(e.target));
             return;
         }
 
-        var classApplier = rangy.createClassApplier(applier_class);
-        // classApplier.addClass("NB-temporary");
-        rangy.init();
         this.$(".NB-starred-story-selection-highlight,[data-tippy]").contents().unwrap();
         $doc.attr('id', 'NB-highlighting');
         
-        this.highlighter = rangy.createHighlighter($doc.get(0));
-        this.highlighter.addClassApplier(classApplier);
-        this.highlighter.highlightSelection(applier_class, {
-            containerElementId: "NB-highlighting"
-        });
 
-        this.serialized_highlight = this.highlighter.serialize();
+        var text = "";
+        if (window.getSelection) {
+            text = window.getSelection().toString();
+        } else if (document.selection && document.selection.type != "Control") {
+            text = document.selection.createRange().text;
+        }
+        this.serialized_highlight = text;
         console.log(['mouseup_check_selection 1', this.serialized_highlight]);
         
         if (this.tooltip && this.tooltip.tooltips && this.tooltip.tooltips.length) {
             this.tooltip.tooltips[0].hide();
         }
-        if (!this.serialized_highlight || this.serialized_highlight == "type:textContent") {
+        if (!this.serialized_highlight) {
             $doc.removeAttr('id');
             this.apply_starred_story_selections();
             return;
         }
         
-        var $selection = $(".NB-starred-story-selection-highlight", $doc);
-        $selection.attr('title', "<div class='NB-highlight-selection'>Highlight</div>");
-        var $t = tippy($selection.get(0), {
-            // delay: 100,
-            appendTo: this.el,
-            arrow: true,
-            arrowType: 'round',
-            size: 'large',
-            duration: 350,
-            animation: 'scale',
-            trigger: 'click',
-            interactive: true,
-            performance: true,
-            onHide: _.bind(function() {
-                $selection.removeClass('NB-starred-story-selection-highlight');
+        $doc.mark(this.serialized_highlight, {
+            "className": "NB-starred-story-selection-highlight",
+            "separateWordSearch": false,
+            "acrossElements": true,
+            "done": _.bind(function() {
+                var $selection = $(".NB-starred-story-selection-highlight", $doc);
+                console.log(['$selection', $selection]);
+                $selection.attr('title', "<div class='NB-highlight-selection'>Highlight</div>");
+                var $t = tippy($selection.get(0), {
+                    // delay: 100,
+                    appendTo: this.el,
+                    arrow: true,
+                    arrowType: 'round',
+                    size: 'large',
+                    duration: 350,
+                    animation: 'scale',
+                    trigger: 'click',
+                    interactive: true,
+                    performance: true,
+                    onHide: _.bind(function() {
+                        $selection.removeClass("NB-starred-story-selection-highlight");
+                    }, this)
+                });
+                this.tooltip = $t;
+                _.defer(function() {
+                    if ($t.tooltips && $t.tooltips.length) $t.tooltips[0].show();
+                });
+
+                $doc.removeAttr('id');
+                // this.apply_starred_story_selections();
             }, this)
         });
-        this.tooltip = $t;
-        _.defer(function() {
-            if ($t.tooltips && $t.tooltips.length) $t.tooltips[0].show();
-        });
-        console.log(['mouseup_check_selection 2', this.serialized_highlight, rangy.serializeSelection(), this.highlighter.serialize()]);
-
-        $doc.removeAttr('id');
-        this.apply_starred_story_selections();
     },
     
     show_unhighlight_tooltip: function($highlight) {
+        this.$highlight = $highlight;
         $highlight.attr('title', "<div class='NB-unhighlight-selection'>Unhighlight</div>");
         var $t = tippy($highlight.get(0), {
             // delay: 100,
@@ -791,7 +796,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             interactive: true,
             performance: true,
             onHide: _.bind(function() {
-                $highlight.removeClass('NB-starred-story-selection-highlight');
+                // $highlight.removeClass('NB-starred-story-selection-highlight');
             }, this)
         });
         this.tooltip = $t;
@@ -803,11 +808,11 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     
     highlight_selected_text: function() {
         var highlights = this.model.get('highlights');
-        if (highlights && highlights.length > 1) highlights = highlights.split(',').filter(function(h) { return h.length > 1; });
-        else highlights = [];
-        console.log(['highlighting', this.serialized_highlight, highlights]);
+        if (!highlights || !$.isArray(highlights)) highlights = [];
         highlights.push(this.serialized_highlight);
-        this.model.set('highlights', highlights.join(','));
+        this.model.set('highlights', highlights, {silent: true});
+        this.model.trigger('change:highlights');
+        console.log(['highlight_selected_text', this.serialized_highlight, highlights]);
         
         if (this.tooltip && this.tooltip.tooltips && this.tooltip.tooltips.length) {
             this.tooltip.tooltips[0].hide();
@@ -818,26 +823,41 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         return true;
     },
     
-    unhighlight_selected_text: function() {
-        console.log(['Unhighlighting', this.model.get('highlights')]);
+    unhighlight_selected_text: function(el) {
+        var remove_highlight = this.$highlight.text();
+        var highlights = this.model.get('highlights');
+        if (!highlights || !$.isArray(highlights)) highlights = [];
+        highlights = _.filter(highlights, function(value) { return !_.string.contains(value, remove_highlight); });
+        
+        this.model.set('highlights', highlights, {silent: true});
+        this.model.trigger('change:highlights');
+        console.log(['UNhighlighting', remove_highlight, highlights]);
+        
+        if (this.tooltip && this.tooltip.tooltips && this.tooltip.tooltips.length) {
+            this.tooltip.tooltips[0].hide();
+        }
+        
+        this.apply_starred_story_selections(true);
+        
+        return true;
     },
     
-    apply_starred_story_selections: function() {
-        var highlights = this.model.get('highlights');
-        if (!highlights) return;
-        highlights = highlights.split(',').filter(function(h) { return h.length > 1; });
-        
-        rangy.init();
-        var $doc = this.$(".NB-feed-story-content");
+    apply_starred_story_selections: function(force) {
+        var highlights = this.model.user_highlights();
+        if (!force) {
+            if (!highlights || !highlights.length) return;
+        }
         console.log(['apply_starred_story_selections', highlights]);
-        var highlighter = rangy.createHighlighter($doc.get(0));
-        highlighter.addClassApplier(rangy.createClassApplier("NB-starred-story-selection-highlight"));
+        
+        var $doc = this.$(".NB-feed-story-content");
+        $doc.unmark();
+
         $doc.attr('id', 'NB-highlighting');
-        
-        highlights.forEach(function(highlight) {
-            highlighter.deserialize(highlight);
+        $doc.mark(highlights, {
+            "className": "NB-highlight",
+            "separateWordSearch": false,
+            "acrossElements": true
         });
-        
         $doc.removeAttr('id');
     },
     
