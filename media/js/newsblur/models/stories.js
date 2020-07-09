@@ -82,7 +82,7 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
         if (window.location.protocol == 'https:') {
             _.each(this.get('secure_image_urls'), function(secure_url, url) {
                 if (_.str.startsWith(url, "http://")) {
-                    console.log(['Securing image url', url, secure_url]);
+                    // console.log(['Securing image url', url, secure_url]);
                     content = content.split(url).join(secure_url);
                 }
             });
