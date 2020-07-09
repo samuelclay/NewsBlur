@@ -74,6 +74,7 @@ public class APIConstants {
     public static final String PATH_DELETE_SEARCH = "/reader/delete_search";
     public static final String PATH_SAVE_SEARCH = "/reader/save_search";
     public static final String PATH_ADD_FOLDER = "/reader/add_folder";
+    public static final String PATH_DELETE_FOLDER = "/reader/delete_folder";
 
     public static String buildUrl(String path) {
         return CurrentUrlBase + path;
@@ -124,6 +125,7 @@ public class APIConstants {
     public static final String PARAMETER_RESET_FETCH = "reset_fetch";
     public static final String PARAMETER_INFREQUENT = "infrequent";
     public static final String PARAMETER_FEEDTITLE = "feed_title";
+    public static final String PARAMETER_FOLDER_TO_DELETE = "folder_to_delete";
 
     public static final String VALUE_PREFIX_SOCIAL = "social:";
     public static final String VALUE_ALLSOCIAL = "river:blurblogs"; // the magic value passed to the mark-read API for all social feeds

@@ -158,6 +158,7 @@
     <string name="menu_unmute_feed">Unmute feed</string>
     <string name="menu_mute_folder">Mute folder</string>
     <string name="menu_unmute_folder">Unmute folder</string>
+    <string name="menu_delete_folder">Delete folder</string>
     <string name="menu_instafetch_feed">Insta-fetch stories</string>
     <string name="menu_infrequent_cutoff">Infrequent stories per month</string>
     <string name="menu_intel">Intelligence trainer</string>
@@ -243,6 +244,7 @@
     <string name="unknown_user">Unknown User</string>
     <string name="delete_feed_message">Delete feed \&quot;%s\&quot;?</string>
     <string name="delete_saved_search_message">Delete saved search %s?</string>
+    <string name="delete_folder_message">Delete folder \&quot;%s\&quot; and unsubscribe from all feeds inside?</string>
     <string name="add_saved_search_message">Save search \&quot;%s\&quot;?</string>
     <string name="unfollow_message">Unfollow \&quot;%s\&quot;?</string>
     <string name="feed_subscribers">%s subscribers</string>

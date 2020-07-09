@@ -590,6 +590,14 @@ public class APIManager {
 		return response.getResponse(gson, NewsBlurResponse.class);
 	}
 
+	public NewsBlurResponse deleteFolder(String folderName, String inFolder) {
+        ContentValues values = new ContentValues();
+        values.put(APIConstants.PARAMETER_FOLDER_TO_DELETE, folderName);
+        values.put(APIConstants.PARAMETER_IN_FOLDER, inFolder);
+        APIResponse response = post(buildUrl(APIConstants.PATH_DELETE_FOLDER), values);
+        return response.getResponse(gson, NewsBlurResponse.class);
+    }
+
 	public NewsBlurResponse deleteSearch(String feedId, String query) {
         ContentValues values = new ContentValues();
         values.put(APIConstants.PARAMETER_FEEDID, feedId);

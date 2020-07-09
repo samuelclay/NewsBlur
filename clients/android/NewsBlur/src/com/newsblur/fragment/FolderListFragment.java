@@ -42,6 +42,7 @@ import com.newsblur.activity.SocialFeedItemsList;
 import com.newsblur.database.FolderListAdapter;
 import com.newsblur.databinding.FragmentFolderfeedlistBinding;
 import com.newsblur.domain.Feed;
+import com.newsblur.domain.Folder;
 import com.newsblur.domain.SavedSearch;
 import com.newsblur.domain.SocialFeed;
 import com.newsblur.util.AppConstants;
@@ -262,6 +263,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
             if (adapter.isRowAllStories(groupPosition)) {
                 menu.removeItem(R.id.menu_mute_folder);
                 menu.removeItem(R.id.menu_unmute_folder);
+                menu.removeItem(R.id.menu_delete_folder);
             }
 
 			break;
@@ -406,7 +408,15 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
                 DialogFragment deleteFeedFragment = DeleteFeedFragment.newInstance(savedSearch);
                 deleteFeedFragment.show(getFragmentManager(), "dialog");
             }
-		}
+		} else if (item.getItemId() == R.id.menu_delete_folder) {
+		    Folder folder = adapter.getGroupFolder(groupPosition);
+		    String folderParentName = null;
+		    if (!folder.parents.isEmpty()) {
+		        folderParentName = folder.parents.get(0);
+            }
+		    DeleteFolderFragment deleteFolderFragment = DeleteFolderFragment.newInstance(folder.name, folderParentName);
+		    deleteFolderFragment.show(getFragmentManager(), deleteFolderFragment.getTag());
+        }
 
 		return super.onContextItemSelected(item);
 	}

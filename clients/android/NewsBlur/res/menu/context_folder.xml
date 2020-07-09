@@ -9,5 +9,8 @@
 
     <item android:id="@+id/menu_unmute_folder"
           android:title="@string/menu_unmute_folder" />
-    
+
+    <item android:id="@+id/menu_delete_folder"
+        android:title="@string/menu_delete_folder" />
+
 </menu>
