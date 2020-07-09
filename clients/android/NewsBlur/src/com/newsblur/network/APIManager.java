@@ -15,6 +15,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -550,11 +551,21 @@ public class APIManager {
         return (CommentResponse) response.getResponse(gson, CommentResponse.class);
 	}
 
-	public AddFeedResponse addFeed(String feedUrl) {
+	public NewsBlurResponse addFolder(String folderName) {
+        ContentValues values = new ContentValues();
+        values.put(APIConstants.PARAMETER_FOLDER, folderName);
+        APIResponse response = post(buildUrl(APIConstants.PATH_ADD_FOLDER), values);
+        return response.getResponse(gson, NewsBlurResponse.class);
+    }
+
+	public AddFeedResponse addFeed(String feedUrl, @Nullable String folderName) {
 		ContentValues values = new ContentValues();
 		values.put(APIConstants.PARAMETER_URL, feedUrl);
+		if (!TextUtils.isEmpty(folderName)) {
+		    values.put(APIConstants.PARAMETER_FOLDER, folderName);
+        }
 		APIResponse response = post(buildUrl(APIConstants.PATH_ADD_FEED), values);
-		return (AddFeedResponse) response.getResponse(gson, AddFeedResponse.class);
+		return response.getResponse(gson, AddFeedResponse.class);
 	}
 
 	public FeedResult[] searchForFeed(String searchTerm) {
