@@ -198,13 +198,19 @@
     <string name="menu_add_feed">Add new feed</string>
     <string name="menu_search">Search</string>
     <string name="adding_feed_progress">Adding feed…</string>
+    <string name="add_folder_name">Please enter folder name</string>
+    <string name="add_new_folder">+ Add new folder</string>
+    <string name="new_folder_name_hint">Enter new folder name</string>
     <string name="add_feed_error">Could not add feed</string>
+    <string name="add_folder_error">Could not add folder</string>
     <string name="menu_mark_all_as_read">Mark all as read</string>
     <string name="menu_logout">Log out</string>
     <string name="menu_feedback">Send app feedback</string>
     <string name="menu_feedback_post">Create a feedback post</string>
     <string name="menu_feedback_email">Email a bug report</string>
     <string name="menu_theme_choose">Theme…</string>
+
+    <string name="description_add_new_folder_icon">Add new folder icon</string>
 
     <string name="menu_loginas">Login as...</string>
 
@@ -407,6 +413,7 @@
     <string name="sync_status_text">Storing text for %s stories...</string>
     <string name="sync_status_images">Storing %s images...</string>
     <string name="sync_status_offline">Offline</string>
+    <string name="sync_status_feed_add">Adding feed …</string>
 
     <string name="volume_key_navigation">Volume Key Navigation</string>
     <string name="off">Off</string>
