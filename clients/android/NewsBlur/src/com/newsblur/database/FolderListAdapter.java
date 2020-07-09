@@ -407,6 +407,11 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
         return folder.name;
     }
 
+    public Folder getGroupFolder(int groupPosition) {
+        String flatFolderName = activeFolderNames.get(groupPosition);
+        return flatFolders.get(flatFolderName);
+    }
+
 	@Override
 	public synchronized int getGroupCount() {
         if (activeFolderNames == null) return 0;
