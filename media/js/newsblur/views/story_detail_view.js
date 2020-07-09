@@ -719,7 +719,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     
     mouseup_check_selection: function(e) {
         var $doc = this.$(".NB-feed-story-content");
-        console.log(['mouseup_check_selection', e, $(e.target)]);
+        // console.log(['mouseup_check_selection', e, $(e.target)]);
         if ($(e.target).hasClass("NB-highlight")) {
             this.show_unhighlight_tooltip($(e.target));
             return;
@@ -728,15 +728,17 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         this.$(".NB-starred-story-selection-highlight,[data-tippy]").contents().unwrap();
         $doc.attr('id', 'NB-highlighting');
         
-
         var text = "";
+        var selection;
         if (window.getSelection) {
+            selection = window.getSelection();
             text = window.getSelection().toString();
         } else if (document.selection && document.selection.type != "Control") {
+            selection = document.selection.createRange();
             text = document.selection.createRange().text;
         }
         this.serialized_highlight = text;
-        console.log(['mouseup_check_selection 1', this.serialized_highlight]);
+        // console.log(['mouseup_check_selection 1', this.serialized_highlight]);
         
         if (this.tooltip && this.tooltip.tooltips && this.tooltip.tooltips.length) {
             this.tooltip.tooltips[0].hide();
@@ -746,14 +748,22 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             this.apply_starred_story_selections();
             return;
         }
-        
+
         $doc.mark(this.serialized_highlight, {
             "className": "NB-starred-story-selection-highlight",
             "separateWordSearch": false,
             "acrossElements": true,
+            "filter": function(node, term, total_counter, counter) {
+                if (!selection.containsNode(node)) return false;
+                // Highlighting the second 'baz' will fail, and the entire 'baz quz baz' will be highlighted instead.
+                //     foo bar baz quz baz bar foo
+                // console.log(['filter', node, term, total_counter, counter, selection.anchorNode, selection.anchorOffset, selection.focusNode, selection.focusOffset, selection.anchorNode == node, selection.containsNode(node), node.textContent.indexOf(term)]);
+                // if (node.textContent.indexOf(term) != selection.anchorOffset) return false;
+                return true;
+            },
             "done": _.bind(function() {
                 var $selection = $(".NB-starred-story-selection-highlight", $doc);
-                console.log(['$selection', $selection]);
+                console.log(['$selection', $selection, $selection.first().get(0), $selection.last().get(0)]);
                 $selection.attr('title', "<div class='NB-highlight-selection'>Highlight</div>");
                 var $t = tippy($selection.get(0), {
                     // delay: 100,
@@ -777,6 +787,21 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
 
                 $doc.removeAttr('id');
                 // this.apply_starred_story_selections();
+
+                var doc = window.document, range;
+                if (window.getSelection && doc.createRange) {
+                    if ($selection.length) {
+                        selection.removeAllRanges();
+                        range = doc.createRange();
+                        range.setStart($selection.first().get(0), 0);
+                        range.setEndAfter($selection.last().get(0), 0);
+                        selection.addRange(range);
+                    }
+                // } else if (doc.body.createTextRange) {
+                //     range = doc.body.createTextRange();
+                //     range.moveToElementText($selection[0]);
+                //     range.select();
+                }
             }, this)
         });
     },
@@ -847,7 +872,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         if (!force) {
             if (!highlights || !highlights.length) return;
         }
-        console.log(['apply_starred_story_selections', highlights]);
+        console.log(['Applying highlights', highlights]);
         
         var $doc = this.$(".NB-feed-story-content");
         $doc.unmark();
