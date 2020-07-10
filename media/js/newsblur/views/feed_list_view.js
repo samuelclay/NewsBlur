@@ -203,7 +203,7 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
         options = options || {};
         var $starred_feeds = $('.NB-starred-feeds', this.$s.$starred_feeds);
         var $feeds = _.compact(NEWSBLUR.assets.starred_feeds.map(function(feed) {
-            if (feed.get('tag') == "" || !feed.get('tag')) return;
+            if (!feed.get('highlights') && (feed.get('tag') == "" || !feed.get('tag'))) return;
             var feed_view = new NEWSBLUR.Views.FeedTitleView({
                 model: feed, 
                 type: 'feed', 

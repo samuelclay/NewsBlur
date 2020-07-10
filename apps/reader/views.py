@@ -885,6 +885,7 @@ def load_starred_stories(request):
     query        = request.REQUEST.get('query', '').strip()
     order        = request.REQUEST.get('order', 'newest')
     tag          = request.REQUEST.get('tag')
+    highlights   = is_true(request.REQUEST.get('highlights', False))
     story_hashes = request.REQUEST.getlist('h') or request.REQUEST.getlist('h[]')
     story_hashes = story_hashes[:100]
     version      = int(request.REQUEST.get('v', 1))
@@ -902,6 +903,16 @@ def load_starred_stories(request):
         else:
             stories = []
             message = "You must be a premium subscriber to search."
+    elif highlights:
+        if user.profile.is_premium:
+            mstories = MStarredStory.objects(
+                user_id=user.pk,
+                highlights__exists=True
+            ).order_by('%sstarred_date' % order_by)[offset:offset+limit]
+            stories = Feed.format_stories(mstories)        
+        else:
+            stories = []
+            message = "You must be a premium subscriber to read through saved story highlights."
     elif tag:
         if user.profile.is_premium:
             mstories = MStarredStory.objects(
@@ -2418,6 +2429,7 @@ def _mark_story_as_starred(request):
     starred_story = MStarredStory.objects(**params).limit(1)
     created = False
     removed_user_tags = []
+    removed_highlights = []
     if not starred_story:
         params.update(story_values)
         if params.has_key('story_latest_content_z'):
@@ -2434,15 +2446,23 @@ def _mark_story_as_starred(request):
                                     story_feed_id=feed_id,
                                     story_id=starred_story.story_guid)
         new_user_tags = user_tags
+        new_highlights = highlights
         MStarredStoryCounts.adjust_count(request.user.pk, feed_id=feed_id, amount=1)
     else:
         starred_story = starred_story[0]
         new_user_tags = list(set(user_tags) - set(starred_story.user_tags or []))
         removed_user_tags = list(set(starred_story.user_tags or []) - set(user_tags))
+        new_highlights = list(set(highlights) - set(starred_story.highlights or []))
+        removed_highlights = list(set(starred_story.highlights or []) - set(highlights))
         starred_story.user_tags = user_tags
         starred_story.highlights = highlights
         starred_story.save()
     
+    if len(highlights) == 1 and len(new_highlights) == 1:
+        MStarredStoryCounts.adjust_count(request.user.pk, highlights=True, amount=1)
+    elif len(highlights) == 0 and len(removed_highlights):
+        MStarredStoryCounts.adjust_count(request.user.pk, highlights=True, amount=-1)
+        
     for tag in new_user_tags:
         MStarredStoryCounts.adjust_count(request.user.pk, tag=tag, amount=1)
     for tag in removed_user_tags:
