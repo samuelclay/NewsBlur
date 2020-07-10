@@ -2865,8 +2865,12 @@ class MStarredStory(mongo.DynamicDocument):
     }
 
     def __unicode__(self):
-        user = User.objects.get(pk=self.user_id)
-        return "%s: %s (%s)" % (user.username, 
+        try:
+            user = User.objects.get(pk=self.user_id)
+            username = user.username
+        except User.DoesNotExist:
+            username = '[deleted]'
+        return "%s: %s (%s)" % (username, 
                                     self.story_title[:20], 
                                     self.story_feed_id)
     
@@ -2978,6 +2982,7 @@ class MStarredStoryCounts(mongo.Document):
     user_id = mongo.IntField()
     tag = mongo.StringField(max_length=128)
     feed_id = mongo.IntField()
+    highlights = mongo.BooleanField()
     slug = mongo.StringField(max_length=128)
     count = mongo.IntField(default=0)
 
@@ -2987,6 +2992,16 @@ class MStarredStoryCounts(mongo.Document):
         'ordering': ['tag'],
         'allow_inheritance': False,
     }
+    
+    def __unicode__(self):
+        if self.tag:
+            return "Tag: %s (%s)" % (self.tag, self.count)
+        elif self.feed_id:
+            return "Feed: %s (%s)" % (self.feed_id, self.count)
+        elif self.highlights:
+            return "Highlights: %s (%s)" % (self.highlights, self.count)
+            
+        return "%s/%s/%s" % (self.tag, self.feed_id, self.highlights)
 
     @property
     def rss_url(self, secret_token=None):
@@ -3006,6 +3021,7 @@ class MStarredStoryCounts(mongo.Document):
         counts = cls.objects.filter(user_id=user_id)
         counts = sorted([{'tag': c.tag, 
                           'count': c.count, 
+                          'highlights': c.highlights, 
                           'feed_address': c.rss_url, 
                           'feed_id': c.feed_id} 
                          for c in counts],
@@ -3039,11 +3055,13 @@ class MStarredStoryCounts(mongo.Document):
     def count_for_user(cls, user_id, total_only=False):
         user_tags = []
         user_feeds = []
+        highlights = 0
         
         if not total_only:
             cls.objects(user_id=user_id).delete()
             try:
                 user_tags = cls.count_tags_for_user(user_id)
+                highlights = cls.count_highlights_for_user(user_id)
                 user_feeds = cls.count_feeds_for_user(user_id)
             except pymongo.errors.OperationFailure, e:
                 logging.debug(" ---> ~FBOperationError on mongo: ~SB%s" % e)
@@ -3052,7 +3070,7 @@ class MStarredStoryCounts(mongo.Document):
         cls.objects(user_id=user_id, tag=None, feed_id=None).update_one(set__count=total_stories_count,
                                                                         upsert=True)
 
-        return dict(total=total_stories_count, tags=user_tags, feeds=user_feeds)
+        return dict(total=total_stories_count, tags=user_tags, feeds=user_feeds, highlights=highlights)
 
     @classmethod
     def count_tags_for_user(cls, user_id):
@@ -3065,9 +3083,17 @@ class MStarredStoryCounts(mongo.Document):
         for tag, count in dict(user_tags).items():
             cls.objects(user_id=user_id, tag=tag, slug=slugify(tag)).update_one(set__count=count,
                                                                                 upsert=True)
-    
+        
         return user_tags
     
+    @classmethod
+    def count_highlights_for_user(cls, user_id):
+        highlighted_count = MStarredStory.objects(user_id=user_id, highlights__exists=True).count()
+        cls.objects(user_id=user_id, 
+                    highlights=True, slug="highlights").update_one(set__count=highlighted_count, upsert=True)
+        
+        return highlighted_count
+        
     @classmethod
     def count_feeds_for_user(cls, user_id):
         all_feeds = MStarredStory.objects(user_id=user_id).item_frequencies('story_feed_id')
@@ -3093,12 +3119,14 @@ class MStarredStoryCounts(mongo.Document):
         return user_feeds
     
     @classmethod
-    def adjust_count(cls, user_id, feed_id=None, tag=None, amount=0):
+    def adjust_count(cls, user_id, feed_id=None, tag=None, highlights=None, amount=0):
         params = dict(user_id=user_id)
         if feed_id:
             params['feed_id'] = feed_id
         if tag:
             params['tag'] = tag
+        if highlights:
+            params['highlights'] = True
 
         cls.objects(**params).update_one(inc__count=amount, upsert=True)
         try:
