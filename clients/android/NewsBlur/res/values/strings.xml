@@ -37,7 +37,8 @@
 
     <string name="title_choose_folders">Choose Folders for Feed %s</string>
     <string name="title_rename_feed">Rename Feed %s</string>
-	
+    <string name="title_rename_folder">Rename Folder %s</string>
+
 	<string name="all_stories_row_title">ALL STORIES</string>
 	<string name="all_stories_title">All Stories</string>
 	<string name="infrequent_row_title">INFREQUENT SITE STORIES</string>
@@ -64,6 +65,7 @@
     <string name="unshare">DELETE SHARE</string>
     <string name="update_shared">UPDATE COMMENT</string>
     <string name="feed_name_save">RENAME FEED</string>
+    <string name="folder_name_save">RENAME FOLDER</string>
 
 	<string name="save_this">SAVE</string>
 	<string name="unsave_this">REMOVE FROM SAVED</string>
@@ -159,6 +161,7 @@
     <string name="menu_mute_folder">Mute folder</string>
     <string name="menu_unmute_folder">Unmute folder</string>
     <string name="menu_delete_folder">Delete folder</string>
+    <string name="menu_rename_folder">Rename folder</string>
     <string name="menu_instafetch_feed">Insta-fetch stories</string>
     <string name="menu_infrequent_cutoff">Infrequent stories per month</string>
     <string name="menu_intel">Intelligence trainer</string>
