@@ -3030,7 +3030,7 @@ class MStarredStoryCounts(mongo.Document):
         total = 0
         feed_total = 0
         for c in counts:
-            if not c['tag'] and not c['feed_id']:
+            if not c['tag'] and not c['feed_id'] and not c['highlights']:
                 total = c['count']
             if c['feed_id']:
                 feed_total += c['count']
@@ -3067,7 +3067,7 @@ class MStarredStoryCounts(mongo.Document):
                 logging.debug(" ---> ~FBOperationError on mongo: ~SB%s" % e)
 
         total_stories_count = MStarredStory.objects(user_id=user_id).count()
-        cls.objects(user_id=user_id, tag=None, feed_id=None).update_one(set__count=total_stories_count,
+        cls.objects(user_id=user_id, tag=None, feed_id=None, highlights=None).update_one(set__count=total_stories_count,
                                                                         upsert=True)
 
         return dict(total=total_stories_count, tags=user_tags, feeds=user_feeds, highlights=highlights)
@@ -3088,7 +3088,9 @@ class MStarredStoryCounts(mongo.Document):
     
     @classmethod
     def count_highlights_for_user(cls, user_id):
-        highlighted_count = MStarredStory.objects(user_id=user_id, highlights__exists=True).count()
+        highlighted_count = MStarredStory.objects(user_id=user_id, 
+                                                  highlights__exists=True,
+                                                  __raw__={"$where": "this.highlights.length > 0"}).count()
         cls.objects(user_id=user_id, 
                     highlights=True, slug="highlights").update_one(set__count=highlighted_count, upsert=True)
         
