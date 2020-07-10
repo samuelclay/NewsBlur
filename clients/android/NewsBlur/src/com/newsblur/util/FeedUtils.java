@@ -194,6 +194,24 @@ public class FeedUtils {
         }.execute();
     }
 
+    public static void renameFolder(final String folderName, final String newFolderName, final String inFolder, final Context context, final APIManager apiManager) {
+        new AsyncTask<Void, Void, NewsBlurResponse>() {
+            @Override
+            protected NewsBlurResponse doInBackground(Void... voids) {
+                return apiManager.renameFolder(folderName, newFolderName, inFolder);
+            }
+
+            @Override
+            protected void onPostExecute(NewsBlurResponse result) {
+                super.onPostExecute(result);
+                if (!result.isError()) {
+                    NBSyncService.forceFeedsFolders();
+                    triggerSync(context);
+                }
+            }
+        }.execute();
+    }
+
     public static void markStoryUnread(final Story story, final Context context) {
         new AsyncTask<Void, Void, Void>() {
             @Override

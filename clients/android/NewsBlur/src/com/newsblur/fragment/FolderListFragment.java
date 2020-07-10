@@ -264,6 +264,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
                 menu.removeItem(R.id.menu_mute_folder);
                 menu.removeItem(R.id.menu_unmute_folder);
                 menu.removeItem(R.id.menu_delete_folder);
+                menu.removeItem(R.id.menu_rename_folder);
             }
 
 			break;
@@ -382,7 +383,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
         } else if (item.getItemId() == R.id.menu_rename_feed) {
             Feed feed = adapter.getFeed(groupPosition, childPosition);
             if (feed != null) {
-                DialogFragment renameFeedFragment = RenameFeedFragment.newInstance(feed);
+                DialogFragment renameFeedFragment = RenameDialogFragment.newInstance(feed);
                 renameFeedFragment.show(getFragmentManager(), "dialog");
             }
         } else if (item.getItemId() == R.id.menu_mute_feed) {
@@ -410,12 +411,14 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
             }
 		} else if (item.getItemId() == R.id.menu_delete_folder) {
 		    Folder folder = adapter.getGroupFolder(groupPosition);
-		    String folderParentName = null;
-		    if (!folder.parents.isEmpty()) {
-		        folderParentName = folder.parents.get(0);
-            }
+		    String folderParentName = folder.getFirstParentName();
 		    DeleteFolderFragment deleteFolderFragment = DeleteFolderFragment.newInstance(folder.name, folderParentName);
 		    deleteFolderFragment.show(getFragmentManager(), deleteFolderFragment.getTag());
+        } else if (item.getItemId() == R.id.menu_rename_folder) {
+		    Folder folder = adapter.getGroupFolder(groupPosition);
+            String folderParentName = folder.getFirstParentName();
+            RenameDialogFragment renameDialogFragment = RenameDialogFragment.newInstance(folder.name, folderParentName);
+            renameDialogFragment.show(getFragmentManager(), renameDialogFragment.getTag());
         }
 
 		return super.onContextItemSelected(item);

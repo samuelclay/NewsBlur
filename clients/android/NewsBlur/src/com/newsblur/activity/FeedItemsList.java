@@ -11,7 +11,7 @@ import com.newsblur.R;
 import com.newsblur.domain.Feed;
 import com.newsblur.fragment.DeleteFeedFragment;
 import com.newsblur.fragment.FeedIntelTrainerFragment;
-import com.newsblur.fragment.RenameFeedFragment;
+import com.newsblur.fragment.RenameDialogFragment;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.UIUtils;
@@ -79,8 +79,8 @@ public class FeedItemsList extends ItemsList {
             return true;
         }
         if (item.getItemId() == R.id.menu_rename_feed) {
-            RenameFeedFragment frag = RenameFeedFragment.newInstance(feed);
-            frag.show(getSupportFragmentManager(), RenameFeedFragment.class.getName());
+            RenameDialogFragment frag = RenameDialogFragment.newInstance(feed);
+            frag.show(getSupportFragmentManager(), RenameDialogFragment.class.getName());
             return true;
             // TODO: since this activity uses a feed object passed as an extra and doesn't query the DB,
             // the name change won't be reflected until the activity finishes.

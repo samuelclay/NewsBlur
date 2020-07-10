@@ -652,6 +652,15 @@ public class APIManager {
         return response.getResponse(gson, NewsBlurResponse.class);
     }
 
+    public NewsBlurResponse renameFolder(String folderName, String newFolderName, String inFolder) {
+        ContentValues values = new ContentValues();
+        values.put(APIConstants.PARAMETER_FOLDER_TO_RENAME, folderName);
+        values.put(APIConstants.PARAMETER_NEW_FOLDER_NAME, newFolderName);
+        values.put(APIConstants.PARAMETER_IN_FOLDER, inFolder);
+        APIResponse response = post(buildUrl(APIConstants.PATH_RENAME_FOLDER), values);
+        return response.getResponse(gson, NewsBlurResponse.class);
+    }
+
     /* HTTP METHODS */
    
 	private APIResponse get(final String urlString) {
