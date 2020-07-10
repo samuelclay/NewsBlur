@@ -907,7 +907,8 @@ def load_starred_stories(request):
         if user.profile.is_premium:
             mstories = MStarredStory.objects(
                 user_id=user.pk,
-                highlights__exists=True
+                highlights__exists=True,
+                __raw__={"$where": "this.highlights.length > 0"}
             ).order_by('%sstarred_date' % order_by)[offset:offset+limit]
             stories = Feed.format_stories(mstories)        
         else:
