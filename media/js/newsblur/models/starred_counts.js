@@ -2,7 +2,7 @@ NEWSBLUR.Models.StarredFeed = Backbone.Model.extend({
     
     initialize: function() {
         this.set('feed_title', this.get('tag'));
-        if (this.get('highlights')) {
+        if (this.get('is_highlights')) {
             this.set('feed_title', "Highlights");
         }
         this.views = [];
@@ -33,7 +33,7 @@ NEWSBLUR.Models.StarredFeed = Backbone.Model.extend({
     },
     
     tag_slug: function() {
-        if (this.get('highlights')) {
+        if (this.get('is_highlights')) {
             return "highlights";
         }
         return Inflector.sluggify(this.get('tag') || '');
@@ -48,7 +48,7 @@ NEWSBLUR.Collections.StarredFeeds = Backbone.Collection.extend({
     parse: function(models) {
         _.each(models, function(feed) {
             feed.id = 'starred:' + (feed.tag || feed.feed_id);
-            if (feed.highlights) {
+            if (feed.is_highlights) {
                 feed.id = 'starred:highlights';
             }
             // feed.selected = false;

@@ -2982,7 +2982,7 @@ class MStarredStoryCounts(mongo.Document):
     user_id = mongo.IntField()
     tag = mongo.StringField(max_length=128)
     feed_id = mongo.IntField()
-    highlights = mongo.BooleanField()
+    is_highlights = mongo.BooleanField()
     slug = mongo.StringField(max_length=128)
     count = mongo.IntField(default=0)
 
@@ -2998,10 +2998,10 @@ class MStarredStoryCounts(mongo.Document):
             return "Tag: %s (%s)" % (self.tag, self.count)
         elif self.feed_id:
             return "Feed: %s (%s)" % (self.feed_id, self.count)
-        elif self.highlights:
-            return "Highlights: %s (%s)" % (self.highlights, self.count)
+        elif self.is_highlights:
+            return "Highlights: %s (%s)" % (self.is_highlights, self.count)
             
-        return "%s/%s/%s" % (self.tag, self.feed_id, self.highlights)
+        return "%s/%s/%s" % (self.tag, self.feed_id, self.is_highlights)
 
     @property
     def rss_url(self, secret_token=None):
@@ -3021,7 +3021,7 @@ class MStarredStoryCounts(mongo.Document):
         counts = cls.objects.filter(user_id=user_id)
         counts = sorted([{'tag': c.tag, 
                           'count': c.count, 
-                          'highlights': c.highlights, 
+                          'is_highlights': c.is_highlights, 
                           'feed_address': c.rss_url, 
                           'feed_id': c.feed_id} 
                          for c in counts],
@@ -3030,7 +3030,7 @@ class MStarredStoryCounts(mongo.Document):
         total = 0
         feed_total = 0
         for c in counts:
-            if not c['tag'] and not c['feed_id'] and not c['highlights']:
+            if not c['tag'] and not c['feed_id'] and not c['is_highlights']:
                 total = c['count']
             if c['feed_id']:
                 feed_total += c['count']
@@ -3067,7 +3067,7 @@ class MStarredStoryCounts(mongo.Document):
                 logging.debug(" ---> ~FBOperationError on mongo: ~SB%s" % e)
 
         total_stories_count = MStarredStory.objects(user_id=user_id).count()
-        cls.objects(user_id=user_id, tag=None, feed_id=None, highlights=None).update_one(set__count=total_stories_count,
+        cls.objects(user_id=user_id, tag=None, feed_id=None, is_highlights=None).update_one(set__count=total_stories_count,
                                                                         upsert=True)
 
         return dict(total=total_stories_count, tags=user_tags, feeds=user_feeds, highlights=highlights)
@@ -3092,7 +3092,7 @@ class MStarredStoryCounts(mongo.Document):
                                                   highlights__exists=True,
                                                   __raw__={"$where": "this.highlights.length > 0"}).count()
         cls.objects(user_id=user_id, 
-                    highlights=True, slug="highlights").update_one(set__count=highlighted_count, upsert=True)
+                    is_highlights=True, slug="highlights").update_one(set__count=highlighted_count, upsert=True)
         
         return highlighted_count
         
@@ -3128,7 +3128,7 @@ class MStarredStoryCounts(mongo.Document):
         if tag:
             params['tag'] = tag
         if highlights:
-            params['highlights'] = True
+            params['is_highlights'] = True
 
         cls.objects(**params).update_one(inc__count=amount, upsert=True)
         try:
