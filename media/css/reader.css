@@ -3284,14 +3284,14 @@ body {
     max-height: none;
 }
 .NB-feed-story .NB-story-content-wrapper {
-    margin: 0 236px 28px 28px;
+    padding: 0 236px 28px 28px;
 }
 .NB-narrow-content .NB-feed-story .NB-story-content-wrapper {
-    margin-right: 28px;
+    padding-right: 28px;
 }
 .NB-story-content-wrapper.NB-story-content-wrapper-height-truncated {
     max-height: 460px;
-    margin-bottom: 0;
+    padding-bottom: 0;
     overflow: hidden;
 }
 .NB-story-content-wrapper.NB-story-content-wrapper-height-fudged {
@@ -3307,6 +3307,7 @@ body {
     color: #1a9fff;
     font-size: 12px;
     background: #fff;
+    margin: 28px;
 }
 .NB-story-content-wrapper .NB-story-content-expander .NB-story-content-expander-inner {
     position: relative;

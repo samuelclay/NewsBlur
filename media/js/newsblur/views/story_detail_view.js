@@ -17,7 +17,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         "mouseenter .NB-feed-story-manage-icon" : "mouseenter_manage_icon",
         "mouseleave .NB-feed-story-manage-icon" : "mouseleave_manage_icon",
         "contextmenu .NB-feed-story-header"     : "show_manage_menu_rightclick",
-        "mouseup .NB-feed-story-content"        : "mouseup_check_selection",
+        "mouseup .NB-story-content-wrapper"     : "mouseup_check_selection",
         "click .NB-feed-story-manage-icon"      : "show_manage_menu",
         "click .NB-feed-story-show-changes"     : "show_story_changes",
         "click .NB-feed-story-header-title"     : "open_feed",
