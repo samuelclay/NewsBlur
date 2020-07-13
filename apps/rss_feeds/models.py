@@ -2969,6 +2969,7 @@ class MStarredStoryCounts(mongo.Document):
     user_id = mongo.IntField()
     tag = mongo.StringField(max_length=128)
     feed_id = mongo.IntField()
+    is_highlights = mongo.BooleanField()
     slug = mongo.StringField(max_length=128)
     count = mongo.IntField(default=0)
 
