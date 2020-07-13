@@ -1811,7 +1811,7 @@
             if (options.tag && !options.model) {
                 if (options.tag == 'highlights') {
                     var model = NEWSBLUR.assets.starred_feeds.detect(function(feed) {
-                        return feed.get('highlights');
+                        return feed.get('is_highlights');
                     });
                 } else {
                     var model = NEWSBLUR.assets.starred_feeds.detect(function(feed) {
@@ -1821,7 +1821,7 @@
                 if (model) {
                     options.model = model;
                     options.tag = model.get('tag');
-                    options.highlights = model.get('highlights');
+                    options.highlights = model.get('is_highlights');
                     if (options.highlights) options.tag = "highlights";
                 }
             }
