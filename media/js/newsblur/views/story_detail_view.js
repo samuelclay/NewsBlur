@@ -737,7 +737,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             selection = document.selection.createRange();
             text = document.selection.createRange().text;
         }
-        this.serialized_highlight = text;
+        this.serialized_highlight = _.string.trim(text);
         // console.log(['mouseup_check_selection 1', this.serialized_highlight]);
         
         if (this.tooltip && this.tooltip.tooltips && this.tooltip.tooltips.length) {
