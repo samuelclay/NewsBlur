@@ -725,6 +725,8 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             return;
         }
 
+        if (!NEWSBLUR.assets.preference('highlights')) return;
+
         this.$(".NB-starred-story-selection-highlight,[data-tippy]").contents().unwrap();
         $doc.attr('id', 'NB-highlighting');
         
