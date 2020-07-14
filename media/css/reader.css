@@ -2149,7 +2149,7 @@ hr {
 }
 
 .NB-end-line {
-    min-height: 36px;
+    min-height: 76px;
     border-top: 1px solid #C2C5BE;
     border-bottom: 1px solid #E1E6E0;
 /*    padding-left: 14px; /* offset for scrollbar on right */
@@ -2159,6 +2159,10 @@ hr {
     background-image:  no-repeat center center;
     overflow: hidden;
     clear: both;
+}
+.NB-module-river .NB-end-line {
+    border-top: none;
+    border-bottom: none;
 }
 .NB-end-line.NB-short {
     height: 8px;
@@ -2170,7 +2174,7 @@ hr {
     background-size: 203px 24px;
     margin: 0 auto;
     width: 175px;
-    height: 36px;
+    height: 76px;
 }
 
 .NB-empty .NB-end-line {
