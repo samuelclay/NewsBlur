@@ -695,8 +695,7 @@ def load_single_feed(request, feed_id):
         starred_stories = MStarredStory.objects(user_id=user.pk, 
                                                 story_feed_id=feed.pk, 
                                                 story_hash__in=story_hashes)\
-                                       .hint([('user_id', 1), ('story_hash', 1)])\
-                                       .only('story_hash', 'starred_date', 'user_tags')
+                                       .hint([('user_id', 1), ('story_hash', 1)])
         shared_story_hashes = MSharedStory.check_shared_story_hashes(user.pk, story_hashes)
         shared_stories = []
         if shared_story_hashes:
@@ -704,8 +703,7 @@ def load_single_feed(request, feed_id):
                                                   story_hash__in=shared_story_hashes)\
                                          .hint([('story_hash', 1)])\
                                          .only('story_hash', 'shared_date', 'comments')
-        starred_stories = dict([(story.story_hash, dict(starred_date=story.starred_date,
-                                                        user_tags=story.user_tags))
+        starred_stories = dict([(story.story_hash, story)
                                 for story in starred_stories])
         shared_stories = dict([(story.story_hash, dict(shared_date=story.shared_date,
                                                        comments=story.comments))
@@ -730,11 +728,13 @@ def load_single_feed(request, feed_id):
                 story['read_status'] = 0
             if story['story_hash'] in starred_stories:
                 story['starred'] = True
-                starred_date = localtime_for_timezone(starred_stories[story['story_hash']]['starred_date'],
+                starred_story = Feed.format_story(starred_stories[story['story_hash']])
+                starred_date = localtime_for_timezone(starred_story['starred_date'],
                                                       user.profile.timezone)
                 story['starred_date'] = format_story_link_date__long(starred_date, now)
                 story['starred_timestamp'] = starred_date.strftime('%s')
-                story['user_tags'] = starred_stories[story['story_hash']]['user_tags']
+                story['user_tags'] = starred_story['user_tags']
+                story['highlights'] = starred_story['highlights']
             if story['story_hash'] in shared_stories:
                 story['shared'] = True
                 shared_date = localtime_for_timezone(shared_stories[story['story_hash']]['shared_date'],
@@ -885,6 +885,7 @@ def load_starred_stories(request):
     query        = request.REQUEST.get('query', '').strip()
     order        = request.REQUEST.get('order', 'newest')
     tag          = request.REQUEST.get('tag')
+    highlights   = is_true(request.REQUEST.get('highlights', False))
     story_hashes = request.REQUEST.getlist('h') or request.REQUEST.getlist('h[]')
     story_hashes = story_hashes[:100]
     version      = int(request.REQUEST.get('v', 1))
@@ -902,6 +903,17 @@ def load_starred_stories(request):
         else:
             stories = []
             message = "You must be a premium subscriber to search."
+    elif highlights:
+        if user.profile.is_premium:
+            mstories = MStarredStory.objects(
+                user_id=user.pk,
+                highlights__exists=True,
+                __raw__={"$where": "this.highlights.length > 0"}
+            ).order_by('%sstarred_date' % order_by)[offset:offset+limit]
+            stories = Feed.format_stories(mstories)        
+        else:
+            stories = []
+            message = "You must be a premium subscriber to read through saved story highlights."
     elif tag:
         if user.profile.is_premium:
             mstories = MStarredStory.objects(
@@ -1047,6 +1059,12 @@ def starred_stories_rss_feed(request, user_id, secret_token, tag_slug):
     if not tag_counts.tag:
         starred_stories = MStarredStory.objects(
             user_id=user.pk
+        ).order_by('-starred_date').limit(25)
+    elif tag_counts.highlights:
+        starred_stories = MStarredStory.objects(
+            user_id=user.pk,
+            highlights__exists=True,
+            __raw__={"$where": "this.highlights.length > 0"}
         ).order_by('-starred_date').limit(25)
     else:
         starred_stories = MStarredStory.objects(
@@ -1247,9 +1265,8 @@ def load_read_stories(request):
                            for story in shared_stories])
     starred_stories = MStarredStory.objects(user_id=user.pk, 
                                             story_hash__in=story_hashes)\
-                                   .hint([('user_id', 1), ('story_hash', 1)])\
-                                   .only('story_hash', 'starred_date')
-    starred_stories = dict([(story.story_hash, story.starred_date) 
+                                   .hint([('user_id', 1), ('story_hash', 1)])
+    starred_stories = dict([(story.story_hash, story) 
                             for story in starred_stories])
     
     nowtz = localtime_for_timezone(now, user.profile.timezone)
@@ -1266,7 +1283,8 @@ def load_read_stories(request):
         }
         if story['story_hash'] in starred_stories:
             story['starred'] = True
-            starred_date = localtime_for_timezone(starred_stories[story['story_hash']],
+            starred_story = Feed.format_story(starred_stories[story['story_hash']])
+            starred_date = localtime_for_timezone(starred_story['starred_date'],
                                                   user.profile.timezone)
             story['starred_date'] = format_story_link_date__long(starred_date, now)
             story['starred_timestamp'] = starred_date.strftime('%s')
@@ -1394,10 +1412,10 @@ def load_river_stories__redis(request):
             story_hashes = [s['story_hash'] for s in stories]
             starred_stories = MStarredStory.objects(
                 user_id=user.pk,
-                story_hash__in=story_hashes
-            ).only('story_hash', 'starred_date', 'user_tags')
+                story_hash__in=story_hashes)
         starred_stories = dict([(story.story_hash, dict(starred_date=story.starred_date,
-                                                        user_tags=story.user_tags)) 
+                                                        user_tags=story.user_tags,
+                                                        highlights=story.highlights)) 
                                 for story in starred_stories])
     else:
         starred_stories = {}
@@ -1445,6 +1463,7 @@ def load_river_stories__redis(request):
             story['starred_date'] = format_story_link_date__long(starred_date, now)
             story['starred_timestamp'] = starred_date.strftime('%s')
             story['user_tags'] = starred_stories[story['story_hash']]['user_tags']
+            story['highlights'] = starred_stories[story['story_hash']]['highlights']
         story['intelligence'] = {
             'feed':   apply_classifier_feeds(classifier_feeds, story['story_feed_id']),
             'author': apply_classifier_authors(classifier_authors, story),
@@ -2393,6 +2412,7 @@ def _mark_story_as_starred(request):
     story_id   = request.REQUEST.get('story_id', None)
     story_hash = request.REQUEST.get('story_hash', None)
     user_tags  = request.REQUEST.getlist('user_tags') or request.REQUEST.getlist('user_tags[]')
+    highlights = request.REQUEST.getlist('highlights') or request.REQUEST.getlist('highlights[]') or []
     message    = ""
     if story_hash:
         story, _   = MStory.find_story(story_hash=story_hash)
@@ -2409,12 +2429,14 @@ def _mark_story_as_starred(request):
     story_db.pop('starred_date', None)
     story_db.pop('id', None)
     story_db.pop('user_tags', None)
+    story_db.pop('highlights', None)
     now = datetime.datetime.now()
-    story_values = dict(starred_date=now, user_tags=user_tags, **story_db)
+    story_values = dict(starred_date=now, user_tags=user_tags, highlights=highlights, **story_db)
     params = dict(story_guid=story.story_guid, user_id=request.user.pk)
     starred_story = MStarredStory.objects(**params).limit(1)
     created = False
     removed_user_tags = []
+    removed_highlights = []
     if not starred_story:
         params.update(story_values)
         if params.has_key('story_latest_content_z'):
@@ -2431,14 +2453,23 @@ def _mark_story_as_starred(request):
                                     story_feed_id=feed_id,
                                     story_id=starred_story.story_guid)
         new_user_tags = user_tags
+        new_highlights = highlights
         MStarredStoryCounts.adjust_count(request.user.pk, feed_id=feed_id, amount=1)
     else:
         starred_story = starred_story[0]
         new_user_tags = list(set(user_tags) - set(starred_story.user_tags or []))
         removed_user_tags = list(set(starred_story.user_tags or []) - set(user_tags))
+        new_highlights = list(set(highlights) - set(starred_story.highlights or []))
+        removed_highlights = list(set(starred_story.highlights or []) - set(highlights))
         starred_story.user_tags = user_tags
+        starred_story.highlights = highlights
         starred_story.save()
     
+    if len(highlights) == 1 and len(new_highlights) == 1:
+        MStarredStoryCounts.adjust_count(request.user.pk, highlights=True, amount=1)
+    elif len(highlights) == 0 and len(removed_highlights):
+        MStarredStoryCounts.adjust_count(request.user.pk, highlights=True, amount=-1)
+        
     for tag in new_user_tags:
         MStarredStoryCounts.adjust_count(request.user.pk, tag=tag, amount=1)
     for tag in removed_user_tags:

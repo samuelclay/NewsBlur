@@ -13,7 +13,7 @@ from django.contrib.auth import logout as logout_user
 from apps.reader.forms import SignupForm, LoginForm
 from apps.profile.models import Profile
 from apps.social.models import MSocialProfile, MSharedStory, MSocialSubscription
-from apps.rss_feeds.models import Feed
+from apps.rss_feeds.models import Feed, MStarredStoryCounts, MStarredStory
 from apps.rss_feeds.text_importer import TextImporter
 from apps.reader.models import UserSubscription, UserSubscriptionFolders, RUserStory
 from utils import json_functions as json
@@ -81,8 +81,10 @@ def logout(request):
 def add_site_load_script(request, token):
     code = 0
     usf = None
-    profile = None;
-    user_profile = None;
+    profile = None
+    user_profile = None
+    starred_counts = {}
+    
     def image_base64(image_name, path='icons/circular/'):
         image_file = open(os.path.join(settings.MEDIA_ROOT, 'img/%s%s' % (path, image_name)))
         return base64.b64encode(image_file.read())
@@ -100,6 +102,7 @@ def add_site_load_script(request, token):
                 user=profile.user
             )
             user_profile = MSocialProfile.get_user(user_id=profile.user.pk)
+            starred_counts = MStarredStoryCounts.user_counts(profile.user.pk)
         else:
             code = -1
     except Profile.DoesNotExist:
@@ -113,6 +116,7 @@ def add_site_load_script(request, token):
         'folders': (usf and usf.folders) or [],
         'user': profile and profile.user or {},
         'user_profile': user_profile and json.encode(user_profile.canonical()) or {},
+        'starred_counts': json.encode(starred_counts),
         'accept_image': accept_image,
         'error_image': error_image,
         'add_image': add_image,
@@ -302,7 +306,6 @@ def share_story(request, token=None):
                 message = "Not authenticated, couldn't find user by token."
             else:
                 message = "Not authenticated, no token supplied and not authenticated."
-
     
     if not profile:
         return HttpResponse(json.encode({
@@ -388,6 +391,106 @@ def share_story(request, token=None):
         'code':     code,
         'message':  message,
         'story':    shared_story,
+    }), mimetype='text/plain')
+    response['Access-Control-Allow-Origin'] = '*'
+    response['Access-Control-Allow-Methods'] = 'POST'
+    
+    return response
+
+@required_params('story_url', 'title')
+def save_story(request, token=None):
+    code      = 0
+    story_url = request.POST['story_url']
+    user_tags = request.POST.getlist('user_tags') or request.REQUEST.getlist('user_tags[]') or []
+    add_user_tag = request.POST.get('add_user_tag', None)
+    title     = request.POST['title']
+    content   = request.POST.get('content', None)
+    rss_url   = request.POST.get('rss_url', None)
+    feed_id   = request.POST.get('feed_id', None) or 0
+    feed      = None
+    message   = None
+    profile   = None
+    
+    if request.user.is_authenticated():
+        profile = request.user.profile
+    else:
+        try:
+            profile = Profile.objects.get(secret_token=token)
+        except Profile.DoesNotExist:
+            code = -1
+            if token:
+                message = "Not authenticated, couldn't find user by token."
+            else:
+                message = "Not authenticated, no token supplied and not authenticated."
+    
+    if not profile:
+        return HttpResponse(json.encode({
+            'code':     code,
+            'message':  message,
+            'story':    None,
+        }), mimetype='text/plain')
+    
+    if feed_id:
+        feed = Feed.get_by_id(feed_id)
+    else:
+        if rss_url:
+            logging.user(request.user, "~FBFinding feed (save_story): %s" % rss_url)
+            feed = Feed.get_feed_from_url(rss_url, create=True, fetch=True)
+        if not feed:
+            logging.user(request.user, "~FBFinding feed (save_story): %s" % story_url)
+            feed = Feed.get_feed_from_url(story_url, create=True, fetch=True)
+        if feed:
+            feed_id = feed.pk
+    
+    if content:
+        content = lxml.html.fromstring(content)
+        content.make_links_absolute(story_url)
+        content = lxml.html.tostring(content)
+    else:
+        importer = TextImporter(story=None, story_url=story_url, request=request, debug=settings.DEBUG)
+        document = importer.fetch(skip_save=True, return_document=True)
+        content = document['content']
+        if not title:
+            title = document['title']
+    
+    if add_user_tag:
+        user_tags = user_tags + [tag for tag in add_user_tag.split(',')]
+        
+    starred_story = MStarredStory.objects.filter(user_id=profile.user.pk,
+                                                 story_feed_id=feed_id, 
+                                                 story_guid=story_url).limit(1).first()
+    if not starred_story:
+        story_db = {
+            "story_guid": story_url,
+            "story_permalink": story_url,
+            "story_title": title,
+            "story_feed_id": feed_id,
+            "story_content": content,
+            "story_date": datetime.datetime.now(),
+            "starred_date": datetime.datetime.now(),
+            "user_id": profile.user.pk,
+            "user_tags": user_tags,
+        }
+        starred_story = MStarredStory.objects.create(**story_db)
+        logging.user(profile.user, "~BM~FCStarring story from site: ~SB%s: %s" % (story_url, user_tags))
+        message = "Saving story from site: %s: %s" % (story_url, user_tags)
+    else:
+        starred_story.story_content = content
+        starred_story.story_title = title
+        starred_story.user_tags = user_tags
+        starred_story.story_permalink = story_url
+        starred_story.story_guid = story_url
+        starred_story.story_feed_id = feed_id
+        starred_story.save()
+        logging.user(profile.user, "~BM~FC~SBUpdating~SN starred story from site: ~SB%s: %s" % (story_url, user_tags))
+        message = "Updating saved story from site: %s: %s" % (story_url, user_tags)
+
+    MStarredStoryCounts.schedule_count_tags_for_user(request.user.pk)
+    
+    response = HttpResponse(json.encode({
+        'code':     code,
+        'message':  message,
+        'story':    starred_story,
     }), mimetype='text/plain')
     response['Access-Control-Allow-Origin'] = '*'
     response['Access-Control-Allow-Methods'] = 'POST'

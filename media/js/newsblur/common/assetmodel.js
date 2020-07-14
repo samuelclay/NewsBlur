@@ -245,7 +245,8 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
 
         this.make_request('/reader/mark_story_hash_as_starred', {
             story_hash: story.get('story_hash'),
-            user_tags: story.get('user_tags')
+            user_tags: story.get('user_tags'),
+            highlights: story.get('highlights')
         }, pre_callback);
     },
     
@@ -643,7 +644,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         });
     },
     
-    fetch_starred_stories: function(page, tag, callback, error_callback, first_load) {
+    fetch_starred_stories: function(page, tag, highlights, callback, error_callback, first_load) {
         var self = this;
         
         var pre_callback = function(data) {
@@ -657,6 +658,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             query: NEWSBLUR.reader.flags.search,
             order: this.view_setting('starred', 'order'),
             tag: tag,
+            highlights: highlights,
             v: 2
         }, pre_callback, error_callback, {
             'ajax_group': (page ? 'feed_page' : 'feed'),
