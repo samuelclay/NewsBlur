@@ -14,7 +14,6 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         this.folders = new NEWSBLUR.Collections.Folders([]);
         this.favicons = {};
         this.stories = new NEWSBLUR.Collections.Stories();
-        this.dashboard_stories = new NEWSBLUR.Collections.Stories();
         this.starred_feeds = new NEWSBLUR.Collections.StarredFeeds();
         this.searches_feeds = new NEWSBLUR.Collections.SearchesFeeds();
         this.queued_read_stories = {};
@@ -45,7 +44,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                                                                      domCompleteTrigger: true}); 
         this.ajax['statistics']  = $.manageAjax.create('statistics', {queue: 'clear', abortOld: true}); 
         this.ajax['interactions']  = $.manageAjax.create('interactions', {queue: 'clear', abortOld: true}); 
-        this.ajax['dashboard']  = $.manageAjax.create('interactions', {queue: 'clear', abortOld: true}); 
+        this.ajax['dashboard']  = $.manageAjax.create('dashboard', {queue: true}); 
         $.ajaxSettings.traditional = true;
     },
     
@@ -714,7 +713,6 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             }
             
             self.load_feed_precallback(data, feed_id, callback, first_load);
-            // console.log(['river stories fetch', self.dashboard_stories.length, self.stories.length]);
         };
         
         this.feed_id = feed_id;
@@ -736,14 +734,25 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         });
     },
     
-    fetch_dashboard_stories: function(feed_id, feeds, page, callback, error_callback) {
+    fetch_dashboard_stories: function(feed_id, feeds, page, dashboard_stories, options, callback, error_callback) {
         var self = this;
-        
-        var order = this.view_setting(feed_id, 'order');
-        this.dashboard_stories.comparator = function(a, b) {
+        options = $.extend({
+            feeds: feeds,
+            page: page,
+            order: this.view_setting(feed_id, 'order'),
+            read_filter: this.view_setting(feed_id, 'read_filter'),
+            query: NEWSBLUR.reader.flags.search,
+            limit: 5,
+            infrequent: false,
+            include_hidden: false,
+            dashboard: true,
+            initial_dashboard: true
+        }, options);
+
+        dashboard_stories.comparator = function(a, b) {
             var a_time = parseInt(a.get('story_timestamp'), 10);
             var b_time = parseInt(b.get('story_timestamp'), 10);
-            if (order == "newest")
+            if (options.order == "newest")
                 return a_time < b_time ? 1 : (a_time == b_time) ? 0 : -1;
             else
                 return a_time > b_time ? 1 : (a_time == b_time) ? 0 : -1;
@@ -757,37 +766,36 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                 data.stories = data.stories.splice(0, 3);
             }
             if (page > 1) {
-                self.dashboard_stories.add(data.stories, {silent: true});
-                self.dashboard_stories.trigger('add', {added: data.stories.length});
+                dashboard_stories.add(data.stories, {silent: true});
+                dashboard_stories.trigger('add', {added: data.stories.length});
             } else {
-                self.dashboard_stories.reset(data.stories, {added: data.stories.length});
+                dashboard_stories.reset(data.stories, {added: data.stories.length});
             }
 
             callback();
         };
         
-        this.make_request('/reader/river_stories', {
-            feeds: feeds,
-            limit: 4,
-            page: page,
-            order: this.view_setting(feed_id, 'order'),
-            read_filter: this.view_setting(feed_id, 'read_filter'),
-            include_hidden: false,
-            dashboard: true,
-            initial_dashboard: true
-        }, pre_callback, error_callback, {
-            'ajax_group': 'dashboard',
-            'request_type': 'GET'
-        });
+        if (_.string.startsWith(feed_id, 'river:global')) {
+            this.make_request('/social/river_stories', options, pre_callback, error_callback, {
+                'ajax_group': 'dashboard',
+                'request_type': 'GET'
+            });
+        } else if (_.string.startsWith(feed_id, 'river:')) {
+            this.make_request('/reader/river_stories', options, pre_callback, error_callback, {
+                'ajax_group': 'dashboard',
+                'request_type': 'GET'
+            });
+        }
+        
     },
     
-    add_dashboard_story: function(story_hash) {
+    add_dashboard_story: function(story_hash, dashboard_stories) {
         var self = this;
         
         var pre_callback = function(data) {
-            self.dashboard_stories.add(data.stories, {silent: true});
-            self.dashboard_stories.limit(NEWSBLUR.Globals.is_premium ? 5 : 3);
-            self.dashboard_stories.trigger('reset', {added: 1});
+            dashboard_stories.add(data.stories, {silent: true});
+            dashboard_stories.limit(NEWSBLUR.Globals.is_premium ? 5 : 3);
+            dashboard_stories.trigger('reset', {added: 1});
         };
         
         this.make_request('/reader/river_stories', {
