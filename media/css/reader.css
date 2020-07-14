@@ -12648,7 +12648,7 @@ form.opml_import_form input {
     overflow: hidden;
     padding: 12px;
     position: relative;
-
+    width: 50%;
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
@@ -12662,7 +12662,7 @@ form.opml_import_form input {
     
 }
 .NB-module-search-input input {
-    width: 196px;
+    width: 85%;
     float: left;
     font-size: 13px;
     padding: 4px 20px 4px 6px;

@@ -44,7 +44,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                                                                      domCompleteTrigger: true}); 
         this.ajax['statistics']  = $.manageAjax.create('statistics', {queue: 'clear', abortOld: true}); 
         this.ajax['interactions']  = $.manageAjax.create('interactions', {queue: 'clear', abortOld: true}); 
-        this.ajax['dashboard']  = $.manageAjax.create('dashboard', {queue: true}); 
+        this.ajax['dashboard']  = $.manageAjax.create('dashboard', {queue: false}); 
         $.ajaxSettings.traditional = true;
     },
     
