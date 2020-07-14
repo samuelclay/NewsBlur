@@ -241,6 +241,11 @@
             Only load stories under a specific saved story tag.
           optional: true
           example: "pizza"
+        - key: highlights
+          desc: >
+            Only load stories that have highlighting.
+          optional: true
+          example: "true"
         - key: query
           desc: >
             Search for a keyword or phrase in the starred story feed. 

@@ -23,6 +23,7 @@
 
 .NB-theme-transitioning div,
 .NB-theme-transitioning span,
+.NB-theme-transitioning mark,
 .NB-theme-transitioning a,
 .NB-theme-transitioning ul,
 .NB-theme-transitioning li,
@@ -1213,6 +1214,12 @@ background-color: #5d8392;
 /* Inserted text background color (greed) */
 .NB-dark .NB-feed-story-content ins {
     background-color: #069000;
+}
+
+.NB-dark .NB-feed-story-content .NB-starred-story-selection-highlight,
+.NB-dark .NB-feed-story-content .NB-highlight {
+    background-color: #4a6379;
+    color: #f3f3f3;
 }
 
 /* Link color */
