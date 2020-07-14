@@ -145,13 +145,24 @@ hr {
     margin: 0 24px 32px 0;
 }
 
-.NB-account {
-    position: absolute;
-    right: 0;
-    z-index: 1;
-    overflow: hidden;
-    width: 188px;
+.NB-account-wide {
+    min-width: 388px;
+    max-width: 388px;
+    margin: 24px 24px 32px 0;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.NB-account-left {
+    flex: 1;
     margin: 0 24px 32px 0;
+}
+.NB-account-right {
+    flex: 1.2;
+}
+.NB-account {
+    display: flex;
 }
 
 .NB-account .NB-module-header-login {
@@ -5224,8 +5235,9 @@ form.opml_import_form input {
 }
 
 .NB-splash-modules {
-    max-width: 750px;
-    min-width: 500px;
+    max-width: 1200px;
+    display: flex;
+    flex-direction: row;
     position: relative;
 }
 .NB-splash-info {
@@ -6331,7 +6343,9 @@ form.opml_import_form input {
     font-size: 13px;
     line-height: 16px;
     font-weight: normal;
-    float: right;
+    position: absolute;
+    right: 12px;
+    top: 16px;
 }
 .NB-module .NB-spinner {
     background: transparent url('/media/embed/reader/ring_spinner.svg') no-repeat center center;
@@ -6388,7 +6402,6 @@ form.opml_import_form input {
     position: relative;
     min-height: 77px;
     margin: 12px 0 0;
-    padding-bottom: 1px;
     clear: both;
 }
 
@@ -6427,9 +6440,14 @@ form.opml_import_form input {
 	float: right;
 	margin: 4px 4px 0 0;
 }
+
 /* =========================== */
 /* = Right Modules - Account = */
 /* =========================== */
+
+.NB-module-features {
+    margin-top: 24px;
+}
 
 .NB-account .NB-module,
 .NB-manage .NB-module {
@@ -6737,11 +6755,6 @@ form.opml_import_form input {
     overflow: hidden;
     padding: 6px 0;
 }
-.NB-module-account .NB-module-stats-count {
-	float: left;
-	width: 33%;
-	border-bottom: none;
-}
 .NB-module-stats-count:last-child {
     border-bottom: none;
 }
@@ -6811,15 +6824,25 @@ form.opml_import_form input {
 /* ================== */
 
 .NB-modules-center {
-    margin: 24px 212px 0 0px;
+    margin: 24px 24px 0 0px;
     padding: 0 24px;
-    max-width: 500px;
-    float: left;
+    flex: 1;
 }
 
 .NB-modules-center .NB-module {
     margin: 0 0 24px;
 	clear: both;
+}
+.NB-module-river .NB-story-title-container:first-child .NB-story-title {
+    border-top: none;
+}
+.NB-module-river .NB-story-title-container:last-child .NB-story-title {
+    border-bottom: none;
+}
+
+.NB-module-river .NB-view-river {
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    border-radius: 3px;
 }
 
 /* ============ */
@@ -6860,7 +6883,7 @@ form.opml_import_form input {
     font-size: 11px;
     line-height: 20px;
     white-space: nowrap;
-    min-width: 100px;
+    min-width: 74px;
 }
 
 .NB-module-features .NB-module-feature.last .NB-module-feature-date {
@@ -12635,7 +12658,7 @@ form.opml_import_form input {
     
 }
 .NB-module-search-input input {
-    width: 190px;
+    width: 196px;
     float: left;
     font-size: 13px;
     padding: 4px 20px 4px 6px;
