@@ -1060,7 +1060,7 @@ def starred_stories_rss_feed(request, user_id, secret_token, tag_slug):
         starred_stories = MStarredStory.objects(
             user_id=user.pk
         ).order_by('-starred_date').limit(25)
-    elif tag_counts.highlights:
+    elif tag_counts.is_highlights:
         starred_stories = MStarredStory.objects(
             user_id=user.pk,
             highlights__exists=True,
