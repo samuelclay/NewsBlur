@@ -719,7 +719,11 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     
     mouseup_check_selection: function(e) {
         var $doc = this.$(".NB-feed-story-content");
-        // console.log(['mouseup_check_selection', e, $(e.target)]);
+        // console.log(['mouseup_check_selection', e, e.which, $(e.target)]);
+        if (e.which == 3) {
+            // Right click
+            return;
+        }
         if ($(e.target).hasClass("NB-highlight")) {
             this.show_unhighlight_tooltip($(e.target));
             return;
