@@ -14,7 +14,7 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
             collection: this.options.dashboard_stories,
             $story_titles: this.$stories,
             override_layout: 'split',
-            on_dashboard: true
+            on_dashboard: this
         });
         this.page = 1;
         this.cache = {
@@ -170,10 +170,36 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
     },
     
     open_story: function(story) {
-        NEWSBLUR.reader.open_river_stories(null, null, {
-            dashboard_transfer: true,
-            story_id: story.id
-        });
+        console.log('Opening dashboard story', story, this.options);
+        if (this.options.query) {
+            console.log('Saved search', NEWSBLUR.assets.searches_feeds.get(this.options.active_feed))
+            NEWSBLUR.reader.flags.searching = true;
+            NEWSBLUR.reader.flags.search = this.options.query;
+            NEWSBLUR.reader.open_saved_search({
+                search_model: NEWSBLUR.assets.searches_feeds.get(this.options.active_feed),
+                feed_id: this.options.active_feed,
+                dashboard_transfer: this.options.dashboard_stories,
+                story_id: story.id,
+                query: this.options.query
+            });
+        } else if (this.options.active_feed == "river:infrequent") {
+            NEWSBLUR.reader.open_river_stories(null, null, {
+                dashboard_transfer: this.options.dashboard_stories,
+                infrequent: this.options.infrequent,
+                story_id: story.id
+            });    
+        } else if (this.options.active_feed == "river:global") {
+            NEWSBLUR.reader.open_river_blurblogs_stories({
+                global: true,
+                dashboard_transfer: this.options.dashboard_stories,
+                story_id: story.id
+            });
+        } else if (_.string.startsWith(this.options.active_feed, 'river:')) {
+            NEWSBLUR.reader.open_river_stories(null, null, {
+                dashboard_transfer: this.options.dashboard_stories,
+                story_id: story.id
+            });    
+        }
     },
     
     show_end_line: function() {

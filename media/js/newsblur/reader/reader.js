@@ -153,7 +153,7 @@
             }));
             NEWSBLUR.app.dashboard_rivers.push(new NEWSBLUR.Views.DashboardRiver({
                 el: '.NB-module-river-4',
-                active_feed: 'river:',
+                active_feed: 'search:river::pizza',
                 active_folder: NEWSBLUR.assets.folders,
                 query: "pizza",
                 dashboard_stories: new NEWSBLUR.Collections.Stories()
@@ -2086,7 +2086,7 @@
             NEWSBLUR.app.taskbar_info.hide_stories_error();
             // NEWSBLUR.app.taskbar_info.show_stories_progress_bar(feeds.length);
             if (options.dashboard_transfer) {
-                NEWSBLUR.assets.stories.reset(NEWSBLUR.assets.dashboard_stories.map(function(story) {
+                NEWSBLUR.assets.stories.reset(options.dashboard_transfer.map(function(story) {
                     return story.toJSON();
                 }));
                 if (this.counts['select_story_in_feed'] || this.flags['select_story_in_feed']) {
@@ -2200,10 +2200,23 @@
             }
             NEWSBLUR.app.taskbar_info.hide_stories_error();
             NEWSBLUR.app.taskbar_info.show_stories_progress_bar(100); // Assume 100 followees for popular
-            this.model.fetch_river_blurblogs_stories(this.active_feed, 1, 
-                {'global': this.flags.global_blurblogs},
-                _.bind(this.post_open_river_blurblogs_stories, this), 
-                NEWSBLUR.app.taskbar_info.show_stories_error, true);
+            if (options.dashboard_transfer) {
+                NEWSBLUR.assets.stories.reset(options.dashboard_transfer.map(function(story) {
+                    return story.toJSON();
+                }));
+                if (this.counts['select_story_in_feed'] || this.flags['select_story_in_feed']) {
+                    this.select_story_in_feed();
+                }
+                this.model.fetch_river_blurblogs_stories(this.active_feed, 1, 
+                    {'global': this.flags.global_blurblogs},
+                    _.bind(this.post_open_river_blurblogs_stories, this), 
+                    NEWSBLUR.app.taskbar_info.show_stories_error, false);    
+            } else {
+                this.model.fetch_river_blurblogs_stories(this.active_feed, 1, 
+                    {'global': this.flags.global_blurblogs},
+                    _.bind(this.post_open_river_blurblogs_stories, this), 
+                    NEWSBLUR.app.taskbar_info.show_stories_error, true);
+            }
         },
         
         post_open_river_blurblogs_stories: function(data, first_load) {
