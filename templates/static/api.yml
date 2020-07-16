@@ -503,7 +503,17 @@
           desc: "Story to save, specified by hash."
           required: true
           example: "64:a295ed"
-  
+        - key: user_tags
+          desc: "Tags for the saved story"
+          optional: true
+          example: "['cooking', 'blogs']"
+        - key: highlights
+          desc: "Strings to highlight"
+          optional: true
+          example: "['For example', 'this sentence is highlighted.']"
+      tips:
+        - "You can send a list for user_tags and highlights. <code>user_tags[]=blog&user_tags[]=cooking</code>"
+
     - url: /reader/mark_story_as_unstarred
       method: POST
       short_desc: "Mark a story as unstarred (unsaved)."
