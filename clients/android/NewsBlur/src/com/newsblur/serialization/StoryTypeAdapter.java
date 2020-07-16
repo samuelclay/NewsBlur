@@ -24,6 +24,7 @@ public class StoryTypeAdapter implements JsonDeserializer<Story> {
 
     // any characters we don't want in the short description, such as newlines or placeholders
     private final static Pattern ShortContentExcludes = Pattern.compile("[\\uFFFC\\u000A\\u000B\\u000C\\u000D]");
+    private final static Pattern httpSniff = Pattern.compile("(?:http):\\/\\/");
 
     public StoryTypeAdapter() {
         this.gson = new GsonBuilder()
@@ -39,6 +40,14 @@ public class StoryTypeAdapter implements JsonDeserializer<Story> {
 
         // Convert story_timestamp to milliseconds
         story.timestamp = story.timestamp * 1000;
+
+        // replace http image urls with https
+        if (httpSniff.matcher(story.content).find() && story.secureImageUrls != null && story.secureImageUrls.size() > 0) {
+            for (String httpUrl : story.secureImageUrls.keySet()) {
+                String httpsUrl = story.secureImageUrls.get(httpUrl);
+                story.content = story.content.replace(httpUrl, httpsUrl);
+            }
+        }
         
         // populate the shortContent field
         if (story.content != null) {
