@@ -109,6 +109,10 @@ REDIS_PUBSUB = {
 REDIS_STORY = {
     'host': '127.0.0.1',
 }
+REDIS_SESSIONS = {
+    'host': '127.0.0.1',
+    'port': 6379
+}
 
 ELASTICSEARCH_FEED_HOSTS = ["127.0.0.1:9200"]
 ELASTICSEARCH_STORY_HOSTS = ["127.0.0.1:9200"]
