@@ -9,10 +9,9 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ExpandableListView;
-import android.widget.TextView;
 
 import com.newsblur.R;
+import com.newsblur.databinding.ActivityWidgetConfigBinding;
 import com.newsblur.domain.Feed;
 import com.newsblur.domain.Folder;
 import com.newsblur.util.FeedOrderFilter;
@@ -31,15 +30,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import butterknife.Bind;
-import butterknife.ButterKnife;
-
 public class WidgetConfig extends NbActivity {
-
-    @Bind(R.id.list_view)
-    ExpandableListView listView;
-    @Bind(R.id.text_no_subscriptions)
-    TextView textNoSubscriptions;
 
     private WidgetConfigAdapter adapter;
     private ArrayList<Feed> feeds;
@@ -47,12 +38,13 @@ public class WidgetConfig extends NbActivity {
     private Map<String, Feed> feedMap = new HashMap<>();
     private ArrayList<String> folderNames = new ArrayList<>();
     private ArrayList<ArrayList<Feed>> folderChildren = new ArrayList<>();
+    private ActivityWidgetConfigBinding binding;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_widget_config);
-        ButterKnife.bind(this);
+        binding = ActivityWidgetConfigBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
         getActionBar().setDisplayHomeAsUpEnabled(true);
         setupList();
         loadFeeds();
@@ -164,7 +156,7 @@ public class WidgetConfig extends NbActivity {
 
     private void setupList() {
         adapter = new WidgetConfigAdapter(this);
-        listView.setAdapter(adapter);
+        binding.listView.setAdapter(adapter);
     }
 
     private void loadFeeds() {
@@ -288,7 +280,7 @@ public class WidgetConfig extends NbActivity {
     private void setAdapterData() {
         adapter.setData(this.folderNames, this.folderChildren, this.feeds);
 
-        listView.setVisibility(this.feeds.isEmpty() ? View.GONE : View.VISIBLE);
-        textNoSubscriptions.setVisibility(this.feeds.isEmpty() ? View.VISIBLE : View.GONE);
+        binding.listView.setVisibility(this.feeds.isEmpty() ? View.GONE : View.VISIBLE);
+        binding.textNoSubscriptions.setVisibility(this.feeds.isEmpty() ? View.VISIBLE : View.GONE);
     }
 }
