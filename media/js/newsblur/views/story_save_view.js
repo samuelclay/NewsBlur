@@ -2,7 +2,7 @@ NEWSBLUR.Views.StorySaveView = Backbone.View.extend({
     
     events: {
         "click .NB-sideoption-save-populate" : "populate_story_tags",
-        // "keypress .NB-sideoption-save-notes" : "autosize",
+        "keypress .NB-sideoption-save-notes" : "autosize",
         "keyup .NB-sideoption-save-notes"   : "debounced_save_user_notes",
         "change .NB-sideoption-save-notes"   : "save_user_notes"
     },
@@ -114,7 +114,8 @@ NEWSBLUR.Views.StorySaveView = Backbone.View.extend({
                 }
             });
             $tag_input.tagit('addClassAutocomplete', 'NB-tagging-autocomplete');
-            
+            this.$('textarea').autosize();
+
             if (options.animate_scroll) {
                 var $scroll_container = NEWSBLUR.reader.$s.$story_titles;
                 if (_.contains(['split', 'full'], NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout'))) {
@@ -134,7 +135,7 @@ NEWSBLUR.Views.StorySaveView = Backbone.View.extend({
     },
 
     autosize: function() {
-        this.resize({duration: 100});
+        this.resize({duration: 100, resize_open: true});
     },
 
     resize: function(options) {
@@ -142,6 +143,7 @@ NEWSBLUR.Views.StorySaveView = Backbone.View.extend({
         var $sideoption_container = this.$('.NB-feed-story-sideoptions-container');
         var $save_wrapper = this.$('.NB-sideoption-save-wrapper');
         var $save_content = this.$('.NB-sideoption-save');
+        var $user_notes = this.$('.NB-sideoption-save-notes');
         var $story_content = this.$('.NB-feed-story-content,.NB-story-content');
         var $story_comments = this.$('.NB-feed-story-comments');
         var $sideoption = this.$('.NB-feed-story-save');
@@ -168,7 +170,7 @@ NEWSBLUR.Views.StorySaveView = Backbone.View.extend({
         $save_wrapper.animate({
             'height': sideoption_content_height
         }, {
-            'duration': options.immediate ? 0 : 350,
+            'duration': options.immediate ? 0 : options.duration || 350,
             'easing': 'easeInOutQuint',
             'queue': false,
             'complete': _.bind(function() {
