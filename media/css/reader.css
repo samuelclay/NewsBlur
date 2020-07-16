@@ -4103,6 +4103,15 @@ body {
     text-shadow: 0 1px 0 #FBFBFB;
     line-height: 16px;
 }
+.NB-sideoption-save .NB-sideoption-save-message {
+    float: right;
+    opacity: 0;
+    transition: opacity 1s ease-out;
+}
+.NB-sideoption-save .NB-sideoption-save-message.NB-active {
+    opacity: 1;
+}
+.NB-sideoption-save .NB-sideoption-save-comments,
 .NB-sideoption-share .NB-sideoption-share-comments {
   width: 100%;
   -webkit-box-sizing: border-box;

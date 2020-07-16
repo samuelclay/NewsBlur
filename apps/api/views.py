@@ -406,6 +406,7 @@ def save_story(request, token=None):
     title     = request.POST['title']
     content   = request.POST.get('content', None)
     rss_url   = request.POST.get('rss_url', None)
+    user_notes = request.POST.get('user_notes', None)
     feed_id   = request.POST.get('feed_id', None) or 0
     feed      = None
     message   = None
@@ -470,6 +471,7 @@ def save_story(request, token=None):
             "starred_date": datetime.datetime.now(),
             "user_id": profile.user.pk,
             "user_tags": user_tags,
+            "user_notes": user_notes,
         }
         starred_story = MStarredStory.objects.create(**story_db)
         logging.user(profile.user, "~BM~FCStarring story from site: ~SB%s: %s" % (story_url, user_tags))
@@ -481,6 +483,7 @@ def save_story(request, token=None):
         starred_story.story_permalink = story_url
         starred_story.story_guid = story_url
         starred_story.story_feed_id = feed_id
+        starred_story.user_notes = user_notes
         starred_story.save()
         logging.user(profile.user, "~BM~FC~SBUpdating~SN starred story from site: ~SB%s: %s" % (story_url, user_tags))
         message = "Updating saved story from site: %s: %s" % (story_url, user_tags)
