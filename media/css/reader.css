@@ -4475,6 +4475,11 @@ body {
     background-size: 16px;
 }
 
+.NB-feeds-header-river-infrequent .NB-feeds-header-icon {
+    background: transparent url('/media/embed/icons/circular/noun_turtle.png') no-repeat 0 0;
+    background-size: 16px;
+}
+
 .NB-feeds-header-river-global .NB-feeds-header-icon {
     background: transparent url('/media/embed/icons/circular/ak-icon-global.png') no-repeat 0 0;
     background-size: 16px;
