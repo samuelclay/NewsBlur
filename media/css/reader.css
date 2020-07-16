@@ -3960,11 +3960,11 @@ body {
     overflow: hidden;
     display: none;
 }
-.NB-sideoption-save-wrapper ::-moz-selection {
+.NB-sideoption-save-tag ::-moz-selection {
     background: transparent;
 } 
 
-.NB-sideoption-save-wrapper ::selection {
+.NB-sideoption-save-tag ::selection {
     background: transparent;
 }
 
