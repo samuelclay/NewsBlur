@@ -2,6 +2,7 @@ package com.newsblur.domain;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import java.util.Collection;
@@ -60,6 +61,15 @@ public class Folder {
 
     public void removeOrphanFeedIds(Collection<String> orphanFeedIds) {
         feedIds.removeAll(orphanFeedIds);
+    }
+
+    @Nullable
+    public String getFirstParentName() {
+        String folderParentName = null;
+        if (!parents.isEmpty()) {
+            folderParentName = parents.get(0);
+        }
+        return folderParentName;
     }
 	
 	@Override

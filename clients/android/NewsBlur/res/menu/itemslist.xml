@@ -72,4 +72,8 @@
     <item android:id="@+id/menu_infrequent_cutoff"
           android:title="@string/menu_infrequent_cutoff"
           android:showAsAction="never" />
+    <item android:id="@+id/menu_save_search"
+        android:title="Save Search"
+        android:showAsAction="never"
+        android:visible="false"/>
 </menu>
