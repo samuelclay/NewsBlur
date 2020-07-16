@@ -1912,6 +1912,8 @@ class Feed(models.Model):
             story['starred_date'] = story_db.starred_date
         if hasattr(story_db, 'user_tags'):
             story['user_tags'] = story_db.user_tags
+        if hasattr(story_db, 'user_notes'):
+            story['user_notes'] = story_db.user_notes
         if hasattr(story_db, 'highlights'):
             story['highlights'] = story_db.highlights
         if hasattr(story_db, 'shared_date'):
@@ -2851,6 +2853,7 @@ class MStarredStory(mongo.DynamicDocument):
     story_guid               = mongo.StringField()
     story_hash               = mongo.StringField()
     story_tags               = mongo.ListField(mongo.StringField(max_length=250))
+    user_notes               = mongo.StringField()
     user_tags                = mongo.ListField(mongo.StringField(max_length=128))
     highlights               = mongo.ListField(mongo.StringField(max_length=1024))
     image_urls               = mongo.ListField(mongo.StringField(max_length=1024))

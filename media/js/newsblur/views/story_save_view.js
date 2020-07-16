@@ -1,11 +1,13 @@
 NEWSBLUR.Views.StorySaveView = Backbone.View.extend({
     
     events: {
-        "click .NB-sideoption-save-populate" : "populate_story_tags"
+        "click .NB-sideoption-save-populate" : "populate_story_tags",
+        "keypress .NB-sideoption-save-notes"   : "autosize",
+        "keypress .NB-sideoption-save-notes"   : "save_user_notes",
     },
     
     initialize: function() {
-        _.bindAll(this, 'toggle_feed_story_save_dialog');
+        _.bindAll(this, 'toggle_feed_story_save_dialog', 'save_user_notes', 'autosize');
         this.sideoptions_view = this.options.sideoptions_view;
         this.model.story_save_view = this;
         this.model.bind('change:starred', this.toggle_feed_story_save_dialog);
@@ -38,6 +40,9 @@ NEWSBLUR.Views.StorySaveView = Backbone.View.extend({
                     <li><%= tag %></li>\
                 <% }) %>\
             </ul>\
+            <div class="NB-sideoption-save-message">Saved</div>\
+            <div class="NB-sideoption-save-title">Private notes:</div>\
+            <textarea class="NB-sideoption-save-notes"><%= story.get("user_notes") %></textarea>\
         </div>\
     </div>\
     '),
@@ -238,6 +243,23 @@ NEWSBLUR.Views.StorySaveView = Backbone.View.extend({
 
         var user_tags = $tag_input.tagit('assignedTags');
         this.model.set('user_tags', user_tags);
+    },
+
+    save_user_notes: function(options) {
+        var $notes = this.$('.NB-sideoption-save-notes');
+        var $saved = this.$('.NB-sideoption-save-message');
+        var user_notes = $notes.val();
+        
+        this.model.set('user_notes', user_notes);
+
+        $saved.addClass('NB-active');
+        if (this.saved_defer) {
+            clearTimeout(this.saved_defer);
+        }
+        this.saved_defer = _.defer(_.bind(function() {
+            $saved.removeClass('NB-active');
+            this.saved_defer = null;
+        }, this));
     }
-    
+
 });
