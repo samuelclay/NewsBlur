@@ -76,7 +76,6 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
     private View contentView; // we use this a ton, so cache it
     
     ViewPager pager;
-    ReadingPagerFragment readingFragment;
 
 	protected ReadingAdapter readingAdapter;
     private boolean stopLoading;
@@ -249,6 +248,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
                 // the system can and will re-use activities, so during the initial mismatch of
                 // data, don't show the old stories
                 pager.setVisibility(View.INVISIBLE);
+                binding.readingEmptyViewText.setVisibility(View.VISIBLE);
                 stories = null;
                 triggerRefresh(AppConstants.READING_STORY_PRELOAD);
                 return;
@@ -287,7 +287,11 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 
     private void skipPagerToStoryHash() {
         // if we already started and found our target story, this will be unset
-        if (storyHash == null) return;
+        if (storyHash == null) {
+            pager.setVisibility(View.VISIBLE);
+            binding.readingEmptyViewText.setVisibility(View.INVISIBLE);
+            return;
+        }
         int position = -1;
         if (storyHash.equals(FIND_FIRST_UNREAD)) {
             position = readingAdapter.findFirstUnread();
