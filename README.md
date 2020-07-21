@@ -161,7 +161,7 @@ these after the installation below.
  
     Then load up the database with empty NewsBlur tables and bootstrap the database:
     
-        ./manage.py syncdb --all
+        ./manage.py syncdb --all --noinput
         ./manage.py migrate --fake
         ./manage.py migrate
         ./manage.py loaddata config/fixtures/bootstrap.json

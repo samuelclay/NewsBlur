@@ -199,6 +199,8 @@ def signup(request):
                 url = "https://%s%s" % (Site.objects.get_current().domain,
                                          reverse('stripe-form'))
                 return HttpResponseRedirect(url)
+            else:
+                return HttpResponseRedirect(reverse('index'))
     
     return index(request)
         
