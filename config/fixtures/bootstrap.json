@@ -9,22 +9,6 @@
     },
     {
         "pk": 1,
-        "model": "profile.profile",
-        "fields": {
-            "secret_token": "4a700381ea08",
-            "feed_pane_size": 242,
-            "last_seen_ip": null,
-            "view_settings": "{}",
-            "is_premium": false,
-            "user": 1,
-            "collapsed_folders": "[]",
-            "timezone": "America/New_York",
-            "last_seen_on": "2011-07-18 02:30:37",
-            "preferences": "{}"
-        }
-    },
-    {
-        "pk": 1,
         "model": "auth.user",
         "fields": {
             "username": "newsblur",
@@ -41,7 +25,23 @@
             "date_joined": "2011-07-18 00:23:49"
         }
     },
-        {
+    {
+        "pk": 1,
+        "model": "profile.profile",
+        "fields": {
+            "secret_token": "4a700381ea08",
+            "feed_pane_size": 242,
+            "last_seen_ip": null,
+            "view_settings": "{}",
+            "is_premium": false,
+            "user": 1,
+            "collapsed_folders": "[]",
+            "timezone": "America/New_York",
+            "last_seen_on": "2011-07-18 02:30:37",
+            "preferences": "{}"
+        }
+    },
+    {
         "pk": 1,
         "model": "rss_feeds.feed",
         "fields": {
@@ -50,8 +50,8 @@
             "exception_code": 500,
             "last_load_time": 1,
             "active_subscribers": 1,
-            "feed_address": "http://blog.newsblur.com/rss",
-            "feed_link": "http://blog.newsblur.com/",
+            "feed_address": "https://blog.newsblur.com/rss",
+            "feed_link": "https://blog.newsblur.com/",
             "last_update": "2011-07-18 04:27:26",
             "etag": "",
             "average_stories_per_month": 0,

@@ -10,17 +10,14 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnKeyListener;
-import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
-import android.widget.TextView;
-
-import butterknife.ButterKnife;
-import butterknife.Bind;
 
 import com.newsblur.R;
+import com.newsblur.databinding.ActivityItemslistBinding;
 import com.newsblur.fragment.ItemSetFragment;
 import com.newsblur.fragment.ReadFilterDialogFragment;
+import com.newsblur.fragment.SaveSearchFragment;
 import com.newsblur.fragment.StoryOrderDialogFragment;
 import com.newsblur.fragment.TextSizeDialogFragment;
 import com.newsblur.service.NBSyncService;
@@ -46,10 +43,9 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
 	private static final String READ_FILTER = "readFilter";
     private static final String DEFAULT_FEED_VIEW = "defaultFeedView";
     private static final String BUNDLE_ACTIVE_SEARCH_QUERY = "activeSearchQuery";
+    private ActivityItemslistBinding binding;
 
 	protected ItemSetFragment itemSetFragment;
-    @Bind(R.id.itemlist_sync_status) TextView overlayStatusText;
-    @Bind(R.id.itemlist_search_query) EditText searchQueryInput;
 	protected StateFilter intelState;
 
     protected FeedSet fs;
@@ -79,8 +75,8 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
 
         getWindow().setBackgroundDrawableResource(android.R.color.transparent);
 
-		setContentView(R.layout.activity_itemslist);
-        ButterKnife.bind(this);
+        binding = ActivityItemslistBinding.inflate(getLayoutInflater());
+		setContentView(binding.getRoot());
 
 		FragmentManager fragmentManager = getSupportFragmentManager();
 		itemSetFragment = (ItemSetFragment) fragmentManager.findFragmentByTag(ItemSetFragment.class.getName());
@@ -92,19 +88,23 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
 			transaction.commit();
 		}
 
+        String activeSearchQuery;
         if (bundle != null) {
-            String activeSearchQuery = bundle.getString(BUNDLE_ACTIVE_SEARCH_QUERY);
-            if (activeSearchQuery != null) {
-                searchQueryInput.setText(activeSearchQuery);
-                searchQueryInput.setVisibility(View.VISIBLE);
-                fs.setSearchQuery(activeSearchQuery);
-            }
+            activeSearchQuery = bundle.getString(BUNDLE_ACTIVE_SEARCH_QUERY);
+        } else {
+            activeSearchQuery = fs.getSearchQuery();
         }
-        searchQueryInput.setOnKeyListener(new OnKeyListener() {
+        if (activeSearchQuery != null) {
+            binding.itemlistSearchQuery.setText(activeSearchQuery);
+            binding.itemlistSearchQuery.setVisibility(View.VISIBLE);
+            fs.setSearchQuery(activeSearchQuery);
+        }
+
+        binding.itemlistSearchQuery.setOnKeyListener(new OnKeyListener() {
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if ((keyCode == KeyEvent.KEYCODE_BACK) && (event.getAction() == KeyEvent.ACTION_DOWN)) {
-                    searchQueryInput.setVisibility(View.GONE);
-                    searchQueryInput.setText("");
+                    binding.itemlistSearchQuery.setVisibility(View.GONE);
+                    binding.itemlistSearchQuery.setText("");
                     checkSearchQuery();
                     return true;
                 }
@@ -120,8 +120,8 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        if (searchQueryInput != null) {
-            String q = searchQueryInput.getText().toString().trim();
+        if (binding.itemlistSearchQuery != null) {
+            String q = binding.itemlistSearchQuery.getText().toString().trim();
             if (q.length() > 0) {
                 outState.putString(BUNDLE_ACTIVE_SEARCH_QUERY, q);
             }
@@ -224,6 +224,12 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
             menu.findItem(R.id.menu_theme_black).setChecked(true);
         }
 
+        if (!TextUtils.isEmpty(binding.itemlistSearchQuery.getText())) {
+            menu.findItem(R.id.menu_save_search).setVisible(true);
+        } else {
+            menu.findItem(R.id.menu_save_search).setVisible(false);
+        }
+
 		return true;
 	}
 
@@ -250,11 +256,11 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
 			textSize.show(getSupportFragmentManager(), TextSizeDialogFragment.class.getName());
 			return true;
         } else if (item.getItemId() == R.id.menu_search_stories) {
-            if (searchQueryInput.getVisibility() != View.VISIBLE) {
-                searchQueryInput.setVisibility(View.VISIBLE);
-                searchQueryInput.requestFocus();
+            if (binding.itemlistSearchQuery.getVisibility() != View.VISIBLE) {
+                binding.itemlistSearchQuery.setVisibility(View.VISIBLE);
+                binding.itemlistSearchQuery.requestFocus();
             } else {
-                searchQueryInput.setVisibility(View.GONE);
+                binding.itemlistSearchQuery.setVisibility(View.GONE);
                 checkSearchQuery();
             }
         } else if (item.getItemId() == R.id.menu_theme_light) {
@@ -278,6 +284,14 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
         } else if (item.getItemId() == R.id.menu_list_style_grid_c) {
             PrefsUtils.updateStoryListStyle(this, fs, StoryListStyle.GRID_C);
             itemSetFragment.updateStyle();
+        }
+        if (item.getItemId() == R.id.menu_save_search) {
+            String feedId = getSaveSearchFeedId();
+            if (feedId != null) {
+                String query = binding.itemlistSearchQuery.getText().toString();
+                SaveSearchFragment frag = SaveSearchFragment.newInstance(feedId, query);
+                frag.show(getSupportFragmentManager(), SaveSearchFragment.class.getName());
+            }
         }
 	
 		return false;
@@ -315,23 +329,23 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
     }
 
     private void updateStatusIndicators() {
-        if (overlayStatusText != null) {
+        if (binding.itemlistSyncStatus != null) {
             String syncStatus = NBSyncService.getSyncStatusMessage(this, true);
             if (syncStatus != null)  {
                 if (AppConstants.VERBOSE_LOG) {
                     syncStatus = syncStatus + UIUtils.getMemoryUsageDebug(this);
                 }
-                overlayStatusText.setText(syncStatus);
-                overlayStatusText.setVisibility(View.VISIBLE);
+                binding.itemlistSyncStatus.setText(syncStatus);
+                binding.itemlistSyncStatus.setVisibility(View.VISIBLE);
             } else {
-                overlayStatusText.setVisibility(View.GONE);
+                binding.itemlistSyncStatus.setVisibility(View.GONE);
             }
         }
     }
 
     private void checkSearchQuery() {
         String oldQuery = fs.getSearchQuery();
-        String q = searchQueryInput.getText().toString().trim();
+        String q = binding.itemlistSearchQuery.getText().toString().trim();
         if (q.length() < 1) {
             q = null;
         }
@@ -395,4 +409,6 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
          */
         overridePendingTransition(R.anim.slide_in_from_left, R.anim.slide_out_to_right);
     }
+
+    abstract String getSaveSearchFeedId();
 }

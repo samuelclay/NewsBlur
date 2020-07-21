@@ -27,6 +27,7 @@ public class BlurDatabase extends SQLiteOpenHelper {
 		db.execSQL(DatabaseConstants.CLASSIFIER_SQL);
 		db.execSQL(DatabaseConstants.SOCIALFEED_STORIES_SQL);
         db.execSQL(DatabaseConstants.STARREDCOUNTS_SQL);
+        db.execSQL(DatabaseConstants.SAVED_SEARCH_SQL);
         db.execSQL(DatabaseConstants.ACTION_SQL);
         db.execSQL(DatabaseConstants.NOTIFY_DISMISS_SQL);
         db.execSQL(DatabaseConstants.FEED_TAGS_SQL);
@@ -49,6 +50,7 @@ public class BlurDatabase extends SQLiteOpenHelper {
 		db.execSQL(drop + DatabaseConstants.CLASSIFIER_TABLE);
 		db.execSQL(drop + DatabaseConstants.SOCIALFEED_STORY_MAP_TABLE);
 		db.execSQL(drop + DatabaseConstants.STARREDCOUNTS_TABLE);
+		db.execSQL(drop + DatabaseConstants.SAVED_SEARCH_TABLE);
 		db.execSQL(drop + DatabaseConstants.ACTION_TABLE);
         db.execSQL(drop + DatabaseConstants.NOTIFY_DISMISS_TABLE);
         db.execSQL(drop + DatabaseConstants.FEED_TAGS_TABLE);
