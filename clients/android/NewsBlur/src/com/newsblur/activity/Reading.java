@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -330,6 +331,15 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
             pager.setPageMarginDrawable(R.drawable.divider_light);
         } else if (themeValue == ThemeValue.DARK) {
             pager.setPageMarginDrawable(R.drawable.divider_dark);
+        } else if (themeValue == ThemeValue.AUTO) {
+            int nightModeFlags = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
+            if (nightModeFlags == Configuration.UI_MODE_NIGHT_YES) {
+                pager.setPageMarginDrawable(R.drawable.divider_dark);
+            } else if (nightModeFlags == Configuration.UI_MODE_NIGHT_NO) {
+                pager.setPageMarginDrawable(R.drawable.divider_light);
+            } else if (nightModeFlags == Configuration.UI_MODE_NIGHT_UNDEFINED) {
+                pager.setPageMarginDrawable(R.drawable.divider_light);
+            }
         }
 
         boolean showFeedMetadata = true;
