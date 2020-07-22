@@ -34,8 +34,6 @@
           android:title="@string/menu_theme_choose" >
         <menu>
             <group android:checkableBehavior="single">
-                <item android:id="@+id/menu_theme_auto"
-                    android:title="@string/auto" />
                 <item android:id="@+id/menu_theme_light"
                       android:title="@string/light" />
                 <item android:id="@+id/menu_theme_dark"

@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
@@ -321,8 +320,6 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
             menu.findItem(R.id.menu_theme_dark).setChecked(true);
         } else if (themeValue == ThemeValue.BLACK) {
             menu.findItem(R.id.menu_theme_black).setChecked(true);
-        } else if (themeValue == ThemeValue.AUTO) {
-            menu.findItem(R.id.menu_theme_auto).setChecked(true);
         }
 
         pm.setOnMenuItemClickListener(this);
@@ -370,11 +367,7 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
         } else if (item.getItemId() == R.id.menu_reading_markunread) {
             FeedUtils.markStoryUnread(story, getActivity());
             return true;
-		} else if (item.getItemId() == R.id.menu_theme_auto) {
-		    PrefsUtils.setSelectedTheme(getActivity(), ThemeValue.AUTO);
-		    UIUtils.restartActivity(getActivity());
-		    return true;
-        } else if (item.getItemId() == R.id.menu_theme_light) {
+		} else if (item.getItemId() == R.id.menu_theme_light) {
             PrefsUtils.setSelectedTheme(getActivity(), ThemeValue.LIGHT);
             UIUtils.restartActivity(getActivity());
             return true;
@@ -796,15 +789,6 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
                 builder.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"dark_reading.css\" />");
             } else if (themeValue == ThemeValue.BLACK) {
                 builder.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"black_reading.css\" />");
-            } else if (themeValue == ThemeValue.AUTO) {
-                int nightModeFlags = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
-                if (nightModeFlags == Configuration.UI_MODE_NIGHT_YES) {
-                    builder.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"dark_reading.css\" />");
-                } else if (nightModeFlags == Configuration.UI_MODE_NIGHT_NO) {
-                    builder.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"light_reading.css\" />");
-                } else if (nightModeFlags == Configuration.UI_MODE_NIGHT_UNDEFINED) {
-                    builder.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"light_reading.css\" />");
-                }
             }
             builder.append("</head><body><div class=\"NB-story\">");
             builder.append(storyText);
