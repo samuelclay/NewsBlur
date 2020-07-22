@@ -1908,6 +1908,12 @@
     [self.webView evaluateJavaScript:jsString completionHandler:nil];
     
     self.webView.backgroundColor = UIColorFromLightDarkRGB(0x707070, 0x404040);
+    
+    if ([ThemeManager themeManager].isDarkTheme) {
+        self.webView.scrollView.indicatorStyle = UIScrollViewIndicatorStyleWhite;
+    } else {
+        self.webView.scrollView.indicatorStyle = UIScrollViewIndicatorStyleBlack;
+    }
 }
 
 - (BOOL)canHideNavigationBar {

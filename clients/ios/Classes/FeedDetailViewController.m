@@ -2751,8 +2751,10 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     }
     
     if ([ThemeManager themeManager].isDarkTheme) {
+        self.storyTitlesTable.indicatorStyle = UIScrollViewIndicatorStyleWhite;
         self.searchBar.keyboardAppearance = UIKeyboardAppearanceDark;
     } else {
+        self.storyTitlesTable.indicatorStyle = UIScrollViewIndicatorStyleBlack;
         self.searchBar.keyboardAppearance = UIKeyboardAppearanceDefault;
     }
     
