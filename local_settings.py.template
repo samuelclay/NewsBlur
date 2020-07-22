@@ -91,6 +91,11 @@ MONGO_DB = {
     'host': '127.0.0.1',
     'port': 27017
 }
+MONGO_ANALYTICS_DB = {
+    'name': 'nbanalytics',
+    'host': '128.0.0.1',
+    'port': 27017,
+}
 
 MONGODB_SLAVE = {
     'host': '127.0.0.1'
