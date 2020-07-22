@@ -17,6 +17,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         "mouseenter .NB-feed-story-manage-icon" : "mouseenter_manage_icon",
         "mouseleave .NB-feed-story-manage-icon" : "mouseleave_manage_icon",
         "contextmenu .NB-feed-story-header"     : "show_manage_menu_rightclick",
+        "mouseup .NB-story-content-wrapper"     : "mouseup_check_selection",
         "click .NB-feed-story-manage-icon"      : "show_manage_menu",
         "click .NB-feed-story-show-changes"     : "show_story_changes",
         "click .NB-feed-story-header-title"     : "open_feed",
@@ -26,11 +27,13 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         "click .NB-feed-story-email"            : "open_email",
         "click .NB-feed-story-save"             : "toggle_starred",
         "click .NB-story-comments-label"        : "scroll_to_comments",
-        "click .NB-story-content-expander"      : "expand_story"
+        "click .NB-story-content-expander"      : "expand_story",
+        "click .NB-highlight-selection"         : "highlight_selected_text",
+        "click .NB-unhighlight-selection"       : "unhighlight_selected_text"
     },
     
     initialize: function() {
-        _.bindAll(this, 'mouseleave', 'mouseenter');
+        _.bindAll(this, 'mouseleave', 'mouseenter', 'mouseup_check_selection', 'highlight_selected_text', 'unhighlight_selected_text');
         this.model.bind('change', this.toggle_classes, this);
         this.model.bind('change:read_status', this.toggle_read_status, this);
         this.model.bind('change:selected', this.toggle_selected, this);
@@ -123,6 +126,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         this.attach_syntax_highlighter_handler();
         this.attach_fitvid_handler();
         this.render_starred_tags();
+        this.apply_starred_story_selections();
     },
     
     watch_images_load: function() {
@@ -146,6 +150,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     
     render_header: function(model, value, options) {
         var params = this.get_render_params();
+        this.$('.NB-feed-story-header-feed').remove();
         this.$('.NB-feed-story-header').replaceWith($(this.story_header_template(params)));
         this.generate_gradients();
     },
@@ -171,15 +176,15 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     },
     
     story_header_template: _.template('\
+        <div class="NB-feed-story-header-feed">\
+            <% if (feed) { %>\
+                <div class="NB-feed-story-feed">\
+                    <img class="feed_favicon" src="<%= $.favicon(feed) %>">\
+                    <span class="NB-feed-story-header-title"><%= feed.get("feed_title") %></span>\
+                </div>\
+            <% } %>\
+        </div>\
         <div class="NB-feed-story-header">\
-            <div class="NB-feed-story-header-feed">\
-                <% if (feed) { %>\
-                    <div class="NB-feed-story-feed">\
-                        <img class="feed_favicon" src="<%= $.favicon(feed) %>">\
-                        <span class="NB-feed-story-header-title"><%= feed.get("feed_title") %></span>\
-                    </div>\
-                <% } %>\
-            </div>\
             <div class="NB-feed-story-header-info">\
                 <div class="NB-feed-story-title-container">\
                     <div class="NB-feed-story-sentiment"></div>\
@@ -229,7 +234,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         <div class="NB-feed-story-shares-container"></div>\
         <div class="NB-story-content-container">\
             <div class="NB-story-content-wrapper <% if (truncatable) { %>NB-story-content-truncatable<% } %>">\
-                <div class="NB-feed-story-content">\
+                <div class="NB-feed-story-content <% if (feed && feed.get("is_newsletter")) { %>NB-newsletter<% } %>">\
                     <% if (!options.skip_content) { %>\
                         <%= story.story_content() %>\
                     <% } %>\
@@ -710,6 +715,181 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     
     mouseleave: function() {
         
+    },
+    
+    mouseup_check_selection: function(e) {
+        var $doc = this.$(".NB-feed-story-content");
+        // console.log(['mouseup_check_selection', e, e.which, $(e.target)]);
+        if (e.which == 3) {
+            // Right click
+            return;
+        }
+        if ($(e.target).hasClass("NB-highlight")) {
+            this.show_unhighlight_tooltip($(e.target));
+            return;
+        }
+
+        if (!NEWSBLUR.assets.preference('highlights')) return;
+
+        this.$(".NB-starred-story-selection-highlight,[data-tippy]").contents().unwrap();
+        $doc.attr('id', 'NB-highlighting');
+        
+        var text = "";
+        var selection;
+        if (window.getSelection) {
+            selection = window.getSelection();
+            text = window.getSelection().toString();
+        } else if (document.selection && document.selection.type != "Control") {
+            selection = document.selection.createRange();
+            text = document.selection.createRange().text;
+        }
+        this.serialized_highlight = _.string.trim(text);
+        // console.log(['mouseup_check_selection 1', this.serialized_highlight]);
+        
+        if (this.tooltip && this.tooltip.tooltips && this.tooltip.tooltips.length) {
+            this.tooltip.tooltips[0].hide();
+        }
+        if (!this.serialized_highlight) {
+            $doc.removeAttr('id');
+            this.apply_starred_story_selections();
+            return;
+        }
+
+        $doc.mark(this.serialized_highlight, {
+            "className": "NB-starred-story-selection-highlight",
+            "separateWordSearch": false,
+            "acrossElements": true,
+            "filter": function(node, term, total_counter, counter) {
+                if (!selection.containsNode(node)) return false;
+                // Highlighting the second 'baz' will fail, and the entire 'baz quz baz' will be highlighted instead.
+                //     foo bar baz quz baz bar foo
+                // console.log(['filter', node, term, total_counter, counter, selection.anchorNode, selection.anchorOffset, selection.focusNode, selection.focusOffset, selection.anchorNode == node, selection.containsNode(node), node.textContent.indexOf(term)]);
+                // if (node.textContent.indexOf(term) != selection.anchorOffset) return false;
+                return true;
+            },
+            "done": _.bind(function() {
+                var $selection = $(".NB-starred-story-selection-highlight", $doc);
+                console.log(['$selection', $selection, $selection.first().get(0), $selection.last().get(0)]);
+                $selection.attr('title', "<div class='NB-highlight-selection'>Highlight</div>");
+                var $t = tippy($selection.get(0), {
+                    // delay: 100,
+                    appendTo: this.el,
+                    arrow: true,
+                    arrowType: 'round',
+                    size: 'large',
+                    duration: 350,
+                    animation: 'scale',
+                    trigger: 'click',
+                    interactive: true,
+                    performance: true,
+                    onHide: _.bind(function() {
+                        $selection.removeClass("NB-starred-story-selection-highlight");
+                    }, this)
+                });
+                this.tooltip = $t;
+                _.defer(function() {
+                    if ($t.tooltips && $t.tooltips.length) $t.tooltips[0].show();
+                });
+
+                $doc.removeAttr('id');
+                // this.apply_starred_story_selections();
+
+                var doc = window.document, range;
+                if (window.getSelection && doc.createRange) {
+                    if ($selection.length) {
+                        selection.removeAllRanges();
+                        range = doc.createRange();
+                        range.setStart($selection.first().get(0), 0);
+                        range.setEndAfter($selection.last().get(0), 0);
+                        selection.addRange(range);
+                    }
+                // } else if (doc.body.createTextRange) {
+                //     range = doc.body.createTextRange();
+                //     range.moveToElementText($selection[0]);
+                //     range.select();
+                }
+            }, this)
+        });
+    },
+    
+    show_unhighlight_tooltip: function($highlight) {
+        this.$highlight = $highlight;
+        $highlight.attr('title', "<div class='NB-unhighlight-selection'>Unhighlight</div>");
+        var $t = tippy($highlight.get(0), {
+            // delay: 100,
+            appendTo: this.el,
+            arrow: true,
+            arrowType: 'round',
+            size: 'large',
+            duration: 350,
+            animation: 'scale',
+            trigger: 'click',
+            interactive: true,
+            performance: true,
+            onHide: _.bind(function() {
+                // $highlight.removeClass('NB-starred-story-selection-highlight');
+            }, this)
+        });
+        this.tooltip = $t;
+        _.defer(function() {
+            if ($t.tooltips && $t.tooltips.length) $t.tooltips[0].show();
+        });
+        
+    },
+    
+    highlight_selected_text: function() {
+        var highlights = this.model.get('highlights');
+        if (!highlights || !$.isArray(highlights)) highlights = [];
+        highlights.push(this.serialized_highlight);
+        this.model.set('highlights', highlights, {silent: true});
+        this.model.trigger('change:highlights');
+        console.log(['highlight_selected_text', this.serialized_highlight, highlights]);
+        
+        if (this.tooltip && this.tooltip.tooltips && this.tooltip.tooltips.length) {
+            this.tooltip.tooltips[0].hide();
+        }
+        
+        this.apply_starred_story_selections();
+        
+        return true;
+    },
+    
+    unhighlight_selected_text: function(el) {
+        var remove_highlight = this.$highlight.text();
+        var highlights = this.model.get('highlights');
+        if (!highlights || !$.isArray(highlights)) highlights = [];
+        highlights = _.filter(highlights, function(value) { return !_.string.contains(value, remove_highlight); });
+        
+        this.model.set('highlights', highlights, {silent: true});
+        this.model.trigger('change:highlights');
+        console.log(['UNhighlighting', remove_highlight, highlights]);
+        
+        if (this.tooltip && this.tooltip.tooltips && this.tooltip.tooltips.length) {
+            this.tooltip.tooltips[0].hide();
+        }
+        
+        this.apply_starred_story_selections(true);
+        
+        return true;
+    },
+    
+    apply_starred_story_selections: function(force) {
+        var highlights = this.model.user_highlights();
+        if (!force) {
+            if (!highlights || !highlights.length) return;
+        }
+        console.log(['Applying highlights', highlights]);
+        
+        var $doc = this.$(".NB-feed-story-content");
+        $doc.unmark();
+
+        $doc.attr('id', 'NB-highlighting');
+        $doc.mark(highlights, {
+            "className": "NB-highlight",
+            "separateWordSearch": false,
+            "acrossElements": true
+        });
+        $doc.removeAttr('id');
     },
     
     show_manage_menu_rightclick: function(e) {

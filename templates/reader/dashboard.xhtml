@@ -36,9 +36,12 @@
     {% endif %}
 {% endblock %}
 
-{% block bodyclass %}NB-body-main{% endblock %}
-{% block content %}
+{% block bodyclass %}
+  NB-body-main 
+  {% if preferences.theme == "dark" %}NB-dark{% endif %}
+{% endblock %}
 
+{% block content %}
 
 <h1 class="NB-splash-heading">NewsBlur</h1>
 <h2 class="NB-splash-heading">- The best stories from your friends and favorite blogs, all in one place.</h2>
@@ -116,12 +119,12 @@
             <div class="NB-module-search-container">
                 <div class="NB-module-search-input NB-module-search-sites">
                     <div class="NB-search-close"></div>
-                    <label for="search_site"><img src="{{ MEDIA_URL }}img/reader/search_icon2.png"></label>
+                    <label for="search_site"><img src="{{ MEDIA_URL }}img/reader/search_light.png"></label>
                     <input id="search_site" name="search_site" placeholder="Site name or address...">
                 </div>
                 <div class="NB-module-search-input NB-module-search-people">
                     <div class="NB-search-close"></div>
-                    <label for="search_people"><img src="{{ MEDIA_URL }}img/reader/search_icon2.png"></label>
+                    <label for="search_people"><img src="{{ MEDIA_URL }}img/reader/search_light.png"></label>
                     <input id="search_people" name="search_people" placeholder="Username or email...">
                 </div>
                 <div class="NB-module-search-results"></div>

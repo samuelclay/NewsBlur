@@ -51,7 +51,6 @@
                 $read_header: $('.NB-feeds-header-read'),
                 $tryfeed_header: $('.NB-feeds-header-tryfeed'),
                 $taskbar: $('.NB-taskbar-view'),
-                $feed_floater: $('.NB-feed-story-view-floater'),
                 $feedbar: $('.NB-feedbar'),
                 $add_button: $('.NB-task-add'),
                 $taskbar_options: $('.NB-taskbar-options'),
@@ -61,7 +60,6 @@
                 'bouncing_callout': false,
                 'has_unfetched_feeds': false,
                 'count_unreads_after_import_working': false,
-                'import_from_google_reader_working': false,
                 'sidebar_closed': this.options.hide_sidebar,
                 'splash_page_frontmost': true
             };
@@ -114,9 +112,6 @@
             this.load_javascript_elements_on_page();
             this.apply_resizable_layout();
             this.add_body_classes();
-            if (NEWSBLUR.Flags['start_import_from_google_reader']) {
-                this.start_import_from_google_reader();
-            }
             NEWSBLUR.app.sidebar_header = new NEWSBLUR.Views.SidebarHeader({
                 feed_collection: NEWSBLUR.assets.feeds,
                 socialfeed_collection: NEWSBLUR.assets.social_feeds
@@ -153,6 +148,7 @@
             this.setup_unfetched_feed_check();
             this.switch_story_layout();
             this.load_delayed_stylesheets();
+            this.load_theme();
         },
 
         // ========
@@ -237,6 +233,7 @@
             } else {
                 center = NEWSBLUR.reader.layout.rightLayout.panes.center;
             }
+
             if (center) {
                 var center_width = center.width();
                 var narrow = center_width < 780;
@@ -1812,15 +1809,27 @@
 
             this.iframe_scroll = null;
             if (options.tag && !options.model) {
-                var model = NEWSBLUR.assets.starred_feeds.detect(function(feed) {
-                    return feed.tag_slug() == options.tag || feed.get('tag') == options.tag;
-                });
+                if (options.tag == 'highlights') {
+                    var model = NEWSBLUR.assets.starred_feeds.detect(function(feed) {
+                        return feed.get('is_highlights');
+                    });
+                } else {
+                    var model = NEWSBLUR.assets.starred_feeds.detect(function(feed) {
+                        return feed.tag_slug() == options.tag || feed.get('tag') == options.tag;
+                    });
+                }
                 if (model) {
                     options.model = model;
                     options.tag = model.get('tag');
+                    options.highlights = model.get('is_highlights');
+                    if (options.highlights) options.tag = "highlights";
                 }
             }
-            if (options.tag) {
+            if (options.tag == "highlights") {
+                this.active_feed = options.model.id;
+                this.flags['starred_tag'] = "highlights";
+                options.model.set('selected', true);
+            } else if (options.tag) {
                 this.active_feed = options.model.id;
                 this.flags['starred_tag'] = options.model.get('tag');
                 if (options.feed) {
@@ -1871,7 +1880,7 @@
             }
             NEWSBLUR.app.taskbar_info.hide_stories_error();
             
-            this.model.fetch_starred_stories(1, this.flags['starred_tag'], _.bind(this.post_open_starred_stories, this), 
+            this.model.fetch_starred_stories(1, this.flags['starred_tag'], this.flags['starred_tag'] == 'highlights', _.bind(this.post_open_starred_stories, this), 
                                              NEWSBLUR.app.taskbar_info.show_stories_error, true);
 
 
@@ -2782,7 +2791,7 @@
             if (this.active_feed == 'river:infrequent') options.infrequent = NEWSBLUR.assets.preference('infrequent_stories_per_month');
             
             if (this.flags['starred_view']) {
-                this.model.fetch_starred_stories(this.counts['page'], this.flags['starred_tag'], _.bind(this.post_open_starred_stories, this),
+                this.model.fetch_starred_stories(this.counts['page'], this.flags['starred_tag'], this.flags['starred_tag'] == 'highlights', _.bind(this.post_open_starred_stories, this),
                                                  NEWSBLUR.app.taskbar_info.show_stories_error, false);
             } else if (this.active_feed == 'read') {
                 this.model.fetch_read_stories(this.counts['page'], _.bind(this.post_open_read_stories, this),
@@ -3266,6 +3275,67 @@
             }
         },
         
+        switch_theme: function(theme) {
+            this.model.preference('theme', theme);
+            this.load_theme();
+        },
+        
+        load_theme: function() {
+            var theme = this.model.preference('theme');
+            var is_auto = theme == 'auto';
+            
+            if (is_auto) {
+                if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                    // dark mode
+                    theme = "dark";
+                } else {
+                    theme = "light";
+                }
+            }
+            
+            if (!this.flags.watching_system_theme && window.matchMedia) {
+                var darkMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+
+                try {
+                    // Chrome & Firefox
+                    darkMediaQuery.addEventListener('change', _.bind(function(e) {
+                        console.log(['Chrome/FF switching themes', e]);
+                        this.load_theme();
+                    }, this));
+                } catch (e1) {
+                    try {
+                        // Safari
+                        darkMediaQuery.addListener(_.bind(function(e) {
+                            console.log(['Safari switching themes', e]);
+                            this.load_theme();
+                        }, this));
+                    } catch (e2) {
+                        console.error(e2);
+                    }
+                }
+                this.flags.watching_system_theme = true;
+            }
+            
+            $('.NB-theme-option').removeClass('NB-active');
+            if (is_auto) {
+                $('.NB-options-theme-auto').addClass('NB-active');  
+            } else {
+                $('.NB-options-theme-'+theme).addClass('NB-active');  
+            }
+            
+            $("body").addClass('NB-theme-transitioning');
+            
+            if (theme == 'dark') {
+                $("body").addClass('NB-dark');
+            } else {
+                $("body").removeClass('NB-dark');
+            }
+
+            _.delay(function() {
+                $("body").removeClass("NB-theme-transitioning");
+            }, 2000);
+        },
+        
         close_interactions_popover: function() {
             NEWSBLUR.InteractionsPopover.close();
         },
@@ -3410,9 +3480,30 @@
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-preferences' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Preferences')
+                    ]),
+                    $.make('li', { className: 'NB-menu-item NB-menu-manage-theme' }, [
+                        $.make('div', { className: 'NB-menu-manage-image' }),
+                        $.make('ul', { className: 'segmented-control NB-options-theme' }, [
+                            $.make('li', { className: 'NB-theme-option NB-options-theme-light' }, [
+                                $.make('div', { className: 'NB-icon' }),
+                                'Light'
+                            ]),
+                            $.make('li', { className: 'NB-theme-option NB-options-theme-dark' }, [
+                                $.make('div', { className: 'NB-icon' }),
+                                'Dark'
+                            ]),
+                            $.make('li', { className: 'NB-theme-option NB-options-theme-auto' }, [
+                                $.make('div', { className: 'NB-icon' }),
+                                'Auto'
+                            ])
+                        ])
                     ])
                 ]);
                 $manage_menu.addClass('NB-menu-manage-notop');
+                var theme = this.model.preference('theme');
+                $(".NB-options-theme-light", $manage_menu).toggleClass('NB-active', theme == 'light');
+                $(".NB-options-theme-dark", $manage_menu).toggleClass('NB-active', theme == 'dark');
+                $(".NB-options-theme-auto", $manage_menu).toggleClass('NB-active', theme == 'auto');
             } else if (type == 'feed') {
                 var feed = this.model.get_feed(feed_id);
                 if (!feed) return;
@@ -5484,59 +5575,6 @@
         // = Import from Google Reader =
         // =============================
         
-        post_google_reader_connect: function(data) {
-            if (NEWSBLUR.intro) {
-                NEWSBLUR.intro.start_import_from_google_reader(data);
-            } else {
-                this.start_import_from_google_reader();
-            }
-        },
-        
-        start_import_from_google_reader: function() {
-            var self = this;
-            var $progress = this.$s.$feeds_progress;
-            var $bar = $('.NB-progress-bar', $progress);
-            var percentage = 0;
-            this.flags['import_from_google_reader_working'] = true;
-            
-            $('.NB-progress-title', $progress).text('Importing from Google Reader');
-            $('.NB-progress-counts', $progress).hide();
-            $('.NB-progress-percentage', $progress).hide();
-            $bar.progressbar({
-                value: percentage
-            });
-            
-            this.animate_progress_bar($bar, 5);
-            
-            this.model.start_import_from_google_reader(
-                $.rescope(this.finish_import_from_google_reader, this));
-            this.show_progress_bar();
-        },
-
-        finish_import_from_google_reader: function(e, data) {
-            var $progress = this.$s.$feeds_progress;
-            var $bar = $('.NB-progress-bar', $progress);
-            this.flags['import_from_google_reader_working'] = false;
-            clearTimeout(this.locks['animate_progress_bar']);
-            
-            if (data.code >= 1) {
-                $bar.progressbar({value: 100});
-                NEWSBLUR.assets.load_feeds();
-                $('.NB-progress-title', $progress).text('');
-                $('.NB-progress-link', $progress).html('');
-            } else {
-                NEWSBLUR.log(['Import Error!', data]);
-                this.$s.$feed_link_loader.fadeOut(250);
-                $progress.addClass('NB-progress-error');
-                $('.NB-progress-title', $progress).text('Error importing Google Reader');
-                $('.NB-progress-link', $progress).html($.make('a', { 
-                    className: 'NB-modal-submit-button NB-modal-submit-green',
-                    href: NEWSBLUR.URLs['google-reader-authorize']
-                }, ['Try importing again']));
-                $('.left-center-footer').css('height', 'auto');
-            }
-        },
-
         start_count_unreads_after_import: function() {
             var self = this;
             var $progress = this.$s.$feeds_progress;
@@ -6281,6 +6319,21 @@
                         self.open_preferences_modal();
                     });
                 }
+            });  
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-theme' }, function($t, $p){
+                e.preventDefault();
+            });  
+            $.targetIs(e, { tagSelector: '.NB-options-theme-light' }, function($t, $p){
+                e.preventDefault();
+                self.switch_theme('light');
+            });  
+            $.targetIs(e, { tagSelector: '.NB-options-theme-dark' }, function($t, $p){
+                e.preventDefault();
+                self.switch_theme('dark');
+            });  
+            $.targetIs(e, { tagSelector: '.NB-options-theme-auto' }, function($t, $p){
+                e.preventDefault();
+                self.switch_theme('auto');
             });  
             $.targetIs(e, { tagSelector: '.NB-menu-manage-logout' }, function($t, $p){
                 e.preventDefault();
