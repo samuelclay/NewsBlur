@@ -14,7 +14,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
@@ -777,6 +781,15 @@ public class PrefsUtils {
             activity.setTheme(R.style.NewsBlurDarkTheme);
         } else if (value == ThemeValue.BLACK) {
             activity.setTheme(R.style.NewsBlurBlackTheme);
+        } else if (value == ThemeValue.AUTO) {
+            int nightModeFlags = activity.getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
+            if (nightModeFlags == Configuration.UI_MODE_NIGHT_YES) {
+                activity.setTheme(R.style.NewsBlurDarkTheme);
+            } else if (nightModeFlags == Configuration.UI_MODE_NIGHT_NO) {
+                activity.setTheme(R.style.NewsBlurTheme);
+            } else if (nightModeFlags == Configuration.UI_MODE_NIGHT_UNDEFINED) {
+                activity.setTheme(R.style.NewsBlurTheme);
+            }
         }
     }
 
