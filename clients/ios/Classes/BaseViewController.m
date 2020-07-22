@@ -150,4 +150,14 @@
     }
 }
 
+- (UIStatusBarStyle)preferredStatusBarStyle {
+    if (!ThemeManager.themeManager.isDarkTheme) {
+        if (@available(iOS 13.0, *)) {
+            return UIStatusBarStyleDarkContent;
+        }
+    }
+    
+    return UIStatusBarStyleLightContent;
+}
+
 @end

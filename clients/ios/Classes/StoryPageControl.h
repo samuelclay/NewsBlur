@@ -87,7 +87,8 @@
 @property (nonatomic) MBProgressHUD *storyHUD;
 @property (nonatomic, strong) NBNotifier *notifier;
 @property (nonatomic) NSInteger scrollingToPage;
-@property (nonatomic, readonly) BOOL wantNavigationBarHidden;
+@property (nonatomic, strong) id standardInteractivePopGestureDelegate;
+@property (nonatomic, readonly) BOOL allowFullscreen;
 @property (nonatomic) BOOL forceNavigationBarShown;
 @property (nonatomic) BOOL currentlyTogglingNavigationBar;
 @property (nonatomic, readonly) BOOL isHorizontal;
@@ -96,6 +97,7 @@
 - (void)resizeScrollView;
 - (void)applyNewIndex:(NSInteger)newIndex pageController:(StoryDetailViewController *)pageController;
 - (void)layoutForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
+- (void)updateStatusBarState;
 - (void)setNavigationBarHidden:(BOOL)hide;
 - (void)setNavigationBarHidden:(BOOL)hide alsoTraverse:(BOOL)alsoTraverse;
 - (void)adjustDragBar:(UIInterfaceOrientation)orientation;
@@ -135,6 +137,7 @@
 
 - (void)flashCheckmarkHud:(NSString *)messageType;
 
+- (void)tappedStory;
 - (void)showAutoscrollBriefly:(BOOL)briefly;
 - (void)hideAutoscrollAfterDelay;
 - (void)hideAutoscrollImmediately;
