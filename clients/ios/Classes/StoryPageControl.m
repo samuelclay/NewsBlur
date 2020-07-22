@@ -1261,8 +1261,10 @@
         }
         [appDelegate.feedDetailViewController redrawUnreadStory];
     }
-
-    [currentPage becomeFirstResponder];
+    
+    if (!appDelegate.storiesCollection.inSearch) {
+        [currentPage becomeFirstResponder];
+    }
 }
 
 - (void)advanceToNextUnread {
