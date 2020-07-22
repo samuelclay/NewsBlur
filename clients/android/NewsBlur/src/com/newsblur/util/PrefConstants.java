@@ -85,7 +85,6 @@ public class PrefConstants {
 
     public static final String THEME = "theme";
     public enum ThemeValue {
-        AUTO,
         LIGHT,
         DARK,
         BLACK;

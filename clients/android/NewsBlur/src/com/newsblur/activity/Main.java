@@ -72,6 +72,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
 
 		fragmentManager = getSupportFragmentManager();
 		folderFeedList = (FolderListFragment) fragmentManager.findFragmentByTag("folderFeedListFragment");
+		folderFeedList.setRetainInstance(true);
         ((FeedIntelligenceSelectorFragment) fragmentManager.findFragmentByTag("feedIntelligenceSelector")).setState(folderFeedList.currentState);
 
         // make sure the interval sync is scheduled, since we are the root Activity
@@ -302,8 +303,6 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
             menu.findItem(R.id.menu_theme_dark).setChecked(true);
         } else if (themeValue == ThemeValue.BLACK) {
             menu.findItem(R.id.menu_theme_black).setChecked(true);
-        } else if (themeValue == ThemeValue.AUTO) {
-            menu.findItem(R.id.menu_theme_auto).setChecked(true);
         }
         
         menu.findItem(R.id.menu_widget).setVisible(WidgetUtils.hasActiveAppWidgets(this));
@@ -361,9 +360,6 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
             DialogFragment newFragment = new LoginAsDialogFragment();
             newFragment.show(getSupportFragmentManager(), "dialog");
             return true;
-        } else if (item.getItemId() == R.id.menu_theme_auto) {
-            PrefsUtils.setSelectedTheme(this, ThemeValue.AUTO);
-		    UIUtils.restartActivity(this);
         } else if (item.getItemId() == R.id.menu_theme_light) {
             PrefsUtils.setSelectedTheme(this, ThemeValue.LIGHT);
             UIUtils.restartActivity(this);
