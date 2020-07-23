@@ -402,10 +402,6 @@
     } else {
         feedMarkReadButton.enabled = YES;
     }
-        
-    if (self.isPhoneOrCompact) {
-        [self fadeSelectedCell:NO];
-    }
     
     [self.notifier setNeedsLayout];
     [appDelegate hideShareView:YES];
@@ -438,6 +434,10 @@
     }
     
     [self updateTheme];
+    
+    if (self.isPhoneOrCompact) {
+        [self fadeSelectedCell:NO];
+    }
     
     if (storiesCollection.activeFeed != nil) {
         [appDelegate donateFeed];
