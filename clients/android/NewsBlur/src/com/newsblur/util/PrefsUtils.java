@@ -958,4 +958,13 @@ public class PrefsUtils {
         editor.putString(PrefConstants.WIDGET_BACKGROUND, widgetBackground.toString());
         editor.commit();
     }
+
+    public static DefaultBrowser getDefaultBrowser(Context context) {
+        return DefaultBrowser.getDefaultBrowser(getDefaultBrowserString(context));
+    }
+
+    public static String getDefaultBrowserString(Context context) {
+        SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        return preferences.getString(PrefConstants.DEFAULT_BROWSER, DefaultBrowser.SYSTEM_DEFAULT.toString());
+    }
 }
