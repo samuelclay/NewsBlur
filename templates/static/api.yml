@@ -220,7 +220,28 @@
             </ul>
         - >
             If you aren't including hidden stories and a user has many stories that are hidden (which happens quite often as they might thumbs down the publisher but thumbs up a title or tag), then make sure to keep paging if the <code>hidden_stories_count</code> is non-zero. Don't rely on the <code>stories</code> list being empty to assume that's when to stop paging.
-  
+    - url: /rss_feeds/original_text
+      method: GET
+      short_desc: "Original text from a story."
+      long_desc: 
+        - "Retrieve the extracted full text for a story."
+      params:
+        - key: story_hash
+          desc: "A story hash to fetch."
+          required: true
+          example: >
+            story_hash=123:a1d62b
+    - url: /rss_feeds/original_story
+      method: GET
+      short_desc: "Proxied story from website."
+      long_desc: 
+        - "Retrieve the original website for a story."
+      params:
+        - key: story_hash
+          desc: "A story hash to fetch."
+          required: true
+          example: >
+            story_hash=123:a1d62b
     - url: /reader/starred_stories
       method: GET
       short_desc: "User's starred stories."

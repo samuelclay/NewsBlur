@@ -849,7 +849,6 @@ color: #a85b40;
 /* Error text on bottom bar */
 .NB-dark #story_taskbar .NB-river-progress .NB-river-progress-text,
 .NB-dark #story_taskbar .NB-feed-error .NB-feed-error-text {
-    background-color: #191b1c;
     color: #c0c0c0;
     text-shadow: 0 1px 0 rgba(0,0,0,.8);
 }
