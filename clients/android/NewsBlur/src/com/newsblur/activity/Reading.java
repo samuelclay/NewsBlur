@@ -178,7 +178,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 			transaction.commit();
 		}
 
-        getSupportLoaderManager().initLoader(0, null, this);
+        LoaderManager.getInstance(this).initLoader(0, null, this);
 	}
 
     @Override
@@ -436,7 +436,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
     private void updateCursor() {
         synchronized (STORIES_MUTEX) {
             try {
-                getSupportLoaderManager().restartLoader(0, null, this);
+                LoaderManager.getInstance(this).restartLoader(0, null, this);
             } catch (IllegalStateException ise) {
                 ; // our heavy use of async can race loader calls, which it will gripe about, but this
                  //  is only a refresh call, so dropping a refresh during creation is perfectly fine.

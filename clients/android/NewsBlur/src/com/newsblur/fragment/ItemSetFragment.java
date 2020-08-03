@@ -80,7 +80,7 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
     @Override
 	public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        getLoaderManager().initLoader(ITEMLIST_LOADER, null, this);
+        LoaderManager.getInstance(this).initLoader(ITEMLIST_LOADER, null, this);
     }
 
     @Override
@@ -231,7 +231,7 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
 
 	public void hasUpdated() {
         if (isAdded() && !getFeedSet().isMuted()) {
-		    getLoaderManager().restartLoader(ITEMLIST_LOADER , null, this);
+		    LoaderManager.getInstance(this).restartLoader(ITEMLIST_LOADER , null, this);
         }
 	}
 

@@ -165,11 +165,11 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
         if (isAdded()) {
             com.newsblur.util.Log.d(this, "loading feeds in mode: " + currentState);
             try {
-                getLoaderManager().restartLoader(SOCIALFEEDS_LOADER, null, this);
-                getLoaderManager().restartLoader(FOLDERS_LOADER, null, this);
-                getLoaderManager().restartLoader(FEEDS_LOADER, null, this);
-                getLoaderManager().restartLoader(SAVEDCOUNT_LOADER, null, this);
-                getLoaderManager().restartLoader(SAVED_SEARCH_LOADER, null, this);
+                LoaderManager.getInstance(this).restartLoader(SOCIALFEEDS_LOADER, null, this);
+                LoaderManager.getInstance(this).restartLoader(FOLDERS_LOADER, null, this);
+                LoaderManager.getInstance(this).restartLoader(FEEDS_LOADER, null, this);
+                LoaderManager.getInstance(this).restartLoader(SAVEDCOUNT_LOADER, null, this);
+                LoaderManager.getInstance(this).restartLoader(SAVED_SEARCH_LOADER, null, this);
             } catch (Exception e) {
                 // on heavily loaded devices, the time between isAdded() going false
                 // and the loader subsystem shutting down can be nontrivial, causing
@@ -180,13 +180,13 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 
     public synchronized void startLoaders() {
         if (isAdded()) {
-            if (getLoaderManager().getLoader(FOLDERS_LOADER) == null) {
+            if (LoaderManager.getInstance(this).getLoader(FOLDERS_LOADER) == null) {
                 // if the loaders haven't yet been created, do so
-                getLoaderManager().initLoader(SOCIALFEEDS_LOADER, null, this);
-                getLoaderManager().initLoader(FOLDERS_LOADER, null, this);
-                getLoaderManager().initLoader(FEEDS_LOADER, null, this);
-                getLoaderManager().initLoader(SAVEDCOUNT_LOADER, null, this);
-                getLoaderManager().initLoader(SAVED_SEARCH_LOADER, null, this);
+                LoaderManager.getInstance(this).initLoader(SOCIALFEEDS_LOADER, null, this);
+                LoaderManager.getInstance(this).initLoader(FOLDERS_LOADER, null, this);
+                LoaderManager.getInstance(this).initLoader(FEEDS_LOADER, null, this);
+                LoaderManager.getInstance(this).initLoader(SAVEDCOUNT_LOADER, null, this);
+                LoaderManager.getInstance(this).initLoader(SAVED_SEARCH_LOADER, null, this);
             }
         }
     }
