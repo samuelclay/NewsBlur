@@ -21,7 +21,7 @@ public class ActivityDetailsPagerAdapter extends FragmentPagerAdapter {
     private final Profile profile;
 
     public ActivityDetailsPagerAdapter(FragmentManager fragmentManager, Profile profile) {
-        super(fragmentManager);
+        super(fragmentManager, FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
 
         this.profile = profile;
 

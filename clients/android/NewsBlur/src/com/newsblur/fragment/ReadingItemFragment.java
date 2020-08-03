@@ -415,7 +415,7 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
 
     private void clickShare() {
         DialogFragment newFragment = ShareDialogFragment.newInstance(story, sourceUserId);
-        newFragment.show(getFragmentManager(), "dialog");
+        newFragment.show(getParentFragmentManager(), "dialog");
     }
 
 	private void updateShareButton() {
@@ -483,7 +483,7 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
 			public void onClick(View v) {
                 if (story.feedId.equals("0")) return; // cannot train on feedless stories
                 StoryIntelTrainerFragment intelFrag = StoryIntelTrainerFragment.newInstance(story, fs);
-                intelFrag.show(getFragmentManager(), StoryIntelTrainerFragment.class.getName());
+                intelFrag.show(getParentFragmentManager(), StoryIntelTrainerFragment.class.getName());
 			}	
 		});
 
@@ -492,7 +492,7 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
 			public void onClick(View v) {
                 if (story.feedId.equals("0")) return; // cannot train on feedless stories
                 StoryIntelTrainerFragment intelFrag = StoryIntelTrainerFragment.newInstance(story, fs);
-                intelFrag.show(getFragmentManager(), StoryIntelTrainerFragment.class.getName());
+                intelFrag.show(getParentFragmentManager(), StoryIntelTrainerFragment.class.getName());
 			}
 		});
 
@@ -558,7 +558,7 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
                     public void onClick(View view) {
                         if (story.feedId.equals("0")) return; // cannot train on feedless stories
                         StoryIntelTrainerFragment intelFrag = StoryIntelTrainerFragment.newInstance(story, fs);
-                        intelFrag.show(getFragmentManager(), StoryIntelTrainerFragment.class.getName());
+                        intelFrag.show(getParentFragmentManager(), StoryIntelTrainerFragment.class.getName());
                     }
                 });
             }

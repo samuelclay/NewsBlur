@@ -55,7 +55,7 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 	public SetupCommentSectionTask(ReadingItemFragment fragment, View view, LayoutInflater inflater, Story story) {
         this.fragment = fragment;
 		this.context = fragment.getActivity();
-		this.manager = fragment.getFragmentManager();
+		this.manager = fragment.getParentFragmentManager();
 		this.inflater = inflater;
 		this.story = story;
 		viewHolder = new WeakReference<View>(view);
