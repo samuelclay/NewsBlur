@@ -178,7 +178,6 @@ public class ReadingAdapter extends PagerAdapter {
             }
         }
         fragment.setMenuVisibility(false);
-        fragment.setUserVisibleHint(false);
         if (curTransaction == null) {
             curTransaction = fm.beginTransaction();
         }
@@ -208,11 +207,9 @@ public class ReadingAdapter extends PagerAdapter {
         if (fragment != lastActiveFragment) {
             if (lastActiveFragment != null) {
                 lastActiveFragment.setMenuVisibility(false);
-                lastActiveFragment.setUserVisibleHint(false);
             }
             if (fragment != null) {
                 fragment.setMenuVisibility(true);
-                fragment.setUserVisibleHint(true);
             }
             lastActiveFragment = fragment;
         }
