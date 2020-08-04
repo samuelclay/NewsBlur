@@ -16,7 +16,7 @@ class FeedTest(TestCase):
         disconnect()
         settings.MONGODB = connect('test_newsblur')
         settings.REDIS_STORY_HASH_POOL = redis.ConnectionPool(host=settings.REDIS_STORY['host'], port=6379, db=10)
-        settings.REDIS_FEED_READ_POOL = redis.ConnectionPool(host=settings.SESSION_REDIS_HOST, port=6379, db=10)
+        settings.REDIS_FEED_READ_POOL = redis.ConnectionPool(host=settings.REDIS_SESSIONS['host'], port=6379, db=10)
 
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         r.delete('RS:1')
