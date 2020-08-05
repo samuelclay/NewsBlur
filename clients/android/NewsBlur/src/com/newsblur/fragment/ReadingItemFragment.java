@@ -499,10 +499,8 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
 		binding.readingItemTitle.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				Intent i = new Intent(Intent.ACTION_VIEW);
                 try {
-                    i.setData(Uri.parse(story.permalink));
-                    startActivity(i);
+                    UIUtils.handleUri(requireContext(), Uri.parse(story.permalink));
                 } catch (Throwable t) {
                     // we don't actually know if the user will successfully be able to open whatever string
                     // was in the permalink or if the Intent could throw errors
