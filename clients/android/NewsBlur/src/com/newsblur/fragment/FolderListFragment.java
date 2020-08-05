@@ -8,9 +8,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.Loader;
+import androidx.fragment.app.DialogFragment;
+import androidx.loader.app.LoaderManager;
+import androidx.loader.content.Loader;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -165,11 +165,11 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
         if (isAdded()) {
             com.newsblur.util.Log.d(this, "loading feeds in mode: " + currentState);
             try {
-                getLoaderManager().restartLoader(SOCIALFEEDS_LOADER, null, this);
-                getLoaderManager().restartLoader(FOLDERS_LOADER, null, this);
-                getLoaderManager().restartLoader(FEEDS_LOADER, null, this);
-                getLoaderManager().restartLoader(SAVEDCOUNT_LOADER, null, this);
-                getLoaderManager().restartLoader(SAVED_SEARCH_LOADER, null, this);
+                LoaderManager.getInstance(this).restartLoader(SOCIALFEEDS_LOADER, null, this);
+                LoaderManager.getInstance(this).restartLoader(FOLDERS_LOADER, null, this);
+                LoaderManager.getInstance(this).restartLoader(FEEDS_LOADER, null, this);
+                LoaderManager.getInstance(this).restartLoader(SAVEDCOUNT_LOADER, null, this);
+                LoaderManager.getInstance(this).restartLoader(SAVED_SEARCH_LOADER, null, this);
             } catch (Exception e) {
                 // on heavily loaded devices, the time between isAdded() going false
                 // and the loader subsystem shutting down can be nontrivial, causing
@@ -180,13 +180,13 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 
     public synchronized void startLoaders() {
         if (isAdded()) {
-            if (getLoaderManager().getLoader(FOLDERS_LOADER) == null) {
+            if (LoaderManager.getInstance(this).getLoader(FOLDERS_LOADER) == null) {
                 // if the loaders haven't yet been created, do so
-                getLoaderManager().initLoader(SOCIALFEEDS_LOADER, null, this);
-                getLoaderManager().initLoader(FOLDERS_LOADER, null, this);
-                getLoaderManager().initLoader(FEEDS_LOADER, null, this);
-                getLoaderManager().initLoader(SAVEDCOUNT_LOADER, null, this);
-                getLoaderManager().initLoader(SAVED_SEARCH_LOADER, null, this);
+                LoaderManager.getInstance(this).initLoader(SOCIALFEEDS_LOADER, null, this);
+                LoaderManager.getInstance(this).initLoader(FOLDERS_LOADER, null, this);
+                LoaderManager.getInstance(this).initLoader(FEEDS_LOADER, null, this);
+                LoaderManager.getInstance(this).initLoader(SAVEDCOUNT_LOADER, null, this);
+                LoaderManager.getInstance(this).initLoader(SAVED_SEARCH_LOADER, null, this);
             }
         }
     }
@@ -364,7 +364,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
                 String folderName = adapter.getGroupFolderName(groupPosition);
                 deleteFeedFragment = DeleteFeedFragment.newInstance(adapter.getFeed(groupPosition, childPosition), folderName);
             }
-			deleteFeedFragment.show(getFragmentManager(), "dialog");
+			deleteFeedFragment.show(getParentFragmentManager(), "dialog");
 			return true;
 		} else if (item.getItemId() == R.id.menu_mark_feed_as_read) {
             FeedSet fs = adapter.getChild(groupPosition, childPosition);
@@ -378,13 +378,13 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
             Feed feed = adapter.getFeed(groupPosition, childPosition);
             if (feed != null) {
                 DialogFragment chooseFoldersFragment = ChooseFoldersFragment.newInstance(feed);
-                chooseFoldersFragment.show(getFragmentManager(), "dialog");
+                chooseFoldersFragment.show(getParentFragmentManager(), "dialog");
             }
         } else if (item.getItemId() == R.id.menu_rename_feed) {
             Feed feed = adapter.getFeed(groupPosition, childPosition);
             if (feed != null) {
                 DialogFragment renameFeedFragment = RenameDialogFragment.newInstance(feed);
-                renameFeedFragment.show(getFragmentManager(), "dialog");
+                renameFeedFragment.show(getParentFragmentManager(), "dialog");
             }
         } else if (item.getItemId() == R.id.menu_mute_feed) {
             Set<String> feedIds = new HashSet<String>();
@@ -402,23 +402,23 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
             FeedUtils.instaFetchFeed(getActivity(), adapter.getFeed(groupPosition, childPosition).feedId);
         } else if (item.getItemId() == R.id.menu_intel) {
             FeedIntelTrainerFragment intelFrag = FeedIntelTrainerFragment.newInstance(adapter.getFeed(groupPosition, childPosition), adapter.getChild(groupPosition, childPosition));
-            intelFrag.show(getFragmentManager(), FeedIntelTrainerFragment.class.getName());
+            intelFrag.show(getParentFragmentManager(), FeedIntelTrainerFragment.class.getName());
         } else if (item.getItemId() == R.id.menu_delete_saved_search) {
 		    SavedSearch savedSearch = adapter.getSavedSearch(childPosition);
 		    if (savedSearch != null) {
                 DialogFragment deleteFeedFragment = DeleteFeedFragment.newInstance(savedSearch);
-                deleteFeedFragment.show(getFragmentManager(), "dialog");
+                deleteFeedFragment.show(getParentFragmentManager(), "dialog");
             }
 		} else if (item.getItemId() == R.id.menu_delete_folder) {
 		    Folder folder = adapter.getGroupFolder(groupPosition);
 		    String folderParentName = folder.getFirstParentName();
 		    DeleteFolderFragment deleteFolderFragment = DeleteFolderFragment.newInstance(folder.name, folderParentName);
-		    deleteFolderFragment.show(getFragmentManager(), deleteFolderFragment.getTag());
+		    deleteFolderFragment.show(getParentFragmentManager(), deleteFolderFragment.getTag());
         } else if (item.getItemId() == R.id.menu_rename_folder) {
 		    Folder folder = adapter.getGroupFolder(groupPosition);
             String folderParentName = folder.getFirstParentName();
             RenameDialogFragment renameDialogFragment = RenameDialogFragment.newInstance(folder.name, folderParentName);
-            renameDialogFragment.show(getFragmentManager(), renameDialogFragment.getTag());
+            renameDialogFragment.show(getParentFragmentManager(), renameDialogFragment.getTag());
         }
 
 		return super.onContextItemSelected(item);

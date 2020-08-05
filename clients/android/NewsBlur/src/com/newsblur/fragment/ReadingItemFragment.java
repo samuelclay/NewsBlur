@@ -14,9 +14,9 @@ import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.DialogFragment;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -415,7 +415,7 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
 
     private void clickShare() {
         DialogFragment newFragment = ShareDialogFragment.newInstance(story, sourceUserId);
-        newFragment.show(getFragmentManager(), "dialog");
+        newFragment.show(getParentFragmentManager(), "dialog");
     }
 
 	private void updateShareButton() {
@@ -483,7 +483,7 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
 			public void onClick(View v) {
                 if (story.feedId.equals("0")) return; // cannot train on feedless stories
                 StoryIntelTrainerFragment intelFrag = StoryIntelTrainerFragment.newInstance(story, fs);
-                intelFrag.show(getFragmentManager(), StoryIntelTrainerFragment.class.getName());
+                intelFrag.show(getParentFragmentManager(), StoryIntelTrainerFragment.class.getName());
 			}	
 		});
 
@@ -492,7 +492,7 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
 			public void onClick(View v) {
                 if (story.feedId.equals("0")) return; // cannot train on feedless stories
                 StoryIntelTrainerFragment intelFrag = StoryIntelTrainerFragment.newInstance(story, fs);
-                intelFrag.show(getFragmentManager(), StoryIntelTrainerFragment.class.getName());
+                intelFrag.show(getParentFragmentManager(), StoryIntelTrainerFragment.class.getName());
 			}
 		});
 
@@ -558,7 +558,7 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
                     public void onClick(View view) {
                         if (story.feedId.equals("0")) return; // cannot train on feedless stories
                         StoryIntelTrainerFragment intelFrag = StoryIntelTrainerFragment.newInstance(story, fs);
-                        intelFrag.show(getFragmentManager(), StoryIntelTrainerFragment.class.getName());
+                        intelFrag.show(getParentFragmentManager(), StoryIntelTrainerFragment.class.getName());
                     }
                 });
             }
