@@ -5,10 +5,10 @@ import android.graphics.Typeface;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.Loader;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.loader.app.LoaderManager;
+import androidx.loader.content.Loader;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -80,7 +80,7 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
     @Override
 	public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        getLoaderManager().initLoader(ITEMLIST_LOADER, null, this);
+        LoaderManager.getInstance(this).initLoader(ITEMLIST_LOADER, null, this);
     }
 
     @Override
@@ -231,7 +231,7 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
 
 	public void hasUpdated() {
         if (isAdded() && !getFeedSet().isMuted()) {
-		    getLoaderManager().restartLoader(ITEMLIST_LOADER , null, this);
+		    LoaderManager.getInstance(this).restartLoader(ITEMLIST_LOADER , null, this);
         }
 	}
 

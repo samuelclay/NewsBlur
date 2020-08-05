@@ -8,9 +8,10 @@ import java.util.Set;
 import android.app.SearchManager;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.LoaderManager.LoaderCallbacks;
-import android.support.v4.content.Loader;
+import androidx.fragment.app.DialogFragment;
+import androidx.loader.app.LoaderManager;
+import androidx.loader.app.LoaderManager.LoaderCallbacks;
+import androidx.loader.content.Loader;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -55,7 +56,7 @@ public class SearchForFeeds extends NbActivity implements LoaderCallbacks<Search
 		resultsList.setEmptyView(emptyView);
 		resultsList.setOnItemClickListener(this);
 		resultsList.setItemsCanFocus(false);
-		searchLoader = getSupportLoaderManager().initLoader(0, new Bundle(), this);
+		searchLoader = LoaderManager.getInstance(this).initLoader(0, new Bundle(), this);
 		
 		onSearchRequested();
 	}
@@ -83,7 +84,7 @@ public class SearchForFeeds extends NbActivity implements LoaderCallbacks<Search
 			
 			Bundle bundle = new Bundle();
 			bundle.putString(SearchAsyncTaskLoader.SEARCH_TERM, query);
-			searchLoader = getSupportLoaderManager().restartLoader(0, bundle, this);
+			searchLoader = LoaderManager.getInstance(this).restartLoader(0, bundle, this);
 			
 			searchLoader.forceLoad();
 		}
