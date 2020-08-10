@@ -18,4 +18,13 @@ public class SavedStoriesItemsList extends ItemsList {
         UIUtils.setCustomActionBar(this, R.drawable.clock, title);
 	}
 
+    @Override
+    String getSaveSearchFeedId() {
+	    String feedId = "starred";
+	    String savedTag = fs.getSingleSavedTag();
+        if (savedTag != null) {
+            feedId += ":" + savedTag;
+        }
+        return feedId;
+    }
 }

@@ -37,4 +37,8 @@ public class InfrequentItemsList extends ItemsList implements InfrequentCutoffCh
         restartReadingSession();
     }
 
+    @Override
+    String getSaveSearchFeedId() {
+        return "river:infrequent";
+    }
 }

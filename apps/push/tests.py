@@ -366,7 +366,7 @@ class PSHBUpdateTestCase(PSHBTestBase, TestCase):
         self.assertEquals(self.requests[0][0],
                           'http://myhub.example.com/endpoint')
         self.assertEquals(self.requests[0][1]['callback'],
-                          'http://testserver/1/')
+                          'http://test.nb.local.com/1/')
         self.assert_((self.requests[0][1]['lease_seconds'] - 86400) < 5)
 
     def test_update_with_changed_self(self):
@@ -414,7 +414,7 @@ class PSHBUpdateTestCase(PSHBTestBase, TestCase):
         self.assertEquals(self.requests[0][0],
                           'http://myhub.example.com/endpoint')
         self.assertEquals(self.requests[0][1]['callback'],
-                          'http://testserver/1/')
+                          'http://test.nb.local.com/1/')
         self.assert_((self.requests[0][1]['lease_seconds'] - 86400) < 5)
 
     def test_update_with_changed_hub_and_self(self):
@@ -463,5 +463,5 @@ class PSHBUpdateTestCase(PSHBTestBase, TestCase):
         self.assertEquals(self.requests[0][0],
                           'http://myhub.example.com/endpoint')
         self.assertEquals(self.requests[0][1]['callback'],
-                          'http://testserver/1/')
+                          'http://test.nb.local.com/1/')
         self.assert_((self.requests[0][1]['lease_seconds'] - 86400) < 5)

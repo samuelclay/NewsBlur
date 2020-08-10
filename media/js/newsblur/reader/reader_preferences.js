@@ -28,6 +28,7 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         this.original_preferences = this.serialize_preferences();
         
         this.$modal.bind('click', $.rescope(this.handle_click, this));
+        this.$modal.bind('click', $.rescope(this.handle_click, this));
     },
     
     make_modal: function() {
@@ -795,6 +796,21 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                         $.make('div', { className: 'NB-preference-label'}, [
                             'Story button placement'
                         ])
+                    ]),
+                    $.make('div', { className: 'NB-preference NB-preference-highlights' }, [
+                        $.make('div', { className: 'NB-preference-options' }, [
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-highlights-1', type: 'radio', name: 'highlights', value: 'true' }),
+                                $.make('label', { 'for': 'NB-preference-highlights-1' }, 'Show highlighter when selecting text')
+                            ]),
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-highlights-2', type: 'radio', name: 'highlights', value: 'false' }),
+                                $.make('label', { 'for': 'NB-preference-highlights-2' }, 'Disable the highlighter')
+                            ])
+                        ]),
+                        $.make('div', { className: 'NB-preference-label'}, [
+                            'Enable highlighting'
+                        ])
                     ])
                 ]),
                 $.make('div', { className: 'NB-tab NB-tab-keyboard' }, [
@@ -1126,6 +1142,12 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         });
         $('input[name=story_button_placement]', $modal).each(function() {
             if ($(this).val() == ""+NEWSBLUR.Preferences.story_button_placement) {
+                $(this).attr('checked', true);
+                return false;
+            }
+        });
+        $('input[name=highlights]', $modal).each(function() {
+            if ($(this).val() == ""+NEWSBLUR.Preferences.highlights) {
                 $(this).attr('checked', true);
                 return false;
             }

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -19,18 +20,14 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
-import android.widget.TextView;
 import android.widget.Toast;
-
-import butterknife.ButterKnife;
-import butterknife.Bind;
 
 import com.newsblur.R;
 import com.newsblur.database.ReadingAdapter;
+import com.newsblur.databinding.ActivityReadingBinding;
 import com.newsblur.domain.Story;
 import com.newsblur.fragment.ReadingItemFragment;
 import com.newsblur.fragment.ReadingPagerFragment;
@@ -77,19 +74,9 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
     protected final Object STORIES_MUTEX = new Object();
 	protected Cursor stories;
 
-    @Bind(android.R.id.content) View contentView; // we use this a ton, so cache it
-    @Bind(R.id.reading_overlay_left) Button overlayLeft;
-    @Bind(R.id.reading_overlay_right) Button overlayRight;
-    @Bind(R.id.reading_overlay_progress) ProgressBar overlayProgress;
-    @Bind(R.id.reading_overlay_progress_right) ProgressBar overlayProgressRight;
-    @Bind(R.id.reading_overlay_progress_left) ProgressBar overlayProgressLeft;
-    @Bind(R.id.reading_overlay_text) Button overlayText;
-    @Bind(R.id.reading_overlay_send) Button overlaySend;
-    @Bind(R.id.reading_empty_view_text) View emptyViewText;
-    @Bind(R.id.reading_sync_status) TextView overlayStatusText;
+    private View contentView; // we use this a ton, so cache it
     
     ViewPager pager;
-    ReadingPagerFragment readingFragment;
 
 	protected ReadingAdapter readingAdapter;
     private boolean stopLoading;
@@ -109,6 +96,8 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 
     private VolumeKeyNavigation volumeKeyNavigation;
 
+    private ActivityReadingBinding binding;
+
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
@@ -119,8 +108,9 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 	protected void onCreate(Bundle savedInstanceBundle) {
         super.onCreate(savedInstanceBundle);
 
-		setContentView(R.layout.activity_reading);
-        ButterKnife.bind(this);
+        binding = ActivityReadingBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
+        contentView = findViewById(android.R.id.content);
 
         try {
             fs = (FeedSet)getIntent().getSerializableExtra(EXTRA_FEEDSET);
@@ -167,17 +157,17 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 
         this.pageHistory = new ArrayList<Story>();
 
-        ViewUtils.setViewElevation(overlayLeft, OVERLAY_ELEVATION_DP);
-        ViewUtils.setViewElevation(overlayRight, OVERLAY_ELEVATION_DP);
-        ViewUtils.setViewElevation(overlayText, OVERLAY_ELEVATION_DP);
-        ViewUtils.setViewElevation(overlaySend, OVERLAY_ELEVATION_DP);
-        ViewUtils.setViewElevation(overlayProgress, OVERLAY_ELEVATION_DP);
-        ViewUtils.setViewElevation(overlayProgressLeft, OVERLAY_ELEVATION_DP);
-        ViewUtils.setViewElevation(overlayProgressRight, OVERLAY_ELEVATION_DP);
+        ViewUtils.setViewElevation(binding.readingOverlayLeft, OVERLAY_ELEVATION_DP);
+        ViewUtils.setViewElevation(binding.readingOverlayRight, OVERLAY_ELEVATION_DP);
+        ViewUtils.setViewElevation(binding.readingOverlayText, OVERLAY_ELEVATION_DP);
+        ViewUtils.setViewElevation(binding.readingOverlaySend, OVERLAY_ELEVATION_DP);
+        ViewUtils.setViewElevation(binding.readingOverlayProgress, OVERLAY_ELEVATION_DP);
+        ViewUtils.setViewElevation(binding.readingOverlayProgressLeft, OVERLAY_ELEVATION_DP);
+        ViewUtils.setViewElevation(binding.readingOverlayProgressRight, OVERLAY_ELEVATION_DP);
 
         // this likes to default to 'on' for some platforms
-        enableProgressCircle(overlayProgressLeft, false);
-        enableProgressCircle(overlayProgressRight, false);
+        enableProgressCircle(binding.readingOverlayProgressLeft, false);
+        enableProgressCircle(binding.readingOverlayProgressRight, false);
 
 		FragmentManager fragmentManager = getSupportFragmentManager();
 		ReadingPagerFragment fragment = (ReadingPagerFragment) fragmentManager.findFragmentByTag(ReadingPagerFragment.class.getName());
@@ -259,6 +249,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
                 // the system can and will re-use activities, so during the initial mismatch of
                 // data, don't show the old stories
                 pager.setVisibility(View.INVISIBLE);
+                binding.readingEmptyViewText.setVisibility(View.VISIBLE);
                 stories = null;
                 triggerRefresh(AppConstants.READING_STORY_PRELOAD);
                 return;
@@ -297,7 +288,11 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 
     private void skipPagerToStoryHash() {
         // if we already started and found our target story, this will be unset
-        if (storyHash == null) return;
+        if (storyHash == null) {
+            pager.setVisibility(View.VISIBLE);
+            binding.readingEmptyViewText.setVisibility(View.INVISIBLE);
+            return;
+        }
         int position = -1;
         if (storyHash.equals(FIND_FIRST_UNREAD)) {
             position = readingAdapter.findFirstUnread();
@@ -312,7 +307,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
             this.onPageSelected(position);
             // now that the pager is getting the right story, make it visible
             pager.setVisibility(View.VISIBLE);
-            emptyViewText.setVisibility(View.INVISIBLE);
+            binding.readingEmptyViewText.setVisibility(View.INVISIBLE);
             storyHash = null;
             return;
         }
@@ -340,6 +335,15 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
             pager.setPageMarginDrawable(R.drawable.divider_light);
         } else if (themeValue == ThemeValue.DARK) {
             pager.setPageMarginDrawable(R.drawable.divider_dark);
+        } else if (themeValue == ThemeValue.AUTO) {
+            int nightModeFlags = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
+            if (nightModeFlags == Configuration.UI_MODE_NIGHT_YES) {
+                pager.setPageMarginDrawable(R.drawable.divider_dark);
+            } else if (nightModeFlags == Configuration.UI_MODE_NIGHT_NO) {
+                pager.setPageMarginDrawable(R.drawable.divider_light);
+            } else if (nightModeFlags == Configuration.UI_MODE_NIGHT_UNDEFINED) {
+                pager.setPageMarginDrawable(R.drawable.divider_light);
+            }
         }
 
         boolean showFeedMetadata = true;
@@ -405,16 +409,16 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
         }
         if ((updateType & UPDATE_STATUS) != 0) {
             enableMainProgress(NBSyncService.isFeedSetSyncing(this.fs, this));
-            if (overlayStatusText != null) {
+            if (binding.readingSyncStatus != null) {
                 String syncStatus = NBSyncService.getSyncStatusMessage(this, true);
                 if (syncStatus != null)  {
                     if (AppConstants.VERBOSE_LOG) {
                         syncStatus = syncStatus + UIUtils.getMemoryUsageDebug(this);
                     }
-                    overlayStatusText.setText(syncStatus);
-                    overlayStatusText.setVisibility(View.VISIBLE);
+                    binding.readingSyncStatus.setText(syncStatus);
+                    binding.readingSyncStatus.setVisibility(View.VISIBLE);
                 } else {
-                    overlayStatusText.setVisibility(View.GONE);
+                    binding.readingSyncStatus.setVisibility(View.GONE);
                 }
             }
         }
@@ -516,11 +520,11 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
         final boolean _overflowExtras = overflowExtras;
         runOnUiThread(new Runnable() {
             public void run() {
-                UIUtils.setViewAlpha(overlayLeft, a, true);
-                UIUtils.setViewAlpha(overlayRight, a, true);
-                UIUtils.setViewAlpha(overlayProgress, a, true);
-                UIUtils.setViewAlpha(overlayText, a, true);
-                UIUtils.setViewAlpha(overlaySend, a, !_overflowExtras);
+                UIUtils.setViewAlpha(binding.readingOverlayLeft, a, true);
+                UIUtils.setViewAlpha(binding.readingOverlayRight, a, true);
+                UIUtils.setViewAlpha(binding.readingOverlayProgress, a, true);
+                UIUtils.setViewAlpha(binding.readingOverlayText, a, true);
+                UIUtils.setViewAlpha(binding.readingOverlaySend, a, !_overflowExtras);
             }
         });
     }
@@ -544,40 +548,40 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
         if (currentUnreadCount > this.startingUnreadCount ) {
             this.startingUnreadCount = currentUnreadCount;
         }
-        this.overlayLeft.setEnabled(this.getLastReadPosition(false) != -1);
-        this.overlayRight.setText((currentUnreadCount > 0) ? R.string.overlay_next : R.string.overlay_done);
+        this.binding.readingOverlayLeft.setEnabled(this.getLastReadPosition(false) != -1);
+        this.binding.readingOverlayRight.setText((currentUnreadCount > 0) ? R.string.overlay_next : R.string.overlay_done);
         if (currentUnreadCount > 0) {
-            this.overlayRight.setBackgroundResource(UIUtils.getThemedResource(this, R.attr.selectorOverlayBackgroundRight, android.R.attr.background));
+            this.binding.readingOverlayRight.setBackgroundResource(UIUtils.getThemedResource(this, R.attr.selectorOverlayBackgroundRight, android.R.attr.background));
         } else {
-            this.overlayRight.setBackgroundResource(UIUtils.getThemedResource(this, R.attr.selectorOverlayBackgroundRightDone, android.R.attr.background));
+            this.binding.readingOverlayRight.setBackgroundResource(UIUtils.getThemedResource(this, R.attr.selectorOverlayBackgroundRightDone, android.R.attr.background));
         }
 
         if (this.startingUnreadCount == 0 ) {
             // sessions with no unreads just show a full progress bar
-            this.overlayProgress.setMax(1);
-            this.overlayProgress.setProgress(1);
+            this.binding.readingOverlayProgress.setMax(1);
+            this.binding.readingOverlayProgress.setProgress(1);
         } else {
             int unreadProgress = this.startingUnreadCount - currentUnreadCount;
-            this.overlayProgress.setMax(this.startingUnreadCount);
-            this.overlayProgress.setProgress(unreadProgress);
+            this.binding.readingOverlayProgress.setMax(this.startingUnreadCount);
+            this.binding.readingOverlayProgress.setProgress(unreadProgress);
         }
-        this.overlayProgress.invalidate();
+        this.binding.readingOverlayProgress.invalidate();
 
         invalidateOptionsMenu();
     }
 
      private void updateOverlayText() {
-        if (overlayText == null) return;
+        if (binding.readingOverlayText == null) return;
         runOnUiThread(new Runnable() {
             public void run() {
                 ReadingItemFragment item = getReadingFragment();
                 if (item == null) return;
                 if (item.getSelectedViewMode() == DefaultFeedView.STORY) {
-                    overlayText.setBackgroundResource(UIUtils.getThemedResource(Reading.this, R.attr.selectorOverlayBackgroundText, android.R.attr.background));
-                    overlayText.setText(R.string.overlay_text);
+                    binding.readingOverlayText.setBackgroundResource(UIUtils.getThemedResource(Reading.this, R.attr.selectorOverlayBackgroundText, android.R.attr.background));
+                    binding.readingOverlayText.setText(R.string.overlay_text);
                 } else {
-                    overlayText.setBackgroundResource(UIUtils.getThemedResource(Reading.this, R.attr.selectorOverlayBackgroundStory, android.R.attr.background));
-                    overlayText.setText(R.string.overlay_story);
+                    binding.readingOverlayText.setBackgroundResource(UIUtils.getThemedResource(Reading.this, R.attr.selectorOverlayBackgroundStory, android.R.attr.background));
+                    binding.readingOverlayText.setText(R.string.overlay_story);
                 }
             }
         });
@@ -610,11 +614,11 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 	}
 
 	protected void enableMainProgress(boolean enabled) {
-        enableProgressCircle(overlayProgressRight, enabled);
+        enableProgressCircle(binding.readingOverlayProgressRight, enabled);
 	}
 
     public void enableLeftProgressCircle(boolean enabled) {
-        enableProgressCircle(overlayProgressLeft, enabled);
+        enableProgressCircle(binding.readingOverlayProgressLeft, enabled);
     }
 
     private void enableProgressCircle(final ProgressBar view, final boolean enabled) {
