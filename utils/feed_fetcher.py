@@ -74,7 +74,8 @@ class FetchFeed:
             self.options['force'] = True
             modified = None
             etag = None
-            address = qurl(address, add={"_": random.randint(0, 10000)})
+            if address.startswith('http'):
+                address = qurl(address, add={"_": random.randint(0, 10000)})
             logging.debug('   ---> [%-30s] ~FBForcing fetch: %s' % (
                           self.feed.log_title[:30], address))
         elif (not self.feed.fetched_once or not self.feed.known_good):

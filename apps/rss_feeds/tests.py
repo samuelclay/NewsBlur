@@ -16,7 +16,7 @@ class FeedTest(TestCase):
         disconnect()
         settings.MONGODB = connect('test_newsblur')
         settings.REDIS_STORY_HASH_POOL = redis.ConnectionPool(host=settings.REDIS_STORY['host'], port=6379, db=10)
-        settings.REDIS_FEED_READ_POOL = redis.ConnectionPool(host=settings.SESSION_REDIS_HOST, port=6379, db=10)
+        settings.REDIS_FEED_READ_POOL = redis.ConnectionPool(host=settings.REDIS_SESSIONS['host'], port=6379, db=10)
 
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         r.delete('RS:1')
@@ -33,9 +33,9 @@ class FeedTest(TestCase):
     def test_load_feeds__gawker(self):
         self.client.login(username='conesus', password='test')
 
-        management.call_command('loaddata', 'gawker1.json', verbosity=0, skip_checks=False)
+        management.call_command('loaddata', 'gawker1.json', verbosity=0, commit=False, skip_checks=False)
 
-        feed = Feed.objects.get(feed_link__contains='gawker')
+        feed = Feed.objects.get(pk=10)
         stories = MStory.objects(story_feed_id=feed.pk)
         self.assertEqual(stories.count(), 0)
 
@@ -44,7 +44,7 @@ class FeedTest(TestCase):
         stories = MStory.objects(story_feed_id=feed.pk)
         self.assertEqual(stories.count(), 38)
 
-        management.call_command('loaddata', 'gawker2.json', verbosity=0, skip_checks=False)
+        management.call_command('loaddata', 'gawker2.json', verbosity=0, commit=False, skip_checks=False)
 
         feed.update(force=True)
 
@@ -52,7 +52,7 @@ class FeedTest(TestCase):
         stories = MStory.objects(story_feed_id=feed.pk)
         self.assertEqual(stories.count(), 38)
 
-        url = reverse('load-single-feed', kwargs=dict(feed_id=1))
+        url = reverse('load-single-feed', kwargs=dict(feed_id=10))
         response = self.client.get(url)
         feed = json.decode(response.content)
         self.assertEqual(len(feed['stories']), 6)
@@ -60,7 +60,7 @@ class FeedTest(TestCase):
     def test_load_feeds__gothamist(self):
         self.client.login(username='conesus', password='test')
 
-        management.call_command('loaddata', 'gothamist_aug_2009_1.json', verbosity=0, skip_checks=False)
+        management.call_command('loaddata', 'gothamist_aug_2009_1.json', verbosity=0, commit=False, skip_checks=False)
         feed = Feed.objects.get(feed_link__contains='gothamist')
         stories = MStory.objects(story_feed_id=feed.pk)
         self.assertEqual(stories.count(), 0)
@@ -75,7 +75,7 @@ class FeedTest(TestCase):
         content = json.decode(response.content)
         self.assertEqual(len(content['stories']), 6)
 
-        management.call_command('loaddata', 'gothamist_aug_2009_2.json', verbosity=0, skip_checks=False)
+        management.call_command('loaddata', 'gothamist_aug_2009_2.json', verbosity=0, commit=False, skip_checks=False)
         feed.update(force=True)
 
         stories = MStory.objects(story_feed_id=feed.pk)
@@ -93,7 +93,7 @@ class FeedTest(TestCase):
 
         old_story_guid = "tag:google.com,2005:reader/item/4528442633bc7b2b"
 
-        management.call_command('loaddata', 'slashdot1.json', verbosity=0, skip_checks=False)
+        management.call_command('loaddata', 'slashdot1.json', verbosity=0, commit=False, skip_checks=False)
 
         feed = Feed.objects.get(feed_link__contains='slashdot')
         stories = MStory.objects(story_feed_id=feed.pk)
@@ -114,7 +114,7 @@ class FeedTest(TestCase):
         content = json.decode(response.content)
         self.assertEqual(content['feeds']['5']['nt'], 37)
 
-        management.call_command('loaddata', 'slashdot2.json', verbosity=0, skip_checks=False)
+        management.call_command('loaddata', 'slashdot2.json', verbosity=0, commit=False, skip_checks=False)
         management.call_command('refresh_feed', force=1, feed=5, single_threaded=True, daemonize=False, skip_checks=False)
 
         stories = MStory.objects(story_feed_id=feed.pk)
@@ -136,7 +136,7 @@ class FeedTest(TestCase):
     def test_load_feeds__motherjones(self):
         self.client.login(username='conesus', password='test')
 
-        management.call_command('loaddata', 'motherjones1.json', verbosity=0, skip_checks=False)
+        management.call_command('loaddata', 'motherjones1.json', verbosity=0, commit=False, skip_checks=False)
 
         feed = Feed.objects.get(feed_link__contains='motherjones')
         stories = MStory.objects(story_feed_id=feed.pk)
@@ -157,7 +157,7 @@ class FeedTest(TestCase):
         content = json.decode(response.content)
         self.assertEqual(content['feeds'][str(feed.pk)]['nt'], 9)
 
-        management.call_command('loaddata', 'motherjones2.json', verbosity=0, skip_checks=False)
+        management.call_command('loaddata', 'motherjones2.json', verbosity=0, commit=False, skip_checks=False)
         management.call_command('refresh_feed', force=1, feed=feed.pk, single_threaded=True, daemonize=False, skip_checks=False)
 
         stories = MStory.objects(story_feed_id=feed.pk)
@@ -225,12 +225,16 @@ class FeedTest(TestCase):
         self.assertEqual(content['feeds']['766']['nt'], 19)
         
     def test_load_feeds__brokelyn__invalid_xml(self):
+        BROKELYN_FEED_ID = 16
         self.client.login(username='conesus', password='test')
+        management.call_command('loaddata', 'brokelyn.json', verbosity=0, commit=False)
+        self.assertEquals(Feed.objects.get(pk=BROKELYN_FEED_ID).pk, BROKELYN_FEED_ID)
+        management.call_command('refresh_feed', force=1, feed=BROKELYN_FEED_ID, single_threaded=True, daemonize=False)
 
-        management.call_command('loaddata', 'brokelyn.json', verbosity=0, skip_checks=False)
+        management.call_command('loaddata', 'brokelyn.json', verbosity=0, commit=False, skip_checks=False)
         management.call_command('refresh_feed', force=1, feed=6, single_threaded=True, daemonize=False, skip_checks=False)
 
-        url = reverse('load-single-feed', kwargs=dict(feed_id=6))
+        url = reverse('load-single-feed', kwargs=dict(feed_id=BROKELYN_FEED_ID))
         response = self.client.get(url)
 
         # pprint([c['story_title'] for c in json.decode(response.content)])

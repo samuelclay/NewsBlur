@@ -775,6 +775,28 @@
 			<string>story_browser</string>
 		</dict>
 		<dict>
+			<key>FooterText</key>
+			<string>This setting only applies after the app is restarted.</string>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Play videos</string>
+			<key>Titles</key>
+			<array>
+				<string>Inline</string>
+				<string>Full-screen</string>
+			</array>
+			<key>DefaultValue</key>
+			<string>inline</string>
+			<key>Values</key>
+			<array>
+				<string>inline</string>
+				<string>fullscreen</string>
+			</array>
+			<key>Key</key>
+			<string>video_playback</string>
+		</dict>
+		<dict>
 			<key>Type</key>
 			<string>PSMultiValueSpecifier</string>
 			<key>Title</key>
