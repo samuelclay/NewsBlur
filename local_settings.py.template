@@ -26,9 +26,9 @@ AUTO_PREMIUM_NEW_USERS = True
 AUTO_ENABLE_NEW_USERS = True
 ENFORCE_SIGNUP_CAPTCHA = False
 
-# CACHES = 'dummy:///'
-# CACHES = 'locmem:///'
-# CACHES = 'memcached://127.0.0.1:11211'
+# CACHE_BACKEND = 'dummy:///'
+# CACHE_BACKEND = 'locmem:///'
+# CACHE_BACKEND = 'memcached://127.0.0.1:11211'
 
 CACHES = {
     'default': {
@@ -88,6 +88,11 @@ MONGO_DB = {
     'host': '127.0.0.1',
     'port': 27017
 }
+MONGO_ANALYTICS_DB = {
+    'name': 'nbanalytics',
+    'host': '128.0.0.1',
+    'port': 27017,
+}
 
 MONGODB_SLAVE = {
     'host': '127.0.0.1'
@@ -105,6 +110,10 @@ REDIS_PUBSUB = {
 }
 REDIS_STORY = {
     'host': '127.0.0.1',
+}
+REDIS_SESSIONS = {
+    'host': '127.0.0.1',
+    'port': 6379
 }
 
 ELASTICSEARCH_FEED_HOSTS = ["127.0.0.1:9200"]
@@ -153,5 +162,5 @@ SESSION_ENGINE = 'redis_sessions.session'
 # CORS_ORIGIN_REGEX_WHITELIST = ('^(https?://)?(\w+\.)?nb.local\.com$', )
 
 YOUTUBE_API_KEY = "000000000000000000000000000000000000000"
-RECAPTCHA_SECRET_KEY = "6LdlSv8UAAAAAGQPPGwWUZaPAL4mQie_ecr-oRbm"
+RECAPTCHA_SECRET_KEY = "0000000000000000000000000000000000000000"
 IMAGES_SECRET_KEY = "0000000000000000000000000000000"

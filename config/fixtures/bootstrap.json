@@ -6,6 +6,32 @@
             "domain": "localhost",
             "name": "NewsBlur"
         }
+    },    
+    {
+        "pk": 2,
+        "model": "sites.site",
+        "fields": {
+            "domain": "testserver",
+            "name": "NewsBlur Tests"
+        }
+    },
+    {
+        "pk": 1,
+        "model": "auth.user",
+        "fields": {
+            "username": "homepage",
+            "first_name": "",
+            "last_name": "",
+            "is_active": true,
+            "is_superuser": false,
+            "is_staff": false,
+            "last_login": "2011-07-18 00:23:49",
+            "groups": [],
+            "user_permissions": [],
+            "password": "sha1$d5473$d07ce4495b088ff0f41a62d5113d0189ce8f0096",
+            "email": "homepage@newsblur.com",
+            "date_joined": "2011-07-18 00:23:49"
+        }
     },
     {
         "pk": 1,
@@ -24,10 +50,10 @@
         }
     },
     {
-        "pk": 1,
+        "pk": 2,
         "model": "auth.user",
         "fields": {
-            "username": "newsblur",
+            "username": "popular",
             "first_name": "",
             "last_name": "",
             "is_active": true,
@@ -37,11 +63,27 @@
             "groups": [],
             "user_permissions": [],
             "password": "sha1$d5473$d07ce4495b088ff0f41a62d5113d0189ce8f0096",
-            "email": "samuel@newsblur.com",
+            "email": "popular@newsblur.com",
             "date_joined": "2011-07-18 00:23:49"
         }
     },
-        {
+    {
+        "pk": 2,
+        "model": "profile.profile",
+        "fields": {
+            "secret_token": "4a700381ea08",
+            "feed_pane_size": 242,
+            "last_seen_ip": null,
+            "view_settings": "{}",
+            "is_premium": false,
+            "user": 2,
+            "collapsed_folders": "[]",
+            "timezone": "America/New_York",
+            "last_seen_on": "2011-07-18 02:30:37",
+            "preferences": "{}"
+        }
+    },
+    {
         "pk": 1,
         "model": "rss_feeds.feed",
         "fields": {
@@ -50,8 +92,8 @@
             "exception_code": 500,
             "last_load_time": 1,
             "active_subscribers": 1,
-            "feed_address": "http://blog.newsblur.com/rss",
-            "feed_link": "http://blog.newsblur.com/",
+            "feed_address": "https://blog.newsblur.com/rss",
+            "feed_link": "https://blog.newsblur.com/",
             "last_update": "2011-07-18 04:27:26",
             "etag": "",
             "average_stories_per_month": 0,
