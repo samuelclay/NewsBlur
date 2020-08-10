@@ -5,8 +5,11 @@ from django.core.urlresolvers import reverse
 from django.conf import settings
 from mongoengine.connection import connect, disconnect
 
-class ProfiuleTest(TestCase):
-    fixtures = ['rss_feeds.json']
+class ProfileTest(TestCase):
+    fixtures = [
+        'subscriptions.json',
+        'rss_feeds.json',
+    ]
     
     def setUp(self):
         disconnect()
@@ -17,10 +20,18 @@ class ProfiuleTest(TestCase):
         settings.MONGODB.drop_database('test_newsblur')
             
     def test_create_account(self):
+        resp = self.client.get(reverse('load-feeds'))
+        response = json.decode(resp.content)
+        self.assertEquals(response['authenticated'], False)
+
         response = self.client.post(reverse('welcome-signup'), {
-            'signup_username': 'test',
-            'signup_password': 'password',
-            'signup_email': 'test@newsblur.com',
+            'signup-username': 'test',
+            'signup-password': 'password',
+            'signup-email': 'test@newsblur.com',
         })
-        
+        self.assertEquals(response.status_code, 302)
+
+        resp = self.client.get(reverse('load-feeds'))
+        response = json.decode(resp.content)
+        self.assertEquals(response['authenticated'], True)
         

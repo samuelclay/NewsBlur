@@ -402,6 +402,7 @@
     <string name="feed_intel_author_header">AUTHORS</string>
     <string name="intel_feed_header">EVERYTHING BY PUBLISHER</string>
 
+    <string name="auto">Auto</string>
     <string name="light">Light</string>
     <string name="dark">Dark</string>
     <string name="black">Black</string>
@@ -493,6 +494,7 @@
     </string-array>
     <string name="rtl_gesture_action_value">GEST_ACTION_MARKUNREAD</string>
 
+    <string name="default_browser">Default browser</string>
     <string name="font">Font</string>
     <string name="default_font">Default</string>
     <string name="whitney_font">Whitney</string>
@@ -510,6 +512,25 @@
     <string name="noto_sans_font_prefvalue">NOTO_SANS</string>
     <string name="noto_serif_font_prefvalue">NOTO_SERIF</string>
     <string name="open_sans_condensed_font_prefvalue">OPEN_SANS_CONDENSED</string>
+    <string name="system_default_prefvalue">SYSTEM_DEFAULT</string>
+    <string name="in_app_browser_prefvalue">IN_APP_BROWSER</string>
+    <string name="chrome_prefvalue">CHROME</string>
+    <string name="firefox_prefvalue">FIREFOX</string>
+    <string name="opera_mini_prefvalue">OPERA_MINI</string>
+    <string-array name="default_browser_entries">
+        <item>System default</item>
+        <item>In-app browser</item>
+        <item>Chrome</item>
+        <item>Firefox</item>
+        <item>Opera Mini</item>
+    </string-array>
+    <string-array name="default_browser_values">
+        <item>@string/system_default_prefvalue</item>
+        <item>@string/in_app_browser_prefvalue</item>
+        <item>@string/chrome_prefvalue</item>
+        <item>@string/firefox_prefvalue</item>
+        <item>@string/opera_mini_prefvalue</item>
+    </string-array>
     <string-array name="default_font_entries">
         <item>@string/anonymous_pro_font</item>
         <item>@string/chronicle_font</item>
@@ -531,6 +552,7 @@
         <item>@string/whitney_font_prefvalue</item>
     </string-array>
     <string name="default_font_value">DEFAULT</string>
+    <string name="default_default_browser">@string/system_default_prefvalue</string>
 
     <string name="story_notification_channel_id">story_notification_channel</string>
     <string name="story_notification_channel_name">New Stories</string>

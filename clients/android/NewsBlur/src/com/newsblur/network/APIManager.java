@@ -561,7 +561,7 @@ public class APIManager {
 	public AddFeedResponse addFeed(String feedUrl, @Nullable String folderName) {
 		ContentValues values = new ContentValues();
 		values.put(APIConstants.PARAMETER_URL, feedUrl);
-		if (!TextUtils.isEmpty(folderName)) {
+		if (!TextUtils.isEmpty(folderName) && !folderName.equals(AppConstants.ROOT_FOLDER)) {
 		    values.put(APIConstants.PARAMETER_FOLDER, folderName);
         }
 		APIResponse response = post(buildUrl(APIConstants.PATH_ADD_FEED), values);

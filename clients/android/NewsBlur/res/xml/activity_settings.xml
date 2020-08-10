@@ -106,6 +106,13 @@
         android:title="@string/settings_reading"
         android:key="reading">
         <ListPreference
+            android:key="default_browser"
+            android:title="@string/default_browser"
+            android:dialogTitle="@string/default_browser"
+            android:entries="@array/default_browser_entries"
+            android:entryValues="@array/default_browser_values"
+            android:defaultValue="@string/default_default_browser" />
+        <ListPreference
             android:key="reading_font"
             android:title="@string/font"
             android:dialogTitle="@string/font"
