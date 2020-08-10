@@ -38,6 +38,7 @@ javascripts:
         - media/js/vendor/jquery.ajaxmanager.3.js
         - media/js/vendor/jquery.simplemodal-1.4.js
         - media/js/vendor/jquery.color.js
+        - media/js/vendor/jquery.wakeup.js
         - media/js/vendor/jquery-ui-1.12.1.js
         # - media/js/vendor/jquery.ui.autocomplete.js
         # - media/js/vendor/jquery.ui.core.js
@@ -54,6 +55,7 @@ javascripts:
         - media/js/vendor/jquery.tinysort.js
         - media/js/vendor/jquery.fieldselection.js
         - media/js/vendor/jquery.tipsy.js
+        - media/js/vendor/tippy-*.js
         - media/js/vendor/jquery.autosize.js
         - media/js/vendor/jquery.chosen.js
         - media/js/vendor/jquery.effects.core.js
@@ -72,6 +74,7 @@ javascripts:
         - media/js/vendor/highlight.js
         - media/js/vendor/fitvid.js
         - media/js/vendor/imagesLoaded-*.js
+        - media/js/vendor/mark.js
         - media/js/newsblur/reader/reader_utils.js
         - media/js/newsblur/reader/reader.js
         - media/js/newsblur/reader/reader_popover.js

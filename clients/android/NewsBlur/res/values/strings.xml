@@ -37,7 +37,8 @@
 
     <string name="title_choose_folders">Choose Folders for Feed %s</string>
     <string name="title_rename_feed">Rename Feed %s</string>
-	
+    <string name="title_rename_folder">Rename Folder %s</string>
+
 	<string name="all_stories_row_title">ALL STORIES</string>
 	<string name="all_stories_title">All Stories</string>
 	<string name="infrequent_row_title">INFREQUENT SITE STORIES</string>
@@ -50,6 +51,7 @@
 	<string name="read_stories_title">Read Stories</string>
 	<string name="saved_stories_row_title">SAVED STORIES</string>
 	<string name="saved_stories_title">Saved Stories</string>
+    <string name="saved_searches_row_title">SAVED SEARCHES</string>
 
     <string name="top_level">TOP LEVEL</string>
 	
@@ -63,6 +65,7 @@
     <string name="unshare">DELETE SHARE</string>
     <string name="update_shared">UPDATE COMMENT</string>
     <string name="feed_name_save">RENAME FEED</string>
+    <string name="folder_name_save">RENAME FOLDER</string>
 
 	<string name="save_this">SAVE</string>
 	<string name="unsave_this">REMOVE FROM SAVED</string>
@@ -132,6 +135,7 @@
     <string name="menu_send_story_full">Send story to…</string>
     <string name="menu_mark_feed_as_read">Mark feed as read</string>
     <string name="menu_delete_feed">Delete feed</string>
+    <string name="menu_delete_saved_search">Delete saved search</string>
     <string name="menu_unfollow">Unfollow user</string>
     <string name="menu_choose_folders">Choose folders</string>
     <string name="menu_notifications_choose">Notifications…</string>
@@ -156,6 +160,8 @@
     <string name="menu_unmute_feed">Unmute feed</string>
     <string name="menu_mute_folder">Mute folder</string>
     <string name="menu_unmute_folder">Unmute folder</string>
+    <string name="menu_delete_folder">Delete folder</string>
+    <string name="menu_rename_folder">Rename folder</string>
     <string name="menu_instafetch_feed">Insta-fetch stories</string>
     <string name="menu_infrequent_cutoff">Infrequent stories per month</string>
     <string name="menu_intel">Intelligence trainer</string>
@@ -196,13 +202,19 @@
     <string name="menu_add_feed">Add new feed</string>
     <string name="menu_search">Search</string>
     <string name="adding_feed_progress">Adding feed…</string>
+    <string name="add_folder_name">Please enter folder name</string>
+    <string name="add_new_folder">+ Add new folder</string>
+    <string name="new_folder_name_hint">Enter new folder name</string>
     <string name="add_feed_error">Could not add feed</string>
+    <string name="add_folder_error">Could not add folder</string>
     <string name="menu_mark_all_as_read">Mark all as read</string>
     <string name="menu_logout">Log out</string>
     <string name="menu_feedback">Send app feedback</string>
     <string name="menu_feedback_post">Create a feedback post</string>
     <string name="menu_feedback_email">Email a bug report</string>
     <string name="menu_theme_choose">Theme…</string>
+
+    <string name="description_add_new_folder_icon">Add new folder icon</string>
 
     <string name="menu_loginas">Login as...</string>
 
@@ -234,6 +246,9 @@
     <string name="friends_shares_count">%d SHARES</string>
     <string name="unknown_user">Unknown User</string>
     <string name="delete_feed_message">Delete feed \&quot;%s\&quot;?</string>
+    <string name="delete_saved_search_message">Delete saved search %s?</string>
+    <string name="delete_folder_message">Delete folder \&quot;%s\&quot; and unsubscribe from all feeds inside?</string>
+    <string name="add_saved_search_message">Save search \&quot;%s\&quot;?</string>
     <string name="unfollow_message">Unfollow \&quot;%s\&quot;?</string>
     <string name="feed_subscribers">%s subscribers</string>
     <string name="feed_opens">%d opens</string>
@@ -387,6 +402,7 @@
     <string name="feed_intel_author_header">AUTHORS</string>
     <string name="intel_feed_header">EVERYTHING BY PUBLISHER</string>
 
+    <string name="auto">Auto</string>
     <string name="light">Light</string>
     <string name="dark">Dark</string>
     <string name="black">Black</string>
@@ -403,6 +419,7 @@
     <string name="sync_status_text">Storing text for %s stories...</string>
     <string name="sync_status_images">Storing %s images...</string>
     <string name="sync_status_offline">Offline</string>
+    <string name="sync_status_feed_add">Adding feed …</string>
 
     <string name="volume_key_navigation">Volume Key Navigation</string>
     <string name="off">Off</string>
@@ -477,6 +494,7 @@
     </string-array>
     <string name="rtl_gesture_action_value">GEST_ACTION_MARKUNREAD</string>
 
+    <string name="default_browser">Default browser</string>
     <string name="font">Font</string>
     <string name="default_font">Default</string>
     <string name="whitney_font">Whitney</string>
@@ -494,6 +512,25 @@
     <string name="noto_sans_font_prefvalue">NOTO_SANS</string>
     <string name="noto_serif_font_prefvalue">NOTO_SERIF</string>
     <string name="open_sans_condensed_font_prefvalue">OPEN_SANS_CONDENSED</string>
+    <string name="system_default_prefvalue">SYSTEM_DEFAULT</string>
+    <string name="in_app_browser_prefvalue">IN_APP_BROWSER</string>
+    <string name="chrome_prefvalue">CHROME</string>
+    <string name="firefox_prefvalue">FIREFOX</string>
+    <string name="opera_mini_prefvalue">OPERA_MINI</string>
+    <string-array name="default_browser_entries">
+        <item>System default</item>
+        <item>In-app browser</item>
+        <item>Chrome</item>
+        <item>Firefox</item>
+        <item>Opera Mini</item>
+    </string-array>
+    <string-array name="default_browser_values">
+        <item>@string/system_default_prefvalue</item>
+        <item>@string/in_app_browser_prefvalue</item>
+        <item>@string/chrome_prefvalue</item>
+        <item>@string/firefox_prefvalue</item>
+        <item>@string/opera_mini_prefvalue</item>
+    </string-array>
     <string-array name="default_font_entries">
         <item>@string/anonymous_pro_font</item>
         <item>@string/chronicle_font</item>
@@ -515,6 +552,7 @@
         <item>@string/whitney_font_prefvalue</item>
     </string-array>
     <string name="default_font_value">DEFAULT</string>
+    <string name="default_default_browser">@string/system_default_prefvalue</string>
 
     <string name="story_notification_channel_id">story_notification_channel</string>
     <string name="story_notification_channel_name">New Stories</string>
