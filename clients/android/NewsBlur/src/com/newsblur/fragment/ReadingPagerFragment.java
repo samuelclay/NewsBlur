@@ -1,16 +1,13 @@
 package com.newsblur.fragment;
 
 import android.os.Bundle;
-import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import butterknife.ButterKnife;
-import butterknife.Bind;
-
 import com.newsblur.R;
 import com.newsblur.activity.Reading;
+import com.newsblur.databinding.FragmentReadingpagerBinding;
 
 /*
  * A fragment to hold the story pager.  Eventually this fragment should hold much of the UI and logic
@@ -20,8 +17,6 @@ import com.newsblur.activity.Reading;
  * expect this design.
  */
 public class ReadingPagerFragment extends NbFragment {
-
-    @Bind(R.id.reading_pager) ViewPager pager;
 
 	public static ReadingPagerFragment newInstance() {
 		ReadingPagerFragment fragment = new ReadingPagerFragment();
@@ -33,12 +28,12 @@ public class ReadingPagerFragment extends NbFragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View v = inflater.inflate(R.layout.fragment_readingpager, null);
-        ButterKnife.bind(this, v);
+		FragmentReadingpagerBinding binding = FragmentReadingpagerBinding.bind(v);
 
         Reading activity = ((Reading) getActivity());
 
-		pager.addOnPageChangeListener(activity);
-        activity.offerPager(pager, getChildFragmentManager());
+		binding.readingPager.addOnPageChangeListener(activity);
+        activity.offerPager(binding.readingPager, getChildFragmentManager());
 		return v;
 	}
 

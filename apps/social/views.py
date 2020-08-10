@@ -1305,6 +1305,7 @@ def shared_stories_rss_feed_noid(request):
 
     return index
 
+@ratelimit(minutes=1, requests=5)
 def shared_stories_rss_feed(request, user_id, username):
     try:
         user = User.objects.get(pk=user_id)

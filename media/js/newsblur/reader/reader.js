@@ -140,6 +140,7 @@
             this.load_intelligence_slider();
             this.handle_mouse_indicator_hover();
             this.handle_login_and_signup_forms();
+            this.handle_wakeup();
             this.apply_story_styling();
             this.load_recommended_feeds();
             this.setup_dashboard_graphs();
@@ -1809,15 +1810,27 @@
 
             this.iframe_scroll = null;
             if (options.tag && !options.model) {
-                var model = NEWSBLUR.assets.starred_feeds.detect(function(feed) {
-                    return feed.tag_slug() == options.tag || feed.get('tag') == options.tag;
-                });
+                if (options.tag == 'highlights') {
+                    var model = NEWSBLUR.assets.starred_feeds.detect(function(feed) {
+                        return feed.get('is_highlights');
+                    });
+                } else {
+                    var model = NEWSBLUR.assets.starred_feeds.detect(function(feed) {
+                        return feed.tag_slug() == options.tag || feed.get('tag') == options.tag;
+                    });
+                }
                 if (model) {
                     options.model = model;
                     options.tag = model.get('tag');
+                    options.highlights = model.get('is_highlights');
+                    if (options.highlights) options.tag = "highlights";
                 }
             }
-            if (options.tag) {
+            if (options.tag == "highlights") {
+                this.active_feed = options.model.id;
+                this.flags['starred_tag'] = "highlights";
+                options.model.set('selected', true);
+            } else if (options.tag) {
                 this.active_feed = options.model.id;
                 this.flags['starred_tag'] = options.model.get('tag');
                 if (options.feed) {
@@ -1868,7 +1881,7 @@
             }
             NEWSBLUR.app.taskbar_info.hide_stories_error();
             
-            this.model.fetch_starred_stories(1, this.flags['starred_tag'], _.bind(this.post_open_starred_stories, this), 
+            this.model.fetch_starred_stories(1, this.flags['starred_tag'], this.flags['starred_tag'] == 'highlights', _.bind(this.post_open_starred_stories, this), 
                                              NEWSBLUR.app.taskbar_info.show_stories_error, true);
 
 
@@ -2779,7 +2792,7 @@
             if (this.active_feed == 'river:infrequent') options.infrequent = NEWSBLUR.assets.preference('infrequent_stories_per_month');
             
             if (this.flags['starred_view']) {
-                this.model.fetch_starred_stories(this.counts['page'], this.flags['starred_tag'], _.bind(this.post_open_starred_stories, this),
+                this.model.fetch_starred_stories(this.counts['page'], this.flags['starred_tag'], this.flags['starred_tag'] == 'highlights', _.bind(this.post_open_starred_stories, this),
                                                  NEWSBLUR.app.taskbar_info.show_stories_error, false);
             } else if (this.active_feed == 'read') {
                 this.model.fetch_read_stories(this.counts['page'], _.bind(this.post_open_read_stories, this),
@@ -5074,7 +5087,7 @@
                     // $('.NB-module-content-account-realtime-subtitle').html($.make('b', 'Updating every 60 sec'));
                     $('.NB-module-content-account-realtime').attr('title', 'Updating sites every ' + this.flags.refresh_interval + ' seconds...').addClass('NB-error').removeClass('NB-active');
                     this.apply_tipsy_titles();
-                    _.delay(_.bind(this.setup_socket_realtime_unread_counts, this), 60*1000);
+                    _.delay(_.bind(this.setup_socket_realtime_unread_counts, this), Math.random()*60*1000);
                 }, this));
                 this.socket.on('reconnect_failed', _.bind(function() {
                     console.log(["Socket.io reconnect failed"]);
@@ -5096,7 +5109,7 @@
             window.addEventListener('online', _.bind(this.setup_socket_realtime_unread_counts, this));
             window.addEventListener('offline', _.bind(this.setup_socket_realtime_unread_counts, this));
         },
-        
+
         send_socket_active_feeds: function() {
             if (!this.socket) return;
             
@@ -5112,6 +5125,14 @@
             return active_feeds;
         },
         
+        handle_wakeup: function() {
+            $.dreamOn();
+            $.wakeUp(_.bind(function() {
+                console.log(["Wakeup, reconnecting to real-time socket.io...", new Date()]);
+                this.setup_socket_realtime_unread_counts();
+            }, this), {}, 1 * 1000);
+        },
+
         setup_feed_refresh: function(new_feeds) {
             var self = this;
             var refresh_interval = this.constants.FEED_REFRESH_INTERVAL;
