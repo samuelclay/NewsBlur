@@ -734,8 +734,9 @@ static const CGFloat kFolderTitleHeight = 36.0;
     if (self.operation == FeedChooserOperationMuteSites) {
         UIImage *image = [UIImage imageNamed:@"mute_feed_on.png"];
         UIImage *highlightedImage = [UIImage imageNamed:@"mute_feed_off.png"];
-        
-        cell.accessoryView = [[UIImageView alloc] initWithImage:image highlightedImage:highlightedImage];
+        UIImageView *imageView = [[UIImageView alloc] initWithImage:image highlightedImage:highlightedImage];
+        imageView.highlighted = [tableView.indexPathsForSelectedRows containsObject:indexPath];
+        cell.accessoryView = imageView;
     } else {
         cell.accessoryView = nil;
     }
@@ -778,6 +779,10 @@ static const CGFloat kFolderTitleHeight = 36.0;
         [self setWidgetIncludes:YES itemForIndexPath:indexPath];
     }
     
+    UIImageView *imageView = (UIImageView *)[tableView cellForRowAtIndexPath:indexPath].accessoryView;
+    
+    imageView.highlighted = YES;
+    
     [self updateControls];
 }
 
@@ -785,6 +790,10 @@ static const CGFloat kFolderTitleHeight = 36.0;
     if (self.operation == FeedChooserOperationWidgetSites) {
         [self setWidgetIncludes:NO itemForIndexPath:indexPath];
     }
+    
+    UIImageView *imageView = (UIImageView *)[tableView cellForRowAtIndexPath:indexPath].accessoryView;
+    
+    imageView.highlighted = NO;
     
     [self updateControls];
 }

@@ -19,4 +19,8 @@ public class FolderItemsList extends ItemsList {
         UIUtils.setCustomActionBar(this, R.drawable.g_icn_folder_rss, folderName);
 	}
 
+	@Override
+	String getSaveSearchFeedId() {
+		return "river:" + folderName;
+	}
 }
