@@ -9,6 +9,7 @@ import java.util.Set;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import com.newsblur.R;
@@ -18,6 +19,7 @@ import com.newsblur.domain.Classifier;
 import com.newsblur.domain.Feed;
 import com.newsblur.domain.Folder;
 import com.newsblur.domain.SocialFeed;
+import com.newsblur.domain.StarredCount;
 import com.newsblur.domain.Story;
 import com.newsblur.fragment.ReadingActionConfirmationFragment;
 import com.newsblur.network.APIManager;
@@ -109,6 +111,40 @@ public class FeedUtils {
         }.execute();
     }
 
+    public static void deleteSavedSearch(final String feedId, final String query, final Context context, final APIManager apiManager) {
+        new AsyncTask<Void, Void, NewsBlurResponse>() {
+            @Override
+            protected NewsBlurResponse doInBackground(Void... voids) {
+                return apiManager.deleteSearch(feedId, query);
+            }
+
+            @Override
+            protected void onPostExecute(NewsBlurResponse newsBlurResponse) {
+                if (!newsBlurResponse.isError()) {
+                    dbHelper.deleteSavedSearch(feedId, query);
+                    NbActivity.updateAllActivities(NbActivity.UPDATE_METADATA);
+                }
+            }
+        }.execute();
+    }
+
+    public static void saveSearch(final String feedId, final String query, final Context context, final APIManager apiManager) {
+        new AsyncTask<Void, Void, NewsBlurResponse>() {
+            @Override
+            protected NewsBlurResponse doInBackground(Void... voids) {
+                return apiManager.saveSearch(feedId, query);
+            }
+
+            @Override
+            protected void onPostExecute(NewsBlurResponse newsBlurResponse) {
+                if (!newsBlurResponse.isError()) {
+                    NBSyncService.forceFeedsFolders();
+                    triggerSync(context);
+                }
+            }
+        }.execute();
+    }
+
     public static void deleteFeed(final String feedId, final String folderName, final Context context, final APIManager apiManager) {
         new AsyncTask<Void, Void, NewsBlurResponse>() {
             @Override
@@ -136,6 +172,42 @@ public class FeedUtils {
                 // TODO: we can't check result.isError() because the delete call sets the .message property on all calls. find a better error check
                 dbHelper.deleteSocialFeed(userId);
                 NbActivity.updateAllActivities(NbActivity.UPDATE_METADATA);
+            }
+        }.execute();
+    }
+
+    public static void deleteFolder(final String folderName, final String inFolder, final Context context, final APIManager apiManager) {
+        new AsyncTask<Void, Void, NewsBlurResponse>() {
+            @Override
+            protected NewsBlurResponse doInBackground(Void... voids) {
+                return apiManager.deleteFolder(folderName, inFolder);
+            }
+
+            @Override
+            protected void onPostExecute(NewsBlurResponse result) {
+                super.onPostExecute(result);
+                if (!result.isError()) {
+                    NBSyncService.forceFeedsFolders();
+                    triggerSync(context);
+                }
+            }
+        }.execute();
+    }
+
+    public static void renameFolder(final String folderName, final String newFolderName, final String inFolder, final Context context, final APIManager apiManager) {
+        new AsyncTask<Void, Void, NewsBlurResponse>() {
+            @Override
+            protected NewsBlurResponse doInBackground(Void... voids) {
+                return apiManager.renameFolder(folderName, newFolderName, inFolder);
+            }
+
+            @Override
+            protected void onPostExecute(NewsBlurResponse result) {
+                super.onPostExecute(result);
+                if (!result.isError()) {
+                    NBSyncService.forceFeedsFolders();
+                    triggerSync(context);
+                }
             }
         }.execute();
     }
@@ -518,4 +590,8 @@ public class FeedUtils {
         return dbHelper.getSocialFeed(feedId);
     }
 
+    @Nullable
+    public static StarredCount getStarredFeedByTag(String feedId) {
+        return dbHelper.getStarredFeedByTag(feedId);
+    }
 }

@@ -139,9 +139,9 @@ class ClassifierTest(TestCase):
         # user = User.objects.all()
         # feed = Feed.objects.all()
         
-        management.call_command('loaddata', 'brownstoner.json', verbosity=0, skip_checks=False)
+        management.call_command('loaddata', 'brownstoner.json', verbosity=0, commit=False, skip_checks=False)
         management.call_command('refresh_feed', force=1, feed=1, single_threaded=True, daemonize=False, skip_checks=False)
-        management.call_command('loaddata', 'brownstoner2.json', verbosity=0, skip_checks=False)
+        management.call_command('loaddata', 'brownstoner2.json', verbosity=0, commit=False, skip_checks=False)
         management.call_command('refresh_feed', force=1, feed=1, single_threaded=True, daemonize=False, skip_checks=False)
         
         stories = MStory.objects(story_feed_id=1)[:53]
