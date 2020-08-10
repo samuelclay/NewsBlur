@@ -1,19 +1,17 @@
 package com.newsblur.fragment;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.widget.RadioButton;
-
-import butterknife.ButterKnife;
-import butterknife.Bind;
-import butterknife.OnClick;
 
 import com.newsblur.R;
+import com.newsblur.databinding.ReadfilterDialogBinding;
 import com.newsblur.util.ReadFilter;
 import com.newsblur.util.ReadFilterChangedListener;
 
@@ -21,8 +19,7 @@ public class ReadFilterDialogFragment extends DialogFragment {
 	
 	private static String CURRENT_FILTER = "currentFilter";
 	private ReadFilter currentValue;
-    @Bind(R.id.radio_all) RadioButton allButton;
-    @Bind(R.id.radio_unread) RadioButton unreadButton;
+	private ReadfilterDialogBinding binding;
 
 	public static ReadFilterDialogFragment newInstance(ReadFilter currentValue) {
 		ReadFilterDialogFragment dialog = new ReadFilterDialogFragment();
@@ -42,10 +39,10 @@ public class ReadFilterDialogFragment extends DialogFragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle bundle) {
 		currentValue = (ReadFilter) getArguments().getSerializable(CURRENT_FILTER);
 		View v = inflater.inflate(R.layout.readfilter_dialog, null);
-        ButterKnife.bind(this, v);
+		binding = ReadfilterDialogBinding.bind(v);
 
-		allButton.setChecked(currentValue == ReadFilter.ALL);
-		unreadButton.setChecked(currentValue == ReadFilter.UNREAD);
+		binding.radioAll.setChecked(currentValue == ReadFilter.ALL);
+		binding.radioUnread.setChecked(currentValue == ReadFilter.UNREAD);
 		
 		getDialog().requestWindowFeature(Window.FEATURE_NO_TITLE);
 		getDialog().getWindow().getAttributes().gravity = Gravity.BOTTOM;
@@ -53,14 +50,31 @@ public class ReadFilterDialogFragment extends DialogFragment {
 		return v;
 	}
 
-    @OnClick(R.id.radio_all) void selectAll() {
+	@Override
+	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+		super.onViewCreated(view, savedInstanceState);
+		binding.radioAll.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				selectAll();
+			}
+		});
+		binding.radioUnread.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				selectUnread();
+			}
+		});
+	}
+
+	private void selectAll() {
         if (currentValue != ReadFilter.ALL) {
             ((ReadFilterChangedListener) getActivity()).readFilterChanged(ReadFilter.ALL);
         }
         dismiss();
     }
 
-    @OnClick(R.id.radio_unread) void selectUnread() {
+    private void selectUnread() {
         if (currentValue != ReadFilter.UNREAD) {
             ((ReadFilterChangedListener) getActivity()).readFilterChanged(ReadFilter.UNREAD);
         }

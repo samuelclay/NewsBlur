@@ -10,7 +10,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from mongoengine.queryset import OperationError
 import vendor.opml as opml
-from apps.rss_feeds.models import Feed, DuplicateFeed, MStarredStory
+from apps.rss_feeds.models import Feed, DuplicateFeed
 from apps.reader.models import UserSubscription, UserSubscriptionFolders
 from utils import json_functions as json, urlnorm
 from utils import log as logging
