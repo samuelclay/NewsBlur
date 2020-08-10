@@ -3094,8 +3094,13 @@ class MStarredStoryCounts(mongo.Document):
         highlighted_count = MStarredStory.objects(user_id=user_id, 
                                                   highlights__exists=True,
                                                   __raw__={"$where": "this.highlights.length > 0"}).count()
-        cls.objects(user_id=user_id, 
-                    is_highlights=True, slug="highlights").update_one(set__count=highlighted_count, upsert=True)
+        if highlighted_count > 0:
+            cls.objects(user_id=user_id, 
+                        is_highlights=True, 
+                        slug="highlights"
+                       ).update_one(set__count=highlighted_count, upsert=True)
+        else:
+            cls.objects(user_id=user_id, is_highlights=True, slug="highlights").delete()
         
         return highlighted_count
         
