@@ -34,6 +34,7 @@ public class FeedSet implements Serializable {
 
     private String folderName;
     private String searchQuery;
+    private String searchFeedId;
     private boolean isFilterSaved = false;
     private boolean muted = false;
 
@@ -72,17 +73,6 @@ public class FeedSet implements Serializable {
         for (String id : userIds) {
             fs.socialFeeds.put(id, "");
         }
-        return fs;
-    }
-
-    /**
-     * Convenience constructor for multiple feeds with IDs
-     */
-    public static FeedSet multipleFeeds(Set<String> feedIds) {
-        FeedSet fs = new FeedSet();
-        fs.feeds = new HashSet<>(feedIds.size());
-        fs.feeds.addAll(feedIds);
-        fs.feeds = Collections.unmodifiableSet(fs.feeds);
         return fs;
     }
 
@@ -130,6 +120,16 @@ public class FeedSet implements Serializable {
         fs.savedTags = new HashSet<String>(1);
         fs.savedTags.add(tag);
         fs.savedTags = Collections.unmodifiableSet(fs.savedTags);
+        return fs;
+    }
+
+    /**
+     * Convenience constructor for a single saved search.
+     */
+    public static FeedSet singleSavedSearch(String feedId, String searchQuery) {
+        FeedSet fs = new FeedSet();
+        fs.searchQuery = searchQuery;
+        fs.searchFeedId = feedId;
         return fs;
     }
 
@@ -279,6 +279,10 @@ public class FeedSet implements Serializable {
 
     public String getSearchQuery() {
         return this.searchQuery;
+    }
+
+    public String getSearchFeedId() {
+        return this.searchFeedId;
     }
 
     public void setFilterSaved(boolean isFilterSaved) {

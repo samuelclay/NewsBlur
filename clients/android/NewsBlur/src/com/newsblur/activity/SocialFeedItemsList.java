@@ -19,4 +19,8 @@ public class SocialFeedItemsList extends ItemsList {
         UIUtils.setCustomActionBar(this, socialFeed.photoUrl, socialFeed.feedTitle);
 	}
 
+	@Override
+	String getSaveSearchFeedId() {
+		return "social:" + socialFeed.userId;
+	}
 }

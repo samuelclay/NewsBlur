@@ -11,17 +11,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.ImageView;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
-
-import butterknife.ButterKnife;
-import butterknife.Bind;
 
 import com.newsblur.R;
 import com.newsblur.activity.Login;
 import com.newsblur.activity.Main;
+import com.newsblur.databinding.FragmentLoginprogressBinding;
 import com.newsblur.network.APIManager;
 import com.newsblur.network.domain.LoginResponse;
 import com.newsblur.util.PrefsUtils;
@@ -30,14 +25,10 @@ import com.newsblur.util.UIUtils;
 public class LoginProgressFragment extends Fragment {
 
 	private APIManager apiManager;
-	@Bind(R.id.login_logging_in) TextView updateStatus;
-    @Bind(R.id.login_retrieving_feeds) TextView retrievingFeeds;
-	@Bind(R.id.login_profile_picture) ImageView loginProfilePicture;
-	@Bind(R.id.login_feed_progress) ProgressBar feedProgress;
-    @Bind(R.id.login_logging_in_progress) ProgressBar loggingInProgress;
 	private LoginTask loginTask;
 	private String username;
 	private String password;
+	private FragmentLoginprogressBinding binding;
 
 	public static LoginProgressFragment getInstance(String username, String password) {
 		LoginProgressFragment fragment = new LoginProgressFragment();
@@ -61,7 +52,7 @@ public class LoginProgressFragment extends Fragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View v = inflater.inflate(R.layout.fragment_loginprogress, null);
-        ButterKnife.bind(this, v);
+        binding = FragmentLoginprogressBinding.bind(v);
 
         loginTask = new LoginTask();
         loginTask.execute();
@@ -73,7 +64,7 @@ public class LoginProgressFragment extends Fragment {
 		@Override
 		protected void onPreExecute() {
 			Animation a = AnimationUtils.loadAnimation(getActivity(), R.anim.text_up);
-			updateStatus.startAnimation(a);
+			binding.loginLoggingIn.startAnimation(a);
 		}
 
 		@Override
@@ -90,20 +81,20 @@ public class LoginProgressFragment extends Fragment {
             if (c == null) return; // we might have run past the lifecycle of the activity
 			if (!result.isError()) {
 				final Animation a = AnimationUtils.loadAnimation(c, R.anim.text_down);
-				updateStatus.setText(R.string.login_logged_in);
-				loggingInProgress.setVisibility(View.GONE);
-				updateStatus.startAnimation(a);
+				binding.loginLoggingIn.setText(R.string.login_logged_in);
+				binding.loginLoggingInProgress.setVisibility(View.GONE);
+				binding.loginLoggingIn.startAnimation(a);
 
                 Bitmap userImage = PrefsUtils.getUserImage(c);
                 if (userImage != null ) {
-                    loginProfilePicture.setVisibility(View.VISIBLE);
-                    loginProfilePicture.setImageBitmap(UIUtils.clipAndRound(userImage, 10f, false));
+                    binding.loginProfilePicture.setVisibility(View.VISIBLE);
+                    binding.loginProfilePicture.setImageBitmap(UIUtils.clipAndRound(userImage, 10f, false));
                 }
-				feedProgress.setVisibility(View.VISIBLE);
+				binding.loginFeedProgress.setVisibility(View.VISIBLE);
 
 				final Animation b = AnimationUtils.loadAnimation(c, R.anim.text_up);
-				retrievingFeeds.setText(R.string.login_retrieving_feeds);
-				retrievingFeeds.startAnimation(b);
+				binding.loginRetrievingFeeds.setText(R.string.login_retrieving_feeds);
+				binding.loginFeedProgress.startAnimation(b);
 
                 Intent startMain = new Intent(getActivity(), Main.class);
                 c.startActivity(startMain);
