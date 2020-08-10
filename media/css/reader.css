@@ -4417,12 +4417,12 @@ body {
 }
 
 .NB-feeds-header {
-    background-color: #EAECE5;
-    background-image: -webkit-gradient(linear, left top, left bottom, from(#EAECE5), to(#DCDFD6));
+    background-color: #e9ece6;
+    /* background-image: -webkit-gradient(linear, left top, left bottom, from(#EAECE5), to(#DCDFD6));
     background: -moz-linear-gradient(center top , #EAECE5 0%, #DCDFD6 100%);
-    background-image: linear-gradient(top, #EAECE5, #DCDFD6);
+    background-image: linear-gradient(top, #EAECE5, #DCDFD6); */
     border-bottom: 1px solid #E9E9E9;
-    border-top: 1px solid #EAECE5;
+    border-top: 1px solid #FFFFFF;
     font-size: 11px;
     line-height: 22px;
     cursor: pointer;
@@ -4444,9 +4444,9 @@ body {
 
 .NB-feeds-header:hover:not(.NB-selected) {
     background-color: #E1E6D7;
-    background-image: -webkit-gradient(linear, left top, left bottom, from(#E1E6D7), to(#CFD6C3));
+    /* background-image: -webkit-gradient(linear, left top, left bottom, from(#E1E6D7), to(#CFD6C3));
     background: -moz-linear-gradient(center top , #E1E6D7 0%, #CFD6C3 100%);
-    background-image: linear-gradient(top, #E1E6D7, #CFD6C3);
+    background-image: linear-gradient(top, #E1E6D7, #CFD6C3); */
 }
 
 .NB-feeds-header.NB-selected {
