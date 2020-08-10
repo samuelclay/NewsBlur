@@ -24,4 +24,9 @@ public class AllStoriesItemsList extends ItemsList {
 			UIUtils.startReadingActivity(fs, hash, this);
 		}
 	}
+
+	@Override
+	String getSaveSearchFeedId() {
+		return "river:";
+	}
 }

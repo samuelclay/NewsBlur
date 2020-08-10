@@ -34,6 +34,8 @@
           android:title="@string/menu_theme_choose" >
         <menu>
             <group android:checkableBehavior="single">
+                <item android:id="@+id/menu_theme_auto"
+                    android:title="@string/auto" />
                 <item android:id="@+id/menu_theme_light"
                       android:title="@string/light" />
                 <item android:id="@+id/menu_theme_dark"
@@ -72,4 +74,8 @@
     <item android:id="@+id/menu_infrequent_cutoff"
           android:title="@string/menu_infrequent_cutoff"
           android:showAsAction="never" />
+    <item android:id="@+id/menu_save_search"
+        android:title="Save Search"
+        android:showAsAction="never"
+        android:visible="false"/>
 </menu>
