@@ -2,6 +2,7 @@ package com.newsblur.domain;
 
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -81,6 +82,12 @@ public class Story implements Serializable {
 
     @SerializedName("story_hash")
     public String storyHash;
+
+    @SerializedName("secure_image_urls")
+    public Map<String, String> secureImageUrls;
+
+    @SerializedName("secure_image_thumbnails")
+    public Map<String, String> secureImageThumbnails;
 
     // NOTE: this is parsed and saved to the DB, but is *not* generally un-thawed when stories are fetched back from the DB
     @SerializedName("image_urls")
@@ -310,10 +317,13 @@ public class Story implements Serializable {
             return YT_THUMB_PRE + ytUrl + YT_THUMB_POST;
         }
 
-        if ((story.imageUrls != null) && (story.imageUrls.length > 0)) {
-            return story.imageUrls[0];
+        if (story.imageUrls != null && story.imageUrls.length > 0) {
+            String thumbnail = story.imageUrls[0];
+            if (thumbnail.startsWith("http://") && story.secureImageThumbnails != null && story.secureImageThumbnails.containsKey(thumbnail)){
+                thumbnail = story.secureImageThumbnails.get(thumbnail);
+            }
+            return thumbnail;
         }
-
         return null;
     }
 
