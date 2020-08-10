@@ -23,6 +23,7 @@
 
 .NB-theme-transitioning div,
 .NB-theme-transitioning span,
+.NB-theme-transitioning mark,
 .NB-theme-transitioning a,
 .NB-theme-transitioning ul,
 .NB-theme-transitioning li,
@@ -847,7 +848,6 @@ color: #a85b40;
 /* Error text on bottom bar */
 .NB-dark #story_taskbar .NB-river-progress .NB-river-progress-text,
 .NB-dark #story_taskbar .NB-feed-error .NB-feed-error-text {
-    background-color: #191b1c;
     color: #c0c0c0;
     text-shadow: 0 1px 0 rgba(0,0,0,.8);
 }
@@ -1213,6 +1213,12 @@ background-color: #5d8392;
 /* Inserted text background color (greed) */
 .NB-dark .NB-feed-story-content ins {
     background-color: #069000;
+}
+
+.NB-dark .NB-feed-story-content .NB-starred-story-selection-highlight,
+.NB-dark .NB-feed-story-content .NB-highlight {
+    background-color: #4a6379;
+    color: #f3f3f3;
 }
 
 /* Link color */

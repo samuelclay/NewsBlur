@@ -190,6 +190,21 @@ a:active {
     text-shadow: 0 1px 0 rgba(0, 0, 0, .2);
 }
 
+.NB-newsletter p,
+.NB-newsletter div,
+.NB-newsletter span,
+.NB-newsletter td {
+    background-color: #FFFEE5;
+}
+.NB-newsletter h1,
+.NB-newsletter h2,
+.NB-newsletter h3,
+.NB-newsletter h4,
+.NB-newsletter h5,
+.NB-newsletter h6 {
+    background-color: #FFFEE5;
+}
+
 /* Story Comments */
 
 #story_pane .NB-story-comment {
