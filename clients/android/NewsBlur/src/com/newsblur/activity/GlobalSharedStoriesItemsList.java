@@ -14,4 +14,9 @@ public class GlobalSharedStoriesItemsList extends ItemsList {
         UIUtils.setCustomActionBar(this, R.drawable.ak_icon_global, getResources().getString(R.string.global_shared_stories_title));
 	}
 
+	@Override
+	String getSaveSearchFeedId() {
+		// doesn't have save search option
+		return null;
+	}
 }
