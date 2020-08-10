@@ -174,6 +174,11 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'verbose'
         },
+        'subdomains.middleware':{
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose'
+        },
         'vendor.apns':{
             'level': 'DEBUG',
             'class': 'logging.StreamHandler',
@@ -227,6 +232,11 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': False,
         },
+        'subdomains.middleware': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
         'apps': {
             'handlers': ['log_file'],
             'level': 'INFO',
@@ -275,7 +285,7 @@ SOUTH_TESTS_MIGRATE     = False
 SESSION_ENGINE          = 'redis_sessions.session'
 TEST_RUNNER             = "utils.testrunner.TestRunner"
 SESSION_COOKIE_NAME     = 'newsblur_sessionid'
-SESSION_COOKIE_AGE      = 60*60*24*365*10 # 10 years
+SESSION_COOKIE_AGE      = 60*60*24*365*2 # 2 years
 SESSION_COOKIE_DOMAIN   = '.newsblur.com'
 SESSION_COOKIE_HTTPONLY = False
 SENTRY_DSN              = 'https://XXXNEWSBLURXXX@app.getsentry.com/99999999'
