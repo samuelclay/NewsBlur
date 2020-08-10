@@ -870,10 +870,10 @@ hr {
 .NB-feeds-header.NB-selected,
 .NB-feedlist .folder.NB-selected > .folder_title {
     background-color: #FFFFD2;
-    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#FFFFD2), to(#F5F9B4));
-    background: -moz-linear-gradient(center top , #FFFFD2 0%, #F5F9B4 100%);
-    border-top: 1px solid #D6D682;
-    border-bottom: 1px solid #D6D682;
+    /* background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#FFFFD2), to(#F5F9B4));
+    background: -moz-linear-gradient(center top , #FFFFD2 0%, #F5F9B4 100%); */
+    border-top: 1px solid rgb(241 241 189);
+    border-bottom: 1px solid rgb(241 241 189);
 }
 .NB-feedlist .folder.NB-selected > .folder_title {
     text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
@@ -2126,8 +2126,8 @@ hr {
 .NB-story-title.NB-selected,
 .NB-interaction:hover:not(.NB-disabled) {
     color: #304080;
-    border-top: 1px solid #EFEEC3;
-    border-bottom: 1px solid #EFEEC3;
+    border-top: 1px solid rgb(255 254 237);
+    border-bottom: 1px solid rgb(249 248 222);
     background-color: #FFFEE2;
 }
 
