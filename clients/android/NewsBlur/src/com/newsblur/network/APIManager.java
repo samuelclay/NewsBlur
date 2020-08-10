@@ -15,6 +15,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -550,11 +551,21 @@ public class APIManager {
         return (CommentResponse) response.getResponse(gson, CommentResponse.class);
 	}
 
-	public AddFeedResponse addFeed(String feedUrl) {
+	public NewsBlurResponse addFolder(String folderName) {
+        ContentValues values = new ContentValues();
+        values.put(APIConstants.PARAMETER_FOLDER, folderName);
+        APIResponse response = post(buildUrl(APIConstants.PATH_ADD_FOLDER), values);
+        return response.getResponse(gson, NewsBlurResponse.class);
+    }
+
+	public AddFeedResponse addFeed(String feedUrl, @Nullable String folderName) {
 		ContentValues values = new ContentValues();
 		values.put(APIConstants.PARAMETER_URL, feedUrl);
+		if (!TextUtils.isEmpty(folderName) && !folderName.equals(AppConstants.ROOT_FOLDER)) {
+		    values.put(APIConstants.PARAMETER_FOLDER, folderName);
+        }
 		APIResponse response = post(buildUrl(APIConstants.PATH_ADD_FEED), values);
-		return (AddFeedResponse) response.getResponse(gson, AddFeedResponse.class);
+		return response.getResponse(gson, AddFeedResponse.class);
 	}
 
 	public FeedResult[] searchForFeed(String searchTerm) {
@@ -578,6 +589,30 @@ public class APIManager {
 		APIResponse response = post(buildUrl(APIConstants.PATH_DELETE_FEED), values);
 		return response.getResponse(gson, NewsBlurResponse.class);
 	}
+
+	public NewsBlurResponse deleteFolder(String folderName, String inFolder) {
+        ContentValues values = new ContentValues();
+        values.put(APIConstants.PARAMETER_FOLDER_TO_DELETE, folderName);
+        values.put(APIConstants.PARAMETER_IN_FOLDER, inFolder);
+        APIResponse response = post(buildUrl(APIConstants.PATH_DELETE_FOLDER), values);
+        return response.getResponse(gson, NewsBlurResponse.class);
+    }
+
+	public NewsBlurResponse deleteSearch(String feedId, String query) {
+        ContentValues values = new ContentValues();
+        values.put(APIConstants.PARAMETER_FEEDID, feedId);
+        values.put(APIConstants.PARAMETER_QUERY, query);
+        APIResponse response = post(buildUrl(APIConstants.PATH_DELETE_SEARCH), values);
+        return response.getResponse(gson, NewsBlurResponse.class);
+    }
+
+    public NewsBlurResponse saveSearch(String feedId, String query) {
+        ContentValues values = new ContentValues();
+        values.put(APIConstants.PARAMETER_FEEDID, feedId);
+        values.put(APIConstants.PARAMETER_QUERY, query);
+        APIResponse response = post(buildUrl(APIConstants.PATH_SAVE_SEARCH), values);
+        return response.getResponse(gson, NewsBlurResponse.class);
+    }
 
     public NewsBlurResponse saveFeedChooser(Set<String> feeds) {
         ValueMultimap values = new ValueMultimap();
@@ -614,6 +649,15 @@ public class APIManager {
         values.put(APIConstants.PARAMETER_FEEDID, feedId);
         values.put(APIConstants.PARAMETER_FEEDTITLE, newFeedName);
         APIResponse response = post(buildUrl(APIConstants.PATH_RENAME_FEED), values);
+        return response.getResponse(gson, NewsBlurResponse.class);
+    }
+
+    public NewsBlurResponse renameFolder(String folderName, String newFolderName, String inFolder) {
+        ContentValues values = new ContentValues();
+        values.put(APIConstants.PARAMETER_FOLDER_TO_RENAME, folderName);
+        values.put(APIConstants.PARAMETER_NEW_FOLDER_NAME, newFolderName);
+        values.put(APIConstants.PARAMETER_IN_FOLDER, inFolder);
+        APIResponse response = post(buildUrl(APIConstants.PATH_RENAME_FOLDER), values);
         return response.getResponse(gson, NewsBlurResponse.class);
     }
 

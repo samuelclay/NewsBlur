@@ -7,13 +7,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.widget.RadioButton;
-
-import butterknife.ButterKnife;
-import butterknife.Bind;
-import butterknife.OnClick;
 
 import com.newsblur.R;
+import com.newsblur.databinding.StoryorderDialogBinding;
 import com.newsblur.util.StoryOrder;
 import com.newsblur.util.StoryOrderChangedListener;
 
@@ -21,8 +17,6 @@ public class StoryOrderDialogFragment extends DialogFragment {
 	
 	private static String CURRENT_ORDER = "currentOrder";
 	private StoryOrder currentValue;
-    @Bind(R.id.radio_newest) RadioButton newestButton;
-    @Bind(R.id.radio_oldest) RadioButton oldestButton;
 
 	public static StoryOrderDialogFragment newInstance(StoryOrder currentValue) {
 		StoryOrderDialogFragment dialog = new StoryOrderDialogFragment();
@@ -42,25 +36,38 @@ public class StoryOrderDialogFragment extends DialogFragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle bundle) {
 		currentValue = (StoryOrder) getArguments().getSerializable(CURRENT_ORDER);
 		View v = inflater.inflate(R.layout.storyorder_dialog, null);
-        ButterKnife.bind(this, v);
+		StoryorderDialogBinding binding = StoryorderDialogBinding.bind(v);
 
-		newestButton.setChecked(currentValue == StoryOrder.NEWEST);
-		oldestButton.setChecked(currentValue == StoryOrder.OLDEST);
+		binding.radioNewest.setChecked(currentValue == StoryOrder.NEWEST);
+		binding.radioOldest.setChecked(currentValue == StoryOrder.OLDEST);
 		
 		getDialog().requestWindowFeature(Window.FEATURE_NO_TITLE);
 		getDialog().getWindow().getAttributes().gravity = Gravity.BOTTOM;
+
+		binding.radioNewest.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				selectNewest();
+			}
+		});
+		binding.radioOldest.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				selectOldest();
+			}
+		});
 		
 		return v;
 	}
 
-    @OnClick(R.id.radio_newest) void selectNewest() {
+    private void selectNewest() {
         if (currentValue != StoryOrder.NEWEST) {
             ((StoryOrderChangedListener) getActivity()).storyOrderChanged(StoryOrder.NEWEST);
         }
         dismiss();
     }
 
-    @OnClick(R.id.radio_oldest) void selectOldest() {
+    private void selectOldest() {
         if (currentValue != StoryOrder.OLDEST) {
             ((StoryOrderChangedListener) getActivity()).storyOrderChanged(StoryOrder.OLDEST);
         }

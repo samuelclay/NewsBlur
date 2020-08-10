@@ -14,20 +14,15 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import butterknife.ButterKnife;
-import butterknife.Bind;
-
 import com.newsblur.R;
+import com.newsblur.databinding.DialogTrainstoryBinding;
 import com.newsblur.domain.Classifier;
 import com.newsblur.domain.Story;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.UIUtils;
-import com.newsblur.view.SelectOnlyEditText;
 
 public class StoryIntelTrainerFragment extends DialogFragment {
 
@@ -35,17 +30,7 @@ public class StoryIntelTrainerFragment extends DialogFragment {
     private FeedSet fs;
     private Classifier classifier;
     private Integer newTitleTraining;
-
-    @Bind(R.id.intel_tag_header) TextView headerTags;
-    @Bind(R.id.intel_author_header) TextView headerAuthor;
-    @Bind(R.id.intel_title_selection) SelectOnlyEditText titleSelection;
-    @Bind(R.id.intel_title_like) Button titleLikeButton;
-    @Bind(R.id.intel_title_dislike) Button titleDislikeButton;
-    @Bind(R.id.intel_title_clear) Button titleClearButton;
-    @Bind(R.id.existing_title_intel_container) LinearLayout titleRowsContainer;
-    @Bind(R.id.existing_tag_intel_container) LinearLayout tagRowsContainer;
-    @Bind(R.id.existing_author_intel_container) LinearLayout authorRowsContainer;
-    @Bind(R.id.existing_feed_intel_container) LinearLayout feedRowsContainer;
+    private DialogTrainstoryBinding binding;
 
     public static StoryIntelTrainerFragment newInstance(Story story, FeedSet fs) {
         if (story.feedId.equals("0")) {
@@ -69,44 +54,44 @@ public class StoryIntelTrainerFragment extends DialogFragment {
         final Activity activity = getActivity();
         LayoutInflater inflater = LayoutInflater.from(activity);
         View v = inflater.inflate(R.layout.dialog_trainstory, null);
-        ButterKnife.bind(this, v);
+        binding = DialogTrainstoryBinding.bind(v);
 
         // set up the special title training box for the title from this story and the associated buttons
-        titleSelection.setText(story.title);
+        binding.intelTitleSelection.setText(story.title);
         // the layout sets inputType="none" on this EditText, but a widespread platform bug requires us
         // to also set this programmatically to make the field read-only for selection.
-        titleSelection.setInputType(InputType.TYPE_NULL);
+        binding.intelTitleSelection.setInputType(InputType.TYPE_NULL);
         // the user is selecting for our custom widget, not to copy/paste
-        titleSelection.disableActionMenu();
+        binding.intelTitleSelection.disableActionMenu();
         // pre-select the whole title to make it easier for the user to manipulate the selection handles
-        titleSelection.selectAll();
+        binding.intelTitleSelection.selectAll();
         // do this after init and selection to prevent toast spam
-        titleSelection.setForceSelection(true);
+        binding.intelTitleSelection.setForceSelection(true);
         // the disposition buttons for a new title training don't immediately impact the classifier object,
         // lest the user want to change selection substring after choosing the disposition.  so just store
         // the training factor in a variable that can be pulled on completion
-        titleLikeButton.setOnClickListener(new OnClickListener() {
+        binding.intelTitleLike.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 newTitleTraining = Classifier.LIKE;
-                titleLikeButton.setBackgroundResource(R.drawable.ic_like_active);
-                titleDislikeButton.setBackgroundResource(R.drawable.ic_dislike_gray55);
+                binding.intelTitleLike.setBackgroundResource(R.drawable.ic_like_active);
+                binding.intelTitleDislike.setBackgroundResource(R.drawable.ic_dislike_gray55);
             }
         });
-        titleDislikeButton.setOnClickListener(new OnClickListener() {
+        binding.intelTitleDislike.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 newTitleTraining = Classifier.DISLIKE;
-                titleLikeButton.setBackgroundResource(R.drawable.ic_like_gray55);
-                titleDislikeButton.setBackgroundResource(R.drawable.ic_dislike_active);
+                binding.intelTitleLike.setBackgroundResource(R.drawable.ic_like_gray55);
+                binding.intelTitleDislike.setBackgroundResource(R.drawable.ic_dislike_active);
             }
         });
-        titleClearButton.setOnClickListener(new OnClickListener() {
+        binding.intelTitleClear.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 newTitleTraining = null;
-                titleLikeButton.setBackgroundResource(R.drawable.ic_like_gray55);
-                titleDislikeButton.setBackgroundResource(R.drawable.ic_dislike_gray55);
+                binding.intelTitleLike.setBackgroundResource(R.drawable.ic_like_gray55);
+                binding.intelTitleDislike.setBackgroundResource(R.drawable.ic_dislike_gray55);
             }
         });
 
@@ -117,7 +102,7 @@ public class StoryIntelTrainerFragment extends DialogFragment {
                 TextView label = (TextView) row.findViewById(R.id.intel_row_label);
                 label.setText(rule.getKey());
                 UIUtils.setupIntelDialogRow(row, classifier.title, rule.getKey());
-                titleRowsContainer.addView(row);
+                binding.existingTitleIntelContainer.addView(row);
             }
         }
         
@@ -127,9 +112,9 @@ public class StoryIntelTrainerFragment extends DialogFragment {
             TextView label = (TextView) row.findViewById(R.id.intel_row_label);
             label.setText(tag);
             UIUtils.setupIntelDialogRow(row, classifier.tags, tag);
-            tagRowsContainer.addView(row);
+            binding.existingTagIntelContainer.addView(row);
         }
-        if (story.tags.length < 1) headerTags.setVisibility(View.GONE);
+        if (story.tags.length < 1) binding.intelTagHeader.setVisibility(View.GONE);
 
         // there is a single author per story
         if (!TextUtils.isEmpty(story.authors)) {
@@ -137,9 +122,9 @@ public class StoryIntelTrainerFragment extends DialogFragment {
             TextView labelAuthor = (TextView) rowAuthor.findViewById(R.id.intel_row_label);
             labelAuthor.setText(story.authors);
             UIUtils.setupIntelDialogRow(rowAuthor, classifier.authors, story.authors);
-            authorRowsContainer.addView(rowAuthor);
+            binding.existingAuthorIntelContainer.addView(rowAuthor);
         } else {
-            headerAuthor.setVisibility(View.GONE);
+            binding.intelAuthorHeader.setVisibility(View.GONE);
         }
 
         // there is a single feed to be trained, but it is a bit odd in that the label is the title and
@@ -148,7 +133,7 @@ public class StoryIntelTrainerFragment extends DialogFragment {
         TextView labelFeed = (TextView) rowFeed.findViewById(R.id.intel_row_label);
         labelFeed.setText(FeedUtils.getFeedTitle(story.feedId));
         UIUtils.setupIntelDialogRow(rowFeed, classifier.feeds, story.feedId);
-        feedRowsContainer.addView(rowFeed);
+        binding.existingFeedIntelContainer.addView(rowFeed);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle(R.string.story_intel_dialog_title);
@@ -163,8 +148,8 @@ public class StoryIntelTrainerFragment extends DialogFragment {
         builder.setPositiveButton(R.string.dialog_story_intel_save, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                if ((newTitleTraining != null) && (!TextUtils.isEmpty(titleSelection.getSelection()))) {
-                    classifier.title.put(titleSelection.getSelection(), newTitleTraining);
+                if ((newTitleTraining != null) && (!TextUtils.isEmpty(binding.intelTitleSelection.getSelection()))) {
+                    classifier.title.put(binding.intelTitleSelection.getSelection(), newTitleTraining);
                 }
                 FeedUtils.updateClassifier(story.feedId, classifier, fs, activity);
                 StoryIntelTrainerFragment.this.dismiss();
