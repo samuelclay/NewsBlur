@@ -125,6 +125,9 @@
         
         <activity
             android:name=".activity.FolderReading"/>
+
+        <activity
+            android:name=".activity.InAppBrowser" />
         
         <activity 
             android:name=".activity.SearchForFeeds" android:launchMode="singleTop" >
