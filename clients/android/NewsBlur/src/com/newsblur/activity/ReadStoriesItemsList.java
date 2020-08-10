@@ -14,4 +14,8 @@ public class ReadStoriesItemsList extends ItemsList {
         UIUtils.setCustomActionBar(this, R.drawable.g_icn_unread_double, getResources().getString(R.string.read_stories_title));
 	}
 
+	@Override
+	String getSaveSearchFeedId() {
+		return "read";
+	}
 }
