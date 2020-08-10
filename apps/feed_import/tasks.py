@@ -2,7 +2,6 @@ from celery.task import Task
 from django.contrib.auth.models import User
 from apps.feed_import.models import UploadedOPML, OPMLImporter
 from apps.reader.models import UserSubscription
-from apps.rss_feeds.models import MStarredStory
 from utils import log as logging
 
 

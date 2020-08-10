@@ -3,23 +3,19 @@ package com.newsblur.fragment;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
-import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.Toast;
-import android.widget.ViewSwitcher;
-
-import butterknife.ButterKnife;
-import butterknife.Bind;
-import butterknife.OnClick;
 
 import com.newsblur.R;
 import com.newsblur.activity.AddSocial;
 import com.newsblur.activity.Login;
+import com.newsblur.databinding.FragmentRegisterprogressBinding;
 import com.newsblur.network.APIManager;
 import com.newsblur.network.domain.RegisterResponse;
 
@@ -31,9 +27,7 @@ public class RegisterProgressFragment extends Fragment {
     private String password;
     private String email;
     private RegisterTask registerTask;
-    @Bind(R.id.register_viewswitcher) ViewSwitcher switcher;
-    @Bind(R.id.registering_next_1) Button next;
-    @Bind(R.id.registerprogress_logo) ImageView registerProgressLogo;
+    private FragmentRegisterprogressBinding binding;
 
     public static RegisterProgressFragment getInstance(String username, String password, String email) {
         RegisterProgressFragment fragment = new RegisterProgressFragment();
@@ -59,12 +53,12 @@ public class RegisterProgressFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_registerprogress, null);
-        ButterKnife.bind(this, v);
+        binding = FragmentRegisterprogressBinding.bind(v);
 
-        registerProgressLogo.startAnimation(AnimationUtils.loadAnimation(getActivity(), R.anim.rotate));
+        binding.registerprogressLogo.startAnimation(AnimationUtils.loadAnimation(getActivity(), R.anim.rotate));
 
         if (registerTask != null) {
-            switcher.showNext();
+            binding.registerViewswitcher.showNext();
         } else {
             registerTask = new RegisterTask();
             registerTask.execute();
@@ -73,7 +67,18 @@ public class RegisterProgressFragment extends Fragment {
         return v;
     }
 
-    @OnClick(R.id.registering_next_1) void next() {
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        binding.registeringNext1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                next();
+            }
+        });
+    }
+
+    private void next() {
         Intent i = new Intent(getActivity(), AddSocial.class);
         startActivity(i);
     }
@@ -88,7 +93,7 @@ public class RegisterProgressFragment extends Fragment {
         @Override
         protected void onPostExecute(RegisterResponse response) {
             if (response.authenticated) {
-                switcher.showNext();
+                binding.registerViewswitcher.showNext();
             } else {
                 String errorMessage = response.getErrorMessage();
                 if(errorMessage == null) {

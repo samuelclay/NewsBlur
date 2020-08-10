@@ -12,13 +12,10 @@ import android.support.v4.app.DialogFragment;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import butterknife.ButterKnife;
-import butterknife.Bind;
-
 import com.newsblur.R;
+import com.newsblur.databinding.DialogTrainfeedBinding;
 import com.newsblur.domain.Classifier;
 import com.newsblur.domain.Feed;
 import com.newsblur.util.FeedSet;
@@ -30,14 +27,7 @@ public class FeedIntelTrainerFragment extends DialogFragment {
     private Feed feed;
     private FeedSet fs;
     private Classifier classifier;
-
-    @Bind(R.id.intel_title_header) TextView headerTitles;
-    @Bind(R.id.intel_tag_header) TextView headerTags;
-    @Bind(R.id.intel_author_header) TextView headerAuthor;
-    @Bind(R.id.existing_title_intel_container) LinearLayout titleRowsContainer;
-    @Bind(R.id.existing_tag_intel_container) LinearLayout tagRowsContainer;
-    @Bind(R.id.existing_author_intel_container) LinearLayout authorRowsContainer;
-    @Bind(R.id.existing_feed_intel_container) LinearLayout feedRowsContainer;
+    private DialogTrainfeedBinding binding;
 
     public static FeedIntelTrainerFragment newInstance(Feed feed, FeedSet fs) {
         FeedIntelTrainerFragment fragment = new FeedIntelTrainerFragment();
@@ -58,7 +48,7 @@ public class FeedIntelTrainerFragment extends DialogFragment {
         final Activity activity = getActivity();
         LayoutInflater inflater = LayoutInflater.from(activity);
         View v = inflater.inflate(R.layout.dialog_trainfeed, null);
-        ButterKnife.bind(this, v);
+        binding = DialogTrainfeedBinding.bind(v);
 
         // display known title classifiers
         for (Map.Entry<String, Integer> rule : classifier.title.entrySet()) {
@@ -66,9 +56,9 @@ public class FeedIntelTrainerFragment extends DialogFragment {
                 TextView label = (TextView) row.findViewById(R.id.intel_row_label);
                 label.setText(rule.getKey());
                 UIUtils.setupIntelDialogRow(row, classifier.title, rule.getKey());
-                titleRowsContainer.addView(row);
+                binding.existingTitleIntelContainer.addView(row);
         }
-        if (classifier.title.size() < 1) headerTitles.setVisibility(View.GONE);
+        if (classifier.title.size() < 1) binding.intelTitleHeader.setVisibility(View.GONE);
         
         // get the list of suggested tags
         List<String> allTags = FeedUtils.dbHelper.getTagsForFeed(feed.feedId);
@@ -83,9 +73,9 @@ public class FeedIntelTrainerFragment extends DialogFragment {
             TextView label = (TextView) row.findViewById(R.id.intel_row_label);
             label.setText(tag);
             UIUtils.setupIntelDialogRow(row, classifier.tags, tag);
-            tagRowsContainer.addView(row);
+            binding.existingTagIntelContainer.addView(row);
         }
-        if (allTags.size() < 1) headerTags.setVisibility(View.GONE);
+        if (allTags.size() < 1) binding.intelTagHeader.setVisibility(View.GONE);
 
         // get the list of suggested authors
         List<String> allAuthors = FeedUtils.dbHelper.getAuthorsForFeed(feed.feedId);
@@ -100,16 +90,16 @@ public class FeedIntelTrainerFragment extends DialogFragment {
             TextView labelAuthor = (TextView) rowAuthor.findViewById(R.id.intel_row_label);
             labelAuthor.setText(author);
             UIUtils.setupIntelDialogRow(rowAuthor, classifier.authors, author);
-            authorRowsContainer.addView(rowAuthor);
+            binding.existingAuthorIntelContainer.addView(rowAuthor);
         }
-        if (allAuthors.size() < 1) headerAuthor.setVisibility(View.GONE);
+        if (allAuthors.size() < 1) binding.intelAuthorHeader.setVisibility(View.GONE);
 
         // for feel-level intel, the label is the title and the intel identifier is the feed ID
         View rowFeed = inflater.inflate(R.layout.include_intel_row, null);
         TextView labelFeed = (TextView) rowFeed.findViewById(R.id.intel_row_label);
         labelFeed.setText(feed.title);
         UIUtils.setupIntelDialogRow(rowFeed, classifier.feeds, feed.feedId);
-        feedRowsContainer.addView(rowFeed);
+        binding.existingFeedIntelContainer.addView(rowFeed);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle(R.string.feed_intel_dialog_title);
