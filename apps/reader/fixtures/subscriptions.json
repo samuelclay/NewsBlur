@@ -1,20 +1,6 @@
 [
     {
         "pk": 1,
-        "model": "reader.usersubscription",
-        "fields": {
-            "feed": 1,
-            "unread_count_updated": "2009-08-01 00:23:42",
-            "mark_read_date": "2009-07-28 23:17:27",
-            "unread_count_neutral": 0,
-            "unread_count_positive": 0,
-            "unread_count_negative": 0,
-            "user": 1,
-            "last_read_date": "2009-07-28 23:17:27"
-        }
-    },
-    {
-        "pk": 1,
         "model": "reader.usersubscriptionfolders",
         "fields": {
             "folders": "[{\"Tech\": [1, 4, 5, {\"Deep Tech\": [6, 7]}]}, 2, 3, 8, 9, {\"Blogs\": [8, 9]}, 1]",
@@ -26,7 +12,7 @@
         "model": "reader.usersubscriptionfolders",
         "fields": {
             "folders": "[5299728, 644144, 1187026, {\"Brainiacs & Opinion\": [569, 38, 3581, 183139, 1186180, 15]}, {\"Science & Technology\": [731503, 140145, 1272495, 76, 161, 39, {\"Hacker\": [5985150, 3323431]}]}, {\"Humor\": [212379, 3530, 5994357]}, {\"Videos\": [3240, 5168]}]",
-            "user": 2
+            "user": 4
         }
     },
 
@@ -40,7 +26,7 @@
             "unread_count_neutral": 0,
             "unread_count_positive": 0,
             "unread_count_negative": 0,
-            "user": 1,
+            "user": 3,
             "last_read_date": "2009-07-28 23:17:27"
         }
     },
@@ -54,7 +40,7 @@
             "unread_count_neutral": 0,
             "unread_count_positive": 0,
             "unread_count_negative": 0,
-            "user": 1,
+            "user": 3,
             "last_read_date": "2009-07-28 23:17:27"
         }
     },
@@ -68,7 +54,7 @@
             "unread_count_neutral": 0,
             "unread_count_positive": 0,
             "unread_count_negative": 0,
-            "user": 1,
+            "user": 3,
             "last_read_date": "2009-07-28 23:17:27"
         }
     },
@@ -82,7 +68,7 @@
             "unread_count_neutral": 0,
             "unread_count_positive": 0,
             "unread_count_negative": 0,
-            "user": 1,
+            "user": 3,
             "last_read_date": "2009-07-28 23:17:27"
         }
     },
@@ -96,7 +82,7 @@
             "unread_count_neutral": 0,
             "unread_count_positive": 0,
             "unread_count_negative": 0,
-            "user": 1,
+            "user": 3,
             "last_read_date": "2009-07-28 23:17:27"
         }
     },
@@ -110,7 +96,7 @@
             "unread_count_neutral": 0,
             "unread_count_positive": 0,
             "unread_count_negative": 0,
-            "user": 1,
+            "user": 3,
             "last_read_date": "2009-07-28 23:17:27"
         }
     },
@@ -124,7 +110,7 @@
             "unread_count_neutral": 0,
             "unread_count_positive": 0,
             "unread_count_negative": 0,
-            "user": 1,
+            "user": 3,
             "last_read_date": "2009-07-28 23:17:27"
         }
     },
@@ -138,22 +124,13 @@
             "unread_count_neutral": 0,
             "unread_count_positive": 0,
             "unread_count_negative": 0,
-            "user": 1,
+            "user": 3,
             "last_read_date": "2009-07-28 23:17:27"
         }
     },
 
     {
-        "pk": 2,
-        "model": "sites.site",
-        "fields": {
-            "domain": "testserver",
-            "name": "testserver"
-        }
-    },
-
-    {
-        "pk": 1, 
+        "pk": 3, 
         "model": "auth.user", 
         "fields": {
             "username": "conesus", 
@@ -171,7 +148,7 @@
         }
     }, 
     {
-        "pk": 2, 
+        "pk": 4, 
         "model": "auth.user", 
         "fields": {
             "username": "Dejal", 
@@ -198,7 +175,7 @@
             "unread_count_positive": 0, 
             "mark_read_date": "2010-06-28 19:36:44", 
             "unread_count_negative": 3, 
-            "user": 1, 
+            "user": 3, 
             "last_read_date": "2010-06-15 19:30:35", 
             "unread_count_neutral": 0
         }
