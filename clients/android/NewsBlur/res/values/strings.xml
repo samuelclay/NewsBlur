@@ -263,6 +263,20 @@
     <string name="premium_subscribers_folder">Reading by folder is only available to</string>
     <string name="premium_subscribers_search">Search is only available to</string>
     <string name="premium_subscribers">premium subscribers</string>
+    <string name="premium_toolbar_title">NewsBlur Premium</string>
+    <string name="premium_title">Thank you so much for going premium!</string>
+    <string name="premium_subtitle">Upgrading to a NewsBlur premium subscription gives you all of these features. Payments will be charged to your Play Store account at confirmation of purchase. Subscription renew unless auto-renew is turned off at least 24 hours before the end of the current period. Cancel at any time from Account Settings in Play Store.</string>
+    <string name="premium_policies"><![CDATA[See NewsBlur\'s <a href="https://newsblur.com/privacy">privacy policy</a> and <a href="https://newsblur.com/tos">terms of use</a> for details.]]></string>
+    <string name="premium_subscription_title">NewsBlur Premium Subscription</string>
+    <string name="premium_subscription_price">$35.99 per year ($3.00/month)</string>
+    <string name="premium_sync">Sites updated up to 10x more often</string>
+    <string name="premium_read_by_folder">River of News (reading by folder)</string>
+    <string name="premium_search">Search sites and folders</string>
+    <string name="premium_searchable_tags">Save stories with searchable tags</string>
+    <string name="premium_privacy_options">Privacy options for your blurblog</string>
+    <string name="premium_custom_rss">Custom RSS feeds for folders and saves stories</string>
+    <string name="premium_text_view">Text view conveniently extracts the story</string>
+    <string name="premium_shiloh">You feed Shiloh, my poor, hungry dog, for a month</string>
 
     <string name="settings_cat_offline">Offline</string>
     <string name="settings_enable_offline">Download Stories</string>

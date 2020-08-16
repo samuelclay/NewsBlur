@@ -92,4 +92,7 @@ public class AppConstants {
     // link to the web-based forgot password flow
     public final static String FORGOT_PASWORD_URL = "http://www.newsblur.com/folder_rss/forgot_password";
 
+    // Shiloh photo
+    public final static String SHILOH_PHOTO_URL = "https://newsblur.com/media//img/reader/shiloh.jpg";
+
 }
