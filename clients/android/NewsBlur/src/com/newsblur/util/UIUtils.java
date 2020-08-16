@@ -586,6 +586,12 @@ public class UIUtils {
         boolean isPremium = PrefsUtils.isPremium(context);
         boolean requiresPremium = feedSet.isFolder() || feedSet.isInfrequent() ||
                 feedSet.isAllNormal() || feedSet.isGlobalShared() || feedSet.isSingleSavedTag();
-        return isPremium && requiresPremium;
+        //TODO: change flag
+        return !(isPremium && requiresPremium);
+    }
+
+    public static void startPremiumActivity(Context context) {
+        Intent intent = new Intent(context, Premium.class);
+        context.startActivity(intent);
     }
 }
