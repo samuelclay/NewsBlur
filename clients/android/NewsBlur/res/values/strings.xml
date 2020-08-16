@@ -259,6 +259,10 @@
     <string name="title_widget_setup">Tap to setup in NewsBlur</string>
     <string name="title_no_subscriptions">No active subscriptions detected</string>
     <string name="title_widget_loading">Loading...</string>
+    
+    <string name="premium_subscribers_folder">Reading by folder is only available to</string>
+    <string name="premium_subscribers_search">Search is only available to</string>
+    <string name="premium_subscribers">premium subscribers</string>
 
     <string name="settings_cat_offline">Offline</string>
     <string name="settings_enable_offline">Download Stories</string>

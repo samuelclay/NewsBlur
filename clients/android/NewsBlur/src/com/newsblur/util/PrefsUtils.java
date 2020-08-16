@@ -964,4 +964,16 @@ public class PrefsUtils {
         SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
         return preferences.getString(PrefConstants.DEFAULT_BROWSER, DefaultBrowser.SYSTEM_DEFAULT.toString());
     }
+
+    public static void isPremium(Context context, boolean isPremium) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        Editor editor = prefs.edit();
+        editor.putBoolean(PrefConstants.IS_PREMIUM, isPremium);
+        editor.commit();
+    }
+
+    public static boolean isPremium(Context context) {
+        SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        return preferences.getBoolean(PrefConstants.IS_PREMIUM, false);
+    }
 }
