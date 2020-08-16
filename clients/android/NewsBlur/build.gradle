@@ -39,8 +39,8 @@ android {
         applicationId "com.newsblur"
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode 166
-        versionName "10.0b4"
+        versionCode 168
+        versionName "10.1"
     }
     compileOptions.with {
         sourceCompatibility = JavaVersion.VERSION_1_8
