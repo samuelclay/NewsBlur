@@ -24,7 +24,6 @@ import com.newsblur.service.NBSyncService;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
-import com.newsblur.util.Log;
 import com.newsblur.util.PrefConstants.ThemeValue;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadFilter;
@@ -354,7 +353,8 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
         if (q.length() < 1) {
             updateFleuron(false);
             q = null;
-        } else if (!PrefsUtils.isPremium(this)) {
+            //TODO: change flag
+        } else if (PrefsUtils.isPremium(this)) {
             updateFleuron(true);
             return;
         }
@@ -380,9 +380,7 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
             binding.footerFleuron.textSubscription.setText(R.string.premium_subscribers_search);
             binding.footerFleuron.containerSubscribe.setVisibility(View.VISIBLE);
             binding.footerFleuron.getRoot().setVisibility(View.VISIBLE);
-            binding.footerFleuron.containerSubscribe.setOnClickListener(view -> {
-//                Log.d(this, "Open subscription page");
-            });
+            binding.footerFleuron.containerSubscribe.setOnClickListener(view -> UIUtils.startPremiumActivity(this));
         } else {
 	        transaction.show(itemSetFragment);
             binding.footerFleuron.containerSubscribe.setVisibility(View.GONE);

@@ -27,7 +27,6 @@ import com.newsblur.domain.Story;
 import com.newsblur.service.NBSyncService;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
-import com.newsblur.util.Log;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadFilter;
 import com.newsblur.util.StoryListStyle;
@@ -141,9 +140,7 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
                                      UIUtils.getColor(getActivity(), R.color.refresh_4));
 
         fleuronBinding.getRoot().setVisibility(View.INVISIBLE);
-        fleuronBinding.containerSubscribe.setOnClickListener(view -> {
-//            Log.d(this, "Show subscribe page");
-        });
+        fleuronBinding.containerSubscribe.setOnClickListener(view -> UIUtils.startPremiumActivity(requireContext()));
 
         binding.itemgridfragmentGrid.getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
             @Override
