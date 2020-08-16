@@ -126,7 +126,11 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     }
 
     public int getStoryCount() {
-        return stories.size();
+        if (fs != null && !UIUtils.hasPremiumAccess(context, fs)) {
+            return Math.min(3, stories.size());
+        } else {
+            return stories.size();
+        }
     }
 
     /**

@@ -581,4 +581,11 @@ public class UIUtils {
             openSystemDefaultBrowser(context, uri);
         }
     }
+
+    public static boolean hasPremiumAccess(Context context, FeedSet feedSet) {
+        boolean isPremium = PrefsUtils.isPremium(context);
+        boolean requiresPremium = feedSet.isFolder() || feedSet.isInfrequent() ||
+                feedSet.isAllNormal() || feedSet.isGlobalShared() || feedSet.isSingleSavedTag();
+        return isPremium && requiresPremium;
+    }
 }

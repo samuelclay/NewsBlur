@@ -24,6 +24,7 @@ import com.newsblur.service.NBSyncService;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
+import com.newsblur.util.Log;
 import com.newsblur.util.PrefConstants.ThemeValue;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadFilter;
@@ -97,7 +98,7 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
         if (activeSearchQuery != null) {
             binding.itemlistSearchQuery.setText(activeSearchQuery);
             binding.itemlistSearchQuery.setVisibility(View.VISIBLE);
-            fs.setSearchQuery(activeSearchQuery);
+            checkSearchQuery();
         }
 
         binding.itemlistSearchQuery.setOnKeyListener(new OnKeyListener() {
@@ -349,11 +350,16 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
     }
 
     private void checkSearchQuery() {
-        String oldQuery = fs.getSearchQuery();
         String q = binding.itemlistSearchQuery.getText().toString().trim();
         if (q.length() < 1) {
+            updateFleuron(false);
             q = null;
+        } else if (!PrefsUtils.isPremium(this)) {
+            updateFleuron(true);
+            return;
         }
+
+        String oldQuery = fs.getSearchQuery();
         fs.setSearchQuery(q);
         if (!TextUtils.equals(q, oldQuery)) {
             FeedUtils.prepareReadingSession(fs, true);
@@ -362,6 +368,28 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
             itemSetFragment.hasUpdated();
             itemSetFragment.scrollToTop();
         }
+    }
+
+    private void updateFleuron(boolean requiresPremium) {
+	    FragmentTransaction transaction = getSupportFragmentManager()
+                .beginTransaction()
+                .setCustomAnimations(android.R.animator.fade_in, android.R.animator.fade_out);
+
+	    if (requiresPremium) {
+	        transaction.hide(itemSetFragment);
+            binding.footerFleuron.textSubscription.setText(R.string.premium_subscribers_search);
+            binding.footerFleuron.containerSubscribe.setVisibility(View.VISIBLE);
+            binding.footerFleuron.getRoot().setVisibility(View.VISIBLE);
+            binding.footerFleuron.containerSubscribe.setOnClickListener(view -> {
+//                Log.d(this, "Open subscription page");
+            });
+        } else {
+	        transaction.show(itemSetFragment);
+            binding.footerFleuron.containerSubscribe.setVisibility(View.GONE);
+            binding.footerFleuron.getRoot().setVisibility(View.GONE);
+            binding.footerFleuron.containerSubscribe.setOnClickListener(null);
+        }
+	    transaction.commit();
     }
 
 	@Override
