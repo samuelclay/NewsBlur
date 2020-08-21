@@ -1016,10 +1016,15 @@ def starred_story_hashes(request):
     
     mstories = MStarredStory.objects(
         user_id=user.pk
-    ).only('story_hash', 'starred_date').order_by('-starred_date')
+    ).only('story_hash', 'starred_date', 'starred_updated').order_by('-starred_date')
     
     if include_timestamps:
-        story_hashes = [(s.story_hash, s.starred_date.strftime("%s")) for s in mstories]
+        story_hashes = []
+        for s in mstories:
+            date = s.starred_date
+            if s.starred_updated:
+                date = s.starred_updated
+            story_hashes.append((s.story_hash, date.strftime("%s")))
     else:
         story_hashes = [s.story_hash for s in mstories]
     
