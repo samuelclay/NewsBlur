@@ -104,7 +104,7 @@ public class LoginRegisterFragment extends Fragment {
 
 			Intent i = new Intent(getActivity(), LoginProgress.class);
 			i.putExtra("username", binding.loginUsername.getText().toString());
-			i.putExtra("password", binding.loginUsername.getText().toString());
+			i.putExtra("password", binding.loginPassword.getText().toString());
 			startActivity(i);
 		}
 	}
