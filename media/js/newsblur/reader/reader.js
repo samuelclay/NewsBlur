@@ -140,6 +140,7 @@
             this.load_intelligence_slider();
             this.handle_mouse_indicator_hover();
             this.handle_login_and_signup_forms();
+            this.handle_wakeup();
             this.apply_story_styling();
             this.load_recommended_feeds();
             this.setup_dashboard_graphs();
@@ -5086,7 +5087,7 @@
                     // $('.NB-module-content-account-realtime-subtitle').html($.make('b', 'Updating every 60 sec'));
                     $('.NB-module-content-account-realtime').attr('title', 'Updating sites every ' + this.flags.refresh_interval + ' seconds...').addClass('NB-error').removeClass('NB-active');
                     this.apply_tipsy_titles();
-                    _.delay(_.bind(this.setup_socket_realtime_unread_counts, this), 60*1000);
+                    _.delay(_.bind(this.setup_socket_realtime_unread_counts, this), Math.random()*60*1000);
                 }, this));
                 this.socket.on('reconnect_failed', _.bind(function() {
                     console.log(["Socket.io reconnect failed"]);
@@ -5108,7 +5109,7 @@
             window.addEventListener('online', _.bind(this.setup_socket_realtime_unread_counts, this));
             window.addEventListener('offline', _.bind(this.setup_socket_realtime_unread_counts, this));
         },
-        
+
         send_socket_active_feeds: function() {
             if (!this.socket) return;
             
@@ -5124,6 +5125,14 @@
             return active_feeds;
         },
         
+        handle_wakeup: function() {
+            $.dreamOn();
+            $.wakeUp(_.bind(function() {
+                console.log(["Wakeup, reconnecting to real-time socket.io...", new Date()]);
+                this.setup_socket_realtime_unread_counts();
+            }, this), {}, 1 * 1000);
+        },
+
         setup_feed_refresh: function(new_feeds) {
             var self = this;
             var refresh_interval = this.constants.FEED_REFRESH_INTERVAL;

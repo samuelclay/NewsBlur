@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -76,7 +77,6 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
     private View contentView; // we use this a ton, so cache it
     
     ViewPager pager;
-    ReadingPagerFragment readingFragment;
 
 	protected ReadingAdapter readingAdapter;
     private boolean stopLoading;
@@ -249,6 +249,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
                 // the system can and will re-use activities, so during the initial mismatch of
                 // data, don't show the old stories
                 pager.setVisibility(View.INVISIBLE);
+                binding.readingEmptyViewText.setVisibility(View.VISIBLE);
                 stories = null;
                 triggerRefresh(AppConstants.READING_STORY_PRELOAD);
                 return;
@@ -287,7 +288,11 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 
     private void skipPagerToStoryHash() {
         // if we already started and found our target story, this will be unset
-        if (storyHash == null) return;
+        if (storyHash == null) {
+            pager.setVisibility(View.VISIBLE);
+            binding.readingEmptyViewText.setVisibility(View.INVISIBLE);
+            return;
+        }
         int position = -1;
         if (storyHash.equals(FIND_FIRST_UNREAD)) {
             position = readingAdapter.findFirstUnread();
@@ -330,6 +335,15 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
             pager.setPageMarginDrawable(R.drawable.divider_light);
         } else if (themeValue == ThemeValue.DARK) {
             pager.setPageMarginDrawable(R.drawable.divider_dark);
+        } else if (themeValue == ThemeValue.AUTO) {
+            int nightModeFlags = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
+            if (nightModeFlags == Configuration.UI_MODE_NIGHT_YES) {
+                pager.setPageMarginDrawable(R.drawable.divider_dark);
+            } else if (nightModeFlags == Configuration.UI_MODE_NIGHT_NO) {
+                pager.setPageMarginDrawable(R.drawable.divider_light);
+            } else if (nightModeFlags == Configuration.UI_MODE_NIGHT_UNDEFINED) {
+                pager.setPageMarginDrawable(R.drawable.divider_light);
+            }
         }
 
         boolean showFeedMetadata = true;

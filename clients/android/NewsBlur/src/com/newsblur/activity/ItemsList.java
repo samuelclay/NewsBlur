@@ -222,6 +222,8 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
             menu.findItem(R.id.menu_theme_dark).setChecked(true);
         } else if (themeValue == ThemeValue.BLACK) {
             menu.findItem(R.id.menu_theme_black).setChecked(true);
+        } else if (themeValue == ThemeValue.AUTO) {
+            menu.findItem(R.id.menu_theme_auto).setChecked(true);
         }
 
         if (!TextUtils.isEmpty(binding.itemlistSearchQuery.getText())) {
@@ -263,6 +265,9 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
                 binding.itemlistSearchQuery.setVisibility(View.GONE);
                 checkSearchQuery();
             }
+        } else if(item.getItemId() == R.id.menu_theme_auto) {
+		    PrefsUtils.setSelectedTheme(this, ThemeValue.AUTO);
+		    UIUtils.restartActivity(this);
         } else if (item.getItemId() == R.id.menu_theme_light) {
             PrefsUtils.setSelectedTheme(this, ThemeValue.LIGHT);
             UIUtils.restartActivity(this);
