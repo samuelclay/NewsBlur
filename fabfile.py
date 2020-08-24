@@ -800,7 +800,7 @@ def copy_certificates():
     run('mkdir -p %s' % cert_path)
     put(os.path.join(env.SECRETS_PATH, 'certificates/newsblur.com.crt'), cert_path)
     put(os.path.join(env.SECRETS_PATH, 'certificates/newsblur.com.key'), cert_path)
-    put(os.path.join(env.SECRETS_PATH, 'certificates/comodo/newsblur.com.crt'), os.path.join(cert_path, 'newsblur.com.pem')) # For backwards compatibility with hard-coded nginx configs
+    run('ln -fs %s %s' % (os.path.join(cert_path, 'newsblur.com.crt'), os.path.join(cert_path, 'newsblur.com.pem'))) # For backwards compatibility with hard-coded nginx configs
     put(os.path.join(env.SECRETS_PATH, 'certificates/comodo/dhparams.pem'), cert_path)
     put(os.path.join(env.SECRETS_PATH, 'certificates/ios/aps_development.pem'), cert_path)
     # openssl x509 -in aps.cer -inform DER -outform PEM -out aps.pem
