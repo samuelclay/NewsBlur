@@ -582,12 +582,11 @@ public class UIUtils {
         }
     }
 
-    public static boolean hasPremiumAccess(Context context, FeedSet feedSet) {
+    public static boolean needsPremiumAccess(Context context, FeedSet feedSet) {
         boolean isPremium = PrefsUtils.isPremium(context);
         boolean requiresPremium = feedSet.isFolder() || feedSet.isInfrequent() ||
                 feedSet.isAllNormal() || feedSet.isGlobalShared() || feedSet.isSingleSavedTag();
-        //TODO: change flag
-        return !(isPremium && requiresPremium);
+        return !isPremium && requiresPremium;
     }
 
     public static void startPremiumActivity(Context context) {
