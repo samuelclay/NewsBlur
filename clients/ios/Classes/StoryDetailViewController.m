@@ -185,7 +185,7 @@
 - (void)tap:(UITapGestureRecognizer *)gestureRecognizer {
 //    NSLog(@"Gesture tap: %ld (%ld) - %d", (long)gestureRecognizer.state, (long)UIGestureRecognizerStateEnded, inDoubleTap);
     
-    if (gestureRecognizer.state == UIGestureRecognizerStateEnded && gestureRecognizer.numberOfTouches == 1 && appDelegate.storyPageControl.autoscrollAvailable && self.presentedViewController == nil) {
+    if (gestureRecognizer.state == UIGestureRecognizerStateEnded && gestureRecognizer.numberOfTouches == 1 && self.presentedViewController == nil) {
         CGPoint pt = [self pointForGesture:gestureRecognizer];
         if (pt.x == CGPointZero.x && pt.y == CGPointZero.y) return;
         if (inDoubleTap) return;
@@ -196,7 +196,7 @@
                 [webView evaluateJavaScript:[NSString stringWithFormat:@"linkAt(%li, %li, 'id');", (long)pt.x,(long)pt.y] completionHandler:^(NSString *identifier, NSError *error) {
                     [webView evaluateJavaScript:[NSString stringWithFormat:@"linkAt(%li, %li, 'outerHTML');", (long)pt.x,(long)pt.y] completionHandler:^(NSString *outerHTML, NSError *error) {
                         if ([identifier isEqualToString:@"NB-story"] || ![outerHTML containsString:@"NB-"]) {
-                            [appDelegate.storyPageControl showAutoscrollBriefly:YES];
+                            [appDelegate.storyPageControl tappedStory];
                         }
                     }];
                 }];
@@ -206,7 +206,7 @@
             
             // Ignore links, videos, and iframes (e.g. embedded YouTube videos).
             if (![@[@"A", @"VIDEO", @"IFRAME"] containsObject:tagName]) {
-                [appDelegate.storyPageControl showAutoscrollBriefly:YES];
+                [appDelegate.storyPageControl tappedStory];
             }
         }];
     }
@@ -523,6 +523,16 @@
 //        }
 //    }
     
+    NSString *feedIdStr = [NSString stringWithFormat:@"%@",
+                           [self.activeStory
+                            objectForKey:@"story_feed_id"]];
+    NSDictionary *feed = [appDelegate getFeed:feedIdStr];
+    NSString *storyClassSuffix = @"";
+    
+    if (feed[@"is_newsletter"]) {
+        storyClassSuffix = @" NB-newsletter";
+    }
+    
     NSString *riverClass = (appDelegate.storiesCollection.isRiverView ||
                             appDelegate.storiesCollection.isSocialView ||
                             appDelegate.storiesCollection.isSavedView ||
@@ -580,7 +590,7 @@
     
     NSString *htmlContent = [NSString stringWithFormat:@
                              "%@" // header
-                             "        <div id=\"NB-story\" class=\"NB-story\">%@</div>"
+                             "        <div id=\"NB-story\" class=\"NB-story%@\">%@</div>"
                              "        <div class=\"NB-text-view-premium-only\">%@</div>"
                              "        <div id=\"NB-sideoptions-container\">%@</div>"
                              "        <div id=\"NB-comments-wrapper\">"
@@ -589,6 +599,7 @@
                              "        %@"
                              "%@", // footer
                              htmlTop,
+                             storyClassSuffix,
                              storyContent,
                              premiumTextString,
                              sharingHtmlString,
@@ -617,15 +628,16 @@
 }
 
 - (void)drawFeedGradient {
-    NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
-    BOOL shouldHideStatusBar = [preferences boolForKey:@"story_hide_status_bar"];
-    UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
-    BOOL shouldOffsetFeedGradient = UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone && !UIInterfaceOrientationIsLandscape(orientation) && self.navigationController.navigationBarHidden && !shouldHideStatusBar;
-    CGFloat yOffset = shouldOffsetFeedGradient ? appDelegate.storyPageControl.statusBarBackgroundView.bounds.size.height - 1 : -1;
+    BOOL shouldHideStatusBar = appDelegate.storyPageControl.shouldHideStatusBar;
+    CGFloat yOffset = -1;
     NSString *feedIdStr = [NSString stringWithFormat:@"%@",
                            [self.activeStory
                             objectForKey:@"story_feed_id"]];
     NSDictionary *feed = [appDelegate getFeed:feedIdStr];
+    
+    if (appDelegate.storyPageControl.currentlyTogglingNavigationBar && !appDelegate.storyPageControl.isNavigationBarHidden) {
+        yOffset -= 25;
+    }
     
     if (self.feedTitleGradient) {
         [self.feedTitleGradient removeFromSuperview];
@@ -655,11 +667,11 @@
     [self.webView insertSubview:feedTitleGradient aboveSubview:self.webView.scrollView];
     
     if (@available(iOS 11.0, *)) {
-        if (self.view.safeAreaInsets.top > 0.0 && [UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone && shouldHideStatusBar) {
-            feedTitleGradient.alpha = self.navigationController.navigationBarHidden ? 1 : 0;
+        if (appDelegate.storyPageControl.view.safeAreaInsets.top > 0.0 && [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone && shouldHideStatusBar) {
+            feedTitleGradient.alpha = appDelegate.storyPageControl.isNavigationBarHidden ? 1 : 0;
             
             [UIView animateWithDuration:0.3 animations:^{
-                feedTitleGradient.alpha = self.navigationController.navigationBarHidden ? 0 : 1;
+                feedTitleGradient.alpha = appDelegate.storyPageControl.isNavigationBarHidden ? 0 : 1;
             }];
         }
     }
@@ -1320,6 +1332,9 @@
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
     if ([keyPath isEqual:@"contentOffset"]) {
+        BOOL isHorizontal = appDelegate.storyPageControl.isHorizontal;
+        BOOL isNavBarHidden = appDelegate.storyPageControl.isNavigationBarHidden;
+        
         if (self.webView.scrollView.contentOffset.y < (-1 * self.feedTitleGradient.frame.size.height + 1 + self.webView.scrollView.scrollIndicatorInsets.top)) {
             // Pulling
             if (!pullingScrollview) {
@@ -1341,11 +1356,14 @@
             if (pullingScrollview) {
                 pullingScrollview = NO;
                 [self.feedTitleGradient.layer setShadowOpacity:0];
-                [self.webView insertSubview:self.feedTitleGradient aboveSubview:self.webView.scrollView];
                 
-                self.feedTitleGradient.frame = CGRectMake(0, -1,
-                                                          self.feedTitleGradient.frame.size.width,
-                                                          self.feedTitleGradient.frame.size.height);
+                if (!isNavBarHidden) {
+                    [self.webView insertSubview:self.feedTitleGradient aboveSubview:self.webView.scrollView];
+                    
+                    self.feedTitleGradient.frame = CGRectMake(0, -1,
+                                                              self.feedTitleGradient.frame.size.width,
+                                                              self.feedTitleGradient.frame.size.height);
+                }
                 
                 for (id subview in self.webView.scrollView.subviews) {
                     UIImageView *imgView = [subview isKindOfClass:[UIImageView class]] ?
@@ -1364,16 +1382,11 @@
         int viewportHeight = self.view.frame.size.height;
         int topPosition = self.webView.scrollView.contentOffset.y;
         int safeBottomMargin = 0;
-        int minimumTopPositionWhenHidden = -1;
         
         if (@available(iOS 11.0, *)) {
             CGFloat bottomInset = appDelegate.storyPageControl.view.safeAreaInsets.bottom;
             
             safeBottomMargin = -1 * bottomInset / 2;
-            
-            if (bottomInset != 0) {
-                minimumTopPositionWhenHidden = 0;
-            }
         }
         
         int bottomPosition = webpageHeight - topPosition - viewportHeight;
@@ -1386,14 +1399,7 @@
             hasScrolled = YES;
         }
         
-        BOOL isHorizontal = appDelegate.storyPageControl.isHorizontal;
-        BOOL isNavBarHidden = self.navigationController.navigationBarHidden;
-        
-        if (!isHorizontal && appDelegate.storyPageControl.previousPage.pageIndex < 0) {
-            [appDelegate.storyPageControl setNavigationBarHidden:NO];
-        } else if (isHorizontal && topPosition <= minimumTopPositionWhenHidden && isNavBarHidden) {
-            [appDelegate.storyPageControl setNavigationBarHidden:NO];
-        } else if (!nearTop && !isNavBarHidden && self.canHideNavigationBar) {
+        if (!isNavBarHidden && self.canHideNavigationBar && !nearTop && appDelegate.storyPageControl.autoscrollActive) {
             [appDelegate.storyPageControl setNavigationBarHidden:YES];
         }
         
@@ -1416,28 +1422,18 @@
             appDelegate.storyPageControl.traverseView.alpha = 1;
 //            NSLog(@" ---> Bottom position: %d", bottomPosition);
             if (bottomPosition >= 0 || !isHorizontal) {
-//                appDelegate.storyPageControl.traverseView.frame = CGRectMake(tvf.origin.x,
-//                                                                             self.webView.scrollView.frame.size.height - tvf.size.height - safeBottomMargin,
-//                                                                             tvf.size.width, tvf.size.height);
                 appDelegate.storyPageControl.traverseBottomConstraint.constant = safeBottomMargin;
             } else {
-//                appDelegate.storyPageControl.traverseView.frame = CGRectMake(tvf.origin.x,
-//                                                                             (webpageHeight - topPosition) - tvf.size.height - safeBottomMargin,
-//                                                                             tvf.size.width, tvf.size.height);
                 if (webpageHeight > 0) {
                     appDelegate.storyPageControl.traverseBottomConstraint.constant = viewportHeight - (webpageHeight - topPosition) + safeBottomMargin;
                 } else {
                     appDelegate.storyPageControl.traverseBottomConstraint.constant = safeBottomMargin;
                 }
-//                appDelegate.storyPageControl.traverseBottomConstraint.constant = safeBottomMargin;
             }
         } else if (!singlePage && (atTop && !atBottom)) {
             // Pin to bottom of viewport, regardless of scrollview
             appDelegate.storyPageControl.traversePinned = YES;
             appDelegate.storyPageControl.traverseFloating = NO;
-//            appDelegate.storyPageControl.traverseView.frame = CGRectMake(tvf.origin.x,
-//                                                                         self.webView.scrollView.frame.size.height - tvf.size.height - safeBottomMargin,
-//                                                                         tvf.size.width, tvf.size.height);
             [appDelegate.storyPageControl.view layoutIfNeeded];
 
             appDelegate.storyPageControl.traverseBottomConstraint.constant = safeBottomMargin;
@@ -1457,9 +1453,6 @@
             [UIView animateWithDuration:.3 delay:0
                                 options:UIViewAnimationOptionCurveEaseInOut
              animations:^{
-//             appDelegate.storyPageControl.traverseView.frame = CGRectMake(tvf.origin.x,
-//                                                                         (webpageHeight - topPosition) - tvf.size.height - safeBottomMargin,
-//                                                                         tvf.size.width, tvf.size.height);
                  [appDelegate.storyPageControl.view layoutIfNeeded];
              } completion:^(BOOL finished) {
                  appDelegate.storyPageControl.traversePinned = NO;
@@ -1470,9 +1463,6 @@
             appDelegate.storyPageControl.traverseFloating = YES;
             appDelegate.storyPageControl.traverseView.alpha = 1;
             appDelegate.storyPageControl.traverseBottomConstraint.constant = viewportHeight - (webpageHeight - topPosition) + safeBottomMargin;
-//            appDelegate.storyPageControl.traverseView.frame = CGRectMake(tvf.origin.x,
-//                                                                         (webpageHeight - topPosition) - tvf.size.height - safeBottomMargin,
-//                                                                         tvf.size.width, tvf.size.height);
         }
         
         [self storeScrollPosition:YES];
@@ -1912,23 +1902,21 @@
     [self.webView evaluateJavaScript:jsString completionHandler:nil];
     
     self.webView.backgroundColor = UIColorFromLightDarkRGB(0x707070, 0x404040);
+    
+    if ([ThemeManager themeManager].isDarkTheme) {
+        self.webView.scrollView.indicatorStyle = UIScrollViewIndicatorStyleWhite;
+    } else {
+        self.webView.scrollView.indicatorStyle = UIScrollViewIndicatorStyleBlack;
+    }
 }
 
 - (BOOL)canHideNavigationBar {
-    if ([UIDevice currentDevice] userInterfaceIdiom] != UIUserInterfaceIdiomPhone || self.presentedViewController != nil) {
-        return NO;
-    }
-    
-    if (!appDelegate.storyPageControl.wantNavigationBarHidden) {
+    if (!appDelegate.storyPageControl.allowFullscreen) {
         NSLog(@"canHideNavigationBar: no, toggle is off");  // log
         return NO;
     }
     
-    BOOL canHide = !self.isSinglePage;
-    
-    NSLog(@"canHideNavigationBar: %@", canHide ? @"yes" : @"no");  // log
-    
-    return canHide;
+    return YES;
 }
 
 - (BOOL)isSinglePage {
@@ -2243,7 +2231,7 @@
     return [super canPerformAction:action withSender:sender];
 }
 
-# pragma mark
+# pragma mark -
 # pragma mark Subscribing to blurblog
 
 - (void)subscribeToBlurblog {

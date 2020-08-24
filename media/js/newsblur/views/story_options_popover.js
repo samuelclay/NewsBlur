@@ -96,7 +96,7 @@ NEWSBLUR.StoryOptionsPopover = NEWSBLUR.ReaderPopover.extend({
             ]),
             $.make('div', { className: 'NB-popover-section' }, [
                 $.make('div', { className: 'NB-popover-section-title' }, 'Font Family'),
-                $.make('ul', { className: 'segmented-control-vertical NB-options-font-family' }, [
+                $.make('ul', { className: 'segmented-control segmented-control-vertical NB-options-font-family' }, [
                     $.make('li', { className: 'NB-font-family-option NB-options-font-family-sans-serif NB-active' }, 'Helvetica'),
                     $.make('li', { className: 'NB-font-family-option NB-options-font-family-serif' }, 'Palatino / Georgia'),
                     $.make('li', { className: 'NB-font-family-option NB-premium-only NB-options-font-family-gotham' }, [

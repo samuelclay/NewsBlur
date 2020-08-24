@@ -1107,8 +1107,10 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     self.searchBar.nb_searchField.tintColor = UIColorFromRGB(NEWSBLUR_BLACK_COLOR);
     
     if ([ThemeManager themeManager].isDarkTheme) {
+        self.feedTitlesTable.indicatorStyle = UIScrollViewIndicatorStyleWhite;
         self.searchBar.keyboardAppearance = UIKeyboardAppearanceDark;
     } else {
+        self.feedTitlesTable.indicatorStyle = UIScrollViewIndicatorStyleBlack;
         self.searchBar.keyboardAppearance = UIKeyboardAppearanceDefault;
     }
     

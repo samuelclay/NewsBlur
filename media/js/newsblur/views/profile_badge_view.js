@@ -53,7 +53,7 @@ NEWSBLUR.Views.SocialProfileBadge = Backbone.View.extend({
                     $.make('div', { className: 'NB-profile-badge-bio' }, profile.get('bio')),
                     (_.isNumber(profile.get('shared_stories_count')) && 
                      $.make('div', { className: 'NB-profile-badge-stats' }, [
-                        $.make('span', { className: 'NB-count' }, profile.get('shared_stories_count')),
+                        $.make('span', { className: 'NB-count' }, Inflector.commas(profile.get('shared_stories_count'))),
                         'shared ',
                         Inflector.pluralize('story', profile.get('shared_stories_count')),
                         ' &middot; ',

@@ -7,12 +7,15 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.text.TextUtils;
 import android.util.Log;
@@ -26,22 +29,17 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.webkit.WebView.HitTestResult;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
-import android.widget.ScrollView;
 import android.widget.TextView;
-
-import butterknife.ButterKnife;
-import butterknife.Bind;
-import butterknife.OnClick;
 
 import com.newsblur.R;
 import com.newsblur.activity.FeedItemsList;
 import com.newsblur.activity.NbActivity;
 import com.newsblur.activity.Reading;
+import com.newsblur.databinding.FragmentReadingitemBinding;
+import com.newsblur.databinding.IncludeReadingItemCommentBinding;
 import com.newsblur.domain.Classifier;
-import com.newsblur.domain.Feed;
 import com.newsblur.domain.Story;
 import com.newsblur.domain.UserDetails;
 import com.newsblur.service.OriginalTextService;
@@ -54,14 +52,9 @@ import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.StoryUtils;
 import com.newsblur.util.UIUtils;
 import com.newsblur.util.ViewUtils;
-import com.newsblur.view.FlowLayout;
-import com.newsblur.view.NewsblurWebview;
 import com.newsblur.view.ReadingScrollView;
 
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -76,24 +69,12 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
 	private LayoutInflater inflater;
 	private String feedColor, feedTitle, feedFade, feedBorder, feedIconUrl, faviconText;
 	private Classifier classifier;
-	@Bind(R.id.reading_webview) NewsblurWebview web;
-    @Bind(R.id.custom_view_container) ViewGroup webviewCustomViewLayout;
-    @Bind(R.id.reading_scrollview) ScrollView fragmentScrollview;
 	private BroadcastReceiver textSizeReceiver, readingFontReceiver;
-    @Bind(R.id.reading_item_title) TextView itemTitle;
-    @Bind(R.id.reading_item_authors) TextView itemAuthors;
-	@Bind(R.id.reading_feed_title) TextView itemFeed;
 	private boolean displayFeedDetails;
-	@Bind(R.id.reading_item_tags) FlowLayout tagContainer;
 	private View view;
 	private UserDetails user;
     private DefaultFeedView selectedFeedView;
     private boolean textViewUnavailable;
-    @Bind(R.id.reading_textloading) TextView textViewLoadingMsg;
-    @Bind(R.id.reading_textmodefailed) TextView textViewLoadingFailedMsg;
-    @Bind(R.id.save_story_button) Button saveButton;
-    @Bind(R.id.share_story_button) Button shareButton;
-    @Bind(R.id.story_context_menu_button) Button menuButton;
 
     /** The story HTML, as provided by the 'content' element of the stories API. */
     private String storyContent;
@@ -114,6 +95,9 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
     private float savedScrollPosRel = 0f;
 
     private final Object WEBVIEW_CONTENT_MUTEX = new Object();
+
+    private FragmentReadingitemBinding binding;
+    private IncludeReadingItemCommentBinding itemCommentBinding;
 
 	public static ReadingItemFragment newInstance(Story story, String feedTitle, String feedFaviconColor, String feedFaviconFade, String feedFaviconBorder, String faviconText, String faviconUrl, Classifier classifier, boolean displayFeedDetails, String sourceUserId) {
 		ReadingItemFragment readingFragment = new ReadingItemFragment();
@@ -168,8 +152,8 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        int heightm = fragmentScrollview.getChildAt(0).getMeasuredHeight();
-        int pos = fragmentScrollview.getScrollY();
+        int heightm = binding.readingScrollview.getChildAt(0).getMeasuredHeight();
+        int pos = binding.readingScrollview.getScrollY();
         outState.putFloat(BUNDLE_SCROLL_POS_REL, (((float)pos)/heightm));
     }
 
@@ -177,7 +161,7 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
 	public void onDestroy() {
 		getActivity().unregisterReceiver(textSizeReceiver);
         getActivity().unregisterReceiver(readingFontReceiver);
-        web.setOnTouchListener(null);
+        binding.readingWebview.setOnTouchListener(null);
         view.setOnTouchListener(null);
         getActivity().getWindow().getDecorView().setOnSystemUiVisibilityChangeListener(null);
 		super.onDestroy();
@@ -187,7 +171,7 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
     // state into the webview so it behaves.
     @Override
     public void onPause() {
-        if (this.web != null ) { this.web.onPause(); }
+        if (this.binding.readingWebview != null ) { this.binding.readingWebview.onPause(); }
         super.onPause();
     }
 
@@ -195,25 +179,26 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
     public void onResume() {
         super.onResume();
         reloadStoryContent();
-        if (this.web != null ) { this.web.onResume(); }
+        if (this.binding.readingWebview != null ) { this.binding.readingWebview.onResume(); }
     }
 
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         this.inflater = inflater;
         view = inflater.inflate(R.layout.fragment_readingitem, null);
-        ButterKnife.bind(this, view);
+        binding = FragmentReadingitemBinding.bind(view);
+        itemCommentBinding = IncludeReadingItemCommentBinding.bind(binding.getRoot());
 
         Reading activity = (Reading) getActivity();
         fs = activity.getFeedSet();
 
         selectedFeedView = PrefsUtils.getDefaultViewModeForFeed(activity, story.feedId);
 
-        registerForContextMenu(web);
-        web.setCustomViewLayout(webviewCustomViewLayout);
-        web.setWebviewWrapperLayout(fragmentScrollview);
-        web.setBackgroundColor(Color.TRANSPARENT);
-        web.fragment = this;
-        web.activity = activity;
+        registerForContextMenu(binding.readingWebview);
+        binding.readingWebview.setCustomViewLayout(binding.customViewContainer);
+        binding.readingWebview.setWebviewWrapperLayout(binding.readingScrollview);
+        binding.readingWebview.setBackgroundColor(Color.TRANSPARENT);
+        binding.readingWebview.fragment = this;
+        binding.readingWebview.activity = activity;
 
 		setupItemMetadata();
 		updateShareButton();
@@ -228,6 +213,29 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
 		return view;
 	}
 
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        binding.storyContextMenuButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onClickMenuButton();
+            }
+        });
+        itemCommentBinding.saveStoryButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                clickSave();
+            }
+        });
+        itemCommentBinding.shareStoryButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                clickShare();
+            }
+        });
+	}
+
     private void setupImmersiveViewGestureDetector() {
         // Change the system visibility on the decorview from the activity so that the state is maintained as we page through
         // fragments
@@ -239,7 +247,7 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
                 return gestureDetector.onTouchEvent(motionEvent);
             }
         };
-        web.setOnTouchListener(touchListener);
+        binding.readingWebview.setOnTouchListener(touchListener);
         view.setOnTouchListener(touchListener);
 
         getActivity().getWindow().getDecorView().setOnSystemUiVisibilityChangeListener(immersiveViewHandler);
@@ -247,7 +255,7 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-        HitTestResult result = web.getHitTestResult();
+        HitTestResult result = binding.readingWebview.getHitTestResult();
         if (result.getType() == HitTestResult.IMAGE_TYPE ||
             result.getType() == HitTestResult.SRC_IMAGE_ANCHOR_TYPE ) {
             // if the long-pressed item was an image, see if we can pop up a little dialogue
@@ -298,8 +306,8 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
         }
     }
 
-    @OnClick(R.id.story_context_menu_button) void onClickMenuButton() {
-        PopupMenu pm = new PopupMenu(getActivity(), menuButton);
+    private void onClickMenuButton() {
+        PopupMenu pm = new PopupMenu(getActivity(), binding.storyContextMenuButton);
         Menu menu = pm.getMenu();
         pm.getMenuInflater().inflate(R.menu.story_context, menu);
 
@@ -313,6 +321,8 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
             menu.findItem(R.id.menu_theme_dark).setChecked(true);
         } else if (themeValue == ThemeValue.BLACK) {
             menu.findItem(R.id.menu_theme_black).setChecked(true);
+        } else if (themeValue == ThemeValue.AUTO) {
+            menu.findItem(R.id.menu_theme_auto).setChecked(true);
         }
 
         pm.setOnMenuItemClickListener(this);
@@ -360,7 +370,11 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
         } else if (item.getItemId() == R.id.menu_reading_markunread) {
             FeedUtils.markStoryUnread(story, getActivity());
             return true;
-		} else if (item.getItemId() == R.id.menu_theme_light) {
+		} else if (item.getItemId() == R.id.menu_theme_auto) {
+		    PrefsUtils.setSelectedTheme(getActivity(), ThemeValue.AUTO);
+		    UIUtils.restartActivity(getActivity());
+		    return true;
+        } else if (item.getItemId() == R.id.menu_theme_light) {
             PrefsUtils.setSelectedTheme(getActivity(), ThemeValue.LIGHT);
             UIUtils.restartActivity(getActivity());
             return true;
@@ -386,7 +400,7 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
 		}
     }
 
-    @OnClick(R.id.save_story_button) void clickSave() {
+    private void clickSave() {
         if (story.starred) {
             FeedUtils.setStorySaved(story.storyHash, false, getActivity());
         } else {
@@ -395,24 +409,24 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
     }
 
     private void updateSaveButton() {
-        if (saveButton == null) return;
-        saveButton.setText(story.starred ? R.string.unsave_this : R.string.save_this);
+        if (itemCommentBinding.saveStoryButton == null) return;
+        itemCommentBinding.saveStoryButton.setText(story.starred ? R.string.unsave_this : R.string.save_this);
     }
 
-    @OnClick(R.id.share_story_button) void clickShare() {
+    private void clickShare() {
         DialogFragment newFragment = ShareDialogFragment.newInstance(story, sourceUserId);
         newFragment.show(getFragmentManager(), "dialog");
     }
 
 	private void updateShareButton() {
-        if (shareButton == null) return;
+        if (itemCommentBinding.shareStoryButton == null) return;
 		for (String userId : story.sharedUserIds) {
 			if (TextUtils.equals(userId, user.id)) {
-				shareButton.setText(R.string.already_shared);
+				itemCommentBinding.shareStoryButton.setText(R.string.already_shared);
 				return;
 			}
 		}
-        shareButton.setText(R.string.share_this);
+        itemCommentBinding.shareStoryButton.setText(R.string.share_this);
 	}
 
     private void setupItemCommentsAndShares() {
@@ -443,28 +457,28 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
         feedHeaderBorder.setBackgroundColor(Color.parseColor("#" + feedBorder));
 
         if (TextUtils.equals(faviconText, "black")) {
-            itemFeed.setTextColor(UIUtils.getColor(getActivity(), R.color.text));
-            itemFeed.setShadowLayer(1, 0, 1, UIUtils.getColor(getActivity(), R.color.half_white));
+            binding.readingFeedTitle.setTextColor(UIUtils.getColor(getActivity(), R.color.text));
+            binding.readingFeedTitle.setShadowLayer(1, 0, 1, UIUtils.getColor(getActivity(), R.color.half_white));
         } else {
-            itemFeed.setTextColor(UIUtils.getColor(getActivity(), R.color.white));
-            itemFeed.setShadowLayer(1, 0, 1, UIUtils.getColor(getActivity(), R.color.half_black));
+            binding.readingFeedTitle.setTextColor(UIUtils.getColor(getActivity(), R.color.white));
+            binding.readingFeedTitle.setShadowLayer(1, 0, 1, UIUtils.getColor(getActivity(), R.color.half_black));
         }
 
 		if (!displayFeedDetails) {
-			itemFeed.setVisibility(View.GONE);
+			binding.readingFeedTitle.setVisibility(View.GONE);
 			feedIcon.setVisibility(View.GONE);
 		} else {
 			FeedUtils.iconLoader.displayImage(feedIconUrl, feedIcon, 0, false);
-			itemFeed.setText(feedTitle);
+			binding.readingFeedTitle.setText(feedTitle);
 		}
 
         itemDate.setText(StoryUtils.formatLongDate(getActivity(), story.timestamp));
 
         if (story.tags.length <= 0) {
-            tagContainer.setVisibility(View.GONE);
+            binding.readingItemTags.setVisibility(View.GONE);
         }
 
-		itemAuthors.setOnClickListener(new OnClickListener() {
+		binding.readingItemAuthors.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
                 if (story.feedId.equals("0")) return; // cannot train on feedless stories
@@ -473,7 +487,7 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
 			}	
 		});
 
-		itemFeed.setOnClickListener(new OnClickListener() {
+		binding.readingFeedTitle.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
                 if (story.feedId.equals("0")) return; // cannot train on feedless stories
@@ -482,7 +496,7 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
 			}
 		});
 
-		itemTitle.setOnClickListener(new OnClickListener() {
+		binding.readingItemTitle.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				Intent i = new Intent(Intent.ACTION_VIEW);
@@ -506,7 +520,7 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
         Drawable tag_green_background = UIUtils.getDrawable(getActivity(), R.drawable.tag_background_positive);
         Drawable tag_red_background = UIUtils.getDrawable(getActivity(), R.drawable.tag_background_negative);
 
-        tagContainer.removeAllViews();
+        binding.readingItemTags.removeAllViews();
 		for (String tag : story.tags) {
             // TODO: these textviews with compound images are buggy, but stubbed in to let colourblind users
             //       see what is going on. these should be replaced with proper Chips when the v28 Chip lib
@@ -549,21 +563,21 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
                 });
             }
 
-			tagContainer.addView(v);
+			binding.readingItemTags.addView(v);
 		}
 
         if (!TextUtils.isEmpty(story.authors)) {
-            itemAuthors.setText("•   " + story.authors);
+            binding.readingItemAuthors.setText("•   " + story.authors);
             if (classifier != null && classifier.authors.containsKey(story.authors)) {
                 switch (classifier.authors.get(story.authors)) {
                     case Classifier.LIKE:
-                        itemAuthors.setTextColor(UIUtils.getColor(getActivity(), R.color.positive));
+                        binding.readingItemAuthors.setTextColor(UIUtils.getColor(getActivity(), R.color.positive));
                         break;
                     case Classifier.DISLIKE:
-                        itemAuthors.setTextColor(UIUtils.getColor(getActivity(), R.color.negative));
+                        binding.readingItemAuthors.setTextColor(UIUtils.getColor(getActivity(), R.color.negative));
                         break;
                     default:
-                        itemAuthors.setTextColor(UIUtils.getThemedColor(getActivity(), R.attr.readingItemMetadata, android.R.attr.textColor));
+                        binding.readingItemAuthors.setTextColor(UIUtils.getThemedColor(getActivity(), R.attr.readingItemMetadata, android.R.attr.textColor));
                         break;
                 }
             }
@@ -571,7 +585,7 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
 
         String title = story.title;
         title = UIUtils.colourTitleFromClassifier(title, classifier);
-        itemTitle.setText(UIUtils.fromHtml(title));
+        binding.readingItemTitle.setText(UIUtils.fromHtml(title));
 	}
 
     public void switchSelectedViewMode() {
@@ -613,8 +627,8 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
 
     private void reloadStoryContent() {
         // reset indicators
-        textViewLoadingMsg.setVisibility(View.GONE);
-        textViewLoadingFailedMsg.setVisibility(View.GONE);
+        binding.readingTextloading.setVisibility(View.GONE);
+        binding.readingTextmodefailed.setVisibility(View.GONE);
         enableProgress(false);
 
         boolean needStoryContent = false;
@@ -623,10 +637,10 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
             needStoryContent = true;
         } else {
             if (textViewUnavailable) {
-                textViewLoadingFailedMsg.setVisibility(View.VISIBLE);
+                binding.readingTextmodefailed.setVisibility(View.VISIBLE);
                 needStoryContent = true;
             } else if (originalText == null) {
-                textViewLoadingMsg.setVisibility(View.VISIBLE);
+                binding.readingTextloading.setVisibility(View.VISIBLE);
                 enableProgress(true);
                 loadOriginalText();
                 // still show the story mode version, as the text mode one may take some time
@@ -782,11 +796,20 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
                 builder.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"dark_reading.css\" />");
             } else if (themeValue == ThemeValue.BLACK) {
                 builder.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"black_reading.css\" />");
+            } else if (themeValue == ThemeValue.AUTO) {
+                int nightModeFlags = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
+                if (nightModeFlags == Configuration.UI_MODE_NIGHT_YES) {
+                    builder.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"dark_reading.css\" />");
+                } else if (nightModeFlags == Configuration.UI_MODE_NIGHT_NO) {
+                    builder.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"light_reading.css\" />");
+                } else if (nightModeFlags == Configuration.UI_MODE_NIGHT_UNDEFINED) {
+                    builder.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"light_reading.css\" />");
+                }
             }
             builder.append("</head><body><div class=\"NB-story\">");
             builder.append(storyText);
             builder.append("</div></body></html>");
-            web.loadDataWithBaseURL("file:///android_asset/", builder.toString(), "text/html", "UTF-8", null);
+            binding.readingWebview.loadDataWithBaseURL("file:///android_asset/", builder.toString(), "text/html", "UTF-8", null);
         }
 	}
 
@@ -887,10 +910,10 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
             // insufficient time to allow the WebView to actually finish internally computing state and size.
             // an additional fixed delay is added in a last ditch attempt to give the black-box platform
             // threads a chance to finish their work.
-            fragmentScrollview.postDelayed(new Runnable() {
+            binding.readingScrollview.postDelayed(new Runnable() {
                 public void run() {
-                    int relPos = Math.round(fragmentScrollview.getChildAt(0).getMeasuredHeight() * savedScrollPosRel);
-                    fragmentScrollview.scrollTo(0, relPos);
+                    int relPos = Math.round(binding.readingScrollview.getChildAt(0).getMeasuredHeight() * savedScrollPosRel);
+                    binding.readingScrollview.scrollTo(0, relPos);
                 }
             }, 75L);
         }
@@ -903,7 +926,7 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
 	private class TextSizeReceiver extends BroadcastReceiver {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			web.setTextSize(intent.getFloatExtra(TEXT_SIZE_VALUE, 1.0f));
+			binding.readingWebview.setTextSize(intent.getFloatExtra(TEXT_SIZE_VALUE, 1.0f));
 		}   
 	}
 
@@ -924,7 +947,7 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
 
         @Override
         public boolean onSingleTapUp(MotionEvent e) {
-            if (web.wasLinkClicked()) {
+            if (binding.readingWebview.wasLinkClicked()) {
                 // Clicked a link so ignore immersive view
                 return super.onSingleTapUp(e);
             }

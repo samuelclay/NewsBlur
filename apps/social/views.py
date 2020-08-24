@@ -660,11 +660,7 @@ def mark_story_as_shared(request):
     if post_to_services:
         for service in post_to_services:
             if service not in shared_story.posted_to_services:
-                if service == 'appdotnet':
-                    # XXX TODO: Remove. Only for www->dev.
-                    shared_story.post_to_service(service)
-                else:
-                    PostToService.delay(shared_story_id=shared_story.id, service=service)
+                PostToService.delay(shared_story_id=shared_story.id, service=service)
     
     if shared_story.source_user_id and shared_story.comments:
         EmailStoryReshares.apply_async(kwargs=dict(shared_story_id=shared_story.id),
@@ -1309,6 +1305,7 @@ def shared_stories_rss_feed_noid(request):
 
     return index
 
+@ratelimit(minutes=1, requests=5)
 def shared_stories_rss_feed(request, user_id, username):
     try:
         user = User.objects.get(pk=user_id)

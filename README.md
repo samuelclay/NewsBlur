@@ -161,7 +161,7 @@ these after the installation below.
  
     Then load up the database with empty NewsBlur tables and bootstrap the database:
     
-        ./manage.py syncdb --all
+        ./manage.py syncdb --all --noinput
         ./manage.py migrate --fake
         ./manage.py migrate
         ./manage.py loaddata config/fixtures/bootstrap.json
@@ -275,7 +275,7 @@ If you need to move search servers and want to just delete everything in the sea
 NewsBlur comes complete with a test suite that tests the functionality of the rss_feeds,
 reader, and feed importer. To run the test suite:
 
-    ./manage.py test --settings=utils.test-settings
+    ./manage.py test --settings=utils.test_settings
 
 
 ## In Case of Downtime
