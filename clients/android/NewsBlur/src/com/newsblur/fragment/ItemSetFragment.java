@@ -307,7 +307,7 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
             return;
         }
 
-        if (cursorSeenYet && adapter.getRawStoryCount() > 0 && !UIUtils.hasPremiumAccess(requireContext(), getFeedSet())) {
+        if (cursorSeenYet && adapter.getRawStoryCount() > 0 && UIUtils.needsPremiumAccess(requireContext(), getFeedSet())) {
             fleuronBinding.getRoot().setVisibility(View.VISIBLE);
             fleuronBinding.containerSubscribe.setVisibility(View.VISIBLE);
             binding.topLoadingThrob.setVisibility(View.INVISIBLE);
@@ -428,7 +428,7 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
         if (dy < 1) return;
 
         // skip fetching more stories if premium access is required
-        if (!UIUtils.hasPremiumAccess(requireContext(), getFeedSet()) && adapter.getItemCount() >= 3) return;
+        if (UIUtils.needsPremiumAccess(requireContext(), getFeedSet()) && adapter.getItemCount() >= 3) return;
 
         ensureSufficientStories();
 

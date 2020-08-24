@@ -5,14 +5,20 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.text.util.Linkify;
 import android.util.Log;
+import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
+import com.android.billingclient.api.AcknowledgePurchaseParams;
+import com.android.billingclient.api.AcknowledgePurchaseResponseListener;
 import com.android.billingclient.api.BillingClient;
 import com.android.billingclient.api.BillingClientStateListener;
 import com.android.billingclient.api.BillingFlowParams;
 import com.android.billingclient.api.BillingResult;
 import com.android.billingclient.api.Purchase;
+import com.android.billingclient.api.PurchaseHistoryRecord;
+import com.android.billingclient.api.PurchaseHistoryResponseListener;
 import com.android.billingclient.api.PurchasesUpdatedListener;
 import com.android.billingclient.api.SkuDetails;
 import com.android.billingclient.api.SkuDetailsParams;
@@ -25,11 +31,85 @@ import com.newsblur.util.UIUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class Premium extends NbActivity {
 
     private ActivityPremiumBinding binding;
     private BillingClient billingClient;
+    private final String subscriptionSku = "nb.premium.36";
+    private SkuDetails subscriptionDetails;
+
+    private AcknowledgePurchaseResponseListener acknowledgePurchaseResponseListener = billingResult -> {
+        if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
+            Log.d(Premium.this.getLocalClassName(), "acknowledgePurchaseResponseListener OK");
+            enablePremiumAccess();
+        } else if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.BILLING_UNAVAILABLE) {
+            // Billing API version is not supported for the type requested.
+            Log.d(Premium.this.getLocalClassName(), "acknowledgePurchaseResponseListener BILLING_UNAVAILABLE");
+        } else if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.SERVICE_UNAVAILABLE) {
+            // Network connection is down.
+            Log.d(Premium.this.getLocalClassName(), "acknowledgePurchaseResponseListener SERVICE_UNAVAILABLE");
+        } else {
+            // Handle any other error codes.
+            Log.d(Premium.this.getLocalClassName(), "acknowledgePurchaseResponseListener ERROR - message: " + billingResult.getDebugMessage());
+        }
+    };
+
+    private PurchasesUpdatedListener purchaseUpdateListener = (billingResult, purchases) -> {
+        if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK && purchases != null) {
+            Log.d(Premium.this.getLocalClassName(), "purchaseUpdateListener OK");
+            for (Purchase purchase : purchases) {
+                handlePurchase(purchase);
+            }
+        } else if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.USER_CANCELED) {
+            // Handle an error caused by a user cancelling the purchase flow.
+            Log.d(Premium.this.getLocalClassName(), "purchaseUpdateListener USER_CANCELLED");
+        } else if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.BILLING_UNAVAILABLE) {
+            // Billing API version is not supported for the type requested.
+            Log.d(Premium.this.getLocalClassName(), "purchaseUpdateListener BILLING_UNAVAILABLE");
+        } else if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.SERVICE_UNAVAILABLE) {
+            // Network connection is down.
+            Log.d(Premium.this.getLocalClassName(), "purchaseUpdateListener SERVICE_UNAVAILABLE");
+        } else {
+            // Handle any other error codes.
+            Log.d(Premium.this.getLocalClassName(), "purchaseUpdateListener ERROR - message: " + billingResult.getDebugMessage());
+        }
+    };
+
+    private BillingClientStateListener billingClientStateListener = new BillingClientStateListener() {
+        @Override
+        public void onBillingSetupFinished(@NonNull BillingResult billingResult) {
+            if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
+                // The BillingClient is ready. You can query purchases here.
+                Log.d(Premium.this.getLocalClassName(), "onBillingSetupFinished OK");
+                retrieveSubs();
+                Purchase.PurchasesResult result = billingClient.queryPurchases(BillingClient.SkuType.SUBS);
+                for (Purchase purchase : result.getPurchasesList()) {
+                    Purchase purchase1 = purchase;
+                }
+                billingClient.queryPurchaseHistoryAsync(BillingClient.SkuType.SUBS, new PurchaseHistoryResponseListener() {
+                    @Override
+                    public void onPurchaseHistoryResponse(@NonNull BillingResult billingResult, @Nullable List<PurchaseHistoryRecord> list) {
+                        Log.d("fdsfsdfsd", "fdsfdfsdfsd");
+                        for (PurchaseHistoryRecord purchaseHistoryRecord : list) {
+                            purchaseHistoryRecord.getSku();
+                        }
+                    }
+                });
+            } else {
+                showSubscriptionDetailsError();
+            }
+        }
+
+        @Override
+        public void onBillingServiceDisconnected() {
+            Log.d(Premium.this.getLocalClassName(), "onBillingServiceDisconnected");
+            // Try to restart the connection on the next request to
+            // Google Play by calling the startConnection() method.
+            showSubscriptionDetailsError();
+        }
+    };
 
     @Override
     protected void onCreate(Bundle bundle) {
@@ -51,73 +131,95 @@ public class Premium extends NbActivity {
                     return true;
                 });
         binding.textPolicies.setText(UIUtils.fromHtml(getString(R.string.premium_policies)));
-        binding.textSubscriptionTitle.setPaintFlags(binding.textSubscriptionTitle.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+        binding.textSubTitle.setPaintFlags(binding.textSubTitle.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
         FeedUtils.iconLoader.displayImage(AppConstants.SHILOH_PHOTO_URL, binding.imgShiloh, 0, false);
     }
 
     private void setupBillingClient() {
-        PurchasesUpdatedListener purchaseUpdateListener = (billingResult, purchases) -> {
-            // To be implemented
-            if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK && purchases != null) {
-                for (Purchase purchase : purchases) {
-                    // handle purchase
-                }
-            } else if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.USER_CANCELED) {
-                // Handle an error caused by a user cancelling the purchase flow.
-            } else {
-                // Handle any other error codes.
-            }
-        };
-
         billingClient = BillingClient.newBuilder(this)
                 .setListener(purchaseUpdateListener)
                 .enablePendingPurchases()
                 .build();
 
-        billingClient.startConnection(new BillingClientStateListener() {
-            @Override
-            public void onBillingSetupFinished(@NonNull BillingResult billingResult) {
-                if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
-                    // The BillingClient is ready. You can query purchases here.
-                    Log.d(Premium.this.getLocalClassName(), "onBillingSetupFinished - message: " + billingResult.getDebugMessage() + " | response code: " + billingResult.getResponseCode());
-                }
-            }
+        billingClient.startConnection(billingClientStateListener);
+    }
 
-            @Override
-            public void onBillingServiceDisconnected() {
-                Log.d(Premium.this.getLocalClassName(), "onBillingServiceDisconnected");
-                // Try to restart the connection on the next request to
-                // Google Play by calling the startConnection() method.
-            }
-        });
-
-        List<String> skuList = new ArrayList<>();
+    private void retrieveSubs() {
+        List<String> skuList = new ArrayList<>(1);
         // add sub SKUs from Play Store
-        skuList.add("premium_subscription");
+        skuList.add(subscriptionSku);
         SkuDetailsParams.Builder params = SkuDetailsParams.newBuilder();
         params.setSkusList(skuList).setType(BillingClient.SkuType.SUBS);
         billingClient.querySkuDetailsAsync(params.build(), (billingResult, skuDetailsList) -> {
-            // Process the result.
-            Log.d(Premium.this.getLocalClassName(), "SkuDetailsResponse - result message: " + billingResult.getDebugMessage() + " | result response code: " + billingResult.getResponseCode());
-            if (skuDetailsList != null) {
-                for (SkuDetails skuDetails : skuDetailsList) {
-                    Log.d(Premium.this.getLocalClassName(), "Sku detail: " + skuDetails.getTitle() + " | " + skuDetails.getDescription() + " | " + skuDetails.getPrice() + " | " + skuDetails.getSku());
-                }
-            } else {
-                Log.d(Premium.this.getLocalClassName(), "Empty sku list");
-            }
+            Log.d(Premium.this.getLocalClassName(), "SkuDetailsResponse");
+            processSkuDetailsList(skuDetailsList);
         });
     }
 
+    private void processSkuDetailsList(@Nullable List<SkuDetails> skuDetailsList) {
+        if (skuDetailsList != null) {
+            for (SkuDetails skuDetails : skuDetailsList) {
+                if (skuDetails.getSku().equals(subscriptionSku)) {
+                    Log.d(Premium.this.getLocalClassName(), "Sku detail: " + skuDetails.getTitle() + " | " + skuDetails.getDescription() + " | " + skuDetails.getPrice() + " | " + skuDetails.getSku());
+                    subscriptionDetails = skuDetails;
+                }
+            }
+        }
+
+        if (subscriptionDetails != null) {
+            showSubscriptionDetails();
+        } else {
+            showSubscriptionDetailsError();
+        }
+    }
+
+    private void showSubscriptionDetailsError() {
+        binding.textLoading.setText(R.string.premium_subscription_details_error);
+        binding.textLoading.setVisibility(View.VISIBLE);
+        binding.containerSub.setVisibility(View.GONE);
+    }
+
+    private void showSubscriptionDetails() {
+        // handling dynamic currency and pricing for 1Y subscriptions
+        String currencySymbol = subscriptionDetails.getPrice().substring(0, 1);
+        String priceString = subscriptionDetails.getPrice().substring(1);
+        double price = Double.parseDouble(priceString);
+        StringBuilder pricingText = new StringBuilder();
+        pricingText.append(subscriptionDetails.getPrice());
+        pricingText.append(" per year (");
+        pricingText.append(currencySymbol);
+        pricingText.append(String.format(Locale.getDefault(), "%.2f", price / 12));
+        pricingText.append("/month)");
+
+        binding.textSubTitle.setText(subscriptionDetails.getTitle());
+        binding.textSubPrice.setText(pricingText);
+        binding.textLoading.setVisibility(View.GONE);
+        binding.containerSub.setVisibility(View.VISIBLE);
+        binding.containerSub.setOnClickListener(view -> launchBillingFlow(subscriptionDetails));
+    }
+
     private void launchBillingFlow(@NonNull SkuDetails skuDetails) {
-        Log.d(Premium.this.getLocalClassName(), "launchBillingFlow");
-        // Retrieve a value for "skuDetails" by calling querySkuDetailsAsync().
+        Log.d(Premium.this.getLocalClassName(), "launchBillingFlow for sku: " + skuDetails.getSku());
         BillingFlowParams billingFlowParams = BillingFlowParams.newBuilder()
                 .setSkuDetails(skuDetails)
                 .build();
-        int responseCode = billingClient.launchBillingFlow(this, billingFlowParams).getResponseCode();
+        billingClient.launchBillingFlow(this, billingFlowParams);
+    }
 
-        // Handle the result.
 
+    private void handlePurchase(Purchase purchase) {
+        Log.d(Premium.this.getLocalClassName(), "handlePurchase: " + purchase.getOrderId());
+        if (purchase.getPurchaseState() == Purchase.PurchaseState.PURCHASED && !purchase.isAcknowledged()) {
+            Log.d(Premium.this.getLocalClassName(), "acknowledge purchase: " + purchase.getOrderId());
+            AcknowledgePurchaseParams acknowledgePurchaseParams =
+                    AcknowledgePurchaseParams.newBuilder()
+                            .setPurchaseToken(purchase.getPurchaseToken())
+                            .build();
+            billingClient.acknowledgePurchase(acknowledgePurchaseParams, acknowledgePurchaseResponseListener);
+        }
+    }
+
+    private void enablePremiumAccess() {
+        // what now?
     }
 }

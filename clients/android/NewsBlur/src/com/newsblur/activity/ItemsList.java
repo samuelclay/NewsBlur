@@ -353,8 +353,7 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
         if (q.length() < 1) {
             updateFleuron(false);
             q = null;
-            //TODO: change flag
-        } else if (PrefsUtils.isPremium(this)) {
+        } else if (!PrefsUtils.isPremium(this)) {
             updateFleuron(true);
             return;
         }
