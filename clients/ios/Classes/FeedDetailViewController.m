@@ -44,6 +44,8 @@
 
 @property (nonatomic) NSUInteger scrollingMarkReadRow;
 @property (nonatomic, readonly) BOOL isMarkReadOnScroll;
+@property (nonatomic, readonly) BOOL canPullToRefresh;
+@property (readwrite) BOOL inPullToRefresh_;
 @property (nonatomic, strong) NSString *restoringFolder;
 @property (nonatomic, strong) NSString *restoringFeedID;
 
@@ -103,6 +105,11 @@
     spacer2BarButton = [[UIBarButtonItem alloc]
                         initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
     spacer2BarButton.width = 0;
+    
+    self.refreshControl = [UIRefreshControl new];
+    self.refreshControl.tintColor = UIColorFromLightDarkRGB(0x0, 0xffffff);
+    self.refreshControl.backgroundColor = UIColorFromRGB(0xE3E6E0);
+    [self.refreshControl addTarget:self action:@selector(refresh:) forControlEvents:UIControlEventValueChanged];
     
     self.searchBar = [[UISearchBar alloc]
                  initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.storyTitlesTable.frame), 44.)];
@@ -431,6 +438,12 @@
         [self.searchBar setShowsCancelButton:YES animated:YES];
     } else {
         [self.searchBar setShowsCancelButton:NO animated:YES];
+    }
+    
+    if (self.canPullToRefresh) {
+        self.storyTitlesTable.refreshControl = self.refreshControl;
+    } else {
+        self.storyTitlesTable.refreshControl = nil;
     }
     
     [self updateTheme];
@@ -2741,6 +2754,9 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     self.navigationController.navigationBar.barTintColor = [UINavigationBar appearance].barTintColor;
     self.navigationController.toolbar.barTintColor = [UINavigationBar appearance].barTintColor;
     
+    self.refreshControl.tintColor = UIColorFromLightDarkRGB(0x0, 0xffffff);
+    self.refreshControl.backgroundColor = UIColorFromRGB(0xE3E6E0);
+    
     self.searchBar.backgroundColor = UIColorFromRGB(0xE3E6E0);
     self.searchBar.tintColor = UIColorFromRGB(0xffffff);
     self.searchBar.nb_searchField.textColor = UIColorFromRGB(NEWSBLUR_BLACK_COLOR);
@@ -2806,10 +2822,12 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 //    [self cancelRequests];
     [appDelegate GET:urlString parameters:nil success:^(NSURLSessionTask *task, id responseObject) {
         [self renderStories:[responseObject objectForKey:@"stories"]];
+        [self finishRefresh];
     } failure:^(NSURLSessionTask *operation, NSError *error) {
         NSLog(@"Fail: %@", error);
         [self informError:[operation error]];
         [self fetchFeedDetail:1 withCallback:nil];
+        [self finishRefresh];
     }];
     
     [storiesCollection setStories:nil];
@@ -2817,6 +2835,32 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     self.pageFetching = YES;
     [self.storyTitlesTable reloadData];
     [storyTitlesTable scrollRectToVisible:CGRectMake(0, CGRectGetHeight(self.searchBar.frame), 1, 1) animated:YES];
+}
+
+#pragma mark -
+#pragma mark PullToRefresh
+
+- (BOOL)canPullToRefresh {
+    BOOL river = appDelegate.storiesCollection.isRiverView;
+    BOOL infrequent = [self isInfrequent];
+    BOOL read = appDelegate.storiesCollection.isReadView;
+    BOOL saved = appDelegate.storiesCollection.isSavedView;
+    
+    return appDelegate.storiesCollection.activeFeed != nil && !river && !infrequent && !saved && !read;
+}
+
+- (void)refresh:(UIRefreshControl *)refreshControl {
+    if (self.canPullToRefresh) {
+        self.inPullToRefresh_ = YES;
+        [self instafetchFeed];
+    } else {
+        [self finishRefresh];
+    }
+}
+
+- (void)finishRefresh {
+    self.inPullToRefresh_ = NO;
+    [self.refreshControl endRefreshing];
 }
 
 #pragma mark -
