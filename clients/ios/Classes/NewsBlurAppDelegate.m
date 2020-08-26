@@ -2124,6 +2124,10 @@
         }
         
         [[UIApplication sharedApplication] openURL:[NSURL URLWithString:edgeURL] options:@{} completionHandler:nil];
+    } else if ([storyBrowser isEqualToString:@"brave"]){
+        NSString *encodedURL = [url.absoluteString stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLHostAllowedCharacterSet]];
+        NSString *braveURL = [NSString stringWithFormat:@"%@%@", @"brave://open-url?url=", encodedURL];
+        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:braveURL] options:@{} completionHandler:nil];
     } else if ([storyBrowser isEqualToString:@"inappsafari"]) {
         [self showSafariViewControllerWithURL:url useReader:NO];
     } else if ([storyBrowser isEqualToString:@"inappsafarireader"]) {
