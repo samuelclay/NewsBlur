@@ -137,7 +137,7 @@
     doubleDoubleTapGesture.delegate = self;
     [self.webView addGestureRecognizer:doubleDoubleTapGesture];
     
-    if ([UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
         UIPinchGestureRecognizer *pinchGesture = [[UIPinchGestureRecognizer alloc]
                                                   initWithTarget:self action:@selector(pinchGesture:)];
         [self.webView addGestureRecognizer:pinchGesture];
@@ -381,7 +381,7 @@
 }
 
 - (BOOL)isPhoneOrCompact {
-    return [UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone || self.appDelegate.isCompactWidth;
+    return [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone || self.appDelegate.isCompactWidth;
 }
 
 // allow keyboard comands
