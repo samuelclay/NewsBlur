@@ -54,7 +54,7 @@
     }
     
     [self.appDelegate prepareWebView:self.webView completionHandler:^{
-        NSString *urlAddress = [NSString stringWithFormat:@"%@%@", self.appDelegate.url, url];
+        NSString *urlAddress = [NSString stringWithFormat:@"%@%@", self.appDelegate.url, self.url];
         NSURL *fullUrl = [NSURL URLWithString:urlAddress];
         NSURLRequest *requestObj = [NSURLRequest requestWithURL:fullUrl];
         [self.webView loadRequest:requestObj];
@@ -92,27 +92,27 @@
             NSString *errorString = result;
             
             if (self.fromStory) {
-                [appDelegate refreshUserProfile:^{
+                [self.appDelegate refreshUserProfile:^{
                     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-                        [appDelegate.shareNavigationController viewWillAppear:YES];
-                        [appDelegate.modalNavigationController dismissViewControllerAnimated:YES completion:nil];
+                        [self.appDelegate.shareNavigationController viewWillAppear:YES];
+                        [self.appDelegate.modalNavigationController dismissViewControllerAnimated:YES completion:nil];
                     } else {
                         [self.navigationController popViewControllerAnimated:YES];
                     }
                 }];
             } else {
                 [self.navigationController popViewControllerAnimated:YES];
-                if ([type isEqualToString:@"facebook"]) {
+                if ([self.type isEqualToString:@"facebook"]) {
                     if (errorString.length) {
                         [self showError:errorString];
                     } else {
-                        [appDelegate.firstTimeUserAddFriendsViewController selectFacebookButton];
+                        [self.appDelegate.firstTimeUserAddFriendsViewController selectFacebookButton];
                     }
-                } else if ([type isEqualToString:@"twitter"]) {
+                } else if ([self.type isEqualToString:@"twitter"]) {
                     if (errorString.length) {
                         [self showError:errorString];
                     } else {
-                        [appDelegate.firstTimeUserAddFriendsViewController selectTwitterButton];
+                        [self.appDelegate.firstTimeUserAddFriendsViewController selectTwitterButton];
                     }
                 }
             }
@@ -127,7 +127,7 @@
 }
 
 - (void)showError:(NSString *)error {
-    [appDelegate.firstTimeUserAddFriendsViewController changeMessaging:error];
+    [self.appDelegate.firstTimeUserAddFriendsViewController changeMessaging:error];
 }
 
 

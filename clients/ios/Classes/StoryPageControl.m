@@ -439,13 +439,13 @@
     [coordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
 //        NSLog(@"---> Story page control is re-orienting: %@ / %@", NSStringFromCGSize(self.scrollView.bounds.size), NSStringFromCGSize(size));
         UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
-        _orientation = [UIApplication sharedApplication].statusBarOrientation;
+        self->_orientation = [UIApplication sharedApplication].statusBarOrientation;
         [self layoutForInterfaceOrientation:orientation];
         [self adjustDragBar:orientation];
         [self reorientPages];
     } completion:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
 //        NSLog(@"---> Story page control did re-orient: %@ / %@", NSStringFromCGSize(self.scrollView.bounds.size), NSStringFromCGSize(size));
-        inRotation = NO;
+        self->inRotation = NO;
         
         [self updateStatusBarState];
 
@@ -576,7 +576,7 @@
         }
         
         if (!singlePage) {
-            currentPage.webView.scrollView.contentOffset = newOffset;
+            self.currentPage.webView.scrollView.contentOffset = newOffset;
         }
         
         if (alsoTraverse) {

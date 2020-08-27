@@ -160,7 +160,7 @@
         }
         
         self.usernameInput.text = loginDictionary[AppExtensionUsernameKey];
-        [passwordInput becomeFirstResponder];
+        [self.passwordInput becomeFirstResponder];
         self.passwordInput.text = loginDictionary[AppExtensionPasswordKey];
     }];
 }
@@ -228,7 +228,7 @@
         } else {
             [self.passwordInput setText:@""];
             [self.signUpPasswordInput setText:@""];
-            [appDelegate reloadFeedsView:YES];
+            [self.appDelegate reloadFeedsView:YES];
             [self dismissViewControllerAnimated:YES completion:nil];
         }
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
@@ -276,7 +276,7 @@
             [self.passwordInput setText:@""];
             [self.signUpPasswordInput setText:@""];
             //        [appDelegate showFirstTimeUser];
-            [appDelegate reloadFeedsView:YES];
+            [self.appDelegate reloadFeedsView:YES];
             [self dismissViewControllerAnimated:YES completion:nil];
         }
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
@@ -363,46 +363,46 @@
     if ([self.loginControl selectedSegmentIndex] == 0) {
         [UIView animateWithDuration:0.5 animations:^{
             // Login
-            usernameInput.frame = CGRectMake(20, 67, width-margin*2, 31);
-            usernameOrEmailLabel.alpha = 1.0;
-            usernameLabel.alpha = 0.0;
+            self.usernameInput.frame = CGRectMake(20, 67, width-margin*2, 31);
+            self.usernameOrEmailLabel.alpha = 1.0;
+            self.usernameLabel.alpha = 0.0;
             
-            passwordInput.frame = CGRectMake(20, 129, width-margin*2, 31);
-            passwordLabel.frame = CGRectMake(21, 106, 212, 22);
-            passwordOptionalLabel.frame = CGRectMake(width-margin-101, 112, 101, 16);
+            self.passwordInput.frame = CGRectMake(20, 129, width-margin*2, 31);
+            self.passwordLabel.frame = CGRectMake(21, 106, 212, 22);
+            self.passwordOptionalLabel.frame = CGRectMake(width-margin-101, 112, 101, 16);
             
-            emailInput.alpha = 0.0;
-            emailLabel.alpha = 0.0;
+            self.emailInput.alpha = 0.0;
+            self.emailLabel.alpha = 0.0;
             
-            onePasswordButton.frame = CGRectMake(20+ passwordInput.frame.size.width - 31, 129, 31, 31);
-            onePasswordButton.alpha = 1.0;
+            self.onePasswordButton.frame = CGRectMake(20+ self.passwordInput.frame.size.width - 31, 129, 31, 31);
+            self.onePasswordButton.alpha = 1.0;
         }];
         
-        passwordInput.returnKeyType = UIReturnKeyGo;
-        usernameInput.keyboardType = UIKeyboardTypeEmailAddress;
-        [usernameInput resignFirstResponder];
-        [usernameInput becomeFirstResponder];
+        self.passwordInput.returnKeyType = UIReturnKeyGo;
+        self.usernameInput.keyboardType = UIKeyboardTypeEmailAddress;
+        [self.usernameInput resignFirstResponder];
+        [self.usernameInput becomeFirstResponder];
     } else {
         [UIView animateWithDuration:0.5 animations:^{
             // Signup
-            usernameInput.frame = CGRectMake(20, 67, width/2-margin*2, 31);
-            usernameOrEmailLabel.alpha = 0.0;
-            usernameLabel.alpha = 1.0;
+            self.usernameInput.frame = CGRectMake(20, 67, width/2-margin*2, 31);
+            self.usernameOrEmailLabel.alpha = 0.0;
+            self.usernameLabel.alpha = 1.0;
             
-            passwordInput.frame = CGRectMake(width/2+margin, 67, width/2-margin*2, 31);
-            passwordLabel.frame = CGRectMake(width/2+margin, 44, 212, 22);
-            passwordOptionalLabel.frame = CGRectMake(width-margin-101, 50, 101, 16);
+            self.passwordInput.frame = CGRectMake(width/2+margin, 67, width/2-margin*2, 31);
+            self.passwordLabel.frame = CGRectMake(width/2+margin, 44, 212, 22);
+            self.passwordOptionalLabel.frame = CGRectMake(width-margin-101, 50, 101, 16);
             
-            emailInput.alpha = 1.0;
-            emailLabel.alpha = 1.0;
+            self.emailInput.alpha = 1.0;
+            self.emailLabel.alpha = 1.0;
             
-            onePasswordButton.frame = CGRectMake(width/2+margin + passwordInput.frame.size.width - 31, 67, 31, 31);
-            onePasswordButton.alpha = 0.0; // Don't want to deal with registration yet.
+            self.onePasswordButton.frame = CGRectMake(width/2+margin + self.passwordInput.frame.size.width - 31, 67, 31, 31);
+            self.onePasswordButton.alpha = 0.0; // Don't want to deal with registration yet.
         }];        
-        passwordInput.returnKeyType = UIReturnKeyNext;
-        usernameInput.keyboardType = UIKeyboardTypeAlphabet;
-        [usernameInput resignFirstResponder];
-        [usernameInput becomeFirstResponder];
+        self.passwordInput.returnKeyType = UIReturnKeyNext;
+        self.usernameInput.keyboardType = UIKeyboardTypeAlphabet;
+        [self.usernameInput resignFirstResponder];
+        [self.usernameInput becomeFirstResponder];
     }
     
     self.forgotPasswordButton.hidden = YES;

@@ -39,10 +39,10 @@
     BOOL offlineAllowed = [[[NSUserDefaults standardUserDefaults]
                             objectForKey:@"offline_allowed"] boolValue];
     if (!offlineAllowed ||
-        ![appDelegate isReachableForOffline]) {
+        ![self.appDelegate isReachableForOffline]) {
         dispatch_async(dispatch_get_main_queue(), ^{
-            [appDelegate.feedsViewController showDoneNotifier];
-            [appDelegate.feedsViewController hideNotifier];
+            [self.appDelegate.feedsViewController showDoneNotifier];
+            [self.appDelegate.feedsViewController hideNotifier];
         });
         return NO;
     }
@@ -55,15 +55,15 @@
             [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
             
             if ([[NSUserDefaults standardUserDefaults] boolForKey:@"offline_text_download"]) {
-                [appDelegate.feedsViewController showCachingNotifier:@"Text" progress:0 hoursBack:1];
-                [appDelegate startOfflineFetchText];
+                [self.appDelegate.feedsViewController showCachingNotifier:@"Text" progress:0 hoursBack:1];
+                [self.appDelegate startOfflineFetchText];
             } else if ([[NSUserDefaults standardUserDefaults] boolForKey:@"offline_image_download"]) {
-                [appDelegate.feedsViewController showCachingNotifier:@"Images" progress:0 hoursBack:1];
-                [appDelegate startOfflineFetchImages];
+                [self.appDelegate.feedsViewController showCachingNotifier:@"Images" progress:0 hoursBack:1];
+                [self.appDelegate startOfflineFetchImages];
             } else {
-                [appDelegate.feedsViewController showDoneNotifier];
-                [appDelegate.feedsViewController hideNotifier];
-                [appDelegate finishBackground];
+                [self.appDelegate.feedsViewController showDoneNotifier];
+                [self.appDelegate.feedsViewController hideNotifier];
+                [self.appDelegate finishBackground];
             }
         });
         return NO;
@@ -107,11 +107,11 @@
         "LEFT OUTER JOIN stories s ON (s.story_hash = u.story_hash) "
         "WHERE s.story_hash IS NULL";
         int count = [db intForQuery:[NSString stringWithFormat:@"SELECT COUNT(1) %@", commonQuery]];
-        if (appDelegate.totalUnfetchedStoryCount == 0) {
-            appDelegate.totalUnfetchedStoryCount = count;
-            appDelegate.remainingUnfetchedStoryCount = appDelegate.totalUnfetchedStoryCount;
+        if (self.appDelegate.totalUnfetchedStoryCount == 0) {
+            self.appDelegate.totalUnfetchedStoryCount = count;
+            self.appDelegate.remainingUnfetchedStoryCount = self.appDelegate.totalUnfetchedStoryCount;
         } else {
-            appDelegate.remainingUnfetchedStoryCount = count;
+            self.appDelegate.remainingUnfetchedStoryCount = count;
         }
         
         int limit = 100;
@@ -153,7 +153,7 @@
         __strong __typeof(&*weakSelf)strongSelf = weakSelf;
         if (!strongSelf) return;
         if (strongSelf.isCancelled) return;
-        [appDelegate.feedsViewController showSyncingNotifier:progress hoursBack:hours];
+        [self.appDelegate.feedsViewController showSyncingNotifier:progress hoursBack:hours];
     });
 }
 
@@ -161,7 +161,7 @@
     NSMutableArray *storyHashes = [hashes mutableCopy];
     __weak __typeof(&*self)weakSelf = self;
 
-    [appDelegate.database inDatabase:^(FMDatabase *db) {
+    [self.appDelegate.database inDatabase:^(FMDatabase *db) {
         __strong __typeof(&*weakSelf)strongSelf = weakSelf;
         if (!strongSelf) return;
         BOOL anyInserted = NO;
@@ -178,7 +178,7 @@
                              storyTimestamp,
                              [story JSONRepresentation]
                              ];
-            if ([appDelegate isFeedInTextView:storyFeedId]) {
+            if ([self.appDelegate isFeedInTextView:storyFeedId]) {
                 [db executeUpdate:@"INSERT INTO cached_text "
                  "(story_feed_id, story_hash, story_timestamp) VALUES "
                  "(?, ?, ?)",
@@ -204,17 +204,17 @@
                 [storyHashes removeObject:storyHash];
             }
             if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"default_order"] isEqualToString:@"oldest"]) {
-                if ([storyTimestamp intValue] > appDelegate.latestFetchedStoryDate) {
-                    appDelegate.latestFetchedStoryDate = [storyTimestamp intValue];
+                if ([storyTimestamp intValue] > self.appDelegate.latestFetchedStoryDate) {
+                    self.appDelegate.latestFetchedStoryDate = [storyTimestamp intValue];
                 }
             } else {
-                if (!appDelegate.latestFetchedStoryDate ||
-                    [storyTimestamp intValue] < appDelegate.latestFetchedStoryDate) {
-                    appDelegate.latestFetchedStoryDate = [storyTimestamp intValue];
+                if (!self.appDelegate.latestFetchedStoryDate ||
+                    [storyTimestamp intValue] < self.appDelegate.latestFetchedStoryDate) {
+                    self.appDelegate.latestFetchedStoryDate = [storyTimestamp intValue];
                 }
             }
-            appDelegate.remainingUnfetchedStoryCount--;
-            if (appDelegate.remainingUnfetchedStoryCount % 10 == 0) {
+            self.appDelegate.remainingUnfetchedStoryCount--;
+            if (self.appDelegate.remainingUnfetchedStoryCount % 10 == 0) {
                 [strongSelf updateProgress];
             }
 
@@ -227,7 +227,7 @@
             } else {
                 lastStory = [[results objectForKey:@"stories"] lastObject];
             }
-            appDelegate.latestFetchedStoryDate = [[lastStory
+            self.appDelegate.latestFetchedStoryDate = [[lastStory
                                                    objectForKey:@"story_timestamp"]
                                                   intValue];
         }
@@ -238,7 +238,7 @@
         }
     }];
     
-    [appDelegate storeUserProfiles:[results objectForKey:@"user_profiles"]];
+    [self.appDelegate storeUserProfiles:[results objectForKey:@"user_profiles"]];
 }
 
 

@@ -88,10 +88,10 @@
             if (resultsArray.count) {
                 NSDictionary *results = resultsArray[0];
                 NSMutableDictionary *newClassifiers = [[results objectForKey:@"classifiers"] mutableCopy];
-                [appDelegate.storiesCollection.activeClassifiers setObject:newClassifiers
+                [self.appDelegate.storiesCollection.activeClassifiers setObject:newClassifiers
                                                                     forKey:feedId];
-                appDelegate.storiesCollection.activePopularAuthors = [results objectForKey:@"feed_authors"];
-                appDelegate.storiesCollection.activePopularTags = [results objectForKey:@"feed_tags"];
+                self.appDelegate.storiesCollection.activePopularAuthors = [results objectForKey:@"feed_authors"];
+                self.appDelegate.storiesCollection.activePopularTags = [results objectForKey:@"feed_tags"];
             }
             [self renderTrainer];
         } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
@@ -100,9 +100,9 @@
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1.0 * NSEC_PER_SEC),
                            dispatch_get_main_queue(), ^() {
                                if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-                                   [appDelegate hidePopover];
+                                   [self.appDelegate hidePopover];
                                } else {
-                                   [appDelegate.navigationController dismissViewControllerAnimated:YES completion:nil];
+                                   [self.appDelegate.navigationController dismissViewControllerAnimated:YES completion:nil];
                                }
                            });
         }];

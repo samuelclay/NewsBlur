@@ -438,16 +438,16 @@
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
                                              (unsigned long)NULL), ^(void) {
-        BOOL dequeued = [appDelegate dequeueReadStoryHash:storyHash inFeed:storyFeedId];
+        BOOL dequeued = [self.appDelegate dequeueReadStoryHash:storyHash inFeed:storyFeedId];
         dispatch_async(dispatch_get_main_queue(), ^{
             if (!dequeued) {
                 // Offline means can't unread a story unless it was read while offline.
                 [self markStoryRead:storyHash feedId:storyFeedId];
         //        [self.storyTitlesTable reloadData];
-                [appDelegate failedMarkAsUnread:params];
+                [self.appDelegate failedMarkAsUnread:params];
             } else {
                 // Offline but read story while offline, so it never touched the server.
-                [appDelegate.unreadStoryHashes setObject:[NSNumber numberWithBool:YES] forKey:storyHash];
+                [self.appDelegate.unreadStoryHashes setObject:[NSNumber numberWithBool:YES] forKey:storyHash];
         //        [self.storyTitlesTable reloadData];
             }
         });
@@ -550,7 +550,7 @@
         
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
                                                  (unsigned long)NULL), ^(void) {
-            [appDelegate.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
+            [self.appDelegate.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
                 NSString *storyHash = [newStory objectForKey:@"story_hash"];
                 [db executeUpdate:@"UPDATE stories SET story_json = ? WHERE story_hash = ?",
                  [newStory JSONRepresentation],
@@ -662,7 +662,7 @@
 
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
                                                  (unsigned long)NULL), ^(void) {
-            [appDelegate.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
+            [self.appDelegate.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
                 NSString *storyHash = [newStory objectForKey:@"story_hash"];
                 [db executeUpdate:@"UPDATE stories SET story_json = ? WHERE story_hash = ?",
                  [newStory JSONRepresentation],
@@ -766,24 +766,24 @@
     [params setObject:storyFeedId forKey:@"feed_id"];
     [params setObject:tags forKey:@"user_tags"];
     
-    [appDelegate POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [self.appDelegate POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self finishMarkAsSaved:responseObject withParams:params];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        [appDelegate queueSavedStory:story];
+        [self.appDelegate queueSavedStory:story];
     }];
 }
 
 - (void)finishMarkAsSaved:(NSDictionary *)results withParams:(NSDictionary *)params {
     [self updateSavedStoryCounts:results withParams:params];
     
-    [appDelegate finishMarkAsSaved:params];
+    [self.appDelegate finishMarkAsSaved:params];
 }
 
 - (void)updateSavedStoryCounts:(NSDictionary *)results withParams:(NSDictionary *)params {
-    NSArray *savedStories = [appDelegate updateStarredStoryCounts:results];
-    NSMutableDictionary *allFolders = [appDelegate.dictFolders mutableCopy];
+    NSArray *savedStories = [self.appDelegate updateStarredStoryCounts:results];
+    NSMutableDictionary *allFolders = [self.appDelegate.dictFolders mutableCopy];
     [allFolders setValue:savedStories forKey:@"saved_stories"];
-    appDelegate.dictFolders = allFolders;
+    self.appDelegate.dictFolders = allFolders;
 }
 
 - (void)syncStoryAsUnsaved:(NSDictionary *)story {
@@ -796,34 +796,34 @@
     [params setObject:storyHash forKey:@"story_id"];
     [params setObject:storyFeedId forKey:@"feed_id"];
     
-    [appDelegate POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [self.appDelegate POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self finishMarkAsUnsaved:responseObject withParams:params];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        [appDelegate queueSavedStory:story];
+        [self.appDelegate queueSavedStory:story];
     }];
 }
 
 - (void)finishMarkAsUnsaved:(NSDictionary *)results withParams:(NSDictionary *)params {
     [self updateSavedStoryCounts:results withParams:params];
-    [appDelegate finishMarkAsUnsaved:params];
+    [self.appDelegate finishMarkAsUnsaved:params];
 }
 
 - (void)failedMarkAsUnsaved:(NSDictionary *)params {
     NSString *storyFeedId = [params objectForKey:@"story_feed_id"];
     NSString *storyHash = [params objectForKey:@"story_hash"];
-    BOOL dequeued = [appDelegate dequeueReadStoryHash:storyHash inFeed:storyFeedId];
+    BOOL dequeued = [self.appDelegate dequeueReadStoryHash:storyHash inFeed:storyFeedId];
     dispatch_async(dispatch_get_main_queue(), ^{
         if (!dequeued) {
             // Offline means can't unsave a story unless it was saved while offline.
-            NSDictionary *story = [appDelegate getStory:storyHash];
+            NSDictionary *story = [self.appDelegate getStory:storyHash];
             
             if (story) {
                 [self markStory:story asSaved:NO];
-                [appDelegate failedMarkAsUnsaved:params];
+                [self.appDelegate failedMarkAsUnsaved:params];
             }
         } else {
             // Offline but saved story while offline, so it never touched the server.
-            [appDelegate.unsavedStoryHashes setObject:[NSNumber numberWithBool:YES] forKey:storyHash];
+            [self.appDelegate.unsavedStoryHashes setObject:[NSNumber numberWithBool:YES] forKey:storyHash];
         }
     });
 }

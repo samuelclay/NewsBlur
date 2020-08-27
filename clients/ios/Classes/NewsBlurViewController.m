@@ -573,12 +573,12 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
                                              (unsigned long)NULL), ^(void) {
-        [appDelegate.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
-            [db executeUpdate:@"DELETE FROM accounts WHERE username = ?", appDelegate.activeUsername];
+        [self.appDelegate.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
+            [db executeUpdate:@"DELETE FROM accounts WHERE username = ?", self.appDelegate.activeUsername];
             [db executeUpdate:@"INSERT INTO accounts"
              "(username, download_date, feeds_json) VALUES "
              "(?, ?, ?)",
-             appDelegate.activeUsername,
+             self.appDelegate.activeUsername,
              [NSDate date],
              [results JSONRepresentation]
              ];
@@ -853,12 +853,12 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul);
 
     dispatch_async(queue, ^{
-        for (NSString *folderName in appDelegate.dictFoldersArray) {
-            NSInteger section = [appDelegate.dictFoldersArray indexOfObject:folderName];
-            NSArray *folder = [appDelegate.dictFolders objectForKey:folderName];
+        for (NSString *folderName in self.appDelegate.dictFoldersArray) {
+            NSInteger section = [self.appDelegate.dictFoldersArray indexOfObject:folderName];
+            NSArray *folder = [self.appDelegate.dictFolders objectForKey:folderName];
             for (NSInteger row=0; row < folder.count; row++) {
                 NSIndexPath *indexPath = [NSIndexPath indexPathForRow:row inSection:section];
-                [indexPathsForFeedIds setObject:indexPath forKey:[folder objectAtIndex:row]];
+                [self->indexPathsForFeedIds setObject:indexPath forKey:[folder objectAtIndex:row]];
             }
         }
     });
@@ -890,7 +890,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 
         
         FMResultSet *cursor = [db executeQuery:@"SELECT * FROM accounts WHERE username = ? LIMIT 1",
-                               appDelegate.activeUsername];
+                               self.appDelegate.activeUsername];
         
         while ([cursor next]) {
             NSDictionary *feedsCache = [cursor resultDictionary];
@@ -912,8 +912,8 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 
 - (void)loadNotificationStory {
     dispatch_async(dispatch_get_main_queue(), ^{
-        if (appDelegate.tryFeedFeedId && !appDelegate.isTryFeedView) {
-            [appDelegate loadFeed:appDelegate.tryFeedFeedId withStory:appDelegate.tryFeedStoryId animated:NO];
+        if (self.appDelegate.tryFeedFeedId && !self.appDelegate.isTryFeedView) {
+            [self.appDelegate loadFeed:self.appDelegate.tryFeedFeedId withStory:self.appDelegate.tryFeedStoryId animated:NO];
         }
     });
 }
@@ -1161,13 +1161,13 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
             dispatch_sync(dispatch_get_main_queue(), ^{
                 [[NSUserDefaults standardUserDefaults] setObject:@"Deleting..." forKey:specifier.key];
             });
-            [appDelegate.database inDatabase:^(FMDatabase *db) {
+            [self.appDelegate.database inDatabase:^(FMDatabase *db) {
                 [db executeUpdate:@"VACUUM"];
-                [appDelegate setupDatabase:db force:YES];
+                [self.appDelegate setupDatabase:db force:YES];
                 [db executeUpdate:@"DELETE FROM stories"];
                 [db executeUpdate:@"DELETE FROM text"];
                 [db executeUpdate:@"DELETE FROM cached_images"];
-                [appDelegate deleteAllCachedImages];
+                [self.appDelegate deleteAllCachedImages];
                 dispatch_sync(dispatch_get_main_queue(), ^{
                     [[NSUserDefaults standardUserDefaults] setObject:@"Cleared all stories and images!"
                                                               forKey:specifier.key];
@@ -2021,8 +2021,8 @@ heightForHeaderInSection:(NSInteger)section {
 - (void)loadAvatars {
     dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul);
     dispatch_async(queue, ^{
-        for (NSString *feed_id in [appDelegate.dictSocialFeeds allKeys]) {
-            NSDictionary *feed = [appDelegate.dictSocialFeeds objectForKey:feed_id];
+        for (NSString *feed_id in [self.appDelegate.dictSocialFeeds allKeys]) {
+            NSDictionary *feed = [self.appDelegate.dictSocialFeeds objectForKey:feed_id];
             NSURL *imageURL = [NSURL URLWithString:[feed objectForKey:@"photo_url"]];
             NSData *imageData = [NSData dataWithContentsOfURL:imageURL];
             if (!imageData) continue;
@@ -2030,7 +2030,7 @@ heightForHeaderInSection:(NSInteger)section {
             if (!faviconImage) continue;
             faviconImage = [Utilities roundCorneredImage:faviconImage radius:6];
             
-            [appDelegate saveFavicon:faviconImage feedId:feed_id];
+            [self.appDelegate saveFavicon:faviconImage feedId:feed_id];
         }
         
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -2049,13 +2049,13 @@ heightForHeaderInSection:(NSInteger)section {
 //            [feed setValue:[results objectForKey:feed_id] forKey:@"favicon"];
 //            [appDelegate.dictFeeds setValue:feed forKey:feed_id];
             
-            if (![appDelegate.dictFeeds objectForKey:feed_id]) continue;
+            if (![self.appDelegate.dictFeeds objectForKey:feed_id]) continue;
             NSString *favicon = [results objectForKey:feed_id];
             if ((NSNull *)favicon != [NSNull null] && [favicon length] > 0) {
                 NSData *imageData = [[NSData alloc] initWithBase64EncodedString:favicon options:NSDataBase64DecodingIgnoreUnknownCharacters];
 //                NSData *imageData = [NSData dataWithBase64EncodedString:favicon];
                 UIImage *faviconImage = [UIImage imageWithData:imageData];
-                [appDelegate saveFavicon:faviconImage feedId:feed_id];
+                [self.appDelegate saveFavicon:faviconImage feedId:feed_id];
             }
         }
         
@@ -2181,7 +2181,7 @@ heightForHeaderInSection:(NSInteger)section {
 
         if ([httpResponse statusCode] == 403) {
             NSLog(@"Showing login after refresh");
-            return [appDelegate showLogin];
+            return [self.appDelegate showLogin];
         } else if ([httpResponse statusCode] == 503) {
             return [self informError:@"In maintenance mode"];
         } else if ([httpResponse statusCode] >= 500) {
@@ -2203,10 +2203,10 @@ heightForHeaderInSection:(NSInteger)section {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
                                              (unsigned long)NULL), ^(void) {
         NSDictionary *newFeedCounts = [results objectForKey:@"feeds"];
-        NSInteger intelligenceLevel = [appDelegate selectedIntelligence];
+        NSInteger intelligenceLevel = [self.appDelegate selectedIntelligence];
         for (id feed in newFeedCounts) {
             NSString *feedIdStr = [NSString stringWithFormat:@"%@", feed];
-            NSMutableDictionary *unreadCount = [[appDelegate.dictUnreadCounts objectForKey:feedIdStr] mutableCopy];
+            NSMutableDictionary *unreadCount = [[self.appDelegate.dictUnreadCounts objectForKey:feedIdStr] mutableCopy];
             NSMutableDictionary *newFeedCount = [newFeedCounts objectForKey:feed];
 
             if (![unreadCount isKindOfClass:[NSDictionary class]]) continue;
@@ -2221,10 +2221,10 @@ heightForHeaderInSection:(NSInteger)section {
                  [[newFeedCount objectForKey:@"ps"] intValue] == 0 &&
                  [[newFeedCount objectForKey:@"nt"] intValue] == 0)) {
                 NSIndexPath *indexPath;
-                for (int s=0; s < [appDelegate.dictFoldersArray count]; s++) {
-                    NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:s];
+                for (int s=0; s < [self.appDelegate.dictFoldersArray count]; s++) {
+                    NSString *folderName = [self.appDelegate.dictFoldersArray objectAtIndex:s];
                     NSArray *activeFolderFeeds = [self.activeFeedLocations objectForKey:folderName];
-                    NSArray *originalFolder = [appDelegate.dictFolders objectForKey:folderName];
+                    NSArray *originalFolder = [self.appDelegate.dictFolders objectForKey:folderName];
                     for (int l=0; l < [activeFolderFeeds count]; l++) {
                         if ([[originalFolder objectAtIndex:[[activeFolderFeeds objectAtIndex:l] intValue]] intValue] == [feed intValue]) {
                             indexPath = [NSIndexPath indexPathForRow:l inSection:s];
@@ -2240,24 +2240,24 @@ heightForHeaderInSection:(NSInteger)section {
             [unreadCount setObject:[newFeedCount objectForKey:@"ng"] forKey:@"ng"];
             [unreadCount setObject:[newFeedCount objectForKey:@"nt"] forKey:@"nt"];
             [unreadCount setObject:[newFeedCount objectForKey:@"ps"] forKey:@"ps"];
-            [appDelegate.dictUnreadCounts setObject:unreadCount forKey:feedIdStr];
+            [self.appDelegate.dictUnreadCounts setObject:unreadCount forKey:feedIdStr];
         }
         
         NSDictionary *newSocialFeedCounts = [results objectForKey:@"social_feeds"];
         for (id feed in newSocialFeedCounts) {
             NSString *feedIdStr = [NSString stringWithFormat:@"%@", feed];
-            NSMutableDictionary *unreadCount = [[appDelegate.dictUnreadCounts objectForKey:feedIdStr] mutableCopy];
+            NSMutableDictionary *unreadCount = [[self.appDelegate.dictUnreadCounts objectForKey:feedIdStr] mutableCopy];
             NSMutableDictionary *newFeedCount = [newSocialFeedCounts objectForKey:feed];
 
             if (![unreadCount isKindOfClass:[NSDictionary class]]) continue;
             [unreadCount setObject:[newFeedCount objectForKey:@"ng"] forKey:@"ng"];
             [unreadCount setObject:[newFeedCount objectForKey:@"nt"] forKey:@"nt"];
             [unreadCount setObject:[newFeedCount objectForKey:@"ps"] forKey:@"ps"];
-            [appDelegate.dictUnreadCounts setObject:unreadCount forKey:feedIdStr];
+            [self.appDelegate.dictUnreadCounts setObject:unreadCount forKey:feedIdStr];
         }
         
         dispatch_async(dispatch_get_main_queue(), ^{
-            [appDelegate.folderCountCache removeAllObjects];
+            [self.appDelegate.folderCountCache removeAllObjects];
             [self reloadFeedTitlesTable];
             [self refreshHeaderCounts];
             if (!feedId) {

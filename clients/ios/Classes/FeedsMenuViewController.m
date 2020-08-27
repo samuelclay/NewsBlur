@@ -274,17 +274,17 @@
         NSString *urlString = [NSString stringWithFormat:@"%@/reader/login_as?user=%@",
                           self.appDelegate.url, username];
 
-        [appDelegate GET:urlString parameters:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        [self.appDelegate GET:urlString parameters:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
             NSLog(@"Login as %@ successful", username);
-            [MBProgressHUD hideHUDForView:appDelegate.feedsViewController.view animated:YES];
-            [appDelegate reloadFeedsView:YES];
+            [MBProgressHUD hideHUDForView:self.appDelegate.feedsViewController.view animated:YES];
+            [self.appDelegate reloadFeedsView:YES];
         } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-            [MBProgressHUD hideHUDForView:appDelegate.feedsViewController.view animated:YES];
+            [MBProgressHUD hideHUDForView:self.appDelegate.feedsViewController.view animated:YES];
             [self informError:error];
         }];
         
         [MBProgressHUD hideHUDForView:self.view animated:YES];
-        MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:appDelegate.feedsViewController.view animated:YES];
+        MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.appDelegate.feedsViewController.view animated:YES];
         HUD.labelText = [NSString stringWithFormat:@"Login: %@", username];
     }]];
     [alertController addAction:[UIAlertAction actionWithTitle:@"Cancel"

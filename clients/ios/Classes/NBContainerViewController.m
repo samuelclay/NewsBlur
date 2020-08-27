@@ -204,9 +204,9 @@
         //    leftBorder.frame = CGRectMake(0, 0, 1, CGRectGetHeight(self.view.bounds));
         
         if (UIInterfaceOrientationIsPortrait(orientation) && !self.storyTitlesOnLeft) {
-            leftBorder.hidden = YES;
+            self.leftBorder.hidden = YES;
         } else {
-            leftBorder.hidden = NO;
+            self.leftBorder.hidden = NO;
         }
         
         [self adjustLayoutCompleted:NO];
@@ -229,7 +229,7 @@
         if (self.feedDetailIsVisible) {
             // Defer this in the background, to avoid misaligning the detail views
             if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive) {
-                NSString *networkOperationIdentifier = [appDelegate beginNetworkOperation];
+                NSString *networkOperationIdentifier = [self.appDelegate beginNetworkOperation];
                 
                 [self performSelector:@selector(delayedReorientPages:) withObject:networkOperationIdentifier afterDelay:0.5];
             } else {
@@ -537,8 +537,8 @@
                 self.storyNavigationController.view.frame = CGRectMake(self.masterWidth-1, 0, vb.size.width - self.masterWidth + 1, vb.size.height);
             } completion:^(BOOL finished) {
                 [self.feedDetailViewController checkScroll];
-                [appDelegate.storyPageControl refreshPages];
-                [appDelegate adjustStoryDetailWebView];
+                [self.appDelegate.storyPageControl refreshPages];
+                [self.appDelegate adjustStoryDetailWebView];
                 [self.feedDetailViewController.storyTitlesTable reloadData];
             }];
         }
@@ -570,17 +570,17 @@
         [UIView animateWithDuration:NB_DEFAULT_SLIDER_INTERVAL delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
             self.masterNavigationController.view.frame = CGRectMake(-1 * self.masterWidth, 0, self.masterWidth, vb.size.height);
             
-            self.storyNavigationController.view.frame = CGRectMake(0, 0, vb.size.width, storyTitlesYCoordinate);
+            self.storyNavigationController.view.frame = CGRectMake(0, 0, vb.size.width, self.storyTitlesYCoordinate);
             
-            self.storyTitlesStub.frame = CGRectMake(0, storyTitlesYCoordinate, vb.size.width, vb.size.height - storyTitlesYCoordinate - 44 - 20);
+            self.storyTitlesStub.frame = CGRectMake(0, self.storyTitlesYCoordinate, vb.size.width, vb.size.height - self.storyTitlesYCoordinate - 44 - 20);
         } completion:^(BOOL finished) {
             [self.view insertSubview:self.feedDetailViewController.view
                         aboveSubview:self.storyTitlesStub];
-            self.feedDetailViewController.view.frame = CGRectMake(0, storyTitlesYCoordinate, vb.size.width, vb.size.height - storyTitlesYCoordinate);
+            self.feedDetailViewController.view.frame = CGRectMake(0, self.storyTitlesYCoordinate, vb.size.width, vb.size.height - self.storyTitlesYCoordinate);
             self.storyTitlesStub.hidden = YES;
             [self.feedDetailViewController checkScroll];
-            [appDelegate.storyPageControl refreshPages];
-            [appDelegate adjustStoryDetailWebView];
+            [self.appDelegate.storyPageControl refreshPages];
+            [self.appDelegate adjustStoryDetailWebView];
             [self.feedDetailViewController.storyTitlesTable reloadData];
         }];    
     }
@@ -659,12 +659,12 @@
             self.feedDetailViewController.view.frame = CGRectMake(self.masterWidth,
                                                                   self.storyTitlesYCoordinate, 
                                                                   vb.size.width, 
-                                                                  vb.size.height - storyTitlesYCoordinate);
+                                                                  vb.size.height - self.storyTitlesYCoordinate);
         } completion:^(BOOL finished) {
             self.leftBorder.hidden = YES;
             [UIView animateWithDuration:smallTimeInterval delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^{
                 self.storyNavigationController.view.frame = CGRectMake(0, 0, vb.size.width, self.storyTitlesYCoordinate);
-                self.feedDetailViewController.view.frame = CGRectMake(0, self.storyTitlesYCoordinate, vb.size.width, vb.size.height - storyTitlesYCoordinate);
+                self.feedDetailViewController.view.frame = CGRectMake(0, self.storyTitlesYCoordinate, vb.size.width, vb.size.height - self.storyTitlesYCoordinate);
                 self.masterNavigationController.view.frame = CGRectMake(-1 * self.masterWidth, 0, self.masterWidth, vb.size.height);
             } completion:^(BOOL finished) {
                 self.feedDetailIsVisible = YES;
@@ -773,7 +773,7 @@
      {
          if (UIInterfaceOrientationIsPortrait(orientation) && !self.storyTitlesOnLeft) {
              self.storyNavigationController.view.frame = CGRectMake(-100, 0, vb.size.width, self.storyTitlesYCoordinate);
-             self.feedDetailViewController.view.frame = CGRectMake(-100, self.storyTitlesYCoordinate, vb.size.width, vb.size.height - storyTitlesYCoordinate);
+             self.feedDetailViewController.view.frame = CGRectMake(-100, self.storyTitlesYCoordinate, vb.size.width, vb.size.height - self.storyTitlesYCoordinate);
              self.masterNavigationController.view.frame = CGRectMake(-1 * self.masterWidth, 0, self.masterWidth, vb.size.height);
          } else {
              self.masterNavigationController.view.frame = CGRectMake(-100, 0, self.masterWidth, vb.size.height);
@@ -912,7 +912,7 @@
             self.feedDetailViewController.view.frame = CGRectMake(self.masterWidth,
                                                                   self.storyTitlesYCoordinate, 
                                                                   vb.size.width, 
-                                                                  vb.size.height - storyTitlesYCoordinate);
+                                                                  vb.size.height - self.storyTitlesYCoordinate);
         } completion:^(BOOL finished) {
             if (self.feedDetailIsVisible) return;
             
@@ -922,7 +922,7 @@
                 self.feedDetailViewController.view.frame = CGRectMake(vb.size.width, 
                                                                       self.storyTitlesYCoordinate, 
                                                                       vb.size.width, 
-                                                                      vb.size.height - storyTitlesYCoordinate);
+                                                                      vb.size.height - self.storyTitlesYCoordinate);
             } completion:^(BOOL finished) {
                 if (self.feedDetailIsVisible) return;
                 [self.storyNavigationController.view removeFromSuperview];
@@ -1182,7 +1182,7 @@
                  self.storyNavigationController.view.frame = CGRectMake(self.storyNavigationController.view.frame.origin.x,
                                                                         0,
                                                                         self.storyNavigationController.view.frame.size.width,
-                                                                        storyTitlesYCoordinate);
+                                                                        self.storyTitlesYCoordinate);
              } else {
                  self.storyNavigationController.view.frame = CGRectMake(self.storyNavigationController.view.frame.origin.x,
                                                                         0,
