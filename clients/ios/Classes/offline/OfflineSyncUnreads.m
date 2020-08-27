@@ -23,7 +23,7 @@
     
 //    NSLog(@"Syncing Unreads...");
     dispatch_async(dispatch_get_main_queue(), ^{
-        [appDelegate.feedsViewController showSyncingNotifier];
+        [self.appDelegate.feedsViewController showSyncingNotifier];
     });
 
     __block NSCondition *lock = [NSCondition new];
@@ -56,10 +56,10 @@
         return;
     }
     
-    [appDelegate.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
+    [self.appDelegate.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
 //        NSLog(@"Storing unread story hashes...");
         [db executeUpdate:@"DROP TABLE unread_hashes"];
-        [appDelegate setupDatabase:db force:NO];
+        [self.appDelegate setupDatabase:db force:NO];
         NSDictionary *hashes = [results objectForKey:@"unread_feed_story_hashes"];
         for (NSString *feed in [hashes allKeys]) {
             NSArray *story_hashes = [hashes objectForKey:feed];
@@ -74,7 +74,7 @@
             }
         }
     }];
-    [appDelegate.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
+    [self.appDelegate.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
         // Once all unread hashes are in, only keep under preference for offline limit
         NSInteger offlineLimit = [[NSUserDefaults standardUserDefaults]
                                   integerForKey:@"offline_store_limit"];
@@ -109,14 +109,14 @@
         }
     }];
     
-    appDelegate.totalUnfetchedStoryCount = 0;
-    appDelegate.remainingUnfetchedStoryCount = 0;
-    appDelegate.latestFetchedStoryDate = 0;
-    appDelegate.totalUncachedImagesCount = 0;
-    appDelegate.remainingUncachedImagesCount = 0;
+    self.appDelegate.totalUnfetchedStoryCount = 0;
+    self.appDelegate.remainingUnfetchedStoryCount = 0;
+    self.appDelegate.latestFetchedStoryDate = 0;
+    self.appDelegate.totalUncachedImagesCount = 0;
+    self.appDelegate.remainingUncachedImagesCount = 0;
     
 //    NSLog(@"Done syncing Unreads...");
-    [appDelegate startOfflineFetchStories];
+    [self.appDelegate startOfflineFetchStories];
 }
 
 @end

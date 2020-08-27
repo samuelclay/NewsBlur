@@ -173,8 +173,8 @@
 - (void)refreshStories {
     [appDelegate.cachedStoryImages removeAllObjects:^(PINCache * _Nonnull cache) {
         dispatch_async(dispatch_get_main_queue(), ^{
-            [appDelegate loadRiverFeedDetailView:self.storiesModule withFolder:@"everything"];
-            appDelegate.inFeedDetail = NO;
+            [self.appDelegate loadRiverFeedDetailView:self.storiesModule withFolder:@"everything"];
+            self.appDelegate.inFeedDetail = NO;
         });
     }];
 }

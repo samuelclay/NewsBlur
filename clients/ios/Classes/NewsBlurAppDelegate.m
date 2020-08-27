@@ -223,11 +223,11 @@
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
                                              (unsigned long)NULL), ^(void) {
         [self setupReachability];
-        cacheImagesOperationQueue = [NSOperationQueue new];
+        self.cacheImagesOperationQueue = [NSOperationQueue new];
         if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-            cacheImagesOperationQueue.maxConcurrentOperationCount = 2;
+            self.cacheImagesOperationQueue.maxConcurrentOperationCount = 2;
         } else {
-            cacheImagesOperationQueue.maxConcurrentOperationCount = 1;
+            self.cacheImagesOperationQueue.maxConcurrentOperationCount = 1;
         }
     });
 
@@ -576,13 +576,13 @@
         
         [self popToRootWithCompletion:^{
             self.inFindingStoryMode = YES;
-            [storiesCollection reset];
-            storiesCollection.isRiverView = YES;
+            [self.storiesCollection reset];
+            self.storiesCollection.isRiverView = YES;
             
             self.tryFeedStoryId = storyHash;
-            storiesCollection.activeFolder = @"everything";
+            self.storiesCollection.activeFolder = @"everything";
             
-            [self loadRiverFeedDetailView:self.feedDetailViewController withFolder:storiesCollection.activeFolder];
+            [self loadRiverFeedDetailView:self.feedDetailViewController withFolder:self.storiesCollection.activeFolder];
         }];
         
         return YES;
@@ -611,7 +611,7 @@
     reach.unreachableBlock = ^(Reachability *reach) {
         NSLog(@"Un-Reachable: %@", reach);
         dispatch_sync(dispatch_get_main_queue(), ^{
-            [feedsViewController loadOfflineFeeds:NO];
+            [self.feedsViewController loadOfflineFeeds:NO];
         });
     };
     [reach startNotifier];
@@ -1532,7 +1532,7 @@
     [self flushQueuedReadStories:NO withCallback:^{
         [self flushQueuedSavedStories:NO withCallback:^{
             dispatch_async(dispatch_get_main_queue(), ^{
-                [feedDetailViewController fetchFeedDetail:1 withCallback:nil];
+                [self.feedDetailViewController fetchFeedDetail:1 withCallback:nil];
             });
         }];
     }];

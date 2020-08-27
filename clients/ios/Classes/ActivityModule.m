@@ -98,7 +98,7 @@
         [appDelegate GET:urlString parameters:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
             [self finishLoadActivities:responseObject];
         } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-            [appDelegate informError:error];
+            [self.appDelegate informError:error];
         }];
     }
 }

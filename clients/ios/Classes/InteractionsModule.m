@@ -99,7 +99,7 @@
         [appDelegate GET:urlString parameters:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
             [self finishLoadInteractions:responseObject];
         } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-            [appDelegate informError:error];
+            [self->appDelegate informError:error];
         }];
     }
 }
@@ -115,7 +115,7 @@
     }
     
     NSMutableArray *confirmedInteractions = [NSMutableArray array];
-    if ([appDelegate.userInteractionsArray count]) {
+    if ([self->appDelegate.userInteractionsArray count]) {
         NSMutableSet *interactionsDates = [NSMutableSet set];
         for (id interaction in appDelegate.userInteractionsArray) {
             [interactionsDates addObject:[interaction objectForKey:@"date"]];

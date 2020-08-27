@@ -70,12 +70,12 @@
     
     [self executeLocked:^() {
         
-        if ([_databaseInPool containsObject:db]) {
+        if ([self->_databaseInPool containsObject:db]) {
             [[NSException exceptionWithName:@"Database already in pool" reason:@"The FMDatabase being put back into the pool is already present in the pool" userInfo:nil] raise];
         }
         
-        [_databaseInPool addObject:db];
-        [_databaseOutPool removeObject:db];
+        [self->_databaseInPool addObject:db];
+        [self->_databaseOutPool removeObject:db];
         
     }];
 }
@@ -85,41 +85,41 @@
     __block FMDatabase *db;
     
     [self executeLocked:^() {
-        db = [_databaseInPool lastObject];
+        db = [self->_databaseInPool lastObject];
         
         if (db) {
-            [_databaseOutPool addObject:db];
-            [_databaseInPool removeLastObject];
+            [self->_databaseOutPool addObject:db];
+            [self->_databaseInPool removeLastObject];
         }
         else {
             
-            if (_maximumNumberOfDatabasesToCreate) {
-                NSUInteger currentCount = [_databaseOutPool count] + [_databaseInPool count];
+            if (self->_maximumNumberOfDatabasesToCreate) {
+                NSUInteger currentCount = [self->_databaseOutPool count] + [self->_databaseInPool count];
                 
-                if (currentCount >= _maximumNumberOfDatabasesToCreate) {
+                if (currentCount >= self->_maximumNumberOfDatabasesToCreate) {
                     NSLog(@"Maximum number of databases (%ld) has already been reached!", (long)currentCount);
                     return;
                 }
             }
             
-            db = [FMDatabase databaseWithPath:_path];
+            db = [FMDatabase databaseWithPath:self->_path];
         }
         
         //This ensures that the db is opened before returning
         if ([db open]) {
-            if ([_delegate respondsToSelector:@selector(databasePool:shouldAddDatabaseToPool:)] && ![_delegate databasePool:self shouldAddDatabaseToPool:db]) {
+            if ([self->_delegate respondsToSelector:@selector(databasePool:shouldAddDatabaseToPool:)] && ![self->_delegate databasePool:self shouldAddDatabaseToPool:db]) {
                 [db close];
                 db = 0x00;
             }
             else {
                 //It should not get added in the pool twice if lastObject was found
-                if (![_databaseOutPool containsObject:db]) {
-                    [_databaseOutPool addObject:db];
+                if (![self->_databaseOutPool containsObject:db]) {
+                    [self->_databaseOutPool addObject:db];
                 }
             }
         }
         else {
-            NSLog(@"Could not open up the database at path %@", _path);
+            NSLog(@"Could not open up the database at path %@", self->_path);
             db = 0x00;
         }
     }];
@@ -132,7 +132,7 @@
     __block NSUInteger count;
     
     [self executeLocked:^() {
-        count = [_databaseInPool count];
+        count = [self->_databaseInPool count];
     }];
     
     return count;
@@ -143,7 +143,7 @@
     __block NSUInteger count;
     
     [self executeLocked:^() {
-        count = [_databaseOutPool count];
+        count = [self->_databaseOutPool count];
     }];
     
     return count;
@@ -153,7 +153,7 @@
     __block NSUInteger count;
     
     [self executeLocked:^() {
-        count = [_databaseOutPool count] + [_databaseInPool count];
+        count = [self->_databaseOutPool count] + [self->_databaseInPool count];
     }];
     
     return count;
@@ -161,8 +161,8 @@
 
 - (void)releaseAllDatabases {
     [self executeLocked:^() {
-        [_databaseOutPool removeAllObjects];
-        [_databaseInPool removeAllObjects];
+        [self->_databaseOutPool removeAllObjects];
+        [self->_databaseInPool removeAllObjects];
     }];
 }
 

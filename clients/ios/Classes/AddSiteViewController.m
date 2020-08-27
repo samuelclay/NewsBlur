@@ -266,11 +266,11 @@
             [self.errorLabel setHidden:NO];
         } else {
             if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-                [appDelegate hidePopover];
+                [self->appDelegate hidePopover];
             } else {
-                [appDelegate hidePopoverAnimated:YES];
+                [self->appDelegate hidePopoverAnimated:YES];
             }
-            [appDelegate reloadFeedsView:NO];
+            [self->appDelegate reloadFeedsView:NO];
         }
         
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {

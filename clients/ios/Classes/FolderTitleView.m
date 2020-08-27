@@ -334,14 +334,14 @@
     
     if ([longPressTitle isEqualToString:@"mark_read_choose_days"]) {
         [self.appDelegate showMarkReadMenuWithFeedIds:feedIds collectionTitle:collectionTitle sourceView:self sourceRect:self.bounds completionHandler:^(BOOL marked){
-            [appDelegate.folderCountCache removeObjectForKey:folderTitle];
-            [appDelegate.feedsViewController sectionUntappedOutside:invisibleHeaderButton];
-            [appDelegate.feedsViewController.feedTitlesTable reloadData];
+            [self.appDelegate.folderCountCache removeObjectForKey:folderTitle];
+            [self.appDelegate.feedsViewController sectionUntappedOutside:self.invisibleHeaderButton];
+            [self.appDelegate.feedsViewController.feedTitlesTable reloadData];
         }];
     } else if ([longPressTitle isEqualToString:@"mark_read_immediate"]) {
-        [appDelegate.folderCountCache removeObjectForKey:folderTitle];
-        [appDelegate.feedsViewController markFeedsRead:feedIds cutoffDays:0];
-        [appDelegate.feedsViewController.feedTitlesTable reloadData];
+        [self.appDelegate.folderCountCache removeObjectForKey:folderTitle];
+        [self.appDelegate.feedsViewController markFeedsRead:feedIds cutoffDays:0];
+        [self.appDelegate.feedsViewController.feedTitlesTable reloadData];
     }
 }
 

@@ -41,20 +41,20 @@
         ![[[NSUserDefaults standardUserDefaults]
            objectForKey:@"offline_allowed"] boolValue] ||
         [urls count] == 0) {
-        NSLog(@"Finished caching images. %ld total", (long)appDelegate.totalUncachedImagesCount);
+        NSLog(@"Finished caching images. %ld total", (long)self.appDelegate.totalUncachedImagesCount);
         dispatch_async(dispatch_get_main_queue(), ^{
-            [appDelegate.feedsViewController showDoneNotifier];
-            [appDelegate.feedsViewController hideNotifier];
-            [appDelegate cleanImageCache];
-            [appDelegate finishBackground];
+            [self.appDelegate.feedsViewController showDoneNotifier];
+            [self.appDelegate.feedsViewController hideNotifier];
+            [self.appDelegate cleanImageCache];
+            [self.appDelegate finishBackground];
         });
         return NO;
     }
 
-    if (![appDelegate isReachableForOffline]) {
+    if (![self.appDelegate isReachableForOffline]) {
         dispatch_async(dispatch_get_main_queue(), ^{
-            [appDelegate.feedsViewController showDoneNotifier];
-            [appDelegate.feedsViewController hideNotifier];
+            [self.appDelegate.feedsViewController showDoneNotifier];
+            [self.appDelegate.feedsViewController hideNotifier];
         });
         return NO;
     }
@@ -105,16 +105,16 @@
 - (NSArray *)uncachedImageUrls {
     NSMutableArray *urls = [NSMutableArray array];
     
-    [appDelegate.database inDatabase:^(FMDatabase *db) {
+    [self.appDelegate.database inDatabase:^(FMDatabase *db) {
         NSString *commonQuery = @"FROM cached_images c "
         "INNER JOIN unread_hashes u ON (c.story_hash = u.story_hash) "
         "WHERE c.image_cached is null ";
         int count = [db intForQuery:[NSString stringWithFormat:@"SELECT COUNT(1) %@", commonQuery]];
-        if (appDelegate.totalUncachedImagesCount == 0) {
-            appDelegate.totalUncachedImagesCount = count;
-            appDelegate.remainingUncachedImagesCount = appDelegate.totalUncachedImagesCount;
+        if (self.appDelegate.totalUncachedImagesCount == 0) {
+            self.appDelegate.totalUncachedImagesCount = count;
+            self.appDelegate.remainingUncachedImagesCount = self.appDelegate.totalUncachedImagesCount;
         } else {
-            appDelegate.remainingUncachedImagesCount = count;
+            self.appDelegate.remainingUncachedImagesCount = count;
         }
         
         int limit = 120;
@@ -143,17 +143,17 @@
     if (self.isCancelled) return;
     
     NSInteger start = (NSInteger)[[NSDate date] timeIntervalSince1970];
-    NSInteger end = appDelegate.latestCachedImageDate;
+    NSInteger end = self.appDelegate.latestCachedImageDate;
     NSInteger seconds = start - (end ? end : start);
     __block int hours = (int)round(seconds / 60.f / 60.f);
     
     __block float progress = 0.f;
-    if (appDelegate.totalUncachedImagesCount) {
+    if (self.appDelegate.totalUncachedImagesCount) {
         progress = 1.f - ((float)appDelegate.remainingUncachedImagesCount /
                           (float)appDelegate.totalUncachedImagesCount);
     }
     dispatch_async(dispatch_get_main_queue(), ^{
-        [appDelegate.feedsViewController showCachingNotifier:@"Images" progress:progress hoursBack:hours];
+        [self.appDelegate.feedsViewController showCachingNotifier:@"Images" progress:progress hoursBack:hours];
     });
 }
 
@@ -177,25 +177,25 @@
         
         [fileManager createFileAtPath:fullPath contents:responseData attributes:nil];
         
-        [appDelegate.database inDatabase:^(FMDatabase *db) {
+        [self.appDelegate.database inDatabase:^(FMDatabase *db) {
             [db executeUpdate:@"UPDATE cached_images SET "
              "image_cached = 1 WHERE story_hash = ?",
              storyHash];
         }];
         
         if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"default_order"] isEqualToString:@"oldest"]) {
-            if (storyTimestamp > appDelegate.latestCachedImageDate) {
-                appDelegate.latestCachedImageDate = storyTimestamp;
+            if (storyTimestamp > self.appDelegate.latestCachedImageDate) {
+                self.appDelegate.latestCachedImageDate = storyTimestamp;
             }
         } else {
-            if (!appDelegate.latestCachedImageDate || storyTimestamp < appDelegate.latestCachedImageDate) {
-                appDelegate.latestCachedImageDate = storyTimestamp;
+            if (!self.appDelegate.latestCachedImageDate || storyTimestamp < self.appDelegate.latestCachedImageDate) {
+                self.appDelegate.latestCachedImageDate = storyTimestamp;
             }
         }
         
         @synchronized (self) {
-            appDelegate.remainingUncachedImagesCount--;
-            if (appDelegate.remainingUncachedImagesCount % 10 == 0) {
+            self.appDelegate.remainingUncachedImagesCount--;
+            if (self.appDelegate.remainingUncachedImagesCount % 10 == 0) {
                 [self updateProgress];
             }
         }
@@ -203,7 +203,7 @@
 }
 
 - (void)storeFailedImage:(NSString *)storyHash {
-    [appDelegate.database inDatabase:^(FMDatabase *db) {
+    [self.appDelegate.database inDatabase:^(FMDatabase *db) {
         [db executeUpdate:@"UPDATE cached_images SET "
          "image_cached = 1, failed = 1 WHERE story_hash = ?",
          storyHash];
