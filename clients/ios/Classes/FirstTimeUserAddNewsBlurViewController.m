@@ -7,7 +7,7 @@
 //
 
 #import "FirstTimeUserAddNewsBlurViewController.h"
-#import "NewsBlurViewController.h"
+#import "NewsBlur-Swift.h"
 
 @implementation FirstTimeUserAddNewsBlurViewController
 
@@ -36,15 +36,6 @@
     self.navigationItem.title = @"All Done";
 }
 
-- (void)viewDidUnload
-{
-    [self setNextButton:nil];
-    [self setInstructionsLabel:nil];
-    [super viewDidUnload];
-    // Release any retained subviews of the main view.
-    // e.g. self.myOutlet = nil;
-}
-
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
@@ -58,16 +49,16 @@
     [self addPopular];
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-    // Return YES for supported orientations
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-        return YES;
-    } else if (UIInterfaceOrientationIsPortrait(interfaceOrientation)) {
-        return YES;
-    }
-    
-    return NO;
-}
+//- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+//    // Return YES for supported orientations
+//    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+//        return YES;
+//    } else if (UIInterfaceOrientationIsPortrait(interfaceOrientation)) {
+//        return YES;
+//    }
+//    
+//    return NO;
+//}
 
 
 - (IBAction)tapNextButton {

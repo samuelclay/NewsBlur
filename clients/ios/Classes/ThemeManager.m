@@ -9,13 +9,10 @@
 #import "ThemeManager.h"
 #import "NewsBlurAppDelegate.h"
 #import "NBContainerViewController.h"
-#import "NewsBlurViewController.h"
 #import "DashboardViewController.h"
-#import "FeedDetailViewController.h"
-#import "StoryDetailViewController.h"
-#import "StoryPageControl.h"
 #import "OriginalStoryViewController.h"
 #import <AudioToolbox/AudioToolbox.h>
+#import "NewsBlur-Swift.h"
 
 NSString * const ThemeStyleLight = @"light";
 NSString * const ThemeStyleSepia = @"sepia";

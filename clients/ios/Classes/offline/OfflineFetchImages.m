@@ -8,10 +8,10 @@
 
 #import "OfflineFetchImages.h"
 #import "NewsBlurAppDelegate.h"
-#import "NewsBlurViewController.h"
 #import "FMDatabase.h"
 #import "FMDatabaseAdditions.h"
 #import "Utilities.h"
+#import "NewsBlur-Swift.h"
 
 @implementation OfflineFetchImages
 @synthesize appDelegate;

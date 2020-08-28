@@ -7,7 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "NewsBlurAppDelegate.h"
+#import "NewsBlur-Swift.h"
 
 #define LANDSCAPE_MARGIN 128
 

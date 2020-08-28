@@ -45,33 +45,22 @@
     self.navigationItem.title = @"Friends";
 }
 
-- (void)viewDidUnload {
-    [self setNextButton:nil];
-    [self setFacebookButton:nil];
-    [self setTwitterButton:nil];
-    [self setFacebookActivityIndicator:nil];
-    [self setTwitterActivityIndicator:nil];
-    [super viewDidUnload];
-    // Release any retained subviews of the main view.
-    // e.g. self.myOutlet = nil;
-}
-
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
 //    [self selectTwitterButton];
     [self.navigationItem.rightBarButtonItem setStyle:UIBarButtonItemStyleDone];
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-    // Return YES for supported orientations
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-        return YES;
-    } else if (UIInterfaceOrientationIsPortrait(interfaceOrientation)) {
-        return YES;
-    }
-    
-    return NO;
-}
+//- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+//    // Return YES for supported orientations
+//    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+//        return YES;
+//    } else if (UIInterfaceOrientationIsPortrait(interfaceOrientation)) {
+//        return YES;
+//    }
+//    
+//    return NO;
+//}
 
 - (IBAction)tapNextButton {
     [appDelegate.ftuxNavigationController pushViewController:appDelegate.firstTimeUserAddNewsBlurViewController animated:YES];

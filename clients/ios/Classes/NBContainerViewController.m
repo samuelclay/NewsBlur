@@ -7,11 +7,7 @@
 //
 
 #import "NBContainerViewController.h"
-#import "NewsBlurViewController.h"
-#import "FeedDetailViewController.h"
 #import "DashboardViewController.h"
-#import "StoryDetailViewController.h"
-#import "StoryPageControl.h"
 #import "OriginalStoryViewController.h"
 #import "ShareViewController.h"
 #import "UserProfileViewController.h"
@@ -26,6 +22,7 @@
 #import "NotificationsViewController.h"
 #import "StoriesCollection.h"
 #import "UserTagsViewController.h"
+#import "NewsBlur-Swift.h"
 
 #define NB_DEFAULT_MASTER_WIDTH 270
 #define NB_DEFAULT_MASTER_WIDTH_LANDSCAPE 370
@@ -40,12 +37,12 @@
 @property (nonatomic, strong) UINavigationController *storyNavigationController;
 @property (nonatomic, strong) UINavigationController *shareNavigationController;
 @property (nonatomic, strong) UINavigationController *originalNavigationController;
-@property (nonatomic, strong) NewsBlurViewController *feedsViewController;
+@property (nonatomic, strong) FeedsViewController *feedsViewController;
 @property (nonatomic, strong) FeedDetailViewController *feedDetailViewController;
 @property (nonatomic, strong) DashboardViewController *dashboardViewController;
 @property (nonatomic, strong) StoryDetailViewController *storyDetailViewController;
 @property (nonatomic, strong) OriginalStoryViewController *originalViewController;
-@property (nonatomic, strong) StoryPageControl *storyPageControl;
+@property (nonatomic, strong) StoryPageDelegate *storyPageControl;
 @property (nonatomic, strong) ShareViewController *shareViewController;
 @property (nonatomic, strong) UIView *storyTitlesStub;
 @property (readwrite) BOOL storyTitlesOnLeft;
@@ -177,11 +174,6 @@
     }
     
     [self layoutDashboardScreen];
-}
-
-- (void)viewDidUnload {
-    [super viewDidUnload];
-    // Release any retained subviews of the main view.
 }
 
 - (void)viewDidAppear:(BOOL)animated {

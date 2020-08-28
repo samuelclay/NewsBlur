@@ -21,7 +21,7 @@
 #define STORY_TITLES_HEIGHT 240
 #define DASHBOARD_TITLE @"NewsBlur"
 
-@class NewsBlurViewController;
+@class FeedsViewController;
 @class DashboardViewController;
 @class FeedsMenuViewController;
 @class FeedDetailViewController;
@@ -33,7 +33,7 @@
 @class FriendsListViewController;
 @class FontSettingsViewController;
 @class StoryDetailViewController;
-@class StoryPageControl;
+@class StoryPageDelegate;
 @class ShareViewController;
 @class LoginViewController;
 @class AddSiteViewController;
@@ -74,14 +74,14 @@ SFSafariViewControllerDelegate>  {
     FirstTimeUserAddNewsBlurViewController *firstTimeUserAddNewsBlurViewController;
                                     
     DashboardViewController *dashboardViewController;
-    NewsBlurViewController *feedsViewController;
+    FeedsViewController *feedsViewController;
     FeedsMenuViewController *feedsMenuViewController;
     FeedDetailViewController *feedDetailViewController;
     FriendsListViewController *friendsListViewController;
     FontSettingsViewController *fontSettingsViewController;
     
     StoryDetailViewController *storyDetailViewController;
-    StoryPageControl *storyPageControl;
+    StoryPageDelegate *storyPageControl;
     ShareViewController *shareViewController;
     LoginViewController *loginViewController;
     AddSiteViewController *addSiteViewController;
@@ -171,13 +171,13 @@ SFSafariViewControllerDelegate>  {
 @property (nonatomic) UINavigationController *originalStoryViewNavController;
 @property (nonatomic) IBOutlet NBContainerViewController *masterContainerViewController;
 @property (nonatomic) IBOutlet DashboardViewController *dashboardViewController;
-@property (nonatomic) IBOutlet NewsBlurViewController *feedsViewController;
+@property (nonatomic) IBOutlet FeedsViewController *feedsViewController;
 @property (nonatomic) IBOutlet FeedsMenuViewController *feedsMenuViewController;
 @property (nonatomic) IBOutlet FeedDetailViewController *feedDetailViewController;
 @property (nonatomic, strong) UINavigationController *feedDetailMenuNavigationController;
 @property (nonatomic) IBOutlet FriendsListViewController *friendsListViewController;
 @property (nonatomic) IBOutlet StoryDetailViewController *storyDetailViewController;
-@property (nonatomic) IBOutlet StoryPageControl *storyPageControl;
+@property (nonatomic) IBOutlet StoryPageDelegate *storyPageControl;
 @property (nonatomic) IBOutlet LoginViewController *loginViewController;
 @property (nonatomic, strong) UINavigationController *addSiteNavigationController;
 @property (nonatomic) IBOutlet AddSiteViewController *addSiteViewController;
@@ -285,7 +285,8 @@ SFSafariViewControllerDelegate>  {
 
 @property (nonatomic, strong) void (^backgroundCompletionHandler)(UIBackgroundFetchResult);
 
-+ (NewsBlurAppDelegate*) sharedAppDelegate;
++ (instancetype)sharedAppDelegate;
+
 - (void)registerDefaultsFromSettingsBundle;
 - (void)finishBackground;
 

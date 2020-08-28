@@ -8,9 +8,9 @@
 
 #import <QuartzCore/QuartzCore.h>
 #import "NewsBlurAppDelegate.h"
-#import "NewsBlurViewController.h"
 #import "FolderTitleView.h"
 #import "UnreadCountView.h"
+#import "NewsBlur-Swift.h"
 
 @implementation FolderTitleView
 

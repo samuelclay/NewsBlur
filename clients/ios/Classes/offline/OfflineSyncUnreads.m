@@ -8,9 +8,9 @@
 
 #import "OfflineSyncUnreads.h"
 #import "NewsBlurAppDelegate.h"
-#import "NewsBlurViewController.h"
 #import "FMResultSet.h"
 #import "FMDatabase.h"
+#import "NewsBlur-Swift.h"
 
 @implementation OfflineSyncUnreads
 

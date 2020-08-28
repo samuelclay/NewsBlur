@@ -8,11 +8,11 @@
 
 #import "OfflineFetchStories.h"
 #import "NewsBlurAppDelegate.h"
-#import "NewsBlurViewController.h"
 #import "FMDatabase.h"
 #import "FMDatabaseAdditions.h"
 #import "SBJson4.h"
 #import "NSObject+SBJSON.h"
+#import "NewsBlur-Swift.h"
 
 @implementation OfflineFetchStories
 

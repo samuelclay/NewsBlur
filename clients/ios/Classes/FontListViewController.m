@@ -9,7 +9,7 @@
 #import "FontListViewController.h"
 #import "MenuTableViewCell.h"
 #import "NewsBlurAppDelegate.h"
-#import "StoryPageControl.h"
+#import "NewsBlur-Swift.h"
 
 @interface FontListViewController ()
 

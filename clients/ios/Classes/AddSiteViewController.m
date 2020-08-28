@@ -9,10 +9,10 @@
 #import "AddSiteViewController.h"
 #import "AddSiteAutocompleteCell.h"
 #import "NewsBlurAppDelegate.h"
-#import "NewsBlurViewController.h"
 #import "NBContainerViewController.h"
 #import "MenuViewController.h"
 #import "SBJson4.h"
+#import "NewsBlur-Swift.h"
 
 @interface AddSiteViewController()
 
@@ -86,16 +86,16 @@
     [super viewWillAppear:animated];
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-    // Return YES for supported orientations
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-        return YES;
-    } else if (UIInterfaceOrientationIsPortrait(interfaceOrientation)) {
-        return YES;
-    }
-    
-    return NO;
-}
+//- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+//    // Return YES for supported orientations
+//    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+//        return YES;
+//    } else if (UIInterfaceOrientationIsPortrait(interfaceOrientation)) {
+//        return YES;
+//    }
+//
+//    return NO;
+//}
 
 - (void)viewDidAppear:(BOOL)animated {
     [self.activityIndicator stopAnimating];

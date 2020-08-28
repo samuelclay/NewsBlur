@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 #import <SafariServices/SafariServices.h>
 #import "NewsBlurAppDelegate.h"
+#import "NewsBlur-Swift.h"
 
 @class NewsBlurAppDelegate;
 

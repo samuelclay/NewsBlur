@@ -7,7 +7,6 @@
 //
 
 #import "NewsBlurAppDelegate.h"
-#import "FeedDetailViewController.h"
 #import "FeedDetailTableCell.h"
 #import "DashboardViewController.h"
 #import "ABTableViewCell.h"
@@ -16,6 +15,7 @@
 #import "Utilities.h"
 #import "MCSwipeTableViewCell.h"
 #import "PINCache.h"
+#import "NewsBlur-Swift.h"
 
 static UIFont *textFont = nil;
 static UIFont *indicatorFont = nil;

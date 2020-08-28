@@ -11,6 +11,7 @@
 #import "Utilities.h"
 #import "UIImageView+AFNetworking.h"
 #import <QuartzCore/QuartzCore.h>
+#import "NewsBlur-Swift.h"
 
 #define kTopBadgeHeight 125
 #define kTopBadgeTextXCoordinate 100

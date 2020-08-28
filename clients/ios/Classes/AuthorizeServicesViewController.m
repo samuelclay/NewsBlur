@@ -35,13 +35,6 @@
     self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];
 }
 
-- (void)viewDidUnload {
-    [self setWebView:nil];
-    [super viewDidUnload];
-    // Release any retained subviews of the main view.
-    // e.g. self.myOutlet = nil;
-}
-
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
@@ -72,9 +65,9 @@
     }
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-    return YES;
-}
+//- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+//    return YES;
+//}
 
 - (void)doCancelButton {
     [appDelegate.shareViewController adjustShareButtons];

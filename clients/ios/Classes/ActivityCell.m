@@ -9,6 +9,7 @@
 #import "ActivityCell.h"
 #import "UIImageView+AFNetworking.h"
 #import "NewsBlurAppDelegate.h"
+#import "NewsBlur-Swift.h"
 
 @implementation ActivityCell
 

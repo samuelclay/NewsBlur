@@ -1,5 +1,5 @@
 //
-//  StoryPageControl.h
+//  StoryPageObjCDelegate.h
 //  NewsBlur
 //
 //  Created by Samuel Clay on 11/2/12.
@@ -7,12 +7,14 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "NewsBlurAppDelegate.h"
 #import "BaseViewController.h"
 #import "THCircularProgressView.h"
 #import "NBNotifier.h"
-#import "StoryDetailViewController.h"
 
-@interface StoryPageControl : BaseViewController
+@class StoryDetailViewController;
+
+@interface StoryPageObjCDelegate : BaseViewController
 <UIScrollViewDelegate, UIPopoverControllerDelegate, UIPopoverPresentationControllerDelegate, UIGestureRecognizerDelegate> {
     NewsBlurAppDelegate *appDelegate;
     THCircularProgressView *circularProgressView;

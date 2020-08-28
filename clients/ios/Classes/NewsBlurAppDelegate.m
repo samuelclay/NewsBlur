@@ -6,14 +6,10 @@
 //
 
 #import "NewsBlurAppDelegate.h"
-#import "NewsBlurViewController.h"
 #import "NBContainerViewController.h"
-#import "FeedDetailViewController.h"
 #import "DashboardViewController.h"
 #import "MarkReadMenuViewController.h"
 #import "FeedsMenuViewController.h"
-#import "StoryDetailViewController.h"
-#import "StoryPageControl.h"
 #import "FirstTimeUserViewController.h"
 #import "FriendsListViewController.h"
 #import "LoginViewController.h"
@@ -64,6 +60,7 @@
 #import "UISearchBar+Field.h"
 #import "UIViewController+HidePopover.h"
 #import "PINCache.h"
+#import "NewsBlur-Swift.h"
 #import <float.h>
 #import <UserNotifications/UserNotifications.h>
 #import <Intents/Intents.h>
@@ -194,11 +191,15 @@
 @synthesize totalUncachedImagesCount;
 @synthesize remainingUncachedImagesCount;
 
-+ (NewsBlurAppDelegate*) sharedAppDelegate {
-	return (NewsBlurAppDelegate*) [UIApplication sharedApplication].delegate;
++ (instancetype)sharedAppDelegate {
+	return (NewsBlurAppDelegate *)[UIApplication sharedApplication].delegate;
 }
 
 - (BOOL)application:(UIApplication *)application willFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+    #warning CATALYST hack
+    return YES;
+    
+    
     [self registerDefaultsFromSettingsBundle];
     
     self.navigationController.delegate = self;
@@ -338,7 +339,7 @@
         return self.feedsViewController;
     } else if ([identifier isEqualToString:@"FeedDetailView"]) {
         return self.feedDetailViewController;
-    } else if ([identifier isEqualToString:@"StoryPageControl"]) {
+    } else if ([identifier isEqualToString:@"StoryPageDelegate"]) {
         return self.storyPageControl;
     } else if ([identifier isEqualToString:@"ContainerView"]) {
         return self.masterContainerViewController;

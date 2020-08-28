@@ -1,5 +1,5 @@
 //
-//  FeedDetailViewController.h
+//  FeedDetailObjCViewController.h
 //  NewsBlur
 //
 //  Created by Samuel Clay on 6/20/10.
@@ -17,7 +17,7 @@
 @class NewsBlurAppDelegate;
 @class MCSwipeTableViewCell;
 
-@interface FeedDetailViewController : BaseViewController 
+@interface FeedDetailObjCViewController : BaseViewController
 <UITableViewDelegate, UITableViewDataSource,
  UIPopoverControllerDelegate,
  MCSwipeTableViewCellDelegate,

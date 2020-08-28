@@ -10,11 +10,11 @@
 #import "NewsBlurAppDelegate.h"
 #import "ActivityModule.h"
 #import "InteractionsModule.h"
-#import "FeedDetailViewController.h"
 #import "UserProfileViewController.h"
 #import "PINCache.h"
 #import "StoriesCollection.h"
 #import "UISearchBar+Field.h"
+#import "NewsBlur-Swift.h"
 
 @implementation DashboardViewController
 
@@ -87,9 +87,9 @@
     }
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-	return YES;
-}
+//- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+//	return YES;
+//}
 
 // allow keyboard comands
 - (BOOL)canBecomeFirstResponder {

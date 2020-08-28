@@ -8,6 +8,7 @@
 
 #import "FeedChooserItem.h"
 #import "NewsBlurAppDelegate.h"
+#import "NewsBlur-Swift.h"
 
 @interface FeedChooserItem ()
 

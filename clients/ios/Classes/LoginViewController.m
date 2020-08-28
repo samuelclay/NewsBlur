@@ -95,29 +95,19 @@
     }
 }
 
-- (void)viewDidUnload {
-    [self setSignUpView:nil];
-    [self setLogInView:nil];
-    [self setSignUpUsernameInput:nil];
-    [self setSignUpPasswordInput:nil];
-    [self setSelectSignUpButton:nil];
-    [self setSelectLoginButton:nil];
-    [super viewDidUnload];
-}
-
 - (void)viewWillAppear:(BOOL)animated {
     [self showError:nil];
     [super viewWillAppear:animated];
     [usernameInput becomeFirstResponder];
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-    // Return YES for supported orientations
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-        return YES;
-    }
-    return NO;
-}
+//- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+//    // Return YES for supported orientations
+//    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+//        return YES;
+//    }
+//    return NO;
+//}
 
 - (void)viewDidAppear:(BOOL)animated {
     [MBProgressHUD hideHUDForView:self.view animated:YES];
@@ -131,9 +121,9 @@
 	// Release any cached data, images, etc that aren't in use.
 }
 
-- (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
-    [self rearrangeViews];
-}
+//- (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
+//    [self rearrangeViews];
+//}
 
 - (void)showError:(NSString *)error {
     BOOL hasError = error.length > 0;

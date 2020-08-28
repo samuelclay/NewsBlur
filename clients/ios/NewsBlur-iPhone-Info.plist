@@ -121,8 +121,6 @@
 			</dict>
 		</dict>
 	</dict>
-	<key>NSMainNibFile</key>
-	<string>MainWindow</string>
 	<key>NSMainNibFile~ipad</key>
 	<string>MainWindow~ipad</string>
 	<key>NSPhotoLibraryUsageDescription</key>
@@ -194,6 +192,8 @@
 	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
+	<key>UIMainStoryboardFile</key>
+	<string>MainInterface</string>
 	<key>UIPrerenderedIcon</key>
 	<true/>
 	<key>UIStatusBarHidden</key>

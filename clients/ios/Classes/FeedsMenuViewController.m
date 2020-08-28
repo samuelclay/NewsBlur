@@ -10,8 +10,8 @@
 #import "NewsBlurAppDelegate.h"
 #import "MBProgressHUD.h"
 #import "NBContainerViewController.h"
-#import "NewsBlurViewController.h"
 #import "MenuTableViewCell.h"
+#import "NewsBlur-Swift.h"
 
 @implementation FeedsMenuViewController
 
@@ -70,15 +70,6 @@
     [self.menuTableView reloadData];
 }
 
-- (void)viewDidUnload
-{
-    [super viewDidUnload];
-    // Release any retained subviews of the main view.
-    // e.g. self.myOutlet = nil;
-    self.menuOptions = nil;
-    self.menuTableView = nil;
-}
-
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
@@ -118,9 +109,9 @@
     }
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-	return YES;
-}
+//- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+//	return YES;
+//}
 
 // allow keyboard comands
 - (BOOL)canBecomeFirstResponder {
