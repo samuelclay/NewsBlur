@@ -9,6 +9,7 @@
 #import "DataUtilities.h"
 #import "NewsBlurAppDelegate.h"
 #import "StoriesCollection.h"
+#import "NewsBlur-Swift.h"
 
 @implementation DataUtilities
 

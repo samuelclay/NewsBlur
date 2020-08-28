@@ -1,14 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14845" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useSafeAreas="YES" colorMatched="YES">
-    <device id="retina3_5" orientation="portrait" appearance="light"/>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="17154" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useSafeAreas="YES" colorMatched="YES">
     <dependencies>
-        <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14799.2"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17124"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
-        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="NewsBlurViewController">
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="FeedsViewController">
             <connections>
                 <outlet property="addBarButton" destination="106" id="120"/>
                 <outlet property="feedTitlesTable" destination="8" id="66"/>
@@ -31,7 +29,7 @@
                     <subviews>
                         <tableView clipsSubviews="YES" contentMode="scaleToFill" restorationIdentifier="FeedTitlesTable" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" bouncesZoom="NO" style="plain" separatorStyle="none" rowHeight="6" estimatedRowHeight="6" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="8" userLabel="Table View">
                             <rect key="frame" x="0.0" y="0.0" width="320" height="436"/>
-                            <color key="backgroundColor" cocoaTouchSystemColor="lightTextColor"/>
+                            <color key="backgroundColor" systemColor="lightTextColor"/>
                             <connections>
                                 <outlet property="dataSource" destination="-1" id="36"/>
                                 <outlet property="delegate" destination="-1" id="37"/>
@@ -81,7 +79,7 @@
                         </barButtonItem>
                         <barButtonItem style="plain" systemItem="flexibleSpace" id="104"/>
                         <barButtonItem id="56">
-                            <segmentedControl key="customView" contentMode="center" contentHorizontalAlignment="left" contentVerticalAlignment="top" apportionsSegmentWidthsByContent="YES" segmentControlStyle="plain" selectedSegmentIndex="0" id="55">
+                            <segmentedControl key="customView" contentMode="center" misplaced="YES" contentHorizontalAlignment="left" contentVerticalAlignment="top" apportionsSegmentWidthsByContent="YES" segmentControlStyle="plain" selectedSegmentIndex="0" id="55">
                                 <rect key="frame" x="21" y="6" width="278" height="32"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <segments>
@@ -107,6 +105,7 @@
                     </items>
                 </toolbar>
             </subviews>
+            <viewLayoutGuide key="safeArea" id="JS5-vR-UMU"/>
             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <constraints>
                 <constraint firstItem="11" firstAttribute="top" secondItem="85" secondAttribute="bottom" id="5kv-Yh-mBh"/>
@@ -119,7 +118,6 @@
                 <constraint firstItem="11" firstAttribute="trailing" secondItem="6" secondAttribute="trailing" id="qyT-XC-D2U"/>
             </constraints>
             <nil key="simulatedStatusBarMetrics"/>
-            <viewLayoutGuide key="safeArea" id="JS5-vR-UMU"/>
             <point key="canvasLocation" x="139" y="155"/>
         </view>
     </objects>
@@ -131,5 +129,8 @@
         <image name="unread_blue.png" width="49.5" height="12.5"/>
         <image name="unread_green.png" width="49" height="12.5"/>
         <image name="unread_yellow.png" width="58" height="12.5"/>
+        <systemColor name="lightTextColor">
+            <color white="1" alpha="0.59999999999999998" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
     </resources>
 </document>

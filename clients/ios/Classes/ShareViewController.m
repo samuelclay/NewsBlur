@@ -8,14 +8,12 @@
 
 #import "ShareViewController.h"
 #import "NewsBlurAppDelegate.h"
-#import "StoryDetailViewController.h"
-#import "FeedDetailViewController.h"
-#import "StoryPageControl.h"
 #import <QuartzCore/QuartzCore.h>
 #import "Utilities.h"
 #import "DataUtilities.h"
 #import "StoriesCollection.h"
 #import "NSString+HTML.h"
+#import "NewsBlur-Swift.h"
 
 @implementation ShareViewController
 
@@ -83,16 +81,6 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-- (void)viewDidUnload {
-    [self setCommentField:nil];
-    [self setFacebookButton:nil];
-    [self setTwitterButton:nil];
-    [self setSubmitButton:nil];
-    [super viewDidUnload];
-    // Release any retained subviews of the main view.
-    // e.g. self.myOutlet = nil;
-}
-
 - (bool)isHardwareKeyboardUsed:(NSNotification*)keyboardNotification {
     NSDictionary* info = [keyboardNotification userInfo];
     CGRect keyboardEndFrame;
@@ -139,13 +127,13 @@
     }];
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-	return YES;
-}
-
-- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
-    [self adjustCommentField:CGSizeZero];
-}
+//- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+//	return YES;
+//}
+//
+//- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
+//    [self adjustCommentField:CGSizeZero];
+//}
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];

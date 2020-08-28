@@ -13,6 +13,7 @@
 #import <QuartzCore/QuartzCore.h>
 #import "ActivityCell.h"
 #import "SmallActivityCell.h"
+#import "NewsBlur-Swift.h"
 
 @implementation ActivityModule
 

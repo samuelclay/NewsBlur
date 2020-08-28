@@ -8,6 +8,7 @@
 
 #import "FeedChooserTitleView.h"
 #import "NewsBlurAppDelegate.h"
+#import "NewsBlur-Swift.h"
 
 @interface FeedChooserTitleView ()
 

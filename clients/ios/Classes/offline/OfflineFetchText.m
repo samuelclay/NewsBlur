@@ -7,11 +7,11 @@
 //
 
 #import "OfflineFetchText.h"
-#import "NewsBlurViewController.h"
 #import "FMDatabase.h"
 #import "FMDatabaseAdditions.h"
 #import "Utilities.h"
 #import "NSObject+SBJSON.h"
+#import "NewsBlur-Swift.h"
 
 @implementation OfflineFetchText
 

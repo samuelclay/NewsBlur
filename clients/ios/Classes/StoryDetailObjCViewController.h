@@ -1,5 +1,5 @@
 //
-//  StoryDetailViewController.h
+//  StoryDetailObjCViewController.h
 //  NewsBlur
 //
 //  Created by Samuel Clay on 6/24/10.
@@ -13,7 +13,7 @@
 
 @class NewsBlurAppDelegate;
 
-@interface StoryDetailViewController : BaseViewController
+@interface StoryDetailObjCViewController : BaseViewController
 <UIScrollViewDelegate, UIGestureRecognizerDelegate,
 UIActionSheetDelegate, WKNavigationDelegate> {
     NewsBlurAppDelegate *appDelegate;

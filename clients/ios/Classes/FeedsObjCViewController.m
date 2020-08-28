@@ -1,12 +1,12 @@
 //
-//  NewsBlurViewController.m
+//  FeedsObjCViewController.m
 //  NewsBlur
 //
 //  Created by Samuel Clay on 6/16/10.
 //  Copyright NewsBlur 2010. All rights reserved.
 //
 
-#import "NewsBlurViewController.h"
+#import "FeedsObjCViewController.h"
 #import "NewsBlurAppDelegate.h"
 #import "NBContainerViewController.h"
 #import "DashboardViewController.h"
@@ -15,10 +15,7 @@
 #import "FeedTableCell.h"
 #import "DashboardViewController.h"
 #import "FeedsMenuViewController.h"
-#import "FeedDetailViewController.h"
 #import "UserProfileViewController.h"
-#import "StoryDetailViewController.h"
-#import "StoryPageControl.h"
 #import "MBProgressHUD.h"
 #import "SBJson4.h"
 #import "NSObject+SBJSON.h"
@@ -46,7 +43,7 @@ static UIFont *userLabelFont;
 
 static NSArray<NSString *> *NewsBlurTopSectionNames;
 
-@interface NewsBlurViewController () 
+@interface FeedsObjCViewController ()
 
 @property (nonatomic, strong) NSMutableDictionary *updatedDictSocialFeeds_;
 @property (nonatomic, strong) NSMutableDictionary *updatedDictFeeds_;
@@ -55,7 +52,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 
 @end
 
-@implementation NewsBlurViewController
+@implementation FeedsObjCViewController
 
 @synthesize appDelegate;
 @synthesize feedTitlesTable;

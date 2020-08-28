@@ -1,5 +1,6 @@
 #import "BaseViewController.h"
 #import "NewsBlurAppDelegate.h"
+#import "NewsBlur-Swift.h"
 
 @implementation BaseViewController
 
@@ -125,10 +126,6 @@
     if (@available(iOS 13.0, *)) {
         [[ThemeManager themeManager] systemAppearanceDidChange:self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark];
     }
-}
-
-- (void) viewDidUnload {
-	[super viewDidUnload];
 }
 
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {

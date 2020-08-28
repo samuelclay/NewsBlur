@@ -1,14 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="16097.2" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
-    <device id="retina5_9" orientation="portrait" appearance="light"/>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="17154" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <dependencies>
-        <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16087"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17124"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
-        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="StoryPageControl">
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="StoryPageDelegate">
             <connections>
                 <outlet property="autoscrollBackgroundImageView" destination="Hm0-aD-uc2" id="iGQ-3d-kdN"/>
                 <outlet property="autoscrollBottomConstraint" destination="E9T-hc-jPk" id="2sE-74-XyW"/>
@@ -48,7 +46,7 @@
                     </connections>
                 </scrollView>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="75">
-                    <rect key="frame" x="0.0" y="627" width="375" height="51"/>
+                    <rect key="frame" x="0.0" y="661" width="375" height="51"/>
                     <subviews>
                         <imageView userInteractionEnabled="NO" contentMode="scaleToFill" image="traverse_background.png" translatesAutoresizingMaskIntoConstraints="NO" id="71">
                             <rect key="frame" x="209" y="4" width="160" height="44"/>
@@ -191,7 +189,7 @@
                     </constraints>
                 </view>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="LNI-9u-7l4">
-                    <rect key="frame" x="107.66666666666669" y="556" width="160" height="44"/>
+                    <rect key="frame" x="107.5" y="590" width="160" height="44"/>
                     <subviews>
                         <imageView userInteractionEnabled="NO" contentMode="scaleToFill" image="traverse_background.png" translatesAutoresizingMaskIntoConstraints="NO" id="Hm0-aD-uc2">
                             <rect key="frame" x="0.0" y="0.0" width="160" height="44"/>
@@ -220,7 +218,7 @@
                             </connections>
                         </button>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Uu8-vD-eak">
-                            <rect key="frame" x="42.999999999999986" y="5" width="36" height="34"/>
+                            <rect key="frame" x="43" y="5" width="36" height="34"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="34" id="Yzw-La-pZ7"/>
                                 <constraint firstAttribute="width" constant="36" id="yxq-b5-vYH"/>
@@ -239,7 +237,7 @@
                             </connections>
                         </button>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Qah-Lp-ocZ">
-                            <rect key="frame" x="79.999999999999986" y="5" width="36" height="34"/>
+                            <rect key="frame" x="80" y="5" width="36" height="34"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="34" id="C1Z-x4-bix"/>
                                 <constraint firstAttribute="width" constant="36" id="Jo4-Fl-lLj"/>
@@ -294,7 +292,7 @@
                     </constraints>
                 </view>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="YKz-PZ-s0t">
-                    <rect key="frame" x="0.0" y="678" width="375" height="12"/>
+                    <rect key="frame" x="0.0" y="712" width="375" height="12"/>
                     <subviews>
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="MK4-IV-OSa">
                             <rect key="frame" x="0.0" y="-1" width="375" height="1"/>
@@ -311,7 +309,7 @@
                             </constraints>
                         </view>
                         <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="drag_icon.png" translatesAutoresizingMaskIntoConstraints="NO" id="kYw-ba-fFD">
-                            <rect key="frame" x="170.66666666666666" y="2" width="34" height="9"/>
+                            <rect key="frame" x="170.5" y="2" width="34" height="9"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="9" id="Pta-oX-r3A"/>
                                 <constraint firstAttribute="width" constant="34" id="oVQ-MZ-nUk"/>
@@ -340,6 +338,7 @@
                     </variation>
                 </view>
             </subviews>
+            <viewLayoutGuide key="safeArea" id="ir3-jV-2M5"/>
             <color key="backgroundColor" red="0.43529411759999997" green="0.4431372549" blue="0.47450980390000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <constraints>
                 <constraint firstItem="5" firstAttribute="trailing" secondItem="ir3-jV-2M5" secondAttribute="trailing" id="A4p-mh-u6O"/>
@@ -357,7 +356,6 @@
             </constraints>
             <nil key="simulatedStatusBarMetrics"/>
             <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" translucent="NO" prompted="NO"/>
-            <viewLayoutGuide key="safeArea" id="ir3-jV-2M5"/>
             <point key="canvasLocation" x="300" y="480.29556650246309"/>
         </view>
     </objects>

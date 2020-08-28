@@ -11,6 +11,7 @@
 #import "UnreadCountView.h"
 #import "ABTableViewCell.h"
 #import "MCSwipeTableViewCell.h"
+#import "NewsBlur-Swift.h"
 
 static UIFont *textFont = nil;
 
@@ -103,7 +104,7 @@ static UIFont *textFont = nil;
         iconName = @"train.png";
     }
     
-    [self setDelegate:(NewsBlurViewController <MCSwipeTableViewCellDelegate> *)appDelegate.feedsViewController];
+    [self setDelegate:(FeedsViewController <MCSwipeTableViewCellDelegate> *)appDelegate.feedsViewController];
     [self setFirstStateIconName:(iconName)
                      firstColor:UIColorFromRGB(0xA4D97B)
             secondStateIconName:nil

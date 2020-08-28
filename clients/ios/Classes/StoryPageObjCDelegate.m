@@ -1,16 +1,13 @@
 //
-//  StoryPageControl.m
+//  StoryPageObjCDelegate.m
 //  NewsBlur
 //
 //  Created by Samuel Clay on 11/2/12.
 //  Copyright (c) 2012 NewsBlur. All rights reserved.
 //
 
-#import "StoryPageControl.h"
-#import "StoryDetailViewController.h"
+#import "StoryPageObjCDelegate.h"
 #import "NewsBlurAppDelegate.h"
-#import "NewsBlurViewController.h"
-#import "FeedDetailViewController.h"
 #import "FontSettingsViewController.h"
 #import "UserProfileViewController.h"
 #import "ShareViewController.h"
@@ -23,9 +20,11 @@
 #import "THCircularProgressView.h"
 #import "FMDatabase.h"
 #import "StoriesCollection.h"
+#import "NewsBlur-Swift.h"
+
 @import WebKit;
 
-@interface StoryPageControl ()
+@interface StoryPageObjCDelegate ()
 
 @property (nonatomic) CGFloat statusBarHeight;
 @property (nonatomic) BOOL wasNavigationBarHidden;
@@ -35,7 +34,7 @@
 
 @end
 
-@implementation StoryPageControl
+@implementation StoryPageObjCDelegate
 
 @synthesize currentPage, nextPage, previousPage;
 @synthesize circularProgressView;

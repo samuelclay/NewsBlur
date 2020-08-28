@@ -1,5 +1,5 @@
 //
-//  FeedDetailViewController.m
+//  FeedDetailObjCViewController.m
 //  NewsBlur
 //
 //  Created by Samuel Clay on 6/20/10.
@@ -7,14 +7,11 @@
 //
 
 #import <QuartzCore/QuartzCore.h>
-#import "FeedDetailViewController.h"
+#import "FeedDetailObjCViewController.h"
 #import "NewsBlurAppDelegate.h"
 #import "NBContainerViewController.h"
-#import "NewsBlurViewController.h"
 #import "FeedDetailTableCell.h"
 #import "UserProfileViewController.h"
-#import "StoryDetailViewController.h"
-#import "StoryPageControl.h"
 #import "NSString+HTML.h"
 #import "MBProgressHUD.h"
 #import "SBJson4.h"
@@ -35,12 +32,13 @@
 #import "UISearchBar+Field.h"
 #import "MenuViewController.h"
 #import "StoryTitleAttributedString.h"
+#import "NewsBlur-Swift.h"
 
 #define kTableViewRowHeight 46;
 #define kTableViewRiverRowHeight 68;
 #define kTableViewShortRowDifference 17;
 
-@interface FeedDetailViewController ()
+@interface FeedDetailObjCViewController ()
 
 @property (nonatomic) NSUInteger scrollingMarkReadRow;
 @property (nonatomic, readonly) BOOL isMarkReadOnScroll;
@@ -51,7 +49,7 @@
 
 @end
 
-@implementation FeedDetailViewController
+@implementation FeedDetailObjCViewController
 
 @synthesize storyTitlesTable, feedMarkReadButton;
 @synthesize settingsBarButton;
@@ -607,7 +605,7 @@
             folder = [NSString stringWithFormat:@"%@", @(index)];
         }
         
-        [appDelegate loadRiverFeedDetailView:self withFolder:folder];
+        [appDelegate loadRiverFeedDetailView:(FeedDetailViewController *)self withFolder:folder];
         [self viewWillAppear:NO];
     }
     

@@ -8,14 +8,12 @@
 
 #import "FontSettingsViewController.h"
 #import "NewsBlurAppDelegate.h"
-#import "StoryDetailViewController.h"
-#import "StoryPageControl.h"
-#import "FeedDetailViewController.h"
 #import "MenuTableViewCell.h"
 #import "NBContainerViewController.h"
 #import "StoriesCollection.h"
 #import "FontListViewController.h"
 #import "MenuViewController.h"
+#import "NewsBlur-Swift.h"
 
 @interface FontSettingsViewController ()
 
@@ -139,9 +137,9 @@
     }
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-	return YES;
-}
+//- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+//	return YES;
+//}
 
 // allow keyboard comands
 - (BOOL)canBecomeFirstResponder {

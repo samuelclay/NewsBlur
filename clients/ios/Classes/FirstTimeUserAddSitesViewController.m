@@ -10,8 +10,8 @@
 #import "FirstTimeUserAddSitesViewController.h"
 #import "FirstTimeUserAddFriendsViewController.h"
 #import "AuthorizeServicesViewController.h"
-#import "NewsBlurViewController.h"
 #import "SiteCell.h"
+#import "NewsBlur-Swift.h"
 
 @interface FirstTimeUserAddSitesViewController()
 
@@ -87,24 +87,15 @@
     NSLog(@"%f height", self.tableViewHeight);
 }
 
-- (void)viewDidUnload {
-    [super viewDidUnload];
-    [self setActivityIndicator:nil];
-    [self setInstructionLabel:nil];
-    [self setCategoriesTable:nil];
-    [self setGoogleReaderButton:nil];
-    [self setNextButton:nil];
-}
-
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-    // Return YES for supported orientations
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-        return YES;
-    } else if (UIInterfaceOrientationIsPortrait(interfaceOrientation)) {
-        return YES;
-    }
-    return NO;
-}
+//- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+//    // Return YES for supported orientations
+//    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+//        return YES;
+//    } else if (UIInterfaceOrientationIsPortrait(interfaceOrientation)) {
+//        return YES;
+//    }
+//    return NO;
+//}
 
 
 - (IBAction)tapNextButton {

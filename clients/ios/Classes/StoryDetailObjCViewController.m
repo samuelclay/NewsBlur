@@ -1,5 +1,5 @@
 //
-//  StoryDetailViewController.m
+//  StoryDetailObjCViewController.m
 //  NewsBlur
 //
 //  Created by Samuel Clay on 6/24/10.
@@ -8,14 +8,11 @@
 
 #import <AVFoundation/AVFoundation.h>
 #import <Photos/Photos.h>
-#import "StoryDetailViewController.h"
+#import "StoryDetailObjCViewController.h"
 #import "NewsBlurAppDelegate.h"
-#import "NewsBlurViewController.h"
-#import "FeedDetailViewController.h"
 #import "FontSettingsViewController.h"
 #import "UserProfileViewController.h"
 #import "ShareViewController.h"
-#import "StoryPageControl.h"
 #import "Utilities.h"
 #import "NSString+HTML.h"
 #import "NBContainerViewController.h"
@@ -26,17 +23,18 @@
 #import "StoriesCollection.h"
 #import "UIView+ViewController.h"
 #import "JNWThrottledBlock.h"
+#import "NewsBlur-Swift.h"
 
 #define iPadPro12 ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad && ([UIScreen mainScreen].bounds.size.height == 1366 || [UIScreen mainScreen].bounds.size.width == 1366))
 #define iPadPro10 ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad && ([UIScreen mainScreen].bounds.size.height == 1112 || [UIScreen mainScreen].bounds.size.width == 1112))
 
-@interface StoryDetailViewController ()
+@interface StoryDetailObjCViewController ()
 
 @property (nonatomic, strong) NSString *fullStoryHTML;
 
 @end
 
-@implementation StoryDetailViewController
+@implementation StoryDetailObjCViewController
 
 @synthesize appDelegate;
 @synthesize activeStoryId;
@@ -285,12 +283,6 @@
 
 - (void)deferredEnableScrolling {
     self.webView.scrollView.scrollEnabled = YES;
-}
-
-- (void)viewDidUnload {
-    [self setInnerView:nil];
-    
-    [super viewDidUnload];
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
@@ -617,7 +609,7 @@
     dispatch_async(dispatch_get_main_queue(), ^{
 //        NSLog(@"Drawing Story: %@", [self.activeStory objectForKey:@"story_title"]);
         [self loadHTMLString:htmlTopAndBottom];
-        [self.appDelegate.storyPageControl setTextButton:self];
+        [self.appDelegate.storyPageControl setTextButton:(StoryDetailViewController *)self];
     });
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
@@ -2500,7 +2492,7 @@
 - (void)showStoryView {
     self.inTextView = NO;
     [MBProgressHUD hideHUDForView:self.webView animated:YES];
-    [appDelegate.storyPageControl setTextButton:self];
+    [appDelegate.storyPageControl setTextButton:(StoryDetailViewController *)self];
     [self drawStory];
 }
 
@@ -2529,7 +2521,7 @@
         [self informError:@"Could not fetch text"];
     }
     self.inTextView = NO;
-    [appDelegate.storyPageControl setTextButton:self];
+    [appDelegate.storyPageControl setTextButton:(StoryDetailViewController *)self];
 }
 
 - (void)finishFetchText:(NSString *)text storyId:(NSString *)storyId {
@@ -2537,7 +2529,7 @@
         [self.appDelegate.storyPageControl hideNotifier];
         [MBProgressHUD hideHUDForView:self.webView animated:YES];
         self.inTextView = NO;
-        [appDelegate.storyPageControl setTextButton:self];
+        [appDelegate.storyPageControl setTextButton:(StoryDetailViewController *)self];
         return;
     }
     
@@ -2588,7 +2580,7 @@
         [self informError:@"Could not fetch changes"];
     }
     self.inTextView = NO;
-    [appDelegate.storyPageControl setTextButton:self];
+    [appDelegate.storyPageControl setTextButton:(StoryDetailViewController *)self];
 }
 
 - (void)finishFetchStoryChanges:(NSDictionary *)results storyId:(NSString *)storyId {
@@ -2601,7 +2593,7 @@
         [self.appDelegate.storyPageControl hideNotifier];
         [MBProgressHUD hideHUDForView:self.webView animated:YES];
         self.inTextView = NO;
-        [appDelegate.storyPageControl setTextButton:self];
+        [appDelegate.storyPageControl setTextButton:(StoryDetailViewController *)self];
         return;
     }
     

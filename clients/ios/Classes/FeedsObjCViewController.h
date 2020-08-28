@@ -1,5 +1,5 @@
 //
-//  NewsBlurViewController.h
+//  FeedsObjCViewController.h
 //  NewsBlur
 //
 //  Created by Samuel Clay on 6/16/10.
@@ -25,7 +25,7 @@ static enum {
 
 @class NewsBlurAppDelegate;
 
-@interface NewsBlurViewController : BaseViewController
+@interface FeedsObjCViewController : BaseViewController
 <UITableViewDelegate, UITableViewDataSource,
 NSCacheDelegate,
 UIPopoverControllerDelegate,

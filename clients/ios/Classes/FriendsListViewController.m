@@ -59,15 +59,6 @@
     self.preferredContentSize = self.view.frame.size;
 }
 
-- (void)viewDidUnload
-{
-    [self setFriendSearchBar:nil];
-    [self setSuggestedUserProfiles:nil];
-    [super viewDidUnload];
-    // Release any retained subviews of the main view.
-    // e.g. self.myOutlet = nil;
-}
-
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
@@ -77,13 +68,13 @@
     [self.friendSearchBar becomeFirstResponder];
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-	return YES;
-}
-
-- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
-    [self.friendsTable reloadData];
-}
+//- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+//	return YES;
+//}
+//
+//- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
+//    [self.friendsTable reloadData];
+//}
 
 - (void)doCancelButton {
     [appDelegate.modalNavigationController dismissViewControllerAnimated:YES completion:nil];

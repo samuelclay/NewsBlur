@@ -8,10 +8,9 @@
 
 #import "MarkReadMenuViewController.h"
 #import "NewsBlurAppDelegate.h"
-#import "NewsBlurViewController.h"
-#import "FeedDetailViewController.h"
 #import "StoriesCollection.h"
 #import "MenuTableViewCell.h"
+#import "NewsBlur-Swift.h"
 
 NSString * const MarkReadMenuTitle = @"title";
 NSString * const MarkReadMenuIcon = @"icon";

@@ -11,6 +11,7 @@
 #import "ABTableViewCell.h"
 #import "UIView+TKCategory.h"
 #import "Utilities.h"
+#import "NewsBlur-Swift.h"
 
 static UIFont *textFont = nil;
 static UIFont *indicatorFont = nil;

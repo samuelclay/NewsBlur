@@ -57,16 +57,16 @@
     [super viewDidLoad];
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-    // Return YES for supported orientations
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-        return YES;
-    } else if (UIInterfaceOrientationIsPortrait(interfaceOrientation)) {
-        return YES;
-    }
-    
-    return NO;
-}
+//- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+//    // Return YES for supported orientations
+//    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+//        return YES;
+//    } else if (UIInterfaceOrientationIsPortrait(interfaceOrientation)) {
+//        return YES;
+//    }
+//    
+//    return NO;
+//}
 
 - (void)viewWillAppear:(BOOL)animated {
     [self.errorLabel setHidden:YES];
