@@ -2,9 +2,10 @@ package com.newsblur.activity;
 
 import android.graphics.Paint;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.format.DateUtils;
 import android.text.util.Linkify;
-import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -17,33 +18,40 @@ import com.android.billingclient.api.BillingClientStateListener;
 import com.android.billingclient.api.BillingFlowParams;
 import com.android.billingclient.api.BillingResult;
 import com.android.billingclient.api.Purchase;
-import com.android.billingclient.api.PurchaseHistoryRecord;
-import com.android.billingclient.api.PurchaseHistoryResponseListener;
 import com.android.billingclient.api.PurchasesUpdatedListener;
 import com.android.billingclient.api.SkuDetails;
 import com.android.billingclient.api.SkuDetailsParams;
 import com.newsblur.R;
 import com.newsblur.databinding.ActivityPremiumBinding;
+import com.newsblur.network.APIManager;
+import com.newsblur.network.domain.NewsBlurResponse;
+import com.newsblur.service.NBSyncService;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.BetterLinkMovementMethod;
 import com.newsblur.util.FeedUtils;
+import com.newsblur.util.Log;
+import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.UIUtils;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.TimeZone;
 
 public class Premium extends NbActivity {
 
     private ActivityPremiumBinding binding;
     private BillingClient billingClient;
-    private final String subscriptionSku = "nb.premium.36";
     private SkuDetails subscriptionDetails;
+    private Purchase purchasedSubscription;
 
     private AcknowledgePurchaseResponseListener acknowledgePurchaseResponseListener = billingResult -> {
         if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
             Log.d(Premium.this.getLocalClassName(), "acknowledgePurchaseResponseListener OK");
-            enablePremiumAccess();
+            verifyUserSubscriptionStatus();
         } else if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.BILLING_UNAVAILABLE) {
             // Billing API version is not supported for the type requested.
             Log.d(Premium.this.getLocalClassName(), "acknowledgePurchaseResponseListener BILLING_UNAVAILABLE");
@@ -83,20 +91,8 @@ public class Premium extends NbActivity {
             if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
                 // The BillingClient is ready. You can query purchases here.
                 Log.d(Premium.this.getLocalClassName(), "onBillingSetupFinished OK");
-                retrieveSubs();
-                Purchase.PurchasesResult result = billingClient.queryPurchases(BillingClient.SkuType.SUBS);
-                for (Purchase purchase : result.getPurchasesList()) {
-                    Purchase purchase1 = purchase;
-                }
-                billingClient.queryPurchaseHistoryAsync(BillingClient.SkuType.SUBS, new PurchaseHistoryResponseListener() {
-                    @Override
-                    public void onPurchaseHistoryResponse(@NonNull BillingResult billingResult, @Nullable List<PurchaseHistoryRecord> list) {
-                        Log.d("fdsfsdfsd", "fdsfdfsdfsd");
-                        for (PurchaseHistoryRecord purchaseHistoryRecord : list) {
-                            purchaseHistoryRecord.getSku();
-                        }
-                    }
-                });
+                retrievePlayStoreSubscriptions();
+                verifyUserSubscriptionStatus();
             } else {
                 showSubscriptionDetailsError();
             }
@@ -144,10 +140,48 @@ public class Premium extends NbActivity {
         billingClient.startConnection(billingClientStateListener);
     }
 
-    private void retrieveSubs() {
+    private void verifyUserSubscriptionStatus() {
+        boolean hasNewsBlurSubscription = PrefsUtils.isPremium(this);
+        Purchase playStoreSubscription = null;
+        Purchase.PurchasesResult result = billingClient.queryPurchases(BillingClient.SkuType.SUBS);
+        if (result.getPurchasesList() != null) {
+            for (Purchase purchase : result.getPurchasesList()) {
+                if (purchase.getSku().equals(AppConstants.PREMIUM_SKU)) {
+                    playStoreSubscription = purchase;
+                }
+            }
+        }
+
+        if (hasNewsBlurSubscription || playStoreSubscription != null) {
+            binding.containerGoingPremium.setVisibility(View.GONE);
+            binding.containerGonePremium.setVisibility(View.VISIBLE);
+
+            if (playStoreSubscription != null) {
+                long expirationTimeMs = playStoreSubscription.getPurchaseTime() + DateUtils.YEAR_IN_MILLIS;
+                Date expirationDate = new Date(expirationTimeMs);
+                DateFormat dateFormat = new SimpleDateFormat("EEE, MMMM d, yyyy", Locale.getDefault());
+                dateFormat.setTimeZone(TimeZone.getDefault());
+                String renewalString;
+                if (playStoreSubscription.isAutoRenewing()) {
+                    renewalString = getString(R.string.premium_subscription_renewal, dateFormat.format(expirationDate));
+                } else {
+                    renewalString = getString(R.string.premium_subscription_expiration, dateFormat.format(expirationDate));
+                }
+                binding.textSubscriptionRenewal.setText(renewalString);
+                binding.textSubscriptionRenewal.setVisibility(View.VISIBLE);
+            }
+        }
+
+        if (!hasNewsBlurSubscription && playStoreSubscription != null) {
+            purchasedSubscription = playStoreSubscription;
+            notifyNewsBlurOfSubscription();
+        }
+    }
+
+    private void retrievePlayStoreSubscriptions() {
         List<String> skuList = new ArrayList<>(1);
         // add sub SKUs from Play Store
-        skuList.add(subscriptionSku);
+        skuList.add(AppConstants.PREMIUM_SKU);
         SkuDetailsParams.Builder params = SkuDetailsParams.newBuilder();
         params.setSkusList(skuList).setType(BillingClient.SkuType.SUBS);
         billingClient.querySkuDetailsAsync(params.build(), (billingResult, skuDetailsList) -> {
@@ -159,7 +193,7 @@ public class Premium extends NbActivity {
     private void processSkuDetailsList(@Nullable List<SkuDetails> skuDetailsList) {
         if (skuDetailsList != null) {
             for (SkuDetails skuDetails : skuDetailsList) {
-                if (skuDetails.getSku().equals(subscriptionSku)) {
+                if (skuDetails.getSku().equals(AppConstants.PREMIUM_SKU)) {
                     Log.d(Premium.this.getLocalClassName(), "Sku detail: " + skuDetails.getTitle() + " | " + skuDetails.getDescription() + " | " + skuDetails.getPrice() + " | " + skuDetails.getSku());
                     subscriptionDetails = skuDetails;
                 }
@@ -206,10 +240,13 @@ public class Premium extends NbActivity {
         billingClient.launchBillingFlow(this, billingFlowParams);
     }
 
-
     private void handlePurchase(Purchase purchase) {
         Log.d(Premium.this.getLocalClassName(), "handlePurchase: " + purchase.getOrderId());
-        if (purchase.getPurchaseState() == Purchase.PurchaseState.PURCHASED && !purchase.isAcknowledged()) {
+        purchasedSubscription = purchase;
+        if (purchase.getPurchaseState() == Purchase.PurchaseState.PURCHASED && purchase.isAcknowledged()) {
+            verifyUserSubscriptionStatus();
+        } else if (purchase.getPurchaseState() == Purchase.PurchaseState.PURCHASED && !purchase.isAcknowledged()) {
+            // need to acknowledge first time sub otherwise it will void
             Log.d(Premium.this.getLocalClassName(), "acknowledge purchase: " + purchase.getOrderId());
             AcknowledgePurchaseParams acknowledgePurchaseParams =
                     AcknowledgePurchaseParams.newBuilder()
@@ -219,7 +256,25 @@ public class Premium extends NbActivity {
         }
     }
 
-    private void enablePremiumAccess() {
-        // what now?
+    private void notifyNewsBlurOfSubscription() {
+        if (purchasedSubscription != null) {
+            APIManager apiManager = new APIManager(this);
+            new AsyncTask<Void, Void, NewsBlurResponse>() {
+                @Override
+                protected NewsBlurResponse doInBackground(Void... voids) {
+                    return apiManager.saveReceipt(purchasedSubscription.getOrderId(), purchasedSubscription.getSku());
+                }
+
+                @Override
+                protected void onPostExecute(NewsBlurResponse result) {
+                    super.onPostExecute(result);
+                    if (!result.isError()) {
+                        NBSyncService.forceFeedsFolders();
+                        triggerSync();
+                    }
+                    finish();
+                }
+            }.execute();
+        }
     }
 }
