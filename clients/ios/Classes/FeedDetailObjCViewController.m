@@ -64,7 +64,6 @@
 @synthesize searchBar;
 @synthesize isOnline;
 @synthesize isShowingFetching;
-@synthesize isDashboardModule;
 @synthesize storiesCollection;
 @synthesize showImagePreview;
 @synthesize invalidateFontCache;
@@ -79,6 +78,8 @@
  
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    self.appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
     
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(preferredContentSizeChanged:)
@@ -415,8 +416,7 @@
     [self.notifier setNeedsLayout];
     [appDelegate hideShareView:YES];
     
-    if (!isDashboardModule &&
-        !self.isPhoneOrCompact &&
+    if (!self.isPhoneOrCompact &&
         (appDelegate.masterContainerViewController.storyTitlesOnLeft ||
          !UIInterfaceOrientationIsPortrait(orientation)) &&
         !self.isMovingFromParentViewController &&
@@ -424,7 +424,7 @@
         [appDelegate.masterContainerViewController transitionToFeedDetail:NO];
     }
     
-    if (!isDashboardModule && !storiesCollection.inSearch && storiesCollection.feedPage == 1) {
+    if (!!storiesCollection.inSearch && storiesCollection.feedPage == 1) {
         [self.storyTitlesTable setContentOffset:CGPointMake(0, CGRectGetHeight(self.searchBar.frame))];
     }
     if (storiesCollection.inSearch && storiesCollection.searchQuery) {
@@ -476,8 +476,7 @@
     }
     
     self.finishedAnimatingIn = YES;
-    if ([storiesCollection.activeFeedStories count] ||
-        self.isDashboardModule) {
+    if ([storiesCollection.activeFeedStories count]) {
         [self.storyTitlesTable reloadData];
     }
     
@@ -636,9 +635,8 @@
     [storiesCollection setStories:nil];
     [storiesCollection setFeedUserProfiles:nil];
     storiesCollection.storyCount = 0;
-    if (!self.isDashboardModule) {
-        [appDelegate.storyPageControl resetPages];
-    }
+    [appDelegate.storyPageControl resetPages];
+    
     storiesCollection.inSearch = NO;
     storiesCollection.searchQuery = nil;
     storiesCollection.savedSearchQuery = nil;
@@ -674,7 +672,7 @@
 }
 
 - (void)beginOfflineTimer {
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (self.isDashboardModule ? 3 : 1) * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
         if (!self.storiesCollection.storyLocationsCount && !self.pageFinished &&
             self.storiesCollection.feedPage == 1 && self.isOnline) {
             self.isShowingFetching = YES;
@@ -706,13 +704,8 @@
                 image = [image imageByScalingAndCroppingForSize:maxImageSize];
                 [self.appDelegate.cachedStoryImages setObject:image
                                                   forKey:storyImageUrl];
-                if (self.isDashboardModule) {
-                    [self.appDelegate.dashboardViewController.storiesModule
-                     showStoryImage:storyImageUrl];
-                } else {
-                    [self.appDelegate.feedDetailViewController
-                     showStoryImage:storyImageUrl];
-                }
+                [self.appDelegate.feedDetailViewController
+                    showStoryImage:storyImageUrl];
             } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
                 
             }];
@@ -725,16 +718,10 @@
 
 - (void)showStoryImage:(NSString *)imageUrl {
     dispatch_async(dispatch_get_main_queue(), ^{
-        if (self.isDashboardModule &&
-            self.appDelegate.navigationController.visibleViewController == self.appDelegate.feedDetailViewController) {
-            return;
-        }
-        
         for (FeedDetailTableCell *cell in [self.storyTitlesTable visibleCells]) {
             if (![cell isKindOfClass:[FeedDetailTableCell class]]) return;
             if ([cell.storyImageUrl isEqualToString:imageUrl]) {
                 NSIndexPath *indexPath = [self.storyTitlesTable indexPathForCell:cell];
-//                NSLog(@"Reloading cell (dashboard? %d): %@ (%ld)", self.isDashboardModule, cell.storyTitle, (long)indexPath.row);
                 [self.storyTitlesTable beginUpdates];
                 [self.storyTitlesTable reloadRowsAtIndexPaths:@[indexPath]
                                              withRowAnimation:UITableViewRowAnimationNone];
@@ -791,7 +778,7 @@
             }];
         });
     }
-    if (!isDashboardModule && !storiesCollection.inSearch && storiesCollection.feedPage == 1) {
+    if (!!storiesCollection.inSearch && storiesCollection.feedPage == 1) {
         [self.storyTitlesTable setContentOffset:CGPointMake(0, CGRectGetHeight(self.searchBar.frame))];
     }
     
@@ -982,7 +969,7 @@
 
     }
     
-    if (!isDashboardModule && !storiesCollection.inSearch && storiesCollection.feedPage == 1) {
+    if (!!storiesCollection.inSearch && storiesCollection.feedPage == 1) {
         [self.storyTitlesTable setContentOffset:CGPointMake(0, CGRectGetHeight(self.searchBar.frame))];
     }
     if (storiesCollection.feedPage == 1) {
@@ -1190,7 +1177,7 @@
     self.pageFinished = NO;
     [self renderStories:confirmedNewStories];
     
-    if (!self.isPhoneOrCompact && !self.isDashboardModule) {
+    if (!self.isPhoneOrCompact) {
         [appDelegate.storyPageControl resizeScrollView];
         [appDelegate.storyPageControl setStoryFromScroll:YES];
     }
@@ -1316,8 +1303,7 @@
 }
 
 - (void)testForTryFeed {
-    if (self.isDashboardModule ||
-        !appDelegate.inFindingStoryMode ||
+    if (!appDelegate.inFindingStoryMode ||
         !appDelegate.tryFeedStoryId) return;
     
     if (!self.view.window) {
@@ -1547,8 +1533,6 @@
         feed = [appDelegate.dictFeeds objectForKey:feedIdStr];
     }
     
-    cell.inDashboard = self.isDashboardModule;
-    
     NSString *siteTitle = [feed objectForKey:@"feed_title"];
     cell.siteTitle = siteTitle; 
 
@@ -1572,7 +1556,7 @@
     }
     
     cell.storyContent = nil;
-    if (self.isDashboardModule || self.textSize != FeedDetailTextSizeTitleOnly) {
+    if (self.textSize != FeedDetailTextSizeTitleOnly) {
         NSString *content = [[[[story objectForKey:@"story_content"] convertHTML] stringByDecodingXMLEntities] stringByDecodingHTMLEntities];
         if ([content length] > 500) {
             content = [content substringToIndex:500];
@@ -1617,7 +1601,6 @@
     
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
     if (!self.isPhoneOrCompact &&
-        !self.isDashboardModule &&
         !appDelegate.masterContainerViewController.storyTitlesOnLeft &&
         UIInterfaceOrientationIsPortrait(orientation)) {
         cell.isShort = YES;
@@ -1632,7 +1615,7 @@
         cell.isRiverOrSocial = YES;
     }
 
-    if (!self.isPhoneOrCompact && !self.isDashboardModule) {
+    if (!self.isPhoneOrCompact) {
         NSInteger rowIndex = [storiesCollection locationOfActiveStory];
         if (rowIndex == indexPath.row) {
             [self tableView:tableView selectRowAtIndexPath:indexPath animated:NO];
@@ -1732,27 +1715,16 @@
         
         [self tableView:tableView redisplayCellAtIndexPath:indexPath];
         
-        if (self.isDashboardModule) {
-            NSInteger storyIndex = [storiesCollection indexFromLocation:indexPath.row];
-            NSDictionary *activeStory = [[storiesCollection activeFeedStories] objectAtIndex:storyIndex];
-            appDelegate.activeStory = activeStory;
-            [appDelegate openDashboardRiverForStory:[activeStory objectForKey:@"story_hash"] showFindingStory:NO];
-            
-        } else {
-            FeedDetailTableCell *cell = (FeedDetailTableCell*) [tableView cellForRowAtIndexPath:indexPath];
-            NSInteger storyIndex = [storiesCollection indexFromLocation:indexPath.row];
-            NSDictionary *story = [[storiesCollection activeFeedStories] objectAtIndex:storyIndex];
-            if (!self.isPhoneOrCompact &&
-                appDelegate.activeStory &&
-                [[story objectForKey:@"story_hash"]
-                 isEqualToString:[appDelegate.activeStory objectForKey:@"story_hash"]]) {
-                return;
-            }
-            [self loadStory:cell atRow:indexPath.row];
+        FeedDetailTableCell *cell = (FeedDetailTableCell*) [tableView cellForRowAtIndexPath:indexPath];
+        NSInteger storyIndex = [storiesCollection indexFromLocation:indexPath.row];
+        NSDictionary *story = [[storiesCollection activeFeedStories] objectAtIndex:storyIndex];
+        if (!self.isPhoneOrCompact &&
+            appDelegate.activeStory &&
+            [[story objectForKey:@"story_hash"]
+             isEqualToString:[appDelegate.activeStory objectForKey:@"story_hash"]]) {
+            return;
         }
-        if (!self.isPhoneOrCompact) {
-            [appDelegate.dashboardViewController.storiesModule.view endEditing:YES];
-        }
+        [self loadStory:cell atRow:indexPath.row];
     } else if (indexPath.row == storiesCollection.storyLocationsCount) {
         if (!appDelegate.isPremium && storiesCollection.isRiverView) {
             [appDelegate showPremiumDialog];
@@ -1806,7 +1778,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
         UIFont *font = [UIFont fontWithDescriptor:fontDescriptor size:0.0];
         if ([self isShortTitles] && self.textSize != FeedDetailTextSizeTitleOnly) {
             return height + font.pointSize * 3.25;
-        } else if (self.isDashboardModule || self.textSize != FeedDetailTextSizeTitleOnly) {
+        } else if (self.textSize != FeedDetailTextSizeTitleOnly) {
             if (self.textSize == FeedDetailTextSizeMedium || self.textSize == FeedDetailTextSizeLong) {
                 NSDictionary *story = [self getStoryAtRow:indexPath.row];
                 NSString *content = [story[@"story_content"] convertHTML];
@@ -1866,8 +1838,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     
     return !self.isPhoneOrCompact &&
         !appDelegate.masterContainerViewController.storyTitlesOnLeft &&
-        UIInterfaceOrientationIsPortrait(orientation) &&
-        !self.isDashboardModule;
+        UIInterfaceOrientationIsPortrait(orientation);
 }
 
 - (BOOL)isMarkReadOnScroll {
@@ -1921,11 +1892,6 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
                     NSLog(@" --> Reloading indexPath: %@", reloadIndexPath);
                     [self.storyTitlesTable reloadRowsAtIndexPaths:@[reloadIndexPath]
                                                  withRowAnimation:UITableViewRowAnimationFade];
-                    
-                    if (self.isDashboardModule) {
-                        id feedId = [story objectForKey:@"story_feed_id"];
-                        [appDelegate refreshFeedCount:feedId];
-                    }
                 }
             }
             
@@ -1994,9 +1960,6 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         [storiesCollection toggleStoryUnread:story];
         [self.storyTitlesTable reloadRowsAtIndexPaths:@[indexPath]
                                      withRowAnimation:UITableViewRowAnimationFade];
-        if (self.isDashboardModule) {
-            [appDelegate refreshFeedCount:[story objectForKey:@"story_feed_id"]];
-        }
     }
 }
 
@@ -2120,10 +2083,10 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     
     void (^pop)(void) = ^{
         if (!self.isPhoneOrCompact) {
-            [self.appDelegate.navigationController popToRootViewControllerAnimated:YES];
+            [self.appDelegate.feedsNavigationController popToRootViewControllerAnimated:YES];
             [self.appDelegate.masterContainerViewController transitionFromFeedDetail];
         } else {
-            [self.appDelegate.navigationController popToViewController:[self.appDelegate.navigationController.viewControllers objectAtIndex:0] animated:YES];
+            [self.appDelegate.feedsNavigationController popToViewController:[self.appDelegate.feedsNavigationController.viewControllers objectAtIndex:0] animated:YES];
         }
     };
     
@@ -2469,8 +2432,8 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 
     [self.appDelegate POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self.appDelegate reloadFeedsView:YES];
-        [self.appDelegate.navigationController
-         popToViewController:[self.appDelegate.navigationController.viewControllers
+        [self.appDelegate.feedsNavigationController
+         popToViewController:[self.appDelegate.feedsNavigationController.viewControllers
                               objectAtIndex:0]
          animated:YES];
         [MBProgressHUD hideHUDForView:self.view animated:YES];
@@ -2495,8 +2458,8 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     
     [appDelegate POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self.appDelegate reloadFeedsView:YES];
-        [self.appDelegate.navigationController
-         popToViewController:[self.appDelegate.navigationController.viewControllers
+        [self.appDelegate.feedsNavigationController
+         popToViewController:[self.appDelegate.feedsNavigationController.viewControllers
                               objectAtIndex:0]
          animated:YES];
         [MBProgressHUD hideHUDForView:self.view animated:YES];
@@ -2524,7 +2487,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     [params setObject:activeIdentifiers forKey:@"approved_feeds"];
     [appDelegate POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self.appDelegate reloadFeedsView:YES];
-        [self.appDelegate.navigationController popToViewController:[self.appDelegate.navigationController.viewControllers objectAtIndex:0]
+        [self.appDelegate.feedsNavigationController popToViewController:[self.appDelegate.feedsNavigationController.viewControllers objectAtIndex:0]
                                                           animated:YES];
         [MBProgressHUD hideHUDForView:self.view animated:YES];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {

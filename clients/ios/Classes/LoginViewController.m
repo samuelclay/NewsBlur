@@ -43,7 +43,9 @@
     
     }
 
-- (void)viewDidLoad {        
+- (void)viewDidLoad {
+    self.appDelegate = NewsBlurAppDelegate.sharedAppDelegate;
+    
     self.usernameInput.borderStyle = UITextBorderStyleRoundedRect;
     self.passwordInput.borderStyle = UITextBorderStyleRoundedRect;
     self.emailInput.borderStyle = UITextBorderStyleRoundedRect;

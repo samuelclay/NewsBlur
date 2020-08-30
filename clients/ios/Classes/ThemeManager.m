@@ -286,9 +286,9 @@ NSString * const ThemeStyleDark = @"dark";
     
     [UINavigationBar appearance].barStyle = style;
     [UINavigationBar appearance].translucent = YES;
-    self.appDelegate.navigationController.navigationBar.barStyle = style;
+    self.appDelegate.feedsNavigationController.navigationBar.barStyle = style;
     
-    [self.appDelegate.navigationController setNeedsStatusBarAppearanceUpdate];
+    [self.appDelegate.feedsNavigationController setNeedsStatusBarAppearanceUpdate];
 }
 
 - (void)updateTheme {

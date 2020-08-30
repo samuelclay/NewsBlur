@@ -36,6 +36,8 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    self.appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
+    
     self.menuTableView.backgroundColor = UIColorFromRGB(0xECEEEA);
     self.menuTableView.separatorColor = UIColorFromRGB(0x909090);
 }
@@ -431,8 +433,8 @@
     
     [self.appDelegate POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self.appDelegate reloadFeedsView:YES];
-        [self.appDelegate.navigationController
-         popToViewController:[self.appDelegate.navigationController.viewControllers
+        [self.appDelegate.feedsNavigationController
+         popToViewController:[self.appDelegate.feedsNavigationController.viewControllers
                               objectAtIndex:0]
          animated:YES];
         [MBProgressHUD hideHUDForView:self.view animated:YES];

@@ -32,6 +32,7 @@
 @class FirstTimeUserAddNewsBlurViewController;
 @class FriendsListViewController;
 @class FontSettingsViewController;
+@class DetailViewController;
 @class StoryDetailViewController;
 @class StoryPageDelegate;
 @class ShareViewController;
@@ -59,7 +60,7 @@
 SFSafariViewControllerDelegate>  {
     EventWindow *window;
     UINavigationController *ftuxNavigationController;
-    UINavigationController *navigationController;
+    UINavigationController *feedsNavigationController;
     UINavigationController *modalNavigationController;
     UINavigationController *shareNavigationController;
     UINavigationController *userProfileNavigationController;
@@ -160,8 +161,11 @@ SFSafariViewControllerDelegate>  {
 }
 
 @property (nonatomic) IBOutlet EventWindow *window;
+@property (nonatomic) UISplitViewController *splitViewController;
 @property (nonatomic) IBOutlet UINavigationController *ftuxNavigationController;
-@property (nonatomic) IBOutlet UINavigationController *navigationController;
+@property (nonatomic) IBOutlet UINavigationController *feedsNavigationController;
+@property (nonatomic) IBOutlet UINavigationController *feedDetailNavigationController;
+@property (nonatomic) IBOutlet UINavigationController *detailNavigationController;
 @property (nonatomic) UINavigationController *modalNavigationController;
 @property (nonatomic) UINavigationController *shareNavigationController;
 @property (nonatomic) UINavigationController *trainNavigationController;
@@ -176,6 +180,7 @@ SFSafariViewControllerDelegate>  {
 @property (nonatomic) IBOutlet FeedDetailViewController *feedDetailViewController;
 @property (nonatomic, strong) UINavigationController *feedDetailMenuNavigationController;
 @property (nonatomic) IBOutlet FriendsListViewController *friendsListViewController;
+@property (nonatomic) IBOutlet DetailViewController *detailViewController;
 @property (nonatomic) IBOutlet StoryDetailViewController *storyDetailViewController;
 @property (nonatomic) IBOutlet StoryPageDelegate *storyPageControl;
 @property (nonatomic) IBOutlet LoginViewController *loginViewController;
@@ -430,6 +435,7 @@ SFSafariViewControllerDelegate>  {
 - (void)showMarkReadMenuWithFeedIds:(NSArray *)feedIds collectionTitle:(NSString *)collectionTitle sourceView:(UIView *)sourceView sourceRect:(CGRect)sourceRect completionHandler:(void (^)(BOOL marked))completionHandler;
 - (void)showMarkOlderNewerReadMenuWithStoriesCollection:(StoriesCollection *)olderNewerCollection story:(NSDictionary *)olderNewerStory sourceView:(UIView *)sourceView sourceRect:(CGRect)sourceRect extraItems:(NSArray *)extraItems completionHandler:(void (^)(BOOL marked))completionHandler;
 
+- (void)showPopoverWithViewController:(UIViewController *)viewController contentSize:(CGSize)contentSize sender:(id)sender;
 - (void)showPopoverWithViewController:(UIViewController *)viewController contentSize:(CGSize)contentSize barButtonItem:(UIBarButtonItem *)barButtonItem;
 - (void)showPopoverWithViewController:(UIViewController *)viewController contentSize:(CGSize)contentSize sourceView:(UIView *)sourceView sourceRect:(CGRect)sourceRect;
 - (void)showPopoverWithViewController:(UIViewController *)viewController contentSize:(CGSize)contentSize sourceView:(UIView *)sourceView sourceRect:(CGRect)sourceRect permittedArrowDirections:(UIPopoverArrowDirection)permittedArrowDirections;

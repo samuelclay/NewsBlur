@@ -42,7 +42,6 @@ static UIFont *indicatorFont = nil;
 @synthesize feedColorBar;
 @synthesize feedColorBarTopBorder;
 @synthesize hasAlpha;
-@synthesize inDashboard;
 
 
 #define leftMargin 30
@@ -119,11 +118,8 @@ static UIFont *indicatorFont = nil;
     }
     
     appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
-    if (inDashboard) {
-        [self setDelegate:(FeedDetailViewController <MCSwipeTableViewCellDelegate> *)appDelegate.dashboardViewController.storiesModule];
-    } else {
-        [self setDelegate:(FeedDetailViewController <MCSwipeTableViewCellDelegate> *)appDelegate.feedDetailViewController];
-    }
+    [self setDelegate:(FeedDetailViewController <MCSwipeTableViewCellDelegate> *)appDelegate.feedDetailViewController];
+    
     [self setFirstStateIconName:@"clock.png"
                      firstColor:shareColor
             secondStateIconName:nil
@@ -319,9 +315,6 @@ static UIFont *indicatorFont = nil;
     
     if (cell.storyContent) {
         int storyContentWidth = rect.size.width;
-        if (cell.inDashboard) {
-            storyContentWidth -= leftMargin*2;
-        }
         CGFloat boundingRows = cell.isShort ? 1.5 : 3;
         
         if (!cell.isShort && (self.cell.textSize == FeedDetailTextSizeMedium || self.cell.textSize == FeedDetailTextSizeLong)) {

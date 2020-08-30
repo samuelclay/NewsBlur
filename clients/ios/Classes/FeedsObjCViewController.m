@@ -109,6 +109,8 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    self.appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
+    
     self.rowHeights = [NSMutableDictionary dictionary];
     
     self.refreshControl = [UIRefreshControl new];
@@ -180,8 +182,8 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     self.notifier = [[NBNotifier alloc] initWithTitle:@"Fetching stories..."
                                            withOffset:CGPointMake(0, 0)];
     [self.view insertSubview:self.notifier belowSubview:self.feedViewToolbar];
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.notifier attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeWidth multiplier:1.0 constant:0]];
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.notifier attribute:NSLayoutAttributeLeading relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeLeading multiplier:1.0 constant:0]];
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.notifier attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self.innerView attribute:NSLayoutAttributeWidth multiplier:1.0 constant:0]];
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.notifier attribute:NSLayoutAttributeLeading relatedBy:NSLayoutRelationEqual toItem:self.innerView attribute:NSLayoutAttributeLeading multiplier:1.0 constant:0]];
     [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.notifier attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:NOTIFIER_HEIGHT]];
     self.notifier.topOffsetConstraint = [NSLayoutConstraint constraintWithItem:self.notifier attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.feedViewToolbar attribute:NSLayoutAttributeTop multiplier:1.0 constant:0];
     [self.view addConstraint:self.notifier.topOffsetConstraint];
@@ -293,11 +295,11 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 //    NSLog(@"back gesture: %d, %f - %f/%f", (int)gesture.state, percentage, point.x, viewWidth);
     
     if (gesture.state == UIGestureRecognizerStateBegan) {
-        if (appDelegate.storiesCollection.transferredFromDashboard) {
-            [appDelegate.dashboardViewController.storiesModule.storiesCollection
-             transferStoriesFromCollection:appDelegate.storiesCollection];
-            [appDelegate.dashboardViewController.storiesModule fadeSelectedCell:NO];
-        }
+//        if (appDelegate.storiesCollection.transferredFromDashboard) {
+//            [appDelegate.dashboardViewController.storiesModule.storiesCollection
+//             transferStoriesFromCollection:appDelegate.storiesCollection];
+//            [appDelegate.dashboardViewController.storiesModule fadeSelectedCell:NO];
+//        }
     } else if (gesture.state == UIGestureRecognizerStateChanged) {
         [appDelegate.masterContainerViewController interactiveTransitionFromFeedDetail:percentage];
     } else if (gesture.state == UIGestureRecognizerStateEnded) {
@@ -314,7 +316,10 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 }
 
 - (void)fadeSelectedCell {
-    NSIndexPath *indexPath = [self.feedTitlesTable indexPathForSelectedRow];
+    [self fadeCellWithIndexPath:[self.feedTitlesTable indexPathForSelectedRow]];
+}
+
+- (void)fadeCellWithIndexPath:(NSIndexPath *)indexPath {
     if (!indexPath) return;
     [self tableView:self.feedTitlesTable deselectRowAtIndexPath:indexPath animated:YES];
     
@@ -398,15 +403,15 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 //    }
 //    self.innerView.frame = (CGRect){CGPointZero, CGSizeMake(CGRectGetWidth(self.view.frame), CGRectGetMinY(self.feedViewToolbar.frame))};
     
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad && !appDelegate.isCompactWidth) {
-        CGRect navFrame = appDelegate.navigationController.view.frame;
-        CGFloat limit = appDelegate.masterContainerViewController.rightBorder.frame.origin.x + 1;
-        
-        if (navFrame.size.width > limit) {
-            navFrame.size.width = limit;
-            appDelegate.navigationController.view.frame = navFrame;
-        }
-    }
+//    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad && !appDelegate.isCompactWidth) {
+//        CGRect navFrame = appDelegate.navigationController.view.frame;
+//        CGFloat limit = appDelegate.masterContainerViewController.rightBorder.frame.origin.x + 1;
+//
+//        if (navFrame.size.width > limit) {
+//            navFrame.size.width = limit;
+//            appDelegate.navigationController.view.frame = navFrame;
+//        }
+//    }
     
     self.notifier.offset = CGPointMake(0, 0);
     
@@ -530,9 +535,6 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
         self.isOffline = YES;
         [self showOfflineNotifier];
         
-        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-            [appDelegate.dashboardViewController refreshStories];
-        }
         return;
     }
 
@@ -542,10 +544,6 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     [self informError:error];
     
     self.isOffline = YES;
-
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-        [appDelegate.dashboardViewController refreshStories];
-    }
 
     [self showOfflineNotifier];
     [self loadNotificationStory];
@@ -645,23 +643,18 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 //    settingsButton.accessibilityLabel = @"Settings";
 //    [settingsBarButton setCustomView:settingsButton];
     
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
-        UIImage *activityImage = [UIImage imageNamed:@"nav_icn_activity_hover.png"];
-        NBBarButtonItem *activityButton = [NBBarButtonItem buttonWithType:UIButtonTypeCustom];
-        activityButton.accessibilityLabel = @"Activities";
-        [activityButton setImage:activityImage forState:UIControlStateNormal];
-//        [activityButton sizeToFit];
-//        [activityButton setContentEdgeInsets:UIEdgeInsetsMake(0, -6, -0, -6)];
-//        [activityButton setFrame:CGRectInset(activityButton.frame, 0, -6)];
-        [activityButton setImageEdgeInsets:UIEdgeInsetsMake(4, 4, 4, 4)];
-        [activityButton addTarget:self
-                           action:@selector(showInteractionsPopover:)
-                 forControlEvents:UIControlEventTouchUpInside];
-        activitiesButton = [[UIBarButtonItem alloc]
-                            initWithCustomView:activityButton];
-        activitiesButton.width = 32;
-        self.navigationItem.rightBarButtonItem = activitiesButton;
-    }
+    UIImage *activityImage = [UIImage imageNamed:@"nav_icn_activity_hover.png"];
+    NBBarButtonItem *activityButton = [NBBarButtonItem buttonWithType:UIButtonTypeCustom];
+    activityButton.accessibilityLabel = @"Activities";
+    [activityButton setImage:activityImage forState:UIControlStateNormal];
+    [activityButton setImageEdgeInsets:UIEdgeInsetsMake(4, 4, 4, 4)];
+    [activityButton addTarget:self
+                       action:@selector(showInteractionsPopover:)
+             forControlEvents:UIControlEventTouchUpInside];
+    activitiesButton = [[UIBarButtonItem alloc]
+                        initWithCustomView:activityButton];
+    activitiesButton.width = 32;
+    self.navigationItem.rightBarButtonItem = activitiesButton;
     
     NSMutableDictionary *sortedFolders = [[NSMutableDictionary alloc] init];
     NSArray *sortedArray;
@@ -837,7 +830,6 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     [appDelegate checkForFeedNotifications];
 
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad && finished) {
-        [appDelegate.dashboardViewController refreshStories];
         [self cacheFeedRowLocations];
     }
     [self loadNotificationStory];
@@ -911,6 +903,8 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     dispatch_async(dispatch_get_main_queue(), ^{
         if (self.appDelegate.tryFeedFeedId && !self.appDelegate.isTryFeedView) {
             [self.appDelegate loadFeed:self.appDelegate.tryFeedFeedId withStory:self.appDelegate.tryFeedStoryId animated:NO];
+        } else if (!self.appDelegate.isCompactWidth) {
+            [self.appDelegate loadRiverFeedDetailView:self.appDelegate.feedDetailViewController withFolder:@"everything"];
         }
     });
 }
@@ -926,12 +920,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 - (IBAction)tapAddSite:(id)sender {
     [self.appDelegate.addSiteNavigationController popToRootViewControllerAnimated:NO];
     
-//    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
     [self.appDelegate showPopoverWithViewController:self.appDelegate.addSiteNavigationController contentSize:CGSizeMake(320, 96) barButtonItem:self.addBarButton];
-//        [self.appDelegate showPopoverWithViewController:self.appDelegate.addSiteNavigationController contentSize:CGSizeMake(320, 96) sourceView:self.addBarButton sourceRect:CGRectMake(35.0, 0.0, 0.0, 0.0) permittedArrowDirections:UIPopoverArrowDirectionDown];
-//    } else {
-//        [self.appDelegate showPopoverWithViewController:self.appDelegate.addSiteNavigationController contentSize:CGSizeMake(320, 96) barButtonItem:self.addBarButton];
-//    }
     
     [self.appDelegate.addSiteViewController reload];
 }
@@ -1035,11 +1024,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 }
 
 - (void)settingsViewControllerDidEnd:(IASKAppSettingsViewController*)sender {
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-        [appDelegate.masterContainerViewController dismissViewControllerAnimated:YES completion:nil];
-    } else {
-        [appDelegate.navigationController dismissViewControllerAnimated:YES completion:nil];
-    }
+    [appDelegate.feedsNavigationController dismissViewControllerAnimated:YES completion:nil];
     
     [self resizeFontSize];
     [self resetupGestures];
@@ -1049,9 +1034,6 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     [self reloadFeedTitlesTable];
     
     [appDelegate.feedDetailViewController reloadData];
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-        [appDelegate.dashboardViewController.storiesModule reloadData];
-    }
 }
 
 - (void)resizeFontSize {
@@ -1060,9 +1042,6 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     
     appDelegate.feedDetailViewController.invalidateFontCache = YES;
     [appDelegate.feedDetailViewController reloadData];
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-        [appDelegate.dashboardViewController.storiesModule reloadData];
-    }
 }
 
 - (void)updateTheme {
@@ -1143,9 +1122,6 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     } else if ([identifier isEqual:@"theme_style"]) {
         [self updateThemeStyle];
     } else if ([identifier isEqual:@"story_list_preview_images_size"]) {
-        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-            [appDelegate.dashboardViewController.storiesModule reloadData];
-        }
     }
     
     [appDelegate setHiddenPreferencesAnimated:YES];
@@ -1341,11 +1317,11 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
         return;
     }
     
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-        [appDelegate.dashboardViewController.storiesModule.view endEditing:YES];
-    }
-
     [appDelegate.storiesCollection reset];
+    
+    if (self.currentRowAtIndexPath != nil && self.currentRowAtIndexPath != indexPath) {
+        [self fadeCellWithIndexPath:self.currentRowAtIndexPath];
+    }
     
     // set the current row pointer
     self.currentRowAtIndexPath = indexPath;
@@ -1547,8 +1523,8 @@ heightForHeaderInSection:(NSInteger)section {
 }
 
 - (void)didSelectSectionHeaderWithTag:(NSInteger)tag {
-    if (self.appDelegate.inFeedDetail) {
-        return;
+    if (self.currentRowAtIndexPath != nil) {
+        [self fadeCellWithIndexPath:self.currentRowAtIndexPath];
     }
     
     // reset pointer to the cells
@@ -1560,10 +1536,6 @@ heightForHeaderInSection:(NSInteger)section {
         folder = NewsBlurTopSectionNames[tag];
     } else {
         folder = [NSString stringWithFormat:@"%ld", (long)tag];
-    }
-    
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-        [appDelegate.dashboardViewController.storiesModule.view endEditing:YES];
     }
     
     [appDelegate loadRiverFeedDetailView:appDelegate.feedDetailViewController withFolder:folder];
@@ -1909,15 +1881,15 @@ heightForHeaderInSection:(NSInteger)section {
 	[hud hide:YES afterDelay:0.5];
     [self showExplainerOnEmptyFeedlist];
     
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-        FeedDetailViewController *storiesModule = self.appDelegate.dashboardViewController.storiesModule;
-        
-        storiesModule.storiesCollection.feedPage = 0;
-        storiesModule.storiesCollection.storyCount = 0;
-        storiesModule.pageFinished = NO;
-        [storiesModule.storiesCollection calculateStoryLocations];
-        [storiesModule reloadData];
-    }
+//    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+//        FeedDetailViewController *storiesModule = self.appDelegate.dashboardViewController.storiesModule;
+//
+//        storiesModule.storiesCollection.feedPage = 0;
+//        storiesModule.storiesCollection.storyCount = 0;
+//        storiesModule.pageFinished = NO;
+//        [storiesModule.storiesCollection calculateStoryLocations];
+//        [storiesModule reloadData];
+//    }
 }
 
 - (void)showExplainerOnEmptyFeedlist {
@@ -2361,10 +2333,7 @@ heightForHeaderInSection:(NSInteger)section {
                                target:nil
                                action:nil];
     spacer.width = -8;
-    self.navigationItem.leftBarButtonItems = [NSArray arrayWithObjects:
-                                              spacer,
-                                              userAvatarButton,
-                                              userInfoBarButton, nil];
+    self.navigationItem.leftBarButtonItems = @[spacer, userAvatarButton, userInfoBarButton];
 }
 
 - (void)refreshHeaderCounts {

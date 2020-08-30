@@ -68,6 +68,8 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    self.appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
+    
     self.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     
     AVAudioSession *audioSession = [AVAudioSession sharedInstance];
@@ -289,9 +291,9 @@
     [super viewDidDisappear:animated];
     
     if (!appDelegate.showingSafariViewController &&
-        appDelegate.navigationController.visibleViewController != (UIViewController *)appDelegate.shareViewController &&
-        appDelegate.navigationController.visibleViewController != (UIViewController *)appDelegate.trainerViewController &&
-        appDelegate.navigationController.visibleViewController != (UIViewController *)appDelegate.originalStoryViewController) {
+        appDelegate.feedsNavigationController.visibleViewController != (UIViewController *)appDelegate.shareViewController &&
+        appDelegate.feedsNavigationController.visibleViewController != (UIViewController *)appDelegate.trainerViewController &&
+        appDelegate.feedsNavigationController.visibleViewController != (UIViewController *)appDelegate.originalStoryViewController) {
         [self clearStory];
     }
 }

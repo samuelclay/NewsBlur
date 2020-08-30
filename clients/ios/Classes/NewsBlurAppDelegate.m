@@ -85,7 +85,7 @@
 @synthesize window;
 
 @synthesize ftuxNavigationController;
-@synthesize navigationController;
+@synthesize feedsNavigationController;
 @synthesize modalNavigationController;
 @synthesize shareNavigationController;
 @synthesize trainNavigationController;
@@ -196,21 +196,20 @@
 }
 
 - (BOOL)application:(UIApplication *)application willFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    #warning CATALYST hack
-    return YES;
-    
-    
     [self registerDefaultsFromSettingsBundle];
     
-    self.navigationController.delegate = self;
-    self.navigationController.viewControllers = [NSArray arrayWithObject:self.feedsViewController];
+    // CATALYST: this is now handled by the storyboard.
+//    self.navigationController.delegate = self;
+//    self.navigationController.viewControllers = [NSArray arrayWithObject:self.feedsViewController];
     self.storiesCollection = [StoriesCollection new];
     
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-        self.window.rootViewController = self.masterContainerViewController;
-    } else {
-        self.window.rootViewController = self.navigationController;
-    }
+//    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+//        self.window.rootViewController = self.masterContainerViewController;
+//    } else {
+//        self.window.rootViewController = self.navigationController;
+//    }
+    
+    [self prepareViewControllers];
     
     [self clearNetworkManager];
     
@@ -334,7 +333,7 @@
     NSString *identifier = identifierComponents.lastObject;
     
     if ([identifier isEqualToString:@"MainNavigation"]) {
-        return self.navigationController;
+        return self.feedsNavigationController;
     } else if ([identifier isEqualToString:@"FeedsView"]) {
         return self.feedsViewController;
     } else if ([identifier isEqualToString:@"FeedDetailView"]) {
@@ -372,13 +371,13 @@
     } else if ([type startsWith:prefix]) {
         type = [type substringFromIndex:[prefix length]];
         if ([type isEqualToString:@"AddFeed"]) {
-            [self.navigationController popToRootViewControllerAnimated:NO];
+            [self.feedsNavigationController popToRootViewControllerAnimated:NO];
             [self performSelector:@selector(delayedAddSite) withObject:nil afterDelay:0.0];
         } else if ([type isEqualToString:@"AllStories"]) {
-            [self.navigationController popToRootViewControllerAnimated:NO];
+            [self.feedsNavigationController popToRootViewControllerAnimated:NO];
             [self.feedsViewController didSelectSectionHeaderWithTag:2];
         } else if ([type isEqualToString:@"Search"]) {
-            [self.navigationController popToRootViewControllerAnimated:NO];
+            [self.feedsNavigationController popToRootViewControllerAnimated:NO];
             [self.feedsViewController didSelectSectionHeaderWithTag:2];
             self.feedDetailViewController.storiesCollection.searchQuery = @"";
             self.feedDetailViewController.storiesCollection.savedSearchQuery = nil;
@@ -708,9 +707,9 @@
     newUserProfile.navigationItem.backBarButtonItem.title = self.activeUserProfileName;
     [newUserProfile getUserProfile];
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-        [self.masterContainerViewController showUserProfilePopover:sender];
+        [self showPopoverWithViewController:self.userProfileNavigationController contentSize:CGSizeMake(320, 454) sender:sender];
     } else {
-        [self.navigationController presentViewController:navController animated:YES completion:nil];
+        [self.feedsNavigationController presentViewController:navController animated:YES completion:nil];
     }
 
 }
@@ -742,7 +741,7 @@
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         [self hidePopover];
     } else {
-        [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+        [self.feedsNavigationController dismissViewControllerAnimated:YES completion:nil];
     }
 }
 
@@ -762,13 +761,13 @@
         }
         
         [masterContainerViewController dismissViewControllerAnimated:NO completion:nil];
-        [self.navigationController popToViewController:[self.navigationController.viewControllers objectAtIndex:0] animated:YES];
+        [self.feedsNavigationController popToViewController:[self.feedsNavigationController.viewControllers objectAtIndex:0] animated:YES];
         
         if (completion) {
             [CATransaction commit];
         }
     } else {
-        [self.navigationController popToRootViewControllerAnimated:NO];
+        [self.feedsNavigationController popToRootViewControllerAnimated:NO];
         
         if (completion) {
             completion();
@@ -777,7 +776,7 @@
 }
 
 - (void)showPremiumDialog {
-    UINavigationController *navController = self.navigationController;
+    UINavigationController *navController = self.feedsNavigationController;
     if (self.premiumNavigationController == nil) {
         self.premiumNavigationController = [[UINavigationController alloc]
                                             initWithRootViewController:self.premiumViewController];
@@ -817,12 +816,10 @@
     self.modalNavigationController.navigationBar.translucent = NO;
     
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-        [masterContainerViewController dismissViewControllerAnimated:NO completion:nil];
         self.modalNavigationController.modalPresentationStyle = UIModalPresentationFormSheet;
-        [masterContainerViewController presentViewController:modalNavigationController animated:YES completion:nil];
-    } else {
-        [navigationController presentViewController:modalNavigationController animated:YES completion:nil];
     }
+    
+    [feedsNavigationController presentViewController:modalNavigationController animated:YES completion:nil];
 }
 
 - (void)setHiddenPreferencesAnimated:(BOOL)animated {
@@ -875,7 +872,7 @@
         self.modalNavigationController.modalPresentationStyle = UIModalPresentationFormSheet;
         [masterContainerViewController presentViewController:modalNavigationController animated:YES completion:nil];
     } else {
-        [navigationController presentViewController:modalNavigationController animated:YES completion:nil];
+        [feedsNavigationController presentViewController:modalNavigationController animated:YES completion:nil];
     }
 }
 
@@ -906,7 +903,7 @@
         self.modalNavigationController.modalPresentationStyle = UIModalPresentationFormSheet;
         [masterContainerViewController presentViewController:modalNavigationController animated:YES completion:nil];
     } else {
-        [navigationController presentViewController:modalNavigationController animated:YES completion:nil];
+        [feedsNavigationController presentViewController:modalNavigationController animated:YES completion:nil];
     }
     [self.friendsListViewController loadSuggestedFriendsList];
 }
@@ -1032,7 +1029,7 @@
             //            [[OSKPresentationManager sharedInstance] presentActivitySheetForContent:content presentingViewController:vc popoverFromRect:[sender frame] inView:[sender superview] permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES options:options];
         }
     } else {
-        [self.navigationController presentViewController:activityViewController animated:YES completion:^{}];
+        [self.feedsNavigationController presentViewController:activityViewController animated:YES completion:^{}];
     }
     self.isPresentingActivities = YES;
 }
@@ -1053,7 +1050,7 @@
             self.shareNavigationController = shareNav;
             self.shareNavigationController.navigationBar.translucent = NO;
         }
-        [self.navigationController presentViewController:self.shareNavigationController animated:YES completion:^{
+        [self.feedsNavigationController presentViewController:self.shareNavigationController animated:YES completion:^{
             [self.shareViewController setSiteInfo:type setUserId:userId setUsername:username setReplyId:replyId];
         }];
     }
@@ -1069,7 +1066,7 @@
         [self.masterContainerViewController transitionFromShareView];
         [self.storyPageControl becomeFirstResponder];
     } else if (!self.showingSafariViewController) {
-        [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+        [self.feedsNavigationController dismissViewControllerAnimated:YES completion:nil];
         [self.shareViewController.commentField resignFirstResponder];
     }
 }
@@ -1080,6 +1077,47 @@
 
 #pragma mark -
 #pragma mark View Management
+
+- (void)prepareViewControllers {
+    self.splitViewController = (SplitViewController *)self.window.rootViewController;
+    
+    NSArray <UIViewController *> *splitChildren = self.splitViewController.viewControllers;
+    
+    if (splitChildren.count < 3) {
+        NSLog(@"Missing split view controllers: %@", splitChildren);  // log
+        return;
+    }
+    
+    if (@available(iOS 14.0, *)) {
+        self.splitViewController.showsSecondaryOnlyButton = YES;
+    }
+    
+    self.feedsNavigationController = (UINavigationController *)splitChildren[0];
+    self.feedsViewController = self.feedsNavigationController.viewControllers.firstObject;
+    self.feedDetailNavigationController = (UINavigationController *)splitChildren[1];
+    self.feedDetailViewController = self.feedDetailNavigationController.viewControllers.firstObject;
+    self.detailNavigationController = (UINavigationController *)splitChildren[2];
+    self.detailViewController = self.detailNavigationController.viewControllers.firstObject;
+    
+    self.dashboardViewController = [DashboardViewController new];
+    self.feedsMenuViewController = [FeedsMenuViewController new];
+    self.friendsListViewController = [FriendsListViewController new];
+    self.storyDetailViewController = [StoryDetailViewController new];
+    self.loginViewController = [LoginViewController new];
+    self.addSiteViewController = [AddSiteViewController new];
+    self.moveSiteViewController = [MoveSiteViewController new];
+    self.trainerViewController = [TrainerViewController new];
+    self.notificationsViewController = [NotificationsViewController new];
+    self.shareViewController = [ShareViewController new];
+    self.fontSettingsViewController = [FontSettingsViewController new];
+    self.userProfileViewController = [UserProfileViewController new];
+    self.preferencesViewController = [IASKAppSettingsViewController new];
+    self.premiumViewController = [PremiumViewController new];
+    self.firstTimeUserViewController = [FirstTimeUserViewController new];
+    self.firstTimeUserAddSitesViewController = [FirstTimeUserAddSitesViewController new];
+    self.firstTimeUserAddFriendsViewController = [FirstTimeUserAddFriendsViewController new];
+    self.firstTimeUserAddNewsBlurViewController = [FirstTimeUserAddNewsBlurViewController new];
+}
 
 - (void)showLogin {
     self.dictFeeds = nil;
@@ -1104,22 +1142,15 @@
     [userPreferences setInteger:-1 forKey:@"selectedIntelligence"];
     [userPreferences synchronize];
     
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-        if (self.masterContainerViewController.presentedViewController == loginViewController) {
+    loginViewController.modalPresentationStyle = UIModalPresentationFullScreen;
+    
+    [feedsMenuViewController dismissViewControllerAnimated:NO completion:nil];
+    if (feedsNavigationController.isViewLoaded && feedsNavigationController.view.window) {
+        if ([self.feedsNavigationController visibleViewController] == loginViewController) {
             NSLog(@"Already showing login!");
             return;
         }
-        loginViewController.modalPresentationStyle = UIModalPresentationFullScreen;
-        [self.masterContainerViewController presentViewController:loginViewController animated:NO completion:nil];
-    } else {
-        [feedsMenuViewController dismissViewControllerAnimated:NO completion:nil];
-        if (navigationController.isViewLoaded && navigationController.view.window) {
-            if ([self.navigationController visibleViewController] == loginViewController) {
-                NSLog(@"Already showing login!");
-                return;
-            }
-            [self.navigationController presentViewController:loginViewController animated:NO completion:nil];
-        }
+        [self.feedsNavigationController presentViewController:loginViewController animated:NO completion:nil];
     }
 }
 
@@ -1145,12 +1176,12 @@
         }
             
     } else {
-        [self.navigationController presentViewController:self.ftuxNavigationController animated:YES completion:nil];
+        [self.feedsNavigationController presentViewController:self.ftuxNavigationController animated:YES completion:nil];
     }
 }
 
 - (void)showMoveSite {
-    UINavigationController *navController = self.navigationController;
+    UINavigationController *navController = self.feedsNavigationController;
     
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         [masterContainerViewController dismissViewControllerAnimated:NO completion:nil];
@@ -1174,7 +1205,7 @@
 }
 
 - (void)openTrainSiteWithFeedLoaded:(BOOL)feedLoaded from:(id)sender {
-    UINavigationController *navController = self.navigationController;
+    UINavigationController *navController = self.feedsNavigationController;
     trainerViewController.feedTrainer = YES;
     trainerViewController.storyTrainer = NO;
     trainerViewController.feedLoaded = feedLoaded;
@@ -1182,7 +1213,7 @@
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
 //        trainerViewController.modalPresentationStyle=UIModalPresentationFormSheet;
 //        [navController presentViewController:trainerViewController animated:YES completion:nil];
-        [self.masterContainerViewController showTrainingPopover:sender];
+        [self showPopoverWithViewController:self.trainerViewController contentSize:CGSizeMake(420, 382) sender:sender];
     } else {
         if (self.trainNavigationController == nil) {
             self.trainNavigationController = [[UINavigationController alloc]
@@ -1194,12 +1225,12 @@
 }
 
 - (void)openTrainStory:(id)sender {
-    UINavigationController *navController = self.navigationController;
+    UINavigationController *navController = self.feedsNavigationController;
     trainerViewController.feedTrainer = NO;
     trainerViewController.storyTrainer = YES;
     trainerViewController.feedLoaded = YES;
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-        [self.masterContainerViewController showTrainingPopover:sender];
+        [self showPopoverWithViewController:self.trainerViewController contentSize:CGSizeMake(420, 382) sender:sender];
     } else {
         if (self.trainNavigationController == nil) {
             self.trainNavigationController = [[UINavigationController alloc]
@@ -1219,10 +1250,10 @@
 }
 
 - (void)openNotificationsWithFeed:(NSString *)feedId sender:(id)sender {
-    UINavigationController *navController = self.navigationController;
+    UINavigationController *navController = self.feedsNavigationController;
     
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-        [self.masterContainerViewController showNotificationsPopoverWithFeed:feedId sender:sender];
+        [self showPopoverWithViewController:self.notificationsViewController contentSize:CGSizeMake(420, 382) sender:sender];
     } else {
         if (self.notificationsNavigationController == nil) {
             self.notificationsNavigationController = [[UINavigationController alloc]
@@ -1310,7 +1341,7 @@
 }
 
 - (void)popoverPresentationControllerDidDismissPopover:(UIPopoverPresentationController *)popoverPresentationController {
-    [self.navigationController.topViewController becomeFirstResponder];
+    [self.feedsNavigationController.topViewController becomeFirstResponder];
 }
 
 #pragma mark - Network
@@ -1508,11 +1539,7 @@
     popoverHasFeedView = YES;
 
     [feedDetailViewController resetFeedDetail];
-    if (feedDetailViewController == dashboardViewController.storiesModule) {
-        feedDetailViewController.storiesCollection = dashboardViewController.storiesModule.storiesCollection;
-    } else {
-        feedDetailViewController.storiesCollection = storiesCollection;
-    }
+    feedDetailViewController.storiesCollection = storiesCollection;
     
     if (transition) {
         UIBarButtonItem *newBackButton = [[UIBarButtonItem alloc]
@@ -1521,13 +1548,24 @@
                                           target: nil
                                           action: nil];
         [feedsViewController.navigationItem setBackBarButtonItem:newBackButton];
-
-        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-            [self.masterContainerViewController transitionToFeedDetail];
+        
+        [self.feedDetailViewController checkScroll];
+        [self.storyPageControl refreshPages];
+        [self adjustStoryDetailWebView];
+        [self.feedDetailViewController.storyTitlesTable reloadData];
+        
+        if (@available(iOS 14.0, *)) {
+            [self.splitViewController showColumn:UISplitViewControllerColumnSupplementary];
         } else {
-            [navigationController pushViewController:feedDetailViewController
-                                            animated:YES];
+            [self.splitViewController showViewController:feedDetailViewController sender:self];
         }
+        
+//        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+//            [self.masterContainerViewController transitionToFeedDetail];
+//        } else {
+//            [feedsNavigationController pushViewController:feedDetailViewController
+//                                            animated:YES];
+//        }
     }
     
     [self flushQueuedReadStories:NO withCallback:^{
@@ -1567,10 +1605,10 @@
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         [self loadFeedDetailView];
     } else if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
-        [self.navigationController popToRootViewControllerAnimated:NO];
+        [self.feedsNavigationController popToRootViewControllerAnimated:NO];
         [self hidePopoverAnimated:NO completion:^{
-            if (self.navigationController.presentedViewController) {
-                [self.navigationController dismissViewControllerAnimated:NO completion:^{
+            if (self.feedsNavigationController.presentedViewController) {
+                [self.feedsNavigationController dismissViewControllerAnimated:NO completion:^{
                     [self loadFeedDetailView];
                 }];
             } else {
@@ -1612,10 +1650,10 @@
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         [self loadFeedDetailView];
     } else if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
-        [self.navigationController popToRootViewControllerAnimated:NO];
+        [self.feedsNavigationController popToRootViewControllerAnimated:NO];
         [self hidePopoverAnimated:YES completion:^{
-            if (self.navigationController.presentedViewController) {
-                [self.navigationController dismissViewControllerAnimated:YES completion:^{
+            if (self.feedsNavigationController.presentedViewController) {
+                [self.feedsNavigationController dismissViewControllerAnimated:YES completion:^{
                     [self loadFeedDetailView];
                 }];
             } else {
@@ -1628,8 +1666,8 @@
 - (void)loadStarredDetailViewWithStory:(NSString *)contentId
                       showFindingStory:(BOOL)showHUD {
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
-        [self.navigationController popToRootViewControllerAnimated:NO];
-        [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+        [self.feedsNavigationController popToRootViewControllerAnimated:NO];
+        [self.feedsNavigationController dismissViewControllerAnimated:YES completion:nil];
         [self hidePopoverAnimated:NO];
     }
 
@@ -1789,20 +1827,18 @@
     
     self.inFeedDetail = YES;
     [feedDetailView resetFeedDetail];
-    if (feedDetailView == dashboardViewController.storiesModule) {
-        feedDetailView.storiesCollection = dashboardViewController.storiesModule.storiesCollection;
-    } else if (feedDetailView == feedDetailViewController) {
+    if (feedDetailView == feedDetailViewController) {
         feedDetailView.storiesCollection = storiesCollection;
     }
 
     [feedDetailView.storiesCollection reset];
 
     if (transferFromDashboard) {
-        StoriesCollection *dashboardCollection = dashboardViewController.storiesModule.storiesCollection;
-        [feedDetailView.storiesCollection transferStoriesFromCollection:dashboardCollection];
-        feedDetailView.storiesCollection.isRiverView = YES;
-        feedDetailView.storiesCollection.transferredFromDashboard = YES;
-        [feedDetailView.storiesCollection setActiveFolder:@"everything"];
+//        StoriesCollection *dashboardCollection = dashboardViewController.storiesModule.storiesCollection;
+//        [feedDetailView.storiesCollection transferStoriesFromCollection:dashboardCollection];
+//        feedDetailView.storiesCollection.isRiverView = YES;
+//        feedDetailView.storiesCollection.transferredFromDashboard = YES;
+//        [feedDetailView.storiesCollection setActiveFolder:@"everything"];
     } else {
         if ([folder isEqualToString:@"river_global"]) {
             feedDetailView.storiesCollection.isSocialRiverView = YES;
@@ -1885,7 +1921,7 @@
         if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
             [self.masterContainerViewController transitionToFeedDetail];
         } else {
-            UINavigationController *navController = self.navigationController;
+            UINavigationController *navController = self.feedsNavigationController;
             [navController pushViewController:feedDetailViewController animated:YES];
         }
     }
@@ -1906,8 +1942,8 @@
 - (void)openDashboardRiverForStory:(NSString *)contentId
                   showFindingStory:(BOOL)showHUD {
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
-        [self.navigationController popToRootViewControllerAnimated:NO];
-        [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+        [self.feedsNavigationController popToRootViewControllerAnimated:NO];
+        [self.feedsNavigationController dismissViewControllerAnimated:YES completion:nil];
         [self hidePopoverAnimated:NO];
     }
     
@@ -2019,8 +2055,8 @@
 
 - (void)loadStoryDetailView {
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone || self.isCompactWidth) {
-        [navigationController pushViewController:storyPageControl animated:YES];
-        navigationController.navigationItem.hidesBackButton = YES;
+        [feedsNavigationController pushViewController:storyPageControl animated:YES];
+        feedsNavigationController.navigationItem.hidesBackButton = YES;
     }
 
     NSInteger activeStoryLocation = [storiesCollection locationOfActiveStory];
@@ -2057,7 +2093,7 @@
     [label setShadowOffset:CGSizeMake(0, -1)];
     [label setShadowColor:UIColorFromRGB(0xFAFAFA)];
     [label sizeToFit];
-    [navigationController.navigationBar.topItem setTitleView:label];
+    [feedsNavigationController.navigationBar.topItem setTitleView:label];
 }
 
 - (void)showOriginalStory:(NSURL *)url {
@@ -2072,7 +2108,7 @@
                                                               handler:^(UIAlertAction * action) {}];
         
         [alert addAction:defaultAction];
-        [navigationController presentViewController:alert animated:YES completion:nil];
+        [feedsNavigationController presentViewController:alert animated:YES completion:nil];
         return;
     }
     
@@ -2161,11 +2197,11 @@
             [self.masterContainerViewController transitionToOriginalView];
         }
     } else {
-        if ([[navigationController viewControllers]
+        if ([[feedsNavigationController viewControllers]
              containsObject:originalStoryViewController]) {
             return;
         }
-        [navigationController pushViewController:originalStoryViewController
+        [feedsNavigationController pushViewController:originalStoryViewController
                                         animated:YES];
         [originalStoryViewController view]; // Force viewDidLoad
         [originalStoryViewController loadInitialStory];
@@ -2178,7 +2214,7 @@
     self.safariViewController = [[SFSafariViewController alloc] initWithURL:url configuration:config];
     self.safariViewController.delegate = self;
     [self.storyPageControl setNavigationBarHidden:NO];
-    [navigationController presentViewController:self.safariViewController animated:YES completion:nil];
+    [feedsNavigationController presentViewController:self.safariViewController animated:YES completion:nil];
 }
 
 - (BOOL)showingSafariViewController {
@@ -2230,8 +2266,8 @@
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         [self.masterContainerViewController transitionFromOriginalView];
     } else {
-        if ([[navigationController viewControllers] containsObject:originalStoryViewController]) {
-            [navigationController popToViewController:storyPageControl animated:YES];
+        if ([[feedsNavigationController viewControllers] containsObject:originalStoryViewController]) {
+            [feedsNavigationController popToViewController:storyPageControl animated:YES];
         }
     }
 }
@@ -2240,7 +2276,7 @@
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         [self.masterContainerViewController transitionFromFeedDetail];
     } else {
-        [self.navigationController popViewControllerAnimated:YES];
+        [self.feedsNavigationController popViewControllerAnimated:YES];
     }
 }
 
@@ -2249,18 +2285,18 @@
 
 - (void)handleUserActivity:(NSUserActivity *)activity {
     if ([activity.activityType isEqualToString:@"com.newsblur.refresh"]) {
-        [self.navigationController popToRootViewControllerAnimated:NO];
+        [self.feedsNavigationController popToRootViewControllerAnimated:NO];
         [self.feedsViewController refreshFeedList];
     } else if ([activity.activityType isEqualToString:@"com.newsblur.gotoFolder"]) {
         NSString *folder = activity.userInfo[@"folder"];
         
-        [self.navigationController popToRootViewControllerAnimated:NO];
+        [self.feedsNavigationController popToRootViewControllerAnimated:NO];
         [self loadRiverFeedDetailView:self.feedDetailViewController withFolder:folder];
     } else if ([activity.activityType isEqualToString:@"com.newsblur.gotoFeed"]) {
         NSString *folder = activity.userInfo[@"folder"];
         NSString *feedID = activity.userInfo[@"feedID"];
         
-        [self.navigationController popToRootViewControllerAnimated:NO];
+        [self.feedsNavigationController popToRootViewControllerAnimated:NO];
         [self loadFolder:folder feedID:feedID];
     }
 }
@@ -2845,11 +2881,9 @@
 - (void)failedMarkAsUnread:(NSDictionary *)params {
     if (![storyPageControl failedMarkAsUnread:params]) {
         [feedDetailViewController failedMarkAsUnread:params];
-        [dashboardViewController.storiesModule failedMarkAsUnread:params];
         [storyPageControl failedMarkAsUnread:params];
     }
     [feedDetailViewController reloadData];
-    [dashboardViewController.storiesModule reloadData];
 }
 
 - (void)finishMarkAsSaved:(NSDictionary *)params {
@@ -2860,11 +2894,9 @@
 - (void)failedMarkAsSaved:(NSDictionary *)params {
     if (![storyPageControl failedMarkAsSaved:params]) {
         [feedDetailViewController failedMarkAsSaved:params];
-        [dashboardViewController.storiesModule failedMarkAsSaved:params];
         [storyPageControl failedMarkAsSaved:params];
     }
     [feedDetailViewController reloadData];
-    [dashboardViewController.storiesModule reloadData];
 }
 
 - (void)finishMarkAsUnsaved:(NSDictionary *)params {
@@ -2875,11 +2907,9 @@
 - (void)failedMarkAsUnsaved:(NSDictionary *)params {
     if (![storyPageControl failedMarkAsUnsaved:params]) {
         [feedDetailViewController failedMarkAsUnsaved:params];
-        [dashboardViewController.storiesModule failedMarkAsUnsaved:params];
         [storyPageControl failedMarkAsUnsaved:params];
     }
     [feedDetailViewController reloadData];
-    [dashboardViewController.storiesModule reloadData];
 }
 
 
@@ -3032,6 +3062,20 @@
     [self showPopoverWithViewController:self.markReadMenuViewController contentSize:CGSizeZero barButtonItem:barButtonItem sourceView:sourceView sourceRect:sourceRect permittedArrowDirections:UIPopoverArrowDirectionAny];
 }
 
+- (void)showPopoverWithViewController:(UIViewController *)viewController contentSize:(CGSize)contentSize sender:(id)sender {
+    if ([sender isKindOfClass:[UITableViewCell class]]) {
+        UITableViewCell *cell = (UITableViewCell *)sender;
+        
+        [self showPopoverWithViewController:viewController contentSize:contentSize sourceView:cell sourceRect:cell.bounds];
+    } else if ([sender class] == [UIBarButtonItem class]) {
+        [self showPopoverWithViewController:viewController contentSize:contentSize barButtonItem:sender];
+    } else {
+        CGRect frame = [sender CGRectValue];
+        
+        [self showPopoverWithViewController:viewController contentSize:contentSize sourceView:self.storyPageControl.view sourceRect:frame];
+    }
+}
+
 - (void)showPopoverWithViewController:(UIViewController *)viewController contentSize:(CGSize)contentSize barButtonItem:(UIBarButtonItem *)barButtonItem {
     [self showPopoverWithViewController:viewController contentSize:contentSize barButtonItem:barButtonItem sourceView:nil sourceRect:CGRectZero permittedArrowDirections:UIPopoverArrowDirectionAny];
 }
@@ -3088,7 +3132,7 @@
     }
     
     [presentedViewController dismissViewControllerAnimated:animated completion:completion];
-    [self.navigationController.topViewController becomeFirstResponder];
+    [self.feedsNavigationController.topViewController becomeFirstResponder];
 }
 
 - (BOOL)hidePopoverAnimated:(BOOL)animated {
@@ -3097,7 +3141,7 @@
         return NO;
     
     [presentedViewController dismissViewControllerAnimated:animated completion:nil];
-    [self.navigationController.topViewController becomeFirstResponder];
+    [self.feedsNavigationController.topViewController becomeFirstResponder];
     return YES;
 }
 
@@ -3107,11 +3151,7 @@
 }
 
 - (UINavigationController *)navigationControllerForPopover {
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-        return self.masterContainerViewController.masterNavigationController;
-    } else {
-        return self.navigationController;
-    }
+    return self.feedsNavigationController;
 }
 
 #pragma mark -

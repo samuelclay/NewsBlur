@@ -33,7 +33,9 @@
     return self;
 }
 
-- (void)viewDidLoad {    
+- (void)viewDidLoad {
+    self.appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
+    
     UIImageView *folderImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"g_icn_folder.png"]];
     folderImage.frame = CGRectMake(0, 0, 24, 16);
     [folderImage setContentMode:UIViewContentModeRight];

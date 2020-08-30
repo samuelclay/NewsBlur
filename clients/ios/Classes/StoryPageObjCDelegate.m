@@ -421,8 +421,8 @@
 
 - (void)transitionFromFeedDetail {
     if (appDelegate.masterContainerViewController.storyTitlesOnLeft) {
-        [appDelegate.navigationController
-         popToViewController:[appDelegate.navigationController.viewControllers
+        [appDelegate.feedsNavigationController
+         popToViewController:[appDelegate.feedsNavigationController.viewControllers
                               objectAtIndex:0]
          animated:YES];
         [appDelegate hideStoryDetailView];
@@ -963,8 +963,8 @@
             }];
         } else if (!appDelegate.feedDetailViewController.pageFinished &&
                    !appDelegate.feedDetailViewController.pageFetching) {
-            [appDelegate.navigationController
-             popToViewController:[appDelegate.navigationController.viewControllers
+            [appDelegate.feedsNavigationController
+             popToViewController:[appDelegate.feedsNavigationController.viewControllers
                                   objectAtIndex:0]
              animated:YES];
             [appDelegate hideStoryDetailView];
@@ -1848,8 +1848,8 @@
         self.waitingForNextUnreadFromServer = YES;
         [fdvc fetchNextPage:nil];
     } else if (nextLocation == -1) {
-        [appDelegate.navigationController
-         popToViewController:[appDelegate.navigationController.viewControllers
+        [appDelegate.feedsNavigationController
+         popToViewController:[appDelegate.feedsNavigationController.viewControllers
                               objectAtIndex:0]
          animated:YES];
         [appDelegate hideStoryDetailView];
@@ -1864,8 +1864,8 @@
     self.circularProgressView.hidden = NO;
     id previousStoryId = [appDelegate.storiesCollection popReadStory];
     if (!previousStoryId || previousStoryId == [appDelegate.activeStory objectForKey:@"story_hash"]) {
-        [appDelegate.navigationController
-         popToViewController:[appDelegate.navigationController.viewControllers
+        [appDelegate.feedsNavigationController
+         popToViewController:[appDelegate.feedsNavigationController.viewControllers
                               objectAtIndex:0]
          animated:YES];
         [appDelegate hideStoryDetailView];

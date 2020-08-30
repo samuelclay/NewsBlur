@@ -25,7 +25,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
+    self.appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
 
     self.view.layer.masksToBounds = NO;
     self.view.layer.shadowRadius = 5;
@@ -109,7 +109,7 @@
     }
     activeUrl = nil;
     titleView.alpha = 1.0;
-    if (![appDelegate.navigationController.viewControllers containsObject:self]) {
+    if (![appDelegate.feedsNavigationController.viewControllers containsObject:self]) {
         [self.webView loadHTMLString:@"" baseURL:nil];
     }
     

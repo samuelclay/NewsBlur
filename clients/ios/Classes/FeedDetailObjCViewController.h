@@ -30,7 +30,6 @@
     BOOL finishedAnimatingIn;
     BOOL isOnline;
     BOOL isShowingFetching;
-    BOOL isDashboardModule;
     BOOL inDoubleTap;
     BOOL invalidateFontCache;
      
@@ -60,7 +59,6 @@
 @property (nonatomic, readwrite) BOOL finishedAnimatingIn;
 @property (nonatomic, readwrite) BOOL isOnline;
 @property (nonatomic, readwrite) BOOL isShowingFetching;
-@property (nonatomic, readwrite) BOOL isDashboardModule;
 @property (nonatomic) FeedDetailTextSize textSize;
 @property (nonatomic, readwrite) BOOL showImagePreview;
 @property (nonatomic, readwrite) BOOL invalidateFontCache;

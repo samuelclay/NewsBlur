@@ -49,8 +49,8 @@
     self.selectedCategories_ = [[NSMutableSet alloc] init];
     
     [super viewDidLoad];
-    // Do any additional setup after loading the view from its nib.
     
+    self.appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
     
     UIBarButtonItem *next = [[UIBarButtonItem alloc] initWithTitle:@"Next step" style:UIBarButtonItemStyleDone target:self action:@selector(tapNextButton)];
     self.nextButton = next;

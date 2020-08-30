@@ -38,7 +38,7 @@
 }
 
 - (void)viewDidLoad {
-    self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate]; 
+    self.appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
     
     [[NSNotificationCenter defaultCenter] 
      addObserver:self 

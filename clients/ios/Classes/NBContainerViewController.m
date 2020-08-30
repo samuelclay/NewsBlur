@@ -106,7 +106,7 @@
     self.navigationController.navigationBar.translucent = NO;
     self.masterNavigationController.navigationBar.translucent = NO;
     
-    self.masterNavigationController = appDelegate.navigationController;
+    self.masterNavigationController = appDelegate.feedsNavigationController;
     self.feedsViewController = appDelegate.feedsViewController;
     self.dashboardViewController = appDelegate.dashboardViewController;
     self.feedDetailViewController = appDelegate.feedDetailViewController;
@@ -878,8 +878,6 @@
     self.feedDetailIsVisible = NO;
     CGRect vb = [self.view bounds];
     
-    [appDelegate.dashboardViewController.storiesModule reloadData];
-    
     // adding dashboardViewController and masterNavigationController
     [self.view insertSubview:self.dashboardViewController.view atIndex:0];
     [self.view addSubview:self.masterNavigationController.view];
@@ -935,12 +933,6 @@
             if (self.feedDetailIsVisible) return;
             [self.storyNavigationController.view removeFromSuperview];
         }];
-    }
-    
-    if (feedDetailViewController.storiesCollection.transferredFromDashboard) {
-        [dashboardViewController.storiesModule.storiesCollection
-         transferStoriesFromCollection:feedDetailViewController.storiesCollection];
-        [dashboardViewController.storiesModule fadeSelectedCell];
     }
 }
 

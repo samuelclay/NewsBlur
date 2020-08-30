@@ -35,6 +35,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
     self.appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
     
     UIBarButtonItem *done = [[UIBarButtonItem alloc]
@@ -102,7 +103,7 @@
                                if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
                                    [self.appDelegate hidePopover];
                                } else {
-                                   [self.appDelegate.navigationController dismissViewControllerAnimated:YES completion:nil];
+                                   [self.appDelegate.feedsNavigationController dismissViewControllerAnimated:YES completion:nil];
                                }
                            });
         }];
