@@ -95,4 +95,7 @@ public class AppConstants {
     // Shiloh photo
     public final static String SHILOH_PHOTO_URL = "https://newsblur.com/media//img/reader/shiloh.jpg";
 
+    // Premium subscription SKU
+    public final static String PREMIUM_SKU = "nb.premium.36";
+
 }

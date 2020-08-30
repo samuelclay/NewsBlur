@@ -213,6 +213,7 @@
     <string name="menu_feedback_post">Create a feedback post</string>
     <string name="menu_feedback_email">Email a bug report</string>
     <string name="menu_theme_choose">Theme…</string>
+    <string name="menu_premium_account">Premium Account</string>
 
     <string name="description_add_new_folder_icon">Add new folder icon</string>
 
@@ -264,7 +265,10 @@
     <string name="premium_subscribers_search">Search is only available to</string>
     <string name="premium_subscribers">premium subscribers</string>
     <string name="premium_toolbar_title">NewsBlur Premium</string>
-    <string name="premium_title">Thank you so much for going premium!</string>
+    <string name="premium_title_going_premium">Thank you so much for going premium!</string>
+    <string name="premium_title_gone_premium">Thank you for going premium!</string>
+    <string name="premium_subscription_renewal">Your premium subscription is set to\nrenew on %s</string>
+    <string name="premium_subscription_expiration">Your premium subscription is set\nto expire on %s</string>
     <string name="premium_subtitle">Upgrading to a NewsBlur premium subscription gives you all of these features. Payments will be charged to your Play Store account at confirmation of purchase. Subscription renew unless auto-renew is turned off at least 24 hours before the end of the current period. Cancel at any time from Account Settings in Play Store.</string>
     <string name="premium_policies"><![CDATA[See NewsBlur\'s <a href="https://newsblur.com/privacy">privacy policy</a> and <a href="https://newsblur.com/tos">terms of use</a> for details.]]></string>
     <string name="premium_subscription_title">NewsBlur Premium Subscription</string>

@@ -76,6 +76,7 @@ public class APIConstants {
     public static final String PATH_ADD_FOLDER = "/reader/add_folder";
     public static final String PATH_DELETE_FOLDER = "/reader/delete_folder";
     public static final String PATH_RENAME_FOLDER = "/reader/rename_folder";
+    public static final String PATH_SAVE_RECEIPT = "/profile/save_android_receipt";
 
     public static String buildUrl(String path) {
         return CurrentUrlBase + path;
@@ -129,6 +130,8 @@ public class APIConstants {
     public static final String PARAMETER_FOLDER_TO_DELETE = "folder_to_delete";
     public static final String PARAMETER_FOLDER_TO_RENAME = "folder_to_rename";
     public static final String PARAMETER_NEW_FOLDER_NAME = "new_folder_name";
+    public static final String PARAMETER_ORDER_ID = "order_id";
+    public static final String PARAMETER_PRODUCT_ID = "product_id";
 
     public static final String VALUE_PREFIX_SOCIAL = "social:";
     public static final String VALUE_ALLSOCIAL = "river:blurblogs"; // the magic value passed to the mark-read API for all social feeds
