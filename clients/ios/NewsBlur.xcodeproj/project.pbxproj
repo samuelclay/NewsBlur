@@ -290,7 +290,6 @@
 		FF11045F176950F900502C29 /* NBLoadingCell.m in Sources */ = {isa = PBXBuildFile; fileRef = FF11045E176950F900502C29 /* NBLoadingCell.m */; };
 		FF1104611769695A00502C29 /* g_icn_offline@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF1104601769695A00502C29 /* g_icn_offline@2x.png */; };
 		FF1660C816D6E9A700AF8541 /* DashboardViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = FF1660C716D6E9A700AF8541 /* DashboardViewController.xib */; };
-		FF1660CA16D6E9B400AF8541 /* DashboardViewController~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = FF1660C916D6E9B400AF8541 /* DashboardViewController~ipad.xib */; };
 		FF1660CD16D6FD8A00AF8541 /* SmallInteractionCell.m in Sources */ = {isa = PBXBuildFile; fileRef = FF1660CC16D6FD8A00AF8541 /* SmallInteractionCell.m */; };
 		FF191E4F18A323F400473252 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FF191E4E18A323F400473252 /* Images.xcassets */; };
 		FF1C4E171A3FB1F4000995E3 /* NBActivityItemSource.m in Sources */ = {isa = PBXBuildFile; fileRef = FF1C4E161A3FB1F4000995E3 /* NBActivityItemSource.m */; };
@@ -1018,7 +1017,6 @@
 		FF11045E176950F900502C29 /* NBLoadingCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NBLoadingCell.m; sourceTree = "<group>"; };
 		FF1104601769695A00502C29 /* g_icn_offline@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "g_icn_offline@2x.png"; sourceTree = "<group>"; };
 		FF1660C716D6E9A700AF8541 /* DashboardViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DashboardViewController.xib; sourceTree = "<group>"; };
-		FF1660C916D6E9B400AF8541 /* DashboardViewController~ipad.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = "DashboardViewController~ipad.xib"; path = "Resources-iPad/Classes/DashboardViewController~ipad.xib"; sourceTree = "<group>"; };
 		FF1660CB16D6FD8A00AF8541 /* SmallInteractionCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SmallInteractionCell.h; sourceTree = "<group>"; };
 		FF1660CC16D6FD8A00AF8541 /* SmallInteractionCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SmallInteractionCell.m; sourceTree = "<group>"; };
 		FF191E4E18A323F400473252 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = NewsBlur/Images.xcassets; sourceTree = SOURCE_ROOT; };
@@ -2311,7 +2309,6 @@
 			children = (
 				433323B5158901A40025064D /* Images */,
 				43D045241565BC150085F811 /* LoginViewController~ipad.xib */,
-				FF1660C916D6E9B400AF8541 /* DashboardViewController~ipad.xib */,
 				43D0451F1565BC150085F811 /* MainWindow~ipad.xib */,
 				43D045281565BC150085F811 /* MoveSiteViewController~ipad.xib */,
 				43D045221565BC150085F811 /* StoryDetailViewController~ipad.xib */,
@@ -3141,7 +3138,6 @@
 				FF1660C816D6E9A700AF8541 /* DashboardViewController.xib in Resources */,
 				FFC5798F1FB67752004677F1 /* diamond.png in Resources */,
 				17876B9E1C9911D40055DD15 /* g_icn_folder_rss_sm.png in Resources */,
-				FF1660CA16D6E9B400AF8541 /* DashboardViewController~ipad.xib in Resources */,
 				FF3964BC192BED0A004BEE1A /* tag.png in Resources */,
 				FF29708B16DD7AA400E92F85 /* segment_active.png in Resources */,
 				FF29708C16DD7AA400E92F85 /* segment_inactive.png in Resources */,

@@ -121,8 +121,6 @@
 			</dict>
 		</dict>
 	</dict>
-	<key>NSMainNibFile~ipad</key>
-	<string>MainWindow~ipad</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>NewsBlur can save photos to your camera roll by long pressing them.</string>
 	<key>NSUserActivityTypes</key>

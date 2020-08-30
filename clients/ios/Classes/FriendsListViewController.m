@@ -45,6 +45,8 @@
 {
     [super viewDidLoad];
     
+    self.appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
+    
     self.navigationItem.title = @"Find Friends";
     UIBarButtonItem *cancelButton = [[UIBarButtonItem alloc] initWithTitle: @"Done" 
                                                                      style: UIBarButtonItemStylePlain 

@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useSafeAreas="YES" colorMatched="YES">
-    <device id="retina5_5" orientation="portrait">
-        <adaptation id="fullscreen"/>
-    </device>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="17154" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina5_5" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17124"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -33,7 +31,7 @@
                     </connections>
                 </tableView>
                 <view hidden="YES" opaque="NO" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" translatesAutoresizingMaskIntoConstraints="NO" id="6Mr-6Q-kKI">
-                    <rect key="frame" x="0.0" y="220.33333333333337" width="414" height="180.66666666666663"/>
+                    <rect key="frame" x="0.0" y="210.33333333333337" width="414" height="180.66666666666663"/>
                     <subviews>
                         <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="No stories to display. No stories to display. No stories to display. No stories to display." textAlignment="center" lineBreakMode="wordWrap" numberOfLines="8" baselineAdjustment="alignBaselines" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="Ryt-Dy-u2n">
                             <rect key="frame" x="20" y="95.999999999999972" width="374" height="71.666666666666657"/>
@@ -60,6 +58,7 @@
                     </constraints>
                 </view>
             </subviews>
+            <viewLayoutGuide key="safeArea" id="3cs-AJ-WzR"/>
             <constraints>
                 <constraint firstAttribute="trailing" secondItem="6Mr-6Q-kKI" secondAttribute="trailing" id="4oQ-NR-Xjf"/>
                 <constraint firstItem="4" firstAttribute="leading" secondItem="3cs-AJ-WzR" secondAttribute="leading" id="6SF-3m-dmB"/>
@@ -70,10 +69,10 @@
                 <constraint firstItem="6Mr-6Q-kKI" firstAttribute="centerY" secondItem="4" secondAttribute="centerYWithinMargins" constant="-67.5" id="umc-BG-1FN"/>
             </constraints>
             <nil key="simulatedStatusBarMetrics"/>
-            <viewLayoutGuide key="safeArea" id="3cs-AJ-WzR"/>
+            <point key="canvasLocation" x="139" y="154"/>
         </view>
     </objects>
     <resources>
-        <image name="big_world.png" width="128" height="128"/>
+        <image name="big_world.png" width="30.719999313354492" height="30.719999313354492"/>
     </resources>
 </document>

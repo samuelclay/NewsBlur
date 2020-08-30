@@ -21,7 +21,6 @@
 @synthesize appDelegate;
 @synthesize interactionsModule;
 @synthesize activitiesModule;
-@synthesize storiesModule;
 @synthesize topToolbar;
 @synthesize toolbar;
 @synthesize segmentedButton;
@@ -38,11 +37,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-        self.interactionsModule.hidden = YES;
-    } else {
-        self.interactionsModule.hidden = NO;
-    }
+    self.interactionsModule.hidden = NO;
     self.activitiesModule.hidden = YES;
     self.segmentedButton.selectedSegmentIndex = 0;
     
@@ -55,36 +50,11 @@
     topToolbarFrame.size.height += 20;
     self.topToolbar.frame = topToolbarFrame;
     
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-        self.storiesModule = [FeedDetailViewController new];
-        self.storiesModule.isDashboardModule = YES;
-        self.storiesModule.storiesCollection = [StoriesCollection new];
-//        NSLog(@"Dashboard story module view: %@ (%@)", self.storiesModule, self.storiesModule.storiesCollection);
-        self.storiesModule.view.frame = self.activitiesModule.frame;
-        self.storiesModule.view.translatesAutoresizingMaskIntoConstraints = NO;
-        [self.view insertSubview:self.storiesModule.view belowSubview:self.activitiesModule];
-        [self addChildViewController:self.storiesModule];
-        [self.storiesModule didMoveToParentViewController:self];
-        
-        [NSLayoutConstraint constraintWithItem:self.storiesModule.view attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.topToolbar attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0.0].active = YES;
-        [NSLayoutConstraint constraintWithItem:self.storiesModule.view attribute:NSLayoutAttributeLeading relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeLeading multiplier:1.0 constant:0.0].active = YES;
-        [NSLayoutConstraint constraintWithItem:self.storiesModule.view attribute:NSLayoutAttributeTrailing relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeTrailing multiplier:1.0 constant:0.0].active = YES;
-        [NSLayoutConstraint constraintWithItem:self.storiesModule.view attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self.toolbar attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0.0].active = YES;
-    }
-    
     [self updateTheme];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-        if (@available(iOS 11.0, *)) {
-            CGRect frame = self.toolbar.frame;
-            frame.size.height = [NewsBlurAppDelegate sharedAppDelegate].navigationController.toolbar.bounds.size.height; // += self.view.safeAreaInsets.bottom;
-            self.toolbar.frame = frame;
-        }
-    }
 }
 
 //- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
@@ -114,19 +84,12 @@
     self.toolbar.barTintColor = [UINavigationBar appearance].barTintColor;
     self.segmentedButton.tintColor = [UINavigationBar appearance].tintColor;
     
-    self.storiesModule.searchBar.backgroundColor = UIColorFromRGB(0xE3E6E0);
-    self.storiesModule.searchBar.tintColor = UIColorFromRGB(0xffffff);
-    self.storiesModule.searchBar.nb_searchField.textColor = UIColorFromRGB(0x0);
-    
-    self.storiesModule.storyTitlesTable.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
     self.interactionsModule.interactionsTable.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
     self.activitiesModule.activitiesTable.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
     
-    self.storiesModule.storyTitlesTable.separatorColor = UIColorFromRGB(0xE9E8E4);
     self.interactionsModule.interactionsTable.separatorColor = UIColorFromRGB(0xE9E8E4);
     self.activitiesModule.activitiesTable.separatorColor = UIColorFromRGB(0xE9E8E4);
     
-    [self.storiesModule.storyTitlesTable reloadData];
     [self.interactionsModule.interactionsTable reloadData];
     [self.activitiesModule.activitiesTable reloadData];
     
@@ -141,42 +104,13 @@
 - (IBAction)tapSegmentedButton:(id)sender {
     NSInteger selectedSegmentIndex = [self.segmentedButton selectedSegmentIndex];
     
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-        if (selectedSegmentIndex == 0) {
-            self.storiesModule.view.hidden = NO;
-            self.interactionsModule.hidden = YES;
-            self.activitiesModule.hidden = YES;
-        } else if (selectedSegmentIndex == 1) {
-            [self refreshInteractions];
-            self.storiesModule.view.hidden = YES;
-            self.interactionsModule.hidden = NO;
-            self.activitiesModule.hidden = YES;
-        } else if (selectedSegmentIndex == 2) {
-            [self refreshActivity];
-            self.storiesModule.view.hidden = YES;
-            self.interactionsModule.hidden = YES;
-            self.activitiesModule.hidden = NO;
-        }
-    } else {
-        if (selectedSegmentIndex == 0) {
-            self.interactionsModule.hidden = NO;
-            self.activitiesModule.hidden = YES;
-        } else if (selectedSegmentIndex == 1) {
-            self.interactionsModule.hidden = YES;
-            self.activitiesModule.hidden = NO;
-        }
+    if (selectedSegmentIndex == 0) {
+        self.interactionsModule.hidden = NO;
+        self.activitiesModule.hidden = YES;
+    } else if (selectedSegmentIndex == 1) {
+        self.interactionsModule.hidden = YES;
+        self.activitiesModule.hidden = NO;
     }
-}
-
-#pragma mark - Stories
-
-- (void)refreshStories {
-    [appDelegate.cachedStoryImages removeAllObjects:^(PINCache * _Nonnull cache) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self.appDelegate loadRiverFeedDetailView:self.storiesModule withFolder:@"everything"];
-            self.appDelegate.inFeedDetail = NO;
-        });
-    }];
 }
 
 # pragma mark

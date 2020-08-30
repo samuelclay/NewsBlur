@@ -33,6 +33,8 @@
 
 - (void)viewDidLoad
 {
+    self.appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
+    
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
     
@@ -119,7 +121,7 @@
 }
 
 #pragma mark -
-#pragma mark - Table view data source
+#pragma mark Table view data source
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section 
 {
@@ -202,12 +204,8 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath 
 {
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-        [self.appDelegate hidePopover];
-    } else {
-        [self.appDelegate hidePopoverAnimated:YES];
-    }
-
+    [self.appDelegate hidePopoverAnimated:YES];
+    
     switch (indexPath.row) {
         case 0:
             [appDelegate showPreferences];

@@ -17,6 +17,7 @@
                 <outlet property="dashboardViewController" destination="238" id="239"/>
                 <outlet property="feedDetailViewController" destination="51" id="91"/>
                 <outlet property="feedsMenuViewController" destination="162" id="163"/>
+                <outlet property="feedsNavigationController" destination="173" id="185"/>
                 <outlet property="feedsViewController" destination="10" id="15"/>
                 <outlet property="firstTimeUserAddFriendsViewController" destination="252" id="275"/>
                 <outlet property="firstTimeUserAddNewsBlurViewController" destination="253" id="276"/>
@@ -27,7 +28,6 @@
                 <outlet property="loginViewController" destination="102" id="103"/>
                 <outlet property="masterContainerViewController" destination="264" id="266"/>
                 <outlet property="moveSiteViewController" destination="124" id="126"/>
-                <outlet property="navigationController" destination="173" id="185"/>
                 <outlet property="notificationsViewController" destination="3z0-yS-4jT" id="LzV-NG-kRx"/>
                 <outlet property="premiumViewController" destination="Nno-Ma-6TQ" id="0Ex-VU-Hek"/>
                 <outlet property="shareViewController" destination="168" id="272"/>

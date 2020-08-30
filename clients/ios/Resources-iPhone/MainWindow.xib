@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="17154" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
+        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17124"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -17,6 +19,7 @@
                 <outlet property="dashboardViewController" destination="177" id="179"/>
                 <outlet property="feedDetailViewController" destination="51" id="91"/>
                 <outlet property="feedsMenuViewController" destination="128" id="129"/>
+                <outlet property="feedsNavigationController" destination="39" id="45"/>
                 <outlet property="feedsViewController" destination="10" id="15"/>
                 <outlet property="firstTimeUserAddFriendsViewController" destination="150" id="154"/>
                 <outlet property="firstTimeUserAddNewsBlurViewController" destination="151" id="155"/>
@@ -26,7 +29,6 @@
                 <outlet property="friendsListViewController" destination="134" id="135"/>
                 <outlet property="loginViewController" destination="102" id="103"/>
                 <outlet property="moveSiteViewController" destination="124" id="126"/>
-                <outlet property="navigationController" destination="39" id="45"/>
                 <outlet property="notificationsViewController" destination="Fm7-T6-awA" id="PFa-sw-wdZ"/>
                 <outlet property="premiumViewController" destination="GXC-Ze-HBm" id="wZ1-Qy-e0X"/>
                 <outlet property="shareViewController" destination="131" id="132"/>
@@ -50,18 +52,21 @@
             <connections>
                 <outlet property="appDelegate" destination="3" id="168"/>
             </connections>
+            <point key="canvasLocation" x="-491" y="-492"/>
         </viewController>
         <viewController restorationIdentifier="FeedDetailView" nibName="FeedDetailViewController" id="51" customClass="FeedDetailViewController">
             <extendedEdge key="edgesForExtendedLayout"/>
             <connections>
                 <outlet property="appDelegate" destination="3" id="58"/>
             </connections>
+            <point key="canvasLocation" x="836" y="125"/>
         </viewController>
         <viewController restorationIdentifier="StoryDetailView" nibName="StoryDetailViewController" id="92" customClass="StoryDetailViewController">
             <extendedEdge key="edgesForExtendedLayout"/>
             <connections>
                 <outlet property="appDelegate" destination="3" id="105"/>
             </connections>
+            <point key="canvasLocation" x="-677" y="-1136"/>
         </viewController>
         <viewController restorationIdentifier="StoryPageControl" nibName="StoryPageControl" automaticallyAdjustsScrollViewInsets="NO" id="170" customClass="StoryPageDelegate">
             <extendedEdge key="edgesForExtendedLayout"/>
@@ -69,6 +74,7 @@
             <connections>
                 <outlet property="appDelegate" destination="3" id="171"/>
             </connections>
+            <point key="canvasLocation" x="-1564" y="-1165"/>
         </viewController>
         <viewController nibName="LoginViewController" id="102" userLabel="Login View Controller" customClass="LoginViewController">
             <extendedEdge key="edgesForExtendedLayout"/>
@@ -76,87 +82,102 @@
             <connections>
                 <outlet property="appDelegate" destination="3" id="108"/>
             </connections>
+            <point key="canvasLocation" x="-864" y="-1781"/>
         </viewController>
         <viewController nibName="AddSiteViewController" id="121" userLabel="Add Site View Controller" customClass="AddSiteViewController">
             <extendedEdge key="edgesForExtendedLayout"/>
             <connections>
                 <outlet property="appDelegate" destination="3" id="122"/>
             </connections>
+            <point key="canvasLocation" x="-1751" y="-1809"/>
         </viewController>
         <viewController nibName="MoveSiteViewController" id="124" userLabel="Move Site View Controller" customClass="MoveSiteViewController">
             <extendedEdge key="edgesForExtendedLayout"/>
             <connections>
                 <outlet property="appDelegate" destination="3" id="125"/>
             </connections>
+            <point key="canvasLocation" x="-1051" y="-2425"/>
         </viewController>
         <viewController nibName="TrainerViewController" id="174" customClass="TrainerViewController">
             <extendedEdge key="edgesForExtendedLayout"/>
             <connections>
                 <outlet property="appDelegate" destination="3" id="175"/>
             </connections>
+            <point key="canvasLocation" x="-1190" y="125"/>
         </viewController>
         <viewController id="131" customClass="ShareViewController">
             <extendedEdge key="edgesForExtendedLayout"/>
             <connections>
                 <outlet property="appDelegate" destination="3" id="133"/>
             </connections>
+            <point key="canvasLocation" x="-49" y="800"/>
         </viewController>
         <viewController id="134" customClass="FriendsListViewController">
             <extendedEdge key="edgesForExtendedLayout"/>
             <connections>
                 <outlet property="appDelegate" destination="3" id="136"/>
             </connections>
+            <point key="canvasLocation" x="-1238" y="-3070"/>
         </viewController>
         <viewController id="Fm7-T6-awA" customClass="NotificationsViewController">
             <extendedEdge key="edgesForExtendedLayout"/>
             <connections>
                 <outlet property="appDelegate" destination="3" id="zKW-JW-oDh"/>
             </connections>
+            <point key="canvasLocation" x="-1377" y="-520"/>
         </viewController>
         <viewController id="GXC-Ze-HBm" customClass="PremiumViewController">
             <extendedEdge key="edgesForExtendedLayout"/>
             <connections>
                 <outlet property="appDelegate" destination="3" id="bdX-23-OAX"/>
             </connections>
+            <point key="canvasLocation" x="-1425" y="-3715"/>
         </viewController>
         <viewController id="146" customClass="FontSettingsViewController">
             <extendedEdge key="edgesForExtendedLayout"/>
             <connections>
                 <outlet property="appDelegate" destination="3" id="148"/>
             </connections>
+            <point key="canvasLocation" x="-1890" y="125"/>
         </viewController>
         <viewController id="141" customClass="UserProfileViewController">
             <extendedEdge key="edgesForExtendedLayout"/>
+            <point key="canvasLocation" x="20" y="-1136"/>
         </viewController>
         <viewController id="149" customClass="FirstTimeUserViewController">
             <extendedEdge key="edgesForExtendedLayout"/>
             <connections>
                 <outlet property="appDelegate" destination="3" id="160"/>
             </connections>
+            <point key="canvasLocation" x="-49" y="-1781"/>
         </viewController>
         <viewController id="152" customClass="FirstTimeUserAddSitesViewController">
             <extendedEdge key="edgesForExtendedLayout"/>
             <connections>
                 <outlet property="appDelegate" destination="3" id="157"/>
             </connections>
+            <point key="canvasLocation" x="-2264" y="-548"/>
         </viewController>
         <viewController id="150" customClass="FirstTimeUserAddFriendsViewController">
             <extendedEdge key="edgesForExtendedLayout"/>
             <connections>
                 <outlet property="appDelegate" destination="3" id="159"/>
             </connections>
+            <point key="canvasLocation" x="1533" y="125"/>
         </viewController>
         <viewController id="151" customClass="FirstTimeUserAddNewsBlurViewController">
             <extendedEdge key="edgesForExtendedLayout"/>
             <connections>
                 <outlet property="appDelegate" destination="3" id="158"/>
             </connections>
+            <point key="canvasLocation" x="-2451" y="-1193"/>
         </viewController>
         <viewController restorationIdentifier="DashboardView" id="177" customClass="DashboardViewController">
             <extendedEdge key="edgesForExtendedLayout"/>
             <connections>
                 <outlet property="appDelegate" destination="3" id="178"/>
             </connections>
+            <point key="canvasLocation" x="-2638" y="-1838"/>
         </viewController>
         <window opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" restorationIdentifier="EventWindow" id="12" customClass="EventWindow">
             <rect key="frame" x="0.0" y="0.0" width="320" height="480"/>
@@ -167,7 +188,7 @@
         <navigationController restorationIdentifier="MainNavigation" automaticallyAdjustsScrollViewInsets="NO" id="39">
             <extendedEdge key="edgesForExtendedLayout"/>
             <navigationBar key="navigationBar" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" id="41">
-                <rect key="frame" x="0.0" y="-44" width="375" height="44"/>
+                <rect key="frame" x="0.0" y="-44" width="414" height="44"/>
                 <autoresizingMask key="autoresizingMask"/>
             </navigationBar>
             <viewControllers>
@@ -176,6 +197,7 @@
                     <navigationItem key="navigationItem" title="Title" id="84"/>
                 </viewController>
             </viewControllers>
+            <point key="canvasLocation" x="139" y="153"/>
         </navigationController>
     </objects>
 </document>
