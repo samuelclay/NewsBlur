@@ -463,9 +463,9 @@ color: #a85b40;
 
 /* Background color */
 .NB-dark #simplemodal-container {
-    background-color: #252D30;
+    background-color: #2f3840;
     box-shadow: none;    
-    border: 2px solid #404040;
+    border: 2px solid #131617;
 }
 
 /* Title color */
@@ -665,6 +665,37 @@ color: #a85b40;
 /* Mute sites: Text color */
 .NB-dark .NB-feedchooser-info-counts {
     text-shadow: none;
+}
+
+.NB-dark .NB-modal-feedchooser .NB-feedchooser-info-reset {
+    text-shadow: 0 1px 0 #181818;
+}
+.NB-dark .NB-modal-feedchooser .NB-feedchooser-premium-bullets {
+    color: #A0A0A0;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.6);
+}
+.NB-dark .NB-modal-feedchooser .NB-feedchooser-premium-bullets li {
+    background-color: #3b484b;
+}
+.NB-dark .NB-modal-feedchooser .NB-feedchooser-dollar-value {
+    text-shadow: 0 1px 0 #2b2a1e;
+}
+.NB-dark .NB-modal-feedchooser .NB-selected .NB-feedchooser-dollar-month {
+    color: #8293b3;
+}
+.NB-dark .NB-modal-feedchooser .NB-selected .NB-feedchooser-dollar-year {
+    color: #697192;
+}
+.NB-dark .NB-modal-feedchooser .NB-modal-submit.NB-modal-submit-paypal {
+    background-color: #3b3725;
+    background-image: -webkit-gradient(
+    linear,
+    left bottom,
+    left top,
+    color-stop(0.16, #3b3725),
+    color-stop(0.84, #3b392e)
+    );
+    box-shadow: 0 2px 0 #383215;
 }
 
 /* Intelligence Trainer: Container color */
@@ -971,7 +1002,10 @@ text-shadow: none;
     background: transparent url("/media/embed/reader/sun_loader_dark.svg") no-repeat 0 0;
     background-size: 52px;
 }
-
+.NB-dark .NB-feeds-list-empty {
+    color: rgba(152, 152, 152, 1);
+    text-shadow: 0 1px 0 rgba(32, 32, 32, 0.4);
+}
 .NB-dark .left-pane,
 .NB-dark .NB-feedlist {
     background-color: #434543;
@@ -1427,9 +1461,11 @@ background: #191b1c;
 }
 
 /* Comment "Reply" & "Post" button color */
+.NB-dark .NB-story-comment-reply-button-wrapper {
+    background-color: #505050;
+}
 .NB-dark .NB-story-comment-reply-button-wrapper,
 .NB-dark .NB-modal-submit-green {
-    background-color: #505050;
     background-image: none;
     color: #d5d4db;
     text-shadow: none;
