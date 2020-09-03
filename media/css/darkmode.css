@@ -666,7 +666,9 @@ color: #a85b40;
 .NB-dark .NB-feedchooser-info-counts {
     text-shadow: none;
 }
-
+.NB-dark .NB-modal-feedchooser .NB-modal-subtitle b {
+    color: #85bd67;
+}
 .NB-dark .NB-modal-feedchooser .NB-feedchooser-info-reset {
     text-shadow: 0 1px 0 #181818;
 }
