@@ -965,15 +965,23 @@ public class PrefsUtils {
         return preferences.getString(PrefConstants.DEFAULT_BROWSER, DefaultBrowser.SYSTEM_DEFAULT.toString());
     }
 
-    public static void isPremium(Context context, boolean isPremium) {
+    public static void setPremium(Context context, boolean isPremium, Long premiumExpire) {
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
         Editor editor = prefs.edit();
         editor.putBoolean(PrefConstants.IS_PREMIUM, isPremium);
+        if (premiumExpire != null) {
+            editor.putLong(PrefConstants.PREMIUM_EXPIRE, premiumExpire);
+        }
         editor.commit();
     }
 
-    public static boolean isPremium(Context context) {
+    public static boolean getIsPremium(Context context) {
         SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
         return preferences.getBoolean(PrefConstants.IS_PREMIUM, false);
+    }
+
+    public static long getPremiumExpire(Context context) {
+        SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        return preferences.getLong(PrefConstants.PREMIUM_EXPIRE, -1);
     }
 }

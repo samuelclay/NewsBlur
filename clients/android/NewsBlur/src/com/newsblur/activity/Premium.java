@@ -1,15 +1,20 @@
 package com.newsblur.activity;
 
+import android.content.res.Resources;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.text.format.DateUtils;
+import android.text.TextUtils;
 import android.text.util.Linkify;
+import android.util.DisplayMetrics;
 import android.view.View;
+import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.res.ResourcesCompat;
 
 import com.android.billingclient.api.AcknowledgePurchaseParams;
 import com.android.billingclient.api.AcknowledgePurchaseResponseListener;
@@ -40,6 +45,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
+
+import nl.dionsegijn.konfetti.emitters.StreamEmitter;
+import nl.dionsegijn.konfetti.models.Shape;
+import nl.dionsegijn.konfetti.models.Size;
 
 public class Premium extends NbActivity {
 
@@ -141,7 +150,7 @@ public class Premium extends NbActivity {
     }
 
     private void verifyUserSubscriptionStatus() {
-        boolean hasNewsBlurSubscription = PrefsUtils.isPremium(this);
+        boolean hasNewsBlurSubscription = PrefsUtils.getIsPremium(this);
         Purchase playStoreSubscription = null;
         Purchase.PurchasesResult result = billingClient.queryPurchases(BillingClient.SkuType.SUBS);
         if (result.getPurchasesList() != null) {
@@ -155,21 +164,28 @@ public class Premium extends NbActivity {
         if (hasNewsBlurSubscription || playStoreSubscription != null) {
             binding.containerGoingPremium.setVisibility(View.GONE);
             binding.containerGonePremium.setVisibility(View.VISIBLE);
+            long expirationTimeMs = PrefsUtils.getPremiumExpire(this);
+            String renewalString = null;
 
-            if (playStoreSubscription != null) {
-                long expirationTimeMs = playStoreSubscription.getPurchaseTime() + DateUtils.YEAR_IN_MILLIS;
-                Date expirationDate = new Date(expirationTimeMs);
+            if (expirationTimeMs == 0) {
+                renewalString = getString(R.string.premium_subscription_no_expiration);
+            } else if (expirationTimeMs > 0) {
+                // date constructor expects ms
+                Date expirationDate = new Date(expirationTimeMs * 1000);
                 DateFormat dateFormat = new SimpleDateFormat("EEE, MMMM d, yyyy", Locale.getDefault());
                 dateFormat.setTimeZone(TimeZone.getDefault());
-                String renewalString;
-                if (playStoreSubscription.isAutoRenewing()) {
-                    renewalString = getString(R.string.premium_subscription_renewal, dateFormat.format(expirationDate));
-                } else {
+                renewalString = getString(R.string.premium_subscription_renewal, dateFormat.format(expirationDate));
+
+                if (playStoreSubscription != null && !playStoreSubscription.isAutoRenewing()) {
                     renewalString = getString(R.string.premium_subscription_expiration, dateFormat.format(expirationDate));
                 }
+            }
+
+            if (!TextUtils.isEmpty(renewalString)) {
                 binding.textSubscriptionRenewal.setText(renewalString);
                 binding.textSubscriptionRenewal.setVisibility(View.VISIBLE);
             }
+            showConfetti();
         }
 
         if (!hasNewsBlurSubscription && playStoreSubscription != null) {
@@ -254,6 +270,18 @@ public class Premium extends NbActivity {
                             .build();
             billingClient.acknowledgePurchase(acknowledgePurchaseParams, acknowledgePurchaseResponseListener);
         }
+    }
+
+    private void showConfetti() {
+        binding.konfetti.build()
+                .addColors(Color.YELLOW, Color.GREEN, Color.MAGENTA, Color.BLUE, Color.CYAN, Color.RED)
+                .setDirection(90)
+                .setFadeOutEnabled(true)
+                .setTimeToLive(1000L)
+                .addShapes(Shape.Square.INSTANCE, Shape.Circle.INSTANCE)
+                .addSizes(new Size(10, 5f))
+                .setPosition(0, binding.konfetti.getWidth() + 0f , -50f,  -20f)
+                .streamFor(100, StreamEmitter.INDEFINITE);
     }
 
     private void notifyNewsBlurOfSubscription() {
