@@ -27,6 +27,7 @@ public class PrefConstants {
 	public final static String USER_SHARED_STORIES_COUNT = "shared_stories_count";
 
 	public static final String IS_PREMIUM = "is_premium";
+	public static final String PREMIUM_EXPIRE = "premium_expire";
 	
 	public static final String PREFERENCE_TEXT_SIZE = "default_reading_text_size";
 	public static final String PREFERENCE_LIST_TEXT_SIZE = "list_text_size";

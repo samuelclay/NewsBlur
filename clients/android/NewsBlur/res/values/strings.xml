@@ -269,6 +269,7 @@
     <string name="premium_title_gone_premium">Thank you for going premium!</string>
     <string name="premium_subscription_renewal">Your premium subscription is set to\nrenew on %s</string>
     <string name="premium_subscription_expiration">Your premium subscription is set\nto expire on %s</string>
+    <string name="premium_subscription_no_expiration">Your premium subscription is set\nto never expire. Whoa!</string>
     <string name="premium_subtitle">Upgrading to a NewsBlur premium subscription gives you all of these features. Payments will be charged to your Play Store account at confirmation of purchase. Subscription renew unless auto-renew is turned off at least 24 hours before the end of the current period. Cancel at any time from Account Settings in Play Store.</string>
     <string name="premium_policies"><![CDATA[See NewsBlur\'s <a href="https://newsblur.com/privacy">privacy policy</a> and <a href="https://newsblur.com/tos">terms of use</a> for details.]]></string>
     <string name="premium_subscription_title">NewsBlur Premium Subscription</string>

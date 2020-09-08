@@ -35,6 +35,7 @@ public class FeedFolderResponse {
 	
 	public boolean isAuthenticated;
     public boolean isPremium;
+    public long premiumExpire;
     public boolean isStaff;
 	public int starredCount;
 	
@@ -52,6 +53,7 @@ public class FeedFolderResponse {
         if (userProfile != null) {
             JsonObject profile = (JsonObject) userProfile;
             this.isPremium = profile.get("is_premium").getAsBoolean();
+            this.premiumExpire = profile.get("premium_expire").getAsLong();
         }
 
 		JsonElement starredCountElement = asJsonObject.get("starred_count");
