@@ -8,13 +8,15 @@ import android.widget.ImageView;
 
 import com.newsblur.R;
 import com.newsblur.domain.Feed;
-import com.newsblur.util.PrefsUtils;
+import com.newsblur.util.FeedUtils;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
-public class WidgetConfigAdapter extends FeedChooserAdapter {
+public class MuteConfigAdapter extends FeedChooserAdapter {
 
-    WidgetConfigAdapter(Context context) {
+    MuteConfigAdapter(Context context) {
         super(context);
     }
 
@@ -23,23 +25,25 @@ public class WidgetConfigAdapter extends FeedChooserAdapter {
         View groupView = super.getGroupView(groupPosition, isExpanded, convertView, parent);
 
         groupView.setOnClickListener(v -> {
-            ArrayList<Feed> folderChild = WidgetConfigAdapter.this.folderChildren.get(groupPosition);
-            // check all is selected
-            boolean allSelected = true;
+            ArrayList<Feed> folderChild = MuteConfigAdapter.this.folderChildren.get(groupPosition);
+            boolean allAreMute = true;
             for (Feed feed : folderChild) {
-                if (!feedIds.contains(feed.feedId)) {
-                    allSelected = false;
+                if (feed.active) {
+                    allAreMute = false;
                     break;
                 }
             }
+
+            Set<String> feedIds = new HashSet<>(folderChild.size());
             for (Feed feed : folderChild) {
-                if (allSelected) {
-                    feedIds.remove(feed.feedId);
-                } else {
-                    feedIds.add(feed.feedId);
-                }
+                // flip active flag
+                feed.active = allAreMute;
+                feedIds.add(feed.feedId);
             }
-            setWidgetFeedIds(parent.getContext());
+
+            // if allAreMute initially, we need to unMute feeds
+            if (allAreMute) FeedUtils.unmuteFeeds(groupView.getContext(), feedIds);
+            else FeedUtils.muteFeeds(groupView.getContext(), feedIds);
             notifyDataChanged();
         });
         return groupView;
@@ -51,22 +55,20 @@ public class WidgetConfigAdapter extends FeedChooserAdapter {
         final Feed feed = folderChildren.get(groupPosition).get(childPosition);
         final CheckBox checkBox = childView.findViewById(R.id.check_box);
         final ImageView imgToggle = childView.findViewById(R.id.img_toggle);
-        checkBox.setVisibility(View.VISIBLE);
-        imgToggle.setVisibility(View.GONE);
+        checkBox.setVisibility(View.GONE);
+        imgToggle.setVisibility(View.VISIBLE);
+
+        if (feed.active) imgToggle.setBackgroundResource(R.drawable.mute_feed_on);
+        else imgToggle.setBackgroundResource(R.drawable.mute_feed_off);
 
         childView.setOnClickListener(v -> {
-            checkBox.setChecked(!checkBox.isChecked());
-            if (checkBox.isChecked()) {
-                feedIds.add(feed.feedId);
-            } else {
-                feedIds.remove(feed.feedId);
-            }
-            setWidgetFeedIds(parent.getContext());
+            feed.active = !feed.active;
+            Set<String> feedIds = new HashSet<>(1);
+            feedIds.add(feed.feedId);
+            if (feed.active) FeedUtils.unmuteFeeds(childView.getContext(), feedIds);
+            else FeedUtils.muteFeeds(childView.getContext(), feedIds);
+            notifyDataChanged();
         });
         return childView;
-    }
-
-    private void setWidgetFeedIds(Context context) {
-        PrefsUtils.setWidgetFeedIds(context, feedIds);
     }
 }

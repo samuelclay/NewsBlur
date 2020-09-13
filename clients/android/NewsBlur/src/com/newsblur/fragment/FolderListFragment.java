@@ -11,6 +11,8 @@ import android.os.Bundle;
 import androidx.fragment.app.DialogFragment;
 import androidx.loader.app.LoaderManager;
 import androidx.loader.content.Loader;
+
+import android.os.Handler;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -35,6 +37,7 @@ import com.newsblur.activity.GlobalSharedStoriesItemsList;
 import com.newsblur.activity.InfrequentItemsList;
 import com.newsblur.activity.ItemsList;
 import com.newsblur.activity.Main;
+import com.newsblur.activity.MuteConfig;
 import com.newsblur.activity.NbActivity;
 import com.newsblur.activity.ReadStoriesItemsList;
 import com.newsblur.activity.SavedStoriesItemsList;
@@ -139,6 +142,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
                     checkOpenFolderPreferences();
                     firstCursorSeenYet = true;
                     pushUnreadCounts();
+                    checkAccountFeedsLimit();
                     break;
                 case SAVEDCOUNT_LOADER:
                     adapter.setStarredCountCursor(cursor);
@@ -580,6 +584,15 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 		}
 		return true;
 	}
+
+	private void checkAccountFeedsLimit() {
+        new Handler().postDelayed(() -> {
+            if (adapter.totalActiveFeedCount > AppConstants.FREE_ACCOUNT_SITE_LIMIT && !PrefsUtils.getIsPremium(requireContext())) {
+                Intent intent = new Intent(requireActivity(), MuteConfig.class);
+                startActivity(intent);
+            }
+        }, 2000);
+    }
 
     private void openSavedSearch(SavedSearch savedSearch) {
         Intent intent = null;

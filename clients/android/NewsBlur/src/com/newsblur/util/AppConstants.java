@@ -98,4 +98,7 @@ public class AppConstants {
     // Premium subscription SKU
     public final static String PREMIUM_SKU = "nb.premium.36";
 
+    // Free standard account sites limit
+    public final static int FREE_ACCOUNT_SITE_LIMIT = 64;
+
 }
