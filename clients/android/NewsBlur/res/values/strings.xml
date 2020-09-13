@@ -29,6 +29,7 @@
 	<string name="description_profile_picture">The user\'s profile picture</string>
 	<string name="description_row_folder_icon">folder icon</string>
     <string name="description_row_feed_icon">feed icon</string>
+    <string name="description_row_feed_mute_toggle">feed mute toggle</string>
     <string name="description_activity_icon">An icon illustrating the user\'s activity</string>
     <string name="description_follow_button">Follow or unfollow a user</string>
     <string name="description_comment_user">Comment user image</string>
@@ -184,6 +185,8 @@
     <string name="menu_folder_view">Folder View</string>
     <string name="menu_folder_view_nested">Nested</string>
     <string name="menu_folder_view_flat">Flat</string>
+    <string name="menu_mute_all">Mute All</string>
+    <string name="menu_mute_none">Mute None</string>
     <string name="menu_select_all">Select All</string>
     <string name="menu_select_none">Select None</string>
     <string name="menu_widget_background">Widget Background</string>
@@ -256,6 +259,7 @@
     <string name="feed_stories_per_month">%d stories/month</string>
     
     <string name="settings">Preferences</string>
+    <string name="mute_sites">Mute Sites</string>
     <string name="widget">Widget</string>
     <string name="title_widget_setup">Tap to setup in NewsBlur</string>
     <string name="title_no_subscriptions">No active subscriptions detected</string>
@@ -291,6 +295,10 @@
     <string name="settings_enable_image_prefetch_sum">Pre-fetch images for offline reading</string>
     <string name="settings_keep_old_stories">Keep Stories after Reading</string>
     <string name="settings_keep_old_stories_sum">Disable to reduce storage usage</string>
+
+    <string name="mute_config_title">You can follow up to 64 sites with a free standard account</string>
+    <string name="mute_config_message">Please mute %d sites or reset to most popular sites.</string>
+    <string name="mute_config_reset_button">RESET TO POPULAR SITES</string>
 
     <string name="menu_network_select">Download Using</string>
     <string name="menu_network_select_sum">Restrict background data to chosen networks</string>

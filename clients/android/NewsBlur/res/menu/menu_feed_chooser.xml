@@ -55,6 +55,12 @@
         </menu>
     </item>
     <item
+        android:id="@+id/menu_mute_all"
+        android:title="@string/menu_mute_all" />
+    <item
+        android:id="@+id/menu_mute_none"
+        android:title="@string/menu_mute_none" />
+    <item
         android:id="@+id/menu_select_all"
         android:title="@string/menu_select_all" />
     <item

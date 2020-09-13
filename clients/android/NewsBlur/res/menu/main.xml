@@ -21,6 +21,10 @@
           android:title="@string/settings"
           android:showAsAction="never" />
 
+    <item android:id="@+id/menu_mute_sites"
+        android:title="@string/mute_sites"
+        android:showAsAction="never" />
+
     <item android:id="@+id/menu_widget"
         android:title="@string/widget"
         android:showAsAction="never" />

@@ -131,6 +131,10 @@
 
         <activity
             android:name=".activity.Premium" />
+
+        <activity
+            android:name=".activity.MuteConfig"
+            android:launchMode="singleTask"/>
         
         <activity 
             android:name=".activity.SearchForFeeds" android:launchMode="singleTop" >
