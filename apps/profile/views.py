@@ -108,16 +108,17 @@ def signup(request):
     recaptcha = request.POST.get('g-recaptcha-response', None)
     recaptcha_error = None
     
-    if not recaptcha:
-        recaptcha_error = "Please hit the \"I'm not a robot\" button."
-    else:
-        response = requests.post('https://www.google.com/recaptcha/api/siteverify', {
-            'secret': settings.RECAPTCHA_SECRET_KEY,
-            'response': recaptcha,
-        })
-        result = response.json()
-        if not result['success']:
-            recaptcha_error = "Really, please hit the \"I'm not a robot\" button."
+    if settings.ENFORCE_SIGNUP_CAPTCHA:
+        if not recaptcha:
+            recaptcha_error = "Please hit the \"I'm not a robot\" button."
+        else:
+            response = requests.post('https://www.google.com/recaptcha/api/siteverify', {
+                'secret': settings.RECAPTCHA_SECRET_KEY,
+                'response': recaptcha,
+            })
+            result = response.json()
+            if not result['success']:
+                recaptcha_error = "Really, please hit the \"I'm not a robot\" button."
 
     if request.method == "POST":
         form = SignupForm(data=request.POST, prefix="signup")
