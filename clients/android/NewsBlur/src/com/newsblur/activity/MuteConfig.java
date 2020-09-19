@@ -1,11 +1,16 @@
 package com.newsblur.activity;
 
 import android.app.AlertDialog;
+import android.content.Intent;
 import android.database.Cursor;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
+
+import androidx.core.content.ContextCompat;
 
 import com.newsblur.R;
 import com.newsblur.databinding.ActivityMuteConfigBinding;
@@ -15,15 +20,17 @@ import com.newsblur.service.NBSyncService;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
+import com.newsblur.util.UIUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-public class MuteConfig extends FeedChooser {
+public class MuteConfig extends FeedChooser implements MuteConfigAdapter.FeedStateChangedListener {
 
     private ActivityMuteConfigBinding binding;
+    private boolean checkedInitFeedsLimit = false;
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
@@ -56,7 +63,7 @@ public class MuteConfig extends FeedChooser {
 
     @Override
     void setupList() {
-        adapter = new MuteConfigAdapter(this);
+        adapter = new MuteConfigAdapter(this, this);
         binding.listView.setAdapter(adapter);
     }
 
@@ -74,7 +81,6 @@ public class MuteConfig extends FeedChooser {
 
     @Override
     void processData() {
-        int activeSites = 0;
         if (folders != null && feeds != null) {
             for (Folder folder : folders) {
                 ArrayList<Feed> children = new ArrayList<>();
@@ -83,21 +89,14 @@ public class MuteConfig extends FeedChooser {
                     if (!children.contains(feed)) {
                         children.add(feed);
                     }
-                    if (feed != null && feed.active) {
-                        activeSites++;
-                    }
                 }
                 folderNames.add(folder.flatName());
                 folderChildren.add(children);
             }
 
             setAdapterData();
-
-            // free standard accounts can follow up to 64 sites
-            boolean isPremium = PrefsUtils.getIsPremium(this);
-            if (!isPremium && activeSites > AppConstants.FREE_ACCOUNT_SITE_LIMIT) {
-                showAccountFeedsLimitDialog(activeSites - AppConstants.FREE_ACCOUNT_SITE_LIMIT);
-            }
+            syncActiveFeedCount();
+            checkedInitFeedsLimit = true;
         }
     }
 
@@ -126,6 +125,34 @@ public class MuteConfig extends FeedChooser {
         }
     }
 
+    @Override
+    public void onFeedStateChanged() {
+        syncActiveFeedCount();
+    }
+
+    private void syncActiveFeedCount() {
+        // free standard accounts can follow up to 64 sites
+        boolean isPremium = PrefsUtils.getIsPremium(this);
+        if (!isPremium && feeds != null) {
+            int activeSites = 0;
+            for (Feed feed : feeds) {
+                if (feed.active) {
+                    activeSites++;
+                }
+            }
+            int textColorRes = activeSites > AppConstants.FREE_ACCOUNT_SITE_LIMIT ? R.color.negative : R.color.positive;
+            binding.textSites.setTextColor(ContextCompat.getColor(this, textColorRes));
+            binding.textSites.setText(String.format(getString(R.string.mute_config_sites), activeSites, AppConstants.FREE_ACCOUNT_SITE_LIMIT));
+            showSitesCount();
+
+            if (activeSites > AppConstants.FREE_ACCOUNT_SITE_LIMIT && !checkedInitFeedsLimit) {
+                showAccountFeedsLimitDialog(activeSites - AppConstants.FREE_ACCOUNT_SITE_LIMIT);
+            }
+        } else {
+            hideSitesCount();
+        }
+    }
+
     private void setFeedsState(boolean isMute) {
         for (Feed feed : feeds) {
             feed.active = !isMute;
@@ -140,9 +167,27 @@ public class MuteConfig extends FeedChooser {
         new AlertDialog.Builder(this)
                 .setTitle(R.string.mute_config_title)
                 .setMessage(String.format(getString(R.string.mute_config_message), exceededLimitCount))
-                .setPositiveButton(android.R.string.ok, null)
-                .setNeutralButton(R.string.mute_config_reset_button, (dialogInterface, i) -> resetToPopularFeeds())
+                .setNeutralButton(android.R.string.ok, null)
+                .setPositiveButton(R.string.mute_config_upgrade, (dialogInterface, i) -> openUpgradeToPremium())
                 .show();
+    }
+
+    private void showSitesCount() {
+        ViewGroup.LayoutParams oldLayout = binding.listView.getLayoutParams();
+        FrameLayout.LayoutParams newLayout = new FrameLayout.LayoutParams(oldLayout);
+        newLayout.topMargin = UIUtils.dp2px(this, 56);
+        binding.listView.setLayoutParams(newLayout);
+        binding.containerSitesCount.setVisibility(View.VISIBLE);
+        binding.textResetSites.setOnClickListener(view -> resetToPopularFeeds());
+    }
+
+    private void hideSitesCount() {
+        ViewGroup.LayoutParams oldLayout = binding.listView.getLayoutParams();
+        FrameLayout.LayoutParams newLayout = new FrameLayout.LayoutParams(oldLayout);
+        newLayout.topMargin = UIUtils.dp2px(this, 0);
+        binding.listView.setLayoutParams(newLayout);
+        binding.containerSitesCount.setVisibility(View.GONE);
+        binding.textResetSites.setOnClickListener(null);
     }
 
     // reset to most popular sites based on subscribers
@@ -165,6 +210,12 @@ public class MuteConfig extends FeedChooser {
         }
         FeedUtils.unmuteFeeds(this, activeFeedIds);
         FeedUtils.muteFeeds(this, inactiveFeedIds);
+        finish();
+    }
+
+    private void openUpgradeToPremium() {
+        Intent intent = new Intent(this, Premium.class);
+        startActivity(intent);
         finish();
     }
 }

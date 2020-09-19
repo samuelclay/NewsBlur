@@ -299,6 +299,8 @@
     <string name="mute_config_title">You can follow up to 64 sites with a free standard account</string>
     <string name="mute_config_message">Please mute %d sites or reset to most popular sites.</string>
     <string name="mute_config_reset_button">RESET TO POPULAR SITES</string>
+    <string name="mute_config_upgrade">UPGRADE</string>
+    <string name="mute_config_sites">%s/%s</string>
 
     <string name="menu_network_select">Download Using</string>
     <string name="menu_network_select_sum">Restrict background data to chosen networks</string>

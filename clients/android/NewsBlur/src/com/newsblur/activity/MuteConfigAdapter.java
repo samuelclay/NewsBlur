@@ -16,8 +16,11 @@ import java.util.Set;
 
 public class MuteConfigAdapter extends FeedChooserAdapter {
 
-    MuteConfigAdapter(Context context) {
+    private FeedStateChangedListener listener;
+
+    MuteConfigAdapter(Context context, FeedStateChangedListener listener) {
         super(context);
+        this.listener = listener;
     }
 
     @Override
@@ -44,6 +47,8 @@ public class MuteConfigAdapter extends FeedChooserAdapter {
             // if allAreMute initially, we need to unMute feeds
             if (allAreMute) FeedUtils.unmuteFeeds(groupView.getContext(), feedIds);
             else FeedUtils.muteFeeds(groupView.getContext(), feedIds);
+
+            listener.onFeedStateChanged();
             notifyDataChanged();
         });
         return groupView;
@@ -67,8 +72,15 @@ public class MuteConfigAdapter extends FeedChooserAdapter {
             feedIds.add(feed.feedId);
             if (feed.active) FeedUtils.unmuteFeeds(childView.getContext(), feedIds);
             else FeedUtils.muteFeeds(childView.getContext(), feedIds);
+
+            listener.onFeedStateChanged();
             notifyDataChanged();
         });
         return childView;
+    }
+
+    interface FeedStateChangedListener {
+
+        void onFeedStateChanged();
     }
 }
