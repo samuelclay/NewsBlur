@@ -86,6 +86,12 @@ def do_roledefs(split=False):
 def list_do():
     droplets = assign_digitalocean_roledefs(split=True)
     pprint(droplets)
+
+    # Uncomment below to print all IP addresses
+    # for group in droplets.values():
+    #     for server in group:
+    #         if 'address' in server:
+    #             print(server['address'])
     
     doapi = digitalocean.Manager(token=django_settings.DO_TOKEN_FABRIC)
     droplets = doapi.get_all_droplets()
