@@ -253,7 +253,10 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 //        [self.feedTitlesTable selectRowAtIndexPath:self.currentRowAtIndexPath
 //                                          animated:NO 
 //                                    scrollPosition:UITableViewScrollPositionNone];
-        [self hideNotifier];
+        
+        if (self.notifier.pendingHide) {
+            [self hideNotifier];
+        }
     }
     
     if (self.searchFeedIds) {
