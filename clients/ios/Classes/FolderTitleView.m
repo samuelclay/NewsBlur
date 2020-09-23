@@ -248,7 +248,7 @@
         allowLongPress = NO;
     } else if ([folderName isEqual:@"saved_searches"]) {
         folderImage = [UIImage imageNamed:@"g_icn_search.png"];
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
             folderImageViewX = 10;
         } else {
             folderImageViewX = 7;

@@ -157,7 +157,7 @@
                                                  name:@"TapAndHoldNotification"
                                                object:nil];
 
-    _orientation = [UIApplication sharedApplication].statusBarOrientation;
+    _orientation = self.appDelegate.window.windowScene.interfaceOrientation;
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch {
@@ -315,8 +315,8 @@
         [appDelegate.feedDetailViewController.view endEditing:YES];
     }
 
-    if (_orientation != [UIApplication sharedApplication].statusBarOrientation) {
-        _orientation = [UIApplication sharedApplication].statusBarOrientation;
+    if (_orientation != self.appDelegate.window.windowScene.interfaceOrientation) {
+        _orientation = self.appDelegate.window.windowScene.interfaceOrientation;
         NSLog(@"Found stale orientation in story detail: %@", NSStringFromCGSize(self.view.bounds.size));
     }
     
@@ -345,7 +345,7 @@
 //          self.webView.scrollView.contentSize.height);
 
     [coordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
-        self->_orientation = [UIApplication sharedApplication].statusBarOrientation;
+        self->_orientation = self.appDelegate.window.windowScene.interfaceOrientation;
         [self changeWebViewWidth];
         [self drawFeedGradient];
         [self scrollToLastPosition:NO];
@@ -354,7 +354,7 @@
 }
 
 - (void)viewWillLayoutSubviews {
-    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+    UIInterfaceOrientation orientation = self.appDelegate.window.windowScene.interfaceOrientation;
     [super viewWillLayoutSubviews];
     dispatch_async(dispatch_get_main_queue(), ^{
         [self.appDelegate.storyPageControl layoutForInterfaceOrientation:orientation];
@@ -409,7 +409,7 @@
 }
 
 - (void)drawStory {
-    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+    UIInterfaceOrientation orientation = self.appDelegate.window.windowScene.interfaceOrientation;
     [self drawStory:NO withOrientation:orientation];
 }
 
@@ -1329,7 +1329,7 @@
         BOOL isHorizontal = appDelegate.storyPageControl.isHorizontal;
         BOOL isNavBarHidden = appDelegate.storyPageControl.isNavigationBarHidden;
         
-        if (self.webView.scrollView.contentOffset.y < (-1 * self.feedTitleGradient.frame.size.height + 1 + self.webView.scrollView.scrollIndicatorInsets.top)) {
+        if (self.webView.scrollView.contentOffset.y < (-1 * self.feedTitleGradient.frame.size.height + 1 + self.webView.scrollView.verticalScrollIndicatorInsets.top)) {
             // Pulling
             if (!pullingScrollview) {
                 pullingScrollview = YES;
@@ -2385,7 +2385,7 @@
 //    NSLog(@"changeWebViewWidth: %@ / %@ / %@", NSStringFromCGSize(self.view.bounds.size), NSStringFromCGSize(webView.scrollView.bounds.size), NSStringFromCGSize(webView.scrollView.contentSize));
 
     NSInteger contentWidth = CGRectGetWidth(webView.scrollView.bounds);
-    UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
+    UIInterfaceOrientation orientation = self.appDelegate.window.windowScene.interfaceOrientation;
     NSString *contentWidthClass;
 
 #if TARGET_OS_MACCATALYST

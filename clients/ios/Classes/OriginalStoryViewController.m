@@ -324,12 +324,12 @@
     activeUrl = [[webView URL] absoluteString];
     finishedLoading = NO;
 
-    [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
+//    [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
 }
 
 - (void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation {
     [MBProgressHUD hideHUDForView:self.webView animated:YES];
-    [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+//    [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
     [self updateTitle:self.webView];
     finishedLoading = YES;
     [self resetProgressBar];
@@ -337,7 +337,7 @@
 
 - (void)webView:(WKWebView *)webView didFailLoadWithError:(NSError *)error
 {
-    [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+//    [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
     
 //    if (error.code == 102 && [error.domain isEqual:@"WebKitErrorDomain"]) {    }
 

@@ -192,7 +192,7 @@
     }
     
     [coordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
-        UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+        UIInterfaceOrientation orientation = self.appDelegate.window.windowScene.interfaceOrientation;
         //    leftBorder.frame = CGRectMake(0, 0, 1, CGRectGetHeight(self.view.bounds));
         
         if (UIInterfaceOrientationIsPortrait(orientation) && !self.storyTitlesOnLeft) {
@@ -293,7 +293,7 @@
         return self.appDelegate.compactWidth;
     }
     
-    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+    UIInterfaceOrientation orientation = self.appDelegate.window.windowScene.interfaceOrientation;
 	if (UIInterfaceOrientationIsLandscape(orientation)) {
         return NB_DEFAULT_MASTER_WIDTH_LANDSCAPE;
     }
@@ -452,7 +452,7 @@
     CGRect vb = [self.view bounds];
     rightBorder.frame = CGRectMake(self.masterWidth-1, 0, 1, CGRectGetHeight(self.view.bounds));
 
-    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+    UIInterfaceOrientation orientation = self.appDelegate.window.windowScene.interfaceOrientation;
 	if (UIInterfaceOrientationIsPortrait(orientation) && !self.storyTitlesOnLeft) {
         // add the back button
         self.storyPageControl.navigationItem.leftBarButtonItem = self.storyPageControl.buttonBack;
@@ -625,7 +625,7 @@
     }
     
     CGRect vb = [self.view bounds];
-    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+    UIInterfaceOrientation orientation = self.appDelegate.window.windowScene.interfaceOrientation;
 	if (UIInterfaceOrientationIsPortrait(orientation) && !self.storyTitlesOnLeft) {
         // Force the story page control to load.
         [storyPageControl view];
@@ -726,7 +726,7 @@
 }
 
 - (void)transitionToOriginalView:(BOOL)resetLayout {
-    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+    UIInterfaceOrientation orientation = self.appDelegate.window.windowScene.interfaceOrientation;
     CGRect vb = [self.view bounds];
     
     self.originalViewIsVisible = YES;
@@ -806,7 +806,7 @@
 
 - (void)interactiveTransitionFromOriginalView:(CGFloat)percentage {
     CGRect vb = [self.view bounds];
-    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+    UIInterfaceOrientation orientation = self.appDelegate.window.windowScene.interfaceOrientation;
     
     if (UIInterfaceOrientationIsPortrait(orientation) && !self.storyTitlesOnLeft) {
 //        CGRect originalNavFrame = self.originalNavigationController.view.frame;
@@ -882,7 +882,7 @@
     [self.view insertSubview:self.dashboardViewController.view atIndex:0];
     [self.view addSubview:self.masterNavigationController.view];
     
-    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+    UIInterfaceOrientation orientation = self.appDelegate.window.windowScene.interfaceOrientation;
 	if (UIInterfaceOrientationIsPortrait(orientation) && !self.storyTitlesOnLeft) {
         // CASE: story titles on bottom
         if (resetLayout) {
@@ -984,7 +984,7 @@
         self.isHidingStory = YES; // the flag allows the keyboard animation to also slide down the share view
         [self.shareViewController.commentField resignFirstResponder];
     } else {
-        UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+        UIInterfaceOrientation orientation = self.appDelegate.window.windowScene.interfaceOrientation;
         if (UIInterfaceOrientationIsPortrait(orientation) && !self.storyTitlesOnLeft) {
             self.storyNavigationController.view.frame = CGRectMake(self.storyNavigationController.view.frame.origin.x,
                                                                    0,
@@ -1098,7 +1098,7 @@
     NSDictionary *userInfo = notification.userInfo;
     NSTimeInterval duration = [[userInfo objectForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue];
     UIViewAnimationCurve curve = [[userInfo objectForKey:UIKeyboardAnimationCurveUserInfoKey] intValue];
-    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+    UIInterfaceOrientation orientation = self.appDelegate.window.windowScene.interfaceOrientation;
     CGRect vb = [self.view bounds];
     CGRect keyboardFrame = [[userInfo objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
     CGRect storyNavigationFrame = self.storyNavigationController.view.frame;

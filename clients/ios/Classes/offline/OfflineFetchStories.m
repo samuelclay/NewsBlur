@@ -52,7 +52,7 @@
     if ([hashes count] == 0) {
 //        NSLog(@"Finished downloading unread stories. %d total", appDelegate.totalUnfetchedStoryCount);
         dispatch_async(dispatch_get_main_queue(), ^{
-            [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+//            [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
             
             if ([[NSUserDefaults standardUserDefaults] boolForKey:@"offline_text_download"]) {
                 [self.appDelegate.feedsViewController showCachingNotifier:@"Text" progress:0 hoursBack:1];
@@ -86,9 +86,9 @@
         [lock signal];
     }];
     
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
-    });
+//    dispatch_async(dispatch_get_main_queue(), ^{
+//        [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
+//    });
     
     [lock waitUntilDate:[NSDate dateWithTimeIntervalSinceNow:30]];
     [lock unlock];

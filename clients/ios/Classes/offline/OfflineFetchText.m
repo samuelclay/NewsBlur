@@ -97,17 +97,17 @@
         }];
     }
     
-    dispatch_sync(dispatch_get_main_queue(), ^{
-        [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
-    });
+//    dispatch_sync(dispatch_get_main_queue(), ^{
+//        [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
+//    });
     dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
     NSLog(@"Queue finished: %ld total (%ld remaining)", (long)self.appDelegate.totalUncachedTextCount, (long)self.appDelegate.remainingUncachedTextCount);
     
     [self updateProgress];
     
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
-    });
+//    dispatch_async(dispatch_get_main_queue(), ^{
+//        [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+//    });
     
     return YES;
 }

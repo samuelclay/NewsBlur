@@ -119,11 +119,7 @@
     [self.scrollView sizeToFit];
 //    NSLog(@"Scroll view frame post 2: %@", NSStringFromCGRect(self.scrollView.frame));
     
-    if (@available(iOS 13.0, *)) {
-        self.statusBarHeight = appDelegate.window.windowScene.statusBarManager.statusBarFrame.size.height;
-    } else {
-        self.statusBarHeight = [UIApplication sharedApplication].statusBarFrame.size.height;
-    }
+    self.statusBarHeight = appDelegate.window.windowScene.statusBarManager.statusBarFrame.size.height;
     
     // adding HUD for progress bar
     CGFloat radius = 8;
@@ -241,7 +237,7 @@
                          options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld
                          context:nil];
     
-    _orientation = [UIApplication sharedApplication].statusBarOrientation;
+    _orientation = appDelegate.window.windowScene.interfaceOrientation;
     
     [self addKeyCommandWithInput:UIKeyInputDownArrow modifierFlags:0 action:@selector(changeToNextPage:) discoverabilityTitle:@"Next Story"];
     [self addKeyCommandWithInput:@"j" modifierFlags:0 action:@selector(changeToNextPage:) discoverabilityTitle:@"Next Story"];
@@ -364,7 +360,7 @@
                                              style:UIBarButtonItemStylePlain
                                              target:nil action:nil];
     
-    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+    UIInterfaceOrientation orientation = appDelegate.window.windowScene.interfaceOrientation;
     [self layoutForInterfaceOrientation:orientation];
     [self adjustDragBar:orientation];
     [self reorientPages];
@@ -437,8 +433,8 @@
     
     [coordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
 //        NSLog(@"---> Story page control is re-orienting: %@ / %@", NSStringFromCGSize(self.scrollView.bounds.size), NSStringFromCGSize(size));
-        UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
-        self->_orientation = [UIApplication sharedApplication].statusBarOrientation;
+        UIInterfaceOrientation orientation = appDelegate.window.windowScene.interfaceOrientation;
+        self->_orientation = orientation;
         [self layoutForInterfaceOrientation:orientation];
         [self adjustDragBar:orientation];
         [self reorientPages];
@@ -479,7 +475,7 @@
         self.scrollViewTopConstraint.constant = 0;
     }
     
-    UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
+    UIInterfaceOrientation orientation = appDelegate.window.windowScene.interfaceOrientation;
     [self layoutForInterfaceOrientation:orientation];
     [self adjustDragBar:orientation];
 }
@@ -507,7 +503,7 @@
 }
 
 - (BOOL)allowFullscreen {
-    if (UI_USER_INTERFACE_IDIOM() != UIUserInterfaceIdiomPhone || self.presentedViewController != nil) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] != UIUserInterfaceIdiomPhone || self.presentedViewController != nil) {
         return NO;
     }
     
@@ -784,7 +780,7 @@
 }
 
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
-    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+    UIInterfaceOrientation orientation = appDelegate.window.windowScene.interfaceOrientation;
     
     if (!self.isPhoneOrCompact &&
         UIInterfaceOrientationIsPortrait(orientation)) {
@@ -804,7 +800,7 @@
 }
 
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
-    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+    UIInterfaceOrientation orientation = appDelegate.window.windowScene.interfaceOrientation;
     
     if (!self.isPhoneOrCompact &&
         UIInterfaceOrientationIsPortrait(orientation)) {
@@ -1621,7 +1617,7 @@
 }
 
 - (void)updateStatusBarTheme {
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
         [self.statusBarBackgroundView removeFromSuperview];
         
         CGRect statusRect = CGRectMake(0, 0, self.view.bounds.size.width, self.statusBarHeight);

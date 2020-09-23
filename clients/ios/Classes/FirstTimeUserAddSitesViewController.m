@@ -73,7 +73,7 @@
     
     
     UIActivityIndicatorView *activityView = [[UIActivityIndicatorView alloc] 
-                                             initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
+                                             initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleMedium];
     activityView.frame = CGRectMake(68, 7, 20, 20.0);
     self.activityIndicator = activityView;
 }

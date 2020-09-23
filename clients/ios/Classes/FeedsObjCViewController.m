@@ -166,7 +166,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     self.view.backgroundColor = UIColorFromRGB(0xf4f4f4);
     self.navigationController.navigationBar.tintColor = UIColorFromRGB(0x8F918B);
     self.navigationController.navigationBar.translucent = NO;
-    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+    UIInterfaceOrientation orientation = self.appDelegate.window.windowScene.interfaceOrientation;
     [self layoutForInterfaceOrientation:orientation];
     
     UILongPressGestureRecognizer *longpress = [[UILongPressGestureRecognizer alloc]
@@ -387,7 +387,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
     
     [coordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
-        UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+        UIInterfaceOrientation orientation = self.appDelegate.window.windowScene.interfaceOrientation;
         [self layoutForInterfaceOrientation:orientation];
         [self.notifier setNeedsLayout];
     } completion:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
@@ -425,7 +425,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 
 - (void)updateIntelligenceControlForOrientation:(UIInterfaceOrientation)orientation {
     if (orientation == UIInterfaceOrientationUnknown) {
-        orientation = [UIApplication sharedApplication].statusBarOrientation;
+        orientation = self.appDelegate.window.windowScene.interfaceOrientation;
     }
     
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad && !UIInterfaceOrientationIsLandscape(orientation)) {
@@ -2254,7 +2254,7 @@ heightForHeaderInSection:(NSInteger)section {
 
 - (void)layoutHeaderCounts:(UIInterfaceOrientation)orientation {
     if (!orientation) {
-        orientation = [UIApplication sharedApplication].statusBarOrientation;
+        orientation = self.appDelegate.window.windowScene.interfaceOrientation;
     }
     
     BOOL isShort = NO;

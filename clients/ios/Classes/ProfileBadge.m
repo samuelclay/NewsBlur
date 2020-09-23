@@ -159,7 +159,7 @@
     [self.contentView addSubview:self.followButton];
     
     // ACTIVITY INDICATOR
-    UIActivityIndicatorView *activityView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+    UIActivityIndicatorView *activityView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleMedium];
     activityView.frame = CGRectMake(40, 98, 20, 20.0);
     self.activityIndicator = activityView;
     
