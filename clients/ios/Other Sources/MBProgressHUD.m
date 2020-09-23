@@ -487,7 +487,7 @@ static const CGFloat kDetailsLabelFontSize = 12.f;
             // Update to indeterminate indicator
             [indicator removeFromSuperview];
             self.indicator = MB_AUTORELEASE([[UIActivityIndicatorView alloc]
-                                             initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge]);
+                                             initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleLarge]);
             [(UIActivityIndicatorView *)indicator startAnimating];
             [self addSubview:indicator];
         }
@@ -749,7 +749,7 @@ static const CGFloat kDetailsLabelFontSize = 12.f;
         [self setNeedsDisplay];
     }
     
-    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+    UIInterfaceOrientation orientation = [UIApplication sharedApplication].delegate.window.windowScene.interfaceOrientation;
     CGFloat radians = 0;
     if (UIInterfaceOrientationIsLandscape(orientation)) {
         if (orientation == UIInterfaceOrientationLandscapeLeft) { radians = -(CGFloat)M_PI_2; }

@@ -1168,7 +1168,7 @@
         [self.masterContainerViewController presentViewController:self.ftuxNavigationController animated:YES completion:nil];
         
         self.ftuxNavigationController.view.superview.frame = CGRectMake(0, 0, 540, 540);//it's important to do this after 
-        UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+        UIInterfaceOrientation orientation = self.window.windowScene.interfaceOrientation;
         if (UIInterfaceOrientationIsPortrait(orientation)) {
             self.ftuxNavigationController.view.superview.center = self.view.center;
         } else {
@@ -1739,7 +1739,7 @@
 }
 
 - (BOOL)isPortrait {
-    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;        
+    UIInterfaceOrientation orientation = self.window.windowScene.interfaceOrientation;
     if (orientation == UIInterfaceOrientationPortrait || orientation == UIInterfaceOrientationPortraitUpsideDown) {
         return YES;
     } else {

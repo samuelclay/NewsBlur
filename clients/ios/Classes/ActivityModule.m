@@ -318,7 +318,7 @@
         cell.textLabel.text = @"Loading...";
         
         UIActivityIndicatorView *spinner = [[UIActivityIndicatorView alloc] 
-                                            initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+                                            initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleMedium];
         UIImage *spacer = [UIImage imageNamed:@"spacer"];
         UIGraphicsBeginImageContext(spinner.frame.size);        
         [spacer drawInRect:CGRectMake(0, 0, spinner.frame.size.width,spinner.frame.size.height)];

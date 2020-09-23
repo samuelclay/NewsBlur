@@ -188,7 +188,7 @@
     self.progressBar.hidden = YES;
 
     if (style == NBLoadingStyle) {
-        UIActivityIndicatorView *activityIndicator = [[UIActivityIndicatorView alloc]initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
+        UIActivityIndicatorView *activityIndicator = [[UIActivityIndicatorView alloc]initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleMedium];
         [activityIndicator startAnimating];
         self.accessoryView = activityIndicator;
     } else if (style == NBOfflineStyle) {
@@ -203,7 +203,7 @@
         self.accessoryView = imageView;
         self.progressBar.hidden = NO;
     } else if (style == NBSyncingStyle) {
-        UIActivityIndicatorView *activityIndicator = [[UIActivityIndicatorView alloc]initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
+        UIActivityIndicatorView *activityIndicator = [[UIActivityIndicatorView alloc]initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleMedium];
         [activityIndicator startAnimating];
         self.accessoryView = activityIndicator;        
     } else if (style == NBDoneStyle) {

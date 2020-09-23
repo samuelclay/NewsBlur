@@ -86,7 +86,7 @@
         CGFloat yOffset = 0;
         CGFloat xOffset = isOnSignUpScreen ? -viewWidth : 0;
         
-        if (UIInterfaceOrientationIsPortrait([[UIApplication sharedApplication] statusBarOrientation])) {
+        if (UIInterfaceOrientationIsPortrait(self.appDelegate.window.windowScene.interfaceOrientation)) {
             yOffset = viewSize.height / 6;
         }
         

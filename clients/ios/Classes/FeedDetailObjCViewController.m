@@ -328,7 +328,7 @@
     [self.storyTitlesTable reloadData];
     
     [coordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
-        UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+        UIInterfaceOrientation orientation = self.appDelegate.window.windowScene.interfaceOrientation;
         [self setUserAvatarLayout:orientation];
         [self.notifier setNeedsLayout];
     } completion:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
@@ -342,7 +342,7 @@
     
     self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];
     
-    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+    UIInterfaceOrientation orientation = self.appDelegate.window.windowScene.interfaceOrientation;
     [self setUserAvatarLayout:orientation];
     self.finishedAnimatingIn = NO;
     [MBProgressHUD hideHUDForView:self.view animated:NO];
@@ -500,7 +500,7 @@
     
     [self.searchBar resignFirstResponder];
     [self.appDelegate hidePopoverAnimated:YES];
-    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+    UIInterfaceOrientation orientation = self.appDelegate.window.windowScene.interfaceOrientation;
     
     if (self.isMovingToParentViewController) {
         appDelegate.inFindingStoryMode = NO;
@@ -1387,7 +1387,7 @@
         UIImage *img = [UIImage imageNamed:@"fleuron.png"];
         UIImageView *fleuron = [[UIImageView alloc] initWithImage:img];
         
-        UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+        UIInterfaceOrientation orientation = self.appDelegate.window.windowScene.interfaceOrientation;
         if (!self.isPhoneOrCompact
             && !appDelegate.masterContainerViewController.storyTitlesOnLeft
             && UIInterfaceOrientationIsPortrait(orientation)) {
@@ -1599,7 +1599,7 @@
     cell.textSize = self.textSize;
     cell.isShort = NO;
     
-    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+    UIInterfaceOrientation orientation = self.appDelegate.window.windowScene.interfaceOrientation;
     if (!self.isPhoneOrCompact &&
         !appDelegate.masterContainerViewController.storyTitlesOnLeft &&
         UIInterfaceOrientationIsPortrait(orientation)) {
@@ -1834,7 +1834,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 }
 
 - (BOOL)isShortTitles {
-    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+    UIInterfaceOrientation orientation = self.appDelegate.window.windowScene.interfaceOrientation;
     
     return !self.isPhoneOrCompact &&
         !appDelegate.masterContainerViewController.storyTitlesOnLeft &&
