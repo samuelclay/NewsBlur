@@ -1217,6 +1217,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:indexPath.section];
     id feedId = [[appDelegate.dictFolders objectForKey:folderName] objectAtIndex:indexPath.row];
     NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
+    BOOL isSavedSearch = [appDelegate isSavedSearch:feedIdStr];
     NSString *searchQuery = [appDelegate searchQueryForFeedId:feedIdStr];
     NSString *searchFolder = [appDelegate searchFolderForFeedId:feedIdStr];
     feedIdStr = [appDelegate feedIdWithoutSearchQuery:feedIdStr];
@@ -1230,7 +1231,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     if (self.searchFeedIds && !isSaved) {
         isOmitted = ![self.searchFeedIds containsObject:feedIdStr];
     } else {
-        isOmitted = [appDelegate isFolderCollapsed:folderName] || ![self isFeedVisible:feedIdStr];
+        isOmitted = [appDelegate isFolderCollapsed:folderName] || !([self isFeedVisible:feedIdStr] || isSavedSearch);
     }
     
     if (isOmitted) {
@@ -1770,7 +1771,9 @@ heightForHeaderInSection:(NSInteger)section {
     NSDictionary *unreadCounts = self.appDelegate.dictUnreadCounts[feedId];
     NSIndexPath *stillVisible = self.stillVisibleFeeds[feedId];
     if (!stillVisible && self.appDelegate.isSavedStoriesIntelligenceMode) {
-        return [self.appDelegate savedStoriesCountForFeed:feedId] > 0 || [self.appDelegate isSavedFeed:feedId];
+        return [self.appDelegate savedStoriesCountForFeed:feedId] > 0 || [self.appDelegate isSavedFeed:feedId] || [self.appDelegate isSavedSearch:feedId];
+    } else if (!stillVisible && [self.appDelegate isSavedSearch:feedId]) {
+        return YES;
     } else if (!stillVisible &&
         appDelegate.selectedIntelligence >= 1 &&
         [[unreadCounts objectForKey:@"ps"] intValue] <= 0) {
