@@ -292,7 +292,7 @@
     [self.feedsViewController refreshHeaderCounts];
 }
 
-- (BOOL)application:(UIApplication *)application shouldSaveApplicationState:(NSCoder *)coder {
+- (BOOL)application:(UIApplication *)application shouldSaveSecureApplicationState:(NSCoder *)coder {
     return YES;
 }
 
@@ -301,7 +301,7 @@
     [coder encodeObject:[NSDate date] forKey:@"last_saved_state_date"];
 }
 
-- (BOOL)application:(UIApplication *)application shouldRestoreApplicationState:(NSCoder *)coder {
+- (BOOL)application:(UIApplication *)application shouldRestoreSecureApplicationState:(NSCoder *)coder {
     NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
     NSString *option = [preferences stringForKey:@"restore_state"];
     
@@ -402,6 +402,7 @@
     self.title = @"All";
 }
 
+//TODO: replace this with a BGAppRefreshTask in the BackgroundTasks framework
 - (void)application:(UIApplication *)application
     performFetchWithCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
     [self createDatabaseConnection];
@@ -545,10 +546,7 @@
     }];
 }
 
-- (BOOL)application:(UIApplication *)application
-            openURL:(NSURL *)url
-  sourceApplication:(NSString *)sourceApplication
-         annotation:(id)annotation {
+- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
     if (self.activeUsername && [url.scheme isEqualToString:@"newsblurwidget"]) {
         NSMutableDictionary *query = [NSMutableDictionary dictionary];
         
@@ -1340,7 +1338,7 @@
     return UIModalPresentationNone;
 }
 
-- (void)popoverPresentationControllerDidDismissPopover:(UIPopoverPresentationController *)popoverPresentationController {
+- (void)presentationControllerDidDismiss:(UIPresentationController *)presentationController {
     [self.feedsNavigationController.topViewController becomeFirstResponder];
 }
 
