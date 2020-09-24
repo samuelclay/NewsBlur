@@ -37,6 +37,7 @@
     CGFloat scrollPct;
 }
 
+@property (nonatomic, strong) NewsBlurAppDelegate *appDelegate;
 @property (nonatomic) StoryDetailViewController *currentPage;
 @property (nonatomic) StoryDetailViewController *nextPage;
 @property (nonatomic) StoryDetailViewController *previousPage;

@@ -856,9 +856,9 @@ CGRect IASKCGRectSwap(CGRect rect);
             
             mailViewController.mailComposeDelegate = vc;
             _currentChildViewController = mailViewController;
-            UIStatusBarStyle savedStatusBarStyle = [UIApplication sharedApplication].statusBarStyle;
+//            UIStatusBarStyle savedStatusBarStyle = [UIApplication sharedApplication].statusBarStyle;
             [vc presentViewController:mailViewController animated:YES completion:^{
-			    [UIApplication sharedApplication].statusBarStyle = savedStatusBarStyle;
+//			    [UIApplication sharedApplication].statusBarStyle = savedStatusBarStyle;
             }];
 			
         } else {

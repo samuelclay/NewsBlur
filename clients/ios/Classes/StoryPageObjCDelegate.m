@@ -36,6 +36,7 @@
 
 @implementation StoryPageObjCDelegate
 
+@synthesize appDelegate;
 @synthesize currentPage, nextPage, previousPage;
 @synthesize circularProgressView;
 @synthesize separatorBarButton;
@@ -433,7 +434,7 @@
     
     [coordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
 //        NSLog(@"---> Story page control is re-orienting: %@ / %@", NSStringFromCGSize(self.scrollView.bounds.size), NSStringFromCGSize(size));
-        UIInterfaceOrientation orientation = appDelegate.window.windowScene.interfaceOrientation;
+        UIInterfaceOrientation orientation = self.appDelegate.window.windowScene.interfaceOrientation;
         self->_orientation = orientation;
         [self layoutForInterfaceOrientation:orientation];
         [self adjustDragBar:orientation];

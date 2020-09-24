@@ -116,13 +116,9 @@
     angle_ = 0;
     timerInterval_ = 0.01;
     
-    [UIView beginAnimations:nil context:NULL];
-	[UIView setAnimationDelegate:self];
-	[UIView setAnimationDuration:1];
-	[UIView setAnimationCurve:UIViewAnimationCurveEaseIn];
-	
-	timer_ = [NSTimer scheduledTimerWithTimeInterval: timerInterval_ target: self selector:@selector(handleTimer:) userInfo: nil repeats: YES];
-	[UIView commitAnimations];
+    [UIView animateWithDuration:1 delay:0 options:UIViewAnimationOptionCurveEaseIn animations:^{
+        self.timer_ = [NSTimer scheduledTimerWithTimeInterval: self.timerInterval_ target: self selector:@selector(handleTimer:) userInfo: nil repeats: YES];
+    } completion:nil];
 }
 
 -(void)handleTimer:(NSTimer *)timer

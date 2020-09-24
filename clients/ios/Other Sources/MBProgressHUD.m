@@ -322,13 +322,12 @@ static const CGFloat kDetailsLabelFontSize = 12.f;
     self.showStarted = [NSDate date];
     // Fade in
     if (animated) {
-        [UIView beginAnimations:nil context:NULL];
-        [UIView setAnimationDuration:0.30];
-        self.alpha = 1.0f;
-        if (animationType == MBProgressHUDAnimationZoomIn || animationType == MBProgressHUDAnimationZoomOut) {
-            self.transform = rotationTransform;
-        }
-        [UIView commitAnimations];
+        [UIView animateWithDuration:0.3 animations:^{
+            self.alpha = 1.0f;
+            if (animationType == MBProgressHUDAnimationZoomIn || animationType == MBProgressHUDAnimationZoomOut) {
+                self.transform = rotationTransform;
+            }
+        }];
     }
     else {
         self.alpha = 1.0f;
@@ -338,30 +337,25 @@ static const CGFloat kDetailsLabelFontSize = 12.f;
 - (void)hideUsingAnimation:(BOOL)animated {
     // Fade out
     if (animated && showStarted) {
-        [UIView beginAnimations:nil context:NULL];
-        [UIView setAnimationDuration:0.30];
-        [UIView setAnimationDelegate:self];
-        [UIView setAnimationDidStopSelector:@selector(animationFinished:finished:context:)];
-        // 0.02 prevents the hud from passing through touches during the animation the hud will get completely hidden
-        // in the done method
-        if (animationType == MBProgressHUDAnimationZoomIn) {
-            self.transform = CGAffineTransformConcat(rotationTransform, CGAffineTransformMakeScale(1.5f, 1.5f));
-        } else if (animationType == MBProgressHUDAnimationZoomOut) {
-            self.transform = CGAffineTransformConcat(rotationTransform, CGAffineTransformMakeScale(0.5f, 0.5f));
-        }
-        
-        self.alpha = 0.02f;
-        [UIView commitAnimations];
+        [UIView animateWithDuration:0.3 animations:^{
+            // 0.02 prevents the hud from passing through touches during the animation the hud will get completely hidden
+            // in the done method
+            if (animationType == MBProgressHUDAnimationZoomIn) {
+                self.transform = CGAffineTransformConcat(rotationTransform, CGAffineTransformMakeScale(1.5f, 1.5f));
+            } else if (animationType == MBProgressHUDAnimationZoomOut) {
+                self.transform = CGAffineTransformConcat(rotationTransform, CGAffineTransformMakeScale(0.5f, 0.5f));
+            }
+            
+            self.alpha = 0.02f;
+        } completion:^(BOOL finished) {
+            [self done];
+        }];
     }
     else {
         self.alpha = 0.0f;
         [self done];
     }
     self.showStarted = nil;
-}
-
-- (void)animationFinished:(NSString *)animationID finished:(BOOL)finished context:(void*)context {
-    [self done];
 }
 
 - (void)done {
@@ -719,15 +713,15 @@ static const CGFloat kDetailsLabelFontSize = 12.f;
 #pragma mark - Notifications
 
 - (void)registerForNotifications {
-    NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
-    
-    [nc addObserver:self selector:@selector(statusBarOrientationDidChange:)
-               name:UIApplicationDidChangeStatusBarOrientationNotification object:nil];
+//    NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+//
+//    [nc addObserver:self selector:@selector(statusBarOrientationDidChange:)
+//               name:UIApplicationDidChangeStatusBarOrientationNotification object:nil];
 }
 
 - (void)unregisterFromNotifications {
-    NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
-    [nc removeObserver:self name:UIApplicationDidChangeStatusBarOrientationNotification object:nil];
+//    NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+//    [nc removeObserver:self name:UIApplicationDidChangeStatusBarOrientationNotification object:nil];
 }
 
 - (void)statusBarOrientationDidChange:(NSNotification *)notification {
@@ -763,12 +757,11 @@ static const CGFloat kDetailsLabelFontSize = 12.f;
     rotationTransform = CGAffineTransformMakeRotation(radians);
     
     if (animated) {
-        [UIView beginAnimations:nil context:nil];
-        [UIView setAnimationDuration:0.3];
-    }
-    [self setTransform:rotationTransform];
-    if (animated) {
-        [UIView commitAnimations];
+        [UIView animateWithDuration:0.3 animations:^{
+            [self setTransform:rotationTransform];
+        }];
+    } else {
+        [self setTransform:rotationTransform];
     }
 }
 
