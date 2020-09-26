@@ -833,12 +833,10 @@
     if (system_font_enabled) {
         [hiddenSet addObjectsFromArray:@[@"feed_list_font_size"]];
     }
-    if (@available(iOS 13.0, *)) {
-        BOOL theme_follow_system = [[NSUserDefaults standardUserDefaults] boolForKey:@"theme_follow_system"];
-        if (theme_follow_system) {
-            [hiddenSet addObjectsFromArray:@[@"theme_auto_toggle", @"theme_auto_brightness", @"theme_style", @"theme_gesture"]];
-            [[ThemeManager themeManager] updateForSystemAppearance];
-        }
+    BOOL theme_follow_system = [[NSUserDefaults standardUserDefaults] boolForKey:@"theme_follow_system"];
+    if (theme_follow_system) {
+        [hiddenSet addObjectsFromArray:@[@"theme_auto_toggle", @"theme_auto_brightness", @"theme_style", @"theme_gesture"]];
+        [[ThemeManager themeManager] updateForSystemAppearance];
     }
     BOOL theme_auto_toggle = [[NSUserDefaults standardUserDefaults] boolForKey:@"theme_auto_toggle"];
     if (theme_auto_toggle) {
@@ -2306,11 +2304,8 @@
     activity.userInfo = @{};
     activity.requiredUserInfoKeys = [NSSet new];
     activity.eligibleForSearch = YES;
-    
-    if (@available(iOS 12.0, *)) {
-        activity.eligibleForPrediction = YES;
-        activity.suggestedInvocationPhrase = @"Refresh NewsBlur";
-    }
+    activity.eligibleForPrediction = YES;
+    activity.suggestedInvocationPhrase = @"Refresh NewsBlur";
     
     CSSearchableItemAttributeSet *attributes = [[CSSearchableItemAttributeSet alloc] initWithItemContentType:(NSString *)kUTTypeItem];
     
@@ -2352,11 +2347,8 @@
     activity.userInfo = @{@"folder" : folder};
     activity.requiredUserInfoKeys = [NSSet setWithObject:@"folder"];
     activity.eligibleForSearch = YES;
-    
-    if (@available(iOS 12.0, *)) {
-        activity.eligibleForPrediction = YES;
-        activity.suggestedInvocationPhrase = activity.title;
-    }
+    activity.eligibleForPrediction = YES;
+    activity.suggestedInvocationPhrase = activity.title;
     
     CSSearchableItemAttributeSet *attributes = [[CSSearchableItemAttributeSet alloc] initWithItemContentType:(NSString *)kUTTypeItem];
     
@@ -2386,10 +2378,8 @@
         activity.requiredUserInfoKeys = [NSSet setWithArray:@[@"feedID"]];
     }
     
-    if (@available(iOS 12.0, *)) {
-        activity.eligibleForPrediction = YES;
-        activity.suggestedInvocationPhrase = activity.title;
-    }
+    activity.eligibleForPrediction = YES;
+    activity.suggestedInvocationPhrase = activity.title;
     
     CSSearchableItemAttributeSet *attributes = [[CSSearchableItemAttributeSet alloc] initWithItemContentType:(NSString *)kUTTypeItem];
     BOOL isSocial = [self isSocialFeed:feedID];
@@ -3052,10 +3042,7 @@
     self.markReadMenuViewController.olderNewerStory = olderNewerStory;
     self.markReadMenuViewController.extraItems = extraItems;
     self.markReadMenuViewController.completionHandler = completionHandler;
-    
-    if (@available(iOS 13.0, *)) {
-        self.markReadMenuViewController.menuTableView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentAlways;
-    }
+    self.markReadMenuViewController.menuTableView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentAlways;
     
     [self showPopoverWithViewController:self.markReadMenuViewController contentSize:CGSizeZero barButtonItem:barButtonItem sourceView:sourceView sourceRect:sourceRect permittedArrowDirections:UIPopoverArrowDirectionAny];
 }

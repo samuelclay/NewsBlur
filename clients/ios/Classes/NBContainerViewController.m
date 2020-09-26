@@ -238,11 +238,7 @@
         return NO;
     }
     
-    if (@available(iOS 11.0, *)) {
-        return self.navigationController.navigationBarHidden && self.view.safeAreaInsets.top > 0.0;
-    } else {
-        return self.navigationController.navigationBarHidden;
-    }
+    return self.navigationController.navigationBarHidden && self.view.safeAreaInsets.top > 0.0;
 }
 
 - (void)adjustLayoutCompleted:(BOOL)completed {

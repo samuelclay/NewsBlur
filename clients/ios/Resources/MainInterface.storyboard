@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17154" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="6pv-7g-17r">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17503.1" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="6pv-7g-17r">
     <device id="ipad11_0rounded" orientation="landscape" layout="fullscreen" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17124"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17502"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -237,6 +237,34 @@ Coming soon!</string>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="w4a-3K-Zqk" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-546" y="1835"/>
+        </scene>
+        <!--Horizontal Page View Controller-->
+        <scene sceneID="Dnt-lB-G3h">
+            <objects>
+                <pageViewController storyboardIdentifier="HorizontalPageViewController" autoresizesArchivedViewToFullSize="NO" useStoryboardIdentifierAsRestorationIdentifier="YES" transitionStyle="scroll" navigationOrientation="horizontal" spineLocation="none" id="NRu-rJ-Lar" customClass="HorizontalPageViewController" customModule="NewsBlur" customModuleProvider="target" sceneMemberID="viewController">
+                    <connections>
+                        <outlet property="dataSource" destination="9g1-OD-yDA" id="ZvM-5d-Jt9"/>
+                        <outlet property="delegate" destination="9g1-OD-yDA" id="d2R-hZ-LWX"/>
+                    </connections>
+                </pageViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="y78-Tv-B24" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+                <customObject id="9g1-OD-yDA" customClass="HorizontalPageDelegate" customModule="NewsBlur" customModuleProvider="target"/>
+            </objects>
+            <point key="canvasLocation" x="181" y="2603"/>
+        </scene>
+        <!--Vertical Page View Controller-->
+        <scene sceneID="jpJ-mR-ccR">
+            <objects>
+                <pageViewController storyboardIdentifier="VerticalPageViewController" autoresizesArchivedViewToFullSize="NO" useStoryboardIdentifierAsRestorationIdentifier="YES" transitionStyle="scroll" navigationOrientation="vertical" spineLocation="none" id="CMe-mI-71o" customClass="VerticalPageViewController" customModule="NewsBlur" customModuleProvider="target" sceneMemberID="viewController">
+                    <connections>
+                        <outlet property="dataSource" destination="aFI-Ht-5Fb" id="0Pj-ia-UN8"/>
+                        <outlet property="delegate" destination="aFI-Ht-5Fb" id="Mem-e0-ujx"/>
+                    </connections>
+                </pageViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="rdh-By-bOV" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+                <customObject id="aFI-Ht-5Fb" customClass="VerticalPageDelegate" customModule="NewsBlur" customModuleProvider="target"/>
+            </objects>
+            <point key="canvasLocation" x="181" y="3363"/>
         </scene>
         <!--Feed Detail View Controller-->
         <scene sceneID="P4B-M4-aIa">

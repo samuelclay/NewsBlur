@@ -354,10 +354,7 @@
     [self.themeSegmentedControl setDividerImage:blankImage forLeftSegmentState:UIControlStateNormal rightSegmentState:UIControlStateNormal barMetrics:UIBarMetricsDefault];
     self.themeSegmentedControl.tintColor = [UIColor clearColor];
     self.themeSegmentedControl.backgroundColor = [UIColor clearColor];
-    
-    if (@available(iOS 13.0, *)) {
-        self.themeSegmentedControl.selectedSegmentTintColor = [UIColor clearColor];
-    }
+    self.themeSegmentedControl.selectedSegmentTintColor = [UIColor clearColor];
     
     [cell addSubview:self.themeSegmentedControl];
     

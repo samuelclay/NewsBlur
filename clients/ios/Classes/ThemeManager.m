@@ -28,10 +28,8 @@ NSString * const ThemeStyleDark = @"dark";
 - (UIStatusBarStyle)preferredStatusBarStyle {
     if ([ThemeManager themeManager].isDarkTheme) {
         return UIStatusBarStyleLightContent;
-    } else if (@available(iOS 13.0, *)) {
-        return UIStatusBarStyleDarkContent;
     } else {
-        return UIStatusBarStyleDefault;
+        return UIStatusBarStyleDarkContent;
     }
 }
 
@@ -235,23 +233,17 @@ NSString * const ThemeStyleDark = @"dark";
 
 - (void)updateSegmentedControl:(UISegmentedControl *)segmentedControl {
     segmentedControl.tintColor = UIColorFromRGB(0x8F918B);
+    segmentedControl.backgroundColor = UIColorFromLightDarkRGB(0xe7e6e7, 0x303030);
+    segmentedControl.selectedSegmentTintColor = UIColorFromLightDarkRGB(0xffffff, 0x6f6f75);
     
-    if (@available(iOS 13.0, *)) {
-        segmentedControl.backgroundColor = UIColorFromLightDarkRGB(0xe7e6e7, 0x303030);
-        segmentedControl.selectedSegmentTintColor = UIColorFromLightDarkRGB(0xffffff, 0x6f6f75);
-        
-        [self updateTextAttributesForSegmentedControl:segmentedControl forState:UIControlStateNormal foregroundColor:UIColorFromLightDarkRGB(0x909090, 0xaaaaaa)];
-        [self updateTextAttributesForSegmentedControl:segmentedControl forState:UIControlStateSelected foregroundColor:UIColorFromLightDarkRGB(0x0, 0xffffff)];
-    }
+    [self updateTextAttributesForSegmentedControl:segmentedControl forState:UIControlStateNormal foregroundColor:UIColorFromLightDarkRGB(0x909090, 0xaaaaaa)];
+    [self updateTextAttributesForSegmentedControl:segmentedControl forState:UIControlStateSelected foregroundColor:UIColorFromLightDarkRGB(0x0, 0xffffff)];
 }
 
 - (void)updateThemeSegmentedControl:(UISegmentedControl *)segmentedControl {
     segmentedControl.tintColor = [UIColor clearColor];
-    
-    if (@available(iOS 13.0, *)) {
-        segmentedControl.backgroundColor = [UIColor clearColor];
-        segmentedControl.selectedSegmentTintColor = [UIColor clearColor];
-    }
+    segmentedControl.backgroundColor = [UIColor clearColor];
+    segmentedControl.selectedSegmentTintColor = [UIColor clearColor];
 }
 
 - (void)debugColor:(NSInteger)rgbValue {
@@ -413,11 +405,9 @@ NSString * const ThemeStyleDark = @"dark";
 }
 
 - (void)updateForSystemAppearance {
-    if (@available(iOS 12.0, *)) {
-        BOOL isDark = self.appDelegate.window.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark;
-        
-        [self systemAppearanceDidChange:isDark];
-    }
+    BOOL isDark = self.appDelegate.window.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark;
+    
+    [self systemAppearanceDidChange:isDark];
 }
 
 - (void)systemAppearanceDidChange:(BOOL)isDark {

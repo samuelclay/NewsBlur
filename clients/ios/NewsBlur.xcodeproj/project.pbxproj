@@ -14,11 +14,15 @@
 		170E3CCD24F8A3A2009CE819 /* FeedsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 170E3CCC24F8A3A2009CE819 /* FeedsViewController.swift */; };
 		170E3CCF24F8A5D8009CE819 /* SplitViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 170E3CCE24F8A5D8009CE819 /* SplitViewController.swift */; };
 		170E3CD124F8A664009CE819 /* SplitViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 170E3CD024F8A664009CE819 /* SplitViewDelegate.swift */; };
-		170E3CD324F8A89B009CE819 /* StoryPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 170E3CD224F8A89B009CE819 /* StoryPageViewController.swift */; };
+		170E3CD324F8A89B009CE819 /* HorizontalPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 170E3CD224F8A89B009CE819 /* HorizontalPageViewController.swift */; };
 		170E3CD524F8A981009CE819 /* StoryPageDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 170E3CD424F8A981009CE819 /* StoryPageDelegate.swift */; };
 		170E3CD724F8AB0D009CE819 /* FeedDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 170E3CD624F8AB0D009CE819 /* FeedDetailViewController.swift */; };
 		1715D02B2166B3F900227731 /* PremiumManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 1715D02A2166B3F900227731 /* PremiumManager.m */; };
 		1721C9D12497F91A00B0EDC4 /* mute_gray.png in Resources */ = {isa = PBXBuildFile; fileRef = 1721C9D02497F91900B0EDC4 /* mute_gray.png */; };
+		172AD25E251D9011000BB264 /* VerticalPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 172AD25D251D9011000BB264 /* VerticalPageViewController.swift */; };
+		172AD264251D901D000BB264 /* HorizontalPageDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 172AD263251D901D000BB264 /* HorizontalPageDelegate.swift */; };
+		172AD26A251D9028000BB264 /* VerticalPageDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 172AD269251D9028000BB264 /* VerticalPageDelegate.swift */; };
+		172AD274251D9F40000BB264 /* Storyboards.swift in Sources */ = {isa = PBXBuildFile; fileRef = 172AD273251D9F40000BB264 /* Storyboards.swift */; };
 		17362ADD23639B4E00A0FCCC /* OfflineFetchText.m in Sources */ = {isa = PBXBuildFile; fileRef = 17362ADC23639B4E00A0FCCC /* OfflineFetchText.m */; };
 		1740C6881C10FD75005EA453 /* theme_color_dark.png in Resources */ = {isa = PBXBuildFile; fileRef = 1740C6841C10FD75005EA453 /* theme_color_dark.png */; };
 		1740C6891C10FD75005EA453 /* theme_color_light.png in Resources */ = {isa = PBXBuildFile; fileRef = 1740C6851C10FD75005EA453 /* theme_color_light.png */; };
@@ -675,12 +679,16 @@
 		170E3CCC24F8A3A2009CE819 /* FeedsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedsViewController.swift; sourceTree = "<group>"; };
 		170E3CCE24F8A5D8009CE819 /* SplitViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplitViewController.swift; sourceTree = "<group>"; };
 		170E3CD024F8A664009CE819 /* SplitViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplitViewDelegate.swift; sourceTree = "<group>"; };
-		170E3CD224F8A89B009CE819 /* StoryPageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryPageViewController.swift; sourceTree = "<group>"; };
+		170E3CD224F8A89B009CE819 /* HorizontalPageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HorizontalPageViewController.swift; sourceTree = "<group>"; };
 		170E3CD424F8A981009CE819 /* StoryPageDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryPageDelegate.swift; sourceTree = "<group>"; };
 		170E3CD624F8AB0D009CE819 /* FeedDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedDetailViewController.swift; sourceTree = "<group>"; };
 		1715D0292166B3F900227731 /* PremiumManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PremiumManager.h; sourceTree = "<group>"; };
 		1715D02A2166B3F900227731 /* PremiumManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PremiumManager.m; sourceTree = "<group>"; };
 		1721C9D02497F91900B0EDC4 /* mute_gray.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = mute_gray.png; sourceTree = "<group>"; };
+		172AD25D251D9011000BB264 /* VerticalPageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerticalPageViewController.swift; sourceTree = "<group>"; };
+		172AD263251D901D000BB264 /* HorizontalPageDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HorizontalPageDelegate.swift; sourceTree = "<group>"; };
+		172AD269251D9028000BB264 /* VerticalPageDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerticalPageDelegate.swift; sourceTree = "<group>"; };
+		172AD273251D9F40000BB264 /* Storyboards.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Storyboards.swift; sourceTree = "<group>"; };
 		17362ADB23639B4E00A0FCCC /* OfflineFetchText.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = OfflineFetchText.h; path = offline/OfflineFetchText.h; sourceTree = "<group>"; };
 		17362ADC23639B4E00A0FCCC /* OfflineFetchText.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = OfflineFetchText.m; path = offline/OfflineFetchText.m; sourceTree = "<group>"; };
 		1740C6841C10FD75005EA453 /* theme_color_dark.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = theme_color_dark.png; sourceTree = "<group>"; };
@@ -1888,7 +1896,10 @@
 		431B857415A1324200DCE497 /* Story */ = {
 			isa = PBXGroup;
 			children = (
-				170E3CD224F8A89B009CE819 /* StoryPageViewController.swift */,
+				170E3CD224F8A89B009CE819 /* HorizontalPageViewController.swift */,
+				172AD263251D901D000BB264 /* HorizontalPageDelegate.swift */,
+				172AD25D251D9011000BB264 /* VerticalPageViewController.swift */,
+				172AD269251D9028000BB264 /* VerticalPageDelegate.swift */,
 				170E3CD424F8A981009CE819 /* StoryPageDelegate.swift */,
 				FF6A233016448E0700E15989 /* StoryPageObjCDelegate.h */,
 				FF6A233116448E0700E15989 /* StoryPageObjCDelegate.m */,
@@ -2370,6 +2381,7 @@
 				FFE5322E144C8AC300ACFDE0 /* Utilities.m */,
 				43D818A115B940C200733444 /* DataUtilities.h */,
 				43D818A215B940C200733444 /* DataUtilities.m */,
+				172AD273251D9F40000BB264 /* Storyboards.swift */,
 				170E3CCE24F8A5D8009CE819 /* SplitViewController.swift */,
 				170E3CD024F8A664009CE819 /* SplitViewDelegate.swift */,
 				176A5C7924F8BD1B009E8DF9 /* DetailViewController.swift */,
@@ -3388,6 +3400,7 @@
 				FFC0E5AC1F7AC00A0023B9D9 /* AFImageDownloader.m in Sources */,
 				FFC0E5AE1F7AC00A0023B9D9 /* AFNetworkActivityIndicatorManager.m in Sources */,
 				FFC0E5B11F7AC00A0023B9D9 /* AFNetworkReachabilityManager.m in Sources */,
+				172AD26A251D9028000BB264 /* VerticalPageDelegate.swift in Sources */,
 				FFC0E5B31F7AC00A0023B9D9 /* AFSecurityPolicy.m in Sources */,
 				FFC0E5B51F7AC00A0023B9D9 /* AFURLRequestSerialization.m in Sources */,
 				FFC0E5B71F7AC00A0023B9D9 /* AFURLResponseSerialization.m in Sources */,
@@ -3397,7 +3410,7 @@
 				FFC0E5C01F7AC00A0023B9D9 /* UIImageView+AFNetworking.m in Sources */,
 				FFC0E5C31F7AC00A0023B9D9 /* UIProgressView+AFNetworking.m in Sources */,
 				FFC0E5C51F7AC00A0023B9D9 /* UIRefreshControl+AFNetworking.m in Sources */,
-				170E3CD324F8A89B009CE819 /* StoryPageViewController.swift in Sources */,
+				170E3CD324F8A89B009CE819 /* HorizontalPageViewController.swift in Sources */,
 				17EB50601BE46A900021358B /* FontListViewController.m in Sources */,
 				FF0FAEB117B084D2008651F9 /* OfflineCleanImages.m in Sources */,
 				43F44B1C159D8DBC00F48F8A /* FeedTableCell.m in Sources */,
@@ -3425,6 +3438,7 @@
 				17731A9D23DFAD3D00759A7D /* ImportExportPreferences.swift in Sources */,
 				FFD1D7311459B63500E46F89 /* BaseViewController.m in Sources */,
 				FF34FD6D1E9D93CB0062F8ED /* IASKSwitch.m in Sources */,
+				172AD25E251D9011000BB264 /* VerticalPageViewController.swift in Sources */,
 				FF9B8BB217F2351A0036A41C /* NBBarButtonItem.m in Sources */,
 				FF2D8CE514893BC000057B80 /* MoveSiteViewController.m in Sources */,
 				433323CD158968ED0025064D /* FirstTimeUserViewController.m in Sources */,
@@ -3471,6 +3485,7 @@
 				43ABBCAA15B53A1400EA3111 /* InteractionCell.m in Sources */,
 				FF8D1ECF1BAA311000725D8A /* SBJson4StreamTokeniser.m in Sources */,
 				FF8D1ED81BAA33BA00725D8A /* NSObject+SBJSON.m in Sources */,
+				172AD274251D9F40000BB264 /* Storyboards.swift in Sources */,
 				FF34FD651E9D93CB0062F8ED /* IASKSettingsStore.m in Sources */,
 				43D818A315B940C200733444 /* DataUtilities.m in Sources */,
 				FF03AFFD19F881380063002A /* ARChromeActivity.m in Sources */,
@@ -3490,6 +3505,7 @@
 				FFA045B419CA49D700618DC4 /* SloppySwiper.m in Sources */,
 				E160F0571C9DAC2C00CB96DF /* UIViewController+HidePopover.m in Sources */,
 				FFDE35CC161B8F870034BFDE /* FolderTitleView.m in Sources */,
+				172AD264251D901D000BB264 /* HorizontalPageDelegate.swift in Sources */,
 				E1C44B0B200147ED002128AD /* StoryTitleAttributedString.m in Sources */,
 				170E3CD524F8A981009CE819 /* StoryPageDelegate.swift in Sources */,
 				FFDE35DA161D12250034BFDE /* UnreadCountView.m in Sources */,

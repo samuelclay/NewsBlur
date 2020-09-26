@@ -134,9 +134,7 @@
     self.navigationController.navigationBarHidden = YES;
     self.navigationController.preferredContentSize = CGSizeMake(240.0, self.menuTableView.contentSize.height + (self.menuTableView.frame.origin.y * 2));
     
-    if (@available(iOS 13.0, *)) {
-        self.menuTableView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentAlways;
-    }
+    self.menuTableView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentAlways;
 }
 
 //- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
