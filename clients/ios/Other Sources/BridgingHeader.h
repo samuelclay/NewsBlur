@@ -14,3 +14,4 @@
 #import "FeedDetailObjCViewController.h"
 #import "StoryPageObjCDelegate.h"
 #import "StoryDetailObjCViewController.h"
+#import "OriginalStoryViewController.h"

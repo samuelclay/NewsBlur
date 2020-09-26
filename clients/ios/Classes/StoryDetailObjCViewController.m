@@ -98,10 +98,8 @@
     [self.webView.scrollView setAutoresizingMask:(UIViewAutoresizingFlexibleWidth |
                                                      UIViewAutoresizingFlexibleHeight)];
     
-    if (@available(iOS 11.0, *)) {
-        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-            self.webView.scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
-        }
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+        self.webView.scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
     }
     
     [self.webView.scrollView addObserver:self forKeyPath:@"contentOffset"
@@ -157,7 +155,7 @@
                                                  name:@"TapAndHoldNotification"
                                                object:nil];
 
-    _orientation = self.appDelegate.window.windowScene.interfaceOrientation;
+    _orientation = self.view.window.windowScene.interfaceOrientation;
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch {
@@ -315,8 +313,8 @@
         [appDelegate.feedDetailViewController.view endEditing:YES];
     }
 
-    if (_orientation != self.appDelegate.window.windowScene.interfaceOrientation) {
-        _orientation = self.appDelegate.window.windowScene.interfaceOrientation;
+    if (_orientation != self.view.window.windowScene.interfaceOrientation) {
+        _orientation = self.view.window.windowScene.interfaceOrientation;
         NSLog(@"Found stale orientation in story detail: %@", NSStringFromCGSize(self.view.bounds.size));
     }
     
@@ -345,7 +343,7 @@
 //          self.webView.scrollView.contentSize.height);
 
     [coordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
-        self->_orientation = self.appDelegate.window.windowScene.interfaceOrientation;
+        self->_orientation = self.view.window.windowScene.interfaceOrientation;
         [self changeWebViewWidth];
         [self drawFeedGradient];
         [self scrollToLastPosition:NO];
@@ -354,7 +352,7 @@
 }
 
 - (void)viewWillLayoutSubviews {
-    UIInterfaceOrientation orientation = self.appDelegate.window.windowScene.interfaceOrientation;
+    UIInterfaceOrientation orientation = self.view.window.windowScene.interfaceOrientation;
     [super viewWillLayoutSubviews];
     dispatch_async(dispatch_get_main_queue(), ^{
         [self.appDelegate.storyPageControl layoutForInterfaceOrientation:orientation];
@@ -409,7 +407,7 @@
 }
 
 - (void)drawStory {
-    UIInterfaceOrientation orientation = self.appDelegate.window.windowScene.interfaceOrientation;
+    UIInterfaceOrientation orientation = self.view.window.windowScene.interfaceOrientation;
     [self drawStory:NO withOrientation:orientation];
 }
 
@@ -660,14 +658,12 @@
     }
     [self.webView insertSubview:feedTitleGradient aboveSubview:self.webView.scrollView];
     
-    if (@available(iOS 11.0, *)) {
-        if (appDelegate.storyPageControl.view.safeAreaInsets.top > 0.0 && [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone && shouldHideStatusBar) {
-            feedTitleGradient.alpha = appDelegate.storyPageControl.isNavigationBarHidden ? 1 : 0;
-            
-            [UIView animateWithDuration:0.3 animations:^{
-                self.feedTitleGradient.alpha = self.appDelegate.storyPageControl.isNavigationBarHidden ? 0 : 1;
-            }];
-        }
+    if (appDelegate.storyPageControl.view.safeAreaInsets.top > 0.0 && [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone && shouldHideStatusBar) {
+        feedTitleGradient.alpha = appDelegate.storyPageControl.isNavigationBarHidden ? 1 : 0;
+        
+        [UIView animateWithDuration:0.3 animations:^{
+            self.feedTitleGradient.alpha = self.appDelegate.storyPageControl.isNavigationBarHidden ? 0 : 1;
+        }];
     }
 }
 
@@ -1375,14 +1371,10 @@
         int webpageHeight = self.webView.scrollView.contentSize.height;
         int viewportHeight = self.view.frame.size.height;
         int topPosition = self.webView.scrollView.contentOffset.y;
-        int safeBottomMargin = 0;
         
-        if (@available(iOS 11.0, *)) {
-            CGFloat bottomInset = appDelegate.storyPageControl.view.safeAreaInsets.bottom;
-            
-            safeBottomMargin = -1 * bottomInset / 2;
-        }
+        CGFloat bottomInset = appDelegate.storyPageControl.view.safeAreaInsets.bottom;
         
+        int safeBottomMargin = -1 * bottomInset / 2;
         int bottomPosition = webpageHeight - topPosition - viewportHeight;
         BOOL singlePage = webpageHeight - 200 <= viewportHeight;
         BOOL atBottom = bottomPosition < 150;
@@ -2385,7 +2377,7 @@
 //    NSLog(@"changeWebViewWidth: %@ / %@ / %@", NSStringFromCGSize(self.view.bounds.size), NSStringFromCGSize(webView.scrollView.bounds.size), NSStringFromCGSize(webView.scrollView.contentSize));
 
     NSInteger contentWidth = CGRectGetWidth(webView.scrollView.bounds);
-    UIInterfaceOrientation orientation = self.appDelegate.window.windowScene.interfaceOrientation;
+    UIInterfaceOrientation orientation = self.view.window.windowScene.interfaceOrientation;
     NSString *contentWidthClass;
 
 #if TARGET_OS_MACCATALYST

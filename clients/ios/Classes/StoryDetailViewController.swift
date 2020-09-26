@@ -10,5 +10,8 @@ import UIKit
 
 /// An individual story.
 class StoryDetailViewController: StoryDetailObjCViewController {
-    
+    /// Convenience initializer to load a new instance of this class from the XIB.
+    convenience init() {
+        self.init(nibName: "StoryDetailViewController", bundle: nil)
+    }
 }

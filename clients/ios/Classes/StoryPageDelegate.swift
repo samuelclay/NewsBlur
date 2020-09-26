@@ -8,19 +8,7 @@
 
 import UIKit
 
-/// Delegate and data source of the story page controller
-class StoryPageDelegate: StoryPageObjCDelegate, UIPageViewControllerDelegate, UIPageViewControllerDataSource {
-    func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
-        //TODO: *** TO BE IMPLEMENTED *** CATALYST
-        
-        return nil
-    }
-    
-    func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
-        //TODO: *** TO BE IMPLEMENTED *** CATALYST
-        
-        return nil
-    }
-    
-    
+/// Delegate and data source of the story page controller.
+/// NOTE: this will be replaced by VerticalPageDelegate.
+class StoryPageDelegate: StoryPageObjCDelegate {
 }

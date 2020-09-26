@@ -52,13 +52,9 @@
     self.signUpPasswordInput.borderStyle = UITextBorderStyleRoundedRect;
     self.signUpUsernameInput.borderStyle = UITextBorderStyleRoundedRect;
     
-    if (@available(iOS 11.0, *)) {
-        self.usernameInput.textContentType = UITextContentTypeUsername;
-        self.passwordInput.textContentType = UITextContentTypePassword;
-        self.emailInput.textContentType = UITextContentTypeEmailAddress;
-    } else {
-        // Fallback on earlier versions
-    }
+    self.usernameInput.textContentType = UITextContentTypeUsername;
+    self.passwordInput.textContentType = UITextContentTypePassword;
+    self.emailInput.textContentType = UITextContentTypeEmailAddress;
     
     [self.loginControl
      setTitleTextAttributes:@{NSFontAttributeName:
@@ -86,7 +82,7 @@
         CGFloat yOffset = 0;
         CGFloat xOffset = isOnSignUpScreen ? -viewWidth : 0;
         
-        if (UIInterfaceOrientationIsPortrait(self.appDelegate.window.windowScene.interfaceOrientation)) {
+        if (UIInterfaceOrientationIsPortrait(self.view.window.windowScene.interfaceOrientation)) {
             yOffset = viewSize.height / 6;
         }
         

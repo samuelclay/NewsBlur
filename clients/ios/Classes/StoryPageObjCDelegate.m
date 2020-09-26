@@ -109,10 +109,8 @@
     [self.scrollView setAlwaysBounceHorizontal:self.isHorizontal];
     [self.scrollView setAlwaysBounceVertical:!self.isHorizontal];
     
-    if (@available(iOS 11.0, *)) {
-        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-            self.scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
-        }
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+        self.scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
     }
     
 //    NSLog(@"Scroll view frame post: %@", NSStringFromCGRect(self.scrollView.frame));
@@ -120,7 +118,7 @@
     [self.scrollView sizeToFit];
 //    NSLog(@"Scroll view frame post 2: %@", NSStringFromCGRect(self.scrollView.frame));
     
-    self.statusBarHeight = appDelegate.window.windowScene.statusBarManager.statusBarFrame.size.height;
+    self.statusBarHeight = self.view.window.windowScene.statusBarManager.statusBarFrame.size.height;
     
     // adding HUD for progress bar
     CGFloat radius = 8;
@@ -238,7 +236,7 @@
                          options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld
                          context:nil];
     
-    _orientation = appDelegate.window.windowScene.interfaceOrientation;
+    _orientation = self.view.window.windowScene.interfaceOrientation;
     
     [self addKeyCommandWithInput:UIKeyInputDownArrow modifierFlags:0 action:@selector(changeToNextPage:) discoverabilityTitle:@"Next Story"];
     [self addKeyCommandWithInput:@"j" modifierFlags:0 action:@selector(changeToNextPage:) discoverabilityTitle:@"Next Story"];
@@ -361,7 +359,7 @@
                                              style:UIBarButtonItemStylePlain
                                              target:nil action:nil];
     
-    UIInterfaceOrientation orientation = appDelegate.window.windowScene.interfaceOrientation;
+    UIInterfaceOrientation orientation = self.view.window.windowScene.interfaceOrientation;
     [self layoutForInterfaceOrientation:orientation];
     [self adjustDragBar:orientation];
     [self reorientPages];
@@ -434,7 +432,7 @@
     
     [coordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
 //        NSLog(@"---> Story page control is re-orienting: %@ / %@", NSStringFromCGSize(self.scrollView.bounds.size), NSStringFromCGSize(size));
-        UIInterfaceOrientation orientation = self.appDelegate.window.windowScene.interfaceOrientation;
+        UIInterfaceOrientation orientation = self.view.window.windowScene.interfaceOrientation;
         self->_orientation = orientation;
         [self layoutForInterfaceOrientation:orientation];
         [self adjustDragBar:orientation];
@@ -476,7 +474,7 @@
         self.scrollViewTopConstraint.constant = 0;
     }
     
-    UIInterfaceOrientation orientation = appDelegate.window.windowScene.interfaceOrientation;
+    UIInterfaceOrientation orientation = self.view.window.windowScene.interfaceOrientation;
     [self layoutForInterfaceOrientation:orientation];
     [self adjustDragBar:orientation];
 }
@@ -531,11 +529,9 @@
     CGFloat navHeight = self.navigationController.navigationBar.bounds.size.height;
     CGFloat statusAdjustment = 20.0;
     
-    if (@available(iOS 11.0, *)) {
-        // The top inset is zero when the status bar is hidden, so using the bottom one to confirm.
-        if (self.view.safeAreaInsets.top > 0.0 || self.view.safeAreaInsets.bottom > 0.0) {
-            statusAdjustment = 0.0;
-        }
+    // The top inset is zero when the status bar is hidden, so using the bottom one to confirm.
+    if (self.view.safeAreaInsets.top > 0.0 || self.view.safeAreaInsets.bottom > 0.0) {
+        statusAdjustment = 0.0;
     }
     
     if (oldOffset.y < 0.0) {
@@ -556,9 +552,7 @@
             int safeBottomMargin = 0;
             
             if (self.isPhoneOrCompact) {
-                if (@available(iOS 11.0, *)) {
-                    safeBottomMargin = -1 * self.view.safeAreaInsets.bottom/2;
-                }
+                safeBottomMargin = -1 * self.view.safeAreaInsets.bottom/2;
             }
             
             self.traverseBottomConstraint.constant = safeBottomMargin;
@@ -659,7 +653,7 @@
     if (recognizer.state == UIGestureRecognizerStateEnded && isBarHidden != self.wasNavigationBarHidden) {
         self.wasNavigationBarHidden = isBarHidden;
         
-        if (!appDelegate.storyPageControl.shouldHideStatusBar) {
+        if (!self.shouldHideStatusBar) {
             [currentPage drawFeedGradient];
         }
         
@@ -727,17 +721,11 @@
         frame.origin.y = 0;
         
 //        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-//            if (@available(iOS 11.0, *)) {
 //                frame.origin.y -= self.view.safeAreaInsets.bottom;
-//            }
 //        }
     } else {
         frame.origin.x = 0;
-        frame.origin.y = frame.size.height * currentIndex;
-        
-        if (@available(iOS 11.0, *)) {
-            frame.origin.y -= self.view.safeAreaInsets.bottom;
-        }
+        frame.origin.y = (frame.size.height * currentIndex) - self.view.safeAreaInsets.bottom;
     }
     
     [self.scrollView scrollRectToVisible:frame animated:NO];
@@ -781,7 +769,7 @@
 }
 
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
-    UIInterfaceOrientation orientation = appDelegate.window.windowScene.interfaceOrientation;
+    UIInterfaceOrientation orientation = self.view.window.windowScene.interfaceOrientation;
     
     if (!self.isPhoneOrCompact &&
         UIInterfaceOrientationIsPortrait(orientation)) {
@@ -801,7 +789,7 @@
 }
 
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
-    UIInterfaceOrientation orientation = appDelegate.window.windowScene.interfaceOrientation;
+    UIInterfaceOrientation orientation = self.view.window.windowScene.interfaceOrientation;
     
     if (!self.isPhoneOrCompact &&
         UIInterfaceOrientationIsPortrait(orientation)) {
@@ -1066,10 +1054,8 @@
     
     if (!self.isPhoneOrCompact) {
         self.traverseBottomConstraint.constant = 0;
-    } else if (@available(iOS 11.0, *)) {
-        self.traverseBottomConstraint.constant = -1 * self.view.safeAreaInsets.bottom/2;
     } else {
-        self.traverseBottomConstraint.constant = 0;
+        self.traverseBottomConstraint.constant = -1 * self.view.safeAreaInsets.bottom/2;
     }
 
     [UIView animateWithDuration:.24 delay:0
@@ -1182,11 +1168,7 @@
         frame.origin.y = 0;
     } else {
         frame.origin.x = 0;
-        frame.origin.y = frame.size.height * pageIndex;
-        
-        if (@available(iOS 11.0, *)) {
-            frame.origin.y -= self.view.safeAreaInsets.bottom;
-        }
+        frame.origin.y = (frame.size.height * pageIndex) - self.view.safeAreaInsets.bottom;
     }
 
     self.scrollingToPage = pageIndex;
@@ -1337,7 +1319,7 @@
     }
     
     [self setNextPreviousButtons];
-    EventWindow *tapDetectingWindow = (EventWindow*)appDelegate.window;
+    EventWindow *tapDetectingWindow = (EventWindow*)self.view.window;
     tapDetectingWindow.tapDetectingView = currentPage.view;
     [appDelegate changeActiveFeedDetailRow];
     
@@ -1715,11 +1697,7 @@
 - (void)autoscroll:(NSTimer *)timer {
     WKWebView *webView = self.currentPage.webView;
     CGFloat position = webView.scrollView.contentOffset.y + 0.5;
-    CGFloat maximum = webView.scrollView.contentSize.height - webView.frame.size.height;
-    
-    if (@available(iOS 11.0, *)) {
-        maximum += self.view.safeAreaInsets.bottom;
-    }
+    CGFloat maximum = (webView.scrollView.contentSize.height - webView.frame.size.height) + self.view.safeAreaInsets.bottom;
     
     if (position < maximum) {
         [webView.scrollView setContentOffset:CGPointMake(0, position) animated:NO];
