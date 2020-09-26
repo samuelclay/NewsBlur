@@ -71,6 +71,7 @@ public class SearchForFeeds extends NbActivity implements LoaderCallbacks<Search
 
 	@Override
 	protected void onNewIntent(Intent intent) {
+		super.onNewIntent(intent);
 		setIntent(intent);
 		handleIntent(intent);
 	}
