@@ -1,5 +1,5 @@
 buildscript {
-    ext.kotlin_version = '1.4.0'
+    ext.kotlin_version = '1.4.10'
     repositories {
         mavenCentral()
         maven {
@@ -40,11 +40,11 @@ dependencies {
 }
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 29
     defaultConfig {
         applicationId "com.newsblur"
         minSdkVersion 21
-        targetSdkVersion 28
+        targetSdkVersion 29
         versionCode 170
         versionName "10.1b3"
     }
