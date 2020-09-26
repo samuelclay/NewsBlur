@@ -46,6 +46,7 @@ public class AddSocial extends NbActivity {
 	
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+		super.onActivityResult(requestCode, resultCode, intent);
 		switch (resultCode) {
 		case AddTwitter.TWITTER_AUTHED:
 			addSocialFragment.setTwitterAuthed();

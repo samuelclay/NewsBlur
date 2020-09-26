@@ -16,8 +16,7 @@
     <string name="login_next">Next</string>
     
     <string name="title_feed_search">Search for feeds</string>
-    <string name="add_feed_message">Add \"%s\" to your feeds?</string>
-    
+
     <string name="loading">Loading…</string>
     <string name="orig_text_loading">Fetching story text…</string>
     
@@ -300,7 +299,7 @@
     <string name="mute_config_message">Please mute %d sites or reset to most popular sites.</string>
     <string name="mute_config_reset_button">RESET TO POPULAR SITES</string>
     <string name="mute_config_upgrade">UPGRADE</string>
-    <string name="mute_config_sites">%s/%s</string>
+    <string name="mute_config_sites">%1$s/%2$s</string>
 
     <string name="menu_network_select">Download Using</string>
     <string name="menu_network_select_sum">Restrict background data to chosen networks</string>
@@ -398,7 +397,6 @@
     <string name="settings_reading">Reading</string>
     <string name="settings_immersive_enter_single_tap">Immersive Mode Via Single Tap</string>
     <string name="settings_show_content_preview">Show Content Preview Text</string>
-    <string name="settings_show_thumbnails">Show Image Preview Thumbnails</string>
     <string name="settings_thumbnails_style">Image Preview Thumbnails</string>
     <string name="settings_notifications">Notifications</string>
     <string name="settings_enable_notifications">Enable Notifications</string>
@@ -590,7 +588,5 @@
 
     <string name="story_notification_channel_id">story_notification_channel</string>
     <string name="story_notification_channel_name">New Stories</string>
-    <string name="save_widget">Save Widget</string>
-    <string name="select_feed">Select Feed</string>
     <string name="go_to_feed">Go to feed</string>
 </resources>
