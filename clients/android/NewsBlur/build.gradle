@@ -44,7 +44,7 @@ android {
     defaultConfig {
         applicationId "com.newsblur"
         minSdkVersion 21
-        targetSdkVersion 28
+        targetSdkVersion 29
         versionCode 173
         versionName "10.1b5"
     }
