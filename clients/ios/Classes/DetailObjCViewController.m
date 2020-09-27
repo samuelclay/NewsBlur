@@ -77,6 +77,8 @@
     [super viewDidLoad];
     
     appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
+    appDelegate.storyPageControl = (DetailViewController *)self;
+    
 	currentPage = [[StoryDetailViewController alloc]
                    initWithNibName:@"StoryDetailViewController"
                    bundle:nil];
