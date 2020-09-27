@@ -1,12 +1,12 @@
 //
-//  StoryPageObjCDelegate.m
+//  DetailObjCViewController.m
 //  NewsBlur
 //
 //  Created by Samuel Clay on 11/2/12.
 //  Copyright (c) 2012 NewsBlur. All rights reserved.
 //
 
-#import "StoryPageObjCDelegate.h"
+#import "DetailObjCViewController.h"
 #import "NewsBlurAppDelegate.h"
 #import "FontSettingsViewController.h"
 #import "UserProfileViewController.h"
@@ -24,7 +24,7 @@
 
 @import WebKit;
 
-@interface StoryPageObjCDelegate ()
+@interface DetailObjCViewController ()
 
 @property (nonatomic) CGFloat statusBarHeight;
 @property (nonatomic) BOOL wasNavigationBarHidden;
@@ -34,7 +34,7 @@
 
 @end
 
-@implementation StoryPageObjCDelegate
+@implementation DetailObjCViewController
 
 @synthesize appDelegate;
 @synthesize currentPage, nextPage, previousPage;
@@ -90,9 +90,10 @@
     currentPage.appDelegate = appDelegate;
     nextPage.appDelegate = appDelegate;
     previousPage.appDelegate = appDelegate;
-    currentPage.view.frame = self.scrollView.frame;
-    nextPage.view.frame = self.scrollView.frame;
-    previousPage.view.frame = self.scrollView.frame;
+    #warning commented out since not using scroll view
+//    currentPage.view.frame = self.scrollView.frame;
+//    nextPage.view.frame = self.scrollView.frame;
+//    previousPage.view.frame = self.scrollView.frame;
     
 //    NSLog(@"Scroll view content inset: %@", NSStringFromCGRect(self.scrollView.bounds));
 //    NSLog(@"Scroll view frame pre: %@", NSStringFromCGRect(self.scrollView.frame));

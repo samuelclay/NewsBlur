@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.iPad.XIB" version="3.0" toolsVersion="17154" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.iPad.XIB" version="3.0" toolsVersion="17503.1" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES">
+    <device id="ipad9_7" orientation="portrait" layout="fullscreen" appearance="light"/>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17124"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17502"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -32,7 +34,6 @@
                 <outlet property="premiumViewController" destination="Nno-Ma-6TQ" id="0Ex-VU-Hek"/>
                 <outlet property="shareViewController" destination="168" id="272"/>
                 <outlet property="storyDetailViewController" destination="92" id="93"/>
-                <outlet property="storyPageControl" destination="290" id="292"/>
                 <outlet property="trainerViewController" destination="287" id="289"/>
                 <outlet property="userProfileViewController" destination="235" id="236"/>
                 <outlet property="userTagsViewController" destination="v2Q-Hh-f3K" id="5CE-5l-aoS"/>
@@ -151,13 +152,6 @@
             <simulatedStatusBarMetrics key="simulatedStatusBarMetrics" statusBarStyle="blackOpaque"/>
             <connections>
                 <outlet property="appDelegate" destination="3" id="271"/>
-            </connections>
-        </viewController>
-        <viewController restorationIdentifier="StoryPageControl" id="290" customClass="StoryPageDelegate">
-            <extendedEdge key="edgesForExtendedLayout"/>
-            <simulatedStatusBarMetrics key="simulatedStatusBarMetrics" statusBarStyle="blackOpaque"/>
-            <connections>
-                <outlet property="appDelegate" destination="3" id="291"/>
             </connections>
         </viewController>
         <viewController restorationIdentifier="StoryDetailView" nibName="StoryDetailViewController" id="92" customClass="StoryDetailViewController">

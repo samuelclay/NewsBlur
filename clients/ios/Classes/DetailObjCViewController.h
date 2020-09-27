@@ -1,5 +1,5 @@
 //
-//  StoryPageObjCDelegate.h
+//  DetailObjCViewController.h
 //  NewsBlur
 //
 //  Created by Samuel Clay on 11/2/12.
@@ -14,7 +14,7 @@
 
 @class StoryDetailViewController;
 
-@interface StoryPageObjCDelegate : BaseViewController
+@interface DetailObjCViewController : BaseViewController
 <UIScrollViewDelegate, UIPopoverControllerDelegate, UIPopoverPresentationControllerDelegate, UIGestureRecognizerDelegate> {
     NewsBlurAppDelegate *appDelegate;
     THCircularProgressView *circularProgressView;

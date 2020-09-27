@@ -34,7 +34,6 @@
 @class FontSettingsViewController;
 @class DetailViewController;
 @class StoryDetailViewController;
-@class StoryPageDelegate;
 @class ShareViewController;
 @class LoginViewController;
 @class AddSiteViewController;
@@ -82,7 +81,7 @@ SFSafariViewControllerDelegate>  {
     FontSettingsViewController *fontSettingsViewController;
     
     StoryDetailViewController *storyDetailViewController;
-    StoryPageDelegate *storyPageControl;
+    DetailViewController *storyPageControl;
     ShareViewController *shareViewController;
     LoginViewController *loginViewController;
     AddSiteViewController *addSiteViewController;
@@ -182,7 +181,7 @@ SFSafariViewControllerDelegate>  {
 @property (nonatomic) IBOutlet FriendsListViewController *friendsListViewController;
 @property (nonatomic) IBOutlet DetailViewController *detailViewController;
 @property (nonatomic) IBOutlet StoryDetailViewController *storyDetailViewController;
-@property (nonatomic) IBOutlet StoryPageDelegate *storyPageControl;
+@property (nonatomic) IBOutlet DetailViewController *storyPageControl;
 @property (nonatomic) IBOutlet LoginViewController *loginViewController;
 @property (nonatomic, strong) UINavigationController *addSiteNavigationController;
 @property (nonatomic) IBOutlet AddSiteViewController *addSiteViewController;
