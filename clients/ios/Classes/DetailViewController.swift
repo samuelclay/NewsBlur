@@ -9,7 +9,7 @@
 import UIKit
 
 /// Manages the detail column of the split view, with the feed detail and/or the story pages.
-class DetailViewController: BaseViewController {
+class DetailViewController: DetailObjCViewController {
     /// How the feed detail and story pages are laid out.
     enum Layout {
         /// The feed detail is to the left of the story pages (and managed by the split view, not here).
@@ -44,6 +44,8 @@ class DetailViewController: BaseViewController {
         updateLayout()
         
         if let viewController = Storyboards.shared.controller(withIdentifier: .verticalPages) as? VerticalPageViewController {
+            viewController.horizontalPageViewController = horizontalPageViewController
+            
             horizontalPageViewController?.setViewControllers([viewController], direction: .forward, animated: false, completion: nil)
         }
     }
@@ -72,6 +74,8 @@ private extension DetailViewController {
         if horizontalPageViewController == nil {
             horizontalPageViewController = Storyboards.shared.controller(withIdentifier: .horizontalPages) as? HorizontalPageViewController
             
+            horizontalPageViewController?.detailViewController = self
+            
             add(viewController: horizontalPageViewController)
         }
     }
@@ -82,7 +86,8 @@ private extension DetailViewController {
         }
         
         addChild(viewController)
-        view.addSubview(viewController.view)
+//        view.addSubview(viewController.view)
+        view.insertSubview(viewController.view, at: 0)
         viewController.didMove(toParent: self)
     }
     

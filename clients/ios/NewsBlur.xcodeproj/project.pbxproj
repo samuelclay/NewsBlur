@@ -15,7 +15,6 @@
 		170E3CCF24F8A5D8009CE819 /* SplitViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 170E3CCE24F8A5D8009CE819 /* SplitViewController.swift */; };
 		170E3CD124F8A664009CE819 /* SplitViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 170E3CD024F8A664009CE819 /* SplitViewDelegate.swift */; };
 		170E3CD324F8A89B009CE819 /* HorizontalPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 170E3CD224F8A89B009CE819 /* HorizontalPageViewController.swift */; };
-		170E3CD524F8A981009CE819 /* StoryPageDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 170E3CD424F8A981009CE819 /* StoryPageDelegate.swift */; };
 		170E3CD724F8AB0D009CE819 /* FeedDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 170E3CD624F8AB0D009CE819 /* FeedDetailViewController.swift */; };
 		1715D02B2166B3F900227731 /* PremiumManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 1715D02A2166B3F900227731 /* PremiumManager.m */; };
 		1721C9D12497F91A00B0EDC4 /* mute_gray.png in Resources */ = {isa = PBXBuildFile; fileRef = 1721C9D02497F91900B0EDC4 /* mute_gray.png */; };
@@ -429,7 +428,7 @@
 		FF688E4F16E6B3E1003B7B42 /* traverse_done@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF688E4D16E6B3E1003B7B42 /* traverse_done@2x.png */; };
 		FF688E5216E6B8D0003B7B42 /* traverse_background.png in Resources */ = {isa = PBXBuildFile; fileRef = FF688E5016E6B8D0003B7B42 /* traverse_background.png */; };
 		FF688E5316E6B8D0003B7B42 /* traverse_background@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF688E5116E6B8D0003B7B42 /* traverse_background@2x.png */; };
-		FF6A233216448E0700E15989 /* StoryPageObjCDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = FF6A233116448E0700E15989 /* StoryPageObjCDelegate.m */; };
+		FF6A233216448E0700E15989 /* DetailObjCViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FF6A233116448E0700E15989 /* DetailObjCViewController.m */; };
 		FF6A23391644957800E15989 /* StoryPageControl.xib in Resources */ = {isa = PBXBuildFile; fileRef = FF6A23361644903900E15989 /* StoryPageControl.xib */; };
 		FF6DD31E1AEDF9F300F1F53A /* menu_icn_rename.png in Resources */ = {isa = PBXBuildFile; fileRef = FF6DD31C1AEDF9F300F1F53A /* menu_icn_rename.png */; };
 		FF6DD31F1AEDF9F300F1F53A /* menu_icn_rename@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF6DD31D1AEDF9F300F1F53A /* menu_icn_rename@2x.png */; };
@@ -680,7 +679,6 @@
 		170E3CCE24F8A5D8009CE819 /* SplitViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplitViewController.swift; sourceTree = "<group>"; };
 		170E3CD024F8A664009CE819 /* SplitViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplitViewDelegate.swift; sourceTree = "<group>"; };
 		170E3CD224F8A89B009CE819 /* HorizontalPageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HorizontalPageViewController.swift; sourceTree = "<group>"; };
-		170E3CD424F8A981009CE819 /* StoryPageDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryPageDelegate.swift; sourceTree = "<group>"; };
 		170E3CD624F8AB0D009CE819 /* FeedDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedDetailViewController.swift; sourceTree = "<group>"; };
 		1715D0292166B3F900227731 /* PremiumManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PremiumManager.h; sourceTree = "<group>"; };
 		1715D02A2166B3F900227731 /* PremiumManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PremiumManager.m; sourceTree = "<group>"; };
@@ -1233,8 +1231,8 @@
 		FF688E4D16E6B3E1003B7B42 /* traverse_done@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "traverse_done@2x.png"; sourceTree = "<group>"; };
 		FF688E5016E6B8D0003B7B42 /* traverse_background.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = traverse_background.png; sourceTree = "<group>"; };
 		FF688E5116E6B8D0003B7B42 /* traverse_background@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "traverse_background@2x.png"; sourceTree = "<group>"; };
-		FF6A233016448E0700E15989 /* StoryPageObjCDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StoryPageObjCDelegate.h; sourceTree = "<group>"; };
-		FF6A233116448E0700E15989 /* StoryPageObjCDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StoryPageObjCDelegate.m; sourceTree = "<group>"; };
+		FF6A233016448E0700E15989 /* DetailObjCViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DetailObjCViewController.h; sourceTree = "<group>"; };
+		FF6A233116448E0700E15989 /* DetailObjCViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DetailObjCViewController.m; sourceTree = "<group>"; };
 		FF6A23361644903900E15989 /* StoryPageControl.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = StoryPageControl.xib; path = ../Classes/StoryPageControl.xib; sourceTree = "<group>"; };
 		FF6DD31C1AEDF9F300F1F53A /* menu_icn_rename.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = menu_icn_rename.png; sourceTree = "<group>"; };
 		FF6DD31D1AEDF9F300F1F53A /* menu_icn_rename@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "menu_icn_rename@2x.png"; sourceTree = "<group>"; };
@@ -1896,13 +1894,13 @@
 		431B857415A1324200DCE497 /* Story */ = {
 			isa = PBXGroup;
 			children = (
+				176A5C7924F8BD1B009E8DF9 /* DetailViewController.swift */,
+				FF6A233016448E0700E15989 /* DetailObjCViewController.h */,
+				FF6A233116448E0700E15989 /* DetailObjCViewController.m */,
 				170E3CD224F8A89B009CE819 /* HorizontalPageViewController.swift */,
 				172AD263251D901D000BB264 /* HorizontalPageDelegate.swift */,
 				172AD25D251D9011000BB264 /* VerticalPageViewController.swift */,
 				172AD269251D9028000BB264 /* VerticalPageDelegate.swift */,
-				170E3CD424F8A981009CE819 /* StoryPageDelegate.swift */,
-				FF6A233016448E0700E15989 /* StoryPageObjCDelegate.h */,
-				FF6A233116448E0700E15989 /* StoryPageObjCDelegate.m */,
 				1787082F24F8B3A50000C82B /* StoryDetailViewController.swift */,
 				7842ECF511D44A530066CF9D /* StoryDetailObjCViewController.h */,
 				7842ECF611D44A530066CF9D /* StoryDetailObjCViewController.m */,
@@ -2384,7 +2382,6 @@
 				172AD273251D9F40000BB264 /* Storyboards.swift */,
 				170E3CCE24F8A5D8009CE819 /* SplitViewController.swift */,
 				170E3CD024F8A664009CE819 /* SplitViewDelegate.swift */,
-				176A5C7924F8BD1B009E8DF9 /* DetailViewController.swift */,
 				436ACA8B15BF1088004E01CC /* NBContainerViewController.h */,
 				436ACA8C15BF1088004E01CC /* NBContainerViewController.m */,
 				17432C7D1C533FBC003F8FD6 /* MenuViewController.h */,
@@ -3507,7 +3504,6 @@
 				FFDE35CC161B8F870034BFDE /* FolderTitleView.m in Sources */,
 				172AD264251D901D000BB264 /* HorizontalPageDelegate.swift in Sources */,
 				E1C44B0B200147ED002128AD /* StoryTitleAttributedString.m in Sources */,
-				170E3CD524F8A981009CE819 /* StoryPageDelegate.swift in Sources */,
 				FFDE35DA161D12250034BFDE /* UnreadCountView.m in Sources */,
 				FF34FD621E9D93CB0062F8ED /* IASKMultipleValueSelection.m in Sources */,
 				FF4130A3162E10CF00DDB6A7 /* MenuTableViewCell.m in Sources */,
@@ -3515,7 +3511,7 @@
 				17432C7F1C533FBC003F8FD6 /* MenuViewController.m in Sources */,
 				FFF8B3AF1F847505001AB95E /* NBDashboardNavigationBar.m in Sources */,
 				17E635AF1C548C580075338E /* FeedChooserItem.m in Sources */,
-				FF6A233216448E0700E15989 /* StoryPageObjCDelegate.m in Sources */,
+				FF6A233216448E0700E15989 /* DetailObjCViewController.m in Sources */,
 				FF67D3B2168924C40057A7DA /* TrainerViewController.m in Sources */,
 				FF1660CD16D6FD8A00AF8541 /* SmallInteractionCell.m in Sources */,
 				FF34FD6E1E9D93CB0062F8ED /* IASKTextField.m in Sources */,

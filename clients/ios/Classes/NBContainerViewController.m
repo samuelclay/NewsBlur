@@ -42,7 +42,7 @@
 @property (nonatomic, strong) DashboardViewController *dashboardViewController;
 @property (nonatomic, strong) StoryDetailViewController *storyDetailViewController;
 @property (nonatomic, strong) OriginalStoryViewController *originalViewController;
-@property (nonatomic, strong) StoryPageDelegate *storyPageControl;
+@property (nonatomic, strong) DetailViewController *storyPageControl;
 @property (nonatomic, strong) ShareViewController *shareViewController;
 @property (nonatomic, strong) UIView *storyTitlesStub;
 @property (readwrite) BOOL storyTitlesOnLeft;

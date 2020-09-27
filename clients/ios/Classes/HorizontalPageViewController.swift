@@ -10,5 +10,6 @@ import UIKit
 
 /// Manages horizontal story pages. An instance of this is contained within `DetailViewController`.
 class HorizontalPageViewController: UIPageViewController {
-    
+    /// Weak reference to owning detail view controller.
+    weak var detailViewController: DetailViewController?
 }

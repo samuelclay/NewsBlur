@@ -338,7 +338,7 @@
         return self.feedsViewController;
     } else if ([identifier isEqualToString:@"FeedDetailView"]) {
         return self.feedDetailViewController;
-    } else if ([identifier isEqualToString:@"StoryPageDelegate"]) {
+    } else if ([identifier isEqualToString:@"DetailViewController"]) {
         return self.storyPageControl;
     } else if ([identifier isEqualToString:@"ContainerView"]) {
         return self.masterContainerViewController;
