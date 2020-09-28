@@ -191,6 +191,7 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
             menu.findItem(R.id.menu_instafetch_feed).setVisible(false);
             menu.findItem(R.id.menu_intel).setVisible(false);
             menu.findItem(R.id.menu_rename_feed).setVisible(false);
+            menu.findItem(R.id.menu_statistics).setVisible(false);
         }
 
         if (!fs.isInfrequent()) {
