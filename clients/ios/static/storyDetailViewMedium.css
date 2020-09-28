@@ -121,6 +121,10 @@ a:active {
     background-color: #6c696a;
 }
 
+.NB-story blockquote p {
+    background-color: #6c696a;
+}
+
 ins {
     background-color: #475D49;
     text-decoration: none;
