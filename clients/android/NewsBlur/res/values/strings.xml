@@ -135,6 +135,7 @@
     <string name="menu_send_story_full">Send story to…</string>
     <string name="menu_mark_feed_as_read">Mark feed as read</string>
     <string name="menu_delete_feed">Delete feed</string>
+    <string name="menu_statistics">Statistics</string>
     <string name="menu_delete_saved_search">Delete saved search</string>
     <string name="menu_unfollow">Unfollow user</string>
     <string name="menu_choose_folders">Choose folders</string>
@@ -493,12 +494,14 @@
     <string name="gest_action_markunread">Mark Story Unread</string>
     <string name="gest_action_save">Save Story</string>
     <string name="gest_action_unsave">Unsave Story</string>
+    <string name="gest_action_statistics">Statistics</string>
     <string-array name="ltr_gesture_action_entries">
         <item>@string/gest_action_none</item>
         <item>@string/gest_action_markread</item>
         <item>@string/gest_action_markunread</item>
         <item>@string/gest_action_save</item>
         <item>@string/gest_action_unsave</item>
+        <item>@string/gest_action_statistics</item>
     </string-array>
     <string-array name="ltr_gesture_action_values">
         <item>GEST_ACTION_NONE</item>
@@ -506,6 +509,7 @@
         <item>GEST_ACTION_MARKUNREAD</item>
         <item>GEST_ACTION_SAVE</item>
         <item>GEST_ACTION_UNSAVE</item>
+        <item>GEST_ACTION_STATISTICS</item>
     </string-array>
     <string name="ltr_gesture_action_value">GEST_ACTION_MARKREAD</string>
 
@@ -516,6 +520,7 @@
         <item>@string/gest_action_markunread</item>
         <item>@string/gest_action_save</item>
         <item>@string/gest_action_unsave</item>
+        <item>@string/gest_action_statistics</item>
     </string-array>
     <string-array name="rtl_gesture_action_values">
         <item>GEST_ACTION_NONE</item>
@@ -523,6 +528,7 @@
         <item>GEST_ACTION_MARKUNREAD</item>
         <item>GEST_ACTION_SAVE</item>
         <item>GEST_ACTION_UNSAVE</item>
+        <item>GEST_ACTION_STATISTICS</item>
     </string-array>
     <string name="rtl_gesture_action_value">GEST_ACTION_MARKUNREAD</string>
 

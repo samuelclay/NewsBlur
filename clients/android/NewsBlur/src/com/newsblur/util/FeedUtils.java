@@ -8,6 +8,7 @@ import java.util.Set;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import androidx.annotation.Nullable;
 import android.text.TextUtils;
@@ -22,6 +23,7 @@ import com.newsblur.domain.SocialFeed;
 import com.newsblur.domain.StarredCount;
 import com.newsblur.domain.Story;
 import com.newsblur.fragment.ReadingActionConfirmationFragment;
+import com.newsblur.network.APIConstants;
 import com.newsblur.network.APIManager;
 import com.newsblur.network.domain.NewsBlurResponse;
 import com.newsblur.service.NBSyncService;
@@ -593,5 +595,10 @@ public class FeedUtils {
     @Nullable
     public static StarredCount getStarredFeedByTag(String feedId) {
         return dbHelper.getStarredFeedByTag(feedId);
+    }
+
+    public static void openStatistics(Context context, String feedId) {
+        String url = APIConstants.buildUrl(APIConstants.PATH_FEED_STATISTICS + feedId);
+        UIUtils.handleUri(context, Uri.parse(url));
     }
 }

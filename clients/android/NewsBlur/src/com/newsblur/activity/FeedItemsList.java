@@ -85,6 +85,10 @@ public class FeedItemsList extends ItemsList {
             // TODO: since this activity uses a feed object passed as an extra and doesn't query the DB,
             // the name change won't be reflected until the activity finishes.
         }
+        if (item.getItemId() == R.id.menu_statistics) {
+            FeedUtils.openStatistics(this, feed.feedId);
+            return true;
+        }
         return false;
 	}
 	

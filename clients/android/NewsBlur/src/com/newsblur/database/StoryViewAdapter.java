@@ -468,6 +468,9 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 case GEST_ACTION_UNSAVE:
                     FeedUtils.setStorySaved(story, false, context, null);
                     break;
+                case GEST_ACTION_STATISTICS:
+                    FeedUtils.openStatistics(context, story.feedId);
+                    break;
                 case GEST_ACTION_NONE:
                 default:
             }
