@@ -193,7 +193,7 @@ a:active {
 .NB-newsletter div,
 .NB-newsletter span,
 .NB-newsletter td {
-    background-color: #FFFEE5;
+    background-color: #FFFEE5 !important;
 }
 .NB-newsletter h1,
 .NB-newsletter h2,
@@ -201,7 +201,7 @@ a:active {
 .NB-newsletter h4,
 .NB-newsletter h5,
 .NB-newsletter h6 {
-    background-color: #FFFEE5;
+    background-color: #FFFEE5 !important;
 }
 
 /* Story Comments */
