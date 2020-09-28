@@ -114,6 +114,10 @@ a:active {
     background-color: #F2F2D4;
 }
 
+.NB-story blockquote p {
+    background-color: #F2F2D4;
+}
+
 /* Comments */
 
 .NB-story-comments-group:last-child {

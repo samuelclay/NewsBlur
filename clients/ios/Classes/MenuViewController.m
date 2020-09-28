@@ -176,7 +176,7 @@ NSString * const MenuHandler = @"handler";
     
     segmentedControl.selectedSegmentIndex = valueIndex;
     
-    [cell addSubview:segmentedControl];
+    [cell.contentView addSubview:segmentedControl];
     
     return cell;
 }
@@ -214,7 +214,7 @@ NSString * const MenuHandler = @"handler";
     
     [[ThemeManager themeManager] updateSegmentedControl:segmentedControl];
     
-    [cell addSubview:segmentedControl];
+    [cell.contentView addSubview:segmentedControl];
     
     return cell;
 }
