@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.os.Build;
+
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
@@ -44,6 +45,11 @@ public class NotificationUtils {
                 nm.cancel(story.hashCode());
                 continue;
             }
+            if (StoryUtils.hasOldTimestamp(story.timestamp)) {
+                FeedUtils.dbHelper.putStoryDismissed(story.storyHash);
+                nm.cancel(story.hashCode());
+                continue;
+            }
             if (count < MAX_CONCUR_NOTIFY) {
                 Notification n = buildStoryNotification(story, storiesFocus, context, iconCache);
                 nm.notify(story.hashCode(), n);
@@ -60,6 +66,11 @@ public class NotificationUtils {
                 continue;
             }
             if (FeedUtils.dbHelper.isStoryDismissed(story.storyHash)) {
+                nm.cancel(story.hashCode());
+                continue;
+            }
+            if (StoryUtils.hasOldTimestamp(story.timestamp)) {
+                FeedUtils.dbHelper.putStoryDismissed(story.storyHash);
                 nm.cancel(story.hashCode());
                 continue;
             }
@@ -131,14 +142,13 @@ public class NotificationUtils {
             .setContentIntent(pendingIntent)
             .setDeleteIntent(dismissPendingIntent)
             .setAutoCancel(true)
+            .setOnlyAlertOnce(true)
             .setWhen(story.timestamp)
             .addAction(0, "Save", savePendingIntent)
-            .addAction(0, "Mark Read", markreadPendingIntent);
+            .addAction(0, "Mark Read", markreadPendingIntent)
+            .setColor(NOTIFY_COLOUR);
         if (feedIcon != null) {
             nb.setLargeIcon(feedIcon);
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            nb.setColor(NOTIFY_COLOUR);
         }
 
         return nb.build();
@@ -153,6 +163,4 @@ public class NotificationUtils {
         NotificationManager nm = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         nm.cancel(nid);
     }
-
-
 }
