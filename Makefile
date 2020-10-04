@@ -7,10 +7,7 @@ nb:
 	- CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker-compose down
 	- [[ -d config/certificates ]] && echo "keys exist" || rm -r config/certificates
 	- CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker-compose up -d --build --remove-orphans
-	# wait for the database and then run migrations... there should be a cleaner way to do this
 	- cd node && npm install & cd ..
-	- docker-compose exec newsblur_web ./manage.py syncdb --all --noinput
-	- docker-compose exec newsblur_web ./manage.py migrate --fake
 	- docker-compose exec newsblur_web ./manage.py migrate
 	- docker-compose exec newsblur_web ./manage.py loaddata config/fixtures/bootstrap.json
 
