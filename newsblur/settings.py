@@ -543,32 +543,6 @@ class MasterSlaveRouter(object):
         "Explicitly put all models on all databases."
         return True
 
-# =========
-# = Redis =
-# =========
-
-REDIS = {
-    'host': '127.0.0.1',
-}
-REDIS_PUBSUB = {
-    'host': '127.0.0.1',
-}
-REDIS_STORY = {
-    'host': '127.0.0.1',
-}
-REDIS_SESSIONS = {
-    'host': '127.0.0.1',
-}
-
-CELERY_REDIS_DB_NUM = 4
-SESSION_REDIS_DB = 5
-
-# =================
-# = Elasticsearch =
-# =================
-
-ELASTICSEARCH_FEED_HOSTS = ['db_search_feed:9200']
-ELASTICSEARCH_STORY_HOSTS = ['db_search_story:9200']
 
 # ===============
 # = Social APIs =
