@@ -601,8 +601,10 @@ S3_AVATARS_BUCKET_NAME = 'avatars.newsblur.com'
 # ==================
 # = Configurations =
 # ==================
-
-from .local_settings import *
+if os.getenv("DOCKERBUILD"):
+    from newsblur.docker_local_settings import *
+else:
+    from newsblur.local_settings import *
 
 if not DEBUG:
     INSTALLED_APPS += (
