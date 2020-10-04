@@ -81,9 +81,6 @@ DATABASES = {
         'USER': 'newsblur',
         'PASSWORD': 'newsblur',
         'HOST': 'postgres',
-        'OPTIONS': {
-            "autocommit": True,
-        },
     },
 }
 
@@ -118,6 +115,9 @@ REDIS_SESSIONS = {
     'host': 'redis',
     'port': 6379
 }
+
+CELERY_REDIS_DB_NUM = 4
+SESSION_REDIS_DB = 5
 
 ELASTICSEARCH_FEED_HOSTS = ["elasticsearch:9200"]
 ELASTICSEARCH_STORY_HOSTS = ["elasticsearch:9200"]
