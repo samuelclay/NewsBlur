@@ -1,5 +1,5 @@
 import datetime
-from celery.task import Task
+from celery import Task
 from apps.profile.models import Profile, RNewUserQueue
 from utils import log as logging
 from apps.reader.models import UserSubscription, UserSubscriptionFolders

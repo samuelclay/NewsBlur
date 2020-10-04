@@ -1,4 +1,4 @@
-from celery.task import Task
+from celery import Task
 from django.contrib.auth.models import User
 from apps.feed_import.models import UploadedOPML, OPMLImporter
 from apps.reader.models import UserSubscription

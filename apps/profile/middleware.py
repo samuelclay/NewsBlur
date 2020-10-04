@@ -29,7 +29,7 @@ class LastSeenMiddleware(object):
                 logging.user(request, "~FG~BBRepeat visitor: ~SB%s (%s)" % (
                     request.user.profile.last_seen_on, ip))
                 from apps.profile.tasks import CleanupUser
-                CleanupUser.delay(user_id=request.user.pk)
+                CleanupUser().delay(user_id=request.user.pk)
             elif settings.DEBUG:
                 logging.user(request, "~FG~BBRepeat visitor (ignored): ~SB%s (%s)" % (
                     request.user.profile.last_seen_on, ip))

@@ -1,4 +1,4 @@
-from celery.task import Task
+from celery import Task
 from utils import log as logging
 
 class EmailPopularityQuery(Task):

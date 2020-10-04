@@ -1,5 +1,5 @@
 import datetime
-from celery.task import Task
+from celery import Task
 from utils import log as logging
 from django.contrib.auth.models import User
 from django.conf import settings
