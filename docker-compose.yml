@@ -136,7 +136,7 @@ services:
   celerybeat:
     container_name: celerybeat
     image: newsblur/newsblur_python3
-    command: bash -c "mkdir -p data &&  /srv/newsblur/manage.py celery beat --schedule=/srv/newsblur/data/celerybeat-schedule.db --loglevel=INFO --pidfile=/srv/celeryd.pid"
+    command: bash -c "mkdir -p data && celery beat -A newsblur --schedule=/srv/newsblur/data/celerybeat-schedule.db --loglevel=INFO --pidfile=/srv/celeryd.pid"
     environment: 
       - DOCKERBUILD=True
     volumes:
@@ -147,7 +147,7 @@ services:
   celeryd:
     container_name: celeryd
     image: newsblur/newsblur_python3
-    command: "/srv/newsblur/manage.py celery worker --loglevel=INFO -Q new_feeds,push_feeds,update_feeds"
+    command: "celery worker -A newsblur --loglevel=INFO -Q new_feeds,push_feeds,update_feeds"
     volumes:
       - app-files:/srv/newsblur
     environment: 
@@ -157,7 +157,7 @@ services:
   celeryd_beat:
     container_name: celeryd_beat
     image: newsblur/newsblur_python3
-    command: "/srv/newsblur/manage.py celery worker --loglevel=INFO -Q beat_tasks -c 3"
+    command: "celery worker -A newsblur --loglevel=INFO -Q beat_tasks -c 3"
     environment: 
       - DOCKERBUILD=True
     volumes:
@@ -167,7 +167,7 @@ services:
   celeryd_beat_feeds:
     container_name: celeryd_beat_feeds
     image: newsblur/newsblur_python3
-    command: "/srv/newsblur/manage.py celery worker --loglevel=INFO -Q beat_feeds_task -c 1"
+    command: "celery worker -A newsblur --loglevel=INFO -Q beat_feeds_task -c 1"
     environment: 
       - DOCKERBUILD=True
     volumes:
@@ -177,7 +177,7 @@ services:
   celeryd_news:
     container_name: celeryd_news
     image: newsblur/newsblur_python3
-    command: "/srv/newsblur/manage.py celery worker --loglevel=INFO -Q new_feeds,push_feeds"
+    command: "celery worker -A newsblur --loglevel=INFO -Q new_feeds,push_feeds"
     environment: 
       - DOCKERBUILD=True
     volumes:
@@ -187,7 +187,7 @@ services:
   celeryd_search_indexer:
     container_name: celeryd_search_indexer
     image: newsblur/newsblur_python3
-    command: "/srv/newsblur/manage.py celery worker --loglevel=INFO -Q search_indexer -c 4"
+    command: "celery worker -A newsblur --loglevel=INFO -Q search_indexer -c 4"
     environment: 
       - DOCKERBUILD=True
     volumes:
@@ -198,7 +198,7 @@ services:
   celeryd_search_indexer_tasker:
     container_name: celeryd_search_indexer_tasker
     image: newsblur/newsblur_python3
-    command: "/srv/newsblur/manage.py celery worker --loglevel=INFO -Q search_indexer_tasker -c 2"
+    command: "celery worker -A newsblur --loglevel=INFO -Q search_indexer_tasker -c 2"
     environment: 
       - DOCKERBUILD=True
     volumes:
@@ -208,7 +208,7 @@ services:
   celeryd_work_queue:
     container_name: celeryd_work_queue
     image: newsblur/newsblur_python3
-    command: bash -c "/srv/newsblur/manage.py celery worker --loglevel=INFO -Q work_queue"
+    command: bash -c "celery worker -A newsblur --loglevel=INFO -Q work_queue"
     ports:
       - 82:82
     environment: 
