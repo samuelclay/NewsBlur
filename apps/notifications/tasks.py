@@ -1,4 +1,4 @@
-from celery.task import Task
+from celery import Task
 from django.contrib.auth.models import User
 from apps.notifications.models import MUserFeedNotification
 from utils import log as logging

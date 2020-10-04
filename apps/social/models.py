@@ -474,7 +474,7 @@ class MSocialProfile(mongo.Document):
 
         if followee.protected and user_id != self.user_id and not force:
             from apps.social.tasks import EmailFollowRequest
-            EmailFollowRequest.apply_async(kwargs=dict(follower_user_id=self.user_id,
+            EmailFollowRequest().apply_async(kwargs=dict(follower_user_id=self.user_id,
                                                        followee_user_id=user_id),
                                            countdown=settings.SECONDS_TO_DELAY_CELERY_EMAILS)
             return
@@ -500,7 +500,7 @@ class MSocialProfile(mongo.Document):
         
         if not force:
             from apps.social.tasks import EmailNewFollower
-            EmailNewFollower.apply_async(kwargs=dict(follower_user_id=self.user_id,
+            EmailNewFollower().apply_async(kwargs=dict(follower_user_id=self.user_id,
                                                      followee_user_id=user_id),
                                          countdown=settings.SECONDS_TO_DELAY_CELERY_EMAILS)
         

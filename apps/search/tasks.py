@@ -1,4 +1,4 @@
-from celery.task import Task
+from celery import Task
 
 class IndexSubscriptionsForSearch(Task):
     

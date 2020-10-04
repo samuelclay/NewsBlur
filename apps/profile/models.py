@@ -161,7 +161,7 @@ class Profile(models.Model):
     def activate_premium(self, never_expire=False):
         from apps.profile.tasks import EmailNewPremium
         
-        EmailNewPremium.delay(user_id=self.user.pk)
+        EmailNewPremium().delay(user_id=self.user.pk)
         
         was_premium = self.is_premium
         self.is_premium = True
@@ -186,7 +186,7 @@ class Profile(models.Model):
             scheduled_feeds = []
         logging.user(self.user, "~SN~FMTasking the scheduling immediate premium setup of ~SB%s~SN feeds..." % 
                      len(scheduled_feeds))
-        SchedulePremiumSetup.apply_async(kwargs=dict(feed_ids=scheduled_feeds))
+        SchedulePremiumSetup().apply_async(kwargs=dict(feed_ids=scheduled_feeds))
     
         UserSubscription.queue_new_feeds(self.user)
         

@@ -1,4 +1,4 @@
-from celery.task import Task
+from celery import Task
 from apps.statistics.models import MStatistics
 from apps.statistics.models import MFeedback
 # from utils import log as logging

@@ -561,7 +561,7 @@ class Feed(models.Model):
         
         # for feed_ids in (feeds[pos:pos + queue_size] for pos in xrange(0, len(feeds), queue_size)):
         for feed_id in feeds:
-            UpdateFeeds.apply_async(args=(feed_id,), queue='update_feeds')
+            UpdateFeeds().apply_async(args=(feed_id,), queue='update_feeds')
     
     @classmethod
     def drain_task_feeds(cls):
@@ -2250,7 +2250,7 @@ class Feed(models.Model):
         else:
             logging.debug('   ---> [%-30s] [%s] ~FB~SBQueuing pushed stories, last pushed %s...' % (self.log_title[:30], self.pk, latest_push_date_delta))
             self.set_next_scheduled_update()
-            PushFeeds.apply_async(args=(self.pk, xml), queue='push_feeds')
+            PushFeeds().apply_async(args=(self.pk, xml), queue='push_feeds')
     
     # def calculate_collocations_story_content(self,
     #                                          collocation_measures=TrigramAssocMeasures,
@@ -3047,7 +3047,7 @@ class MStarredStoryCounts(mongo.Document):
     
     @classmethod
     def schedule_count_tags_for_user(cls, user_id):
-        ScheduleCountTagsForUser.apply_async(kwargs=dict(user_id=user_id))
+        ScheduleCountTagsForUser().apply_async(kwargs=dict(user_id=user_id))
     
     @classmethod
     def count_for_user(cls, user_id, total_only=False):

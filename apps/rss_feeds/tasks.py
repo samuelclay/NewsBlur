@@ -3,7 +3,7 @@ import os
 import shutil
 import time
 import redis
-from celery.task import Task
+from celery import Task
 from celery.exceptions import SoftTimeLimitExceeded
 from utils import log as logging
 from utils import s3_utils as s3
