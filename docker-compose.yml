@@ -1,23 +1,56 @@
----
-version: '2'
+version: '3'
 services:
-  newsblur:
-    build:
-      context: .
-      dockerfile: docker/Dockerfile
-    image: newsblur
+  newsblur_web:
+    container_name: newsblur_web
+    image: newsblur/newsblur_python3
+    environment: 
+      - DOCKERBUILD=True
+    stdin_open: true
+    tty: true
     links:
-      - mongo
+      - db_mongo
       - postgres
       - elasticsearch
       - redis
+    restart: always
+    depends_on:
+      - db_mongo
+      - postgres
+      - redis
+      - elasticsearch
+    ulimits:
+      nproc: 10000
+      nofile:
+        soft: 10000
+        hard: 10000
     ports:
       - '8000:8000'
-    networks:
-      - front
-      - back
+    command: gunicorn --bind :8000 newsblur.wsgi:application
+    volumes: 
+      - app-files:/srv/newsblur
+  nginx:
+    container_name: nginx
+    image: nginx:1.13
+    ports:
+      - 81:81
+    depends_on:
+    - newsblur_web
+    - favicons
+    - postgres
+    - redis
+    - db_mongo
+    - elasticsearch
+    - original_pages
+    - original_text
+    - node_websocket
+    environment: 
+      - DOCKERBUILD=True
+    volumes:
+    - ./docker/nginx:/etc/nginx/conf.d
+    - app-files:/srv/newsblur
 
   postgres:
+    container_name: postgres
     image: postgres:9.6
     environment:
       - POSTGRES_USER=newsblur
@@ -25,57 +58,203 @@ services:
     ports:
       - '5432:5432'
     volumes:
-      - ./docker/postgres:/docker-entrypoint-initdb.d
       - ./docker/volumes/postgres:/var/lib/postgresql/data
-    networks:
-      - back
 
   redis:
     image: redis:3
     ports:
       - '6379:6379'
+    container_name: redis
     volumes:
       - ./docker/volumes/redis:/data
       - ./config/redis.conf:/usr/local/etc/redis_server.conf
       - ./config/redis_docker.conf:/etc/redis_server.conf
       - ./docker/volumes/redis.var.lib:/var/lib/redis
     command: /usr/local/bin/redis-server /usr/local/etc/redis_server.conf
-    networks:
-      - back
-
 
   elasticsearch:
+    container_name: elasticsearch
     image: elasticsearch:1.7
     ports:
       - '9200:9200'
     volumes:
       - ./docker/volumes/elasticsearch:/usr/share/elasticsearch/data
-    networks:
-      - back
 
-  mongo:
+  db_mongo:
+    container_name: db_mongo
     image: mongo:3.2
     ports:
-      - '27017:27017'
+      - 27017:27017
     command: mongod --smallfiles
     volumes:
-      - ./docker/volumes/mongo:/data/db
-    networks:
-      - back
+      - ./docker/volumes/db_mongo:/data/db
 
-networks:
-    front:
-      driver: bridge
-# Note: below is optional, if you have an existing ingress bridge
-#      config:
-#        external:
-#            name: ingress
-    back:
-      driver: bridge
-      ipam:
-        driver: default
-# Note: below is optional, if you'd like the back bridge to use fewer IP addresses
-#        config:
-#        - subnet: 172.16.128.0/24
-#          gateway: 172.16.128.1
-      internal: true
+  original_pages:
+    image: newsblur/newsblur_node
+    container_name: node_original_page
+    environment:
+      - NODE_ENV=development
+    command: node original_page.js
+    ports:
+      - 3060:3060
+    volumes: 
+      - node-files:/usr/src/app
+  original_text:
+    image: newsblur/newsblur_node
+    container_name: node_original_text
+    environment:
+      - NODE_ENV=development
+    ports:
+      - 4040:4040
+    command: sleep 100000 #node original_text.js
+    volumes: 
+      - node-files:/usr/src/app
+  
+  favicons:
+    image: newsblur/newsblur_node
+    container_name: node_favicons
+    environment:
+      - NODE_ENV=docker
+    ports:
+      - 3030:3030
+    command: node favicons.js
+    volumes: 
+      - node-files:/usr/src/app
+
+  node_websocket:
+    container_name: node_websocket
+    image: newsblur/newsblur_node
+    environment:
+      - NODE_ENV=docker
+    command: node unread_counts.js
+    stop_signal: HUP
+    ports:
+      - 8888:8888
+    volumes: 
+      - node-files:/usr/src/app
+  
+  celerybeat:
+    container_name: celerybeat
+    image: newsblur/newsblur_python3
+    command: bash -c "mkdir -p data &&  /srv/newsblur/manage.py celery beat --schedule=/srv/newsblur/data/celerybeat-schedule.db --loglevel=INFO --pidfile=/srv/celeryd.pid"
+    environment: 
+      - DOCKERBUILD=True
+    volumes:
+      - app-files:/srv/newsblur
+      - ./config:/etc/supervisor/conf.d/
+
+  
+  celeryd:
+    container_name: celeryd
+    image: newsblur/newsblur_python3
+    command: "/srv/newsblur/manage.py celery worker --loglevel=INFO -Q new_feeds,push_feeds,update_feeds"
+    volumes:
+      - app-files:/srv/newsblur
+    environment: 
+      - DOCKERBUILD=True
+    user: "${CURRENT_UID}:${CURRENT_GID}"
+
+  celeryd_beat:
+    container_name: celeryd_beat
+    image: newsblur/newsblur_python3
+    command: "/srv/newsblur/manage.py celery worker --loglevel=INFO -Q beat_tasks -c 3"
+    environment: 
+      - DOCKERBUILD=True
+    volumes:
+      - app-files:/srv/newsblur
+    user: "${CURRENT_UID}:${CURRENT_GID}"
+
+  celeryd_beat_feeds:
+    container_name: celeryd_beat_feeds
+    image: newsblur/newsblur_python3
+    command: "/srv/newsblur/manage.py celery worker --loglevel=INFO -Q beat_feeds_task -c 1"
+    environment: 
+      - DOCKERBUILD=True
+    volumes:
+      - app-files:/srv/newsblur
+    user: "${CURRENT_UID}:${CURRENT_GID}"
+
+  celeryd_news:
+    container_name: celeryd_news
+    image: newsblur/newsblur_python3
+    command: "/srv/newsblur/manage.py celery worker --loglevel=INFO -Q new_feeds,push_feeds"
+    environment: 
+      - DOCKERBUILD=True
+    volumes:
+      - app-files:/srv/newsblur
+    user: "${CURRENT_UID}:${CURRENT_GID}"
+
+  celeryd_search_indexer:
+    container_name: celeryd_search_indexer
+    image: newsblur/newsblur_python3
+    command: "/srv/newsblur/manage.py celery worker --loglevel=INFO -Q search_indexer -c 4"
+    environment: 
+      - DOCKERBUILD=True
+    volumes:
+      - app-files:/srv/newsblur
+
+    user: $CURRENT_UID:$CURRENT_GID
+
+  celeryd_search_indexer_tasker:
+    container_name: celeryd_search_indexer_tasker
+    image: newsblur/newsblur_python3
+    command: "/srv/newsblur/manage.py celery worker --loglevel=INFO -Q search_indexer_tasker -c 2"
+    environment: 
+      - DOCKERBUILD=True
+    volumes:
+      - app-files:/srv/newsblur
+    user: $CURRENT_UID:$CURRENT_GID
+
+  celeryd_work_queue:
+    container_name: celeryd_work_queue
+    image: newsblur/newsblur_python3
+    command: bash -c "/srv/newsblur/manage.py celery worker --loglevel=INFO -Q work_queue"
+    ports:
+      - 82:82
+    environment: 
+      - DOCKERBUILD=True
+    volumes:
+      - app-files:/srv/newsblur
+    user: $CURRENT_UID:$CURRENT_GID
+
+  monitor:
+    container_name: monitor
+    image: newsblur/newsblur_python3 
+    command: bash -c "python /srv/newsblur/flask_monitor/db_monitor.py"
+    environment: 
+      - DOCKERBUILD=True
+    volumes:
+      - app-files:/srv/newsblur
+    ports:
+      - 5000:5000
+
+  haproxy:
+    container_name: haproxy
+    build:
+      context: .
+      dockerfile: docker/haproxy/Dockerfile
+    depends_on: 
+      - nginx
+      - newsblur_web
+      - redis
+    ports:
+      - 80:80
+      - 443:443
+      - 1936:1936
+    environment: 
+      - DOCKERBUILD=True
+    volumes:
+      - ./docker/haproxy/haproxy.conf:/usr/local/etc/haproxy/haproxy.cfg
+      - app-files:/srv/newsblur
+
+volumes:
+  app-files:
+    driver_opts:
+      type: nfs
+      device: $PWD
+      o: bind
+  node-files:
+    driver_opts:
+      type: nfs
+      device: $PWD/node
+      o: bind
