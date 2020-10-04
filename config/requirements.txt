@@ -22,6 +22,7 @@ Django>=3.0,<3.1
 dnspython==1.15.0
 Fabric2==2.5.0
 Fabric>=1.14.0,<2
+flask==1.1.2
 gunicorn==19.7
 hiredis==0.2.0
 httplib2==0.18.1
