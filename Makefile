@@ -2,6 +2,11 @@ newsblur := $(shell docker ps -qf "name=newsblur_web")
 CURRENT_UID := $(shell id -u)
 CURRENT_GID := $(shell id -g)
 
+#creates newsblur, but does not rebuild images or create keys
+start:
+	- CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker-compose down
+	- CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker-compose up -d
+
 #creates newsblur, builds new images, and creates/refreshes SSL keys
 nb:
 	- CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker-compose down
@@ -10,11 +15,6 @@ nb:
 	- cd node && npm install & cd ..
 	- docker-compose exec newsblur_web ./manage.py migrate
 	- docker-compose exec newsblur_web ./manage.py loaddata config/fixtures/bootstrap.json
-
-#creates newsblur, but does not rebuild images or create keys
-nb-no-build:
-	- CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker-compose down
-	- CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker-compose up -d
 
 # allows user to exec into newsblur_web and use pdb.
 nb-exec:
@@ -27,7 +27,7 @@ nb-down:
 
 # runs tests
 test:
-	- ./manage.py test --settings=utils.test_settings
+	- docker-compose exec newsblur_web ./manage.py test --settings=utils.test_settings
 
 keys:
 	- rm config/certificates
