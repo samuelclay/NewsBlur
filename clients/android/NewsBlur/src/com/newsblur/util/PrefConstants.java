@@ -117,4 +117,5 @@ public class PrefConstants {
     public static final String FEED_CHOOSER_FEED_ORDER = "feed_chooser_feed_order";
     public static final String FEED_CHOOSER_FOLDER_VIEW = "feed_chooser_folder_view";
     public static final String WIDGET_BACKGROUND = "widget_background";
+    public static final String IN_APP_REVIEW = "in_app_review";
 }

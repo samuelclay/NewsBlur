@@ -975,4 +975,16 @@ public class PrefsUtils {
         SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
         return preferences.getLong(PrefConstants.PREMIUM_EXPIRE, -1);
     }
+
+    public static boolean hasInAppReviewed(Context context) {
+        SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        return preferences.getBoolean(PrefConstants.IN_APP_REVIEW, false);
+    }
+
+    public static void setInAppReviewed(Context context) {
+        SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        Editor editor = preferences.edit();
+        editor.putBoolean(PrefConstants.IN_APP_REVIEW, true);
+        editor.commit();
+    }
 }
