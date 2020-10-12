@@ -1567,9 +1567,9 @@ def complete_river(request):
 @json.json_view
 def unread_story_hashes__old(request):
     user              = get_user(request)
-    feed_ids          = request.REQUEST.getlist('feed_id') or request.REQUEST.getlist('feed_id[]')
+    feed_ids          = request.POST.getlist('feed_id') or request.POST.getlist('feed_id[]')
     feed_ids          = [int(feed_id) for feed_id in feed_ids if feed_id]
-    include_timestamps = is_true(request.REQUEST.get('include_timestamps', False))
+    include_timestamps = is_true(request.POST.get('include_timestamps', False))
     usersubs = {}
     
     if not feed_ids:
