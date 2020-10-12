@@ -17,7 +17,7 @@ nb:
 	- docker-compose exec newsblur_web ./manage.py loaddata config/fixtures/bootstrap.json
 
 # allows user to exec into newsblur_web and use pdb.
-nb-exec:
+debug:
 	# run `make nb-no-build` if this doesn't work
 	- CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker attach ${newsblur}
 
