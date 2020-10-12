@@ -27,7 +27,7 @@ nb-down:
 
 # runs tests
 test:
-	- docker-compose exec newsblur_web ./manage.py test --settings=utils.test_settings
+	- docker-compose exec newsblur_web ./manage.py test --settings=newsblur.test_settings
 
 keys:
 	- rm config/certificates
