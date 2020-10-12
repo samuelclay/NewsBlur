@@ -3,7 +3,7 @@
         "pk": 1,
         "model": "sites.site",
         "fields": {
-            "domain": "localhost",
+            "domain": "nb.local.com",
             "name": "NewsBlur"
         }
     },    
