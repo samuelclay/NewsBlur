@@ -27,7 +27,11 @@ nb-down:
 
 # runs tests
 test:
-	- docker-compose exec newsblur_web ./manage.py test --settings=newsblur.test_settings
+	- docker-compose down
+	- CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} TEST=True docker-compose -f docker-compose.yml up -d
+	- CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker-compose exec newsblur_web ./manage.py migrate --database=test_newsblur
+	- CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker-compose exec newsblur_web ./manage.py loaddata config/fixtures/bootstrap.json --database=test_newsblur
+	- CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker-compose -f docker-compose.yml exec newsblur_web ./manage.py test --settings=newsblur_web.test_settings
 
 keys:
 	- rm config/certificates
