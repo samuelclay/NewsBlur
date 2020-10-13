@@ -264,7 +264,7 @@ DAYS_OF_STORY_HASHES    = 30
 
 SUBSCRIBER_EXPIRE       = 7
 
-ROOT_URLCONF            = 'newsblur.urls'
+ROOT_URLCONF            = 'newsblur_web.urls'
 INTERNAL_IPS            = ('127.0.0.1',)
 LOGGING_LOG_SQL         = True
 APPEND_SLASH            = False
@@ -288,8 +288,9 @@ else:
 # ==============
 
 SUBDOMAIN_URLCONFS = {
-    None: 'newsblur.urls',
-    'www': 'newsblur.urls',
+    None: 'newsblur_web.urls',
+    'www': 'newsblur_web.urls',
+    'nb': 'newsblur_web.urls',
 }
 REMOVE_WWW_FROM_DOMAIN = True
 
@@ -576,9 +577,9 @@ S3_AVATARS_BUCKET_NAME = 'avatars.newsblur.com'
 # = Configurations =
 # ==================
 if os.getenv("DOCKERBUILD"):
-    from newsblur.docker_local_settings import *
+    from newsblur_web.docker_local_settings import *
 else:
-    from newsblur.local_settings import *
+    from newsblur_web.local_settings import *
 
 if not DEBUG:
     INSTALLED_APPS += (
