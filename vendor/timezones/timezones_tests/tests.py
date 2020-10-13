@@ -12,7 +12,7 @@ import vendor.timezones.forms
 import vendor.timezones.timezones_tests.models as test_models
 
 from vendor.timezones.utilities import localtime_for_timezone, adjust_datetime_to_timezone
-
+from vendor import timezones
 
 
 class TimeZoneTestCase(TestCase):
@@ -95,7 +95,10 @@ class TimeZoneFieldTestCase(TimeZoneTestCase):
             class Meta:
                 model = test_models.Profile
                 fields = "__all__"
-        form = ProfileForm({"name": "Brian Rosner", "timezone": "America/Denver"})
+        now = datetime.now()
+        tz = "America/Denver"
+        tz = "(GMT%s) %s" % (now.strftime("%z"), tz)
+        form = ProfileForm({"name": "Brian Rosner", "timezone": tz})
         self.assertFormIsValid(form)
     
     def test_models_modelform_save(self):
@@ -103,7 +106,10 @@ class TimeZoneFieldTestCase(TimeZoneTestCase):
             class Meta:
                 model = test_models.Profile
                 fields = "__all__"
-        form = ProfileForm({"name": "Brian Rosner", "timezone": "America/Denver"})
+        tz = "America/Denver"
+        now = datetime.now()
+        tz = "(GMT%s) %s" % (now.strftime("%z"), tz)
+        form = ProfileForm({"name": "Brian Rosner", "timezone": tz})
         self.assertFormIsValid(form)
         p = form.save()
     
