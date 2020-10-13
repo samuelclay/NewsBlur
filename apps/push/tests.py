@@ -24,7 +24,7 @@
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 from datetime import datetime, timedelta
-import urllib2
+import urllib
 
 from django.urls import reverse
 from django.test import TestCase
@@ -147,7 +147,7 @@ class PSHBSubscriptionManagerTest(PSHBTestBase, TestCase):
         self.responses.append(MockResponse(500, 'error data'))
         try:
             PushSubscription.objects.subscribe('topic', 'hub', 'callback')
-        except urllib2.URLError, e:
+        except urllib.URLError as e:
             self.assertEquals(e.reason,
                               'error subscribing to topic on hub:\nerror data')
         else:

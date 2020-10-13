@@ -13,9 +13,9 @@ class Tokenizer:
         self.lower = lower
         
     def tokenize(self, doc):
-        print doc
+        print(doc)
         formatted_doc = ' '.join(self.WORD_RE.split(doc))
-        print formatted_doc
+        print(formatted_doc)
         for phrase in self.phrases:
             if phrase in formatted_doc:
                 yield phrase
