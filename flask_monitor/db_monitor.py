@@ -7,7 +7,7 @@ import redis
 import pyes
 
 if os.getenv("DOCKERBUILD") == "True":
-    import newsblur.docker_local_settings as settings
+    import newsblur_web.docker_local_settings as settings
 else:
     import flask_monitor.flask_settings as settings
 
