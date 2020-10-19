@@ -256,7 +256,7 @@ def setup_node():
     setup_node_app()
     config_node()
     
-def setup_db(engine=None, skip_common=False, skip_benchmark=True):
+def setup_db(engine=None, skip_common=False, skip_benchmark=False):
     if not skip_common:
         setup_common()
         setup_db_firewall()
