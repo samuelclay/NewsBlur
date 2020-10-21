@@ -1010,6 +1010,7 @@ def setup_db_firewall():
     sudo('ufw default deny')
     sudo('ufw allow ssh')
     sudo('ufw allow 80')
+    sudo('ufw allow 443')
 
     # DigitalOcean
     for ip in set(env.roledefs['app'] +
