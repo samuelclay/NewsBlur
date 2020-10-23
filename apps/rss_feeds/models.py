@@ -3018,6 +3018,9 @@ class MStarredStoryCounts(mongo.Document):
             secret_token = user.profile.secret_token
         
         slug = self.slug if self.slug else ""
+        if not self.slug and self.tag:
+            slug = slugify(self.tag)
+
         return "%s/reader/starred_rss/%s/%s/%s" % (settings.NEWSBLUR_URL, self.user_id, 
                                                    secret_token, slug)
     
