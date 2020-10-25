@@ -2,6 +2,8 @@ version: '3'
 services:
   newsblur_web:
     hostname: nb
+    dns:
+      - nb.com
     container_name: newsblur_web
     image: newsblur/newsblur_python3
     environment: 
