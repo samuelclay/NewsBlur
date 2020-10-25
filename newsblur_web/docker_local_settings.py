@@ -33,7 +33,7 @@ ENFORCE_SIGNUP_CAPTCHA = False
 CACHES = {
     'default': {
         'BACKEND': 'redis_cache.RedisCache',
-        'LOCATION': 'redis:6379',
+        'LOCATION': 'redis:6579',
         'OPTIONS': {
             'DB': 6,
             'PARSER_CLASS': 'redis.connection.HiredisParser'
@@ -99,7 +99,7 @@ MONGODB_SLAVE = {
 }
 
 # Celery RabbitMQ/Redis Broker
-BROKER_URL = "redis://redis:6379/0"
+BROKER_URL = "redis://redis:6579/0"
 CELERY_RESULT_BACKEND = BROKER_URL
 
 REDIS = {
@@ -113,7 +113,7 @@ REDIS_STORY = {
 }
 REDIS_SESSIONS = {
     'host': 'redis',
-    'port': 6379
+    'port': 6579
 }
 
 CELERY_REDIS_DB_NUM = 4
