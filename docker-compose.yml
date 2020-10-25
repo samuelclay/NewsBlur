@@ -232,7 +232,7 @@ services:
     volumes:
       - app-files:/srv/newsblur
     ports:
-      - 5000:5000
+      - 5579:5579
 
   haproxy:
     domainname: 'nb.local.com'
