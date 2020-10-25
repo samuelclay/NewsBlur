@@ -67,7 +67,7 @@ services:
   redis:
     image: redis:3
     ports:
-      - '6379:6379'
+      - '6579:6579'
     container_name: redis
     volumes:
       - ./docker/volumes/redis:/data
