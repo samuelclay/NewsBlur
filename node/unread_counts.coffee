@@ -5,7 +5,6 @@ log    = require './log.js'
 DEV = process.env.NODE_ENV == 'development'
 DOCKER = process.env.NODE_ENV == 'docker'
 REDIS_SERVER = if process.env.NODE_ENV == 'development' then 'localhost' else if DOCKER then 'redis' else 'db_redis_pubsub'
-REDIS_PORT = process.env.env.NODE_ENV == 'docker' then 6579 else 6379
 SECURE = !!process.env.NODE_SSL
 # client = redis.createClient 6379, REDIS_SERVER
 
@@ -66,7 +65,7 @@ io.on 'connection', (socket) ->
         socket.on "error", (err) ->
             log.debug "Error (socket): #{err}"
         socket.subscribe?.quit()
-        socket.subscribe = redis.createClient REDIS_PORT, REDIS_SERVER
+        socket.subscribe = redis.createClient 6379, REDIS_SERVER
         socket.subscribe.on "error", (err) =>
             log.info @username, "Error: #{err} (#{@feeds.length} feeds)"
             socket.subscribe?.quit()
