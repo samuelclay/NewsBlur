@@ -14,8 +14,6 @@
 
   REDIS_SERVER = process.env.NODE_ENV === 'development' ? 'localhost' : DOCKER ? 'redis' : 'db_redis_pubsub';
   
-  REDIS_PORT = process.env.NODE_ENV === 'docker' ? 6379 : 6579;
-  
   SECURE = !!process.env.NODE_SSL;
 
   log.debug("Starting NewsBlur unread count server...");
@@ -72,7 +70,7 @@
       if ((_ref = socket.subscribe) != null) {
         _ref.quit();
       }
-      socket.subscribe = redis.createClient(REDIS_PORT, REDIS_SERVER);
+      socket.subscribe = redis.createClient(6379, REDIS_SERVER);
       socket.subscribe.on("error", (function(_this) {
         return function(err) {
           var _ref1;

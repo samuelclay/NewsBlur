@@ -578,10 +578,8 @@ S3_AVATARS_BUCKET_NAME = 'avatars.newsblur.com'
 # ==================
 if os.getenv("DOCKERBUILD"):
     from newsblur_web.docker_local_settings import *
-    REDIS_PORT = 6579
 else:
     from newsblur_web.local_settings import *
-    REDIS_PORT = 6379
 
 if not DEBUG:
     INSTALLED_APPS += (
@@ -681,15 +679,15 @@ MONGOANALYTICSDB = connect(MONGO_ANALYTICS_DB_NAME, **MONGO_ANALYTICS_DB)
 # =========
 # = Redis =
 # =========
-
+REDIS_PORT = 6379
 CELERY_REDIS_DB_NUM = 4
 SESSION_REDIS_DB = 5
-CELERY_BROKER_URL = "redis://%s:%s/%s" % (REDIS['host'], REDIS_PORT,CELERY_REDIS_DB_NUM)
+CELERY_BROKER_URL = "redis://%s:6379/%s" % (REDIS['host'],CELERY_REDIS_DB_NUM)
 CELERY_RESULT_BACKEND = CELERY_BROKER_URL
 
 SESSION_REDIS = {
     'host': REDIS_SESSIONS['host'],
-    'port': REDIS_PORT,
+    'port': 6379,
     'db': SESSION_REDIS_DB,
     # 'password': 'password',
     'prefix': '',
@@ -700,7 +698,7 @@ SESSION_REDIS = {
 CACHES = {
     'default': {
         'BACKEND': 'redis_cache.RedisCache',
-        'LOCATION': '%s:%s' % REDIS['host'], REDIS_PORT,
+        'LOCATION': '%s:6379' % REDIS['host'],
         'OPTIONS': {
             'DB': 6,
             'PARSER_CLASS': 'redis.connection.HiredisParser',
