@@ -88,8 +88,8 @@ services:
     container_name: db_mongo
     image: mongo:3.2
     ports:
-      - 29019:27017
-    command: mongod --smallfiles
+      - 29019:29019
+    command: mongod --smallfiles --port 29019
     volumes:
       - ./docker/volumes/db_mongo:/data/db
 
