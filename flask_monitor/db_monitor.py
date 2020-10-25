@@ -136,4 +136,4 @@ def db_check_elasticsearch():
         abort(404)    
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0")
+    app.run(host="0.0.0.0", port=5579)
