@@ -91,7 +91,7 @@ MONGO_DB = {
 MONGO_ANALYTICS_DB = {
     'name': 'nbanalytics',
     'host': 'db_mongo',
-    'port': 27017,
+    'port': 29019,
 }
 
 MONGODB_SLAVE = {

@@ -1,6 +1,8 @@
 import sys
 from newsblur_web.settings import *
 
+DOCKERBUILD = os.getenv("DOCKERBUILD")
+
 if 'test' in sys.argv:
     DATABASES['default']['ENGINE'] = 'django.db.backends.sqlite3'
     DATABASES['default']['OPTIONS'] = {}
@@ -14,9 +16,14 @@ if 'test' in sys.argv:
 #         'TEST_NAME': ':memory:',
 #     },
 # }
+if DOCKERBUILD:
+    MONGO_PORT = 29019
+else:
+    MONGO_PORT = 27017
+
 MONGO_DB = {
     'name': 'newsblur_test',
-    'host': '127.0.0.1:27017',
+    'host': '127.0.0.1:29019',
 }
 
 MONGO_DATABASE_NAME = 'test_newsblur'
