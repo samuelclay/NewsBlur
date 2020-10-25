@@ -88,7 +88,7 @@ services:
     container_name: db_mongo
     image: mongo:3.2
     ports:
-      - 27017:27017
+      - 29019:27017
     command: mongod --smallfiles
     volumes:
       - ./docker/volumes/db_mongo:/data/db
@@ -119,6 +119,7 @@ services:
     container_name: node_favicons
     environment:
       - NODE_ENV=docker
+      - MONGO_PORT=29019
     ports:
       - 3030:3030
     command: node favicons.js

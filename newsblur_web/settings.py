@@ -53,7 +53,7 @@ DNSIMPLE_TOKEN = "YOUR_DNSIMPLE_TOKEN"
 RECAPTCHA_SECRET_KEY = "YOUR_RECAPTCHA_KEY"
 YOUTUBE_API_KEY = "YOUR_YOUTUBE_API_KEY"
 IMAGES_SECRET_KEY = "YOUR_IMAGES_SECRET_KEY"
-
+DOCKERBUILD = os.getenv("DOCKERBUILD")
 # ===================
 # = Global Settings =
 # ===================
@@ -508,13 +508,16 @@ CELERY_BEAT_SCHEDULE = {
 # =========
 # = Mongo =
 # =========
-
+if DOCKERBUILD:
+    MONGO_PORT = 29019
+else:
+    MONGO_PORT = 27017
 MONGO_DB = {
-    'host': 'db_mongo:27017',
+    'host': f'db_mongo:{MONGO_PORT}',
     'name': 'newsblur',
 }
 MONGO_ANALYTICS_DB = {
-    'host': 'db_mongo_analytics:27017',
+    'host': f'db_mongo_analytics:{MONGO_PORT}',
     'name': 'nbanalytics',
 }
 
@@ -576,7 +579,7 @@ S3_AVATARS_BUCKET_NAME = 'avatars.newsblur.com'
 # ==================
 # = Configurations =
 # ==================
-if os.getenv("DOCKERBUILD"):
+if DOCKERBUILD:
     from newsblur_web.docker_local_settings import *
 else:
     from newsblur_web.local_settings import *
@@ -647,7 +650,7 @@ TEMPLATES = [
 
 MONGO_DB_DEFAULTS = {
     'name': 'newsblur',
-    'host': 'db_mongo:27017',
+    'host': f'db_mongo:{MONGO_PORT}',
     'alias': 'default',
     'connect': False,
 }
@@ -667,7 +670,7 @@ MONGODB = connect(MONGO_DB_NAME, **MONGO_DB)
 
 MONGO_ANALYTICS_DB_DEFAULTS = {
     'name': 'nbanalytics',
-    'host': 'db_mongo_analytics:27017',
+    'host': f'db_mongo_analytics:{MONGO_PORT}',
     'alias': 'nbanalytics',
 }
 MONGO_ANALYTICS_DB = dict(MONGO_ANALYTICS_DB_DEFAULTS, **MONGO_ANALYTICS_DB)
