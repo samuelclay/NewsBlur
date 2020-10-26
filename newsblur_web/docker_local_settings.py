@@ -86,7 +86,7 @@ DATABASES = {
 
 MONGO_DB = {
     'name': 'newsblur',
-    'host': 'db_mongo'
+    'host': 'db_mongo:29019'
 }
 MONGO_ANALYTICS_DB = {
     'name': 'nbanalytics',
