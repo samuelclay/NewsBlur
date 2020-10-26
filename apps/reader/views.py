@@ -2650,8 +2650,8 @@ def send_story_email(request):
         
         share_user_profile.save_sent_email()
         
-        logging.user(request, '~BMSharing story by email to %s recipient%s: ~FY~SB%s~SN~BM~FY/~SB%s' % 
-                              (len(to_addresses), '' if len(to_addresses) == 1 else 's', 
+        logging.user(request, '~BMSharing story by email to %s recipient%s (%s): ~FY~SB%s~SN~BM~FY/~SB%s' %
+                              (len(to_addresses), '' if len(to_addresses) == 1 else 's', to_addresses,
                                story['story_title'][:50], feed and feed.feed_title[:50]))
         
     return {'code': code, 'message': message}

@@ -521,7 +521,7 @@
     NSDictionary *feed = [appDelegate getFeed:feedIdStr];
     NSString *storyClassSuffix = @"";
     
-    if (feed[@"is_newsletter"]) {
+    if ([feed[@"is_newsletter"] isEqualToNumber:[NSNumber numberWithInt:1]]) {
         storyClassSuffix = @" NB-newsletter";
     }
     

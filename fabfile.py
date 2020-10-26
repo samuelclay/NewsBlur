@@ -256,7 +256,7 @@ def setup_node():
     setup_node_app()
     config_node()
     
-def setup_db(engine=None, skip_common=False, skip_benchmark=True):
+def setup_db(engine=None, skip_common=False, skip_benchmark=False):
     if not skip_common:
         setup_common()
         setup_db_firewall()
@@ -1010,6 +1010,7 @@ def setup_db_firewall():
     sudo('ufw default deny')
     sudo('ufw allow ssh')
     sudo('ufw allow 80')
+    sudo('ufw allow 443')
 
     # DigitalOcean
     for ip in set(env.roledefs['app'] +
