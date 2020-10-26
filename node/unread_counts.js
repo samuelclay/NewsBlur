@@ -16,6 +16,8 @@
   
   SECURE = !!process.env.NODE_SSL;
 
+  REDIS_PORT = DOCKER ? 6579 : 6379;
+
   log.debug("Starting NewsBlur unread count server...");
 
   if (!DEV && !process.env.NODE_ENV) {
@@ -70,7 +72,7 @@
       if ((_ref = socket.subscribe) != null) {
         _ref.quit();
       }
-      socket.subscribe = redis.createClient(6379, REDIS_SERVER);
+      socket.subscribe = redis.createClient(REDIS_PORT, REDIS_SERVER);
       socket.subscribe.on("error", (function(_this) {
         return function(err) {
           var _ref1;
