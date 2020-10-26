@@ -64,14 +64,14 @@ services:
   redis:
     image: redis:3
     ports:
-      - '6379:6379'
+      - '6579:6579'
     container_name: redis
     volumes:
       - ./docker/volumes/redis:/data
       - ./config/redis.conf:/usr/local/etc/redis_server.conf
       - ./config/redis_docker.conf:/etc/redis_server.conf
       - ./docker/volumes/redis.var.lib:/var/lib/redis
-    command: /usr/local/bin/redis-server /usr/local/etc/redis_server.conf
+    command: redis-server --port 6579
 
   elasticsearch:
     container_name: elasticsearch

@@ -682,15 +682,19 @@ MONGOANALYTICSDB = connect(MONGO_ANALYTICS_DB_NAME, **MONGO_ANALYTICS_DB)
 # =========
 # = Redis =
 # =========
-REDIS_PORT = 6379
+if DOCKERBUILD:
+    REDIS_PORT = 6579
+else:
+    REDIS_PORT = 6379
+
 CELERY_REDIS_DB_NUM = 4
 SESSION_REDIS_DB = 5
-CELERY_BROKER_URL = "redis://%s:6379/%s" % (REDIS['host'],CELERY_REDIS_DB_NUM)
+CELERY_BROKER_URL = "redis://%s:%s/%s" % (REDIS['host'], REDIS_PORT,CELERY_REDIS_DB_NUM)
 CELERY_RESULT_BACKEND = CELERY_BROKER_URL
 
 SESSION_REDIS = {
     'host': REDIS_SESSIONS['host'],
-    'port': 6379,
+    'port': REDIS_PORT,
     'db': SESSION_REDIS_DB,
     # 'password': 'password',
     'prefix': '',
@@ -701,7 +705,7 @@ SESSION_REDIS = {
 CACHES = {
     'default': {
         'BACKEND': 'redis_cache.RedisCache',
-        'LOCATION': '%s:6379' % REDIS['host'],
+        'LOCATION': '%s:%s' % (REDIS['host'], REDIS_PORT),
         'OPTIONS': {
             'DB': 6,
             'PARSER_CLASS': 'redis.connection.HiredisParser',
