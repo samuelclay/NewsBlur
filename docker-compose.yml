@@ -107,7 +107,7 @@ services:
       - NODE_ENV=development
     ports:
       - 4040:4040
-    command: sleep 100000 #node original_text.js
+    command: node original_text.js
     volumes: 
       - node-files:/usr/src/app
   
