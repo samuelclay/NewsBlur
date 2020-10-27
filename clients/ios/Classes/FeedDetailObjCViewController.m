@@ -1869,7 +1869,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     }
     
     CGPoint topRowPoint = self.storyTitlesTable.contentOffset;
-    topRowPoint.y = topRowPoint.y + 80.f;
+    topRowPoint.y = topRowPoint.y + (self.textSize != FeedDetailTextSizeTitleOnly ? 80.f : 60.f);
     NSIndexPath *indexPath = [self.storyTitlesTable indexPathForRowAtPoint:topRowPoint];
     BOOL markReadOnScroll = self.isMarkReadOnScroll;
     

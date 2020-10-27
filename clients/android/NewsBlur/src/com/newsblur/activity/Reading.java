@@ -8,12 +8,12 @@ import android.content.res.Configuration;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.Loader;
-import android.support.v4.view.ViewPager;
-import android.support.v4.view.ViewPager.OnPageChangeListener;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.loader.app.LoaderManager;
+import androidx.loader.content.Loader;
+import androidx.viewpager.widget.ViewPager;
+import androidx.viewpager.widget.ViewPager.OnPageChangeListener;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -178,7 +178,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 			transaction.commit();
 		}
 
-        getSupportLoaderManager().initLoader(0, null, this);
+        LoaderManager.getInstance(this).initLoader(0, null, this);
 	}
 
     @Override
@@ -436,7 +436,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
     private void updateCursor() {
         synchronized (STORIES_MUTEX) {
             try {
-                getSupportLoaderManager().restartLoader(0, null, this);
+                LoaderManager.getInstance(this).restartLoader(0, null, this);
             } catch (IllegalStateException ise) {
                 ; // our heavy use of async can race loader calls, which it will gripe about, but this
                  //  is only a refresh call, so dropping a refresh during creation is perfectly fine.
