@@ -189,4 +189,8 @@ public class StoryUtils {
             return shortDateFormat.get().format(storyDate) +", " + timeFormat.format(storyDate);
         }
     }
+
+    public static boolean hasOldTimestamp(long storyTimestamp) {
+        return (System.currentTimeMillis() - storyTimestamp) > (2 * DateUtils.DAY_IN_MILLIS);
+    }
 }

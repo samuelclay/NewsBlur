@@ -25,6 +25,9 @@ public class PrefConstants {
 	public final static String USER_FOLLOWING_COUNT = "following_count";
 	public final static String USER_SUBSCRIBER_COUNT = "subscribers_count";
 	public final static String USER_SHARED_STORIES_COUNT = "shared_stories_count";
+
+	public static final String IS_PREMIUM = "is_premium";
+	public static final String PREMIUM_EXPIRE = "premium_expire";
 	
 	public static final String PREFERENCE_TEXT_SIZE = "default_reading_text_size";
 	public static final String PREFERENCE_LIST_TEXT_SIZE = "list_text_size";
@@ -110,8 +113,9 @@ public class PrefConstants {
 
     public static final String READING_FONT = "reading_font";
     public static final String WIDGET_FEED_SET = "widget_feed_set";
-    public static final String WIDGET_CONFIG_LIST_ORDER = "widget_config_list_order";
-    public static final String WIDGET_CONFIG_FEED_ORDER = "widget_config_feed_order";
-    public static final String WIDGET_CONFIG_FOLDER_VIEW = "widget_config_folder_view";
+    public static final String FEED_CHOOSER_LIST_ORDER = "feed_chooser_list_order";
+    public static final String FEED_CHOOSER_FEED_ORDER = "feed_chooser_feed_order";
+    public static final String FEED_CHOOSER_FOLDER_VIEW = "feed_chooser_folder_view";
     public static final String WIDGET_BACKGROUND = "widget_background";
+    public static final String IN_APP_REVIEW = "in_app_review";
 }

@@ -63,6 +63,9 @@
             </group>
         </menu>
     </item>
+    <item android:id="@+id/menu_statistics"
+        android:title="@string/menu_statistics"
+        android:showAsAction="never" />
     <item android:id="@+id/menu_delete_feed"
           android:title="@string/menu_delete_feed"
           android:showAsAction="never" />
