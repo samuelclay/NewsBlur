@@ -1,8 +1,12 @@
 version: '3'
 services:
   newsblur_web:
+    hostname: nb.com
     container_name: newsblur_web
     image: newsblur/newsblur_python3
+    dns_search:
+      - 10.19.128.55
+      - nb.com
     environment: 
       - DOCKERBUILD=True
     stdin_open: true
