@@ -530,6 +530,8 @@ public class NBSyncService extends JobService {
             isPremium = feedResponse.isPremium;
             isStaff = feedResponse.isStaff;
 
+            PrefsUtils.setPremium(this, feedResponse.isPremium, feedResponse.premiumExpire);
+
             // note all feeds that belong to some folder so we can find orphans
             for (Folder folder : feedResponse.folders) {
                 debugFeedIdsFromFolders.addAll(folder.feedIds);
