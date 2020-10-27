@@ -57,11 +57,14 @@ services:
   postgres:
     container_name: postgres
     image: postgres:9.6
+    #build:
+    #  context: .
+    #  dockerfile: docker/pg_docker/Dockerfile
     environment:
       - POSTGRES_USER=newsblur
       - POSTGRES_PASSWORD=newsblur
     ports:
-      - '5432:5432'
+      - '5434:5432'
     volumes:
       - ./docker/volumes/postgres:/var/lib/postgresql/data
 
