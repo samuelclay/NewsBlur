@@ -269,7 +269,7 @@ INTERNAL_IPS            = ('127.0.0.1',)
 LOGGING_LOG_SQL         = True
 APPEND_SLASH            = False
 SESSION_ENGINE          = 'redis_sessions.session'
-TEST_RUNNER             = "utils.testrunner.TestRunner"
+TEST_RUNNER             = "django_nose.NoseTestSuiteRunner"
 SESSION_COOKIE_NAME     = 'newsblur_sessionid'
 SESSION_COOKIE_AGE      = 60*60*24*365*10 # 10 years
 SESSION_COOKIE_DOMAIN   = '.newsblur.com'
@@ -338,6 +338,7 @@ INSTALLED_APPS = (
     'vendor.zebra',
     'oauth2_provider',
     'corsheaders',
+    'django_nose',
 )
 
 # ==========
