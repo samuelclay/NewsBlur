@@ -15,7 +15,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -658,6 +658,14 @@ public class APIManager {
         values.put(APIConstants.PARAMETER_NEW_FOLDER_NAME, newFolderName);
         values.put(APIConstants.PARAMETER_IN_FOLDER, inFolder);
         APIResponse response = post(buildUrl(APIConstants.PATH_RENAME_FOLDER), values);
+        return response.getResponse(gson, NewsBlurResponse.class);
+    }
+
+    public NewsBlurResponse saveReceipt(String orderId, String productId) {
+        ContentValues values = new ContentValues();
+        values.put(APIConstants.PARAMETER_ORDER_ID, orderId);
+        values.put(APIConstants.PARAMETER_PRODUCT_ID, productId);
+        APIResponse response = post(buildUrl(APIConstants.PATH_SAVE_RECEIPT), values);
         return response.getResponse(gson, NewsBlurResponse.class);
     }
 
