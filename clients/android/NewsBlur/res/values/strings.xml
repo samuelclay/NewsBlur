@@ -16,8 +16,7 @@
     <string name="login_next">Next</string>
     
     <string name="title_feed_search">Search for feeds</string>
-    <string name="add_feed_message">Add \"%s\" to your feeds?</string>
-    
+
     <string name="loading">Loading…</string>
     <string name="orig_text_loading">Fetching story text…</string>
     
@@ -29,6 +28,7 @@
 	<string name="description_profile_picture">The user\'s profile picture</string>
 	<string name="description_row_folder_icon">folder icon</string>
     <string name="description_row_feed_icon">feed icon</string>
+    <string name="description_row_feed_mute_toggle">feed mute toggle</string>
     <string name="description_activity_icon">An icon illustrating the user\'s activity</string>
     <string name="description_follow_button">Follow or unfollow a user</string>
     <string name="description_comment_user">Comment user image</string>
@@ -135,6 +135,7 @@
     <string name="menu_send_story_full">Send story to…</string>
     <string name="menu_mark_feed_as_read">Mark feed as read</string>
     <string name="menu_delete_feed">Delete feed</string>
+    <string name="menu_statistics">Statistics</string>
     <string name="menu_delete_saved_search">Delete saved search</string>
     <string name="menu_unfollow">Unfollow user</string>
     <string name="menu_choose_folders">Choose folders</string>
@@ -184,6 +185,8 @@
     <string name="menu_folder_view">Folder View</string>
     <string name="menu_folder_view_nested">Nested</string>
     <string name="menu_folder_view_flat">Flat</string>
+    <string name="menu_mute_all">Mute All</string>
+    <string name="menu_mute_none">Mute None</string>
     <string name="menu_select_all">Select All</string>
     <string name="menu_select_none">Select None</string>
     <string name="menu_widget_background">Widget Background</string>
@@ -213,6 +216,7 @@
     <string name="menu_feedback_post">Create a feedback post</string>
     <string name="menu_feedback_email">Email a bug report</string>
     <string name="menu_theme_choose">Theme…</string>
+    <string name="menu_premium_account">Premium Account</string>
 
     <string name="description_add_new_folder_icon">Add new folder icon</string>
 
@@ -255,10 +259,34 @@
     <string name="feed_stories_per_month">%d stories/month</string>
     
     <string name="settings">Preferences</string>
+    <string name="mute_sites">Mute Sites</string>
     <string name="widget">Widget</string>
     <string name="title_widget_setup">Tap to setup in NewsBlur</string>
     <string name="title_no_subscriptions">No active subscriptions detected</string>
     <string name="title_widget_loading">Loading...</string>
+    
+    <string name="premium_subscribers_folder">Reading by folder is only available to</string>
+    <string name="premium_subscribers_search">Search is only available to</string>
+    <string name="premium_subscribers">premium subscribers</string>
+    <string name="premium_toolbar_title">NewsBlur Premium</string>
+    <string name="premium_title_going_premium">Thank you so much for going premium!</string>
+    <string name="premium_title_gone_premium">Thank you for going premium!</string>
+    <string name="premium_subscription_renewal">Your premium subscription is set to\nrenew on %s</string>
+    <string name="premium_subscription_expiration">Your premium subscription is set\nto expire on %s</string>
+    <string name="premium_subscription_no_expiration">Your premium subscription is set\nto never expire. Whoa!</string>
+    <string name="premium_subtitle">Upgrading to a NewsBlur premium subscription gives you all of these features. Payments will be charged to your Play Store account at confirmation of purchase. Subscription renew unless auto-renew is turned off at least 24 hours before the end of the current period. Cancel at any time from Account Settings in Play Store.</string>
+    <string name="premium_policies"><![CDATA[See NewsBlur\'s <a href="https://newsblur.com/privacy">privacy policy</a> and <a href="https://newsblur.com/tos">terms of use</a> for details.]]></string>
+    <string name="premium_subscription_title">NewsBlur Premium Subscription</string>
+    <string name="premium_subscription_price">$35.99 per year ($3.00/month)</string>
+    <string name="premium_subscription_details_error">Error retrieving subscription details</string>
+    <string name="premium_sync">Sites updated up to 10x more often</string>
+    <string name="premium_read_by_folder">River of News (reading by folder)</string>
+    <string name="premium_search">Search sites and folders</string>
+    <string name="premium_searchable_tags">Save stories with searchable tags</string>
+    <string name="premium_privacy_options">Privacy options for your blurblog</string>
+    <string name="premium_custom_rss">Custom RSS feeds for folders and saves stories</string>
+    <string name="premium_text_view">Text view conveniently extracts the story</string>
+    <string name="premium_shiloh">You feed Shiloh, my poor, hungry dog, for a month</string>
 
     <string name="settings_cat_offline">Offline</string>
     <string name="settings_enable_offline">Download Stories</string>
@@ -267,6 +295,12 @@
     <string name="settings_enable_image_prefetch_sum">Pre-fetch images for offline reading</string>
     <string name="settings_keep_old_stories">Keep Stories after Reading</string>
     <string name="settings_keep_old_stories_sum">Disable to reduce storage usage</string>
+
+    <string name="mute_config_title">You can follow up to 64 sites with a free standard account</string>
+    <string name="mute_config_message">Please mute %d sites or reset to most popular sites.</string>
+    <string name="mute_config_reset_button">RESET TO POPULAR SITES</string>
+    <string name="mute_config_upgrade">UPGRADE</string>
+    <string name="mute_config_sites">%1$s/%2$s</string>
 
     <string name="menu_network_select">Download Using</string>
     <string name="menu_network_select_sum">Restrict background data to chosen networks</string>
@@ -364,7 +398,6 @@
     <string name="settings_reading">Reading</string>
     <string name="settings_immersive_enter_single_tap">Immersive Mode Via Single Tap</string>
     <string name="settings_show_content_preview">Show Content Preview Text</string>
-    <string name="settings_show_thumbnails">Show Image Preview Thumbnails</string>
     <string name="settings_thumbnails_style">Image Preview Thumbnails</string>
     <string name="settings_notifications">Notifications</string>
     <string name="settings_enable_notifications">Enable Notifications</string>
@@ -461,12 +494,14 @@
     <string name="gest_action_markunread">Mark Story Unread</string>
     <string name="gest_action_save">Save Story</string>
     <string name="gest_action_unsave">Unsave Story</string>
+    <string name="gest_action_statistics">Statistics</string>
     <string-array name="ltr_gesture_action_entries">
         <item>@string/gest_action_none</item>
         <item>@string/gest_action_markread</item>
         <item>@string/gest_action_markunread</item>
         <item>@string/gest_action_save</item>
         <item>@string/gest_action_unsave</item>
+        <item>@string/gest_action_statistics</item>
     </string-array>
     <string-array name="ltr_gesture_action_values">
         <item>GEST_ACTION_NONE</item>
@@ -474,6 +509,7 @@
         <item>GEST_ACTION_MARKUNREAD</item>
         <item>GEST_ACTION_SAVE</item>
         <item>GEST_ACTION_UNSAVE</item>
+        <item>GEST_ACTION_STATISTICS</item>
     </string-array>
     <string name="ltr_gesture_action_value">GEST_ACTION_MARKREAD</string>
 
@@ -484,6 +520,7 @@
         <item>@string/gest_action_markunread</item>
         <item>@string/gest_action_save</item>
         <item>@string/gest_action_unsave</item>
+        <item>@string/gest_action_statistics</item>
     </string-array>
     <string-array name="rtl_gesture_action_values">
         <item>GEST_ACTION_NONE</item>
@@ -491,6 +528,7 @@
         <item>GEST_ACTION_MARKUNREAD</item>
         <item>GEST_ACTION_SAVE</item>
         <item>GEST_ACTION_UNSAVE</item>
+        <item>GEST_ACTION_STATISTICS</item>
     </string-array>
     <string name="rtl_gesture_action_value">GEST_ACTION_MARKUNREAD</string>
 
@@ -556,7 +594,5 @@
 
     <string name="story_notification_channel_id">story_notification_channel</string>
     <string name="story_notification_channel_name">New Stories</string>
-    <string name="save_widget">Save Widget</string>
-    <string name="select_feed">Select Feed</string>
     <string name="go_to_feed">Go to feed</string>
 </resources>
