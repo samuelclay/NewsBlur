@@ -130,7 +130,7 @@
                 android:id="@+id/share_bar_underline"
                 android:layout_width="match_parent"
                 android:layout_height="3dp"
-                style="?divider"
+                style="?android:divider"
                 android:visibility="gone" />
 
             <TextView
