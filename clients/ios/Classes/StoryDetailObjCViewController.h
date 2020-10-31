@@ -88,7 +88,7 @@ UIActionSheetDelegate, WKNavigationDelegate> {
 - (NSString *)getReplies:(NSArray *)replies forUserId:(NSString *)commentUserId;
 - (NSString *)getAvatars:(NSString *)key;
 - (void)refreshHeader;
-- (void)refreshSideoptions;
+- (void)refreshSideOptions;
 
 - (CGPoint)pointForGesture:(UIGestureRecognizer *)gestureRecognizer;
 

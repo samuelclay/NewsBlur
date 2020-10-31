@@ -464,7 +464,6 @@
     
     if (appDelegate.inStoryDetail && self.isPhoneOrCompact) {
         appDelegate.inStoryDetail = NO;
-//        [appDelegate.storyPageControl resetPages];
         [self checkScroll];
     }
     
@@ -633,7 +632,7 @@
     [storiesCollection setStories:nil];
     [storiesCollection setFeedUserProfiles:nil];
     storiesCollection.storyCount = 0;
-    [appDelegate.storyPageControl resetPages];
+    [appDelegate.storyPageControl resetPageControllers];
     
     storiesCollection.inSearch = NO;
     storiesCollection.searchQuery = nil;

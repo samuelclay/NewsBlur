@@ -38,9 +38,9 @@
 }
 
 @property (nonatomic, strong) NewsBlurAppDelegate *appDelegate;
-@property (nonatomic) StoryDetailViewController *currentPage;
-@property (nonatomic) StoryDetailViewController *nextPage;
-@property (nonatomic) StoryDetailViewController *previousPage;
+//@property (nonatomic) StoryDetailViewController *currentPage;
+//@property (nonatomic) StoryDetailViewController *nextPage;
+//@property (nonatomic) StoryDetailViewController *previousPage;
 @property (nonatomic, strong) IBOutlet UIScrollView *scrollView;
 @property (nonatomic, strong) IBOutlet UIPageControl *pageControl;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *scrollViewTopConstraint;
@@ -99,8 +99,10 @@
 @property (nonatomic) BOOL currentlyTogglingNavigationBar;
 @property (nonatomic, readonly) BOOL isHorizontal;
 @property (nonatomic) BOOL temporarilyMarkedUnread;
+@property (nonatomic, readonly) NSInteger storiesCount;
 
 - (void)resizeScrollView;
+- (BOOL)pageIndexIsValid:(NSInteger)pageIndex;
 - (void)applyNewIndex:(NSInteger)newIndex pageController:(StoryDetailViewController *)pageController;
 - (void)layoutForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
 - (void)updateStatusBarState;
@@ -109,7 +111,6 @@
 - (void)adjustDragBar:(UIInterfaceOrientation)orientation;
 
 - (void)transitionFromFeedDetail;
-- (void)resetPages;
 - (void)hidePages;
 - (void)refreshPages;
 - (void)reorientPages;

@@ -59,10 +59,13 @@
     return self;
 }
 
+- (void)dealloc {
+    [self.webView.scrollView removeObserver:self forKeyPath:@"contentOffset"];
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
 
 - (NSString *)description {
-    NSString *page = appDelegate.storyPageControl.currentPage == self ? @"currentPage" : appDelegate.storyPageControl.previousPage == self ? @"previousPage" : appDelegate.storyPageControl.nextPage == self ? @"nextPage" : @"unattached page";
-    return [NSString stringWithFormat:@"%@", page];
+    return [NSString stringWithFormat:@"%@: page %@, '%@'", [super description], @(pageIndex), activeStory[@"story_title"]];
 }
 
 - (void)viewDidLoad {
@@ -544,7 +547,7 @@
                     "<script src=\"storyDetailView.js\"></script>"
                     "<script src=\"fastTouch.js\"></script>"];
     
-    sharingHtmlString = [self getSideoptions];
+    sharingHtmlString = [self getSideOptions];
 
     NSString *storyHeader = [self getHeader];
     
@@ -685,6 +688,7 @@
     self.activeStoryId = nil;
     self.webView.hidden = YES;
     self.noStoryMessage.hidden = NO;
+    [self.activityIndicator stopAnimating];
 }
 
 #pragma mark -
@@ -839,11 +843,11 @@
     return storyHeader;
 }
 
-- (NSString *)getSideoptions {
+- (NSString *)getSideOptions {
     BOOL isSaved = [[self.activeStory objectForKey:@"starred"] boolValue];
     BOOL isShared = [[self.activeStory objectForKey:@"shared"] boolValue];
     
-    NSString *sideoptions = [NSString stringWithFormat:@
+    NSString *sideOptions = [NSString stringWithFormat:@
                              "<div class='NB-sideoptions'>"
                              "<div class='NB-share-header'></div>"
                              "<div class='NB-share-wrapper'><div class='NB-share-inner-wrapper'>"
@@ -869,7 +873,7 @@
                              isSaved ? @"Saved" : @"Save"
                              ];
     
-    return sideoptions;
+    return sideOptions;
 }
 
 - (NSString *)getAvatars:(NSString *)key {
@@ -1366,7 +1370,7 @@
             }
         }
         
-        if (appDelegate.storyPageControl.currentPage != self) return;
+        if (appDelegate.storyPageControl.currentStoryController != self) return;
 
         int webpageHeight = self.webView.scrollView.contentSize.height;
         int viewportHeight = self.view.frame.size.height;
@@ -1882,6 +1886,8 @@
 }
 
 - (void)updateStoryTheme {
+    self.view.backgroundColor = UIColorFromLightDarkRGB(0x707070, 0x404040);
+    
     NSString *jsString = [NSString stringWithFormat:@"document.getElementById('NB-theme-style').href='storyDetailView%@.css';",
                           [ThemeManager themeManager].themeCSSSuffix];
     
@@ -1963,7 +1969,7 @@
     appDelegate.storiesCollection.activeFeedStories = [NSArray arrayWithArray:newActiveFeedStories];
     
     [MBProgressHUD hideHUDForView:appDelegate.storyPageControl.view animated:NO];
-    [MBProgressHUD hideHUDForView:appDelegate.storyPageControl.currentPage.view animated:NO];
+    [MBProgressHUD hideHUDForView:appDelegate.storyPageControl.currentStoryController.view animated:NO];
     [self refreshComments:@"like"];
 } 
 
@@ -1972,7 +1978,7 @@
     NSLog(@"Error in story detail: %@", error);
     
     [MBProgressHUD hideHUDForView:appDelegate.storyPageControl.view animated:NO];
-    [MBProgressHUD hideHUDForView:appDelegate.storyPageControl.currentPage.view animated:NO];
+    [MBProgressHUD hideHUDForView:appDelegate.storyPageControl.currentStoryController.view animated:NO];
 
     [self informError:error statusCode:statusCode];
 }
@@ -2134,7 +2140,7 @@
 }
 
 - (CGPoint)pointForEvent:(NSNotification*)notification {
-    if (self != appDelegate.storyPageControl.currentPage) return CGPointZero;
+    if (self != appDelegate.storyPageControl.currentStoryController) return CGPointZero;
     if (!self.view.window) return CGPointZero;
     
     CGPoint pt;
@@ -2160,10 +2166,10 @@
 }
 
 - (CGPoint)pointForGesture:(UIGestureRecognizer *)gestureRecognizer {
-    if (self != appDelegate.storyPageControl.currentPage) return CGPointZero;
+    if (self != appDelegate.storyPageControl.currentStoryController) return CGPointZero;
     if (!self.view.window) return CGPointZero;
     
-    CGPoint pt = [gestureRecognizer locationInView:appDelegate.storyPageControl.currentPage.webView];
+    CGPoint pt = [gestureRecognizer locationInView:appDelegate.storyPageControl.currentStoryController.webView];
     
     // convert point from view to HTML coordinate system
 //    CGPoint offset  = [self.webView scrollOffset];
@@ -2271,7 +2277,7 @@
                                                initWithFormat:@"slideToComment('%@', true);", currentUserId];
                     [self.webView evaluateJavaScript:jsFlashString completionHandler:^(id result, NSError * _Nullable error) {
                         [self flashCheckmarkHud:shareType];
-                        [self refreshSideoptions];
+                        [self refreshSideOptions];
                     }];
                 } else if ([replyId isEqualToString:@"like"]) {
                     
@@ -2280,7 +2286,7 @@
                                                initWithFormat:@"slideToComment('%@', true);", replyId];
                     [self.webView evaluateJavaScript:jsFlashString completionHandler:^(id result, NSError * _Nullable error) {
                         [self flashCheckmarkHud:shareType];
-                        [self refreshSideoptions];
+                        [self refreshSideOptions];
                     }];
                 }
             });
@@ -2290,7 +2296,7 @@
 
 - (void)flashCheckmarkHud:(NSString *)messageType {
     [MBProgressHUD hideHUDForView:self.webView animated:NO];
-    [MBProgressHUD hideHUDForView:appDelegate.storyPageControl.currentPage.view animated:NO];
+    [MBProgressHUD hideHUDForView:appDelegate.storyPageControl.currentStoryController.view animated:NO];
     self.storyHUD = [MBProgressHUD showHUDAddedTo:self.webView animated:YES];
     self.storyHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"37x-Checkmark.png"]];
     self.storyHUD.mode = MBProgressHUDModeCustomView;
@@ -2448,11 +2454,11 @@
     }];
 }
 
-- (void)refreshSideoptions {
-    NSString *sideoptionsString = [[[self getSideoptions] stringByReplacingOccurrencesOfString:@"\'" withString:@"\\'"]
+- (void)refreshSideOptions {
+    NSString *sideOptionsString = [[[self getSideOptions] stringByReplacingOccurrencesOfString:@"\'" withString:@"\\'"]
                               stringByReplacingOccurrencesOfString:@"\n" withString:@" "];
     NSString *jsString = [NSString stringWithFormat:@"document.getElementById('NB-sideoptions-container').innerHTML = '%@';",
-                          sideoptionsString];
+                          sideOptionsString];
     
     [self.webView evaluateJavaScript:jsString completionHandler:^(id result, NSError *error) {
         [self.webView evaluateJavaScript:@"attachFastClick();" completionHandler:nil];
@@ -2494,7 +2500,7 @@
     if (!self.activeStoryId || !self.activeStory) return;
     self.inTextView = YES;
 //    NSLog(@"Fetching Text: %@", [self.activeStory objectForKey:@"story_title"]);
-    if (self.activeStory == appDelegate.storyPageControl.currentPage.activeStory) {
+    if (self.activeStory == appDelegate.storyPageControl.currentStoryController.activeStory) {
         [self.appDelegate.storyPageControl showFetchingTextNotifier];
     }
     NSString *storyId = [self.activeStory objectForKey:@"id"];
@@ -2511,7 +2517,7 @@
 - (void)failedFetchText {
     [self.appDelegate.storyPageControl hideNotifier];
     [MBProgressHUD hideHUDForView:self.webView animated:YES];
-    if (self.activeStory == appDelegate.storyPageControl.currentPage.activeStory) {
+    if (self.activeStory == appDelegate.storyPageControl.currentStoryController.activeStory) {
         [self informError:@"Could not fetch text"];
     }
     self.inTextView = NO;
@@ -2548,7 +2554,7 @@
     if (!self.activeStoryId || !self.activeStory) return;
     self.inTextView = YES;
 //    NSLog(@"Fetching Changes: %@", [self.activeStory objectForKey:@"story_title"]);
-    if (self.activeStory == appDelegate.storyPageControl.currentPage.activeStory) {
+    if (self.activeStory == appDelegate.storyPageControl.currentStoryController.activeStory) {
         dispatch_async(dispatch_get_main_queue(), ^{
             [self.appDelegate.storyPageControl showFetchingTextNotifier];
         });
@@ -2570,7 +2576,7 @@
 - (void)failedFetchStoryChanges:(NSError *)error {
     [self.appDelegate.storyPageControl hideNotifier];
     [MBProgressHUD hideHUDForView:self.webView animated:YES];
-    if (self.activeStory == appDelegate.storyPageControl.currentPage.activeStory) {
+    if (self.activeStory == appDelegate.storyPageControl.currentStoryController.activeStory) {
         [self informError:@"Could not fetch changes"];
     }
     self.inTextView = NO;

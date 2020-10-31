@@ -30,43 +30,47 @@ class HorizontalPageDelegate: NSObject {
 
 extension HorizontalPageDelegate: UIPageViewControllerDataSource {
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
-        guard let pageViewController = pageViewController as? HorizontalPageViewController, let detailViewController = pageViewController.detailViewController, let verticalViewController = Storyboards.shared.controller(withIdentifier: .verticalPages) as? VerticalPageViewController else {
+        guard let pageViewController = pageViewController as? HorizontalPageViewController, let currentViewController = viewController as? VerticalPageViewController, let detailViewController = pageViewController.detailViewController else {
             return nil
         }
         
-        verticalViewController.setViewControllers([detailViewController.previousPage], direction: .reverse, animated: false, completion: nil)
+        let pageIndex = (currentViewController.pageIndex ?? -1) - 1
+        let previousViewController = detailViewController.pageIndexIsValid(pageIndex) ? Storyboards.shared.controller(withIdentifier: .verticalPages) as? VerticalPageViewController : nil
         
-        //TODO: *** TO BE IMPLEMENTED *** CATALYST: set up the page controller
+        pageViewController.previousController = previousViewController
+        previousViewController?.horizontalPageViewController = pageViewController
+        previousViewController?.currentController = detailViewController.makeStoryController(for: pageIndex)
         
-        return verticalViewController
+        return previousViewController
     }
     
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
-        guard let pageViewController = pageViewController as? HorizontalPageViewController, let detailViewController = pageViewController.detailViewController, let verticalViewController = Storyboards.shared.controller(withIdentifier: .verticalPages) as? VerticalPageViewController else {
+        guard let pageViewController = pageViewController as? HorizontalPageViewController, let currentViewController = viewController as? VerticalPageViewController, let detailViewController = pageViewController.detailViewController else {
             return nil
         }
         
-        verticalViewController.setViewControllers([detailViewController.nextPage], direction: .forward, animated: false, completion: nil)
+        var pageIndex = (currentViewController.pageIndex ?? -1) + 1
         
-        //TODO: *** TO BE IMPLEMENTED *** CATALYST: set up the page controller
+        if pageIndex == -1 {
+            pageIndex = 0
+        }
         
-        return verticalViewController
+        let nextViewController = detailViewController.pageIndexIsValid(pageIndex) ? Storyboards.shared.controller(withIdentifier: .verticalPages) as? VerticalPageViewController : nil
+
+        pageViewController.nextController = nextViewController
+        nextViewController?.horizontalPageViewController = pageViewController
+        nextViewController?.currentController = detailViewController.makeStoryController(for: pageIndex)
+        
+        return nextViewController
     }
-    
-    // Don't want the page dots.
-//    func presentationIndex(for pageViewController: UIPageViewController) -> Int {
-//        //TODO: *** TO BE IMPLEMENTED *** CATALYST
-//
-//        return 1
-//    }
-//
-//    func presentationCount(for pageViewController: UIPageViewController) -> Int {
-//        //TODO: *** TO BE IMPLEMENTED *** CATALYST
-//
-//        return 10
-//    }
 }
 
 extension HorizontalPageDelegate: UIPageViewControllerDelegate {
-    
+    func pageViewController(_ pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [UIViewController], transitionCompleted completed: Bool) {
+        guard let pageViewController = pageViewController as? HorizontalPageViewController, let detailViewController = pageViewController.detailViewController else {
+            return
+        }
+        
+        detailViewController.setStoryFromScroll(false)
+    }
 }
