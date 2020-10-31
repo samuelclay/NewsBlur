@@ -38,16 +38,86 @@ class DetailViewController: DetailObjCViewController {
     /// The horizontal page view controller.
     var horizontalPageViewController: HorizontalPageViewController?
     
+    /// Returns the currently displayed story view controller, or `nil` if none.
+    @objc var currentStoryController: StoryDetailViewController? {
+        return horizontalPageViewController?.currentController?.currentController
+    }
+    
+    /// Returns an array of all existing story view controllers.
+    @objc var storyControllers: [StoryDetailViewController] {
+        var controllers = [StoryDetailViewController]()
+        
+        guard let pageViewController = horizontalPageViewController else {
+            return controllers
+        }
+        
+        addStories(from: pageViewController.previousController, to: &controllers)
+        addStories(from: pageViewController.currentController, to: &controllers)
+        addStories(from: pageViewController.nextController, to: &controllers)
+        
+        return controllers
+    }
+    
+    /// Returns an array of the previous, current, and next vertical page view controllers, each with the previous, current, and next story view controllers. Note that the top-level array will always have three values, but the inner arrays may have 0-3, depending on usage. This is mainly for debugging use.
+    @objc var storyControllersMatrix: [[StoryDetailViewController]] {
+        guard let pageViewController = horizontalPageViewController else {
+            return [[]]
+        }
+        
+        var previousVerticalControllers = [StoryDetailViewController]()
+        var currentVerticalControllers = [StoryDetailViewController]()
+        var nextVerticalControllers = [StoryDetailViewController]()
+        
+        addStories(from: pageViewController.previousController, to: &previousVerticalControllers)
+        addStories(from: pageViewController.currentController, to: &currentVerticalControllers)
+        addStories(from: pageViewController.nextController, to: &nextVerticalControllers)
+        
+        return [previousVerticalControllers, currentVerticalControllers, nextVerticalControllers]
+    }
+    
+    /// Calls a closure for each story view controller.
+    ///
+    /// - Parameter handler: The closure to call; it takes a story controller as a parameter.
+    @objc(updateStoryControllers:) func updateStoryControllers(handler:(StoryDetailViewController) -> Void) {
+        for controller in storyControllers {
+            handler(controller)
+        }
+    }
+    
+    /// Resets all of the other story controllers from the current one.
+    @objc func resetOtherStoryControllers() {
+        horizontalPageViewController?.currentController = horizontalPageViewController?.currentController
+        
+        navigationItem.titleView = nil
+    }
+    
+    /// Resets the page controllers to a blank state.
+    @objc func resetPageControllers() {
+        if let viewController = Storyboards.shared.controller(withIdentifier: .verticalPages) as? VerticalPageViewController {
+            viewController.horizontalPageViewController = horizontalPageViewController
+            viewController.currentController = makeStoryController(for: -2)
+            
+            horizontalPageViewController?.setViewControllers([viewController], direction: .forward, animated: false, completion: nil)
+        }
+    }
+    
+    /// Creates a new story view controller for the specified page index, and starts loading the content.
+    ///
+    /// - Parameter pageIndex: The index of the story page.
+    /// - Returns: A new `StoryDetailViewController` instance.
+    func makeStoryController(for pageIndex: Int) -> StoryDetailViewController? {
+        let storyController = StoryDetailViewController(pageIndex: pageIndex)
+        
+        applyNewIndex(pageIndex, pageController: storyController)
+        
+        return storyController
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         updateLayout()
-        
-        if let viewController = Storyboards.shared.controller(withIdentifier: .verticalPages) as? VerticalPageViewController {
-            viewController.horizontalPageViewController = horizontalPageViewController
-            
-            horizontalPageViewController?.setViewControllers([viewController], direction: .forward, animated: false, completion: nil)
-        }
+        resetPageControllers()
     }
 }
 
@@ -88,6 +158,14 @@ private extension DetailViewController {
         addChild(viewController)
 //        view.addSubview(viewController.view)
         view.insertSubview(viewController.view, at: 0)
+        
+        //TODO: *** TO BE IMPLEMENTED ***: will want to use slightly different constraints for top & bottom layouts
+        viewController.view.translatesAutoresizingMaskIntoConstraints = false
+        viewController.view.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
+        viewController.view.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+        viewController.view.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        viewController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        
         viewController.didMove(toParent: self)
     }
     
@@ -99,5 +177,21 @@ private extension DetailViewController {
         viewController.willMove(toParent: nil)
         viewController.removeFromParent()
         viewController.view.removeFromSuperview()
+    }
+    
+    func addStories(from verticalPageController: VerticalPageViewController?, to controllers: inout [StoryDetailViewController]) {
+        guard let verticalPageController = verticalPageController else {
+            return
+        }
+        
+        addStory(verticalPageController.previousController, to: &controllers)
+        addStory(verticalPageController.currentController, to: &controllers)
+        addStory(verticalPageController.nextController, to: &controllers)
+    }
+    
+    func addStory(_ story: StoryDetailViewController?, to controllers: inout [StoryDetailViewController]) {
+        if let story = story {
+            controllers.append(story)
+        }
     }
 }

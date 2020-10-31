@@ -1963,10 +1963,9 @@
 }
 
 - (void)adjustStoryDetailWebView {
-    // change the web view
-    [storyPageControl.currentPage changeWebViewWidth];
-    [storyPageControl.nextPage changeWebViewWidth];
-    [storyPageControl.previousPage changeWebViewWidth];
+    [storyPageControl updateStoryControllers:^(StoryDetailViewController * _Nonnull storyController) {
+        [storyController changeWebViewWidth];
+    }];
 }
 
 - (void)calibrateStoryTitles {
@@ -2839,10 +2838,7 @@
 }
 
 - (void)finishMarkAsRead:(NSDictionary *)story {
-    if (!storyPageControl.previousPage || !storyPageControl.currentPage || !storyPageControl.nextPage) return;
-    for (StoryDetailViewController *page in @[storyPageControl.previousPage,
-                                              storyPageControl.currentPage,
-                                              storyPageControl.nextPage]) {
+    for (StoryDetailViewController *page in storyPageControl.storyControllers) {
         if ([[page.activeStory objectForKey:@"story_hash"]
              isEqualToString:[story objectForKey:@"story_hash"]] && page.isRecentlyUnread) {
             page.isRecentlyUnread = NO;
@@ -2852,10 +2848,7 @@
 }
 
 - (void)finishMarkAsUnread:(NSDictionary *)story {
-    if (!storyPageControl.previousPage || !storyPageControl.currentPage || !storyPageControl.nextPage) return;
-    for (StoryDetailViewController *page in @[storyPageControl.previousPage,
-                                              storyPageControl.currentPage,
-                                              storyPageControl.nextPage]) {
+    for (StoryDetailViewController *page in storyPageControl.storyControllers) {
         if ([[page.activeStory objectForKey:@"story_hash"]
              isEqualToString:[story objectForKey:@"story_hash"]]) {
             page.isRecentlyUnread = YES;
@@ -3054,6 +3047,8 @@
         [self showPopoverWithViewController:viewController contentSize:contentSize sourceView:cell sourceRect:cell.bounds];
     } else if ([sender class] == [UIBarButtonItem class]) {
         [self showPopoverWithViewController:viewController contentSize:contentSize barButtonItem:sender];
+    } else if ([sender class] == [UIView class]) {
+        [self showPopoverWithViewController:viewController contentSize:contentSize sourceView:sender sourceRect:[sender frame]];
     } else {
         CGRect frame = [sender CGRectValue];
         
@@ -3589,7 +3584,7 @@
     if (self.trainerViewController.isViewLoaded && self.trainerViewController.view.window) {
         view = self.trainerViewController;
     } else {
-        view = self.storyPageControl.currentPage;
+        view = self.storyPageControl.currentStoryController;
     }
     
     NSHTTPURLResponse *response = (NSHTTPURLResponse *)task.response;
@@ -3781,7 +3776,7 @@
     if (self.trainerViewController.isViewLoaded && self.trainerViewController.view.window) {
         view = self.trainerViewController;
     } else {
-        view = self.storyPageControl.currentPage;
+        view = self.storyPageControl.currentStoryController;
     }
     if (httpResponse.statusCode == 503) {
         return [view informError:@"In maintenance mode"];

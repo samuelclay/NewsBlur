@@ -603,8 +603,8 @@
                     aboveSubview:self.storyNavigationController.view];
 
         // reset the storyDetailViewController components
-        self.storyPageControl.currentPage.webView.hidden = YES;
-        self.storyPageControl.nextPage.webView.hidden = YES;
+//        self.storyPageControl.currentStoryController.webView.hidden = YES;
+//        self.storyPageControl.nextPage.webView.hidden = YES;
         self.storyPageControl.navigationItem.rightBarButtonItems = nil;
         [self.storyPageControl hidePages];
         NSInteger unreadCount = appDelegate.unreadCount;
@@ -1182,7 +1182,7 @@
      } completion:^(BOOL finished) {
          if (self.keyboardIsShown) {
              self.storyNavigationController.view.frame = storyNavigationFrame;
-             [self.storyPageControl.currentPage scrolltoComment];
+             [self.storyPageControl.currentStoryController scrolltoComment];
              [self.storyPageControl resizeScrollView];
          } else {
              // remove the shareNavigationController after keyboard slides down

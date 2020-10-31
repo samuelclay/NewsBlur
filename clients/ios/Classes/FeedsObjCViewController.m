@@ -78,7 +78,6 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 @synthesize settingsBarButton;
 @synthesize activitiesButton;
 @synthesize userAvatarButton;
-@synthesize userInfoBarButton;
 @synthesize neutralCount;
 @synthesize positiveCount;
 @synthesize userLabel;
@@ -193,8 +192,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     self.feedTitlesTable.translatesAutoresizingMaskIntoConstraints = NO;
     self.feedTitlesTable.estimatedRowHeight = 0;
     
-    userAvatarButton.customView.hidden = YES;
-    userInfoBarButton.customView.hidden = YES;
+    userAvatarButton.hidden = YES;
     self.noFocusMessage.hidden = YES;
 
     [self.navigationController.interactivePopGestureRecognizer addTarget:self action:@selector(handleGesture:)];
@@ -916,8 +914,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     appDelegate.activeUserProfileId = [NSString stringWithFormat:@"%@", [appDelegate.dictSocialProfile objectForKey:@"user_id"]];
     appDelegate.activeUserProfileName = [NSString stringWithFormat:@"%@", [appDelegate.dictSocialProfile objectForKey:@"username"]];
 //    appDelegate.activeUserProfileName = @"You";
-    [appDelegate showUserProfileModal:[self.navigationItem.leftBarButtonItems
-                                       objectAtIndex:1]];
+    [appDelegate showUserProfileModal:self.navigationItem.titleView];
 }
 
 - (IBAction)tapAddSite:(id)sender {
@@ -2250,7 +2247,7 @@ heightForHeaderInSection:(NSInteger)section {
 }
 
 - (void)resetToolbar {
-    self.navigationItem.leftBarButtonItem = nil;
+//    self.navigationItem.leftBarButtonItem = nil;
     self.navigationItem.titleView = nil;
     self.navigationItem.rightBarButtonItem = nil;
 }
@@ -2275,34 +2272,30 @@ heightForHeaderInSection:(NSInteger)section {
     NSURL *imageURL = [NSURL URLWithString:[NSString stringWithFormat:@"%@",
                                             [appDelegate.dictSocialProfile
                                              objectForKey:@"large_photo_url"]]];
-    userAvatarButton = [UIBarButtonItem barItemWithImage:[UIImage imageNamed:@"user"]
-                                                  target:self
-                                                  action:@selector(showUserProfile)];
-    userAvatarButton.customView.frame = CGRectMake(0, yOffset + 1, 32, 32);
-    userAvatarButton.width = 32;
+    userAvatarButton = [UIButton systemButtonWithImage:[UIImage imageNamed:@"user"]
+                                                target:self action:@selector((showUserProfile))];
+    userAvatarButton.pointerInteractionEnabled = YES;
     userAvatarButton.accessibilityLabel = @"User info";
     userAvatarButton.accessibilityHint = @"Double-tap for information about your account.";
-
+    
     NSMutableURLRequest *avatarRequest = [NSMutableURLRequest requestWithURL:imageURL];
     [avatarRequest addValue:@"image/*" forHTTPHeaderField:@"Accept"];
     [avatarRequest setTimeoutInterval:30.0];
-    avatarImageView = [[UIImageView alloc] initWithFrame:userAvatarButton.customView.frame];
+    avatarImageView = [[UIImageView alloc] initWithFrame:userAvatarButton.frame];
     typeof(self) __weak weakSelf = self;
     [avatarImageView setImageWithURLRequest:avatarRequest placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
         typeof(weakSelf) __strong strongSelf = weakSelf;
         image = [Utilities roundCorneredImage:image radius:6 convertToSize:CGSizeMake(32, 32)];
-        [(UIButton *)strongSelf.userAvatarButton.customView setImage:image forState:UIControlStateNormal];
+        image = [image imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+        [(UIButton *)strongSelf.userAvatarButton setImage:image forState:UIControlStateNormal];
         
     } failure:^(NSURLRequest * _Nonnull request, NSHTTPURLResponse * _Nonnull response, NSError * _Nonnull error) {
         NSLog(@"Could not fetch user avatar: %@", error);
     }];
     
+    [userInfoView addSubview:userAvatarButton];
     
-    //    self.navigationItem.leftBarButtonItem = userInfoBarButton;
-    
-    //    [userInfoView addSubview:userAvatarButton];
-    
-    userLabel = [[UILabel alloc] initWithFrame:CGRectMake(8, yOffset, userInfoView.frame.size.width, 16)];
+    userLabel = [[UILabel alloc] initWithFrame:CGRectMake(48, yOffset, userInfoView.frame.size.width, 16)];
     userLabel.text = appDelegate.activeUsername;
     userLabel.font = userLabelFont;
     userLabel.textColor = UIColorFromRGB(0x404040);
@@ -2332,25 +2325,16 @@ heightForHeaderInSection:(NSInteger)section {
     
     [userInfoView sizeToFit];
     
-    userInfoBarButton = [[UIBarButtonItem alloc]
-                         initWithCustomView:userInfoView];
-    UIBarButtonItem *spacer = [[UIBarButtonItem alloc]
-                               initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
-                               target:nil
-                               action:nil];
-    spacer.width = -8;
-    self.navigationItem.leftBarButtonItems = @[spacer, userAvatarButton, userInfoBarButton];
+    self.navigationItem.titleView = userInfoView;
 }
 
 - (void)refreshHeaderCounts {
     if (!appDelegate.activeUsername) {
-        userAvatarButton.customView.hidden = YES;
-        userInfoBarButton.customView.hidden = YES;
+        userAvatarButton.hidden = YES;
         return;
     }
     
-    userAvatarButton.customView.hidden = NO;
-    userInfoBarButton.customView.hidden = NO;
+    userAvatarButton.hidden = NO;
     [appDelegate.folderCountCache removeObjectForKey:@"everything"];
 
     NSNumberFormatter *formatter = [NSNumberFormatter new];

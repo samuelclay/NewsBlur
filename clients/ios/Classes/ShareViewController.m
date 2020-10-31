@@ -393,7 +393,7 @@
     [appDelegate.feedDetailViewController redrawUnreadStory];
 
     [MBProgressHUD hideHUDForView:appDelegate.storyPageControl.view animated:NO];
-    [MBProgressHUD hideHUDForView:appDelegate.storyPageControl.currentPage.view animated:NO];
+    [MBProgressHUD hideHUDForView:appDelegate.storyPageControl.currentStoryController.view animated:NO];
 }
 
 # pragma mark
@@ -443,10 +443,10 @@
 
 - (void)requestFailed:(NSError *)error statusCode:(NSInteger)statusCode {
     [MBProgressHUD hideHUDForView:appDelegate.storyPageControl.view animated:NO];
-    [MBProgressHUD hideHUDForView:appDelegate.storyPageControl.currentPage.view animated:NO];
+    [MBProgressHUD hideHUDForView:appDelegate.storyPageControl.currentStoryController.view animated:NO];
 
     NSLog(@"Error: %@", error);
-    [appDelegate.storyPageControl.currentPage informError:error statusCode:statusCode];
+    [appDelegate.storyPageControl.currentStoryController informError:error statusCode:statusCode];
 }
 
 - (void)replaceStory:(NSDictionary *)newStory withReplyId:(NSString *)replyId {
@@ -455,7 +455,7 @@
 
     // update the current story and the activeFeedStories
     appDelegate.activeStory = newStoryParsed;
-    [appDelegate.storyPageControl.currentPage setActiveStoryAtIndex:-1];
+    [appDelegate.storyPageControl.currentStoryController setActiveStoryAtIndex:-1];
 
     NSMutableArray *newActiveFeedStories = [[NSMutableArray alloc] init];
     
@@ -473,7 +473,7 @@
     appDelegate.storiesCollection.activeFeedStories = [NSArray arrayWithArray:newActiveFeedStories];
     
     self.commentField.text = nil;
-    [appDelegate.storyPageControl.currentPage refreshComments:replyId];
+    [appDelegate.storyPageControl.currentStoryController refreshComments:replyId];
     [appDelegate changeActiveFeedDetailRow];
 }
 

@@ -388,7 +388,7 @@
     } else if (indexPath.row == 4) {
         [self.appDelegate openTrainStory:self.appDelegate.storyPageControl.fontSettingsButton];
     } else if (indexPath.row == 5) {
-        [self.appDelegate.storyPageControl.currentPage openShareDialog];
+        [self.appDelegate.storyPageControl.currentStoryController openShareDialog];
     } else if (indexPath.row == 6) {
         [self showFontList];
     }
