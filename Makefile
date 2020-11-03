@@ -4,6 +4,9 @@ CURRENT_GID := $(shell id -g)
 
 #creates newsblur, but does not rebuild images or create keys
 start:
+	- CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker-compose up -d
+
+rebuild:
 	- CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker-compose down
 	- CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker-compose up -d
 
@@ -16,9 +19,10 @@ nb:
 	- docker-compose exec newsblur_web ./manage.py migrate
 	- docker-compose exec newsblur_web ./manage.py loaddata config/fixtures/bootstrap.json
 
+shell:
+	- - CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker-compose exec newsblur_web ./manage.py shellplus
 # allows user to exec into newsblur_web and use pdb.
 debug:
-	# run `make nb-no-build` if this doesn't work
 	- CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker attach ${newsblur}
 
 # brings down containers
