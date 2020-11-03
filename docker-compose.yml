@@ -56,9 +56,6 @@ services:
   postgres:
     container_name: postgres
     image: postgres:9.6
-    #build:
-    #  context: .
-    #  dockerfile: docker/pg_docker/Dockerfile
     environment:
       - POSTGRES_USER=newsblur
       - POSTGRES_PASSWORD=newsblur
