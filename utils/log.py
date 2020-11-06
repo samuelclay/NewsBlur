@@ -5,7 +5,7 @@ import time
 
 from django.core.handlers.wsgi import WSGIRequest
 from django.conf import settings
-from django.utils.encoding import smart_str, smart_text
+from django.utils.encoding import smart_str, smart_str
 
 from .user_functions import extract_user_agent
 from apps.statistics.rstats import RStats
@@ -22,7 +22,7 @@ def getlogger():
 
 
 def user(u, msg, request=None, warn_color=True):
-    msg = smart_text(msg)
+    msg = smart_str(msg)
     if not u:
         return debug(msg)
 
@@ -72,19 +72,19 @@ def cipher(msg):
 
 
 def debug(msg):
-    msg = smart_text(msg)
+    msg = smart_str(msg)
     logger = getlogger()
     logger.debug(colorize(msg))
 
 
 def info(msg):
-    msg = smart_text(msg)
+    msg = smart_str(msg)
     logger = getlogger()
     logger.info(colorize(msg))
 
 
 def error(msg):
-    msg = smart_text(msg)
+    msg = smart_str(msg)
     logger = getlogger()
     logger.error(msg)
 
