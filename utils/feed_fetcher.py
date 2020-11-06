@@ -31,7 +31,7 @@ from bs4 import BeautifulSoup
 from mongoengine import connect, connection
 from django.utils import feedgenerator
 from django.utils.html import linebreaks
-from django.utils.encoding import smart_text
+from django.utils.encoding import smart_str
 from utils import json_functions as json
 from celery.exceptions import SoftTimeLimitExceeded
 from utils.twitter_fetcher import TwitterFetcher
@@ -149,11 +149,11 @@ class FetchFeed:
                 elif raw_feed.content and raw_feed.status_code < 400:
                     response_headers = raw_feed.headers
                     response_headers['Content-Location'] = raw_feed.url
-                    self.raw_feed = smart_text(raw_feed.content)
+                    self.raw_feed = smart_str(raw_feed.content)
                     self.fpf = feedparser.parse(self.raw_feed,
                                                 response_headers=response_headers)
                     if self.options.get('debug', False):
-                        logging.debug(" ---> [%-30s] ~FBFeed fetch status %s: %s length / %s" % (self.feed.log_title[:30], raw_feed.status_code, len(smart_text(raw_feed.content)), raw_feed.headers))
+                        logging.debug(" ---> [%-30s] ~FBFeed fetch status %s: %s length / %s" % (self.feed.log_title[:30], raw_feed.status_code, len(smart_str(raw_feed.content)), raw_feed.headers))
             except Exception as e:
                 logging.debug("   ***> [%-30s] ~FRFeed failed to fetch with request, trying feedparser: %s" % (self.feed.log_title[:30], str(e)[:100]))
             
@@ -472,7 +472,7 @@ class ProcessFeed:
         tagline = self.fpf.feed.get('tagline', self.feed.data.feed_tagline)
         if tagline:
             original_tagline = self.feed.data.feed_tagline
-            self.feed.data.feed_tagline = smart_text(tagline)
+            self.feed.data.feed_tagline = smart_str(tagline)
             if self.feed.data.feed_tagline != original_tagline:
                 self.feed.data.save(update_fields=['feed_tagline'])
 

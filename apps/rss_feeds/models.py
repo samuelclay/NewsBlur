@@ -27,7 +27,7 @@ from django.urls import reverse
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
 from django.template.defaultfilters import slugify
-from django.utils.encoding import smart_bytes, smart_text
+from django.utils.encoding import smart_bytes, smart_str
 from mongoengine.queryset import OperationError, Q, NotUniqueError
 from mongoengine.errors import ValidationError
 from vendor.timezones.utilities import localtime_for_timezone
@@ -1330,7 +1330,7 @@ class Feed(models.Model):
                         # Don't mangle stories with code, just use new
                         story_content_diff = story_content
                     else:
-                        story_content_diff = htmldiff(smart_text(original_content), smart_text(story_content))
+                        story_content_diff = htmldiff(smart_str(original_content), smart_str(story_content))
                 else:
                     story_content_diff = original_content
                 # logging.debug("\t\tDiff: %s %s %s" % diff.getStats())
@@ -1863,9 +1863,9 @@ class Feed(models.Model):
         if (not show_changes and 
             hasattr(story_db, 'story_latest_content_z') and 
             story_db.story_latest_content_z):
-            latest_story_content = smart_text(zlib.decompress(story_db.story_latest_content_z))
+            latest_story_content = smart_str(zlib.decompress(story_db.story_latest_content_z))
         if story_db.story_content_z:
-            story_content = smart_text(zlib.decompress(story_db.story_content_z))
+            story_content = smart_str(zlib.decompress(story_db.story_content_z))
         
         if '<ins' in story_content or '<del' in story_content:
             has_changes = True
@@ -2016,11 +2016,11 @@ class Feed(models.Model):
                 continue
 
             if 'story_latest_content_z' in existing_story:
-                existing_story_content = smart_text(zlib.decompress(existing_story.story_latest_content_z))
+                existing_story_content = smart_str(zlib.decompress(existing_story.story_latest_content_z))
             elif 'story_latest_content' in existing_story:
                 existing_story_content = existing_story.story_latest_content
             elif 'story_content_z' in existing_story:
-                existing_story_content = smart_text(zlib.decompress(existing_story.story_content_z))
+                existing_story_content = smart_str(zlib.decompress(existing_story.story_content_z))
             elif 'story_content' in existing_story:
                 existing_story_content = existing_story.story_content
             else:
@@ -2411,7 +2411,6 @@ class MStory(mongo.Document):
         'indexes': [('story_feed_id', '-story_date'),
                     {'fields': ['story_hash'], 
                      'unique': True,
-                     'types': False,
                     }],
         'ordering': ['-story_date'],
         'allow_inheritance': False,
@@ -3152,7 +3151,6 @@ class MSavedSearch(mongo.Document):
         'indexes': ['user_id',
                     {'fields': ['user_id', 'feed_id', 'query'], 
                      'unique': True,
-                     'types': False,
                     }],
         'ordering': ['query'],
         'allow_inheritance': False,
