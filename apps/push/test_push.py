@@ -71,7 +71,7 @@ class PSHBTestBase:
         self.requests.append((url, data))
         return self.responses.pop()
 
-class PSHBSubscriptionManagerTest(PSHBTestBase, TestCase):
+class Test_PSHBSubscriptionManagerTest(PSHBTestBase, TestCase):
 
     def test_sync_verify(self):
         """
@@ -153,7 +153,7 @@ class PSHBSubscriptionManagerTest(PSHBTestBase, TestCase):
         else:
             self.fail('subscription did not raise URLError exception')
 
-class PSHBCallbackViewTestCase(PSHBTestBase, TestCase):
+class Test_PSHBCallbackViewCase(PSHBTestBase, TestCase):
 
     def test_verify(self):
         """
@@ -235,7 +235,7 @@ class PSHBCallbackViewTestCase(PSHBTestBase, TestCase):
         self.assertEquals(response.status_code, 404)
         self.assertEquals(len(self.signals), 0)
 
-class PSHBUpdateTestCase(PSHBTestBase, TestCase):
+class Test_PSHBUpdateCase(PSHBTestBase, TestCase):
 
     def test_update(self):
         # this data comes from

@@ -6,7 +6,7 @@ from django.urls import reverse
 from apps.reader.models import UserSubscription, UserSubscriptionFolders
 from utils import json_functions as json
 
-class ImportTest(TestCase):
+class Test_Import(TestCase):
     fixtures = ['opml_import.json']
     
     def setUp(self):
@@ -47,3 +47,6 @@ class ImportTest(TestCase):
         subs = UserSubscription.objects.filter(user=user)
 
         self.assertEquals(subs.count(), 0)
+
+class Test_Duplicate_Feeds(TestCase):
+    pass

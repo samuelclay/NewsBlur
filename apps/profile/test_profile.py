@@ -5,7 +5,7 @@ from django.urls import reverse
 from django.conf import settings
 from mongoengine.connection import connect, disconnect
 
-class ProfileTest(TestCase):
+class Test_Profile(TestCase):
     fixtures = [
         'subscriptions.json',
         'rss_feeds.json',
