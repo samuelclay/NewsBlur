@@ -1,6 +1,6 @@
 [
     {
-        "pk": 5, 
+        "pk": 11, 
         "model": "rss_feeds.feed", 
         "fields": {            
             "feed_address": "%(NEWSBLUR_DIR)s/apps/rss_feeds/fixtures/slashdot1.xml", 
