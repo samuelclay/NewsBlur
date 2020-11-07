@@ -147,7 +147,7 @@ class PSHBSubscriptionManagerTest(PSHBTestBase, TestCase):
         self.responses.append(MockResponse(500, 'error data'))
         try:
             PushSubscription.objects.subscribe('topic', 'hub', 'callback')
-        except urllib.URLError as e:
+        except urllib.error.URLError as e:
             self.assertEquals(e.reason,
                               'error subscribing to topic on hub:\nerror data')
         else:
