@@ -223,5 +223,7 @@ fitVideos();
 
 Zepto(function($) {
       attachFastClick();
-      notifyLoaded();
+      if (!window.sampleText) {
+        notifyLoaded();
+      }
 });
