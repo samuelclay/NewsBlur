@@ -1,8 +1,8 @@
 package com.newsblur.activity;
 
 import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -97,7 +97,7 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
         if (activeSearchQuery != null) {
             binding.itemlistSearchQuery.setText(activeSearchQuery);
             binding.itemlistSearchQuery.setVisibility(View.VISIBLE);
-            fs.setSearchQuery(activeSearchQuery);
+            checkSearchQuery();
         }
 
         binding.itemlistSearchQuery.setOnKeyListener(new OnKeyListener() {
@@ -191,6 +191,7 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
             menu.findItem(R.id.menu_instafetch_feed).setVisible(false);
             menu.findItem(R.id.menu_intel).setVisible(false);
             menu.findItem(R.id.menu_rename_feed).setVisible(false);
+            menu.findItem(R.id.menu_statistics).setVisible(false);
         }
 
         if (!fs.isInfrequent()) {
@@ -349,11 +350,16 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
     }
 
     private void checkSearchQuery() {
-        String oldQuery = fs.getSearchQuery();
         String q = binding.itemlistSearchQuery.getText().toString().trim();
         if (q.length() < 1) {
+            updateFleuron(false);
             q = null;
+        } else if (!PrefsUtils.getIsPremium(this)) {
+            updateFleuron(true);
+            return;
         }
+
+        String oldQuery = fs.getSearchQuery();
         fs.setSearchQuery(q);
         if (!TextUtils.equals(q, oldQuery)) {
             FeedUtils.prepareReadingSession(fs, true);
@@ -362,6 +368,26 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
             itemSetFragment.hasUpdated();
             itemSetFragment.scrollToTop();
         }
+    }
+
+    private void updateFleuron(boolean requiresPremium) {
+	    FragmentTransaction transaction = getSupportFragmentManager()
+                .beginTransaction()
+                .setCustomAnimations(android.R.animator.fade_in, android.R.animator.fade_out);
+
+	    if (requiresPremium) {
+	        transaction.hide(itemSetFragment);
+            binding.footerFleuron.textSubscription.setText(R.string.premium_subscribers_search);
+            binding.footerFleuron.containerSubscribe.setVisibility(View.VISIBLE);
+            binding.footerFleuron.getRoot().setVisibility(View.VISIBLE);
+            binding.footerFleuron.containerSubscribe.setOnClickListener(view -> UIUtils.startPremiumActivity(this));
+        } else {
+	        transaction.show(itemSetFragment);
+            binding.footerFleuron.containerSubscribe.setVisibility(View.GONE);
+            binding.footerFleuron.getRoot().setVisibility(View.GONE);
+            binding.footerFleuron.containerSubscribe.setOnClickListener(null);
+        }
+	    transaction.commit();
     }
 
 	@Override
