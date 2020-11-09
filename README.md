@@ -279,7 +279,7 @@ If you need to move search servers and want to just delete everything in the sea
 NewsBlur comes complete with a test suite that tests the functionality of the rss_feeds,
 reader, and feed importer. To run the test suite:
 
-    ./manage.py test --settings=utils.test-settings
+    ./manage.py test --settings=utils.test_settings
 
 
 ## In Case of Downtime

@@ -101,15 +101,23 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         if (story_layout != 'grid') return;
         
         var columns = NEWSBLUR.assets.preference('grid_columns');
+        var height = NEWSBLUR.assets.preference('grid_height');
         var $layout = this.$story_titles;
         $layout.removeClass('NB-grid-columns-1')
                .removeClass('NB-grid-columns-2')
                .removeClass('NB-grid-columns-3')
                .removeClass('NB-grid-columns-4');
 
+        $layout.removeClass('NB-grid-height-xs')
+               .removeClass('NB-grid-height-s')
+               .removeClass('NB-grid-height-m')
+               .removeClass('NB-grid-height-l')
+               .removeClass('NB-grid-height-xl');
+
         if (columns > 0) {
             $layout.addClass('NB-grid-columns-' + columns);
         }
+        $layout.addClass('NB-grid-height-' + height);
     },
     
     append_river_premium_only_notification: function() {
