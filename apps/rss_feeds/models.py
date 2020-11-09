@@ -2834,6 +2834,7 @@ class MStarredStory(mongo.DynamicDocument):
        mongoengine's inheritance model on every single row."""
     user_id                  = mongo.IntField(unique_with=('story_guid',))
     starred_date             = mongo.DateTimeField()
+    starred_updated          = mongo.DateTimeField()
     story_feed_id            = mongo.IntField()
     story_date               = mongo.DateTimeField()
     story_title              = mongo.StringField(max_length=1024)
@@ -2880,7 +2881,8 @@ class MStarredStory(mongo.DynamicDocument):
             self.story_original_content_z = zlib.compress(self.story_original_content)
             self.story_original_content = None
         self.story_hash = self.feed_guid_hash
-        
+        self.starred_updated = datetime.datetime.now()
+
         return super(MStarredStory, self).save(*args, **kwargs)
         
     @classmethod
@@ -3011,6 +3013,11 @@ class MStarredStoryCounts(mongo.Document):
             secret_token = user.profile.secret_token
         
         slug = self.slug if self.slug else ""
+        if not self.slug and self.tag:
+            slug = slugify(self.tag)
+            self.slug = slug
+            self.save()
+
         return "%s/reader/starred_rss/%s/%s/%s" % (settings.NEWSBLUR_URL, self.user_id, 
                                                    secret_token, slug)
     
