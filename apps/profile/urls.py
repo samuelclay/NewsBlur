@@ -22,6 +22,7 @@ urlpatterns = [
     url(r'^never_expire_premium/?', views.never_expire_premium, name='profile-never-expire-premium'),
     url(r'^upgrade_premium/?', views.upgrade_premium, name='profile-upgrade-premium'),
     url(r'^save_ios_receipt/?', views.save_ios_receipt, name='save-ios-receipt'),
+    url(r'^save_android_receipt/?', views.save_android_receipt, name='save-android-receipt'),
     url(r'^update_payment_history/?', views.update_payment_history, name='profile-update-payment-history'),
     url(r'^delete_account/?', views.delete_account, name='profile-delete-account'),
     url(r'^forgot_password_return/?', views.forgot_password_return, name='profile-forgot-password-return'),

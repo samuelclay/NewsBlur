@@ -1,5 +1,33 @@
 {
-    "webcredentials" : {
+    "applinks": {
+        "details": [
+             {
+               "appIDs": [ "HR7P97SD72.com.newsblur.NewsBlur" ],
+               "components": [
+                 {
+                    "#": "no_universal_links",
+                    "exclude": true,
+                    "comment": "Matches any URL whose fragment equals no_universal_links and instructs the system not to open it as a universal link"
+                 },
+                 {
+                    "/": "/buy/*",
+                    "comment": "Matches any URL whose path starts with /buy/"
+                 },
+                 {
+                    "/": "/help/website/*",
+                    "exclude": true,
+                    "comment": "Matches any URL whose path starts with /help/website/ and instructs the system not to open it as a universal link"
+                 },
+                 {
+                    "/": "/help/*",
+                    "?": { "articleNumber": "????" },
+                    "comment": "Matches any URL whose path starts with /help/ and which has a query item with name 'articleNumber' and a value of exactly 4 characters"
+                 }
+               ]
+             }
+         ]
+     },
+     "webcredentials" : {
         "apps" : ["HR7P97SD72.com.newsblur.NewsBlur"]
     }
 }
