@@ -88,6 +88,12 @@ def do_roledefs(split=False):
 def list_do():
     droplets = assign_digitalocean_roledefs(split=True)
     pprint(droplets)
+
+    # Uncomment below to print all IP addresses
+    # for group in droplets.values():
+    #     for server in group:
+    #         if 'address' in server:
+    #             print(server['address'])
     
     doapi = digitalocean.Manager(token=django_settings.DO_TOKEN_FABRIC)
     droplets = doapi.get_all_droplets()
@@ -252,7 +258,7 @@ def setup_node():
     setup_node_app()
     config_node()
     
-def setup_db(engine=None, skip_common=False, skip_benchmark=True):
+def setup_db(engine=None, skip_common=False, skip_benchmark=False):
     if not skip_common:
         setup_common()
         setup_db_firewall()
@@ -802,7 +808,7 @@ def copy_certificates():
     run('mkdir -p %s' % cert_path)
     put(os.path.join(env.SECRETS_PATH, 'certificates/newsblur.com.crt'), cert_path)
     put(os.path.join(env.SECRETS_PATH, 'certificates/newsblur.com.key'), cert_path)
-    put(os.path.join(env.SECRETS_PATH, 'certificates/comodo/newsblur.com.crt'), os.path.join(cert_path, 'newsblur.com.pem')) # For backwards compatibility with hard-coded nginx configs
+    run('ln -fs %s %s' % (os.path.join(cert_path, 'newsblur.com.crt'), os.path.join(cert_path, 'newsblur.com.pem'))) # For backwards compatibility with hard-coded nginx configs
     put(os.path.join(env.SECRETS_PATH, 'certificates/comodo/dhparams.pem'), cert_path)
     put(os.path.join(env.SECRETS_PATH, 'certificates/ios/aps_development.pem'), cert_path)
     # openssl x509 -in aps.cer -inform DER -outform PEM -out aps.pem
@@ -1006,6 +1012,7 @@ def setup_db_firewall():
     sudo('ufw default deny')
     sudo('ufw allow ssh')
     sudo('ufw allow 80')
+    sudo('ufw allow 443')
 
     # DigitalOcean
     for ip in set(env.roledefs['app'] +
