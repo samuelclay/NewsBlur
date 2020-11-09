@@ -75,6 +75,8 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
     public int totalSocialNeutCount = 0;
     /** Total positive unreads for all social feeds. */
     public int totalSocialPosiCount = 0;
+    /** Total active feeds. */
+    public int totalActiveFeedCount = 0;
 
     /** Feeds, indexed by feed ID. */
     private Map<String,Feed> feeds = Collections.emptyMap();
@@ -557,6 +559,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
         feedPosCounts = new HashMap<String,Integer>();
         totalNeutCount = 0;
         totalPosCount = 0;
+        totalActiveFeedCount = 0;
         while (cursor.moveToNext()) {
             Feed f = Feed.fromCursor(cursor);
             feeds.put(f.feedId, f);
@@ -569,6 +572,9 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
                 int neut = checkNegativeUnreads(f.neutralCount);
                 feedNeutCounts.put(f.feedId, neut);
                 totalNeutCount += neut;
+            }
+            if (f.active) {
+                totalActiveFeedCount++;
             }
         }
         recountFeeds();

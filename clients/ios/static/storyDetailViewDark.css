@@ -118,6 +118,10 @@ a:active {
     background-color: #2f2f2f;
 }
 
+.NB-story blockquote p {
+    background-color: #2f2f2f;
+}
+
 ins {
     background-color: #475D49;
     text-decoration: none;
@@ -142,10 +146,7 @@ del {
 .NB-newsletter span,
 .NB-newsletter td {
     color: #c0c0c0 !important;
-    background-color: #000000;
-}
-.NB-newsletter td {
-    background-color: #191b1c;
+    background-color: #000000 !important;
 }
 .NB-newsletter h1,
 .NB-newsletter h2,
@@ -154,7 +155,7 @@ del {
 .NB-newsletter h5,
 .NB-newsletter h6 {
     color: #c0c0c0 !important;
-    background-color: #000000;
+    background-color: #000000 !important;
 }
 
 /* Comments */
@@ -204,14 +205,9 @@ del {
     border-color: rgba(255, 255, 255, .3) rgba(0, 0, 0, .2) rgba(0, 0, 0, .3) rgba(255, 255, 255, .2);
 }
 .NB-button.NB-share-button div {
-    background: -webkit-gradient(
-        linear, left top, left bottom, 
-        from(#666666),
-        color-stop(0.50, #555555),
-        color-stop(0.50, #444444),
-        to(#333333));
-    color: #bbbbbb;
+    color: rgba(187, 187, 187, 0.6);
     text-shadow: 0 1px 0 rgba(0, 0, 0, .5);
+    border: 1px solid rgb(255, 255, 255, 0.25);
 }
 .NB-button:active div,
 .NB-button.NB-button-active div {
