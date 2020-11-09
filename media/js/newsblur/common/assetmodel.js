@@ -927,7 +927,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         if (NEWSBLUR.Globals.is_authenticated || feed_id) {
             this.make_request('/reader/feed_unread_count',  {
                 'feed_id': feed_id
-            }, pre_callback, error_callback);
+            }, pre_callback, error_callback, {request_type: 'GET'});
         }
     },
     
