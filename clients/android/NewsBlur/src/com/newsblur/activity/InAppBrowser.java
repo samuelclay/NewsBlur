@@ -2,11 +2,12 @@ package com.newsblur.activity;
 
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.view.View;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+
+import androidx.fragment.app.FragmentActivity;
 
 import com.newsblur.databinding.ActivityInAppBrowserBinding;
 import com.newsblur.util.PrefsUtils;
@@ -52,14 +53,5 @@ public class InAppBrowser extends FragmentActivity {
         });
 
         binding.webView.loadUrl(url);
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (binding.webView.canGoBack()) {
-            binding.webView.goBack();
-        } else {
-            finish();
-        }
     }
 }

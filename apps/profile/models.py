@@ -493,7 +493,7 @@ class Profile(models.Model):
         
         return ipn[0].payer_email
     
-    def activate_ios_premium(self, product_identifier, transaction_identifier, amount=36):
+    def activate_ios_premium(self, transaction_identifier=None, amount=36):
         payments = PaymentHistory.objects.filter(user=self.user,
                                                  payment_identifier=transaction_identifier,
                                                  payment_date__gte=datetime.datetime.now()-datetime.timedelta(days=3))
@@ -513,7 +513,30 @@ class Profile(models.Model):
         if not self.is_premium:
             self.activate_premium()
         
-        logging.user(self.user, "~FG~BBNew iOS premium subscription: $%s~FW" % product_identifier)
+        logging.user(self.user, "~FG~BBNew iOS premium subscription: $%s~FW" % amount)
+        return True
+            
+    def activate_android_premium(self, order_id=None, amount=36):
+        payments = PaymentHistory.objects.filter(user=self.user,
+                                                 payment_identifier=order_id,
+                                                 payment_date__gte=datetime.datetime.now()-datetime.timedelta(days=3))
+        if len(payments):
+            # Already paid
+            logging.user(self.user, "~FG~BBAlready paid Android premium subscription: $%s~FW" % amount)
+            return False
+
+        PaymentHistory.objects.create(user=self.user,
+                                      payment_date=datetime.datetime.now(),
+                                      payment_amount=amount,
+                                      payment_provider='android-subscription',
+                                      payment_identifier=order_id)
+        
+        self.setup_premium_history()
+                                      
+        if not self.is_premium:
+            self.activate_premium()
+        
+        logging.user(self.user, "~FG~BBNew Android premium subscription: $%s~FW" % amount)
         return True
         
     @classmethod
