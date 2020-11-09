@@ -17,7 +17,7 @@ import time
 import sys
 import re
 
-django.setup()
+# django.setup()
 
 try:
     import digitalocean
@@ -964,6 +964,10 @@ def upgrade_django():
         pull()
         sudo('supervisorctl reload')
 
+def clean():
+    with virtualenv(), settings(warn_only=True):
+        run('find . -name "*.pyc" -exec rm -f {} \;')
+    
 def upgrade_pil():
     with virtualenv():
         pull()
