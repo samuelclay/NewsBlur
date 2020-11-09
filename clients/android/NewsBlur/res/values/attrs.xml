@@ -23,7 +23,6 @@
     <attr name="commentsHeader" format="string" />
     <attr name="rowBorderTop" format="string" />
     <attr name="rowBorderBottom" format="string" />
-    <attr name="divider" format="string" />
     <attr name="profileCount" format="string" />
     <attr name="profileActivityList" format="string" />
     <attr name="itemHeaderDivider" format="string" />

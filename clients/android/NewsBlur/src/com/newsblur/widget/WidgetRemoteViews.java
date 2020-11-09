@@ -1,6 +1,6 @@
 package com.newsblur.widget;
 
-import android.support.annotation.ColorInt;
+import androidx.annotation.ColorInt;
 import android.widget.RemoteViews;
 
 class WidgetRemoteViews extends RemoteViews {
