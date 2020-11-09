@@ -3,7 +3,7 @@ NEWSBLUR.StoryOptionsPopover = NEWSBLUR.ReaderPopover.extend({
     className: "NB-style-popover",
     
     options: {
-        'width': 264,
+        'width': 274,
         'anchor': '.NB-taskbar-options',
         'placement': 'top right',
         'offset': {
@@ -22,6 +22,7 @@ NEWSBLUR.StoryOptionsPopover = NEWSBLUR.ReaderPopover.extend({
         "click .NB-story-titles-pane-option": "change_story_titles_pane",
         "click .NB-single-story-option": "change_single_story",
         "click .NB-grid-columns-option": "change_grid_columns",
+        "click .NB-grid-height-option": "change_grid_height",
         "click .NB-premium-link": "open_premium_modal"
     },
     
@@ -92,6 +93,23 @@ NEWSBLUR.StoryOptionsPopover = NEWSBLUR.ReaderPopover.extend({
                     $.make('li', { className: 'NB-grid-columns-option NB-options-grid-columns-4' }, [
                         '4'
                     ])
+                ]),
+                $.make('ul', { className: 'segmented-control NB-options-grid-height' }, [
+                    $.make('li', { className: 'NB-grid-height-option NB-options-grid-height-xs' }, [
+                        'XS'
+                    ]),
+                    $.make('li', { className: 'NB-grid-height-option NB-options-grid-height-s' }, [
+                        'Short'
+                    ]),
+                    $.make('li', { className: 'NB-grid-height-option NB-options-grid-height-m' }, [
+                        'Medium'
+                    ]),
+                    $.make('li', { className: 'NB-grid-height-option NB-options-grid-height-l' }, [
+                        'Tall'
+                    ]),
+                    $.make('li', { className: 'NB-grid-height-option NB-options-grid-height-xl' }, [
+                        'XL'
+                    ])
                 ])
             ]),
             $.make('div', { className: 'NB-popover-section' }, [
@@ -159,6 +177,7 @@ NEWSBLUR.StoryOptionsPopover = NEWSBLUR.ReaderPopover.extend({
         var titles_layout_pane = NEWSBLUR.assets.preference('story_pane_anchor');
         var single_story = NEWSBLUR.assets.preference('feed_view_single_story');
         var grid_columns = NEWSBLUR.assets.preference('grid_columns');
+        var grid_height = NEWSBLUR.assets.preference('grid_height');
         
         this.$('.NB-font-family-option').removeClass('NB-active');
         this.$('.NB-options-font-family-'+font_family).addClass('NB-active');
@@ -177,6 +196,8 @@ NEWSBLUR.StoryOptionsPopover = NEWSBLUR.ReaderPopover.extend({
 
         this.$('.NB-grid-columns-option').removeClass('NB-active');
         this.$('.NB-options-grid-columns-'+grid_columns).addClass('NB-active');
+        this.$('.NB-grid-height-option').removeClass('NB-active');
+        this.$('.NB-options-grid-height-'+grid_height).addClass('NB-active');
 
         NEWSBLUR.reader.$s.$taskbar_options.addClass('NB-active');
         
@@ -359,6 +380,33 @@ NEWSBLUR.StoryOptionsPopover = NEWSBLUR.ReaderPopover.extend({
     
     update_grid_columns: function(setting) {
         NEWSBLUR.assets.preference('grid_columns', setting);
+        NEWSBLUR.app.story_list.render();
+        _.defer(function() {
+            NEWSBLUR.app.story_titles.override_grid();
+            NEWSBLUR.reader.resize_window();
+        });
+    },
+    
+    change_grid_height: function(e) {
+        var $target = $(e.currentTarget);
+        
+        if ($target.hasClass("NB-options-grid-height-xs")) {
+            this.update_grid_height('xs');
+        } else if ($target.hasClass("NB-options-grid-height-s")) {
+            this.update_grid_height('s');
+        } else if ($target.hasClass("NB-options-grid-height-m")) {
+            this.update_grid_height('m');
+        } else if ($target.hasClass("NB-options-grid-height-l")) {
+            this.update_grid_height('l');
+        } else if ($target.hasClass("NB-options-grid-height-xl")) {
+            this.update_grid_height('xl');
+        }
+        
+        this.show_correct_options();
+    },
+    
+    update_grid_height: function(setting) {
+        NEWSBLUR.assets.preference('grid_height', setting);
         NEWSBLUR.app.story_list.render();
         _.defer(function() {
             NEWSBLUR.app.story_titles.override_grid();
