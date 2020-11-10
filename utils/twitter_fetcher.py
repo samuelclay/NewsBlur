@@ -339,7 +339,7 @@ class TwitterFetcher:
                         bitrate = variant['bitrate']
                         chosen_variant = variant
                 if chosen_variant:
-                    entities += "<video src=\"%s\" autoplay loop muted playsinline> <hr>" % chosen_variant['url']
+                    entities += "<video src=\"%s\" autoplay loop muted playsinline controls> <hr>" % chosen_variant['url']
                 categories.add(media['type'])                
                 
         for url in content_tweet['entities'].get('urls', []):
