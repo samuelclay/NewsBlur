@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <color name="primary.light">@color/nb_green_gray91</color>
+    <color name="primaryDark.light">@color/black</color>
+    <color name="secondary.light">@color/newsblur_blue</color>
+
     <color name="black">#000000</color>
     <color name="gray07">#121212</color>
     <color name="gray10">#1A1A1A</color>

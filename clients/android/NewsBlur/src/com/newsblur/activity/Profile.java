@@ -28,7 +28,7 @@ public class Profile extends NbActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_profile);
-		getActionBar().setDisplayHomeAsUpEnabled(true);
+		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		apiManager = new APIManager(this);
         if (savedInstanceState == null) {
             userId = getIntent().getStringExtra(USER_ID);

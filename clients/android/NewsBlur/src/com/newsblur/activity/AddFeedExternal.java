@@ -20,7 +20,7 @@ public class AddFeedExternal extends NbActivity implements AddFeedFragment.AddFe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityAddfeedexternalBinding.inflate(getLayoutInflater());
-        getActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         setContentView(binding.getRoot());
 

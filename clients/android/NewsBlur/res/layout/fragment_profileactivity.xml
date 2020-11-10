@@ -3,7 +3,7 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical"
-    style="?itemBackground" >
+    style="?layoutBackground" >
 
     <RelativeLayout
         android:id="@+id/empty_view"

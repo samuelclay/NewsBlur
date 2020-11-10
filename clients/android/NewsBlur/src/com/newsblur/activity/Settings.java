@@ -1,5 +1,6 @@
 package com.newsblur.activity;
 
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentActivity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -10,7 +11,7 @@ import com.newsblur.util.PrefConstants;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.UIUtils;
 
-public class Settings extends FragmentActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
+public class Settings extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -18,7 +19,7 @@ public class Settings extends FragmentActivity implements SharedPreferences.OnSh
 
         super.onCreate(savedInstanceState);
 
-        getActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         SettingsFragment fragment = new SettingsFragment();
         getFragmentManager().beginTransaction().replace(android.R.id.content, fragment).commit();
