@@ -67,6 +67,7 @@ class required_params(object):
 
         # Check if parameter is correct type
         for param, param_type in self.named_params.items():
+            if param == "method": continue
             if getattr(request, self.method).get(param) is None:
                 print " Typed parameter not found: %s" % param
                 return self.disallowed(param)
