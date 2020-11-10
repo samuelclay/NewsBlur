@@ -1175,7 +1175,7 @@ def ignore_follower(request):
     return {'code': code}
 
 
-@required_params('query')
+@required_params('query', method="GET")
 @json.json_view
 def find_friends(request):
     query = request.GET['query']

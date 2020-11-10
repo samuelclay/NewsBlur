@@ -94,4 +94,8 @@ class required_params(object):
         return HttpResponse(json.encode({
             'message': message,
             'code': -1,
+<<<<<<< Updated upstream
         }), content_type="application/json", status=status_code)
+=======
+        }), mimetype="application/json", status=status_code)
+>>>>>>> Stashed changes
