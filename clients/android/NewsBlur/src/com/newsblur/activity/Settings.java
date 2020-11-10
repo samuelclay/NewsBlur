@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.MenuItem;
 
+import com.newsblur.R;
 import com.newsblur.fragment.SettingsFragment;
 import com.newsblur.util.PrefConstants;
 import com.newsblur.util.PrefsUtils;
@@ -19,7 +20,7 @@ public class Settings extends AppCompatActivity implements SharedPreferences.OnS
 
         super.onCreate(savedInstanceState);
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        UIUtils.setCustomActionBar(this, R.drawable.logo, getString(R.string.settings), true);
 
         SettingsFragment fragment = new SettingsFragment();
         getFragmentManager().beginTransaction().replace(android.R.id.content, fragment).commit();

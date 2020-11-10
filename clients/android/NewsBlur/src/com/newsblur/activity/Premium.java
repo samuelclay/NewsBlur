@@ -127,7 +127,7 @@ public class Premium extends NbActivity {
     }
 
     private void setupUI() {
-        UIUtils.setCustomActionBar(this, R.drawable.logo, getString(R.string.premium_toolbar_title));
+        UIUtils.setCustomActionBar(this, R.drawable.logo, getString(R.string.premium_toolbar_title), true);
 
         // linkify before setting the string resource
         BetterLinkMovementMethod.linkify(Linkify.WEB_URLS, binding.textPolicies)

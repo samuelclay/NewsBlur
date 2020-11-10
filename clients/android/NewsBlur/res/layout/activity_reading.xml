@@ -19,7 +19,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <Button
+    <TextView
         android:id="@+id/reading_overlay_text"
         android:layout_width="110dp"
         android:layout_height="40dp"
@@ -28,12 +28,13 @@
         android:layout_marginLeft="8dp"
         android:layout_marginBottom="4dp"
         android:text="@string/overlay_text"
+        android:gravity="center"
         android:textSize="14sp"
         android:paddingLeft="10dp"
         style="?selectorOverlayBackgroundText"
         android:onClick="overlayText" />
 
-    <Button
+    <ImageButton
         android:id="@+id/reading_overlay_send"
         android:layout_width="50dp"
         android:layout_height="40dp"
@@ -44,7 +45,7 @@
         style="?selectorOverlayBackgroundSend"
         android:onClick="overlaySend" />
 
-    <Button
+    <TextView
         android:id="@+id/reading_overlay_right"
         android:layout_width="120dp"
         android:layout_height="40dp"
@@ -53,11 +54,12 @@
         android:layout_marginRight="8dp"
         android:layout_marginBottom="4dp"
         android:text="@string/overlay_next"
+        android:gravity="center"
         android:textSize="14sp"
         style="?selectorOverlayBackgroundRight"
         android:onClick="overlayRight" />
 
-    <Button
+    <ImageButton
         android:id="@+id/reading_overlay_left"
         android:layout_width="50dp"
         android:layout_height="40dp"

@@ -59,6 +59,7 @@ public class MuteConfig extends FeedChooser implements MuteConfigAdapter.FeedSta
     void bindLayout() {
         binding = ActivityMuteConfigBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        UIUtils.setCustomActionBar(this, R.drawable.logo, getString(R.string.mute_sites), true);
     }
 
     @Override
