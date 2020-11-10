@@ -27,6 +27,7 @@ import com.newsblur.domain.FeedResult;
 import com.newsblur.fragment.AddFeedFragment;
 import com.newsblur.network.SearchAsyncTaskLoader;
 import com.newsblur.network.SearchLoaderResponse;
+import com.newsblur.util.UIUtils;
 
 // TODO: this activity's use of the inbuilt activity search facility as well as an improper use of a loader to
 //       make network requests makes it easily lose state, lack non-legacy progress indication, and generally
@@ -46,9 +47,8 @@ public class SearchForFeeds extends NbActivity implements LoaderCallbacks<Search
 	@Override
 	protected void onCreate(Bundle arg0) {
 		super.onCreate(arg0);
-		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-		
-		setTitle(R.string.title_feed_search);
+		UIUtils.setCustomActionBar(this, R.drawable.logo, getString(R.string.title_feed_search), true);
+
 		setContentView(R.layout.activity_feed_search);
 		
 		TextView emptyView = (TextView) findViewById(R.id.empty_view);

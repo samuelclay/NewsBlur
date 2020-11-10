@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
         android:id="@+id/menu_reading_fullscreen"
         android:icon="@drawable/ic_menu_fullscreen_gray55"
-        android:showAsAction="always"
+        app:showAsAction="always"
         android:title="@string/menu_fullscreen"/>
 
 </menu>

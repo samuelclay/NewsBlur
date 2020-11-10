@@ -14,7 +14,9 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="4dp"
         android:clickable="false"
-        android:focusable="false" />
+        android:focusable="false"
+        android:minWidth="0dp"
+        android:minHeight="0dp" />
 
     <ImageView
         android:id="@+id/img"

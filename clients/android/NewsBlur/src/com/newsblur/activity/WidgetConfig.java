@@ -11,6 +11,7 @@ import com.newsblur.databinding.ActivityWidgetConfigBinding;
 import com.newsblur.domain.Feed;
 import com.newsblur.domain.Folder;
 import com.newsblur.util.PrefsUtils;
+import com.newsblur.util.UIUtils;
 import com.newsblur.widget.WidgetUtils;
 
 import java.util.ArrayList;
@@ -62,6 +63,7 @@ public class WidgetConfig extends FeedChooser {
     void bindLayout() {
         binding = ActivityWidgetConfigBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        UIUtils.setCustomActionBar(this, R.drawable.logo, getString(R.string.widget), true);
     }
 
     @Override

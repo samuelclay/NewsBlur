@@ -134,7 +134,8 @@
 
         <activity
             android:name=".activity.MuteConfig"
-            android:launchMode="singleTask"/>
+            android:launchMode="singleTask"
+            android:label="@string/mute_sites"/>
         
         <activity 
             android:name=".activity.SearchForFeeds" android:launchMode="singleTop" >
