@@ -46,7 +46,7 @@ abstract public class FeedChooser extends NbActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         bindLayout();
-        getActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         setupList();
         loadFeeds();
         loadFolders();

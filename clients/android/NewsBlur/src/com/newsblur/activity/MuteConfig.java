@@ -1,6 +1,5 @@
 package com.newsblur.activity;
 
-import android.app.AlertDialog;
 import android.content.Intent;
 import android.database.Cursor;
 import android.text.TextUtils;
@@ -10,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 
 import com.newsblur.R;

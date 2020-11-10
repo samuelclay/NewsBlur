@@ -3,10 +3,11 @@ package com.newsblur.fragment;
 import java.util.Map;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 import android.text.InputType;
 import android.text.TextUtils;

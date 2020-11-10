@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
-    style="?itemBackground" >
+    style="?layoutBackground" >
     
     <EditText
         android:id="@+id/itemlist_search_query"
