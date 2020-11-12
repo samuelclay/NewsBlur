@@ -4754,6 +4754,7 @@
             NEWSBLUR.assets.folders.update_all_folder_visibility();
             NEWSBLUR.app.feed_list.scroll_to_selected();
             NEWSBLUR.app.dashboard_river.load_stories();
+            this.force_feeds_refresh();
             
             $('.NB-active', $slider).removeClass('NB-active');
             if (this.flags['feed_list_showing_starred']) {
