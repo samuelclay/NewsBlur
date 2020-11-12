@@ -355,8 +355,8 @@ def save_android_receipt(request):
     paid = request.user.profile.activate_android_premium(order_id)
     if paid:
         logging.user(request, "~BM~FBSending Android Receipt email: %s %s" % (product_id, order_id))
-        subject = "Android Premium: %s (%s)" % (request.user.profile, product_identifier)
-        message = """User: %s (%s) -- Email: %s, product: %s, order: %s, receipt: %s""" % (request.user.username, request.user.pk, request.user.email, product_id, order_id, receipt)
+        subject = "Android Premium: %s (%s)" % (request.user.profile, product_id)
+        message = """User: %s (%s) -- Email: %s, product: %s, order: %s""" % (request.user.username, request.user.pk, request.user.email, product_id, order_id)
         mail_admins(subject, message, fail_silently=True)
     else:
         logging.user(request, "~BM~FBNot sending Android Receipt email, already paid: %s %s" % (product_id, order_id))
