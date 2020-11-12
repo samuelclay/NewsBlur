@@ -1834,20 +1834,22 @@ def setup_time_calibration():
 # = Tasks - DB =
 # ==============
 
-def restore_postgres(port=5433):
-    backup_date = '2013-01-29-09-00'
+def restore_postgres(port=5433, download=False):
+    backup_date = '2020-11-11-04-00'
     yes = prompt("Dropping and creating NewsBlur PGSQL db. Sure?")
     if yes != 'y':
         return
-    # run('PYTHONPATH=%s python utils/backups/s3.py get backup_postgresql_%s.sql.gz' % (env.NEWSBLUR_PATH, backup_date))
+    if download:
+        run('PYTHONPATH=%s python utils/backups/s3.py get backup_postgresql_%s.sql.gz' % (env.NEWSBLUR_PATH, backup_date))
     # sudo('su postgres -c "createuser -p %s -U newsblur"' % (port,))
-    run('dropdb newsblur -p %s -U postgres' % (port,), pty=False)
+    run('dropdb newsblur -p %s -U newsblur' % (port,), pty=False)
     run('createdb newsblur -p %s -O newsblur' % (port,), pty=False)
-    run('pg_restore -p %s --role=newsblur --dbname=newsblur /Users/sclay/Documents/backups/backup_postgresql_%s.sql.gz' % (port, backup_date), pty=False)
+    run('pg_restore -p %s --role=newsblur --dbname=newsblur /Users/sclay/Documents/Backups/backup_postgresql_%s.sql.gz' % (port, backup_date), pty=False)
 
-def restore_mongo():
-    backup_date = '2012-07-24-09-00'
-    run('PYTHONPATH=/srv/newsblur python s3.py get backup_mongo_%s.tgz' % (backup_date))
+def restore_mongo(download=False):
+    backup_date = '2020-11-11-04-00'
+    if download:
+        run('PYTHONPATH=/srv/newsblur python utils/backups/s3.py get backup_mongo_%s.tgz' % (backup_date))
     run('tar -xf backup_mongo_%s.tgz' % backup_date)
     run('mongorestore backup_mongo_%s' % backup_date)
 
