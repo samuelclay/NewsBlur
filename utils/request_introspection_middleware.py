@@ -8,3 +8,5 @@ class DumpRequestMiddleware:
             request_items = request_data.items()
             if request_items:
                 logging.debug(" ---> ~FC%s ~SN~FC%s ~SN~BC~FK%s~BK~FC" % (request.method, request.path, dict(request_items)))
+            else:
+                logging.debug(" ---> ~FC%s ~SN~FC%s" % (request.method, request.path))
