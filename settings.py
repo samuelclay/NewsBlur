@@ -328,7 +328,7 @@ INSTALLED_APPS = (
     'django_extensions',
     'djcelery',
     # 'kombu.transport.django',
-    'vendor.paypal.standard.ipn',
+    'paypal.standard.ipn',
     'apps.rss_feeds',
     'apps.reader',
     'apps.analyzer',
