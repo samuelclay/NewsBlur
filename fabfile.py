@@ -504,7 +504,8 @@ def pip():
         run('easy_install -U pip')
         run('pip install --upgrade pip')
         run('pip install -r requirements.txt')
-        sudo('swapoff /swapfile')
+        with settings(warn_only=True):
+            sudo('swapoff /swapfile')
 
 def solo_pip(role):
     if role == "app":
