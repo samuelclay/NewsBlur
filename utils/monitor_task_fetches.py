@@ -35,7 +35,7 @@ def main():
                 data={"from": "NewsBlur Task Monitor: %s <admin@%s.newsblur.com>" % (hostname, hostname),
                       "to": [admin_email],
                       "subject": "%s feeds fetched falling: %s" % (hostname, feeds_fetched),
-                      "text": "Feed fetches are falling: %s" % (hostname, feeds_fetched, failed)})
+                      "text": "Feed fetches are falling: %s" % (feeds_fetched)})
         print(" ---> Feeds fetched falling! %s" % (feeds_fetched))
     else:
         print(" ---> Feeds fetched OK: %s" % (feeds_fetched))
