@@ -33,7 +33,7 @@ def EmailCommentReplies(shared_story_id, reply_id):
     shared_story = MSharedStory.objects.get(id=ObjectId(shared_story_id))
     shared_story.send_emails_for_new_reply(ObjectId(reply_id))
         
-@task
+@app.task()
 def EmailStoryReshares(shared_story_id):
     shared_story = MSharedStory.objects.get(id=ObjectId(shared_story_id))
     shared_story.send_email_for_reshare()
