@@ -36,9 +36,9 @@ except ImportError:
 # = DEFAULTS =
 # ============
 
-env.NEWSBLUR_PATH = "/Users/jmath/NewsBlur"
-env.SECRETS_PATH = "/srv/secrets-newsblur"
-env.VENDOR_PATH   = "/Users/jmath/NewsBlur/vendor"
+env.NEWSBLUR_PATH = "/srv/newsblur"
+env.SECRETS_PATH  = "/srv/secrets-newsblur"
+env.VENDOR_PATH   = "/srv/code"
 env.user = 'sclay'
 env.key_filename = os.path.join(env.SECRETS_PATH, 'keys/newsblur.key')
 env.connection_attempts = 10
