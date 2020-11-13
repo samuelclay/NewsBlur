@@ -1,11 +1,11 @@
-from celery.task import task
+from newsblur.celeryapp import app
 from django.contrib.auth.models import User
 from apps.feed_import.models import UploadedOPML, OPMLImporter
 from apps.reader.models import UserSubscription
 from utils import log as logging
 
 
-@task()
+@app.task()
 def ProcessOPML(user_id):
     user = User.objects.get(pk=user_id)
     logging.user(user, "~FR~SBOPML upload (task) starting...")

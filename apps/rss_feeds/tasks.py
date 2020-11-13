@@ -3,7 +3,7 @@ import os
 import shutil
 import time
 import redis
-from celery.task import task
+from newsblur.celeryapp import app
 from celery.exceptions import SoftTimeLimitExceeded
 from utils import log as logging
 from utils import s3_utils as s3
@@ -13,7 +13,7 @@ from utils.mongo_raw_log_middleware import MongoDumpMiddleware
 from utils.redis_raw_log_middleware import RedisDumpMiddleware
 FEED_TASKING_MAX = 10000
 
-@task(name='task-feeds')
+@app.task(name='task-feeds')
 def TaskFeeds():
     from apps.rss_feeds.models import Feed        
     settings.LOG_TO_STREAM = True
@@ -55,7 +55,7 @@ def TaskFeeds():
                     r.scard('queued_feeds'),
                     r.zcard('scheduled_updates')))
 
-@task(name='task-broken-feeds')
+@app.task(name='task-broken-feeds')
 def TaskBrokenFeeds():
     from apps.rss_feeds.models import Feed        
     settings.LOG_TO_STREAM = True
@@ -119,7 +119,7 @@ def TaskBrokenFeeds():
                     r.scard('queued_feeds'),
                     r.zcard('scheduled_updates')))
         
-@task(name='update-feeds', time_limit=10*60, soft_time_limit=9*60, ignore_result=True)
+@app.task(name='update-feeds', time_limit=10*60, soft_time_limit=9*60, ignore_result=True)
 def UpdateFeeds(feed_pks):
     from apps.rss_feeds.models import Feed
     from apps.statistics.models import MStatistics
@@ -160,7 +160,7 @@ def UpdateFeeds(feed_pks):
             logging.info(" ---> [%-30s] ~BR~FWTime limit hit!~SB~FR Moving on to next feed..." % feed)
         if profiler_activated: profiler.process_celery_finished()
 
-@task(name='new-feeds', time_limit=10*60, soft_time_limit=9*60, ignore_result=True)
+@app.task(name='new-feeds', time_limit=10*60, soft_time_limit=9*60, ignore_result=True)
 def NewFeeds(feed_pks):
     from apps.rss_feeds.models import Feed
     if not isinstance(feed_pks, list):
@@ -172,7 +172,7 @@ def NewFeeds(feed_pks):
         if not feed: continue
         feed.update(options=options)
 
-@task(name='push-feeds', ignore_result=True)
+@app.task(name='push-feeds', ignore_result=True)
 def PushFeeds(feed_id, xml):
     from apps.rss_feeds.models import Feed
     from apps.statistics.models import MStatistics
@@ -189,7 +189,7 @@ def PushFeeds(feed_id, xml):
     if feed:
         feed.update(options=options)
 
-@task(name='backup-mongo', ignore_result=True)
+@app.task(name='backup-mongo', ignore_result=True)
 def BackupMongo():
     COLLECTIONS = "classifier_tag classifier_author classifier_feed classifier_title userstories starred_stories shared_stories category category_site sent_emails social_profile social_subscription social_services statistics feedback"
 
@@ -216,7 +216,7 @@ def BackupMongo():
     logging.debug(' ---> ~FRFinished uploading ~SB~FM%s~SN~FR to S3.' % filename)
 
 
-@task()
+@app.task()
 def ScheduleImmediateFetches(feed_ids, user_id=None):
     from apps.rss_feeds.models import Feed
     
@@ -226,7 +226,7 @@ def ScheduleImmediateFetches(feed_ids, user_id=None):
     Feed.schedule_feed_fetches_immediately(feed_ids, user_id=user_id)
 
 
-@task()
+@app.task()
 def SchedulePremiumSetup(feed_ids):
     from apps.rss_feeds.models import Feed
     
@@ -235,7 +235,7 @@ def SchedulePremiumSetup(feed_ids):
     
     Feed.setup_feeds_for_premium_subscribers(feed_ids)
     
-@task()
+@app.task()
 def ScheduleCountTagsForUser(user_id):
     from apps.rss_feeds.models import MStarredStoryCounts
     
