@@ -514,11 +514,13 @@ def status(request):
 
 @json.json_view
 def original_text(request):
-    story_id = request.GET.get('story_id')
-    feed_id = request.GET.get('feed_id')
-    story_hash = request.GET.get('story_hash', None)
-    force = request.GET.get('force', False)
-    debug = request.GET.get('debug', False)
+    # iOS sends a POST, web sends a GET
+    GET_POST = getattr(request, request.method)
+    story_id = GET_POST.get('story_id')
+    feed_id = GET_POST.get('feed_id')
+    story_hash = GET_POST.get('story_hash', None)
+    force = GET_POST.get('force', False)
+    debug = GET_POST.get('debug', False)
 
     if story_hash:
         story, _ = MStory.find_story(story_hash=story_hash)
