@@ -959,29 +959,26 @@ def build_haproxy():
     f.write(haproxy_template)
     f.close()
 
-def upgrade_django_app():
+def upgrade_django(role):
     with virtualenv(), settings(warn_only=True):
-        sudo('supervisorctl stop gunicorn')
-        run('./utils/kill_gunicorn.sh')
+        sudo('sudo dpkg --configure -a')
+        setup_supervisor()
+        if role == "task":
+            sudo('supervisorctl stop celery')
+            run('./utils/kill_celery.sh')
+            copy_task_settings()
+            enable_celery_supervisor(update=False)
+        elif role == "app":
+            sudo('supervisorctl stop gunicorn')
+            run('./utils/kill_gunicorn.sh')
+            copy_app_settings()
+            setup_gunicorn(restart=False)
         pull()
+        run('git co django1.11')
         pip()
         clean()
-        copy_app_settings()
 
-        sudo('supervisorctl reload')
-
-def upgrade_django_task():
-    with virtualenv(), settings(warn_only=True):
-        # sudo('sudo dpkg --configure -a')
-        # setup_supervisor()
-        # sudo('supervisorctl stop celery')
-        # run('./utils/kill_celery.sh')
-        # pull()
-        # pip()
-        # clean()
-        copy_task_settings()
-
-        sudo('supervisorctl reload')
+        sudo('reboot')
 
 def clean():
     with virtualenv(), settings(warn_only=True):
@@ -1770,7 +1767,7 @@ def kill_celery():
                 run('./utils/kill_celery.sh')  
 
 def compress_assets(bundle=False):
-    local('jammit -c assets.yml --base-url https://www.newsblur.com --output static')
+    local('jammit -c newsblur/assets.yml --base-url https://www.newsblur.com --output static')
     local('tar -czf static.tgz static/*')
 
     tries_left = 5
