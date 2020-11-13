@@ -519,6 +519,7 @@ def solo_pip(role):
         celery()
     
 def setup_supervisor():
+    sudo('apt-get update')
     sudo('apt-get -y install supervisor')
     put('config/supervisord.conf', '/etc/supervisor/supervisord.conf', use_sudo=True)
     sudo('/etc/init.d/supervisor stop')
@@ -795,9 +796,10 @@ def config_node(full=False):
 
 @parallel
 def copy_app_settings():
+    run('rm -f %s/local_settings.py' % env.NEWSBLUR_PATH)
     put(os.path.join(env.SECRETS_PATH, 'settings/app_settings.py'), 
-        '%s/local_settings.py' % env.NEWSBLUR_PATH)
-    run('echo "\nSERVER_NAME = \\\\"`hostname`\\\\"" >> %s/local_settings.py' % env.NEWSBLUR_PATH)
+        '%s/newsblur/local_settings.py' % env.NEWSBLUR_PATH)
+    run('echo "\nSERVER_NAME = \\\\"`hostname`\\\\"" >> %s/newsblur/local_settings.py' % env.NEWSBLUR_PATH)
 
 def assemble_certificates():
     with lcd(os.path.join(env.SECRETS_PATH, 'certificates/comodo')):
@@ -957,12 +959,28 @@ def build_haproxy():
     f.write(haproxy_template)
     f.close()
 
-def upgrade_django():
+def upgrade_django_app():
     with virtualenv(), settings(warn_only=True):
         sudo('supervisorctl stop gunicorn')
         run('./utils/kill_gunicorn.sh')
-        sudo('easy_install -U django gunicorn')
         pull()
+        pip()
+        clean()
+        copy_app_settings()
+
+        sudo('supervisorctl reload')
+
+def upgrade_django_task():
+    with virtualenv(), settings(warn_only=True):
+        # sudo('sudo dpkg --configure -a')
+        # setup_supervisor()
+        # sudo('supervisorctl stop celery')
+        # run('./utils/kill_celery.sh')
+        # pull()
+        # pip()
+        # clean()
+        copy_task_settings()
+
         sudo('supervisorctl reload')
 
 def clean():
@@ -1452,9 +1470,10 @@ def copy_task_settings():
     #     host = env.host_string.split('.', 2)[0]
 
     with settings(warn_only=True):
+        run('rm -f %s/local_settings.py' % env.NEWSBLUR_PATH)
         put(os.path.join(env.SECRETS_PATH, 'settings/task_settings.py'), 
-            '%s/local_settings.py' % env.NEWSBLUR_PATH)
-        run('echo "\nSERVER_NAME = \\\\"%s\\\\"" >> %s/local_settings.py' % (host, env.NEWSBLUR_PATH))
+            '%s/newsblur/local_settings.py' % env.NEWSBLUR_PATH)
+        run('echo "\nSERVER_NAME = \\\\"%s\\\\"" >> %s/newsblur/local_settings.py' % (host, env.NEWSBLUR_PATH))
 
 @parallel
 def copy_spam():
