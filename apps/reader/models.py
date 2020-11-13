@@ -1192,7 +1192,7 @@ class RUserStory:
         redis_commands(read_story_key)
         
         read_stories_list_key = 'lRS:%s' % user_id
-        r.lrem(read_stories_list_key, story_hash)
+        r.lrem(read_stories_list_key, 1, story_hash)
         
         if ps and username:
             ps.publish(username, 'story:unread:%s' % story_hash)
