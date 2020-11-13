@@ -46,11 +46,11 @@ python-dateutil==2.6.0
 python-digitalocean==1.13.2
 python-gflags==3.1.0
 pytz==2018.3
-raven==6.5.0
 redis==3.5.3
 requests==2.20.0
 scipy==0.18.1
 seacucumber==1.5.2
+sentry-sdk==0.19.3
 simplejson==3.10.0
 six==1.10.0
 stripe==1.43.0

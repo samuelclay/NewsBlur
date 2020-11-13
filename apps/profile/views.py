@@ -714,3 +714,7 @@ def ios_subscription_status(request):
     return {
         "code": 1
     }
+
+def trigger_error(request):
+    division_by_zero = 1 / 0
+    return HttpResponseRedirect(reverse('index'))

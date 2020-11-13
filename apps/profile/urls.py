@@ -31,4 +31,5 @@ urlpatterns = [
     url(r'^delete_all_sites/?', views.delete_all_sites, name='profile-delete-all-sites'),
     url(r'^email_optout/?', views.email_optout, name='profile-email-optout'),
     url(r'^ios_subscription_status/?', views.ios_subscription_status, name='profile-ios-subscription-status'),
+    url(r'debug/?', views.trigger_error, name='trigger-error'),
 ]
