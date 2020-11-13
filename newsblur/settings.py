@@ -271,6 +271,7 @@ SESSION_COOKIE_DOMAIN   = '.newsblur.com'
 SESSION_COOKIE_HTTPONLY = False
 SENTRY_DSN              = 'https://XXXNEWSBLURXXX@app.getsentry.com/99999999'
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
+DATA_UPLOAD_MAX_NUMBER_FIELDS = None # Handle long /reader/complete_river calls
 
 if DEBUG:
     # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
