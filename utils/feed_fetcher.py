@@ -14,7 +14,6 @@ import isodate
 import urlparse
 from django.conf import settings
 from django.db import IntegrityError
-from django.db.models.fields.related_descriptors import RelatedObjectDoesNotExist
 from django.core.cache import cache
 from apps.reader.models import UserSubscription
 from apps.rss_feeds.models import Feed, MStory
@@ -470,11 +469,7 @@ class ProcessFeed:
         if self.feed.feed_title != original_title:
             self.feed.save(update_fields=['feed_title'])
         
-        try:
-            tagline = self.fpf.feed.get('tagline', self.feed.data.feed_tagline)
-        except RelatedObjectDoesNotExist:
-            tagline = None
-
+        tagline = self.fpf.feed.get('tagline', self.feed.data.feed_tagline)
         if tagline:
             original_tagline = self.feed.data.feed_tagline
             self.feed.data.feed_tagline = smart_unicode(tagline)
