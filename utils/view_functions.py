@@ -3,7 +3,7 @@ from django.shortcuts import render
 from utils import json_functions as json
 import functools
 
-def get_argument_or_404(request, param, method='REQUEST', code='404'):
+def get_argument_or_404(request, param, method='POST', code='404'):
     try:
         return getattr(request, method)[param]
     except KeyError:
