@@ -28,7 +28,8 @@ import logging
 import datetime
 import redis
 import sentry_sdk
-from sentry_sdk.integrations.django import DjangoIntegration, RedisIntegration
+from sentry_sdk.integrations.django import DjangoIntegration
+from sentry_sdk.integrations.redis import RedisIntegration
 import django.http
 import re
 from mongoengine import connect
