@@ -1,7 +1,7 @@
-from celery.task import task
+from newsblur.celeryapp import app
 from utils import log as logging
 
-@task()
+@app.task()
 def EmailPopularityQuery(pk):
     from apps.analyzer.models import MPopularityQuery
     

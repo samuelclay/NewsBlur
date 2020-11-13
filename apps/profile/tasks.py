@@ -1,21 +1,21 @@
 import datetime
-from celery.task import task
+from newsblur.celeryapp import app
 from apps.profile.models import Profile, RNewUserQueue
 from utils import log as logging
 from apps.reader.models import UserSubscription, UserSubscriptionFolders
 from apps.social.models import MSocialServices, MActivity, MInteraction
 
-@task(name="email-new-user")
+@app.task(name="email-new-user")
 def EmailNewUser(user_id):
     user_profile = Profile.objects.get(user__pk=user_id)
     user_profile.send_new_user_email()
 
-@task(name="email-new-premium")
+@app.task(name="email-new-premium")
 def EmailNewPremium(user_id):
     user_profile = Profile.objects.get(user__pk=user_id)
     user_profile.send_new_premium_email()
 
-@task(name="premium-expire")
+@app.task(name="premium-expire")
 def PremiumExpire(**kwargs):
     # Get expired but grace period users
     two_days_ago = datetime.datetime.now() - datetime.timedelta(days=2)
@@ -41,11 +41,11 @@ def PremiumExpire(**kwargs):
             profile.send_premium_expire_email()
             profile.deactivate_premium()
 
-@task(name="activate-next-new-user")
+@app.task(name="activate-next-new-user")
 def ActivateNextNewUser():
     RNewUserQueue.activate_next()
 
-@task(name="cleanup-user")
+@app.task(name="cleanup-user")
 def CleanupUser(user_id):
     UserSubscription.trim_user_read_stories(user_id)
     UserSubscription.verify_feeds_scheduled(user_id)
@@ -63,12 +63,12 @@ def CleanupUser(user_id):
         return
     ss.sync_twitter_photo()
 
-@task(name="clean-spam")
+@app.task(name="clean-spam")
 def CleanSpam():
     logging.debug(" ---> Finding spammers...")
     Profile.clear_dead_spammers(confirm=True)
 
-@task(name="reimport-stripe-history")
+@app.task(name="reimport-stripe-history")
 def ReimportStripeHistory():
     logging.debug(" ---> Reimporting Stripe history...")
     Profile.reimport_stripe_history(limit=10, days=1)
