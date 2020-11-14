@@ -96,9 +96,10 @@ def login(request):
             logging.user(form.get_user(), "~FG~BBOAuth Login~FW")
             return HttpResponseRedirect(request.POST['next'] or reverse('index'))
 
-    return render('accounts/login.html', {
+    return render(request, 'accounts/login.html', {
         'form': form,
-        'next': request.POST.get('next', "")})
+        'next': request.POST.get('next', "")
+    })
     
 @csrf_exempt
 def signup(request):
@@ -369,8 +370,7 @@ def stripe_form(request):
     user = request.user
     success_updating = False
     stripe.api_key = settings.STRIPE_SECRET
-    plan = int(request.GET.get('plan', 2))
-    plan = PLANS[plan-1][0]
+    plan = PLANS[0][0]
     renew = is_true(request.GET.get('renew', False))
     error = None
     
