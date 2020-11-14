@@ -963,6 +963,10 @@ def upgrade_django():
         pull()
         sudo('supervisorctl reload')
 
+def vendorize_paypal():
+    with virtualenv(), settings(warn_only=True):
+        run('pip uninstall -y django-paypal')
+
 def upgrade_pil():
     with virtualenv():
         pull()
