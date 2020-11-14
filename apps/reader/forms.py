@@ -154,7 +154,8 @@ class SignupForm(forms.Form):
             
         new_user = User(username=username)
         new_user.set_password(password)
-        new_user.is_active = False
+        if not getattr(settings, 'AUTO_ENABLE_NEW_USERS', True):
+            new_user.is_active = False
         new_user.email = email
         new_user.save()
         new_user = authenticate(username=username,
