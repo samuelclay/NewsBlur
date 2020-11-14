@@ -48,6 +48,8 @@ class PayPalDateTimeField(forms.DateTimeField):
         # Wait for django 1.5 to be gone
         # if value in self.empty_values:
         #     return None
+        if value is None:
+            return None
 
         if isinstance(value, datetime):
             return value
