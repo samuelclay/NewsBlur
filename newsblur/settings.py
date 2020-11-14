@@ -796,7 +796,7 @@ def monkey_patched_get_user(request):
             backend = auth.load_backend(backend_path)
             user = backend.get_user(user_id)
             session_hash = request.session.get(auth.HASH_SESSION_KEY)
-            logging.debug(request, " ---> Ignoring session hash: %s vs %s" % (user.get_session_auth_hash(), session_hash))
+            logging.debug(request, " ---> Ignoring session hash: %s vs %s" % (user.get_session_auth_hash() if user else "[no user]", session_hash))
             # # Verify the session
             # if hasattr(user, 'get_session_auth_hash'):
             #     session_hash = request.session.get(HASH_SESSION_KEY)
