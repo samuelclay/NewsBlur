@@ -984,6 +984,10 @@ def clean():
     with virtualenv(), settings(warn_only=True):
         run('find . -name "*.pyc" -exec rm -f {} \;')
     
+def vendorize_paypal():
+    with virtualenv(), settings(warn_only=True):
+        run('pip uninstall -y django-paypal')
+
 def upgrade_pil():
     with virtualenv():
         pull()
