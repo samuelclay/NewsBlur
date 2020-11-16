@@ -1,4 +1,4 @@
-{% ifequal pdt_obj.st 'SUCCESS' %}
+{% if pdt_obj.st == 'SUCCESS' %}
 <h1>Transaction complete</h1>
 <p>Thank you for your payment</p>
 <p>Please print this page for your records</p>
@@ -28,4 +28,4 @@
 {% else %}
 <h1>Transaction Failed</h1>
 <p>Sorry transaction failed, please try a different form of payment</p>
-{% endifequal %}		
+{% endif %}
