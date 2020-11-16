@@ -16,6 +16,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.PopupMenu;
 import androidx.fragment.app.DialogFragment;
 import android.text.TextUtils;
 import android.util.Log;
@@ -30,7 +31,6 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.webkit.WebView.HitTestResult;
 import android.widget.ImageView;
-import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import com.newsblur.R;

@@ -6,6 +6,11 @@
         <item name="android:letterSpacing">0</item>
     </style>
 
+    <style name="dialogButton.dark" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:letterSpacing">0</item>
+    </style>
+
     <style name="initStyle" parent="@android:style/Theme.DeviceDefault.NoActionBar">
         <item name="android:windowBackground">@color/transparent</item>
     </style>
@@ -13,18 +18,13 @@
     <style name="actionbar" parent="ThemeOverlay.MaterialComponents.Light">
         <item name="colorControlNormal">@color/gray55</item>
     </style>
-    <style name="actionbar.dark" parent="@android:style/Widget.Holo.ActionBar">
+    <style name="actionbar.dark" parent="ThemeOverlay.MaterialComponents">
         <item name="android:background">@color/dark_bar_background</item>
+        <item name="colorControlNormal">@color/gray55</item>
     </style>
-    <style name="actionbar.black" parent="@android:style/Widget.Holo.ActionBar">
+    <style name="actionbar.black" parent="ThemeOverlay.MaterialComponents">
         <item name="android:background">@color/black</item>
-    </style>
-
-    <style name="expandableListView" parent="@android:style/Widget.Holo.Light.ExpandableListView">
-        <item name="android:background">@drawable/list_background</item>
-    </style>
-    <style name="expandableListView.dark" parent="@android:style/Widget.Holo.ExpandableListView">
-        <item name="android:background">@drawable/dark_list_background</item>
+        <item name="colorControlNormal">@color/gray55</item>
     </style>
 
     <style name="selectorFolderBackground">
@@ -384,21 +384,4 @@
         <item name="android:src">@drawable/mute_black</item>
     </style>
 
-    <!-- these fix the Android framework bug that causes context menus to get badly
-         truncated when the Holo theme is used on a v7+ device:
-         https://issuetracker.google.com/issues/37118658  -->
-    <style name="contextPopupStyle" parent="@android:style/Widget.Holo.Light.PopupMenu">
-        <item name="android:overlapAnchor">true</item>
-    </style>
-    <style name="contextPopupStyle.dark" parent="@android:style/Widget.Holo.PopupMenu">
-        <item name="android:overlapAnchor">true</item>
-    </style>
-
-    <!-- Fixes menu text being too dark on Moto devices -->
-    <style name="itemTextAppearance">
-        <item name="android:textColor">@color/black</item>
-    </style>
-    <style name="itemTextAppearance.dark">
-        <item name="android:textColor">@color/white</item>
-    </style>
 </resources>

@@ -10,7 +10,6 @@
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="16dp"
         android:text="@string/infrequent_choice_title"
-        android:textColor="@color/text"
         android:textSize="18sp"
         android:textStyle="bold" />
 
