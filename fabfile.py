@@ -86,6 +86,12 @@ def do_roledefs(split=False):
 def list_do():
     droplets = assign_digitalocean_roledefs(split=True)
     pprint(droplets)
+
+    # Uncomment below to print all IP addresses
+    # for group in droplets.values():
+    #     for server in group:
+    #         if 'address' in server:
+    #             print(server['address'])
     
     doapi = digitalocean.Manager(token=django_settings.DO_TOKEN_FABRIC)
     droplets = doapi.get_all_droplets()
@@ -250,7 +256,7 @@ def setup_node():
     setup_node_app()
     config_node()
     
-def setup_db(engine=None, skip_common=False, skip_benchmark=True):
+def setup_db(engine=None, skip_common=False, skip_benchmark=False):
     if not skip_common:
         setup_common()
         setup_db_firewall()
@@ -496,7 +502,8 @@ def pip():
         run('easy_install -U pip')
         run('pip install --upgrade pip')
         run('pip install -r requirements.txt')
-        sudo('swapoff /swapfile')
+        with settings(warn_only=True):
+            sudo('swapoff /swapfile')
 
 def solo_pip(role):
     if role == "app":
@@ -800,7 +807,7 @@ def copy_certificates():
     run('mkdir -p %s' % cert_path)
     put(os.path.join(env.SECRETS_PATH, 'certificates/newsblur.com.crt'), cert_path)
     put(os.path.join(env.SECRETS_PATH, 'certificates/newsblur.com.key'), cert_path)
-    put(os.path.join(env.SECRETS_PATH, 'certificates/comodo/newsblur.com.crt'), os.path.join(cert_path, 'newsblur.com.pem')) # For backwards compatibility with hard-coded nginx configs
+    run('ln -fs %s %s' % (os.path.join(cert_path, 'newsblur.com.crt'), os.path.join(cert_path, 'newsblur.com.pem'))) # For backwards compatibility with hard-coded nginx configs
     put(os.path.join(env.SECRETS_PATH, 'certificates/comodo/dhparams.pem'), cert_path)
     put(os.path.join(env.SECRETS_PATH, 'certificates/ios/aps_development.pem'), cert_path)
     # openssl x509 -in aps.cer -inform DER -outform PEM -out aps.pem
@@ -956,6 +963,10 @@ def upgrade_django():
         pull()
         sudo('supervisorctl reload')
 
+def vendorize_paypal():
+    with virtualenv(), settings(warn_only=True):
+        run('pip uninstall -y django-paypal')
+
 def upgrade_pil():
     with virtualenv():
         pull()
@@ -1004,6 +1015,7 @@ def setup_db_firewall():
     sudo('ufw default deny')
     sudo('ufw allow ssh')
     sudo('ufw allow 80')
+    sudo('ufw allow 443')
 
     # DigitalOcean
     for ip in set(env.roledefs['app'] +
@@ -1827,20 +1839,22 @@ def setup_time_calibration():
 # = Tasks - DB =
 # ==============
 
-def restore_postgres(port=5433):
-    backup_date = '2013-01-29-09-00'
+def restore_postgres(port=5433, download=False):
+    backup_date = '2020-11-11-04-00'
     yes = prompt("Dropping and creating NewsBlur PGSQL db. Sure?")
     if yes != 'y':
         return
-    # run('PYTHONPATH=%s python utils/backups/s3.py get backup_postgresql_%s.sql.gz' % (env.NEWSBLUR_PATH, backup_date))
+    if download:
+        run('PYTHONPATH=%s python utils/backups/s3.py get backup_postgresql_%s.sql.gz' % (env.NEWSBLUR_PATH, backup_date))
     # sudo('su postgres -c "createuser -p %s -U newsblur"' % (port,))
-    run('dropdb newsblur -p %s -U postgres' % (port,), pty=False)
+    run('dropdb newsblur -p %s -U newsblur' % (port,), pty=False)
     run('createdb newsblur -p %s -O newsblur' % (port,), pty=False)
-    run('pg_restore -p %s --role=newsblur --dbname=newsblur /Users/sclay/Documents/backups/backup_postgresql_%s.sql.gz' % (port, backup_date), pty=False)
+    run('pg_restore -p %s --role=newsblur --dbname=newsblur /Users/sclay/Documents/Backups/backup_postgresql_%s.sql.gz' % (port, backup_date), pty=False)
 
-def restore_mongo():
-    backup_date = '2012-07-24-09-00'
-    run('PYTHONPATH=/srv/newsblur python s3.py get backup_mongo_%s.tgz' % (backup_date))
+def restore_mongo(download=False):
+    backup_date = '2020-11-11-04-00'
+    if download:
+        run('PYTHONPATH=/srv/newsblur python utils/backups/s3.py get backup_mongo_%s.tgz' % (backup_date))
     run('tar -xf backup_mongo_%s.tgz' % backup_date)
     run('mongorestore backup_mongo_%s' % backup_date)
 

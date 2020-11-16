@@ -5,8 +5,11 @@ import hashlib
 from django.conf import settings
 from django.utils.encoding import smart_str
 
+from paypal.utils import warn_untested
+
 
 def get_sha1_hexdigest(salt, raw_password):
+    warn_untested()
     return hashlib.sha1(smart_str(salt) + smart_str(raw_password)).hexdigest()
 
 
@@ -21,7 +24,11 @@ def duplicate_txn_id(ipn_obj):
     """
 
     # get latest similar transaction(s)
-    similars = ipn_obj._default_manager.filter(txn_id=ipn_obj.txn_id).order_by('-created_at')[:1]
+    similars = (ipn_obj.__class__._default_manager
+                .filter(txn_id=ipn_obj.txn_id)
+                .exclude(id=ipn_obj.id)
+                .exclude(flag=True)
+                .order_by('-created_at')[:1])
 
     if len(similars) > 0:
         # we have a similar transaction, has the payment_status changed?
@@ -36,6 +43,7 @@ def make_secret(form_instance, secret_fields=None):
     selection of variables in params. Should only be used with SSL.
 
     """
+    warn_untested()
     # @@@ Moved here as temporary fix to avoid dependancy on auth.models.
     # @@@ amount is mc_gross on the IPN - where should mapping logic go?
     # @@@ amount / mc_gross is not nessecarily returned as it was sent - how to use it? 10.00 vs. 10.0
@@ -67,6 +75,7 @@ def check_secret(form_instance, secret):
     Used to verify IPN.
 
     """
+    warn_untested()
     # @@@ add invoice & custom
     # secret_fields = ['business', 'item_name']
     return make_secret(form_instance) == secret

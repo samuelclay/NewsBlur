@@ -47,7 +47,7 @@ ADMINS       = (
 SERVER_NAME  = 'newsblur'
 SERVER_EMAIL = 'server@newsblur.com'
 HELLO_EMAIL  = 'hello@newsblur.com'
-NEWSBLUR_URL = 'http://www.newsblur.com'
+NEWSBLUR_URL = 'https://www.newsblur.com'
 IMAGES_URL   = 'https://imageproxy.newsblur.com'
 SECRET_KEY            = 'YOUR_SECRET_KEY'
 IMAGES_SECRET_KEY = "YOUR_SECRET_IMAGE_KEY"
@@ -174,6 +174,11 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'verbose'
         },
+        'subdomains.middleware':{
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose'
+        },
         'vendor.apns':{
             'level': 'DEBUG',
             'class': 'logging.StreamHandler',
@@ -223,6 +228,11 @@ LOGGING = {
             'propagate': False,
         },
         'pyes': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        'subdomains.middleware': {
             'handlers': ['console'],
             'level': 'DEBUG',
             'propagate': False,
@@ -318,7 +328,7 @@ INSTALLED_APPS = (
     'django_extensions',
     'djcelery',
     # 'kombu.transport.django',
-    'vendor.paypal.standard.ipn',
+    'paypal.standard.ipn',
     'apps.rss_feeds',
     'apps.reader',
     'apps.analyzer',
