@@ -222,6 +222,26 @@ def setup_all():
     setup_db(skip_common=True)
     setup_task(skip_common=True)
 
+def setup_app_docker(skip_common=False):
+    if not skip_common:
+        setup_common()
+    setup_app_firewall()
+    setup_motd('app')
+
+    change_shell()
+    setup_user()
+    setup_sudoers()
+    setup_ulimit()
+    setup_do_monitoring()
+    setup_repo()
+    setup_local_files()
+    # setup_time_calibration()
+
+    setup_docker()
+
+    done()
+    sudo('reboot')
+
 def setup_app(skip_common=False, node=False):
     if not skip_common:
         setup_common()
@@ -313,6 +333,22 @@ def setup_task_image():
     sudo('reboot')
 
 # ==================
+# = Setup - Docker =
+# ==================
+
+def setup_docker():
+    packages = [
+        'build-essential',
+    ]
+    sudo('DEBIAN_FRONTEND=noninteractive apt-get -y --force-yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install %s' % ' '.join(packages))
+
+    sudo('apt install -fy docker docker-compose')
+    sudo('usermod -aG docker ${USER}')
+    sudo('su - ${USER}')
+
+    copy_certificates()
+    
+# ==================
 # = Setup - Common =
 # ==================
 
@@ -383,9 +419,10 @@ def setup_installs():
         sudo('chown %s.%s %s' % (env.user, env.user, env.VENDOR_PATH))
 
 def change_shell():
-    sudo('apt-get -y install zsh')
+    sudo('apt-get -fy install zsh')
     with settings(warn_only=True):
         run('git clone git://github.com/robbyrussell/oh-my-zsh.git ~/.oh-my-zsh')
+        run('git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting')
     sudo('chsh %s -s /bin/zsh' % env.user)
 
 def setup_user():
@@ -471,8 +508,8 @@ def setup_virtualenv():
                 # sudo('rm -fr venv')
                 with settings(warn_only=True):
                     run('mkvirtualenv newsblur')
-                run('echo "import sys; sys.setdefaultencoding(\'utf-8\')" | sudo tee venv/newsblur/lib/python2.7/sitecustomize.py')
-                run('echo "/srv/newsblur" | sudo tee venv/newsblur/lib/python2.7/site-packages/newsblur.pth')
+                # run('echo "import sys; sys.setdefaultencoding(\'utf-8\')" | sudo tee venv/newsblur/lib/python2.7/sitecustomize.py')
+                # run('echo "/srv/newsblur" | sudo tee venv/newsblur/lib/python2.7/site-packages/newsblur.pth')
     
 @_contextmanager
 def virtualenv():
@@ -1471,7 +1508,7 @@ def setup_do(name, size=1, image=None):
     # sizes = dict((s.slug, s.slug) for s in doapi.get_all_sizes())
     ssh_key_ids = [k.id for k in doapi.get_all_sshkeys()]
     if not image:
-        image = "ubuntu-16-04-x64"
+        image = "ubuntu-20-04-x64"
     else:
         images = dict((s.name, s.id) for s in doapi.get_all_images())
         if image == "task": 
