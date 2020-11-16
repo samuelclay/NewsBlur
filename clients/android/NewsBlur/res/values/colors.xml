@@ -1,9 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <color name="primary.light">@color/nb_green_gray91</color>
-    <color name="primaryDark.light">@color/black</color>
-    <color name="secondary.light">@color/newsblur_blue</color>
+    <color name="primary">@color/nb_green_gray91</color>
+    <color name="primaryDark">@color/black</color>
+    <color name="secondary">@color/newsblur_blue</color>
+
+    <color name="primary.dark">@color/gray13</color>
+    <color name="primaryDark.dark">@color/black</color>
+    <color name="secondary.dark">@color/newsblur_blue</color>
+
+    <color name="primary.black">@color/black</color>
+    <color name="primaryDark.black">@color/black</color>
+    <color name="secondary.black">@color/newsblur_blue</color>
 
     <color name="black">#000000</color>
     <color name="gray07">#121212</color>
@@ -127,7 +135,7 @@
     <color name="tag_gray_shadow">#C9C9C8</color>
     <color name="tag_bg_dark">#757575</color>
 
-    <color name="newsblur_blue">#0b445a</color>
+    <color name="newsblur_blue">#319DC5</color>
 
     <color name="progress_circle_complete">@color/gray46</color>
     <color name="progress_circle_remaining">@color/gray75</color>
