@@ -792,7 +792,7 @@ public class PrefsUtils {
 
     public static ThemeValue getSelectedTheme(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
-        String value = prefs.getString(PrefConstants.THEME, ThemeValue.LIGHT.name());
+        String value = prefs.getString(PrefConstants.THEME, ThemeValue.AUTO.name());
         // check for legacy hard-coded values. this can go away once installs of v152 or earlier are minimized
         if (value.equals("light")) {    
             setSelectedTheme(context, ThemeValue.LIGHT);

@@ -447,6 +447,7 @@
     <string name="sync_status_recounts">Catching up reading actions...</string>
     <string name="sync_status_ffsync">On its way...</string>
     <string name="sync_status_cleanup">Cleaning up...</string>
+    <string name="sync_status_starred">Sync saved stories actions…</string>
     <string name="sync_status_stories">Fetching fresh stories...</string>
     <string name="sync_status_unreads">Storing%sunread stories...</string>
     <string name="sync_status_text">Storing text for %s stories...</string>
