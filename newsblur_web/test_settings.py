@@ -6,8 +6,19 @@ DOCKERBUILD = os.getenv("DOCKERBUILD")
 DATABASES['default']['ENGINE'] = 'django.db.backends.sqlite3'
 DATABASES['default']['OPTIONS'] = {}
 DATABASES['default']['NAME'] = 'nb.db'
-DATABASES['default']['TEST_NAME'] = 'nb2.db'
-    
+DATABASES['default']['TEST_NAME'] = os.path.join(BASE_DIR, 'db.sqlite3.test')
+
+
+#DATABASES['default'] = {
+#        'NAME': 'newslur',
+#        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#        'USER': 'newsblur',
+#        'PASSWORD': 'newsblur',
+#        'HOST': 'localhost',
+#    }
+
+LOGGING_CONFIG = None
+
 # DATABASES = {
 #     'default':{
 #         'ENGINE': 'django.db.backends.sqlite3',
@@ -15,6 +26,39 @@ DATABASES['default']['TEST_NAME'] = 'nb2.db'
 #         'TEST_NAME': ':memory:',
 #     },
 # }
+
+
+INSTALLED_APPS = (
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.sites',
+    'django.contrib.admin',
+    'django.contrib.messages',
+    'django_extensions',
+    'paypal.standard.ipn',
+    'apps.rss_feeds',
+    'apps.reader',
+    'apps.analyzer',
+    'apps.feed_import',
+    'apps.profile',
+    'apps.recommendations',
+    'apps.statistics',
+    'apps.notifications',
+    'apps.static',
+    'apps.mobile',
+    'apps.push',
+    'apps.social',
+    'apps.oauth',
+    'apps.search',
+    'apps.categories',
+    'django_celery_beat',
+    'utils', # missing models so no migrations
+    'typogrify',
+    'oauth2_provider',
+    'corsheaders',
+)
+
 if DOCKERBUILD:
     MONGO_PORT = 29019
     MONGO_DB = {
