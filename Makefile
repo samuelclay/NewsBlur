@@ -31,8 +31,17 @@ nb-down:
 
 # runs tests
 test:
-	- CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} TEST=True docker-compose -f docker-compose.yml up -d newsblur_web
-	- CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} DJANGO_SETTINGS_MODULE=newsblur_web.test_settings docker-compose exec newsblur_web pytest --ignore ./vendor --verbosity 3
+	- python manage.py test --settings=newsblur_web.test_settings apps/analyzer
+	- python manage.py test --settings=newsblur_web.test_settings apps/api
+	- python manage.py test --settings=newsblur_web.test_settings apps/categories
+	- python manage.py test --settings=newsblur_web.test_settings apps/feed_import
+	- python manage.py test --settings=newsblur_web.test_settings apps/profile
+	- python manage.py test --settings=newsblur_web.test_settings apps/push
+	- python manage.py test --settings=newsblur_web.test_settings apps/reader
+	- python manage.py test --settings=newsblur_web.test_settings apps/rss_feeds
+
+	#- CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} TEST=True docker-compose -f docker-compose.yml up -d newsblur_web
+	#- CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} DJANGO_SETTINGS_MODULE=newsblur_web.test_settings docker-compose exec newsblur_web pytest --ignore ./vendor --verbosity 3
 
 keys:
 	- rm config/certificates
