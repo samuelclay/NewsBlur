@@ -39,7 +39,7 @@ class EmailNewsletter:
 
         # If not found, check among titles user has subscribed to
         if not feed:
-            newsletter_subs = UserSubscription.objects.filter(user=user, is_newsletter=True).only('feed')
+            newsletter_subs = UserSubscription.objects.filter(user=user, feed_address__contains="newsletter:").only('feed')
             newsletter_feed_ids = [us.feed.pk for us in newsletter_subs]
             feeds = Feed.objects.filter(feed_title__iexact=sender_name, pk__in=newsletter_feed_ids)
             if feeds.count():
