@@ -48,6 +48,7 @@
         <item name="selectorOverlayBackgroundText">@style/selectorOverlayBackgroundText</item>
         <item name="muteicon">@style/muteicon</item>
         <item name="android:textColor">@color/black</item>
+        <item name="preferenceTheme">@style/preferenceTheme</item>
 	</style>
 
     <style name="NewsBlurDarkTheme" parent="Theme.MaterialComponents">
@@ -98,6 +99,8 @@
         <item name="selectorOverlayBackgroundText">@style/selectorOverlayBackgroundText.dark</item>
         <item name="muteicon">@style/muteicon.dark</item>
         <item name="android:textColor">@color/white</item>
+        <item name="preferenceTheme">@style/preferenceTheme</item>
+        <item name="android:navigationBarColor">@android:color/black</item>
     </style>
 
     <style name="NewsBlurBlackTheme" parent="Theme.MaterialComponents" >
@@ -148,5 +151,7 @@
         <item name="selectorOverlayBackgroundText">@style/selectorOverlayBackgroundText.dark</item>
         <item name="muteicon">@style/muteicon.dark</item>
         <item name="android:textColor">@color/white</item>
+        <item name="preferenceTheme">@style/preferenceTheme</item>
+        <item name="android:navigationBarColor">@android:color/black</item>
     </style>
 </resources>

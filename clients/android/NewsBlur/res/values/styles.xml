@@ -394,4 +394,22 @@
         <item name="popupMenuBackground">@color/gray13</item>
     </style>
 
+    <style name="preferenceTheme" parent="@style/PreferenceThemeOverlay">
+        <item name="preferenceCategoryStyle">@style/preferenceCategory</item>
+        <item name="checkBoxPreferenceStyle">@style/checkBoxPreference</item>
+        <item name="dialogPreferenceStyle">@style/dialogPreference</item>
+    </style>
+
+    <style name="preferenceCategory" parent="Preference.Category.Material">
+        <item name="iconSpaceReserved">false</item>
+    </style>
+
+    <style name="checkBoxPreference" parent="Preference.CheckBoxPreference.Material">
+        <item name="iconSpaceReserved">false</item>
+    </style>
+
+    <style name="dialogPreference" parent="Preference.DialogPreference.Material">
+        <item name="iconSpaceReserved">false</item>
+    </style>
+
 </resources>
