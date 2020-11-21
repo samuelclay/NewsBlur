@@ -5,6 +5,7 @@
         <item name="colorPrimaryDark">@color/primaryDark</item>
         <item name="colorSecondary">@color/secondary</item>
         <item name="actionBarTheme">@style/actionbar</item>
+        <item name="actionBarPopupTheme">@style/actionBarPopup</item>
         <item name="popupMenuBackground">@color/primary</item>
         <item name="buttonBarPositiveButtonStyle">@style/dialogButton</item>
         <item name="buttonBarNegativeButtonStyle">@style/dialogButton</item>
@@ -54,7 +55,8 @@
         <item name="colorPrimaryDark">@color/primaryDark.dark</item>
         <item name="colorSecondary">@color/secondary.dark</item>
         <item name="actionBarTheme">@style/actionbar.dark</item>
-        <item name="popupMenuBackground">@color/primary.dark</item>
+        <item name="actionBarPopupTheme">@style/actionBarPopup.dark</item>
+        <item name="popupMenuBackground">@color/gray13</item>
         <item name="buttonBarPositiveButtonStyle">@style/dialogButton.dark</item>
         <item name="buttonBarNegativeButtonStyle">@style/dialogButton.dark</item>
         <item name="buttonBarNeutralButtonStyle">@style/dialogButton.dark</item>
@@ -103,7 +105,8 @@
         <item name="colorPrimaryDark">@color/primaryDark.black</item>
         <item name="colorSecondary">@color/secondary.black</item>
         <item name="actionBarTheme">@style/actionbar.black</item>
-        <item name="popupMenuBackground">@color/primary.black</item>
+        <item name="actionBarPopupTheme">@style/actionBarPopup.dark</item>
+        <item name="popupMenuBackground">@color/gray13</item>
         <item name="buttonBarPositiveButtonStyle">@style/dialogButton.dark</item>
         <item name="buttonBarNegativeButtonStyle">@style/dialogButton.dark</item>
         <item name="buttonBarNeutralButtonStyle">@style/dialogButton.dark</item>

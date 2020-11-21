@@ -1,7 +1,6 @@
 package com.newsblur.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentActivity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.MenuItem;

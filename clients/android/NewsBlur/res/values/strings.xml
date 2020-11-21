@@ -155,7 +155,6 @@
     <string name="menu_oldest_mark_newer_stories_as_read">\u21E3 Mark newer as read</string>
     <string name="menu_mark_story_as_read">Mark as read</string>
     <string name="menu_mark_unread">Mark as unread</string>
-    <string name="menu_fullscreen">Full screen</string>
     <string name="menu_search_stories">Search…</string>
     <string name="menu_mute_feed">Mute feed</string>
     <string name="menu_unmute_feed">Unmute feed</string>

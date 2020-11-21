@@ -384,4 +384,14 @@
         <item name="android:src">@drawable/mute_black</item>
     </style>
 
+    <style name="actionBarPopup" parent="Widget.MaterialComponents.PopupMenu">
+        <item name="android:background">@color/transparent</item>
+        <item name="popupMenuBackground">@color/primary</item>
+    </style>
+
+    <style name="actionBarPopup.dark" parent="Widget.MaterialComponents.PopupMenu">
+        <item name="android:background">@color/transparent</item>
+        <item name="popupMenuBackground">@color/gray13</item>
+    </style>
+
 </resources>
