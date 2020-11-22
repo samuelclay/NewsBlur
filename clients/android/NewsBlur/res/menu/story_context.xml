@@ -1,51 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
         android:id="@+id/menu_reading_sharenewsblur"
-        android:showAsAction="never"
+        app:showAsAction="never"
         android:title="@string/menu_sharenewsblur"/>
 
     <item
         android:id="@+id/menu_reading_original"
-        android:showAsAction="never"
+        app:showAsAction="never"
         android:title="@string/menu_original"/>
 
     <item
         android:id="@+id/menu_send_story"
-        android:showAsAction="never"
+        app:showAsAction="never"
         android:title="@string/menu_send_story"/>
 
     <item
         android:id="@+id/menu_send_story_full"
-        android:showAsAction="never"
+        app:showAsAction="never"
         android:title="@string/menu_send_story_full"/>
 
     <item
         android:id="@+id/menu_textsize"
-        android:showAsAction="never"
+        app:showAsAction="never"
         android:title="@string/menu_textsize"/>
 
     <item
         android:id="@+id/menu_font"
-        android:showAsAction="never"
+        app:showAsAction="never"
         android:title="@string/menu_font"/>
-        
+
     <item
         android:id="@+id/menu_reading_save"
-        android:showAsAction="never"
+        app:showAsAction="never"
         android:title="@string/menu_save_story"/>
 
     <item
         android:id="@+id/menu_reading_markunread"
-        android:showAsAction="never"
+        app:showAsAction="never"
         android:title="@string/menu_mark_unread"/>
 
     <item android:id="@+id/menu_go_to_feed"
         android:title="@string/go_to_feed"/>
     <item
         android:id="@+id/menu_intel"
-        android:showAsAction="never"
+        app:showAsAction="never"
         android:title="@string/menu_intel"/>
 
     <item android:id="@+id/menu_theme"

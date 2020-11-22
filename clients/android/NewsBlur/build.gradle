@@ -9,7 +9,7 @@ buildscript {
         google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.1.0'
+        classpath 'com.android.tools.build:gradle:4.1.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
@@ -38,6 +38,8 @@ dependencies {
     implementation 'nl.dionsegijn:konfetti:1.2.2'
     implementation 'com.github.jinatonic.confetti:confetti:1.1.2'
     implementation 'com.google.android.play:core:1.8.3'
+    implementation "com.google.android.material:material:1.2.1"
+    implementation "androidx.preference:preference-ktx:1.1.1"
 }
 
 android {
@@ -47,13 +49,14 @@ android {
         minSdkVersion 21
         targetSdkVersion 29
         versionCode 175
-        versionName "10.1b7"
+        versionName "10.1.1"
     }
     compileOptions.with {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
     android.buildFeatures.viewBinding = true
+    android.buildFeatures.dataBinding = true
 
     sourceSets {
         main {

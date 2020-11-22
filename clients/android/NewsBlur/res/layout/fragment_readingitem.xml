@@ -63,12 +63,12 @@
                     android:layout_below="@id/row_item_feed_header"
                     android:background="@color/gray55"/>
 
-                <Button
+                <ImageButton
                     android:id="@+id/story_context_menu_button"
                     android:layout_width="34dp"
                     android:layout_height="34dp"
                     android:layout_margin="5dp"
-                    android:background="@drawable/ic_menu_moreoverflow"
+                    style="?android:attr/actionOverflowButtonStyle"
                     android:contentDescription="@string/description_menu"
                     android:layout_below="@id/item_feed_border"
                     android:layout_alignParentRight="true" />

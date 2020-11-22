@@ -5,6 +5,8 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+
+import androidx.appcompat.widget.PopupMenu;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -17,7 +19,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnKeyListener;
 import android.widget.AbsListView;
-import android.widget.PopupMenu;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 
@@ -58,7 +59,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         binding = ActivityMainBinding.inflate(getLayoutInflater());
 		setContentView(binding.getRoot());
 
-		getActionBar().hide();
+		getSupportActionBar().hide();
 
         // set the status bar to an generic loading message when the activity is first created so
         // that something is displayed while the service warms up
