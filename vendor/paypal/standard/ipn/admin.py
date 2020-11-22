@@ -1,10 +1,25 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from django.contrib import admin
+from django.contrib import admin, messages
+
 from paypal.standard.ipn.models import PayPalIPN
 
 
+def reverify_flagged(modeladmin, request, queryset):
+    q = queryset.filter(flag=True)
+    for ipn in q:
+        ipn.verify()
+        ipn.send_signals()
+    messages.info(request, "{0} IPN object(s) re-verified".format(len(q)))
+reverify_flagged.short_description = "Re-verify selected flagged IPNs"
+
+
 class PayPalIPNAdmin(admin.ModelAdmin):
+    list_filter = [
+        'payment_status',
+        'flag',
+        'txn_type',
+    ]
     date_hierarchy = 'payment_date'
     fieldsets = (
         (None, {
@@ -50,6 +65,16 @@ class PayPalIPNAdmin(admin.ModelAdmin):
                 "next_payment_date"
             ]
         }),
+        ("Subscription", {
+            "description": "Information about recurring Subscptions.",
+            "classes": ("collapse",),
+            "fields": [
+                "subscr_date", "subscr_effective", "period1", "period2",
+                "period3", "amount1", "amount2", "amount3", "mc_amount1",
+                "mc_amount2", "mc_amount3", "recurring", "reattempt",
+                "retry_at", "recur_times", "username", "password", "subscr_id"
+            ]
+        }),
         ("Admin", {
             "description": "Additional Info.",
             "classes": ('collapse',),
@@ -63,7 +88,8 @@ class PayPalIPNAdmin(admin.ModelAdmin):
         "__unicode__", "flag", "flag_info", "invoice", "custom",
         "payment_status", "created_at"
     ]
-    search_fields = ["txn_id", "recurring_payment_id"]
+    search_fields = ["txn_id", "recurring_payment_id", "subscr_id"]
 
+    actions = [reverify_flagged]
 
 admin.site.register(PayPalIPN, PayPalIPNAdmin)

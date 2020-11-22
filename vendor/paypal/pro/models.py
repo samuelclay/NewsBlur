@@ -1,9 +1,15 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
+
 from django.conf import settings
 from django.db import models
-from django.utils.http import urlencode
 from django.forms.models import model_to_dict
+from django.http import QueryDict
+from django.utils.functional import cached_property
+from django.utils.http import urlencode
+
+from paypal.utils import warn_untested
 
 try:
     from idmapper.models import SharedMemoryModel as Model
@@ -48,7 +54,7 @@ class PayPalNVP(Model):
     timestamp = models.DateTimeField(blank=True, null=True)
     profileid = models.CharField(max_length=32, blank=True)  # I-E596DFUSD882
     profilereference = models.CharField(max_length=128, blank=True)  # PROFILEREFERENCE
-    correlationid = models.CharField(max_length=32, blank=True) # 25b380cda7a21
+    correlationid = models.CharField(max_length=32, blank=True)  # 25b380cda7a21
     token = models.CharField(max_length=64, blank=True)
     payerid = models.CharField(max_length=64, blank=True)
 
@@ -67,11 +73,12 @@ class PayPalNVP(Model):
 
     # Admin fields
     user = models.ForeignKey(getattr(settings, 'AUTH_USER_MODEL', 'auth.User'),
-                             blank=True, null=True)
+                             blank=True, null=True,
+                             on_delete=models.CASCADE)
     flag = models.BooleanField(default=False, blank=True)
     flag_code = models.CharField(max_length=32, blank=True)
     flag_info = models.TextField(blank=True)
-    ipaddress = models.IPAddressField(blank=True)
+    ipaddress = models.GenericIPAddressField(blank=True, null=True)
     query = models.TextField(blank=True)
     response = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -81,11 +88,22 @@ class PayPalNVP(Model):
         db_table = "paypal_nvp"
         verbose_name = "PayPal NVP"
 
+    @cached_property
+    def response_dict(self):
+        """
+        Returns a (MultiValueDict) dictionary containing all the parameters returned in the PayPal response.
+        """
+        # Undo the urlencode done in init
+        warn_untested()
+        return QueryDict(self.response)
+
     def init(self, request, paypal_request, paypal_response):
         """Initialize a PayPalNVP instance from a HttpRequest."""
         if request is not None:
-            self.ipaddress = request.META.get('REMOTE_ADDR', '').split(':')[0]
+            from paypal.pro.helpers import strip_ip_port
+            self.ipaddress = strip_ip_port(request.META.get('REMOTE_ADDR', ''))
             if hasattr(request, "user") and request.user.is_authenticated():
+                warn_untested()
                 self.user = request.user
         else:
             self.ipaddress = ''
@@ -95,10 +113,11 @@ class PayPalNVP(Model):
         self.query = urlencode(query_data)
         self.response = urlencode(paypal_response)
 
-        # Was there a flag on the play?        
+        # Was there a flag on the play?
         ack = paypal_response.get('ack', False)
         if ack != "Success":
             if ack == "SuccessWithWarning":
+                warn_untested()
                 self.flag_info = paypal_response.get('l_longmessage0', '')
             else:
                 self.set_flag(paypal_response.get('l_longmessage0', ''), paypal_response.get('l_errorcode', ''))
@@ -112,11 +131,12 @@ class PayPalNVP(Model):
 
     def process(self, request, item):
         """Do a direct payment."""
+        warn_untested()
         from paypal.pro.helpers import PayPalWPP
 
         wpp = PayPalWPP(request)
 
-        # Change the model information into a dict that PayPal can understand.        
+        # Change the model information into a dict that PayPal can understand.
         params = model_to_dict(self, exclude=self.ADMIN_FIELDS)
         params['acct'] = self.acct
         params['creditcardtype'] = self.creditcardtype
@@ -130,3 +150,9 @@ class PayPalNVP(Model):
         # Create single payment:
         else:
             return wpp.doDirectPayment(params)
+
+    def __repr__(self):
+        return '<PayPalNVP id:{0}>'.format(self.id)
+
+    def __str__(self):
+        return "PayPalNVP: {0}".format(self.id)
