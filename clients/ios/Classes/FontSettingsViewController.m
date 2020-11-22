@@ -476,7 +476,7 @@
     
     [[ThemeManager themeManager] updateSegmentedControl:self.fontSizeSegment];
     
-    [cell addSubview:self.fontSizeSegment];
+    [cell.contentView addSubview:self.fontSizeSegment];
     
     return cell;
 }
@@ -498,7 +498,7 @@
     
     [[ThemeManager themeManager] updateSegmentedControl:self.lineSpacingSegment];
     
-    [cell addSubview:self.lineSpacingSegment];
+    [cell.contentView addSubview:self.lineSpacingSegment];
     
     return cell;
 }
@@ -520,7 +520,7 @@
     
     [[ThemeManager themeManager] updateSegmentedControl:self.fullscreenSegment];
     
-    [cell addSubview:self.fullscreenSegment];
+    [cell.contentView addSubview:self.fullscreenSegment];
     
     return cell;
 }
@@ -542,7 +542,7 @@
     
     [[ThemeManager themeManager] updateSegmentedControl:self.autoscrollSegment];
     
-    [cell addSubview:self.autoscrollSegment];
+    [cell.contentView addSubview:self.autoscrollSegment];
     
     return cell;
 }
@@ -564,7 +564,7 @@
     
     [[ThemeManager themeManager] updateSegmentedControl:self.scrollOrientationSegment];
     
-    [cell addSubview:self.scrollOrientationSegment];
+    [cell.contentView addSubview:self.scrollOrientationSegment];
     
     return cell;
 }
@@ -597,7 +597,7 @@
     
     [[ThemeManager themeManager] updateThemeSegmentedControl:self.themeSegment];
     
-    [cell addSubview:self.themeSegment];
+    [cell.contentView addSubview:self.themeSegment];
     
     return cell;
 }

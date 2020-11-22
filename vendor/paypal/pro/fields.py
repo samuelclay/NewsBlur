@@ -1,13 +1,17 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
+
 from calendar import monthrange
 from datetime import date
 
+import six
 from django import forms
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 from six.moves import range
 
 from paypal.pro.creditcard import verify_credit_card
+from paypal.utils import warn_untested
 
 
 class CreditCardField(forms.CharField):
@@ -35,7 +39,7 @@ class CreditCardExpiryWidget(forms.MultiWidget):
     def decompress(self, value):
         if isinstance(value, date):
             return [value.month, value.year]
-        elif isinstance(value, basestring):
+        elif isinstance(value, six.string_types):
             return [value[0:2], value[2:]]
         else:
             return [None, None]
@@ -68,12 +72,14 @@ class CreditCardExpiryField(forms.MultiValueField):
         self.widget = CreditCardExpiryWidget(widgets=[fields[0].widget, fields[1].widget])
 
     def clean(self, value):
+        warn_untested()
         exp = super(CreditCardExpiryField, self).clean(value)
         if date.today() > exp:
             raise forms.ValidationError("The expiration date you entered is in the past.")
         return exp
 
     def compress(self, data_list):
+        warn_untested()
         if data_list:
             if data_list[1] in forms.fields.EMPTY_VALUES:
                 error = self.error_messages['invalid_year']

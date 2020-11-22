@@ -1,5 +1,9 @@
-from django.conf.urls import patterns
+from __future__ import unicode_literals
 
-urlpatterns = patterns('paypal.standard.pdt.views',
-                       (r'^pdt/$', 'pdt'),
-)
+from django.conf.urls import url
+
+from paypal.standard.pdt import views
+
+urlpatterns = [
+    url(r'^pdt/$', views.pdt),
+]
