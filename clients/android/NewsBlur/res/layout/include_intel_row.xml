@@ -4,7 +4,7 @@
     android:layout_height="wrap_content"
     >
 
-    <Button
+    <ImageButton
         android:id="@+id/intel_row_clear"
         android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
@@ -14,7 +14,7 @@
         android:background="@drawable/ic_clear_gray55"
     />
 
-    <Button
+    <ImageButton
         android:id="@+id/intel_row_dislike"
         android:layout_alignParentTop="true"
         android:layout_toLeftOf="@id/intel_row_clear"
@@ -27,7 +27,7 @@
         android:background="@drawable/ic_dislike_gray55"
     />
 
-    <Button
+    <ImageButton
         android:id="@+id/intel_row_like"
         android:layout_alignParentTop="true"
         android:layout_toLeftOf="@id/intel_row_dislike"
