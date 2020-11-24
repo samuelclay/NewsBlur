@@ -2,11 +2,15 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from six import b
-from six.moves.urllib.request import urlopen
+import requests
 
+from paypal.standard.ipn.signals import (
+    invalid_ipn_received, payment_was_flagged, payment_was_refunded, payment_was_reversed, payment_was_successful,
+    recurring_cancel, recurring_create, recurring_failed, recurring_payment, recurring_skipped, subscription_cancel,
+    subscription_eot, subscription_modify, subscription_signup, valid_ipn_received
+)
 from paypal.standard.models import PayPalStandardBase
-from vendor.paypal.standard.ipn.signals import payment_was_flagged, payment_was_refunded, payment_was_reversed, payment_was_successful, recurring_create, recurring_payment, recurring_cancel, recurring_skipped, recurring_failed, subscription_cancel, subscription_signup, subscription_eot, subscription_modify
+from paypal.utils import warn_untested
 
 
 class PayPalIPN(PayPalStandardBase):
@@ -19,7 +23,7 @@ class PayPalIPN(PayPalStandardBase):
 
     def _postback(self):
         """Perform PayPal Postback validation."""
-        return urlopen(self.get_endpoint(), b("cmd=_notify-validate&%s" % self.query)).read()
+        return requests.post(self.get_endpoint(), data=b"cmd=_notify-validate&" + self.query.encode("ascii")).content
 
     def _verify_postback(self):
         if self.response != "VERIFIED":
@@ -28,7 +32,11 @@ class PayPalIPN(PayPalStandardBase):
     def send_signals(self):
         """Shout for the world to hear whether a txn was successful."""
         if self.flag:
+            invalid_ipn_received.send(sender=self)
             payment_was_flagged.send(sender=self)
+            return
+        else:
+            valid_ipn_received.send(sender=self)
 
         # Transaction signals:
         if self.is_transaction():
@@ -44,6 +52,7 @@ class PayPalIPN(PayPalStandardBase):
             if self.is_recurring_create():
                 recurring_create.send(sender=self)
             elif self.is_recurring_payment():
+                warn_untested()
                 recurring_payment.send(sender=self)
             elif self.is_recurring_cancel():
                 recurring_cancel.send(sender=self)
@@ -51,8 +60,9 @@ class PayPalIPN(PayPalStandardBase):
                 recurring_skipped.send(sender=self)
             elif self.is_recurring_failed():
                 recurring_failed.send(sender=self)
-       # Subscription signals:
+        # Subscription signals:
         else:
+            warn_untested()
             if self.is_subscription_cancellation():
                 subscription_cancel.send(sender=self)
             elif self.is_subscription_signup():
@@ -61,3 +71,9 @@ class PayPalIPN(PayPalStandardBase):
                 subscription_eot.send(sender=self)
             elif self.is_subscription_modified():
                 subscription_modify.send(sender=self)
+
+    def __repr__(self):
+        return '<PayPalIPN id:{0}>'.format(self.id)
+
+    def __str__(self):
+        return "PayPalIPN: {0}".format(self.id)

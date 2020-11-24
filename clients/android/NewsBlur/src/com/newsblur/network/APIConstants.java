@@ -52,6 +52,7 @@ public class APIConstants {
     public static final String PATH_MARK_STORY_AS_UNREAD = "/reader/mark_story_as_unread/";
     public static final String PATH_MARK_STORY_HASH_UNREAD = "/reader/mark_story_hash_as_unread/";
     public static final String PATH_STARRED_STORIES = "/reader/starred_stories";
+    public static final String PATH_STARRED_STORY_HASHES = "/reader/starred_story_hashes";
 	public static final String PATH_FEED_AUTOCOMPLETE = "/rss_feeds/feed_autocomplete";
 	public static final String PATH_LIKE_COMMENT = "/social/like_comment";
 	public static final String PATH_UNLIKE_COMMENT = "/social/remove_like_comment";

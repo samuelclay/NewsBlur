@@ -16,7 +16,7 @@ def load_recommended_feed(request):
     page        = max(int(request.REQUEST.get('page', 0)), 0)
     usersub     = None
     refresh     = request.REQUEST.get('refresh')
-    now         = datetime.datetime.now
+    now         = datetime.datetime.now()
     unmoderated = request.REQUEST.get('unmoderated', False) == 'true'
     
     if unmoderated:

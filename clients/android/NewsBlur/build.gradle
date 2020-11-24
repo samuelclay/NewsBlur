@@ -9,7 +9,7 @@ buildscript {
         google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.0.2'
+        classpath 'com.android.tools.build:gradle:4.1.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
@@ -29,15 +29,15 @@ apply plugin: 'checkstyle'
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation 'androidx.fragment:fragment:1.2.5'
+    implementation 'androidx.fragment:fragment-ktx:1.2.5'
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
-    implementation 'com.squareup.okhttp3:okhttp:3.12.12'
+    implementation 'com.squareup.okhttp3:okhttp:4.9.0'
     implementation 'com.google.code.gson:gson:2.8.6'
-    implementation 'com.android.billingclient:billing:3.0.0'
+    implementation 'com.android.billingclient:billing:3.0.1'
     implementation 'nl.dionsegijn:konfetti:1.2.2'
     implementation 'com.github.jinatonic.confetti:confetti:1.1.2'
-    implementation 'com.google.android.play:core:1.8.2'
+    implementation 'com.google.android.play:core:1.8.3'
 }
 
 android {
@@ -46,8 +46,8 @@ android {
         applicationId "com.newsblur"
         minSdkVersion 21
         targetSdkVersion 29
-        versionCode 175
-        versionName "10.1b7"
+        versionCode 177
+        versionName "10.1.1"
     }
     compileOptions.with {
         sourceCompatibility = JavaVersion.VERSION_1_8
