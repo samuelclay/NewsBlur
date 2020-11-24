@@ -20,8 +20,8 @@ from django.contrib.auth.models import User
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden, Http404, UnreadablePostError
 from django.conf import settings
 from django.core.mail import mail_admins
-from django.core.validators import email_re
 from django.core.mail import EmailMultiAlternatives
+from django.core.validators import validate_email
 from django.contrib.sites.models import Site
 from django.utils import feedgenerator
 from django.utils.encoding import smart_unicode
@@ -85,7 +85,7 @@ def index(request, **kwargs):
                 reverse('index')))
         return load_social_page(request, user_id=user.pk, username=request.subdomain, **kwargs)
 
-    if request.user.is_anonymous():
+    if request.user.is_anonymous:
         return welcome(request, **kwargs)
     else:
         return dashboard(request, **kwargs)
@@ -176,7 +176,7 @@ def login(request):
             message = form.errors.items()[0][1][0]
 
     if request.POST.get('api'):
-        return HttpResponse(json.encode(dict(code=code, message=message)), mimetype='application/json')
+        return HttpResponse(json.encode(dict(code=code, message=message)), content_type='application/json')
     else:
         return index(request)
     
@@ -210,7 +210,7 @@ def logout(request):
     logout_user(request)
     
     if request.GET.get('api'):
-        return HttpResponse(json.encode(dict(code=1)), mimetype='application/json')
+        return HttpResponse(json.encode(dict(code=1)), content_type='application/json')
     else:
         return HttpResponseRedirect(reverse('index'))
 
@@ -243,10 +243,10 @@ def autologin(request, username, secret):
 def load_feeds(request):
     user             = get_user(request)
     feeds            = {}
-    include_favicons = is_true(request.REQUEST.get('include_favicons', False))
-    flat             = is_true(request.REQUEST.get('flat', False))
-    update_counts    = is_true(request.REQUEST.get('update_counts', True))
-    version          = int(request.REQUEST.get('v', 1))
+    include_favicons = is_true(request.GET.get('include_favicons', False))
+    flat             = is_true(request.GET.get('flat', False))
+    update_counts    = is_true(request.GET.get('update_counts', True))
+    version          = int(request.GET.get('v', 1))
     
     if include_favicons == 'false': include_favicons = False
     if update_counts == 'false': update_counts = False
@@ -290,7 +290,7 @@ def load_feeds(request):
         elif sub.feed.next_scheduled_update < day_ago:
             scheduled_feeds.append(sub.feed.pk)
     
-    if len(scheduled_feeds) > 0 and request.user.is_authenticated():
+    if len(scheduled_feeds) > 0 and request.user.is_authenticated:
         logging.user(request, "~SN~FMTasking the scheduling immediate fetch of ~SB%s~SN feeds..." % 
                      len(scheduled_feeds))
         ScheduleImmediateFetches.apply_async(kwargs=dict(feed_ids=scheduled_feeds, user_id=user.pk))
@@ -336,7 +336,7 @@ def load_feeds(request):
 @json.json_view
 def load_feed_favicons(request):
     user = get_user(request)
-    feed_ids = request.REQUEST.getlist('feed_ids') or request.REQUEST.getlist('feed_ids[]')
+    feed_ids = request.GET.getlist('feed_ids') or request.GET.getlist('feed_ids[]')
     
     if not feed_ids:
         user_subs = UserSubscription.objects.select_related('feed').filter(user=user, active=True)
@@ -348,10 +348,10 @@ def load_feed_favicons(request):
 
 def load_feeds_flat(request):
     user = request.user
-    include_favicons = is_true(request.REQUEST.get('include_favicons', False))
-    update_counts    = is_true(request.REQUEST.get('update_counts', True))
-    include_inactive = is_true(request.REQUEST.get('include_inactive', False))
-    background_ios   = is_true(request.REQUEST.get('background_ios', False))
+    include_favicons = is_true(request.GET.get('include_favicons', False))
+    update_counts    = is_true(request.GET.get('update_counts', True))
+    include_inactive = is_true(request.GET.get('include_inactive', False))
+    background_ios   = is_true(request.GET.get('background_ios', False))
     
     feeds = {}
     inactive_feeds = {}
@@ -364,7 +364,7 @@ def load_feeds_flat(request):
     if include_favicons == 'false': include_favicons = False
     if update_counts == 'false': update_counts = False
     
-    if not user.is_authenticated():
+    if not user.is_authenticated:
         return HttpResponseForbidden()
     
     try:
@@ -399,7 +399,7 @@ def load_feeds_flat(request):
         for sub in inactive_subs:
             inactive_feeds[sub.feed_id] = sub.canonical(include_favicon=include_favicons)
     
-    if len(scheduled_feeds) > 0 and request.user.is_authenticated():
+    if len(scheduled_feeds) > 0 and request.user.is_authenticated:
         logging.user(request, "~SN~FMTasking the scheduling immediate fetch of ~SB%s~SN feeds..." % 
                      len(scheduled_feeds))
         ScheduleImmediateFetches.apply_async(kwargs=dict(feed_ids=scheduled_feeds, user_id=user.pk))
@@ -470,9 +470,9 @@ def refresh_feeds(request):
     start = datetime.datetime.now()
     start_time = time.time()
     user = get_user(request)
-    feed_ids = request.REQUEST.getlist('feed_id') or request.REQUEST.getlist('feed_id[]')
-    check_fetch_status = request.REQUEST.get('check_fetch_status')
-    favicons_fetching = request.REQUEST.getlist('favicons_fetching') or request.REQUEST.getlist('favicons_fetching[]')
+    feed_ids = request.GET.getlist('feed_id') or request.GET.getlist('feed_id[]')
+    check_fetch_status = request.GET.get('check_fetch_status')
+    favicons_fetching = request.GET.getlist('favicons_fetching') or request.GET.getlist('favicons_fetching[]')
     social_feed_ids = [feed_id for feed_id in feed_ids if 'social:' in feed_id]
     feed_ids = list(set(feed_ids) - set(social_feed_ids))
     
@@ -553,8 +553,8 @@ def interactions_count(request):
 def feed_unread_count(request):
     start = time.time()
     user = request.user
-    feed_ids = request.REQUEST.getlist('feed_id') or request.REQUEST.getlist('feed_id[]')
-    force = request.REQUEST.get('force', False)
+    feed_ids = request.GET.getlist('feed_id') or request.GET.getlist('feed_id[]')
+    force = request.GET.get('force', False)
     social_feed_ids = [feed_id for feed_id in feed_ids if 'social:' in feed_id]
     feed_ids = list(set(feed_ids) - set(social_feed_ids))
     
@@ -599,18 +599,18 @@ def refresh_feed(request, feed_id):
 def load_single_feed(request, feed_id):
     start                   = time.time()
     user                    = get_user(request)
-    # offset                  = int(request.REQUEST.get('offset', 0))
-    # limit                   = int(request.REQUEST.get('limit', 6))
+    # offset                  = int(request.GET.get('offset', 0))
+    # limit                   = int(request.GET.get('limit', 6))
     limit                   = 6
-    page                    = int(request.REQUEST.get('page', 1))
-    delay                   = int(request.REQUEST.get('delay', 0))
+    page                    = int(request.GET.get('page', 1))
+    delay                   = int(request.GET.get('delay', 0))
     offset                  = limit * (page-1)
-    order                   = request.REQUEST.get('order', 'newest')
-    read_filter             = request.REQUEST.get('read_filter', 'all')
-    query                   = request.REQUEST.get('query', '').strip()
-    include_story_content   = is_true(request.REQUEST.get('include_story_content', True))
-    include_hidden          = is_true(request.REQUEST.get('include_hidden', False))
-    include_feeds           = is_true(request.REQUEST.get('include_feeds', False))
+    order                   = request.GET.get('order', 'newest')
+    read_filter             = request.GET.get('read_filter', 'all')
+    query                   = request.GET.get('query', '').strip()
+    include_story_content   = is_true(request.GET.get('include_story_content', True))
+    include_hidden          = is_true(request.GET.get('include_hidden', False))
+    include_feeds           = is_true(request.GET.get('include_feeds', False))
     message                 = None
     user_search             = None
         
@@ -619,7 +619,7 @@ def load_single_feed(request, feed_id):
     now = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
     if not feed_id: raise Http404
 
-    feed_address = request.REQUEST.get('feed_address')
+    feed_address = request.GET.get('feed_address')
     feed = Feed.get_by_id(feed_id, feed_address=feed_address)
     if not feed:
         raise Http404
@@ -843,7 +843,7 @@ def load_feed_page(request, feed_id):
             except requests.ConnectionError:
                 page_response = None
             if page_response and page_response.status_code == 200:
-                response = HttpResponse(page_response.content, mimetype="text/html; charset=utf-8")
+                response = HttpResponse(page_response.content, content_type="text/html; charset=utf-8")
                 response['Content-Encoding'] = 'gzip'
                 response['Last-Modified'] = page_response.headers.get('Last-modified')
                 response['Etag'] = page_response.headers.get('Etag')
@@ -857,7 +857,7 @@ def load_feed_page(request, feed_id):
                 key = settings.S3_CONN.get_bucket(settings.S3_PAGES_BUCKET_NAME).get_key(feed.s3_pages_key)
                 if key:
                     compressed_data = key.get_contents_as_string()
-                    response = HttpResponse(compressed_data, mimetype="text/html; charset=utf-8")
+                    response = HttpResponse(compressed_data, content_type="text/html; charset=utf-8")
                     response['Content-Encoding'] = 'gzip'
             
                     logging.user(request, "~FYLoading original page, proxied: ~SB%s bytes" %
@@ -877,21 +877,21 @@ def load_feed_page(request, feed_id):
             status=404)
     
     logging.user(request, "~FYLoading original page, from the db")
-    return HttpResponse(data, mimetype="text/html; charset=utf-8")
+    return HttpResponse(data, content_type="text/html; charset=utf-8")
 
 @json.json_view
 def load_starred_stories(request):
     user         = get_user(request)
-    offset       = int(request.REQUEST.get('offset', 0))
-    limit        = int(request.REQUEST.get('limit', 10))
-    page         = int(request.REQUEST.get('page', 0))
-    query        = request.REQUEST.get('query', '').strip()
-    order        = request.REQUEST.get('order', 'newest')
-    tag          = request.REQUEST.get('tag')
-    highlights   = is_true(request.REQUEST.get('highlights', False))
-    story_hashes = request.REQUEST.getlist('h') or request.REQUEST.getlist('h[]')
+    offset       = int(request.GET.get('offset', 0))
+    limit        = int(request.GET.get('limit', 10))
+    page         = int(request.GET.get('page', 0))
+    query        = request.GET.get('query', '').strip()
+    order        = request.GET.get('order', 'newest')
+    tag          = request.GET.get('tag')
+    highlights   = is_true(request.GET.get('highlights', False))
+    story_hashes = request.GET.getlist('h') or request.GET.getlist('h[]')
     story_hashes = story_hashes[:100]
-    version      = int(request.REQUEST.get('v', 1))
+    version      = int(request.GET.get('v', 1))
     now          = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
     message      = None
     order_by     = '-' if order == "newest" else ""
@@ -1012,14 +1012,19 @@ def load_starred_stories(request):
 @json.json_view
 def starred_story_hashes(request):
     user               = get_user(request)
-    include_timestamps = is_true(request.REQUEST.get('include_timestamps', False))
+    include_timestamps = is_true(request.GET.get('include_timestamps', False))
     
     mstories = MStarredStory.objects(
         user_id=user.pk
-    ).only('story_hash', 'starred_date').order_by('-starred_date')
+    ).only('story_hash', 'starred_date', 'starred_updated').order_by('-starred_date')
     
     if include_timestamps:
-        story_hashes = [(s.story_hash, s.starred_date.strftime("%s")) for s in mstories]
+        story_hashes = []
+        for s in mstories:
+            date = s.starred_date
+            if s.starred_updated:
+                date = s.starred_updated
+            story_hashes.append((s.story_hash, date.strftime("%s")))
     else:
         story_hashes = [s.story_hash for s in mstories]
     
@@ -1225,11 +1230,11 @@ def folder_rss_feed(request, user_id, secret_token, unread_filter, folder_slug):
 @json.json_view
 def load_read_stories(request):
     user   = get_user(request)
-    offset = int(request.REQUEST.get('offset', 0))
-    limit  = int(request.REQUEST.get('limit', 10))
-    page   = int(request.REQUEST.get('page', 0))
-    order  = request.REQUEST.get('order', 'newest')
-    query  = request.REQUEST.get('query', '').strip()
+    offset = int(request.GET.get('offset', 0))
+    limit  = int(request.GET.get('limit', 10))
+    page   = int(request.GET.get('page', 0))
+    order  = request.GET.get('order', 'newest')
+    query  = request.GET.get('query', '').strip()
     now    = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
     message = None
     if page: offset = limit * (page - 1)
@@ -1307,28 +1312,32 @@ def load_read_stories(request):
 
 @json.json_view
 def load_river_stories__redis(request):
-    limit             = int(request.REQUEST.get('limit', 12))
+    # get_post is request.REQUEST, since this endpoint needs to handle either
+    # GET or POST requests, since the parameters for this endpoint can be
+    # very long, at which point the max size of a GET url request is exceeded.
+    get_post          = getattr(request, request.method)
+    limit             = int(get_post.get('limit', 12))
     start             = time.time()
     user              = get_user(request)
     message           = None
-    feed_ids          = request.REQUEST.getlist('feeds') or request.REQUEST.getlist('feeds[]')
+    feed_ids          = get_post.getlist('feeds') or get_post.getlist('feeds[]')
     feed_ids          = [int(feed_id) for feed_id in feed_ids if feed_id]
     if not feed_ids:
-        feed_ids      = request.REQUEST.getlist('f') or request.REQUEST.getlist('f[]')
-        feed_ids      = [int(feed_id) for feed_id in request.REQUEST.getlist('f') if feed_id]
-    story_hashes      = request.REQUEST.getlist('h') or request.REQUEST.getlist('h[]')
+        feed_ids      = get_post.getlist('f') or get_post.getlist('f[]')
+        feed_ids      = [int(feed_id) for feed_id in get_post.getlist('f') if feed_id]
+    story_hashes      = get_post.getlist('h') or get_post.getlist('h[]')
     story_hashes      = story_hashes[:100]
     original_feed_ids = list(feed_ids)
-    page              = int(request.REQUEST.get('page', 1))
-    order             = request.REQUEST.get('order', 'newest')
-    read_filter       = request.REQUEST.get('read_filter', 'unread')
-    query             = request.REQUEST.get('query', '').strip()
-    include_hidden    = is_true(request.REQUEST.get('include_hidden', False))
-    include_feeds     = is_true(request.REQUEST.get('include_feeds', False))
-    initial_dashboard = is_true(request.REQUEST.get('initial_dashboard', False))
-    infrequent        = is_true(request.REQUEST.get('infrequent', False))
+    page              = int(get_post.get('page', 1))
+    order             = get_post.get('order', 'newest')
+    read_filter       = get_post.get('read_filter', 'unread')
+    query             = get_post.get('query', '').strip()
+    include_hidden    = is_true(get_post.get('include_hidden', False))
+    include_feeds     = is_true(get_post.get('include_feeds', False))
+    initial_dashboard = is_true(get_post.get('initial_dashboard', False))
+    infrequent        = is_true(get_post.get('infrequent', False))
     if infrequent:
-        infrequent = request.REQUEST.get('infrequent')
+        infrequent = get_post.get('infrequent')
     now               = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
     usersubs          = []
     code              = 1
@@ -1559,9 +1568,9 @@ def complete_river(request):
 @json.json_view
 def unread_story_hashes__old(request):
     user              = get_user(request)
-    feed_ids          = request.REQUEST.getlist('feed_id') or request.REQUEST.getlist('feed_id[]')
+    feed_ids          = request.GET.getlist('feed_id') or request.GET.getlist('feed_id[]')
     feed_ids          = [int(feed_id) for feed_id in feed_ids if feed_id]
-    include_timestamps = is_true(request.REQUEST.get('include_timestamps', False))
+    include_timestamps = is_true(request.GET.get('include_timestamps', False))
     usersubs = {}
     
     if not feed_ids:
@@ -1599,11 +1608,11 @@ def unread_story_hashes__old(request):
 @json.json_view
 def unread_story_hashes(request):
     user               = get_user(request)
-    feed_ids           = request.REQUEST.getlist('feed_id') or request.REQUEST.getlist('feed_id[]')
+    feed_ids           = request.GET.getlist('feed_id') or request.GET.getlist('feed_id[]')
     feed_ids           = [int(feed_id) for feed_id in feed_ids if feed_id]
-    include_timestamps = is_true(request.REQUEST.get('include_timestamps', False))
-    order              = request.REQUEST.get('order', 'newest')
-    read_filter        = request.REQUEST.get('read_filter', 'unread')
+    include_timestamps = is_true(request.GET.get('include_timestamps', False))
+    order              = request.GET.get('order', 'newest')
+    read_filter        = request.GET.get('read_filter', 'unread')
     
     story_hashes = UserSubscription.story_hashes(user.pk, feed_ids=feed_ids, 
                                                  order=order, read_filter=read_filter,
@@ -1619,17 +1628,17 @@ def unread_story_hashes(request):
 def mark_all_as_read(request):
     code = 1
     try:
-        days = int(request.REQUEST.get('days', 0))
+        days = int(request.POST.get('days', 0))
     except ValueError:
         return dict(code=-1, message="Days parameter must be an integer, not: %s" %
-                    request.REQUEST.get('days'))
+                    request.POST.get('days'))
     read_date = datetime.datetime.utcnow() - datetime.timedelta(days=days)
     
     feeds = UserSubscription.objects.filter(user=request.user)
 
-    infrequent        = is_true(request.REQUEST.get('infrequent', False))
+    infrequent        = is_true(request.POST.get('infrequent', False))
     if infrequent:
-        infrequent = request.REQUEST.get('infrequent')
+        infrequent = request.POST.get('infrequent')
         feed_ids = Feed.low_volume_feeds([usersub.feed.pk for usersub in feeds], stories_per_month=infrequent)
         feeds = UserSubscription.objects.filter(user=request.user, feed_id__in=feed_ids)
     
@@ -1653,12 +1662,12 @@ def mark_all_as_read(request):
 @ajax_login_required
 @json.json_view
 def mark_story_as_read(request):
-    story_ids = request.REQUEST.getlist('story_id') or request.REQUEST.getlist('story_id[]')
+    story_ids = request.POST.getlist('story_id') or request.POST.getlist('story_id[]')
     try:
         feed_id = int(get_argument_or_404(request, 'feed_id'))
     except ValueError:
         return dict(code=-1, errors=["You must pass a valid feed_id: %s" %
-                                     request.REQUEST.get('feed_id')])
+                                     request.POST.get('feed_id')])
     
     try:
         usersub = UserSubscription.objects.select_related('feed').get(user=request.user, feed=feed_id)
@@ -1689,7 +1698,7 @@ def mark_story_hashes_as_read(request):
     retrying_failed = is_true(request.POST.get('retrying_failed', False))
     r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
     try:
-        story_hashes = request.REQUEST.getlist('story_hash') or request.REQUEST.getlist('story_hash[]')
+        story_hashes = request.POST.getlist('story_hash') or request.POST.getlist('story_hash[]')
     except UnreadablePostError:
         return dict(code=-1, message="Missing `story_hash` list parameter.")
     
@@ -1731,7 +1740,7 @@ def mark_story_hashes_as_read(request):
 @json.json_view
 def mark_feed_stories_as_read(request):
     r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
-    feeds_stories = request.REQUEST.get('feeds_stories', "{}")
+    feeds_stories = request.POST.get('feeds_stories', "{}")
     feeds_stories = json.decode(feeds_stories)
     data = {
         'code': -1,
@@ -1769,7 +1778,7 @@ def mark_social_stories_as_read(request):
     errors = []
     data = {}
     r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
-    users_feeds_stories = request.REQUEST.get('users_feeds_stories', "{}")
+    users_feeds_stories = request.POST.get('users_feeds_stories', "{}")
     users_feeds_stories = json.decode(users_feeds_stories)
 
     for social_user_id, feeds in users_feeds_stories.items():
@@ -1808,8 +1817,8 @@ def mark_social_stories_as_read(request):
 @ajax_login_required
 @json.json_view
 def mark_story_as_unread(request):
-    story_id = request.REQUEST.get('story_id', None)
-    feed_id = int(request.REQUEST.get('feed_id', 0))
+    story_id = request.POST.get('story_id', None)
+    feed_id = int(request.POST.get('feed_id', 0))
     
     try:
         usersub = UserSubscription.objects.select_related('feed').get(user=request.user, feed=feed_id)
@@ -1858,7 +1867,7 @@ def mark_story_as_unread(request):
 @required_params('story_hash')
 def mark_story_hash_as_unread(request):
     r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
-    story_hash = request.REQUEST.get('story_hash')
+    story_hash = request.POST.get('story_hash')
     feed_id, _ = MStory.split_story_hash(story_hash)
     story, _ = MStory.find_story(feed_id, story_hash)
     if not story:
@@ -1900,11 +1909,11 @@ def mark_story_hash_as_unread(request):
 def mark_feed_as_read(request):
     r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
     feed_ids = request.POST.getlist('feed_id') or request.POST.getlist('feed_id[]')
-    cutoff_timestamp = int(request.REQUEST.get('cutoff_timestamp', 0))
-    direction = request.REQUEST.get('direction', 'older')
-    infrequent        = is_true(request.REQUEST.get('infrequent', False))
+    cutoff_timestamp = int(request.POST.get('cutoff_timestamp', 0))
+    direction = request.POST.get('direction', 'older')
+    infrequent        = is_true(request.POST.get('infrequent', False))
     if infrequent:
-        infrequent = request.REQUEST.get('infrequent')
+        infrequent = request.POST.get('infrequent')
     multiple = len(feed_ids) > 1
     code = 1
     errors = []
@@ -1970,9 +1979,9 @@ def mark_feed_as_read(request):
 def _parse_user_info(user):
     return {
         'user_info': {
-            'is_anonymous': json.encode(user.is_anonymous()),
-            'is_authenticated': json.encode(user.is_authenticated()),
-            'username': json.encode(user.username if user.is_authenticated() else 'Anonymous')
+            'is_anonymous': json.encode(user.is_anonymous),
+            'is_authenticated': json.encode(user.is_authenticated),
+            'username': json.encode(user.username if user.is_authenticated else 'Anonymous')
         }
     }
 
@@ -2099,7 +2108,7 @@ def delete_feed_by_url(request):
 def delete_folder(request):
     folder_to_delete = request.POST.get('folder_name') or request.POST.get('folder_to_delete')
     in_folder = request.POST.get('in_folder', None)
-    feed_ids_in_folder = request.REQUEST.getlist('feed_id') or request.REQUEST.getlist('feed_id[]')
+    feed_ids_in_folder = request.POST.getlist('feed_id') or request.POST.getlist('feed_id[]')
     feed_ids_in_folder = [int(f) for f in feed_ids_in_folder if f]
 
     request.user.profile.send_opml_export_email(reason="You have deleted an entire folder of feeds, so here's a backup of all of your subscriptions just in case.")
@@ -2258,7 +2267,7 @@ def add_feature(request):
 @json.json_view
 def load_features(request):
     user = get_user(request)
-    page = max(int(request.REQUEST.get('page', 0)), 0)
+    page = max(int(request.GET.get('page', 0)), 0)
     if page > 1:
         logging.user(request, "~FBBrowse features: ~SBPage #%s" % (page+1))
     features = Feature.objects.all()[page*3:(page+1)*3+1].values()
@@ -2286,7 +2295,7 @@ def save_feed_order(request):
 @json.json_view
 def feeds_trainer(request):
     classifiers = []
-    feed_id = request.REQUEST.get('feed_id')
+    feed_id = request.GET.get('feed_id')
     user = get_user(request)
     usersubs = UserSubscription.objects.filter(user=user, active=True)
     
@@ -2413,12 +2422,12 @@ def mark_story_hash_as_starred(request):
     
 def _mark_story_as_starred(request):
     code       = 1
-    feed_id    = int(request.REQUEST.get('feed_id', 0))
-    story_id   = request.REQUEST.get('story_id', None)
-    story_hash = request.REQUEST.get('story_hash', None)
-    user_tags  = request.REQUEST.getlist('user_tags') or request.REQUEST.getlist('user_tags[]')
-    user_notes = request.REQUEST.get('user_notes', None)
-    highlights = request.REQUEST.getlist('highlights') or request.REQUEST.getlist('highlights[]') or []
+    feed_id    = int(request.POST.get('feed_id', 0))
+    story_id   = request.POST.get('story_id', None)
+    story_hash = request.POST.get('story_hash', None)
+    user_tags  = request.POST.getlist('user_tags') or request.POST.getlist('user_tags[]')
+    user_notes = request.POST.get('user_notes', None)
+    highlights = request.POST.getlist('highlights') or request.POST.getlist('highlights[]') or []
     message    = ""
     if story_hash:
         story, _   = MStory.find_story(story_hash=story_hash)
@@ -2522,7 +2531,7 @@ def mark_story_hash_as_unstarred(request):
 def _mark_story_as_unstarred(request):
     code     = 1
     story_id = request.POST.get('story_id', None)
-    story_hash = request.REQUEST.get('story_hash', None)
+    story_hash = request.POST.get('story_hash', None)
     starred_counts = None
     starred_story = None
     
@@ -2574,6 +2583,14 @@ def starred_counts(request):
 @ajax_login_required
 @json.json_view
 def send_story_email(request):
+
+    def validate_email_as_bool(email):
+        try:
+            validate_email(email)
+            return True
+        except:
+            return False
+
     code       = 1
     message    = 'OK'
     user       = get_user(request)
@@ -2600,10 +2617,10 @@ def send_story_email(request):
     elif not to_addresses:
         code = -1
         message = 'Please provide at least one email address.'
-    elif not all(email_re.match(to_address) for to_address in to_addresses if to_addresses):
+    elif not all(validate_email_as_bool(to_address) for to_address in to_addresses if to_addresses):
         code = -1
         message = 'You need to send the email to a valid email address.'
-    elif not email_re.match(from_email):
+    elif not validate_email_as_bool(from_email):
         code = -1
         message = 'You need to provide your email address.'
     elif not from_name:
@@ -2645,15 +2662,15 @@ def send_story_email(request):
         
         share_user_profile.save_sent_email()
         
-        logging.user(request, '~BMSharing story by email to %s recipient%s: ~FY~SB%s~SN~BM~FY/~SB%s' % 
-                              (len(to_addresses), '' if len(to_addresses) == 1 else 's', 
+        logging.user(request, '~BMSharing story by email to %s recipient%s (%s): ~FY~SB%s~SN~BM~FY/~SB%s' %
+                              (len(to_addresses), '' if len(to_addresses) == 1 else 's', to_addresses,
                                story['story_title'][:50], feed and feed.feed_title[:50]))
         
     return {'code': code, 'message': message}
 
 @json.json_view
 def load_tutorial(request):
-    if request.REQUEST.get('finished'):
+    if request.GET.get('finished'):
         logging.user(request, '~BY~FW~SBFinishing Tutorial')
         return {}
     else:

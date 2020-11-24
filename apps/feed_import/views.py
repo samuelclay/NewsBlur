@@ -11,9 +11,7 @@ from django.contrib.auth.models import User
 from django.http import HttpResponse, HttpResponseRedirect
 from django.conf import settings
 from django.core.urlresolvers import reverse
-from django.template import RequestContext
 from django.contrib.auth import login as login_user
-from django.shortcuts import render_to_response
 from apps.reader.forms import SignupForm
 from apps.reader.models import UserSubscription
 from apps.feed_import.models import OAuthToken
@@ -70,22 +68,21 @@ def opml_upload(request):
             code = -1
             
     return HttpResponse(json.encode(dict(message=message, code=code, payload=payload)),
-                        mimetype='text/html')
+                        content_type='text/html')
 
 def opml_export(request):
     user     = get_user(request)
     now      = datetime.datetime.now()
-    if request.REQUEST.get('user_id') and user.is_staff:
-        user = User.objects.get(pk=request.REQUEST['user_id'])
+    if request.GET.get('user_id') and user.is_staff:
+        user = User.objects.get(pk=request.GET['user_id'])
     exporter = OPMLExporter(user)
     opml     = exporter.process()
     
-    response = HttpResponse(opml, mimetype='text/xml')
+    response = HttpResponse(opml, content_type='text/xml')
     response['Content-Disposition'] = 'attachment; filename=NewsBlur-%s-%s' % (
         user.username,
         now.strftime('%Y-%m-%d')
     )
     
     return response
-
 

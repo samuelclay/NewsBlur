@@ -29,7 +29,7 @@ from django.contrib.sites.models import Site
 from django.template.defaultfilters import slugify
 from django.utils.encoding import smart_str, smart_unicode
 from mongoengine.queryset import OperationError, Q, NotUniqueError
-from mongoengine.base import ValidationError
+from mongoengine.errors import ValidationError
 from vendor.timezones.utilities import localtime_for_timezone
 from apps.rss_feeds.tasks import UpdateFeeds, PushFeeds, ScheduleCountTagsForUser
 from apps.rss_feeds.text_importer import TextImporter
@@ -65,7 +65,7 @@ class Feed(models.Model):
     active_subscribers = models.IntegerField(default=-1, db_index=True)
     premium_subscribers = models.IntegerField(default=-1)
     active_premium_subscribers = models.IntegerField(default=-1)
-    branch_from_feed = models.ForeignKey('Feed', blank=True, null=True, db_index=True)
+    branch_from_feed = models.ForeignKey('Feed', blank=True, null=True, db_index=True, on_delete=models.CASCADE)
     last_update = models.DateTimeField(db_index=True)
     next_scheduled_update = models.DateTimeField()
     last_story_date = models.DateTimeField(null=True, blank=True)
@@ -556,7 +556,7 @@ class Feed(models.Model):
         now = datetime.datetime.now().strftime("%s")
         p = r.pipeline()
         for feed_id in feeds:
-            p.zadd('tasked_feeds', feed_id, now)
+            p.zadd('tasked_feeds', {feed_id: now})
         p.execute()
         
         # for feed_ids in (feeds[pos:pos + queue_size] for pos in xrange(0, len(feeds), queue_size)):
@@ -1169,7 +1169,7 @@ class Feed(models.Model):
             'requesting_user_id': kwargs.get('requesting_user_id', None)
         }
         
-        if getattr(settings, 'TEST_DEBUG', False):
+        if getattr(settings, 'TEST_DEBUG', False) and "NEWSBLUR_DIR" in self.feed_address:
             print " ---> Testing feed fetch: %s" % self.log_title
             # options['force_fp'] = True # No, why would this be needed?
             original_feed_address = self.feed_address
@@ -1192,7 +1192,7 @@ class Feed(models.Model):
         if feed:
             feed.last_update = datetime.datetime.utcnow()
             feed.set_next_scheduled_update()
-            r.zadd('fetched_feeds_last_hour', feed.pk, int(datetime.datetime.now().strftime('%s')))
+            r.zadd('fetched_feeds_last_hour', {feed.pk: int(datetime.datetime.now().strftime('%s'))})
         
         if not feed or original_feed_id != feed.pk:
             logging.info(" ---> ~FRFeed changed id, removing %s from tasked_feeds queue..." % original_feed_id)
@@ -2199,7 +2199,7 @@ class Feed(models.Model):
         if minutes_to_next_fetch > self.min_to_decay or not skip_scheduling:
             self.next_scheduled_update = next_scheduled_update
             if self.active_subscribers >= 1:
-                r.zadd('scheduled_updates', self.pk, self.next_scheduled_update.strftime('%s'))
+                r.zadd('scheduled_updates', {self.pk: self.next_scheduled_update.strftime('%s')})
             r.zrem('tasked_feeds', self.pk)
             r.srem('queued_feeds', self.pk)
         
@@ -2225,7 +2225,7 @@ class Feed(models.Model):
             logging.debug('   ---> [%-30s] Scheduling feed fetch immediately...' % (self.log_title[:30]))
             
         self.next_scheduled_update = datetime.datetime.utcnow()
-        r.zadd('scheduled_updates', self.pk, self.next_scheduled_update.strftime('%s'))
+        r.zadd('scheduled_updates', {self.pk: self.next_scheduled_update.strftime('%s')})
 
         return self.save()
         
@@ -2358,11 +2358,6 @@ class MFeedPage(mongo.Document):
         'allow_inheritance': False,
     }
     
-    def save(self, *args, **kwargs):
-        if self.page_data:
-            self.page_data = zlib.compress(self.page_data)
-        return super(MFeedPage, self).save(*args, **kwargs)
-    
     def page(self):
         return zlib.decompress(self.page_data)
         
@@ -2417,7 +2412,8 @@ class MStory(mongo.Document):
         'indexes': [('story_feed_id', '-story_date'),
                     {'fields': ['story_hash'], 
                      'unique': True,
-                     'types': False, }],
+                     'types': False,
+                    }],
         'ordering': ['-story_date'],
         'allow_inheritance': False,
         'cascade': False,
@@ -2686,7 +2682,7 @@ class MStory(mongo.Document):
             # r2.sadd(feed_key, self.story_hash)
             # r2.expire(feed_key, settings.DAYS_OF_STORY_HASHES*24*60*60)
             
-            r.zadd('z' + feed_key, self.story_hash, time.mktime(self.story_date.timetuple()))
+            r.zadd('z' + feed_key, {self.story_hash: time.mktime(self.story_date.timetuple())})
             r.expire('z' + feed_key, settings.DAYS_OF_STORY_HASHES*24*60*60)
             # r2.zadd('z' + feed_key, self.story_hash, time.mktime(self.story_date.timetuple()))
             # r2.expire('z' + feed_key, settings.DAYS_OF_STORY_HASHES*24*60*60)
@@ -2839,6 +2835,7 @@ class MStarredStory(mongo.DynamicDocument):
        mongoengine's inheritance model on every single row."""
     user_id                  = mongo.IntField(unique_with=('story_guid',))
     starred_date             = mongo.DateTimeField()
+    starred_updated          = mongo.DateTimeField()
     story_feed_id            = mongo.IntField()
     story_date               = mongo.DateTimeField()
     story_title              = mongo.StringField(max_length=1024)
@@ -2885,7 +2882,8 @@ class MStarredStory(mongo.DynamicDocument):
             self.story_original_content_z = zlib.compress(self.story_original_content)
             self.story_original_content = None
         self.story_hash = self.feed_guid_hash
-        
+        self.starred_updated = datetime.datetime.now()
+
         return super(MStarredStory, self).save(*args, **kwargs)
         
     @classmethod
@@ -3016,6 +3014,11 @@ class MStarredStoryCounts(mongo.Document):
             secret_token = user.profile.secret_token
         
         slug = self.slug if self.slug else ""
+        if not self.slug and self.tag:
+            slug = slugify(self.tag)
+            self.slug = slug
+            self.save()
+
         return "%s/reader/starred_rss/%s/%s/%s" % (settings.NEWSBLUR_URL, self.user_id, 
                                                    secret_token, slug)
     
@@ -3157,7 +3160,8 @@ class MSavedSearch(mongo.Document):
         'indexes': ['user_id',
                     {'fields': ['user_id', 'feed_id', 'query'], 
                      'unique': True,
-                     'types': False, }],
+                     'types': False,
+                    }],
         'ordering': ['query'],
         'allow_inheritance': False,
     }

@@ -59,9 +59,13 @@ def set_notifications_for_feed(request):
 @ajax_login_required
 @json.json_view
 def set_apns_token(request):
+    """
+    Apple Push Notification Service, token is sent by the iOS app. Used to send 
+    push notifications to iOS.
+    """
     user = get_user(request)
     tokens = MUserNotificationTokens.get_tokens_for_user(user.pk)
-    apns_token = request.REQUEST['apns_token']
+    apns_token = request.POST['apns_token']
     
     logging.user(user, "~FCUpdating APNS push token")
     if apns_token not in tokens.ios_tokens:
@@ -74,9 +78,13 @@ def set_apns_token(request):
 @ajax_login_required
 @json.json_view
 def set_android_token(request):
+    """
+    Android's push notification tokens. Not sure why I can't find this function in 
+    the Android code.
+    """
     user = get_user(request)
     tokens = MUserNotificationTokens.get_tokens_for_user(user.pk)
-    token = request.REQUEST['token']
+    token = request.POST['token']
     
     logging.user(user, "~FCUpdating Android push token")
     if token not in tokens.android_tokens:
@@ -90,9 +98,12 @@ def set_android_token(request):
 @staff_member_required
 @json.json_view
 def force_push(request):
+    """
+    Intended to force a push notification for a feed for testing. Handier than the console.
+    """
     user = get_user(request)
-    feed_id = request.REQUEST['feed_id']
-    count = int(request.REQUEST.get('count', 1))
+    feed_id = request.GET['feed_id']
+    count = int(request.GET.get('count', 1))
     
     logging.user(user, "~BM~FWForce pushing %s stories: ~SB%s" % (count, Feed.get_by_id(feed_id)))
     sent_count, user_count = MUserFeedNotification.push_feed_notifications(feed_id, new_stories=count, force=True)

@@ -2,13 +2,14 @@
 from django.db import models
 from django.utils.functional import Promise
 from django.utils.encoding import force_unicode, smart_unicode
-from django.utils import simplejson as json
+import json
 from decimal import Decimal
 from django.core import serializers
 from django.conf import settings
 from django.http import HttpResponse, HttpResponseForbidden, Http404
 from django.core.mail import mail_admins
 from django.db.models.query import QuerySet
+from django.utils.deprecation import CallableBool
 from mongoengine.queryset.queryset import QuerySet as MongoQuerySet
 from bson.objectid import ObjectId
 import sys
@@ -50,6 +51,8 @@ def json_encode(data, *args, **kwargs):
         # Same as for lists above.
         elif isinstance(data, dict):
             ret = _dict(data)
+        elif isinstance(data, CallableBool):
+            ret = bool(data)
         elif isinstance(data, (Decimal, ObjectId)):
             # json.dumps() cant handle Decimal
             ret = str(data)
@@ -129,7 +132,7 @@ def json_response(request, response=None):
             response = dict(response)
             if 'result' not in response:
                 response['result'] = 'ok'
-            authenticated = request.user.is_authenticated()
+            authenticated = request.user.is_authenticated
             response['authenticated'] = authenticated
             if authenticated:
                 response['user_id'] = request.user.pk
@@ -161,7 +164,7 @@ def json_response(request, response=None):
             print '\n'.join(traceback.format_exception(*exc_info))
 
     json = json_encode(response)
-    return HttpResponse(json, mimetype='application/json', status=code)
+    return HttpResponse(json, content_type='application/json', status=code)
 
 
 def main():

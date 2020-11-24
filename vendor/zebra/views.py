@@ -1,6 +1,6 @@
+import json
 from django.http import HttpResponse
-from django.utils import simplejson
-from django.db.models import get_model
+from django.apps import apps
 import stripe
 from zebra.conf import options
 from zebra.signals import *
@@ -13,7 +13,7 @@ stripe.api_key = options.STRIPE_SECRET
 
 def _try_to_get_customer_from_customer_id(stripe_customer_id):
     if options.ZEBRA_CUSTOMER_MODEL:
-        m = get_model(*options.ZEBRA_CUSTOMER_MODEL.split('.'))
+        m = apps.get_model(*options.ZEBRA_CUSTOMER_MODEL.split('.'))
         try:
             return m.objects.get(stripe_customer_id=stripe_customer_id)
         except:
@@ -30,7 +30,7 @@ def webhooks(request):
     if request.method != "POST":
         return HttpResponse("Invalid Request.", status=400)
 
-    json = simplejson.loads(request.POST["json"])
+    json = json.loads(request.POST["json"])
 
     if json["event"] == "recurring_payment_failed":
         zebra_webhook_recurring_payment_failed.send(sender=None, customer=_try_to_get_customer_from_customer_id(json["customer"]), full_json=json)
@@ -64,7 +64,7 @@ def webhooks_v2(request):
     if request.method != "POST":
         return HttpResponse("Invalid Request.", status=400)
 
-    event_json = simplejson.loads(request.raw_post_data)
+    event_json = json.loads(request.raw_post_data)
     event_key = event_json['type'].replace('.', '_')
 
     if event_key in WEBHOOK_MAP:

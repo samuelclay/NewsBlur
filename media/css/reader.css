@@ -2235,6 +2235,21 @@ hr {
     -moz-box-sizing: border-box;
     box-sizing: border-box;
 }
+.NB-layout-grid.NB-grid-height-xs .NB-story-grid {
+    height: 200px;
+}
+.NB-layout-grid.NB-grid-height-s .NB-story-grid {
+    height: 280px;
+}
+.NB-layout-grid.NB-grid-height-m .NB-story-grid {
+    height: 360px;
+}
+.NB-layout-grid.NB-grid-height-l .NB-story-grid {
+    height: 420px;
+}
+.NB-layout-grid.NB-grid-height-xl .NB-story-grid {
+    height: 480px;
+}
 .NB-story-grid.NB-story-title-hide-preview {
     height: 296px;
 }
@@ -2321,6 +2336,17 @@ hr {
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
+}
+.NB-layout-grid.NB-grid-height-xs .NB-story-grid .NB-storytitles-story-image {
+    height: 86px;
+}
+.NB-layout-grid.NB-grid-height-s .NB-story-grid .NB-storytitles-story-image {
+    height: 112px;
+}
+.NB-layout-grid.NB-grid-height-xs.NB-grid-columns-3 .NB-story-grid .NB-storytitles-author,
+.NB-layout-grid.NB-grid-height-xs.NB-grid-columns-4 .NB-story-grid .NB-storytitles-author,
+.NB-layout-grid.NB-grid-height-s.NB-grid-columns-4 .NB-story-grid .NB-storytitles-author {
+    display: none;
 }
 .NB-story-grid.read .NB-storytitles-story-image {
     opacity: .5;
@@ -4979,7 +5005,7 @@ background: transparent;
 
 .NB-style-popover .NB-options-feed-font-size li,
 .NB-style-popover .NB-options-story-font-size li {
-    width: 45px;
+    width: 48px;
     padding: 2px 0;
     line-height: 16px;
     font-weight: bold;
@@ -5006,7 +5032,7 @@ background: transparent;
     margin-top: 6px;
 }
 .NB-style-popover .NB-options-line-spacing li {
-    width: 45px;
+    width: 48px;
     padding: 2px 0;
     line-height: 16px;
     font-weight: bold;
@@ -5035,7 +5061,7 @@ background: transparent;
 }
 
 .NB-style-popover .NB-options-font-family {
-    width: 230px;
+    width: 246px;
 }
 .NB-style-popover .NB-options-font-family li {
     padding: 5px 0;
@@ -5094,7 +5120,7 @@ background: transparent;
 }
 
 .NB-style-popover .NB-story-titles-pane-option {
-    width: 72px;
+    width: 79px;
     font-size: 12px;
     padding: 4px 0;
 }
@@ -5123,7 +5149,7 @@ background: transparent;
     margin-top: 6px;
 }
 .NB-style-popover .NB-single-story-option {
-    width: 116px;
+    width: 122px;
     font-size: 12px;
     padding: 4px 0;
 }
@@ -5141,13 +5167,18 @@ background: transparent;
     background: transparent url("/media/embed/icons/silk/text_horizontalrule.png") no-repeat center center;
 }
 
-.NB-style-popover .NB-options-grid-columns {
+.NB-style-popover .NB-options-grid-columns,
+.NB-style-popover .NB-options-grid-height {
     margin-top: 6px;
 }
-.NB-style-popover .NB-grid-columns-option {
-    min-width: 23px;
+.NB-style-popover .NB-grid-columns-option,
+.NB-style-popover .NB-grid-height-option {
+    min-width: 26px;
     font-size: 12px;
     padding: 4px 8px;
+}
+.NB-style-popover .NB-grid-height-option {
+    min-width: 22px;
 }
 .NB-style-popover .NB-grid-columns-option .NB-icon {
     width: 16px;

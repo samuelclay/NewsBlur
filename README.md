@@ -165,9 +165,7 @@ these after the installation below.
         ./manage.py migrate --fake
         ./manage.py migrate
         ./manage.py loaddata config/fixtures/bootstrap.json
-        
-    If you don't create a user during `syncdb`, the `bootstrap.json` file will create a 
-    newsblur user with no password.
+
 
  3. Start mongodb (if not already running):
  
@@ -211,7 +209,7 @@ You must perform a few tasks to tie all of the various systems together.
 
     #### MySQL/PostgreSQL
     
-        ./manage.py syncdb
+        ./manage.py migrate
 
 
 #### App server
@@ -237,11 +235,17 @@ the `refresh_feeds` command regularly so you have new stories to test with and r
 
 If you just want to fetch feeds once, you can use the `refresh_feeds` management command:
 
+    ./manage.py refresh_feeds
+  
+If you want to fetch feeds regardless of when they were last updated:
+
     ./manage.py refresh_feeds --force
     
 You can also fetch the feeds for a specific user:
 
-    ./manage.py refresh_feeds --user=newsblur --force
+    ./manage.py refresh_feeds --user=newsblur
+    
+You'll want to put this `refresh_feeds` command on a timer to keep your feeds up to date.
 
 ### Feedback
 
@@ -275,7 +279,7 @@ If you need to move search servers and want to just delete everything in the sea
 NewsBlur comes complete with a test suite that tests the functionality of the rss_feeds,
 reader, and feed importer. To run the test suite:
 
-    ./manage.py test --settings=utils.test-settings
+    ./manage.py test --settings=utils.test_settings
 
 
 ## In Case of Downtime
