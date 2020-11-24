@@ -565,7 +565,7 @@ hr {
     font-weight: bold;
     display: block;
     color: #606060;
-    text-transform: uppercase;
+    letter-spacing: 0.5px;
     cursor: pointer;
     position: relative;
 }
@@ -4494,7 +4494,7 @@ body {
     color: #393939;
     overflow: hidden;
     text-shadow: 0 1px 0 rgba(255, 255, 255, .4);
-    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 
@@ -6423,6 +6423,7 @@ form.opml_import_form input {
     margin: 12px 0 4px 0;
     font-size: 13px;
     text-transform: uppercase;
+    letter-spacing: 1px;
     color: #585a55;
     clear: both;
 }
@@ -7134,7 +7135,6 @@ form.opml_import_form input {
 .NB-menu-manage {
     list-style: none;
     font-size: 11px;
-    text-transform: uppercase;
     margin: 4px 0 0;
     padding: 0;
     position: relative;
@@ -7241,8 +7241,10 @@ form.opml_import_form input {
 }
 
 .NB-menu-manage .NB-menu-manage-title {
-  font-size: 14px;
+  font-size: 11px;
   text-shadow: 0 1px 0 rgba(255, 255, 255, .6);
+  padding: 5px 0 5px 0;
+  margin-left: 36px;
 }
 
 .NB-menu-manage li.NB-menu-item:hover:not(.NB-disabled) .NB-menu-manage-title {
@@ -7273,10 +7275,6 @@ form.opml_import_form input {
     color: rgba(255, 255, 255, 1);
     text-shadow: 0 1px 0 rgba(0, 0, 0, .4);
 }
-.NB-menu-manage .NB-menu-manage-title {
-  padding: 5px 0 5px 0;
-  margin-left: 36px;
-}
 .NB-menu-manage .NB-menu-manage-subtitle {
   margin: -5px 0 0 36px;
   padding: 0 0 5px 0;
@@ -7286,8 +7284,11 @@ form.opml_import_form input {
   position: absolute;
   width: 18px;
   height: 18px;
-  top: 5px;
+  top: 3px;
   left: 10px;
+}
+.NB-menu-manage .NB-menu-manage-theme .NB-menu-manage-image {
+    top: 5px;
 }
 
 .NB-menu-manage .NB-menu-manage-feed-info,
