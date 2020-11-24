@@ -29,8 +29,6 @@ from oauth2client.client import Storage as BaseStorage
 
 class CredentialsField(models.Field):
 
-  __metaclass__ = models.SubfieldBase
-
   def __init__(self, *args, **kwargs):
     if 'null' not in kwargs:
       kwargs['null'] = True
@@ -51,10 +49,12 @@ class CredentialsField(models.Field):
       return None
     return base64.b64encode(pickle.dumps(value))
 
+  def deconstruct(self):
+    name, path, args, kwargs = super().deconstruct()
+    del kwargs['null']
+    return name, path, args, kwargs
 
 class FlowField(models.Field):
-
-  __metaclass__ = models.SubfieldBase
 
   def __init__(self, *args, **kwargs):
     if 'null' not in kwargs:
@@ -76,6 +76,10 @@ class FlowField(models.Field):
       return None
     return base64.b64encode(pickle.dumps(value))
 
+  def deconstruct(self):
+    name, path, args, kwargs = super().deconstruct()
+    del kwargs['null']
+    return name, path, args, kwargs
 
 class Storage(BaseStorage):
   """Store and retrieve a single credential to and from

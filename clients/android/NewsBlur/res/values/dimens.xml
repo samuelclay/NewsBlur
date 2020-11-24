@@ -2,4 +2,5 @@
 <resources>
     <dimen name="thumbnails_small_size">50dp</dimen>
     <dimen name="thumbnails_size">90dp</dimen>
+    <dimen name="extra_line_spacing">4dp</dimen>
 </resources>

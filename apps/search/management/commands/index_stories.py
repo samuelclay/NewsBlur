@@ -3,14 +3,13 @@ from django.core.management.base import BaseCommand
 from django.contrib.auth.models import User
 from apps.rss_feeds.models import Feed, MStory
 from apps.reader.models import UserSubscription
-from optparse import make_option
 
 class Command(BaseCommand):
-    option_list = BaseCommand.option_list + (
-        make_option("-u", "--user", dest="user", nargs=1, help="Specify user id or username"),
-        make_option("-R", "--reindex", dest="reindex", action="store_true", help="Drop index and reindex all stories."),
-        
-    )
+
+    def add_arguments(self, parser):
+        parser.add_argument("-u", "--user", dest="user", nargs=1, help="Specify user id or username")
+        parser.add_argument("-R", "--reindex", dest="reindex", action="store_true", help="Drop index and reindex all stories.")
+
 
     def handle(self, *args, **options):
         if options['reindex']:

@@ -17,13 +17,9 @@ from utils import log as logging
 from utils.feed_functions import timelimit
 from utils.feed_functions import add_object_to_folder
 
-from south.modelsinspector import add_introspection_rules
-add_introspection_rules([], ["^oauth2client\.django_orm\.FlowField"])
-add_introspection_rules([], ["^oauth2client\.django_orm\.CredentialsField"])
-
 
 class OAuthToken(models.Model):
-    user = models.OneToOneField(User, null=True, blank=True)
+    user = models.OneToOneField(User, null=True, blank=True, on_delete=models.CASCADE)
     session_id = models.CharField(max_length=50, null=True, blank=True)
     uuid = models.CharField(max_length=50, null=True, blank=True)
     remote_ip = models.CharField(max_length=50, null=True, blank=True)
@@ -234,4 +230,3 @@ class UploadedOPML(mongo.Document):
         'order': '-upload_date',
         'indexes': ['user_id', '-upload_date'],
     }
-    

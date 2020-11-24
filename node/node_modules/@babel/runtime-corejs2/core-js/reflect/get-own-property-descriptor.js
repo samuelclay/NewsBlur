@@ -1,1 +1,0 @@
-module.exports = require("core-js/library/fn/reflect/get-own-property-descriptor");

@@ -18,7 +18,7 @@ services:
       - back
 
   postgres:
-    image: postgres:9
+    image: postgres:9.6
     environment:
       - POSTGRES_USER=newsblur
       - POSTGRES_PASSWORD=newsblur

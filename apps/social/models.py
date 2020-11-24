@@ -1108,7 +1108,7 @@ class MSocialSubscription(mongo.Document):
         
         pipeline = rt.pipeline()
         for story_hash_group in chunks(story_hashes, 100):
-            pipeline.zadd(ranked_stories_keys, **dict(story_hash_group))
+            pipeline.zadd(ranked_stories_keys, dict(story_hash_group))
         pipeline.execute()
         story_hashes_and_dates = range_func(ranked_stories_keys, offset, limit, withscores=True)
         if not story_hashes_and_dates:
@@ -1129,7 +1129,7 @@ class MSocialSubscription(mongo.Document):
             if unread_story_hashes:
                 pipeline = rt.pipeline()
                 for unread_story_hash_group in chunks(unread_story_hashes, 100):
-                    pipeline.zadd(unread_ranked_stories_keys, **dict(unread_story_hash_group))
+                    pipeline.zadd(unread_ranked_stories_keys, dict(unread_story_hash_group))
                 pipeline.execute()
             unread_feed_story_hashes = range_func(unread_ranked_stories_keys, offset, limit)
         
@@ -1867,10 +1867,10 @@ class MSharedStory(mongo.DynamicDocument):
         
         r.sadd('B:%s' % self.user_id, self.feed_guid_hash)
         # r2.sadd('B:%s' % self.user_id, self.feed_guid_hash)
-        r.zadd('zB:%s' % self.user_id, self.feed_guid_hash,
-               time.mktime(self.shared_date.timetuple()))
-        # r2.zadd('zB:%s' % self.user_id, self.feed_guid_hash,
-        #        time.mktime(self.shared_date.timetuple()))
+        r.zadd('zB:%s' % self.user_id, {self.feed_guid_hash:
+               time.mktime(self.shared_date.timetuple())})
+        # r2.zadd('zB:%s' % self.user_id, {self.feed_guid_hash:
+        #        time.mktime(self.shared_date.timetuple())})
         r.expire('B:%s' % self.user_id, settings.DAYS_OF_STORY_HASHES*24*60*60)
         # r2.expire('B:%s' % self.user_id, settings.DAYS_OF_STORY_HASHES*24*60*60)
         r.expire('zB:%s' % self.user_id, settings.DAYS_OF_STORY_HASHES*24*60*60)

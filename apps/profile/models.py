@@ -28,16 +28,15 @@ from utils import json_functions as json
 from utils.user_functions import generate_secret_token
 from utils.feed_functions import chunks
 from vendor.timezones.fields import TimeZoneField
-from vendor.paypal.standard.ipn.signals import subscription_signup, payment_was_successful, recurring_payment
-from vendor.paypal.standard.ipn.signals import payment_was_flagged
-from vendor.paypal.standard.ipn.models import PayPalIPN
+from paypal.standard.ipn.signals import valid_ipn_received, invalid_ipn_received
+from paypal.standard.ipn.models import PayPalIPN
 from vendor.paypalapi.interface import PayPalInterface
 from vendor.paypalapi.exceptions import PayPalAPIResponseError
 from zebra.signals import zebra_webhook_customer_subscription_created
 from zebra.signals import zebra_webhook_charge_succeeded
 
 class Profile(models.Model):
-    user              = models.OneToOneField(User, unique=True, related_name="profile")
+    user              = models.OneToOneField(User, unique=True, related_name="profile", on_delete=models.CASCADE)
     is_premium        = models.BooleanField(default=False)
     premium_expire    = models.DateTimeField(blank=True, null=True)
     send_emails       = models.BooleanField(default=True)
@@ -493,7 +492,7 @@ class Profile(models.Model):
         
         return ipn[0].payer_email
     
-    def activate_ios_premium(self, product_identifier, transaction_identifier, amount=36):
+    def activate_ios_premium(self, transaction_identifier=None, amount=36):
         payments = PaymentHistory.objects.filter(user=self.user,
                                                  payment_identifier=transaction_identifier,
                                                  payment_date__gte=datetime.datetime.now()-datetime.timedelta(days=3))
@@ -513,7 +512,30 @@ class Profile(models.Model):
         if not self.is_premium:
             self.activate_premium()
         
-        logging.user(self.user, "~FG~BBNew iOS premium subscription: $%s~FW" % product_identifier)
+        logging.user(self.user, "~FG~BBNew iOS premium subscription: $%s~FW" % amount)
+        return True
+            
+    def activate_android_premium(self, order_id=None, amount=36):
+        payments = PaymentHistory.objects.filter(user=self.user,
+                                                 payment_identifier=order_id,
+                                                 payment_date__gte=datetime.datetime.now()-datetime.timedelta(days=3))
+        if len(payments):
+            # Already paid
+            logging.user(self.user, "~FG~BBAlready paid Android premium subscription: $%s~FW" % amount)
+            return False
+
+        PaymentHistory.objects.create(user=self.user,
+                                      payment_date=datetime.datetime.now(),
+                                      payment_amount=amount,
+                                      payment_provider='android-subscription',
+                                      payment_identifier=order_id)
+        
+        self.setup_premium_history()
+                                      
+        if not self.is_premium:
+            self.activate_premium()
+        
+        logging.user(self.user, "~FG~BBNew Android premium subscription: $%s~FW" % amount)
         return True
         
     @classmethod
@@ -600,10 +622,10 @@ class Profile(models.Model):
                     muted_feed = not bool(user_ids[profile['user_id']])
                     if muted_feed:
                         last_seen_on = 0
-                    pipeline.zadd(key, profile['user_id'], last_seen_on)
+                    pipeline.zadd(key, {profile['user_id']: last_seen_on})
                     total += 1
                     if profile['is_premium']:
-                        pipeline.zadd(premium_key, profile['user_id'], last_seen_on)
+                        pipeline.zadd(premium_key, {profile['user_id']: last_seen_on})
                         premium += 1
                     else:
                         pipeline.zrem(premium_key, profile['user_id'])
@@ -616,9 +638,9 @@ class Profile(models.Model):
             
             if entire_feed_counted:
                 now = int(datetime.datetime.now().strftime('%s'))
-                r.zadd(key, -1, now)
+                r.zadd(key, {-1: now})
                 r.expire(key, settings.SUBSCRIBER_EXPIRE*24*60*60)
-                r.zadd(premium_key, -1, now)
+                r.zadd(premium_key, {-1: now})
                 r.expire(premium_key, settings.SUBSCRIBER_EXPIRE*24*60*60)
             
             logging.info("   ---> [%-30s] ~SN~FBCounting subscribers, storing in ~SBredis~SN: ~FMt:~SB~FM%s~SN a:~SB%s~SN p:~SB%s~SN ap:~SB%s" % 
@@ -644,9 +666,9 @@ class Profile(models.Model):
                     last_seen_on = int(user.profile.last_seen_on.strftime('%s'))
                     if feed_ids is muted_feed_ids:
                         last_seen_on = 0
-                    pipeline.zadd(key, user.pk, last_seen_on)
+                    pipeline.zadd(key, {user.pk: last_seen_on})
                     if user.profile.is_premium:
-                        pipeline.zadd(premium_key, user.pk, last_seen_on)
+                        pipeline.zadd(premium_key, {user.pk: last_seen_on})
                     else:
                         pipeline.zrem(premium_key, user.pk)
                 pipeline.execute()
@@ -1047,7 +1069,7 @@ class Profile(models.Model):
         
 
 class StripeIds(models.Model):
-    user = models.ForeignKey(User, related_name='stripe_ids')
+    user = models.ForeignKey(User, related_name='stripe_ids', on_delete=models.CASCADE)
     stripe_id = models.CharField(max_length=24, blank=True, null=True)
 
     def __unicode__(self):
@@ -1078,7 +1100,7 @@ def paypal_signup(sender, **kwargs):
     user.profile.activate_premium()
     user.profile.cancel_premium_stripe()
     user.profile.cancel_premium_paypal(second_most_recent_only=True)
-subscription_signup.connect(paypal_signup)
+valid_ipn_received.connect(paypal_signup)
 
 def paypal_payment_history_sync(sender, **kwargs):
     ipn_obj = sender
@@ -1091,7 +1113,7 @@ def paypal_payment_history_sync(sender, **kwargs):
         user.profile.setup_premium_history()
     except:
         return {"code": -1, "message": "User doesn't exist."}
-payment_was_successful.connect(paypal_payment_history_sync)
+valid_ipn_received.connect(paypal_payment_history_sync)
 
 def paypal_payment_was_flagged(sender, **kwargs):
     ipn_obj = sender
@@ -1105,7 +1127,7 @@ def paypal_payment_was_flagged(sender, **kwargs):
         logging.user(user, "~BC~SB~FBPaypal subscription payment flagged")
     except:
         return {"code": -1, "message": "User doesn't exist."}
-payment_was_flagged.connect(paypal_payment_was_flagged)
+invalid_ipn_received.connect(paypal_payment_was_flagged)
 
 def paypal_recurring_payment_history_sync(sender, **kwargs):
     ipn_obj = sender
@@ -1118,7 +1140,7 @@ def paypal_recurring_payment_history_sync(sender, **kwargs):
         user.profile.setup_premium_history()
     except:
         return {"code": -1, "message": "User doesn't exist."}
-recurring_payment.connect(paypal_recurring_payment_history_sync)
+valid_ipn_received.connect(paypal_recurring_payment_history_sync)
 
 def stripe_signup(sender, full_json, **kwargs):
     stripe_id = full_json['data']['object']['customer']
@@ -1191,7 +1213,8 @@ class MEmailUnsubscribe(mongo.Document):
         'indexes': ['user_id', 
                     {'fields': ['user_id', 'email_type'], 
                      'unique': True,
-                     'types': False}],
+                     'types': False,
+                    }],
     }
     
     def __unicode__(self):
@@ -1229,7 +1252,7 @@ class MSentEmail(mongo.Document):
                            sending_user_id=sending_user_id)
 
 class PaymentHistory(models.Model):
-    user = models.ForeignKey(User, related_name='payments')
+    user = models.ForeignKey(User, related_name='payments', on_delete=models.CASCADE)
     payment_date = models.DateTimeField()
     payment_amount = models.IntegerField()
     payment_provider = models.CharField(max_length=20)
@@ -1531,7 +1554,7 @@ class RNewUserQueue:
         r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
         now = time.time()
         
-        r.zadd(cls.KEY, user_id, now)
+        r.zadd(cls.KEY, {user_id: now})
     
     @classmethod
     def user_count(cls):

@@ -12,8 +12,7 @@ from django.contrib.sites.models import Site
 from django.contrib.auth.models import User
 from django.contrib.admin.views.decorators import staff_member_required
 from django.core.urlresolvers import reverse
-from django.template import RequestContext
-from django.shortcuts import render_to_response
+from django.shortcuts import render
 from django.core.mail import mail_admins
 from django.conf import settings
 from apps.profile.models import Profile, PaymentHistory, RNewUserQueue, MRedeemedCode, MGiftCode
@@ -31,7 +30,7 @@ from utils.view_functions import render_to, is_true
 from utils.user_functions import get_user
 from utils import log as logging
 from vendor.paypalapi.exceptions import PayPalAPIResponseError
-from vendor.paypal.standard.forms import PayPalPaymentsForm
+from paypal.standard.forms import PayPalPaymentsForm
 
 SINGLE_FIELD_PREFS = ('timezone','feed_pane_size','hide_mobile','send_emails',
                       'hide_getting_started', 'has_setup_feeds', 'has_found_friends',
@@ -97,10 +96,10 @@ def login(request):
             logging.user(form.get_user(), "~FG~BBOAuth Login~FW")
             return HttpResponseRedirect(request.POST['next'] or reverse('index'))
 
-    return render_to_response('accounts/login.html', {
+    return render(request, 'accounts/login.html', {
         'form': form,
-        'next': request.REQUEST.get('next', "")
-    }, context_instance=RequestContext(request))
+        'next': request.POST.get('next', "")
+    })
     
 @csrf_exempt
 def signup(request):
@@ -108,16 +107,17 @@ def signup(request):
     recaptcha = request.POST.get('g-recaptcha-response', None)
     recaptcha_error = None
     
-    if not recaptcha:
-        recaptcha_error = "Please hit the \"I'm not a robot\" button."
-    else:
-        response = requests.post('https://www.google.com/recaptcha/api/siteverify', {
-            'secret': settings.RECAPTCHA_SECRET_KEY,
-            'response': recaptcha,
-        })
-        result = response.json()
-        if not result['success']:
-            recaptcha_error = "Really, please hit the \"I'm not a robot\" button."
+    if settings.ENFORCE_SIGNUP_CAPTCHA:
+        if not recaptcha:
+            recaptcha_error = "Please hit the \"I'm not a robot\" button."
+        else:
+            response = requests.post('https://www.google.com/recaptcha/api/siteverify', {
+                'secret': settings.RECAPTCHA_SECRET_KEY,
+                'response': recaptcha,
+            })
+            result = response.json()
+            if not result['success']:
+                recaptcha_error = "Really, please hit the \"I'm not a robot\" button."
 
     if request.method == "POST":
         form = SignupForm(data=request.POST, prefix="signup")
@@ -128,11 +128,11 @@ def signup(request):
             new_user.profile.activate_free()
             return HttpResponseRedirect(request.POST['next'] or reverse('index'))
 
-    return render_to_response('accounts/signup.html', {
+    return render(request, 'accounts/signup.html', {
         'form': form,
         'recaptcha_error': recaptcha_error,
-        'next': request.REQUEST.get('next', "")
-    }, context_instance=RequestContext(request))
+        'next': request.POST.get('next', "")
+    })
 
 @login_required
 @csrf_protect
@@ -145,14 +145,13 @@ def redeem_code(request):
         if form.is_valid():
             gift_code = request.POST['gift_code']
             MRedeemedCode.redeem(user=request.user, gift_code=gift_code)
-            return render_to_response('reader/paypal_return.xhtml', 
-                                      {}, context_instance=RequestContext(request))
+            return render(request, 'reader/paypal_return.xhtml')
 
-    return render_to_response('accounts/redeem_code.html', {
+    return render(request, 'accounts/redeem_code.html', {
         'form': form,
-        'code': request.REQUEST.get('code', ""),
-        'next': request.REQUEST.get('next', "")
-    }, context_instance=RequestContext(request))
+        'code': request.POST.get('code', ""),
+        'next': request.POST.get('next', "")
+    })
     
 
 @ajax_login_required
@@ -286,12 +285,12 @@ def paypal_form(request):
     logging.user(request, "~FBLoading paypal/feedchooser")
 
     # Output the button.
-    return HttpResponse(form.render(), mimetype='text/html')
+    return HttpResponse(form.render(), content_type='text/html')
 
 def paypal_return(request):
 
-    return render_to_response('reader/paypal_return.xhtml', {
-    }, context_instance=RequestContext(request))
+    return render(request, 'reader/paypal_return.xhtml', {
+    })
     
 @login_required
 def activate_premium(request):
@@ -328,13 +327,13 @@ def profile_is_premium(request):
 @ajax_login_required
 @json.json_view
 def save_ios_receipt(request):
-    receipt = request.REQUEST.get('receipt')
+    receipt = request.POST.get('receipt')
     product_identifier = request.POST.get('product_identifier')
     transaction_identifier = request.POST.get('transaction_identifier')
     
     logging.user(request, "~BM~FBSaving iOS Receipt: %s %s" % (product_identifier, transaction_identifier))
     
-    paid = request.user.profile.activate_ios_premium(product_identifier, transaction_identifier)
+    paid = request.user.profile.activate_ios_premium(transaction_identifier)
     if paid:
         logging.user(request, "~BM~FBSending iOS Receipt email: %s %s" % (product_identifier, transaction_identifier))
         subject = "iOS Premium: %s (%s)" % (request.user.profile, product_identifier)
@@ -346,13 +345,32 @@ def save_ios_receipt(request):
     
     return request.user.profile
     
+@ajax_login_required
+@json.json_view
+def save_android_receipt(request):
+    order_id = request.POST.get('order_id')
+    product_id = request.POST.get('product_id')
+    
+    logging.user(request, "~BM~FBSaving Android Receipt: %s %s" % (product_id, order_id))
+    
+    paid = request.user.profile.activate_android_premium(order_id)
+    if paid:
+        logging.user(request, "~BM~FBSending Android Receipt email: %s %s" % (product_id, order_id))
+        subject = "Android Premium: %s (%s)" % (request.user.profile, product_id)
+        message = """User: %s (%s) -- Email: %s, product: %s, order: %s""" % (request.user.username, request.user.pk, request.user.email, product_id, order_id)
+        mail_admins(subject, message, fail_silently=True)
+    else:
+        logging.user(request, "~BM~FBNot sending Android Receipt email, already paid: %s %s" % (product_id, order_id))
+        
+    
+    return request.user.profile
+    
 @login_required
 def stripe_form(request):
     user = request.user
     success_updating = False
     stripe.api_key = settings.STRIPE_SECRET
-    plan = int(request.GET.get('plan', 2))
-    plan = PLANS[plan-1][0]
+    plan = PLANS[0][0]
     renew = is_true(request.GET.get('renew', False))
     error = None
     
@@ -424,8 +442,7 @@ def stripe_form(request):
         zebra_form = StripePlusPaymentForm(email=user.email, plan=plan)
     
     if success_updating:
-        return render_to_response('reader/paypal_return.xhtml', 
-                                  {}, context_instance=RequestContext(request))
+        return render(request, 'reader/paypal_return.xhtml')
     
     new_user_queue_count = RNewUserQueue.user_count()
     new_user_queue_position = RNewUserQueue.user_position(request.user.pk)
@@ -440,7 +457,7 @@ def stripe_form(request):
     
     logging.user(request, "~BM~FBLoading Stripe form")
 
-    return render_to_response('profile/stripe_form.xhtml',
+    return render(request, 'profile/stripe_form.xhtml',
         {
           'zebra_form': zebra_form,
           'publishable': settings.STRIPE_PUBLISHABLE,
@@ -451,14 +468,13 @@ def stripe_form(request):
           'renew': renew,
           'immediate_charge': immediate_charge,
           'error': error,
-        },
-        context_instance=RequestContext(request)
+        }
     )
 
 @render_to('reader/activities_module.xhtml')
 def load_activities(request):
     user = get_user(request)
-    page = max(1, int(request.REQUEST.get('page', 1)))
+    page = max(1, int(request.GET.get('page', 1)))
     activities, has_next_page = MActivity.user(user.pk, page=page)
 
     return {
@@ -473,7 +489,7 @@ def load_activities(request):
 def payment_history(request):
     user = request.user
     if request.user.is_staff:
-        user_id = request.REQUEST.get('user_id', request.user.pk)
+        user_id = request.GET.get('user_id', request.user.pk)
         user = User.objects.get(pk=user_id)
 
     history = PaymentHistory.objects.filter(user=user)
@@ -521,8 +537,8 @@ def cancel_premium(request):
 @ajax_login_required
 @json.json_view
 def refund_premium(request):
-    user_id = request.REQUEST.get('user_id')
-    partial = request.REQUEST.get('partial', False)
+    user_id = request.POST.get('user_id')
+    partial = request.POST.get('partial', False)
     user = User.objects.get(pk=user_id)
     try:
         refunded = user.profile.refund_premium(partial=partial)
@@ -537,7 +553,7 @@ def refund_premium(request):
 @ajax_login_required
 @json.json_view
 def upgrade_premium(request):
-    user_id = request.REQUEST.get('user_id')
+    user_id = request.POST.get('user_id')
     user = User.objects.get(pk=user_id)
     
     gift = MGiftCode.add(gifting_user_id=User.objects.get(username='samuel').pk, 
@@ -550,7 +566,7 @@ def upgrade_premium(request):
 @ajax_login_required
 @json.json_view
 def never_expire_premium(request):
-    user_id = request.REQUEST.get('user_id')
+    user_id = request.POST.get('user_id')
     user = User.objects.get(pk=user_id)
     if user.profile.is_premium:
         user.profile.premium_expire = None
@@ -563,7 +579,7 @@ def never_expire_premium(request):
 @ajax_login_required
 @json.json_view
 def update_payment_history(request):
-    user_id = request.REQUEST.get('user_id')
+    user_id = request.POST.get('user_id')
     user = User.objects.get(pk=user_id)
     user.profile.setup_premium_history(set_premium_expire=False)
     
@@ -698,3 +714,7 @@ def ios_subscription_status(request):
     return {
         "code": 1
     }
+
+def trigger_error(request):
+    division_by_zero = 1 / 0
+    return HttpResponseRedirect(reverse('index'))

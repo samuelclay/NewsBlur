@@ -2,8 +2,7 @@ import re
 import datetime
 from utils import log as logging
 from django.http import HttpResponse
-from django.template import RequestContext
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import render, get_object_or_404
 from apps.recommendations.models import RecommendedFeed
 from apps.reader.models import UserSubscription
 from apps.rss_feeds.models import Feed, MFeedIcon
@@ -13,17 +12,17 @@ from utils.user_functions import get_user, ajax_login_required, admin_only
 
 def load_recommended_feed(request):
     user        = get_user(request)
-    page        = max(int(request.REQUEST.get('page', 0)), 0)
+    page        = max(int(request.GET.get('page', 0)), 0)
     usersub     = None
-    refresh     = request.REQUEST.get('refresh')
-    now         = datetime.datetime.now
-    unmoderated = request.REQUEST.get('unmoderated', False) == 'true'
+    refresh     = request.GET.get('refresh')
+    now         = datetime.datetime.now()
+    unmoderated = request.GET.get('unmoderated', False) == 'true'
     
     if unmoderated:
         recommended_feeds = RecommendedFeed.objects.filter(is_public=False, declined_date__isnull=True)[page:page+2]
     else:
         recommended_feeds = RecommendedFeed.objects.filter(is_public=True, approved_date__lte=now)[page:page+2]
-    if recommended_feeds and request.user.is_authenticated():
+    if recommended_feeds and request.user.is_authenticated:
         usersub = UserSubscription.objects.filter(user=user, feed=recommended_feeds[0].feed)
     if refresh != 'true' and page > 0:
         logging.user(request, "~FBBrowse recommended feed: ~SBPage #%s" % (page+1))
@@ -35,7 +34,7 @@ def load_recommended_feed(request):
     feed_icon = MFeedIcon.objects(feed_id=recommended_feed.feed_id)
     
     if recommended_feed:
-        return render_to_response('recommendations/render_recommended_feed.xhtml', {
+        return render(request, 'recommendations/render_recommended_feed.xhtml', {
             'recommended_feed'  : recommended_feed,
             'description'       : recommended_feed.description or recommended_feed.feed.data.feed_tagline,
             'usersub'           : usersub,
@@ -45,7 +44,7 @@ def load_recommended_feed(request):
             'unmoderated'       : unmoderated,
             'today'             : datetime.datetime.now(),
             'page'              : page,
-        }, context_instance=RequestContext(request))
+        })
     else:
         return HttpResponse("")
         
@@ -53,7 +52,7 @@ def load_recommended_feed(request):
 def load_feed_info(request, feed_id):
     feed = get_object_or_404(Feed, pk=feed_id)
     previous_recommendation = None
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         recommended_feed = RecommendedFeed.objects.filter(user=request.user, feed=feed)
         if recommended_feed:
             previous_recommendation = recommended_feed[0].created_date
@@ -102,7 +101,7 @@ def approve_feed(request):
 @admin_only
 @ajax_login_required
 def decline_feed(request):
-    feed_id = request.POST['feed_id']
+    feed_id = request.GET['feed_id']
     feed    = get_object_or_404(Feed, pk=int(feed_id))
     recommended_feeds = RecommendedFeed.objects.filter(feed=feed)
     

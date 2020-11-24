@@ -1,7 +1,7 @@
 from django.conf.urls import *
 from apps.profile import views
 
-urlpatterns = patterns('',
+urlpatterns = [
     url(r'^get_preferences?/?', views.get_preference),
     url(r'^set_preference/?', views.set_preference),
     url(r'^set_account_settings/?', views.set_account_settings),
@@ -22,6 +22,7 @@ urlpatterns = patterns('',
     url(r'^never_expire_premium/?', views.never_expire_premium, name='profile-never-expire-premium'),
     url(r'^upgrade_premium/?', views.upgrade_premium, name='profile-upgrade-premium'),
     url(r'^save_ios_receipt/?', views.save_ios_receipt, name='save-ios-receipt'),
+    url(r'^save_android_receipt/?', views.save_android_receipt, name='save-android-receipt'),
     url(r'^update_payment_history/?', views.update_payment_history, name='profile-update-payment-history'),
     url(r'^delete_account/?', views.delete_account, name='profile-delete-account'),
     url(r'^forgot_password_return/?', views.forgot_password_return, name='profile-forgot-password-return'),
@@ -30,4 +31,5 @@ urlpatterns = patterns('',
     url(r'^delete_all_sites/?', views.delete_all_sites, name='profile-delete-all-sites'),
     url(r'^email_optout/?', views.email_optout, name='profile-email-optout'),
     url(r'^ios_subscription_status/?', views.ios_subscription_status, name='profile-ios-subscription-status'),
-)
+    url(r'debug/?', views.trigger_error, name='trigger-error'),
+]

@@ -33,7 +33,6 @@
 @interface StoryDetailViewController ()
 
 @property (nonatomic, strong) NSString *fullStoryHTML;
-@property (nonatomic) BOOL isBarHideSwiping;
 
 @end
 
@@ -297,8 +296,6 @@
 - (void)viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
     
-    [self.navigationController.barHideOnSwipeGestureRecognizer removeTarget:self action:@selector(barHideSwipe:)];
-    
     if (!appDelegate.showingSafariViewController &&
         appDelegate.navigationController.visibleViewController != (UIViewController *)appDelegate.shareViewController &&
         appDelegate.navigationController.visibleViewController != (UIViewController *)appDelegate.trainerViewController &&
@@ -319,8 +316,6 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    
-    [self.navigationController.barHideOnSwipeGestureRecognizer addTarget:self action:@selector(barHideSwipe:)];
     
     if (!self.isPhoneOrCompact) {
         [appDelegate.feedDetailViewController.view endEditing:YES];
@@ -529,7 +524,7 @@
     NSDictionary *feed = [appDelegate getFeed:feedIdStr];
     NSString *storyClassSuffix = @"";
     
-    if (feed[@"is_newsletter"]) {
+    if ([feed[@"is_newsletter"] isEqualToNumber:[NSNumber numberWithInt:1]]) {
         storyClassSuffix = @" NB-newsletter";
     }
     
@@ -628,22 +623,16 @@
 }
 
 - (void)drawFeedGradient {
-    NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
-    BOOL navigationBarHidden = self.navigationController.navigationBarHidden;
-    BOOL shouldHideStatusBar = [preferences boolForKey:@"story_hide_status_bar"];
-    UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
-    BOOL shouldOffsetFeedGradient = !self.isBarHideSwiping && UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone && !UIInterfaceOrientationIsLandscape(orientation) && navigationBarHidden && !shouldHideStatusBar;
-    CGFloat offset = 0;
-    
-    if (shouldOffsetFeedGradient) {
-        offset = appDelegate.storyPageControl.statusBarBackgroundView.bounds.size.height;
-    }
-    
-    CGFloat yOffset = offset - 1;
+    BOOL shouldHideStatusBar = appDelegate.storyPageControl.shouldHideStatusBar;
+    CGFloat yOffset = -1;
     NSString *feedIdStr = [NSString stringWithFormat:@"%@",
                            [self.activeStory
                             objectForKey:@"story_feed_id"]];
     NSDictionary *feed = [appDelegate getFeed:feedIdStr];
+    
+    if (appDelegate.storyPageControl.currentlyTogglingNavigationBar && !appDelegate.storyPageControl.isNavigationBarHidden) {
+        yOffset -= 25;
+    }
     
     if (self.feedTitleGradient) {
         [self.feedTitleGradient removeFromSuperview];
@@ -673,11 +662,11 @@
     [self.webView insertSubview:feedTitleGradient aboveSubview:self.webView.scrollView];
     
     if (@available(iOS 11.0, *)) {
-        if (self.view.safeAreaInsets.top > 0.0 && UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone && shouldHideStatusBar) {
-            feedTitleGradient.alpha = self.navigationController.navigationBarHidden ? 1 : 0;
+        if (appDelegate.storyPageControl.view.safeAreaInsets.top > 0.0 && UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone && shouldHideStatusBar) {
+            feedTitleGradient.alpha = appDelegate.storyPageControl.isNavigationBarHidden ? 1 : 0;
             
             [UIView animateWithDuration:0.3 animations:^{
-                feedTitleGradient.alpha = self.navigationController.navigationBarHidden ? 0 : 1;
+                feedTitleGradient.alpha = appDelegate.storyPageControl.isNavigationBarHidden ? 0 : 1;
             }];
         }
     }
@@ -1339,7 +1328,7 @@
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
     if ([keyPath isEqual:@"contentOffset"]) {
         BOOL isHorizontal = appDelegate.storyPageControl.isHorizontal;
-        BOOL isNavBarHidden = self.navigationController.navigationBarHidden;
+        BOOL isNavBarHidden = appDelegate.storyPageControl.isNavigationBarHidden;
         
         if (self.webView.scrollView.contentOffset.y < (-1 * self.feedTitleGradient.frame.size.height + 1 + self.webView.scrollView.scrollIndicatorInsets.top)) {
             // Pulling
@@ -2235,21 +2224,6 @@
     if ([self respondsToSelector:action])
         return self.noStoryMessage.hidden;
     return [super canPerformAction:action withSender:sender];
-}
-
-- (void)barHideSwipe:(UISwipeGestureRecognizer *)recognizer {
-    if (recognizer.state == UIGestureRecognizerStateEnded) {
-        self.isBarHideSwiping = NO;
-        
-        NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
-        BOOL shouldHideStatusBar = [preferences boolForKey:@"story_hide_status_bar"];
-        
-        if (!shouldHideStatusBar) {
-            [self drawFeedGradient];
-        }
-    } else {
-        self.isBarHideSwiping = YES;
-    }
 }
 
 # pragma mark -
