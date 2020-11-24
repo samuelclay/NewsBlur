@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import UniformTypeIdentifiers
 
 /// Singleton class to import or export the preferences.
 class ImportExportPreferences: NSObject {
@@ -30,14 +31,13 @@ class ImportExportPreferences: NSObject {
 
 private extension ImportExportPreferences {
     struct Constant {
-        static let fileType = "com.newsblur.preferences"
+        static let fileType = UTType(exportedAs: "com.newsblur.preferences")
         static let fileName = "NewsBlur Preferences"
         static let fileExtension = "newsblurprefs"
     }
     
     func importPreferences(from controller: UIViewController) {
-        
-        let picker = UIDocumentPickerViewController(documentTypes: [Constant.fileType], in: .import)
+        let picker = UIDocumentPickerViewController(forOpeningContentTypes: [Constant.fileType], asCopy: false)
         
         picker.delegate = self
         
@@ -51,13 +51,7 @@ private extension ImportExportPreferences {
         
         dictionary.write(to: prefsURL, atomically: true)
         
-        let picker: UIDocumentPickerViewController
-        
-        if #available(iOS 11.0, *) {
-            picker = UIDocumentPickerViewController(urls: [prefsURL], in: .exportToService)
-        } else {
-            picker = UIDocumentPickerViewController(url: prefsURL, in: .exportToService)
-        }
+        let picker = UIDocumentPickerViewController(forExporting: [prefsURL])
         
         controller.present(picker, animated: true, completion: nil)
     }
