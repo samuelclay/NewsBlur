@@ -2383,13 +2383,14 @@
 //    NSLog(@"changeWebViewWidth: %@ / %@ / %@", NSStringFromCGSize(self.view.bounds.size), NSStringFromCGSize(webView.scrollView.bounds.size), NSStringFromCGSize(webView.scrollView.contentSize));
 
     NSInteger contentWidth = CGRectGetWidth(webView.scrollView.bounds);
-    UIInterfaceOrientation orientation = self.view.window.windowScene.interfaceOrientation;
     NSString *contentWidthClass;
 
 #if TARGET_OS_MACCATALYST
     // CATALYST: probably will want to add custom CSS for Macs.
     contentWidthClass = @"NB-ipad-wide NB-ipad-pro-12-wide NB-width-768";
 #else
+    UIInterfaceOrientation orientation = self.view.window.windowScene.interfaceOrientation;
+    
     if (UIInterfaceOrientationIsLandscape(orientation) && !self.isPhoneOrCompact) {
         if (iPadPro12) {
             contentWidthClass = @"NB-ipad-wide NB-ipad-pro-12-wide";
