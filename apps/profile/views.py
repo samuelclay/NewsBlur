@@ -31,7 +31,7 @@ from utils.view_functions import render_to, is_true
 from utils.user_functions import get_user
 from utils import log as logging
 from vendor.paypalapi.exceptions import PayPalAPIResponseError
-from vendor.paypal.standard.forms import PayPalPaymentsForm
+from paypal.standard.forms import PayPalPaymentsForm
 
 SINGLE_FIELD_PREFS = ('timezone','feed_pane_size','hide_mobile','send_emails',
                       'hide_getting_started', 'has_setup_feeds', 'has_found_friends',
@@ -358,8 +358,8 @@ def save_android_receipt(request):
     paid = request.user.profile.activate_android_premium(order_id)
     if paid:
         logging.user(request, "~BM~FBSending Android Receipt email: %s %s" % (product_id, order_id))
-        subject = "Android Premium: %s (%s)" % (request.user.profile, product_identifier)
-        message = """User: %s (%s) -- Email: %s, product: %s, order: %s, receipt: %s""" % (request.user.username, request.user.pk, request.user.email, product_id, order_id, receipt)
+        subject = "Android Premium: %s (%s)" % (request.user.profile, product_id)
+        message = """User: %s (%s) -- Email: %s, product: %s, order: %s""" % (request.user.username, request.user.pk, request.user.email, product_id, order_id)
         mail_admins(subject, message, fail_silently=True)
     else:
         logging.user(request, "~BM~FBNot sending Android Receipt email, already paid: %s %s" % (product_id, order_id))

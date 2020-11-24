@@ -131,7 +131,15 @@ color: #a85b40;
 .NB-dark .NB-module-features .NB-module-feature .NB-module-feature-description {
     color: #c0c0c0;
 }
-
+.NB-dark .NB-module-features .NB-module-feature.NB-module-feature-new td {
+    background-color: #a28334;
+}
+.NB-dark .NB-module-features .NB-module-feature.NB-module-feature-new .NB-module-feature-description {
+    color: #e1e1e1;
+}
+.NB-dark .NB-module-features .NB-module-feature.NB-module-feature-new .NB-module-feature-date {
+    color: #d1d1d1;
+}
 .NB-dark .NB-module-recommended .NB-recommended-added {
     color: #69ac4b;
 }
@@ -146,6 +154,7 @@ color: #a85b40;
 .NB-dark .NB-recommended-title {
     color: #eee;
 }
+
 
 /* Link color */
 .NB-dark a.NB-splash-link,

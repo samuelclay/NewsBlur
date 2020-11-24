@@ -28,9 +28,9 @@ from utils import json_functions as json
 from utils.user_functions import generate_secret_token
 from utils.feed_functions import chunks
 from vendor.timezones.fields import TimeZoneField
-from vendor.paypal.standard.ipn.signals import subscription_signup, payment_was_successful, recurring_payment
-from vendor.paypal.standard.ipn.signals import payment_was_flagged
-from vendor.paypal.standard.ipn.models import PayPalIPN
+from paypal.standard.ipn.signals import subscription_signup, payment_was_successful, recurring_payment
+from paypal.standard.ipn.signals import payment_was_flagged
+from paypal.standard.ipn.models import PayPalIPN
 from vendor.paypalapi.interface import PayPalInterface
 from vendor.paypalapi.exceptions import PayPalAPIResponseError
 from zebra.signals import zebra_webhook_customer_subscription_created

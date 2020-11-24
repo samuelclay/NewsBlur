@@ -6,8 +6,9 @@ Adapted from:
     - http://www.satchmoproject.com/trac/browser/satchmo/trunk/satchmo/apps/satchmo_utils/views.py
     - http://tinyurl.com/shoppify-credit-cards
 """
-import re
+from __future__ import unicode_literals
 
+import re
 
 # Well known card regular expressions.
 CARDS = {

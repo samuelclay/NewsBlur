@@ -37,6 +37,7 @@ import com.newsblur.network.domain.LoginResponse;
 import com.newsblur.network.domain.NewsBlurResponse;
 import com.newsblur.network.domain.ProfileResponse;
 import com.newsblur.network.domain.RegisterResponse;
+import com.newsblur.network.domain.StarredStoryHashesResponse;
 import com.newsblur.network.domain.StoriesResponse;
 import com.newsblur.network.domain.StoryTextResponse;
 import com.newsblur.network.domain.UnreadCountResponse;
@@ -277,6 +278,11 @@ public class APIManager {
         values.put(APIConstants.PARAMETER_INCLUDE_TIMESTAMPS, "1");
         APIResponse response = get(buildUrl(APIConstants.PATH_UNREAD_HASHES), values);
         return (UnreadStoryHashesResponse) response.getResponse(gson, UnreadStoryHashesResponse.class);
+    }
+
+    public StarredStoryHashesResponse getStarredStoryHashes() {
+	    APIResponse response = get(buildUrl(APIConstants.PATH_STARRED_STORY_HASHES));
+	    return response.getResponse(gson, StarredStoryHashesResponse.class);
     }
 
     public StoriesResponse getStoriesByHash(List<String> storyHashes) {
