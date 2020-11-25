@@ -29,6 +29,16 @@ class DetailViewController: DetailObjCViewController {
         }
     }
     
+    /// Whether or not the feed detail is on the left; see also the following property.
+    @objc var storyTitlesOnLeft: Bool {
+        return layout == .left
+    }
+    
+    /// Whether or not the feed detail is on the top; see also the previous property.
+    @objc var storyTitlesOnTop: Bool {
+        return layout == .top
+    }
+    
     /// Position of the divider between the views.
     var splitPosition: CGFloat = 200  //TODO: set this based on prefs
     

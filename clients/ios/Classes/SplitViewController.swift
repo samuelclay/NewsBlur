@@ -10,5 +10,8 @@ import UIKit
 
 /// Subclass of `UISplitViewController` to enable customizations.
 class SplitViewController: UISplitViewController {
-    
+    /// Update the theme of the split view controller.
+    @objc func updateTheme() {
+        
+    }
 }

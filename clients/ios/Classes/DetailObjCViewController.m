@@ -418,7 +418,7 @@
 }
 
 - (void)transitionFromFeedDetail {
-    if (appDelegate.masterContainerViewController.storyTitlesOnLeft) {
+    if (appDelegate.detailViewController.storyTitlesOnLeft) {
         [appDelegate.feedsNavigationController
          popToViewController:[appDelegate.feedsNavigationController.viewControllers
                               objectAtIndex:0]
@@ -771,7 +771,7 @@
         UIInterfaceOrientationIsPortrait(orientation)) {
         UITouch *theTouch = [touches anyObject];
         CGPoint tappedPt = [theTouch locationInView:self.view];
-        NSInteger fudge = appDelegate.masterContainerViewController.storyTitlesOnLeft ? -30 : -20;
+        NSInteger fudge = appDelegate.detailViewController.storyTitlesOnLeft ? -30 : -20;
         BOOL inside = CGRectContainsPoint(CGRectInset(self.bottomSize.frame, 0, fudge), tappedPt);
         BOOL attached = self.inTouchMove;
         
@@ -947,6 +947,8 @@
         [self resetOtherStoryControllers];
     }
     
+    [self.splitViewController showColumn:UISplitViewControllerColumnSecondary];
+    
 //    NSLog(@"Applied Index to %@: Was %ld, now %ld (%ld/%ld/%ld) [%lu stories - %d] %@", pageController, (long)wasIndex, (long)newIndex, (long)previousPage.pageIndex, (long)currentPage.pageIndex, (long)nextPage.pageIndex, (unsigned long)self.storiesCount, outOfBounds, NSStringFromCGRect(self.scrollView.frame));
     
     if (newIndex > 0 && newIndex >= self.storiesCount) {
@@ -993,6 +995,9 @@
         }
     } else if (outOfBounds) {
         [pageController hideStory]; // clearStory];
+        
+        //TODO: might want to check if overlay display, or something, to avoid doing this on compact layout
+        [self.splitViewController showColumn:UISplitViewControllerColumnPrimary];
     }
     
     if (!suppressRedraw) {
@@ -1310,7 +1315,7 @@
 //    [self.view setNeedsLayout];
     
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-        if (appDelegate.masterContainerViewController.storyTitlesOnLeft) {
+        if (appDelegate.detailViewController.storyTitlesOnLeft) {
             self.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects:
                                                        originalStoryButton,
                                                        separatorBarButton,

@@ -2419,7 +2419,7 @@
     
     NSString *alternateViewClass = @"";
     if (!self.isPhoneOrCompact) {
-        if (appDelegate.masterContainerViewController.storyTitlesOnLeft) {
+        if (appDelegate.detailViewController.storyTitlesOnLeft) {
             alternateViewClass = @"NB-titles-bottom";
         } else {
             alternateViewClass = @"NB-titles-left";

@@ -415,7 +415,7 @@
     [appDelegate hideShareView:YES];
     
     if (!self.isPhoneOrCompact &&
-        (appDelegate.masterContainerViewController.storyTitlesOnLeft ||
+        (appDelegate.detailViewController.storyTitlesOnLeft ||
          !UIInterfaceOrientationIsPortrait(orientation)) &&
         !self.isMovingFromParentViewController &&
         !appDelegate.masterContainerViewController.interactiveOriginalTransition) {
@@ -507,7 +507,7 @@
     
     if (!self.isPhoneOrCompact &&
         self.isMovingToParentViewController &&
-        (appDelegate.masterContainerViewController.storyTitlesOnLeft ||
+        (appDelegate.detailViewController.storyTitlesOnLeft ||
          !UIInterfaceOrientationIsPortrait(orientation))) {
         [appDelegate.masterContainerViewController transitionFromFeedDetail:NO];
     }
@@ -955,7 +955,9 @@
 - (void)fetchRiverPage:(int)page withCallback:(void(^)(void))callback {
     if (self.pageFetching || self.pageFinished) return;
 //    NSLog(@"Fetching River in storiesCollection (pg. %ld): %@", (long)page, storiesCollection);
-
+    
+    [self.splitViewController showColumn:UISplitViewControllerColumnSupplementary];
+    
     storiesCollection.feedPage = page;
     self.pageFetching = YES;
     NSInteger storyCount = storiesCollection.storyCount;
@@ -1386,7 +1388,7 @@
         
         UIInterfaceOrientation orientation = self.view.window.windowScene.interfaceOrientation;
         if (!self.isPhoneOrCompact
-            && !appDelegate.masterContainerViewController.storyTitlesOnLeft
+            && !appDelegate.detailViewController.storyTitlesOnLeft
             && UIInterfaceOrientationIsPortrait(orientation)) {
             height = height - kTableViewShortRowDifference;
         }
@@ -1598,7 +1600,7 @@
     
     UIInterfaceOrientation orientation = self.view.window.windowScene.interfaceOrientation;
     if (!self.isPhoneOrCompact &&
-        !appDelegate.masterContainerViewController.storyTitlesOnLeft &&
+        !appDelegate.detailViewController.storyTitlesOnLeft &&
         UIInterfaceOrientationIsPortrait(orientation)) {
         cell.isShort = YES;
     }
@@ -1834,7 +1836,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     UIInterfaceOrientation orientation = self.view.window.windowScene.interfaceOrientation;
     
     return !self.isPhoneOrCompact &&
-        !appDelegate.masterContainerViewController.storyTitlesOnLeft &&
+        !appDelegate.detailViewController.storyTitlesOnLeft &&
         UIInterfaceOrientationIsPortrait(orientation);
 }
 

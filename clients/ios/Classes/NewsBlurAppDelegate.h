@@ -21,6 +21,7 @@
 #define STORY_TITLES_HEIGHT 240
 #define DASHBOARD_TITLE @"NewsBlur"
 
+@class SplitViewController;
 @class FeedsViewController;
 @class DashboardViewController;
 @class FeedsMenuViewController;
@@ -160,7 +161,7 @@ SFSafariViewControllerDelegate>  {
 }
 
 @property (nonatomic) IBOutlet EventWindow *window;
-@property (nonatomic) UISplitViewController *splitViewController;
+@property (nonatomic) SplitViewController *splitViewController;
 @property (nonatomic) IBOutlet UINavigationController *ftuxNavigationController;
 @property (nonatomic) IBOutlet UINavigationController *feedsNavigationController;
 @property (nonatomic) IBOutlet UINavigationController *feedDetailNavigationController;
