@@ -297,7 +297,7 @@ NSString * const ThemeStyleDark = @"dark";
     
     [self setupTheme];
     
-    [appDelegate.masterContainerViewController updateTheme];
+    [appDelegate.splitViewController updateTheme];
     [appDelegate.feedsViewController updateTheme];
     [appDelegate.dashboardViewController updateTheme];
     [appDelegate.feedDetailViewController updateTheme];

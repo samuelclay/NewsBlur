@@ -340,8 +340,8 @@
         return self.feedDetailViewController;
     } else if ([identifier isEqualToString:@"DetailViewController"]) {
         return self.storyPageControl;
-    } else if ([identifier isEqualToString:@"ContainerView"]) {
-        return self.masterContainerViewController;
+    } else if ([identifier isEqualToString:@"SplitView"]) {
+        return self.splitViewController;
     } else {
         return nil;
     }
@@ -752,43 +752,30 @@
 }
 
 - (void)popToRootWithCompletion:(void (^)(void))completion {
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-        if (completion) {
-            [CATransaction begin];
-            [CATransaction setCompletionBlock:completion];
-        }
-        
-        [masterContainerViewController dismissViewControllerAnimated:NO completion:nil];
-        [self.feedsNavigationController popToViewController:[self.feedsNavigationController.viewControllers objectAtIndex:0] animated:YES];
-        
-        if (completion) {
-            [CATransaction commit];
-        }
-    } else {
-        [self.feedsNavigationController popToRootViewControllerAnimated:NO];
-        
-        if (completion) {
-            completion();
-        }
+    if (completion) {
+        [CATransaction begin];
+        [CATransaction setCompletionBlock:completion];
+    }
+    
+    [self.splitViewController dismissViewControllerAnimated:NO completion:nil];
+    [self.splitViewController showColumn:UISplitViewControllerColumnPrimary];
+    
+    if (completion) {
+        [CATransaction commit];
     }
 }
 
 - (void)showPremiumDialog {
-    UINavigationController *navController = self.feedsNavigationController;
     if (self.premiumNavigationController == nil) {
         self.premiumNavigationController = [[UINavigationController alloc]
                                             initWithRootViewController:self.premiumViewController];
     }
     self.premiumNavigationController.navigationBar.translucent = NO;
 
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-        [masterContainerViewController dismissViewControllerAnimated:NO completion:nil];
-        premiumNavigationController.modalPresentationStyle = UIModalPresentationFormSheet;
-        [masterContainerViewController presentViewController:premiumNavigationController animated:YES completion:nil];
-        [self.premiumViewController.view setNeedsLayout];
-    } else {
-        [navController presentViewController:self.premiumNavigationController animated:YES completion:nil];
-    }
+    [self.splitViewController dismissViewControllerAnimated:NO completion:nil];
+    premiumNavigationController.modalPresentationStyle = UIModalPresentationFormSheet;
+    [self.splitViewController presentViewController:premiumNavigationController animated:YES completion:nil];
+    [self.premiumViewController.view setNeedsLayout];
 }
 
 - (void)showPreferences {
@@ -864,12 +851,7 @@
     self.modalNavigationController = nav;
     self.modalNavigationController.navigationBar.translucent = NO;
     
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-        self.modalNavigationController.modalPresentationStyle = UIModalPresentationFormSheet;
-        [masterContainerViewController presentViewController:modalNavigationController animated:YES completion:nil];
-    } else {
-        [feedsNavigationController presentViewController:modalNavigationController animated:YES completion:nil];
-    }
+    [self.splitViewController presentViewController:modalNavigationController animated:YES completion:nil];
 }
 
 - (void)showMuteSites {
@@ -894,13 +876,10 @@
     self.modalNavigationController = friendsNav;
     self.modalNavigationController.navigationBar.translucent = NO;
     
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-        [masterContainerViewController dismissViewControllerAnimated:NO completion:nil];
-        self.modalNavigationController.modalPresentationStyle = UIModalPresentationFormSheet;
-        [masterContainerViewController presentViewController:modalNavigationController animated:YES completion:nil];
-    } else {
-        [feedsNavigationController presentViewController:modalNavigationController animated:YES completion:nil];
-    }
+    [self.splitViewController dismissViewControllerAnimated:NO completion:nil];
+    self.modalNavigationController.modalPresentationStyle = UIModalPresentationFormSheet;
+    [self.splitViewController presentViewController:modalNavigationController animated:YES completion:nil];
+    
     [self.friendsListViewController loadSuggestedFriendsList];
 }
 
@@ -998,7 +977,7 @@
 
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         BOOL fromPopover = [self hidePopoverAnimated:NO];
-        [self.masterContainerViewController presentViewController:activityViewController animated:!fromPopover completion:nil];
+        [self.splitViewController presentViewController:activityViewController animated:!fromPopover completion:nil];
         activityViewController.modalPresentationStyle = UIModalPresentationPopover;
         // iOS 8+
         UIPopoverPresentationController *popPC = activityViewController.popoverPresentationController;
@@ -1084,9 +1063,7 @@
         return;
     }
     
-    if (@available(iOS 14.0, *)) {
-        self.splitViewController.showsSecondaryOnlyButton = YES;
-    }
+    self.splitViewController.showsSecondaryOnlyButton = YES;
     
     self.feedsNavigationController = (UINavigationController *)splitChildren[0];
     self.feedsViewController = self.feedsNavigationController.viewControllers.firstObject;
@@ -1158,35 +1135,25 @@
     self.ftuxNavigationController = ftux;
     self.ftuxNavigationController.navigationBar.translucent = NO;
     
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-        [masterContainerViewController dismissViewControllerAnimated:NO completion:nil];
-        self.ftuxNavigationController.modalPresentationStyle = UIModalPresentationFullScreen;
-        [self.masterContainerViewController presentViewController:self.ftuxNavigationController animated:YES completion:nil];
-        
-        self.ftuxNavigationController.view.superview.frame = CGRectMake(0, 0, 540, 540);//it's important to do this after 
-        UIInterfaceOrientation orientation = self.window.windowScene.interfaceOrientation;
-        if (UIInterfaceOrientationIsPortrait(orientation)) {
-            self.ftuxNavigationController.view.superview.center = self.view.center;
-        } else {
-            self.ftuxNavigationController.view.superview.center = CGPointMake(self.view.center.y, self.view.center.x);
-        }
-            
+    [self.splitViewController dismissViewControllerAnimated:NO completion:nil];
+    self.ftuxNavigationController.modalPresentationStyle = UIModalPresentationFullScreen;
+    [self.splitViewController presentViewController:self.ftuxNavigationController animated:YES completion:nil];
+    
+    self.ftuxNavigationController.view.superview.frame = CGRectMake(0, 0, 540, 540);//it's important to do this after
+    UIInterfaceOrientation orientation = self.window.windowScene.interfaceOrientation;
+    if (UIInterfaceOrientationIsPortrait(orientation)) {
+        self.ftuxNavigationController.view.superview.center = self.view.center;
     } else {
-        [self.feedsNavigationController presentViewController:self.ftuxNavigationController animated:YES completion:nil];
+        self.ftuxNavigationController.view.superview.center = CGPointMake(self.view.center.y, self.view.center.x);
     }
 }
 
 - (void)showMoveSite {
     UINavigationController *navController = self.feedsNavigationController;
     
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-        [masterContainerViewController dismissViewControllerAnimated:NO completion:nil];
-        moveSiteViewController.modalPresentationStyle=UIModalPresentationFormSheet;
-        [navController presentViewController:moveSiteViewController animated:YES completion:nil];
-    } else {
-        [self hidePopover];
-        [navController presentViewController:moveSiteViewController animated:YES completion:nil];
-    }
+    [self.splitViewController dismissViewControllerAnimated:NO completion:nil];
+    moveSiteViewController.modalPresentationStyle = UIModalPresentationFormSheet;
+    [navController presentViewController:moveSiteViewController animated:YES completion:nil];
 }
 
 - (void)openTrainSite {
@@ -1550,18 +1517,12 @@
         [self adjustStoryDetailWebView];
         [self.feedDetailViewController.storyTitlesTable reloadData];
         
-        if (@available(iOS 14.0, *)) {
-            [self.splitViewController showColumn:UISplitViewControllerColumnSupplementary];
-        } else {
-            [self.splitViewController showViewController:feedDetailViewController sender:self];
+        if (feedDetailViewController.view.window == nil) {
+            [feedsNavigationController pushViewController:feedDetailViewController
+                                                 animated:YES];
         }
         
-//        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-//            [self.masterContainerViewController transitionToFeedDetail];
-//        } else {
-//            [feedsNavigationController pushViewController:feedDetailViewController
-//                                            animated:YES];
-//        }
+        [self.splitViewController showColumn:UISplitViewControllerColumnSupplementary];
     }
     
     [self flushQueuedReadStories:NO withCallback:^{
@@ -1775,26 +1736,19 @@
     serviceVC.url = [NSString stringWithFormat:@"/oauth/%@_connect", serviceName];
     serviceVC.type = serviceName;
     serviceVC.fromStory = YES;
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-        UINavigationController *connectNav = [[UINavigationController alloc]
-                                              initWithRootViewController:serviceVC];
-        self.modalNavigationController = connectNav;
-        [masterContainerViewController dismissViewControllerAnimated:NO completion:nil];
-        self.modalNavigationController.modalPresentationStyle = UIModalPresentationFormSheet;
-        self.modalNavigationController.navigationBar.translucent = NO;
-        [self.masterContainerViewController presentViewController:modalNavigationController
-                                                              animated:YES completion:nil];
-    } else {
-        [self.shareNavigationController pushViewController:serviceVC animated:YES];
-    }
+    
+    UINavigationController *connectNav = [[UINavigationController alloc]
+                                          initWithRootViewController:serviceVC];
+    self.modalNavigationController = connectNav;
+    [self.splitViewController dismissViewControllerAnimated:NO completion:nil];
+    self.modalNavigationController.modalPresentationStyle = UIModalPresentationFormSheet;
+    self.modalNavigationController.navigationBar.translucent = NO;
+    [self.splitViewController presentViewController:modalNavigationController
+                                                          animated:YES completion:nil];
 }
 
 - (void)showAlert:(UIAlertController *)alert withViewController:(UIViewController *)vc {
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-        [self.masterContainerViewController presentViewController:alert animated:YES completion:nil];
-    } else {
-        [vc presentViewController:alert animated:YES completion:nil];
-    }
+    [self.splitViewController presentViewController:alert animated:YES completion:nil];
 }
 
 - (void)refreshUserProfile:(void(^)(void))callback {
@@ -1908,18 +1862,14 @@
         [self.folderCountCache removeObjectForKey:feedDetailView.storiesCollection.activeFolder];
     }
     
-    if (feedDetailView == feedDetailViewController && feedDetailView.navigationController == nil) {
+    if (feedDetailView == feedDetailViewController && feedDetailView.view.window == nil) {
         UIBarButtonItem *newBackButton = [[UIBarButtonItem alloc] initWithTitle: @"All"
                                                                           style: UIBarButtonItemStylePlain
                                                                          target: nil
                                                                          action: nil];
         [feedsViewController.navigationItem setBackBarButtonItem: newBackButton];
-        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-            [self.masterContainerViewController transitionToFeedDetail];
-        } else {
-            UINavigationController *navController = self.feedsNavigationController;
-            [navController pushViewController:feedDetailViewController animated:YES];
-        }
+        UINavigationController *navController = self.feedsNavigationController;
+        [navController pushViewController:feedDetailViewController animated:YES];
     }
     
     if (!transferFromDashboard) {
