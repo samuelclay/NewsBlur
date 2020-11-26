@@ -96,7 +96,7 @@
     
     self.selectedIndexPath = indexPath;
     
-    [appDelegate.storyPageControl setFontStyle:style];
+    [appDelegate.detailViewController setFontStyle:style];
     
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }

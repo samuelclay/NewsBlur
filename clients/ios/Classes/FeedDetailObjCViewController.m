@@ -632,7 +632,7 @@
     [storiesCollection setStories:nil];
     [storiesCollection setFeedUserProfiles:nil];
     storiesCollection.storyCount = 0;
-    [appDelegate.storyPageControl resetPageControllers];
+    [appDelegate.detailViewController resetPageControllers];
     
     storiesCollection.inSearch = NO;
     storiesCollection.searchQuery = nil;
@@ -1177,10 +1177,10 @@
     [self renderStories:confirmedNewStories];
     
     if (!self.isPhoneOrCompact) {
-        [appDelegate.storyPageControl resizeScrollView];
-        [appDelegate.storyPageControl setStoryFromScroll:YES];
+        [appDelegate.detailViewController resizeScrollView];
+        [appDelegate.detailViewController setStoryFromScroll:YES];
     }
-    [appDelegate.storyPageControl advanceToNextUnread];
+    [appDelegate.detailViewController advanceToNextUnread];
     
     if (!storiesCollection.storyCount) {
         if ([results objectForKey:@"message"] && ![[results objectForKey:@"message"] isKindOfClass:[NSNull class]]) {
@@ -2261,7 +2261,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     
     [viewController addThemeSegmentedControl];
     
-    UINavigationController *navController = self.navigationController ?: appDelegate.storyPageControl.navigationController;
+    UINavigationController *navController = self.navigationController ?: appDelegate.detailViewController.navigationController;
     
     [viewController showFromNavigationController:navController barButtonItem:self.settingsBarButton];
 }
@@ -2407,7 +2407,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         }
         [self.view setNeedsDisplay];
         if (!self.isPhoneOrCompact) {
-            self.appDelegate.storyPageControl.navigationItem.titleView = [self.appDelegate makeFeedTitle:self.storiesCollection.activeFeed];
+            self.appDelegate.detailViewController.navigationItem.titleView = [self.appDelegate makeFeedTitle:self.storiesCollection.activeFeed];
         } else {
             self.navigationItem.titleView = [self.appDelegate makeFeedTitle:self.storiesCollection.activeFeed];
         }
