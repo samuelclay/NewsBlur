@@ -180,19 +180,19 @@
 - (IBAction)changeFontSize:(id)sender {
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     if ([sender selectedSegmentIndex] == 0) {
-        [self.appDelegate.storyPageControl changeFontSize:@"xs"];
+        [self.appDelegate.detailViewController changeFontSize:@"xs"];
         [userPreferences setObject:@"xs" forKey:@"story_font_size"];
     } else if ([sender selectedSegmentIndex] == 1) {
-        [self.appDelegate.storyPageControl changeFontSize:@"small"];
+        [self.appDelegate.detailViewController changeFontSize:@"small"];
         [userPreferences setObject:@"small" forKey:@"story_font_size"];
     } else if ([sender selectedSegmentIndex] == 2) {
-        [self.appDelegate.storyPageControl changeFontSize:@"medium"];
+        [self.appDelegate.detailViewController changeFontSize:@"medium"];
         [userPreferences setObject:@"medium" forKey:@"story_font_size"];
     } else if ([sender selectedSegmentIndex] == 3) {
-        [self.appDelegate.storyPageControl changeFontSize:@"large"];
+        [self.appDelegate.detailViewController changeFontSize:@"large"];
         [userPreferences setObject:@"large" forKey:@"story_font_size"];
     } else if ([sender selectedSegmentIndex] == 4) {
-        [self.appDelegate.storyPageControl changeFontSize:@"xl"];
+        [self.appDelegate.detailViewController changeFontSize:@"xl"];
         [userPreferences setObject:@"xl" forKey:@"story_font_size"];
     }
     [userPreferences synchronize];
@@ -201,19 +201,19 @@
 - (IBAction)changeLineSpacing:(id)sender {
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     if ([sender selectedSegmentIndex] == 0) {
-        [self.appDelegate.storyPageControl changeLineSpacing:@"xs"];
+        [self.appDelegate.detailViewController changeLineSpacing:@"xs"];
         [userPreferences setObject:@"xs" forKey:@"story_line_spacing"];
     } else if ([sender selectedSegmentIndex] == 1) {
-        [self.appDelegate.storyPageControl changeLineSpacing:@"small"];
+        [self.appDelegate.detailViewController changeLineSpacing:@"small"];
         [userPreferences setObject:@"small" forKey:@"story_line_spacing"];
     } else if ([sender selectedSegmentIndex] == 2) {
-        [self.appDelegate.storyPageControl changeLineSpacing:@"medium"];
+        [self.appDelegate.detailViewController changeLineSpacing:@"medium"];
         [userPreferences setObject:@"medium" forKey:@"story_line_spacing"];
     } else if ([sender selectedSegmentIndex] == 3) {
-        [self.appDelegate.storyPageControl changeLineSpacing:@"large"];
+        [self.appDelegate.detailViewController changeLineSpacing:@"large"];
         [userPreferences setObject:@"large" forKey:@"story_line_spacing"];
     } else if ([sender selectedSegmentIndex] == 4) {
-        [self.appDelegate.storyPageControl changeLineSpacing:@"xl"];
+        [self.appDelegate.detailViewController changeLineSpacing:@"xl"];
         [userPreferences setObject:@"xl" forKey:@"story_line_spacing"];
     }
     [userPreferences synchronize];
@@ -223,21 +223,21 @@
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     [userPreferences setBool:[sender selectedSegmentIndex] == 0 forKey:@"story_full_screen"];
     [userPreferences synchronize];
-    [self.appDelegate.storyPageControl changedFullscreen];
+    [self.appDelegate.detailViewController changedFullscreen];
 }
 
 - (IBAction)changeAutoscroll:(id)sender {
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     [userPreferences setBool:[sender selectedSegmentIndex] == 1 forKey:@"story_autoscroll"];
     [userPreferences synchronize];
-    [self.appDelegate.storyPageControl changedAutoscroll];
+    [self.appDelegate.detailViewController changedAutoscroll];
 }
 
 - (IBAction)changeScrollOrientation:(id)sender {
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     [userPreferences setBool:[sender selectedSegmentIndex] == 0 forKey:@"scroll_stories_horizontally"];
     [userPreferences synchronize];
-    [self.appDelegate.storyPageControl changedScrollOrientation];
+    [self.appDelegate.detailViewController changedScrollOrientation];
 }
 
 - (IBAction)changeTheme:(id)sender {
@@ -378,17 +378,17 @@
     } else if (indexPath.row == 1) {
         [self.appDelegate.storiesCollection toggleStorySaved];
         [self.appDelegate.feedDetailViewController reloadData];
-        [self.appDelegate.storyPageControl refreshHeaders];
+        [self.appDelegate.detailViewController refreshHeaders];
     } else if (indexPath.row == 2) {
         [self.appDelegate.storiesCollection toggleStoryUnread];
         [self.appDelegate.feedDetailViewController reloadData];
-        [self.appDelegate.storyPageControl refreshHeaders];
+        [self.appDelegate.detailViewController refreshHeaders];
     } else if (indexPath.row == 3) {
-        [self.appDelegate.storyPageControl openSendToDialog:self.appDelegate.storyPageControl.fontSettingsButton];
+        [self.appDelegate.detailViewController openSendToDialog:self.appDelegate.detailViewController.fontSettingsButton];
     } else if (indexPath.row == 4) {
-        [self.appDelegate openTrainStory:self.appDelegate.storyPageControl.fontSettingsButton];
+        [self.appDelegate openTrainStory:self.appDelegate.detailViewController.fontSettingsButton];
     } else if (indexPath.row == 5) {
-        [self.appDelegate.storyPageControl.currentStoryController openShareDialog];
+        [self.appDelegate.detailViewController.currentStoryController openShareDialog];
     } else if (indexPath.row == 6) {
         [self showFontList];
     }
@@ -400,8 +400,8 @@
 //            [self.appDelegate.masterContainerViewController hidePopover];
 //        }
 //    } else {
-//        [self.appDelegate.storyPageControl.popoverController dismissPopoverAnimated:YES];
-//        self.appDelegate.storyPageControl.popoverController = nil;
+//        [self.appDelegate.detailViewController.popoverController dismissPopoverAnimated:YES];
+//        self.appDelegate.detailViewController.popoverController = nil;
 //    }
 //    
 //    [tableView deselectRowAtIndexPath:indexPath animated:YES];

@@ -238,7 +238,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
         [appDelegate setSelectedIntelligence:0];
     }
     
-//    [MBProgressHUD hideHUDForView:appDelegate.storyPageControl.view animated:NO];
+//    [MBProgressHUD hideHUDForView:appDelegate.detailViewController.view animated:NO];
     
     // perform these only if coming from the feed detail view
     if (appDelegate.inFeedDetail) {

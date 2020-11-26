@@ -77,7 +77,6 @@
     [super viewDidLoad];
     
     appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
-    appDelegate.storyPageControl = (DetailViewController *)self;
     
 #warning commented out for new UIPageViewController-based approach; remove these in due course
 //	currentPage = [[StoryDetailViewController alloc]
@@ -409,6 +408,7 @@
     self.navigationController.hidesBarsOnSwipe = NO;
     self.navigationController.interactivePopGestureRecognizer.enabled = YES;
     self.navigationController.interactivePopGestureRecognizer.delegate = self.standardInteractivePopGestureDelegate;
+    [self.navigationController setNavigationBarHidden:NO animated:YES];
     self.autoscrollActive = NO;
 }
 
