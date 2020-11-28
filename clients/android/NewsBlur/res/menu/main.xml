@@ -2,22 +2,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item android:id="@+id/menu_refresh"
-          android:title="@string/menu_refresh"
-          app:showAsAction="never" />
-
-    <item android:id="@+id/menu_search_feeds"
-          android:title="@string/menu_search_feeds"
-          app:showAsAction="never" />
-    
-    <item android:id="@+id/menu_add_feed"
-          android:title="@string/menu_add_feed"
-          app:showAsAction="never" />
-    
-    <item android:id="@+id/menu_textsize"
-          app:showAsAction="never"
-          android:title="@string/menu_textsize"/>
-
     <item android:id="@+id/menu_settings"
           android:title="@string/settings"
           app:showAsAction="never" />
@@ -30,32 +14,13 @@
         android:title="@string/widget"
         app:showAsAction="never" />
 
-    <item android:id="@+id/menu_feedback"
-          android:title="@string/menu_feedback"
-          app:showAsAction="never" >
-        <menu>
-            <item android:id="@+id/menu_feedback_post"
-                  android:title="@string/menu_feedback_post"
-                  app:showAsAction="never" />
-            <item android:id="@+id/menu_feedback_email"
-                  android:title="@string/menu_feedback_email"
-                  app:showAsAction="never" />
-
-        </menu>
-    </item>
-
-    <item android:id="@+id/menu_loginas"
-          android:title="@string/menu_loginas"
-          app:showAsAction="never"
-          android:visible="false"/>
-
     <item android:id="@+id/menu_premium_account"
         android:title="@string/menu_premium_account"
         app:showAsAction="never" />
-    
-    <item android:id="@+id/menu_logout"
-          android:title="@string/menu_logout"
-          app:showAsAction="never" />
+
+    <item android:id="@+id/menu_textsize"
+        app:showAsAction="never"
+        android:title="@string/menu_textsize"/>
 
     <item android:id="@+id/menu_theme"
           android:title="@string/menu_theme_choose" >
@@ -72,5 +37,28 @@
             </group>
         </menu>
     </item>
+
+    <item android:id="@+id/menu_feedback"
+        android:title="@string/menu_feedback"
+        app:showAsAction="never" >
+        <menu>
+            <item android:id="@+id/menu_feedback_post"
+                android:title="@string/menu_feedback_post"
+                app:showAsAction="never" />
+            <item android:id="@+id/menu_feedback_email"
+                android:title="@string/menu_feedback_email"
+                app:showAsAction="never" />
+
+        </menu>
+    </item>
+
+    <item android:id="@+id/menu_loginas"
+        android:title="@string/menu_loginas"
+        app:showAsAction="never"
+        android:visible="false"/>
+
+    <item android:id="@+id/menu_logout"
+        android:title="@string/menu_logout"
+        app:showAsAction="never" />
 
 </menu>

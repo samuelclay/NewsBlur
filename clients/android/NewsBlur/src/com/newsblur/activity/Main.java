@@ -109,30 +109,11 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
 
         FeedUtils.currentFolderName = null;
 
-        binding.mainMenuButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onClickMenuButton();
-            }
-        });
-        binding.mainAddButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onClickAddButton();
-            }
-        });
-        binding.mainProfileButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onClickProfileButton();
-            }
-        });
-        binding.mainUserImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onClickUserButton();
-            }
-        });
+        binding.mainMenuButton.setOnClickListener(v -> onClickMenuButton());
+        binding.mainAddButton.setOnClickListener(v -> onClickAddButton());
+        binding.mainProfileButton.setOnClickListener(v -> onClickProfileButton());
+        binding.mainUserImage.setOnClickListener(v -> onClickUserButton());
+        binding.mainSearchFeedsButton.setOnClickListener(v -> onClickSearchFeedsButton());
 	}
 
     @Override
@@ -281,21 +262,6 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
             loginAsItem.setVisible(false);
         }
 
-        MenuItem feedbackItem = menu.findItem(R.id.menu_feedback);
-        if (AppConstants.ENABLE_FEEDBACK) {
-            feedbackItem.setTitle(feedbackItem.getTitle() + " (v" + PrefsUtils.getVersion(this) + ")");
-        } else {
-            feedbackItem.setVisible(false);
-        }
-
-        if ( (folderFeedList.currentState == StateFilter.ALL) ||
-             (folderFeedList.currentState == StateFilter.SOME) ||
-             (folderFeedList.currentState == StateFilter.BEST) ) {
-            menu.findItem(R.id.menu_search_feeds).setVisible(true);
-        } else {
-            menu.findItem(R.id.menu_search_feeds).setVisible(false);
-        }
-
         ThemeValue themeValue = PrefsUtils.getSelectedTheme(this);
         if (themeValue == ThemeValue.LIGHT) {
             menu.findItem(R.id.menu_theme_light).setChecked(true);
@@ -315,23 +281,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
 
     @Override
     public boolean onMenuItemClick(MenuItem item) {
-		if (item.getItemId() == R.id.menu_refresh) {
-            onRefresh();
-			return true;
-        } else if (item.getItemId() == R.id.menu_search_feeds) {
-            if (binding.feedlistSearchQuery.getVisibility() != View.VISIBLE) {
-                binding.feedlistSearchQuery.setVisibility(View.VISIBLE);
-                binding.feedlistSearchQuery.requestFocus();
-            } else {
-                binding.feedlistSearchQuery.setText("");
-                binding.feedlistSearchQuery.setVisibility(View.GONE);
-                checkSearchQuery();
-            }
-		} else if (item.getItemId() == R.id.menu_add_feed) {
-			Intent i = new Intent(this, SearchForFeeds.class);
-            startActivity(i);
-			return true;
-		} else if (item.getItemId() == R.id.menu_logout) {
+		if (item.getItemId() == R.id.menu_logout) {
 			DialogFragment newFragment = new LogoutDialogFragment();
 			newFragment.show(getSupportFragmentManager(), "dialog");
 		} else if (item.getItemId() == R.id.menu_settings) {
@@ -399,6 +349,17 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
     private void onClickUserButton() {
         Intent i = new Intent(this, Profile.class);
         startActivity(i);
+    }
+
+    private void onClickSearchFeedsButton() {
+        if (binding.feedlistSearchQuery.getVisibility() != View.VISIBLE) {
+            binding.feedlistSearchQuery.setVisibility(View.VISIBLE);
+            binding.feedlistSearchQuery.requestFocus();
+        } else {
+            binding.feedlistSearchQuery.setText("");
+            binding.feedlistSearchQuery.setVisibility(View.GONE);
+            checkSearchQuery();
+        }
     }
 
     @Override
