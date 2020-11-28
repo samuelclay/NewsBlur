@@ -76,6 +76,18 @@
             android:textSize="14sp" />
 
         <ImageButton
+            android:id="@+id/main_search_feeds_button"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:padding="2dp"
+            android:layout_alignParentTop="true"
+            android:layout_margin="8dp"
+            android:layout_toStartOf="@+id/main_profile_button"
+            android:layout_toLeftOf="@+id/main_profile_button"
+            android:background="@drawable/ic_search"
+            android:contentDescription="@string/menu_search_feeds" />
+
+        <ImageButton
             android:id="@+id/main_profile_button"
             android:layout_width="34dp"
             android:layout_height="34dp"
