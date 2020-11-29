@@ -1522,7 +1522,9 @@
                                                  animated:YES];
         }
         
-        [self.splitViewController showColumn:UISplitViewControllerColumnSupplementary];
+        if (detailViewController.storyTitlesOnLeft) {
+            [self.splitViewController showColumn:UISplitViewControllerColumnSupplementary];
+        }
     }
     
     [self flushQueuedReadStories:NO withCallback:^{
@@ -1869,6 +1871,11 @@
                                                                          action: nil];
         [feedsViewController.navigationItem setBackBarButtonItem: newBackButton];
         UINavigationController *navController = self.feedsNavigationController;
+        
+        if (navController.viewControllers.count > 1) {
+            [navController popToRootViewControllerAnimated:NO];
+        }
+        
         [navController pushViewController:feedDetailViewController animated:YES];
     }
     

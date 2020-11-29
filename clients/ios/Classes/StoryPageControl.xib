@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="17154" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="17506" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17124"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17505"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -15,12 +15,12 @@
                 <outlet property="autoscrollPauseResumeButton" destination="Uu8-vD-eak" id="kzw-qG-7Qo"/>
                 <outlet property="autoscrollSlowerButton" destination="Qah-Lp-ocZ" id="ITc-cA-UUV"/>
                 <outlet property="autoscrollView" destination="LNI-9u-7l4" id="hXJ-Sf-E0z"/>
-                <outlet property="bottomSize" destination="YKz-PZ-s0t" id="P3I-Wx-dLN"/>
-                <outlet property="bottomSizeHeightConstraint" destination="Ugq-XC-pFz" id="A98-YF-eby"/>
                 <outlet property="buttonNext" destination="62" id="72"/>
                 <outlet property="buttonPrevious" destination="64" id="67"/>
                 <outlet property="buttonSend" destination="85" id="88"/>
                 <outlet property="buttonText" destination="81" id="84"/>
+                <outlet property="dividerView" destination="YKz-PZ-s0t" id="P3I-Wx-dLN"/>
+                <outlet property="dividerViewBottomConstraint" destination="Ugq-XC-pFz" id="A98-YF-eby"/>
                 <outlet property="dragBarImageView" destination="kYw-ba-fFD" id="3C2-Je-cht"/>
                 <outlet property="loadingIndicator" destination="73" id="74"/>
                 <outlet property="prevNextBackgroundImageView" destination="71" id="S3e-tC-Pbu"/>

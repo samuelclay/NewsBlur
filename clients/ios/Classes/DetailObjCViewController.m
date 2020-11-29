@@ -50,10 +50,10 @@
 @synthesize originalStoryButton;
 @synthesize subscribeButton;
 @synthesize buttonBack;
-@synthesize bottomSize;
-@synthesize bottomSizeHeightConstraint;
+@synthesize dividerView;
+//@synthesize dividerViewBottomConstraint;
 @synthesize loadingIndicator;
-@synthesize inTouchMove;
+//@synthesize inTouchMove;
 @synthesize isDraggingScrollview;
 @synthesize waitingForNextUnreadFromServer;
 @synthesize storyHUD;
@@ -216,7 +216,7 @@
     self.buttonBack = backButton;
     
     self.notifier = [[NBNotifier alloc] initWithTitle:@"Fetching text..."
-                                           withOffset:CGPointMake(0.0, 0.0 /*self.bottomSize.frame.size.height*/)];
+                                           withOffset:CGPointMake(0.0, 0.0 /*self.dividerView.frame.size.height*/)];
     [self.view addSubview:self.notifier];
     [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.notifier attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeWidth multiplier:1.0 constant:0]];
     [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.notifier attribute:NSLayoutAttributeLeading relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeLeading multiplier:1.0 constant:0]];
@@ -363,7 +363,7 @@
     
     UIInterfaceOrientation orientation = self.view.window.windowScene.interfaceOrientation;
     [self layoutForInterfaceOrientation:orientation];
-    [self adjustDragBar:orientation];
+//    [self adjustDragBar:orientation];
     [self reorientPages];
 }
 
@@ -438,7 +438,7 @@
         UIInterfaceOrientation orientation = self.view.window.windowScene.interfaceOrientation;
         self->_orientation = orientation;
         [self layoutForInterfaceOrientation:orientation];
-        [self adjustDragBar:orientation];
+//        [self adjustDragBar:orientation];
         [self reorientPages];
     } completion:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
 //        NSLog(@"---> Story page control did re-orient: %@ / %@", NSStringFromCGSize(self.scrollView.bounds.size), NSStringFromCGSize(size));
@@ -479,7 +479,7 @@
     
     UIInterfaceOrientation orientation = self.view.window.windowScene.interfaceOrientation;
     [self layoutForInterfaceOrientation:orientation];
-    [self adjustDragBar:orientation];
+//    [self adjustDragBar:orientation];
 }
 
 - (BOOL)shouldHideStatusBar {
@@ -558,7 +558,7 @@
                 safeBottomMargin = -1 * self.view.safeAreaInsets.bottom/2;
             }
             
-            self.traverseBottomConstraint.constant = safeBottomMargin;
+            self.traverseBottomConstraint.constant = safeBottomMargin + 20;
             [self.view layoutIfNeeded];
         }
     }
@@ -602,30 +602,30 @@
     return ![otherGestureRecognizer isKindOfClass:[UIScreenEdgePanGestureRecognizer class]];
 }
 
-- (void)adjustDragBar:(UIInterfaceOrientation)orientation {
+//- (void)adjustDragBar:(UIInterfaceOrientation)orientation {
 //    CGRect scrollViewFrame = self.scrollView.frame;
 //    CGRect traverseViewFrame = self.traverseView.frame;
 
-    if (self.isPhoneOrCompact ||
-        UIInterfaceOrientationIsLandscape(orientation)) {
-//        scrollViewFrame.size.height = self.scrollView.bounds.size.height;
-//        self.bottomSize.hidden = YES;
-        [self.bottomSizeHeightConstraint setConstant:0];
-        [self.scrollBottomConstraint setConstant:0];
-        [bottomSize setHidden:YES];
-    } else {
-//        scrollViewFrame.size.height = self.scrollView.bounds.size.height - 12;
-//        self.bottomSize.hidden = NO;
-        [self.bottomSizeHeightConstraint setConstant:12];
-        [self.scrollBottomConstraint setConstant:-12];
-        [bottomSize setHidden:NO];
-    }
-    
-    [self.view layoutIfNeeded];
+//    if (self.isPhoneOrCompact ||
+//        UIInterfaceOrientationIsLandscape(orientation)) {
+////        scrollViewFrame.size.height = self.scrollView.bounds.size.height;
+////        self.dividerView.hidden = YES;
+//        [self.dividerViewBottomConstraint setConstant:0];
+//        [self.scrollBottomConstraint setConstant:0];
+//        [dividerView setHidden:YES];
+//    } else {
+////        scrollViewFrame.size.height = self.scrollView.bounds.size.height - 12;
+////        self.dividerView.hidden = NO;
+//        [self.dividerViewBottomConstraint setConstant:12];
+//        [self.scrollBottomConstraint setConstant:-12];
+//        [dividerView setHidden:NO];
+//    }
+//
+//    [self.view layoutIfNeeded];
 //    self.scrollView.frame = scrollViewFrame;
 //    traverseViewFrame.origin.y = scrollViewFrame.size.height - traverseViewFrame.size.height;
 //    self.traverseView.frame = traverseViewFrame;
-}
+//}
 
 - (void)highlightButton:(UIButton *)b {
     if (![b isKindOfClass:[UIButton class]]) return;
@@ -644,6 +644,10 @@
     if (!sender) return;
     
     [self performSelector:@selector(unhighlightButton:) withObject:sender afterDelay:0.2];
+}
+
+- (BOOL)isPortraitOrientation {
+    return UIInterfaceOrientationIsPortrait(self.view.window.windowScene.interfaceOrientation);
 }
 
 - (BOOL)isHorizontal {
@@ -764,38 +768,6 @@
 //    }
 }
 
-- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
-    UIInterfaceOrientation orientation = self.view.window.windowScene.interfaceOrientation;
-    
-    if (!self.isPhoneOrCompact &&
-        UIInterfaceOrientationIsPortrait(orientation)) {
-        UITouch *theTouch = [touches anyObject];
-        CGPoint tappedPt = [theTouch locationInView:self.view];
-        NSInteger fudge = appDelegate.detailViewController.storyTitlesOnLeft ? -30 : -20;
-        BOOL inside = CGRectContainsPoint(CGRectInset(self.bottomSize.frame, 0, fudge), tappedPt);
-        BOOL attached = self.inTouchMove;
-        
-        if (theTouch.view == self.bottomSize || inside || attached) {
-            self.inTouchMove = YES;
-            CGPoint touchLocation = [theTouch locationInView:self.view];
-            CGFloat y = touchLocation.y;
-            [appDelegate.masterContainerViewController dragStoryToolbar:y];
-        }
-    }
-}
-
-- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
-    UIInterfaceOrientation orientation = self.view.window.windowScene.interfaceOrientation;
-    
-    if (!self.isPhoneOrCompact &&
-        UIInterfaceOrientationIsPortrait(orientation)) {
-        if (self.inTouchMove) {
-            self.inTouchMove = NO;
-            [appDelegate.masterContainerViewController adjustFeedDetailScreenForStoryTitles];
-        }
-    }
-}
-
 - (BOOL)isPhoneOrCompact {
     return [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone || appDelegate.isCompactWidth;
 }
@@ -819,7 +791,7 @@
     self.textStorySendBackgroundImageView.image = [[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"traverse_background.png"]];
     self.prevNextBackgroundImageView.image = [[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"traverse_background.png"]];
     self.dragBarImageView.image = [[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"drag_icon.png"]];
-    self.bottomSize.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
+    self.dividerView.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
 }
 
 - (void)updateTheme {
@@ -1081,7 +1053,7 @@
 //                     animations:^{
 //                         [self.traverseView setNeedsLayout];
 ////                         self.traverseView.frame = CGRectMake(tvf.origin.x,
-////                                                              self.scrollView.bounds.size.height - tvf.size.height - bottomSizeHeightConstraint.constant - (self.view.safeAreaInsets.bottom - 20),
+////                                                              self.scrollView.bounds.size.height - tvf.size.height - dividerViewBottomConstraint.constant - (self.view.safeAreaInsets.bottom - 20),
 ////                                                              tvf.size.width, tvf.size.height);
 //                         self.traverseView.alpha = 1;
 //                         self.traversePinned = YES;

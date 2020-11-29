@@ -956,7 +956,9 @@
     if (self.pageFetching || self.pageFinished) return;
 //    NSLog(@"Fetching River in storiesCollection (pg. %ld): %@", (long)page, storiesCollection);
     
-    [self.splitViewController showColumn:UISplitViewControllerColumnSupplementary];
+    if (appDelegate.detailViewController.storyTitlesOnLeft) {
+        [self.splitViewController showColumn:UISplitViewControllerColumnSupplementary];
+    }
     
     storiesCollection.feedPage = page;
     self.pageFetching = YES;
@@ -2197,6 +2199,14 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
             [self instafetchFeed];
         }];
     }
+    
+//    NSString *preferenceKey = @"story_titles_position";
+//    NSArray *titles = @[@"Left", @"Top", @"Bottom"];
+//    NSArray *values = @[@"titles_on_left", @"titles_on_top", @"titles_on_bottom"];
+//
+//    [viewController addSegmentedControlWithTitles:titles values:values preferenceKey:preferenceKey selectionShouldDismiss:YES handler:^(NSUInteger selectedIndex) {
+//        [self.appDelegate.detailViewController updateLayoutWithReload:YES];
+//    }];
     
     [viewController addSegmentedControlWithTitles:@[@"Newest First", @"Oldest"] selectIndex:[appDelegate.storiesCollection.activeOrder isEqualToString:@"newest"] ? 0 : 1 selectionShouldDismiss:YES handler:^(NSUInteger selectedIndex) {
         if (selectedIndex == 0) {

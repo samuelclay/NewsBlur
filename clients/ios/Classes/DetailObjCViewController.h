@@ -63,8 +63,8 @@
 @property (nonatomic) IBOutlet UIButton *buttonSend;
 @property (nonatomic) UIBarButtonItem *buttonBack;
 @property (nonatomic) IBOutlet UIBarButtonItem *buttonAction;
-@property (nonatomic) IBOutlet UIView *bottomSize;
-@property (nonatomic) IBOutlet NSLayoutConstraint *bottomSizeHeightConstraint;
+@property (nonatomic) IBOutlet UIView *dividerView;
+//@property (nonatomic) IBOutlet NSLayoutConstraint *dividerViewBottomConstraint;
 @property (nonatomic) IBOutlet UIBarButtonItem * spacerBarButton;
 @property (nonatomic) IBOutlet UIBarButtonItem * spacer2BarButton;
 @property (nonatomic) IBOutlet UIBarButtonItem * spacer3BarButton;
@@ -84,7 +84,7 @@
 @property (nonatomic) NSTimeInterval autoscrollSpeed;
 @property (readwrite) BOOL traversePinned;
 @property (readwrite) BOOL traverseFloating;
-@property (readwrite) CGFloat inTouchMove;
+//@property (readwrite) CGFloat inTouchMove;
 @property (assign) BOOL isDraggingScrollview;
 @property (assign) BOOL isAnimatedIntoPlace;
 @property (assign) BOOL waitingForNextUnreadFromServer;
@@ -97,6 +97,7 @@
 @property (nonatomic, readonly) BOOL allowFullscreen;
 @property (nonatomic) BOOL forceNavigationBarShown;
 @property (nonatomic) BOOL currentlyTogglingNavigationBar;
+@property (nonatomic, readonly) BOOL isPortraitOrientation;
 @property (nonatomic, readonly) BOOL isHorizontal;
 @property (nonatomic) BOOL temporarilyMarkedUnread;
 @property (nonatomic, readonly) NSInteger storiesCount;
@@ -108,7 +109,7 @@
 - (void)updateStatusBarState;
 - (void)setNavigationBarHidden:(BOOL)hide;
 - (void)setNavigationBarHidden:(BOOL)hide alsoTraverse:(BOOL)alsoTraverse;
-- (void)adjustDragBar:(UIInterfaceOrientation)orientation;
+//- (void)adjustDragBar:(UIInterfaceOrientation)orientation;
 
 - (void)transitionFromFeedDetail;
 - (void)hidePages;
