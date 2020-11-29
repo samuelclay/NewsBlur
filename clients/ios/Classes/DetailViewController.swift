@@ -10,6 +10,25 @@ import UIKit
 
 /// Manages the detail column of the split view, with the feed detail and/or the story pages.
 class DetailViewController: DetailObjCViewController {
+    /// Preference keys.
+    enum Key {
+        /// Layout of the story titles and story pages.
+        static let layout = "story_titles_position"
+        
+        /// Position of the divider between the views when in horizontal orientation. Only used for `.top` and `.bottom` layouts.
+        static let horizontalPosition = "story_titles_divider_horizontal"
+        
+        /// Position of the divider between the views when in vertical orientation. Only used for `.top` and `.bottom` layouts.
+        static let verticalPosition = "story_titles_divider_vertical"
+    }
+    
+    /// Preference values.
+    enum Value {
+        static let left = "titles_on_left"
+        static let top = "titles_on_top"
+        static let bottom = "titles_on_bottom"
+    }
+    
     /// How the feed detail and story pages are laid out.
     enum Layout {
         /// The feed detail is to the left of the story pages (and managed by the split view, not here).
@@ -23,9 +42,32 @@ class DetailViewController: DetailObjCViewController {
     }
     
     /// How the feed detail and story pages are laid out.
-    var layout: Layout = .left {  //TODO: set this based on prefs, either here or in the initializer
-        didSet {
-            updateLayout()
+    var layout: Layout {
+        get {
+            switch UserDefaults.standard.string(forKey: Key.layout) {
+            case Value.top:
+                return .top
+            case Value.bottom:
+                return .bottom
+            default:
+                return .left
+            }
+        }
+        set {
+            guard newValue != layout else {
+                return
+            }
+            
+            switch newValue {
+            case .top:
+                UserDefaults.standard.set(Value.top, forKey: Key.layout)
+            case .bottom:
+                UserDefaults.standard.set(Value.bottom, forKey: Key.layout)
+            default:
+                UserDefaults.standard.set(Value.left, forKey: Key.layout)
+            }
+            
+            updateLayout(reload: true)
         }
     }
     
@@ -40,7 +82,42 @@ class DetailViewController: DetailObjCViewController {
     }
     
     /// Position of the divider between the views.
-    var splitPosition: CGFloat = 200  //TODO: set this based on prefs
+    var dividerPosition: CGFloat {
+        get {
+            let key = isPortraitOrientation ? Key.verticalPosition : Key.horizontalPosition
+            let value = CGFloat(UserDefaults.standard.float(forKey: key))
+            
+            if value == 0 {
+                return 200
+            } else {
+                return value
+            }
+        }
+        set {
+            guard newValue != dividerPosition else {
+                return
+            }
+            
+            let key = isPortraitOrientation ? Key.verticalPosition : Key.horizontalPosition
+            
+            UserDefaults.standard.set(Float(newValue), forKey: key)
+        }
+    }
+    
+    /// Top container view.
+    @IBOutlet weak var topContainerView: UIView!
+    
+    /// Bottom container view.
+    @IBOutlet weak var bottomContainerView: UIView!
+    
+    /// Bottom constraint of the divider view.
+    @IBOutlet weak var dividerViewBottomConstraint: NSLayoutConstraint!
+    
+    /// The feed detail navigation controller in the supplementary pane, loaded from the storyboard.
+    var supplementaryFeedDetailNavigationController: UINavigationController?
+    
+    /// The feed detail view controller in the supplementary pane, loaded from the storyboard.
+    var supplementaryFeedDetailViewController: FeedDetailViewController?
     
     /// The feed detail view controller, if using `top` or `bottom` layout. `nil` if using `left` layout.
     var feedDetailViewController: FeedDetailViewController?
@@ -123,32 +200,92 @@ class DetailViewController: DetailObjCViewController {
         return storyController
     }
     
+    /// Updates the layout; call this when the layout is changed in the preferences.
+    @objc(updateLayoutWithReload:) func updateLayout(reload: Bool) {
+        checkViewControllers()
+        
+        appDelegate.feedsViewController.loadOfflineFeeds(false)
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        updateLayout()
+        updateLayout(reload: false)
         resetPageControllers()
+    }
+    
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        
+        if layout != .left {
+            coordinator.animate { context in
+                self.dividerViewBottomConstraint.constant = self.dividerPosition
+            }
+        }
+    }
+    
+    private var isDraggingDivider = false
+    
+    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+        let touch = touches.first
+        
+        guard let point = touch?.location(in: view) else {
+            return
+        }
+        
+        let isInside = dividerView.frame.contains(point)
+        
+        guard touch?.view == dividerView || isInside || isDraggingDivider else {
+            return
+        }
+        
+        isDraggingDivider = true
+        
+        let position = view.frame.height - point.y - 6
+        
+        guard position > 150, position < view.frame.height - 200 else {
+            return
+        }
+        
+        dividerPosition = position
+        dividerViewBottomConstraint.constant = position
+        view.setNeedsLayout()
+    }
+    
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        isDraggingDivider = false
+        
+        //TODO: see if I need anything from adjustFeedDetailScreenForStoryTitles
     }
 }
 
 private extension DetailViewController {
-    func updateLayout() {
-        checkViewControllers()
-        
-        //TODO: *** TO BE IMPLEMENTED ***: update the layout
-    }
-    
     func checkViewControllers() {
         if layout == .left {
-            remove(viewController: feedDetailViewController)
+            if feedDetailViewController != nil {
+                remove(viewController: feedDetailViewController)
+                
+                feedDetailViewController = nil
+                appDelegate.feedDetailViewController = supplementaryFeedDetailViewController
+                appDelegate.splitViewController.setViewController(supplementaryFeedDetailNavigationController, for: .supplementary)
+                supplementaryFeedDetailNavigationController = nil
+                supplementaryFeedDetailViewController = nil
+            }
             
-            feedDetailViewController = nil
+            dividerViewBottomConstraint.constant = -13
         } else {
             if feedDetailViewController == nil {
                 feedDetailViewController = Storyboards.shared.controller(withIdentifier: .feedDetail) as? FeedDetailViewController
                 
-                add(viewController: feedDetailViewController)
+                add(viewController: feedDetailViewController, top: layout == .top)
+                
+                supplementaryFeedDetailNavigationController = appDelegate.feedDetailNavigationController
+                supplementaryFeedDetailViewController = appDelegate.feedDetailViewController
+                appDelegate.feedDetailViewController = feedDetailViewController
+                appDelegate.splitViewController.setViewController(nil, for: .supplementary)
             }
+            
+            dividerViewBottomConstraint.constant = dividerPosition
         }
         
         if horizontalPageViewController == nil {
@@ -156,25 +293,34 @@ private extension DetailViewController {
             
             horizontalPageViewController?.detailViewController = self
             
-            add(viewController: horizontalPageViewController)
+            add(viewController: horizontalPageViewController, top: layout != .top)
+        }
+        
+//        appDelegate.loadFeedDetailView()
+    }
+    
+    func add(viewController: UIViewController?, top: Bool) {
+        if top {
+            add(viewController: viewController, to: topContainerView)
+        } else {
+            add(viewController: viewController, to: bottomContainerView)
         }
     }
     
-    func add(viewController: UIViewController?) {
+    func add(viewController: UIViewController?, to containerView: UIView) {
         guard let viewController = viewController else {
             return
         }
         
         addChild(viewController)
-//        view.addSubview(viewController.view)
-        view.insertSubview(viewController.view, at: 0)
         
-        //TODO: *** TO BE IMPLEMENTED ***: will want to use slightly different constraints for top & bottom layouts
+        containerView.addSubview(viewController.view)
+        
         viewController.view.translatesAutoresizingMaskIntoConstraints = false
-        viewController.view.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
-        viewController.view.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
-        viewController.view.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
-        viewController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        viewController.view.leadingAnchor.constraint(equalTo: containerView.leadingAnchor).isActive = true
+        viewController.view.trailingAnchor.constraint(equalTo: containerView.trailingAnchor).isActive = true
+        viewController.view.topAnchor.constraint(equalTo: containerView.topAnchor).isActive = true
+        viewController.view.bottomAnchor.constraint(equalTo: containerView.bottomAnchor).isActive = true
         
         viewController.didMove(toParent: self)
     }

@@ -1121,6 +1121,8 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
         [self updateThemeBrightness];
     } else if ([identifier isEqual:@"theme_style"]) {
         [self updateThemeStyle];
+    } else if ([identifier isEqual:@"story_titles_position"]) {
+        [self.appDelegate.detailViewController updateLayoutWithReload:YES];
     } else if ([identifier isEqual:@"story_list_preview_images_size"]) {
     }
     

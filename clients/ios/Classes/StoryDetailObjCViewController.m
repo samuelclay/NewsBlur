@@ -1378,7 +1378,7 @@
         
         CGFloat bottomInset = appDelegate.detailViewController.view.safeAreaInsets.bottom;
         
-        int safeBottomMargin = -1 * bottomInset / 2;
+        int safeBottomMargin = (-1 * bottomInset / 2) + 20;
         int bottomPosition = webpageHeight - topPosition - viewportHeight;
         BOOL singlePage = webpageHeight - 200 <= viewportHeight;
         BOOL atBottom = bottomPosition < 150;
