@@ -907,7 +907,7 @@ def build_haproxy():
     gunicorn_counts_servers = ['app22', 'app26']
     gunicorn_refresh_servers = ['app20', 'app21']
     maintenance_servers = ['app20']
-    ignore_servers = ['app01']
+    ignore_servers = ['']
     
     for group_type in ['app', 'push', 'work', 'node_socket', 'node_favicon', 'node_text', 'www']:
         group_type_name = group_type
