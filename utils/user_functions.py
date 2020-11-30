@@ -89,16 +89,13 @@ def get_user(request):
             except User.DoesNotExist:
                 pass
         
-    if user.is_anonymous:
-        user = cache.get('user:%s' % settings.HOMEPAGE_USERNAME, None)
-        if not user:
-            try:
-                user = User.objects.get(username=settings.HOMEPAGE_USERNAME)
-                cache.set('user:%s' % user, user)
-            except User.DoesNotExist:
-                user = User.objects.create(username=settings.HOMEPAGE_USERNAME)
-                user.set_password('')
-                user.save()
+    if user.is_anonymous():
+        try:
+            user = User.objects.get(username=settings.HOMEPAGE_USERNAME)
+        except User.DoesNotExist:
+            user = User.objects.create(username=settings.HOMEPAGE_USERNAME)
+            user.set_password('')
+            user.save()
     return user
     
 def invalidate_template_cache(fragment_name, *variables):
