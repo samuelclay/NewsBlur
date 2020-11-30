@@ -11,6 +11,7 @@ media/iphone/build
 build/
 .DS_Store
 **/*.perspectivev*
+.vscode/*
 data/
 config/certificates
 **/*.xcuserstate
