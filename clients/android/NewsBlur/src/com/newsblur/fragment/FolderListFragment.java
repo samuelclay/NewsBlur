@@ -587,8 +587,8 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 
 	private void checkAccountFeedsLimit() {
         new Handler().postDelayed(() -> {
-            if (adapter.totalActiveFeedCount > AppConstants.FREE_ACCOUNT_SITE_LIMIT && !PrefsUtils.getIsPremium(requireContext())) {
-                Intent intent = new Intent(requireActivity(), MuteConfig.class);
+            if (getActivity() != null && adapter.totalActiveFeedCount > AppConstants.FREE_ACCOUNT_SITE_LIMIT && !PrefsUtils.getIsPremium(getActivity())) {
+                Intent intent = new Intent(getActivity(), MuteConfig.class);
                 startActivity(intent);
             }
         }, 2000);
