@@ -284,6 +284,19 @@ public class BlurDatabaseHelper {
         return hashes;
     }
 
+    public Set<String> getStarredStoryHashes() {
+        String q = "SELECT " + DatabaseConstants.STORY_HASH +
+                " FROM " + DatabaseConstants.STORY_TABLE +
+                " WHERE " + DatabaseConstants.STORY_STARRED + " = 1" ;
+        Cursor c = dbRO.rawQuery(q, null);
+        Set<String> hashes = new HashSet<>(c.getCount());
+        while (c.moveToNext()) {
+            hashes.add(c.getString(c.getColumnIndexOrThrow(DatabaseConstants.STORY_HASH)));
+        }
+        c.close();
+        return hashes;
+    }
+
     public Set<String> getAllStoryImages() {
         Cursor c = dbRO.query(DatabaseConstants.STORY_TABLE, new String[]{DatabaseConstants.STORY_IMAGE_URLS}, null, null, null, null, null);
         Set<String> urls = new HashSet<String>(c.getCount());
@@ -574,6 +587,22 @@ public class BlurDatabaseHelper {
             try {
                 ContentValues values = new ContentValues();
                 values.put(DatabaseConstants.STORY_READ, true);
+                for (String hash : hashes) {
+                    dbRW.update(DatabaseConstants.STORY_TABLE, values, DatabaseConstants.STORY_HASH + " = ?", new String[]{hash});
+                }
+                dbRW.setTransactionSuccessful();
+            } finally {
+                dbRW.endTransaction();
+            }
+        }
+    }
+
+    public void markStoryHashesStarred(Collection<String> hashes, boolean isStarred) {
+        synchronized (RW_MUTEX) {
+            dbRW.beginTransaction();
+            try {
+                ContentValues values = new ContentValues();
+                values.put(DatabaseConstants.STORY_STARRED, isStarred);
                 for (String hash : hashes) {
                     dbRW.update(DatabaseConstants.STORY_TABLE, values, DatabaseConstants.STORY_HASH + " = ?", new String[]{hash});
                 }
