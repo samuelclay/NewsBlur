@@ -51,13 +51,11 @@ class PageImporter(object):
     @property
     def headers(self):
         return {
-            'User-Agent': 'NewsBlur Page Fetcher - %s subscriber%s - %s '
-                          '(Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_1) '
-                          'AppleWebKit/534.48.3 (KHTML, like Gecko) Version/5.1 '
-                          'Safari/534.48.3)' % (
+            'User-Agent': 'NewsBlur Page Fetcher - %s subscriber%s - %s %s' % (
                 self.feed.num_subscribers,
                 's' if self.feed.num_subscribers != 1 else '',
                 self.feed.permalink,
+                self.feed.fake_user_agent,
             ),
         }
     
