@@ -771,6 +771,9 @@ class UserSubscription(models.Model):
                 except pymongo.errors.OperationFailure, e:
                     stories_db = MStory.objects(story_hash__in=unread_story_hashes)[:100]
                     stories = Feed.format_stories(stories_db, self.feed_id)
+                except pymongo.errors.OperationFailure, e:
+                    stories_db = MStory.objects(story_hash__in=unread_story_hashes)[:25]
+                    stories = Feed.format_stories(stories_db, self.feed_id)
                     
             unread_stories = []
             for story in stories:

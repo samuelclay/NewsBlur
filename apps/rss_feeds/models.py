@@ -1117,20 +1117,20 @@ class Feed(models.Model):
             # A known workaround is using facebook's user agent.
             return 'facebookexternalhit/1.0 (+http://www.facebook.com/externalhit_uatext.php)'
 
-        ua = ('NewsBlur Feed Fetcher - %s subscriber%s - %s '
-              '(Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_3) '
-              'AppleWebKit/537.36 (KHTML, like Gecko) '
-              'Chrome/56.0.2924.87 Safari/537.36)' % (
+        ua = ('NewsBlur Feed Fetcher - %s subscriber%s - %s %s' % (
                    self.num_subscribers,
                    's' if self.num_subscribers != 1 else '',
                    self.permalink,
+                   self.fake_user_agent,
               ))
 
         return ua
     
     @property
     def fake_user_agent(self):
-        ua = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:49.0) Gecko/20100101 Firefox/49.0"
+        ua = ('("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
+              'AppleWebKit/605.1.15 (KHTML, like Gecko) '
+              'Version/14.0.1 Safari/605.1.15")')
         
         return ua
     
