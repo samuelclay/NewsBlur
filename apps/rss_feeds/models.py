@@ -2799,6 +2799,14 @@ class MStory(mongo.Document):
         if len(image_urls):
             self.image_urls = [u for u in image_urls if u]
         
+        max_length = MStory.image_urls.field.max_length
+        while len(''.join(self.image_urls)) > max_length:
+            if len(self.image_urls) <= 1:
+                self.image_urls[0] = self.image_urls[0][:max_length-1]
+                break
+            else:
+                self.image_urls.pop()
+
         return self.image_urls
 
     def fetch_original_text(self, force=False, request=None, debug=False):
