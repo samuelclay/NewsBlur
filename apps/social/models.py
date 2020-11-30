@@ -2312,10 +2312,7 @@ class MSharedStory(mongo.DynamicDocument):
             return self.image_sizes
             
         headers = {
-            'User-Agent': 'NewsBlur Image Fetcher - %s '
-                          '(Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_1) '
-                          'AppleWebKit/534.48.3 (KHTML, like Gecko) Version/5.1 '
-                          'Safari/534.48.3)' % (
+            'User-Agent': 'NewsBlur Image Fetcher - %s' % (
                 settings.NEWSBLUR_URL
             ),
         }
