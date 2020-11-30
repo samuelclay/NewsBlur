@@ -291,7 +291,8 @@ class PageImporter(object):
                     feed_page.page_data = zlib.compress(html)
                     feed_page.save()
             except MFeedPage.DoesNotExist:
-                feed_page = MFeedPage.objects.create(feed_id=self.feed.pk, page_data=html)
+                feed_page = MFeedPage.objects.create(feed_id=self.feed.pk, 
+                                                     page_data=zlib.compress(html))
             return feed_page
     
     def save_page_node(self, html):
