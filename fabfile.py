@@ -963,6 +963,8 @@ def upgrade_django(role):
     with virtualenv(), settings(warn_only=True):
         sudo('sudo dpkg --configure -a')
         setup_supervisor()
+        pull()
+        run('git co django1.11')
         if role == "task":
             sudo('supervisorctl stop celery')
             run('./utils/kill_celery.sh')
@@ -973,8 +975,6 @@ def upgrade_django(role):
             run('./utils/kill_gunicorn.sh')
             copy_app_settings()
             setup_gunicorn(restart=False)
-        pull()
-        run('git co django1.11')
         pip()
         clean()
 
