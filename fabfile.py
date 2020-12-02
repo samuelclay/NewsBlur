@@ -503,6 +503,7 @@ def pip():
         sudo('chown %s.%s -R %s' % (env.user, env.user, os.path.join(env.NEWSBLUR_PATH, 'venv')))
         run('easy_install -U pip')
         run('pip install --upgrade pip')
+        run('pip install --upgrade setuptools')
         run('pip install -r requirements.txt')
         with settings(warn_only=True):
             sudo('swapoff /swapfile')
