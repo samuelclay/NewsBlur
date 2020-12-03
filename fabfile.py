@@ -368,9 +368,9 @@ def setup_installs():
     ]
     # sudo("sed -i -e 's/archive.ubuntu.com\|security.ubuntu.com/old-releases.ubuntu.com/g' /etc/apt/sources.list")
     put("config/apt_sources.conf", "/etc/apt/sources.list", use_sudo=True)
-    # run('sleep 10') # Dies on a lock, so just delay
+    run('sleep 10') # Dies on a lock, so just delay
     sudo('apt-get -y update')
-    # run('sleep 10') # Dies on a lock, so just delay
+    run('sleep 10') # Dies on a lock, so just delay
     sudo('DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" dist-upgrade')
     sudo('DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install %s' % ' '.join(packages))
     
@@ -1071,16 +1071,16 @@ def setup_rabbitmq():
 def setup_postgres(standby=False):
     shmmax = 17818362112
     hugepages = 9000
-    sudo('echo "deb http://apt.postgresql.org/pub/repos/apt/ xenial-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list')
+    sudo('echo "deb http://apt.postgresql.org/pub/repos/apt/ `lsb_release -cs`-pgdg main" |sudo tee  /etc/apt/sources.list.d/pgdg.list')
     sudo('wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -')
-    sudo('apt-get update')
-    sudo('apt-get -y install postgresql-9.4 postgresql-client-9.4 postgresql-contrib-9.4 libpq-dev')
-    put('config/postgresql.conf', '/etc/postgresql/9.4/main/postgresql.conf', use_sudo=True)
-    put('config/postgres_hba.conf', '/etc/postgresql/9.4/main/pg_hba.conf', use_sudo=True)
-    sudo('mkdir -p /var/lib/postgresql/9.4/archive')
-    sudo('chown -R postgres.postgres /etc/postgresql/9.4/main')
-    sudo('chown -R postgres.postgres /var/lib/postgresql/9.4/main')
-    sudo('chown -R postgres.postgres /var/lib/postgresql/9.4/archive')
+    sudo('apt update')
+    sudo('apt install -y postgresql-13')
+    put('config/postgresql-13.conf', '/etc/postgresql/13/main/postgresql.conf', use_sudo=True)
+    put('config/postgres_hba-13.conf', '/etc/postgresql/13/main/pg_hba.conf', use_sudo=True)
+    sudo('mkdir -p /var/lib/postgresql/13/archive')
+    sudo('chown -R postgres.postgres /etc/postgresql/13/main')
+    sudo('chown -R postgres.postgres /var/lib/postgresql/13/main')
+    sudo('chown -R postgres.postgres /var/lib/postgresql/13/archive')
     sudo('echo "%s" | sudo tee /proc/sys/kernel/shmmax' % shmmax)
     sudo('echo "\nkernel.shmmax = %s" | sudo tee -a /etc/sysctl.conf' % shmmax)
     sudo('echo "\nvm.nr_hugepages = %s\n" | sudo tee -a /etc/sysctl.conf' % hugepages)
@@ -1092,20 +1092,20 @@ def setup_postgres(standby=False):
     sudo('systemctl enable postgresql')
 
     if standby:
-        put('config/postgresql_recovery.conf', '/var/lib/postgresql/9.4/recovery.conf', use_sudo=True)
-        sudo('chown -R postgres.postgres /var/lib/postgresql/9.4/recovery.conf')
+        put('config/postgresql_recovery.conf', '/var/lib/postgresql/13/recovery.conf', use_sudo=True)
+        sudo('chown -R postgres.postgres /var/lib/postgresql/13/recovery.conf')
 
     sudo('/etc/init.d/postgresql stop')
     sudo('/etc/init.d/postgresql start')
 
 def config_postgres(standby=False):
-    put('config/postgresql.conf', '/etc/postgresql/9.4/main/postgresql.conf', use_sudo=True)
-    put('config/postgres_hba.conf', '/etc/postgresql/9.4/main/pg_hba.conf', use_sudo=True)
-    sudo('chown postgres.postgres /etc/postgresql/9.4/main/postgresql.conf')
+    put('config/postgresql-13.conf', '/etc/postgresql/13/main/postgresql.conf', use_sudo=True)
+    put('config/postgres_hba.conf', '/etc/postgresql/13/main/pg_hba.conf', use_sudo=True)
+    sudo('chown postgres.postgres /etc/postgresql/13/main/postgresql.conf')
     run('echo "ulimit -n 100000" > postgresql.defaults')
     sudo('mv postgresql.defaults /etc/default/postgresql')
     
-    sudo('/etc/init.d/postgresql reload 9.4')
+    sudo('/etc/init.d/postgresql reload 13')
 
 def upgrade_postgres():
     sudo('su postgres -c "/usr/lib/postgresql/10/bin/pg_upgrade -b /usr/lib/postgresql/9.4/bin -B /usr/lib/postgresql/10/bin -d /var/lib/postgresql/9.4/main -D /var/lib/postgresql/10/main"')
@@ -1813,8 +1813,8 @@ def setup_postgres_backups():
     # crontab for postgres backups
     crontab = """
 0 4 * * * /srv/newsblur/venv/newsblur/bin/python /srv/newsblur/utils/backups/backup_psql.py
-0 * * * * sudo find /var/lib/postgresql/9.4/archive -mtime +1 -exec rm {} \;
-0 * * * * sudo find /var/lib/postgresql/9.4/archive -type f -mmin +180 -delete"""
+0 * * * * sudo find /var/lib/postgresql/13/archive -mtime +1 -exec rm {} \;
+0 * * * * sudo find /var/lib/postgresql/13/archive -type f -mmin +180 -delete"""
 
     run('(crontab -l ; echo "%s") | sort - | uniq - | crontab -' % crontab)
     run('crontab -l')
@@ -1851,17 +1851,23 @@ def setup_time_calibration():
 # = Tasks - DB =
 # ==============
 
-def restore_postgres(port=5433, download=False):
-    backup_date = '2020-11-11-04-00'
-    yes = prompt("Dropping and creating NewsBlur PGSQL db. Sure?")
-    if yes != 'y':
-        return
-    if download:
-        run('PYTHONPATH=%s python utils/backups/s3.py get backup_postgresql_%s.sql.gz' % (env.NEWSBLUR_PATH, backup_date))
-    # sudo('su postgres -c "createuser -p %s -U newsblur"' % (port,))
-    run('dropdb newsblur -p %s -U newsblur' % (port,), pty=False)
-    run('createdb newsblur -p %s -O newsblur' % (port,), pty=False)
-    run('pg_restore -p %s --role=newsblur --dbname=newsblur /Users/sclay/Documents/Backups/backup_postgresql_%s.sql.gz' % (port, backup_date), pty=False)
+def restore_postgres(port=5432, download=False):
+    with virtualenv():
+        backup_date = '2020-12-02-04-00'
+        yes = prompt("Dropping and creating NewsBlur PGSQL db. Sure?")
+        if yes != 'y':
+            return
+        if download:
+            run('mkdir -p postgres')
+            run('PYTHONPATH=%s python utils/backups/s3.py get postgres/backup_postgresql_%s.sql.gz' % (env.NEWSBLUR_PATH, backup_date))
+        # sudo('su postgres -c "createuser -p %s -U newsblur"' % (port,))
+        with settings(warn_only=True): 
+            # May not exist
+            run('dropdb newsblur -p %s -U newsblur' % (port,), pty=False)
+            run('sudo -u postgres createuser newsblur -s')
+            # May already exist
+            run('createdb newsblur -p %s -O newsblur -U newsblur' % (port,), pty=False)
+        run('pg_restore -U newsblur -p %s --role=newsblur --dbname=newsblur /srv/newsblur/postgres/backup_postgresql_%s.sql.gz' % (port, backup_date), pty=False)
 
 def restore_mongo(download=False):
     backup_date = '2020-11-11-04-00'
@@ -1951,8 +1957,9 @@ def upgrade_to_virtualenv(role=None):
         sudo('reboot')
 
 def benchmark():
+    run('curl -s https://packagecloud.io/install/repositories/akopytov/sysbench/script.deb.sh | sudo bash')
     sudo('apt-get install -y sysbench')
-    run('sysbench --test=cpu --cpu-max-prime=20000 run')
-    run('sysbench --test=fileio --file-total-size=150G prepare')
-    run('sysbench --test=fileio --file-total-size=150G --file-test-mode=rndrw --init-rng=on --max-time=300 --max-requests=0 run')
-    run('sysbench --test=fileio --file-total-size=150G cleanup')
+    run('sysbench cpu --cpu-max-prime=20000 run')
+    run('sysbench fileio --file-total-size=150G prepare')
+    run('sysbench fileio --file-total-size=150G --file-test-mode=rndrw --time=300 --max-requests=0 run')
+    run('sysbench fileio --file-total-size=150G cleanup')
