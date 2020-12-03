@@ -26,9 +26,6 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-from __future__ import absolute_import
-from __future__ import unicode_literals
-
 from ..util import FeedParserDict
 
 
@@ -102,7 +99,7 @@ class Namespace(object):
 
     def _end_itunes_block(self):
         value = self.pop('itunes_block', 0)
-        self._get_context()['itunes_block'] = (value == 'yes') and 1 or 0
+        self._get_context()['itunes_block'] = (value == 'yes' or value == 'Yes') and 1 or 0
 
     def _end_itunes_explicit(self):
         value = self.pop('itunes_explicit', 0)

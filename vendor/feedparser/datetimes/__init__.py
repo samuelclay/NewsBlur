@@ -25,8 +25,6 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-from __future__ import absolute_import
-
 from .asctime import _parse_date_asctime
 from .greek import _parse_date_greek
 from .hungarian import _parse_date_hungarian

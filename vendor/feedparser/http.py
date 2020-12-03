@@ -25,62 +25,19 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-from __future__ import absolute_import
-from __future__ import unicode_literals
-
+import base64
 import datetime
 import gzip
+import io
 import re
 import struct
+import urllib.parse
+import urllib.request
 import zlib
-
-try:
-    import urllib.parse
-    import urllib.request
-except ImportError:
-    # Mock urllib sufficiently to work on Python 2.7
-    from urllib import splithost, splittype, splituser
-    from urllib2 import build_opener, HTTPDigestAuthHandler, HTTPRedirectHandler, HTTPDefaultErrorHandler, Request
-    from urlparse import urlparse
-
-    class urllib(object):
-        class parse(object):
-            splithost = staticmethod(splithost)
-            splittype = staticmethod(splittype)
-            splituser = staticmethod(splituser)
-            urlparse = staticmethod(urlparse)
-
-        class request(object):
-            build_opener = staticmethod(build_opener)
-            HTTPDigestAuthHandler = HTTPDigestAuthHandler
-            HTTPRedirectHandler = HTTPRedirectHandler
-            HTTPDefaultErrorHandler = HTTPDefaultErrorHandler
-            Request = Request
-
-try:
-    from io import BytesIO as _StringIO
-except ImportError:
-    # Python 2.7
-    try:
-        from cStringIO import StringIO as _StringIO
-    except ImportError:
-        from StringIO import StringIO as _StringIO
-
-import base64
 
 from .datetimes import _parse_date
 from .urls import convert_to_idn
 
-# Python 3.1 deprecated decodestring in favor of decodebytes.
-# This can be removed after Python 2.7 support is dropped.
-_base64decode = getattr(base64, 'decodebytes', base64.decodestring)
-
-try:
-    basestring
-except NameError:
-    basestring = str
-
-bytes_ = type(b'')
 
 # HTTP "Accept" header to send to servers when downloading feeds.  If you don't
 # want to send an Accept header, set this to None.
@@ -121,7 +78,7 @@ class _FeedURLHandler(urllib.request.HTTPDigestAuthHandler, urllib.request.HTTPR
         host = urllib.parse.urlparse(req.get_full_url())[1]
         if 'Authorization' not in req.headers or 'WWW-Authenticate' not in headers:
             return self.http_error_default(req, fp, code, msg, headers)
-        auth = _base64decode(req.headers['Authorization'].split(' ')[1])
+        auth = base64.decodebytes(req.headers['Authorization'].split(' ')[1].encode('utf8'))
         user, passw = auth.split(':')
         realm = re.findall('realm="([^"]*)"', headers['WWW-Authenticate'])[0]
         self.add_password(realm, host, user, passw)
@@ -135,7 +92,7 @@ def _build_urllib2_request(url, agent, accept_header, etag, modified, referrer, 
     request.add_header('User-Agent', agent)
     if etag:
         request.add_header('If-None-Match', etag)
-    if isinstance(modified, basestring):
+    if isinstance(modified, str):
         modified = _parse_date(modified)
     elif isinstance(modified, datetime.datetime):
         modified = modified.utctimetuple()
@@ -181,16 +138,17 @@ def get(url, etag=None, modified=None, agent=None, referrer=None, handlers=None,
     # Test for inline user:password credentials for HTTP basic auth
     auth = None
     if not url.startswith('ftp:'):
-        urltype, rest = urllib.parse.splittype(url)
-        realhost, rest = urllib.parse.splithost(rest)
-        if realhost:
-            user_passwd, realhost = urllib.parse.splituser(realhost)
-            if user_passwd:
-                url = '%s://%s%s' % (urltype, realhost, rest)
-                auth = base64.standard_b64encode(user_passwd).strip()
+        url_pieces = urllib.parse.urlparse(url)
+        if url_pieces.username:
+            new_pieces = list(url_pieces)
+            new_pieces[1] = url_pieces.hostname
+            if url_pieces.port:
+                new_pieces[1] = f'{url_pieces.hostname}:{url_pieces.port}'
+            url = urllib.parse.urlunparse(new_pieces)
+            auth = base64.standard_b64encode(f'{url_pieces.username}:{url_pieces.password}').strip()
 
     # iri support
-    if not isinstance(url, bytes_):
+    if not isinstance(url, bytes):
         url = convert_to_idn(url)
 
     # try to open with urllib2 (to use optional headers)
@@ -207,7 +165,7 @@ def get(url, etag=None, modified=None, agent=None, referrer=None, handlers=None,
     # if feed is gzip-compressed, decompress it
     if data and 'gzip' in result['headers'].get('content-encoding', ''):
         try:
-            data = gzip.GzipFile(fileobj=_StringIO(data)).read()
+            data = gzip.GzipFile(fileobj=io.BytesIO(data)).read()
         except (EOFError, IOError, struct.error) as e:
             # IOError can occur if the gzip header is bad.
             # struct.error can occur if the data is damaged.
@@ -232,7 +190,7 @@ def get(url, etag=None, modified=None, agent=None, referrer=None, handlers=None,
     # save HTTP headers
     if 'etag' in result['headers']:
         etag = result['headers'].get('etag', '')
-        if isinstance(etag, bytes_):
+        if isinstance(etag, bytes):
             etag = etag.decode('utf-8', 'ignore')
         if etag:
             result['etag'] = etag
@@ -241,7 +199,7 @@ def get(url, etag=None, modified=None, agent=None, referrer=None, handlers=None,
         if modified:
             result['modified'] = modified
             result['modified_parsed'] = _parse_date(modified)
-    if isinstance(f.url, bytes_):
+    if isinstance(f.url, bytes):
         result['href'] = f.url.decode('utf-8', 'ignore')
     else:
         result['href'] = f.url

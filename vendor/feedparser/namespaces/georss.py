@@ -26,8 +26,7 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-from __future__ import absolute_import
-from __future__ import unicode_literals
+# Required for Python 3.6 compatibility.
 from __future__ import generator_stop
 
 from ..util import FeedParserDict

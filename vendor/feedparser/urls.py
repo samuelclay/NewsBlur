@@ -25,15 +25,8 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-from __future__ import absolute_import
-from __future__ import unicode_literals
-
 import re
-
-try:
-    import urllib.parse as urlparse
-except ImportError:
-    import urlparse as urlparse
+import urllib.parse
 
 from .html import _BaseHTMLProcessor
 
@@ -59,7 +52,7 @@ _urifixer = re.compile('^([A-Za-z][A-Za-z0-9+-.]*://)(/*)(.*?)')
 def _urljoin(base, uri):
     uri = _urifixer.sub(r'\1\3', uri)
     try:
-        uri = urlparse.urljoin(base, uri)
+        uri = urllib.parse.urljoin(base, uri)
     except ValueError:
         uri = ''
     return uri
@@ -70,7 +63,7 @@ def convert_to_idn(url):
     # this function should only be called with a unicode string
     # strategy: if the host cannot be encoded in ascii, then
     # it'll be necessary to encode it in idn form
-    parts = list(urlparse.urlsplit(url))
+    parts = list(urllib.parse.urlsplit(url))
     try:
         parts[1].encode('ascii')
     except UnicodeEncodeError:
@@ -85,7 +78,7 @@ def convert_to_idn(url):
         parts[1] = '.'.join(newhost)
         if port:
             parts[1] += ':' + port
-        return urlparse.urlunsplit(parts)
+        return urllib.parse.urlunsplit(parts)
     else:
         return url
 
@@ -98,7 +91,7 @@ def make_safe_absolute_uri(base, rel=None):
         return rel or ''
     if not rel:
         try:
-            scheme = urlparse.urlparse(base)[0]
+            scheme = urllib.parse.urlparse(base)[0]
         except ValueError:
             return ''
         if not scheme or scheme in ACCEPTABLE_URI_SCHEMES:

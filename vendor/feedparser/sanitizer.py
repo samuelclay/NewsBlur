@@ -25,13 +25,9 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-from __future__ import absolute_import
-from __future__ import unicode_literals
-
 import re
 
 from .html import _BaseHTMLProcessor
-from .sgml import _SGML_AVAILABLE
 from .urls import make_safe_absolute_uri
 
 
@@ -260,6 +256,7 @@ class _HTMLSanitizer(_BaseHTMLProcessor):
         'src',
         'start',
         'step',
+        'style',
         'summary',
         'suppress',
         'tabindex',
@@ -280,12 +277,6 @@ class _HTMLSanitizer(_BaseHTMLProcessor):
         'width',
         'wrap',
         'xml:lang',
-        # Added by NewsBlur
-        'allowfullscreen', 
-        'autoplay', 
-        'muted', 
-        'loop',
-        'playsinline',
     }
 
     unacceptable_elements_with_end_tag = {
@@ -804,16 +795,16 @@ class _HTMLSanitizer(_BaseHTMLProcessor):
 
         clean_attrs = []
         for key, value in self.normalize_attrs(attrs):
-            if key in acceptable_attributes:
+            if key == 'style' and 'style' in acceptable_attributes:
+                clean_value = self.sanitize_style(value)
+                if clean_value:
+                    clean_attrs.append((key, clean_value))
+            elif key in acceptable_attributes:
                 key = keymap.get(key, key)
                 # make sure the uri uses an acceptable uri scheme
                 if key == 'href':
                     value = make_safe_absolute_uri(value)
                 clean_attrs.append((key, value))
-            elif key == 'style':
-                clean_value = self.sanitize_style(value)
-                if clean_value:
-                    clean_attrs.append((key, clean_value))
         super(_HTMLSanitizer, self).unknown_starttag(tag, clean_attrs)
 
     def unknown_endtag(self, tag):
@@ -887,8 +878,6 @@ class _HTMLSanitizer(_BaseHTMLProcessor):
 
 
 def _sanitize_html(html_source, encoding, _type):
-    if not _SGML_AVAILABLE:
-        return html_source
     p = _HTMLSanitizer(encoding, _type)
     html_source = html_source.replace('<![CDATA[', '&lt;![CDATA[')
     p.feed(html_source)
