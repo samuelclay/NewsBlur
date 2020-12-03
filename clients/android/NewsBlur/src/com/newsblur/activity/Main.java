@@ -5,9 +5,9 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.widget.SwipeRefreshLayout;
+import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -373,6 +373,14 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         } else if (item.getItemId() == R.id.menu_theme_black) {
             PrefsUtils.setSelectedTheme(this, ThemeValue.BLACK);
             UIUtils.restartActivity(this);
+        } else if (item.getItemId() == R.id.menu_premium_account) {
+            Intent intent = new Intent(this, Premium.class);
+            startActivity(intent);
+            return true;
+        } else if (item.getItemId() == R.id.menu_mute_sites) {
+		    Intent intent = new Intent(this, MuteConfig.class);
+		    startActivity(intent);
+		    return true;
         }
 		return false;
     }

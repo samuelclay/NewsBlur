@@ -3,7 +3,7 @@ from django.shortcuts import render
 from utils import json_functions as json
 import functools
 
-def get_argument_or_404(request, param, method='REQUEST', code='404'):
+def get_argument_or_404(request, param, method='POST', code='404'):
     try:
         return getattr(request, method)[param]
     except KeyError:
@@ -67,6 +67,7 @@ class required_params(object):
 
         # Check if parameter is correct type
         for param, param_type in list(self.named_params.items()):
+            if param == "method": continue
             if getattr(request, self.method).get(param) is None:
                 print(" Typed parameter not found: %s" % param)
                 return self.disallowed(param)
