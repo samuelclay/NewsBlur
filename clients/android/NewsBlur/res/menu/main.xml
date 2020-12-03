@@ -21,6 +21,10 @@
           android:title="@string/settings"
           android:showAsAction="never" />
 
+    <item android:id="@+id/menu_mute_sites"
+        android:title="@string/mute_sites"
+        android:showAsAction="never" />
+
     <item android:id="@+id/menu_widget"
         android:title="@string/widget"
         android:showAsAction="never" />
@@ -43,6 +47,10 @@
           android:title="@string/menu_loginas"
           android:showAsAction="never"
           android:visible="false"/>
+
+    <item android:id="@+id/menu_premium_account"
+        android:title="@string/menu_premium_account"
+        android:showAsAction="never" />
     
     <item android:id="@+id/menu_logout"
           android:title="@string/menu_logout"

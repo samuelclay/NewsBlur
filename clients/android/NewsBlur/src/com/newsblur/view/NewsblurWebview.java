@@ -2,7 +2,6 @@ package com.newsblur.view;
 
 import android.annotation.TargetApi;
 import android.content.Context;
-import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.util.AttributeSet;
@@ -17,11 +16,9 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 
-import com.newsblur.activity.InAppBrowser;
 import com.newsblur.activity.Reading;
 import com.newsblur.fragment.ReadingItemFragment;
-import com.newsblur.util.DefaultBrowser;
-import com.newsblur.util.PrefsUtils;
+import com.newsblur.util.UIUtils;
 
 public class NewsblurWebview extends WebView {
 
@@ -93,14 +90,14 @@ public class NewsblurWebview extends WebView {
     class NewsblurWebViewClient extends WebViewClient {
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
-            handleUri(Uri.parse(url));
+            UIUtils.handleUri(context, Uri.parse(url));
             return true;
         }
 
         @TargetApi(Build.VERSION_CODES.N)
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-            handleUri(request.getUrl());
+            UIUtils.handleUri(context, request.getUrl());
             return true;
         }
 
@@ -110,46 +107,6 @@ public class NewsblurWebview extends WebView {
                 com.newsblur.util.Log.w(this, "WebView Error ("+error.getErrorCode()+"): " + error.getDescription());
             }
             fragment.flagWebviewError();
-        }
-    }
-
-    private void handleUri(Uri uri) {
-        DefaultBrowser defaultBrowser = PrefsUtils.getDefaultBrowser(context);
-        if (defaultBrowser == DefaultBrowser.SYSTEM_DEFAULT) {
-            openSystemDefaultBrowser(uri);
-        } else if (defaultBrowser == DefaultBrowser.IN_APP_BROWSER) {
-            Intent intent = new Intent(context, InAppBrowser.class);
-            intent.putExtra(InAppBrowser.URI, uri);
-            context.startActivity(intent);
-        } else if (defaultBrowser == DefaultBrowser.CHROME) {
-            openExternalBrowserApp(uri, "com.android.chrome");
-        } else if (defaultBrowser == DefaultBrowser.FIREFOX) {
-            openExternalBrowserApp(uri, "org.mozilla.firefox");
-        } else if (defaultBrowser == DefaultBrowser.OPERA_MINI) {
-            openExternalBrowserApp(uri, "com.opera.mini.native");
-        }
-    }
-
-    private void openSystemDefaultBrowser(Uri uri) {
-        try {
-            Intent intent = new Intent(Intent.ACTION_VIEW);
-            intent.setData(uri);
-            context.startActivity(intent);
-        } catch (Exception e) {
-            com.newsblur.util.Log.e(this.getClass().getName(), "device cannot open URLs");
-        }
-    }
-
-    private void openExternalBrowserApp(Uri uri, String packageName) {
-        try {
-            Intent intent = new Intent(Intent.ACTION_VIEW);
-            intent.setData(uri);
-            intent.setPackage(packageName);
-            context.startActivity(intent);
-        } catch (Exception e) {
-            com.newsblur.util.Log.e(this.getClass().getName(), "apps not available to open URLs");
-            // fallback to system default if apps cannot be opened
-            openSystemDefaultBrowser(uri);
         }
     }
 

@@ -223,7 +223,8 @@
         return;
     }
     
-    showing = YES;
+    self.showing = YES;
+    self.pendingHide = NO;
 //    CGRect frame = self.frame;
 //    frame.size.width = self.view.frame.size.width;
 //    self.frame = frame;
@@ -252,6 +253,7 @@
 
 - (void)hideIn:(float)seconds {
     if (!self.window) {
+        self.pendingHide = YES;
         return;
     }
     
@@ -267,7 +269,8 @@
 //        self.hidden = YES;
     }];
     
-    showing = NO;
+    self.showing = NO;
+    self.pendingHide = NO;
 }
 
 - (void)drawRect:(CGRect)rect{
