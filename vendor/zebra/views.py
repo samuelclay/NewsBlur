@@ -64,7 +64,7 @@ def webhooks_v2(request):
     if request.method != "POST":
         return HttpResponse("Invalid Request.", status=400)
 
-    event_json = json.loads(request.raw_post_data)
+    event_json = json.loads(request.body)
     event_key = event_json['type'].replace('.', '_')
 
     if event_key in WEBHOOK_MAP:
