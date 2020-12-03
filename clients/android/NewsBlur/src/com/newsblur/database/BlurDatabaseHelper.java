@@ -6,9 +6,9 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.CancellationSignal;
-import android.support.annotation.Nullable;
-import android.support.v4.content.AsyncTaskLoader;
-import android.support.v4.content.Loader;
+import androidx.annotation.Nullable;
+import androidx.loader.content.AsyncTaskLoader;
+import androidx.loader.content.Loader;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -279,6 +279,19 @@ public class BlurDatabaseHelper {
         Set<String> hashes = new HashSet<String>(c.getCount());
         while (c.moveToNext()) {
            hashes.add(c.getString(c.getColumnIndexOrThrow(DatabaseConstants.STORY_HASH)));
+        }
+        c.close();
+        return hashes;
+    }
+
+    public Set<String> getStarredStoryHashes() {
+        String q = "SELECT " + DatabaseConstants.STORY_HASH +
+                " FROM " + DatabaseConstants.STORY_TABLE +
+                " WHERE " + DatabaseConstants.STORY_STARRED + " = 1" ;
+        Cursor c = dbRO.rawQuery(q, null);
+        Set<String> hashes = new HashSet<>(c.getCount());
+        while (c.moveToNext()) {
+            hashes.add(c.getString(c.getColumnIndexOrThrow(DatabaseConstants.STORY_HASH)));
         }
         c.close();
         return hashes;
@@ -574,6 +587,22 @@ public class BlurDatabaseHelper {
             try {
                 ContentValues values = new ContentValues();
                 values.put(DatabaseConstants.STORY_READ, true);
+                for (String hash : hashes) {
+                    dbRW.update(DatabaseConstants.STORY_TABLE, values, DatabaseConstants.STORY_HASH + " = ?", new String[]{hash});
+                }
+                dbRW.setTransactionSuccessful();
+            } finally {
+                dbRW.endTransaction();
+            }
+        }
+    }
+
+    public void markStoryHashesStarred(Collection<String> hashes, boolean isStarred) {
+        synchronized (RW_MUTEX) {
+            dbRW.beginTransaction();
+            try {
+                ContentValues values = new ContentValues();
+                values.put(DatabaseConstants.STORY_STARRED, isStarred);
                 for (String hash : hashes) {
                     dbRW.update(DatabaseConstants.STORY_TABLE, values, DatabaseConstants.STORY_HASH + " = ?", new String[]{hash});
                 }

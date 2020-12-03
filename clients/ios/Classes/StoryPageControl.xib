@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="15705" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="16097.2" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina5_9" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15706"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16087"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -28,6 +28,7 @@
                 <outlet property="prevNextBackgroundImageView" destination="71" id="S3e-tC-Pbu"/>
                 <outlet property="scrollBottomConstraint" destination="AOS-qV-fjZ" id="JD4-zE-OTv"/>
                 <outlet property="scrollView" destination="5" id="15"/>
+                <outlet property="scrollViewTopConstraint" destination="sgh-qa-2V3" id="Z8v-Gi-IqF"/>
                 <outlet property="textStorySendBackgroundImageView" destination="80" id="1hz-Zr-85e"/>
                 <outlet property="traverseBottomConstraint" destination="rgF-mh-lia" id="ucW-KZ-fN6"/>
                 <outlet property="traverseView" destination="75" id="76"/>
