@@ -1,4 +1,4 @@
-#!/srv/newsblur/venv/newsblur/bin/python
+#!/srv/newsblur/venv/newsblur3/bin/python
 
 import os
 import sys

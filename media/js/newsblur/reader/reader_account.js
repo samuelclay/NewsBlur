@@ -336,7 +336,9 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
             $cancel.removeAttr('disabled');
             $cancel.text("Cancel subscription renewal");
             $(".NB-preference-premium-cancel .NB-error").remove();
-            $(".NB-preference-premium-cancel .NB-preference-options").append($.make("div", { className: "NB-error" }, message).fadeIn(500));
+            $(".NB-preference-premium-cancel .NB-preference-options").append($.make("div", {
+                className: "NB-error"
+            }, message).fadeIn(500).css('display', 'block'));
         };
 
         this.model.cancel_premium_subscription(_.bind(function(data) {
