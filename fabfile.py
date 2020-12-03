@@ -176,7 +176,7 @@ def db():
 
 def task():
     assign_digitalocean_roledefs()
-    env.roles = ['task', 'search']
+    env.roles = ['task']
 
 def ec2task():
     ec2()
@@ -213,7 +213,7 @@ def setup_common():
     pip()
     setup_supervisor()
     setup_hosts()
-    # setup_pgbouncer()
+    setup_pgbouncer()
     config_pgbouncer()
     setup_mongoengine_repo()
     # setup_forked_mongoengine()
@@ -538,14 +538,14 @@ def setup_hosts():
 
 def setup_pgbouncer():
     sudo('apt-get remove -y pgbouncer')
-    sudo('apt-get install -y libevent-dev')
-    PGBOUNCER_VERSION = '1.7.2'
+    sudo('apt-get install -y libevent-dev pkg-config libc-ares2 libc-ares-dev')
+    PGBOUNCER_VERSION = '1.15.0'
     with cd(env.VENDOR_PATH), settings(warn_only=True):
         run('wget https://pgbouncer.github.io/downloads/files/%s/pgbouncer-%s.tar.gz' % (PGBOUNCER_VERSION, PGBOUNCER_VERSION))
         run('tar -xzf pgbouncer-%s.tar.gz' % PGBOUNCER_VERSION)
         run('rm pgbouncer-%s.tar.gz' % PGBOUNCER_VERSION)
         with cd('pgbouncer-%s' % PGBOUNCER_VERSION):
-            run('./configure --prefix=/usr/local --with-libevent=libevent-prefix')
+            run('./configure --prefix=/usr/local')
             run('make')
             sudo('make install')
             sudo('ln -s /usr/local/bin/pgbouncer /usr/sbin/pgbouncer')
