@@ -267,7 +267,7 @@ def setup_db(engine=None, skip_common=False, skip_benchmark=False):
         setup_postgres_backups()
     elif engine == "postgres_slave":
         setup_postgres(standby=True)
-    elif engine.startswith("mongo"):
+    elif engine and engine.startswith("mongo"):
         setup_mongo()
         # setup_mongo_mms()
         setup_mongo_backups()
@@ -334,9 +334,9 @@ def setup_installs():
         'sysstat',
         'iotop',
         'git',
+        'python2',
         'python-dev',
         'locate',
-        'python-software-properties',
         'software-properties-common',
         'libpcre3-dev',
         'libncurses5-dev',
@@ -348,13 +348,10 @@ def setup_installs():
         'postgresql-common',
         'ssl-cert',
         'pgbouncer',
-        'openssl-blacklist',
         'python-setuptools',
-        'python-psycopg2',
         'libyaml-0-2',
         'python-yaml',
         'python-numpy',
-        'python-scipy',
         'curl',
         'monit',
         'ufw',
@@ -362,7 +359,6 @@ def setup_installs():
         'libjpeg62-dev',
         'libfreetype6',
         'libfreetype6-dev',
-        'python-imaging',
         'libmysqlclient-dev',
         'libblas-dev',
         'liblapack-dev',
@@ -372,10 +368,11 @@ def setup_installs():
     ]
     # sudo("sed -i -e 's/archive.ubuntu.com\|security.ubuntu.com/old-releases.ubuntu.com/g' /etc/apt/sources.list")
     put("config/apt_sources.conf", "/etc/apt/sources.list", use_sudo=True)
-    run('sleep 10') # Dies on a lock, so just delay
+    # run('sleep 10') # Dies on a lock, so just delay
     sudo('apt-get -y update')
-    sudo('DEBIAN_FRONTEND=noninteractive apt-get -y --force-yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" dist-upgrade')
-    sudo('DEBIAN_FRONTEND=noninteractive apt-get -y --force-yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install %s' % ' '.join(packages))
+    # run('sleep 10') # Dies on a lock, so just delay
+    sudo('DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" dist-upgrade')
+    sudo('DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install %s' % ' '.join(packages))
     
     with settings(warn_only=True):
         sudo("ln -s /usr/lib/x86_64-linux-gnu/libjpeg.so /usr/lib")
@@ -441,7 +438,7 @@ def setup_local_files():
     put('config/ssh.conf', '~/.ssh/config')
 
 def setup_psql_client():
-    sudo('apt-get -y --force-yes install postgresql-client')
+    sudo('apt-get -y install postgresql-client')
     sudo('mkdir -p /var/run/postgresql')
     with settings(warn_only=True):
         sudo('chown postgres.postgres /var/run/postgresql')
@@ -487,7 +484,10 @@ def virtualenv():
                     yield
 
 def setup_pip():
-    sudo('easy_install -U pip')
+    with cd(env.VENDOR_PATH), settings(warn_only=True):
+        run('curl https://bootstrap.pypa.io/get-pip.py --output get-pip.py')
+        sudo('python2 get-pip.py')
+
 
 @parallel
 def pip():
@@ -698,7 +698,7 @@ def setup_sudoers(user=None):
     sudo('chmod 0440 /etc/sudoers.d/sclay')
 
 def setup_nginx():
-    NGINX_VERSION = '1.15.8'
+    NGINX_VERSION = '1.19.5'
     with cd(env.VENDOR_PATH), settings(warn_only=True):
         sudo("groupadd nginx")
         sudo("useradd -g nginx -d /var/www/htdocs -s /bin/false nginx")
@@ -963,6 +963,19 @@ def upgrade_django():
         pull()
         sudo('supervisorctl reload')
 
+def downgrade_django(role=None):
+    with virtualenv(), settings(warn_only=True):
+        pull()
+        run('git co master')
+        pip()
+        run('pip uninstall -y django-paypal')
+        if role == "task":
+            copy_task_settings()
+            enable_celery_supervisor()
+        else:
+            copy_app_settings()
+            deploy()
+        
 def vendorize_paypal():
     with virtualenv(), settings(warn_only=True):
         run('pip uninstall -y django-paypal')
@@ -987,7 +1000,6 @@ def downgrade_pil():
 def setup_db_monitor():
     pull()
     with virtualenv():
-        sudo('apt-get install -y python-mysqldb')
         sudo('apt-get install -y libpq-dev python-dev')
         run('pip install -r flask/requirements.txt')
         put('flask/supervisor_db_monitor.conf', '/etc/supervisor/conf.d/db_monitor.conf', use_sudo=True)
@@ -1143,7 +1155,7 @@ def setup_mongo():
     # sudo('echo "\ndeb http://downloads-distro.mongodb.org/repo/debian-sysvinit dist 10gen" | sudo tee -a /etc/apt/sources.list')
     sudo('echo "deb http://repo.mongodb.org/apt/ubuntu trusty/mongodb-org/3.2 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.2.list')
     sudo('apt-get update')
-    sudo('apt-get install -y --force-yes mongodb-org=%s mongodb-org-server=%s mongodb-org-shell=%s mongodb-org-mongos=%s mongodb-org-tools=%s' %
+    sudo('apt-get install -y --allow mongodb-org=%s mongodb-org-server=%s mongodb-org-shell=%s mongodb-org-mongos=%s mongodb-org-tools=%s' %
          (MONGODB_VERSION, MONGODB_VERSION, MONGODB_VERSION, MONGODB_VERSION, MONGODB_VERSION))
     put('config/mongodb.%s.conf' % ('prod' if env.user != 'ubuntu' else 'ec2'),
         '/etc/mongodb.conf', use_sudo=True)
@@ -1481,7 +1493,7 @@ def setup_do(name, size=1, image=None):
     # sizes = dict((s.slug, s.slug) for s in doapi.get_all_sizes())
     ssh_key_ids = [k.id for k in doapi.get_all_sshkeys()]
     if not image:
-        image = "ubuntu-16-04-x64"
+        image = "ubuntu-20-04-x64"
     else:
         images = dict((s.name, s.id) for s in doapi.get_all_images())
         if image == "task": 
