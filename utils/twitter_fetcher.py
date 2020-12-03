@@ -199,6 +199,11 @@ class TwitterFetcher:
                               (self.feed.log_title[:30], e))
                 self.feed.save_feed_history(560, "Twitter Error: Blocked from viewing")
                 return []
+            elif 'over capacity' in message:
+                logging.debug(u'   ***> [%-30s] ~FRTwitter over capacity, ignoring: %s' % 
+                              (self.feed.log_title[:30], e))
+                self.feed.save_feed_history(560, "Twitter Error: Over capacity")
+                return []
             else:
                 raise e
         

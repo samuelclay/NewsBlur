@@ -2302,6 +2302,13 @@ class MSharedStory(mongo.DynamicDocument):
         image_sources = [img.get('src') for img in soup.findAll('img') if img and img.get('src')]
         if len(image_sources) > 0:
             self.image_urls = image_sources
+            max_length = MSharedStory.image_urls.field.max_length
+            while len(''.join(self.image_urls)) > max_length:
+                if len(self.image_urls) <= 1:
+                    self.image_urls[0] = self.image_urls[0][:max_length-1]
+                    break
+                else:
+                    self.image_urls.pop()
             self.save()
             
     def calculate_image_sizes(self, force=False):
@@ -2312,10 +2319,7 @@ class MSharedStory(mongo.DynamicDocument):
             return self.image_sizes
             
         headers = {
-            'User-Agent': 'NewsBlur Image Fetcher - %s '
-                          '(Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_1) '
-                          'AppleWebKit/534.48.3 (KHTML, like Gecko) Version/5.1 '
-                          'Safari/534.48.3)' % (
+            'User-Agent': 'NewsBlur Image Fetcher - %s' % (
                 settings.NEWSBLUR_URL
             ),
         }
