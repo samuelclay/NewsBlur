@@ -158,7 +158,7 @@ def add_site(request, token):
         'code':    code,
         'message': message,
         'usersub': us and us.feed_id,
-    }) + ')', mimetype='text/plain')
+    }) + ')', content_type='text/plain')
 
 @ajax_login_required
 def add_site_authed(request):
@@ -193,7 +193,7 @@ def add_site_authed(request):
         'code':    code,
         'message': message,
         'usersub': us and us.feed_id,
-    }) + ')', mimetype='text/plain')
+    }) + ')', content_type='text/plain')
 
 def check_share_on_site(request, token):
     code       = 0
@@ -274,7 +274,7 @@ def check_share_on_site(request, token):
         'other_stories'     : other_stories,
         'previous_stories'  : previous_stories,
         'users'             : users,
-    }) + ')', mimetype='text/plain')
+    }) + ')', content_type='text/plain')
     response['Access-Control-Allow-Origin'] = '*'
     response['Access-Control-Allow-Methods'] = 'GET'
     
@@ -310,7 +310,7 @@ def share_story(request, token=None):
             'code':     code,
             'message':  message,
             'story':    None,
-        }), mimetype='text/plain')
+        }), content_type='text/plain')
     
     if feed_id:
         feed = Feed.get_by_id(feed_id)
@@ -389,7 +389,7 @@ def share_story(request, token=None):
         'code':     code,
         'message':  message,
         'story':    shared_story,
-    }), mimetype='text/plain')
+    }), content_type='text/plain')
     response['Access-Control-Allow-Origin'] = '*'
     response['Access-Control-Allow-Methods'] = 'POST'
     
@@ -399,7 +399,7 @@ def share_story(request, token=None):
 def save_story(request, token=None):
     code      = 0
     story_url = request.POST['story_url']
-    user_tags = request.POST.getlist('user_tags') or request.REQUEST.getlist('user_tags[]') or []
+    user_tags = request.POST.getlist('user_tags') or request.POST.getlist('user_tags[]') or []
     add_user_tag = request.POST.get('add_user_tag', None)
     title     = request.POST['title']
     content   = request.POST.get('content', None)
@@ -427,7 +427,7 @@ def save_story(request, token=None):
             'code':     code,
             'message':  message,
             'story':    None,
-        }), mimetype='text/plain')
+        }), content_type='text/plain')
     
     if feed_id:
         feed = Feed.get_by_id(feed_id)
@@ -492,7 +492,7 @@ def save_story(request, token=None):
         'code':     code,
         'message':  message,
         'story':    starred_story,
-    }), mimetype='text/plain')
+    }), content_type='text/plain')
     response['Access-Control-Allow-Origin'] = '*'
     response['Access-Control-Allow-Methods'] = 'POST'
     

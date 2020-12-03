@@ -185,7 +185,7 @@ def load_feed_statistics_embedded(request, feed_id):
     )
 
 def assemble_statistics(user, feed_id):
-    timezone = user.profile.timezone
+    user_timezone = user.profile.timezone
     stats = dict()
     feed = get_object_or_404(Feed, pk=feed_id)
     feed.update_all_statistics()
@@ -201,7 +201,7 @@ def assemble_statistics(user, feed_id):
     if feed.is_push:
         try:
             stats['push_expires'] = localtime_for_timezone(feed.push.lease_expires, 
-                                                           timezone).strftime("%Y-%m-%d %H:%M:%S")
+                                                           user_timezone).strftime("%Y-%m-%d %H:%M:%S")
         except PushSubscription.DoesNotExist:
             stats['push_expires'] = 'Missing push'
             feed.is_push = False
@@ -233,7 +233,7 @@ def assemble_statistics(user, feed_id):
         stats['story_count_history'] = story_count_history
     
     # Rotate hours to match user's timezone offset
-    localoffset = timezone.utcoffset(datetime.datetime.utcnow())
+    localoffset = user_timezone.utcoffset(datetime.datetime.utcnow())
     hours_offset = int(localoffset.total_seconds() / 3600)
     rotated_hours = {}
     for hour, value in list(stats['story_hours_history'].items()):
@@ -253,7 +253,7 @@ def assemble_statistics(user, feed_id):
     stats['classifier_counts'] = json.decode(feed.data.feed_classifier_counts)
     
     # Fetch histories
-    fetch_history = MFetchHistory.feed(feed_id, timezone=timezone)
+    fetch_history = MFetchHistory.feed(feed_id, timezone=user_timezone)
     stats['feed_fetch_history'] = fetch_history['feed_fetch_history']
     stats['page_fetch_history'] = fetch_history['page_fetch_history']
     stats['feed_push_history'] = fetch_history['push_history']
@@ -515,11 +515,13 @@ def status(request):
 
 @json.json_view
 def original_text(request):
-    story_id = request.GET.get('story_id')
-    feed_id = request.GET.get('feed_id')
-    story_hash = request.GET.get('story_hash', None)
-    force = request.GET.get('force', False)
-    debug = request.GET.get('debug', False)
+    # iOS sends a POST, web sends a GET
+    GET_POST = getattr(request, request.method)
+    story_id = GET_POST.get('story_id')
+    feed_id = GET_POST.get('feed_id')
+    story_hash = GET_POST.get('story_hash', None)
+    force = GET_POST.get('force', False)
+    debug = GET_POST.get('debug', False)
 
     if story_hash:
         story, _ = MStory.find_story(story_hash=story_hash)

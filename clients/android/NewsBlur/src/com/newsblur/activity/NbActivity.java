@@ -1,11 +1,9 @@
 package com.newsblur.activity;
 
-import android.appwidget.AppWidgetManager;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
+import androidx.fragment.app.FragmentActivity;
 import android.widget.Toast;
 
-import com.newsblur.R;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.PrefConstants.ThemeValue;
