@@ -191,6 +191,9 @@ def pre_process_story(entry, encoding):
         
     entry['title'] = strip_tags(entry.get('title'))
     entry['author'] = strip_tags(entry.get('author'))
+    if not entry['author']:
+        entry['author'] = strip_tags(entry.get('credit'))
+
     
     entry['story_content'] = attach_media_scripts(entry['story_content'])
     

@@ -10,8 +10,8 @@ import java.util.Set;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.FragmentManager;
+import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -28,7 +28,6 @@ import com.newsblur.domain.Reply;
 import com.newsblur.domain.Story;
 import com.newsblur.domain.UserDetails;
 import com.newsblur.domain.UserProfile;
-import com.newsblur.fragment.ReplyDialogFragment;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.UIUtils;
@@ -56,7 +55,7 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 	public SetupCommentSectionTask(ReadingItemFragment fragment, View view, LayoutInflater inflater, Story story) {
         this.fragment = fragment;
 		this.context = fragment.getActivity();
-		this.manager = fragment.getFragmentManager();
+		this.manager = fragment.getParentFragmentManager();
 		this.inflater = inflater;
 		this.story = story;
 		viewHolder = new WeakReference<View>(view);

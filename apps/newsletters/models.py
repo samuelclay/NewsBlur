@@ -31,9 +31,26 @@ class EmailNewsletter:
             return
         usf.add_folder('', 'Newsletters')
         
+        # First look for the email address
         try:
             feed = Feed.objects.get(feed_address=feed_address)
+        except Feed.MultipleObjectsReturned:
+            feeds = Feed.objects.filter(feed_address=feed_address)[:1]
+            if feeds.count():
+                feed = feeds[0]
         except Feed.DoesNotExist:
+            feed = None
+
+        # If not found, check among titles user has subscribed to
+        if not feed:
+            newsletter_subs = UserSubscription.objects.filter(user=user, feed__feed_address__contains="newsletter:").only('feed')
+            newsletter_feed_ids = [us.feed.pk for us in newsletter_subs]
+            feeds = Feed.objects.filter(feed_title__iexact=sender_name, pk__in=newsletter_feed_ids)
+            if feeds.count():
+                feed = feeds[0]
+        
+        # Create a new feed if it doesn't exist by sender name or email
+        if not feed:
             feed = Feed.objects.create(feed_address=feed_address, 
                                        feed_link='http://' + sender_domain,
                                        feed_title=sender_name,
@@ -148,8 +165,8 @@ class EmailNewsletter:
         
         return profile.user
     
-    def _feed_address(self, user, sender):
-        return 'newsletter:%s:%s' % (user.pk, sender)
+    def _feed_address(self, user, sender_email):
+        return 'newsletter:%s:%s' % (user.pk, sender_email)
     
     def _split_sender(self, sender):
         tokens = re.search('(.*?) <(.*?)@(.*?)>', sender)
