@@ -9,8 +9,6 @@ from apps.profile.models import change_password, blank_authenticate, MGiftCode, 
 from apps.social.models import MSocialProfile
 
 PLANS = [
-    ("newsblur-premium-12", mark_safe("$12 / year <span class='NB-small'>($1/month)</span>")),
-    ("newsblur-premium-24", mark_safe("$24 / year <span class='NB-small'>($2/month)</span>")),
     ("newsblur-premium-36", mark_safe("$36 / year <span class='NB-small'>($3/month)</span>")),
 ]
 
@@ -35,7 +33,7 @@ class StripePlusPaymentForm(StripePaymentForm):
     email = forms.EmailField(widget=forms.TextInput(attrs=dict(maxlength=75)),
                              label='Email address',
                              required=False)
-    plan = forms.ChoiceField(required=False, widget=HorizRadioRenderer,
+    plan = forms.ChoiceField(required=False, widget=forms.RadioSelect,
                              choices=PLANS, label='Plan')
 
 

@@ -133,6 +133,7 @@ public class NBSyncService extends JobService {
     private List<JobParameters> outstandingStartParams = new ArrayList<JobParameters>();
     private boolean mainSyncRunning = false;
     CleanupService cleanupService;
+    StarredService starredService;
     OriginalTextService originalTextService;
     UnreadsService unreadsService;
     ImagePrefetchService imagePrefetchService;
@@ -166,6 +167,7 @@ public class NBSyncService extends JobService {
             dbHelper = new BlurDatabaseHelper(this);
             iconCache = FileCache.asIconCache(this);
             cleanupService = new CleanupService(this);
+            starredService = new StarredService(this);
             originalTextService = new OriginalTextService(this);
             unreadsService = new UnreadsService(this);
             imagePrefetchService = new ImagePrefetchService(this);
@@ -530,6 +532,8 @@ public class NBSyncService extends JobService {
             isPremium = feedResponse.isPremium;
             isStaff = feedResponse.isStaff;
 
+            PrefsUtils.setPremium(this, feedResponse.isPremium, feedResponse.premiumExpire);
+
             // note all feeds that belong to some folder so we can find orphans
             for (Folder folder : feedResponse.folders) {
                 debugFeedIdsFromFolders.addAll(folder.feedIds);
@@ -610,6 +614,7 @@ public class NBSyncService extends JobService {
             UnreadsService.doMetadata();
             unreadsService.start();
             cleanupService.start();
+            starredService.start();
 
         } finally {
             FFSyncRunning = false;
@@ -950,6 +955,7 @@ public class NBSyncService extends JobService {
         //Log.d(this, "checking completion");
         if (mainSyncRunning) return;
         if ((cleanupService != null) && cleanupService.isRunning()) return;
+        if ((starredService != null) && starredService.isRunning()) return;
         if ((originalTextService != null) && originalTextService.isRunning()) return;
         if ((unreadsService != null) && unreadsService.isRunning()) return;
         if ((imagePrefetchService != null) && imagePrefetchService.isRunning()) return;
@@ -1034,6 +1040,7 @@ public class NBSyncService extends JobService {
         if (HousekeepingRunning) return context.getResources().getString(R.string.sync_status_housekeeping);
         if (FFSyncRunning) return context.getResources().getString(R.string.sync_status_ffsync);
         if (CleanupService.activelyRunning) return context.getResources().getString(R.string.sync_status_cleanup);
+        if (StarredService.activelyRunning) return context.getResources().getString(R.string.sync_status_starred);
         if (brief && !AppConstants.VERBOSE_LOG) return null;
         if (ActionsRunning) return String.format(context.getResources().getString(R.string.sync_status_actions), lastActionCount);
         if (RecountsRunning) return context.getResources().getString(R.string.sync_status_recounts);
@@ -1194,6 +1201,7 @@ public class NBSyncService extends JobService {
             }
             if (cleanupService != null) cleanupService.shutdown();
             if (unreadsService != null) unreadsService.shutdown();
+            if (starredService != null) starredService.shutdown();
             if (originalTextService != null) originalTextService.shutdown();
             if (imagePrefetchService != null) imagePrefetchService.shutdown();
             if (primaryExecutor != null) {
