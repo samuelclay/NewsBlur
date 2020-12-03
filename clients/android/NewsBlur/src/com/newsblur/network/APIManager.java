@@ -15,7 +15,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -37,6 +37,7 @@ import com.newsblur.network.domain.LoginResponse;
 import com.newsblur.network.domain.NewsBlurResponse;
 import com.newsblur.network.domain.ProfileResponse;
 import com.newsblur.network.domain.RegisterResponse;
+import com.newsblur.network.domain.StarredStoryHashesResponse;
 import com.newsblur.network.domain.StoriesResponse;
 import com.newsblur.network.domain.StoryTextResponse;
 import com.newsblur.network.domain.UnreadCountResponse;
@@ -277,6 +278,11 @@ public class APIManager {
         values.put(APIConstants.PARAMETER_INCLUDE_TIMESTAMPS, "1");
         APIResponse response = get(buildUrl(APIConstants.PATH_UNREAD_HASHES), values);
         return (UnreadStoryHashesResponse) response.getResponse(gson, UnreadStoryHashesResponse.class);
+    }
+
+    public StarredStoryHashesResponse getStarredStoryHashes() {
+	    APIResponse response = get(buildUrl(APIConstants.PATH_STARRED_STORY_HASHES));
+	    return response.getResponse(gson, StarredStoryHashesResponse.class);
     }
 
     public StoriesResponse getStoriesByHash(List<String> storyHashes) {
@@ -658,6 +664,14 @@ public class APIManager {
         values.put(APIConstants.PARAMETER_NEW_FOLDER_NAME, newFolderName);
         values.put(APIConstants.PARAMETER_IN_FOLDER, inFolder);
         APIResponse response = post(buildUrl(APIConstants.PATH_RENAME_FOLDER), values);
+        return response.getResponse(gson, NewsBlurResponse.class);
+    }
+
+    public NewsBlurResponse saveReceipt(String orderId, String productId) {
+        ContentValues values = new ContentValues();
+        values.put(APIConstants.PARAMETER_ORDER_ID, orderId);
+        values.put(APIConstants.PARAMETER_PRODUCT_ID, productId);
+        APIResponse response = post(buildUrl(APIConstants.PATH_SAVE_RECEIPT), values);
         return response.getResponse(gson, NewsBlurResponse.class);
     }
 

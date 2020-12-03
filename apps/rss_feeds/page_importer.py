@@ -51,13 +51,11 @@ class PageImporter(object):
     @property
     def headers(self):
         return {
-            'User-Agent': 'NewsBlur Page Fetcher - %s subscriber%s - %s '
-                          '(Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_1) '
-                          'AppleWebKit/534.48.3 (KHTML, like Gecko) Version/5.1 '
-                          'Safari/534.48.3)' % (
+            'User-Agent': 'NewsBlur Page Fetcher - %s subscriber%s - %s %s' % (
                 self.feed.num_subscribers,
                 's' if self.feed.num_subscribers != 1 else '',
                 self.feed.permalink,
+                self.feed.fake_user_agent,
             ),
         }
     
@@ -293,7 +291,8 @@ class PageImporter(object):
                     feed_page.page_data = zlib.compress(html)
                     feed_page.save()
             except MFeedPage.DoesNotExist:
-                feed_page = MFeedPage.objects.create(feed_id=self.feed.pk, page_data=html)
+                feed_page = MFeedPage.objects.create(feed_id=self.feed.pk, 
+                                                     page_data=zlib.compress(html))
             return feed_page
     
     def save_page_node(self, html):
