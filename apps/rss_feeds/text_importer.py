@@ -41,7 +41,7 @@ class TextImporter:
                               num_subscribers,
                               's' if num_subscribers != 1 else '',
                               getattr(self.feed, 'permalink', ''),
-                              self.feed.fake_user_agent,
+                              getattr(self.feed, 'fake_user_agent', ''),
                           ),
         }
 
