@@ -217,6 +217,7 @@ def setup_common():
     # setup_forked_mongoengine()
     # setup_pymongo_repo()
     setup_logrotate()
+    copy_certificates()
     setup_nginx()
     setup_munin()
 
@@ -1853,7 +1854,7 @@ def setup_time_calibration():
 
 def restore_postgres(port=5432, download=False):
     with virtualenv():
-        backup_date = '2020-12-02-04-00'
+        backup_date = '2020-12-03-02-51'
         yes = prompt("Dropping and creating NewsBlur PGSQL db. Sure?")
         if yes != 'y':
             return
