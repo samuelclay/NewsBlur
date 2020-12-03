@@ -25,9 +25,6 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-from __future__ import absolute_import
-from __future__ import unicode_literals
-
 import re
 
 from .w3dtf import _parse_date_w3dtf
@@ -55,8 +52,8 @@ def _parse_date_onblog(dateString):
     if not m:
         return
     w3dtfdate = '%(year)s-%(month)s-%(day)sT%(hour)s:%(minute)s:%(second)s%(zonediff)s' % \
-                {'year': m.group(1), 'month': m.group(2), 'day': m.group(3),\
-                 'hour': m.group(4), 'minute': m.group(5), 'second': m.group(6),\
+                {'year': m.group(1), 'month': m.group(2), 'day': m.group(3),
+                 'hour': m.group(4), 'minute': m.group(5), 'second': m.group(6),
                  'zonediff': '+09:00'}
     return _parse_date_w3dtf(w3dtfdate)
 

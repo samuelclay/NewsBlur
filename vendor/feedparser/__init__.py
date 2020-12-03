@@ -25,9 +25,6 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE."""
 
-from __future__ import absolute_import
-from __future__ import unicode_literals
-
 from .api import parse
 from .datetimes import registerDateHandler
 from .exceptions import *
@@ -35,7 +32,7 @@ from .util import FeedParserDict
 
 __author__ = 'Kurt McKee <contactme@kurtmckee.org>'
 __license__ = 'BSD 2-clause'
-__version__ = '6.0.0b3'
+__version__ = '6.0.2'
 
 # HTTP "User-Agent" header to send to servers when downloading feeds.
 # If you are embedding feedparser in a larger application, you should

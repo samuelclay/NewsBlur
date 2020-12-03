@@ -25,17 +25,8 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-from __future__ import absolute_import
-from __future__ import unicode_literals
-
+import html.entities
 import re
-
-try:
-    from html.entities import name2codepoint
-except ImportError:
-    # Python 2
-    # noinspection PyUnresolvedReferences
-    from htmlentitydefs import name2codepoint
 
 from .sgml import *
 
@@ -251,7 +242,7 @@ class _BaseHTMLProcessor(sgmllib.SGMLParser, object):
 
         # Called for each entity reference, e.g. '&copy;' will extract 'copy'
         # Reconstruct the original entity reference.
-        if ref in name2codepoint or ref == 'apos':
+        if ref in html.entities.name2codepoint or ref == 'apos':
             self.pieces.append('&%s;' % ref)
         else:
             self.pieces.append('&amp;%s' % ref)

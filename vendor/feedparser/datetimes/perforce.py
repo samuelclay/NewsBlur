@@ -25,14 +25,7 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-from __future__ import absolute_import
-from __future__ import unicode_literals
-
-try:
-    import rfc822
-except ImportError:
-    from email import _parseaddr as rfc822
-
+import email._parseaddr
 import re
 import time
 
@@ -48,6 +41,6 @@ def _parse_date_perforce(date_string):
     dow, year, month, day, hour, minute, second, tz = m.groups()
     months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
     new_date_string = "%s, %s %s %s %s:%s:%s %s" % (dow, day, months[int(month) - 1], year, hour, minute, second, tz)
-    tm = rfc822.parsedate_tz(new_date_string)
+    tm = email._parseaddr.parsedate_tz(new_date_string)
     if tm:
-        return time.gmtime(rfc822.mktime_tz(tm))
+        return time.gmtime(email._parseaddr.mktime_tz(tm))

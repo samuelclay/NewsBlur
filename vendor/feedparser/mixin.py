@@ -25,41 +25,18 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-from __future__ import absolute_import
-from __future__ import unicode_literals
-
 import base64
 import binascii
 import copy
+import html.entities
 import re
-from xml.sax.saxutils import escape as _xmlescape
-
-try:
-    from html.entities import name2codepoint, entitydefs
-except ImportError:
-    # Python 2
-    # noinspection PyUnresolvedReferences
-    from htmlentitydefs import name2codepoint, entitydefs
+import xml.sax.saxutils
 
 from .html import _cp1252
 from .namespaces import _base, cc, dc, georss, itunes, mediarss, psc
 from .sanitizer import _sanitize_html, _HTMLSanitizer
 from .util import FeedParserDict
 from .urls import _urljoin, make_safe_absolute_uri, resolve_relative_uris
-
-
-# Python 2.7 only offers "decodestring()".
-# This name substitution can be removed when Python 2.7 support is dropped.
-_base64decode = getattr(base64, 'decodebytes', base64.decodestring)
-
-
-bytes_ = type(b'')
-try:
-    # Python 2
-    # noinspection PyUnresolvedReferences,PyShadowingBuiltins
-    chr = unichr
-except NameError:
-    pass
 
 
 class _FeedParserMixin(
@@ -242,7 +219,7 @@ class _FeedParserMixin(
         # track xml:base and xml:lang
         attrs_d = dict(attrs)
         baseuri = attrs_d.get('xml:base', attrs_d.get('base')) or self.baseuri
-        if isinstance(baseuri, bytes_):
+        if isinstance(baseuri, bytes):
             baseuri = baseuri.decode(self.encoding, 'ignore')
         # ensure that self.baseuri is always an absolute URI that
         # uses a whitelisted URI scheme (e.g. not `javscript:`)
@@ -393,11 +370,11 @@ class _FeedParserMixin(
                 return self.handle_entityref(text)
         else:
             try:
-                name2codepoint[ref]
+                html.entities.name2codepoint[ref]
             except KeyError:
                 text = '&%s;' % ref
             else:
-                text = chr(name2codepoint[ref]).encode('utf-8')
+                text = chr(html.entities.name2codepoint[ref]).encode('utf-8')
         self.elementstack[-1][2].append(text)
 
     def handle_data(self, text, escape=1):
@@ -406,7 +383,7 @@ class _FeedParserMixin(
         if not self.elementstack:
             return
         if escape and self.contentparams.get('type') == 'application/xhtml+xml':
-            text = _xmlescape(text)
+            text = xml.sax.saxutils.escape(text)
         self.elementstack[-1][2].append(text)
 
     def handle_comment(self, text):
@@ -428,7 +405,7 @@ class _FeedParserMixin(
                 # CDATA block began but didn't finish
                 k = len(self.rawdata)
                 return k
-            self.handle_data(_xmlescape(self.rawdata[i+9:k]), 0)
+            self.handle_data(xml.sax.saxutils.escape(self.rawdata[i+9:k]), 0)
             return k+3
         else:
             k = self.rawdata.find('>', i)
@@ -478,7 +455,7 @@ class _FeedParserMixin(
     @staticmethod
     def strattrs(attrs):
         return ''.join(
-            ' %s="%s"' % (t[0], _xmlescape(t[1], {'"': '&quot;'}))
+            ' %s="%s"' % (t[0], xml.sax.saxutils.escape(t[1], {'"': '&quot;'}))
             for t in attrs
         )
 
@@ -495,7 +472,7 @@ class _FeedParserMixin(
 
         # Ensure each piece is a str for Python 3
         for (i, v) in enumerate(pieces):
-            if isinstance(v, bytes_):
+            if isinstance(v, bytes):
                 pieces[i] = v.decode('utf-8')
 
         if self.version == 'atom10' and self.contentparams.get('type', 'text') == 'application/xhtml+xml':
@@ -528,15 +505,11 @@ class _FeedParserMixin(
         # decode base64 content
         if base64 and self.contentparams.get('base64', 0):
             try:
-                output = _base64decode(output)
+                output = base64.decodebytes(output.encode('utf8')).decode('utf8')
             except binascii.Error:
                 pass
             except binascii.Incomplete:
                 pass
-            except TypeError:
-                # In Python 3, base64 takes and outputs bytes, not str
-                # This may not be the most correct way to accomplish this
-                output = _base64decode(output.encode('utf-8')).decode('utf-8')
 
         # resolve relative URIs
         if (element in self.can_be_relative_uri) and output:
@@ -575,19 +548,19 @@ class _FeedParserMixin(
             if element in self.can_contain_dangerous_markup:
                 output = _sanitize_html(output, self.encoding, self.contentparams.get('type', 'text/html'))
 
-        if self.encoding and isinstance(output, bytes_):
+        if self.encoding and isinstance(output, bytes):
             output = output.decode(self.encoding, 'ignore')
 
         # address common error where people take data that is already
         # utf-8, presume that it is iso-8859-1, and re-encode it.
-        if self.encoding in ('utf-8', 'utf-8_INVALID_PYTHON_3') and not isinstance(output, bytes_):
+        if self.encoding in ('utf-8', 'utf-8_INVALID_PYTHON_3') and not isinstance(output, bytes):
             try:
                 output = output.encode('iso-8859-1').decode('utf-8')
             except (UnicodeEncodeError, UnicodeDecodeError):
                 pass
 
         # map win-1252 extensions to the proper code points
-        if not isinstance(output, bytes_):
+        if not isinstance(output, bytes):
             output = output.translate(_cp1252)
 
         # categories/tags/keywords/whatever are handled in _end_category or
@@ -679,7 +652,7 @@ class _FeedParserMixin(
             return False
 
         # all entities must have been defined as valid HTML entities
-        if any((e for e in re.findall(r'&(\w+);', s) if e not in entitydefs)):
+        if any((e for e in re.findall(r'&(\w+);', s) if e not in html.entities.entitydefs)):
             return False
 
         return True

@@ -26,9 +26,6 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-from __future__ import absolute_import
-from __future__ import unicode_literals
-
 import cgi
 import codecs
 import re
@@ -43,12 +40,7 @@ except ImportError:
     lazy_chardet_encoding = None
 else:
     def lazy_chardet_encoding(data):
-        chardet_encoding = chardet.detect(data)['encoding']
-        if not chardet_encoding:
-            chardet_encoding = ''
-        if isinstance(chardet_encoding, bytes_):
-            chardet_encoding = chardet_encoding.encode('ascii', 'ignore')
-        return chardet_encoding
+        return chardet.detect(data)['encoding'] or ''
 
 from .exceptions import (
     CharacterEncodingOverride,
@@ -56,8 +48,6 @@ from .exceptions import (
     NonXMLContentType,
 )
 
-bytes_ = type(b'')
-unicode_ = type('')
 
 # Each marker represents some of the characters of the opening XML
 # processing instruction ('<?xm') in the specified encoding.
@@ -193,13 +183,15 @@ def convert_to_utf8(http_headers, data, result):
     http_content_type = http_headers.get('content-type') or ''
     http_content_type, params = cgi.parse_header(http_content_type)
     http_encoding = params.get('charset', '').replace("'", "")
-    if isinstance(http_encoding, bytes_):
+    if isinstance(http_encoding, bytes):
         http_encoding = http_encoding.decode('utf-8', 'ignore')
 
     acceptable_content_type = 0
     application_content_types = ('application/xml', 'application/xml-dtd',
                                  'application/xml-external-parsed-entity')
     text_content_types = ('text/xml', 'text/xml-external-parsed-entity')
+    json_content_types = ('application/feed+json', 'application/json')
+    json = False
     if (
             http_content_type in application_content_types
             or (
@@ -218,6 +210,17 @@ def convert_to_utf8(http_headers, data, result):
     ):
         acceptable_content_type = 1
         rfc3023_encoding = http_encoding or 'us-ascii'
+    elif (
+            http_content_type in json_content_types
+            or (
+                    not http_content_type
+                    and data and data.lstrip()[0] == '{'
+            )
+    ):
+        http_content_type = json_content_types[0]
+        acceptable_content_type = 1
+        json = True
+        rfc3023_encoding = http_encoding or 'utf-8'  # RFC 7159, 8.1.
     elif http_content_type.startswith('text/'):
         rfc3023_encoding = http_encoding or 'us-ascii'
     elif http_headers and 'content-type' not in http_headers:
@@ -240,7 +243,7 @@ def convert_to_utf8(http_headers, data, result):
 
     if http_headers and (not acceptable_content_type):
         if 'content-type' in http_headers:
-            msg = '%s is not an XML media type' % http_headers['content-type']
+            msg = '%s is not an accepted media type' % http_headers['content-type']
         else:
             msg = 'no Content-type specified'
         error = NonXMLContentType(msg)
@@ -264,12 +267,13 @@ def convert_to_utf8(http_headers, data, result):
             pass
         else:
             known_encoding = 1
-            # Update the encoding in the opening XML processing instruction.
-            new_declaration = '''<?xml version='1.0' encoding='utf-8'?>'''
-            if RE_XML_DECLARATION.search(data):
-                data = RE_XML_DECLARATION.sub(new_declaration, data)
-            else:
-                data = new_declaration + '\n' + data
+            if not json:
+                # Update the encoding in the opening XML processing instruction.
+                new_declaration = '''<?xml version='1.0' encoding='utf-8'?>'''
+                if RE_XML_DECLARATION.search(data):
+                    data = RE_XML_DECLARATION.sub(new_declaration, data)
+                else:
+                    data = new_declaration + '\n' + data
             data = data.encode('utf-8')
             break
     # if still no luck, give up
@@ -285,6 +289,7 @@ def convert_to_utf8(http_headers, data, result):
             (rfc3023_encoding, proposed_encoding))
         rfc3023_encoding = proposed_encoding
 
+    result['content-type'] = http_content_type  # for selecting the parser
     result['encoding'] = rfc3023_encoding
     if error:
         result['bozo'] = True

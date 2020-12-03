@@ -25,9 +25,6 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-from __future__ import absolute_import
-from __future__ import unicode_literals
-
 import re
 
 from .rfc822 import _parse_date_rfc822
@@ -56,13 +53,13 @@ _greek_months = {
 }
 
 _greek_wdays = {
-   '\u039a\u03c5\u03c1': 'Sun', # caf5f1 in iso-8859-7
-   '\u0394\u03b5\u03c5': 'Mon', # c4e5f5 in iso-8859-7
-   '\u03a4\u03c1\u03b9': 'Tue', # d4f1e9 in iso-8859-7
-   '\u03a4\u03b5\u03c4': 'Wed', # d4e5f4 in iso-8859-7
-   '\u03a0\u03b5\u03bc': 'Thu', # d0e5ec in iso-8859-7
-   '\u03a0\u03b1\u03c1': 'Fri', # d0e1f1 in iso-8859-7
-   '\u03a3\u03b1\u03b2': 'Sat', # d3e1e2 in iso-8859-7
+   '\u039a\u03c5\u03c1': 'Sun',  # caf5f1 in iso-8859-7
+   '\u0394\u03b5\u03c5': 'Mon',  # c4e5f5 in iso-8859-7
+   '\u03a4\u03c1\u03b9': 'Tue',  # d4f1e9 in iso-8859-7
+   '\u03a4\u03b5\u03c4': 'Wed',  # d4e5f4 in iso-8859-7
+   '\u03a0\u03b5\u03bc': 'Thu',  # d0e5ec in iso-8859-7
+   '\u03a0\u03b1\u03c1': 'Fri',  # d0e1f1 in iso-8859-7
+   '\u03a3\u03b1\u03b2': 'Sat',  # d3e1e2 in iso-8859-7
 }
 
 _greek_date_format_re = re.compile(r'([^,]+),\s+(\d{2})\s+([^\s]+)\s+(\d{4})\s+(\d{2}):(\d{2}):(\d{2})\s+([^\s]+)')
