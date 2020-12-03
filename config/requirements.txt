@@ -32,9 +32,9 @@ mongoengine==0.20.0
 PyMySQL==0.9.3
 ndg-httpsclient==0.4.2
 nltk==3.4.5
-numpy==1.18.5
+numpy==1.19.4
 oauth2==1.9.0.post1
-pillow==7.0.0
+pillow==8.0.1
 psycopg2==2.8.5
 psutil==5.7.3
 pyasn1==0.1.9
@@ -51,7 +51,7 @@ pyyaml==5.3.1
 raven==6.10.0
 redis==3.5.3
 requests==2.24.0
-scipy==1.4.1
+scipy==1.5.4
 sgmllib3k==1.0.0
 seacucumber==1.5.2
 sentry-sdk==0.19.3
