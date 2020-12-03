@@ -35,7 +35,7 @@ class EmailNewsletter:
         try:
             feed = Feed.objects.get(feed_address=feed_address)
         except Feed.MultipleObjectsReturned:
-            feeds = Feed.objects.filter(feed_address=feed_address).limit(1)
+            feeds = Feed.objects.filter(feed_address=feed_address)[:1]
             if feeds.count():
                 feed = feeds[0]
         except Feed.DoesNotExist:

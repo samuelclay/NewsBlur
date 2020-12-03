@@ -325,7 +325,6 @@ INSTALLED_APPS = (
     'apps.oauth',
     'apps.search',
     'apps.categories',
-    'django_celery_beat',
     'utils', # missing models so no migrations
     'vendor',
     'vendor.typogrify',
