@@ -1,14 +1,14 @@
-from django.test.simple import DjangoTestSuiteRunner
-
+from django.test.runner import DiscoverRunner
+from django.test.utils import setup_databases
 from mongoengine import connect
 
-class TestRunner(DjangoTestSuiteRunner):
+class TestRunner(DiscoverRunner):
     def setup_databases(self, **kwargs):
         db_name = 'newsblur_test'
         connect(db_name)
         print 'Creating test-database: ' + db_name
 
-        return super(TestRunner, self).setup_databases(**kwargs)
+        return setup_databases(**kwargs)
 
     def teardown_databases(self, old_config, **kwargs):
         import pymongo

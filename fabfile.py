@@ -17,13 +17,15 @@ import time
 import sys
 import re
 
+# django.setup()
+
 try:
     import digitalocean
 except ImportError:
     print "Digital Ocean's API not loaded. Install python-digitalocean."
 
 
-django.settings_module('settings')
+django.settings_module('newsblur.settings')
 try:
     from django.conf import settings as django_settings
 except ImportError:
@@ -35,7 +37,7 @@ except ImportError:
 # ============
 
 env.NEWSBLUR_PATH = "/srv/newsblur"
-env.SECRETS_PATH = "/srv/secrets-newsblur"
+env.SECRETS_PATH  = "/srv/secrets-newsblur"
 env.VENDOR_PATH   = "/srv/code"
 env.user = 'sclay'
 env.key_filename = os.path.join(env.SECRETS_PATH, 'keys/newsblur.key')
@@ -138,7 +140,8 @@ def assign_digitalocean_roledefs(split=False):
     return droplets
 
 def app():
-    web()
+    assign_digitalocean_roledefs()
+    env.roles = ['app']
 
 def web():
     assign_digitalocean_roledefs()
@@ -146,7 +149,7 @@ def web():
 
 def work():
     assign_digitalocean_roledefs()
-    env.roles = ['work', 'search']
+    env.roles = ['work']
 
 def www():
     assign_digitalocean_roledefs()
@@ -174,7 +177,7 @@ def db():
 
 def task():
     assign_digitalocean_roledefs()
-    env.roles = ['task', 'search']
+    env.roles = ['task']
 
 def ec2task():
     ec2()
@@ -211,7 +214,7 @@ def setup_common():
     pip()
     setup_supervisor()
     setup_hosts()
-    # setup_pgbouncer()
+    setup_pgbouncer()
     config_pgbouncer()
     setup_mongoengine_repo()
     # setup_forked_mongoengine()
@@ -492,19 +495,24 @@ def setup_pip():
 
 @parallel
 def pip():
+    role = role_for_host()
+
     pull()
     with virtualenv():
-        with settings(warn_only=True):
-            sudo('fallocate -l 4G /swapfile')
-            sudo('chmod 600 /swapfile')
-            sudo('mkswap /swapfile')
-            sudo('swapon /swapfile')
+        if role == "task":
+            with settings(warn_only=True):
+                sudo('fallocate -l 4G /swapfile')
+                sudo('chmod 600 /swapfile')
+                sudo('mkswap /swapfile')
+                sudo('swapon /swapfile')
         sudo('chown %s.%s -R %s' % (env.user, env.user, os.path.join(env.NEWSBLUR_PATH, 'venv')))
         run('easy_install -U pip')
         run('pip install --upgrade pip')
+        run('pip install --upgrade setuptools')
         run('pip install -r requirements.txt')
-        with settings(warn_only=True):
-            sudo('swapoff /swapfile')
+        if role == "task":
+            with settings(warn_only=True):
+                sudo('swapoff /swapfile')
 
 def solo_pip(role):
     if role == "app":
@@ -518,6 +526,7 @@ def solo_pip(role):
         celery()
     
 def setup_supervisor():
+    sudo('apt-get update')
     sudo('apt-get -y install supervisor')
     put('config/supervisord.conf', '/etc/supervisor/supervisord.conf', use_sudo=True)
     sudo('/etc/init.d/supervisor stop')
@@ -534,14 +543,14 @@ def setup_hosts():
 
 def setup_pgbouncer():
     sudo('apt-get remove -y pgbouncer')
-    sudo('apt-get install -y libevent-dev')
-    PGBOUNCER_VERSION = '1.7.2'
+    sudo('apt-get install -y libevent-dev pkg-config libc-ares2 libc-ares-dev')
+    PGBOUNCER_VERSION = '1.15.0'
     with cd(env.VENDOR_PATH), settings(warn_only=True):
         run('wget https://pgbouncer.github.io/downloads/files/%s/pgbouncer-%s.tar.gz' % (PGBOUNCER_VERSION, PGBOUNCER_VERSION))
         run('tar -xzf pgbouncer-%s.tar.gz' % PGBOUNCER_VERSION)
         run('rm pgbouncer-%s.tar.gz' % PGBOUNCER_VERSION)
         with cd('pgbouncer-%s' % PGBOUNCER_VERSION):
-            run('./configure --prefix=/usr/local --with-libevent=libevent-prefix')
+            run('./configure --prefix=/usr/local')
             run('make')
             sudo('make install')
             sudo('ln -s /usr/local/bin/pgbouncer /usr/sbin/pgbouncer')
@@ -794,9 +803,10 @@ def config_node(full=False):
 
 @parallel
 def copy_app_settings():
+    run('rm -f %s/local_settings.py' % env.NEWSBLUR_PATH)
     put(os.path.join(env.SECRETS_PATH, 'settings/app_settings.py'), 
-        '%s/local_settings.py' % env.NEWSBLUR_PATH)
-    run('echo "\nSERVER_NAME = \\\\"`hostname`\\\\"" >> %s/local_settings.py' % env.NEWSBLUR_PATH)
+        '%s/newsblur/local_settings.py' % env.NEWSBLUR_PATH)
+    run('echo "\nSERVER_NAME = \\\\"`hostname`\\\\"" >> %s/newsblur/local_settings.py' % env.NEWSBLUR_PATH)
 
 def assemble_certificates():
     with lcd(os.path.join(env.SECRETS_PATH, 'certificates/comodo')):
@@ -904,7 +914,7 @@ def build_haproxy():
     gunicorn_counts_servers = ['app22', 'app26']
     gunicorn_refresh_servers = ['app20', 'app21']
     maintenance_servers = ['app20']
-    ignore_servers = []
+    ignore_servers = ['']
     
     for group_type in ['app', 'push', 'work', 'node_socket', 'node_favicon', 'node_text', 'www']:
         group_type_name = group_type
@@ -956,14 +966,43 @@ def build_haproxy():
     f.write(haproxy_template)
     f.close()
 
-def upgrade_django():
-    with virtualenv(), settings(warn_only=True):
-        sudo('supervisorctl stop gunicorn')
-        run('./utils/kill_gunicorn.sh')
-        sudo('easy_install -U django gunicorn')
-        pull()
-        sudo('supervisorctl reload')
+def upgrade_django(role=None):
+    if not role:
+        role = role_for_host()
 
+    with virtualenv(), settings(warn_only=True):
+        sudo('sudo dpkg --configure -a')
+        setup_supervisor()
+        pull()
+        run('git co django1.11')
+        if role == "task":
+            sudo('supervisorctl stop celery')
+            run('./utils/kill_celery.sh')
+            copy_task_settings()
+            enable_celery_supervisor(update=False)
+        elif role == "work":
+            copy_app_settings()
+            enable_celerybeat()
+        elif role == "web" or role == "app":
+            sudo('supervisorctl stop gunicorn')
+            run('./utils/kill_gunicorn.sh')
+            copy_app_settings()
+            setup_gunicorn(restart=False)
+        elif role == "node":
+            copy_app_settings()
+            config_node(full=True)
+        else:
+            copy_task_settings()
+
+        pip()
+        clean()
+
+        # sudo('reboot')
+
+def clean():
+    with virtualenv(), settings(warn_only=True):
+        run('find . -name "*.pyc" -exec rm -f {} \;')
+    
 def downgrade_django(role=None):
     with virtualenv(), settings(warn_only=True):
         pull()
@@ -1463,9 +1502,10 @@ def copy_task_settings():
     #     host = env.host_string.split('.', 2)[0]
 
     with settings(warn_only=True):
+        run('rm -f %s/local_settings.py' % env.NEWSBLUR_PATH)
         put(os.path.join(env.SECRETS_PATH, 'settings/task_settings.py'), 
-            '%s/local_settings.py' % env.NEWSBLUR_PATH)
-        run('echo "\nSERVER_NAME = \\\\"%s\\\\"" >> %s/local_settings.py' % (host, env.NEWSBLUR_PATH))
+            '%s/newsblur/local_settings.py' % env.NEWSBLUR_PATH)
+        run('echo "\nSERVER_NAME = \\\\"%s\\\\"" >> %s/newsblur/local_settings.py' % (host, env.NEWSBLUR_PATH))
 
 @parallel
 def copy_spam():
@@ -1762,7 +1802,7 @@ def kill_celery():
                 run('./utils/kill_celery.sh')  
 
 def compress_assets(bundle=False):
-    local('jammit -c assets.yml --base-url https://www.newsblur.com --output static')
+    local('jammit -c newsblur/assets.yml --base-url https://www.newsblur.com --output static')
     local('tar -czf static.tgz static/*')
 
     tries_left = 5
