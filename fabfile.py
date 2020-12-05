@@ -140,7 +140,8 @@ def assign_digitalocean_roledefs(split=False):
     return droplets
 
 def app():
-    web()
+    assign_digitalocean_roledefs()
+    env.roles = ['app']
 
 def web():
     assign_digitalocean_roledefs()
@@ -961,7 +962,10 @@ def build_haproxy():
     f.write(haproxy_template)
     f.close()
 
-def upgrade_django(role):
+def upgrade_django(role=None):
+    if not role:
+        role = role_for_host()
+
     with virtualenv(), settings(warn_only=True):
         sudo('sudo dpkg --configure -a')
         setup_supervisor()
@@ -975,7 +979,7 @@ def upgrade_django(role):
         elif role == "work":
             copy_app_settings()
             enable_celerybeat()
-        elif role == "web":
+        elif role == "web" or role == "app":
             sudo('supervisorctl stop gunicorn')
             run('./utils/kill_gunicorn.sh')
             copy_app_settings()
