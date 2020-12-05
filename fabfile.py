@@ -972,7 +972,10 @@ def upgrade_django(role):
             run('./utils/kill_celery.sh')
             copy_task_settings()
             enable_celery_supervisor(update=False)
-        elif role == "app":
+        elif role == "work":
+            copy_app_settings()
+            enable_celerybeat()
+        elif role == "web":
             sudo('supervisorctl stop gunicorn')
             run('./utils/kill_gunicorn.sh')
             copy_app_settings()
