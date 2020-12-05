@@ -8,16 +8,11 @@ import pytz
 from vendor.timezones import forms, zones
 from vendor.timezones.utilities import coerce_timezone_value, validate_timezone_max_length
 
-from south.modelsinspector import add_introspection_rules
-add_introspection_rules([], ["^vendor\.timezones\.fields\.TimeZoneField"])
-
 MAX_TIMEZONE_LENGTH = getattr(settings, "MAX_TIMEZONE_LENGTH", 100)
 default_tz = pytz.timezone(getattr(settings, "TIME_ZONE", "UTC"))
 
 
 class TimeZoneField(models.CharField):
-    
-    __metaclass__ = models.SubfieldBase
     
     def __init__(self, *args, **kwargs):
         validate_timezone_max_length(MAX_TIMEZONE_LENGTH, zones.ALL_TIMEZONE_CHOICES)
@@ -37,6 +32,12 @@ class TimeZoneField(models.CharField):
         # coerce value back to a string to validate correctly
         return super(TimeZoneField, self).run_validators(smart_str(value))
     
+    def from_db_value(self, value, expression, connection, context):
+        value = super(TimeZoneField, self).to_python(value)
+        if value is None:
+            return None # null=True
+        return coerce_timezone_value(value)
+
     def to_python(self, value):
         value = super(TimeZoneField, self).to_python(value)
         if value is None:
@@ -55,7 +56,7 @@ class TimeZoneField(models.CharField):
         return self.get_prep_value(value)
     
     def flatten_data(self, follow, obj=None):
-        value = self._get_val_from_obj(obj)
+        value = self.value_from_object(obj)
         if value is None:
             value = ""
         return {self.attname: smart_unicode(value)}

@@ -287,10 +287,12 @@ class PageImporter(object):
                 if feed_page.page() == html:
                     logging.debug('   ---> [%-30s] ~FYNo change in page data: %s' % (self.feed.log_title[:30], self.feed.feed_link))
                 else:
-                    feed_page.page_data = html
+                    # logging.debug('   ---> [%-30s] ~FYChange in page data: %s (%s/%s %s/%s)' % (self.feed.log_title[:30], self.feed.feed_link, type(html), type(feed_page.page()), len(html), len(feed_page.page())))
+                    feed_page.page_data = zlib.compress(html)
                     feed_page.save()
             except MFeedPage.DoesNotExist:
-                feed_page = MFeedPage.objects.create(feed_id=self.feed.pk, page_data=html)
+                feed_page = MFeedPage.objects.create(feed_id=self.feed.pk, 
+                                                     page_data=zlib.compress(html))
             return feed_page
     
     def save_page_node(self, html):

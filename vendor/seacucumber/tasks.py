@@ -3,7 +3,7 @@ Supporting celery tasks go in this module. The primarily interesting one is
 SendEmailTask, which handles sending a single Django EmailMessage object.
 """
 from django.conf import settings
-from celery.task import Task
+from newsblur.celeryapp import app
 from boto.ses import SESConnection
 from seacucumber.util import get_boto_ses_connection
 

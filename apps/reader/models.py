@@ -24,6 +24,9 @@ from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds
 from apps.analyzer.tfidf import tfidf
 from utils.feed_functions import add_object_to_folder, chunks
 
+def unread_cutoff_default():
+    return datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
+    
 class UserSubscription(models.Model):
     """
     A feed which a user has subscribed to. Carries all of the cached information
@@ -32,14 +35,13 @@ class UserSubscription(models.Model):
     Also has a dirty flag (needs_unread_recalc) which means that the unread counts
     are not accurate and need to be calculated with `self.calculate_feed_scores()`.
     """
-    UNREAD_CUTOFF = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
     
-    user = models.ForeignKey(User, related_name='subscriptions')
-    feed = models.ForeignKey(Feed, related_name='subscribers')
+    user = models.ForeignKey(User, related_name='subscriptions', on_delete=models.CASCADE)
+    feed = models.ForeignKey(Feed, related_name='subscribers', on_delete=models.CASCADE)
     user_title = models.CharField(max_length=255, null=True, blank=True)
     active = models.BooleanField(default=False)
-    last_read_date = models.DateTimeField(default=UNREAD_CUTOFF)
-    mark_read_date = models.DateTimeField(default=UNREAD_CUTOFF)
+    last_read_date = models.DateTimeField(default=unread_cutoff_default)
+    mark_read_date = models.DateTimeField(default=unread_cutoff_default)
     unread_count_neutral = models.IntegerField(default=0)
     unread_count_positive = models.IntegerField(default=0)
     unread_count_negative = models.IntegerField(default=0)
@@ -308,7 +310,7 @@ class UserSubscription(models.Model):
         
         pipeline = rt.pipeline()
         for story_hash_group in chunks(story_hashes, 100):
-            pipeline.zadd(ranked_stories_keys, **dict(story_hash_group))
+            pipeline.zadd(ranked_stories_keys, dict(story_hash_group))
         pipeline.execute()
         story_hashes = range_func(ranked_stories_keys, offset, limit)
 
@@ -323,7 +325,7 @@ class UserSubscription(models.Model):
                                                    cutoff_date=cutoff_date)
             if unread_story_hashes:
                 for unread_story_hash_group in chunks(unread_story_hashes, 100):
-                    rt.zadd(unread_ranked_stories_keys, **dict(unread_story_hash_group))
+                    rt.zadd(unread_ranked_stories_keys, dict(unread_story_hash_group))
             unread_feed_story_hashes = range_func(unread_ranked_stories_keys, offset, limit)
         
         rt.expire(ranked_stories_keys, 60*60)
@@ -1193,7 +1195,7 @@ class RUserStory:
         redis_commands(read_story_key)
         
         read_stories_list_key = 'lRS:%s' % user_id
-        r.lrem(read_stories_list_key, story_hash)
+        r.lrem(read_stories_list_key, 1, story_hash)
         
         if ps and username:
             ps.publish(username, 'story:unread:%s' % story_hash)
@@ -1294,7 +1296,7 @@ class UserSubscriptionFolders(models.Model):
     is a recursive descent of feeds and folders in folders. Used to layout
     the feeds and folders in the Reader's feed navigation pane.
     """
-    user = models.ForeignKey(User, unique=True)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     folders = models.TextField(default="[]")
     
     def __unicode__(self):

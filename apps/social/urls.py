@@ -1,7 +1,7 @@
-from django.conf.urls import url, patterns
+from django.conf.urls import url
 from apps.social import views
 
-urlpatterns = patterns('',
+urlpatterns = [
     url(r'^river_stories/?$', views.load_river_blurblog, name='social-river-blurblog'),
     url(r'^share_story/?$', views.mark_story_as_shared, name='mark-story-as-shared'),
     url(r'^unshare_story/?$', views.mark_story_as_unshared, name='mark-story-as-unshared'),
@@ -37,4 +37,4 @@ urlpatterns = patterns('',
     url(r'^statistics/(?P<social_user_id>\w+)/?$', views.load_social_statistics, name='load-social-statistics'),
     url(r'^mute_story/(?P<secret_token>\w+)/(?P<shared_story_id>\w+)?$', views.mute_story, name='social-mute-story'),
     url(r'^(?P<username>[-\w]+)/?$', views.shared_stories_public, name='shared-stories-public'),
-)
+]
