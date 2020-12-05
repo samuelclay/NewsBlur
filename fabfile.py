@@ -149,7 +149,7 @@ def web():
 
 def work():
     assign_digitalocean_roledefs()
-    env.roles = ['work', 'search']
+    env.roles = ['work']
 
 def www():
     assign_digitalocean_roledefs()
@@ -495,20 +495,24 @@ def setup_pip():
 
 @parallel
 def pip():
+    role = role_for_host()
+
     pull()
     with virtualenv():
-        with settings(warn_only=True):
-            sudo('fallocate -l 4G /swapfile')
-            sudo('chmod 600 /swapfile')
-            sudo('mkswap /swapfile')
-            sudo('swapon /swapfile')
+        if role == "task":
+            with settings(warn_only=True):
+                sudo('fallocate -l 4G /swapfile')
+                sudo('chmod 600 /swapfile')
+                sudo('mkswap /swapfile')
+                sudo('swapon /swapfile')
         sudo('chown %s.%s -R %s' % (env.user, env.user, os.path.join(env.NEWSBLUR_PATH, 'venv')))
         run('easy_install -U pip')
         run('pip install --upgrade pip')
         run('pip install --upgrade setuptools')
         run('pip install -r requirements.txt')
-        with settings(warn_only=True):
-            sudo('swapoff /swapfile')
+        if role == "task":
+            with settings(warn_only=True):
+                sudo('swapoff /swapfile')
 
 def solo_pip(role):
     if role == "app":
@@ -984,10 +988,16 @@ def upgrade_django(role=None):
             run('./utils/kill_gunicorn.sh')
             copy_app_settings()
             setup_gunicorn(restart=False)
+        elif role == "node":
+            copy_app_settings()
+            config_node(full=True)
+        else:
+            copy_task_settings()
+
         pip()
         clean()
 
-        sudo('reboot')
+        # sudo('reboot')
 
 def clean():
     with virtualenv(), settings(warn_only=True):
