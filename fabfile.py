@@ -1651,9 +1651,12 @@ def setup_ec2():
 # ==========
 
 @parallel
-def pull():
+def pull(master=False):
     with virtualenv():
         run('git pull')
+        if master:
+            run('git checkout master')
+            run('git pull')
 
 def pre_deploy():
     compress_assets(bundle=True)
