@@ -431,7 +431,7 @@ def setup_repo():
 
 def setup_repo_local_settings():
     with virtualenv():
-        run('cp local_settings.py.template local_settings.py')
+        run('cp newsblur/local_settings.py.template newsblur/local_settings.py')
         run('mkdir -p logs')
         run('touch logs/newsblur.log')
 
