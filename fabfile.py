@@ -140,7 +140,8 @@ def assign_digitalocean_roledefs(split=False):
     return droplets
 
 def app():
-    web()
+    assign_digitalocean_roledefs()
+    env.roles = ['app']
 
 def web():
     assign_digitalocean_roledefs()
@@ -148,7 +149,7 @@ def web():
 
 def work():
     assign_digitalocean_roledefs()
-    env.roles = ['work', 'search']
+    env.roles = ['work']
 
 def www():
     assign_digitalocean_roledefs()
@@ -430,7 +431,7 @@ def setup_repo():
 
 def setup_repo_local_settings():
     with virtualenv():
-        run('cp local_settings.py.template local_settings.py')
+        run('cp newsblur/local_settings.py.template newsblur/local_settings.py')
         run('mkdir -p logs')
         run('touch logs/newsblur.log')
 
@@ -494,20 +495,24 @@ def setup_pip():
 
 @parallel
 def pip():
+    role = role_for_host()
+
     pull()
     with virtualenv():
-        with settings(warn_only=True):
-            sudo('fallocate -l 4G /swapfile')
-            sudo('chmod 600 /swapfile')
-            sudo('mkswap /swapfile')
-            sudo('swapon /swapfile')
+        if role == "task":
+            with settings(warn_only=True):
+                sudo('fallocate -l 4G /swapfile')
+                sudo('chmod 600 /swapfile')
+                sudo('mkswap /swapfile')
+                sudo('swapon /swapfile')
         sudo('chown %s.%s -R %s' % (env.user, env.user, os.path.join(env.NEWSBLUR_PATH, 'venv')))
         run('easy_install -U pip')
         run('pip install --upgrade pip')
         run('pip install --upgrade setuptools')
         run('pip install -r requirements.txt')
-        with settings(warn_only=True):
-            sudo('swapoff /swapfile')
+        if role == "task":
+            with settings(warn_only=True):
+                sudo('swapoff /swapfile')
 
 def solo_pip(role):
     if role == "app":
@@ -961,7 +966,10 @@ def build_haproxy():
     f.write(haproxy_template)
     f.close()
 
-def upgrade_django(role):
+def upgrade_django(role=None):
+    if not role:
+        role = role_for_host()
+
     with virtualenv(), settings(warn_only=True):
         sudo('sudo dpkg --configure -a')
         setup_supervisor()
@@ -972,15 +980,24 @@ def upgrade_django(role):
             run('./utils/kill_celery.sh')
             copy_task_settings()
             enable_celery_supervisor(update=False)
-        elif role == "app":
+        elif role == "work":
+            copy_app_settings()
+            enable_celerybeat()
+        elif role == "web" or role == "app":
             sudo('supervisorctl stop gunicorn')
             run('./utils/kill_gunicorn.sh')
             copy_app_settings()
             setup_gunicorn(restart=False)
+        elif role == "node":
+            copy_app_settings()
+            config_node(full=True)
+        else:
+            copy_task_settings()
+
         pip()
         clean()
 
-        sudo('reboot')
+        # sudo('reboot')
 
 def clean():
     with virtualenv(), settings(warn_only=True):
@@ -1634,9 +1651,12 @@ def setup_ec2():
 # ==========
 
 @parallel
-def pull():
+def pull(master=False):
     with virtualenv():
         run('git pull')
+        if master:
+            run('git checkout master')
+            run('git pull')
 
 def pre_deploy():
     compress_assets(bundle=True)
