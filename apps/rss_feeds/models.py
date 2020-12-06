@@ -420,7 +420,10 @@ class Feed(models.Model):
         original_url = url
         
         if url and url.startswith('newsletter:'):
-            return cls.objects.get(feed_address=url)
+            try:
+                return cls.objects.get(feed_address=url)
+            except cls.MultipleObjectsReturned:
+                return cls.objects.filter(feed_address=url)[0]
         if url and re.match('(https?://)?twitter.com/\w+/?', url):
             without_rss = True
         if url and re.match(r'(https?://)?(www\.)?facebook.com/\w+/?$', url):
