@@ -2802,6 +2802,8 @@ class MStory(mongo.Document):
         
         if len(image_urls):
             self.image_urls = [u for u in image_urls if u]
+        else:
+            return
         
         max_length = MStory.image_urls.field.max_length
         while len(''.join(self.image_urls)) > max_length:
