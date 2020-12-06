@@ -214,7 +214,7 @@ class IconImporter(object):
         url = self._url_from_html(content)
         if not url:
             try:
-                content = requests.get(self.cleaned_feed_link).content
+                content = requests.get(self.cleaned_feed_link, timeout=10).content
                 url = self._url_from_html(content)
             except (AttributeError, SocketError, requests.ConnectionError,
                     requests.models.MissingSchema, requests.sessions.InvalidSchema,
@@ -222,6 +222,7 @@ class IconImporter(object):
                     requests.models.InvalidURL,
                     requests.models.ChunkedEncodingError,
                     requests.models.ContentDecodingError,
+                    requests.adapters.ReadTimeout,
                     httplib.IncompleteRead,
                     LocationParseError, OpenSSLError, PyAsn1Error,
                     ValueError), e:
