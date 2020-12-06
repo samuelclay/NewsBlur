@@ -124,7 +124,7 @@ def json_view(func):
 def json_response(request, response=None):
     code = 200
 
-    if isinstance(response, HttpResponseForbidden):
+    if isinstance(response, HttpResponseForbidden) or isinstance(response, HttpResponse):
         return response
 
     try:
