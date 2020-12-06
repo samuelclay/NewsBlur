@@ -146,8 +146,7 @@ hr {
 }
 
 .NB-account-wide {
-    min-width: 388px;
-    max-width: 388px;
+    max-width: 38%;
     margin: 24px 24px 32px 0;
     display: flex;
     flex-direction: column;
