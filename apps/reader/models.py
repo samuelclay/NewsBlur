@@ -1431,6 +1431,7 @@ class UserSubscriptionFolders(models.Model):
         self.save()
 
         if not multiples_found and deleted and commit_delete:
+            user_sub = None
             try:
                 user_sub = UserSubscription.objects.get(user=self.user, feed=feed_id)
             except (Feed.DoesNotExist, UserSubscription.DoesNotExist):
@@ -1439,7 +1440,7 @@ class UserSubscriptionFolders(models.Model):
                     try:
                         user_sub = UserSubscription.objects.get(user=self.user, 
                                                                 feed=duplicate_feed[0].feed)
-                    except Feed.DoesNotExist:
+                    except (Feed.DoesNotExist, UserSubscription.DoesNotExist):
                         return
             if user_sub:
                 user_sub.delete()
