@@ -46,7 +46,7 @@ python-digitalocean==1.13.2
 python-gflags==3.1.0
 pytz==2018.3
 redis==3.5.3
-requests==2.20.0
+requests==2.25.0
 scipy==0.18.1
 seacucumber==1.5.2
 sentry-sdk==0.19.4
