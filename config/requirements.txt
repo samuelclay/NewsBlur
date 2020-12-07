@@ -56,3 +56,4 @@ stripe==1.43.0
 tweepy==3.5.0
 # -e git://github.com/tweepy/tweepy.git#egg=tweepy
 xlsxwriter==0.9.6
+urllib3==1.26.2
