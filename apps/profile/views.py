@@ -98,7 +98,7 @@ def login(request):
 
     return render(request, 'accounts/login.html', {
         'form': form,
-        'next': request.POST.get('next', "")
+        'next': request.POST.get('next', "") or request.GET.get('next', "")
     })
     
 @csrf_exempt
