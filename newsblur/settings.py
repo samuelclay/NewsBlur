@@ -226,11 +226,6 @@ LOGGING = {
             'level': 'INFO',
             'propagate': True,
         },
-        'gunicorn.errors': {
-            'level': 'DEBUG',
-            'handlers': ['console', 'log_file'],
-            'propagate': True,
-        },
         # 'raven': {
         #     'level': 'DEBUG',
         #     'handlers': ['console'],
