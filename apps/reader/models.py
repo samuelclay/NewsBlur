@@ -1433,7 +1433,7 @@ class UserSubscriptionFolders(models.Model):
         if not multiples_found and deleted and commit_delete:
             try:
                 user_sub = UserSubscription.objects.get(user=self.user, feed=feed_id)
-            except Feed.DoesNotExist:
+            except (Feed.DoesNotExist, UserSubscription.DoesNotExist):
                 duplicate_feed = DuplicateFeed.objects.filter(duplicate_feed_id=feed_id)
                 if duplicate_feed:
                     try:
