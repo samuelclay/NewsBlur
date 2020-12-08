@@ -146,7 +146,7 @@ hr {
 }
 
 .NB-account-wide {
-    max-width: 38%;
+    max-width: 42%;
     margin: 24px 24px 32px 0;
     display: flex;
     flex-direction: column;
@@ -705,17 +705,17 @@ hr {
     height: 16px;
 }
 .NB-theme-feed-size-m .NB-feedlist img.feed_favicon {
-    top: 3px;
+    top: 4px;
 }
 .NB-theme-feed-size-l .NB-feedlist img.feed_favicon {
-    top: 3px;
+    top: 4px;
 }
 .NB-theme-feed-size-xl .NB-feedlist img.feed_favicon {
-    top: 4px;
+    top: 5px;
 }
 .NB-feedlist .feed_title {
     display: block;
-    padding: 4px 40px 2px 23px;
+    padding: 5px 40px 3px 23px;
     text-decoration: none;
     color: rgba(0,0,0,.7);
     line-height: 1.3em;
@@ -859,7 +859,7 @@ hr {
 .NB-feedlist .feed_counts {
     position: absolute;
     right: 2px;
-    top: 0;
+    top: 1px;
 }
 .NB-feedlist .NB-feedbar-mark-feed-read {
     display: none;
@@ -7241,7 +7241,7 @@ form.opml_import_form input {
 }
 
 .NB-menu-manage .NB-menu-manage-title {
-  font-size: 11px;
+  font-size: 14px;
   text-shadow: 0 1px 0 rgba(255, 255, 255, .6);
   padding: 5px 0 5px 0;
   margin-left: 36px;
@@ -7276,7 +7276,7 @@ form.opml_import_form input {
     text-shadow: 0 1px 0 rgba(0, 0, 0, .4);
 }
 .NB-menu-manage .NB-menu-manage-subtitle {
-  margin: -5px 0 0 36px;
+  margin: -2px 0 0 36px;
   padding: 0 0 5px 0;
 }
 .NB-menu-manage .NB-menu-manage-image {
@@ -7284,7 +7284,7 @@ form.opml_import_form input {
   position: absolute;
   width: 18px;
   height: 18px;
-  top: 3px;
+  top: 5px;
   left: 10px;
 }
 .NB-menu-manage .NB-menu-manage-theme .NB-menu-manage-image {
