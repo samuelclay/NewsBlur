@@ -5092,12 +5092,16 @@
                         NEWSBLUR.log(['Real-time user update for read story', username, message]);
                         var story_hash = message.replace('story:read:', '');
                         NEWSBLUR.assets.stories.mark_read_pubsub(story_hash);
-                        NEWSBLUR.assets.dashboard_stories.mark_read_pubsub(story_hash);
+                        NEWSBLUR.app.dashboard_rivers.forEach(function (river) {
+                            river.options.dashboard_stories.mark_read_pubsub(story_hash);
+                        });
                     } else if (_.string.startsWith(message, 'story:unread')) {
                         NEWSBLUR.log(['Real-time user update for unread story', username, message]);
                         var story_hash = message.replace('story:unread:', '');
                         NEWSBLUR.assets.stories.mark_unread_pubsub(story_hash);
-                        NEWSBLUR.assets.dashboard_stories.mark_unread_pubsub(story_hash);
+                        NEWSBLUR.app.dashboard_rivers.forEach(function (river) {
+                            river.options.dashboard_stories.mark_unread_pubsub(story_hash);
+                        });
                     } else if (_.string.startsWith(message, 'story:starred') ||
                                _.string.startsWith(message, 'story:unstarred')) {
                         this.update_starred_counts();
