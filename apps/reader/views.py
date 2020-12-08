@@ -66,6 +66,13 @@ import tweepy
 BANNED_URLS = [
     "brentozar.com",
 ]
+ALLOWED_SUBDOMAINS = [
+    'dev', 
+    'www', 
+    'debug', 
+    'debug3', 
+    'nb',
+]
 
 def get_subdomain(request):
     host = request.META.get('HTTP_HOST')
@@ -79,7 +86,7 @@ def get_subdomain(request):
 def index(request, **kwargs):
     
     subdomain = get_subdomain(request)
-    if request.method == "GET" and subdomain and subdomain not in ['dev', 'www', 'debug', 'nb']:
+    if request.method == "GET" and subdomain and subdomain not in ALLOWED_SUBDOMAINS:
         username = request.subdomain
         if '.' in username:
             username = username.split('.')[0]
