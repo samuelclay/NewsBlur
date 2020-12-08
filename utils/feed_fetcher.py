@@ -133,10 +133,10 @@ class FetchFeed:
                     headers['If-Modified-Since'] = modified_header
                 if etag or modified:
                     headers['A-IM'] = 'feed'
-                raw_feed = requests.get(address, headers=headers)
+                raw_feed = requests.get(address, headers=headers, timeout=15)
                 if raw_feed.status_code >= 400:
                     logging.debug("   ***> [%-30s] ~FRFeed fetch was %s status code, trying fake user agent: %s" % (self.feed.log_title[:30], raw_feed.status_code, raw_feed.headers))
-                    raw_feed = requests.get(self.feed.feed_address, headers=self.feed.fetch_headers(fake=True))
+                    raw_feed = requests.get(self.feed.feed_address, headers=self.feed.fetch_headers(fake=True), timeout=15)
                 
                 if raw_feed.content and 'application/json' in raw_feed.headers.get('Content-Type', ""):
                     # JSON Feed
@@ -155,7 +155,7 @@ class FetchFeed:
                     if self.options.get('debug', False):
                         logging.debug(" ---> [%-30s] ~FBFeed fetch status %s: %s length / %s" % (self.feed.log_title[:30], raw_feed.status_code, len(smart_unicode(raw_feed.content)), raw_feed.headers))
             except Exception, e:
-                logging.debug("   ***> [%-30s] ~FRFeed failed to fetch with request, trying feedparser: %s" % (self.feed.log_title[:30], unicode(e)[:100]))
+                logging.debug("   ***> [%-30s] ~FRFeed failed to fetch with request, trying feedparser: %s" % (self.feed.log_title[:30], e))
             
             if not self.fpf or self.options.get('force_fp', False):
                 try:

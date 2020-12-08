@@ -420,7 +420,10 @@ class Feed(models.Model):
         original_url = url
         
         if url and url.startswith('newsletter:'):
-            return cls.objects.get(feed_address=url)
+            try:
+                return cls.objects.get(feed_address=url)
+            except cls.MultipleObjectsReturned:
+                return cls.objects.filter(feed_address=url)[0]
         if url and re.match('(https?://)?twitter.com/\w+/?', url):
             without_rss = True
         if url and re.match(r'(https?://)?(www\.)?facebook.com/\w+/?$', url):
@@ -2802,6 +2805,8 @@ class MStory(mongo.Document):
         
         if len(image_urls):
             self.image_urls = [u for u in image_urls if u]
+        else:
+            return
         
         max_length = MStory.image_urls.field.max_length
         while len(''.join(self.image_urls)) > max_length:

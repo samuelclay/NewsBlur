@@ -756,7 +756,7 @@ def setup_gunicorn(supervisor=True, restart=True):
         put('config/supervisor_gunicorn.conf', '/etc/supervisor/conf.d/gunicorn.conf', use_sudo=True)
         sudo('supervisorctl reread')
         if restart:
-            restart_gunicorn()
+            sudo('supervisorctl update')
     # with cd(env.VENDOR_PATH):
     #     sudo('rm -fr gunicorn')
     #     run('git clone git://github.com/benoitc/gunicorn.git')

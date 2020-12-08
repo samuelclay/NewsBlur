@@ -1,4 +1,5 @@
 from newsblur.celeryapp import app
+from utils import log as logging
 
 @app.task()
 def IndexSubscriptionsForSearch(user_id):
@@ -9,6 +10,7 @@ def IndexSubscriptionsForSearch(user_id):
 
 @app.task()
 def IndexSubscriptionsChunkForSearch(feed_ids, user_id):
+    logging.debug(" ---> Indexing: %s for %s" % (feed_ids, user_id))
     from apps.search.models import MUserSearch
     
     user_search = MUserSearch.get_user(user_id)
