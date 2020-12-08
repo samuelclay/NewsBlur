@@ -132,36 +132,11 @@
             NEWSBLUR.app.feed_selector = new NEWSBLUR.Views.FeedSelector();
             NEWSBLUR.app.follow_requests_module = new NEWSBLUR.Views.FollowRequestsModule();
             NEWSBLUR.app.dashboard_search = new NEWSBLUR.Views.DashboardSearch();
-            NEWSBLUR.app.dashboard_rivers = [];
-            NEWSBLUR.app.dashboard_rivers.push(new NEWSBLUR.Views.DashboardRiver({
-                el: '.NB-module-river-1',
-                active_feed: 'river:',
-                active_folder: NEWSBLUR.assets.folders,
-                dashboard_stories: new NEWSBLUR.Collections.Stories()
-            }));
-            NEWSBLUR.app.dashboard_rivers.push(new NEWSBLUR.Views.DashboardRiver({
-                el: '.NB-module-river-2',
-                active_feed: 'river:infrequent',
-                active_folder: NEWSBLUR.assets.folders,
-                dashboard_stories: new NEWSBLUR.Collections.Stories()
-            }));
-            NEWSBLUR.app.dashboard_rivers.push(new NEWSBLUR.Views.DashboardRiver({
-                el: '.NB-module-river-3',
-                active_feed: 'river:global',
-                active_folder: NEWSBLUR.assets.folders,
-                dashboard_stories: new NEWSBLUR.Collections.Stories()
-            }));
-            NEWSBLUR.app.dashboard_rivers.push(new NEWSBLUR.Views.DashboardRiver({
-                el: '.NB-module-river-4',
-                active_feed: 'search:river::pizza',
-                active_folder: NEWSBLUR.assets.folders,
-                query: "pizza",
-                dashboard_stories: new NEWSBLUR.Collections.Stories()
-            }));
             NEWSBLUR.app.taskbar_info = new NEWSBLUR.Views.ReaderTaskbarInfo().render();
             NEWSBLUR.app.story_titles_header = new NEWSBLUR.Views.StoryTitlesHeader();
             NEWSBLUR.app.search_header = new NEWSBLUR.Views.FeedSearchHeader();
             
+            this.load_dashboard_rivers();
             this.load_intelligence_slider();
             this.handle_mouse_indicator_hover();
             this.handle_login_and_signup_forms();
@@ -2875,26 +2850,50 @@
             });
         },
         
-        active_fake_folder_title: function() {
-            var title = "All Site Stories";
-            if (NEWSBLUR.reader.active_feed == "read") {
-                title = "Read Stories";
-            } else if (NEWSBLUR.reader.active_feed == "river:infrequent") {
-                title = "Infrequent Site Stories";
-            } else if (NEWSBLUR.reader.flags['starred_view']) {
-                title = "Saved Stories";
-                if (NEWSBLUR.reader.flags['starred_tag']) {
-                    title = title + " - " + NEWSBLUR.reader.flags['starred_tag'];
+        feed_title: function(feed_id) {
+            if (!feed_id) {
+                feed_id = this.active_feed;
+            }
+            var feed_title;
+
+            if (feed_id == 'river:') {
+                feed_title = "All Site Stories";
+            } else if (feed_id == 'river:global') {
+                feed_title = "Global Shared Stories";
+            } else if (feed_id == 'river:blurblogs') {
+                feed_title = "All Shared Stories";
+            } else if (feed_id == 'river:infrequent') {
+                feed_title = "Infrequent Site Stories";
+            } else if (_.string.startsWith(feed_id, 'river:')) {
+                var feed = NEWSBLUR.assets.get_feed(feed_id);
+                if (!feed) return;
+                feed_title = feed.get('folder_title');
+            } else if (feed_id == "read") {
+                feed_title = "Read Stories";
+            } else if (_.string.startsWith(feed_id, 'starred')) {
+                feed_title = "Saved Stories";
+                var tag = feed_id.replace('starred:', '');
+                var model = NEWSBLUR.assets.starred_feeds.detect(function(feed) {
+                    return feed.tag_slug() == tag || feed.get('tag') == tag;
+                });
+                if (model && model.get('tag')) {
+                    feed_title = feed_title + " - " + model.get('tag');
+                } else if (model && model.get('feed_title')) {
+                    feed_title = feed_title + " - " + model.get('feed_title');
                 }
-            } else if (NEWSBLUR.reader.flags['social_view']) {
-                if (NEWSBLUR.reader.flags['global_blurblogs']) {
-                    title = "Global Shared Stories";
-                } else {
-                    title = "All Shared Stories";
-                }
+            } else if (_.string.startsWith(feed_id, 'feed:') || _.isNumber(feed_id)){
+                var feed = NEWSBLUR.assets.get_feed(parseInt(feed_id.replace('feed:', ''), 10));
+                if (!feed) return;
+                
+                feed_title = feed.get('feed_title');
+            } else if (_.string.startsWith(feed_id, 'social:')){
+                var feed = NEWSBLUR.assets.get_feed(feed_id);
+                if (!feed) return;
+                
+                feed_title = feed.get('feed_title');
             }
     
-            return title;
+            return feed_title;
         },
         
         open_feed_intelligence_modal: function(score, feed_id, feed_loaded) {
@@ -4661,6 +4660,43 @@
             
         },
         
+        // ====================
+        // = Dashboard Rivers =
+        // ====================
+
+        load_dashboard_rivers: function () {
+            NEWSBLUR.app.dashboard_rivers = [];
+            NEWSBLUR.app.dashboard_rivers.push(new NEWSBLUR.Views.DashboardRiver({
+                el: '.NB-module-river-1',
+                active_feed: 'river:',
+                active_folder: NEWSBLUR.assets.folders,
+                dashboard_stories: new NEWSBLUR.Collections.Stories(),
+                dashboard_river_number: 1
+            }));
+            NEWSBLUR.app.dashboard_rivers.push(new NEWSBLUR.Views.DashboardRiver({
+                el: '.NB-module-river-2',
+                active_feed: 'river:infrequent',
+                active_folder: NEWSBLUR.assets.folders,
+                dashboard_stories: new NEWSBLUR.Collections.Stories(),
+                dashboard_river_number: 2
+            }));
+            NEWSBLUR.app.dashboard_rivers.push(new NEWSBLUR.Views.DashboardRiver({
+                el: '.NB-module-river-3',
+                active_feed: 'river:global',
+                active_folder: NEWSBLUR.assets.folders,
+                dashboard_stories: new NEWSBLUR.Collections.Stories(),
+                dashboard_river_number: 3
+            }));
+            NEWSBLUR.app.dashboard_rivers.push(new NEWSBLUR.Views.DashboardRiver({
+                el: '.NB-module-river-4',
+                active_feed: 'search:river::pizza',
+                active_folder: NEWSBLUR.assets.folders,
+                query: "pizza",
+                dashboard_stories: new NEWSBLUR.Collections.Stories(),
+                dashboard_river_number: 4
+            }));
+        },
+
         // ==========================
         // = Taskbar - Intelligence =
         // ==========================
