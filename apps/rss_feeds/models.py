@@ -410,13 +410,20 @@ class Feed(models.Model):
         return bool(not (self.favicon_not_found or self.favicon_color))
     
     @classmethod
+    def get_feed_by_url(self, *args, **kwargs):
+        return self.get_feed_from_url(*args, **kwargs)
+        
+    @classmethod
     def get_feed_from_url(cls, url, create=True, aggressive=False, fetch=True, offset=0, user=None, interactive=False):
         feed = None
         without_rss = False
         original_url = url
         
         if url and url.startswith('newsletter:'):
-            return cls.objects.get(feed_address=url)
+            try:
+                return cls.objects.get(feed_address=url)
+            except cls.MultipleObjectsReturned:
+                return cls.objects.filter(feed_address=url)[0]
         if url and re.match('(https?://)?twitter.com/\w+/?', url):
             without_rss = True
         if url and re.match(r'(https?://)?(www\.)?facebook.com/\w+/?$', url):
@@ -1116,20 +1123,20 @@ class Feed(models.Model):
             # A known workaround is using facebook's user agent.
             return 'facebookexternalhit/1.0 (+http://www.facebook.com/externalhit_uatext.php)'
 
-        ua = ('NewsBlur Feed Fetcher - %s subscriber%s - %s '
-              '(Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_3) '
-              'AppleWebKit/537.36 (KHTML, like Gecko) '
-              'Chrome/56.0.2924.87 Safari/537.36)' % (
+        ua = ('NewsBlur Feed Fetcher - %s subscriber%s - %s %s' % (
                    self.num_subscribers,
                    's' if self.num_subscribers != 1 else '',
                    self.permalink,
+                   self.fake_user_agent,
               ))
 
         return ua
     
     @property
     def fake_user_agent(self):
-        ua = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:49.0) Gecko/20100101 Firefox/49.0"
+        ua = ('("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
+              'AppleWebKit/605.1.15 (KHTML, like Gecko) '
+              'Version/14.0.1 Safari/605.1.15")')
         
         return ua
     
@@ -2796,7 +2803,17 @@ class MStory(mongo.Document):
         
         if len(image_urls):
             self.image_urls = [u for u in image_urls if u]
+        else:
+            return
         
+        max_length = MStory.image_urls.field.max_length
+        while len(''.join(self.image_urls)) > max_length:
+            if len(self.image_urls) <= 1:
+                self.image_urls[0] = self.image_urls[0][:max_length-1]
+                break
+            else:
+                self.image_urls.pop()
+
         return self.image_urls
 
     def fetch_original_text(self, force=False, request=None, debug=False):
@@ -2833,6 +2850,7 @@ class MStarredStory(mongo.DynamicDocument):
        mongoengine's inheritance model on every single row."""
     user_id                  = mongo.IntField(unique_with=('story_guid',))
     starred_date             = mongo.DateTimeField()
+    starred_updated          = mongo.DateTimeField()
     story_feed_id            = mongo.IntField()
     story_date               = mongo.DateTimeField()
     story_title              = mongo.StringField(max_length=1024)
@@ -2879,7 +2897,8 @@ class MStarredStory(mongo.DynamicDocument):
             self.story_original_content_z = zlib.compress(self.story_original_content)
             self.story_original_content = None
         self.story_hash = self.feed_guid_hash
-        
+        self.starred_updated = datetime.datetime.now()
+
         return super(MStarredStory, self).save(*args, **kwargs)
         
     @classmethod
@@ -3010,6 +3029,11 @@ class MStarredStoryCounts(mongo.Document):
             secret_token = user.profile.secret_token
         
         slug = self.slug if self.slug else ""
+        if not self.slug and self.tag:
+            slug = slugify(self.tag)
+            self.slug = slug
+            self.save()
+
         return "%s/reader/starred_rss/%s/%s/%s" % (settings.NEWSBLUR_URL, self.user_id, 
                                                    secret_token, slug)
     

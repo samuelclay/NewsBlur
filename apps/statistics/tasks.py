@@ -1,21 +1,17 @@
-from celery import Task
+from newsblur.celeryapp import app
 from apps.statistics.models import MStatistics
 from apps.statistics.models import MFeedback
-# from utils import log as logging
+from utils import log as logging
 
 
 
-class CollectStats(Task):
-    name = 'collect-stats'
-
-    def run(self, **kwargs):
-        # logging.debug(" ---> ~FBCollecting stats...")
-        MStatistics.collect_statistics()
+@app.task(name='collect-stats')
+def CollectStats():
+    logging.debug(" ---> ~FBCollecting stats...")
+    MStatistics.collect_statistics()
         
         
-class CollectFeedback(Task):
-    name = 'collect-feedback'
-
-    def run(self, **kwargs):
-        # logging.debug(" ---> ~FBCollecting feedback...")
-        MFeedback.collect_feedback()
+@app.task(name='collect-feedback')
+def CollectFeedback():
+    logging.debug(" ---> ~FBCollecting feedback...")
+    MFeedback.collect_feedback()

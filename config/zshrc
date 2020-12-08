@@ -7,7 +7,7 @@ export WORKON_HOME=/srv/newsblur/venv
 export PROJECT_HOME=/srv/newsblur
 source /usr/local/bin/virtualenvwrapper.sh
 
-plugins=(git github pip zsh-syntax-highlighting virtualenvwrapper)
+plugins=(git github pip virtualenvwrapper)
 source $ZSH/oh-my-zsh.sh
 
 export PYTHONSTARTUP=$HOME/.pystartup

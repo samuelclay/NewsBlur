@@ -35,14 +35,14 @@ public class FeedFolderResponse {
 	
 	public boolean isAuthenticated;
     public boolean isPremium;
+    public long premiumExpire;
     public boolean isStaff;
 	public int starredCount;
 	
 	public FeedFolderResponse(String json, Gson gson) {
         long startTime = System.currentTimeMillis();
 
-		JsonParser parser = new JsonParser();
-		JsonObject asJsonObject = parser.parse(json).getAsJsonObject();
+		JsonObject asJsonObject = JsonParser.parseString(json).getAsJsonObject();
 
         this.isAuthenticated = asJsonObject.get("authenticated").getAsBoolean();
         if (asJsonObject.has("is_staff")) {
@@ -53,6 +53,7 @@ public class FeedFolderResponse {
         if (userProfile != null) {
             JsonObject profile = (JsonObject) userProfile;
             this.isPremium = profile.get("is_premium").getAsBoolean();
+            this.premiumExpire = profile.get("premium_expire").getAsLong();
         }
 
 		JsonElement starredCountElement = asJsonObject.get("starred_count");
@@ -127,7 +128,7 @@ public class FeedFolderResponse {
 	/**
      * Parses a folder, which is a list of feeds and/or more folders.
      *
-     * @param parentName folder that surrounded this folder.
+     * @param parentNames folder that surrounded this folder.
      * @param name the name of this folder or null if root.
      * @param arrayValue the contents to be parsed.
      */

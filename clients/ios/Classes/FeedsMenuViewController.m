@@ -315,7 +315,7 @@
     
     [[ThemeManager themeManager] updateSegmentedControl:self.fontSizeSegment];
     
-    [cell addSubview:self.fontSizeSegment];
+    [cell.contentView addSubview:self.fontSizeSegment];
     
     return cell;
 }
@@ -370,7 +370,7 @@
         self.themeSegmentedControl.selectedSegmentTintColor = [UIColor clearColor];
     }
     
-    [cell addSubview:self.themeSegmentedControl];
+    [cell.contentView addSubview:self.themeSegmentedControl];
     
     return cell;
 }
