@@ -145,13 +145,23 @@ hr {
     margin: 0 24px 32px 0;
 }
 
-.NB-account {
-    position: absolute;
-    right: 0;
-    z-index: 1;
-    overflow: hidden;
-    width: 188px;
+.NB-account-wide {
+    max-width: 38%;
+    margin: 24px 24px 32px 0;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.NB-account-left {
+    flex: 1;
     margin: 0 24px 32px 0;
+}
+.NB-account-right {
+    flex: 1.2;
+}
+.NB-account {
+    display: flex;
 }
 
 .NB-account .NB-module-header-login {
@@ -553,8 +563,8 @@ hr {
     border-bottom: 1px solid transparent;
     font-weight: bold;
     display: block;
-    color: #606060;
-    text-transform: uppercase;
+    color: #78797B;
+    letter-spacing: 0.5px;
     cursor: pointer;
     position: relative;
 }
@@ -859,10 +869,10 @@ hr {
 .NB-feeds-header.NB-selected,
 .NB-feedlist .folder.NB-selected > .folder_title {
     background-color: #FFFFD2;
-    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#FFFFD2), to(#F5F9B4));
-    background: -moz-linear-gradient(center top , #FFFFD2 0%, #F5F9B4 100%);
-    border-top: 1px solid #D6D682;
-    border-bottom: 1px solid #D6D682;
+    /* background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#FFFFD2), to(#F5F9B4));
+    background: -moz-linear-gradient(center top , #FFFFD2 0%, #F5F9B4 100%); */
+    border-top: 1px solid rgb(241 241 189);
+    border-bottom: 1px solid rgb(241 241 189);
 }
 .NB-feedlist .folder.NB-selected > .folder_title {
     text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
@@ -2115,8 +2125,8 @@ hr {
 .NB-story-title.NB-selected,
 .NB-interaction:hover:not(.NB-disabled) {
     color: #304080;
-    border-top: 1px solid #EFEEC3;
-    border-bottom: 1px solid #EFEEC3;
+    border-top: 1px solid rgb(255 254 237);
+    border-bottom: 1px solid rgb(249 248 222);
     background-color: #FFFEE2;
 }
 
@@ -2138,7 +2148,7 @@ hr {
 }
 
 .NB-end-line {
-    min-height: 36px;
+    min-height: 76px;
     border-top: 1px solid #C2C5BE;
     border-bottom: 1px solid #E1E6E0;
 /*    padding-left: 14px; /* offset for scrollbar on right */
@@ -2148,6 +2158,10 @@ hr {
     background-image:  no-repeat center center;
     overflow: hidden;
     clear: both;
+}
+.NB-module-river .NB-end-line {
+    border-top: none;
+    border-bottom: none;
 }
 .NB-end-line.NB-short {
     height: 8px;
@@ -2159,7 +2173,7 @@ hr {
     background-size: 203px 24px;
     margin: 0 auto;
     width: 175px;
-    height: 36px;
+    height: 76px;
 }
 
 .NB-empty .NB-end-line {
@@ -4428,12 +4442,12 @@ body {
 }
 
 .NB-feeds-header {
-    background-color: #EAECE5;
-    background-image: -webkit-gradient(linear, left top, left bottom, from(#EAECE5), to(#DCDFD6));
+    background-color: #e9ece6;
+    /* background-image: -webkit-gradient(linear, left top, left bottom, from(#EAECE5), to(#DCDFD6));
     background: -moz-linear-gradient(center top , #EAECE5 0%, #DCDFD6 100%);
-    background-image: linear-gradient(top, #EAECE5, #DCDFD6);
+    background-image: linear-gradient(top, #EAECE5, #DCDFD6); */
     border-bottom: 1px solid #E9E9E9;
-    border-top: 1px solid #EAECE5;
+    border-top: 1px solid #FFFFFF;
     font-size: 11px;
     line-height: 22px;
     cursor: pointer;
@@ -4455,9 +4469,9 @@ body {
 
 .NB-feeds-header:hover:not(.NB-selected) {
     background-color: #E1E6D7;
-    background-image: -webkit-gradient(linear, left top, left bottom, from(#E1E6D7), to(#CFD6C3));
+    /* background-image: -webkit-gradient(linear, left top, left bottom, from(#E1E6D7), to(#CFD6C3));
     background: -moz-linear-gradient(center top , #E1E6D7 0%, #CFD6C3 100%);
-    background-image: linear-gradient(top, #E1E6D7, #CFD6C3);
+    background-image: linear-gradient(top, #E1E6D7, #CFD6C3); */
 }
 
 .NB-feeds-header.NB-selected {
@@ -4479,7 +4493,7 @@ body {
     color: #393939;
     overflow: hidden;
     text-shadow: 0 1px 0 rgba(255, 255, 255, .4);
-    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 
@@ -5275,8 +5289,9 @@ form.opml_import_form input {
 }
 
 .NB-splash-modules {
-    max-width: 750px;
-    min-width: 500px;
+    max-width: 1200px;
+    display: flex;
+    flex-direction: row;
     position: relative;
 }
 .NB-splash-info {
@@ -6382,7 +6397,9 @@ form.opml_import_form input {
     font-size: 13px;
     line-height: 16px;
     font-weight: normal;
-    float: right;
+    position: absolute;
+    right: 12px;
+    top: 16px;
 }
 .NB-module .NB-spinner {
     background: transparent url('/media/embed/reader/ring_spinner.svg') no-repeat center center;
@@ -6405,6 +6422,7 @@ form.opml_import_form input {
     margin: 12px 0 4px 0;
     font-size: 13px;
     text-transform: uppercase;
+    letter-spacing: 1px;
     color: #585a55;
     clear: both;
 }
@@ -6439,7 +6457,6 @@ form.opml_import_form input {
     position: relative;
     min-height: 77px;
     margin: 12px 0 0;
-    padding-bottom: 1px;
     clear: both;
 }
 
@@ -6478,9 +6495,14 @@ form.opml_import_form input {
 	float: right;
 	margin: 4px 4px 0 0;
 }
+
 /* =========================== */
 /* = Right Modules - Account = */
 /* =========================== */
+
+.NB-module-features {
+    margin-top: 24px;
+}
 
 .NB-account .NB-module,
 .NB-manage .NB-module {
@@ -6788,11 +6810,6 @@ form.opml_import_form input {
     overflow: hidden;
     padding: 6px 0;
 }
-.NB-module-account .NB-module-stats-count {
-	float: left;
-	width: 33%;
-	border-bottom: none;
-}
 .NB-module-stats-count:last-child {
     border-bottom: none;
 }
@@ -6862,15 +6879,25 @@ form.opml_import_form input {
 /* ================== */
 
 .NB-modules-center {
-    margin: 24px 212px 0 0px;
+    margin: 24px 24px 0 0px;
     padding: 0 24px;
-    max-width: 500px;
-    float: left;
+    flex: 1;
 }
 
 .NB-modules-center .NB-module {
     margin: 0 0 24px;
 	clear: both;
+}
+.NB-module-river .NB-story-title-container:first-child .NB-story-title {
+    border-top: none;
+}
+.NB-module-river .NB-story-title-container:last-child .NB-story-title {
+    border-bottom: none;
+}
+
+.NB-module-river .NB-view-river {
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    border-radius: 3px;
 }
 
 /* ============ */
@@ -6911,7 +6938,7 @@ form.opml_import_form input {
     font-size: 11px;
     line-height: 20px;
     white-space: nowrap;
-    min-width: 100px;
+    min-width: 74px;
 }
 
 .NB-module-features .NB-module-feature.last .NB-module-feature-date {
@@ -7107,7 +7134,6 @@ form.opml_import_form input {
 .NB-menu-manage {
     list-style: none;
     font-size: 11px;
-    text-transform: uppercase;
     margin: 4px 0 0;
     padding: 0;
     position: relative;
@@ -7214,8 +7240,10 @@ form.opml_import_form input {
 }
 
 .NB-menu-manage .NB-menu-manage-title {
-  font-size: 14px;
+  font-size: 11px;
   text-shadow: 0 1px 0 rgba(255, 255, 255, .6);
+  padding: 5px 0 5px 0;
+  margin-left: 36px;
 }
 
 .NB-menu-manage li.NB-menu-item:hover:not(.NB-disabled) .NB-menu-manage-title {
@@ -7246,10 +7274,6 @@ form.opml_import_form input {
     color: rgba(255, 255, 255, 1);
     text-shadow: 0 1px 0 rgba(0, 0, 0, .4);
 }
-.NB-menu-manage .NB-menu-manage-title {
-  padding: 5px 0 5px 0;
-  margin-left: 36px;
-}
 .NB-menu-manage .NB-menu-manage-subtitle {
   margin: -5px 0 0 36px;
   padding: 0 0 5px 0;
@@ -7259,8 +7283,11 @@ form.opml_import_form input {
   position: absolute;
   width: 18px;
   height: 18px;
-  top: 5px;
+  top: 3px;
   left: 10px;
+}
+.NB-menu-manage .NB-menu-manage-theme .NB-menu-manage-image {
+    top: 5px;
 }
 
 .NB-menu-manage .NB-menu-manage-feed-info,
@@ -12673,7 +12700,7 @@ form.opml_import_form input {
     overflow: hidden;
     padding: 12px;
     position: relative;
-
+    width: 50%;
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
@@ -12687,7 +12714,7 @@ form.opml_import_form input {
     
 }
 .NB-module-search-input input {
-    width: 190px;
+    width: 85%;
     float: left;
     font-size: 13px;
     padding: 4px 20px 4px 6px;
