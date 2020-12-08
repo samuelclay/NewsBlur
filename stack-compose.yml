@@ -56,7 +56,6 @@ services:
     environment: 
       - DOCKERBUILD=True
     volumes:
-    - ./docker/nginx:/etc/nginx/conf.d
     - app-files:/srv/newsblur
     deploy:
       placement:
@@ -73,7 +72,7 @@ services:
     ports:
       - '5432:5432'
     volumes:
-      - ./docker/volumes/postgres:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
     deploy:
       placement:
         constraints: [node.label == postgres]
@@ -85,10 +84,8 @@ services:
       - '6379:6379'
     container_name: redis
     volumes:
-      - ./docker/volumes/redis:/data
-      - ./config/redis.conf:/usr/local/etc/redis_server.conf
-      - ./config/redis_docker.conf:/etc/redis_server.conf
-      - ./docker/volumes/redis.var.lib:/var/lib/redis
+      - redis_data:/data
+      - redis_data:/redis.var.lib:/var/lib/redis
     command: redis-server --port 6379
     deploy:
       placement:
@@ -99,10 +96,8 @@ services:
       - '6379:6379'
     container_name: redis
     volumes:
-      - ./docker/volumes/redis:/data
-      - ./config/redis.conf:/usr/local/etc/redis_server.conf
-      - ./config/redis_docker.conf:/etc/redis_server.conf
-      - ./docker/volumes/redis.var.lib:/var/lib/redis
+      - redis_data:/data
+      - redis_data:/redis.var.lib:/var/lib/redis
     command: redis-server --port 6379
     deploy:
       placement:
@@ -114,10 +109,8 @@ services:
       - '6379:6379'
     container_name: redis
     volumes:
-      - ./docker/volumes/redis:/data
-      - ./config/redis.conf:/usr/local/etc/redis_server.conf
-      - ./config/redis_docker.conf:/etc/redis_server.conf
-      - ./docker/volumes/redis.var.lib:/var/lib/redis
+      - redis_data:/data
+      - redis_data:/redis.var.lib:/var/lib/redis
     command: redis-server --port 6379
     deploy:
       placement:
@@ -130,10 +123,8 @@ services:
       - '6379:6379'
     container_name: redis
     volumes:
-      - ./docker/volumes/redis:/data
-      - ./config/redis.conf:/usr/local/etc/redis_server.conf
-      - ./config/redis_docker.conf:/etc/redis_server.conf
-      - ./docker/volumes/redis.var.lib:/var/lib/redis
+      - redis_data:/data
+      - redis_data:/redis.var.lib:/var/lib/redis
     command: redis-server --port 6379
     deploy:
       placement:
@@ -145,7 +136,7 @@ services:
     ports:
       - '9200:9200'
     volumes:
-      - ./docker/volumes/elasticsearch:/usr/share/elasticsearch/data
+      - elasticsearch_data:/usr/share/elasticsearch/data
     deploy:
       placement:
         constraints: [node.label == elasticsearch]
@@ -157,7 +148,7 @@ services:
       - 27017:27017
     command: mongod --smallfiles
     volumes:
-      - ./docker/volumes/db_mongo:/data/db
+      - db_mongo_data:/data/db
     deploy:
       placement:
         constraints: [node.label == mongo]
@@ -165,22 +156,20 @@ services:
       replicas: 3
   
   original_pages:
-    image: newsblur/newsblur_node
+    image: newsblur/newsblur_node_prod
     container_name: node_original_page
     environment:
       - NODE_ENV=development
     command: node original_page.js
     ports:
       - 3060:3060
-    volumes: 
-      - node-files:/usr/src/app
     deploy:
       placement:
         constraints: [node.label == node]
         max_replicas_per_node: 1
 
   original_text:
-    image: newsblur/newsblur_node
+    image: newsblur/newsblur_node_prod
     container_name: node_original_text
     environment:
       - NODE_ENV=development
@@ -195,7 +184,7 @@ services:
         max_replicas_per_node: 1
 
   favicons:
-    image: newsblur/newsblur_node
+    image: newsblur/newsblur_node_prod
     container_name: node_favicons
     environment:
       - NODE_ENV=docker
@@ -214,7 +203,7 @@ services:
 
   node_websocket:
     container_name: node_websocket
-    image: newsblur/newsblur_node
+    image: newsblur/newsblur_node_prod
     environment:
       - NODE_ENV=docker
     command: node unread_counts.js
@@ -236,7 +225,6 @@ services:
       - DOCKERBUILD=True
     volumes:
       - app-files:/srv/newsblur
-      - ./config:/etc/supervisor/conf.d/
 
   
   celeryd:
@@ -352,9 +340,7 @@ services:
   haproxy:
     domainname: 'nb.local.com'
     container_name: haproxy
-    build:
-      context: .
-      dockerfile: docker/haproxy/Dockerfile
+    image: newsblur/haproxy
     depends_on: 
       - nginx
       - newsblur_web
@@ -366,7 +352,6 @@ services:
     environment: 
       - DOCKERBUILD=True
     volumes:
-      - ./docker/haproxy/haproxy.conf:/usr/local/etc/haproxy/haproxy.cfg
       - app-files:/srv/newsblur
     deploy:
       placement:
@@ -380,5 +365,10 @@ volumes:
   node-files:
     driver_opts:
       type: nfs
-      device: $PWD/node
+      device: $PWD
       o: bind
+  postgres_data:
+  redis_data:
+  elasticsearch_data:
+  db_mongo_data:
+  
