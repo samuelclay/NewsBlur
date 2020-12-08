@@ -122,7 +122,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                 NEWSBLUR.log(['AJAX Error', e, e.status, textStatus, errorThrown, 
                               !!error_callback, error_callback, $.isFunction(callback)]);
                 
-                if (options.retry) {
+                if (options.retry && !NEWSBLUR.Globals.debug) {
                     NEWSBLUR.log(['Retrying...', url, data, !!callback, !!error_callback, options]);
                     options.retry = false;
                     self.make_request(url, data, callback, error_callback, options);
@@ -141,6 +141,22 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             }
         }, options)); 
         
+    },
+
+    theme: function () {
+        var theme = this.preference('theme');
+        var is_auto = theme == 'auto';
+        
+        if (is_auto) {
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                // dark mode
+                theme = "dark";
+            } else {
+                theme = "light";
+            }
+        }
+
+        return theme;
     },
     
     mark_story_hash_as_read: function(story, callback, error_callback, data) {
@@ -927,7 +943,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         if (NEWSBLUR.Globals.is_authenticated || feed_id) {
             this.make_request('/reader/feed_unread_count',  {
                 'feed_id': feed_id
-            }, pre_callback, error_callback);
+            }, pre_callback, error_callback, {request_type: 'GET'});
         }
     },
     

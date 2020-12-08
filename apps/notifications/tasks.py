@@ -1,10 +1,9 @@
-from celery import Task
+from newsblur.celeryapp import app
 from django.contrib.auth.models import User
 from apps.notifications.models import MUserFeedNotification
 from utils import log as logging
 
 
-class QueueNotifications(Task):
-    
-    def run(self, feed_id, new_stories):
-        MUserFeedNotification.push_feed_notifications(feed_id, new_stories)
+@app.task()
+def QueueNotifications(feed_id, new_stories):
+    MUserFeedNotification.push_feed_notifications(feed_id, new_stories)

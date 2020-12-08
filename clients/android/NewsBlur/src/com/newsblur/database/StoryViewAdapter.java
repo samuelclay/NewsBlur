@@ -4,8 +4,8 @@ import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Parcelable;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.util.DiffUtil;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.DiffUtil;
 import android.text.TextUtils;
 import android.view.ContextMenu;
 import android.view.GestureDetector;
@@ -126,7 +126,11 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     }
 
     public int getStoryCount() {
-        return stories.size();
+        if (fs != null && UIUtils.needsPremiumAccess(context, fs)) {
+            return Math.min(3, stories.size());
+        } else {
+            return stories.size();
+        }
     }
 
     /**
@@ -463,6 +467,9 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                     break;
                 case GEST_ACTION_UNSAVE:
                     FeedUtils.setStorySaved(story, false, context, null);
+                    break;
+                case GEST_ACTION_STATISTICS:
+                    FeedUtils.openStatistics(context, story.feedId);
                     break;
                 case GEST_ACTION_NONE:
                 default:

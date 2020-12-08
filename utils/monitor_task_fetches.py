@@ -1,11 +1,11 @@
-#!/srv/newsblur/venv/newsblur/bin/python
+#!/srv/newsblur/venv/newsblur3/bin/python
 
 import sys
 sys.path.append('/srv/newsblur')
 
 import subprocess
 import requests
-import settings
+from newsblur import settings
 import socket
 import pymongo
 
@@ -35,7 +35,7 @@ def main():
                 data={"from": "NewsBlur Task Monitor: %s <admin@%s.newsblur.com>" % (hostname, hostname),
                       "to": [admin_email],
                       "subject": "%s feeds fetched falling: %s" % (hostname, feeds_fetched),
-                      "text": "Feed fetches are falling (%s): %s" % (hostname, feeds_fetched, failed)})
+                      "text": "Feed fetches are falling: %s" % (feeds_fetched)})
         print(" ---> Feeds fetched falling! %s" % (feeds_fetched))
     else:
         print(" ---> Feeds fetched OK: %s" % (feeds_fetched))

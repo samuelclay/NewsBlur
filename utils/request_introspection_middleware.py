@@ -5,9 +5,11 @@ class DumpRequestMiddleware:
     def process_request(self, request):
         if settings.DEBUG:
             request_data = request.POST or request.GET
-            request_items = list(request_data.items())
-            # if request_items:
-            logging.debug(" ---> ~FC%s ~SN~FC%s ~SN~BC~FK%s~BK~FC %s" % (request.method, request.path, dict(request_items), request.COOKIES))
+            request_items = request_data.items()
+            if request_items:
+                logging.debug(" ---> ~FC%s ~SN~FC%s ~SN~BC~FK%s~BK~FC" % (request.method, request.path, dict(request_items)))
+            else:
+                logging.debug(" ---> ~FC%s ~SN~FC%s" % (request.method, request.path))
 
     def __init__(self, get_response=None):
         self.get_response = get_response
@@ -18,3 +20,4 @@ class DumpRequestMiddleware:
         response = self.get_response(request)
 
         return response
+

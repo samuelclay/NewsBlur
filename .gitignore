@@ -12,6 +12,7 @@ media/iphone/build
 build/
 .DS_Store
 **/*.perspectivev*
+.vscode/*
 data/
 config/certificates
 **/*.xcuserstate
@@ -71,3 +72,5 @@ clients/android/NewsBlur/build.gradle
 clients/android/NewsBlur/gradle*
 clients/android/NewsBlur/settings.gradle
 /docker/volumes/*
+
+**/node_modules

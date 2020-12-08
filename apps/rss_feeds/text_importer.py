@@ -37,13 +37,11 @@ class TextImporter:
     def headers(self):
         num_subscribers = getattr(self.feed, 'num_subscribers', 0)
         return {
-            'User-Agent': 'NewsBlur Content Fetcher - %s subscriber%s - %s '
-                          '(Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_1) '
-                          'AppleWebKit/534.48.3 (KHTML, like Gecko) Version/5.1 '
-                          'Safari/534.48.3)' % (
+            'User-Agent': 'NewsBlur Content Fetcher - %s subscriber%s - %s %s' % (
                               num_subscribers,
                               's' if num_subscribers != 1 else '',
-                              getattr(self.feed, 'permalink', '')
+                              getattr(self.feed, 'permalink', ''),
+                              getattr(self.feed, 'fake_user_agent', ''),
                           ),
         }
 
@@ -203,7 +201,7 @@ class TextImporter:
                 url = "https://www.newsblur.com/rss_feeds/original_text_fetcher?url=%s" % url
             
         try:
-            r = requests.get(url, headers=headers)
+            r = requests.get(url, headers=headers, verify=False, timeout=15)
             r.connection.close()
         except (AttributeError, SocketError, requests.ConnectionError,
                 requests.models.MissingSchema, requests.sessions.InvalidSchema,
@@ -211,6 +209,7 @@ class TextImporter:
                 requests.models.InvalidURL,
                 requests.models.ChunkedEncodingError,
                 requests.models.ContentDecodingError,
+                requests.adapters.ReadTimeout,
                 urllib3.exceptions.LocationValueError,
                 LocationParseError, OpenSSLError, PyAsn1Error) as e:
             logging.user(self.request, "~SN~FRFailed~FY to fetch ~FGoriginal text~FY: %s" % e)
