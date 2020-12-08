@@ -410,13 +410,20 @@ class Feed(models.Model):
         return bool(not (self.favicon_not_found or self.favicon_color))
     
     @classmethod
+    def get_feed_by_url(self, *args, **kwargs):
+        return self.get_feed_from_url(*args, **kwargs)
+        
+    @classmethod
     def get_feed_from_url(cls, url, create=True, aggressive=False, fetch=True, offset=0, user=None, interactive=False):
         feed = None
         without_rss = False
         original_url = url
         
         if url and url.startswith('newsletter:'):
-            return cls.objects.get(feed_address=url)
+            try:
+                return cls.objects.get(feed_address=url)
+            except cls.MultipleObjectsReturned:
+                return cls.objects.filter(feed_address=url)[0]
         if url and re.match('(https?://)?twitter.com/\w+/?', url):
             without_rss = True
         if url and re.match(r'(https?://)?(www\.)?facebook.com/\w+/?$', url):
@@ -2797,6 +2804,8 @@ class MStory(mongo.Document):
         
         if len(image_urls):
             self.image_urls = [u for u in image_urls if u]
+        else:
+            return
         
         max_length = MStory.image_urls.field.max_length
         while len(''.join(self.image_urls)) > max_length:

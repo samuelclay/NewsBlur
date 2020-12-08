@@ -201,7 +201,7 @@ class TextImporter:
                 url = "https://www.newsblur.com/rss_feeds/original_text_fetcher?url=%s" % url
             
         try:
-            r = requests.get(url, headers=headers)
+            r = requests.get(url, headers=headers, verify=False, timeout=15)
             r.connection.close()
         except (AttributeError, SocketError, requests.ConnectionError,
                 requests.models.MissingSchema, requests.sessions.InvalidSchema,
@@ -209,6 +209,7 @@ class TextImporter:
                 requests.models.InvalidURL,
                 requests.models.ChunkedEncodingError,
                 requests.models.ContentDecodingError,
+                requests.adapters.ReadTimeout,
                 urllib3.exceptions.LocationValueError,
                 LocationParseError, OpenSSLError, PyAsn1Error) as e:
             logging.user(self.request, "~SN~FRFailed~FY to fetch ~FGoriginal text~FY: %s" % e)

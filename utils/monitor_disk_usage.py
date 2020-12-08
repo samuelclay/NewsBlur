@@ -5,7 +5,7 @@ sys.path.append('/srv/newsblur')
 
 import subprocess
 import requests
-import settings
+from newsblur import settings
 import socket
 
 def main():

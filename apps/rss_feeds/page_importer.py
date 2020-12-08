@@ -90,11 +90,12 @@ class PageImporter(object):
                     data = response.read()
                 else:
                     try:
-                        response = requests.get(feed_link, headers=self.headers)
+                        response = requests.get(feed_link, headers=self.headers, timeout=10)
                         response.connection.close()
                     except requests.exceptions.TooManyRedirects:
-                        response = requests.get(feed_link)
-                    except (AttributeError, SocketError, OpenSSLError, PyAsn1Error, TypeError) as e:
+                        response = requests.get(feed_link, timeout=10)
+                    except (AttributeError, SocketError, OpenSSLError, PyAsn1Error, TypeError,
+                            requests.adapters.ReadTimeout) as e:
                         logging.debug('   ***> [%-30s] Page fetch failed using requests: %s' % (self.feed.log_title[:30], e))
                         self.save_no_page()
                         return
@@ -184,12 +185,18 @@ class PageImporter(object):
             return
 
         try:
-            response = requests.get(story_permalink, headers=self.headers)
+            response = requests.get(story_permalink, headers=self.headers, timeout=10)
             response.connection.close()
-        except (AttributeError, SocketError, OpenSSLError, PyAsn1Error, requests.exceptions.ConnectionError, requests.exceptions.TooManyRedirects) as e:
+        except (AttributeError, SocketError, OpenSSLError, PyAsn1Error, 
+                requests.exceptions.ConnectionError, 
+                requests.exceptions.TooManyRedirects,
+                requests.adapters.ReadTimeout) as e:
             try:
-                response = requests.get(story_permalink)
-            except (AttributeError, SocketError, OpenSSLError, PyAsn1Error, requests.exceptions.ConnectionError, requests.exceptions.TooManyRedirects) as e:
+                response = requests.get(story_permalink, timeout=10)
+            except (AttributeError, SocketError, OpenSSLError, PyAsn1Error, 
+                    requests.exceptions.ConnectionError, 
+                    requests.exceptions.TooManyRedirects,
+                    requests.adapters.ReadTimeout) as e:
                 logging.debug('   ***> [%-30s] Original story fetch failed using requests: %s' % (self.feed.log_title[:30], e))
                 return
         try:
