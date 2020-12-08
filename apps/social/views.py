@@ -226,10 +226,7 @@ def load_river_blurblog(request):
                                                     cutoff_date=user.profile.unread_cutoff)
     mstories = MStory.find_by_story_hashes(story_hashes)
     story_hashes_to_dates = dict(list(zip(story_hashes, story_dates)))
-    def sort_stories_by_hash(a, b):
-        return (int(story_hashes_to_dates[str(b.story_hash)]) -
-                int(story_hashes_to_dates[str(a.story_hash)]))
-    sorted_mstories = sorted(mstories, key=sort_stories_by_hash)
+    sorted_mstories = sorted(mstories, key=lambda x: int(story_hashes_to_dates[str(x.story_hash)]))
     stories = Feed.format_stories(sorted_mstories)
     for s, story in enumerate(stories):
         timestamp = story_hashes_to_dates[story['story_hash']]

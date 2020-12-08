@@ -1,58 +1,11 @@
 NEWSBLUR.Models.SavedSearchFeed = Backbone.Model.extend({
     
     initialize: function() {
-        var feed_title = this.feed_title();
+        var feed_title = NEWSBLUR.reader.feed_title(this.get('feed_id'));
         var favicon_url = this.favicon_url();
         this.set('feed_title', "\"<b>" + this.get('query') + "</b>\" in <b>" + feed_title + "</b>");
         this.set('favicon_url', favicon_url);
         this.list_view;
-    },
-    
-    feed_title: function() {
-        var feed_title;
-        var feed_id = this.get('feed_id');
-        
-        if (feed_id == 'river:') {
-            feed_title = "All Site Stories";
-        } else if (feed_id == 'river:infrequent') {
-            feed_title = "Infrequent Site Stories";
-        } else if (_.string.startsWith(feed_id, 'river:')) {
-            var feed = NEWSBLUR.assets.get_feed(feed_id);
-            if (!feed) return;
-            feed_title = feed.get('folder_title');
-        } else if (feed_id == "read") {
-            feed_title = "Read Stories";
-        } else if (_.string.startsWith(feed_id, 'starred')) {
-            feed_title = "Saved Stories";
-            var tag = feed_id.replace('starred:', '');
-            var model = NEWSBLUR.assets.starred_feeds.detect(function(feed) {
-                return feed.tag_slug() == tag || feed.get('tag') == tag;
-            });
-            if (model) {
-                feed_title = feed_title + " - " + model.get('tag');
-            }
-        } else if (_.string.startsWith(feed_id, 'feed:')){
-            var feed = NEWSBLUR.assets.get_feed(parseInt(this.get('feed_id').replace('feed:', ''), 10));
-            if (!feed) return;
-            
-            feed_title = feed.get('feed_title');
-        } else if (_.string.startsWith(feed_id, 'social:')){
-            var feed = NEWSBLUR.assets.get_feed(this.get('feed_id'));
-            if (!feed) return;
-            
-            feed_title = feed.get('feed_title');
-        }
-
-        return feed_title;
-        
-        if (_.string.startsWith(this.get('feed_id'), 'saved:') ||
-        _.string.startsWith(this.get('feed_id'), 'read')) {
-            feed_title = NEWSBLUR.reader.active_fake_folder_title();
-        } else if (NEWSBLUR.reader.active_folder) {
-            feed_title = NEWSBLUR.reader.active_folder.get('folder_title');
-        } else if (NEWSBLUR.reader.active_feed) {
-            
-        }
     },
     
     favicon_url: function() {

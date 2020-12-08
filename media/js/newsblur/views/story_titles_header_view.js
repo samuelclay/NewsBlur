@@ -50,7 +50,7 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
                     <span class="folder_title_text"><%= folder_title %></span>\
                 </div>\
             ', {
-                folder_title: NEWSBLUR.reader.active_fake_folder_title()
+                folder_title: NEWSBLUR.reader.feed_title()
             }));
             this.search_view = new NEWSBLUR.Views.FeedSearchView({
                 feedbar_view: this
@@ -71,7 +71,7 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
                     <div class="folder_title_text"><%= folder_title %></div>\
                 </div>\
             ', {
-                folder_title: NEWSBLUR.reader.active_fake_folder_title()
+                folder_title: NEWSBLUR.reader.feed_title()
             }));
         } else if (this.showing_fake_folder) {
             $view = $(_.template('\
@@ -108,7 +108,7 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
                     <span class="folder_title_text"><%= folder_title %></span>\
                 </div>\
             ', {
-                folder_title: NEWSBLUR.reader.active_fake_folder_title(),
+                folder_title: NEWSBLUR.reader.feed_title(),
                 folder_id: NEWSBLUR.reader.active_feed,
                 all_stories: NEWSBLUR.reader.active_feed == "river:" || NEWSBLUR.reader.active_feed == "river:infrequent",
                 infrequent_stories: NEWSBLUR.reader.active_feed == "river:infrequent",
