@@ -95,7 +95,7 @@ class PushSubscriptionManager(models.Manager):
         return requests.post(url, data=data)
 
 class PushSubscription(models.Model):
-    feed = models.OneToOneField(Feed, db_index=True, related_name='push')
+    feed = models.OneToOneField(Feed, db_index=True, related_name='push', on_delete=models.CASCADE)
     hub = models.URLField(db_index=True)
     topic = models.URLField(db_index=True)
     verified = models.BooleanField(default=False)

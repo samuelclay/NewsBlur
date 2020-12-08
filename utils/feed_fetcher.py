@@ -28,6 +28,7 @@ from utils import log as logging
 from utils.feed_functions import timelimit, TimeoutError
 from qurl import qurl
 from BeautifulSoup import BeautifulSoup
+from mongoengine import connect, connection
 from django.utils import feedgenerator
 from django.utils.html import linebreaks
 from django.utils.encoding import smart_unicode
@@ -132,10 +133,10 @@ class FetchFeed:
                     headers['If-Modified-Since'] = modified_header
                 if etag or modified:
                     headers['A-IM'] = 'feed'
-                raw_feed = requests.get(address, headers=headers)
+                raw_feed = requests.get(address, headers=headers, timeout=15)
                 if raw_feed.status_code >= 400:
                     logging.debug("   ***> [%-30s] ~FRFeed fetch was %s status code, trying fake user agent: %s" % (self.feed.log_title[:30], raw_feed.status_code, raw_feed.headers))
-                    raw_feed = requests.get(self.feed.feed_address, headers=self.feed.fetch_headers(fake=True))
+                    raw_feed = requests.get(self.feed.feed_address, headers=self.feed.fetch_headers(fake=True), timeout=15)
                 
                 if raw_feed.content and 'application/json' in raw_feed.headers.get('Content-Type', ""):
                     # JSON Feed
@@ -154,7 +155,7 @@ class FetchFeed:
                     if self.options.get('debug', False):
                         logging.debug(" ---> [%-30s] ~FBFeed fetch status %s: %s length / %s" % (self.feed.log_title[:30], raw_feed.status_code, len(smart_unicode(raw_feed.content)), raw_feed.headers))
             except Exception, e:
-                logging.debug("   ***> [%-30s] ~FRFeed failed to fetch with request, trying feedparser: %s" % (self.feed.log_title[:30], unicode(e)[:100]))
+                logging.debug("   ***> [%-30s] ~FRFeed failed to fetch with request, trying feedparser: %s" % (self.feed.log_title[:30], e))
             
             if not self.fpf or self.options.get('force_fp', False):
                 try:
@@ -238,7 +239,7 @@ class FetchFeed:
                 return            
         
         if channel_id:
-            video_ids_xml = requests.get("https://www.youtube.com/feeds/videos.xml?channel_id=%s" % channel_id, verify=False)
+            video_ids_xml = requests.get("https://www.youtube.com/feeds/videos.xml?channel_id=%s" % channel_id)
             channel_json = requests.get("https://www.googleapis.com/youtube/v3/channels?part=snippet&id=%s&key=%s" %
                                        (channel_id, settings.YOUTUBE_API_KEY))
             channel = json.decode(channel_json.content)
@@ -258,7 +259,7 @@ class FetchFeed:
                 return
             channel_url = "https://www.youtube.com/playlist?list=%s" % list_id
         elif username:
-            video_ids_xml = requests.get("https://www.youtube.com/feeds/videos.xml?user=%s" % username, verify=False)
+            video_ids_xml = requests.get("https://www.youtube.com/feeds/videos.xml?user=%s" % username)
             description = "YouTube videos uploaded by %s" % username
         else:
             return
@@ -642,6 +643,12 @@ class Dispatcher:
         return Feed.get_by_id(feed_id)
         
     def process_feed_wrapper(self, feed_queue):
+        connection._connections = {}
+        connection._connection_settings ={}
+        connection._dbs = {}
+        settings.MONGODB = connect(settings.MONGO_DB_NAME, **settings.MONGO_DB)
+        settings.MONGOANALYTICSDB = connect(settings.MONGO_ANALYTICS_DB_NAME, **settings.MONGO_ANALYTICS_DB)
+        
         delta = None
         current_process = multiprocessing.current_process()
         identity = "X"

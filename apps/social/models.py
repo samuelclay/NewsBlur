@@ -1108,7 +1108,7 @@ class MSocialSubscription(mongo.Document):
         
         pipeline = rt.pipeline()
         for story_hash_group in chunks(story_hashes, 100):
-            pipeline.zadd(ranked_stories_keys, **dict(story_hash_group))
+            pipeline.zadd(ranked_stories_keys, dict(story_hash_group))
         pipeline.execute()
         story_hashes_and_dates = range_func(ranked_stories_keys, offset, limit, withscores=True)
         if not story_hashes_and_dates:
@@ -1129,7 +1129,7 @@ class MSocialSubscription(mongo.Document):
             if unread_story_hashes:
                 pipeline = rt.pipeline()
                 for unread_story_hash_group in chunks(unread_story_hashes, 100):
-                    pipeline.zadd(unread_ranked_stories_keys, **dict(unread_story_hash_group))
+                    pipeline.zadd(unread_ranked_stories_keys, dict(unread_story_hash_group))
                 pipeline.execute()
             unread_feed_story_hashes = range_func(unread_ranked_stories_keys, offset, limit)
         
@@ -1867,10 +1867,10 @@ class MSharedStory(mongo.DynamicDocument):
         
         r.sadd('B:%s' % self.user_id, self.feed_guid_hash)
         # r2.sadd('B:%s' % self.user_id, self.feed_guid_hash)
-        r.zadd('zB:%s' % self.user_id, self.feed_guid_hash,
-               time.mktime(self.shared_date.timetuple()))
-        # r2.zadd('zB:%s' % self.user_id, self.feed_guid_hash,
-        #        time.mktime(self.shared_date.timetuple()))
+        r.zadd('zB:%s' % self.user_id, {self.feed_guid_hash:
+               time.mktime(self.shared_date.timetuple())})
+        # r2.zadd('zB:%s' % self.user_id, {self.feed_guid_hash:
+        #        time.mktime(self.shared_date.timetuple())})
         r.expire('B:%s' % self.user_id, settings.DAYS_OF_STORY_HASHES*24*60*60)
         # r2.expire('B:%s' % self.user_id, settings.DAYS_OF_STORY_HASHES*24*60*60)
         r.expire('zB:%s' % self.user_id, settings.DAYS_OF_STORY_HASHES*24*60*60)
@@ -2302,6 +2302,13 @@ class MSharedStory(mongo.DynamicDocument):
         image_sources = [img.get('src') for img in soup.findAll('img') if img and img.get('src')]
         if len(image_sources) > 0:
             self.image_urls = image_sources
+            max_length = MSharedStory.image_urls.field.max_length
+            while len(''.join(self.image_urls)) > max_length:
+                if len(self.image_urls) <= 1:
+                    self.image_urls[0] = self.image_urls[0][:max_length-1]
+                    break
+                else:
+                    self.image_urls.pop()
             self.save()
             
     def calculate_image_sizes(self, force=False):
@@ -2312,10 +2319,7 @@ class MSharedStory(mongo.DynamicDocument):
             return self.image_sizes
             
         headers = {
-            'User-Agent': 'NewsBlur Image Fetcher - %s '
-                          '(Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_1) '
-                          'AppleWebKit/534.48.3 (KHTML, like Gecko) Version/5.1 '
-                          'Safari/534.48.3)' % (
+            'User-Agent': 'NewsBlur Image Fetcher - %s' % (
                 settings.NEWSBLUR_URL
             ),
         }
@@ -2326,7 +2330,7 @@ class MSharedStory(mongo.DynamicDocument):
         for image_source in self.image_urls[:10]:
             if any(ignore in image_source for ignore in IGNORE_IMAGE_SOURCES):
                 continue
-            req = requests.get(image_source, headers=headers, stream=True)
+            req = requests.get(image_source, headers=headers, stream=True, timeout=10)
             try:
                 datastream = StringIO(req.content)
                 width, height = ImageOps.image_size(datastream)
@@ -2711,7 +2715,7 @@ class MSocialServices(mongo.Document):
                 os.remove(filename)
             else:
                 api.update_status(status=message)
-        except tweepy.TweepError, e:
+        except (tweepy.TweepError, requests.adapters.ReadError), e:
             user = User.objects.get(pk=self.user_id)
             logging.user(user, "~FRTwitter error: ~SB%s" % e)
             return
@@ -2726,7 +2730,7 @@ class MSocialServices(mongo.Document):
         
         url = shared_story.image_urls[0]
         image_filename = os.path.basename(urlparse.urlparse(url).path)
-        req = requests.get(url, stream=True)
+        req = requests.get(url, stream=True, timeout=10)
         filename = "/tmp/%s-%s" % (shared_story.story_hash, image_filename)
         
         if req.status_code == 200:

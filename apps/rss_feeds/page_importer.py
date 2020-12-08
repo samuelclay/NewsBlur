@@ -51,13 +51,11 @@ class PageImporter(object):
     @property
     def headers(self):
         return {
-            'User-Agent': 'NewsBlur Page Fetcher - %s subscriber%s - %s '
-                          '(Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_1) '
-                          'AppleWebKit/534.48.3 (KHTML, like Gecko) Version/5.1 '
-                          'Safari/534.48.3)' % (
+            'User-Agent': 'NewsBlur Page Fetcher - %s subscriber%s - %s %s' % (
                 self.feed.num_subscribers,
                 's' if self.feed.num_subscribers != 1 else '',
                 self.feed.permalink,
+                self.feed.fake_user_agent,
             ),
         }
     
@@ -92,11 +90,12 @@ class PageImporter(object):
                     data = response.read()
                 else:
                     try:
-                        response = requests.get(feed_link, headers=self.headers)
+                        response = requests.get(feed_link, headers=self.headers, timeout=10)
                         response.connection.close()
                     except requests.exceptions.TooManyRedirects:
-                        response = requests.get(feed_link)
-                    except (AttributeError, SocketError, OpenSSLError, PyAsn1Error, TypeError), e:
+                        response = requests.get(feed_link, timeout=10)
+                    except (AttributeError, SocketError, OpenSSLError, PyAsn1Error, TypeError,
+                            requests.adapters.ReadTimeout), e:
                         logging.debug('   ***> [%-30s] Page fetch failed using requests: %s' % (self.feed.log_title[:30], e))
                         self.save_no_page()
                         return
@@ -186,12 +185,18 @@ class PageImporter(object):
             return
 
         try:
-            response = requests.get(story_permalink, headers=self.headers)
+            response = requests.get(story_permalink, headers=self.headers, timeout=10)
             response.connection.close()
-        except (AttributeError, SocketError, OpenSSLError, PyAsn1Error, requests.exceptions.ConnectionError, requests.exceptions.TooManyRedirects), e:
+        except (AttributeError, SocketError, OpenSSLError, PyAsn1Error, 
+                requests.exceptions.ConnectionError, 
+                requests.exceptions.TooManyRedirects,
+                requests.adapters.ReadTimeout), e:
             try:
-                response = requests.get(story_permalink)
-            except (AttributeError, SocketError, OpenSSLError, PyAsn1Error, requests.exceptions.ConnectionError, requests.exceptions.TooManyRedirects), e:
+                response = requests.get(story_permalink, timeout=10)
+            except (AttributeError, SocketError, OpenSSLError, PyAsn1Error, 
+                    requests.exceptions.ConnectionError, 
+                    requests.exceptions.TooManyRedirects,
+                    requests.adapters.ReadTimeout), e:
                 logging.debug('   ***> [%-30s] Original story fetch failed using requests: %s' % (self.feed.log_title[:30], e))
                 return
         try:
@@ -289,10 +294,12 @@ class PageImporter(object):
                 if feed_page.page() == html:
                     logging.debug('   ---> [%-30s] ~FYNo change in page data: %s' % (self.feed.log_title[:30], self.feed.feed_link))
                 else:
-                    feed_page.page_data = html
+                    # logging.debug('   ---> [%-30s] ~FYChange in page data: %s (%s/%s %s/%s)' % (self.feed.log_title[:30], self.feed.feed_link, type(html), type(feed_page.page()), len(html), len(feed_page.page())))
+                    feed_page.page_data = zlib.compress(html)
                     feed_page.save()
             except MFeedPage.DoesNotExist:
-                feed_page = MFeedPage.objects.create(feed_id=self.feed.pk, page_data=html)
+                feed_page = MFeedPage.objects.create(feed_id=self.feed.pk, 
+                                                     page_data=zlib.compress(html))
             return feed_page
     
     def save_page_node(self, html):
