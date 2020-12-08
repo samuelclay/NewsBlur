@@ -61,6 +61,7 @@ six==1.15.0
 stripe==2.55.1
 subdomains==3.0.1
 tweepy==3.9.0
+virtualenvwrapper==4.8.4
 # -e git://github.com/tweepy/tweepy.git#egg=tweepy
 xlsxwriter==1.3.7
 urllib3==1.26.2
