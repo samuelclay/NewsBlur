@@ -38,7 +38,8 @@ class MUserNotificationTokens(mongo.Document):
         'collection': 'notification_tokens',
         'indexes': [{'fields': ['user_id'], 
                      'unique': True,
-                     'types': False, }],
+                     'types': False,
+                    }],
         'allow_inheritance': False,
     }
     
@@ -70,7 +71,8 @@ class MUserFeedNotification(mongo.Document):
         'indexes': ['feed_id',
                     {'fields': ['user_id', 'feed_id'], 
                      'unique': True,
-                     'types': False, }],
+                     'types': False,
+                    }],
         'allow_inheritance': False,
     }
     

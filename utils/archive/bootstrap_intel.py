@@ -1,6 +1,6 @@
 import sys
 from mongoengine.queryset import OperationError
-from mongoengine.base import ValidationError
+from mongoengine.errors import ValidationError
 from apps.analyzer.models import MClassifierFeed
 from apps.analyzer.models import MClassifierAuthor
 from apps.analyzer.models import MClassifierTag

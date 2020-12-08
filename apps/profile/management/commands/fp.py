@@ -1,12 +1,11 @@
 from django.core.management.base import BaseCommand
 from django.contrib.auth.models import User
-from optparse import make_option
 
 class Command(BaseCommand):
-    option_list = BaseCommand.option_list + (
-        make_option("-u", "--username", dest="username", nargs=1, help="Specify user id or username"),
-        make_option("-e", "--email", dest="email", nargs=1, help="Specify email if it doesn't exist"),
-    )
+
+    def add_arguments(self, parser):
+        parser.add_argument("-u", "--username", dest="username", nargs=1, help="Specify user id or username")
+        parser.add_argument("-e", "--email", dest="email", nargs=1, help="Specify email if it doesn't exist")
 
     def handle(self, *args, **options):
         username = options.get('username')

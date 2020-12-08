@@ -6,7 +6,7 @@ sys.path.append('/srv/newsblur')
 import os
 import datetime
 import requests
-import settings
+from newsblur import settings
 import socket
 
 def main():

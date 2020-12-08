@@ -1,0 +1,5 @@
+db.notifications.dropIndex('user_id_1_feed_id_1')
+db.notification_tokens.dropIndex('user_id_1')
+db.email_unsubscribes.dropIndex('user_id_1_email_type_1')
+db.stories.dropIndex('story_hash_1')
+db.saved_searches.dropIndex('user_id_1_feed_id_1_query_1')
