@@ -11,6 +11,7 @@ swarm = client.swarm
 containers = client.containers
 nodes = client.nodes
 images = client.images
+do_manager = digitalocean.Manager(token=os.getenv("DOTOKEN"))
 
 dev_machines = {
     "app": {
@@ -30,18 +31,18 @@ dev_machines = {
     "redis": {
         "managers": 4,
     },
-    "elastic_search": {
+    "elastic-search": {
         "managers": 1,
     },
-    "task_celeryd": {
+    "task-celeryd": {
         "managers": 1,
         "workers": 3 #(should be 50 in prod deployment),
     },
-    "task_celeryd_work_queue": { # will need more machines for the other celery containers
+    "task-celeryd-work-queue": { # will need more machines for the other celery containers
         "managers": 1,
         "workers": 2,
     },
-    "image_proxy": {
+    "image-proxy": {
         "managers": 1,
     },
     "monitor": {
@@ -49,6 +50,25 @@ dev_machines = {
     },
 
 }
+
+expected_volumes = {
+    "app-files" : {
+        "driver": "rexray/dobs"
+    },
+    "postgres-data" : {
+        "driver": "rexray/dobs"
+    },
+    "redis-data" : {
+        "driver": "rexray/dobs"
+    },
+    "elasticsearch-data" : {
+        "driver": "rexray/dobs"
+    },
+    "db-mongo-data": {
+        "driver": "rexray/dobs"
+    },
+}
+
 def remove_all_machines():
         try:
             for mach in machine.ls():
@@ -77,19 +97,27 @@ def new_swarm():
 def build_machine(machine_name):
 
     xargs = [
-        "--digitalocean-image ubuntu-18-04-x64",
-        "--digitalocean-size s-1vcpu-1gb",
-        f"--digitalocean-access-token {os.getenv('DOTOKEN')}",
+        "--digitalocean-image", "ubuntu-18-04-x64",
+        "--digitalocean-size", "s-1vcpu-1gb",
+        "--digitalocean-access-token", f"{os.getenv('DOTOKEN')}",
 
     ]
-    node = machine.create(machine_name, "digitalocean", xarg=xargs)
+    try:
+        node = machine.create(machine_name, "digitalocean", xarg=xargs)
+    except:
+        node = None
+        print(f"Failed to build machine {machine_name}")
     return node
 
 
 def build_machines(machines):
+    droplets = do_manager.get_all_droplets()
     for machine_name in machines:
-        print(f"Building machine {machine_name}")
-        build_machine(machine_name)
+        if machine_name not in [d.name for d in droplets]:
+            print(f"Building machine {machine_name}")
+            build_machine(machine_name)
+        else:
+            print(f"Already built {machine_name}")
 
     return machine.ls()
 
@@ -100,34 +128,16 @@ def build_containers(name):
     result = os.system(f"docker stack deploy --compose-file machine_compose/{name}.yml {name}")
     return result
 
-def build_image(service, push=False):
-    print(f"Building {service}")
-    if service == "node_base":
-        image = images.build(path=".", dockerfile="./docker/node/node_base.Dockerfile", tag="node_base")
-    if service == "newsblur_base":
-        image = images.build(path=".", dockerfile="./docker/newsblur_base_image.Dockerfile", tag="newsblur_base") 
-    elif service == "haproxy":
-        image =  images.build(path=".", dockerfile="./docker/haproxy/Dockerfile", tag="haproxy")
-    else:
-        print("Service not found")
-    print(f"Built {image}")
-    print("Pushing image")
-    repository = f"jmath1/{service}"
-    if push:
-        print("Pushing image")
-        image.push(repository, tag='')
-
 
 def delete_all_user_machines():
     try:
-        manager = digitalocean.Manager(token=os.getenv("DOTOKEN"))
-        my_droplets = manager.get_all_droplets()
-        jmath_droplets = [x for x in my_droplets if "jmath" in x.name]
-        if not jmath_droplets:
-            print("no jmath droplets found")
+        my_droplets = do_manager.get_all_droplets()
+        user_droplets = [x for x in my_droplets if os.environ['DEV_USER'] in x.name]
+        if not user_droplets:
+            print(f"no {os.environ['DEV_USER']} droplets found")
             return True, ""
         droplets_destroyed = []
-        for droplet in jmath_droplets:
+        for droplet in user_droplets:
             print(
             f"""
                 Attempting to destroy droplet
@@ -148,19 +158,19 @@ def delete_all_user_machines():
 def parse_machine_dict(machine_dict):
     machine_list = []
     for k in machine_dict:
-        if "manager" not in machine_dict[k].keys():
+        if "managers" not in machine_dict[k].keys():
             raise Exception(f"No manager found in machine '{machine_dict[k]}'")
-        manager_machines = machine_dict[k]["manager"]
+        manager_machines = machine_dict[k]["managers"]
         worker_machines = machine_dict[k].get("workers", 0)
 
         i = 0
         while i < manager_machines:
             i += 1
-            machine_list.append(f"{k}_manager_{i}")
+            machine_list.append(f"{k}-manager-{i}")
         i = 0
         while i < worker_machines:
             i +=1
-            machine_list.append(f"{k}_worker_{i}")
+            machine_list.append(f"{k}-worker-{i}")
 
     return machine_list
             
@@ -180,60 +190,78 @@ class DockerCluster():
             print(f"Join token for worker is {self.worker_join_token_command}")
 
             # create machines
-            if restart_swarm:
-                self.machines_list = parse_machine_dict(dev_machine_dict)
-                self.machine_list = [f"{os.environ['DEV_USER']}_" + x for x in machines_list]
-                self.machines = build_machines(self.machine_list)
-            else:
-                self.machines = machine.ls()
+            self.machine_list = parse_machine_dict(dev_machines)
+            self.machine_list = [f"{os.environ['DEV_USER']}-" + x for x in self.machine_list]
+            self.machines = build_machines(self.machine_list)
+    
 
-            for m in self.machines:
-
-                print(f"machine {m['Name']} built")
-                self.machine_ips = [(x['Name'], x.get("URL")) for x in machine.ls()]
-                print(self.machine_ips)
-
-                # create managers and workers for every manifest
-                # get IPs of manager nodes, use for rendering haproxy
-                # use join token to join docker swarm
-                #docker.service.create()
+            self.machine_ips = [(x['Name'], x.get("URL")) for x in machine.ls()]
     
     def add_labels_to_nodes(self):
-        for machine in self.machine_list:
-            import pdb; pdb.set_trace()
+        print("Adding labels")
+        for mach in self.machine_list:
+            cmd = f"docker node update --label-add name={mach} {mach}"
+            print( f"running '{cmd}'")
+            machine.ssh(mach, cmd)
 
     def swarmify_machines(self):
-
-        #machine_ips = [(name, url,),]
-
         for m in self.machine_ips:
             name, url = m
-
-            #TODO add join tokens and IP addresses
             if "worker" in name:
-                swarm.join()
+                role = "worker"
             elif "manager" in name:
-                swarm.join()
+                role = "manager"
+            token = get_join_token(role)
+            import pdb; pdb.set_trace()
+            swarm.join(url, token)
+    
+    def deploy_stack(self):
+        compose_file = "stack.docker-compose.yml"
+        result = subprocess.run(["docker stack deploy --compose-file=", compose_file], capture_output=True)
+        print(result)
 
-def deploy():
-    try:
-        name = "newsblur_dev"
+    def create_volumes(self):
+        """
+        Checks if necessary docker plugin in installed, else installs it.
+        Then adds docker volumes to swarm.
+        """
+        if "rexray/dobs" not in [p.name for p in client.plugins.list()]:
+            print("Installing plugin rexray/dobs to create DO docker volumes")
+            client.plugins.install("rexray/dobs")
+        volumes = client.volumes.list()
+        for vol in expected_volumes:
+            if vol not in volumes:
+                print(f"{vol} volume has not been created. Creating now")
+                try:
+                    client.volumes.create(
+                        name=vol,
+                        driver=expected_volumes[vol]['driver'],
+                        driver_opts=expected_volumes[vol].get('opts', {})
+                    )
+                except KeyError as e:
+                    print(e)
+                    print(f"Failed to create volume {vol}. This volume must have a driver")
+            else:
+                print(f"{vol} has already been created")
+
+def deploy(restart):
+    name = "newsblur_dev"
+    if restart:
         remove_all_machines()
         outcome, error = delete_all_user_machines()
         if error:
             print("There was a problem deleting the user-created (dev) machines")
             exit()
-        docker_swarm = DockerCluster(name, restart_swarm=True)
-        docker_swarm.swarmify_machines()
-        docker_swarm.add_labels_to_nodes()
-        docker_swarm.deploy()
-        
-        for machine in docker_swarm.machines:
-            if f"{machine['Name']}.yml" not in os.listdir('machine_compose'):
-                print(f"{machine['Name']}.yml not found")
-            else:
-                build_containers(machine['Name'])
-    except Exception as e:
-        print(e)
+    docker_swarm = DockerCluster(name, restart_swarm=restart)
+    docker_swarm.swarmify_machines()
+    docker_swarm.add_labels_to_nodes()
+    docker_swarm.create_volumes()
+    docker_swarm.deploy_stack()
+    
+    for machine in docker_swarm.machines:
+        if f"{machine['Name']}.yml" not in os.listdir('machine_compose'):
+            print(f"{machine['Name']}.yml not found")
+        else:
+            build_containers(machine['Name'])
 
-deploy()
+deploy(restart=False)
