@@ -1,7 +1,7 @@
 from newsblur.celeryapp import app
 from apps.statistics.models import MStatistics
 from apps.statistics.models import MFeedback
-# from utils import log as logging
+from utils import log as logging
 
 
 
