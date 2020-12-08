@@ -559,9 +559,11 @@ def interactions_count(request):
 @ajax_login_required
 @json.json_view
 def feed_unread_count(request):
+    get_post = getattr(request, request.method)
     start = time.time()
     user = request.user
-    feed_ids = request.GET.getlist('feed_id') or request.GET.getlist('feed_id[]')
+    feed_ids = get_post.getlist('feed_id') or get_post.getlist('feed_id[]')
+    
     force = request.GET.get('force', False)
     social_feed_ids = [feed_id for feed_id in feed_ids if 'social:' in feed_id]
     feed_ids = list(set(feed_ids) - set(social_feed_ids))
@@ -1024,10 +1026,15 @@ def starred_story_hashes(request):
     
     mstories = MStarredStory.objects(
         user_id=user.pk
-    ).only('story_hash', 'starred_date').order_by('-starred_date')
+    ).only('story_hash', 'starred_date', 'starred_updated').order_by('-starred_date')
     
     if include_timestamps:
-        story_hashes = [(s.story_hash, s.starred_date.strftime("%s")) for s in mstories]
+        story_hashes = []
+        for s in mstories:
+            date = s.starred_date
+            if s.starred_updated:
+                date = s.starred_updated
+            story_hashes.append((s.story_hash, date.strftime("%s")))
     else:
         story_hashes = [s.story_hash for s in mstories]
     
@@ -1315,28 +1322,32 @@ def load_read_stories(request):
 
 @json.json_view
 def load_river_stories__redis(request):
-    limit             = int(request.GET.get('limit', 12))
+    # get_post is request.REQUEST, since this endpoint needs to handle either
+    # GET or POST requests, since the parameters for this endpoint can be
+    # very long, at which point the max size of a GET url request is exceeded.
+    get_post          = getattr(request, request.method)
+    limit             = int(get_post.get('limit', 12))
     start             = time.time()
     user              = get_user(request)
     message           = None
-    feed_ids          = request.GET.getlist('feeds') or request.GET.getlist('feeds[]')
+    feed_ids          = get_post.getlist('feeds') or get_post.getlist('feeds[]')
     feed_ids          = [int(feed_id) for feed_id in feed_ids if feed_id]
     if not feed_ids:
-        feed_ids      = request.GET.getlist('f') or request.GET.getlist('f[]')
-        feed_ids      = [int(feed_id) for feed_id in request.GET.getlist('f') if feed_id]
-    story_hashes      = request.GET.getlist('h') or request.GET.getlist('h[]')
+        feed_ids      = get_post.getlist('f') or get_post.getlist('f[]')
+        feed_ids      = [int(feed_id) for feed_id in get_post.getlist('f') if feed_id]
+    story_hashes      = get_post.getlist('h') or get_post.getlist('h[]')
     story_hashes      = story_hashes[:100]
     original_feed_ids = list(feed_ids)
-    page              = int(request.GET.get('page', 1))
-    order             = request.GET.get('order', 'newest')
-    read_filter       = request.GET.get('read_filter', 'unread')
-    query             = request.GET.get('query', '').strip()
-    include_hidden    = is_true(request.GET.get('include_hidden', False))
-    include_feeds     = is_true(request.GET.get('include_feeds', False))
-    initial_dashboard = is_true(request.GET.get('initial_dashboard', False))
-    infrequent        = is_true(request.GET.get('infrequent', False))
+    page              = int(get_post.get('page', 1))
+    order             = get_post.get('order', 'newest')
+    read_filter       = get_post.get('read_filter', 'unread')
+    query             = get_post.get('query', '').strip()
+    include_hidden    = is_true(get_post.get('include_hidden', False))
+    include_feeds     = is_true(get_post.get('include_feeds', False))
+    initial_dashboard = is_true(get_post.get('initial_dashboard', False))
+    infrequent        = is_true(get_post.get('infrequent', False))
     if infrequent:
-        infrequent = request.GET.get('infrequent')
+        infrequent = get_post.get('infrequent')
     now               = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
     usersubs          = []
     code              = 1
@@ -1567,9 +1578,9 @@ def complete_river(request):
 @json.json_view
 def unread_story_hashes__old(request):
     user              = get_user(request)
-    feed_ids          = request.REQUEST.getlist('feed_id') or request.REQUEST.getlist('feed_id[]')
+    feed_ids          = request.GET.getlist('feed_id') or request.GET.getlist('feed_id[]')
     feed_ids          = [int(feed_id) for feed_id in feed_ids if feed_id]
-    include_timestamps = is_true(request.REQUEST.get('include_timestamps', False))
+    include_timestamps = is_true(request.GET.get('include_timestamps', False))
     usersubs = {}
     
     if not feed_ids:
@@ -2661,8 +2672,8 @@ def send_story_email(request):
         
         share_user_profile.save_sent_email()
         
-        logging.user(request, '~BMSharing story by email to %s recipient%s: ~FY~SB%s~SN~BM~FY/~SB%s' % 
-                              (len(to_addresses), '' if len(to_addresses) == 1 else 's', 
+        logging.user(request, '~BMSharing story by email to %s recipient%s (%s): ~FY~SB%s~SN~BM~FY/~SB%s' %
+                              (len(to_addresses), '' if len(to_addresses) == 1 else 's', to_addresses,
                                story['story_title'][:50], feed and feed.feed_title[:50]))
         
     return {'code': code, 'message': message}

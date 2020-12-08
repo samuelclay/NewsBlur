@@ -52,11 +52,11 @@ def push_callback(request, push_id):
         # XXX TODO: Optimize this by removing feedparser. It just needs to find out
         # the hub_url or topic has changed. ElementTree could do it.
         if random.random() < 0.1:
-            parsed = feedparser.parse(request.raw_post_data)
+            parsed = feedparser.parse(request.body)
             subscription.check_urls_against_pushed_data(parsed)
 
         # Don't give fat ping, just fetch.
-        # subscription.feed.queue_pushed_feed_xml(request.raw_post_data)
+        # subscription.feed.queue_pushed_feed_xml(request.body)
         if subscription.feed.active_premium_subscribers >= 1:
             subscription.feed.queue_pushed_feed_xml("Fetch me", latest_push_date_delta=latest_push_date_delta)
             MFetchHistory.add(feed_id=subscription.feed_id, 

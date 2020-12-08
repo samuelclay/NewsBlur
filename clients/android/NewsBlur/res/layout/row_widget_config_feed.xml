@@ -12,6 +12,7 @@
         android:id="@+id/check_box"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="4dp"
         android:clickable="false"
         android:focusable="false" />
 
@@ -20,7 +21,6 @@
         android:layout_width="19dp"
         android:layout_height="19dp"
         android:layout_gravity="center_vertical"
-        android:layout_marginStart="4dp"
         android:contentDescription="@string/description_row_feed_icon"
         android:scaleType="centerCrop" />
 
@@ -38,5 +38,14 @@
         android:id="@+id/text_details"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
+
+    <ImageView
+        android:id="@+id/img_toggle"
+        android:layout_width="32dp"
+        android:layout_height="24dp"
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="4dp"
+        android:contentDescription="@string/description_row_feed_mute_toggle"
+        android:visibility="gone" />
 
 </LinearLayout>

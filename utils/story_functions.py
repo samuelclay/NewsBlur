@@ -4,6 +4,7 @@ import struct
 import dateutil
 import hashlib
 import base64
+import sys
 from random import randint
 from html.parser import HTMLParser
 from lxml.html.diff import tokenize, fixup_ins_del_tags, htmldiff_tokens
@@ -191,6 +192,9 @@ def pre_process_story(entry, encoding):
         
     entry['title'] = strip_tags(entry.get('title'))
     entry['author'] = strip_tags(entry.get('author'))
+    if not entry['author']:
+        entry['author'] = strip_tags(entry.get('credit'))
+
     
     entry['story_content'] = attach_media_scripts(entry['story_content'])
     
@@ -398,6 +402,8 @@ def create_imageproxy_signed_url(base_url, hmac_key, url, options=None):
     if not options: options = []
     if isinstance(options, int): options = [str(options)]
     if not isinstance(options, list): options = [options]
+    if sys.getdefaultencoding() == 'ascii':
+        url = url.encode('utf-8')
     base_url = base_url.rstrip('/')
     signature = base64.urlsafe_b64encode(hmac.new(hmac_key.encode(), msg=url.encode(), digestmod=hashlib.sha256).digest())
     options.append('sc')

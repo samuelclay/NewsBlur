@@ -2,6 +2,7 @@ import re
 import datetime
 import tweepy
 import dateutil.parser
+from qurl import qurl
 from django.conf import settings
 from django.utils import feedgenerator
 from django.utils.html import linebreaks
@@ -39,6 +40,8 @@ class TwitterFetcher:
         else:
             username = self.extract_username()
             if not username:
+                logging.debug(u'   ***> [%-30s] ~FRTwitter fetch failed: %s: No active user API access' % 
+                              (self.feed.log_title[:30], self.address))
                 return
         
             twitter_user = self.fetch_user(username)
@@ -65,7 +68,8 @@ class TwitterFetcher:
     def extract_username(self):
         username = None
         try:
-            username_groups = re.search('twitter.com/(\w+)/?$', self.address)
+            address = qurl(self.address, remove=['_'])
+            username_groups = re.search('twitter.com/(\w+)/?$', address)
             if not username_groups:
                 return
             username = username_groups.group(1)
@@ -195,6 +199,11 @@ class TwitterFetcher:
                               (self.feed.log_title[:30], e))
                 self.feed.save_feed_history(560, "Twitter Error: Blocked from viewing")
                 return []
+            elif 'over capacity' in message:
+                logging.debug(u'   ***> [%-30s] ~FRTwitter over capacity, ignoring: %s' % 
+                              (self.feed.log_title[:30], e))
+                self.feed.save_feed_history(560, "Twitter Error: Over capacity")
+                return []
             else:
                 raise e
         
@@ -275,28 +284,32 @@ class TwitterFetcher:
         entities = ""
         author = user_tweet.get('author') or user_tweet.get('user')
         if not isinstance(author, dict): author = author.__dict__
-        author_name = author['screen_name']
-        original_author_name = author_name
+        author_screen_name = author['screen_name']
+        author_name = author['name']
+        author_fullname = "%s (%s)" % (author_name, author_screen_name) if author_screen_name != author_name else author_screen_name
+        original_author_screen_name = author_screen_name
         if user_tweet['in_reply_to_user_id'] == author['id']:
             categories.add('reply-to-self')        
         retweet_author = ""
-        tweet_link = "https://twitter.com/%s/status/%s" % (original_author_name, user_tweet['id'])
+        tweet_link = "https://twitter.com/%s/status/%s" % (original_author_screen_name, user_tweet['id'])
         if 'retweeted_status' in user_tweet:
             retweet_author = """Retweeted by 
                                  <a href="https://twitter.com/%s"><img src="%s" style="height: 20px" /></a>
                                  <a href="https://twitter.com/%s">%s</a>
                             on %s""" % (
-                author_name,
+                author_screen_name,
                 author['profile_image_url_https'],
-                author_name,
-                author_name,
+                author_screen_name,
+                author_fullname,
                 DateFormat(user_tweet['created_at']).format('l, F jS, Y g:ia').replace('.',''),
                 )
             content_tweet = user_tweet['retweeted_status'].__dict__
             author = content_tweet['author']
             if not isinstance(author, dict): author = author.__dict__
-            author_name = author['screen_name']
-            tweet_link = "https://twitter.com/%s/status/%s" % (author_name, user_tweet['retweeted_status'].id)
+            author_screen_name = author['screen_name']
+            author_name = author['name']
+            author_fullname = "%s (%s)" % (author_name, author_screen_name) if author_screen_name != author_name else author_screen_name
+            tweet_link = "https://twitter.com/%s/status/%s" % (author_screen_name, user_tweet['retweeted_status'].id)
         
         tweet_title = user_tweet['full_text']
         tweet_text = linebreaks(content_tweet['full_text'])
@@ -331,7 +344,7 @@ class TwitterFetcher:
                         bitrate = variant['bitrate']
                         chosen_variant = variant
                 if chosen_variant:
-                    entities += "<video src=\"%s\" autoplay loop muted playsinline> <hr>" % chosen_variant['url']
+                    entities += "<video src=\"%s\" autoplay loop muted playsinline controls> <hr>" % chosen_variant['url']
                 categories.add(media['type'])                
                 
         for url in content_tweet['entities'].get('urls', []):
@@ -367,10 +380,10 @@ class TwitterFetcher:
             tweet_text,
             quote_tweet_content,
             entities,
-            author_name,
+            author_screen_name,
             author['profile_image_url_https'],
-            author_name,
-            author_name,
+            author_screen_name,
+            author_fullname,
             tweet_link,
             DateFormat(created_date).format('l, F jS, Y g:ia').replace('.',''),
             retweet_author,
@@ -382,9 +395,9 @@ class TwitterFetcher:
         
         story = {
             'title': tweet_title,
-            'link': "https://twitter.com/%s/status/%s" % (original_author_name, user_tweet['id']),
+            'link': "https://twitter.com/%s/status/%s" % (original_author_screen_name, user_tweet['id']),
             'description': content,
-            'author_name': author_name,
+            'author_name': author_fullname,
             'categories': list(categories),
             'unique_id': "tweet:%s" % user_tweet['id'],
             'pubdate': user_tweet['created_at'],
