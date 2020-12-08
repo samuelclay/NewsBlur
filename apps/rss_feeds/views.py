@@ -544,7 +544,7 @@ def original_text(request):
         'failed': not original_text or len(original_text) < 100,
     }
 
-@required_params('story_hash')
+@required_params('story_hash', method="GET")
 def original_story(request):
     story_hash = request.GET.get('story_hash')
     force = request.GET.get('force', False)
@@ -561,7 +561,7 @@ def original_story(request):
 
     return HttpResponse(original_page or "")
 
-@required_params('story_hash')
+@required_params('story_hash', method="GET")
 @json.json_view
 def story_changes(request):
     story_hash = request.GET.get('story_hash', None)

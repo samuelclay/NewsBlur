@@ -559,9 +559,11 @@ def interactions_count(request):
 @ajax_login_required
 @json.json_view
 def feed_unread_count(request):
+    get_post = getattr(request, request.method)
     start = time.time()
     user = request.user
-    feed_ids = request.GET.getlist('feed_id') or request.GET.getlist('feed_id[]')
+    feed_ids = get_post.getlist('feed_id') or get_post.getlist('feed_id[]')
+    
     force = request.GET.get('force', False)
     social_feed_ids = [feed_id for feed_id in feed_ids if 'social:' in feed_id]
     feed_ids = list(set(feed_ids) - set(social_feed_ids))
