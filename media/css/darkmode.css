@@ -24,6 +24,7 @@
 .NB-theme-transitioning div,
 .NB-theme-transitioning span,
 .NB-theme-transitioning mark,
+.NB-theme-transitioning h5,
 .NB-theme-transitioning a,
 .NB-theme-transitioning ul,
 .NB-theme-transitioning li,
@@ -1064,7 +1065,7 @@ border-bottom-color: #303739;
 /* Feed folder text */
 .NB-dark .NB-feedlist .folder_title,
 .NB-dark .NB-feedlist .folder.NB-selected>.folder_title {
-    color: #a8a9aB;
+    color: #98999B;
     text-shadow: 0 1px 0 rgba(0,0,0,.8);
 }
 
