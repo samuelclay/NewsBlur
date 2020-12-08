@@ -563,7 +563,7 @@ hr {
     border-bottom: 1px solid transparent;
     font-weight: bold;
     display: block;
-    color: #78797B;
+    color: #68696B;
     letter-spacing: 0.5px;
     cursor: pointer;
     position: relative;
@@ -4490,10 +4490,11 @@ body {
     display: block;
     padding: 2px 4px 2px 23px;
     text-decoration: none;
-    color: #393939;
+    color: #545454;
     overflow: hidden;
     text-shadow: 0 1px 0 rgba(255, 255, 255, .4);
     letter-spacing: 0.5px;
+    font-weight: bold;
 }
 
 
