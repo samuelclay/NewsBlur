@@ -1,4 +1,4 @@
-#!/srv/newsblur/venv/newsblur/bin/python
+#!/srv/newsblur/venv/newsblur3/bin/python
 
 """ Monitors the total table size (data + indexes)
     for all tables in the specified database."""

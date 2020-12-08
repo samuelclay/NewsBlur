@@ -1,7 +1,10 @@
 from flask import Flask, abort
 import flask_settings as settings
 import psycopg2
-import MySQLdb
+try:
+    import MySQLdb
+except ImportError:
+    pass
 import pymongo
 import redis
 import pyes

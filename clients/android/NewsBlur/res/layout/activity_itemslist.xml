@@ -27,6 +27,13 @@
         android:layout_below="@id/itemlist_search_query"
     />
 
+    <include layout="@layout/row_fleuron"
+        android:id="@+id/footer_fleuron"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/itemlist_search_query"
+        android:visibility="gone"/>
+
     <TextView
         android:id="@+id/itemlist_sync_status"
         android:layout_width="fill_parent"

@@ -18,6 +18,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Shader;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.util.Log;
@@ -541,4 +542,55 @@ public class UIUtils {
         return result;
     }
 
+    public static void  handleUri(Context context, Uri uri) {
+        DefaultBrowser defaultBrowser = PrefsUtils.getDefaultBrowser(context);
+        if (defaultBrowser == DefaultBrowser.SYSTEM_DEFAULT) {
+            openSystemDefaultBrowser(context, uri);
+        } else if (defaultBrowser == DefaultBrowser.IN_APP_BROWSER) {
+            Intent intent = new Intent(context, InAppBrowser.class);
+            intent.putExtra(InAppBrowser.URI, uri);
+            context.startActivity(intent);
+        } else if (defaultBrowser == DefaultBrowser.CHROME) {
+            openExternalBrowserApp(context, uri, "com.android.chrome");
+        } else if (defaultBrowser == DefaultBrowser.FIREFOX) {
+            openExternalBrowserApp(context, uri, "org.mozilla.firefox");
+        } else if (defaultBrowser == DefaultBrowser.OPERA_MINI) {
+            openExternalBrowserApp(context, uri, "com.opera.mini.native");
+        }
+    }
+
+    public static void openSystemDefaultBrowser(Context context, Uri uri) {
+        try {
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setData(uri);
+            context.startActivity(intent);
+        } catch (Exception e) {
+            com.newsblur.util.Log.e(context.getClass().getName(), "device cannot open URLs");
+        }
+    }
+
+    public static void openExternalBrowserApp(Context context, Uri uri, String packageName) {
+        try {
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setData(uri);
+            intent.setPackage(packageName);
+            context.startActivity(intent);
+        } catch (Exception e) {
+            com.newsblur.util.Log.e(context.getClass().getName(), "apps not available to open URLs");
+            // fallback to system default if apps cannot be opened
+            openSystemDefaultBrowser(context, uri);
+        }
+    }
+
+    public static boolean needsPremiumAccess(Context context, FeedSet feedSet) {
+        boolean isPremium = PrefsUtils.getIsPremium(context);
+        boolean requiresPremium = feedSet.isFolder() || feedSet.isInfrequent() ||
+                feedSet.isAllNormal() || feedSet.isGlobalShared() || feedSet.isSingleSavedTag();
+        return !isPremium && requiresPremium;
+    }
+
+    public static void startPremiumActivity(Context context) {
+        Intent intent = new Intent(context, Premium.class);
+        context.startActivity(intent);
+    }
 }

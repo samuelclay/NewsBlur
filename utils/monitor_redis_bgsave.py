@@ -1,4 +1,4 @@
-#!/srv/newsblur/venv/newsblur/bin/python
+#!/srv/newsblur/venv/newsblur3/bin/python
 
 import sys
 sys.path.append('/srv/newsblur')
@@ -6,7 +6,7 @@ sys.path.append('/srv/newsblur')
 import os
 import datetime
 import requests
-import settings
+from newsblur import settings
 import socket
 
 def main():
