@@ -29,7 +29,7 @@ def FreshenHomepage():
         sub.save()
         sub.calculate_feed_scores(silent=True)
 
-@app.task(name='clean_analytics', time_limit=720*10)
+@app.task(name='clean-analytics', time_limit=720*10)
 def CleanAnalytics():
     logging.debug(" ---> Cleaning analytics... %s feed fetches" % (
         settings.MONGOANALYTICSDB.nbanalytics.feed_fetches.count(),
