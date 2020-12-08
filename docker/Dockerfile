@@ -2,13 +2,13 @@ FROM       python:2.7-slim
 MAINTAINER julien@rottenberg.info
 
 
-WORKDIR   /opt/newsblur
+WORKDIR   /srv/newsblur
 ENV       PYTHONPATH=/opt/newsblur
 
 CMD       ["gunicorn", "--bind", "0.0.0.0:8000", "wsgi"]
 EXPOSE    8000
 
-COPY      config/requirements.txt /opt/newsblur/
+COPY      config/requirements.txt /srv/newsblur/
 RUN       set -ex \
           && rundDeps=' \
                   libpq5 \
@@ -39,5 +39,5 @@ RUN       set -ex \
             && rm -rf /var/lib/apt/lists/*
 
 
-COPY      . /opt/newsblur/
+COPY      . /srv/newsblur/
 RUN       cp docker/local_settings.py .

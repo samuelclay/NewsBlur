@@ -127,9 +127,9 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
                 ]),
                 $.make('li', { className: 'NB-9' }, [
                   $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
-                  'You feed Shiloh, my poor, hungry dog, for ',
+                  'You feed Lyric, my poor, hungry dog, for ',
                   $.make('span', { className: 'NB-feedchooser-hungry-dog' }, '6 days'),
-                  $.make('img', { className: 'NB-feedchooser-premium-poor-hungry-dog', src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/shiloh.jpg' })
+                  $.make('img', { className: 'NB-feedchooser-premium-poor-hungry-dog', src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/lyric.jpg' })
                 ])
               ]),
               $.make('div', { className: 'NB-modal-submit NB-modal-submit-paypal' }, [

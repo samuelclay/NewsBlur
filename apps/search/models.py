@@ -78,7 +78,7 @@ class MUserSearch(mongo.Document):
         logging.user(user, "~FCIndexing ~SB%s feeds~SN in %s chunks..." % 
                      (total, len(feed_id_chunks)))
         
-        tasks = [IndexSubscriptionsChunkForSearch().s(feed_ids=feed_id_chunk,
+        tasks = [IndexSubscriptionsChunkForSearch.s(feed_ids=feed_id_chunk,
                                                       user_id=self.user_id
                                                       ).set(queue='search_indexer')
                  for feed_id_chunk in feed_id_chunks]
