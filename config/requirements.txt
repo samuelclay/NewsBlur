@@ -50,11 +50,11 @@ pytz==2018.3
 pyyaml==5.3.1
 raven==6.10.0
 redis==3.5.3
-requests==2.24.0
+requests==2.25.0
 scipy==1.5.4
 sgmllib3k==1.0.0
 seacucumber==1.5.2
-sentry-sdk==0.19.3
+sentry-sdk==0.19.4
 simplejson==3.10.0
 six==1.10.0
 stripe==1.43.0
@@ -62,3 +62,4 @@ subdomains==3.0.1
 tweepy==3.8.0
 # -e git://github.com/tweepy/tweepy.git#egg=tweepy
 xlsxwriter==0.9.6
+urllib3==1.26.2

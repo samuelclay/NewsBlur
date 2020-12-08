@@ -38,7 +38,7 @@ class FeedFinder(object):
 
     def get_feed(self, url, skip_user_agent=False):
         try:
-            r = requests.get(url, headers={"User-Agent": self.user_agent if not skip_user_agent else None})
+            r = requests.get(url, headers={"User-Agent": self.user_agent if not skip_user_agent else None}, timeout=15)
         except Exception as e:
             logging.warn("Error while getting '{0}'".format(url))
             logging.warn("{0}".format(e))
@@ -156,10 +156,10 @@ def sort_urls(feeds):
 
 
 if __name__ == "__main__":
-    print((find_feeds("www.preposterousuniverse.com/blog/")))
-    print((find_feeds("http://xkcd.com")))
-    print((find_feeds("dan.iel.fm/atom.xml")))
-    print((find_feeds("dan.iel.fm", check_all=True)))
-    print((find_feeds("kapadia.github.io")))
-    print((find_feeds("blog.jonathansick.ca")))
-    print((find_feeds("asdasd")))
+    print(find_feeds("www.preposterousuniverse.com/blog/"))
+    print(find_feeds("http://xkcd.com"))
+    print(find_feeds("dan.iel.fm/atom.xml"))
+    print(find_feeds("dan.iel.fm", check_all=True))
+    print(find_feeds("kapadia.github.io"))
+    print(find_feeds("blog.jonathansick.ca"))
+    print(find_feeds("asdasd"))

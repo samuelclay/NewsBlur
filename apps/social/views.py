@@ -507,7 +507,7 @@ def load_social_page(request, user_id, username=None, **kwargs):
         
     return render(request, template, params)
 
-@required_params('story_id', feed_id=int)
+@required_params('story_id', feed_id=int, method="GET")
 def story_public_comments(request):
     format           = request.GET.get('format', 'json')
     relative_user_id = request.GET.get('user_id', None)
@@ -1372,7 +1372,7 @@ def shared_stories_rss_feed(request, user_id, username):
     ))
     return HttpResponse(rss.writeString('utf-8'), content_type='application/rss+xml')
 
-@required_params('user_id')
+@required_params('user_id', method="GET")
 @json.json_view
 def social_feed_trainer(request):
     social_user_id = request.GET['user_id']
