@@ -6,6 +6,10 @@ from apps.newsletters.models import EmailNewsletter
 from apps.rss_feeds.models import Feed, MStory
 
 def newsletter_receive(request):
+    """
+    This function is called by mailgun's receive email feature. This is a 
+    private API used for the newsletter app.
+    """
     # params = {
     #     'stripped-signature':'Thanks,\nBob',
     #     'From':'Test mailer <samuel@ofbrooklyn.com>',
@@ -37,7 +41,7 @@ def newsletter_receive(request):
     #     'Content-Type':'multipart/mixed; boundary="------------020601070403020003080006"',
     #     'Subject':'Test Newsletter theskimm'
     # }
-    params = request.REQUEST
+    params = request.POST
     
     response = HttpResponse('OK')
     

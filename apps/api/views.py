@@ -6,8 +6,7 @@ import lxml.html
 from django import forms
 from django.conf import settings
 from django.http import HttpResponse
-from django.shortcuts import render_to_response
-from django.template import RequestContext
+from django.shortcuts import render
 from django.contrib.auth import login as login_user
 from django.contrib.auth import logout as logout_user
 from apps.reader.forms import SignupForm, LoginForm
@@ -110,7 +109,7 @@ def add_site_load_script(request, token):
     except UserSubscriptionFolders.DoesNotExist:
         code = -1
     
-    return render_to_response('api/share_bookmarklet.js', {
+    return render(request, 'api/share_bookmarklet.js', {
         'code': code,
         'token': token,
         'folders': (usf and usf.folders) or [],
@@ -121,9 +120,8 @@ def add_site_load_script(request, token):
         'error_image': error_image,
         'add_image': add_image,
         'new_folder_image': new_folder_image,
-    }, 
-    context_instance=RequestContext(request),
-    mimetype='application/javascript')
+    },
+    content_type='application/javascript')
 
 def add_site(request, token):
     code       = 0
@@ -160,7 +158,7 @@ def add_site(request, token):
         'code':    code,
         'message': message,
         'usersub': us and us.feed_id,
-    }) + ')', mimetype='text/plain')
+    }) + ')', content_type='text/plain')
 
 @ajax_login_required
 def add_site_authed(request):
@@ -195,7 +193,7 @@ def add_site_authed(request):
         'code':    code,
         'message': message,
         'usersub': us and us.feed_id,
-    }) + ')', mimetype='text/plain')
+    }) + ')', content_type='text/plain')
 
 def check_share_on_site(request, token):
     code       = 0
@@ -276,7 +274,7 @@ def check_share_on_site(request, token):
         'other_stories'     : other_stories,
         'previous_stories'  : previous_stories,
         'users'             : users,
-    }) + ')', mimetype='text/plain')
+    }) + ')', content_type='text/plain')
     response['Access-Control-Allow-Origin'] = '*'
     response['Access-Control-Allow-Methods'] = 'GET'
     
@@ -285,17 +283,17 @@ def check_share_on_site(request, token):
 @required_params('story_url', 'comments', 'title')
 def share_story(request, token=None):
     code      = 0
-    story_url = request.REQUEST['story_url']
-    comments  = request.REQUEST['comments']
-    title     = request.REQUEST['title']
-    content   = request.REQUEST.get('content', None)
-    rss_url   = request.REQUEST.get('rss_url', None)
-    feed_id   = request.REQUEST.get('feed_id', None) or 0
+    story_url = request.POST['story_url']
+    comments  = request.POST['comments']
+    title     = request.POST['title']
+    content   = request.POST.get('content', None)
+    rss_url   = request.POST.get('rss_url', None)
+    feed_id   = request.POST.get('feed_id', None) or 0
     feed      = None
     message   = None
     profile   = None
     
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         profile = request.user.profile
     else:
         try:
@@ -312,7 +310,7 @@ def share_story(request, token=None):
             'code':     code,
             'message':  message,
             'story':    None,
-        }), mimetype='text/plain')
+        }), content_type='text/plain')
     
     if feed_id:
         feed = Feed.get_by_id(feed_id)
@@ -391,7 +389,7 @@ def share_story(request, token=None):
         'code':     code,
         'message':  message,
         'story':    shared_story,
-    }), mimetype='text/plain')
+    }), content_type='text/plain')
     response['Access-Control-Allow-Origin'] = '*'
     response['Access-Control-Allow-Methods'] = 'POST'
     
@@ -401,7 +399,7 @@ def share_story(request, token=None):
 def save_story(request, token=None):
     code      = 0
     story_url = request.POST['story_url']
-    user_tags = request.POST.getlist('user_tags') or request.REQUEST.getlist('user_tags[]') or []
+    user_tags = request.POST.getlist('user_tags') or request.POST.getlist('user_tags[]') or []
     add_user_tag = request.POST.get('add_user_tag', None)
     title     = request.POST['title']
     content   = request.POST.get('content', None)
@@ -429,7 +427,7 @@ def save_story(request, token=None):
             'code':     code,
             'message':  message,
             'story':    None,
-        }), mimetype='text/plain')
+        }), content_type='text/plain')
     
     if feed_id:
         feed = Feed.get_by_id(feed_id)
@@ -494,7 +492,7 @@ def save_story(request, token=None):
         'code':     code,
         'message':  message,
         'story':    starred_story,
-    }), mimetype='text/plain')
+    }), content_type='text/plain')
     response['Access-Control-Allow-Origin'] = '*'
     response['Access-Control-Allow-Methods'] = 'POST'
     

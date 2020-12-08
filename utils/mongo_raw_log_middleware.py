@@ -6,6 +6,7 @@ from pymongo.mongo_replica_set_client import MongoReplicaSetClient
 from time import time
 import struct
 import bson
+import pymongo
 from bson.errors import InvalidBSON
 
 class MongoDumpMiddleware(object):    
@@ -53,7 +54,8 @@ class MongoDumpMiddleware(object):
 
     def _instrument(self, original_method):
         def instrumented_method(*args, **kwargs):
-            query = args[1].get_message(False, False)
+            with args[0]._socket_for_writes() as sock_info:
+                query = args[1].get_message(False, sock_info, False)
             message = _mongodb_decode_wire_protocol(query[1])
             # message = _mongodb_decode_wire_protocol(args[1][1])
             if not message or message['msg_id'] in self._used_msg_ids:
@@ -63,7 +65,9 @@ class MongoDumpMiddleware(object):
             result = original_method(*args, **kwargs)
             stop = time()
             duration = stop - start
-            connection.queries.append({
+            if not getattr(connection, 'queriesx', False):
+                connection.queriesx = []
+            connection.queriesx.append({
                 'mongo': message,
                 'time': '%.3f' % duration,
             })

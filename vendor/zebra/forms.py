@@ -12,6 +12,8 @@ class MonospaceForm(forms.Form):
 
 
 class CardForm(MonospaceForm):
+    use_required_attribute = False
+
     last_4_digits = forms.CharField(required=True, min_length=4, max_length=4,
         widget=forms.HiddenInput())
     stripe_token = forms.CharField(required=True, widget=forms.HiddenInput())

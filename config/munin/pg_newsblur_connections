@@ -2,7 +2,7 @@
 # Plugin to monitor pg_stat_activity
 #
 # Copyright Dalibo <cedric.villemain@dalibo.com> 2007
-# Based on a plugin (postgres_block_read_) from Björn Ruberg <bjorn@linpro.no>
+# Based on a plugin (postgres_block_read_) from Bjï¿½rn Ruberg <bjorn@linpro.no>
 #
 # Licenced under GPL v2.
 #
@@ -131,8 +131,8 @@ else {
   unless($dbh) {
     die ("no Unable to access Database $dbname on host $dbhost as user $dbuser.\nError returned was: ". $DBI::errstr."\n");
   }
-  my $sql = "select count(*), waiting from pg_stat_activity ";
-  $sql   .= " where datname = ? group by waiting ";
+  my $sql = "select count(*), wait_event from pg_stat_activity ";
+  $sql   .= " where datname = ? group by wait_event ";
   print "# $sql\n" if $debug;
   my $sth = $dbh->prepare($sql);
   $sth->execute($dbname);

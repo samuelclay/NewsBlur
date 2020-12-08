@@ -46,7 +46,7 @@ def user(u, msg, request=None, warn_color=True):
                 color,
                 seconds,
             )
-    is_premium = u.is_authenticated() and u.profile.is_premium
+    is_premium = u.is_authenticated and u.profile.is_premium
     premium = '*' if is_premium else ''
     username = cipher(unicode(u)) if settings.CIPHER_USERNAMES else unicode(u)
     info(' ---> [~FB~SN%-6s~SB] %s[%s%s] %s' % (platform, time_elapsed, username, premium, msg))

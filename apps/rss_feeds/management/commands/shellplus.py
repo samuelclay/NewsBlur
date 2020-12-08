@@ -1,37 +1,37 @@
 import os
 import six
 import time
-from optparse import make_option
-
-from django.core.management.base import NoArgsCommand
+from django.core.management.base import BaseCommand
 from django.conf import settings
 
 from django_extensions.management.shells import import_objects
 
-class Command(NoArgsCommand):
-    option_list = NoArgsCommand.option_list + (
-        make_option('--plain', action='store_true', dest='plain',
-                    help='Tells Django to use plain Python, not BPython nor IPython.'),
-        make_option('--bpython', action='store_true', dest='bpython',
-                    help='Tells Django to use BPython, not IPython.'),
-        make_option('--ipython', action='store_true', dest='ipython',
-                    help='Tells Django to use IPython, not BPython.'),
-        make_option('--notebook', action='store_true', dest='notebook',
-                    help='Tells Django to use IPython Notebook.'),
-        make_option('--use-pythonrc', action='store_true', dest='use_pythonrc',
-                    help='Tells Django to execute PYTHONSTARTUP file (BE CAREFULL WITH THIS!)'),
-        make_option("-s", '--print-sql', action='store_true', default=False,
-                    help="Print SQL queries as they're executed"),
-        make_option('--dont-load', action='append', dest='dont_load', default=[],
-                    help='Ignore autoloading of some apps/models. Can be used several times.'),
-        make_option('--quiet-load', action='store_true', default=False, dest='quiet_load',
-                    help='Do not display loaded models messages'),
-    )
+class Command(BaseCommand):
+
     help = "Like the 'shell' command but autoloads the models of all installed Django apps."
 
-    requires_model_validation = True
+    requires_system_checks = True
 
-    def handle_noargs(self, **options):
+    def add_arguments(self, parser):
+        parser.add_argument('--plain', action='store_true', dest='plain',
+                    help='Tells Django to use plain Python, not BPython nor IPython.')
+        parser.add_argument('--bpython', action='store_true', dest='bpython',
+                    help='Tells Django to use BPython, not IPython.')
+        parser.add_argument('--ipython', action='store_true', dest='ipython',
+                    help='Tells Django to use IPython, not BPython.')
+        parser.add_argument('--notebook', action='store_true', dest='notebook',
+                    help='Tells Django to use IPython Notebook.')
+        parser.add_argument('--use-pythonrc', action='store_true', dest='use_pythonrc',
+                    help='Tells Django to execute PYTHONSTARTUP file (BE CAREFULL WITH THIS!)')
+        parser.add_argument("-s", '--print-sql', action='store_true', default=False,
+                    help="Print SQL queries as they're executed")
+        parser.add_argument('--dont-load', action='append', dest='dont_load', default=[],
+                    help='Ignore autoloading of some apps/models. Can be used several times.')
+        parser.add_argument('--quiet-load', action='store_true', default=False, dest='quiet_load',
+                    help='Do not display loaded models messages')
+
+
+    def handle(self, *args, **options):
         use_notebook = options.get('notebook', False)
         use_ipython = options.get('ipython', False)
         use_bpython = options.get('bpython', False)
