@@ -5,7 +5,12 @@
     "python.linting.pylamaEnabled": false,
     "python.linting.flake8Args": [
         "--ignore=E501,W293,W503,W504,E302,E722,E226,E221"
-    ]
-    "python.pythonPath": "venv/bin/python3.7",
-    "git.ignoreLimitWarning": true
+    ],
+    "python.pythonPath": "venv/bin/python",
+    "git.ignoreLimitWarning": true,
+    "search.exclude": {
+        "clients": true,
+        "media/android": true,
+        "media/ios": true,
+    },
 }
