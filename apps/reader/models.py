@@ -771,6 +771,9 @@ class UserSubscription(models.Model):
                 except pymongo.errors.OperationFailure as e:
                     stories_db = MStory.objects(story_hash__in=unread_story_hashes)[:100]
                     stories = Feed.format_stories(stories_db, self.feed_id)
+                except pymongo.errors.OperationFailure as e:
+                    stories_db = MStory.objects(story_hash__in=unread_story_hashes)[:25]
+                    stories = Feed.format_stories(stories_db, self.feed_id)
                     
             unread_stories = []
             for story in stories:
@@ -1192,7 +1195,7 @@ class RUserStory:
         redis_commands(read_story_key)
         
         read_stories_list_key = 'lRS:%s' % user_id
-        r.lrem(read_stories_list_key, story_hash)
+        r.lrem(read_stories_list_key, 1, story_hash)
         
         if ps and username:
             ps.publish(username, 'story:unread:%s' % story_hash)
@@ -1428,15 +1431,16 @@ class UserSubscriptionFolders(models.Model):
         self.save()
 
         if not multiples_found and deleted and commit_delete:
+            user_sub = None
             try:
                 user_sub = UserSubscription.objects.get(user=self.user, feed=feed_id)
-            except Feed.DoesNotExist:
+            except (Feed.DoesNotExist, UserSubscription.DoesNotExist):
                 duplicate_feed = DuplicateFeed.objects.filter(duplicate_feed_id=feed_id)
                 if duplicate_feed:
                     try:
                         user_sub = UserSubscription.objects.get(user=self.user, 
                                                                 feed=duplicate_feed[0].feed)
-                    except Feed.DoesNotExist:
+                    except (Feed.DoesNotExist, UserSubscription.DoesNotExist):
                         return
             if user_sub:
                 user_sub.delete()

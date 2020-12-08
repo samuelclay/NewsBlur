@@ -1,1 +1,1 @@
-../local_settings.py
+../newsblur/local_settings.py

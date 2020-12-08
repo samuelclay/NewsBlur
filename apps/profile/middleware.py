@@ -370,7 +370,7 @@ class UserAgentBanMiddleware:
             }
             logging.user(request, "~FB~SN~BBBanned UA: ~SB%s / %s (%s)" % (user_agent, request.path, request.META))
             
-            return HttpResponse(json.encode(data), status=403, mimetype='text/json')
+            return HttpResponse(json.encode(data), status=403, content_type='text/json')
 
         if request.user.is_authenticated and any(username == request.user.username for username in BANNED_USERNAMES):
             data = {
@@ -379,7 +379,7 @@ class UserAgentBanMiddleware:
             }
             logging.user(request, "~FB~SN~BBBanned Username: ~SB%s / %s (%s)" % (request.user, request.path, request.META))
             
-            return HttpResponse(json.encode(data), status=403, mimetype='text/json')
+            return HttpResponse(json.encode(data), status=403, content_type='text/json')
     
     def __call__(self, request):
         response = None

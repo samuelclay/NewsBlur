@@ -98,7 +98,8 @@ def login(request):
 
     return render(request, 'accounts/login.html', {
         'form': form,
-        'next': request.POST.get('next', "")})
+        'next': request.POST.get('next', "") or request.GET.get('next', "")
+    })
     
 @csrf_exempt
 def signup(request):
@@ -106,16 +107,17 @@ def signup(request):
     recaptcha = request.POST.get('g-recaptcha-response', None)
     recaptcha_error = None
     
-    if not recaptcha:
-        recaptcha_error = "Please hit the \"I'm not a robot\" button."
-    else:
-        response = requests.post('https://www.google.com/recaptcha/api/siteverify', {
-            'secret': settings.RECAPTCHA_SECRET_KEY,
-            'response': recaptcha,
-        })
-        result = response.json()
-        if not result['success']:
-            recaptcha_error = "Really, please hit the \"I'm not a robot\" button."
+    if settings.ENFORCE_SIGNUP_CAPTCHA:
+        if not recaptcha:
+            recaptcha_error = "Please hit the \"I'm not a robot\" button."
+        else:
+            response = requests.post('https://www.google.com/recaptcha/api/siteverify', {
+                'secret': settings.RECAPTCHA_SECRET_KEY,
+                'response': recaptcha,
+            })
+            result = response.json()
+            if not result['success']:
+                recaptcha_error = "Really, please hit the \"I'm not a robot\" button."
 
     if request.method == "POST":
         form = SignupForm(data=request.POST, prefix="signup")
@@ -331,7 +333,7 @@ def save_ios_receipt(request):
     
     logging.user(request, "~BM~FBSaving iOS Receipt: %s %s" % (product_identifier, transaction_identifier))
     
-    paid = request.user.profile.activate_ios_premium(product_identifier, transaction_identifier)
+    paid = request.user.profile.activate_ios_premium(transaction_identifier)
     if paid:
         logging.user(request, "~BM~FBSending iOS Receipt email: %s %s" % (product_identifier, transaction_identifier))
         subject = "iOS Premium: %s (%s)" % (request.user.profile, product_identifier)
@@ -343,13 +345,32 @@ def save_ios_receipt(request):
     
     return request.user.profile
     
+@ajax_login_required
+@json.json_view
+def save_android_receipt(request):
+    order_id = request.POST.get('order_id')
+    product_id = request.POST.get('product_id')
+    
+    logging.user(request, "~BM~FBSaving Android Receipt: %s %s" % (product_id, order_id))
+    
+    paid = request.user.profile.activate_android_premium(order_id)
+    if paid:
+        logging.user(request, "~BM~FBSending Android Receipt email: %s %s" % (product_id, order_id))
+        subject = "Android Premium: %s (%s)" % (request.user.profile, product_id)
+        message = """User: %s (%s) -- Email: %s, product: %s, order: %s""" % (request.user.username, request.user.pk, request.user.email, product_id, order_id)
+        mail_admins(subject, message, fail_silently=True)
+    else:
+        logging.user(request, "~BM~FBNot sending Android Receipt email, already paid: %s %s" % (product_id, order_id))
+        
+    
+    return request.user.profile
+    
 @login_required
 def stripe_form(request):
     user = request.user
     success_updating = False
     stripe.api_key = settings.STRIPE_SECRET
-    plan = int(request.GET.get('plan', 2))
-    plan = PLANS[plan-1][0]
+    plan = PLANS[0][0]
     renew = is_true(request.GET.get('renew', False))
     error = None
     
@@ -693,3 +714,8 @@ def ios_subscription_status(request):
     return {
         "code": 1
     }
+
+def trigger_error(request):
+    logging.user(request.user, "~BR~FW~SBTriggering divison by zero")
+    division_by_zero = 1 / 0
+    return HttpResponseRedirect(reverse('index'))
