@@ -98,7 +98,7 @@ def login(request):
 
     return render(request, 'accounts/login.html', {
         'form': form,
-        'next': request.POST.get('next', "")
+        'next': request.POST.get('next', "") or request.GET.get('next', "")
     })
     
 @csrf_exempt
@@ -716,5 +716,6 @@ def ios_subscription_status(request):
     }
 
 def trigger_error(request):
+    logging.user(request.user, "~BR~FW~SBTriggering divison by zero")
     division_by_zero = 1 / 0
     return HttpResponseRedirect(reverse('index'))
