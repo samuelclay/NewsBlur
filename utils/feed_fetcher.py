@@ -22,7 +22,7 @@ from apps.rss_feeds.icon_importer import IconImporter
 from apps.notifications.tasks import QueueNotifications, MUserFeedNotification
 from apps.push.models import PushSubscription
 from apps.statistics.models import MAnalyticsFetcher, MStatistics
-from vendor import feedparser
+import feedparser
 from utils.story_functions import pre_process_story, strip_tags, linkify
 from utils import log as logging
 from utils.feed_functions import timelimit, TimeoutError

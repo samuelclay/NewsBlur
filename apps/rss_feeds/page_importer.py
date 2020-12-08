@@ -2,7 +2,7 @@ import requests
 import re
 import urllib.parse
 import traceback
-from vendor import feedparser
+import feedparser
 import time
 import urllib.request, urllib.error, urllib.parse
 import http.client

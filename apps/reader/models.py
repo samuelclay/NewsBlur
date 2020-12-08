@@ -597,7 +597,7 @@ class UserSubscription(models.Model):
                     r.sadd(key, *missing_rs)
                 missing_count += len(missing_rs)
                 missing_rs = []
-            found = feed_re.search(rs.decode('utf-8'))
+            found = feed_re.search(rs)
             if not found:
                 print(" ---> Not found: %s" % rs)
                 continue

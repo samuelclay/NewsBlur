@@ -17,7 +17,7 @@ from django.utils.html import strip_tags as strip_tags_django
 from utils.tornado_escape import linkify as linkify_tornado
 from utils.tornado_escape import xhtml_unescape as xhtml_unescape_tornado
 from vendor import reseekfile
-from vendor import feedparser
+import feedparser
 
 import hmac
 from binascii import hexlify
