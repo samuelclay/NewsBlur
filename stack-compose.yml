@@ -34,7 +34,7 @@ services:
       - app-files:/srv/newsblur
     deploy:
       placement:
-        constraints: [node.label == newsblur_web]
+        constraints: [node.label.name == newsblur_web]
         max_replicas_per_node: 1
       replicas: 5
       
@@ -59,7 +59,7 @@ services:
     - app-files:/srv/newsblur
     deploy:
       placement:
-        constraints: [node.label == newsblur_web]
+        constraints: [node.label.name == newsblur_web]
         max_replicas_per_node: 1
       replicas: 5
 
@@ -72,10 +72,10 @@ services:
     ports:
       - '5432:5432'
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres-data:/var/lib/postgresql/data
     deploy:
       placement:
-        constraints: [node.label == postgres]
+        constraints: [node.label.name == postgres]
         max_replicas_per_node: 1
       replicas: 1
 
@@ -86,24 +86,24 @@ services:
       - '6379:6379'
     container_name: redis
     volumes:
-      - redis_data:/data
-      - redis_data:/redis.var.lib:/var/lib/redis
+      - redis-data:/data
+      - redis-data:/redis.var.lib:/var/lib/redis
     command: redis-server --port 6379
     deploy:
       placement:
-        constraints: [node.label == redis]
+        constraints: [node.label.name == redis]
   redis_pubsub:
     image: newsblur/redis:latest
     ports:
       - '6379:6379'
     container_name: redis
     volumes:
-      - redis_data:/data
-      - redis_data:/redis.var.lib:/var/lib/redis
+      - redis-data:/data
+      - redis-data:/redis.var.lib:/var/lib/redis
     command: redis-server --port 6379
     deploy:
       placement:
-        constraints: [node.label == redis_pubsub]
+        constraints: [node.label.name == redis_pubsub]
 
   redis_story:
     image: newsblur/redis:latest
@@ -111,12 +111,12 @@ services:
       - '6379:6379'
     container_name: redis
     volumes:
-      - redis_data:/data
-      - redis_data:/redis.var.lib:/var/lib/redis
+      - redis-data:/data
+      - redis-data:/redis.var.lib:/var/lib/redis
     command: redis-server --port 6379
     deploy:
       placement:
-        constraints: [node.label == redis_story]
+        constraints: [node.label.name == redis_story]
   
   redis_sessions:
     image: newsblur/redis:latest
@@ -124,12 +124,12 @@ services:
       - '6379:6379'
     container_name: redis
     volumes:
-      - redis_data:/data
-      - redis_data:/redis.var.lib:/var/lib/redis
+      - redis-data:/data
+      - redis-data:/redis.var.lib:/var/lib/redis
     command: redis-server --port 6379
     deploy:
       placement:
-        constraints: [node.label == redis_sessions]
+        constraints: [node.label.name == redis_sessions]
 
 
   elasticsearch:
@@ -138,10 +138,10 @@ services:
     ports:
       - '9200:9200'
     volumes:
-      - elasticsearch_data:/usr/share/elasticsearch/data
+      - elasticsearch-data:/usr/share/elasticsearch/data
     deploy:
       placement:
-        constraints: [node.label == elasticsearch]
+        constraints: [node.label.name == elasticsearch]
   
 
   db_mongo:
@@ -151,10 +151,10 @@ services:
       - 27017:27017
     command: mongod --smallfiles
     volumes:
-      - db_mongo_data:/data/db
+      - db-mongo-data:/data/db
     deploy:
       placement:
-        constraints: [node.label == mongo]
+        constraints: [node.label.name == mongo]
         max_replicas_per_node: 1
       replicas: 3
   
@@ -169,7 +169,7 @@ services:
       - 3060:3060
     deploy:
       placement:
-        constraints: [node.label == node]
+        constraints: [node.label.name == node]
         max_replicas_per_node: 1
 
   original_text:
@@ -182,7 +182,7 @@ services:
     command: node original_text.js
     deploy:
       placement:
-        constraints: [node.label == node]
+        constraints: [node.label.name == node]
         max_replicas_per_node: 1
 
   favicons:
@@ -198,7 +198,7 @@ services:
       - postgres
     deploy:
       placement:
-        constraints: [node.label == node]
+        constraints: [node.label.name == node]
         max_replicas_per_node: 1
 
   node_websocket:
@@ -212,7 +212,7 @@ services:
       - 8888:8888
     deploy:
       placement:
-        constraints: [node.label == node]
+        constraints: [node.label.name == node]
         max_replicas_per_node: 1
 
 
@@ -236,7 +236,7 @@ services:
     user: "${CURRENT_UID}:${CURRENT_GID}"
     deploy:
       placement:
-        constraints: [node.label == celeryd]
+        constraints: [node.label.name == celeryd]
         max_replicas_per_node: 1
         replicas: 50
 
@@ -251,7 +251,7 @@ services:
     user: "${CURRENT_UID}:${CURRENT_GID}"
     deploy:
       placement:
-        constraints: [node.label == celery]
+        constraints: [node.label.name == celery]
 
   celeryd_beat_feeds:
     container_name: celeryd_beat_feeds
@@ -264,7 +264,7 @@ services:
     user: "${CURRENT_UID}:${CURRENT_GID}"
     deploy:
       placement:
-        constraints: [node.label == celery]
+        constraints: [node.label.name == celery]
 
   celeryd_news:
     container_name: celeryd_news
@@ -277,7 +277,7 @@ services:
     user: "${CURRENT_UID}:${CURRENT_GID}"
     deploy:
       placement:
-        constraints: [node.label == celery]
+        constraints: [node.label.name == celery]
 
   celeryd_search_indexer:
     container_name: celeryd_search_indexer
@@ -291,7 +291,7 @@ services:
     user: $CURRENT_UID:$CURRENT_GID
     deploy:
       placement:
-        constraints: [node.label == celery]
+        constraints: [node.label.name == celery]
 
   celeryd_search_indexer_tasker:
     container_name: celeryd_search_indexer_tasker
@@ -304,7 +304,7 @@ services:
     user: $CURRENT_UID:$CURRENT_GID
     deploy:
       placement:
-        constraints: [node.label == celery]
+        constraints: [node.label.name == celery]
 
   celeryd_work_queue:
     container_name: celeryd_work_queue
@@ -319,7 +319,7 @@ services:
     user: $CURRENT_UID:$CURRENT_GID
     deploy:
       placement:
-        constraints: [node.label == celeryd_work_queue]
+        constraints: [node.label.name == celeryd_work_queue]
       replicas: 2
 
 
@@ -335,7 +335,7 @@ services:
       - 5579:5579
     deploy:
       placement:
-        constraints: [node.label == monitor]
+        constraints: [node.label.name == monitor]
 
   haproxy:
     domainname: 'nb.local.com'
@@ -355,17 +355,13 @@ services:
       - app-files:/srv/newsblur
     deploy:
       placement:
-        constraints: [node.label == haproxy]
+        constraints: [node.label.name == haproxy]
 
 
 volumes:
   app-files:
-    driver_opts:
-      type: nfs
-      device: $PWD
-      o: bind
-  postgres_data:
-  redis_data:
-  elasticsearch_data:
-  db_mongo_data:
+  postgres-data:
+  redis-data:
+  elasticsearch-data:
+  db-mongo-data:
   
