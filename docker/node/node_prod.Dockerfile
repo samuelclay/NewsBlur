@@ -1,7 +1,5 @@
-FROM       python:3.7-slim
-WORKDIR   /srv/newsblur
-ENV       PYTHONPATH=/srv/newsblur
-COPY      config/requirements.txt /srv/newsblur/
+FROM node:14.4.0
+WORKDIR /usr/src/app
 RUN       set -ex \
           && rundDeps=' \
                   libpq5 \
@@ -27,7 +25,10 @@ RUN       set -ex \
                             ' \
             && apt-get update \
             && apt-get install -y $rundDeps $buildDeps --no-install-recommends \
-            && pip install -r requirements.txt \
             && apt-get purge -y --auto-remove ${buildDeps} \
             && rm -rf /var/lib/apt/lists/*
-COPY ./config /etc/supervisor/conf.d/
+
+COPY ./node/package.json /usr/src/app/package.json
+COPY ./node/package-lock.json /usr/src/app/package-lock.json
+COPY ./node /usr/src/app/ 
+RUN npm install
