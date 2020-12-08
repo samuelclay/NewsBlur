@@ -27,7 +27,9 @@ if '/vendor' not in ' '.join(sys.path):
 import logging
 import datetime
 import redis
-import raven
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
+from sentry_sdk.integrations.redis import RedisIntegration
 import django.http
 import re
 from mongoengine import connect
@@ -276,6 +278,7 @@ SESSION_COOKIE_DOMAIN   = '.newsblur.com'
 SESSION_COOKIE_HTTPONLY = False
 SENTRY_DSN              = 'https://XXXNEWSBLURXXX@app.getsentry.com/99999999'
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
+DATA_UPLOAD_MAX_NUMBER_FIELDS = None # Handle long /reader/complete_river calls
 
 if DEBUG:
     # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
@@ -330,7 +333,6 @@ INSTALLED_APPS = (
     'apps.oauth',
     'apps.search',
     'apps.categories',
-    'django_celery_beat',
     'utils', # missing models so no migrations
     'vendor',
     'typogrify',
@@ -606,12 +608,22 @@ from .local_settings import *
 
 if not DEBUG:
     INSTALLED_APPS += (
-        'raven.contrib.django',
         'django_ses',
 
     )
-    # RAVEN_CLIENT = raven.Client(dsn=SENTRY_DSN, release=raven.fetch_git_sha(os.path.dirname(__file__)))
-    RAVEN_CLIENT = raven.Client(SENTRY_DSN)
+    sentry_sdk.init(
+        dsn=SENTRY_DSN,
+        integrations=[DjangoIntegration(), RedisIntegration()],
+
+        # Set traces_sample_rate to 1.0 to capture 100%
+        # of transactions for performance monitoring.
+        # We recommend adjusting this value in production,
+        traces_sample_rate=1.0,
+
+        # If you wish to associate users to errors (assuming you are using
+        # django.contrib.auth) you may enable sending PII data.
+        send_default_pii=True
+    )
     
 COMPRESS = not DEBUG
 ACCOUNT_ACTIVATION_DAYS = 30
@@ -799,7 +811,7 @@ def monkey_patched_get_user(request):
             backend = auth.load_backend(backend_path)
             user = backend.get_user(user_id)
             session_hash = request.session.get(auth.HASH_SESSION_KEY)
-            logging.debug(request, " ---> Ignoring session hash: %s vs %s" % (user.get_session_auth_hash(), session_hash))
+            logging.debug(request, " ---> Ignoring session hash: %s vs %s" % (user.get_session_auth_hash() if user else "[no user]", session_hash))
             # # Verify the session
             # if hasattr(user, 'get_session_auth_hash'):
             #     session_hash = request.session.get(HASH_SESSION_KEY)

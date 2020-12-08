@@ -334,9 +334,9 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
         var $chart = $.make('table', [
             $.make('tr', { className: 'NB-statistics-history-chart-hours-row' }, [
                 _.map(_.range(24), function(hour) {
-                    var count = data.story_hours_history[hour] || 0;
+                    var count = data.story_hours_history[hour] || data.story_hours_history["" + hour] || 0;
                     var opacity = 1 - (count * 1.0 / max_count);
-                    var theme = NEWSBLUR.assets.preference('theme');
+                    var theme = NEWSBLUR.assets.theme();
                     if (theme == 'light') {
                         return $.make('td', { style: "background-color: rgba(255, 255, 255, " + opacity + ");" });
                     } else if (theme == 'dark') {

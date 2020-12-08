@@ -40,6 +40,7 @@
 @property (nonatomic) StoryDetailViewController *previousPage;
 @property (nonatomic, strong) IBOutlet UIScrollView *scrollView;
 @property (nonatomic, strong) IBOutlet UIPageControl *pageControl;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *scrollViewTopConstraint;
 
 @property (weak, nonatomic) IBOutlet UIView *autoscrollView;
 @property (weak, nonatomic) IBOutlet UIImageView *autoscrollBackgroundImageView;
@@ -88,6 +89,8 @@
 @property (nonatomic, strong) NBNotifier *notifier;
 @property (nonatomic) NSInteger scrollingToPage;
 @property (nonatomic, strong) id standardInteractivePopGestureDelegate;
+@property (nonatomic, readonly) BOOL shouldHideStatusBar;
+@property (nonatomic, readonly) BOOL isNavigationBarHidden;
 @property (nonatomic, readonly) BOOL allowFullscreen;
 @property (nonatomic) BOOL forceNavigationBarShown;
 @property (nonatomic) BOOL currentlyTogglingNavigationBar;
