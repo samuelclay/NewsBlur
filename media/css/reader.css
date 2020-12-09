@@ -162,8 +162,11 @@ hr {
 }
 .NB-account {
     display: flex;
+    flex-wrap: wrap;
 }
-
+.NB-account .NB-module-header {
+    flex-basis: 100%;
+}
 .NB-account .NB-module-header-login {
     width: 142px;
     margin: 0 50px 0 0;
@@ -6385,6 +6388,7 @@ form.opml_import_form input {
 .NB-account h5.NB-module-header,
 .NB-manage h5.NB-module-header {
     text-align: center;
+    margin: 24px 0 12px;
 }
 .NB-module .NB-module-header-left {
     float: left;
@@ -6457,7 +6461,6 @@ form.opml_import_form input {
 .NB-module .NB-module-item {
     position: relative;
     min-height: 77px;
-    margin: 12px 0 0;
     clear: both;
 }
 
@@ -6502,12 +6505,12 @@ form.opml_import_form input {
 /* =========================== */
 
 .NB-module-features {
-    margin-top: 24px;
+    margin-top: 36px;
 }
 
 .NB-account .NB-module,
 .NB-manage .NB-module {
-    margin: 24px 0;
+    margin: 0;
     padding: 0;
     clear: both;
     overflow: hidden;
@@ -6899,6 +6902,7 @@ form.opml_import_form input {
 .NB-module-river .NB-view-river {
     box-shadow: 0 1px 2px rgba(0,0,0,0.1);
     border-radius: 3px;
+    margin: 0 2px;
 }
 
 /* ============ */
@@ -6950,7 +6954,7 @@ form.opml_import_form input {
     color: #404040;
     font-size: 12px;
     line-height: 16px;
-    padding: 4px 8px;
+    padding: 4px 0 4px 8px;
     margin: 0;
     width: 100%;
 }
@@ -7014,6 +7018,7 @@ form.opml_import_form input {
 
 .NB-module-recommended {
   overflow: hidden;
+  margin-top: 36px;
 }
   .NB-module-recommended .NB-module-recommended-date {
     line-height: 14px;
@@ -10417,7 +10422,7 @@ form.opml_import_form input {
   left: 0;
   position: fixed;
   height: 55px;
-  font-size: 36px;
+  font-size: 24px;
   line-height: 60px;
   margin: 0 2px 12px 0;
   text-shadow: 1px 1px 0 #F6F6F6;
@@ -10430,7 +10435,8 @@ form.opml_import_form input {
 
 .NB-static .NB-module .NB-module-title {
   margin: 0 0 12px 0;
-  padding-left: 14px;
+  padding: 44px 0 44px 18px;
+  text-align: left;
 }
 
 .NB-static .NB-module .NB-module-content {
