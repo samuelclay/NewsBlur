@@ -6505,7 +6505,7 @@ form.opml_import_form input {
 /* =========================== */
 
 .NB-module-features {
-    margin-top: 36px;
+    margin-top: 0;
 }
 
 .NB-account .NB-module,

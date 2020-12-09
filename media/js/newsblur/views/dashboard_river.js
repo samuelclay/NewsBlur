@@ -33,6 +33,20 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
         
         this.setup_dashboard_refresh();
     },
+
+    options_template: function () {
+        var $options = $(_.template('<div class="NB-feedbar-options-container">\
+            <span class="NB-feedbar-options">\
+                <div class="NB-icon"></div>\
+                <%= NEWSBLUR.assets.view_setting(feed_id, "read_filter") %>\
+                &middot;\
+                <%= NEWSBLUR.assets.view_setting(feed_id, "order") %>\
+            </span>\
+        </div>'), {
+            feed_id: this.options.active_feed
+        });
+        
+    },
     
     feeds: function() {
         var feeds;

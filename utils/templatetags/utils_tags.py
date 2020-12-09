@@ -71,6 +71,15 @@ def render_getting_started(context):
         'social_profile': profile,
     }
 
+@register.inclusion_tag('reader/dashboard_river.xhtml', takes_context=True)
+def render_dashboard_river(context, dashboard_river):
+    user    = get_user(context['user'])
+
+    return {
+        'user': user,
+        'dashboard_river': dashboard_river,
+    }
+
 @register.inclusion_tag('reader/account_module.xhtml', takes_context=True)
 def render_account_module(context):
     user    = get_user(context['user'])
