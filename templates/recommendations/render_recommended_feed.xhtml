@@ -6,7 +6,14 @@
     {% else %}
       Recommended Site
     {% endif %}
-    <div class="NB-module-header-right">
+    <div class="NB-module-recommended-date">
+      {% if unmoderated %}
+        {{ recommended_feed.created_date|date:"M Y" }}
+      {% else %}
+        {{ recommended_feed.created_date|date:"M Y" }}
+      {% endif %}
+    </div>
+  <div class="NB-module-header-right">
       {% if user.is_staff and not unmoderated %}
         <div class="NB-recommended-show-moderation-wrapper">
           <a href="#" class="NB-recommended-show-moderation" class="NB-splash-link" onclick="$('.NB-recommended-unmoderated').show();">Moderate</a>
@@ -18,17 +25,6 @@
         <a href="#" class="NB-module-direction NB-module-previous-page {% if not has_previous_page %}NB-disabled{% endif %}"></a>
       {% endif %}
       <div class="NB-spinner NB-left"></div>
-      <div class="NB-module-recommended-date">
-        {% if unmoderated %}
-          {{ recommended_feed.created_date|date:"M j" }}
-          <span>{{ recommended_feed.created_date|date:"S" }}</span>,
-          {{ recommended_feed.created_date|date:"Y" }}
-        {% else %}
-          {{ recommended_feed.approved_date|date:"M j" }}
-          <span>{{ recommended_feed.approved_date|date:"S" }}</span>,
-          {{ recommended_feed.approved_date|date:"Y" }}
-        {% endif %}
-      </div>
     </div>
   </h5>
   
