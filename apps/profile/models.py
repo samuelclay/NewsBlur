@@ -1517,7 +1517,44 @@ class MCustomStyling(mongo.Document):
         styling.custom_css = css
         styling.custom_js = js
         styling.save()
+
+
+class MDashboardRivers(mongo.Document):
+    user_id = mongo.IntField(unique=True)
+    left_rivers = mongo.ListField(mongo.StringField())
+    right_rivers = mongo.ListField(mongo.StringField())
+
+    def canonical(self):
+        return {
+            'left_rivers': self.left_rivers,
+            'right_rivers': self.right_rivers,
+        }
+    
+    @classmethod
+    def get_user(cls, user_id):
+        try:
+            rivers = cls.objects.get(user_id=user_id)
+        except cls.DoesNotExist:
+            return None
         
+        return rivers
+
+    @classmethod
+    def save_user(cls, user_id, left_rivers, right_rivers):
+        rivers = cls.get_user(user_id)
+        if not left_rivers and not right_rivers:
+            if rivers:
+                rivers.delete()
+            return
+
+        if not rivers:
+            rivers = cls.objects.create(user_id=user_id)
+
+        rivers.left_rivers = left_rivers
+        rivers.right_rivers = right_rivers
+        rivers.save()
+
+
 class RNewUserQueue:
     
     KEY = "new_user_queue"

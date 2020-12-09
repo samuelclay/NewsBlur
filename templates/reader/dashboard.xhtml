@@ -53,45 +53,10 @@
         {% if not user_profile.hide_getting_started %}
             {% render_getting_started %}
         {% endif %}
-          
-        <div class="NB-module NB-module-river NB-module-river-1">
-            <h5 class="NB-module-header">
-                <div class="NB-module-river-settings NB-javascript"></div>
-                All Site Stories
-            </h5>
-            
-            <div class="NB-view-river">
-                <div class="NB-module-item NB-story-pane-west">
-                    <div class="NB-story-titles"></div>
-                </div>
-            </div>
-        </div>
         
-        <div class="NB-module NB-module-river NB-module-river-2">
-            <h5 class="NB-module-header">
-                <div class="NB-module-river-settings NB-javascript"></div>
-                Infrequent Site Stories
-            </h5>
-            
-            <div class="NB-view-river">
-                <div class="NB-module-item NB-story-pane-west">
-                    <div class="NB-story-titles"></div>
-                </div>
-            </div>
-        </div>
-
-        <div class="NB-module NB-module-river NB-module-river-3">
-            <h5 class="NB-module-header">
-                <div class="NB-module-river-settings NB-javascript"></div>
-                Global Shared Stories
-            </h5>
-            
-            <div class="NB-view-river">
-                <div class="NB-module-item NB-story-pane-west">
-                    <div class="NB-story-titles"></div>
-                </div>
-            </div>
-        </div>
+        {% for dashboard_river in dashboard_rivers.left_rivers %}
+            {% render_dashboard_river dashboard_river %}
+        {% endfor %}
 
         <div class="NB-module-search NB-module">
             <h5 class="NB-module-header">
@@ -117,18 +82,9 @@
 
     <div class="NB-account-wide">
 
-        <div class="NB-module NB-module-river NB-module-river-4">
-            <h5 class="NB-module-header">
-                <div class="NB-module-river-settings NB-javascript"></div>
-                "pizza" in All Site Stories
-            </h5>
-            
-            <div class="NB-view-river">
-                <div class="NB-module-item NB-story-pane-west">
-                    <div class="NB-story-titles"></div>
-                </div>
-            </div>
-        </div>
+        {% for dashboard_river in dashboard_rivers.right_rivers %}
+            {% render_dashboard_river dashboard_river %}
+        {% endfor %}
 
         {% render_features_module %}
 

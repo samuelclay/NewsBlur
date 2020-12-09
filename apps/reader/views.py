@@ -32,7 +32,7 @@ from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifie
 from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds
 from apps.analyzer.models import apply_classifier_authors, apply_classifier_tags
 from apps.analyzer.models import get_classifiers_for_user, sort_classifiers_by_feed
-from apps.profile.models import Profile, MCustomStyling
+from apps.profile.models import Profile, MCustomStyling, MDashboardRivers
 from apps.reader.models import UserSubscription, UserSubscriptionFolders, RUserStory, Feature
 from apps.reader.forms import SignupForm, LoginForm, FeatureForm
 from apps.rss_feeds.models import MFeedIcon, MStarredStoryCounts, MSavedSearch
@@ -119,6 +119,7 @@ def dashboard(request, **kwargs):
     statistics        = MStatistics.all()
     social_profile    = MSocialProfile.get_user(user.pk)
     custom_styling    = MCustomStyling.get_user(user.pk)
+    dashboard_rivers  = MDashboardRivers.get_user(user.pk)
     preferences       = json.decode(user.profile.preferences)
     
     if not user.is_active:
@@ -133,6 +134,7 @@ def dashboard(request, **kwargs):
         'preferences'       : preferences,
         'feed_count'        : feed_count,
         'custom_styling'    : custom_styling,
+        'dashboard_rivers'  : dashboard_rivers,
         'account_images'    : list(range(1, 4)),
         'recommended_feeds' : recommended_feeds,
         'unmoderated_feeds' : unmoderated_feeds,
@@ -324,7 +326,8 @@ def load_feeds(request):
     social_feeds = MSocialSubscription.feeds(**social_params)
     social_profile = MSocialProfile.profile(user.pk)
     social_services = MSocialServices.profile(user.pk)
-    
+    dashboard_rivers = MDashboardRivers.get_user(user.pk)
+
     categories = None
     if not user_subs:
         categories = MCategory.serialize()
@@ -344,6 +347,7 @@ def load_feeds(request):
         'starred_count': starred_count,
         'starred_counts': starred_counts,
         'saved_searches': saved_searches,
+        'dashboard_rivers': dashboard_rivers,
         'categories': categories
     }
     return data
