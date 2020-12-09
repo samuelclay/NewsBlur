@@ -54,12 +54,12 @@ ENTRY_NEW, ENTRY_UPDATED, ENTRY_SAME, ENTRY_ERR = list(range(4))
 
 class Feed(models.Model):
     feed_address = models.URLField(max_length=764, db_index=True)
-    feed_address_locked = models.NullBooleanField(default=False, blank=True, null=True)
+    feed_address_locked = models.BooleanField(default=False, blank=True, null=True)
     feed_link = models.URLField(max_length=1000, default="", blank=True, null=True)
     feed_link_locked = models.BooleanField(default=False)
     hash_address_and_link = models.CharField(max_length=64, unique=True)
     feed_title = models.CharField(max_length=255, default="[Untitled]", blank=True, null=True)
-    is_push = models.NullBooleanField(default=False, blank=True, null=True)
+    is_push = models.BooleanField(default=False, blank=True, null=True)
     active = models.BooleanField(default=True, db_index=True)
     num_subscribers = models.IntegerField(default=-1)
     active_subscribers = models.IntegerField(default=-1, db_index=True)
@@ -86,9 +86,9 @@ class Feed(models.Model):
     last_load_time = models.IntegerField(default=0)
     favicon_color = models.CharField(max_length=6, null=True, blank=True)
     favicon_not_found = models.BooleanField(default=False)
-    s3_page = models.NullBooleanField(default=False, blank=True, null=True)
-    s3_icon = models.NullBooleanField(default=False, blank=True, null=True)
-    search_indexed = models.NullBooleanField(default=None, null=True, blank=True)
+    s3_page = models.BooleanField(default=False, blank=True, null=True)
+    s3_icon = models.BooleanField(default=False, blank=True, null=True)
+    search_indexed = models.BooleanField(default=None, null=True, blank=True)
 
     class Meta:
         db_table="feeds"
