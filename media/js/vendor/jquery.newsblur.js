@@ -262,6 +262,7 @@ NEWSBLUR.log = function(msg) {
             else if (_.isNumber(feed.id)) return NEWSBLUR.URLs.favicon.replace('{id}', feed.id);
             else if (feed.get('favicon_url')) return feed.get('favicon_url');
             else if (feed.is_starred()) return NEWSBLUR.Globals.MEDIA_URL + '/img/reader/tag.png';
+            else if (feed.get('is_newsletter')) return NEWSBLUR.Globals.MEDIA_URL + '/img/icons/circular/email.png';
 
             return empty_icon;
         },
