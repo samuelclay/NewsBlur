@@ -25,6 +25,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         this.user_profiles = new NEWSBLUR.Collections.Users();
         this.follower_profiles = new NEWSBLUR.Collections.Users();
         this.following_profiles = new NEWSBLUR.Collections.Users();
+        this.dashboard_rivers = new NEWSBLUR.Collections.DashboardRivers();
         this.starred_stories = [];
         this.starred_count = 0;
         this.flags = {
@@ -481,6 +482,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             self.user_profile.set(subscriptions.social_profile);
             self.searches_feeds.reset(subscriptions.saved_searches, {parse: true});
             self.social_services = subscriptions.social_services;
+            self.dashboard_rivers.reset(subscriptions.dashboard_rivers);
             
             if (selected && self.feeds.get(selected)) {
                 self.feeds.get(selected).set('selected', true);

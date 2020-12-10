@@ -2728,3 +2728,8 @@ def delete_search(request):
     return {
         'saved_searches': saved_searches,
     }
+
+@render_to('reader/dashboard_rivers.html')
+def save_dashboard_rivers(request):
+    pass
+    

@@ -54,9 +54,7 @@
             {% render_getting_started %}
         {% endif %}
         
-        {% for dashboard_river in dashboard_rivers.left_rivers %}
-            {% render_dashboard_river dashboard_river %}
-        {% endfor %}
+        {% render_dashboard_rivers dashboard_rivers.left_rivers %}
 
         <div class="NB-module-search NB-module">
             <h5 class="NB-module-header">
@@ -82,9 +80,7 @@
 
     <div class="NB-account-wide">
 
-        {% for dashboard_river in dashboard_rivers.right_rivers %}
-            {% render_dashboard_river dashboard_river %}
-        {% endfor %}
+        {% render_dashboard_rivers dashboard_rivers.right_rivers %}
 
         {% render_features_module %}
 

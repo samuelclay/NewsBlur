@@ -1,0 +1,7 @@
+{% load utils_tags %}
+
+<div class="NB-dashboard-rivers">
+    {% for dashboard_river in dashboard_rivers %}
+        {% render_dashboard_river dashboard_river %}
+    {% endfor %}
+</div>
