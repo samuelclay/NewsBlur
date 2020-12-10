@@ -72,12 +72,23 @@ def render_getting_started(context):
     }
 
 @register.inclusion_tag('reader/dashboard_rivers.xhtml', takes_context=True)
-def render_dashboard_rivers(context, dashboard_rivers):
+def render_dashboard_rivers_left(context, dashboard_rivers):
     user    = get_user(context['user'])
 
     return {
         'user': user,
         'dashboard_rivers': dashboard_rivers,
+        'side': 'left'
+    }
+
+@register.inclusion_tag('reader/dashboard_rivers.xhtml', takes_context=True)
+def render_dashboard_rivers_right(context, dashboard_rivers):
+    user    = get_user(context['user'])
+
+    return {
+        'user': user,
+        'dashboard_rivers': dashboard_rivers,
+        'side': 'right'
     }
 
 @register.inclusion_tag('reader/dashboard_river.xhtml', takes_context=True)

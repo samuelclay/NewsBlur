@@ -40,54 +40,16 @@ NEWSBLUR.Models.DashboardRiver = Backbone.Model.extend({
 NEWSBLUR.Collections.DashboardRivers = Backbone.Collection.extend({
     
     model: NEWSBLUR.Models.DashboardRiver,
-    
-    parse: function(models) {
-        _.each(models, function(feed) {
-            feed.id = 'search:' + feed.feed_id + ":" + feed.query;
-        });
-        return models;
-    },
-    
-    comparator: function(a, b) {
-        var sort_order = NEWSBLUR.reader.model.preference('feed_order');
-        var title_a = a.get('query') || '';
-        var title_b = b.get('query') || '';
-        title_a = title_a.toLowerCase();
-        title_b = title_b.toLowerCase();
-
-        if (sort_order == 'MOSTUSED') {
-            var opens_a = a.get('count');
-            var opens_b = b.get('count');
-            if (opens_a > opens_b) return -1;
-            if (opens_a < opens_b) return 1;
-        }
         
-        // if (!sort_order || sort_order == 'ALPHABETICAL')
-        if (title_a > title_b)      return 1;
-        else if (title_a < title_b) return -1;
+    comparator: function(a, b) {
+        if (a.get('sort_order') > b.get('sort_order'))
+            return 1;
+        else if (a.get('sort_order') < b.get('sort_order')) return -1;
         return 0;
     },
-    
-    selected: function() {
-        return this.detect(function(feed) { return feed.get('selected'); });
-    },
-    
-    deselect: function() {
-        this.chain().select(function(feed) { 
-            return feed.get('selected'); 
-        }).each(function(feed){ 
-            feed.set('selected', false); 
-        });
-    },
-    
-    all_searches: function() {
-        return this.pluck('saved_search');
-    },
-    
-    get_feed: function(feed_id) {
-        return this.detect(function(feed) {
-            return feed.get('feed_id') == feed_id;
-        });
+
+    count_sides: function () {
+        return this.countBy(function () { return this.get('river_side'); });
     }
-    
+        
 });

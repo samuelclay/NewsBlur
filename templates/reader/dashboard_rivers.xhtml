@@ -1,7 +1,9 @@
 {% load utils_tags %}
 
-<div class="NB-dashboard-rivers">
+<div class="NB-dashboard-rivers-{{ side }}">
     {% for dashboard_river in dashboard_rivers %}
-        {% render_dashboard_river dashboard_river %}
+        {% if dashboard_river.river_side == side %}
+            {% render_dashboard_river dashboard_river %}
+        {% endif %}
     {% endfor %}
 </div>

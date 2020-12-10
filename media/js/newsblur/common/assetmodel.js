@@ -1798,6 +1798,17 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         }, this));
     },
     
+    save_dashboard_river: function (river_id, river_side, river_order, callback) {
+        this.make_request('/reader/save_dashboard_river', {
+            river_id: river_id,
+            river_side: river_side,
+            river_order: river_order
+        }, _.bind(function (response) {
+            this.dashboard_rivers.reset(response.dashboard_rivers);
+            callback && callback(response);
+        }, this));
+    },
+
     follow_user: function(user_id, callback) {
         this.make_request('/social/follow', {'user_id': user_id}, _.bind(function(data) {
             NEWSBLUR.log(["follow data", data]);
