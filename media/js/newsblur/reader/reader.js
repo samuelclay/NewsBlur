@@ -136,7 +136,6 @@
             NEWSBLUR.app.story_titles_header = new NEWSBLUR.Views.StoryTitlesHeader();
             NEWSBLUR.app.search_header = new NEWSBLUR.Views.FeedSearchHeader();
             
-            this.load_dashboard_rivers();
             this.load_intelligence_slider();
             this.handle_mouse_indicator_hover();
             this.handle_login_and_signup_forms();
@@ -4665,7 +4664,7 @@
         // ====================
 
         load_dashboard_rivers: function () {
-            NEWSBLUR.app.dashboard_rivers = [];
+            NEWSBLUR.app.dashboard_rivers = _.map();
             NEWSBLUR.app.dashboard_rivers.push(new NEWSBLUR.Views.DashboardRiver({
                 el: '.NB-module-river-1',
                 active_feed: 'river:',

@@ -46,6 +46,7 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
             feed_id: this.options.active_feed
         });
         
+        this.$(".NB-module-river-settings").html($options);
     },
     
     feeds: function() {

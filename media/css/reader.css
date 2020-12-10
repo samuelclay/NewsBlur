@@ -5301,10 +5301,7 @@ form.opml_import_form input {
 .NB-splash-info {
   width: 100%;
   height: 55px;
-    background-image: -webkit-gradient(linear, left top, left bottom, from(#F4F5F2), to(#E1E5DC));
-    background: -moz-linear-gradient(center top , #F4F5F2 0%, #E1E5DC 100%);
-    background-image: linear-gradient(top, #F4F5F2, #E1E5DC);
-
+  
   bottom: 0;
   position: absolute;
   right: 0;
@@ -5313,13 +5310,13 @@ form.opml_import_form input {
 .NB-splash-info.NB-splash-top {
   top: 0;
   bottom: inherit;
-  border-bottom: 1px solid #C9CDE0;
+  border-bottom: 1px solid rgba(0,0,0,0.1);
 }
 .NB-body-main .NB-splash-info.NB-splash-top {
     display: none;
 }
 .NB-splash-info.NB-splash-bottom {
-  border-top: 1px solid #C2C5BE;
+  border-top: 1px solid rgba(0,0,0,0.1);
   height: 30px;
   overflow: hidden;
 }
@@ -5336,8 +5333,7 @@ form.opml_import_form input {
     top: 0px;
     bottom: inherit;
     right: 24px;
-    width: 282px;
-    height: 54px;
+    width: 168px;
 }
 .NB-body-main .NB-splash-info.NB-splash-top .NB-splash-title {
     display: none;
@@ -10404,17 +10400,16 @@ form.opml_import_form input {
 .NB-static {
   overflow: auto;
   padding: 78px 0 64px;
-  font-size: 13px;
   color: #303030;
-  line-height: 18px;
 }
 .NB-static h3 {
     line-height: 1.4em;
 }
 
 .NB-static .NB-splash-info {
-  opacity: .9;
   position: fixed;
+  -webkit-backdrop-filter: blur(5px);
+  background-color: rgba(229, 233, 225, 0.7);
 }
 
 .NB-static .NB-static-title {
@@ -10434,14 +10429,15 @@ form.opml_import_form input {
 }
 
 .NB-static .NB-module .NB-module-title {
-  margin: 0 0 12px 0;
-  padding: 44px 0 44px 18px;
+  margin: 44px 0 44px 44px;
+  padding: 44px 0 44px 64px;
   text-align: left;
+  border-left: 4px solid rgba(0, 0, 0, 0.1);
 }
 
 .NB-static .NB-module .NB-module-content {
   width: 620px;
-  margin: 0 14px 24px;
+  margin: 44px 14px 24px 88px;
 }
 
 .NB-static ul {
@@ -10458,7 +10454,7 @@ form.opml_import_form input {
   background-color: ghostWhite;
   padding: 0px 4px;
   border: 1px solid #DEDEDE;
-  font: normal normal normal 11px/normal Menlo, Consolas, Monaco, Courier, monospace;
+  font: normal normal normal 13px/normal Menlo, Consolas, Monaco, Courier, monospace;
   white-space: pre;
 }
 .NB-static pre {
@@ -10546,12 +10542,12 @@ form.opml_import_form input {
 .NB-static-about .NB-module ul,
 .NB-static-faq .NB-module ul {
   margin: 2px 12px 4px 0;
-  font-size: 13px;
+  font-size: 15px;
 }
 
 .NB-static-about .NB-module ul li,
 .NB-static-faq .NB-module ul li {
-  line-height: 20px;
+  line-height: 22px;
   margin-bottom: 12px;
   list-style: none;
 }
@@ -10615,10 +10611,8 @@ form.opml_import_form input {
 }
 
 .NB-static-faq ul li.NB-faq-answer {
-  line-height: 18px;
   color: #404040;
-  margin: 0 0 16px 0;
-  font-size: 12px;
+  margin: 0 0 36px 0;
   background: none;
 }
 
@@ -10705,14 +10699,10 @@ form.opml_import_form input {
 }
 .NB-static-api table th,
 .NB-static-api .NB-api-toc-header {
-  background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#FCFCFC), to(#E0E0E0));
-  background: -moz-linear-gradient(center bottom, #FCFCFC 0%, #E0E0E0 100%);
   border-right: 1px solid #BBB;
   border-bottom: 1px solid #BBB;
   padding: 2px 8px;
   color: #222;
-  font-size: 10px;
-  text-transform: uppercase;
 }
 .NB-static-api .NB-api-toc-header {
   border-right: none;
@@ -10746,8 +10736,6 @@ form.opml_import_form input {
   text-align: right;
   width: 50%;
   float: right;
-  font-size: 12px;
-  line-height: 16px;
   margin-bottom: 12px;
   padding-top: 4px;
 }

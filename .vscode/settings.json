@@ -6,7 +6,7 @@
     "python.linting.flake8Args": [
         "--ignore=E501,W293,W503,W504,E302,E722,E226,E221"
     ],
-    "python.pythonPath": "venv/bin/python",
+    "python.pythonPath": "~/.virtualenvs/newsblur3/bin/python",
     "git.ignoreLimitWarning": true,
     "search.exclude": {
         "clients": true,
