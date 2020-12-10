@@ -5403,7 +5403,8 @@ form.opml_import_form input {
   background: transparent url('/media/embed/logo_newsblur_blur.png') no-repeat center center;
   background-size: contain;
   width: 146px;
-  height: 30px;
+  height: 24px;
+  margin-top: 3px;
 }
 .NB-splash-info .NB-splash-links .NB-splash-link.NB-splash-link-logo a {
     padding-top: 0;

@@ -6,7 +6,17 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
         "click .NB-module-search-add-url"        : "add_url"
     },
     
-    initialize: function() {
+    initialize: function () {
+        var $dashboard_side = $(".NB-dashboard-rivers-" + this.model.get('river_side'));
+        var $river_on_dashboard = $dashboard_side.find(".NB-dashboard-river-order-" + this.model.get('river_order'));
+        if ($river_on_dashboard.length) {
+            this.$el = $river_on_dashboard;
+        } else {
+            var $river = this.template();
+            $dashboard_side.append($river);
+            this.$el = $river;
+        }
+        
         this.$stories = this.$(".NB-module-item .NB-story-titles");
         console.log('dashboard stories', this.options.el, this.$stories, this.options);
         this.story_titles = new NEWSBLUR.Views.StoryTitlesView({
@@ -32,6 +42,26 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
         // NEWSBLUR.assets.stories.bind('change:selected', this.check_read_stories, this);
         
         this.setup_dashboard_refresh();
+    },
+
+    template: function () {
+        var $river = $(_.template('<div class="NB-module NB-module-river NB-dashboard-river">\
+            <h5 class="NB-module-header">\
+                <div class="NB-module-river-settings NB-javascript"></div>\
+                <div class="NB-module-river-title"><%= river_title %></div>\
+            </h5>\
+            \
+            <div class="NB-view-river">\
+                <div class="NB-module-item NB-story-pane-west">\
+                    <div class="NB-story-titles"></div>\
+                </div>\
+            </div>\
+        </div>\
+        ', {
+            river_title: NEWSBLUR.reader.feed_title(this.model.get('river_id'))
+        }));
+
+        return $river;
     },
 
     options_template: function () {

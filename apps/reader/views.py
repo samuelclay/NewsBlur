@@ -32,7 +32,7 @@ from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifie
 from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds
 from apps.analyzer.models import apply_classifier_authors, apply_classifier_tags
 from apps.analyzer.models import get_classifiers_for_user, sort_classifiers_by_feed
-from apps.profile.models import Profile, MCustomStyling, MDashboardRivers
+from apps.profile.models import Profile, MCustomStyling, MDashboardRiver
 from apps.reader.models import UserSubscription, UserSubscriptionFolders, RUserStory, Feature
 from apps.reader.forms import SignupForm, LoginForm, FeatureForm
 from apps.rss_feeds.models import MFeedIcon, MStarredStoryCounts, MSavedSearch
@@ -119,7 +119,7 @@ def dashboard(request, **kwargs):
     statistics        = MStatistics.all()
     social_profile    = MSocialProfile.get_user(user.pk)
     custom_styling    = MCustomStyling.get_user(user.pk)
-    dashboard_rivers  = MDashboardRivers.get_user(user.pk)
+    dashboard_rivers  = MDashboardRiver.get_user(user.pk)
     preferences       = json.decode(user.profile.preferences)
     
     if not user.is_active:
@@ -326,7 +326,7 @@ def load_feeds(request):
     social_feeds = MSocialSubscription.feeds(**social_params)
     social_profile = MSocialProfile.profile(user.pk)
     social_services = MSocialServices.profile(user.pk)
-    dashboard_rivers = MDashboardRivers.get_user(user.pk)
+    dashboard_rivers = MDashboardRiver.get_user(user.pk)
 
     categories = None
     if not user_subs:
@@ -2729,7 +2729,18 @@ def delete_search(request):
         'saved_searches': saved_searches,
     }
 
-@render_to('reader/dashboard_rivers.html')
-def save_dashboard_rivers(request):
-    pass
-    
+@required_params('river_id', 'river_side', 'river_order')
+@json.json_view
+def save_dashboard_river(request):
+    river_id = request.POST['river_id']
+    river_side = request.POST['river_side']
+    river_order = request.POST['river_order']
+
+    logging.user(request, "~FCSaving dashboard river: ~SB%s~SN (%s %s)" % (river_id, river_side, river_order))
+
+    MDashboardRiver.save_user(request.user.pk, river_id, river_side, river_order)
+    dashboard_rivers = MDashboardRiver.get_user(request.user.pk)
+
+    return {
+        'dashboard_rivers': dashboard_rivers,
+    }

@@ -1519,41 +1519,45 @@ class MCustomStyling(mongo.Document):
         styling.save()
 
 
-class MDashboardRivers(mongo.Document):
-    user_id = mongo.IntField(unique=True)
-    left_rivers = mongo.ListField(mongo.StringField())
-    right_rivers = mongo.ListField(mongo.StringField())
+class MDashboardRiver(mongo.Document):
+    user_id = mongo.IntField(unique_with=('river_id'))
+    river_id = mongo.StringField()
+    river_side = mongo.StringField()
+    river_order = mongo.IntField()
+
+    meta = {
+        'ordering': ['river_order']
+    }
 
     def canonical(self):
         return {
-            'left_rivers': self.left_rivers,
-            'right_rivers': self.right_rivers,
+            'river_id': self.river_id,
+            'river_side': self.river_side,
+            'river_order': self.river_order,
         }
     
     @classmethod
-    def get_user(cls, user_id):
-        try:
-            rivers = cls.objects.get(user_id=user_id)
-        except cls.DoesNotExist:
-            return None
-        
-        return rivers
+    def get_user(cls, user_id, river_id=None):
+        if river_id:
+            try:
+                return cls.objects.get(user_id=user_id, river_id=river_id)
+            except MDashboardRiver.DoesNotExist:
+                return None
+        else:
+            return cls.objects(user_id=user_id)
 
     @classmethod
-    def save_user(cls, user_id, left_rivers, right_rivers):
-        rivers = cls.get_user(user_id)
-        if not left_rivers and not right_rivers:
-            if rivers:
-                rivers.delete()
-            return
+    def save_user(cls, user_id, river_id, river_side, river_order):
+        river = cls.get_user(user_id, river_id)
+        
+        if not river:
+            river = cls.objects.create(user_id=user_id, river_id=river_id)
 
-        if not rivers:
-            rivers = cls.objects.create(user_id=user_id)
+        river.river_side = river_side
+        river.river_order = river_order
+        river.save()
 
-        rivers.left_rivers = left_rivers
-        rivers.right_rivers = right_rivers
-        rivers.save()
-
+        return river
 
 class RNewUserQueue:
     
