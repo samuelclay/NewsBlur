@@ -3,6 +3,8 @@ from utils.munin.base import MuninGraph
 import redis
 import os
 os.environ["DJANGO_SETTINGS_MODULE"] = "newsblur.settings"
+import django
+django.setup()
 
 class NBMuninGraph(MuninGraph):
 
