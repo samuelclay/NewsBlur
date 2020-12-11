@@ -11,6 +11,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
     
     initialize: function() {
         _.bindAll(this, 'scroll');
+        // console.log(['initialize story titles view', this.collection]);
         this.collection.bind('reset', this.render, this);
         this.collection.bind('add', this.add, this);
         this.collection.bind('no_more_stories', this.check_premium_river, this);
@@ -48,6 +49,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
             return story.el;
         });
         this.$el.html($stories);
+        // console.log(['Rendered story titles', this.$el, $stories]);
         this.end_loading();
         this.fill_out();
         this.override_grid();

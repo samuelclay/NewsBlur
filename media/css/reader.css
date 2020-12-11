@@ -5289,7 +5289,7 @@ form.opml_import_form input {
     bottom: 0;
     right: 0;
     overflow-y: auto;
-    margin: 0 0 32px;
+    padding: 0 0 32px;
 }
 
 .NB-splash-modules {
@@ -5319,6 +5319,8 @@ form.opml_import_form input {
   border-top: 1px solid rgba(0,0,0,0.1);
   height: 30px;
   overflow: hidden;
+  background: rgba(243, 245, 241, .7);
+  backdrop-filter: blur(5px);
 }
 .NB-splash-info .NB-splash-title {
     position: absolute;

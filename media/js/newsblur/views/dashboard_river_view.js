@@ -9,18 +9,20 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
     initialize: function () {
         var $dashboard_side = $(".NB-dashboard-rivers-" + this.model.get('river_side'));
         var $river_on_dashboard = $dashboard_side.find(".NB-dashboard-river-order-" + this.model.get('river_order'));
+        var $river = this.template();
         if ($river_on_dashboard.length) {
-            this.$el = $river_on_dashboard;
+            $river_on_dashboard.replaceWith($river);
         } else {
-            var $river = this.template();
             $dashboard_side.append($river);
-            this.$el = $river;
         }
+        this.$el = $river;
         
         this.$stories = this.$(".NB-module-item .NB-story-titles");
-        console.log('dashboard stories', this.options.el, this.$stories, this.options);
+        
+        // console.log(['dashboard stories view', this.$stories, this.options, this.$stories.el]);
+        
         this.story_titles = new NEWSBLUR.Views.StoryTitlesView({
-            el: this.$stories,
+            el: this.$stories.get(0),
             collection: this.options.dashboard_stories,
             $story_titles: this.$stories,
             override_layout: 'split',
@@ -42,6 +44,7 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
         // NEWSBLUR.assets.stories.bind('change:selected', this.check_read_stories, this);
         
         this.setup_dashboard_refresh();
+        this.load_stories();
     },
 
     template: function () {
@@ -133,7 +136,7 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
         var feeds = this.feeds();
         if (!feeds.length) return;
         if (!this.$stories.length) return;
-        console.log(['dashboard river load_stories', this.page, feeds.length, options]);
+        // console.log(['dashboard river load_stories', this.page, feeds.length, options]);
         this.page = 1;
         this.story_titles.show_loading();
         NEWSBLUR.assets.fetch_dashboard_stories(this.options.active_feed, feeds, this.page, this.options.dashboard_stories, options,
@@ -142,7 +145,8 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
         this.setup_dashboard_refresh();
     },
     
-    post_load_stories: function() {
+    post_load_stories: function (stories) {
+        // console.log(['post_load_stories', this.model.get('river_id'), this.options.dashboard_stories.length, stories])
         this.fill_out();
         this.cache.story_hashes = this.options.dashboard_stories.pluck('story_hash');
     },
@@ -160,7 +164,7 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
         }
 
         var visible = this.options.dashboard_stories.visible().length;
-        console.log("Visible", visible, options)
+        // console.log("Visible", visible, options)
         if (visible >= 3 && !NEWSBLUR.Globals.is_premium) {
             this.story_titles.check_premium_river();
             this.complete_fill();
