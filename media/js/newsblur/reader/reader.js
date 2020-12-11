@@ -4678,7 +4678,7 @@
             NEWSBLUR.app.dashboard_rivers = NEWSBLUR.assets.dashboard_rivers.map(function (river, r) {
                 return new NEWSBLUR.Views.DashboardRiver({
                     el: '.NB-module-'+river.get('river_side')+'-river-' + river.get('river_order'),
-                    active_feed: river.id,
+                    active_feed: river.get('river_id'),
                     active_folder: NEWSBLUR.assets.folders,
                     dashboard_stories: new NEWSBLUR.Collections.Stories(),
                     side: river.get('river_side'),
@@ -4692,19 +4692,19 @@
             var sides = existing_rivers.count_sides();
             
             if (!existing_rivers.contains(function (river) {
-                river.id == "river:";
+                river.get('river_id') == "river:";
             })) {
                 NEWSBLUR.assets.save_dashboard_river("river:", "left", 0);
             }
             
             if (!existing_rivers.contains(function (river) {
-                river.id == "river:infrequent";
+                river.get('river_id') == "river:infrequent";
             })) {
                 NEWSBLUR.assets.save_dashboard_river("river:infrequent", "left", 1);
             }
             
             if (!existing_rivers.contains(function (river) {
-                river.id == "river:global";
+                river.get('river_id') == "river:global";
             })) {
                 NEWSBLUR.assets.save_dashboard_river("river:global", "left", 2);
             }

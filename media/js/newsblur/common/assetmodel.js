@@ -791,7 +791,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                 dashboard_stories.reset(data.stories, {added: data.stories.length});
             }
 
-            callback();
+            callback(data);
         };
         
         if (_.string.startsWith(feed_id, 'river:global')) {
