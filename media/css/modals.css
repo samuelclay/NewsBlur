@@ -130,7 +130,7 @@ fieldset legend {
 .NB-modal h5,
 .NB-module h5,
 .NB-module-header {
-    margin: 0 0 24px;
+    margin: 0;
     padding: 14px 12px;
 
     background-color: #EAECE5;
@@ -142,6 +142,10 @@ fieldset legend {
     font-weight: bold;
     text-align: center;
     position: relative;
+}
+.NB-module h5,
+.NB-module-header {
+    margin: 0 0 24px;
 }
 .NB-modal h5 {
     border: none;
