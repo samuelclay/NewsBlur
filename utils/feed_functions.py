@@ -34,7 +34,7 @@ def timelimit(timeout):
                         self.error = sys.exc_info()
             c = Dispatch()
             c.join(timeout)
-            if c.isAlive():
+            if c.is_alive():
                 raise TimeoutError('took too long')
             if c.error:
                 tb = ''.join(traceback.format_exception(c.error[0], c.error[1], c.error[2]))

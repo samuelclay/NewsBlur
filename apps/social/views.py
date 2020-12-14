@@ -187,7 +187,7 @@ def load_social_stories(request, user_id, username=None):
     
 @json.json_view
 def load_river_blurblog(request):
-    limit             = 10
+    limit             = int(request.GET.get('limit', 10))
     start             = time.time()
     user              = get_user(request)
     social_user_ids   = request.GET.getlist('social_user_ids') or request.GET.getlist('social_user_ids[]')

@@ -4505,8 +4505,7 @@ body {
 
 
 .NB-feeds-header.NB-selected .NB-feeds-header-title {
-    text-shadow: 0 1px 0 rgba(255, 255, 255, .4);
-    color: #000000;
+
 }
 
 /* ========================== */
@@ -6464,6 +6463,8 @@ form.opml_import_form input {
     position: relative;
     min-height: 77px;
     clear: both;
+    overflow: hidden;
+    border-radius: 3px;
 }
 
 .NB-module .NB-module-item.NB-last {
