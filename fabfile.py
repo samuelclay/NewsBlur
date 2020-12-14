@@ -17,13 +17,15 @@ import time
 import sys
 import re
 
+# django.setup()
+
 try:
     import digitalocean
 except ImportError:
     print "Digital Ocean's API not loaded. Install python-digitalocean."
 
 
-django.settings_module('settings')
+django.settings_module('newsblur.settings')
 try:
     from django.conf import settings as django_settings
 except ImportError:
@@ -35,7 +37,7 @@ except ImportError:
 # ============
 
 env.NEWSBLUR_PATH = "/srv/newsblur"
-env.SECRETS_PATH = "/srv/secrets-newsblur"
+env.SECRETS_PATH  = "/srv/secrets-newsblur"
 env.VENDOR_PATH   = "/srv/code"
 env.user = 'sclay'
 env.key_filename = os.path.join(env.SECRETS_PATH, 'keys/newsblur.key')
@@ -138,7 +140,8 @@ def assign_digitalocean_roledefs(split=False):
     return droplets
 
 def app():
-    web()
+    assign_digitalocean_roledefs()
+    env.roles = ['app']
 
 def web():
     assign_digitalocean_roledefs()
@@ -146,7 +149,7 @@ def web():
 
 def work():
     assign_digitalocean_roledefs()
-    env.roles = ['work', 'search']
+    env.roles = ['work']
 
 def www():
     assign_digitalocean_roledefs()
@@ -174,7 +177,7 @@ def db():
 
 def task():
     assign_digitalocean_roledefs()
-    env.roles = ['task', 'search']
+    env.roles = ['task']
 
 def ec2task():
     ec2()
@@ -211,12 +214,13 @@ def setup_common():
     pip()
     setup_supervisor()
     setup_hosts()
-    # setup_pgbouncer()
+    setup_pgbouncer()
     config_pgbouncer()
     setup_mongoengine_repo()
     # setup_forked_mongoengine()
     # setup_pymongo_repo()
     setup_logrotate()
+    copy_certificates()
     setup_nginx()
     setup_munin()
 
@@ -267,7 +271,7 @@ def setup_db(engine=None, skip_common=False, skip_benchmark=False):
         setup_postgres_backups()
     elif engine == "postgres_slave":
         setup_postgres(standby=True)
-    elif engine.startswith("mongo"):
+    elif engine and engine.startswith("mongo"):
         setup_mongo()
         # setup_mongo_mms()
         setup_mongo_backups()
@@ -334,9 +338,9 @@ def setup_installs():
         'sysstat',
         'iotop',
         'git',
+        'python2',
         'python-dev',
         'locate',
-        'python-software-properties',
         'software-properties-common',
         'libpcre3-dev',
         'libncurses5-dev',
@@ -348,13 +352,10 @@ def setup_installs():
         'postgresql-common',
         'ssl-cert',
         'pgbouncer',
-        'openssl-blacklist',
         'python-setuptools',
-        'python-psycopg2',
         'libyaml-0-2',
         'python-yaml',
         'python-numpy',
-        'python-scipy',
         'curl',
         'monit',
         'ufw',
@@ -362,7 +363,6 @@ def setup_installs():
         'libjpeg62-dev',
         'libfreetype6',
         'libfreetype6-dev',
-        'python-imaging',
         'libmysqlclient-dev',
         'libblas-dev',
         'liblapack-dev',
@@ -374,8 +374,9 @@ def setup_installs():
     put("config/apt_sources.conf", "/etc/apt/sources.list", use_sudo=True)
     run('sleep 10') # Dies on a lock, so just delay
     sudo('apt-get -y update')
-    sudo('DEBIAN_FRONTEND=noninteractive apt-get -y --force-yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" dist-upgrade')
-    sudo('DEBIAN_FRONTEND=noninteractive apt-get -y --force-yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install %s' % ' '.join(packages))
+    run('sleep 10') # Dies on a lock, so just delay
+    sudo('DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" dist-upgrade')
+    sudo('DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install %s' % ' '.join(packages))
     
     with settings(warn_only=True):
         sudo("ln -s /usr/lib/x86_64-linux-gnu/libjpeg.so /usr/lib")
@@ -430,7 +431,7 @@ def setup_repo():
 
 def setup_repo_local_settings():
     with virtualenv():
-        run('cp local_settings.py.template local_settings.py')
+        run('cp newsblur/local_settings.py.template newsblur/local_settings.py')
         run('mkdir -p logs')
         run('touch logs/newsblur.log')
 
@@ -441,7 +442,7 @@ def setup_local_files():
     put('config/ssh.conf', '~/.ssh/config')
 
 def setup_psql_client():
-    sudo('apt-get -y --force-yes install postgresql-client')
+    sudo('apt-get -y install postgresql-client')
     sudo('mkdir -p /var/run/postgresql')
     with settings(warn_only=True):
         sudo('chown postgres.postgres /var/run/postgresql')
@@ -487,23 +488,31 @@ def virtualenv():
                     yield
 
 def setup_pip():
-    sudo('easy_install -U pip')
+    with cd(env.VENDOR_PATH), settings(warn_only=True):
+        run('curl https://bootstrap.pypa.io/get-pip.py --output get-pip.py')
+        sudo('python2 get-pip.py')
+
 
 @parallel
 def pip():
+    role = role_for_host()
+
     pull()
     with virtualenv():
-        with settings(warn_only=True):
-            sudo('fallocate -l 4G /swapfile')
-            sudo('chmod 600 /swapfile')
-            sudo('mkswap /swapfile')
-            sudo('swapon /swapfile')
+        if role == "task":
+            with settings(warn_only=True):
+                sudo('fallocate -l 4G /swapfile')
+                sudo('chmod 600 /swapfile')
+                sudo('mkswap /swapfile')
+                sudo('swapon /swapfile')
         sudo('chown %s.%s -R %s' % (env.user, env.user, os.path.join(env.NEWSBLUR_PATH, 'venv')))
         run('easy_install -U pip')
         run('pip install --upgrade pip')
+        run('pip install --upgrade setuptools')
         run('pip install -r requirements.txt')
-        with settings(warn_only=True):
-            sudo('swapoff /swapfile')
+        if role == "task":
+            with settings(warn_only=True):
+                sudo('swapoff /swapfile')
 
 def solo_pip(role):
     if role == "app":
@@ -517,6 +526,7 @@ def solo_pip(role):
         celery()
     
 def setup_supervisor():
+    sudo('apt-get update')
     sudo('apt-get -y install supervisor')
     put('config/supervisord.conf', '/etc/supervisor/supervisord.conf', use_sudo=True)
     sudo('/etc/init.d/supervisor stop')
@@ -533,14 +543,14 @@ def setup_hosts():
 
 def setup_pgbouncer():
     sudo('apt-get remove -y pgbouncer')
-    sudo('apt-get install -y libevent-dev')
-    PGBOUNCER_VERSION = '1.7.2'
+    sudo('apt-get install -y libevent-dev pkg-config libc-ares2 libc-ares-dev')
+    PGBOUNCER_VERSION = '1.15.0'
     with cd(env.VENDOR_PATH), settings(warn_only=True):
         run('wget https://pgbouncer.github.io/downloads/files/%s/pgbouncer-%s.tar.gz' % (PGBOUNCER_VERSION, PGBOUNCER_VERSION))
         run('tar -xzf pgbouncer-%s.tar.gz' % PGBOUNCER_VERSION)
         run('rm pgbouncer-%s.tar.gz' % PGBOUNCER_VERSION)
         with cd('pgbouncer-%s' % PGBOUNCER_VERSION):
-            run('./configure --prefix=/usr/local --with-libevent=libevent-prefix')
+            run('./configure --prefix=/usr/local')
             run('make')
             sudo('make install')
             sudo('ln -s /usr/local/bin/pgbouncer /usr/sbin/pgbouncer')
@@ -698,7 +708,7 @@ def setup_sudoers(user=None):
     sudo('chmod 0440 /etc/sudoers.d/sclay')
 
 def setup_nginx():
-    NGINX_VERSION = '1.15.8'
+    NGINX_VERSION = '1.19.5'
     with cd(env.VENDOR_PATH), settings(warn_only=True):
         sudo("groupadd nginx")
         sudo("useradd -g nginx -d /var/www/htdocs -s /bin/false nginx")
@@ -746,7 +756,7 @@ def setup_gunicorn(supervisor=True, restart=True):
         put('config/supervisor_gunicorn.conf', '/etc/supervisor/conf.d/gunicorn.conf', use_sudo=True)
         sudo('supervisorctl reread')
         if restart:
-            restart_gunicorn()
+            sudo('supervisorctl update')
     # with cd(env.VENDOR_PATH):
     #     sudo('rm -fr gunicorn')
     #     run('git clone git://github.com/benoitc/gunicorn.git')
@@ -793,9 +803,10 @@ def config_node(full=False):
 
 @parallel
 def copy_app_settings():
+    run('rm -f %s/local_settings.py' % env.NEWSBLUR_PATH)
     put(os.path.join(env.SECRETS_PATH, 'settings/app_settings.py'), 
-        '%s/local_settings.py' % env.NEWSBLUR_PATH)
-    run('echo "\nSERVER_NAME = \\\\"`hostname`\\\\"" >> %s/local_settings.py' % env.NEWSBLUR_PATH)
+        '%s/newsblur/local_settings.py' % env.NEWSBLUR_PATH)
+    run('echo "\nSERVER_NAME = \\\\"`hostname`\\\\"" >> %s/newsblur/local_settings.py' % env.NEWSBLUR_PATH)
 
 def assemble_certificates():
     with lcd(os.path.join(env.SECRETS_PATH, 'certificates/comodo')):
@@ -903,7 +914,7 @@ def build_haproxy():
     gunicorn_counts_servers = ['app22', 'app26']
     gunicorn_refresh_servers = ['app20', 'app21']
     maintenance_servers = ['app20']
-    ignore_servers = []
+    ignore_servers = ['']
     
     for group_type in ['app', 'push', 'work', 'node_socket', 'node_favicon', 'node_text', 'www']:
         group_type_name = group_type
@@ -955,14 +966,56 @@ def build_haproxy():
     f.write(haproxy_template)
     f.close()
 
-def upgrade_django():
-    with virtualenv(), settings(warn_only=True):
-        sudo('supervisorctl stop gunicorn')
-        run('./utils/kill_gunicorn.sh')
-        sudo('easy_install -U django gunicorn')
-        pull()
-        sudo('supervisorctl reload')
+def upgrade_django(role=None):
+    if not role:
+        role = role_for_host()
 
+    with virtualenv(), settings(warn_only=True):
+        sudo('sudo dpkg --configure -a')
+        setup_supervisor()
+        pull()
+        run('git co django1.11')
+        if role == "task":
+            sudo('supervisorctl stop celery')
+            run('./utils/kill_celery.sh')
+            copy_task_settings()
+            enable_celery_supervisor(update=False)
+        elif role == "work":
+            copy_app_settings()
+            enable_celerybeat()
+        elif role == "web" or role == "app":
+            sudo('supervisorctl stop gunicorn')
+            run('./utils/kill_gunicorn.sh')
+            copy_app_settings()
+            setup_gunicorn(restart=False)
+        elif role == "node":
+            copy_app_settings()
+            config_node(full=True)
+        else:
+            copy_task_settings()
+
+        pip()
+        clean()
+
+        # sudo('reboot')
+
+def clean():
+    with virtualenv(), settings(warn_only=True):
+        run('find . -name "*.pyc" -exec rm -f {} \;')
+    
+def downgrade_django(role=None):
+    with virtualenv(), settings(warn_only=True):
+        pull()
+        run('git co master')
+        pip()
+        run('pip uninstall -y django-paypal')
+        if role == "task":
+            copy_task_settings()
+            enable_celery_supervisor()
+        else:
+            copy_app_settings()
+            deploy()
+        
 def vendorize_paypal():
     with virtualenv(), settings(warn_only=True):
         run('pip uninstall -y django-paypal')
@@ -987,7 +1040,6 @@ def downgrade_pil():
 def setup_db_monitor():
     pull()
     with virtualenv():
-        sudo('apt-get install -y python-mysqldb')
         sudo('apt-get install -y libpq-dev python-dev')
         run('pip install -r flask/requirements.txt')
         put('flask/supervisor_db_monitor.conf', '/etc/supervisor/conf.d/db_monitor.conf', use_sudo=True)
@@ -1059,16 +1111,16 @@ def setup_rabbitmq():
 def setup_postgres(standby=False):
     shmmax = 17818362112
     hugepages = 9000
-    sudo('echo "deb http://apt.postgresql.org/pub/repos/apt/ xenial-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list')
+    sudo('echo "deb http://apt.postgresql.org/pub/repos/apt/ `lsb_release -cs`-pgdg main" |sudo tee  /etc/apt/sources.list.d/pgdg.list')
     sudo('wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -')
-    sudo('apt-get update')
-    sudo('apt-get -y install postgresql-9.4 postgresql-client-9.4 postgresql-contrib-9.4 libpq-dev')
-    put('config/postgresql.conf', '/etc/postgresql/9.4/main/postgresql.conf', use_sudo=True)
-    put('config/postgres_hba.conf', '/etc/postgresql/9.4/main/pg_hba.conf', use_sudo=True)
-    sudo('mkdir -p /var/lib/postgresql/9.4/archive')
-    sudo('chown -R postgres.postgres /etc/postgresql/9.4/main')
-    sudo('chown -R postgres.postgres /var/lib/postgresql/9.4/main')
-    sudo('chown -R postgres.postgres /var/lib/postgresql/9.4/archive')
+    sudo('apt update')
+    sudo('apt install -y postgresql-13')
+    put('config/postgresql-13.conf', '/etc/postgresql/13/main/postgresql.conf', use_sudo=True)
+    put('config/postgres_hba-13.conf', '/etc/postgresql/13/main/pg_hba.conf', use_sudo=True)
+    sudo('mkdir -p /var/lib/postgresql/13/archive')
+    sudo('chown -R postgres.postgres /etc/postgresql/13/main')
+    sudo('chown -R postgres.postgres /var/lib/postgresql/13/main')
+    sudo('chown -R postgres.postgres /var/lib/postgresql/13/archive')
     sudo('echo "%s" | sudo tee /proc/sys/kernel/shmmax' % shmmax)
     sudo('echo "\nkernel.shmmax = %s" | sudo tee -a /etc/sysctl.conf' % shmmax)
     sudo('echo "\nvm.nr_hugepages = %s\n" | sudo tee -a /etc/sysctl.conf' % hugepages)
@@ -1080,20 +1132,20 @@ def setup_postgres(standby=False):
     sudo('systemctl enable postgresql')
 
     if standby:
-        put('config/postgresql_recovery.conf', '/var/lib/postgresql/9.4/recovery.conf', use_sudo=True)
-        sudo('chown -R postgres.postgres /var/lib/postgresql/9.4/recovery.conf')
+        put('config/postgresql_recovery.conf', '/var/lib/postgresql/13/recovery.conf', use_sudo=True)
+        sudo('chown -R postgres.postgres /var/lib/postgresql/13/recovery.conf')
 
     sudo('/etc/init.d/postgresql stop')
     sudo('/etc/init.d/postgresql start')
 
 def config_postgres(standby=False):
-    put('config/postgresql.conf', '/etc/postgresql/9.4/main/postgresql.conf', use_sudo=True)
-    put('config/postgres_hba.conf', '/etc/postgresql/9.4/main/pg_hba.conf', use_sudo=True)
-    sudo('chown postgres.postgres /etc/postgresql/9.4/main/postgresql.conf')
+    put('config/postgresql-13.conf', '/etc/postgresql/13/main/postgresql.conf', use_sudo=True)
+    put('config/postgres_hba.conf', '/etc/postgresql/13/main/pg_hba.conf', use_sudo=True)
+    sudo('chown postgres.postgres /etc/postgresql/13/main/postgresql.conf')
     run('echo "ulimit -n 100000" > postgresql.defaults')
     sudo('mv postgresql.defaults /etc/default/postgresql')
     
-    sudo('/etc/init.d/postgresql reload 9.4')
+    sudo('/etc/init.d/postgresql reload 13')
 
 def upgrade_postgres():
     sudo('su postgres -c "/usr/lib/postgresql/10/bin/pg_upgrade -b /usr/lib/postgresql/9.4/bin -B /usr/lib/postgresql/10/bin -d /var/lib/postgresql/9.4/main -D /var/lib/postgresql/10/main"')
@@ -1143,7 +1195,7 @@ def setup_mongo():
     # sudo('echo "\ndeb http://downloads-distro.mongodb.org/repo/debian-sysvinit dist 10gen" | sudo tee -a /etc/apt/sources.list')
     sudo('echo "deb http://repo.mongodb.org/apt/ubuntu trusty/mongodb-org/3.2 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.2.list')
     sudo('apt-get update')
-    sudo('apt-get install -y --force-yes mongodb-org=%s mongodb-org-server=%s mongodb-org-shell=%s mongodb-org-mongos=%s mongodb-org-tools=%s' %
+    sudo('apt-get install -y --allow mongodb-org=%s mongodb-org-server=%s mongodb-org-shell=%s mongodb-org-mongos=%s mongodb-org-tools=%s' %
          (MONGODB_VERSION, MONGODB_VERSION, MONGODB_VERSION, MONGODB_VERSION, MONGODB_VERSION))
     put('config/mongodb.%s.conf' % ('prod' if env.user != 'ubuntu' else 'ec2'),
         '/etc/mongodb.conf', use_sudo=True)
@@ -1450,9 +1502,10 @@ def copy_task_settings():
     #     host = env.host_string.split('.', 2)[0]
 
     with settings(warn_only=True):
+        run('rm -f %s/local_settings.py' % env.NEWSBLUR_PATH)
         put(os.path.join(env.SECRETS_PATH, 'settings/task_settings.py'), 
-            '%s/local_settings.py' % env.NEWSBLUR_PATH)
-        run('echo "\nSERVER_NAME = \\\\"%s\\\\"" >> %s/local_settings.py' % (host, env.NEWSBLUR_PATH))
+            '%s/newsblur/local_settings.py' % env.NEWSBLUR_PATH)
+        run('echo "\nSERVER_NAME = \\\\"%s\\\\"" >> %s/newsblur/local_settings.py' % (host, env.NEWSBLUR_PATH))
 
 @parallel
 def copy_spam():
@@ -1481,7 +1534,7 @@ def setup_do(name, size=1, image=None):
     # sizes = dict((s.slug, s.slug) for s in doapi.get_all_sizes())
     ssh_key_ids = [k.id for k in doapi.get_all_sshkeys()]
     if not image:
-        image = "ubuntu-16-04-x64"
+        image = "ubuntu-20-04-x64"
     else:
         images = dict((s.name, s.id) for s in doapi.get_all_images())
         if image == "task": 
@@ -1598,9 +1651,12 @@ def setup_ec2():
 # ==========
 
 @parallel
-def pull():
+def pull(master=False):
     with virtualenv():
         run('git pull')
+        if master:
+            run('git checkout master')
+            run('git pull')
 
 def pre_deploy():
     compress_assets(bundle=True)
@@ -1749,7 +1805,7 @@ def kill_celery():
                 run('./utils/kill_celery.sh')  
 
 def compress_assets(bundle=False):
-    local('jammit -c assets.yml --base-url https://www.newsblur.com --output static')
+    local('jammit -c newsblur/assets.yml --base-url https://www.newsblur.com --output static')
     local('tar -czf static.tgz static/*')
 
     tries_left = 5
@@ -1801,8 +1857,8 @@ def setup_postgres_backups():
     # crontab for postgres backups
     crontab = """
 0 4 * * * /srv/newsblur/venv/newsblur/bin/python /srv/newsblur/utils/backups/backup_psql.py
-0 * * * * sudo find /var/lib/postgresql/9.4/archive -mtime +1 -exec rm {} \;
-0 * * * * sudo find /var/lib/postgresql/9.4/archive -type f -mmin +180 -delete"""
+0 * * * * sudo find /var/lib/postgresql/13/archive -mtime +1 -exec rm {} \;
+0 * * * * sudo find /var/lib/postgresql/13/archive -type f -mmin +180 -delete"""
 
     run('(crontab -l ; echo "%s") | sort - | uniq - | crontab -' % crontab)
     run('crontab -l')
@@ -1839,17 +1895,23 @@ def setup_time_calibration():
 # = Tasks - DB =
 # ==============
 
-def restore_postgres(port=5433, download=False):
-    backup_date = '2020-11-11-04-00'
-    yes = prompt("Dropping and creating NewsBlur PGSQL db. Sure?")
-    if yes != 'y':
-        return
-    if download:
-        run('PYTHONPATH=%s python utils/backups/s3.py get backup_postgresql_%s.sql.gz' % (env.NEWSBLUR_PATH, backup_date))
-    # sudo('su postgres -c "createuser -p %s -U newsblur"' % (port,))
-    run('dropdb newsblur -p %s -U newsblur' % (port,), pty=False)
-    run('createdb newsblur -p %s -O newsblur' % (port,), pty=False)
-    run('pg_restore -p %s --role=newsblur --dbname=newsblur /Users/sclay/Documents/Backups/backup_postgresql_%s.sql.gz' % (port, backup_date), pty=False)
+def restore_postgres(port=5432, download=False):
+    with virtualenv():
+        backup_date = '2020-12-03-02-51'
+        yes = prompt("Dropping and creating NewsBlur PGSQL db. Sure?")
+        if yes != 'y':
+            return
+        if download:
+            run('mkdir -p postgres')
+            run('PYTHONPATH=%s python utils/backups/s3.py get postgres/backup_postgresql_%s.sql.gz' % (env.NEWSBLUR_PATH, backup_date))
+        # sudo('su postgres -c "createuser -p %s -U newsblur"' % (port,))
+        with settings(warn_only=True): 
+            # May not exist
+            run('dropdb newsblur -p %s -U newsblur' % (port,), pty=False)
+            run('sudo -u postgres createuser newsblur -s')
+            # May already exist
+            run('createdb newsblur -p %s -O newsblur -U newsblur' % (port,), pty=False)
+        run('pg_restore -U newsblur -p %s --role=newsblur --dbname=newsblur /srv/newsblur/postgres/backup_postgresql_%s.sql.gz' % (port, backup_date), pty=False)
 
 def restore_mongo(download=False):
     backup_date = '2020-11-11-04-00'
@@ -1939,8 +2001,9 @@ def upgrade_to_virtualenv(role=None):
         sudo('reboot')
 
 def benchmark():
+    run('curl -s https://packagecloud.io/install/repositories/akopytov/sysbench/script.deb.sh | sudo bash')
     sudo('apt-get install -y sysbench')
-    run('sysbench --test=cpu --cpu-max-prime=20000 run')
-    run('sysbench --test=fileio --file-total-size=150G prepare')
-    run('sysbench --test=fileio --file-total-size=150G --file-test-mode=rndrw --init-rng=on --max-time=300 --max-requests=0 run')
-    run('sysbench --test=fileio --file-total-size=150G cleanup')
+    run('sysbench cpu --cpu-max-prime=20000 run')
+    run('sysbench fileio --file-total-size=150G prepare')
+    run('sysbench fileio --file-total-size=150G --file-test-mode=rndrw --time=300 --max-requests=0 run')
+    run('sysbench fileio --file-total-size=150G cleanup')

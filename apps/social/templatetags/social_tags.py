@@ -29,7 +29,7 @@ def render_story_comments(context, story):
     user = context['user']
     user_social_profile = context.get('user_social_profile')
     MEDIA_URL = settings.MEDIA_URL
-    if not user_social_profile and user.is_authenticated():
+    if not user_social_profile and user.is_authenticated:
         user_social_profile = MSocialProfile.objects.get(user_id=user.pk)
     
     return {
