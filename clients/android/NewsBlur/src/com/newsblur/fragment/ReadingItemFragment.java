@@ -40,6 +40,8 @@ import com.newsblur.databinding.IncludeReadingItemCommentBinding;
 import com.newsblur.domain.Classifier;
 import com.newsblur.domain.Story;
 import com.newsblur.domain.UserDetails;
+import com.newsblur.network.APIManager;
+import com.newsblur.network.domain.StoryChangesResponse;
 import com.newsblur.service.OriginalTextService;
 import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.FeedSet;
@@ -47,6 +49,7 @@ import com.newsblur.util.FeedUtils;
 import com.newsblur.util.Font;
 import com.newsblur.util.PrefConstants.ThemeValue;
 import com.newsblur.util.PrefsUtils;
+import com.newsblur.util.StoryChangesState;
 import com.newsblur.util.StoryUtils;
 import com.newsblur.util.UIUtils;
 import com.newsblur.view.ReadingScrollView;
@@ -72,6 +75,7 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
 	private UserDetails user;
     private DefaultFeedView selectedFeedView;
     private boolean textViewUnavailable;
+    private StoryChangesState storyChangesState = StoryChangesState.SHOW_CHANGES;
 
     /** The story HTML, as provided by the 'content' element of the stories API. */
     private String storyContent;
@@ -229,6 +233,11 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
                 clickShare();
             }
         });
+
+        if (selectedFeedView == DefaultFeedView.STORY && story.hasModifications) {
+            binding.readingStoryChanges.setVisibility(View.VISIBLE);
+            binding.readingStoryChanges.setOnClickListener(v -> loadStoryChanges());
+        }
 	}
 
     @Override
@@ -608,9 +617,11 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
         enableProgress(false);
 
         boolean needStoryContent = false;
+        boolean enableStoryChanges = false;
 
         if (selectedFeedView == DefaultFeedView.STORY) {
             needStoryContent = true;
+            enableStoryChanges = story != null && story.hasModifications;
         } else {
             if (textViewUnavailable) {
                 binding.readingTextmodefailed.setVisibility(View.VISIBLE);
@@ -635,6 +646,8 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
                 onContentLoadFinished();
             }
         }
+
+        binding.readingStoryChanges.setVisibility(enableStoryChanges ? View.VISIBLE : View.GONE);
     }
 
     private void enableProgress(boolean loading) {
@@ -721,6 +734,37 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
                     com.newsblur.util.Log.w(this, "couldn't find story content for existing story.");
                     Activity act = getActivity();
                     if (act != null) act.finish();
+                }
+            }
+        }.execute();
+    }
+
+    private void loadStoryChanges() {
+        boolean showChanges = storyChangesState == null || storyChangesState == StoryChangesState.SHOW_CHANGES;
+        if (story == null) return;
+        new AsyncTask<Void, Void, StoryChangesResponse>() {
+
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+                binding.readingStoryChanges.setText(R.string.story_changes_loading);
+            }
+
+            @Override
+            protected StoryChangesResponse doInBackground(Void... voids) {
+                APIManager apiManager = new APIManager(requireContext());
+                return apiManager.getStoryChanges(story.storyHash, showChanges);
+            }
+
+            @Override
+            protected void onPostExecute(StoryChangesResponse response) {
+                if (!response.isError() && response.getStory() != null) {
+                    ReadingItemFragment.this.storyContent = response.getStory().content;
+                    reloadStoryContent();
+                    binding.readingStoryChanges.setText(showChanges ? R.string.story_hide_changes : R.string.story_show_changes);
+                    storyChangesState = showChanges ? StoryChangesState.HIDE_CHANGES : StoryChangesState.SHOW_CHANGES;
+                } else {
+                    binding.readingStoryChanges.setText(showChanges ? R.string.story_show_changes : R.string.story_hide_changes);
                 }
             }
         }.execute();
