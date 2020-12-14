@@ -128,7 +128,6 @@
     <string name="profile_no_interactions">No interactions</string>
     
     <string name="menu_profile">Profile</string>
-    <string name="menu_refresh">Refresh</string>
     <string name="menu_search_feeds">Search your feeds</string>
     <string name="menu_original">View original</string>
     <string name="menu_send_story">Send link to…</string>
@@ -155,7 +154,6 @@
     <string name="menu_oldest_mark_newer_stories_as_read">\u21E3 Mark newer as read</string>
     <string name="menu_mark_story_as_read">Mark as read</string>
     <string name="menu_mark_unread">Mark as unread</string>
-    <string name="menu_fullscreen">Full screen</string>
     <string name="menu_search_stories">Search…</string>
     <string name="menu_mute_feed">Mute feed</string>
     <string name="menu_unmute_feed">Unmute feed</string>
@@ -197,7 +195,10 @@
 
     <string name="logout_warning">Are you sure you want to log out?</string>
     <string name="search_mark_read_warning">Look out! All stories in feed/folder would be marked read, not just search results.  If you really want to mark all stories read, please clear your search query to confirm.</string>
-    
+
+    <string name="story_show_changes">Show Story Changes</string>
+    <string name="story_hide_changes">Hide Story Changes</string>
+    <string name="story_changes_loading">Story Changes Loading ...</string>
     <string name="your_feeds_search_hint">Search your feeds</string>
     <string name="feed_search_hint">Search term or feed URL</string>
     <string name="story_search_hint">Search for stories</string>

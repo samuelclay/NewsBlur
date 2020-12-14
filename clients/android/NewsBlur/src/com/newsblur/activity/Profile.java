@@ -13,6 +13,7 @@ import com.newsblur.domain.UserDetails;
 import com.newsblur.fragment.ProfileDetailsFragment;
 import com.newsblur.network.APIManager;
 import com.newsblur.util.PrefsUtils;
+import com.newsblur.util.UIUtils;
 
 public class Profile extends NbActivity {
 
@@ -28,7 +29,7 @@ public class Profile extends NbActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_profile);
-		getActionBar().setDisplayHomeAsUpEnabled(true);
+		UIUtils.setCustomActionBar(this, R.drawable.logo, getString(R.string.profile), true);
 		apiManager = new APIManager(this);
         if (savedInstanceState == null) {
             userId = getIntent().getStringExtra(USER_ID);

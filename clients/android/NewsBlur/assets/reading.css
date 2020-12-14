@@ -64,12 +64,3 @@ pre, blockquote {
     word-wrap: break-word !important;
     white-space: pre-wrap !important;
 }
-
-/* these are the diff blocks produced by NewsBlur */
-ins { 
-	text-decoration: none;
-}
-
-del {
-    display: none;
-}
