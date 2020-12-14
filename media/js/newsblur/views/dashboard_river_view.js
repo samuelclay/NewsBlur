@@ -132,12 +132,13 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
             query: this.options.query,
         }, options || {});
         if (options.feed_selector) return;
-        // var feeds = NEWSBLUR.assets.folders.feed_ids_in_folder();
+        
         var feeds = this.feeds();
         if (!feeds.length) return;
         if (!this.$stories.length) return;
         if (this.model.get('river_id') == "river:global") feeds = [];
-        console.log(['dashboard river load_stories', this.model.get('river_id'), this.page, feeds.length, options]);
+        
+        // console.log(['dashboard river load_stories', this.model.get('river_id'), this.page, feeds.length, options]);
         this.page = 1;
         this.story_titles.show_loading();
         NEWSBLUR.assets.fetch_dashboard_stories(this.options.active_feed, feeds, this.page, this.options.dashboard_stories, options,

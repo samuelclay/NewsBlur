@@ -785,10 +785,13 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                 data.stories = data.stories.splice(0, 3);
             }
             if (page > 1) {
-                dashboard_stories.add(data.stories, {silent: true});
+                dashboard_stories.add(data.stories, { silent: true });
+                dashboard_stories.limit(NEWSBLUR.Globals.is_premium ? 5 : 3);
                 dashboard_stories.trigger('add', {added: data.stories.length});
             } else {
-                dashboard_stories.reset(data.stories, {added: data.stories.length});
+                dashboard_stories.reset(data.stories, {added: data.stories.length, silent: true});
+                dashboard_stories.limit(NEWSBLUR.Globals.is_premium ? 5 : 3);
+                dashboard_stories.trigger('reset', {added: data.stories.length});
             }
 
             callback(data);
