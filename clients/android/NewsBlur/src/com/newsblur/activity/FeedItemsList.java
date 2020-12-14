@@ -46,7 +46,7 @@ public class FeedItemsList extends ItemsList {
 
 		super.onCreate(bundle);
 
-        UIUtils.setCustomActionBar(this, feed.faviconUrl, feed.title);
+        UIUtils.setCustomActionBar(this, feed.faviconUrl, feed.title, false);
         checkInAppReview();
     }
 

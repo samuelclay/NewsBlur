@@ -43,8 +43,7 @@ public class InfrequentCutoffDialogFragment extends DialogFragment {
 		binding.radio30.setChecked(currentValue == 30);
 		binding.radio60.setChecked(currentValue == 60);
 		binding.radio90.setChecked(currentValue == 90);
-		
-		getDialog().setTitle(R.string.infrequent_choice_title);
+
 		getDialog().getWindow().getAttributes().gravity = Gravity.BOTTOM;
 		
 		return v;
