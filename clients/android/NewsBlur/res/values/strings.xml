@@ -195,7 +195,10 @@
 
     <string name="logout_warning">Are you sure you want to log out?</string>
     <string name="search_mark_read_warning">Look out! All stories in feed/folder would be marked read, not just search results.  If you really want to mark all stories read, please clear your search query to confirm.</string>
-    
+
+    <string name="story_show_changes">Show Story Changes</string>
+    <string name="story_hide_changes">Hide Story Changes</string>
+    <string name="story_changes_loading">Story Changes Loading ...</string>
     <string name="your_feeds_search_hint">Search your feeds</string>
     <string name="feed_search_hint">Search term or feed URL</string>
     <string name="story_search_hint">Search for stories</string>
