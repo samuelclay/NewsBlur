@@ -934,7 +934,7 @@ class MSocialSubscription(mongo.Document):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         pipeline = r.pipeline()
         story_hashes = {} if group_by_user else []
-        
+
         if not socialsubs:
             socialsubs = cls.subs_for_users(relative_user_id, 
                                             subscription_user_ids=subscription_user_ids,
