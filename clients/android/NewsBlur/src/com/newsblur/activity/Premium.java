@@ -41,6 +41,7 @@ import com.newsblur.util.UIUtils;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Currency;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -230,10 +231,9 @@ public class Premium extends NbActivity {
     }
 
     private void showSubscriptionDetails() {
-        // handling dynamic currency and pricing for 1Y subscriptions
-        String currencySymbol = subscriptionDetails.getPrice().substring(0, 1);
-        String priceString = subscriptionDetails.getPrice().substring(1);
-        double price = Double.parseDouble(priceString);
+        double price = subscriptionDetails.getPriceAmountMicros() / 1000f / 1000f;
+        Currency currency = Currency.getInstance(subscriptionDetails.getPriceCurrencyCode());
+        String currencySymbol = currency.getSymbol(Locale.getDefault());
         StringBuilder pricingText = new StringBuilder();
         pricingText.append(subscriptionDetails.getPrice());
         pricingText.append(" per year (");
