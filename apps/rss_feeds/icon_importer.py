@@ -214,7 +214,7 @@ class IconImporter(object):
         url = self._url_from_html(content)
         if not url:
             try:
-                content = requests.get(self.cleaned_feed_link).content
+                content = requests.get(self.cleaned_feed_link, timeout=10).content
                 url = self._url_from_html(content)
             except (AttributeError, SocketError, requests.ConnectionError,
                     requests.models.MissingSchema, requests.sessions.InvalidSchema,
@@ -222,6 +222,7 @@ class IconImporter(object):
                     requests.models.InvalidURL,
                     requests.models.ChunkedEncodingError,
                     requests.models.ContentDecodingError,
+                    requests.adapters.ReadTimeout,
                     httplib.IncompleteRead,
                     LocationParseError, OpenSSLError, PyAsn1Error,
                     ValueError), e:
@@ -275,14 +276,12 @@ class IconImporter(object):
         @timelimit(30)
         def _1(url):
             headers = {
-                'User-Agent': 'NewsBlur Favicon Fetcher - %s subscriber%s - %s '
-                              '(Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_1) '
-                              'AppleWebKit/534.48.3 (KHTML, like Gecko) Version/5.1 '
-                              'Safari/534.48.3)' %
+                'User-Agent': 'NewsBlur Favicon Fetcher - %s subscriber%s - %s %s' %
                               (
                                   self.feed.num_subscribers,
                                   's' if self.feed.num_subscribers != 1 else '',
-                                  self.feed.permalink
+                                  self.feed.permalink,
+                                  self.feed.fake_user_agent,
                               ),
                 'Connection': 'close',
                 'Accept': 'image/png,image/x-icon,image/*;q=0.9,*/*;q=0.8'

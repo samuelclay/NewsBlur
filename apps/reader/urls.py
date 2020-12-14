@@ -1,7 +1,7 @@
 from django.conf.urls import *
 from apps.reader import views
 
-urlpatterns = patterns('',
+urlpatterns = [
     url(r'^$', views.index),
     url(r'^buster', views.iframe_buster, name='iframe-buster'),
     url(r'^login_as', views.login_as, name='login_as'),
@@ -60,4 +60,4 @@ urlpatterns = patterns('',
     url(r'^load_tutorial', views.load_tutorial, name='load-tutorial'),
     url(r'^save_search', views.save_search, name='save-search'),
     url(r'^delete_search', views.delete_search, name='delete-search'),
-)
+]

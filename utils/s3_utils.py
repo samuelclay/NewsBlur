@@ -9,7 +9,7 @@ from utils.image_functions import ImageOps
 if '/srv/newsblur' not in ' '.join(sys.path):
     sys.path.append("/srv/newsblur")
 
-os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
+os.environ['DJANGO_SETTINGS_MODULE'] = 'newsblur.settings'
 from django.conf import settings
 
 ACCESS_KEY  = settings.S3_ACCESS_KEY
@@ -99,8 +99,8 @@ class S3Store:
         return self.s3.create_bucket(bucket_name)
         
     def save_profile_picture(self, user_id, filename, image_body):
-        mimetype, extension = self._extract_mimetype(filename)
-        if not mimetype or not extension:
+        content_type, extension = self._extract_content_type(filename)
+        if not content_type or not extension:
             return
             
         image_name = 'profile_%s.%s' % (int(time.time()), extension)
@@ -108,39 +108,39 @@ class S3Store:
         image = ImageOps.resize_image(image_body, 'fullsize', fit_to_size=False)
         if image:
             key = 'avatars/%s/large_%s' % (user_id, image_name)
-            self._save_object(key, image, mimetype=mimetype)
+            self._save_object(key, image, content_type=content_type)
 
         image = ImageOps.resize_image(image_body, 'thumbnail', fit_to_size=True)
         if image:
             key = 'avatars/%s/thumbnail_%s' % (user_id, image_name)
-            self._save_object(key, image, mimetype=mimetype)
+            self._save_object(key, image, content_type=content_type)
         
         return image and image_name
 
-    def _extract_mimetype(self, filename):
-        mimetype = mimetypes.guess_type(filename)[0]
+    def _extract_content_type(self, filename):
+        content_type = mimetypes.guess_type(filename)[0]
         extension = None
         
-        if mimetype == 'image/jpeg':
+        if content_type == 'image/jpeg':
             extension = 'jpg'
-        elif mimetype == 'image/png':
+        elif content_type == 'image/png':
             extension = 'png'
-        elif mimetype == 'image/gif':
+        elif content_type == 'image/gif':
             extension = 'gif'
             
-        return mimetype, extension
+        return content_type, extension
         
     def _make_key(self):
         return Key(bucket=self.bucket)
     
-    def _save_object(self, key, file_object, mimetype=None):
+    def _save_object(self, key, file_object, content_type=None):
         k = self._make_key()
         k.key = key
         file_object.seek(0)
         
-        if mimetype:
+        if content_type:
             k.set_contents_from_file(file_object, headers={
-                'Content-Type': mimetype,
+                'Content-Type': content_type,
             })
         else:
             k.set_contents_from_file(file_object)
