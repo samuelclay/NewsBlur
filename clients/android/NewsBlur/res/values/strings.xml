@@ -402,7 +402,6 @@
     <string name="settings_social">Social</string>
     <string name="settings_show_public_comments">Show Public Comments</string>
     <string name="settings_reading">Reading</string>
-    <string name="settings_immersive_enter_single_tap">Immersive Mode Via Single Tap</string>
     <string name="settings_show_content_preview">Show Content Preview Text</string>
     <string name="settings_thumbnails_style">Image Preview Thumbnails</string>
     <string name="settings_notifications">Notifications</string>
