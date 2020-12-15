@@ -346,14 +346,14 @@ class UserSubscription(models.Model):
         if stories_cached:
             truncated += rt.zcard(ranked_stories_keys)
             rt.delete(ranked_stories_keys)
-        else:
-            logging.debug(" ***> ~FRNo stories cached, can't truncate: %s / %s" % (User.objects.get(pk=user_id), feed_ids))
+        # else:
+        #     logging.debug(" ***> ~FRNo stories cached, can't truncate: %s / %s" % (User.objects.get(pk=user_id), feed_ids))
             
         if unreads_cached:
             truncated += rt.zcard(unread_ranked_stories_keys)
             rt.delete(unread_ranked_stories_keys)
-        else:
-            logging.debug(" ***> ~FRNo unread stories cached, can't truncate: %s / %s" % (User.objects.get(pk=user_id), feed_ids))
+        # else:
+        #     logging.debug(" ***> ~FRNo unread stories cached, can't truncate: %s / %s" % (User.objects.get(pk=user_id), feed_ids))
         
         return truncated
         
