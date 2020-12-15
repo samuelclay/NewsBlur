@@ -320,6 +320,11 @@
     </string-array>
     <string name="default_network_select_value">NOMONONME</string>
 
+    <string name="menu_delete_offline_stories">Delete offline stories …</string>
+    <string name="menu_delete_offline_stories_key">delete_offline_stories</string>
+    <string name="menu_delete_offline_stories_sum">Clear all offline stories and images</string>
+    <string name="menu_delete_offline_stories_confirmation">Cleared all stories and images!</string>
+
     <string name="menu_cache_age_select">Maximum Cache Age</string>
     <string name="menu_cache_age_select_sum">Clean up cached story content after…</string>
     <string name="menu_cache_age_select_opt_2d">2 days (reduce storage use)</string>

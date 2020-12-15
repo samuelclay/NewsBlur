@@ -398,6 +398,7 @@
         <item name="preferenceCategoryStyle">@style/preferenceCategory</item>
         <item name="checkBoxPreferenceStyle">@style/checkBoxPreference</item>
         <item name="dialogPreferenceStyle">@style/dialogPreference</item>
+        <item name="preferenceStyle">@style/dialogPreference</item>
     </style>
 
     <style name="preferenceCategory" parent="Preference.Category.Material">
