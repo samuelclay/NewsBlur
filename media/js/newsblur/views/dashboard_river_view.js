@@ -295,6 +295,19 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
             console.log(["Can't fetch dashboard story, no feed", feed_id]);
             return;
         }
+
+        if (this.options.infrequent) {
+            var feed_stories_per_month = feed.get('average_stories_per_month');
+            if (feed_stories_per_month > NEWSBLUR.assets.preference('infrequent_stories_per_month')) {
+                return;
+            }
+        }
+
+        if (this.options.global_feed) {
+            // Global Shared Stories don't come in real-time (yet)
+            return;
+        }
+
         var subs = feed.get('num_subscribers');
         var delay = subs * 2; // 1,000 subs = 2 seconds
         console.log(['Fetching dashboard story', story_hash, delay + 'ms delay']);
