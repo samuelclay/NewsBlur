@@ -123,11 +123,6 @@
             android:entries="@array/default_font_entries"
             android:entryValues="@array/default_font_values"
             android:defaultValue="@string/default_font_value" />
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:key="immersive_enter_single_tap"
-            android:title="@string/settings_immersive_enter_single_tap" >
-        </CheckBoxPreference>
         <ListPreference
             android:key="volume_key_navigation"
             android:title="@string/volume_key_navigation"
