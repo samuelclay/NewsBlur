@@ -5770,13 +5770,13 @@ form.opml_import_form input {
     margin: 1px 5px -1px 0px;
 }
 .NB-narrow-pane-green .NB-intelligence-slider .NB-intelligence-slider-green img {
-    margin: 2px 6px 2px;
+    margin: 3px 6px 2px;
 }
 .NB-narrow-pane-blue .NB-intelligence-slider .NB-intelligence-slider-blue img {
-    margin: 0px 4px 0px;
+    margin: 1px 4px 0px;
 }
 .NB-narrow-pane-yellow .NB-intelligence-slider .NB-intelligence-slider-yellow img {
-    margin: 2px 6px 2px;
+    margin: 3px 6px 2px;
 }
 
 /* ===================== */
