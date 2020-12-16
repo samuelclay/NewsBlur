@@ -324,7 +324,7 @@
                     center__paneSelector:   ".left-center",
                     center__resizable:      false,
                     south__paneSelector:    ".left-south",
-                    south__size:            31,
+                    south__size:            37,
                     south__resizable:       false,
                     enableCursorHotkey:     false,
                     togglerLength_open:     0,
@@ -368,7 +368,7 @@
                     north__paneSelector:    ".content-north",
                     north__size:            37,
                     south__paneSelector:    ".content-south",
-                    south__size:            31
+                    south__size:            37
                 };
 
                 this.layout.rightLayout = $('.right-pane').layout(rightLayoutOptions); 
@@ -411,7 +411,7 @@
                     north__paneSelector:    ".content-north",
                     north__size:            37,
                     south__paneSelector:    ".content-south",
-                    south__size:            31
+                    south__size:            37
                     
                 };
                 this.layout.rightLayout = $('.right-pane').layout(rightLayoutOptions); 
@@ -2150,6 +2150,9 @@
             this.flags.river_view = true;
             this.flags.social_view = true;
             this.flags.global_blurblogs = options.global;
+            if (options.story_id) {
+                this.flags['select_story_in_feed'] = options.story_id;
+            }
             
             $('.task_view_page', this.$s.$taskbar).addClass('NB-disabled');
             var explicit_view_setting = this.model.view_setting(this.active_feed, 'view');

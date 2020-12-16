@@ -159,6 +159,7 @@ hr {
 }
 .NB-account-right {
     flex: 1.2;
+    margin: 0 0 32px 0;
 }
 .NB-account {
     display: flex;
@@ -4214,7 +4215,7 @@ body {
 /* ====================== */
 
 #story_taskbar .NB-river-progress {
-  margin: 3px 12px 0;
+  margin: 6px 12px 0;
   width: 150px;
   height: 20px;
 }
@@ -4242,7 +4243,7 @@ body {
 /* ============== */
 
 #story_taskbar .NB-feed-error {
-  margin: 2px 12px 0;
+  margin: 5px 12px 0;
   height: 20px;
 }
 
@@ -4279,7 +4280,7 @@ body {
 
 #story_taskbar .feed_counts_floater {
     position: absolute;
-    bottom: 2px;
+    bottom: 5px;
     left: 350px;
     height: 27px;
     z-index: 10;
@@ -4675,7 +4676,7 @@ body {
     background-image: -moz-linear-gradient(center top , #F3F3EE 0%, #E8EBE4 100%);
     background-image: linear-gradient(top, #F3F3EE, #E8EBE4);
     z-index: 10;
-    height: 30px;
+    height: 36px;
 }
 
 .NB-taskbar {
@@ -4707,7 +4708,7 @@ body {
     overflow: hidden;
 }
 .NB-feed-taskbar .NB-task-button {
-    padding: 7px;
+    padding: 10px 7px;
     cursor: pointer;
     opacity: .9;
 }
@@ -4763,14 +4764,14 @@ background: transparent;
     text-shadow: none;
 }
 #story_taskbar .NB-taskbar {
-    margin: 3px 0 0 0;    
+    margin: 5px 0 0 0;    
 }
 .NB-feedbar .NB-taskbar {
     margin: 2px 0 0 0;
 }
 #story_taskbar .NB-taskbar .NB-taskbar-button {
     font-size: 11px;
-    padding: 2px 8px 2px;
+    padding: 4px 8px;
     line-height: 18px;
     position: relative;
 }
@@ -4802,69 +4803,69 @@ background: transparent;
     vertical-align: top;
     width: 18px;
     height: 15px;
-    margin: 2px 0 0 0;
+    margin: 1px 0 0 0;
     display: inline-block;
 }
 
 .NB-taskbar .task_view_page .NB-task-image {
     background: transparent url('/media/embed/icons/circular/nav_story_original.png') no-repeat center center;
-    background-size: 18px 15px;
+    background-size: 15px;
 }
 .NB-taskbar .task_view_page.NB-active .NB-task-image {
     background: transparent url('/media/embed/icons/circular/nav_story_original_active.png') no-repeat center center;
-    background-size: 18px 15px;
+    background-size: 15px;
 }
 .NB-taskbar .task_view_feed .NB-task-image {
     background: transparent url('/media/embed/icons/circular/nav_story_feed.png') no-repeat center center;
-    background-size: 18px 15px;
+    background-size: 15px;
 }
 .NB-taskbar .task_view_feed.NB-active .NB-task-image {
     background: transparent url('/media/embed/icons/circular/nav_story_feed_active.png') no-repeat center center;
-    background-size: 18px 15px;
+    background-size: 15px;
 }
 .NB-taskbar .task_view_story .NB-task-image {
     background: transparent url('/media/embed/icons/circular/nav_story_story.png') no-repeat center center;
-    background-size: 18px 15px;
+    background-size: 15px;
 }
 .NB-taskbar .task_view_story.NB-active .NB-task-image {
     background: transparent url('/media/embed/icons/circular/nav_story_story_active.png') no-repeat center center;
-    background-size: 18px 15px;
+    background-size: 15px;
 }
 .NB-taskbar .task_view_text .NB-task-image {
     background: transparent url('/media/embed/icons/circular/nav_story_text.png') no-repeat center center;
-    background-size: 18px 15px;
+    background-size: 15px;
 }
 .NB-taskbar .task_view_text.NB-active .NB-task-image {
     background: transparent url('/media/embed/icons/circular/nav_story_text_active.png') no-repeat center center;
-    background-size: 18px 15px;
+    background-size: 15px;
 }
 .NB-taskbar .task_view_story.NB-disabled-page .NB-task-image {
     background-image: url('/media/embed/icons/circular/exclamation.png');
     background-size: 16px;
 }
 .NB-taskbar .NB-task-story-next-starred .NB-task-image {
-    background: transparent url('/media/embed/icons/circular/g_icn_starred.png') no-repeat 0 0; 
+    background: transparent url('/media/embed/icons/circular/g_icn_starred.png') no-repeat center center; 
     background-size: 8px;
     width: 8px;
     height: 8px;
     margin-top: 5px;
 }
 .NB-taskbar .NB-task-story-next-positive .NB-task-image {
-    background: transparent url('/media/embed/icons/circular/g_icn_focus.png') no-repeat 0 0; 
+    background: transparent url('/media/embed/icons/circular/g_icn_focus.png') no-repeat center center; 
     background-size: 8px;
     width: 8px;
     height: 8px;
     margin-top: 5px;
 }
 .NB-taskbar .NB-task-story-next-neutral .NB-task-image {
-    background: transparent url('/media/embed/icons/circular/g_icn_unread.png') no-repeat  0 0;  
+    background: transparent url('/media/embed/icons/circular/g_icn_unread.png') no-repeat  center center;  
     background-size: 8px;
     width: 8px;
     height: 8px;
     margin-top: 5px;
 }
 .NB-taskbar .NB-task-story-next-negative .NB-task-image {
-    background: transparent url('/media/embed/icons/circular/g_icn_hidden.png') no-repeat 0 0; 
+    background: transparent url('/media/embed/icons/circular/g_icn_hidden.png') no-repeat center center; 
     background-size: 8px;
     width: 8px;
     height: 8px;
@@ -4883,7 +4884,7 @@ background: transparent;
     width: 12px;
     height: 12px;
     margin-top: 2px;
-    background: transparent url('/media/embed/icons/circular/nav_prev.png') no-repeat 0 0;
+    background: transparent url('/media/embed/icons/circular/nav_prev.png') no-repeat center center;
     background-size: 12px;
 }
 .NB-taskbar .NB-task-story-next .NB-task-image {
@@ -4891,53 +4892,53 @@ background: transparent;
     width: 12px;
     height: 12px;
     margin-top: 3px;
-    background: transparent url('/media/embed/icons/circular/nav_next.png') no-repeat 0 0;
+    background: transparent url('/media/embed/icons/circular/nav_next.png') no-repeat center center;
     background-size: 12px;
 }
 
 .NB-taskbar .NB-task-layout-full .NB-task-image {
     left: 12px;
-    background: transparent url('/media/img/icons/circular/nav_story_full.png') no-repeat 0 0;
-    background-size: 18px 14px;
+    background: transparent url('/media/img/icons/circular/nav_story_full.png') no-repeat center center;
+    background-size: 15px;
 }
 .NB-taskbar .NB-task-layout-full.NB-active .NB-task-image {
     left: 12px;
-    background: transparent url('/media/img/icons/circular/nav_story_full_active.png') no-repeat 0 0;
-    background-size: 18px 14px;
+    background: transparent url('/media/img/icons/circular/nav_story_full_active.png') no-repeat center center;
+    background-size: 15px;
 }
 .NB-taskbar .NB-task-layout-split .NB-task-image {
     left: 12px;
-    background: transparent url('/media/img/icons/circular/nav_story_split.png') no-repeat 0 0;
-    background-size: 18px 14px;
+    background: transparent url('/media/img/icons/circular/nav_story_split.png') no-repeat center center;
+    background-size: 15px;
 }
 .NB-taskbar .NB-task-layout-split.NB-active .NB-task-image {
     left: 12px;
-    background: transparent url('/media/img/icons/circular/nav_story_split_active.png') no-repeat 0 0;
-    background-size: 18px 14px;
+    background: transparent url('/media/img/icons/circular/nav_story_split_active.png') no-repeat center center;
+    background-size: 15px;
 }
 .NB-taskbar .NB-task-layout-list .NB-task-image {
     left: 12px;
-    background: transparent url('/media/img/icons/circular/nav_story_list.png') no-repeat 0 0;
-    background-size: 18px 14px;
+    background: transparent url('/media/img/icons/circular/nav_story_list.png') no-repeat center center;
+    background-size: 15px;
 }
 .NB-taskbar .NB-task-layout-list.NB-active .NB-task-image {
     left: 12px;
-    background: transparent url('/media/img/icons/circular/nav_story_list_active.png') no-repeat 0 0;
-    background-size: 18px 14px;
+    background: transparent url('/media/img/icons/circular/nav_story_list_active.png') no-repeat center center;
+    background-size: 15px;
 }
 .NB-taskbar .NB-task-layout-grid .NB-task-image {
     left: 12px;
-    background: transparent url('/media/img/icons/circular/nav_story_grid.png') no-repeat 0 0;
-    background-size: 18px 14px;
+    background: transparent url('/media/img/icons/circular/nav_story_grid.png') no-repeat center center;
+    background-size: 15px;
 }
 .NB-taskbar .NB-task-layout-grid.NB-active .NB-task-image {
     left: 12px;
-    background: transparent url('/media/img/icons/circular/nav_story_grid_active.png') no-repeat 0 0;
-    background-size: 18px 14px;
+    background: transparent url('/media/img/icons/circular/nav_story_grid_active.png') no-repeat center center;
+    background-size: 15px;
 }
 
 .NB-taskbar .NB-task-return .NB-task-image {
-    background: transparent url('/media/embed/icons/silk/arrow_undo.png') no-repeat 0 0;
+    background: transparent url('/media/embed/icons/silk/arrow_undo.png') no-repeat center center;
 }
 .NB-taskbar .task_view_page .NB-task-title.NB-task-original-return {
     display: none;
@@ -4989,7 +4990,7 @@ background: transparent;
     font-weight: bold;
     padding: 1px 4px 1px 8px;
     line-height: 14px;
-    margin: 3px 0 0;
+    margin: 6px 0 0;
 }
 #story_taskbar .NB-taskbar-options:hover,
 #story_taskbar .NB-taskbar-options.NB-active {
@@ -5319,7 +5320,7 @@ form.opml_import_form input {
 }
 .NB-splash-info.NB-splash-bottom {
   border-top: 1px solid rgba(0,0,0,0.1);
-  height: 30px;
+  height: 36px;
   overflow: hidden;
   background: rgba(243, 245, 241, .7);
   backdrop-filter: blur(5px);
@@ -5361,14 +5362,14 @@ form.opml_import_form input {
   display: block;
   overflow: hidden;
   line-height: 12px;
-  height: 30px;
+  height: 36px;
   margin: 0;
   float: left;
 }
 
 .NB-splash-info .NB-splash-links .NB-splash-link a {
   margin: 0;
-  padding: 9px 12px 9px 20px;
+  padding: 12px 12px 12px 20px;
   display: block;
   -webkit-transition: all .12s ease-out;
   -moz-transition: all .12s ease-out;
@@ -5408,7 +5409,7 @@ form.opml_import_form input {
   background-size: contain;
   width: 146px;
   height: 24px;
-  margin-top: 3px;
+  margin-top: 6px;
 }
 .NB-splash-info .NB-splash-links .NB-splash-link.NB-splash-link-logo a {
     padding-top: 0;
@@ -5421,35 +5422,35 @@ form.opml_import_form input {
 .NB-splash-info .NB-splash-links .NB-splash-link-faq a:hover,
 .NB-splash-info .NB-splash-links .NB-splash-link-api a:hover,
 .NB-splash-info .NB-splash-links .NB-splash-link-press a:hover {
-  background: transparent url('/media/embed/favicon_32.png') no-repeat 0 7px;
+  background: transparent url('/media/embed/favicon_32.png') no-repeat 0 10px;
   background-size: 16px;
 }
 .NB-splash-info .NB-splash-links .NB-splash-link-ios a:hover {
-  background: transparent url('/media/embed/reader/apple_icon.png') no-repeat 0 6px;
+  background: transparent url('/media/embed/reader/apple_icon.png') no-repeat 0 9px;
   background-size: 16px;
 }
 .NB-splash-info .NB-splash-links .NB-splash-link-android a:hover {
-  background: transparent url('/media/embed/reader/android_icon_round.png') no-repeat 0 7px;
+  background: transparent url('/media/embed/reader/android_icon_round.png') no-repeat 0 10px;
   background-size: 16px;
 }
 .NB-splash-info .NB-splash-links .NB-splash-link-github a:hover {
-  background: transparent url('/media/embed/reader/github.png') no-repeat 0 6px;
+  background: transparent url('/media/embed/reader/github.png') no-repeat 0 9px;
   background-size: 16px;
 }
 .NB-splash-info .NB-splash-links .NB-splash-link-discourse a:hover {
-  background: transparent url('/media/embed/reader/discourse.png') no-repeat 0 6px;
+  background: transparent url('/media/embed/reader/discourse.png') no-repeat 0 9px;
   background-size: 16px;
 }
 .NB-splash-info .NB-splash-links .NB-splash-link-blog a:hover {
-  background: transparent url('/media/embed/reader/ofbrooklyn_icon.png') no-repeat 0 6px;
+  background: transparent url('/media/embed/reader/ofbrooklyn_icon.png') no-repeat 0 9px;
   background-size: 16px;
 }
 .NB-splash-info .NB-splash-links .NB-splash-link-twitter a:hover {
-  background: transparent url('/media/embed/reader/twitter_bird.png') no-repeat 0 7px;
+  background: transparent url('/media/embed/reader/twitter_bird.png') no-repeat 0 10px;
   background-size: 16px;
 }
 .NB-splash-info .NB-splash-links .NB-splash-link-facebook a:hover {
-  background: transparent url('/media/embed/reader/facebook.png') no-repeat 0 6px;
+  background: transparent url('/media/embed/reader/facebook.png') no-repeat 0 9px;
   background-size: 16px;
 }
 
@@ -5690,8 +5691,8 @@ form.opml_import_form input {
 /* ======================= */
 
 .NB-taskbar-intelligence {
-    margin: 4px auto 0;
-    font-size: 9px;
+    margin: 6px auto 0;
+    font-size: 11px;
     white-space: nowrap;
     overflow: hidden;
     text-align: center;
@@ -5741,9 +5742,10 @@ form.opml_import_form input {
     width: auto;
 }
 .NB-intelligence-slider .NB-intelligence-slider-control {
-    line-height: normal;
+    line-height: 13px;
+    height: 13px;
     position: relative;
-    padding: 5px 8px 4px;
+    padding: 4px 8px 4px;
 }
 .NB-narrow-pane-blue .NB-intelligence-slider .NB-intelligence-slider-blue .NB-intelligence-label {
     display: none;
@@ -5757,23 +5759,23 @@ form.opml_import_form input {
 .NB-intelligence-slider img {
     width: 8px;
     height: 8px;
-    margin: 1px 5px -1px -2px;
+    margin: 3px 5px -1px -2px;
     float: left;
     vertical-align: bottom;
 }
 .NB-intelligence-slider .NB-intelligence-slider-blue img {
     width: 12px;
     height: 12px;
-    margin: -1px 5px -1px 0px;
+    margin: 1px 5px -1px 0px;
 }
 .NB-narrow-pane-green .NB-intelligence-slider .NB-intelligence-slider-green img {
-    margin: 1px 6px 2px;
+    margin: 2px 6px 2px;
 }
 .NB-narrow-pane-blue .NB-intelligence-slider .NB-intelligence-slider-blue img {
-    margin: -1px 4px 0px;
+    margin: 0px 4px 0px;
 }
 .NB-narrow-pane-yellow .NB-intelligence-slider .NB-intelligence-slider-yellow img {
-    margin: 1px 6px 2px;
+    margin: 2px 6px 2px;
 }
 
 /* ===================== */
@@ -12754,7 +12756,7 @@ form.opml_import_form input {
 }
 
 .NB-feed-badge {
-    padding: 12px 0;
+    padding: 12px;
     position: relative;
     font-size: 13px;
     background-color: white;
