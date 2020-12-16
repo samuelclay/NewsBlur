@@ -221,7 +221,7 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
     },
     
     open_story: function(story) {
-        console.log('Opening dashboard story', story, this.options);
+        console.log(['Opening dashboard story', story, this.options]);
         if (this.options.query) {
             console.log('Saved search', NEWSBLUR.assets.searches_feeds.get(this.options.active_feed))
             NEWSBLUR.reader.flags.searching = true;
