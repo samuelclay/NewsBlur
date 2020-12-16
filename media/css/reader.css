@@ -5324,6 +5324,7 @@ form.opml_import_form input {
   overflow: hidden;
   background: rgba(243, 245, 241, .7);
   backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
 }
 .NB-splash-info .NB-splash-title {
     position: absolute;
