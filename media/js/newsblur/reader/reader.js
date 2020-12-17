@@ -2887,8 +2887,11 @@
                 } else if (model && model.get('feed_title')) {
                     feed_title = feed_title + " - " + model.get('feed_title');
                 }
-            } else if (_.string.startsWith(feed_id, 'feed:') || _.isNumber(feed_id)){
-                var feed = NEWSBLUR.assets.get_feed(parseInt(feed_id.replace('feed:', ''), 10));
+            } else if (_.string.startsWith(feed_id, 'feed:') || _.isNumber(feed_id)) {
+                if (!_.isNumber(feed_id)) {
+                    feed_id = parseInt(feed_id.replace('feed:', ''), 10);
+                }
+                var feed = NEWSBLUR.assets.get_feed(feed_id);
                 if (!feed) return;
                 
                 feed_title = feed.get('feed_title');
