@@ -38,8 +38,12 @@ ul.segmented-control {
 .segmented-control li:last-child {
     margin-right: 0;
 }
+.segmented-control li:active:not(.NB-disabled),
+.segmented-control-active li:active {
+    color: #303030;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, .3);
 
-
+}
 .segmented-control li.NB-active,
 .segmented-control-active li {
     color: #131313;
@@ -91,78 +95,36 @@ ul.segmented-control {
 /* ============================== */
 
 ul.segmented-control-vertical {
-    background-color: #AEB0A7;
     list-style-type: none;
     width: auto;
     padding: 1px;
     margin: 0 auto;
     clear: none;
     display: inline-block;
-    color: white;
     text-align: center;
-    
-    -webkit-border-radius: 4px;
-    -moz-border-radius: 4px;
-    border-radius: 4px;
-    
-    -webkit-box-shadow: 0 1px 0 rgba(255, 255, 255, .15);
-    -moz-box-shadow: 0 1px 0 rgba(255, 255, 255, .15);
-    box-shadow: 0 1px 0 rgba(255, 255, 255, .15);
 }
 
 .segmented-control-vertical li {
-    background: none;
     float: left;
-    margin-left: 1px;
     cursor: pointer;
+    margin-bottom: 2px;
     width: 100%;
-    margin: 0;
     padding: 0;
     clear: none;
-    text-transform: uppercase;
     text-align: center;
-    border-right: none;
-    border-left: none;
-    border-bottom: 1px solid rgba(0, 0, 0, .2);
 
     color: #61635e;
     text-shadow: 0 1px 0 rgba(255, 255, 255, .4);
     
-    background-color: #DDDFD9;
-    background-image:
-        -webkit-gradient(linear, left top, left bottom, from(rgba(0, 0, 0, 0)), to(rgba(0, 0, 0, .05))),
-        url(/media/img/reader/background-control-light.png);
-    background-image:
-        -moz-linear-gradient(0% 0% -90deg, rgba(0, 0, 0, 0), rgba(0, 0, 0, .05)),
-        url(/media/img/reader/background-control-light.png);
-    
-    -webkit-box-shadow: inset 0 1px 3px rgba(255, 255, 255, .15),
-                        inset 0 0 5px rgba(255, 255, 255, .1);
-    -moz-box-shadow: inset 0 1px 3px rgba(255, 255, 255, .15),
-                     inset 0 0 5px rgba(255, 255, 255, .1);
-    box-shadow: inset 0 1px 3px rgba(255, 255, 255, .15),
-                inset 0 0 5px rgba(255, 255, 255, .1);
 }
-
+.segmented-control-vertical li:last-child {
+    margin-bottom: 0;
+}
 .segmented-control-vertical li:active:not(.NB-disabled),
 .segmented-control-vertical-active li:active {
     color: #303030;
     text-shadow: 0 1px 0 rgba(255, 255, 255, .3);
 
-    background-image:
-        -webkit-gradient(linear, left top, left bottom, from(rgba(255, 255, 255, .2)), to(rgba(255, 255, 255, .25))),
-        url(/media/img/reader/background-control.png);
-    
-    background-image:
-        -moz-linear-gradient(0% 0% -90deg, rgba(255, 255, 255, .2), rgba(255, 255, 255, .25)),
-        url(/media/img/reader/background-control.png);
-    
-    -webkit-box-shadow: inset 0 1px 4px rgba(0, 0, 0, .15),
-                        inset 0 0 5px rgba(0, 0, 0, .1);
-    -moz-box-shadow: inset 0 1px 4px rgba(0, 0, 0, .15),
-                     inset 0 0 5px rgba(0, 0, 0, .1);
-    box-shadow: inset 0 1px 4px rgba(0, 0, 0, .15),
-                inset 0 0 5px rgba(0, 0, 0, .1);
 }
 
 .segmented-control-vertical li.NB-active,
@@ -170,15 +132,6 @@ ul.segmented-control-vertical {
 .segmented-control-vertical-active li {
     color: #303030;
 
-    background-color: #FDFDFD;
-    background-image: linear-gradient(top, rgba(255, 255, 255, .3), rgba(255, 255, 255, 0));
-    background-image: -webkit-gradient(linear, left top, left bottom, from(rgba(255, 255, 255, .3)), to(rgba(255, 255, 255, 0)));
-    
-    background-image: -moz-linear-gradient(0 0 -90deg, rgba(255, 255, 255, .3), rgba(255, 255, 255, 0));
-
-    -webkit-box-shadow: inset 0 2px 2px rgba(0, 0, 0, .1);
-    -moz-box-shadow: inset 0 2px 2px rgba(0, 0, 0, .1);
-    box-shadow: inset 0 2px 2px rgba(0, 0, 0, .1);
 }
 
 .segmented-control-vertical li.NB-disabled {
@@ -187,12 +140,6 @@ ul.segmented-control-vertical {
     text-shadow: 0 1px 0 rgba(255, 255, 255, .3);
     cursor: default;
     
-    -webkit-box-shadow: inset 0 1px 1px rgba(255, 255, 255, .15),
-                        inset 0 0 2px rgba(255, 255, 255, .1);
-    -moz-box-shadow: inset 0 1px 1px rgba(255, 255, 255, .15),
-                     inset 0 0 2px rgba(255, 255, 255, .1);
-    box-shadow: inset 0 1px 1px rgba(255, 255, 255, .15),
-                inset 0 0 2px rgba(255, 255, 255, .1);
 }
 .segmented-control-vertical li.NB-disabled .NB-task-image {
     opacity: .3;
