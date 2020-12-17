@@ -78,13 +78,13 @@ io.on 'connection', (socket) ->
             socket.subscribe.subscribe @username
 
         socket.subscribe.on 'message', (channel, message) =>
-            log.info @username, "Update on #{channel}: #{message}"
+            event_name = 'feed:update'
             if channel == @username
-                socket.emit 'user:update', channel, message
+                event_name = 'user:update'
             else if channel.indexOf(':story') >= 0
-                socket.emit 'feed:story:new', channel, message
-            else
-                socket.emit 'feed:update', channel, message
+                event_name = 'feed:story:new'
+            log.info @username, "Update on #{channel}: #{event_name} - #{message}"
+            socket.emit event_name, channel, message
 
     socket.on 'disconnect', () =>
         socket.subscribe?.quit()

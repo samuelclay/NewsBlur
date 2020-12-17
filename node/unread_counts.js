@@ -98,14 +98,15 @@
         return socket.subscribe.subscribe(this.username);
       });
       return socket.subscribe.on('message', (channel, message) => {
-        log.info(this.username, `Update on ${channel}: ${message}`);
+        var event_name;
+        event_name = 'feed:update';
         if (channel === this.username) {
-          return socket.emit('user:update', channel, message);
+          event_name = 'user:update';
         } else if (channel.indexOf(':story') >= 0) {
-          return socket.emit('feed:story:new', channel, message);
-        } else {
-          return socket.emit('feed:update', channel, message);
+          event_name = 'feed:story:new';
         }
+        log.info(this.username, `Update on ${channel}: ${event_name} - ${message}`);
+        return socket.emit(event_name, channel, message);
       });
     });
     return socket.on('disconnect', () => {
