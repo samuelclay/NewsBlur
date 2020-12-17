@@ -3354,7 +3354,8 @@ body {
     color: #1a9fff;
     font-size: 12px;
     background: #fff;
-    margin: 28px;
+    margin: 28px 28px 0;
+    padding-bottom: 28px;
 }
 .NB-story-content-wrapper .NB-story-content-expander .NB-story-content-expander-inner {
     position: relative;
