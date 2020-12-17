@@ -67,7 +67,7 @@
   io.on('connection', function(socket) {
     var ip;
     ip = socket.handshake.headers['X-Forwarded-For'] || socket.handshake.address;
-    socket.on('subscribe:feeds', function(feeds, username) {
+    socket.on('subscribe:feeds', (feeds, username) => {
       var ref;
       this.feeds = feeds;
       this.username = username;
@@ -108,7 +108,7 @@
         }
       });
     });
-    return socket.on('disconnect', function() {
+    return socket.on('disconnect', () => {
       var ref, ref1;
       if ((ref = socket.subscribe) != null) {
         ref.quit();
