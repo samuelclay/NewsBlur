@@ -67,11 +67,11 @@
   io.on('connection', function(socket) {
     var ip;
     ip = socket.handshake.headers['X-Forwarded-For'] || socket.handshake.address;
-    socket.on('subscribe:feeds', function(feeds1, username) {
+    socket.on('subscribe:feeds', function(feeds, username) {
       var ref;
-      this.feeds = feeds1;
+      this.feeds = feeds;
       this.username = username;
-      log.info(this.username, `Connecting (${feeds.length} feeds, ${ip}),` + ` (${io.engine.clientsCount} connected) ` + ` ${SECURE ? "(SSL)" : "(non-SSL)"}`);
+      log.info(this.username, `Connecting (${this.feeds.length} feeds, ${ip}),` + ` (${io.engine.clientsCount} connected) ` + ` ${SECURE ? "(SSL)" : "(non-SSL)"}`);
       if (!this.username) {
         return;
       }
