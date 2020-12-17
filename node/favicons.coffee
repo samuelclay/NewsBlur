@@ -40,7 +40,7 @@ do ->
         feed_id = parseInt(req.params[0], 10)
         etag = req.header('If-None-Match')
         log.debug "Feed: #{feed_id} " + if etag then " / #{etag}" else ""
-        @collection.findOne _id: feed_id, (err, docs) ->
+        collection.findOne _id: feed_id, (err, docs) ->
             if not err and etag and docs and docs?.color == etag
                 log.debug "Cached: #{feed_id}, etag: #{etag}/#{docs?.color} " + if err then "(err: #{err})" else ""
                 res.sendStatus 304

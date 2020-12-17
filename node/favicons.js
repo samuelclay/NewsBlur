@@ -56,7 +56,7 @@
       feed_id = parseInt(req.params[0], 10);
       etag = req.header('If-None-Match');
       log.debug(`Feed: ${feed_id} ` + (etag ? ` / ${etag}` : ""));
-      return this.collection.findOne({
+      return collection.findOne({
         _id: feed_id
       }, function(err, docs) {
         var body;
