@@ -13,7 +13,7 @@
     "json-loader": "^0.5.7",
     "mkdirp": "^0.5.5",
     "moment-timezone": "^0.5.31",
-    "mongodb": "^2.2.36",
+    "mongodb": "^3.6.3",
     "psl": "^1.8.0",
     "qs": "^6.7.0",
     "redis": "^2.8.0",
