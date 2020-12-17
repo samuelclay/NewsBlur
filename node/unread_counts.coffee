@@ -53,7 +53,7 @@ else
 io.on 'connection', (socket) ->
     ip = socket.handshake.headers['X-Forwarded-For'] || socket.handshake.address
 
-    socket.on 'subscribe:feeds', (@feeds, @username) ->
+    socket.on 'subscribe:feeds', (@feeds, @username) =>
         log.info @username, "Connecting (#{@feeds.length} feeds, #{ip})," +
                  " (#{io.engine.clientsCount} connected) " +
                  " #{if SECURE then "(SSL)" else "(non-SSL)"}"
@@ -86,7 +86,7 @@ io.on 'connection', (socket) ->
             else
                 socket.emit 'feed:update', channel, message
 
-    socket.on 'disconnect', () ->
+    socket.on 'disconnect', () =>
         socket.subscribe?.quit()
         log.info @username, "Disconnect (#{@feeds?.length} feeds, #{ip})," +
                     " there are now #{io.engine.clientsCount} users. " +
