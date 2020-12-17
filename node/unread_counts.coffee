@@ -54,7 +54,7 @@ io.on 'connection', (socket) ->
     ip = socket.handshake.headers['X-Forwarded-For'] || socket.handshake.address
 
     socket.on 'subscribe:feeds', (@feeds, @username) ->
-        log.info @username, "Connecting (#{feeds.length} feeds, #{ip})," +
+        log.info @username, "Connecting (#{@feeds.length} feeds, #{ip})," +
                  " (#{io.engine.clientsCount} connected) " +
                  " #{if SECURE then "(SSL)" else "(non-SSL)"}"
         
