@@ -379,7 +379,7 @@
                     fxSettings_open:        { duration: 0, easing: "easeInOutQuint" },
                     resizeWhileDragging:    true,
                     center__paneSelector:   ".content-center",
-                    spacing_open:           story_anchor == 'west' ? 1 : 4,
+                    spacing_open:           story_anchor == 'west' ? 1 : 1,
                     resizerDragOpacity:     0.6,
                     enableCursorHotkey:     false,
                     togglerLength_open:     0
