@@ -4995,7 +4995,7 @@
                 this.socket.on('feed:story:new', _.bind(function(feed_id, message) {
                     var story_hash = message.split(',')[0];
                     var timestamp = message.split(',')[1];
-                    // NEWSBLUR.log(['Real-time new story', feed_id, story_hash, timestamp]);
+                    NEWSBLUR.log(['Real-time new story', feed_id, story_hash, timestamp]);
                     NEWSBLUR.app.dashboard_river.new_story(story_hash, timestamp);
                 }, this));
 
