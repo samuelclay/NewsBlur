@@ -757,7 +757,7 @@ class UserSubscription(models.Model):
         
         if self.is_trained:
             if not stories:
-                stories = cache.get('S:%s' % self.feed_id)
+                stories = cache.get('S:v3:%s' % self.feed_id)
             
             unread_story_hashes = self.story_hashes(user_id=self.user_id, feed_ids=[self.feed_id],
                                                     usersubs=[self],
