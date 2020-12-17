@@ -2717,7 +2717,7 @@ class MSocialServices(mongo.Document):
                 os.remove(filename)
             else:
                 api.update_status(status=message)
-        except (tweepy.TweepError, requests.adapters.ReadError) as e:
+        except (tweepy.TweepError, requests.exceptions.RequestException) as e:
             user = User.objects.get(pk=self.user_id)
             logging.user(user, "~FRTwitter error: ~SB%s" % e)
             return
