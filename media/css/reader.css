@@ -797,22 +797,22 @@ hr {
 .NB-feedlist .folder .folder_title .NB-feedlist-collapse-icon,
 .NB-feeds-header .NB-feedlist-collapse-icon {
     position: absolute;
-    top: 5px;
-    right: 3px;
-    width: 16px;
-    height: 16px;
+    top: 0px;
+    right: 0px;
+    width: 24px;
+    height: 24px;
     background: transparent url('/media/embed/icons/circular/folder_collapse.png') no-repeat 0 0;
-    background-size: 13px 12px;
+    background-size: 24px;
     opacity: .6;
     display: none;
 }
 .NB-feeds-header .NB-feedlist-collapse-icon {
-    top: 7px;
+    top: 2px;
 }
 .NB-feedlist .folder.NB-folder-collapsed .folder_title .NB-feedlist-collapse-icon,
 .NB-feeds-header.NB-folder-collapsed .NB-feedlist-collapse-icon {
     background-image: url('/media/embed/icons/circular/folder_expand.png');
-    background-size: 13px 12px;
+    background-size: 24px;
 }
 
 .NB-feedlist .folder .folder_title:hover .NB-feedlist-collapse-icon:hover,
