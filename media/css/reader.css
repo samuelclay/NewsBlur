@@ -12121,8 +12121,6 @@ form.opml_import_form input {
 .NB-feeds-selector {
     display: none;
     background-color: #434343;
-    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#434343), to(#696969));
-    background: -moz-linear-gradient(center top , #4E4E4E 0%, #696969 100%);
     border-bottom: 1px solid #E9E9E9;
     padding-bottom: 3px;
     overflow: hidden;
@@ -12133,15 +12131,16 @@ form.opml_import_form input {
 /* ========== */
 
 .NB-search-input {
+    box-sizing: border-box;
     border-radius: 16px;
     border: 1px solid rgba(0, 0, 0, .1);
     font-weight: bold;
     background: transparent;
-    width: 82%;
-    padding: 2px 52px 1px 18px;
-    margin: 0;
+    width: 94%;
+    padding: 4px 14px;
+    margin: 4px 3% 2px;
     display: block;
-    font-size: 11px;
+    font-size: 14px;
     outline: none;
 }
 
