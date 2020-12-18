@@ -801,7 +801,7 @@ hr {
     right: 0px;
     width: 24px;
     height: 24px;
-    background: transparent url('/media/embed/icons/circular/folder_collapse.png') no-repeat 0 0;
+    background: transparent url('/media/embed/icons/circular/folder_collapse.png') no-repeat center center;
     background-size: 24px;
     opacity: .6;
     display: none;
