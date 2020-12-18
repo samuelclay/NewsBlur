@@ -155,11 +155,11 @@ hr {
 
 .NB-account-left {
     flex: 1;
-    margin: 0 24px 32px 0;
+    margin: 0 24px 12px 0;
 }
 .NB-account-right {
     flex: 1.2;
-    margin: 0 0 32px 0;
+    margin: 0 0 12px 0;
 }
 .NB-account {
     display: flex;
@@ -808,6 +808,13 @@ hr {
 }
 .NB-feeds-header .NB-feedlist-collapse-icon {
     top: 2px;
+}
+.NB-theme-feed-size-xs .NB-feedlist .folder .folder_title .NB-feedlist-collapse-icon,
+.NB-theme-feed-size-s .NB-feedlist .folder .folder_title .NB-feedlist-collapse-icon {
+    top: -1px;
+}
+.NB-theme-feed-size-xl .NB-feedlist .folder .folder_title .NB-feedlist-collapse-icon {
+    top: 1px;
 }
 .NB-feedlist .folder.NB-folder-collapsed .folder_title .NB-feedlist-collapse-icon,
 .NB-feeds-header.NB-folder-collapsed .NB-feedlist-collapse-icon {
@@ -3903,18 +3910,15 @@ body {
 .NB-sideoption {
     cursor: pointer;
     position: relative;
-    text-transform: uppercase;
     font-size: 10px;
     white-space: nowrap;
     font-weight: bold;
     text-shadow: 0 1px 0 #000;
-    margin-top: 1px;
-    background-color: #edefea;
+    background-color: white;
+    box-shadow: 0 1px 2px rgb(230, 230, 230);
+    border-bottom: 1px solid rgb(240,240,240);
     clear: both;
-    -webkit-transition: background-color .12s ease-out;
-    -moz-transition: background-color .12s ease-out;
-    -o-transition: background-color .12s ease-out;
-    -ms-transition: background-color .12s ease-out;
+    transition: background-color .12s ease-out;
     -webkit-user-select: none;
     -moz-user-select: none;
     -o-user-select: none;
@@ -3942,10 +3946,7 @@ body {
     float: right;
     background: transparent url('/media/embed/icons/circular/clock.png') no-repeat 8px center;
     background-size: 16px;
-    -webkit-transition: background .12s ease-out;
-    -moz-transition: background .12s ease-out;
-    -o-transition: background .12s ease-out;
-    -ms-transition: background .12s ease-out;
+    transition: background .12s ease-out;
 }
 .NB-sideoption.NB-feed-story-train .NB-sideoption-icon {
     background-image: url("/media/embed/icons/circular/train.png");
@@ -3962,16 +3963,12 @@ body {
 
 .NB-sideoption .NB-sideoption-title {
     padding: 9px 30px 8px 8px;
-    color: rgba(0,0,0,0.1);
+    color: rgb(218, 218, 218);
     text-shadow: none;
     height: 32px;
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
     box-sizing: border-box;
-    -webkit-transition: padding .12s ease-out;
-    -moz-transition: padding .12s ease-out;
-    -o-transition: padding .12s ease-out;
-    -ms-transition: padding .12s ease-out;
+    transition: padding .12s ease-out,
+    color .12s ease-out;
 }
 .NB-content-narrow .NB-sideoption .NB-sideoption-title {
     padding-left: 10px;
@@ -6390,11 +6387,6 @@ form.opml_import_form input {
     overflow: hidden;
 }
 
-.NB-account h5.NB-module-header,
-.NB-manage h5.NB-module-header {
-    text-align: center;
-    margin: 24px 0 12px;
-}
 .NB-module .NB-module-header-left {
     float: left;
 }
@@ -6428,8 +6420,8 @@ form.opml_import_form input {
     padding-left: 4px;
 }
 .NB-module-content-header {
-    padding: 4px 0 0px;
-    margin: 12px 0 4px 0;
+    padding: 0 0 0px;
+    margin: 0 0 4px 0;
     font-size: 13px;
     text-transform: uppercase;
     letter-spacing: 1px;
@@ -6811,6 +6803,7 @@ form.opml_import_form input {
     background-color: #F7F8F5;
     border: 1px solid rgba(0, 0, 0, .1);
     overflow: hidden;
+    margin-bottom: 20px;
 }
 
 .NB-module-stats-count {
@@ -6919,7 +6912,7 @@ form.opml_import_form input {
 .NB-module-features table {
     list-style: none;
     padding: 0;
-    margin: 12px 6px;
+    margin: 12px 6px 28px;
 }
 
 .NB-module-features .NB-features-add {
@@ -11513,6 +11506,7 @@ form.opml_import_form input {
 
 .NB-profile-badge {
     border-bottom: 1px solid #F0F0F0;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
 }
 .NB-profile-badge:last-child {
     border-bottom: none;
@@ -12703,19 +12697,25 @@ form.opml_import_form input {
 .NB-module-search .NB-module-search-people {
     float: right;
 }
+.NB-module-search .NB-module-search-container {
+    padding: 0 12px;
+}
 .NB-module-search .NB-module-search-input {
     overflow: hidden;
-    padding: 12px;
+    padding: 0 0 12px 12px;
     position: relative;
     width: 50%;
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
 }
+.NB-module-search .NB-module-search-input:first-child {
+    padding-left: 0;
+}
 .NB-module-search .NB-module-search-input.NB-active .NB-search-close {
     display: block;
-    top: 22px;
-    right: 16px;
+    top: 8px;
+    right: 8px;
 }
 .NB-module-search .NB-module-search-input.NB-active .NB-search-close {
     
@@ -12724,13 +12724,16 @@ form.opml_import_form input {
     width: 85%;
     float: left;
     font-size: 13px;
-    padding: 4px 20px 4px 6px;
+    padding: 6px 20px 6px 6px;
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    border: none;
 }
 .NB-module-search .NB-module-search-results {
     padding: 12px;
+    clear: both;
 }
 .NB-module-search .NB-friends-search-badges-empty {
     clear: both;
@@ -12764,6 +12767,7 @@ form.opml_import_form input {
     clear: both;
     overflow: hidden;
     border-bottom: 1px solid #F0F0F0;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
 }
 .NB-feed-badge:last-child {
     border-bottom: none;

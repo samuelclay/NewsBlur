@@ -144,7 +144,7 @@ fieldset legend {
     position: relative;
 }
 .NB-module h5,
-.NB-module-header {
+.NB-splash-modules .NB-module-header {
     margin: 0 0 24px;
 }
 .NB-modal h5 {
