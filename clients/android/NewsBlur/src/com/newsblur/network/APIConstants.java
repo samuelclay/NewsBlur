@@ -63,6 +63,7 @@ public class APIConstants {
 	public static final String PATH_DELETE_FEED = "/reader/delete_feed";
 	public static final String PATH_CLASSIFIER_SAVE = "/classifier/save";
 	public static final String PATH_STORY_TEXT = "/rss_feeds/original_text";
+	public static final String PATH_STORY_CHANGES = "/rss_feeds/story_changes";
 	public static final String PATH_UNREAD_HASHES = "/reader/unread_story_hashes";
     public static final String PATH_READ_STORIES = "/reader/read_stories";
     public static final String PATH_MOVE_FEED_TO_FOLDERS = "/reader/move_feed_to_folders";
@@ -134,6 +135,7 @@ public class APIConstants {
     public static final String PARAMETER_NEW_FOLDER_NAME = "new_folder_name";
     public static final String PARAMETER_ORDER_ID = "order_id";
     public static final String PARAMETER_PRODUCT_ID = "product_id";
+    public static final String PARAMETER_SHOW_CHANGES = "show_changes";
 
     public static final String VALUE_PREFIX_SOCIAL = "social:";
     public static final String VALUE_ALLSOCIAL = "river:blurblogs"; // the magic value passed to the mark-read API for all social feeds
