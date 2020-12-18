@@ -35,7 +35,7 @@ class MongoDumpMiddleware(object):
         if not self.activated(profiler): return
         self._used_msg_ids = []
         if (not getattr(MongoClient, '_logging', False) and 
-            hasattr(MongoClient, '_send_message_with_response')
+            hasattr(MongoClient, '_send_message_with_response') and
             hasattr(MongoReplicaSetClient, '_send_message_with_response')):
             # save old methods
             setattr(MongoClient, '_logging', True)
