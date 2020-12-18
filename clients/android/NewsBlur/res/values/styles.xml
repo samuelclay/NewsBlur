@@ -1,25 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <style name="dialogButton" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:textColor">@color/black</item>
+        <item name="android:letterSpacing">0</item>
+    </style>
+
+    <style name="dialogButton.dark" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:letterSpacing">0</item>
+    </style>
+
     <style name="initStyle" parent="@android:style/Theme.DeviceDefault.NoActionBar">
         <item name="android:windowBackground">@color/transparent</item>
     </style>
 
-    <style name="actionbar" parent="@android:style/Widget.Holo.Light.ActionBar">
-        <item name="android:background">@color/bar_background</item>
+    <style name="actionbar" parent="ThemeOverlay.MaterialComponents.Light">
+        <item name="colorControlNormal">@color/gray55</item>
     </style>
-    <style name="actionbar.dark" parent="@android:style/Widget.Holo.ActionBar">
+    <style name="actionbar.dark" parent="ThemeOverlay.MaterialComponents">
         <item name="android:background">@color/dark_bar_background</item>
+        <item name="colorControlNormal">@color/gray55</item>
     </style>
-    <style name="actionbar.black" parent="@android:style/Widget.Holo.ActionBar">
+    <style name="actionbar.black" parent="ThemeOverlay.MaterialComponents">
         <item name="android:background">@color/black</item>
-    </style>
-
-    <style name="expandableListView" parent="@android:style/Widget.Holo.Light.ExpandableListView">
-        <item name="android:background">@drawable/list_background</item>
-    </style>
-    <style name="expandableListView.dark" parent="@android:style/Widget.Holo.ExpandableListView">
-        <item name="android:background">@drawable/dark_list_background</item>
+        <item name="colorControlNormal">@color/gray55</item>
     </style>
 
     <style name="selectorFolderBackground">
@@ -63,13 +68,13 @@
         <item name="android:background">@drawable/dark_list_background</item>
     </style>
 
-    <style name="itemBackground">
+    <style name="layoutBackground">
         <item name="android:background">@color/item_background</item>
     </style>
-    <style name="itemBackground.dark">
+    <style name="layoutBackground.dark">
         <item name="android:background">@color/dark_item_background</item>
     </style>
-    <style name="itemBackground.black">
+    <style name="layoutBackground.black">
         <item name="android:background">@color/black</item>
     </style>
 
@@ -176,6 +181,7 @@
         <item name="android:textColor">@color/button_text</item>
         <item name="android:background">@drawable/button_background</item>
         <item name="android:gravity">center</item>
+        <item name="android:letterSpacing">0</item>
     </style>
     <style name="storyButtons.dark">
         <item name="android:textSize">14sp</item>
@@ -184,6 +190,7 @@
         <item name="android:textColor">@color/button_text_dark</item>
         <item name="android:background">@drawable/button_background_dark</item>
         <item name="android:gravity">center</item>
+        <item name="android:letterSpacing">0</item>
     </style>
 
     <style name="shareBarBackground">
@@ -377,21 +384,33 @@
         <item name="android:src">@drawable/mute_black</item>
     </style>
 
-    <!-- these fix the Android framework bug that causes context menus to get badly
-         truncated when the Holo theme is used on a v7+ device:
-         https://issuetracker.google.com/issues/37118658  -->
-    <style name="contextPopupStyle" parent="@android:style/Widget.Holo.Light.PopupMenu">
-        <item name="android:overlapAnchor">true</item>
-    </style>
-    <style name="contextPopupStyle.dark" parent="@android:style/Widget.Holo.PopupMenu">
-        <item name="android:overlapAnchor">true</item>
+    <style name="actionBarPopup" parent="Widget.MaterialComponents.PopupMenu">
+        <item name="android:background">@color/transparent</item>
+        <item name="popupMenuBackground">@color/primary</item>
     </style>
 
-    <!-- Fixes menu text being too dark on Moto devices -->
-    <style name="itemTextAppearance">
-        <item name="android:textColor">@color/black</item>
+    <style name="actionBarPopup.dark" parent="Widget.MaterialComponents.PopupMenu">
+        <item name="android:background">@color/transparent</item>
+        <item name="popupMenuBackground">@color/gray13</item>
     </style>
-    <style name="itemTextAppearance.dark">
-        <item name="android:textColor">@color/white</item>
+
+    <style name="preferenceTheme" parent="@style/PreferenceThemeOverlay">
+        <item name="preferenceCategoryStyle">@style/preferenceCategory</item>
+        <item name="checkBoxPreferenceStyle">@style/checkBoxPreference</item>
+        <item name="dialogPreferenceStyle">@style/dialogPreference</item>
+        <item name="preferenceStyle">@style/dialogPreference</item>
     </style>
+
+    <style name="preferenceCategory" parent="Preference.Category.Material">
+        <item name="iconSpaceReserved">false</item>
+    </style>
+
+    <style name="checkBoxPreference" parent="Preference.CheckBoxPreference.Material">
+        <item name="iconSpaceReserved">false</item>
+    </style>
+
+    <style name="dialogPreference" parent="Preference.DialogPreference.Material">
+        <item name="iconSpaceReserved">false</item>
+    </style>
+
 </resources>

@@ -1,14 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
-	<style name="NewsBlurTheme" parent="@android:style/Theme.Holo.Light" >
-    	<item name="android:actionBarStyle">@style/actionbar</item>
-        <item name="android:expandableListViewStyle">@style/expandableListView</item>
+	<style name="NewsBlurTheme" parent="Theme.MaterialComponents.Light">
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryDark">@color/primaryDark</item>
+        <item name="colorSecondary">@color/secondary</item>
+        <item name="actionBarTheme">@style/actionbar</item>
+        <item name="actionBarPopupTheme">@style/actionBarPopup</item>
+        <item name="popupMenuBackground">@color/primary</item>
+        <item name="buttonBarPositiveButtonStyle">@style/dialogButton</item>
+        <item name="buttonBarNegativeButtonStyle">@style/dialogButton</item>
+        <item name="buttonBarNeutralButtonStyle">@style/dialogButton</item>
         <item name="selectorFolderBackground">@style/selectorFolderBackground</item>
         <item name="selectorFeedBackground">@style/selectorFeedBackground</item>
         <item name="feedRowNeutCountText">@style/feedRowNeutCountText</item>
         <item name="actionbarBackground">@style/actionbarBackground</item>
         <item name="listBackground">@style/listBackground</item>
-        <item name="itemBackground">@style/itemBackground</item>
+        <item name="layoutBackground">@style/layoutBackground</item>
         <item name="readingBackground">@style/readingBackground</item>
         <item name="defaultText">@style/defaultText</item>
         <item name="linkText">@style/linkText</item>
@@ -40,19 +47,26 @@
         <item name="selectorOverlayBackgroundStory">@style/selectorOverlayBackgroundStory</item>
         <item name="selectorOverlayBackgroundText">@style/selectorOverlayBackgroundText</item>
         <item name="muteicon">@style/muteicon</item>
-        <item name="android:contextPopupMenuStyle">@style/contextPopupStyle</item>
-        <item name="android:textColorPrimary">@color/black</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="preferenceTheme">@style/preferenceTheme</item>
 	</style>
 
-    <style name="NewsBlurDarkTheme" parent="@android:style/Theme.Holo" >
-        <item name="android:actionBarStyle">@style/actionbar.dark</item>
-        <item name="android:expandableListViewStyle">@style/expandableListView.dark</item>
+    <style name="NewsBlurDarkTheme" parent="Theme.MaterialComponents">
+        <item name="colorPrimary">@color/primary.dark</item>
+        <item name="colorPrimaryDark">@color/primaryDark.dark</item>
+        <item name="colorSecondary">@color/secondary.dark</item>
+        <item name="actionBarTheme">@style/actionbar.dark</item>
+        <item name="actionBarPopupTheme">@style/actionBarPopup.dark</item>
+        <item name="popupMenuBackground">@color/gray13</item>
+        <item name="buttonBarPositiveButtonStyle">@style/dialogButton.dark</item>
+        <item name="buttonBarNegativeButtonStyle">@style/dialogButton.dark</item>
+        <item name="buttonBarNeutralButtonStyle">@style/dialogButton.dark</item>
         <item name="selectorFolderBackground">@style/selectorFolderBackground.dark</item>
         <item name="selectorFeedBackground">@style/selectorFeedBackground.dark</item>
         <item name="feedRowNeutCountText">@style/feedRowNeutCountText.dark</item>
         <item name="actionbarBackground">@style/actionbarBackground.dark</item>
         <item name="listBackground">@style/listBackground.dark</item>
-        <item name="itemBackground">@style/itemBackground.dark</item>
+        <item name="layoutBackground">@style/layoutBackground.dark</item>
         <item name="readingBackground">@style/readingBackground.dark</item>
         <item name="defaultText">@style/defaultText.dark</item>
         <item name="linkText">@style/linkText.dark</item>
@@ -84,22 +98,27 @@
         <item name="selectorOverlayBackgroundStory">@style/selectorOverlayBackgroundStory.dark</item>
         <item name="selectorOverlayBackgroundText">@style/selectorOverlayBackgroundText.dark</item>
         <item name="muteicon">@style/muteicon.dark</item>
-
-        <!--requires API 24-->
-        <item name="android:contextPopupMenuStyle">@style/contextPopupStyle.dark</item>
-        <item name="android:textColorPrimary">@color/white</item>
-        <item name="android:itemTextAppearance">@style/itemTextAppearance.dark</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="preferenceTheme">@style/preferenceTheme</item>
+        <item name="android:navigationBarColor">@android:color/black</item>
     </style>
 
-    <style name="NewsBlurBlackTheme" parent="@android:style/Theme.Holo" >
-        <item name="android:actionBarStyle">@style/actionbar.black</item>
-        <item name="android:expandableListViewStyle">@style/expandableListView.dark</item>
+    <style name="NewsBlurBlackTheme" parent="Theme.MaterialComponents" >
+        <item name="colorPrimary">@color/primary.black</item>
+        <item name="colorPrimaryDark">@color/primaryDark.black</item>
+        <item name="colorSecondary">@color/secondary.black</item>
+        <item name="actionBarTheme">@style/actionbar.black</item>
+        <item name="actionBarPopupTheme">@style/actionBarPopup.dark</item>
+        <item name="popupMenuBackground">@color/gray13</item>
+        <item name="buttonBarPositiveButtonStyle">@style/dialogButton.dark</item>
+        <item name="buttonBarNegativeButtonStyle">@style/dialogButton.dark</item>
+        <item name="buttonBarNeutralButtonStyle">@style/dialogButton.dark</item>
         <item name="selectorFolderBackground">@style/selectorFolderBackground.black</item>
         <item name="selectorFeedBackground">@style/selectorFeedBackground.dark</item>
         <item name="feedRowNeutCountText">@style/feedRowNeutCountText.dark</item>
         <item name="actionbarBackground">@style/actionbarBackground.black</item>
         <item name="listBackground">@style/listBackground.dark</item>
-        <item name="itemBackground">@style/itemBackground.black</item>
+        <item name="layoutBackground">@style/layoutBackground.black</item>
         <item name="readingBackground">@style/readingBackground.black</item>
         <item name="defaultText">@style/defaultText.dark</item>
         <item name="linkText">@style/linkText.dark</item>
@@ -131,8 +150,8 @@
         <item name="selectorOverlayBackgroundStory">@style/selectorOverlayBackgroundStory.dark</item>
         <item name="selectorOverlayBackgroundText">@style/selectorOverlayBackgroundText.dark</item>
         <item name="muteicon">@style/muteicon.dark</item>
-        <item name="android:contextPopupMenuStyle">@style/contextPopupStyle.dark</item>
-        <item name="android:textColorPrimary">@color/white</item>
-        <item name="android:itemTextAppearance">@style/itemTextAppearance.dark</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="preferenceTheme">@style/preferenceTheme</item>
+        <item name="android:navigationBarColor">@android:color/black</item>
     </style>
 </resources>

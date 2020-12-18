@@ -202,6 +202,12 @@ public class BlurDatabaseHelper {
         synchronized (RW_MUTEX) {dbRW.execSQL(q);}
     }
 
+    public void deleteStories() {
+        vacuum();
+        synchronized (RW_MUTEX) {dbRW.delete(DatabaseConstants.STORY_TABLE, null, null);}
+        synchronized (RW_MUTEX) {dbRW.delete(DatabaseConstants.STORY_TEXT_TABLE, null, null);}
+    }
+
     public Feed getFeed(String feedId) {
         Cursor c = dbRO.query(DatabaseConstants.FEED_TABLE, null,  DatabaseConstants.FEED_ID + " = ?", new String[] {feedId}, null, null, null);
         Feed result = null;

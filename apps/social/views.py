@@ -608,6 +608,7 @@ def mark_story_as_shared(request):
         }
         try:
             shared_story = MSharedStory.objects.create(**story_db)
+            shared_story.publish_to_subscribers()
         except NotUniqueError:
             shared_story = MSharedStory.objects.get(story_guid=story_db['story_guid'],
                                                     user_id=story_db['user_id'])
@@ -664,6 +665,7 @@ def mark_story_as_shared(request):
     
     EmailFirstShare.apply_async(kwargs=dict(user_id=request.user.pk))
     
+
     if format == 'html':
         stories = MSharedStory.attach_users_to_stories(stories, profiles)
         return render(request, 'social/social_story.xhtml', {

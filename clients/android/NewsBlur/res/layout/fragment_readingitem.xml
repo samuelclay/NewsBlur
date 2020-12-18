@@ -63,12 +63,12 @@
                     android:layout_below="@id/row_item_feed_header"
                     android:background="@color/gray55"/>
 
-                <Button
+                <ImageButton
                     android:id="@+id/story_context_menu_button"
                     android:layout_width="34dp"
                     android:layout_height="34dp"
                     android:layout_margin="5dp"
-                    android:background="@drawable/ic_menu_moreoverflow"
+                    style="?android:attr/actionOverflowButtonStyle"
                     android:contentDescription="@string/description_menu"
                     android:layout_below="@id/item_feed_border"
                     android:layout_alignParentRight="true" />
@@ -107,12 +107,28 @@
                     android:textSize="12sp"
                     android:textStyle="bold"/>
 
+                <TextView
+                    android:id="@+id/reading_story_changes"
+                    style="?readingItemMetadata"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/reading_item_date"
+                    android:layout_alignLeft="@id/reading_item_title"
+                    android:paddingTop="8dp"
+                    android:gravity="center_vertical"
+                    android:paddingBottom="4dp"
+                    android:drawablePadding="6dp"
+                    android:drawableStart="@drawable/ic_file_edit"
+                    android:text="@string/story_show_changes"
+                    android:textSize="12sp"
+                    android:visibility="gone" />
+
                 <com.newsblur.view.FlowLayout
                     android:id="@+id/reading_item_tags"
                     android:layout_width="match_parent"
                     android:layout_height="17dp"
                     android:layout_alignLeft="@id/reading_item_title"
-                    android:layout_below="@id/reading_item_date"
+                    android:layout_below="@id/reading_story_changes"
                     android:layout_marginBottom="8dp"
                     android:layout_marginTop="8dp" />
 

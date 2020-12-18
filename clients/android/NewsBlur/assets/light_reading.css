@@ -24,3 +24,20 @@ pre, blockquote {
         background-color: #FFF;
     }
 }
+
+ins {
+    background-color: #BEE8BC;
+    text-decoration: none;
+}
+
+del {
+    background-color: #f5c3c3
+}
+.NB-story ins {
+    background-color: #BEE8BC;
+    text-decoration: none
+}
+
+.NB-story del {
+    background-color: #f5c3c3;
+}
