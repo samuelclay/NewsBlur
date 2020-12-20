@@ -1,116 +1,118 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/reading_empty_view_text"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="40dp"
-        android:gravity="center_horizontal"
-        android:text="@string/loading"
-        style="?explainerText"
-        android:textSize="16sp" />
+    <include layout="@layout/toolbar_newsblur" />
 
     <FrameLayout
-        android:id="@+id/activity_reading_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-    <TextView
-        android:id="@+id/reading_overlay_text"
-        android:layout_width="110dp"
-        android:layout_height="40dp"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true" 
-        android:layout_marginLeft="8dp"
-        android:layout_marginBottom="4dp"
-        android:text="@string/overlay_text"
-        android:gravity="center"
-        android:textSize="14sp"
-        android:paddingLeft="10dp"
-        style="?selectorOverlayBackgroundText"
-        android:onClick="overlayText" />
+        <TextView
+            android:id="@+id/reading_empty_view_text"
+            style="?explainerText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
+            android:gravity="center_horizontal"
+            android:text="@string/loading"
+            android:textSize="16sp" />
 
-    <ImageButton
-        android:id="@+id/reading_overlay_send"
-        android:layout_width="50dp"
-        android:layout_height="40dp"
-        android:layout_alignParentBottom="true"
-        android:layout_toRightOf="@id/reading_overlay_text"
-        android:layout_marginLeft="2dp"
-        android:layout_marginBottom="4dp"
-        style="?selectorOverlayBackgroundSend"
-        android:onClick="overlaySend" />
+        <FrameLayout
+            android:id="@+id/activity_reading_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
 
-    <TextView
-        android:id="@+id/reading_overlay_right"
-        android:layout_width="120dp"
-        android:layout_height="40dp"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true" 
-        android:layout_marginRight="8dp"
-        android:layout_marginBottom="4dp"
-        android:text="@string/overlay_next"
-        android:gravity="center"
-        android:textSize="14sp"
-        style="?selectorOverlayBackgroundRight"
-        android:onClick="overlayRight" />
+    </FrameLayout>
 
-    <ImageButton
-        android:id="@+id/reading_overlay_left"
-        android:layout_width="50dp"
-        android:layout_height="40dp"
-        android:layout_alignParentBottom="true"
-        android:layout_toLeftOf="@id/reading_overlay_right"
-        android:layout_marginRight="2dp"
-        android:layout_marginBottom="4dp"
-        style="?selectorOverlayBackgroundLeft"
-        android:onClick="overlayLeft" />
-
-    <com.newsblur.view.ProgressCircle
-        android:id="@+id/reading_overlay_progress"
-        style="@android:style/Widget.ProgressBar.Horizontal"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:layout_marginRight="98dp"
-        android:layout_marginBottom="12dp"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:onClick="overlayCount" />
-
-    <ProgressBar
-        android:id="@+id/reading_overlay_progress_right"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:layout_marginRight="98dp"
-        android:layout_marginBottom="12dp"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:indeterminate="true" />
-
-    <ProgressBar
-        android:id="@+id/reading_overlay_progress_left"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:layout_marginLeft="90dp"
-        android:layout_marginBottom="12dp"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:indeterminate="true" />
-
-    <TextView
-        android:id="@+id/reading_sync_status"
-        android:layout_width="fill_parent"
+    <FrameLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:padding="1dp"
-        android:textSize="13sp"
-        android:gravity="center"
-        android:textColor="@color/status_overlay_text"
-        android:background="@color/status_overlay_background"
-        android:visibility="gone" />
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="8dp">
 
-</RelativeLayout>
+        <TextView
+            android:id="@+id/reading_overlay_text"
+            style="?selectorOverlayBackgroundText"
+            android:layout_width="110dp"
+            android:layout_height="40dp"
+            android:layout_gravity="start"
+            android:layout_marginStart="8dp"
+            android:gravity="center"
+            android:onClick="overlayText"
+            android:paddingStart="8dp"
+            android:text="@string/overlay_text"
+            android:textSize="14sp" />
+
+        <ImageButton
+            android:id="@+id/reading_overlay_send"
+            style="?selectorOverlayBackgroundSend"
+            android:layout_width="50dp"
+            android:layout_height="40dp"
+            android:layout_gravity="start"
+            android:layout_marginStart="120dp"
+            android:onClick="overlaySend" />
+
+        <TextView
+            android:id="@+id/reading_overlay_right"
+            style="?selectorOverlayBackgroundRight"
+            android:layout_width="120dp"
+            android:layout_height="40dp"
+            android:layout_gravity="end"
+            android:layout_marginRight="8dp"
+            android:gravity="center"
+            android:onClick="overlayRight"
+            android:text="@string/overlay_next"
+            android:textSize="14sp" />
+
+        <ImageButton
+            android:id="@+id/reading_overlay_left"
+            style="?selectorOverlayBackgroundLeft"
+            android:layout_width="50dp"
+            android:layout_height="40dp"
+            android:layout_gravity="end"
+            android:layout_marginEnd="130dp"
+            android:onClick="overlayLeft" />
+
+        <com.newsblur.view.ProgressCircle
+            android:id="@+id/reading_overlay_progress"
+            style="@android:style/Widget.ProgressBar.Horizontal"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="end|center_vertical"
+            android:layout_marginRight="100dp"
+            android:onClick="overlayCount" />
+
+        <ProgressBar
+            android:id="@+id/reading_overlay_progress_right"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="end|center_vertical"
+            android:layout_marginRight="100dp"
+            android:indeterminate="true" />
+
+        <ProgressBar
+            android:id="@+id/reading_overlay_progress_left"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="start|center_vertical"
+            android:layout_marginStart="90dp"
+            android:indeterminate="true" />
+
+        <TextView
+            android:id="@+id/reading_sync_status"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal|bottom"
+            android:background="@color/status_overlay_background"
+            android:gravity="center"
+            android:padding="1dp"
+            android:textColor="@color/status_overlay_text"
+            android:textSize="13sp"
+            android:visibility="gone" />
+
+    </FrameLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

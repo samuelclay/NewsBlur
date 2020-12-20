@@ -4,6 +4,9 @@ import java.io.File;
 import java.util.Map;
 
 import static android.graphics.Bitmap.Config.ARGB_8888;
+import static com.google.android.material.appbar.AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS;
+import static com.google.android.material.appbar.AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL;
+import static com.google.android.material.appbar.AppBarLayout.LayoutParams.SCROLL_FLAG_SNAP;
 
 import android.app.Activity;
 import android.content.Context;
@@ -25,22 +28,21 @@ import android.util.TypedValue;
 import android.text.Html;
 import android.text.Spanned;
 import android.text.TextUtils;
-import android.view.LayoutInflater;
 import android.view.ContextMenu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.browser.customtabs.CustomTabColorSchemeParams;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.core.content.ContextCompat;
 
+import com.google.android.material.appbar.AppBarLayout;
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.color.MaterialColors;
 import com.newsblur.R;
 import com.newsblur.activity.*;
@@ -197,33 +199,43 @@ public class UIUtils {
      * Set up our customised ActionBar view that features the specified icon and title, sized
      * away from system standard to meet the NewsBlur visual style.
      */
-    public static void setCustomActionBar(AppCompatActivity activity, String imageUrl, String title, boolean showHomeEnabled) {
-        ImageView iconView = setupCustomActionbar(activity, title, showHomeEnabled);
+    public static void setupToolbar(AppCompatActivity activity, String imageUrl, String title, boolean showHomeEnabled) {
+        ImageView iconView = setupCustomToolbar(activity, title, showHomeEnabled);
         FeedUtils.iconLoader.displayImage(imageUrl, iconView, 0, false);
     }
 
-    public static void setCustomActionBar(AppCompatActivity activity, int imageId, String title, boolean showHomeEnabled) {
-        ImageView iconView = setupCustomActionbar(activity, title, showHomeEnabled);
+    public static void setupToolbar(AppCompatActivity activity, int imageId, String title, boolean showHomeEnabled) {
+        ImageView iconView = setupCustomToolbar(activity, title, showHomeEnabled);
         iconView.setImageResource(imageId);
     }
 
-    private static ImageView setupCustomActionbar(final AppCompatActivity activity, String title, boolean showHomeEnabled) {
-        // we completely replace the existing title and 'home' icon with a custom view
-        activity.getSupportActionBar().setDisplayShowCustomEnabled(true);
+    private static ImageView setupCustomToolbar(final AppCompatActivity activity, String title, boolean showHomeEnabled) {
+        MaterialToolbar toolbar = activity.findViewById(R.id.toolbar);
+        if (toolbar == null) {
+            return new ImageView(activity);
+        }
+
+        // enabled scrolling app bar only for reading
+        if (activity instanceof Reading) {
+            AppBarLayout.LayoutParams p = (AppBarLayout.LayoutParams) toolbar.getLayoutParams();
+            p.setScrollFlags(SCROLL_FLAG_SCROLL | SCROLL_FLAG_ENTER_ALWAYS | SCROLL_FLAG_SNAP);
+            toolbar.setLayoutParams(p);
+        }
+
+        activity.setSupportActionBar(toolbar);
         activity.getSupportActionBar().setDisplayShowTitleEnabled(false);
         activity.getSupportActionBar().setDisplayShowHomeEnabled(false);
-        View v = LayoutInflater.from(activity).inflate(R.layout.actionbar_custom_icon, null);
-        ImageView arrowView = v.findViewById(R.id.actionbar_arrow);
+
+        ImageView arrowView = activity.findViewById(R.id.toolbar_arrow);
         arrowView.setVisibility(showHomeEnabled ? View.VISIBLE : View.GONE);
-        TextView titleView = v.findViewById(R.id.actionbar_text);
+        TextView titleView = activity.findViewById(R.id.toolbar_text);
         titleView.setText(title);
-        ImageView iconView = v.findViewById(R.id.actionbar_icon);
+        ImageView iconView = activity.findViewById(R.id.toolbar_icon);
         // using a custom view breaks the system-standard ability to tap the icon or title to return
         // to the previous activity. Re-implement that here.
         arrowView.setOnClickListener(v0 -> activity.finish());
         titleView.setOnClickListener(v1 -> activity.finish());
         iconView.setOnClickListener(v12 -> activity.finish());
-        activity.getSupportActionBar().setCustomView(v, new ActionBar.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT));
         return iconView;
     }
 
