@@ -20,9 +20,9 @@ public class AddFeedExternal extends NbActivity implements AddFeedFragment.AddFe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityAddfeedexternalBinding.inflate(getLayoutInflater());
-        UIUtils.setCustomActionBar(this, R.drawable.logo, "Add Feed", true);
-
         setContentView(binding.getRoot());
+
+        UIUtils.setupToolbar(this, R.drawable.logo, "Add Feed", true);
 
         binding.loadingThrob.setEnabled(!ViewUtils.isPowerSaveMode(this));
         binding.loadingThrob.setColors(UIUtils.getColor(this, R.color.refresh_1),

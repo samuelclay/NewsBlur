@@ -47,10 +47,10 @@ public class SearchForFeeds extends NbActivity implements LoaderCallbacks<Search
 	@Override
 	protected void onCreate(Bundle arg0) {
 		super.onCreate(arg0);
-		UIUtils.setCustomActionBar(this, R.drawable.logo, getString(R.string.title_feed_search), true);
 
 		setContentView(R.layout.activity_feed_search);
-		
+		UIUtils.setupToolbar(this, R.drawable.logo, getString(R.string.title_feed_search), true);
+
 		TextView emptyView = (TextView) findViewById(R.id.empty_view);
 		resultsList = (ListView) findViewById(R.id.feed_result_list);
 		resultsList.setEmptyView(emptyView);

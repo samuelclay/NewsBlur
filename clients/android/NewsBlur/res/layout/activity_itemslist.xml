@@ -1,50 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:animateLayoutChanges="true"
-    style="?layoutBackground" >
-    
-    <EditText
-        android:id="@+id/itemlist_search_query"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true" 
-        android:textSize="16sp"
-        android:hint="@string/story_search_hint"
-        android:drawableLeft="@android:drawable/ic_menu_search"
-        android:inputType="textNoSuggestions"
-        android:imeOptions="actionSearch"
-        android:visibility="gone"
-        android:animateLayoutChanges="true"
-    />
+    android:layout_height="match_parent">
 
-    <LinearLayout
-        android:id="@+id/activity_itemlist_container"
+    <include layout="@layout/toolbar_newsblur" />
+
+    <RelativeLayout
+        style="?layoutBackground"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="horizontal"
-        android:layout_below="@id/itemlist_search_query"
-    />
+        android:animateLayoutChanges="true"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-    <include layout="@layout/row_fleuron"
-        android:id="@+id/footer_fleuron"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/itemlist_search_query"
-        android:visibility="gone"/>
+        <EditText
+            android:id="@+id/itemlist_search_query"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:animateLayoutChanges="true"
+            android:drawableLeft="@android:drawable/ic_menu_search"
+            android:hint="@string/story_search_hint"
+            android:imeOptions="actionSearch"
+            android:inputType="textNoSuggestions"
+            android:textSize="16sp"
+            android:visibility="gone" />
 
-    <TextView
-        android:id="@+id/itemlist_sync_status"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:padding="2dp"
-        android:textSize="14sp"
-        android:gravity="center"
-        android:textColor="@color/status_overlay_text"
-        android:background="@color/status_overlay_background"
-        android:text="SYNC STATUS" 
-    />
+        <LinearLayout
+            android:id="@+id/activity_itemlist_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/itemlist_search_query"
+            android:orientation="horizontal" />
 
-</RelativeLayout>
+        <include
+            android:id="@+id/footer_fleuron"
+            layout="@layout/row_fleuron"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/itemlist_search_query"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/itemlist_sync_status"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:background="@color/status_overlay_background"
+            android:gravity="center"
+            android:padding="2dp"
+            android:text="SYNC STATUS"
+            android:textColor="@color/status_overlay_text"
+            android:textSize="14sp" />
+
+    </RelativeLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
