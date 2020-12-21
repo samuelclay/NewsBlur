@@ -29,7 +29,7 @@ public class Profile extends NbActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_profile);
-		UIUtils.setCustomActionBar(this, R.drawable.logo, getString(R.string.profile), true);
+		UIUtils.setupToolbar(this, R.drawable.logo, getString(R.string.profile), true);
 		apiManager = new APIManager(this);
         if (savedInstanceState == null) {
             userId = getIntent().getStringExtra(USER_ID);
