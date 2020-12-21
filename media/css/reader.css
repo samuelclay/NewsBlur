@@ -159,7 +159,7 @@ hr {
 }
 .NB-account-right {
     flex: 1.2;
-    margin: 0 0 12px 0;
+    margin: 0 0 28px 0;
 }
 .NB-account {
     display: flex;
@@ -6889,7 +6889,7 @@ form.opml_import_form input {
 }
 
 .NB-modules-center .NB-module {
-    margin: 0 0 24px;
+    margin: 0 0 48px;
 	clear: both;
 }
 .NB-module-river .NB-story-title-container:first-child .NB-story-title {
@@ -6945,6 +6945,9 @@ form.opml_import_form input {
     margin: 12px 6px 28px;
 }
 
+.NB-module-features .NB-feedback-table {
+    margin-bottom: 42px;
+}
 .NB-module-features .NB-features-add {
     float: left;
     display: none;
@@ -7048,7 +7051,7 @@ form.opml_import_form input {
 
 .NB-module-recommended {
   overflow: hidden;
-  margin-top: 36px;
+  margin-bottom: 42px;
 }
   .NB-module-recommended .NB-module-recommended-date {
     line-height: 14px;
