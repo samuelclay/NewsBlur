@@ -63,7 +63,7 @@ public class WidgetConfig extends FeedChooser {
     void bindLayout() {
         binding = ActivityWidgetConfigBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        UIUtils.setCustomActionBar(this, R.drawable.logo, getString(R.string.widget), true);
+        UIUtils.setupToolbar(this, R.drawable.logo, getString(R.string.widget), true);
     }
 
     @Override

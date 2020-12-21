@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
-	<style name="NewsBlurTheme" parent="Theme.MaterialComponents.Light">
+	<style name="NewsBlurTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryDark">@color/primaryDark</item>
         <item name="colorSecondary">@color/secondary</item>
@@ -51,7 +51,7 @@
         <item name="preferenceTheme">@style/preferenceTheme</item>
 	</style>
 
-    <style name="NewsBlurDarkTheme" parent="Theme.MaterialComponents">
+    <style name="NewsBlurDarkTheme" parent="Theme.MaterialComponents.NoActionBar">
         <item name="colorPrimary">@color/primary.dark</item>
         <item name="colorPrimaryDark">@color/primaryDark.dark</item>
         <item name="colorSecondary">@color/secondary.dark</item>
@@ -103,7 +103,7 @@
         <item name="android:navigationBarColor">@android:color/black</item>
     </style>
 
-    <style name="NewsBlurBlackTheme" parent="Theme.MaterialComponents" >
+    <style name="NewsBlurBlackTheme" parent="Theme.MaterialComponents.NoActionBar" >
         <item name="colorPrimary">@color/primary.black</item>
         <item name="colorPrimaryDark">@color/primaryDark.black</item>
         <item name="colorSecondary">@color/secondary.black</item>

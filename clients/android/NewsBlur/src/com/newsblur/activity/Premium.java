@@ -1,6 +1,5 @@
 package com.newsblur.activity;
 
-import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.net.Uri;
@@ -8,13 +7,10 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.text.util.Linkify;
-import android.util.DisplayMetrics;
 import android.view.View;
-import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.res.ResourcesCompat;
 
 import com.android.billingclient.api.AcknowledgePurchaseParams;
 import com.android.billingclient.api.AcknowledgePurchaseResponseListener;
@@ -128,7 +124,7 @@ public class Premium extends NbActivity {
     }
 
     private void setupUI() {
-        UIUtils.setCustomActionBar(this, R.drawable.logo, getString(R.string.premium_toolbar_title), true);
+        UIUtils.setupToolbar(this, R.drawable.logo, getString(R.string.premium_toolbar_title), true);
 
         // linkify before setting the string resource
         BetterLinkMovementMethod.linkify(Linkify.WEB_URLS, binding.textPolicies)
