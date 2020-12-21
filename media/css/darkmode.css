@@ -454,7 +454,8 @@ color: #a85b40;
 }
 
 /* Unread/Oldest text color */
-.NB-dark .NB-feedbar-options-stat .NB-stat {
+.NB-dark .NB-feedbar-options-stat .NB-stat,
+.NB-dark .NB-dashboard-river-options-stat .NB-stat {
     color: #c0c0c0;
 }
 
@@ -924,6 +925,7 @@ color: #a85b40;
 /* "Unread/Oldest" & "Style" border color */
 /* Story Titles Hidden Count */
 .NB-dark .NB-feedbar .NB-feedbar-options,
+.NB-dark .NB-dashboard-river .NB-dashboard-river-options,
 .NB-dark #story_taskbar .NB-taskbar-options,
 .NB-dark .NB-feedbar .NB-story-title-indicator,
 .NB-dark .NB-feedbar .NB-feedbar-mark-feed-read {
@@ -931,8 +933,12 @@ color: #a85b40;
     border: 1px solid rgba(0, 0, 0, .3);
     background-color: #303739;
 }
+.NB-dark .NB-dashboard-river .NB-dashboard-river-options {
+    background-color: #565759;
+}
 
 .NB-dark .NB-feedbar .NB-feedbar-options:hover,
+.NB-dark .NB-dashboard-river .NB-dashboard-river-options:hover,
 .NB-dark #story_taskbar .NB-taskbar-options:hover,
 .NB-dark .NB-feedbar .NB-story-title-indicator:hover,
 .NB-dark .NB-feedbar .NB-feedbar-mark-feed-read:hover,
