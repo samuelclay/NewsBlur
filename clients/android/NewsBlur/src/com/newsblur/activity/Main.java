@@ -59,8 +59,6 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         binding = ActivityMainBinding.inflate(getLayoutInflater());
 		setContentView(binding.getRoot());
 
-		getSupportActionBar().hide();
-
         // set the status bar to an generic loading message when the activity is first created so
         // that something is displayed while the service warms up
         binding.mainSyncStatus.setText(R.string.loading);

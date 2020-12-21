@@ -7,6 +7,7 @@ import android.webkit.WebViewClient;
 
 import com.newsblur.R;
 import com.newsblur.network.APIConstants;
+import com.newsblur.util.UIUtils;
 
 public class AddFacebook extends NbActivity {
 
@@ -17,10 +18,12 @@ public class AddFacebook extends NbActivity {
 	protected void onCreate(Bundle bundle) {
 		super.onCreate(bundle);
 		setContentView(R.layout.activity_webcontainer);
-		
+
+		UIUtils.setupToolbar(this, R.drawable.logo, getString(R.string.add_facebook), true);
+
 		webview = (WebView) findViewById(R.id.webcontainer);
 		webview.getSettings().setJavaScriptEnabled(true);
-		
+
 		webview.setWebViewClient(new WebViewClient() {
             // this was deprecated in API 24 but the replacement only added in the same release.
             // the suppression can be removed when we move past 24

@@ -6,17 +6,10 @@
 
     <include layout="@layout/toolbar_newsblur" />
 
-    <RelativeLayout
+    <FrameLayout
+        android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/item_background"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
-
-        <WebView
-            android:id="@+id/webcontainer"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-
-    </RelativeLayout>
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
