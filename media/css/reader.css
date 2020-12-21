@@ -6905,6 +6905,36 @@ form.opml_import_form input {
     margin: 0 2px;
 }
 
+.NB-module-river .NB-dashboard-river-options-container {
+    float: right;
+}
+.NB-module-river .NB-dashboard-river-options {
+    cursor: pointer;
+    float: right;
+    color: rgba(0, 0, 0, .5);
+    border: 1px solid rgba(0, 0, 0, .1);
+    border-radius: 16px;
+    text-transform: uppercase;
+    font-size: 9px;
+    font-weight: bold;
+    padding: 1px 4px 1px 8px;
+    line-height: 14px;
+    margin: 1px 0 0;
+}
+.NB-module-river .NB-dashboard-river-options:hover,
+.NB-module-river .NB-dashboard-river-options.NB-active {
+    background-color: rgba(0, 0, 0, .1);
+}
+.NB-module-river .NB-dashboard-river-options .NB-icon {
+    float: right;
+    width: 16px;
+    height: 12px;
+    background: transparent url('/media/embed/icons/circular/g_icn_arrow_down.png') no-repeat center center;
+    background-size: 8px;
+    margin: 0 0 0 4px;
+}
+
+
 /* ============ */
 /* = Features = */
 /* ============ */
@@ -12190,13 +12220,13 @@ form.opml_import_form input {
     position: relative;
 }
 .NB-story-title-search-input {
-    -webkit-transition: all .22s ease-in-out;
-    -moz-transition: all .22s ease-in-out;
-    -o-transition: all .22s ease-in-out;
-    -ms-transition: all .22s ease-in-out;
+    transition: all .22s ease-in-out;
 
     width: 24px;
     margin: 0;
+    font-size: 12px;
+    padding: 1px 20px;
+    font-weight: normal;
 }
 .NB-searching .NB-story-title-search-input {
     width: 154px;
@@ -12519,15 +12549,9 @@ form.opml_import_form input {
   padding: 1px;
   text-align: left;
   background-color: #ffffff;
-  -webkit-background-clip: padding-box;
-  -moz-background-clip: padding;
   background-clip: padding-box;
-  border: 1px solid #ccc;
-  border: 1px solid rgba(0, 0, 0, 0.2);
   border-radius: 4px;
-  -webkit-box-shadow: 1px 4px 4px rgba(0, 0, 0, 0.4);
-  -moz-box-shadow: 1px 4px 4px rgba(0, 0, 0, 0.4);
-  box-shadow: 1px 4px 4px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
   white-space: normal;
 }
 .popover.top {
@@ -12714,8 +12738,8 @@ form.opml_import_form input {
 }
 .NB-module-search .NB-module-search-input.NB-active .NB-search-close {
     display: block;
-    top: 8px;
-    right: 8px;
+    top: 10px;
+    right: 16px;
 }
 .NB-module-search .NB-module-search-input.NB-active .NB-search-close {
     

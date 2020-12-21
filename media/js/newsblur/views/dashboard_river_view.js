@@ -45,6 +45,7 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
         
         this.setup_dashboard_refresh();
         this.load_stories();
+        this.options_template();
     },
 
     template: function () {
@@ -68,16 +69,16 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
     },
 
     options_template: function () {
-        var $options = $(_.template('<div class="NB-feedbar-options-container">\
-            <span class="NB-feedbar-options">\
+        var $options = $(_.template('<div class="NB-dashboard-river-options-container">\
+            <span class="NB-dashboard-river-options">\
                 <div class="NB-icon"></div>\
                 <%= NEWSBLUR.assets.view_setting(feed_id, "read_filter") %>\
                 &middot;\
                 <%= NEWSBLUR.assets.view_setting(feed_id, "order") %>\
             </span>\
-        </div>'), {
+        </div>', {
             feed_id: this.options.active_feed
-        });
+        }));
         
         this.$(".NB-module-river-settings").html($options);
     },
