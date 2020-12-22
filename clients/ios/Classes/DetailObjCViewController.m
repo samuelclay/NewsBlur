@@ -62,8 +62,8 @@
 @synthesize isAnimatedIntoPlace;
 @synthesize progressView, progressViewContainer;
 @synthesize traversePinned, traverseFloating;
-@synthesize traverseBottomConstraint;
-@synthesize scrollBottomConstraint;
+@synthesize traverseTopContainerBottomConstraint;
+@synthesize traverseBottomContainerBottomConstraint;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
@@ -225,7 +225,7 @@
     [self.view addConstraint:self.notifier.topOffsetConstraint];
     [self.notifier hideNow];
     
-    self.traverseBottomConstraint.constant = 50;
+    [self adjustTraversePosition:50];
     
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
         self.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects:
@@ -471,11 +471,11 @@
 - (void)viewWillLayoutSubviews {
     [super viewWillLayoutSubviews];
     
-    if (self.isNavigationBarHidden && !self.shouldHideStatusBar) {
-        self.scrollViewTopConstraint.constant = self.statusBarHeight;
-    } else {
-        self.scrollViewTopConstraint.constant = 0;
-    }
+//    if (self.isNavigationBarHidden && !self.shouldHideStatusBar) {
+//        self.scrollViewTopConstraint.constant = self.statusBarHeight;
+//    } else {
+//        self.scrollViewTopConstraint.constant = 0;
+//    }
     
     UIInterfaceOrientation orientation = self.view.window.windowScene.interfaceOrientation;
     [self layoutForInterfaceOrientation:orientation];
@@ -558,7 +558,7 @@
                 safeBottomMargin = -1 * self.view.safeAreaInsets.bottom/2;
             }
             
-            self.traverseBottomConstraint.constant = safeBottomMargin + 20;
+            [self adjustTraversePosition:safeBottomMargin + 20];
             [self.view layoutIfNeeded];
         }
     }
@@ -770,6 +770,16 @@
 
 - (BOOL)isPhoneOrCompact {
     return [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone || appDelegate.isCompactWidth;
+}
+
+- (void)adjustTraversePosition:(CGFloat)position {
+    self.traverseTopContainerBottomConstraint.constant = position;
+    self.traverseBottomContainerBottomConstraint.constant = position;
+}
+
+- (void)adjustAutoscrollPosition:(CGFloat)position {
+    self.autoscrollTopContainerBottomConstraint.constant = position;
+    self.autoscrollBottomContainerBottomConstraint.constant = position;
 }
 
 - (void)updateAutoscrollButtons {
@@ -1043,9 +1053,9 @@
 //    traversePinned = YES;
 //
 //    if (!self.isPhoneOrCompact) {
-//        self.traverseBottomConstraint.constant = 0;
+//        self.traverseTopContainerBottomConstraint.constant = 0;
 //    } else {
-//        self.traverseBottomConstraint.constant = -1 * self.view.safeAreaInsets.bottom/2;
+//        self.traverseTopContainerBottomConstraint.constant = -1 * self.view.safeAreaInsets.bottom/2;
 //    }
 //
 //    [UIView animateWithDuration:.24 delay:0
@@ -1708,9 +1718,9 @@
     
     if (self.autoscrollView.alpha == 0) {
         if (self.isPhoneOrCompact) {
-            self.autoscrollBottomConstraint.constant = 50;
+            [self adjustAutoscrollPosition:50];
         } else {
-            self.autoscrollBottomConstraint.constant = 0;
+            [self adjustAutoscrollPosition:12];
         }
         
         [self.view layoutIfNeeded];

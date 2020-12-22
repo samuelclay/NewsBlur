@@ -170,6 +170,7 @@
 			<key>Titles</key>
 			<array>
 				<string>Titles on left</string>
+				<string>Titles on top</string>
 				<string>Titles on bottom</string>
 			</array>
 			<key>DefaultValue</key>
@@ -177,6 +178,7 @@
 			<key>Values</key>
 			<array>
 				<string>titles_on_left</string>
+				<string>titles_on_top</string>
 				<string>titles_on_bottom</string>
 			</array>
 			<key>Key</key>

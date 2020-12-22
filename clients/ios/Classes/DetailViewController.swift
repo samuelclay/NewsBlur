@@ -261,6 +261,8 @@ class DetailViewController: DetailObjCViewController {
 
 private extension DetailViewController {
     func checkViewControllers() {
+        let isTop = layout == .top
+        
         if layout == .left {
             if feedDetailViewController != nil {
                 remove(viewController: feedDetailViewController)
@@ -277,12 +279,18 @@ private extension DetailViewController {
             if feedDetailViewController == nil {
                 feedDetailViewController = Storyboards.shared.controller(withIdentifier: .feedDetail) as? FeedDetailViewController
                 
-                add(viewController: feedDetailViewController, top: layout == .top)
+                add(viewController: feedDetailViewController, top: isTop)
                 
                 supplementaryFeedDetailNavigationController = appDelegate.feedDetailNavigationController
                 supplementaryFeedDetailViewController = appDelegate.feedDetailViewController
                 appDelegate.feedDetailViewController = feedDetailViewController
                 appDelegate.splitViewController.setViewController(nil, for: .supplementary)
+            } else {
+                let appropriateSuperview = isTop ? topContainerView : bottomContainerView
+                
+                if feedDetailViewController?.view.superview != appropriateSuperview {
+                    add(viewController: feedDetailViewController, top: isTop)
+                }
             }
             
             dividerViewBottomConstraint.constant = dividerPosition
@@ -292,11 +300,26 @@ private extension DetailViewController {
             horizontalPageViewController = Storyboards.shared.controller(withIdentifier: .horizontalPages) as? HorizontalPageViewController
             
             horizontalPageViewController?.detailViewController = self
-            
-            add(viewController: horizontalPageViewController, top: layout != .top)
         }
         
-//        appDelegate.loadFeedDetailView()
+        let appropriateSuperview = isTop ? bottomContainerView : topContainerView
+        
+        if horizontalPageViewController?.view.superview != appropriateSuperview {
+            add(viewController: horizontalPageViewController, top: !isTop)
+            
+            if isTop {
+                bottomContainerView.addSubview(traverseView)
+                bottomContainerView.addSubview(autoscrollView)
+            } else {
+                topContainerView.addSubview(traverseView)
+                topContainerView.addSubview(autoscrollView)
+            }
+        }
+        
+        traverseTopContainerBottomConstraint.isActive = !isTop
+        traverseBottomContainerBottomConstraint.isActive = isTop
+        autoscrollTopContainerBottomConstraint.isActive = !isTop
+        autoscrollBottomContainerBottomConstraint.isActive = isTop
     }
     
     func add(viewController: UIViewController?, top: Bool) {

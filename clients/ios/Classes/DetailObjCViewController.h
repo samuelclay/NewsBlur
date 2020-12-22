@@ -43,7 +43,6 @@
 //@property (nonatomic) StoryDetailViewController *previousPage;
 @property (nonatomic, strong) IBOutlet UIScrollView *scrollView;
 @property (nonatomic, strong) IBOutlet UIPageControl *pageControl;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *scrollViewTopConstraint;
 
 @property (weak, nonatomic) IBOutlet UIView *autoscrollView;
 @property (weak, nonatomic) IBOutlet UIImageView *autoscrollBackgroundImageView;
@@ -51,7 +50,8 @@
 @property (weak, nonatomic) IBOutlet UIButton *autoscrollPauseResumeButton;
 @property (weak, nonatomic) IBOutlet UIButton *autoscrollSlowerButton;
 @property (weak, nonatomic) IBOutlet UIButton *autoscrollFasterButton;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *autoscrollBottomConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *autoscrollTopContainerBottomConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *autoscrollBottomContainerBottomConstraint;
 
 @property (nonatomic, strong) IBOutlet UIActivityIndicatorView *loadingIndicator;
 @property (nonatomic) IBOutlet UIImageView *textStorySendBackgroundImageView;
@@ -76,8 +76,8 @@
 @property (nonatomic) IBOutlet UIBarButtonItem *originalStoryButton;
 @property (nonatomic, strong) IBOutlet UIBarButtonItem *subscribeButton;
 @property (nonatomic) IBOutlet UIImageView *dragBarImageView;
-@property (nonatomic) IBOutlet NSLayoutConstraint *traverseBottomConstraint;
-@property (nonatomic) IBOutlet NSLayoutConstraint *scrollBottomConstraint;
+@property (nonatomic) IBOutlet NSLayoutConstraint *traverseTopContainerBottomConstraint;
+@property (nonatomic) IBOutlet NSLayoutConstraint *traverseBottomContainerBottomConstraint;
 @property (nonatomic) IBOutlet UIView *statusBarBackgroundView;
 @property (nonatomic) BOOL autoscrollAvailable;
 @property (nonatomic) BOOL autoscrollActive;
@@ -144,6 +144,9 @@
 - (IBAction)showOriginalSubview:(id)sender;
 
 - (void)flashCheckmarkHud:(NSString *)messageType;
+
+- (void)adjustTraversePosition:(CGFloat)position;
+- (void)adjustAutoscrollPosition:(CGFloat)position;
 
 - (void)tappedStory;
 - (void)showAutoscrollBriefly:(BOOL)briefly;

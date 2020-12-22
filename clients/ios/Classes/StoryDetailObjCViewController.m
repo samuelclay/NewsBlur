@@ -1412,12 +1412,12 @@
             appDelegate.detailViewController.traverseView.alpha = 1;
 //            NSLog(@" ---> Bottom position: %d", bottomPosition);
             if (bottomPosition >= 0 || !isHorizontal) {
-                appDelegate.detailViewController.traverseBottomConstraint.constant = safeBottomMargin;
+                [appDelegate.detailViewController adjustTraversePosition:safeBottomMargin];
             } else {
                 if (webpageHeight > 0) {
-                    appDelegate.detailViewController.traverseBottomConstraint.constant = viewportHeight - (webpageHeight - topPosition) + safeBottomMargin;
+                    [appDelegate.detailViewController adjustTraversePosition:viewportHeight - (webpageHeight - topPosition) + safeBottomMargin];
                 } else {
-                    appDelegate.detailViewController.traverseBottomConstraint.constant = safeBottomMargin;
+                    [appDelegate.detailViewController adjustTraversePosition:safeBottomMargin];
                 }
             }
         } else if (!singlePage && (atTop && !atBottom)) {
@@ -1426,7 +1426,7 @@
             appDelegate.detailViewController.traverseFloating = NO;
             [appDelegate.detailViewController.view layoutIfNeeded];
 
-            appDelegate.detailViewController.traverseBottomConstraint.constant = safeBottomMargin;
+            [appDelegate.detailViewController adjustTraversePosition:safeBottomMargin];
             [UIView animateWithDuration:.3 delay:0
                                 options:UIViewAnimationOptionCurveEaseInOut
              animations:^{
@@ -1439,7 +1439,7 @@
             appDelegate.detailViewController.traverseFloating = YES;
             [appDelegate.detailViewController.view layoutIfNeeded];
 
-            appDelegate.detailViewController.traverseBottomConstraint.constant = safeBottomMargin;
+            [appDelegate.detailViewController adjustTraversePosition:safeBottomMargin];
             [UIView animateWithDuration:.3 delay:0
                                 options:UIViewAnimationOptionCurveEaseInOut
              animations:^{
@@ -1452,7 +1452,7 @@
             appDelegate.detailViewController.traversePinned = NO;
             appDelegate.detailViewController.traverseFloating = YES;
             appDelegate.detailViewController.traverseView.alpha = 1;
-            appDelegate.detailViewController.traverseBottomConstraint.constant = viewportHeight - (webpageHeight - topPosition) + safeBottomMargin;
+            [appDelegate.detailViewController adjustTraversePosition:viewportHeight - (webpageHeight - topPosition) + safeBottomMargin];
         }
         
         [self storeScrollPosition:YES];
