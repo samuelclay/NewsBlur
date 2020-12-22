@@ -196,6 +196,12 @@ public class FeedUtils {
         }.execute();
     }
 
+    public static void syncOfflineStories(Context context) {
+        dbHelper.deleteStories();
+        NBSyncService.forceFeedsFolders();
+        triggerSync(context);
+    }
+
     public static void renameFolder(final String folderName, final String newFolderName, final String inFolder, final Context context, final APIManager apiManager) {
         new AsyncTask<Void, Void, NewsBlurResponse>() {
             @Override

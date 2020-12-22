@@ -39,6 +39,7 @@ import com.newsblur.network.domain.ProfileResponse;
 import com.newsblur.network.domain.RegisterResponse;
 import com.newsblur.network.domain.StarredStoryHashesResponse;
 import com.newsblur.network.domain.StoriesResponse;
+import com.newsblur.network.domain.StoryChangesResponse;
 import com.newsblur.network.domain.StoryTextResponse;
 import com.newsblur.network.domain.UnreadCountResponse;
 import com.newsblur.network.domain.UnreadStoryHashesResponse;
@@ -504,6 +505,14 @@ public class APIManager {
 			return null;
 		}
 	}
+
+	public StoryChangesResponse getStoryChanges(String storyHash, boolean showChanges) {
+        final ContentValues values = new ContentValues();
+        values.put(APIConstants.PARAMETER_STORY_HASH, storyHash);
+        values.put(APIConstants.PARAMETER_SHOW_CHANGES, showChanges ? "true" : "false");
+        final APIResponse response = get(buildUrl(APIConstants.PATH_STORY_CHANGES), values);
+        return response.getResponse(gson, StoryChangesResponse.class);
+    }
 
 	public NewsBlurResponse favouriteComment(String storyId, String commentUserId, String feedId) {
 		ContentValues values = new ContentValues();

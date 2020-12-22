@@ -10,14 +10,14 @@
         android:layout_marginBottom="15dp"
         android:baselineAligned="false" >
 
-        <Button
+        <TextView
             android:id="@+id/share_story_button"
             android:layout_width="170dp"
             android:layout_height="36dp"
             style="?storyButtons"
             android:text="@string/share_this" />
         
-        <Button
+        <TextView
             android:id="@+id/save_story_button"
             android:layout_width="170dp"
             android:layout_height="36dp"
