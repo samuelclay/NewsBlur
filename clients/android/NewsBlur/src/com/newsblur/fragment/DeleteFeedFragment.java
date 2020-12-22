@@ -11,10 +11,11 @@ import com.newsblur.util.FeedUtils;
 import com.newsblur.util.UIUtils;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
 public class DeleteFeedFragment extends DialogFragment {

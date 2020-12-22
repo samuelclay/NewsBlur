@@ -15,7 +15,7 @@ public class SavedStoriesReading extends Reading {
         if (fs.getSingleSavedTag() != null) {
             title = title + " - " + fs.getSingleSavedTag();
         }
-        UIUtils.setCustomActionBar(this, R.drawable.clock, title);
+        UIUtils.setupToolbar(this, R.drawable.clock, title, false);
     }
 
 }

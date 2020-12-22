@@ -1,6 +1,8 @@
 #!/srv/newsblur/venv/newsblur/bin/python
 from utils.munin.base import MuninGraph
 import datetime
+import os
+os.environ["DJANGO_SETTINGS_MODULE"] = "newsblur.settings"
 from django.conf import settings
 
 

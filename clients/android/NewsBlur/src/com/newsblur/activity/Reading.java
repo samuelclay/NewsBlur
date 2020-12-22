@@ -53,7 +53,6 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
     private static final String BUNDLE_POSITION = "position";
     private static final String BUNDLE_STARTING_UNREAD = "starting_unread";
     private static final String BUNDLE_SELECTED_FEED_VIEW = "selectedFeedView";
-    private static final String BUNDLE_IS_FULLSCREEN = "is_fullscreen";
 
     /** special value for starting story hash that jumps to the first unread. */
     public static final String FIND_FIRST_UNREAD = "FIND_FIRST_UNREAD";
@@ -143,14 +142,6 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 		intelState = PrefsUtils.getStateFilter(this);
         volumeKeyNavigation = PrefsUtils.getVolumeKeyNavigation(this);
 
-        // were we fullscreen before rotation?
-        if ((savedInstanceBundle != null) && savedInstanceBundle.containsKey(BUNDLE_IS_FULLSCREEN)) {
-            boolean isFullscreen = savedInstanceBundle.getBoolean(BUNDLE_IS_FULLSCREEN, false);
-            if (isFullscreen) {
-                ViewUtils.hideSystemUI(getWindow().getDecorView());
-            }
-        }
-
         // this value is expensive to compute but doesn't change during a single runtime
         this.overlayRangeTopPx = (float) UIUtils.dp2px(this, OVERLAY_RANGE_TOP_DP);
         this.overlayRangeBotPx = (float) UIUtils.dp2px(this, OVERLAY_RANGE_BOT_DP);
@@ -198,10 +189,6 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
 
         if (startingUnreadCount != 0) {
             outState.putInt(BUNDLE_STARTING_UNREAD, startingUnreadCount);
-        }
-
-        if (ViewUtils.isSystemUIHidden(getWindow().getDecorView())) {
-            outState.putBoolean(BUNDLE_IS_FULLSCREEN, true);
         }
     }
 
@@ -376,28 +363,11 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
     }
 
 	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		super.onCreateOptionsMenu(menu);
-		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.reading, menu);
-		return true;
-	}
-
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        super.onPrepareOptionsMenu(menu);
-        return true;
-    }
-
-	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		if (item.getItemId() == android.R.id.home) {
 			finish();
 			return true;
-		} else if (item.getItemId() == R.id.menu_reading_fullscreen) {
-            ViewUtils.hideSystemUI(getWindow().getDecorView());
-            return true;
-        } else {
+		} else {
 			return super.onOptionsItemSelected(item);
 		}
 	}

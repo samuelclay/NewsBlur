@@ -58,7 +58,6 @@ public class PrefConstants {
 
     public static final String READ_STORIES_FOLDER_NAME = "read_stories";
     public static final String SAVED_STORIES_FOLDER_NAME = "saved_stories";
-    public static final String READING_ENTER_IMMERSIVE_SINGLE_TAP = "immersive_enter_single_tap";
 
     public static final String STORIES_AUTO_OPEN_FIRST = "pref_auto_open_first_unread";
     public static final String STORIES_MARK_READ_ON_SCROLL = "pref_mark_read_on_scroll";

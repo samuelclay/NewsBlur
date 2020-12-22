@@ -13,7 +13,7 @@ public class SocialFeedReading extends Reading {
         super.onCreate(savedInstanceBundle);
         SocialFeed socialFeed = FeedUtils.dbHelper.getSocialFeed(fs.getSingleSocialFeed().getKey());
         if (socialFeed == null) finish(); // don't open fatally stale intents
-        UIUtils.setCustomActionBar(this, socialFeed.photoUrl, socialFeed.feedTitle);
+        UIUtils.setupToolbar(this, socialFeed.photoUrl, socialFeed.feedTitle, false);
     }
 
 }

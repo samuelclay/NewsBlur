@@ -1,27 +1,31 @@
 package com.newsblur.activity;
 
-import androidx.fragment.app.FragmentActivity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.view.MenuItem;
 
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.newsblur.R;
+import com.newsblur.databinding.ActivitySettingsBinding;
 import com.newsblur.fragment.SettingsFragment;
 import com.newsblur.util.PrefConstants;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.UIUtils;
 
-public class Settings extends FragmentActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
+public class Settings extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         PrefsUtils.applyThemePreference(this);
-
         super.onCreate(savedInstanceState);
+        ActivitySettingsBinding binding = ActivitySettingsBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
+        UIUtils.setupToolbar(this, R.drawable.logo, getString(R.string.settings), true);
 
-        getActionBar().setDisplayHomeAsUpEnabled(true);
-
-        SettingsFragment fragment = new SettingsFragment();
-        getFragmentManager().beginTransaction().replace(android.R.id.content, fragment).commit();
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(binding.container.getId(), new SettingsFragment())
+                .commit();
 
         SharedPreferences prefs = getSharedPreferences(PrefConstants.PREFERENCES, 0);
         prefs.registerOnSharedPreferenceChangeListener(this);
@@ -29,21 +33,10 @@ public class Settings extends FragmentActivity implements SharedPreferences.OnSh
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
-
         SharedPreferences prefs = getSharedPreferences(PrefConstants.PREFERENCES, 0);
         prefs.unregisterOnSharedPreferenceChangeListener(this);
-    }
+        super.onDestroy();
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-        case android.R.id.home:
-            finish();
-            return true;
-        default:
-            return super.onOptionsItemSelected(item);   
-        }
     }
 
     @Override
