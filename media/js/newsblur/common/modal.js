@@ -76,6 +76,7 @@ NEWSBLUR.Modal.prototype = {
     make_feed_chooser: function(options) {
         options = options || {};
         var $chooser = $.make('select', { name: 'feed', className: 'NB-modal-feed-chooser' });
+        var $folders_optgroup = $.make('optgroup', { label: "Folders" });
         var $feeds_optgroup = $.make('optgroup', { label: "Sites" });
         var $social_feeds_optgroup = $.make('optgroup', { label: "Blurblogs" });
         var $starred_feeds_optgroup = $.make('optgroup', { label: "Saved Tags" });
@@ -107,10 +108,22 @@ NEWSBLUR.Modal.prototype = {
             this.starred_feeds.each(make_feed_option);
         }
         
+        if (options.include_folders) {
+            var $folders = NEWSBLUR.utils.make_folders(this.options.folder_title);
+            $('option', $folders).each(function () {
+                $(this).appendTo($folders_optgroup);
+            });
+        }
+
         $('option', $feeds_optgroup).tsort();
         $('option', $social_feeds_optgroup).tsort();
         $('option', $starred_feeds_optgroup).tsort();
+        $('option', $folders_optgroup).tsort();
         
+        if (options.include_folders) {
+            $chooser.append($folders_optgroup);
+        }
+        $chooser.append($feeds_optgroup);
         $chooser.append($feeds_optgroup);
         if (!options.skip_social) {
             $chooser.append($social_feeds_optgroup);

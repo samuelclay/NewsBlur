@@ -3,7 +3,8 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
     el: ".NB-module-river",
     
     events: {
-        "click .NB-module-search-add-url"        : "add_url"
+        "click .NB-module-search-add-url"   : "add_url",
+        "click .NB-feedbar-options" : "open_options_popover"
     },
     
     initialize: function () {
@@ -69,8 +70,8 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
     },
 
     options_template: function () {
-        var $options = $(_.template('<div class="NB-dashboard-river-options-container">\
-            <span class="NB-dashboard-river-options">\
+        var $options = $(_.template('<div class="NB-feedbar-options-container">\
+            <span class="NB-feedbar-options">\
                 <div class="NB-icon"></div>\
                 <%= NEWSBLUR.assets.view_setting(feed_id, "read_filter") %>\
                 &middot;\
@@ -317,6 +318,14 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
             NEWSBLUR.assets.add_dashboard_story(story_hash, this.options.dashboard_stories);
         }, this), Math.random() * delay);
         
-    }
+    },
+
+    open_options_popover: function(e) {
+        NEWSBLUR.FeedOptionsPopover.create({
+            anchor: this.$(".NB-feedbar-options"),
+            feed_id: this.options.active_feed,
+            on_dashboard: this
+        });
+    },
     
 });

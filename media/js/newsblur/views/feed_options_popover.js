@@ -25,7 +25,7 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
     
     initialize: function(options) {
         this.options = _.extend({}, this.options, options);
-        this.options.offset.left = -1 * $(".NB-feedbar-options").width() - 16;
+        this.options.offset.left = -1 * $(this.options.anchor).width() - 31;
         
         if (NEWSBLUR.reader.active_feed == "read") {
             this.options['show_readfilter'] = false;
@@ -43,8 +43,12 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
         this.show_correct_feed_view_options_in_menu();
     },
     
-    close: function() {
-        NEWSBLUR.app.story_titles_header.$(".NB-feedbar-options").removeClass('NB-active');
+    close: function () {
+        if (this.options.on_dashboard) {
+            this.options.on_dashboard.$(".NB-feedbar-options").removeClass('NB-active');
+        } else {
+            NEWSBLUR.app.story_titles_header.$(".NB-feedbar-options").removeClass('NB-active');
+        }
         NEWSBLUR.ReaderPopover.prototype.close.apply(this, arguments);
     },
 
@@ -57,6 +61,9 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
         
         this.$el.html($.make('div', [
             $.make('div', { className: 'NB-popover-section' }, [
+                $.make('div', { className: 'NB-modal-feed-chooser-container'}, [
+                    this.make_feed_chooser({include_folders: true})
+                ]),
                 (is_feed && $.make('div', { className: 'NB-section-icon NB-filter-popover-filter-icon' })),
                 $.make('div', { className: 'NB-popover-section-title' }, 'Filter Options'),
                 (this.options.show_readfilter && $.make('ul', { className: 'segmented-control NB-menu-manage-view-setting-readfilter' }, [
@@ -137,7 +144,11 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
             $infrequent.text(infrequent == freq ? '< '+freq+' stories/month' : freq);
         }
         
-        NEWSBLUR.app.story_titles_header.$(".NB-feedbar-options").addClass('NB-active');
+        if (this.options.on_dashboard) {
+            this.options.on_dashboard.$(".NB-feedbar-options").addClass('NB-active');
+        } else {
+            NEWSBLUR.app.story_titles_header.$(".NB-feedbar-options").addClass('NB-active');
+        }
     },
 
     
