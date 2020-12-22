@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17506" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="6pv-7g-17r">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="6pv-7g-17r">
     <device id="ipad11_0rounded" orientation="landscape" layout="fullscreen" appearance="light"/>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17505"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17703"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -321,6 +321,7 @@
                         <constraints>
                             <constraint firstItem="4vK-W4-ayS" firstAttribute="leading" secondItem="jTZ-4O-xyT" secondAttribute="leading" id="AFV-14-jnc"/>
                             <constraint firstAttribute="trailing" secondItem="5M7-bO-MVK" secondAttribute="trailing" id="Bge-if-1kj"/>
+                            <constraint firstItem="5M7-bO-MVK" firstAttribute="bottom" secondItem="hfm-Pf-oeW" secondAttribute="bottom" constant="90" id="DIG-xz-1US"/>
                             <constraint firstItem="hfm-Pf-oeW" firstAttribute="centerX" secondItem="jTZ-4O-xyT" secondAttribute="centerX" id="Grz-1P-qjc"/>
                             <constraint firstItem="rKh-Md-Ci2" firstAttribute="top" secondItem="bPa-u1-Aml" secondAttribute="top" id="JN4-aj-xiN"/>
                             <constraint firstAttribute="trailing" secondItem="4vK-W4-ayS" secondAttribute="trailing" id="JVw-MX-f4R"/>
@@ -329,6 +330,7 @@
                             <constraint firstItem="5M7-bO-MVK" firstAttribute="leading" secondItem="jTZ-4O-xyT" secondAttribute="leading" id="Tg9-DU-zcP"/>
                             <constraint firstItem="tFd-Uv-aMP" firstAttribute="top" secondItem="4vK-W4-ayS" secondAttribute="bottom" constant="20" id="YVh-UJ-d3j"/>
                             <constraint firstAttribute="bottom" secondItem="tFd-Uv-aMP" secondAttribute="bottom" constant="168" id="c9d-f5-wud"/>
+                            <constraint firstItem="5M7-bO-MVK" firstAttribute="bottom" secondItem="4vK-W4-ayS" secondAttribute="bottom" constant="32" id="efm-qO-UF1"/>
                             <constraint firstAttribute="trailing" secondItem="tFd-Uv-aMP" secondAttribute="trailing" id="h2I-ng-gxc"/>
                             <constraint firstAttribute="bottom" secondItem="5M7-bO-MVK" secondAttribute="bottom" id="nSX-TU-ART"/>
                             <constraint firstItem="tFd-Uv-aMP" firstAttribute="top" secondItem="hfm-Pf-oeW" secondAttribute="bottom" constant="78" id="phm-3P-lxo"/>
@@ -336,15 +338,22 @@
                             <constraint firstItem="tFd-Uv-aMP" firstAttribute="leading" secondItem="jTZ-4O-xyT" secondAttribute="leading" id="wzt-O8-Ild"/>
                             <constraint firstAttribute="trailing" secondItem="bPa-u1-Aml" secondAttribute="trailing" id="xth-oH-VTF"/>
                         </constraints>
+                        <variation key="default">
+                            <mask key="constraints">
+                                <exclude reference="DIG-xz-1US"/>
+                                <exclude reference="efm-qO-UF1"/>
+                            </mask>
+                        </variation>
                     </view>
                     <navigationItem key="navigationItem" id="OyA-BF-OGR"/>
                     <connections>
                         <outlet property="autoscrollBackgroundImageView" destination="DhZ-K9-Ohx" id="JlX-4q-aYI"/>
-                        <outlet property="autoscrollBottomConstraint" destination="phm-3P-lxo" id="7kF-8R-ggC"/>
+                        <outlet property="autoscrollBottomContainerBottomConstraint" destination="DIG-xz-1US" id="SRV-nP-Wrx"/>
                         <outlet property="autoscrollDisableButton" destination="Xtc-sh-knL" id="HH8-tu-4lg"/>
                         <outlet property="autoscrollFasterButton" destination="xZB-Qu-u2n" id="ora-na-Jht"/>
                         <outlet property="autoscrollPauseResumeButton" destination="WoA-Tv-FTT" id="G89-JX-DAM"/>
                         <outlet property="autoscrollSlowerButton" destination="x4P-S0-dR7" id="5r5-Ix-oSv"/>
+                        <outlet property="autoscrollTopContainerBottomConstraint" destination="phm-3P-lxo" id="1se-rX-o1p"/>
                         <outlet property="autoscrollView" destination="hfm-Pf-oeW" id="uLO-sQ-E0v"/>
                         <outlet property="bottomContainerView" destination="5M7-bO-MVK" id="Tqo-s5-kGB"/>
                         <outlet property="buttonNext" destination="ZoU-af-wjh" id="Bg3-Bc-32l"/>
@@ -358,7 +367,8 @@
                         <outlet property="prevNextBackgroundImageView" destination="PLd-RZ-773" id="adi-Gt-uX1"/>
                         <outlet property="textStorySendBackgroundImageView" destination="zfl-mN-y0T" id="lD1-7s-izZ"/>
                         <outlet property="topContainerView" destination="bPa-u1-Aml" id="nUk-aR-0ix"/>
-                        <outlet property="traverseBottomConstraint" destination="YVh-UJ-d3j" id="gGi-RC-s2Z"/>
+                        <outlet property="traverseBottomContainerBottomConstraint" destination="efm-qO-UF1" id="cEE-UD-KiD"/>
+                        <outlet property="traverseTopContainerBottomConstraint" destination="YVh-UJ-d3j" id="d4B-Vw-6hb"/>
                         <outlet property="traverseView" destination="4vK-W4-ayS" id="yvU-Yp-1YP"/>
                     </connections>
                 </viewController>
