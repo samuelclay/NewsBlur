@@ -159,7 +159,7 @@ hr {
 }
 .NB-account-right {
     flex: 1.2;
-    margin: 0 0 28px 0;
+    margin: 0 0 34px 0;
 }
 .NB-account {
     display: flex;
@@ -5297,7 +5297,21 @@ form.opml_import_form input {
     max-width: 1200px;
     display: flex;
     flex-direction: row;
+    flex-flow: row wrap;
     position: relative;
+}
+@media screen and (max-width: 1100px) {
+    .NB-splash-modules .NB-modules-center,
+    .NB-splash-modules .NB-account-wide {
+        flex: 1 1 auto;
+    }
+    .NB-splash-modules .NB-modules-center {
+        margin-right: 0;
+    }
+    .NB-splash-modules .NB-account-wide {
+        max-width: none;
+        margin: 0 24px;
+    }
 }
 .NB-splash-info {
   width: 100%;
@@ -6889,7 +6903,7 @@ form.opml_import_form input {
 }
 
 .NB-modules-center .NB-module {
-    margin: 0 0 48px;
+    margin: 0 0 54px;
 	clear: both;
 }
 .NB-module-river .NB-story-title-container:first-child .NB-story-title {
@@ -6946,7 +6960,7 @@ form.opml_import_form input {
 }
 
 .NB-module-features .NB-feedback-table {
-    margin-bottom: 42px;
+    margin-bottom: 48px;
 }
 .NB-module-features .NB-features-add {
     float: left;
