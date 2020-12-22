@@ -1260,7 +1260,8 @@ def load_read_stories(request):
     
     story_hashes   = [story['story_hash'] for story in stories]
     story_feed_ids = list(set(s['story_feed_id'] for s in stories))
-    usersub_ids    = UserSubscription.objects.filter(user__pk=user.pk, feed__pk__in=story_feed_ids).values('feed__pk')
+    usersub        = UserSubscription.objects.filter(user__pk=user.pk, feed__pk__in=story_feed_ids)
+    usersub_ids    = usersub.values('feed__pk')
     usersub_ids    = [us['feed__pk'] for us in usersub_ids]
     unsub_feed_ids = list(set(story_feed_ids).difference(set(usersub_ids)))
     unsub_feeds    = Feed.objects.filter(pk__in=unsub_feed_ids)
@@ -1285,6 +1286,7 @@ def load_read_stories(request):
         story['short_parsed_date'] = format_story_link_date__short(story_date, nowtz)
         story['long_parsed_date']  = format_story_link_date__long(story_date, nowtz)
         story['read_status']       = 1
+        story['last_read_date']    = usersub.values('last_read_date')
         story['intelligence']      = {
             'feed':   1,
             'author': 0,
