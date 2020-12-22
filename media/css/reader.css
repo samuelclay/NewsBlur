@@ -6919,10 +6919,10 @@ form.opml_import_form input {
     margin: 0 2px;
 }
 
-.NB-module-river .NB-dashboard-river-options-container {
+.NB-module-river .NB-feedbar-options-container {
     float: right;
 }
-.NB-module-river .NB-dashboard-river-options {
+.NB-module-river .NB-feedbar-options {
     cursor: pointer;
     float: right;
     color: rgba(0, 0, 0, .5);
@@ -6935,11 +6935,11 @@ form.opml_import_form input {
     line-height: 14px;
     margin: 1px 0 0;
 }
-.NB-module-river .NB-dashboard-river-options:hover,
-.NB-module-river .NB-dashboard-river-options.NB-active {
+.NB-module-river .NB-feedbar-options:hover,
+.NB-module-river .NB-feedbar-options.NB-active {
     background-color: rgba(0, 0, 0, .1);
 }
-.NB-module-river .NB-dashboard-river-options .NB-icon {
+.NB-module-river .NB-feedbar-options .NB-icon {
     float: right;
     width: 16px;
     height: 12px;
