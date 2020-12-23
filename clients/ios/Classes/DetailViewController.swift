@@ -175,7 +175,7 @@ class DetailViewController: DetailObjCViewController {
     @objc func resetOtherStoryControllers() {
         horizontalPageViewController?.currentController = horizontalPageViewController?.currentController
         
-        navigationItem.titleView = nil
+//        navigationItem.titleView = nil
     }
     
     /// Resets the page controllers to a blank state.
