@@ -332,15 +332,15 @@
 - (UIViewController *)application:(UIApplication *)application viewControllerWithRestorationIdentifierPath:(NSArray<NSString *> *)identifierComponents coder:(NSCoder *)coder {
     NSString *identifier = identifierComponents.lastObject;
     
-    if ([identifier isEqualToString:@"MainNavigation"]) {
+    if ([identifier isEqualToString:@"FeedsNavigationController"]) {
         return self.feedsNavigationController;
-    } else if ([identifier isEqualToString:@"FeedsView"]) {
+    } else if ([identifier isEqualToString:@"FeedsViewController"]) {
         return self.feedsViewController;
-    } else if ([identifier isEqualToString:@"FeedDetailView"]) {
+    } else if ([identifier isEqualToString:@"FeedDetailViewController"]) {
         return self.feedDetailViewController;
-    } else if ([identifier isEqualToString:@"DetailViewController"]) {
-        return self.detailViewController;
-    } else if ([identifier isEqualToString:@"SplitView"]) {
+//    } else if ([identifier isEqualToString:@"DetailViewController"]) {
+//        return self.detailViewController;
+    } else if ([identifier isEqualToString:@"SplitViewController"]) {
         return self.splitViewController;
     } else {
         return nil;
@@ -1511,6 +1511,7 @@
                                           target: nil
                                           action: nil];
         [feedsViewController.navigationItem setBackBarButtonItem:newBackButton];
+        detailViewController.navigationItem.titleView = [self makeFeedTitle:storiesCollection.activeFeed];
         
         [self.feedDetailViewController checkScroll];
         [self.detailViewController refreshPages];
@@ -1863,6 +1864,8 @@
     if (feedDetailView.storiesCollection.activeFolder) {
         [self.folderCountCache removeObjectForKey:feedDetailView.storiesCollection.activeFolder];
     }
+    
+    detailViewController.navigationItem.titleView = [self makeFeedTitle:storiesCollection.activeFeed];
     
     if (feedDetailView == feedDetailViewController && feedDetailView.view.window == nil) {
         UIBarButtonItem *newBackButton = [[UIBarButtonItem alloc] initWithTitle: @"All"
