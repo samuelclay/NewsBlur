@@ -109,7 +109,7 @@
 
 
 - (IBAction)tapNextButton {
-    [appDelegate.ftuxNavigationController pushViewController:appDelegate.firstTimeUserAddSitesViewController animated:YES];
+    [appDelegate.ftuxNavigationController showViewController:appDelegate.firstTimeUserAddSitesViewController sender:self];
 }
 
 - (void)rotateLogo {

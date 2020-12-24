@@ -374,7 +374,7 @@
         viewController.checkedRow = [folders indexOfObject:self.inFolderInput.text] + 1;
     }
     
-    [appDelegate.addSiteNavigationController pushViewController:viewController animated:YES];
+    [appDelegate.addSiteNavigationController showViewController:viewController sender:self];
 }
 
 #pragma mark -

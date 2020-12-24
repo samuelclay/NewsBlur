@@ -14,4 +14,12 @@ class SplitViewDelegate: NSObject, UISplitViewControllerDelegate {
     func splitViewController(_ svc: UISplitViewController, topColumnForCollapsingToProposedTopColumn proposedTopColumn: UISplitViewController.Column) -> UISplitViewController.Column {
         return .primary
     }
+    
+    func splitViewController(_ svc: UISplitViewController, displayModeForExpandingToProposedDisplayMode proposedDisplayMode: UISplitViewController.DisplayMode) -> UISplitViewController.DisplayMode {
+        if UIDevice.current.userInterfaceIdiom == .phone, proposedDisplayMode == .twoOverSecondary {
+            return .oneOverSecondary
+        } else {
+            return proposedDisplayMode
+        }
+    }
 }
