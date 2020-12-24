@@ -956,7 +956,7 @@
     if (self.pageFetching || self.pageFinished) return;
 //    NSLog(@"Fetching River in storiesCollection (pg. %ld): %@", (long)page, storiesCollection);
     
-    if (appDelegate.detailViewController.storyTitlesOnLeft) {
+    if (appDelegate.detailViewController.storyTitlesOnLeft && [[UIDevice currentDevice] userInterfaceIdiom] != UIUserInterfaceIdiomPhone) {
         [self.splitViewController showColumn:UISplitViewControllerColumnSupplementary];
     }
     
@@ -2200,13 +2200,15 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         }];
     }
     
-    NSString *preferenceKey = @"story_titles_position";
-    NSArray *titles = @[@"Left", @"Top", @"Bottom"];
-    NSArray *values = @[@"titles_on_left", @"titles_on_top", @"titles_on_bottom"];
+    if ([[UIDevice currentDevice] userInterfaceIdiom] != UIUserInterfaceIdiomPhone) {
+        NSString *preferenceKey = @"story_titles_position";
+        NSArray *titles = @[@"Left", @"Top", @"Bottom"];
+        NSArray *values = @[@"titles_on_left", @"titles_on_top", @"titles_on_bottom"];
 
-    [viewController addSegmentedControlWithTitles:titles values:values preferenceKey:preferenceKey selectionShouldDismiss:YES handler:^(NSUInteger selectedIndex) {
-        [self.appDelegate.detailViewController updateLayoutWithReload:YES];
-    }];
+        [viewController addSegmentedControlWithTitles:titles values:values preferenceKey:preferenceKey selectionShouldDismiss:YES handler:^(NSUInteger selectedIndex) {
+            [self.appDelegate.detailViewController updateLayoutWithReload:YES];
+        }];
+    }
     
     [viewController addSegmentedControlWithTitles:@[@"Newest First", @"Oldest"] selectIndex:[appDelegate.storiesCollection.activeOrder isEqualToString:@"newest"] ? 0 : 1 selectionShouldDismiss:YES handler:^(NSUInteger selectedIndex) {
         if (selectedIndex == 0) {
@@ -2234,9 +2236,9 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         }];
     }
     
-    preferenceKey = @"story_list_preview_text_size";
-    titles = @[@"Title", @"1", @"2", @"3"];
-    values = @[@"title", @"short", @"medium", @"long"];
+    NSString *preferenceKey = @"story_list_preview_text_size";
+    NSArray *titles = @[@"Title", @"1", @"2", @"3"];
+    NSArray *values = @[@"title", @"short", @"medium", @"long"];
     
     [viewController addSegmentedControlWithTitles:titles values:values preferenceKey:preferenceKey selectionShouldDismiss:YES handler:^(NSUInteger selectedIndex) {
         [self.appDelegate resizePreviewSize];
@@ -2358,7 +2360,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         }];
     }
     
-    [menuNavigationController pushViewController:viewController animated:YES];
+    [menuNavigationController showViewController:viewController sender:self];
 }
 
 - (void)confirmDeleteSite:(UINavigationController *)menuNavigationController {
@@ -2374,7 +2376,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         }
     }];
     
-    [menuNavigationController pushViewController:viewController animated:YES];
+    [menuNavigationController showViewController:viewController sender:self];
 }
 
 - (void)confirmMuteSite:(UINavigationController *)menuNavigationController {
@@ -2385,7 +2387,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         [self muteSite];
     }];
     
-    [menuNavigationController pushViewController:viewController animated:YES];
+    [menuNavigationController showViewController:viewController sender:self];
 }
 
 - (void)renameTo:(NSString *)newTitle {
@@ -2628,7 +2630,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         }
     }
     
-    [menuNavigationController pushViewController:viewController animated:YES];
+    [menuNavigationController showViewController:viewController sender:self];
 }
 
 //- (void)openMoveView {

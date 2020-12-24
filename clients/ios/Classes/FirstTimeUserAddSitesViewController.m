@@ -99,7 +99,7 @@
 
 
 - (IBAction)tapNextButton {
-    [appDelegate.ftuxNavigationController pushViewController:appDelegate.firstTimeUserAddFriendsViewController animated:YES];
+    [appDelegate.ftuxNavigationController showViewController:appDelegate.firstTimeUserAddFriendsViewController sender:self];
     
     if (self.selectedCategories_.count) {
         NSString *urlString = [NSString stringWithFormat:@"%@/categories/subscribe",
@@ -127,7 +127,7 @@
     AuthorizeServicesViewController *service = [[AuthorizeServicesViewController alloc] init];
     service.url = @"/import/authorize";
     service.type = @"google";
-    [appDelegate.ftuxNavigationController pushViewController:service animated:YES];
+    [appDelegate.ftuxNavigationController showViewController:service sender:self];
 }
 
 - (void)importFromGoogleReader {    

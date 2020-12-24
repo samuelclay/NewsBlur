@@ -63,14 +63,14 @@
 //}
 
 - (IBAction)tapNextButton {
-    [appDelegate.ftuxNavigationController pushViewController:appDelegate.firstTimeUserAddNewsBlurViewController animated:YES];
+    [appDelegate.ftuxNavigationController showViewController:appDelegate.firstTimeUserAddNewsBlurViewController sender:self];
 }
 
 - (IBAction)tapTwitterButton {
     AuthorizeServicesViewController *service = [[AuthorizeServicesViewController alloc] init];
     service.url = @"/oauth/twitter_connect";
     service.type = @"twitter";
-    [appDelegate.ftuxNavigationController pushViewController:service animated:YES];
+    [appDelegate.ftuxNavigationController showViewController:service sender:self];
 }
 
 
@@ -78,7 +78,7 @@
     AuthorizeServicesViewController *service = [[AuthorizeServicesViewController alloc] init];
     service.url = @"/oauth/facebook_connect";
     service.type = @"facebook";
-    [appDelegate.ftuxNavigationController pushViewController:service animated:YES];
+    [appDelegate.ftuxNavigationController showViewController:service sender:self];
 }
 
 

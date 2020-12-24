@@ -728,9 +728,9 @@
     userProfileView.navigationItem.backBarButtonItem.title = self.activeUserProfileName;
     [userProfileView getUserProfile];   
     if (self.modalNavigationController.view.window == nil) {
-        [self.userProfileNavigationController pushViewController:userProfileView animated:YES];
+        [self.userProfileNavigationController showViewController:userProfileView sender:self];
     } else {
-        [self.modalNavigationController pushViewController:userProfileView animated:YES];
+        [self.modalNavigationController showViewController:userProfileView sender:self];
     };
 
 }
@@ -1518,13 +1518,12 @@
         [self adjustStoryDetailWebView];
         [self.feedDetailViewController.storyTitlesTable reloadData];
         
-        if (feedDetailViewController.view.window == nil) {
-            [feedsNavigationController pushViewController:feedDetailViewController
-                                                 animated:YES];
+        if (detailViewController.storyTitlesOnLeft && [[UIDevice currentDevice] userInterfaceIdiom] != UIUserInterfaceIdiomPhone) {
+            [self.splitViewController showColumn:UISplitViewControllerColumnSupplementary];
         }
         
-        if (detailViewController.storyTitlesOnLeft) {
-            [self.splitViewController showColumn:UISplitViewControllerColumnSupplementary];
+        if (feedDetailViewController.view.window == nil) {
+            [feedsNavigationController showViewController:feedDetailViewController sender:self];
         }
     }
     
@@ -1879,7 +1878,7 @@
             [navController popToRootViewControllerAnimated:NO];
         }
         
-        [navController pushViewController:feedDetailViewController animated:YES];
+        [navController showViewController:feedDetailViewController sender:self];
     }
     
     if (!transferFromDashboard) {
@@ -2009,10 +2008,10 @@
 }
 
 - (void)loadStoryDetailView {
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone || self.isCompactWidth) {
-        [feedsNavigationController pushViewController:detailViewController animated:YES];
-        feedsNavigationController.navigationItem.hidesBackButton = YES;
-    }
+//    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone || self.isCompactWidth) {
+//        [self showDetailViewController:detailViewController sender:self];
+//        feedsNavigationController.navigationItem.hidesBackButton = YES;
+//    }
 
     NSInteger activeStoryLocation = [storiesCollection locationOfActiveStory];
     if (activeStoryLocation >= 0) {
@@ -2037,6 +2036,8 @@
 - (void)deferredChangePage:(NSDictionary *)params {
     [self.detailViewController changePage:[params[@"location"] integerValue] animated:[params[@"animated"] boolValue]];
     [self.detailViewController animateIntoPlace:YES];
+    [self.splitViewController showColumn:UISplitViewControllerColumnSecondary];
+    [self showDetailViewController:self.detailViewController sender:self];
 }
 
 - (void)setTitle:(NSString *)title {
@@ -2156,10 +2157,9 @@
              containsObject:originalStoryViewController]) {
             return;
         }
-        [feedsNavigationController pushViewController:originalStoryViewController
-                                        animated:YES];
         [originalStoryViewController view]; // Force viewDidLoad
         [originalStoryViewController loadInitialStory];
+        [feedsNavigationController showViewController:originalStoryViewController sender:self];
     }
 }
 

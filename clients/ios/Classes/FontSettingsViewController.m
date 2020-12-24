@@ -415,7 +415,7 @@
         [self deleteSite];
     }];
     
-    [self.navigationController pushViewController:controller animated:YES];
+    [self.navigationController showViewController:controller sender:self];
 }
 
 - (void)deleteSite {
@@ -448,7 +448,7 @@
     
     controller.fonts = self.fonts;
     
-    [self.navigationController pushViewController:controller animated:YES];
+    [self.navigationController showViewController:controller sender:self];
 }
 
 - (UITableViewCell *)makeFontSizeTableCell {

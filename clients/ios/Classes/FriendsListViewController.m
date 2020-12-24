@@ -362,7 +362,7 @@ viewForHeaderInSection:(NSInteger)section {
     newUserProfile.navigationItem.rightBarButtonItem = donebutton;
     newUserProfile.navigationItem.title = appDelegate.activeUserProfileName;
     appDelegate.userProfileViewController = newUserProfile; 
-    [appDelegate.modalNavigationController pushViewController:newUserProfile animated:YES];
+    [appDelegate.modalNavigationController showViewController:newUserProfile sender:self];
     [appDelegate.userProfileViewController getUserProfile];
 }
 
