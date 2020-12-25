@@ -592,6 +592,8 @@
         self.currentlyTogglingNavigationBar = NO;
         [self updateStatusBarState];
     }];
+    
+    [self adjustForAutoscroll];
 }
 
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer {
@@ -688,6 +690,10 @@
 
 - (void)resetOtherStoryControllers {
     @throw [NSException exceptionWithName:@"Missing -resetOtherStoryControllers implementation" reason:@"This is implemented in the Swift subclass, so should never reach here." userInfo:nil];
+}
+
+- (void)adjustForAutoscroll {
+    @throw [NSException exceptionWithName:@"Missing -adjustForAutoscroll: implementation" reason:@"This is implemented in the Swift subclass, so should never reach here." userInfo:nil];
 }
 
 - (void)hidePages {

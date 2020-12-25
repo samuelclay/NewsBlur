@@ -110,6 +110,9 @@ class DetailViewController: DetailObjCViewController {
     /// Bottom container view.
     @IBOutlet weak var bottomContainerView: UIView!
     
+    /// Top container view top constraint. May need to adjust this for fullscreen on iPhone.
+    @IBOutlet weak var topContainerTopConstraint: NSLayoutConstraint!
+    
     /// Bottom constraint of the divider view.
     @IBOutlet weak var dividerViewBottomConstraint: NSLayoutConstraint!
     
@@ -205,6 +208,14 @@ class DetailViewController: DetailObjCViewController {
         checkViewControllers()
         
         appDelegate.feedsViewController.loadOfflineFeeds(false)
+    }
+    
+    @objc func adjustForAutoscroll() {
+        if UIDevice.current.userInterfaceIdiom == .phone, !isNavigationBarHidden {
+            topContainerTopConstraint.constant = -44
+        } else {
+            topContainerTopConstraint.constant = 0
+        }
     }
     
     override func viewDidLoad() {
@@ -306,6 +317,8 @@ private extension DetailViewController {
         
         if horizontalPageViewController?.view.superview != appropriateSuperview {
             add(viewController: horizontalPageViewController, top: !isTop)
+            
+            adjustForAutoscroll()
             
             if isTop {
                 bottomContainerView.addSubview(traverseView)
