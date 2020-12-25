@@ -1,11 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="12121" systemVersion="16F73" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" colorMatched="YES">
-    <device id="retina4_7" orientation="portrait">
-        <adaptation id="fullscreen"/>
-    </device>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="17701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
-        <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12089"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17703"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -26,11 +23,11 @@
         </placeholder>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
         <view clipsSubviews="YES" contentMode="scaleToFill" id="5">
-            <rect key="frame" x="0.0" y="0.0" width="320" height="480"/>
+            <rect key="frame" x="0.0" y="0.0" width="320" height="517"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <subviews>
-                <label hidden="YES" opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="center" text="Adding..." lineBreakMode="tailTruncation" minimumFontSize="10" id="9">
-                    <rect key="frame" x="111" y="250" width="189" height="52"/>
+                <label hidden="YES" opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="center" fixedFrame="YES" text="Adding..." lineBreakMode="tailTruncation" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="9">
+                    <rect key="frame" x="111" y="294" width="189" height="52"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <fontDescription key="fontDescription" name="Helvetica" family="Helvetica" pointSize="17"/>
                     <color key="textColor" red="0.33333333333333331" green="0.33333333333333331" blue="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -38,8 +35,8 @@
                     <color key="shadowColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <size key="shadowOffset" width="0.0" height="1"/>
                 </label>
-                <label hidden="YES" opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="center" misplaced="YES" text="Error" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="4" minimumFontSize="17" id="8">
-                    <rect key="frame" x="20" y="122" width="280" height="50"/>
+                <label hidden="YES" opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="center" fixedFrame="YES" text="Error" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="4" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="8">
+                    <rect key="frame" x="20" y="166" width="280" height="50"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                     <fontDescription key="fontDescription" name="Helvetica" family="Helvetica" pointSize="17"/>
                     <color key="textColor" red="0.92408370969999998" green="0.35912829639999999" blue="0.23267127570000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -47,12 +44,12 @@
                     <color key="shadowColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <size key="shadowOffset" width="0.0" height="1"/>
                 </label>
-                <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" hidesWhenStopped="YES" style="gray" id="10">
-                    <rect key="frame" x="87" y="266" width="20" height="20"/>
+                <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" fixedFrame="YES" hidesWhenStopped="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="10">
+                    <rect key="frame" x="87" y="310" width="20" height="20"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                 </activityIndicatorView>
-                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Choose a folder" minimumFontSize="17" id="36">
-                    <rect key="frame" x="20" y="52" width="250" height="31"/>
+                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Choose a folder" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="36">
+                    <rect key="frame" x="20" y="96" width="250" height="31"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                     <accessibility key="accessibilityConfiguration">
                         <accessibilityTraits key="traits" button="YES" image="YES"/>
@@ -64,8 +61,8 @@
                         <outlet property="delegate" destination="-1" id="37"/>
                     </connections>
                 </textField>
-                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Search by site title or address..." minimumFontSize="18" clearButtonMode="whileEditing" id="47">
-                    <rect key="frame" x="20" y="13" width="280" height="31"/>
+                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Search by site title or address..." minimumFontSize="18" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="47">
+                    <rect key="frame" x="20" y="57" width="280" height="31"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                     <color key="textColor" red="0.33333333333333331" green="0.33333333333333331" blue="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <fontDescription key="fontDescription" name="Helvetica" family="Helvetica" pointSize="12"/>
@@ -76,8 +73,8 @@
                         <outlet property="delegate" destination="-1" id="58"/>
                     </connections>
                 </textField>
-                <textField opaque="NO" clipsSubviews="YES" alpha="0.0" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="New folder title" minimumFontSize="18" clearButtonMode="whileEditing" id="48">
-                    <rect key="frame" x="20" y="91" width="280" height="31"/>
+                <textField opaque="NO" clipsSubviews="YES" alpha="0.0" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="New folder title" minimumFontSize="18" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="48">
+                    <rect key="frame" x="20" y="135" width="280" height="31"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                     <color key="textColor" red="0.33333333333333331" green="0.33333333333333331" blue="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <fontDescription key="fontDescription" name="Helvetica-Bold" family="Helvetica" pointSize="12"/>
@@ -86,17 +83,17 @@
                         <outlet property="delegate" destination="-1" id="55"/>
                     </connections>
                 </textField>
-                <activityIndicatorView hidden="YES" clipsSubviews="YES" contentMode="scaleToFill" hidesWhenStopped="YES" style="gray" id="61">
-                    <rect key="frame" x="24" y="19" width="20" height="20"/>
+                <activityIndicatorView hidden="YES" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" hidesWhenStopped="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="61">
+                    <rect key="frame" x="24" y="63" width="20" height="20"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                 </activityIndicatorView>
-                <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" alpha="0.0" contentMode="scaleToFill" id="63">
-                    <rect key="frame" x="0.0" y="91" width="320" height="345"/>
+                <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" alpha="0.0" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="63">
+                    <rect key="frame" x="0.0" y="135" width="320" height="382"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                     <subviews>
-                        <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="49">
-                            <rect key="frame" x="0.0" y="0.0" width="320" height="345"/>
+                        <tableView clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="49">
+                            <rect key="frame" x="0.0" y="0.0" width="320" height="382"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <color key="backgroundColor" red="1" green="1" blue="1" alpha="0.59999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
                             <inset key="separatorInset" minX="6" minY="0.0" maxX="0.0" maxY="0.0"/>
@@ -108,8 +105,8 @@
                     </subviews>
                     <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
                 </scrollView>
-                <button opaque="NO" contentMode="center" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="67">
-                    <rect key="frame" x="270" y="52" width="50" height="32"/>
+                <button opaque="NO" contentMode="center" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="67">
+                    <rect key="frame" x="270" y="96" width="50" height="32"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
                     <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
                     <inset key="imageEdgeInsets" minX="8" minY="8" maxX="26" maxY="8"/>
@@ -127,14 +124,10 @@
             <color key="backgroundColor" red="0.94625341892242432" green="0.94625341892242432" blue="0.94625341892242432" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <nil key="simulatedStatusBarMetrics"/>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <point key="canvasLocation" x="137.59999999999999" y="137.18140929535232"/>
         </view>
     </objects>
     <resources>
-        <image name="g_icn_folder_add.png" width="16" height="16"/>
+        <image name="g_icn_folder_add.png" width="7.679999828338623" height="7.679999828338623"/>
     </resources>
-    <simulatedMetricsContainer key="defaultSimulatedMetrics">
-        <simulatedStatusBarMetrics key="statusBar"/>
-        <simulatedOrientationMetrics key="orientation"/>
-        <simulatedScreenMetrics key="destination" type="retina4_7.fullscreen"/>
-    </simulatedMetricsContainer>
 </document>
