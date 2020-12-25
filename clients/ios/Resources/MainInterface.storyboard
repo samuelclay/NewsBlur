@@ -13,7 +13,7 @@
             <objects>
                 <viewController storyboardIdentifier="DetailViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="djW-7k-haK" customClass="DetailViewController" customModule="NewsBlur" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="jTZ-4O-xyT">
-                        <rect key="frame" x="0.0" y="0.0" width="818.5" height="834"/>
+                        <rect key="frame" x="0.0" y="0.0" width="1194" height="834"/>
                         <subviews>
                             <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="bPa-u1-Aml">
                                 <rect key="frame" x="0.0" y="50" width="1194" height="604"/>
@@ -366,6 +366,7 @@
                         <outlet property="loadingIndicator" destination="wpt-1g-x7w" id="6Re-nf-bHo"/>
                         <outlet property="prevNextBackgroundImageView" destination="PLd-RZ-773" id="adi-Gt-uX1"/>
                         <outlet property="textStorySendBackgroundImageView" destination="zfl-mN-y0T" id="lD1-7s-izZ"/>
+                        <outlet property="topContainerTopConstraint" destination="JN4-aj-xiN" id="BFs-GY-GpX"/>
                         <outlet property="topContainerView" destination="bPa-u1-Aml" id="nUk-aR-0ix"/>
                         <outlet property="traverseBottomContainerBottomConstraint" destination="efm-qO-UF1" id="cEE-UD-KiD"/>
                         <outlet property="traverseTopContainerBottomConstraint" destination="YVh-UJ-d3j" id="d4B-Vw-6hb"/>
