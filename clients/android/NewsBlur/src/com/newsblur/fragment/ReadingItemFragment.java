@@ -28,7 +28,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.webkit.WebView.HitTestResult;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.newsblur.R;
@@ -52,7 +51,6 @@ import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.StoryChangesState;
 import com.newsblur.util.StoryUtils;
 import com.newsblur.util.UIUtils;
-import com.newsblur.view.ReadingScrollView;
 
 import java.util.HashMap;
 import java.util.regex.Matcher;
@@ -66,12 +64,10 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
     public static final String READING_FONT_CHANGED = "readingFontChanged";
 	public Story story;
     private FeedSet fs;
-	private LayoutInflater inflater;
 	private String feedColor, feedTitle, feedFade, feedBorder, feedIconUrl, faviconText;
 	private Classifier classifier;
 	private BroadcastReceiver textSizeReceiver, readingFontReceiver;
 	private boolean displayFeedDetails;
-	private View view;
 	private UserDetails user;
     private DefaultFeedView selectedFeedView;
     private boolean textViewUnavailable;
@@ -163,7 +159,7 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
 		getActivity().unregisterReceiver(textSizeReceiver);
         getActivity().unregisterReceiver(readingFontReceiver);
         binding.readingWebview.setOnTouchListener(null);
-        view.setOnTouchListener(null);
+        binding.getRoot().setOnTouchListener(null);
         getActivity().getWindow().getDecorView().setOnSystemUiVisibilityChangeListener(null);
 		super.onDestroy();
 	}
@@ -184,8 +180,7 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
     }
 
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        this.inflater = inflater;
-        view = inflater.inflate(R.layout.fragment_readingitem, null);
+        View view = inflater.inflate(R.layout.fragment_readingitem, container, false);
         binding = FragmentReadingitemBinding.bind(view);
         itemCommentBinding = IncludeReadingItemCommentBinding.bind(binding.getRoot());
 
@@ -196,7 +191,7 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
 
         registerForContextMenu(binding.readingWebview);
         binding.readingWebview.setCustomViewLayout(binding.customViewContainer);
-        binding.readingWebview.setWebviewWrapperLayout(binding.readingScrollview);
+        binding.readingWebview.setWebviewWrapperLayout(binding.readingContainer);
         binding.readingWebview.setBackgroundColor(Color.TRANSPARENT);
         binding.readingWebview.fragment = this;
         binding.readingWebview.activity = activity;
@@ -206,8 +201,7 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
 	    updateSaveButton();
         setupItemCommentsAndShares();
 
-        ReadingScrollView scrollView = (ReadingScrollView) view.findViewById(R.id.reading_scrollview);
-        scrollView.registerScrollChangeListener(activity);
+        binding.readingScrollview.registerScrollChangeListener(activity);
 
 		return view;
 	}
@@ -417,15 +411,10 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
 	}
 
     private void setupItemCommentsAndShares() {
-        new SetupCommentSectionTask(this, view, inflater, story).execute();
+        new SetupCommentSectionTask(this, binding.getRoot(), getLayoutInflater(), story).execute();
     }
 
 	private void setupItemMetadata() {
-        View feedHeader = view.findViewById(R.id.row_item_feed_header);
-        View feedHeaderBorder = view.findViewById(R.id.item_feed_border);
-        TextView itemDate = (TextView) view.findViewById(R.id.reading_item_date);
-        ImageView feedIcon = (ImageView) view.findViewById(R.id.reading_feed_icon);
-
 		if ((feedColor == null) ||
             (feedFade == null) ||
             TextUtils.equals(feedColor, "null") ||
@@ -440,8 +429,8 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
             Color.parseColor("#" + feedFade),
         };
         GradientDrawable gradient = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP, colors);
-        UIUtils.setViewBackground(feedHeader, gradient);
-        feedHeaderBorder.setBackgroundColor(Color.parseColor("#" + feedBorder));
+        UIUtils.setViewBackground(binding.rowItemFeedHeader, gradient);
+        binding.itemFeedBorder.setBackgroundColor(Color.parseColor("#" + feedBorder));
 
         if (TextUtils.equals(faviconText, "black")) {
             binding.readingFeedTitle.setTextColor(UIUtils.getColor(getActivity(), R.color.text));
@@ -453,13 +442,13 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
 
 		if (!displayFeedDetails) {
 			binding.readingFeedTitle.setVisibility(View.GONE);
-			feedIcon.setVisibility(View.GONE);
+			binding.readingFeedIcon.setVisibility(View.GONE);
 		} else {
-			FeedUtils.iconLoader.displayImage(feedIconUrl, feedIcon, 0, false);
+			FeedUtils.iconLoader.displayImage(feedIconUrl, binding.readingFeedIcon, 0, false);
 			binding.readingFeedTitle.setText(feedTitle);
 		}
 
-        itemDate.setText(StoryUtils.formatLongDate(getActivity(), story.timestamp));
+        binding.readingItemDate.setText(StoryUtils.formatLongDate(getActivity(), story.timestamp));
 
         if (story.tags.length <= 0) {
             binding.readingItemTags.setVisibility(View.GONE);
@@ -510,7 +499,7 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
             // TODO: these textviews with compound images are buggy, but stubbed in to let colourblind users
             //       see what is going on. these should be replaced with proper Chips when the v28 Chip lib
             //       is in full release.
-            View v = inflater.inflate(R.layout.tag_view, null);
+            View v = getLayoutInflater().inflate(R.layout.tag_view, null);
 
             TextView tagText = (TextView) v.findViewById(R.id.tag_text);
             tagText.setText(tag);

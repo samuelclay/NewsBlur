@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.Map;
 
 import static android.graphics.Bitmap.Config.ARGB_8888;
-import static com.google.android.material.appbar.AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS;
 import static com.google.android.material.appbar.AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL;
 import static com.google.android.material.appbar.AppBarLayout.LayoutParams.SCROLL_FLAG_SNAP;
 
@@ -218,7 +217,7 @@ public class UIUtils {
         // enabled scrolling app bar only for reading
         if (activity instanceof Reading) {
             AppBarLayout.LayoutParams p = (AppBarLayout.LayoutParams) toolbar.getLayoutParams();
-            p.setScrollFlags(SCROLL_FLAG_SCROLL | SCROLL_FLAG_ENTER_ALWAYS | SCROLL_FLAG_SNAP);
+            p.setScrollFlags(SCROLL_FLAG_SCROLL | SCROLL_FLAG_SNAP);
             toolbar.setLayoutParams(p);
         }
 
