@@ -273,11 +273,11 @@ SENTRY_DSN              = 'https://XXXNEWSBLURXXX@app.getsentry.com/99999999'
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
 DATA_UPLOAD_MAX_NUMBER_FIELDS = None # Handle long /reader/complete_river calls
 
-if DEBUG:
-    # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-    EMAIL_BACKEND = 'vendor.mailgun.MailgunBackend'
-else:
-    EMAIL_BACKEND = 'vendor.mailgun.MailgunBackend'
+ANYMAIL = {
+    "MAILGUN_API_KEY": "<your Mailgun key>",
+    "MAILGUN_SENDER_DOMAIN": 'mg.example.com',  # your Mailgun domain, if needed
+}
+EMAIL_BACKEND = 'anymail.backends.mailgun.EmailBackend'
 
 # ==============
 # = Subdomains =
@@ -329,6 +329,7 @@ INSTALLED_APPS = (
     'vendor',
     'vendor.typogrify',
     'vendor.zebra',
+    'anymail',
     'oauth2_provider',
     'corsheaders',
 )
