@@ -567,7 +567,7 @@ def upgrade_premium(request):
 @json.json_view
 def never_expire_premium(request):
     user_id = request.POST.get('user_id')
-    years = request.POST.get('years', 0)
+    years = int(request.POST.get('years', 0))
     user = User.objects.get(pk=user_id)
     if user.profile.is_premium:
         if years:
