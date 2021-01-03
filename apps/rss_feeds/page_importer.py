@@ -303,8 +303,9 @@ class PageImporter(object):
             return feed_page
     
     def save_page_node(self, html):
-        url = "http://%s/original_page/%s" % (
-            settings.ORIGINAL_PAGE_SERVER,
+        domain = Site.objects.get_current().domain
+        url = "https://%s/original_page/%s" % (
+            domain,
             self.feed.pk,
         )
         response = requests.post(url, files={

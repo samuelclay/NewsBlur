@@ -844,8 +844,9 @@ def load_feed_page(request, feed_id):
     
     if feed and feed.has_page and not feed.has_page_exception:
         if settings.BACKED_BY_AWS.get('pages_on_node'):
-            url = "http://%s/original_page/%s" % (
-                settings.ORIGINAL_PAGE_SERVER,
+            domain = Site.objects.get_current().domain
+            url = "https://%s/original_page/%s" % (
+                domain,
                 feed.pk,
             )
             try:

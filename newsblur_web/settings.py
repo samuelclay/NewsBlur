@@ -565,7 +565,6 @@ YOUTUBE_API_KEY = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 # = AWS Backing =
 # ===============
 
-ORIGINAL_PAGE_SERVER = "db_pages:3060"
 
 BACKED_BY_AWS = {
     'pages_on_s3': False,

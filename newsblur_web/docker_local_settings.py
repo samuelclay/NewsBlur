@@ -128,7 +128,6 @@ BACKED_BY_AWS = {
     'icons_on_s3': False,
 }
 
-ORIGINAL_PAGE_SERVER = "node"
 
 # ===========
 # = Logging =
