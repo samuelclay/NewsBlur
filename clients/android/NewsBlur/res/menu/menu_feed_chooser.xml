@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/menu_sort_by"
-        android:showAsAction="never"
+        app:showAsAction="never"
         android:title="@string/menu_sort_by">
         <menu>
             <group android:checkableBehavior="single">
@@ -26,7 +27,7 @@
     </item>
     <item
         android:id="@+id/menu_sort_order"
-        android:showAsAction="never"
+        app:showAsAction="never"
         android:title="@string/menu_sort_order">
         <menu>
             <group android:checkableBehavior="single">
@@ -41,7 +42,7 @@
     </item>
     <item
         android:id="@+id/menu_folder_view"
-        android:showAsAction="never"
+        app:showAsAction="never"
         android:title="@string/menu_folder_view">
         <menu>
             <group android:checkableBehavior="single">
@@ -68,7 +69,7 @@
         android:title="@string/menu_select_none" />
     <item
         android:id="@+id/menu_widget_background"
-        android:showAsAction="never"
+        app:showAsAction="never"
         android:title="@string/menu_widget_background">
         <menu>
             <group android:checkableBehavior="single">

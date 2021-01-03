@@ -248,7 +248,10 @@ NEWSBLUR.log = function(msg) {
             }
         },
         
-        favicon: function(feed, empty_on_missing) {
+        favicon: function (feed, empty_on_missing) {
+            var empty_icon = NEWSBLUR.Globals.MEDIA_URL + '/img/icons/circular/world.png';
+            if (!feed) return empty_icon;
+            
             if (_.isNumber(feed)) return NEWSBLUR.URLs.favicon.replace('{id}', feed);
             else if (feed.get('favicon') && feed.get('favicon').length && feed.get('favicon').indexOf('data:image/png;base64,') != -1) return feed.get('favicon');
             else if (feed.get('favicon') && feed.get('favicon').length) return 'data:image/png;base64,' + feed.get('favicon');
@@ -259,7 +262,8 @@ NEWSBLUR.log = function(msg) {
             else if (_.isNumber(feed.id)) return NEWSBLUR.URLs.favicon.replace('{id}', feed.id);
             else if (feed.get('favicon_url')) return feed.get('favicon_url');
             else if (feed.is_starred()) return NEWSBLUR.Globals.MEDIA_URL + '/img/reader/tag.png';
-            return NEWSBLUR.Globals.MEDIA_URL + '/img/icons/circular/world.png';
+
+            return empty_icon;
         },
         
         deepCopy: function(obj) {

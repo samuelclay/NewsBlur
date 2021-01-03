@@ -9,9 +9,9 @@
     <RelativeLayout
         android:id="@+id/main_top_bar"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="?attr/actionBarSize"
         android:layout_alignParentTop="true"
-        style="?actionbarBackground" >
+        android:background="?colorPrimary" >
 
         <ImageView
             android:id="@+id/main_user_image"
@@ -75,7 +75,19 @@
             android:layout_marginLeft="3dp"
             android:textSize="14sp" />
 
-        <Button
+        <ImageButton
+            android:id="@+id/main_search_feeds_button"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:padding="2dp"
+            android:layout_alignParentTop="true"
+            android:layout_margin="8dp"
+            android:layout_toStartOf="@+id/main_profile_button"
+            android:layout_toLeftOf="@+id/main_profile_button"
+            android:background="@drawable/ic_search"
+            android:contentDescription="@string/menu_search_feeds" />
+
+        <ImageButton
             android:id="@+id/main_profile_button"
             android:layout_width="34dp"
             android:layout_height="34dp"
@@ -98,7 +110,7 @@
         android:layout_alignParentBottom="true"
         android:tag="feedIntelligenceSelector" />
 
-    <Button
+    <ImageButton
         android:id="@+id/main_menu_button"
         android:layout_width="34dp"
         android:layout_height="34dp"
@@ -108,7 +120,7 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true" />
 
-    <Button
+    <ImageButton
         android:id="@+id/main_add_button"
         android:layout_width="36dp"
         android:layout_height="36dp"

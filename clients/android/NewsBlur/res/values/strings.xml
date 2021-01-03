@@ -128,7 +128,6 @@
     <string name="profile_no_interactions">No interactions</string>
     
     <string name="menu_profile">Profile</string>
-    <string name="menu_refresh">Refresh</string>
     <string name="menu_search_feeds">Search your feeds</string>
     <string name="menu_original">View original</string>
     <string name="menu_send_story">Send link to…</string>
@@ -155,7 +154,6 @@
     <string name="menu_oldest_mark_newer_stories_as_read">\u21E3 Mark newer as read</string>
     <string name="menu_mark_story_as_read">Mark as read</string>
     <string name="menu_mark_unread">Mark as unread</string>
-    <string name="menu_fullscreen">Full screen</string>
     <string name="menu_search_stories">Search…</string>
     <string name="menu_mute_feed">Mute feed</string>
     <string name="menu_unmute_feed">Unmute feed</string>
@@ -197,7 +195,10 @@
 
     <string name="logout_warning">Are you sure you want to log out?</string>
     <string name="search_mark_read_warning">Look out! All stories in feed/folder would be marked read, not just search results.  If you really want to mark all stories read, please clear your search query to confirm.</string>
-    
+
+    <string name="story_show_changes">Show Story Changes</string>
+    <string name="story_hide_changes">Hide Story Changes</string>
+    <string name="story_changes_loading">Story Changes Loading ...</string>
     <string name="your_feeds_search_hint">Search your feeds</string>
     <string name="feed_search_hint">Search term or feed URL</string>
     <string name="story_search_hint">Search for stories</string>
@@ -319,6 +320,11 @@
     </string-array>
     <string name="default_network_select_value">NOMONONME</string>
 
+    <string name="menu_delete_offline_stories">Delete offline stories …</string>
+    <string name="menu_delete_offline_stories_key">delete_offline_stories</string>
+    <string name="menu_delete_offline_stories_sum">Clear all offline stories and images</string>
+    <string name="menu_delete_offline_stories_confirmation">Cleared all stories and images!</string>
+
     <string name="menu_cache_age_select">Maximum Cache Age</string>
     <string name="menu_cache_age_select_sum">Clean up cached story content after…</string>
     <string name="menu_cache_age_select_opt_2d">2 days (reduce storage use)</string>
@@ -396,7 +402,6 @@
     <string name="settings_social">Social</string>
     <string name="settings_show_public_comments">Show Public Comments</string>
     <string name="settings_reading">Reading</string>
-    <string name="settings_immersive_enter_single_tap">Immersive Mode Via Single Tap</string>
     <string name="settings_show_content_preview">Show Content Preview Text</string>
     <string name="settings_thumbnails_style">Image Preview Thumbnails</string>
     <string name="settings_notifications">Notifications</string>

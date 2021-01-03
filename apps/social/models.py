@@ -1599,6 +1599,14 @@ class MSharedStory(mongo.DynamicDocument):
             socialsub.save()
 
         self.delete()
+
+    def publish_to_subscribers(self):
+        try:
+            r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
+            r.publish("social:%s:story" % (self.user_id), '%s,%s' % (self.story_hash, self.shared_date.strftime('%s')))
+            logging.debug("   ***> [%-30s] ~BMPublishing to Redis for real-time." % (Feed.get_by_id(self.story_feed_id).title[:30],))
+        except redis.ConnectionError:
+            logging.debug("   ***> [%-30s] ~BMRedis is unavailable for real-time." % (Feed.get_by_id(self.story_feed_id).title[:30],))
     
     @classmethod
     def feed_quota(cls, user_id, story_hash, feed_id=None, days=1, quota=1):
@@ -2765,7 +2773,7 @@ class MSocialServices(mongo.Document):
             return
             
         return True
-        
+    
 
 class MInteraction(mongo.Document):
     user_id      = mongo.IntField()

@@ -1,7 +1,6 @@
 package com.newsblur.fragment;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -16,21 +15,20 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.PopupMenu;
 import androidx.fragment.app.DialogFragment;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.ContextMenu;
-import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.webkit.WebView.HitTestResult;
 import android.widget.ImageView;
-import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import com.newsblur.R;
@@ -42,6 +40,8 @@ import com.newsblur.databinding.IncludeReadingItemCommentBinding;
 import com.newsblur.domain.Classifier;
 import com.newsblur.domain.Story;
 import com.newsblur.domain.UserDetails;
+import com.newsblur.network.APIManager;
+import com.newsblur.network.domain.StoryChangesResponse;
 import com.newsblur.service.OriginalTextService;
 import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.FeedSet;
@@ -49,9 +49,9 @@ import com.newsblur.util.FeedUtils;
 import com.newsblur.util.Font;
 import com.newsblur.util.PrefConstants.ThemeValue;
 import com.newsblur.util.PrefsUtils;
+import com.newsblur.util.StoryChangesState;
 import com.newsblur.util.StoryUtils;
 import com.newsblur.util.UIUtils;
-import com.newsblur.util.ViewUtils;
 import com.newsblur.view.ReadingScrollView;
 
 import java.util.HashMap;
@@ -75,6 +75,7 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
 	private UserDetails user;
     private DefaultFeedView selectedFeedView;
     private boolean textViewUnavailable;
+    private StoryChangesState storyChangesState = StoryChangesState.SHOW_CHANGES;
 
     /** The story HTML, as provided by the 'content' element of the stories API. */
     private String storyContent;
@@ -208,8 +209,6 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
         ReadingScrollView scrollView = (ReadingScrollView) view.findViewById(R.id.reading_scrollview);
         scrollView.registerScrollChangeListener(activity);
 
-        setupImmersiveViewGestureDetector();
-
 		return view;
 	}
 
@@ -234,24 +233,12 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
                 clickShare();
             }
         });
+
+        if (selectedFeedView == DefaultFeedView.STORY && story.hasModifications) {
+            binding.readingStoryChanges.setVisibility(View.VISIBLE);
+            binding.readingStoryChanges.setOnClickListener(v -> loadStoryChanges());
+        }
 	}
-
-    private void setupImmersiveViewGestureDetector() {
-        // Change the system visibility on the decorview from the activity so that the state is maintained as we page through
-        // fragments
-        ImmersiveViewHandler immersiveViewHandler = new ImmersiveViewHandler(getActivity().getWindow().getDecorView());
-        final GestureDetector gestureDetector = new GestureDetector(getActivity(), immersiveViewHandler);
-        View.OnTouchListener touchListener = new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                return gestureDetector.onTouchEvent(motionEvent);
-            }
-        };
-        binding.readingWebview.setOnTouchListener(touchListener);
-        view.setOnTouchListener(touchListener);
-
-        getActivity().getWindow().getDecorView().setOnSystemUiVisibilityChangeListener(immersiveViewHandler);
-    }
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
@@ -630,9 +617,11 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
         enableProgress(false);
 
         boolean needStoryContent = false;
+        boolean enableStoryChanges = false;
 
         if (selectedFeedView == DefaultFeedView.STORY) {
             needStoryContent = true;
+            enableStoryChanges = story != null && story.hasModifications;
         } else {
             if (textViewUnavailable) {
                 binding.readingTextmodefailed.setVisibility(View.VISIBLE);
@@ -657,6 +646,8 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
                 onContentLoadFinished();
             }
         }
+
+        binding.readingStoryChanges.setVisibility(enableStoryChanges ? View.VISIBLE : View.GONE);
     }
 
     private void enableProgress(boolean loading) {
@@ -743,6 +734,37 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
                     com.newsblur.util.Log.w(this, "couldn't find story content for existing story.");
                     Activity act = getActivity();
                     if (act != null) act.finish();
+                }
+            }
+        }.execute();
+    }
+
+    private void loadStoryChanges() {
+        boolean showChanges = storyChangesState == null || storyChangesState == StoryChangesState.SHOW_CHANGES;
+        if (story == null) return;
+        new AsyncTask<Void, Void, StoryChangesResponse>() {
+
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+                binding.readingStoryChanges.setText(R.string.story_changes_loading);
+            }
+
+            @Override
+            protected StoryChangesResponse doInBackground(Void... voids) {
+                APIManager apiManager = new APIManager(requireContext());
+                return apiManager.getStoryChanges(story.storyHash, showChanges);
+            }
+
+            @Override
+            protected void onPostExecute(StoryChangesResponse response) {
+                if (!response.isError() && response.getStory() != null) {
+                    ReadingItemFragment.this.storyContent = response.getStory().content;
+                    reloadStoryContent();
+                    binding.readingStoryChanges.setText(showChanges ? R.string.story_hide_changes : R.string.story_show_changes);
+                    storyChangesState = showChanges ? StoryChangesState.HIDE_CHANGES : StoryChangesState.SHOW_CHANGES;
+                } else {
+                    binding.readingStoryChanges.setText(showChanges ? R.string.story_show_changes : R.string.story_hide_changes);
                 }
             }
         }.execute();
@@ -933,39 +955,6 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
         public void onReceive(Context context, Intent intent) {
             contentHash = 0; // Force reload since content hasn't changed
             reloadStoryContent();
-        }
-    }
-
-    private class ImmersiveViewHandler extends GestureDetector.SimpleOnGestureListener implements View.OnSystemUiVisibilityChangeListener {
-        private View view;
-
-        public ImmersiveViewHandler(View view) {
-            this.view = view;
-        }
-
-        @Override
-        public boolean onSingleTapUp(MotionEvent e) {
-            if (binding.readingWebview.wasLinkClicked()) {
-                // Clicked a link so ignore immersive view
-                return super.onSingleTapUp(e);
-            }
-
-            if (ViewUtils.isSystemUIHidden(view)) {
-                ViewUtils.showSystemUI(view);
-            } else if (PrefsUtils.enterImmersiveReadingModeOnSingleTap(getActivity())) {
-                ViewUtils.hideSystemUI(view);
-            }
-
-            return super.onSingleTapUp(e);
-        }
-
-        @Override
-        public void onSystemUiVisibilityChange(int i) {
-            // If immersive view has been exited via a system gesture we want to ensure that it gets resized
-            // in the same way as using tap to exit.
-            if (ViewUtils.immersiveViewExitedViaSystemGesture(view)) {
-                ViewUtils.showSystemUI(view);
-            }
         }
     }
 }

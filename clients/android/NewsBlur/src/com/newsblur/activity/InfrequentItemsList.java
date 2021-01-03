@@ -16,7 +16,7 @@ public class InfrequentItemsList extends ItemsList implements InfrequentCutoffCh
 	protected void onCreate(Bundle bundle) {
 		super.onCreate(bundle);
 
-        UIUtils.setCustomActionBar(this, R.drawable.ak_icon_allstories, getResources().getString(R.string.infrequent_title));
+        UIUtils.setupToolbar(this, R.drawable.ak_icon_allstories, getResources().getString(R.string.infrequent_title), false);
 	}
 
     @Override

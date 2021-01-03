@@ -10,6 +10,7 @@ import android.widget.Button;
 
 import com.newsblur.R;
 import com.newsblur.fragment.AddSocialFragment;
+import com.newsblur.util.UIUtils;
 
 public class AddSocial extends NbActivity {
 
@@ -21,6 +22,8 @@ public class AddSocial extends NbActivity {
 	protected void onCreate(Bundle bundle) {
 		super.onCreate(bundle);
 		setContentView(R.layout.activity_addsocial);
+
+		UIUtils.setupToolbar(this, R.drawable.logo, getString(R.string.add_friends), false);
 		
 		fragmentManager = getSupportFragmentManager();
 
