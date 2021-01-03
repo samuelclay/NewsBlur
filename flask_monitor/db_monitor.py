@@ -102,6 +102,22 @@ def db_check_redis_story():
     else:
         abort(404)
 
+@app.route("/db_check/redis_pubsub")
+def db_check_redis_story():
+    redis_host = getattr(settings, 'REDIS', {'host': 'db_redis_pubsub'})
+    try:
+        r = redis.Redis(redis_host['host'], db=1)
+    except:
+        abort(502)
+    
+    pubsub_numpat = r.pubsub_numpat()
+    if pubsub_numpat:
+        return str(pubsub_numpat)
+    else:
+        abort(404)
+
+    
+
 @app.route("/db_check/redis_sessions")
 def db_check_redis_sessions():
     redis_host = getattr(settings, 'REDIS', {'host': 'db_redis_sessions'})
