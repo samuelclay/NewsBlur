@@ -2,10 +2,7 @@ version: '3'
 services:
   newsblur_web:
     hostname: nb.com
-    container_name: newsblur_web
     image: newsblur/newsblur_python3
-    dns_search:
-      - nb.com
     environment: 
       - DOCKERBUILD=True
     stdin_open: true
@@ -33,13 +30,15 @@ services:
     volumes: 
       - app-files:/srv/newsblur
     deploy:
-      placement:
-        constraints: [node.label.name == newsblur_web]
-        max_replicas_per_node: 1
+      #placement:
+      #  constraints: 
+      #    - node.name == app
+      #    - node.name == app-counts
+      #    - node.name == app-refresh
+      #    - node.name == app-push
       replicas: 5
       
   nginx:
-    container_name: nginx
     image: nginx:1.13
     ports:
       - 81:81
@@ -58,13 +57,11 @@ services:
     volumes:
     - app-files:/srv/newsblur
     deploy:
-      placement:
-        constraints: [node.label.name == newsblur_web]
-        max_replicas_per_node: 1
+      #placement:
+      #  constraints: [node.name == app]
       replicas: 5
 
   postgres:
-    container_name: postgres
     image: postgres:9.6
     environment:
       - POSTGRES_USER=newsblur
@@ -74,9 +71,8 @@ services:
     volumes:
       - postgres-data:/var/lib/postgresql/data
     deploy:
-      placement:
-        constraints: [node.label.name == postgres]
-        max_replicas_per_node: 1
+      #placement:
+      #  constraints: [node.label.name == postgres]
       replicas: 1
 
 
@@ -84,68 +80,21 @@ services:
     image: newsblur/redis:latest
     ports:
       - '6379:6379'
-    container_name: redis
     volumes:
       - redis-data:/data
       - redis-data:/redis.var.lib:/var/lib/redis
     command: redis-server --port 6379
     deploy:
-      placement:
-        constraints: [node.label.name == redis]
-  redis_pubsub:
-    image: newsblur/redis:latest
-    ports:
-      - '6379:6379'
-    container_name: redis
-    volumes:
-      - redis-data:/data
-      - redis-data:/redis.var.lib:/var/lib/redis
-    command: redis-server --port 6379
-    deploy:
-      placement:
-        constraints: [node.label.name == redis_pubsub]
-
-  redis_story:
-    image: newsblur/redis:latest
-    ports:
-      - '6379:6379'
-    container_name: redis
-    volumes:
-      - redis-data:/data
-      - redis-data:/redis.var.lib:/var/lib/redis
-    command: redis-server --port 6379
-    deploy:
-      placement:
-        constraints: [node.label.name == redis_story]
-  
-  redis_sessions:
-    image: newsblur/redis:latest
-    ports:
-      - '6379:6379'
-    container_name: redis
-    volumes:
-      - redis-data:/data
-      - redis-data:/redis.var.lib:/var/lib/redis
-    command: redis-server --port 6379
-    deploy:
-      placement:
-        constraints: [node.label.name == redis_sessions]
-
+      replicas: 4
 
   elasticsearch:
-    container_name: elasticsearch
     image: elasticsearch:1.7
     ports:
       - '9200:9200'
     volumes:
       - elasticsearch-data:/usr/share/elasticsearch/data
-    deploy:
-      placement:
-        constraints: [node.label.name == elasticsearch]
-  
 
   db_mongo:
-    container_name: db_mongo
     image: mongo:3.2
     ports:
       - 27017:27017
@@ -153,41 +102,27 @@ services:
     volumes:
       - db-mongo-data:/data/db
     deploy:
-      placement:
-        constraints: [node.label.name == mongo]
-        max_replicas_per_node: 1
       replicas: 3
   
 
   original_pages:
-    image: newsblur/newsblur_node_prod
-    container_name: node_original_page
+    image: newsblur/node_prod
     environment:
       - NODE_ENV=development
     command: node original_page.js
     ports:
       - 3060:3060
-    deploy:
-      placement:
-        constraints: [node.label.name == node]
-        max_replicas_per_node: 1
 
   original_text:
-    image: newsblur/newsblur_node_prod
-    container_name: node_original_text
+    image: newsblur/node_prod
     environment:
       - NODE_ENV=development
     ports:
       - 4040:4040
     command: node original_text.js
-    deploy:
-      placement:
-        constraints: [node.label.name == node]
-        max_replicas_per_node: 1
 
   favicons:
-    image: newsblur/newsblur_node_prod
-    container_name: node_favicons
+    image: newsblur/node_prod
     environment:
       - NODE_ENV=docker
       - MONGO_PORT=29019
@@ -196,37 +131,25 @@ services:
     command: node favicons.js
     depends_on: 
       - postgres
-    deploy:
-      placement:
-        constraints: [node.label.name == node]
-        max_replicas_per_node: 1
 
   node_websocket:
-    container_name: node_websocket
-    image: newsblur/newsblur_node_prod
+    image: newsblur/node_prod
     environment:
       - NODE_ENV=docker
     command: node unread_counts.js
     stop_signal: HUP
     ports:
       - 8888:8888
-    deploy:
-      placement:
-        constraints: [node.label.name == node]
-        max_replicas_per_node: 1
-
 
   celerybeat:
-    container_name: celerybeat
     image: newsblur/newsblur_python3
     command: bash -c "mkdir -p data && celery beat -A newsblur_web --schedule=/srv/newsblur/data/celerybeat-schedule.db --loglevel=INFO --pidfile=/srv/celeryd.pid"
     environment: 
       - DOCKERBUILD=True
     volumes:
       - app-files:/srv/newsblur
-  
+
   celeryd:
-    container_name: celeryd
     image: newsblur/newsblur_python3
     command: "celery worker -A newsblur_web --loglevel=INFO -Q new_feeds,push_feeds,update_feeds"
     volumes:
@@ -235,13 +158,9 @@ services:
       - DOCKERBUILD=True
     user: "${CURRENT_UID}:${CURRENT_GID}"
     deploy:
-      placement:
-        constraints: [node.label.name == celeryd]
-        max_replicas_per_node: 1
-        replicas: 50
+      replicas: 3
 
   celeryd_beat:
-    container_name: celeryd_beat
     image: newsblur/newsblur_python3
     command: "celery worker -A newsblur_web --loglevel=INFO -Q beat_tasks -c 3"
     environment: 
@@ -249,12 +168,8 @@ services:
     volumes:
       - app-files:/srv/newsblur
     user: "${CURRENT_UID}:${CURRENT_GID}"
-    deploy:
-      placement:
-        constraints: [node.label.name == celery]
 
   celeryd_beat_feeds:
-    container_name: celeryd_beat_feeds
     image: newsblur/newsblur_python3
     command: "celery worker -A newsblur_web --loglevel=INFO -Q beat_feeds_task -c 1"
     environment: 
@@ -262,12 +177,8 @@ services:
     volumes:
       - app-files:/srv/newsblur
     user: "${CURRENT_UID}:${CURRENT_GID}"
-    deploy:
-      placement:
-        constraints: [node.label.name == celery]
 
   celeryd_news:
-    container_name: celeryd_news
     image: newsblur/newsblur_python3
     command: "celery worker -A newsblur_web --loglevel=INFO -Q new_feeds,push_feeds"
     environment: 
@@ -275,12 +186,8 @@ services:
     volumes:
       - app-files:/srv/newsblur
     user: "${CURRENT_UID}:${CURRENT_GID}"
-    deploy:
-      placement:
-        constraints: [node.label.name == celery]
 
   celeryd_search_indexer:
-    container_name: celeryd_search_indexer
     image: newsblur/newsblur_python3
     command: "celery worker -A newsblur_web --loglevel=INFO -Q search_indexer -c 4"
     environment: 
@@ -289,12 +196,8 @@ services:
       - app-files:/srv/newsblur
 
     user: $CURRENT_UID:$CURRENT_GID
-    deploy:
-      placement:
-        constraints: [node.label.name == celery]
 
   celeryd_search_indexer_tasker:
-    container_name: celeryd_search_indexer_tasker
     image: newsblur/newsblur_python3
     command: "celery worker -A newsblur_web --loglevel=INFO -Q search_indexer_tasker -c 2"
     environment: 
@@ -302,12 +205,8 @@ services:
     volumes:
       - app-files:/srv/newsblur
     user: $CURRENT_UID:$CURRENT_GID
-    deploy:
-      placement:
-        constraints: [node.label.name == celery]
 
   celeryd_work_queue:
-    container_name: celeryd_work_queue
     image: newsblur/newsblur_python3
     command: bash -c "celery worker -A newsblur_web --loglevel=INFO -Q work_queue"
     ports:
@@ -318,13 +217,10 @@ services:
       - app-files:/srv/newsblur
     user: $CURRENT_UID:$CURRENT_GID
     deploy:
-      placement:
-        constraints: [node.label.name == celeryd_work_queue]
       replicas: 2
 
 
   monitor:
-    container_name: monitor
     image: newsblur/newsblur_python3 
     command: bash -c "python /srv/newsblur/flask_monitor/db_monitor.py"
     environment: 
@@ -333,14 +229,11 @@ services:
       - app-files:/srv/newsblur
     ports:
       - 5579:5579
-    deploy:
-      placement:
-        constraints: [node.label.name == monitor]
 
   haproxy:
     domainname: 'nb.local.com'
-    container_name: haproxy
     image: newsblur/haproxy
+    dns: 127.0.0.11
     depends_on: 
       - nginx
       - newsblur_web
@@ -353,10 +246,6 @@ services:
       - DOCKERBUILD=True
     volumes:
       - app-files:/srv/newsblur
-    deploy:
-      placement:
-        constraints: [node.label.name == haproxy]
-
 
 volumes:
   app-files:
