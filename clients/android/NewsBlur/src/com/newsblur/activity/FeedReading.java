@@ -23,7 +23,7 @@ public class FeedReading extends Reading {
             return;
         }
 
-        UIUtils.setCustomActionBar(this, feed.faviconUrl, feed.title);
+        UIUtils.setupToolbar(this, feed.faviconUrl, feed.title, false);
     }
 
 }

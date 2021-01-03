@@ -4,9 +4,11 @@ import java.io.File;
 import java.util.Map;
 
 import static android.graphics.Bitmap.Config.ARGB_8888;
+import static com.google.android.material.appbar.AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS;
+import static com.google.android.material.appbar.AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL;
+import static com.google.android.material.appbar.AppBarLayout.LayoutParams.SCROLL_FLAG_SNAP;
 
 import android.app.Activity;
-import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.TypedArray;
@@ -26,16 +28,22 @@ import android.util.TypedValue;
 import android.text.Html;
 import android.text.Spanned;
 import android.text.TextUtils;
-import android.view.LayoutInflater;
 import android.view.ContextMenu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.browser.customtabs.CustomTabColorSchemeParams;
+import androidx.browser.customtabs.CustomTabsIntent;
+import androidx.core.content.ContextCompat;
+
+import com.google.android.material.appbar.AppBarLayout;
+import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.color.MaterialColors;
 import com.newsblur.R;
 import com.newsblur.activity.*;
 import com.newsblur.domain.Classifier;
@@ -191,40 +199,43 @@ public class UIUtils {
      * Set up our customised ActionBar view that features the specified icon and title, sized
      * away from system standard to meet the NewsBlur visual style.
      */
-    public static void setCustomActionBar(Activity activity, String imageUrl, String title) { 
-        ImageView iconView = setupCustomActionbar(activity, title);
+    public static void setupToolbar(AppCompatActivity activity, String imageUrl, String title, boolean showHomeEnabled) {
+        ImageView iconView = setupCustomToolbar(activity, title, showHomeEnabled);
         FeedUtils.iconLoader.displayImage(imageUrl, iconView, 0, false);
     }
 
-    public static void setCustomActionBar(Activity activity, int imageId, String title) { 
-        ImageView iconView = setupCustomActionbar(activity, title);
+    public static void setupToolbar(AppCompatActivity activity, int imageId, String title, boolean showHomeEnabled) {
+        ImageView iconView = setupCustomToolbar(activity, title, showHomeEnabled);
         iconView.setImageResource(imageId);
     }
 
-    private static ImageView setupCustomActionbar(final Activity activity, String title) {
-        // we completely replace the existing title and 'home' icon with a custom view
-        activity.getActionBar().setDisplayShowCustomEnabled(true);
-        activity.getActionBar().setDisplayShowTitleEnabled(false);
-        activity.getActionBar().setDisplayShowHomeEnabled(false);
-        View v = LayoutInflater.from(activity).inflate(R.layout.actionbar_custom_icon, null);
-        TextView titleView = ((TextView) v.findViewById(R.id.actionbar_text));
+    private static ImageView setupCustomToolbar(final AppCompatActivity activity, String title, boolean showHomeEnabled) {
+        MaterialToolbar toolbar = activity.findViewById(R.id.toolbar);
+        if (toolbar == null) {
+            return new ImageView(activity);
+        }
+
+        // enabled scrolling app bar only for reading
+        if (activity instanceof Reading) {
+            AppBarLayout.LayoutParams p = (AppBarLayout.LayoutParams) toolbar.getLayoutParams();
+            p.setScrollFlags(SCROLL_FLAG_SCROLL | SCROLL_FLAG_ENTER_ALWAYS | SCROLL_FLAG_SNAP);
+            toolbar.setLayoutParams(p);
+        }
+
+        activity.setSupportActionBar(toolbar);
+        activity.getSupportActionBar().setDisplayShowTitleEnabled(false);
+        activity.getSupportActionBar().setDisplayShowHomeEnabled(false);
+
+        ImageView arrowView = activity.findViewById(R.id.toolbar_arrow);
+        arrowView.setVisibility(showHomeEnabled ? View.VISIBLE : View.GONE);
+        TextView titleView = activity.findViewById(R.id.toolbar_text);
         titleView.setText(title);
-        ImageView iconView = ((ImageView) v.findViewById(R.id.actionbar_icon));
+        ImageView iconView = activity.findViewById(R.id.toolbar_icon);
         // using a custom view breaks the system-standard ability to tap the icon or title to return
         // to the previous activity. Re-implement that here.
-        titleView.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                activity.finish();
-            }
-        });
-        iconView.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                activity.finish();
-            }
-        });
-        activity.getActionBar().setCustomView(v, new ActionBar.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT));
+        arrowView.setOnClickListener(v0 -> activity.finish());
+        titleView.setOnClickListener(v1 -> activity.finish());
+        iconView.setOnClickListener(v12 -> activity.finish());
         return iconView;
     }
 
@@ -542,14 +553,12 @@ public class UIUtils {
         return result;
     }
 
-    public static void  handleUri(Context context, Uri uri) {
+    public static void handleUri(Context context, Uri uri) {
         DefaultBrowser defaultBrowser = PrefsUtils.getDefaultBrowser(context);
         if (defaultBrowser == DefaultBrowser.SYSTEM_DEFAULT) {
             openSystemDefaultBrowser(context, uri);
         } else if (defaultBrowser == DefaultBrowser.IN_APP_BROWSER) {
-            Intent intent = new Intent(context, InAppBrowser.class);
-            intent.putExtra(InAppBrowser.URI, uri);
-            context.startActivity(intent);
+            openInAppBrowser(context, uri);
         } else if (defaultBrowser == DefaultBrowser.CHROME) {
             openExternalBrowserApp(context, uri, "com.android.chrome");
         } else if (defaultBrowser == DefaultBrowser.FIREFOX) {
@@ -557,6 +566,21 @@ public class UIUtils {
         } else if (defaultBrowser == DefaultBrowser.OPERA_MINI) {
             openExternalBrowserApp(context, uri, "com.opera.mini.native");
         }
+    }
+
+    private static void openInAppBrowser(Context context, Uri uri) {
+        int colorPrimary = MaterialColors.getColor(context, R.attr.colorPrimary, ContextCompat.getColor(context, R.color.primary_dark));
+        CustomTabColorSchemeParams schemeParams = new CustomTabColorSchemeParams.Builder()
+                .setToolbarColor(colorPrimary)
+                .build();
+        CustomTabsIntent customTabsIntent = new CustomTabsIntent.Builder()
+                .setColorScheme(getCustomTabsColorScheme(context))
+                .setDefaultColorSchemeParams(schemeParams)
+                .setShareState(CustomTabsIntent.SHARE_STATE_ON)
+                .setUrlBarHidingEnabled(false)
+                .setShowTitle(true)
+                .build();
+        customTabsIntent.launchUrl(context, uri);
     }
 
     public static void openSystemDefaultBrowser(Context context, Uri uri) {
@@ -592,5 +616,16 @@ public class UIUtils {
     public static void startPremiumActivity(Context context) {
         Intent intent = new Intent(context, Premium.class);
         context.startActivity(intent);
+    }
+
+    private static int getCustomTabsColorScheme(Context context) {
+        PrefConstants.ThemeValue value = PrefsUtils.getSelectedTheme(context);
+        if (value == PrefConstants.ThemeValue.DARK || value == PrefConstants.ThemeValue.BLACK) {
+            return CustomTabsIntent.COLOR_SCHEME_DARK;
+        } else if (value == PrefConstants.ThemeValue.LIGHT) {
+            return CustomTabsIntent.COLOR_SCHEME_LIGHT;
+        } else {
+            return CustomTabsIntent.COLOR_SCHEME_SYSTEM;
+        }
     }
 }

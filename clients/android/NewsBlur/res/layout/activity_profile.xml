@@ -1,29 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    style="?itemBackground"
-    android:orientation="vertical" >
+    android:layout_height="match_parent">
 
-    <FrameLayout
-        android:id="@+id/profile_details"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+    <include layout="@layout/toolbar_newsblur" />
 
-    <androidx.viewpager.widget.ViewPager
-        android:id="@+id/activity_details_pager"
+    <RelativeLayout
+        style="?layoutBackground"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/profile_details">
+        android:orientation="vertical"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <androidx.viewpager.widget.PagerTitleStrip
+        <FrameLayout
+            android:id="@+id/profile_details"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="top"
-            style="?activityDetailsPager"
-            android:paddingTop="4dp"
-            android:paddingBottom="4dp" />
+            android:layout_height="wrap_content" />
 
-    </androidx.viewpager.widget.ViewPager>
+        <androidx.viewpager.widget.ViewPager
+            android:id="@+id/activity_details_pager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/profile_details">
 
-</RelativeLayout>
+            <androidx.viewpager.widget.PagerTitleStrip
+                style="?activityDetailsPager"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="top"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp" />
+
+        </androidx.viewpager.widget.ViewPager>
+
+    </RelativeLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

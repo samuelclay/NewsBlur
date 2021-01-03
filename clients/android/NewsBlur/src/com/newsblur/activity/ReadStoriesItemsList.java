@@ -11,7 +11,7 @@ public class ReadStoriesItemsList extends ItemsList {
 	protected void onCreate(Bundle bundle) {
 		super.onCreate(bundle);
 
-        UIUtils.setCustomActionBar(this, R.drawable.g_icn_unread_double, getResources().getString(R.string.read_stories_title));
+        UIUtils.setupToolbar(this, R.drawable.g_icn_unread_double, getResources().getString(R.string.read_stories_title), false);
 	}
 
 	@Override
