@@ -288,23 +288,24 @@ class Profile(models.Model):
         oldest_recent_payment_date = None
         free_lifetime_premium = False
         for payment in payment_history:
+            # Don't use free gift premiums in calculation for expiration
             if payment.payment_amount == 0:
+                logging.user(self.user, "~BY~SN~FWFree lifetime premium")
                 free_lifetime_premium = True
+                continue
+
+            # Only update exiration if payment in the last year
             if payment.payment_date > last_year:
                 recent_payments_count += 1
                 if not oldest_recent_payment_date or payment.payment_date < oldest_recent_payment_date:
                     oldest_recent_payment_date = payment.payment_date
         
-        if free_lifetime_premium:
-            logging.user(self.user, "~BY~SN~FWFree lifetime premium")
-            self.premium_expire = None
-            self.save()
-        elif oldest_recent_payment_date:
+        if oldest_recent_payment_date:
             new_premium_expire = (oldest_recent_payment_date +
                                   datetime.timedelta(days=365*recent_payments_count))
             # Only move premium expire forward, never earlier. Also set expiration if not premium.
             if (force_expiration or 
-                (set_premium_expire and not self.premium_expire) or 
+                (set_premium_expire and not self.premium_expire and not free_lifetime_premium) or 
                 (self.premium_expire and new_premium_expire > self.premium_expire)):
                 self.premium_expire = new_premium_expire
                 self.save()
