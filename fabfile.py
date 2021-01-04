@@ -791,7 +791,8 @@ def setup_node_app():
     sudo('ufw allow 4040')
 
 def config_node(full=False):
-    sudo('rm -fr /etc/supervisor/conf.d/node.conf')
+    sudo('rm -f /etc/supervisor/conf.d/gunicorn.conf')
+    sudo('rm -f /etc/supervisor/conf.d/node.conf')
     put('config/supervisor_node_unread.conf', '/etc/supervisor/conf.d/node_unread.conf', use_sudo=True)
     put('config/supervisor_node_unread_ssl.conf', '/etc/supervisor/conf.d/node_unread_ssl.conf', use_sudo=True)
     put('config/supervisor_node_favicons.conf', '/etc/supervisor/conf.d/node_favicons.conf', use_sudo=True)
