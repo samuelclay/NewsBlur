@@ -339,7 +339,7 @@ def setup_installs():
         'iotop',
         'git',
         'python2',
-        'python-dev',
+        'python2.7-dev',
         'locate',
         'software-properties-common',
         'libpcre3-dev',
@@ -351,7 +351,6 @@ def setup_installs():
         'make',
         'postgresql-common',
         'ssl-cert',
-        'pgbouncer',
         'python-setuptools',
         'libyaml-0-2',
         'python-yaml',
@@ -1040,7 +1039,7 @@ def downgrade_pil():
 def setup_db_monitor():
     pull()
     with virtualenv():
-        sudo('apt-get install -y libpq-dev python-dev')
+        sudo('apt-get install -y libpq-dev python2.7-dev')
         run('pip install -r flask/requirements.txt')
         put('flask/supervisor_db_monitor.conf', '/etc/supervisor/conf.d/db_monitor.conf', use_sudo=True)
         sudo('supervisorctl reread')
@@ -1179,7 +1178,7 @@ def disable_thp():
     sudo('update-rc.d disable-transparent-hugepages defaults')
     
 def setup_mongo():
-    MONGODB_VERSION = "3.2.19"
+    MONGODB_VERSION = "3.2.22"
     pull()
     disable_thp()
     sudo('systemctl enable rc-local.service') # Enable rc.local
@@ -1190,12 +1189,13 @@ def setup_mongo():
        echo never > /sys/kernel/mm/transparent_hugepage/defrag\n\
     fi\n\n\
     exit 0" | sudo tee /etc/rc.local')
-    sudo('apt-key adv --keyserver keyserver.ubuntu.com --recv 7F0CEB10')
+    sudo('curl -fsSL https://www.mongodb.org/static/pgp/server-3.2.asc | sudo apt-key add -')
     # sudo('echo "deb http://downloads-distro.mongodb.org/repo/ubuntu-upstart dist 10gen" | sudo tee /etc/apt/sources.list.d/mongodb.list')
     # sudo('echo "\ndeb http://downloads-distro.mongodb.org/repo/debian-sysvinit dist 10gen" | sudo tee -a /etc/apt/sources.list')
-    sudo('echo "deb http://repo.mongodb.org/apt/ubuntu trusty/mongodb-org/3.2 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.2.list')
+    # sudo('echo "deb http://repo.mongodb.org/apt/ubuntu trusty/mongodb-org/3.2 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.2.list')
+    sudo('echo "deb http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.2 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.2.list')
     sudo('apt-get update')
-    sudo('apt-get install -y --allow mongodb-org=%s mongodb-org-server=%s mongodb-org-shell=%s mongodb-org-mongos=%s mongodb-org-tools=%s' %
+    sudo('apt-get install -y mongodb-org=%s mongodb-org-server=%s mongodb-org-shell=%s mongodb-org-mongos=%s mongodb-org-tools=%s' %
          (MONGODB_VERSION, MONGODB_VERSION, MONGODB_VERSION, MONGODB_VERSION, MONGODB_VERSION))
     put('config/mongodb.%s.conf' % ('prod' if env.user != 'ubuntu' else 'ec2'),
         '/etc/mongodb.conf', use_sudo=True)
