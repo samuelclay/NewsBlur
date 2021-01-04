@@ -918,9 +918,10 @@ def build_haproxy():
     gunicorn_counts_servers = ['app22', 'app26']
     gunicorn_refresh_servers = ['app20', 'app21']
     maintenance_servers = ['app20']
-    ignore_servers = ['']
+    node_socket3_servers = ['node02', 'node03']
+    ignore_servers = []
     
-    for group_type in ['app', 'push', 'work', 'node_socket', 'node_favicon', 'node_text', 'www']:
+    for group_type in ['app', 'push', 'work', 'node_socket', 'node_socket3', 'node_favicon', 'node_text', 'www']:
         group_type_name = group_type
         if 'node' in group_type:
             group_type_name = 'node'
@@ -934,9 +935,15 @@ def build_haproxy():
             if server['name'] in ignore_servers:
                 print " ---> Ignoring %s" % server['name']
                 continue
+            if server['name'] in node_socket3_servers and group_type != 'node_socket3':
+                continue
+            if server['name'] not in node_socket3_servers and group_type == 'node_socket3':
+                continue
             if server_type == 'www':
                 port = 81
             if group_type == 'node_socket':
+                port = 8888
+            if group_type == 'node_socket3':
                 port = 8888
             if group_type == 'node_text':
                 port = 4040

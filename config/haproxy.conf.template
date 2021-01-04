@@ -51,6 +51,7 @@ frontend public
   monitor fail  if mx_mode
 
   use_backend node_socket if { path_beg /v2/socket.io/ }
+  use_backend node_socket3 if { path_beg /v3/socket.io/ }
   use_backend node_favicon if { path_beg /rss_feeds/icon/ }
   use_backend node_text if { path_beg /rss_feeds/original_text_fetcher }
   use_backend nginx if { path_beg /media/ }
@@ -70,6 +71,11 @@ backend node_socket
   http-check expect rstatus 200|503
   balance roundrobin
 {{ node_socket }}
+
+backend node_socket3
+  http-check expect rstatus 200|503
+  balance roundrobin
+{{ node_socket3 }}
  
 backend node_favicon
  http-check expect rstatus 200|503
