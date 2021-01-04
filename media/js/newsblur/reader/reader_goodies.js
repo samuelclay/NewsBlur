@@ -97,10 +97,10 @@ _.extend(NEWSBLUR.ReaderGoodies.prototype, {
             $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
               $.make('a', {
                   className: 'NB-goodies-mobile-link NB-modal-submit-button NB-modal-submit-green',
-                  href: 'https://market.android.com/details?id=bitwrit.Blar'
-              }, 'View in Android Market'),
+                  href: 'https://play.google.com/store/apps/details?id=com.grazeten'
+              }, 'View in Play Store'),
               $.make('div', { className: 'NB-goodies-android' }),
-              $.make('div', { className: 'NB-goodies-title' }, 'Blar')
+              $.make('div', { className: 'NB-goodies-title' }, 'GrazeTEN')
             ]),
             $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
               $.make('a', {
@@ -332,7 +332,7 @@ _.extend(NEWSBLUR.ReaderGoodies.prototype, {
             $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
               $.make('input', {
                   className: 'NB-goodies-custom-input',
-                  value: 'http://www.newsblur.com/?url=BLOG_URL_GOES_HERE'
+                  value: 'https://www.newsblur.com/?url=BLOG_URL_GOES_HERE'
               }),
               $.make('div', { className: 'NB-goodies-custom' }),
               $.make('div', { className: 'NB-goodies-title' }, 'Custom Add Site URL')
