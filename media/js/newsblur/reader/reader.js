@@ -4960,7 +4960,7 @@
                 this.socket = this.socket || io.connect(server + ":" + port, {
                     "reconnection delay": 2000,
                     "connect timeout": 2000,
-                    "path": "/v2/socket.io",
+                    "path": "/v3/socket.io",
                     "transports": ['websocket'],
                     "upgrade": false
                 });
@@ -5227,7 +5227,7 @@
             
             var feed = this.model.get_feed(feed_id);
             if (!feed) return;
-            
+
             var subs = feed.get('num_subscribers');
             var delay = options.realtime ? subs * 2 : 0; // 1,000 subs = 2 seconds
             
