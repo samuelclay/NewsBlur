@@ -64,7 +64,7 @@ except:
         'task'  : ['task01.newsblur.com'],
     }
 
-def do_roledefs(split=False):
+def do_roledefs(split=False, debug=False):
     doapi = digitalocean.Manager(token=django_settings.DO_TOKEN_FABRIC)
     droplets = doapi.get_all_droplets()
     env.do_ip_to_hostname = {}
@@ -375,6 +375,7 @@ def setup_installs():
     sudo('apt-get -y update')
     run('sleep 10') # Dies on a lock, so just delay
     sudo('DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" dist-upgrade')
+    run('sleep 10') # Dies on a lock, so just delay
     sudo('DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install %s' % ' '.join(packages))
     
     with settings(warn_only=True):
