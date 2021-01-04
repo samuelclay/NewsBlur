@@ -435,7 +435,9 @@ def setup_repo_local_settings():
         run('touch logs/newsblur.log')
 
 def setup_local_files():
-    put("config/toprc", "~/.toprc")
+    run('mkdir -p ~/.config/procps')
+    put("config/toprc", "~/.config/procps/toprc")
+    run('rm ~/.toprc')
     put("config/zshrc", "~/.zshrc")
     put('config/gitconfig.txt', '~/.gitconfig')
     put('config/ssh.conf', '~/.ssh/config')
