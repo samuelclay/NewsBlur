@@ -258,7 +258,7 @@ def setup_app_image():
 
 def setup_node():
     setup_node_app()
-    config_node()
+    config_node(full=True)
     
 def setup_db(engine=None, skip_common=False, skip_benchmark=False):
     if not skip_common:
@@ -353,6 +353,7 @@ def setup_installs():
         'ssl-cert',
         'python-setuptools',
         'libyaml-0-2',
+        'pgbouncer',
         'python-yaml',
         'python-numpy',
         'curl',
@@ -438,7 +439,7 @@ def setup_repo_local_settings():
 def setup_local_files():
     run('mkdir -p ~/.config/procps')
     put("config/toprc", "~/.config/procps/toprc")
-    run('rm ~/.toprc')
+    run('rm -f ~/.toprc')
     put("config/zshrc", "~/.zshrc")
     put('config/gitconfig.txt', '~/.gitconfig')
     put('config/ssh.conf', '~/.ssh/config')
