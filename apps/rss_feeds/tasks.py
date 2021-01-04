@@ -3,7 +3,7 @@ import os
 import shutil
 import time
 import redis
-from newsblur.celeryapp import app
+from newsblur_web.celeryapp import app
 from celery.exceptions import SoftTimeLimitExceeded
 from utils import log as logging
 from utils import s3_utils as s3
