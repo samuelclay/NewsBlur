@@ -5226,6 +5226,8 @@
             if (!feed_id) return;
             
             var feed = this.model.get_feed(feed_id);
+            if (!feed) return;
+            
             var subs = feed.get('num_subscribers');
             var delay = options.realtime ? subs * 2 : 0; // 1,000 subs = 2 seconds
             
