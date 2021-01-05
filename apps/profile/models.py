@@ -1091,6 +1091,12 @@ def paypal_signup(sender, **kwargs):
         user = User.objects.get(username__iexact=ipn_obj.custom)
     except User.DoesNotExist:
         user = User.objects.get(email__iexact=ipn_obj.payer_email)
+    except User.DoesNotExist:
+        logging.debug(" ---> Paypal subscription not found during flagging: %s/%s" % (
+            ipn_obj.payer_email,
+            ipn_obj.custom))    logging.user(user, "~BC~SB~FBPaypal subscription payment")
+        return {"code": -1, "message": "User doesn't exist."}
+
     logging.user(user, "~BC~SB~FBPaypal subscription signup")
     try:
         if not user.email:
@@ -1109,7 +1115,12 @@ def paypal_payment_history_sync(sender, **kwargs):
         user = User.objects.get(username__iexact=ipn_obj.custom)
     except User.DoesNotExist:
         user = User.objects.get(email__iexact=ipn_obj.payer_email)
-    logging.user(user, "~BC~SB~FBPaypal subscription payment")
+    except User.DoesNotExist:
+        logging.debug(" ---> Paypal subscription not found during flagging: %s/%s" % (
+            ipn_obj.payer_email,
+            ipn_obj.custom))    logging.user(user, "~BC~SB~FBPaypal subscription payment")
+        return {"code": -1, "message": "User doesn't exist."}
+
     try:
         user.profile.setup_premium_history()
     except:
@@ -1123,25 +1134,18 @@ def paypal_payment_was_flagged(sender, **kwargs):
     except User.DoesNotExist:
         if ipn_obj.payer_email:
             user = User.objects.get(email__iexact=ipn_obj.payer_email)
+    except User.DoesNotExist:
+        logging.debug(" ---> Paypal subscription not found during flagging: %s/%s" % (
+            ipn_obj.payer_email,
+            ipn_obj.custom))
+        return {"code": -1, "message": "User doesn't exist."}
+        
     try:
         user.profile.setup_premium_history()
         logging.user(user, "~BC~SB~FBPaypal subscription payment flagged")
     except:
         return {"code": -1, "message": "User doesn't exist."}
 invalid_ipn_received.connect(paypal_payment_was_flagged)
-
-def paypal_recurring_payment_history_sync(sender, **kwargs):
-    ipn_obj = sender
-    try:
-        user = User.objects.get(username__iexact=ipn_obj.custom)
-    except User.DoesNotExist:
-        user = User.objects.get(email__iexact=ipn_obj.payer_email)
-    logging.user(user, "~BC~SB~FBPaypal subscription recurring payment")
-    try:
-        user.profile.setup_premium_history()
-    except:
-        return {"code": -1, "message": "User doesn't exist."}
-valid_ipn_received.connect(paypal_recurring_payment_history_sync)
 
 def stripe_signup(sender, full_json, **kwargs):
     stripe_id = full_json['data']['object']['customer']
