@@ -105,6 +105,14 @@ _.extend(NEWSBLUR.ReaderGoodies.prototype, {
             $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
               $.make('a', {
                   className: 'NB-goodies-mobile-link NB-modal-submit-button NB-modal-submit-green',
+                  href: 'https://www.microsoft.com/store/productId/9N85PV1RJD6V'
+              }, 'View in Microsoft Store'),
+              $.make('div', { className: 'NB-goodies-windows' }),
+              $.make('div', { className: 'NB-goodies-title' }, 'RSS Tracker for Windows 10')
+            ]),
+            $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
+              $.make('a', {
+                  className: 'NB-goodies-mobile-link NB-modal-submit-button NB-modal-submit-green',
                   href: 'https://www.microsoft.com/en-us/store/apps/hypersonic/9nblggh5wnb6'
               }, 'View in Windows Store'),
               $.make('div', { className: 'NB-goodies-windows' }),
