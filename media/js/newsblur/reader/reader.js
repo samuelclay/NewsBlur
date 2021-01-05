@@ -4979,17 +4979,7 @@
                 }, this));
 
                 this.socket.removeAllListeners('feed:update');
-                this.socket.on('feed:update', _.bind(function(feed_id, message) {
-                    NEWSBLUR.log(['Real-time feed update', feed_id, message]);
-                    var feed = this.model.get_feed(feed_id);
-                    if (feed && !feed.get('fetched_once')) {
-                        this.force_feed_refresh(feed_id);
-                    } else {
-                        this.feed_unread_count(feed_id, {
-                            realtime: true
-                        });
-                    }
-                }, this));
+                this.socket.on('feed:update', _.bind(this.handle_realtime_update, this));
 
                 this.socket.removeAllListeners('feed:story:new');
                 this.socket.on('feed:story:new', _.bind(function(feed_id, message) {
@@ -5001,63 +4991,7 @@
 
                 this.socket.removeAllListeners(NEWSBLUR.Globals.username);
                 this.socket.removeAllListeners("user:update");
-                this.socket.on('user:update', _.bind(function(username, message) {
-                    NEWSBLUR.log(['Real-time user update', username, message]);
-                    if (this.flags.social_view) return;
-                    if (_.string.startsWith(message, 'feed:')) {
-                        feed_id = parseInt(message.replace('feed:', ''), 10);
-                        var active_feed_ids = [];
-                        if (this.active_folder && this.active_folder.length) {
-                            active_feed_ids = this.active_folder.feed_ids_in_folder();
-                        }
-                        if (feed_id != this.active_feed && 
-                            !_.contains(active_feed_ids, feed_id)) {
-                            NEWSBLUR.log(['Real-time user update for feed', username, feed_id]);
-                            this.feed_unread_count(feed_id);
-                        }
-                    } else if (_.string.startsWith(message, 'story:read')) {
-                        NEWSBLUR.log(['Real-time user update for read story', username, message]);
-                        var story_hash = message.replace('story:read:', '');
-                        NEWSBLUR.assets.stories.mark_read_pubsub(story_hash);
-                        NEWSBLUR.assets.dashboard_stories.mark_read_pubsub(story_hash);
-                    } else if (_.string.startsWith(message, 'story:unread')) {
-                        NEWSBLUR.log(['Real-time user update for unread story', username, message]);
-                        var story_hash = message.replace('story:unread:', '');
-                        NEWSBLUR.assets.stories.mark_unread_pubsub(story_hash);
-                        NEWSBLUR.assets.dashboard_stories.mark_unread_pubsub(story_hash);
-                    } else if (_.string.startsWith(message, 'story:starred') ||
-                               _.string.startsWith(message, 'story:unstarred')) {
-                        this.update_starred_counts();
-                    } else if (_.string.startsWith(message, 'social:')) {
-                        if (message != this.active_feed) {
-                            NEWSBLUR.log(['Real-time user update for social', username, message]);
-                            this.feed_unread_count(message);
-                        }
-                    } else if (message == "interaction:new") {
-                        this.update_interactions_count();
-                    } else if (_.string.startsWith(message, "notification:setup:")) {
-                        message = message.replace('notification:setup:', '');
-                        this.push_notification_setup(parseInt(message, 10));
-                    } else if (_.string.startsWith(message, "notification:")) {
-                        message = message.replace('notification:', '');
-                        var story_hash = message.slice(0, message.indexOf(','));
-                        var story_title = message.slice(message.indexOf(',')+1);
-                        this.push_notification(story_hash, story_title);
-                    } else if (_.string.startsWith(message, "search_index_complete:")) {
-                        message = message.replace('search_index_complete:', '');
-                        if (NEWSBLUR.app.active_search) {
-                            NEWSBLUR.app.active_search.update_indexing_progress(message);
-                        }
-                    } else if (_.string.startsWith(message, "refresh:")) {
-                        var feeds = message.replace('refresh:', '').split(",");
-                        this.force_feeds_refresh(null, false, feeds);
-                    } else if (_.string.startsWith(message, "reload:")) {
-                        if (!NEWSBLUR.reader.flags['reloading_feeds']) {
-                            console.log(["Reloading feeds due to server reload", NEWSBLUR.reader.flags['reloading_feeds']]);
-                            NEWSBLUR.assets.load_feeds();
-                        }
-                    }
-                }, this));
+                this.socket.on('user:update', _.bind(this.handle_realtime_update, this));
 
                 
                 this.socket.on('disconnect', _.bind(function() {
@@ -5089,6 +5023,77 @@
             }
             
             // this.watch_navigator_online();
+        },
+
+        handle_realtime_update: function (username, message) {
+            if (_.isNumber(username)) {
+                var feed_id = username;
+                NEWSBLUR.log(['Real-time feed update', feed_id, message]);
+                var feed = this.model.get_feed(feed_id);
+                if (feed && !feed.get('fetched_once')) {
+                    this.force_feed_refresh(feed_id);
+                } else {
+                    this.feed_unread_count(feed_id, {
+                        realtime: true
+                    });
+                }
+            } else {
+                NEWSBLUR.log(['Real-time user update', username, message]);
+                if (this.flags.social_view) return;
+                if (_.string.startsWith(message, 'feed:')) {
+                    feed_id = parseInt(message.replace('feed:', ''), 10);
+                    var active_feed_ids = [];
+                    if (this.active_folder && this.active_folder.length) {
+                        active_feed_ids = this.active_folder.feed_ids_in_folder();
+                    }
+                    if (feed_id != this.active_feed &&
+                        !_.contains(active_feed_ids, feed_id)) {
+                        NEWSBLUR.log(['Real-time user update for feed', username, feed_id]);
+                        this.feed_unread_count(feed_id);
+                    }
+                } else if (_.string.startsWith(message, 'story:read')) {
+                    NEWSBLUR.log(['Real-time user update for read story', username, message]);
+                    var story_hash = message.replace('story:read:', '');
+                    NEWSBLUR.assets.stories.mark_read_pubsub(story_hash);
+                    NEWSBLUR.assets.dashboard_stories.mark_read_pubsub(story_hash);
+                } else if (_.string.startsWith(message, 'story:unread')) {
+                    NEWSBLUR.log(['Real-time user update for unread story', username, message]);
+                    var story_hash = message.replace('story:unread:', '');
+                    NEWSBLUR.assets.stories.mark_unread_pubsub(story_hash);
+                    NEWSBLUR.assets.dashboard_stories.mark_unread_pubsub(story_hash);
+                } else if (_.string.startsWith(message, 'story:starred') ||
+                    _.string.startsWith(message, 'story:unstarred')) {
+                    this.update_starred_counts();
+                } else if (_.string.startsWith(message, 'social:')) {
+                    if (message != this.active_feed) {
+                        NEWSBLUR.log(['Real-time user update for social', username, message]);
+                        this.feed_unread_count(message);
+                    }
+                } else if (message == "interaction:new") {
+                    this.update_interactions_count();
+                } else if (_.string.startsWith(message, "notification:setup:")) {
+                    message = message.replace('notification:setup:', '');
+                    this.push_notification_setup(parseInt(message, 10));
+                } else if (_.string.startsWith(message, "notification:")) {
+                    message = message.replace('notification:', '');
+                    var story_hash = message.slice(0, message.indexOf(','));
+                    var story_title = message.slice(message.indexOf(',') + 1);
+                    this.push_notification(story_hash, story_title);
+                } else if (_.string.startsWith(message, "search_index_complete:")) {
+                    message = message.replace('search_index_complete:', '');
+                    if (NEWSBLUR.app.active_search) {
+                        NEWSBLUR.app.active_search.update_indexing_progress(message);
+                    }
+                } else if (_.string.startsWith(message, "refresh:")) {
+                    var feeds = message.replace('refresh:', '').split(",");
+                    this.force_feeds_refresh(null, false, feeds);
+                } else if (_.string.startsWith(message, "reload:")) {
+                    if (!NEWSBLUR.reader.flags['reloading_feeds']) {
+                        console.log(["Reloading feeds due to server reload", NEWSBLUR.reader.flags['reloading_feeds']]);
+                        NEWSBLUR.assets.load_feeds();
+                    }
+                }
+            }
         },
         
         watch_navigator_online: function() {
