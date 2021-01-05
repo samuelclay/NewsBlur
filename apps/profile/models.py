@@ -1094,7 +1094,7 @@ def paypal_signup(sender, **kwargs):
     except User.DoesNotExist:
         logging.debug(" ---> Paypal subscription not found during flagging: %s/%s" % (
             ipn_obj.payer_email,
-            ipn_obj.custom))    logging.user(user, "~BC~SB~FBPaypal subscription payment")
+            ipn_obj.custom))    
         return {"code": -1, "message": "User doesn't exist."}
 
     logging.user(user, "~BC~SB~FBPaypal subscription signup")
@@ -1118,9 +1118,10 @@ def paypal_payment_history_sync(sender, **kwargs):
     except User.DoesNotExist:
         logging.debug(" ---> Paypal subscription not found during flagging: %s/%s" % (
             ipn_obj.payer_email,
-            ipn_obj.custom))    logging.user(user, "~BC~SB~FBPaypal subscription payment")
+            ipn_obj.custom))
         return {"code": -1, "message": "User doesn't exist."}
 
+    logging.user(user, "~BC~SB~FBPaypal subscription payment")
     try:
         user.profile.setup_premium_history()
     except:
