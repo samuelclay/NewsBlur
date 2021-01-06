@@ -475,7 +475,7 @@ class UserSubscription(models.Model):
         logging.user(user, "~BB~FW~SBQueueing NewFeeds: ~FC(%s) %s" % (len(new_feeds), new_feeds))
         size = 4
         for t in (new_feeds[pos:pos + size] for pos in range(0, len(new_feeds), size)):
-            NewFeeds().apply_async(args=(t,), queue="new_feeds")
+            NewFeeds.apply_async(args=(t,), queue="new_feeds")
     
     @classmethod
     def refresh_stale_feeds(cls, user, exclude_new=False):
