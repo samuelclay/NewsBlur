@@ -73,4 +73,4 @@ clients/android/NewsBlur/gradle*
 clients/android/NewsBlur/settings.gradle
 /docker/volumes/*
 
-**/node_modules
+node/node_modules
