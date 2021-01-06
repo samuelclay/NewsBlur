@@ -21,10 +21,11 @@ class MongoDumpMiddleware(object):
         if not getattr(MongoClient, '_logging', False):
             # save old methods
             setattr(MongoClient, '_logging', True)
-            MongoClient._send_message_with_response = \
-                    self._instrument(MongoClient._send_message_with_response)
-            MongoReplicaSetClient._send_message_with_response = \
-                    self._instrument(MongoReplicaSetClient._send_message_with_response)
+            if hasattr(MongoClient, '_send_message_with_response'):
+                MongoClient._send_message_with_response = \
+                        self._instrument(MongoClient._send_message_with_response)
+                MongoReplicaSetClient._send_message_with_response = \
+                        self._instrument(MongoReplicaSetClient._send_message_with_response)
         return None
 
     def process_celery(self, profiler):
@@ -33,23 +34,14 @@ class MongoDumpMiddleware(object):
         if not getattr(MongoClient, '_logging', False):
             # save old methods
             setattr(MongoClient, '_logging', True)
-            MongoClient._send_message_with_response = \
-                    self._instrument(MongoClient._send_message_with_response)
-            MongoReplicaSetClient._send_message_with_response = \
-                    self._instrument(MongoReplicaSetClient._send_message_with_response)
+            if hasattr(MongoClient, '_send_message_with_response'):
+                MongoClient._send_message_with_response = \
+                        self._instrument(MongoClient._send_message_with_response)
+                MongoReplicaSetClient._send_message_with_response = \
+                        self._instrument(MongoReplicaSetClient._send_message_with_response)
         return None
 
     def process_response(self, request, response):
-        # if settings.DEBUG and hasattr(self, 'orig_send_message') and hasattr(self, 'orig_send_message_with_response'):
-        #     # remove instrumentation from pymongo
-        #     MongoClient._send_message = \
-        #             self.orig_send_message
-        #     MongoClient._send_message_with_response = \
-        #             self.orig_send_message_with_response
-        #     MongoReplicaSetClient._send_message = \
-        #             self.orig_rs_send_message
-        #     MongoReplicaSetClient._send_message_with_response = \
-        #             self.orig_rs_send_message_with_response
         return response
 
     def _instrument(self, original_method):
