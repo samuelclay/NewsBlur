@@ -26,7 +26,7 @@ class SESBackend(BaseEmailBackend):
         num_sent = 0
         for message in email_messages:
             # Hand this off to a celery task.
-            SendEmailTask.delay(
+            SendEmailTask().delay(
                 message.from_email,
                 message.recipients(),
                 message.message().as_string(),

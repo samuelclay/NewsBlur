@@ -619,7 +619,7 @@ def mark_story_as_shared(request):
             })
         if source_user_id:
             shared_story.set_source_user_id(int(source_user_id))
-        UpdateRecalcForSubscription.delay(subscription_user_id=request.user.pk,
+        UpdateRecalcForSubscription().delay(subscription_user_id=request.user.pk,
                                           shared_story_id=str(shared_story.id))
         logging.user(request, "~FCSharing ~FM%s: ~SB~FB%s" % (story.story_title[:20], comments[:30]))
     else:
@@ -657,13 +657,13 @@ def mark_story_as_shared(request):
     if post_to_services:
         for service in post_to_services:
             if service not in shared_story.posted_to_services:
-                PostToService.delay(shared_story_id=str(shared_story.id), service=service)
+                PostToService().delay(shared_story_id=str(shared_story.id), service=service)
     
     if shared_story.source_user_id and shared_story.comments:
-        EmailStoryReshares.apply_async(kwargs=dict(shared_story_id=str(shared_story.id)),
+        EmailStoryReshares().apply_async(kwargs=dict(shared_story_id=str(shared_story.id)),
                                        countdown=settings.SECONDS_TO_DELAY_CELERY_EMAILS)
     
-    EmailFirstShare.apply_async(kwargs=dict(user_id=request.user.pk))
+    EmailFirstShare().apply_async(kwargs=dict(user_id=request.user.pk))
     
 
     if format == 'html':
@@ -811,7 +811,7 @@ def save_comment_reply(request):
                                          story_feed_id=feed_id,
                                          story_title=shared_story.story_title)
 
-    EmailCommentReplies.apply_async(kwargs=dict(shared_story_id=str(shared_story.id),
+    EmailCommentReplies().apply_async(kwargs=dict(shared_story_id=str(shared_story.id),
                                                 reply_id=str(reply.reply_id)), 
                                                 countdown=settings.SECONDS_TO_DELAY_CELERY_EMAILS)
     

@@ -4,19 +4,22 @@ mongo = require 'mongodb'
 log    = require './log.js'
 
 DEV = process.env.NODE_ENV == 'development'
+DOCKER = process.env.NODE_ENV == "docker"
 MONGODB_SERVER = if DEV then 'localhost' else 'db_mongo'
 MONGODB_PORT = parseInt(process.env.MONGODB_PORT or 27017, 10)
 
 log.debug "Starting NewsBlur Favicon server..."
 if !DEV and !process.env.NODE_ENV
-    log.debug "Specify NODE_ENV=<development,production>"
+    log.debug "Specify NODE_ENV=<development,docker,production>"
     return
 else if DEV
     log.debug "Running as development server"
+else if DOCKER
+    log.debug "Running as docker server"
 else
     log.debug "Running as production server"
     
-if DEV
+if DEV or DOCKER
     url = "mongodb://#{MONGODB_SERVER}:#{MONGODB_PORT}/newsblur"
 else
     url = "mongodb://#{MONGODB_SERVER}:#{MONGODB_PORT}/newsblur?replicaSet=nbset&readPreference=secondaryPreferred"

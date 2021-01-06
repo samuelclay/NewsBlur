@@ -1,6 +1,6 @@
 import datetime
 from django import forms
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from django.db.models import Q
@@ -167,7 +167,7 @@ class SignupForm(forms.Form):
         RNewUserQueue.add_user(new_user.pk)
         
         if new_user.email:
-            EmailNewUser.delay(user_id=new_user.pk)
+            EmailNewUser().delay(user_id=new_user.pk)
         
         if getattr(settings, 'AUTO_PREMIUM_NEW_USERS', False):
             new_user.profile.activate_premium()

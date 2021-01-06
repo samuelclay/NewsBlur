@@ -3,8 +3,11 @@ redis  = require 'redis'
 log    = require './log.js'
 
 DEV = process.env.NODE_ENV == 'development'
-REDIS_SERVER = if process.env.NODE_ENV == 'development' then 'localhost' else 'db_redis_pubsub'
+DOCKER = process.env.NODE_ENV == 'docker'
+REDIS_SERVER = if process.env.NODE_ENV == 'development' then 'localhost' else if DOCKER then 'redis' else 'db_redis_pubsub'
 SECURE = !!process.env.NODE_SSL
+REDIS_PORT = if DOCKER then 6579 else 6379
+
 # client = redis.createClient 6379, REDIS_SERVER
 
 # RedisStore  = require 'socket.io/lib/stores/redis'
@@ -32,14 +35,14 @@ if SECURE
         key: privateKey
         cert: certificate
     app = require('https').createServer options
-    io = require('socket.io')(app, path: "/v2/socket.io")
+    io = require('socket.io')(app, path: "/v3/socket.io")
     app.listen options.port
     log.debug "Listening securely on port #{options.port}"
 else
     options = 
         port: 8888
     app = require('http').createServer()
-    io = require('socket.io')(app, path: "/v2/socket.io")
+    io = require('socket.io')(app, path: "/v3/socket.io")
     app.listen options.port
     log.debug "Listening on port #{options.port}"
 
@@ -64,7 +67,7 @@ io.on 'connection', (socket) ->
         socket.on "error", (err) ->
             log.debug "Error (socket): #{err}"
         socket.subscribe?.quit()
-        socket.subscribe = redis.createClient 6379, REDIS_SERVER
+        socket.subscribe = redis.createClient REDIS_PORT, REDIS_SERVER
         socket.subscribe.on "error", (err) =>
             log.info @username, "Error: #{err} (#{@feeds.length} feeds)"
             socket.subscribe?.quit()

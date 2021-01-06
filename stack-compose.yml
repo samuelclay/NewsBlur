@@ -1,0 +1,256 @@
+version: '3'
+services:
+  newsblur_web:
+    hostname: nb.com
+    image: newsblur/newsblur_python3
+    environment: 
+      - DOCKERBUILD=True
+    stdin_open: true
+    tty: true
+    links:
+      - db_mongo
+      - postgres
+      - elasticsearch
+      - redis
+    restart: always
+    depends_on:
+      - db_mongo
+      - postgres
+      - redis
+      - elasticsearch
+    ulimits:
+      nproc: 10000
+      nofile:
+        soft: 10000
+        hard: 10000
+    ports:
+      - '8000:8000'
+    # only use gunicorn if the TEST env variable is not "True"
+    command: bash -c 'if [[ -z "${TEST}" && "${TEST}" = "True"  ]] ; then echo "starting test env"; else gunicorn --bind :8000 newsblur_web.wsgi:application; fi'
+    volumes: 
+      - app-files:/srv/newsblur
+    deploy:
+      #placement:
+      #  constraints: 
+      #    - node.name == app
+      #    - node.name == app-counts
+      #    - node.name == app-refresh
+      #    - node.name == app-push
+      replicas: 5
+      
+  nginx:
+    image: nginx:1.13
+    ports:
+      - 81:81
+    depends_on:
+    - newsblur_web
+    - favicons
+    - postgres
+    - redis
+    - db_mongo
+    - elasticsearch
+    - original_pages
+    - original_text
+    - node_websocket
+    environment: 
+      - DOCKERBUILD=True
+    volumes:
+    - app-files:/srv/newsblur
+    deploy:
+      #placement:
+      #  constraints: [node.name == app]
+      replicas: 5
+
+  postgres:
+    image: postgres:9.6
+    environment:
+      - POSTGRES_USER=newsblur
+      - POSTGRES_PASSWORD=newsblur
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    deploy:
+      #placement:
+      #  constraints: [node.label.name == postgres]
+      replicas: 1
+
+
+  redis:
+    image: newsblur/redis:latest
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis-data:/data
+      - redis-data:/redis.var.lib:/var/lib/redis
+    command: redis-server --port 6379
+    deploy:
+      replicas: 4
+
+  elasticsearch:
+    image: elasticsearch:1.7
+    ports:
+      - '9200:9200'
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
+
+  db_mongo:
+    image: mongo:3.2
+    ports:
+      - 27017:27017
+    command: mongod --smallfiles
+    volumes:
+      - db-mongo-data:/data/db
+    deploy:
+      replicas: 3
+  
+
+  original_pages:
+    image: newsblur/node_prod
+    environment:
+      - NODE_ENV=development
+    command: node original_page.js
+    ports:
+      - 3060:3060
+
+  original_text:
+    image: newsblur/node_prod
+    environment:
+      - NODE_ENV=development
+    ports:
+      - 4040:4040
+    command: node original_text.js
+
+  favicons:
+    image: newsblur/node_prod
+    environment:
+      - NODE_ENV=docker
+      - MONGO_PORT=29019
+    ports:
+      - 3030:3030
+    command: node favicons.js
+    depends_on: 
+      - postgres
+
+  node_websocket:
+    image: newsblur/node_prod
+    environment:
+      - NODE_ENV=docker
+    command: node unread_counts.js
+    stop_signal: HUP
+    ports:
+      - 8888:8888
+
+  celerybeat:
+    image: newsblur/newsblur_python3
+    command: bash -c "mkdir -p data && celery beat -A newsblur_web --schedule=/srv/newsblur/data/celerybeat-schedule.db --loglevel=INFO --pidfile=/srv/celeryd.pid"
+    environment: 
+      - DOCKERBUILD=True
+    volumes:
+      - app-files:/srv/newsblur
+
+  celeryd:
+    image: newsblur/newsblur_python3
+    command: "celery worker -A newsblur_web --loglevel=INFO -Q new_feeds,push_feeds,update_feeds"
+    volumes:
+      - app-files:/srv/newsblur
+    environment: 
+      - DOCKERBUILD=True
+    user: "${CURRENT_UID}:${CURRENT_GID}"
+    deploy:
+      replicas: 3
+
+  celeryd_beat:
+    image: newsblur/newsblur_python3
+    command: "celery worker -A newsblur_web --loglevel=INFO -Q beat_tasks -c 3"
+    environment: 
+      - DOCKERBUILD=True
+    volumes:
+      - app-files:/srv/newsblur
+    user: "${CURRENT_UID}:${CURRENT_GID}"
+
+  celeryd_beat_feeds:
+    image: newsblur/newsblur_python3
+    command: "celery worker -A newsblur_web --loglevel=INFO -Q beat_feeds_task -c 1"
+    environment: 
+      - DOCKERBUILD=True
+    volumes:
+      - app-files:/srv/newsblur
+    user: "${CURRENT_UID}:${CURRENT_GID}"
+
+  celeryd_news:
+    image: newsblur/newsblur_python3
+    command: "celery worker -A newsblur_web --loglevel=INFO -Q new_feeds,push_feeds"
+    environment: 
+      - DOCKERBUILD=True
+    volumes:
+      - app-files:/srv/newsblur
+    user: "${CURRENT_UID}:${CURRENT_GID}"
+
+  celeryd_search_indexer:
+    image: newsblur/newsblur_python3
+    command: "celery worker -A newsblur_web --loglevel=INFO -Q search_indexer -c 4"
+    environment: 
+      - DOCKERBUILD=True
+    volumes:
+      - app-files:/srv/newsblur
+
+    user: $CURRENT_UID:$CURRENT_GID
+
+  celeryd_search_indexer_tasker:
+    image: newsblur/newsblur_python3
+    command: "celery worker -A newsblur_web --loglevel=INFO -Q search_indexer_tasker -c 2"
+    environment: 
+      - DOCKERBUILD=True
+    volumes:
+      - app-files:/srv/newsblur
+    user: $CURRENT_UID:$CURRENT_GID
+
+  celeryd_work_queue:
+    image: newsblur/newsblur_python3
+    command: bash -c "celery worker -A newsblur_web --loglevel=INFO -Q work_queue"
+    ports:
+      - 82:82
+    environment: 
+      - DOCKERBUILD=True
+    volumes:
+      - app-files:/srv/newsblur
+    user: $CURRENT_UID:$CURRENT_GID
+    deploy:
+      replicas: 2
+
+
+  monitor:
+    image: newsblur/newsblur_python3 
+    command: bash -c "python /srv/newsblur/flask_monitor/db_monitor.py"
+    environment: 
+      - DOCKERBUILD=True
+    volumes:
+      - app-files:/srv/newsblur
+    ports:
+      - 5579:5579
+
+  haproxy:
+    domainname: 'nb.local.com'
+    image: newsblur/haproxy
+    dns: 127.0.0.11
+    depends_on: 
+      - nginx
+      - newsblur_web
+      - redis
+    ports:
+      - 80:80
+      - 443:443
+      - 1936:1936
+    environment: 
+      - DOCKERBUILD=True
+    volumes:
+      - app-files:/srv/newsblur
+
+volumes:
+  app-files:
+  postgres-data:
+  redis-data:
+  elasticsearch-data:
+  db-mongo-data:
+  

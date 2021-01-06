@@ -55,7 +55,7 @@ DNSIMPLE_TOKEN = "YOUR_DNSIMPLE_TOKEN"
 RECAPTCHA_SECRET_KEY = "YOUR_RECAPTCHA_KEY"
 YOUTUBE_API_KEY = "YOUR_YOUTUBE_API_KEY"
 IMAGES_SECRET_KEY = "YOUR_IMAGES_SECRET_KEY"
-
+DOCKERBUILD = os.getenv("DOCKERBUILD")
 # ===================
 # = Global Settings =
 # ===================
@@ -190,7 +190,7 @@ LOGGING = {
         'mail_admins': {
             'level': 'CRITICAL',
             'class': 'django.utils.log.AdminEmailHandler',
-            'filters': ['require_debug_false'],
+            # 'filters': ['require_debug_false'],
             'include_html': True,
         },
         # 'sentry': {
@@ -266,7 +266,7 @@ DAYS_OF_STORY_HASHES    = 30
 
 SUBSCRIBER_EXPIRE       = 7
 
-ROOT_URLCONF            = 'newsblur.urls'
+ROOT_URLCONF            = 'newsblur_web.urls'
 INTERNAL_IPS            = ('127.0.0.1',)
 LOGGING_LOG_SQL         = True
 APPEND_SLASH            = False
@@ -279,20 +279,16 @@ SESSION_COOKIE_HTTPONLY = False
 SENTRY_DSN              = 'https://XXXNEWSBLURXXX@app.getsentry.com/99999999'
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
 DATA_UPLOAD_MAX_NUMBER_FIELDS = None # Handle long /reader/complete_river calls
-
-if DEBUG:
-    # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-    EMAIL_BACKEND = 'vendor.mailgun.MailgunBackend'
-else:
-    EMAIL_BACKEND = 'vendor.mailgun.MailgunBackend'
+EMAIL_BACKEND = 'anymail.backends.mailgun.EmailBackend'
 
 # ==============
 # = Subdomains =
 # ==============
 
 SUBDOMAIN_URLCONFS = {
-    None: 'newsblur.urls',
-    'www': 'newsblur.urls',
+    None: 'newsblur_web.urls',
+    'www': 'newsblur_web.urls',
+    'nb': 'newsblur_web.urls',
 }
 REMOVE_WWW_FROM_DOMAIN = True
 
@@ -337,6 +333,7 @@ INSTALLED_APPS = (
     'vendor',
     'typogrify',
     'vendor.zebra',
+    'anymail',
     'oauth2_provider',
     'corsheaders',
 )
@@ -509,13 +506,16 @@ CELERY_BEAT_SCHEDULE = {
 # =========
 # = Mongo =
 # =========
-
+if DOCKERBUILD:
+    MONGO_PORT = 29019
+else:
+    MONGO_PORT = 27017
 MONGO_DB = {
-    'host': 'db_mongo:27017',
+    'host': f'db_mongo:{MONGO_PORT}',
     'name': 'newsblur',
 }
 MONGO_ANALYTICS_DB = {
-    'host': 'db_mongo_analytics:27017',
+    'host': f'db_mongo_analytics:{MONGO_PORT}',
     'name': 'nbanalytics',
 }
 
@@ -545,32 +545,6 @@ class MasterSlaveRouter(object):
         "Explicitly put all models on all databases."
         return True
 
-# =========
-# = Redis =
-# =========
-
-REDIS = {
-    'host': '127.0.0.1',
-}
-REDIS_PUBSUB = {
-    'host': '127.0.0.1',
-}
-REDIS_STORY = {
-    'host': '127.0.0.1',
-}
-REDIS_SESSIONS = {
-    'host': '127.0.0.1',
-}
-
-CELERY_REDIS_DB_NUM = 4
-SESSION_REDIS_DB = 5
-
-# =================
-# = Elasticsearch =
-# =================
-
-ELASTICSEARCH_FEED_HOSTS = ['db_search_feed:9200']
-ELASTICSEARCH_STORY_HOSTS = ['db_search_story:9200']
 
 # ===============
 # = Social APIs =
@@ -587,7 +561,6 @@ YOUTUBE_API_KEY = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 # = AWS Backing =
 # ===============
 
-ORIGINAL_PAGE_SERVER = "db_pages:3060"
 
 BACKED_BY_AWS = {
     'pages_on_s3': False,
@@ -603,8 +576,10 @@ S3_AVATARS_BUCKET_NAME = 'avatars.newsblur.com'
 # ==================
 # = Configurations =
 # ==================
-
-from .local_settings import *
+if DOCKERBUILD:
+    from newsblur_web.docker_local_settings import *
+else:
+    from newsblur_web.local_settings import *
 
 if not DEBUG:
     INSTALLED_APPS += (
@@ -676,13 +651,23 @@ TEMPLATES = [
         },
     }
 ]
+
+# =========
+# = Email =
+# =========
+
+ANYMAIL = {
+    "MAILGUN_API_KEY": MAILGUN_ACCESS_KEY,
+    "MAILGUN_SENDER_DOMAIN": MAILGUN_SERVER_NAME,
+}
+
 # =========
 # = Mongo =
 # =========
 
 MONGO_DB_DEFAULTS = {
     'name': 'newsblur',
-    'host': 'db_mongo:27017',
+    'host': f'db_mongo:{MONGO_PORT}',
     'alias': 'default',
     'connect': False,
 }
@@ -702,7 +687,7 @@ MONGODB = connect(MONGO_DB_NAME, **MONGO_DB)
 
 MONGO_ANALYTICS_DB_DEFAULTS = {
     'name': 'nbanalytics',
-    'host': 'db_mongo_analytics:27017',
+    'host': f'db_mongo_analytics:{MONGO_PORT}',
     'alias': 'nbanalytics',
 }
 MONGO_ANALYTICS_DB = dict(MONGO_ANALYTICS_DB_DEFAULTS, **MONGO_ANALYTICS_DB)
@@ -714,13 +699,19 @@ MONGOANALYTICSDB = connect(MONGO_ANALYTICS_DB_NAME, **MONGO_ANALYTICS_DB)
 # =========
 # = Redis =
 # =========
+if DOCKERBUILD:
+    REDIS_PORT = 6579
+else:
+    REDIS_PORT = 6379
 
-CELERY_BROKER_URL = "redis://%s:6379/%s" % (REDIS['host'], CELERY_REDIS_DB_NUM)
+CELERY_REDIS_DB_NUM = 4
+SESSION_REDIS_DB = 5
+CELERY_BROKER_URL = "redis://%s:%s/%s" % (REDIS['host'], REDIS_PORT,CELERY_REDIS_DB_NUM)
 CELERY_RESULT_BACKEND = CELERY_BROKER_URL
 
 SESSION_REDIS = {
     'host': REDIS_SESSIONS['host'],
-    'port': 6379,
+    'port': REDIS_PORT,
     'db': SESSION_REDIS_DB,
     # 'password': 'password',
     'prefix': '',
@@ -731,7 +722,7 @@ SESSION_REDIS = {
 CACHES = {
     'default': {
         'BACKEND': 'redis_cache.RedisCache',
-        'LOCATION': '%s:6379' % REDIS['host'],
+        'LOCATION': '%s:%s' % (REDIS['host'], REDIS_PORT),
         'OPTIONS': {
             'DB': 6,
             'PARSER_CLASS': 'redis.connection.HiredisParser',
@@ -740,18 +731,18 @@ CACHES = {
     },
 }
 
-REDIS_POOL                 = redis.ConnectionPool(host=REDIS['host'], port=6379, db=0, decode_responses=True)
-REDIS_ANALYTICS_POOL       = redis.ConnectionPool(host=REDIS['host'], port=6379, db=2, decode_responses=True)
-REDIS_STATISTICS_POOL      = redis.ConnectionPool(host=REDIS['host'], port=6379, db=3, decode_responses=True)
-REDIS_FEED_UPDATE_POOL     = redis.ConnectionPool(host=REDIS['host'], port=6379, db=4, decode_responses=True)
-# REDIS_STORY_HASH_POOL2   = redis.ConnectionPool(host=REDIS['host'], port=6379, db=8) # Only used when changing DAYS_OF_UNREAD
-REDIS_STORY_HASH_TEMP_POOL = redis.ConnectionPool(host=REDIS['host'], port=6379, db=10, decode_responses=True)
-# REDIS_CACHE_POOL         = redis.ConnectionPool(host=REDIS['host'], port=6379, db=6) # Duped in CACHES
-REDIS_STORY_HASH_POOL      = redis.ConnectionPool(host=REDIS_STORY['host'], port=6379, db=1, decode_responses=True)
-REDIS_FEED_READ_POOL       = redis.ConnectionPool(host=REDIS_SESSIONS['host'], port=6379, db=1, decode_responses=True)
-REDIS_FEED_SUB_POOL        = redis.ConnectionPool(host=REDIS_SESSIONS['host'], port=6379, db=2, decode_responses=True)
-REDIS_SESSION_POOL         = redis.ConnectionPool(host=REDIS_SESSIONS['host'], port=6379, db=5, decode_responses=True)
-REDIS_PUBSUB_POOL          = redis.ConnectionPool(host=REDIS_PUBSUB['host'], port=6379, db=0, decode_responses=True)
+REDIS_POOL                 = redis.ConnectionPool(host=REDIS['host'], port=REDIS_PORT, db=0, decode_responses=True)
+REDIS_ANALYTICS_POOL       = redis.ConnectionPool(host=REDIS['host'], port=REDIS_PORT, db=2, decode_responses=True)
+REDIS_STATISTICS_POOL      = redis.ConnectionPool(host=REDIS['host'], port=REDIS_PORT, db=3, decode_responses=True)
+REDIS_FEED_UPDATE_POOL     = redis.ConnectionPool(host=REDIS['host'], port=REDIS_PORT, db=4, decode_responses=True)
+# REDIS_STORY_HASH_POOL2   = redis.ConnectionPool(host=REDIS['host'], port=REDIS_PORT, db=8) # Only used when changing DAYS_OF_UNREAD
+REDIS_STORY_HASH_TEMP_POOL = redis.ConnectionPool(host=REDIS['host'], port=REDIS_PORT, db=10, decode_responses=True)
+# REDIS_CACHE_POOL         = redis.ConnectionPool(host=REDIS['host'], port=REDIS_PORT, db=6) # Duped in CACHES
+REDIS_STORY_HASH_POOL      = redis.ConnectionPool(host=REDIS_STORY['host'], port=REDIS_PORT, db=1, decode_responses=True)
+REDIS_FEED_READ_POOL       = redis.ConnectionPool(host=REDIS_SESSIONS['host'], port=REDIS_PORT, db=1, decode_responses=True)
+REDIS_FEED_SUB_POOL        = redis.ConnectionPool(host=REDIS_SESSIONS['host'], port=REDIS_PORT, db=2, decode_responses=True)
+REDIS_SESSION_POOL         = redis.ConnectionPool(host=REDIS_SESSIONS['host'], port=REDIS_PORT, db=5, decode_responses=True)
+REDIS_PUBSUB_POOL          = redis.ConnectionPool(host=REDIS_PUBSUB['host'], port=REDIS_PORT, db=0, decode_responses=True)
 
 # ==========
 # = Celery =
