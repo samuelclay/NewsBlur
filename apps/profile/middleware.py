@@ -29,7 +29,7 @@ class LastSeenMiddleware(object):
                 logging.user(request, "~FG~BBRepeat visitor: ~SB%s (%s)" % (
                     request.user.profile.last_seen_on, ip))
                 from apps.profile.tasks import CleanupUser
-                CleanupUser.delay(user_id=request.user.pk)
+                CleanupUser().delay(user_id=request.user.pk)
             elif settings.DEBUG:
                 logging.user(request, "~FG~BBRepeat visitor (ignored): ~SB%s (%s)" % (
                     request.user.profile.last_seen_on, ip))
@@ -62,12 +62,14 @@ class DBProfilerMiddleware:
             random.random() < .01):
             request.activated_segments.append('db_profiler')
             connection.use_debug_cursor = True
+            settings.DEBUG = True
 
     def process_celery(self): 
         setattr(self, 'activated_segments', [])        
         if random.random() < .01:
             self.activated_segments.append('db_profiler')
             connection.use_debug_cursor = True
+            settings.DEBUG = True
             return self
     
     def process_exception(self, request, exception):
@@ -164,10 +166,14 @@ class SQLLogToConsoleMiddleware:
                 'redis': sum([float(q['time']) for q in queries if q.get('redis')]),
             }
             setattr(request, 'sql_times_elapsed', times_elapsed)
+        
+        settings.DEBUG = False
+
         return response
         
     def process_celery(self, profiler):
         self.process_response(profiler, None)
+        settings.DEBUG = False
 
     def __call__(self, request):
         response = None
@@ -362,7 +368,6 @@ class UserAgentBanMiddleware:
         if 'account' in request.path: return
         if 'push' in request.path: return
         if getattr(settings, 'TEST_DEBUG'): return
-        
         if any(ua in user_agent for ua in BANNED_USER_AGENTS):
             data = {
                 'error': 'User agent banned: %s' % user_agent,

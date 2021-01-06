@@ -24,7 +24,7 @@
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 from datetime import datetime, timedelta
-import urllib2
+import urllib
 
 from django.urls import reverse
 from django.test import TestCase
@@ -71,7 +71,7 @@ class PSHBTestBase:
         self.requests.append((url, data))
         return self.responses.pop()
 
-class PSHBSubscriptionManagerTest(PSHBTestBase, TestCase):
+class Test_PSHBSubscriptionManagerTest(PSHBTestBase, TestCase):
 
     def test_sync_verify(self):
         """
@@ -147,13 +147,13 @@ class PSHBSubscriptionManagerTest(PSHBTestBase, TestCase):
         self.responses.append(MockResponse(500, 'error data'))
         try:
             PushSubscription.objects.subscribe('topic', 'hub', 'callback')
-        except urllib2.URLError, e:
+        except urllib.error.URLError as e:
             self.assertEquals(e.reason,
                               'error subscribing to topic on hub:\nerror data')
         else:
             self.fail('subscription did not raise URLError exception')
 
-class PSHBCallbackViewTestCase(PSHBTestBase, TestCase):
+class Test_PSHBCallbackViewCase(PSHBTestBase, TestCase):
 
     def test_verify(self):
         """
@@ -235,7 +235,7 @@ class PSHBCallbackViewTestCase(PSHBTestBase, TestCase):
         self.assertEquals(response.status_code, 404)
         self.assertEquals(len(self.signals), 0)
 
-class PSHBUpdateTestCase(PSHBTestBase, TestCase):
+class Test_PSHBUpdateCase(PSHBTestBase, TestCase):
 
     def test_update(self):
         # this data comes from

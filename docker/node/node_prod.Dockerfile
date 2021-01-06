@@ -1,14 +1,5 @@
-FROM       python:3.7-slim
-MAINTAINER julien@rottenberg.info
-
-
-WORKDIR   /srv/newsblur
-ENV       PYTHONPATH=/opt/newsblur
-ENV       DOCKERBUILD=True
-CMD       ["gunicorn", "--bind", "0.0.0.0:8000", "newsblur.wsgi", "--env", "DJANGO_SETTINGS_MODULE=newsblur.settings"]
-EXPOSE    8000
-
-COPY      config/requirements.txt /srv/newsblur/
+FROM node:14.4.0
+WORKDIR /usr/src/app
 RUN       set -ex \
           && rundDeps=' \
                   libpq5 \
@@ -34,10 +25,10 @@ RUN       set -ex \
                             ' \
             && apt-get update \
             && apt-get install -y $rundDeps $buildDeps --no-install-recommends \
-            && pip install -r requirements.txt \
             && apt-get purge -y --auto-remove ${buildDeps} \
             && rm -rf /var/lib/apt/lists/*
 
-
-COPY      . /srv/newsblur/
-RUN       cp docker/local_settings.py .
+COPY ./node/package.json /usr/src/app/package.json
+COPY ./node/package-lock.json /usr/src/app/package-lock.json
+COPY ./node /usr/src/app/ 
+RUN npm install

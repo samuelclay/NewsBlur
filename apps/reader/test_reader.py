@@ -5,11 +5,12 @@ from django.urls import reverse
 from django.conf import settings
 from mongoengine.connection import connect, disconnect
 
-class ReaderTest(TestCase):
-    fixtures = ['../../rss_feeds/fixtures/rss_feeds.json', 
-                'subscriptions.json', 'stories.json', 
-                '../../rss_feeds/fixtures/gawker1.json']
-    
+class Test_Reader(TestCase):
+    fixtures = [
+        'apps/rss_feeds/fixtures/initial_data.json',
+        'apps/rss_feeds/fixtures/rss_feeds.json', 
+        'subscriptions.json', #'stories.json', 
+        'apps/rss_feeds/fixtures/gawker1.json']
     
     def setUp(self):
         disconnect()
@@ -21,17 +22,15 @@ class ReaderTest(TestCase):
             
     def test_api_feeds(self):
         self.client.login(username='conesus', password='test')
-        
+      
         response = self.client.get(reverse('load-feeds'))
         content = json.decode(response.content)
-        
         self.assertEqual(len(content['feeds']), 10)
-        self.assertEqual(content['feeds']['1']['feed_title'], 'Gawker')
+        self.assertEqual(content['feeds']['1']['feed_title'], 'The NewsBlur Blog')
         self.assertEqual(content['folders'], [{'Tech': [1, 4, 5, {'Deep Tech': [6, 7]}]}, 2, 3, 8, 9, {'Blogs': [8, 9]}, 1])
         
     def test_delete_feed(self):
         self.client.login(username='conesus', password='test')
-        
         response = self.client.get(reverse('load-feeds'))
         feeds = json.decode(response.content)
         self.assertEqual(feeds['folders'], [{'Tech': [1, 4, 5, {'Deep Tech': [6, 7]}]}, 2, 3, 8, 9, {'Blogs': [8, 9]}, 1])
@@ -99,7 +98,7 @@ class ReaderTest(TestCase):
     
     def test_move_feeds_by_folder(self):
         self.client.login(username='Dejal', password='test')
-        
+
         response = self.client.get(reverse('load-feeds'))
         feeds = json.decode(response.content)
         self.assertEqual(feeds['folders'], [5299728, 644144, 1187026, {"Brainiacs & Opinion": [569, 38, 3581, 183139, 1186180, 15]}, {"Science & Technology": [731503, 140145, 1272495, 76, 161, 39, {"Hacker": [5985150, 3323431]}]}, {"Humor": [212379, 3530, 5994357]}, {"Videos": [3240, 5168]}])

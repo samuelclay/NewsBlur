@@ -2,6 +2,7 @@ logs/*.log
 logs/*.log.*
 logs/*.pid
 *.pyc
+__pycache__/
 static/*
 local_settings.py
 celerybeat-schedule
@@ -72,4 +73,4 @@ clients/android/NewsBlur/gradle*
 clients/android/NewsBlur/settings.gradle
 /docker/volumes/*
 
-**/node_modules
+node/node_modules

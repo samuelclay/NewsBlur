@@ -310,7 +310,7 @@ def load_feeds(request):
     if len(scheduled_feeds) > 0 and request.user.is_authenticated:
         logging.user(request, "~SN~FMTasking the scheduling immediate fetch of ~SB%s~SN feeds..." % 
                      len(scheduled_feeds))
-        ScheduleImmediateFetches.apply_async(kwargs=dict(feed_ids=scheduled_feeds, user_id=user.pk))
+        ScheduleImmediateFetches().apply_async(kwargs=dict(feed_ids=scheduled_feeds, user_id=user.pk))
 
     starred_counts, starred_count = MStarredStoryCounts.user_counts(user.pk, include_total=True)
     if not starred_count and len(starred_counts):
@@ -421,7 +421,7 @@ def load_feeds_flat(request):
     if len(scheduled_feeds) > 0 and request.user.is_authenticated:
         logging.user(request, "~SN~FMTasking the scheduling immediate fetch of ~SB%s~SN feeds..." % 
                      len(scheduled_feeds))
-        ScheduleImmediateFetches.apply_async(kwargs=dict(feed_ids=scheduled_feeds, user_id=user.pk))
+        ScheduleImmediateFetches().apply_async(kwargs=dict(feed_ids=scheduled_feeds, user_id=user.pk))
     
     flat_folders = []
     flat_folders_with_inactive = []
@@ -855,8 +855,9 @@ def load_feed_page(request, feed_id):
     
     if feed and feed.has_page and not feed.has_page_exception:
         if settings.BACKED_BY_AWS.get('pages_on_node'):
-            url = "http://%s/original_page/%s" % (
-                settings.ORIGINAL_PAGE_SERVER,
+            domain = Site.objects.get_current().domain
+            url = "https://%s/original_page/%s" % (
+                domain,
                 feed.pk,
             )
             try:

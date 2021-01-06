@@ -1,13 +1,16 @@
 from flask import Flask, abort
-import flask_settings as settings
+import os
 import psycopg2
-try:
-    import MySQLdb
-except ImportError:
-    pass
+import pymysql
 import pymongo
 import redis
 import pyes
+
+if os.getenv("DOCKERBUILD") == "True":
+    import newsblur_web.docker_local_settings as settings
+else:
+    import flask_monitor.flask_settings as settings
+
 app = Flask(__name__)
 
 @app.route("/db_check/postgres")
@@ -22,14 +25,14 @@ def db_check_postgres():
     try:
         conn = psycopg2.connect(connect_params)
     except:
-        print " ---> Postgres can't connect to the database: %s" % connect_params
+        print(" ---> Postgres can't connect to the database: %s" % connect_params)
         abort(502)
 
     cur = conn.cursor()
     cur.execute("""SELECT id FROM feeds ORDER BY feeds.id DESC LIMIT 1""")
     rows = cur.fetchall()
     for row in rows:
-        return unicode(row[0])
+        return str(row[0])
     
     abort(404)
 
@@ -44,20 +47,20 @@ def db_check_mysql():
     )
     try:
 
-        conn = MySQLdb.connect(host=settings.DATABASES['default']['HOST'],
+        conn = pymysql.connect(host=settings.DATABASES['default']['HOST'],
                                port=settings.DATABASES['default']['PORT'],
                                user=settings.DATABASES['default']['USER'],
                                passwd=settings.DATABASES['default']['PASSWORD'],
                                db=settings.DATABASES['default']['NAME'])
     except:
-        print " ---> Mysql can't connect to the database: %s" % connect_params
+        print(" ---> Mysql can't connect to the database: %s" % connect_params)
         abort(502)
 
     cur = conn.cursor()
     cur.execute("""SELECT id FROM feeds ORDER BY feeds.id DESC LIMIT 1""")
     rows = cur.fetchall()
     for row in rows:
-        return unicode(row[0])
+        return str(row[0])
     
     abort(404)
 
@@ -69,7 +72,7 @@ def db_check_mongo():
     except:
         abort(502)
     
-    return unicode(db.stories.count())
+    return str(db.stories.count())
 
 @app.route("/db_check/redis")
 def db_check_redis():
@@ -81,7 +84,7 @@ def db_check_redis():
     
     randkey = r.randomkey()
     if randkey:
-        return unicode(randkey)
+        return str(randkey)
     else:
         abort(404)
 
@@ -95,9 +98,25 @@ def db_check_redis_story():
     
     randkey = r.randomkey()
     if randkey:
-        return unicode(randkey)
+        return str(randkey)
     else:
         abort(404)
+
+@app.route("/db_check/redis_pubsub")
+def db_check_redis_story():
+    redis_host = getattr(settings, 'REDIS', {'host': 'db_redis_pubsub'})
+    try:
+        r = redis.Redis(redis_host['host'], db=1)
+    except:
+        abort(502)
+    
+    pubsub_numpat = r.pubsub_numpat()
+    if pubsub_numpat:
+        return str(pubsub_numpat)
+    else:
+        abort(404)
+
+    
 
 @app.route("/db_check/redis_sessions")
 def db_check_redis_sessions():
@@ -109,7 +128,7 @@ def db_check_redis_sessions():
     
     randkey = r.randomkey()
     if randkey:
-        return unicode(randkey)
+        return str(randkey)
     else:
         abort(404)
 
@@ -122,7 +141,7 @@ def db_check_elasticsearch():
         abort(502)
     
     if conn.indices.exists_index('feeds-index'):
-        return unicode("Index exists, but didn't try search")
+        return str("Index exists, but didn't try search")
         # query = pyes.query.TermQuery("title", "daring fireball")
         # results = conn.search(query=query, size=1, doc_types=['feeds-type'], sort="num_subscribers:desc")
         # for result in results:
@@ -133,4 +152,4 @@ def db_check_elasticsearch():
         abort(404)    
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0")
+    app.run(host="0.0.0.0", port=5579)

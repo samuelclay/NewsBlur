@@ -30,8 +30,7 @@ class PushSubscriptionManager(models.Manager):
         if lease_seconds is None:
             lease_seconds = getattr(settings, 'PUBSUBHUBBUB_LEASE_SECONDS',
                                    DEFAULT_LEASE_SECONDS)
-
-        feed = Feed.get_by_id(feed.pk)
+        feed = Feed.get_by_id(feed.id)
         subscription, created = self.get_or_create(feed=feed)
         signals.pre_subscribe.send(sender=subscription, created=created)
         subscription.set_expiration(lease_seconds)

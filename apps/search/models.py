@@ -49,7 +49,7 @@ class MUserSearch(mongo.Document):
         self.save()
 
     def schedule_index_subscriptions_for_search(self):
-        IndexSubscriptionsForSearch.apply_async(kwargs=dict(user_id=self.user_id), 
+        IndexSubscriptionsForSearch().apply_async(kwargs=dict(user_id=self.user_id), 
                                                 queue='search_indexer_tasker')
         
     # Should be run as a background task
@@ -122,7 +122,7 @@ class MUserSearch(mongo.Document):
         
         if not isinstance(feed_ids, list):
             feed_ids = [feed_ids]
-        IndexFeedsForSearch.apply_async(kwargs=dict(feed_ids=feed_ids, user_id=user_id), 
+        IndexFeedsForSearch().apply_async(kwargs=dict(feed_ids=feed_ids, user_id=user_id), 
                                         queue='search_indexer')
     
     @classmethod

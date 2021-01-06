@@ -28,7 +28,6 @@ import sys
 import  urllib.parse
 
 from urllib.parse import parse_qs
-
 # json module is in the standard library as of python 2.6; fall back to
 # simplejson if present for older versions.
 try:

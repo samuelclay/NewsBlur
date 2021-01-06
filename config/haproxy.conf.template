@@ -51,6 +51,7 @@ frontend public
   monitor fail  if mx_mode
 
   use_backend node_socket if { path_beg /v2/socket.io/ }
+  use_backend node_socket3 if { path_beg /v3/socket.io/ }
   use_backend node_favicon if { path_beg /rss_feeds/icon/ }
   use_backend node_text if { path_beg /rss_feeds/original_text_fetcher }
   use_backend nginx if { path_beg /media/ }
@@ -70,6 +71,11 @@ backend node_socket
   http-check expect rstatus 200|503
   balance roundrobin
 {{ node_socket }}
+
+backend node_socket3
+  http-check expect rstatus 200|503
+  balance roundrobin
+{{ node_socket3 }}
  
 backend node_favicon
  http-check expect rstatus 200|503
@@ -127,7 +133,7 @@ backend postgres
   
 backend mongo
   option httpchk GET /db_check/mongo
-  server mongo-db20e        db20e:5000              check inter 2000ms
+  server mongo-db20d        db20d:5000              check inter 2000ms
   server mongo-db23a        db23a:5000              check inter 2000ms
   server mongo-db25a        db25a:5000              check inter 2000ms
   server mongo-db30         db30:5000               check inter 2000ms

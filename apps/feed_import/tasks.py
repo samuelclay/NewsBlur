@@ -1,4 +1,4 @@
-from newsblur.celeryapp import app
+from newsblur_web.celeryapp import app
 from django.contrib.auth.models import User
 from apps.feed_import.models import UploadedOPML, OPMLImporter
 from apps.reader.models import UserSubscription
