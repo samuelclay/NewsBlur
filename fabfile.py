@@ -857,9 +857,12 @@ def assemble_certificates():
 def copy_certificates():
     cert_path = os.path.join(env.NEWSBLUR_PATH, 'config/certificates')
     run('mkdir -p %s' % cert_path)
-    put(os.path.join(env.SECRETS_PATH, 'certificates/newsblur.com.crt'), cert_path)
-    put(os.path.join(env.SECRETS_PATH, 'certificates/newsblur.com.key'), cert_path)
-    run('ln -fs %s %s' % (os.path.join(cert_path, 'newsblur.com.crt'), os.path.join(cert_path, 'newsblur.com.pem'))) # For backwards compatibility with hard-coded nginx configs
+    fullchain_path = "/etc/letsencrypt/live/newsblur.com/fullchain.pem"
+    privkey_path = "/etc/letsencrypt/live/newsblur.com/privkey.pem"
+    run('ln -fs %s %s' % (fullchain_path, os.path.join(cert_path, 'newsblur.com.crt')))
+    run('ln -fs %s %s' % (fullchain_path, os.path.join(cert_path, 'newsblur.com.pem'))) # For backwards compatibility with hard-coded nginx configs
+    run('ln -fs %s %s' % (privkey_path, os.path.join(cert_path, 'newsblur.com.key')))
+    run('ln -fs %s %s' % (privkey_path, os.path.join(cert_path, 'newsblur.com.crt.key'))) # HAProxy
     put(os.path.join(env.SECRETS_PATH, 'certificates/comodo/dhparams.pem'), cert_path)
     put(os.path.join(env.SECRETS_PATH, 'certificates/ios/aps_development.pem'), cert_path)
     # openssl x509 -in aps.cer -inform DER -outform PEM -out aps.pem
@@ -867,20 +870,42 @@ def copy_certificates():
     # Export aps.p12 from aps.cer using Keychain Assistant
     # openssl pkcs12 -in aps.p12 -out aps.p12.pem -nodes
     put(os.path.join(env.SECRETS_PATH, 'certificates/ios/aps.p12.pem'), cert_path)
-    run('cat %s/newsblur.com.crt > %s/newsblur.pem' % (cert_path, cert_path))
-    run('echo "\n" >> %s/newsblur.pem' % (cert_path))
-    run('cat %s/newsblur.com.key >> %s/newsblur.pem' % (cert_path, cert_path))
+    # run('cat %s/newsblur.com.crt > %s/newsblur.pem' % (cert_path, cert_path))
+    # run('echo "\n" >> %s/newsblur.pem' % (cert_path))
+    # run('cat %s/newsblur.com.key >> %s/newsblur.pem' % (cert_path, cert_path))
 
 def setup_certbot():
-    sudo('add-apt-repository -y universe')
-    sudo('add-apt-repository -y ppa:certbot/certbot')
-    sudo('apt-get update')
-    sudo('apt-get install -y certbot')
-    sudo('apt-get install -y python3-certbot-dns-dnsimple')
-    run('echo "dns_dnsimple_token = %s" > dnsimple.ini')
-    run('chmod 0400 dnsimple.ini')
-    sudo('certbot certonly -n --agree-tos --email samuel@newsblur.com --domains "*.newsblur.com" --dns-dnsimple --dns-dnsimple-credentials %s' % (settings.DNSIMPLE_TOKEN))
-    run('rm dnsimple.ini')
+    sudo('snap install --classic certbot')
+    sudo('snap set certbot trust-plugin-with-root=ok')
+    sudo('snap install certbot-dns-dnsimple')
+    sudo('ln -fs /snap/bin/certbot /usr/bin/certbot')
+    put(os.path.join(env.SECRETS_PATH, 'configs/certbot.conf'), 
+        os.path.join(env.NEWSBLUR_PATH, 'certbot.conf'))
+    sudo('chmod 0600 %s' % os.path.join(env.NEWSBLUR_PATH, 'certbot.conf'))
+    sudo('certbot certonly -n --agree-tos '
+         ' --dns-dnsimple --dns-dnsimple-credentials %s'
+         ' --email samuel@newsblur.com --domains newsblur.com '
+         ' -d "*.newsblur.com" -d "popular.global.newsblur.com"' % 
+         (os.path.join(env.NEWSBLUR_PATH, 'certbot.conf')))
+    sudo('chmod 0755 /etc/letsencrypt/{live,archive}')
+    sudo('chmod 0755 /etc/letsencrypt/archive/newsblur.com/privkey1.pem')
+    
+# def setup_certbot_old():
+#     sudo('add-apt-repository -y universe')
+#     sudo('add-apt-repository -y ppa:certbot/certbot')
+#     sudo('apt-get update')
+#     sudo('apt-get install -y certbot')
+#     sudo('apt-get install -y python3-certbot-dns-dnsimple')
+#     put(os.path.join(env.SECRETS_PATH, 'configs/certbot.conf'), 
+#         os.path.join(env.NEWSBLUR_PATH, 'certbot.conf'))
+#     sudo('chmod 0600 %s' % os.path.join(env.NEWSBLUR_PATH, 'certbot.conf'))
+#     sudo('certbot certonly -n --agree-tos '
+#          ' --dns-dnsimple --dns-dnsimple-credentials %s'
+#          ' --email samuel@newsblur.com --domains newsblur.com '
+#          ' -d "*.newsblur.com" -d "global.popular.newsblur.com"' % 
+#          (os.path.join(env.NEWSBLUR_PATH, 'certbot.conf')))
+#     sudo('chmod 0755 /etc/letsencrypt/{live,archive}')
+#     sudo('chmod 0755 /etc/letsencrypt/archive/newsblur.com/privkey1.pem')
     
 @parallel
 def maintenance_on():
