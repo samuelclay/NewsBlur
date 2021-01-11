@@ -51,6 +51,7 @@ frontend public
   monitor fail  if mx_mode
 
   use_backend imageproxy if { hdr_end(host) -i imageproxy.newsblur.com }
+  use_backend imageproxy if { hdr_end(host) -i iproxy.newsblur.com }
   use_backend push if { hdr_end(host) -i push.newsblur.com }
   use_backend node_socket if { path_beg /v2/socket.io/ }
   use_backend node_socket3 if { path_beg /v3/socket.io/ }
