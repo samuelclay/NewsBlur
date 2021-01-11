@@ -968,7 +968,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         _.each(data.feeds, _.bind(function(feed, feed_id) {
             var existing_feed = this.feeds.get(feed_id);
             if (!existing_feed) {
-                console.log(["Trying to refresh unsub feed", feed_id, feed]);
+                console.log(["Trying to refresh unsub feed", feed_id, feed, this.feeds.length]);
                 return;
             }
             var feed_id = feed.id || feed_id;
