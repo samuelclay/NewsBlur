@@ -903,16 +903,16 @@ def maintenance_off():
             run('git checkout templates/maintenance_off.html')
 
 def setup_haproxy(debug=False):
-    version = "1.5.14"
+    version = "2.3.3"
     sudo('ufw allow 81')    # nginx moved
     sudo('ufw allow 1936')  # haproxy stats
     # sudo('apt-get install -y haproxy')
     # sudo('apt-get remove -y haproxy')
     with cd(env.VENDOR_PATH):
-        run('wget http://www.haproxy.org/download/1.5/src/haproxy-%s.tar.gz' % version)
+        run('wget http://www.haproxy.org/download/2.3/src/haproxy-%s.tar.gz' % version)
         run('tar -xf haproxy-%s.tar.gz' % version)
         with cd('haproxy-%s' % version):
-            run('make TARGET=linux2628 USE_PCRE=1 USE_OPENSSL=1 USE_ZLIB=1')
+            run('make TARGET=linux-glibc USE_PCRE=1 USE_OPENSSL=1 USE_ZLIB=1')
             sudo('make install')
     put('config/haproxy-init', '/etc/init.d/haproxy', use_sudo=True)
     sudo('chmod u+x /etc/init.d/haproxy')
@@ -927,6 +927,7 @@ def setup_haproxy(debug=False):
     cert_path = "%s/config/certificates" % env.NEWSBLUR_PATH
     run('cat %s/newsblur.com.crt > %s/newsblur.pem' % (cert_path, cert_path))
     run('cat %s/newsblur.com.key >> %s/newsblur.pem' % (cert_path, cert_path))
+    run('ln -s %s/newsblur.com.key %s/newsblur.pem.key' % (cert_path, cert_path))
     put('config/haproxy_rsyslog.conf', '/etc/rsyslog.d/49-haproxy.conf', use_sudo=True)
     # sudo('restart rsyslog')
     sudo('update-rc.d -f haproxy defaults')
