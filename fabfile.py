@@ -1509,7 +1509,8 @@ def setup_imageproxy(install_go=False):
     sudo('supervisorctl reread')
     sudo('supervisorctl update')
     sudo('ufw allow 443')
-    put(os.path.join(env.NEWSBLUR_PATH, 'config/camo.nginx.conf'), "/usr/local/nginx/conf/sites-enabled/camo.conf", use_sudo=True)
+    sudo('ufw allow 80')
+    put(os.path.join(env.NEWSBLUR_PATH, 'config/nginx.imageproxy.conf'), "/usr/local/nginx/conf/sites-enabled/imageproxy.conf", use_sudo=True)
     sudo("/etc/init.d/nginx restart")
     
     
