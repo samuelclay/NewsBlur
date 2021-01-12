@@ -51,7 +51,6 @@ frontend public
   monitor fail  if mx_mode
 
   use_backend imageproxy if { hdr_end(host) -i imageproxy.newsblur.com }
-  use_backend imageproxy if { hdr_end(host) -i iproxy.newsblur.com }
   use_backend push if { hdr_end(host) -i push.newsblur.com }
   use_backend node_socket if { path_beg /v2/socket.io/ }
   use_backend node_socket3 if { path_beg /v3/socket.io/ }
@@ -71,8 +70,8 @@ frontend public
   use_backend gunicorn unless gunicorn_dead || nginx_dead
  
 backend imageproxy
-  option httpchk
-  http-check expect rstatus 200|503
+  option httpchk HEAD /sc,sN1megONJiGNy-CCvqzVPTv-TWRhgSKhFlf61XAYESl4=/http:/samuelclay.com/static/images/2019%20-%20Cuba.jpg
+  http-check expect rstatus 200|301
   server imageproxy01 imageproxy:80    check inter 2000ms
 
 backend node_socket
