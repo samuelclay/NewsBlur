@@ -70,7 +70,8 @@ frontend public
   use_backend gunicorn unless gunicorn_dead || nginx_dead
  
 backend imageproxy
-  http-check expect rstatus 200|503
+  option httpchk HEAD /sc,sN1megONJiGNy-CCvqzVPTv-TWRhgSKhFlf61XAYESl4=/http:/samuelclay.com/static/images/2019%20-%20Cuba.jpg
+  http-check expect rstatus 200|301
   server imageproxy01 imageproxy:80    check inter 2000ms
 
 backend node_socket
@@ -159,7 +160,7 @@ backend elasticsearch
   server es-search01        db_search:5000          check inter 2000ms
 
 backend maintenance
-  option httpchk HEAD /maintenance HTTP/1.1\r\nHost:\ www
+  option httpchk HEAD /maintenance
   http-check expect status 404
   http-check send-state
 {{ maintenance }}
