@@ -200,12 +200,12 @@ LOGGING = {
     },
     'loggers': {
         'django': {
-            'handlers': ['console', 'mail_admins'],
+            'handlers': ['console', 'log_file', 'mail_admins'],
             'level': 'ERROR',
             'propagate': True,
         },
         'django.db.backends': {
-            'handlers': ['null'],
+            'handlers': ['console'],
             'level': 'DEBUG',
             'propagate': False,
         },
@@ -219,18 +219,18 @@ LOGGING = {
             'propagate': False,
         },
         'readability': {
-            'handlers': ['console'],
+            'handlers': ['console', 'log_file'],
             'level': 'DEBUG',
             'propagate': False,
         },
         'pyes': {
-            'handlers': ['console'],
+            'handlers': ['console', 'log_file'],
             'level': 'DEBUG',
             'propagate': False,
         },
         'apps': {
             'handlers': ['log_file'],
-            'level': 'INFO',
+            'level': 'DEBUG',
             'propagate': True,
         },
         # 'raven': {
