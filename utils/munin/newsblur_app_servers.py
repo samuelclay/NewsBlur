@@ -2,7 +2,7 @@
 from utils.munin.base import MuninGraph
 import datetime
 import os
-os.environ["DJANGO_SETTINGS_MODULE"] = "newsblur.settings"
+os.environ["DJANGO_SETTINGS_MODULE"] = "newsblur_web.settings"
 from django.conf import settings
 
 

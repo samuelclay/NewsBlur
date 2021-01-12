@@ -62,7 +62,12 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
         this.$el.html($.make('div', [
             $.make('div', { className: 'NB-popover-section' }, [
                 (this.options.on_dashboard && $.make('div', { className: 'NB-modal-feed-chooser-container'}, [
-                    this.make_feed_chooser({include_folders: true})
+                    NEWSBLUR.utils.make_feed_chooser({
+                        folder_title: this.options.feed_id,
+                        include_folders: true,
+                        toplevel: "All Site Stories",
+                        include_special_folders: true
+                    })
                 ])),
                 (is_feed && $.make('div', { className: 'NB-section-icon NB-filter-popover-filter-icon' })),
                 $.make('div', { className: 'NB-popover-section-title' }, 'Filter Options'),

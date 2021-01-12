@@ -5,7 +5,7 @@ NEWSBLUR_DIR = '/srv/newsblur'
 sys.path.insert(0, NEWSBLUR_DIR)
 VENDOR_DIR = '/srv/newsblur/vendor'
 sys.path.insert(0, VENDOR_DIR)
-os.environ['DJANGO_SETTINGS_MODULE'] = 'newsblur.settings'
+os.environ['DJANGO_SETTINGS_MODULE'] = 'newsblur_web.settings'
 
 import time
 import s3

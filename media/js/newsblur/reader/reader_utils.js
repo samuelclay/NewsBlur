@@ -152,12 +152,83 @@ NEWSBLUR.utils = {
 
         return this.dayNames[dayOfWeek] + ", " + this.monthNames[month] + " " + day + ", " + year;
     },
+
+    make_feed_chooser: function (options) {
+        options = options || {};
+        var $chooser = $.make('select', { name: 'feed', className: 'NB-modal-feed-chooser' });
+        var $folders_optgroup = $.make('optgroup', { label: "Folders" });
+        var $feeds_optgroup = $.make('optgroup', { label: "Sites" });
+        var $social_feeds_optgroup = $.make('optgroup', { label: "Blurblogs" });
+        var $starred_feeds_optgroup = $.make('optgroup', { label: "Saved Tags" });
+        var current_feed_id = this.feed_id;
+        
+        var make_feed_option = function(feed) {
+            if (!feed.get('feed_title')) return;
+            
+            var $option = $.make('option', { value: feed.id }, feed.get('feed_title'));
+            $option.appendTo(feed.is_starred() ? $starred_feeds_optgroup : 
+                             feed.is_social() ? $social_feeds_optgroup : 
+                             $feeds_optgroup);
+            
+            if (feed.id == current_feed_id) {
+                $option.attr('selected', true);
+            }
+        };
+        
+        this.feeds = NEWSBLUR.assets.get_feeds();
+        this.feeds.each(make_feed_option);
+        
+        if (!options.skip_social) {
+            this.social_feeds = NEWSBLUR.assets.get_social_feeds();
+            this.social_feeds.each(make_feed_option);
+        }
+        
+        if (!options.skip_starred) {
+            this.starred_feeds = NEWSBLUR.assets.get_starred_feeds();
+            this.starred_feeds.each(make_feed_option);
+        }
+        
+        if (options.include_folders) {
+            var $folders = NEWSBLUR.utils.make_folders(options.selected_folder_title, options);
+            $('option', $folders).each(function () {
+                $(this).appendTo($folders_optgroup);
+            });
+        }
+
+        $('option', $feeds_optgroup).tsort();
+        $('option', $social_feeds_optgroup).tsort();
+        $('option', $starred_feeds_optgroup).tsort();
+        // $('option[value^=river]', $folders_optgroup).tsort();
+        
+        if (options.include_folders) {
+            $chooser.append($folders_optgroup);
+        }
+        $chooser.append($feeds_optgroup);
+        $chooser.append($feeds_optgroup);
+        if (!options.skip_social) {
+            $chooser.append($social_feeds_optgroup);
+        }
+        if (!options.skip_starred) {
+            $chooser.append($starred_feeds_optgroup);
+        }
+        
+        return $chooser;
+    },
     
     make_folders: function(selected_folder_title, options) {
         options = options || {};
         var folders = NEWSBLUR.assets.get_folders();
         var $options = $.make('select', { className: 'NB-folders', name: options.name });
         
+        if (options.include_special_folders) {
+            var $option = $.make('option', { value: 'river:global' }, "Global Shared Stories");
+            $options.append($option);    
+            var $option = $.make('option', { value: 'river:blurblogs' }, "All Shared Stories");
+            $options.append($option);    
+            var $option = $.make('option', { value: 'river:infrequent' }, "Infrequent Site Stories");
+            $options.append($option);    
+        }
+
         var $option = $.make('option', { value: '' }, options.toplevel || "Top Level");
         $options.append($option);
 
