@@ -4,7 +4,7 @@ import sys
 CURRENT_DIR  = os.path.dirname(__file__)
 NEWSBLUR_DIR = ''.join([CURRENT_DIR, '/../../'])
 sys.path.insert(0, NEWSBLUR_DIR)
-os.environ['DJANGO_SETTINGS_MODULE'] = 'newsblur.settings'
+os.environ['DJANGO_SETTINGS_MODULE'] = 'newsblur_web.settings'
 
 import time
 import s3

@@ -2754,6 +2754,9 @@ class MStory(mongo.Document):
         
         try:
             soup = BeautifulSoup(story_content, features="lxml")
+        except UserWarning as e:
+            logging.debug(" ---> ~FBWarning on BS4: ~SB%s" % str(e)[:100])
+            return
         except ValueError:
             if not text:
                 return self.extract_image_urls(force=force, text=True)

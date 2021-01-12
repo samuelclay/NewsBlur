@@ -15,6 +15,6 @@ class Command(BaseCommand):
  
     def handle(self, *args, **options):
         if options['broken']:
-            TaskBrokenFeeds().apply()
+            TaskBrokenFeeds.apply()
         else:
-            TaskFeeds().apply()
+            TaskFeeds.apply()

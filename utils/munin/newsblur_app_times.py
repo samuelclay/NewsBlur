@@ -28,7 +28,7 @@ class NBMuninGraph(MuninGraph):
     def stats(self):
         import datetime
         import os
-        os.environ["DJANGO_SETTINGS_MODULE"] = "newsblur.settings"
+        os.environ["DJANGO_SETTINGS_MODULE"] = "newsblur_web.settings"
         from django.conf import settings
         
         stats = settings.MONGOANALYTICSDB.nbanalytics.page_loads.aggregate([{
