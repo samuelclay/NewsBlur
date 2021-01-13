@@ -76,6 +76,8 @@ NEWSBLUR.Modal.prototype = {
     make_feed_chooser: function (options) {
         options = options || {};
         options.selected_folder_title = this.model.folder_title;
+        options.feed_id = this.feed_id;
+        
         return NEWSBLUR.utils.make_feed_chooser(options);
     },
     

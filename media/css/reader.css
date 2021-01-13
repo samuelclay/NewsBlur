@@ -12454,7 +12454,9 @@ form.opml_import_form input {
 .NB-filter-popover .segmented-control .NB-focus-icon {
     height: 17px;
 }
-
+.NB-filter-popover .NB-modal-feed-chooser {
+    width: 100%;
+}
 .NB-feedbar-options-stat {
     position: relative;
     padding-left: 22px;

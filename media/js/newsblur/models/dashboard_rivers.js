@@ -33,6 +33,11 @@ NEWSBLUR.Models.DashboardRiver = Backbone.Model.extend({
         }
         
         return url;
+    },
+
+    change_feed: function (feed_id) {
+        this.set('feed_id', feed_id);
+        this.initialize();
     }
     
 });
@@ -50,6 +55,20 @@ NEWSBLUR.Collections.DashboardRivers = Backbone.Collection.extend({
 
     count_sides: function () {
         return this.countBy(function () { return this.get('river_side'); });
+    },
+
+    left_side_rivers: function () {
+        return this.side('left');
+    },
+
+    left_side_rivers: function () {
+        return this.side('right');
+    },
+
+    side: function(side) {
+        return this.select(function (river) {
+            return river.get('river_side') == side;
+        });
     }
         
 });

@@ -972,7 +972,7 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         if (NEWSBLUR.Preferences.timezone) {
             $('select[name=timezone] option', $modal).each(function() {
                 if ($(this).val() == NEWSBLUR.Preferences.timezone) {
-                    $(this).attr('selected', true);
+                    $(this).prop('selected', true);
                     return false;
                 }
             });
@@ -980,193 +980,193 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         
         $('select[name=default_folder] option', $modal).each(function() {
             if ($(this).val() == NEWSBLUR.Preferences.default_folder) {
-                $(this).attr('selected', true);
+                $(this).prop('selected', true);
                 return false;
             }
         });
         $('input[name=story_layout]', $modal).each(function() {
             if ($(this).val() == NEWSBLUR.Preferences.story_layout) {
-                $(this).attr('checked', true);
+                $(this).prop('checked', true);
                 return false;
             }
         });
         $('input[name=default_view]', $modal).each(function() {
             if ($(this).val() == NEWSBLUR.Preferences.default_view) {
-                $(this).attr('checked', true);
+                $(this).prop('checked', true);
                 return false;
             }
         });
         $('input[name=new_window]', $modal).each(function() {
             if ($(this).val() == NEWSBLUR.Preferences.new_window) {
-                $(this).attr('checked', true);
+                $(this).prop('checked', true);
                 return false;
             }
         });
         $('input[name=feed_order]', $modal).each(function() {
             if ($(this).val() == NEWSBLUR.Preferences.feed_order) {
-                $(this).attr('checked', true);
+                $(this).prop('checked', true);
                 return false;
             }
         });
         $('input[name=ssl]', $modal).each(function() {
             if ($(this).val() == NEWSBLUR.Preferences.ssl) {
-                $(this).attr('checked', true);
+                $(this).prop('checked', true);
                 return false;
             }
         });
         $('input[name=autoopen_folder]', $modal).each(function() {
             if ($(this).val() == NEWSBLUR.Preferences.autoopen_folder) {
-                $(this).attr('checked', true);
+                $(this).prop('checked', true);
                 return false;
             }
         });
         $('input[name=title_counts]', $modal).each(function() {
             if (NEWSBLUR.Preferences.title_counts) {
-                $(this).attr('checked', true);
+                $(this).prop('checked', true);
                 return false;
             }
         });
         $('input[name=show_global_shared_stories]', $modal).each(function() {
             if (NEWSBLUR.Preferences.show_global_shared_stories) {
-                $(this).attr('checked', true);
+                $(this).prop('checked', true);
                 return false;
             }
         });
         $('input[name=show_infrequent_site_stories]', $modal).each(function() {
             if (NEWSBLUR.Preferences.show_infrequent_site_stories) {
-                $(this).attr('checked', true);
+                $(this).prop('checked', true);
                 return false;
             }
         });
         $('input[name=open_feed_action]', $modal).each(function() {
             if ($(this).val() == NEWSBLUR.Preferences.open_feed_action) {
-                $(this).attr('checked', true);
+                $(this).prop('checked', true);
                 return false;
             }
         });
         $('input[name=mark_read_on_scroll_titles]', $modal).each(function() {
             if ($(this).val() == ""+NEWSBLUR.Preferences.mark_read_on_scroll_titles) {
-                $(this).attr('checked', true);
+                $(this).prop('checked', true);
                 return false;
             }
         });
         $('input[name=show_content_preview]', $modal).each(function() {
             if ($(this).val() == NEWSBLUR.Preferences.show_content_preview) {
-                $(this).attr('checked', true);
+                $(this).prop('checked', true);
                 return false;
             }
         });
         $('input[name=show_image_preview]', $modal).each(function() {
             if ($(this).val() == NEWSBLUR.Preferences.show_image_preview) {
-                $(this).attr('checked', true);
+                $(this).prop('checked', true);
                 return false;
             }
         });
         $('input[name=doubleclick_feed]', $modal).each(function() {
             if ($(this).val() == NEWSBLUR.Preferences.doubleclick_feed) {
-                $(this).attr('checked', true);
+                $(this).prop('checked', true);
                 return false;
             }
         });
         $('input[name=doubleclick_unread]', $modal).each(function() {
             if ($(this).val() == NEWSBLUR.Preferences.doubleclick_unread) {
-                $(this).attr('checked', true);
+                $(this).prop('checked', true);
                 return false;
             }
         });
         $('input[name=mark_read_river_confirm]', $modal).each(function() {
             if ($(this).val() == ""+NEWSBLUR.Preferences.mark_read_river_confirm) {
-                $(this).attr('checked', true);
+                $(this).prop('checked', true);
                 return false;
             }
         });
         $('input[name=markread_nextfeed]', $modal).each(function() {
             if ($(this).val() == NEWSBLUR.Preferences.markread_nextfeed) {
-                $(this).attr('checked', true);
+                $(this).prop('checked', true);
                 return false;
             }
         });
         $('input[name=read_story_delay]', $modal).each(function() {
             if ($(this).val() == ""+NEWSBLUR.Preferences.read_story_delay) {
-                $(this).attr('checked', true);
+                $(this).prop('checked', true);
                 return false;
             }
         });
         $('input[name=full_width_story]', $modal).each(function() {
             if ($(this).val() == ""+NEWSBLUR.Preferences.full_width_story) {
-                $(this).attr('checked', true);
+                $(this).prop('checked', true);
                 return false;
             }
         });
         $('input[name=truncate_story]', $modal).each(function() {
             if ($(this).val() == NEWSBLUR.Preferences.truncate_story) {
-                $(this).attr('checked', true);
+                $(this).prop('checked', true);
                 return false;
             }
         });
         $('input[name=animations]', $modal).each(function() {
             if ($(this).val() == ""+NEWSBLUR.Preferences.animations) {
-                $(this).attr('checked', true);
+                $(this).prop('checked', true);
                 return false;
             }
         });
         $('input[name=dateformat]', $modal).each(function() {
             if ($(this).val() == ""+NEWSBLUR.Preferences.dateformat) {
-                $(this).attr('checked', true);
+                $(this).prop('checked', true);
                 return false;
             }
         });
         $('input[name=folder_counts]', $modal).each(function() {
             if ($(this).val() == ""+NEWSBLUR.Preferences.folder_counts) {
-                $(this).attr('checked', true);
+                $(this).prop('checked', true);
                 return false;
             }
         });
         $('input[name=show_tooltips]', $modal).each(function() {
             if ($(this).val() == NEWSBLUR.Preferences.show_tooltips) {
-                $(this).attr('checked', true);
+                $(this).prop('checked', true);
                 return false;
             }
         });
         $('input[name=show_contextmenus]', $modal).each(function() {
             if ($(this).val() == NEWSBLUR.Preferences.show_contextmenus) {
-                $(this).attr('checked', true);
+                $(this).prop('checked', true);
                 return false;
             }
         });
         $('input[name=hide_public_comments]', $modal).each(function() {
             if ($(this).val() == ""+NEWSBLUR.Preferences.hide_public_comments) {
-                $(this).attr('checked', true);
+                $(this).prop('checked', true);
                 return false;
             }
         });
         $('input[name=story_button_placement]', $modal).each(function() {
             if ($(this).val() == ""+NEWSBLUR.Preferences.story_button_placement) {
-                $(this).attr('checked', true);
+                $(this).prop('checked', true);
                 return false;
             }
         });
         $('input[name=highlights]', $modal).each(function() {
             if ($(this).val() == ""+NEWSBLUR.Preferences.highlights) {
-                $(this).attr('checked', true);
+                $(this).prop('checked', true);
                 return false;
             }
         });
         $('input[name=keyboard_verticalarrows]', $modal).each(function() {
             if ($(this).val() == NEWSBLUR.Preferences.keyboard_verticalarrows) {
-                $(this).attr('checked', true);
+                $(this).prop('checked', true);
                 return false;
             }
         });
         $('input[name=keyboard_horizontalarrows]', $modal).each(function() {
             if ($(this).val() == NEWSBLUR.Preferences.keyboard_horizontalarrows) {
-                $(this).attr('checked', true);
+                $(this).prop('checked', true);
                 return false;
             }
         });
         $('input[name=space_bar_action]', $modal).each(function() {
             if ($(this).val() == NEWSBLUR.Preferences.space_bar_action) {
-                $(this).attr('checked', true);
+                $(this).prop('checked', true);
                 return false;
             }
         });
@@ -1185,7 +1185,7 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         });
         _.each(share_preferences, function(share) {
             var share_name = share.match(/story_share_(.*)/)[1];
-            $('input#NB-preference-story-share-'+share_name, $modal).attr('checked', NEWSBLUR.Preferences[share]);
+            $('input#NB-preference-story-share-'+share_name, $modal).prop('checked', NEWSBLUR.Preferences[share]);
         });
         
         $(".NB-tangle-readstorydelay", $modal).slider({
@@ -1224,7 +1224,7 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                     (NEWSBLUR.Preferences.read_story_delay > 0 ? NEWSBLUR.Preferences.read_story_delay : 1);
         $(".NB-tangle-seconds", this.$modal).text(value == 1 ? value + ' second.' : value + ' seconds.');
         if (NEWSBLUR.Preferences.read_story_delay > 0 || ui) {
-            $("#NB-preference-readstorydelay-2", this.$modal).attr('checked', true).val(value);
+            $("#NB-preference-readstorydelay-2", this.$modal).prop('checked', true).val(value);
             if (ui) {
                 this.enable_save();
             }
@@ -1239,7 +1239,7 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         $(".NB-tangle-arrowscrollspacing", this.$modal).text(value);
         $("input[name=arrow_scroll_spacing]", this.$modal).val(value);
         if (NEWSBLUR.Preferences.keyboard_verticalarrows == 'scroll' || ui) {
-            $("#NB-preference-keyboard-verticalarrows-2", this.$modal).attr('checked', true);
+            $("#NB-preference-keyboard-verticalarrows-2", this.$modal).prop('checked', true);
             if (ui) {
                 this.enable_save();
             }
