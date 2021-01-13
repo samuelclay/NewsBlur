@@ -53,6 +53,14 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
         NEWSBLUR.assets.feeds.bind('add', this.update_dashboard_count, this);
         NEWSBLUR.assets.feeds.bind('remove', this.update_dashboard_count, this);
         
+        $('.NB-feeds-header-river-global .NB-feeds-header-icon').attr('src', $.favicon('river:global'));
+        $('.NB-feeds-header-river-blurblogs .NB-feeds-header-icon').attr('src', $.favicon('river:blurblogs'));
+        $('.NB-feeds-header-river-infrequent .NB-feeds-header-icon').attr('src', $.favicon('river:infrequent'));
+        $('.NB-feeds-header-river-sites .NB-feeds-header-icon').attr('src', $.favicon('river:'));
+        $('.NB-feeds-header-read .NB-feeds-header-icon').attr('src', $.favicon('read'));
+        $('.NB-feeds-header-searches .NB-feeds-header-icon').attr('src', $.favicon('searches'));
+        $('.NB-feeds-header-read .NB-feeds-header-icon').attr('src', $.favicon('read'));
+        $('.NB-feeds-header-starred .NB-feeds-header-icon').attr('src', $.favicon('starred'));
     },
     
     make_feeds: function(options) {
