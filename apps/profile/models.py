@@ -1534,6 +1534,10 @@ class MDashboardRiver(mongo.Document):
         'ordering': ['river_order']
     }
 
+    def __str__(self):
+        u = User.objects.get(pk=self.user_id)
+        return f"{u} ({self.river_side}/{self.river_order}): {self.river_id}"
+        
     def canonical(self):
         return {
             'river_id': self.river_id,
@@ -1542,22 +1546,34 @@ class MDashboardRiver(mongo.Document):
         }
     
     @classmethod
-    def get_user(cls, user_id, river_id=None):
+    def get_user(cls, user_id, river_id=None, river_side=None, river_order=None):
         if river_id:
             try:
                 return cls.objects.get(user_id=user_id, river_id=river_id)
             except MDashboardRiver.DoesNotExist:
                 return None
-        else:
-            return cls.objects(user_id=user_id)
+        elif river_side and river_order:
+            try:
+                return cls.objects.get(user_id=user_id, river_side=river_side, river_order=river_order)
+            except MDashboardRiver.DoesNotExist:
+                return None
+        
+        return cls.objects(user_id=user_id)
 
     @classmethod
     def save_user(cls, user_id, river_id, river_side, river_order):
-        river = cls.get_user(user_id, river_id)
+        river = None
+
+        if river_id:
+            river = cls.get_user(user_id, river_id=river_id)
+        
+        if not river:
+            river = cls.get_user(user_id, river_side=river_side, river_order=river_order)
         
         if not river:
             river = cls.objects.create(user_id=user_id, river_id=river_id)
 
+        river.river_id = river_id
         river.river_side = river_side
         river.river_order = river_order
         river.save()

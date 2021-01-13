@@ -1,6 +1,6 @@
 NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
     
-    el: ".NB-module-river",
+    className: "NB-module-river",
     
     events: {
         "click .NB-module-search-add-url"   : "add_url",
@@ -8,10 +8,14 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
     },
     
     initialize: function () {
-        console.log(['Initialize dashboard river', this.model])
         var $river_on_dashboard = $(".NB-dashboard-rivers-" + this.model.get('river_side') + " .NB-dashboard-river-order-" + this.model.get('river_order'));
-        this.setElement($river_on_dashboard);
-        this.$el.html(this.template());
+        console.log(['Initialize dashboard river', this.model, this.$el, this.el, $river_on_dashboard])
+        if ($river_on_dashboard.length) {
+            this.setElement($river_on_dashboard);
+        } else {
+
+        }
+        this.render();
         
         this.$stories = this.$(".NB-module-item .NB-story-titles");
         
@@ -40,7 +44,7 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
         NEWSBLUR.assets.stories.unbind(null, null, this);
         NEWSBLUR.assets.stories.bind('change:read_status', this.check_read_stories, this);
         // NEWSBLUR.assets.stories.bind('change:selected', this.check_read_stories, this);
-        this.model.bind('change:feed_id', _.bind(this.initialize, this));
+        this.model.bind('change:river_id', _.bind(this.initialize, this));
         
         this.setup_dashboard_refresh();
         this.load_stories();
@@ -49,10 +53,11 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
         return this;
     },
 
-    template: function () {
+    render: function () {
         var $river = $(_.template('<div class="NB-module NB-module-river NB-dashboard-river NB-dashboard-river-order-<%= river_order %>">\
             <h5 class="NB-module-header">\
                 <div class="NB-module-river-settings NB-javascript"></div>\
+                <div class="NB-module-river-favicon"><img src="<%= favicon_url %>"></div>\
                 <div class="NB-module-river-title"><%= river_title %></div>\
             </h5>\
             \
@@ -63,11 +68,14 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
             </div>\
         </div>\
         ', {
+            favicon_url: this.model.get('favicon_url'), 
             river_title: NEWSBLUR.reader.feed_title(this.model.get('river_id')),
             river_order: this.model.get('river_order')
         }));
 
-        return $river;
+        this.$el.html($river);
+
+        return this;
     },
 
     options_template: function () {
