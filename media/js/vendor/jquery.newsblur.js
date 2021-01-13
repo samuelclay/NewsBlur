@@ -251,18 +251,57 @@ NEWSBLUR.log = function(msg) {
         favicon: function (feed, empty_on_missing) {
             var empty_icon = NEWSBLUR.Globals.MEDIA_URL + '/img/icons/circular/world.png';
             if (!feed) return empty_icon;
+            console.log(['Favicon', feed]);
+            // Feed is a string
+            if (_.isNumber(feed))
+                return NEWSBLUR.URLs.favicon.replace('{id}', feed);
+            else if (_.isString(feed)) {
+                var feed_id = feed;
+                if (feed_id == 'river:')
+                    return NEWSBLUR.Globals.MEDIA_URL + 'img/icons/circular/ak-icon-allstories.png';
+                if (feed_id == 'river:infrequent')
+                    return NEWSBLUR.Globals.MEDIA_URL + 'img/icons/circular/noun_turtle.png';
+                if (feed_id == 'river:blurblogs')
+                    return NEWSBLUR.Globals.MEDIA_URL + 'img/icons/circular/ak-icon-blurblogs.png';
+                if (feed_id == 'river:global')
+                    return NEWSBLUR.Globals.MEDIA_URL + 'img/icons/circular/ak-icon-global.png';
+                if (_.string.startsWith(feed_id, 'river:'))
+                    return NEWSBLUR.Globals.MEDIA_URL + 'img/icons/circular/g_icn_folder.png';
+                if (feed_id == "read")
+                    return NEWSBLUR.Globals.MEDIA_URL + 'img/icons/circular/g_icn_unread32.png';
+                if (feed_id == "starred")
+                    return NEWSBLUR.Globals.MEDIA_URL + 'img/icons/circular/clock.png';
+                if (feed_id == "searches")
+                    return NEWSBLUR.Globals.MEDIA_URL + 'img/icons/circular/g_icn_search_black.png';
+                if (_.string.startsWith(feed_id, 'starred:'))
+                    return NEWSBLUR.Globals.MEDIA_URL + 'img/reader/tag.png';
+                if (_.string.startsWith(feed_id, 'feed:'))
+                    return $.favicon(parseInt(feed_id.replace('feed:', ''), 10));
+                if (_.string.startsWith(feed_id, 'social:'))
+                    return $.favicon(NEWSBLUR.assets.get_feed(feed_id));
+            }
             
-            if (_.isNumber(feed)) return NEWSBLUR.URLs.favicon.replace('{id}', feed);
-            else if (feed.get('favicon') && feed.get('favicon').length && feed.get('favicon').indexOf('data:image/png;base64,') != -1) return feed.get('favicon');
-            else if (feed.get('favicon') && feed.get('favicon').length) return 'data:image/png;base64,' + feed.get('favicon');
-            else if (feed.get('favicon_url') && !empty_on_missing) return feed.get('favicon_url');
-            else if (feed.get('photo_url')) return feed.get('photo_url');
-            else if (_.string.include(feed.id, 'social:')) return NEWSBLUR.Globals.MEDIA_URL + 'img/reader/default_profile_photo.png';
-            else if (empty_on_missing) return 'data:image/png;base64,R0lGODlhAQABAIAAAAAAAAAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==';
-            else if (_.isNumber(feed.id)) return NEWSBLUR.URLs.favicon.replace('{id}', feed.id);
-            else if (feed.get('favicon_url')) return feed.get('favicon_url');
-            else if (feed.is_starred()) return NEWSBLUR.Globals.MEDIA_URL + '/img/reader/tag.png';
-            else if (feed.get('is_newsletter')) return NEWSBLUR.Globals.MEDIA_URL + '/img/icons/circular/email.png';
+            // Feed is a model
+            if (feed.get('favicon') && feed.get('favicon').length && feed.get('favicon').indexOf('data:image/png;base64,') != -1)
+                return feed.get('favicon');
+            if (feed.get('favicon') && feed.get('favicon').length)
+                return 'data:image/png;base64,' + feed.get('favicon');
+            if (feed.get('favicon_url') && !empty_on_missing)
+                return feed.get('favicon_url');
+            if (feed.get('photo_url'))
+                return feed.get('photo_url');
+            if (_.string.include(feed.id, 'social:'))
+                return NEWSBLUR.Globals.MEDIA_URL + 'img/reader/default_profile_photo.png';
+            if (empty_on_missing)
+                return 'data:image/png;base64,R0lGODlhAQABAIAAAAAAAAAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==';
+            if (_.isNumber(feed.id))
+                return NEWSBLUR.URLs.favicon.replace('{id}', feed.id);
+            if (feed.get('favicon_url'))
+                return feed.get('favicon_url');
+            if (feed.is_starred())
+                return NEWSBLUR.Globals.MEDIA_URL + '/img/reader/tag.png';
+            if (feed.get('is_newsletter'))
+                return NEWSBLUR.Globals.MEDIA_URL + '/img/icons/circular/email.png';
 
             return empty_icon;
         },

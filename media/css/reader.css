@@ -1592,27 +1592,8 @@ hr {
     text-shadow: 1px 1px 0 rgba(255, 255, 255, .5);
 }
 
-.NB-feedbar .NB-folder .NB-folder-icon {
-    background: transparent url('/media/embed/icons/circular/g_icn_folder.png') no-repeat 0 0;
-    background-size: 16px;
-    width: 16px;
-    height: 16px;
-    position: absolute;
-    left: 12px;
-    top: 10px;
-}
-.NB-feedbar .NB-folder .NB-starred-icon {
-    background: transparent url('/media/embed/icons/circular/clock.png') no-repeat 0 0;
-    background-size: 16px;
-    width: 16px;
-    height: 16px;
-    position: absolute;
-    left: 12px;
-    top: 10px;
-}
-.NB-feedbar .NB-folder .NB-read-icon {
-    background: transparent url('/media/embed/icons/circular/g_icn_unread.png') no-repeat center center;
-    background-size: 8px;
+.NB-feedbar .NB-folder .feed_favicon {
+    vertical-align: text-bottom;
     width: 16px;
     height: 16px;
     position: absolute;
@@ -4515,26 +4496,6 @@ body {
     display: none;
 }
 
-.NB-feeds-header-river-container .NB-feeds-header-icon {
-    background: transparent url('/media/embed/icons/circular/ak-icon-allstories.png') no-repeat 0 0;
-    background-size: 16px;
-}
-
-.NB-feeds-header-river-infrequent .NB-feeds-header-icon {
-    background: transparent url('/media/embed/icons/circular/noun_turtle.png') no-repeat 0 0;
-    background-size: 16px;
-}
-
-.NB-feeds-header-river-global .NB-feeds-header-icon {
-    background: transparent url('/media/embed/icons/circular/ak-icon-global.png') no-repeat 0 0;
-    background-size: 16px;
-}
-
-.NB-feeds-header-river-blurblogs .NB-feeds-header-icon {
-    background: transparent url('/media/embed/icons/circular/ak-icon-blurblogs.png') no-repeat 0 0;
-    background-size: 16px;
-}
-
 .NB-feeds-header-river-container .NB-feeds-header-count {
   background-color: #11448B;
   display: block;
@@ -4561,11 +4522,6 @@ body {
 /* ============================ */
 /* = Header - Starred Stories = */
 /* ============================ */
-
-.NB-feeds-header-starred .NB-feeds-header-icon {
-    background: transparent url('/media/embed/icons/circular/clock.png') no-repeat 0 0;
-    background-size: 16px;
-}
 
 .NB-feeds-header-starred .NB-feeds-header-count {
     background-color: #506B9A;
@@ -4596,10 +4552,6 @@ body {
 .NB-feeds-header-read {
     display: block;
 }
-.NB-feeds-header-read .NB-feeds-header-icon {
-    background: transparent url('/media/embed/icons/circular/g_icn_unread.png') no-repeat center center;
-    background-size: 8px;
-}
 
 .NB-feeds-header-read.NB-empty .NB-feeds-header-count {
   display: none;
@@ -4618,10 +4570,6 @@ body {
 .NB-feeds-header.NB-feeds-header-searches:hover {
     background-image: inherit;
     background-color: #EAECE5;
-}
-.NB-feeds-header-searches .NB-feeds-header-icon {
-    background: transparent url('/media/embed/icons/circular/g_icn_search_black.png') no-repeat 1px 1px;
-    background-size: 14px;
 }
 
 .NB-feeds-header-searches .NB-feeds-header-count {
