@@ -20,7 +20,8 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
         "click .NB-view-setting-option": "change_view_setting",
         "click .NB-filter-popover-filter-icon": "open_site_settings",
         "click .NB-filter-popover-stats-icon": "open_site_statistics",
-        "click .NB-filter-popover-notifications-icon": "open_notifications"
+        "click .NB-filter-popover-notifications-icon": "open_notifications",
+        "change .NB-modal-feed-chooser": "change_feed"
     },
     
     initialize: function(options) {
@@ -55,6 +56,9 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
     render: function() {
         var self = this;
         var feed = NEWSBLUR.assets.active_feed;
+        if (this.options.feed_id) {
+            feed = NEWSBLUR.assets.get_feed(this.options.feed_id)
+        }
         var is_feed = feed && feed.is_feed();
         
         NEWSBLUR.ReaderPopover.prototype.render.call(this);
@@ -63,7 +67,8 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
             $.make('div', { className: 'NB-popover-section' }, [
                 (this.options.on_dashboard && $.make('div', { className: 'NB-modal-feed-chooser-container'}, [
                     NEWSBLUR.utils.make_feed_chooser({
-                        folder_title: this.options.feed_id,
+                        feed_id: this.options.feed_id,
+                        selected_folder_title: this.options.feed_id,
                         include_folders: true,
                         toplevel: "All Site Stories",
                         include_special_folders: true
@@ -151,6 +156,7 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
         
         if (this.options.on_dashboard) {
             this.options.on_dashboard.$(".NB-feedbar-options").addClass('NB-active');
+            this.$('option[value="' + this.options.feed_id + '"]').attr('selected', true);
         } else {
             NEWSBLUR.app.story_titles_header.$(".NB-feedbar-options").addClass('NB-active');
         }
@@ -201,7 +207,11 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
         var changed = NEWSBLUR.assets.view_setting(this.options.feed_id, setting);
         if (!changed) return;
         
-        NEWSBLUR.reader.reload_feed(setting);
+        if (this.options.on_dashboard) {
+            this.options.on_dashboard.initialize();
+        } else {
+            NEWSBLUR.reader.reload_feed(setting);
+        }
     },
     
     open_site_settings: function() {
@@ -221,6 +231,13 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
         this.close(_.bind(function() {
             NEWSBLUR.reader.open_notifications_modal(this.options.feed_id);
         }, this));
+    },
+
+    change_feed: function () {
+        var feed_id = this.$(".NB-modal-feed-chooser").val();
+        console.log(['Changing feed', feed_id])
+        this.options.on_dashboard.model.change_feed(feed_id);
+        this.close();
     }
 
     

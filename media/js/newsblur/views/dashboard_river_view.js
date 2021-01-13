@@ -8,15 +8,10 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
     },
     
     initialize: function () {
-        var $dashboard_side = $(".NB-dashboard-rivers-" + this.model.get('river_side'));
-        var $river_on_dashboard = $dashboard_side.find(".NB-dashboard-river-order-" + this.model.get('river_order'));
-        var $river = this.template();
-        if ($river_on_dashboard.length) {
-            $river_on_dashboard.replaceWith($river);
-        } else {
-            $dashboard_side.append($river);
-        }
-        this.$el = $river;
+        console.log(['Initialize dashboard river', this.model])
+        var $river_on_dashboard = $(".NB-dashboard-rivers-" + this.model.get('river_side') + " .NB-dashboard-river-order-" + this.model.get('river_order'));
+        this.setElement($river_on_dashboard);
+        this.$el.html(this.template());
         
         this.$stories = this.$(".NB-module-item .NB-story-titles");
         
@@ -34,23 +29,28 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
             story_hashes: []
         };
         
-        if (this.options.active_feed == "river:infrequent") {
+        if (this.model.get('river_id') == "river:infrequent") {
             this.options.infrequent = NEWSBLUR.assets.preference('infrequent_stories_per_month');
-        } else if (this.options.active_feed == "river:global") {
+        } else if (this.model.get('river_id') == "river:global") {
             this.options.global_feed = true;
         }
 
+        NEWSBLUR.assets.feeds.unbind(null, null, this);
         NEWSBLUR.assets.feeds.bind('reset', _.bind(this.load_stories, this));
+        NEWSBLUR.assets.stories.unbind(null, null, this);
         NEWSBLUR.assets.stories.bind('change:read_status', this.check_read_stories, this);
         // NEWSBLUR.assets.stories.bind('change:selected', this.check_read_stories, this);
+        this.model.bind('change:feed_id', _.bind(this.initialize, this));
         
         this.setup_dashboard_refresh();
         this.load_stories();
         this.options_template();
+
+        return this;
     },
 
     template: function () {
-        var $river = $(_.template('<div class="NB-module NB-module-river NB-dashboard-river">\
+        var $river = $(_.template('<div class="NB-module NB-module-river NB-dashboard-river NB-dashboard-river-order-<%= river_order %>">\
             <h5 class="NB-module-header">\
                 <div class="NB-module-river-settings NB-javascript"></div>\
                 <div class="NB-module-river-title"><%= river_title %></div>\
@@ -63,7 +63,8 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
             </div>\
         </div>\
         ', {
-            river_title: NEWSBLUR.reader.feed_title(this.model.get('river_id'))
+            river_title: NEWSBLUR.reader.feed_title(this.model.get('river_id')),
+            river_order: this.model.get('river_order')
         }));
 
         return $river;
@@ -78,7 +79,7 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
                 <%= NEWSBLUR.assets.view_setting(feed_id, "order") %>\
             </span>\
         </div>', {
-            feed_id: this.options.active_feed
+            feed_id: this.model.get('river_id')
         }));
         
         this.$(".NB-module-river-settings").html($options);
@@ -86,7 +87,7 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
     
     feeds: function() {
         var feeds;
-        var visible_only = NEWSBLUR.assets.view_setting(this.options.active_feed, 'read_filter') == 'unread';
+        var visible_only = NEWSBLUR.assets.view_setting(this.model.get('river_id'), 'read_filter') == 'unread';
         if (visible_only) {
             feeds = _.pluck(this.options.active_folder.feeds_with_unreads(), 'id');
             if (!feeds.length) {
@@ -113,7 +114,7 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
         
         clearTimeout(this.refresh_interval);
         this.refresh_interval = setTimeout(_.bind(function() {
-            if (NEWSBLUR.reader.active_feed == this.options.active_feed) {
+            if (NEWSBLUR.reader.active_feed == this.model.get('river_id')) {
                 // Currently reading the river, so don't reload because it'll break the cache.
                 console.log(['Currently reading river, so not reloading dashboard river', NEWSBLUR.reader.active_feed]);
                 this.setup_dashboard_refresh();
@@ -143,7 +144,7 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
         // console.log(['dashboard river load_stories', this.model.get('river_id'), this.page, feeds.length, options]);
         this.page = 1;
         this.story_titles.show_loading();
-        NEWSBLUR.assets.fetch_dashboard_stories(this.options.active_feed, feeds, this.page, this.options.dashboard_stories, options,
+        NEWSBLUR.assets.fetch_dashboard_stories(this.model.get('river_id'), feeds, this.page, this.options.dashboard_stories, options,
             _.bind(this.post_load_stories, this), NEWSBLUR.app.taskbar_info.show_stories_error);
             
         this.setup_dashboard_refresh();
@@ -205,7 +206,7 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
         var feeds = this.feeds();
         this.page += 1;
         this.story_titles.show_loading();
-        NEWSBLUR.assets.fetch_dashboard_stories(this.options.active_feed, feeds, this.page, this.options.dashboard_stories, options,
+        NEWSBLUR.assets.fetch_dashboard_stories(this.model.get('river_id'), feeds, this.page, this.options.dashboard_stories, options,
             _.bind(this.post_load_stories, this), NEWSBLUR.app.taskbar_info.show_stories_error);        
     },
     
@@ -225,29 +226,29 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
     open_story: function(story) {
         console.log(['Opening dashboard story', story, this.options]);
         if (this.options.query) {
-            console.log('Saved search', NEWSBLUR.assets.searches_feeds.get(this.options.active_feed))
+            console.log('Saved search', NEWSBLUR.assets.searches_feeds.get(this.model.get('river_id')))
             NEWSBLUR.reader.flags.searching = true;
             NEWSBLUR.reader.flags.search = this.options.query;
             NEWSBLUR.reader.open_saved_search({
-                search_model: NEWSBLUR.assets.searches_feeds.get(this.options.active_feed),
-                feed_id: this.options.active_feed,
+                search_model: NEWSBLUR.assets.searches_feeds.get(this.model.get('river_id')),
+                feed_id: this.model.get('river_id'),
                 dashboard_transfer: this.options.dashboard_stories,
                 story_id: story.id,
                 query: this.options.query
             });
-        } else if (this.options.active_feed == "river:infrequent") {
+        } else if (this.model.get('river_id') == "river:infrequent") {
             NEWSBLUR.reader.open_river_stories(null, null, {
                 dashboard_transfer: this.options.dashboard_stories,
                 infrequent: this.options.infrequent,
                 story_id: story.id
             });    
-        } else if (this.options.active_feed == "river:global") {
+        } else if (this.model.get('river_id') == "river:global") {
             NEWSBLUR.reader.open_river_blurblogs_stories({
                 global: true,
                 dashboard_transfer: this.options.dashboard_stories,
                 story_id: story.id
             });
-        } else if (_.string.startsWith(this.options.active_feed, 'river:')) {
+        } else if (_.string.startsWith(this.model.get('river_id'), 'river:')) {
             NEWSBLUR.reader.open_river_stories(null, null, {
                 dashboard_transfer: this.options.dashboard_stories,
                 story_id: story.id
@@ -262,7 +263,7 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
     
     complete_fill: function() {
         var feeds = this.feeds();
-        NEWSBLUR.assets.complete_river(this.options.active_feed, feeds, this.page);
+        NEWSBLUR.assets.complete_river(this.model.get('river_id'), feeds, this.page);
     },
     
     new_story: function(story_hash, timestamp) {
@@ -278,7 +279,7 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
             var last_timestamp = parseInt(oldest_story.get('story_timestamp'), 10);
             timestamp = parseInt(timestamp, 10);
             
-            if (NEWSBLUR.assets.view_setting(this.options.active_feed, 'order') == 'newest') {
+            if (NEWSBLUR.assets.view_setting(this.model.get('river_id'), 'order') == 'newest') {
                 if (timestamp < last_timestamp) {
                     // console.log(['New story older than last/oldest dashboard story', timestamp, '<', last_timestamp]);
                     return;
@@ -323,7 +324,7 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
     open_options_popover: function(e) {
         NEWSBLUR.FeedOptionsPopover.create({
             anchor: this.$(".NB-feedbar-options"),
-            feed_id: this.options.active_feed,
+            feed_id: this.model.get('river_id'),
             on_dashboard: this
         });
     },

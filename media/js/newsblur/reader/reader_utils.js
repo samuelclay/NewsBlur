@@ -160,7 +160,7 @@ NEWSBLUR.utils = {
         var $feeds_optgroup = $.make('optgroup', { label: "Sites" });
         var $social_feeds_optgroup = $.make('optgroup', { label: "Blurblogs" });
         var $starred_feeds_optgroup = $.make('optgroup', { label: "Saved Tags" });
-        var current_feed_id = this.feed_id;
+        var current_feed_id = options.feed_id;
         
         var make_feed_option = function(feed) {
             if (!feed.get('feed_title')) return;
@@ -171,7 +171,7 @@ NEWSBLUR.utils = {
                              $feeds_optgroup);
             
             if (feed.id == current_feed_id) {
-                $option.attr('selected', true);
+                $option.prop('selected', true);
             }
         };
         
@@ -189,7 +189,7 @@ NEWSBLUR.utils = {
         }
         
         if (options.include_folders) {
-            var $folders = NEWSBLUR.utils.make_folders(options.selected_folder_title, options);
+            var $folders = NEWSBLUR.utils.make_folders(options.feed_id, options.toplevel, options.name, options.include_special_folders);
             $('option', $folders).each(function () {
                 $(this).appendTo($folders_optgroup);
             });
@@ -211,26 +211,39 @@ NEWSBLUR.utils = {
         if (!options.skip_starred) {
             $chooser.append($starred_feeds_optgroup);
         }
-        
+
         return $chooser;
     },
     
-    make_folders: function(selected_folder_title, options) {
-        options = options || {};
+    make_folders: function(selected_folder_title, toplevel, select_name, include_special_folders) {
         var folders = NEWSBLUR.assets.get_folders();
-        var $options = $.make('select', { className: 'NB-folders', name: options.name });
+        var $options = $.make('select', { className: 'NB-folders', name: select_name });
         
-        if (options.include_special_folders) {
+        if (include_special_folders) {
             var $option = $.make('option', { value: 'river:global' }, "Global Shared Stories");
-            $options.append($option);    
+            $options.append($option);
+            if (selected_folder_title == "river:global") {
+                $option.prop('selected', true);
+            }
+            
             var $option = $.make('option', { value: 'river:blurblogs' }, "All Shared Stories");
             $options.append($option);    
+            if (selected_folder_title == "river:blurblogs") {
+                $option.prop('selected', true);
+            }
+
             var $option = $.make('option', { value: 'river:infrequent' }, "Infrequent Site Stories");
             $options.append($option);    
+            if (selected_folder_title == "river:infrequent") {
+                $option.prop('selected', true);
+            }
         }
 
-        var $option = $.make('option', { value: '' }, options.toplevel || "Top Level");
+        var $option = $.make('option', { value: 'river:' }, toplevel || "Top Level");
         $options.append($option);
+        if (selected_folder_title == "river:") {
+            $option.prop('selected', true);
+        }
 
         $options = this.make_folder_options($options, folders, '&nbsp;&nbsp;&nbsp;', selected_folder_title);
         
@@ -246,7 +259,7 @@ NEWSBLUR.utils = {
                 }, depth + ' ' + item.get('folder_title'));
                 $options.append($option);
                 if (item.get('folder_title') == selected_folder_title) {
-                    $option.attr('selected', true);
+                    $option.prop('selected', true);
                 }
                 $options = self.make_folder_options($options, item.folders, depth+'&nbsp;&nbsp;&nbsp;', selected_folder_title);
             }

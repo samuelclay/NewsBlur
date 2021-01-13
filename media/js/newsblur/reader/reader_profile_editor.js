@@ -236,7 +236,7 @@ _.extend(NEWSBLUR.ReaderProfileEditor.prototype, {
         $('textarea[name=custom_css]', this.$modal).val(this.profile.get('custom_css'));
         $('input[name=bb_permalink_direct]', this.$modal).each(function() {
             if ($(this).val() == ""+profile.get('bb_permalink_direct')) {
-                $(this).attr('checked', true);
+                $(this).prop('checked', true);
             }
         });
     },
@@ -285,7 +285,7 @@ _.extend(NEWSBLUR.ReaderProfileEditor.prototype, {
             ]);
             if (service == this.profile.get('photo_service') ||
                 (service == 'nothing' && !this.profile.get('photo_service'))) {
-                $('input[type=radio]', $profile).attr('checked', true);
+                $('input[type=radio]', $profile).prop('checked', true);
             }
             $profiles.append($profile);
         }, this));
