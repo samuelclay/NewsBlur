@@ -4675,7 +4675,7 @@
 
         load_dashboard_rivers: function (force) {
             if (!NEWSBLUR.assets.dashboard_rivers.length) {
-                // Create dashboard rivers if none exiat by choosing folders
+                // Create dashboard rivers if none exist by choosing folders
                 this.choose_dashboard_rivers();
                 return;
             }
@@ -4694,22 +4694,14 @@
             if (!existing_rivers.contains(function (river) {
                 river.get('river_id') == "river:";
             })) {
-                NEWSBLUR.assets.save_dashboard_river("river:", "left", 0);
-            }
-            
-            if (!existing_rivers.contains(function (river) {
-                river.get('river_id') == "river:infrequent";
-            })) {
-                NEWSBLUR.assets.save_dashboard_river("river:infrequent", "left", 1);
-            }
-            
-            if (!existing_rivers.contains(function (river) {
-                river.get('river_id') == "river:global";
-            })) {
-                NEWSBLUR.assets.save_dashboard_river("river:global", "left", 2);
-            }
-
-            
+                NEWSBLUR.assets.save_dashboard_river("river:", "left", 0, _.bind(function () {
+                    NEWSBLUR.assets.save_dashboard_river("river:infrequent", "left", 1, _.bind(function () {
+                        NEWSBLUR.assets.save_dashboard_river("river:global", "left", 2, _.bind(function () {
+                            this.load_dashboard_rivers();
+                        }, this));
+                    }, this));
+                }, this));
+            }            
         },
 
         // ==========================

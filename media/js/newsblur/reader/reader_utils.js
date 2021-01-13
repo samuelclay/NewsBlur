@@ -165,7 +165,7 @@ NEWSBLUR.utils = {
         var make_feed_option = function(feed) {
             if (!feed.get('feed_title')) return;
             
-            var $option = $.make('option', { value: feed.id }, feed.get('feed_title'));
+            var $option = $.make('option', { value: 'feed:' + feed.id }, feed.get('feed_title'));
             $option.appendTo(feed.is_starred() ? $starred_feeds_optgroup : 
                              feed.is_social() ? $social_feeds_optgroup : 
                              $feeds_optgroup);
@@ -255,7 +255,7 @@ NEWSBLUR.utils = {
         items.each(function(item) {
             if (item.is_folder()) {
                 var $option = $.make('option', { 
-                    value: item.get('folder_title')
+                    value: 'river:'+item.get('folder_title')
                 }, depth + ' ' + item.get('folder_title'));
                 $options.append($option);
                 if (item.get('folder_title') == selected_folder_title) {
