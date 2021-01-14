@@ -9,12 +9,10 @@ NEWSBLUR.Views.DashboardRivers = Backbone.View.extend({
     initialize: function () {
         var side = this.options.side;
         this.setElement($(".NB-dashboard-rivers-" + side));
-
+        this.$el.empty();
         this.rivers = NEWSBLUR.assets.dashboard_rivers.side(side).map(_.bind(function (river, r) {
             var river_view = new NEWSBLUR.Views.DashboardRiver({
-                className: '.NB-module-' + river.get('river_side') + '-river-' + river.get('river_order'),
                 dashboard_stories: new NEWSBLUR.Collections.Stories(),
-                side: river.get('river_side'),
                 model: river
             });
             console.log(['Adding river', side, river.get('river_id'), river_view, river_view.$el, this.$el])

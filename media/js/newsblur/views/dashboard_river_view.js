@@ -1,7 +1,5 @@
 NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
     
-    className: "NB-module-river",
-    
     events: {
         "click .NB-module-search-add-url"   : "add_url",
         "click .NB-feedbar-options" : "open_options_popover"
@@ -10,11 +8,23 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
     initialize: function () {
         var $river_on_dashboard = $(".NB-dashboard-rivers-" + this.model.get('river_side') + " .NB-dashboard-river-order-" + this.model.get('river_order'));
         console.log(['Initialize dashboard river', this.model, this.$el, this.el, $river_on_dashboard])
-        if ($river_on_dashboard.length) {
-            this.setElement($river_on_dashboard);
-        } else {
-
+        // if ($river_on_dashboard.length) {
+        //     this.setElement($river_on_dashboard);
+        // }
+        
+        if (this.model.get('river_id') == "river:infrequent") {
+            this.options.infrequent = NEWSBLUR.assets.preference('infrequent_stories_per_month');
+        } else if (this.model.get('river_id') == "river:global") {
+            this.options.global_feed = true;
         }
+
+        NEWSBLUR.assets.feeds.unbind(null, null, this);
+        NEWSBLUR.assets.feeds.bind('reset', _.bind(this.load_stories, this));
+        NEWSBLUR.assets.stories.unbind(null, null, this);
+        NEWSBLUR.assets.stories.bind('change:read_status', this.check_read_stories, this);
+        // NEWSBLUR.assets.stories.bind('change:selected', this.check_read_stories, this);
+        this.model.bind('change:river_id', _.bind(this.initialize, this));
+                
         this.render();
         
         this.$stories = this.$(".NB-module-item .NB-story-titles");
@@ -32,20 +42,6 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
         this.cache = {
             story_hashes: []
         };
-        
-        if (this.model.get('river_id') == "river:infrequent") {
-            this.options.infrequent = NEWSBLUR.assets.preference('infrequent_stories_per_month');
-        } else if (this.model.get('river_id') == "river:global") {
-            this.options.global_feed = true;
-        }
-
-        NEWSBLUR.assets.feeds.unbind(null, null, this);
-        NEWSBLUR.assets.feeds.bind('reset', _.bind(this.load_stories, this));
-        NEWSBLUR.assets.stories.unbind(null, null, this);
-        NEWSBLUR.assets.stories.bind('change:read_status', this.check_read_stories, this);
-        // NEWSBLUR.assets.stories.bind('change:selected', this.check_read_stories, this);
-        this.model.bind('change:river_id', _.bind(this.initialize, this));
-        
         this.setup_dashboard_refresh();
         this.load_stories();
         this.options_template();
@@ -68,7 +64,7 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
             </div>\
         </div>\
         ', {
-            favicon_url: this.model.get('favicon_url'), 
+            favicon_url: this.model.favicon_url(),
             river_title: NEWSBLUR.reader.feed_title(this.model.get('river_id')),
             river_order: this.model.get('river_order')
         }));
@@ -93,14 +89,20 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
         this.$(".NB-module-river-settings").html($options);
     },
     
-    feeds: function() {
-        var active_folder = NEWSBLUR.assets.get_folder(this.model.get('river_id'));
+    feeds: function () {
+        var river_id = this.model.get('river_id');
+
+        if (_.string.startsWith(river_id, 'feed:')) {
+            return [parseInt(river_id.replace('feed:', ''), 10)];
+        }
+        
+        var active_folder = NEWSBLUR.assets.get_folder(river_id);
         if (!active_folder) {
             active_folder = NEWSBLUR.assets.folders;
         }
 
         var feeds;
-        var visible_only = NEWSBLUR.assets.view_setting(this.model.get('river_id'), 'read_filter') == 'unread';
+        var visible_only = NEWSBLUR.assets.view_setting(river_id, 'read_filter') == 'unread';
         if (visible_only) {
             feeds = _.pluck(active_folder.feeds_with_unreads(), 'id');
         }

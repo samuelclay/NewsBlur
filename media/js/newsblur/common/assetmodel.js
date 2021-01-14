@@ -802,7 +802,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                 'ajax_group': 'dashboard',
                 'request_type': 'GET'
             });
-        } else if (_.string.startsWith(feed_id, 'river:')) {
+        } else if (_.string.startsWith(feed_id, 'river:') || _.string.startsWith(feed_id, 'feed:')) {
             this.make_request('/reader/river_stories', options, pre_callback, error_callback, {
                 'ajax_group': 'dashboard',
                 'request_type': 'GET'
