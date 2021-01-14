@@ -23,6 +23,7 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
         NEWSBLUR.assets.stories.unbind(null, null, this);
         NEWSBLUR.assets.stories.bind('change:read_status', this.check_read_stories, this);
         // NEWSBLUR.assets.stories.bind('change:selected', this.check_read_stories, this);
+        this.model.unbind('change:river_id');
         this.model.bind('change:river_id', _.bind(this.initialize, this));
                 
         this.render();
