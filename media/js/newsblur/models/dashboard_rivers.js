@@ -20,7 +20,7 @@ NEWSBLUR.Models.DashboardRiver = Backbone.Model.extend({
         NEWSBLUR.assets.save_dashboard_river(river_id, this.get('river_side'), this.get('river_order'));
         this.initialize();
     }
-    
+
 });
 
 NEWSBLUR.Collections.DashboardRivers = Backbone.Collection.extend({
