@@ -106,12 +106,12 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
                 $.make('div', { className: 'NB-popover-section-title' }, 'Display options'),
                 (this.options.show_contentpreview && $.make('ul', { className: 'segmented-control NB-menu-manage-view-setting-contentpreview' }, [
                     $.make('li', { className: 'NB-view-setting-option NB-view-setting-contentpreview-title' }, 'Title only'),
-                    $.make('li', { className: 'NB-view-setting-option NB-view-setting-contentpreview-1' }, '1'),
-                    $.make('li', { className: 'NB-view-setting-option NB-view-setting-contentpreview-2' }, '2'),
-                    $.make('li', { className: 'NB-view-setting-option NB-view-setting-contentpreview-3' }, '3'),
+                    $.make('li', { className: 'NB-view-setting-option NB-view-setting-contentpreview-small' }, $.make('div', { className: 'NB-icon' })),
+                    $.make('li', { className: 'NB-view-setting-option NB-view-setting-contentpreview-medium' }, $.make('div', { className: 'NB-icon' })),
+                    $.make('li', { className: 'NB-view-setting-option NB-view-setting-contentpreview-large' }, $.make('div', { className: 'NB-icon' })),
                 ])),
                 (this.options.show_imagepreview && $.make('ul', { className: 'segmented-control NB-menu-manage-view-setting-imagepreview' }, [
-                    $.make('li', { className: 'NB-view-setting-option NB-view-setting-imagepreview-title' }, 'No image'),
+                    $.make('li', { className: 'NB-view-setting-option NB-view-setting-imagepreview-none' }, 'No image'),
                     $.make('li', { className: 'NB-view-setting-option NB-view-setting-imagepreview-small' }, 'Small'),
                     $.make('li', { className: 'NB-view-setting-option NB-view-setting-imagepreview-large' }, 'Large'),
                 ])),
@@ -162,7 +162,7 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
     show_correct_feed_view_options_in_menu: function() {
         var order = NEWSBLUR.assets.view_setting(this.options.feed_id, 'order');
         var read_filter = NEWSBLUR.assets.view_setting(this.options.feed_id, 'read_filter');
-        var mark_scroll = NEWSBLUR.assets.preference('mark_scroll');
+        var mark_scroll = NEWSBLUR.assets.preference('mark_read_on_scroll_titles');
         var image_preview = NEWSBLUR.assets.preference('show_image_preview');
         var content_preview = NEWSBLUR.assets.preference('show_content_preview');
         var infrequent = parseInt(NEWSBLUR.assets.preference('infrequent_stories_per_month'), 10);
@@ -175,9 +175,9 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
         var $mark_unread = this.$('.NB-view-setting-markscroll-unread');
         var $mark_read = this.$('.NB-view-setting-markscroll-read');
         var $content_preview_title = this.$('.NB-view-setting-contentpreview-title');
-        var $content_preview_1 = this.$('.NB-view-setting-contentpreview-1');
-        var $content_preview_2 = this.$('.NB-view-setting-contentpreview-2');
-        var $content_preview_3 = this.$('.NB-view-setting-contentpreview-3');
+        var $content_preview_1 = this.$('.NB-view-setting-contentpreview-small');
+        var $content_preview_2 = this.$('.NB-view-setting-contentpreview-medium');
+        var $content_preview_3 = this.$('.NB-view-setting-contentpreview-large');
         var $image_preview_title = this.$('.NB-view-setting-imagepreview-none');
         var $image_preview_1 = this.$('.NB-view-setting-imagepreview-small');
         var $image_preview_2 = this.$('.NB-view-setting-imagepreview-large');
@@ -188,8 +188,15 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
         $newest.text('Newest' + (order != 'oldest' ? ' first' : ''));
         $unread.toggleClass('NB-active', read_filter == 'unread');
         $all.toggleClass('NB-active', read_filter != 'unread');
-        $mark_unread.toggleClass('NB-active', mark_scroll == 'unread');
-        $mark_read.toggleClass('NB-active', mark_scroll == 'read');
+        $mark_unread.toggleClass('NB-active', !mark_scroll);
+        $mark_read.toggleClass('NB-active', mark_scroll);
+        $content_preview_title.toggleClass('NB-active', content_preview == '0' || content_preview == "title");
+        $content_preview_1.toggleClass('NB-active', content_preview == "small");
+        $content_preview_2.toggleClass('NB-active', content_preview == "1" || content_preview == "medium");
+        $content_preview_3.toggleClass('NB-active', content_preview == "large");
+        $image_preview_title.toggleClass('NB-active', image_preview == "0");
+        $image_preview_1.toggleClass('NB-active', image_preview == "small");
+        $image_preview_2.toggleClass('NB-active', image_preview == "1" || image_preview == "large");
         this.$('.NB-feed-font-size-option').removeClass('NB-active');
         this.$('.NB-options-feed-font-size .NB-options-font-size-'+feed_font_size).addClass('NB-active');
 
@@ -215,7 +222,7 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
     // ==========
     
     change_view_setting: function(e) {
-        var $target = $(e.target);
+        var $target = $(e.currentTarget);
         var options = {};
         
         if ($target.hasClass("NB-view-setting-order-newest")) {
@@ -230,6 +237,20 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
             NEWSBLUR.assets.preference('mark_read_on_scroll_titles', false);
         } else if ($target.hasClass("NB-view-setting-markscroll-read")) {
             NEWSBLUR.assets.preference('mark_read_on_scroll_titles', true);
+        } else if ($target.hasClass("NB-view-setting-contentpreview-title")) {
+            NEWSBLUR.assets.preference('show_content_preview', "title");
+        } else if ($target.hasClass("NB-view-setting-contentpreview-small")) {
+            NEWSBLUR.assets.preference('show_content_preview', "small");
+        } else if ($target.hasClass("NB-view-setting-contentpreview-medium")) {
+            NEWSBLUR.assets.preference('show_content_preview', "medium");
+        } else if ($target.hasClass("NB-view-setting-contentpreview-large")) {
+            NEWSBLUR.assets.preference('show_content_preview', "large");
+        } else if ($target.hasClass("NB-view-setting-imagepreview-none")) {
+            NEWSBLUR.assets.preference('show_image_preview', "none");
+        } else if ($target.hasClass("NB-view-setting-imagepreview-small")) {
+            NEWSBLUR.assets.preference('show_image_preview', "small");
+        } else if ($target.hasClass("NB-view-setting-imagepreview-large")) {
+            NEWSBLUR.assets.preference('show_image_preview', "large");
         } else if ($target.hasClass("NB-view-setting-infrequent-5")) {
             NEWSBLUR.assets.preference('infrequent_stories_per_month', 5);
             NEWSBLUR.reader.reload_feed();

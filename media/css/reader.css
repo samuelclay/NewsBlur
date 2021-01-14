@@ -4998,12 +4998,23 @@ background: transparent;
     line-height: 16px;
     font-weight: bold;
 }
+.NB-filter-popover .NB-menu-manage-view-setting-contentpreview .NB-icon,
 .NB-style-popover .NB-options-line-spacing .NB-icon {
     width: 32px;
-    height: 16px;
+    height: 20px;
     background-size: 32px 16px;
     background-position: center center;
+    background-repeat: no-repeat;
     margin: 0 auto;
+}
+.NB-filter-popover .NB-view-setting-contentpreview-small .NB-icon {
+    background-image: url("/media/embed/reader/content_preview_small.png");
+}
+.NB-filter-popover .NB-view-setting-contentpreview-medium .NB-icon {
+    background-image: url("/media/embed/reader/content_preview_medium.png");
+}
+.NB-filter-popover .NB-view-setting-contentpreview-large .NB-icon {
+    background-image: url("/media/embed/reader/content_preview_large.png");
 }
 .NB-style-popover .NB-options-line-spacing-xs .NB-icon {
     background-image: url("/media/embed/reader/line_spacing_xs.png");
@@ -12423,6 +12434,7 @@ form.opml_import_form input {
 }
 .NB-filter-popover .segmented-control.NB-menu-manage-view-setting-contentpreview li {
     width: 30px;
+    height: 20px;
 }
 .NB-filter-popover .segmented-control.NB-menu-manage-view-setting-contentpreview li.NB-view-setting-contentpreview-title {
     width: 64px;
@@ -12515,18 +12527,18 @@ form.opml_import_form input {
 .NB-popover-section-title {
     color: #585A55;
     text-transform: uppercase;
-    margin: 12px 0 10px;
+    margin: 0 0 10px;
     font-size: 12px;
     font-weight: bold;
 }
 .NB-popover-section {
-    padding: 8px 18px 22px;
+    padding: 22px 18px 22px;
     border-bottom: 1px solid #E8EAE4;
     overflow: hidden;
 }
 .NB-popover-section:last-child {
     border-bottom: none;
-    padding-bottom: 8px;
+    /* padding-bottom: 8px; */
 }
 .NB-section-icon {
     float: right;
