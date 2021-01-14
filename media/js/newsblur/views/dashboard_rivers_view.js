@@ -13,7 +13,6 @@ NEWSBLUR.Views.DashboardRivers = Backbone.View.extend({
         this.rivers = NEWSBLUR.assets.dashboard_rivers.side(side).map(_.bind(function (river, r) {
             var river_view = new NEWSBLUR.Views.DashboardRiver({
                 className: '.NB-module-' + river.get('river_side') + '-river-' + river.get('river_order'),
-                active_folder: NEWSBLUR.assets.folders,
                 dashboard_stories: new NEWSBLUR.Collections.Stories(),
                 side: river.get('river_side'),
                 model: river

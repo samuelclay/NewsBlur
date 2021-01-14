@@ -2012,8 +2012,8 @@ def _parse_user_info(user):
 def add_url(request):
     code = 0
     url = request.POST['url']
-    folder = request.POST.get('folder', '')
-    new_folder = request.POST.get('new_folder')
+    folder = request.POST.get('folder', '').replace('river:', '')
+    new_folder = request.POST.get('new_folder').replace('river:', '')
     auto_active = is_true(request.POST.get('auto_active', 1))
     skip_fetch = is_true(request.POST.get('skip_fetch', False))
     feed = None
@@ -2061,8 +2061,8 @@ def add_url(request):
 @ajax_login_required
 @json.json_view
 def add_folder(request):
-    folder = request.POST['folder']
-    parent_folder = request.POST.get('parent_folder', '')
+    folder = request.POST['folder'].replace('river:', '')
+    parent_folder = request.POST.get('parent_folder', '').replace('river:', '')
     folders = None
     logging.user(request, "~FRAdding Folder: ~SB%s (in %s)" % (folder, parent_folder))
     
@@ -2084,7 +2084,7 @@ def add_folder(request):
 @json.json_view
 def delete_feed(request):
     feed_id = int(request.POST['feed_id'])
-    in_folder = request.POST.get('in_folder', None)
+    in_folder = request.POST.get('in_folder', None).replace('river:', '')
     if not in_folder or in_folder == ' ':
         in_folder = ""
     
@@ -2106,7 +2106,7 @@ def delete_feed_by_url(request):
     message = ""
     code = 0
     url = request.POST['url']
-    in_folder = request.POST.get('in_folder', '')
+    in_folder = request.POST.get('in_folder', '').replace('river:', '')
     if in_folder == ' ':
         in_folder = ""
     
@@ -2129,7 +2129,7 @@ def delete_feed_by_url(request):
 @json.json_view
 def delete_folder(request):
     folder_to_delete = request.POST.get('folder_name') or request.POST.get('folder_to_delete')
-    in_folder = request.POST.get('in_folder', None)
+    in_folder = request.POST.get('in_folder', None).replace('river:', '')
     feed_ids_in_folder = request.POST.getlist('feed_id') or request.POST.getlist('feed_id[]')
     feed_ids_in_folder = [int(f) for f in feed_ids_in_folder if f]
 
@@ -2186,7 +2186,7 @@ def rename_feed(request):
 def rename_folder(request):
     folder_to_rename = request.POST.get('folder_name') or request.POST.get('folder_to_rename')
     new_folder_name = request.POST['new_folder_name']
-    in_folder = request.POST.get('in_folder', '')
+    in_folder = request.POST.get('in_folder', '').replace('river:', '')
     if 'Top Level' in in_folder: in_folder = ''
     code = 0
     

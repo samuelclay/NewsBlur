@@ -251,7 +251,8 @@ NEWSBLUR.log = function(msg) {
         favicon: function (feed, empty_on_missing) {
             var empty_icon = NEWSBLUR.Globals.MEDIA_URL + '/img/icons/circular/world.png';
             if (!feed) return empty_icon;
-            console.log(['Favicon', feed]);
+            // console.log(['Favicon', feed]);
+
             // Feed is a string
             if (_.isNumber(feed))
                 return NEWSBLUR.URLs.favicon.replace('{id}', feed);

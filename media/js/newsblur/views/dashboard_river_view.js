@@ -94,15 +94,18 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
     },
     
     feeds: function() {
+        var active_folder = NEWSBLUR.assets.get_folder(this.model.get('river_id'));
+        if (!active_folder) {
+            active_folder = NEWSBLUR.assets.folders;
+        }
+
         var feeds;
         var visible_only = NEWSBLUR.assets.view_setting(this.model.get('river_id'), 'read_filter') == 'unread';
         if (visible_only) {
-            feeds = _.pluck(this.options.active_folder.feeds_with_unreads(), 'id');
-            if (!feeds.length) {
-                feeds = this.options.active_folder.feed_ids_in_folder();
-            }
-        } else {
-            feeds = this.options.active_folder.feed_ids_in_folder();
+            feeds = _.pluck(active_folder.feeds_with_unreads(), 'id');
+        }
+        if (!feeds || !feeds.length) {
+            feeds = active_folder.feed_ids_in_folder();
         }
         
         return feeds;
