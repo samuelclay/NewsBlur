@@ -424,7 +424,7 @@ fieldset legend {
 
 .NB-modal .NB-fieldset {
     border-bottom: 1px solid rgba(0, 0, 0, .1);
-    margin: 16px 0 0;
+    margin: 24px 0 0;
     overflow: hidden;
 }
 .NB-modal .NB-fieldset:first-child {
@@ -433,12 +433,9 @@ fieldset legend {
 
 .NB-modal .NB-fieldset-fields {
     background-color: #F7F7F5;
-    padding: 12px 16px 6px;
+    padding: 20px 16px 14px;
     font-size: 14px;
     overflow: hidden;
-    border-left: 1px solid rgba(0, 0, 0, .1);
-    border-right: 1px solid rgba(0, 0, 0, .1);
-
 }
 
 .NB-modal .NB-modal-feed-chooser-container {

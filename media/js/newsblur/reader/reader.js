@@ -2288,9 +2288,21 @@
             }
             NEWSBLUR.app.taskbar_info.hide_stories_error();
             NEWSBLUR.app.taskbar_info.show_stories_progress_bar();
-            this.model.fetch_social_stories(this.active_feed, 1, 
-                _.bind(this.post_open_social_stories, this), NEWSBLUR.app.taskbar_info.show_stories_error, true);
-            
+
+            if (options.dashboard_transfer) {
+                NEWSBLUR.assets.stories.reset(options.dashboard_transfer.map(function (story) {
+                    return story.toJSON();
+                }));
+                if (this.counts['select_story_in_feed'] || this.flags['select_story_in_feed']) {
+                    this.select_story_in_feed();
+                }
+                this.model.fetch_social_stories(this.active_feed, 1,
+                    _.bind(this.post_open_social_stories, this), NEWSBLUR.app.taskbar_info.show_stories_error, false);
+            } else {
+                this.model.fetch_social_stories(this.active_feed, 1,
+                    _.bind(this.post_open_social_stories, this), NEWSBLUR.app.taskbar_info.show_stories_error, true);
+            }
+
             if (this.story_view == 'page') {
                 _.delay(_.bind(function() {
                     if (!options.delay || feed.id == this.next_feed) {

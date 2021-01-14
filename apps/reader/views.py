@@ -2013,7 +2013,7 @@ def add_url(request):
     code = 0
     url = request.POST['url']
     folder = request.POST.get('folder', '').replace('river:', '')
-    new_folder = request.POST.get('new_folder').replace('river:', '')
+    new_folder = request.POST.get('new_folder', '').replace('river:', '')
     auto_active = is_true(request.POST.get('auto_active', 1))
     skip_fetch = is_true(request.POST.get('skip_fetch', False))
     feed = None
@@ -2084,7 +2084,7 @@ def add_folder(request):
 @json.json_view
 def delete_feed(request):
     feed_id = int(request.POST['feed_id'])
-    in_folder = request.POST.get('in_folder', None).replace('river:', '')
+    in_folder = request.POST.get('in_folder', '').replace('river:', '')
     if not in_folder or in_folder == ' ':
         in_folder = ""
     
@@ -2129,7 +2129,7 @@ def delete_feed_by_url(request):
 @json.json_view
 def delete_folder(request):
     folder_to_delete = request.POST.get('folder_name') or request.POST.get('folder_to_delete')
-    in_folder = request.POST.get('in_folder', None).replace('river:', '')
+    in_folder = request.POST.get('in_folder', None)
     feed_ids_in_folder = request.POST.getlist('feed_id') or request.POST.getlist('feed_id[]')
     feed_ids_in_folder = [int(f) for f in feed_ids_in_folder if f]
 

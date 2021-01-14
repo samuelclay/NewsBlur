@@ -4955,27 +4955,36 @@ background: transparent;
     background: transparent url("/media/embed/icons/circular/menu_icn_settings.png") no-repeat center center;
 }
 
+.NB-filter-popover .segmented-control.NB-options-feed-font-size li,
 .NB-style-popover .NB-options-feed-font-size li,
 .NB-style-popover .NB-options-story-font-size li {
-    width: 48px;
+    width: 45px;
     padding: 2px 0;
     line-height: 16px;
     font-weight: bold;
 }
+.NB-filter-popover .segmented-control.NB-options-feed-font-size li {
+    width: 50px;
+}
+.NB-filter-popover .segmented-control li.NB-options-font-size-xs,
 .NB-style-popover li.NB-options-font-size-xs {
     font-size: 9px;
     padding: 3px 0 1px;
 }
+.NB-filter-popover .segmented-control .NB-options-font-size-s,
 .NB-style-popover .NB-options-font-size-s {
     font-size: 10px;
 }
+.NB-filter-popover .segmented-control li.NB-options-font-size-m,
 .NB-style-popover li.NB-options-font-size-m {
     font-size: 12px;
     padding: 3px 0 1px;
 }
+.NB-filter-popover .segmented-control .NB-options-font-size-l,
 .NB-style-popover .NB-options-font-size-l {
     font-size: 13px;
 }
+.NB-filter-popover .segmented-control li.NB-options-font-size-xl,
 .NB-style-popover li.NB-options-font-size-xl {
     font-size: 15px;
 }
@@ -4984,7 +4993,7 @@ background: transparent;
     margin-top: 6px;
 }
 .NB-style-popover .NB-options-line-spacing li {
-    width: 48px;
+    width: 45px;
     padding: 2px 0;
     line-height: 16px;
     font-weight: bold;
@@ -5013,7 +5022,7 @@ background: transparent;
 }
 
 .NB-style-popover .NB-options-font-family {
-    width: 246px;
+    width: 236px;
 }
 .NB-style-popover .NB-options-font-family li {
     padding: 5px 0;
@@ -5072,7 +5081,7 @@ background: transparent;
 }
 
 .NB-style-popover .NB-story-titles-pane-option {
-    width: 79px;
+    width: 73px;
     font-size: 12px;
     padding: 4px 0;
 }
@@ -5101,7 +5110,7 @@ background: transparent;
     margin-top: 6px;
 }
 .NB-style-popover .NB-single-story-option {
-    width: 122px;
+    width: 116px;
     font-size: 12px;
     padding: 4px 0;
 }
@@ -5125,7 +5134,7 @@ background: transparent;
 }
 .NB-style-popover .NB-grid-columns-option,
 .NB-style-popover .NB-grid-height-option {
-    min-width: 26px;
+    min-width: 23px;
     font-size: 12px;
     padding: 4px 8px;
 }
@@ -9182,6 +9191,9 @@ form.opml_import_form input {
     margin: 12px 0 0;
 }
 
+.NB-feedbar-options-notifications .NB-feed-notification {
+    padding: 0;
+}
 .NB-feed-notification {
     width: 100%;
     overflow: hidden;
@@ -12399,15 +12411,24 @@ form.opml_import_form input {
 .NB-filter-popover .segmented-control li {
     padding: 2px 12px 2px;
     font-size: 11px;
-    width: 112px;
+    width: 104px;
 }
 .NB-filter-popover .segmented-control.NB-feed-notification-types li {
-    width: 44px;
+    width: 39px;
 }
 .NB-filter-popover .segmented-control.NB-menu-manage-view-setting-infrequent li {
     width: auto;
     padding-left: 10px;
     padding-right: 10px;
+}
+.NB-filter-popover .segmented-control.NB-menu-manage-view-setting-contentpreview li {
+    width: 30px;
+}
+.NB-filter-popover .segmented-control.NB-menu-manage-view-setting-contentpreview li.NB-view-setting-contentpreview-title {
+    width: 64px;
+}
+.NB-filter-popover .segmented-control.NB-menu-manage-view-setting-imagepreview li {
+    width: 62px;
 }
 .NB-filter-popover .segmented-control .NB-unread-icon,
 .NB-filter-popover .segmented-control .NB-focus-icon {
@@ -12494,20 +12515,18 @@ form.opml_import_form input {
 .NB-popover-section-title {
     color: #585A55;
     text-transform: uppercase;
-    margin: 12px 0 6px;
+    margin: 12px 0 10px;
     font-size: 12px;
     font-weight: bold;
 }
-.NB-popover-section-title:first-child {
-    margin-top: 0;
-}
 .NB-popover-section {
-    padding: 12px;
+    padding: 8px 18px 22px;
     border-bottom: 1px solid #E8EAE4;
     overflow: hidden;
 }
 .NB-popover-section:last-child {
     border-bottom: none;
+    padding-bottom: 8px;
 }
 .NB-section-icon {
     float: right;
