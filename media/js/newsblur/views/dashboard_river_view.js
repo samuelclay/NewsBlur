@@ -167,9 +167,9 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
         this.setup_dashboard_refresh();
     },
     
-    post_load_stories: function (stories) {
-        // console.log(['post_load_stories', this.model.get('river_id'), this.options.dashboard_stories.length, stories])
-        this.fill_out();
+    post_load_stories: function (data) {
+        // console.log(['post_load_stories', this.model.get('river_id'), this.options.dashboard_stories.length, data, data.stories.length])
+        this.fill_out({ new_stories: data.stories.length });
         this.cache.story_hashes = this.options.dashboard_stories.pluck('story_hash');
     },
     
@@ -220,6 +220,11 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
             }
         }
         
+        if (options.new_stories == 0) {
+            this.complete_fill();
+            return;
+        }
+
         var feeds = this.feeds();
         this.page += 1;
         this.story_titles.show_loading();
