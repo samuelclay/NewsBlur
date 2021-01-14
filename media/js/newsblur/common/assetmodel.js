@@ -595,7 +595,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             }
             
             if (data.stories && first_load) {
-                // console.log(['first load river', data.stories.length, ' stories']);
+                console.log(['first load river', data.stories.length, ' stories']);
                 this.feed_tags = data.feed_tags || {};
                 this.feed_authors = data.feed_authors || {};
                 this.active_feed = this.get_feed(feed_id);
@@ -610,7 +610,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                 this.starred_stories = data.starred_stories;
                 this.stories.reset(data.stories, {added: data.stories.length});
             } else if (data.stories) {
-                // console.log(['adding to river', data.stories.length, ' stories']);
+                console.log(['adding to river', data.stories.length, ' stories']);
                 this.stories.add(data.stories, {silent: true});
                 this.stories.trigger('add', {added: data.stories.length});
             }
@@ -799,6 +799,12 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         
         if (_.string.startsWith(feed_id, 'river:global')) {
             this.make_request('/social/river_stories', options, pre_callback, error_callback, {
+                'ajax_group': 'dashboard',
+                'request_type': 'GET'
+            });
+        } else if (_.string.startsWith(feed_id, 'social:')) {
+            var user_id = this.get_feed(feed_id).get('user_id');
+            this.make_request('/social/stories/'+user_id+'/', options, pre_callback, error_callback, {
                 'ajax_group': 'dashboard',
                 'request_type': 'GET'
             });
@@ -1132,6 +1138,8 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
     
     get_search_feeds: function(feed_id, query) {
         var self = this;
+
+        if (!feed_id && !query) return this.searches_feeds;
         
         return this.searches_feeds.detect(function(feed) {
             if (!query) {
