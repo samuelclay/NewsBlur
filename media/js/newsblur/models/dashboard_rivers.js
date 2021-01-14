@@ -2,9 +2,7 @@ NEWSBLUR.Models.DashboardRiver = Backbone.Model.extend({
     
     initialize: function() {
         var feed_title = NEWSBLUR.reader.feed_title(this.get('river_id'));
-        var favicon_url = this.favicon_url();
         this.set('feed_title', "\"<b>" + this.get('query') + "</b>\" in <b>" + feed_title + "</b>");
-        this.set('favicon_url', favicon_url);
         this.list_view;
     },
     
