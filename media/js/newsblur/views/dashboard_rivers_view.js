@@ -42,6 +42,10 @@ NEWSBLUR.Views.DashboardRivers = Backbone.View.extend({
         this.rivers.forEach(function (r) {
             r.options.dashboard_stories.mark_unread_pubsub(story_hash);
         });
+    },
+
+    redraw: function () {
+        this.rivers.forEach(function (r) { return r.redraw(); });
     }
 
 

@@ -2661,6 +2661,16 @@ body {
     line-height: 2.0em;
 }
 
+.NB-image-preview-none .NB-storytitles-story-image {
+    display: none;
+}
+.NB-image-preview-small .NB-storytitles-story-image {
+    width: 62px;
+    height: 70%;
+    right: 12px;
+    top: 12px;
+    border-radius: 6px;
+}
 .NB-theme-sans-serif.NB-theme-size-xs .NB-feed-story {
     font-size: 11px;    
 }

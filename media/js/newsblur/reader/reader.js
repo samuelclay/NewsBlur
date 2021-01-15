@@ -3043,9 +3043,22 @@
                  .removeClass('NB-line-spacing-l')
                  .removeClass('NB-line-spacing-xl');
             $body.addClass('NB-line-spacing-' + NEWSBLUR.Preferences['story_line_spacing']);
+
+            $body.removeClass('NB-content-preview-title')
+                .removeClass('NB-content-preview-small')
+                .removeClass('NB-content-preview-medium')
+                .removeClass('NB-content-preview-large');
+            $body.addClass('NB-content-preview-' + NEWSBLUR.Preferences['show_content_preview']);
+            
+            $body.removeClass('NB-image-preview-none')
+                .removeClass('NB-image-preview-small')
+                .removeClass('NB-image-preview-large');
+            $body.addClass('NB-image-preview-' + NEWSBLUR.Preferences['show_image_preview']);
             
             if (reset_stories) {
-                this.show_story_titles_above_intelligence_level({'animate': true, 'follow': true});
+                this.show_story_titles_above_intelligence_level({ 'animate': true, 'follow': true });
+                NEWSBLUR.app.dashboard_rivers.left.redraw();
+                NEWSBLUR.app.dashboard_rivers.right.redraw();
             }
         },
         
