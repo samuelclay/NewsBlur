@@ -145,6 +145,10 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
     // = Events =
     // ==========
     
+    redraw: function () {
+        this.story_titles.render();
+    },
+
     load_stories: function(options) {
         options = _.extend({
             global_feed: this.options.global_feed,
@@ -355,7 +359,8 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
         NEWSBLUR.FeedOptionsPopover.create({
             anchor: this.$(".NB-feedbar-options"),
             feed_id: this.model.get('river_id'),
-            on_dashboard: this
+            on_dashboard: this,
+            show_markscroll: false
         });
     },
     
