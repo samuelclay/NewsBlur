@@ -205,7 +205,6 @@ class UserSubscription(models.Model):
             if not ignore_user_stories:
                 r.delete(unread_stories_key)
             
-            import pdb; pdb.set_trace()
             dump = r.dump(unread_ranked_stories_key)
             if dump:
                 pipeline = rt.pipeline()
@@ -238,7 +237,7 @@ class UserSubscription(models.Model):
             else:
                 max_score = 0
                 
-        if settings.DEBUG:
+        if settings.DEBUG and False:
             debug_stories = rt.zrevrange(unread_ranked_stories_key, 0, -1, withscores=True)
             print((" ---> Unread all stories (%s - %s) %s stories: %s" % (
                 min_score,
