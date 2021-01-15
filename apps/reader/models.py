@@ -181,6 +181,7 @@ class UserSubscription(models.Model):
     def get_stories(self, offset=0, limit=6, order='newest', read_filter='all', withscores=False,
                     hashes_only=False, cutoff_date=None, default_cutoff_date=None):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+        renc = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL_ENCODED)
         rt = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_TEMP_POOL)
         ignore_user_stories = False
         
@@ -205,7 +206,7 @@ class UserSubscription(models.Model):
             if not ignore_user_stories:
                 r.delete(unread_stories_key)
             
-            dump = r.dump(unread_ranked_stories_key)
+            dump = renc.dump(unread_ranked_stories_key)
             if dump:
                 pipeline = rt.pipeline()
                 pipeline.delete(unread_ranked_stories_key)
