@@ -116,11 +116,11 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
                     $.make('li', { className: 'NB-view-setting-option NB-view-setting-imagepreview-large' }, 'Large'),
                 ])),
                 $.make('ul', { className: 'segmented-control NB-options-feed-font-size' }, [
-                    $.make('li', { className: 'NB-feed-font-size-option NB-options-font-size-xs' }, 'XS'),
-                    $.make('li', { className: 'NB-feed-font-size-option NB-options-font-size-s' }, 'S'),
-                    $.make('li', { className: 'NB-feed-font-size-option NB-options-font-size-m NB-active' }, 'M'),
-                    $.make('li', { className: 'NB-feed-font-size-option NB-options-font-size-l' }, 'L'),
-                    $.make('li', { className: 'NB-feed-font-size-option NB-options-font-size-xl' }, 'XL')
+                    $.make('li', { className: 'NB-view-setting-option NB-options-font-size-xs' }, 'XS'),
+                    $.make('li', { className: 'NB-view-setting-option NB-options-font-size-s' }, 'S'),
+                    $.make('li', { className: 'NB-view-setting-option NB-options-font-size-m NB-active' }, 'M'),
+                    $.make('li', { className: 'NB-view-setting-option NB-options-font-size-l' }, 'L'),
+                    $.make('li', { className: 'NB-view-setting-option NB-options-font-size-xl' }, 'XL')
                 ])
             ]),
             (is_feed && $.make('div', { className: 'NB-popover-section' }, [
@@ -197,7 +197,7 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
         $image_preview_title.toggleClass('NB-active', image_preview == "0" || image_preview == "none");
         $image_preview_1.toggleClass('NB-active', image_preview == "small");
         $image_preview_2.toggleClass('NB-active', image_preview == "1" || image_preview == "large");
-        this.$('.NB-feed-font-size-option').removeClass('NB-active');
+        this.$('.NB-options-feed-font-size li').removeClass('NB-active');
         this.$('.NB-options-feed-font-size .NB-options-font-size-'+feed_font_size).addClass('NB-active');
 
         var frequencies = [5, 15, 30, 60, 90];
