@@ -79,7 +79,9 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
             <% if (story.get("comment_count_friends")) { %>\
                 <div class="NB-storytitles-shares">\
                     <% _.each(story.get("commented_by_friends"), function(user_id) { %>\
-                        <img class="NB-user-avatar" src="<%= NEWSBLUR.assets.user_profiles.find(user_id).get("photo_url") %>">\
+                        <% if (NEWSBLUR.assets.user_profiles.find(user_id)) { %>\
+                            <img class="NB-user-avatar" src="<%= NEWSBLUR.assets.user_profiles.find(user_id).get("photo_url") %>">\
+                        <% } %>\
                     <% }) %>\
                 </div>\
             <% } %>\

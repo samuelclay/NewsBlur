@@ -42,7 +42,7 @@
     };
     app = require('https').createServer(options);
     io = require('socket.io')(app, {
-      path: "/v2/socket.io"
+      path: "/v3/socket.io"
     });
     app.listen(options.port);
     log.debug(`Listening securely on port ${options.port}`);
@@ -52,7 +52,7 @@
     };
     app = require('http').createServer();
     io = require('socket.io')(app, {
-      path: "/v2/socket.io"
+      path: "/v3/socket.io"
     });
     app.listen(options.port);
     log.debug(`Listening on port ${options.port}`);

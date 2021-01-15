@@ -38,7 +38,6 @@ class MUserNotificationTokens(mongo.Document):
         'collection': 'notification_tokens',
         'indexes': [{'fields': ['user_id'], 
                      'unique': True,
-                     'types': False,
                     }],
         'allow_inheritance': False,
     }

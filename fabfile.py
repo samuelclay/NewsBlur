@@ -64,7 +64,7 @@ except:
         'task'  : ['task01.newsblur.com'],
     }
 
-def do_roledefs(split=False):
+def do_roledefs(split=False, debug=False):
     doapi = digitalocean.Manager(token=django_settings.DO_TOKEN_FABRIC)
     droplets = doapi.get_all_droplets()
     env.do_ip_to_hostname = {}
@@ -258,7 +258,7 @@ def setup_app_image():
 
 def setup_node():
     setup_node_app()
-    config_node()
+    config_node(full=True)
     
 def setup_db(engine=None, skip_common=False, skip_benchmark=False):
     if not skip_common:
@@ -339,7 +339,7 @@ def setup_installs():
         'iotop',
         'git',
         'python2',
-        'python-dev',
+        'python2.7-dev',
         'locate',
         'software-properties-common',
         'libpcre3-dev',
@@ -351,9 +351,9 @@ def setup_installs():
         'make',
         'postgresql-common',
         'ssl-cert',
-        'pgbouncer',
         'python-setuptools',
         'libyaml-0-2',
+        'pgbouncer',
         'python-yaml',
         'python-numpy',
         'curl',
@@ -376,6 +376,7 @@ def setup_installs():
     sudo('apt-get -y update')
     run('sleep 10') # Dies on a lock, so just delay
     sudo('DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" dist-upgrade')
+    run('sleep 10') # Dies on a lock, so just delay
     sudo('DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install %s' % ' '.join(packages))
     
     with settings(warn_only=True):
@@ -436,7 +437,9 @@ def setup_repo_local_settings():
         run('touch logs/newsblur.log')
 
 def setup_local_files():
-    put("config/toprc", "~/.toprc")
+    run('mkdir -p ~/.config/procps')
+    put("config/toprc", "~/.config/procps/toprc")
+    run('rm -f ~/.toprc')
     put("config/zshrc", "~/.zshrc")
     put('config/gitconfig.txt', '~/.gitconfig')
     put('config/ssh.conf', '~/.ssh/config')
@@ -788,7 +791,8 @@ def setup_node_app():
     sudo('ufw allow 4040')
 
 def config_node(full=False):
-    sudo('rm -fr /etc/supervisor/conf.d/node.conf')
+    sudo('rm -f /etc/supervisor/conf.d/gunicorn.conf')
+    sudo('rm -f /etc/supervisor/conf.d/node.conf')
     put('config/supervisor_node_unread.conf', '/etc/supervisor/conf.d/node_unread.conf', use_sudo=True)
     put('config/supervisor_node_unread_ssl.conf', '/etc/supervisor/conf.d/node_unread_ssl.conf', use_sudo=True)
     put('config/supervisor_node_favicons.conf', '/etc/supervisor/conf.d/node_favicons.conf', use_sudo=True)
@@ -816,9 +820,12 @@ def assemble_certificates():
 def copy_certificates():
     cert_path = os.path.join(env.NEWSBLUR_PATH, 'config/certificates')
     run('mkdir -p %s' % cert_path)
-    put(os.path.join(env.SECRETS_PATH, 'certificates/newsblur.com.crt'), cert_path)
-    put(os.path.join(env.SECRETS_PATH, 'certificates/newsblur.com.key'), cert_path)
-    run('ln -fs %s %s' % (os.path.join(cert_path, 'newsblur.com.crt'), os.path.join(cert_path, 'newsblur.com.pem'))) # For backwards compatibility with hard-coded nginx configs
+    fullchain_path = "/etc/letsencrypt/live/newsblur.com/fullchain.pem"
+    privkey_path = "/etc/letsencrypt/live/newsblur.com/privkey.pem"
+    run('ln -fs %s %s' % (fullchain_path, os.path.join(cert_path, 'newsblur.com.crt')))
+    run('ln -fs %s %s' % (fullchain_path, os.path.join(cert_path, 'newsblur.com.pem'))) # For backwards compatibility with hard-coded nginx configs
+    run('ln -fs %s %s' % (privkey_path, os.path.join(cert_path, 'newsblur.com.key')))
+    run('ln -fs %s %s' % (privkey_path, os.path.join(cert_path, 'newsblur.com.crt.key'))) # HAProxy
     put(os.path.join(env.SECRETS_PATH, 'certificates/comodo/dhparams.pem'), cert_path)
     put(os.path.join(env.SECRETS_PATH, 'certificates/ios/aps_development.pem'), cert_path)
     # openssl x509 -in aps.cer -inform DER -outform PEM -out aps.pem
@@ -826,20 +833,42 @@ def copy_certificates():
     # Export aps.p12 from aps.cer using Keychain Assistant
     # openssl pkcs12 -in aps.p12 -out aps.p12.pem -nodes
     put(os.path.join(env.SECRETS_PATH, 'certificates/ios/aps.p12.pem'), cert_path)
-    run('cat %s/newsblur.com.crt > %s/newsblur.pem' % (cert_path, cert_path))
-    run('echo "\n" >> %s/newsblur.pem' % (cert_path))
-    run('cat %s/newsblur.com.key >> %s/newsblur.pem' % (cert_path, cert_path))
+    # run('cat %s/newsblur.com.crt > %s/newsblur.pem' % (cert_path, cert_path))
+    # run('echo "\n" >> %s/newsblur.pem' % (cert_path))
+    # run('cat %s/newsblur.com.key >> %s/newsblur.pem' % (cert_path, cert_path))
 
 def setup_certbot():
-    sudo('add-apt-repository -y universe')
-    sudo('add-apt-repository -y ppa:certbot/certbot')
-    sudo('apt-get update')
-    sudo('apt-get install -y certbot')
-    sudo('apt-get install -y python3-certbot-dns-dnsimple')
-    run('echo "dns_dnsimple_token = %s" > dnsimple.ini')
-    run('chmod 0400 dnsimple.ini')
-    sudo('certbot certonly -n --agree-tos --email samuel@newsblur.com --domains "*.newsblur.com" --dns-dnsimple --dns-dnsimple-credentials %s' % (settings.DNSIMPLE_TOKEN))
-    run('rm dnsimple.ini')
+    sudo('snap install --classic certbot')
+    sudo('snap set certbot trust-plugin-with-root=ok')
+    sudo('snap install certbot-dns-dnsimple')
+    sudo('ln -fs /snap/bin/certbot /usr/bin/certbot')
+    put(os.path.join(env.SECRETS_PATH, 'configs/certbot.conf'), 
+        os.path.join(env.NEWSBLUR_PATH, 'certbot.conf'))
+    sudo('chmod 0600 %s' % os.path.join(env.NEWSBLUR_PATH, 'certbot.conf'))
+    sudo('certbot certonly -n --agree-tos '
+         ' --dns-dnsimple --dns-dnsimple-credentials %s'
+         ' --email samuel@newsblur.com --domains newsblur.com '
+         ' -d "*.newsblur.com" -d "popular.global.newsblur.com"' % 
+         (os.path.join(env.NEWSBLUR_PATH, 'certbot.conf')))
+    sudo('chmod 0755 /etc/letsencrypt/{live,archive}')
+    sudo('chmod 0755 /etc/letsencrypt/archive/newsblur.com/privkey1.pem')
+    
+# def setup_certbot_old():
+#     sudo('add-apt-repository -y universe')
+#     sudo('add-apt-repository -y ppa:certbot/certbot')
+#     sudo('apt-get update')
+#     sudo('apt-get install -y certbot')
+#     sudo('apt-get install -y python3-certbot-dns-dnsimple')
+#     put(os.path.join(env.SECRETS_PATH, 'configs/certbot.conf'), 
+#         os.path.join(env.NEWSBLUR_PATH, 'certbot.conf'))
+#     sudo('chmod 0600 %s' % os.path.join(env.NEWSBLUR_PATH, 'certbot.conf'))
+#     sudo('certbot certonly -n --agree-tos '
+#          ' --dns-dnsimple --dns-dnsimple-credentials %s'
+#          ' --email samuel@newsblur.com --domains newsblur.com '
+#          ' -d "*.newsblur.com" -d "global.popular.newsblur.com"' % 
+#          (os.path.join(env.NEWSBLUR_PATH, 'certbot.conf')))
+#     sudo('chmod 0755 /etc/letsencrypt/{live,archive}')
+#     sudo('chmod 0755 /etc/letsencrypt/archive/newsblur.com/privkey1.pem')
     
 @parallel
 def maintenance_on():
@@ -914,9 +943,10 @@ def build_haproxy():
     gunicorn_counts_servers = ['app22', 'app26']
     gunicorn_refresh_servers = ['app20', 'app21']
     maintenance_servers = ['app20']
-    ignore_servers = ['']
+    node_socket3_servers = ['node02', 'node03']
+    ignore_servers = []
     
-    for group_type in ['app', 'push', 'work', 'node_socket', 'node_favicon', 'node_text', 'www']:
+    for group_type in ['app', 'push', 'work', 'node_socket', 'node_socket3', 'node_favicon', 'node_text', 'www']:
         group_type_name = group_type
         if 'node' in group_type:
             group_type_name = 'node'
@@ -930,9 +960,15 @@ def build_haproxy():
             if server['name'] in ignore_servers:
                 print " ---> Ignoring %s" % server['name']
                 continue
+            if server['name'] in node_socket3_servers and group_type != 'node_socket3':
+                continue
+            if server['name'] not in node_socket3_servers and group_type == 'node_socket3':
+                continue
             if server_type == 'www':
                 port = 81
             if group_type == 'node_socket':
+                port = 8888
+            if group_type == 'node_socket3':
                 port = 8888
             if group_type == 'node_text':
                 port = 4040
@@ -1040,7 +1076,7 @@ def downgrade_pil():
 def setup_db_monitor():
     pull()
     with virtualenv():
-        sudo('apt-get install -y libpq-dev python-dev')
+        sudo('apt-get install -y libpq-dev python2.7-dev')
         run('pip install -r flask/requirements.txt')
         put('flask/supervisor_db_monitor.conf', '/etc/supervisor/conf.d/db_monitor.conf', use_sudo=True)
         sudo('supervisorctl reread')
@@ -1179,7 +1215,7 @@ def disable_thp():
     sudo('update-rc.d disable-transparent-hugepages defaults')
     
 def setup_mongo():
-    MONGODB_VERSION = "3.2.19"
+    MONGODB_VERSION = "3.2.22"
     pull()
     disable_thp()
     sudo('systemctl enable rc-local.service') # Enable rc.local
@@ -1190,12 +1226,13 @@ def setup_mongo():
        echo never > /sys/kernel/mm/transparent_hugepage/defrag\n\
     fi\n\n\
     exit 0" | sudo tee /etc/rc.local')
-    sudo('apt-key adv --keyserver keyserver.ubuntu.com --recv 7F0CEB10')
+    sudo('curl -fsSL https://www.mongodb.org/static/pgp/server-3.2.asc | sudo apt-key add -')
     # sudo('echo "deb http://downloads-distro.mongodb.org/repo/ubuntu-upstart dist 10gen" | sudo tee /etc/apt/sources.list.d/mongodb.list')
     # sudo('echo "\ndeb http://downloads-distro.mongodb.org/repo/debian-sysvinit dist 10gen" | sudo tee -a /etc/apt/sources.list')
-    sudo('echo "deb http://repo.mongodb.org/apt/ubuntu trusty/mongodb-org/3.2 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.2.list')
+    # sudo('echo "deb http://repo.mongodb.org/apt/ubuntu trusty/mongodb-org/3.2 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.2.list')
+    sudo('echo "deb http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.2 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.2.list')
     sudo('apt-get update')
-    sudo('apt-get install -y --allow mongodb-org=%s mongodb-org-server=%s mongodb-org-shell=%s mongodb-org-mongos=%s mongodb-org-tools=%s' %
+    sudo('apt-get install -y mongodb-org=%s mongodb-org-server=%s mongodb-org-shell=%s mongodb-org-mongos=%s mongodb-org-tools=%s' %
          (MONGODB_VERSION, MONGODB_VERSION, MONGODB_VERSION, MONGODB_VERSION, MONGODB_VERSION))
     put('config/mongodb.%s.conf' % ('prod' if env.user != 'ubuntu' else 'ec2'),
         '/etc/mongodb.conf', use_sudo=True)
@@ -1434,7 +1471,8 @@ def setup_imageproxy(install_go=False):
     sudo('supervisorctl reread')
     sudo('supervisorctl update')
     sudo('ufw allow 443')
-    put(os.path.join(env.NEWSBLUR_PATH, 'config/camo.nginx.conf'), "/usr/local/nginx/conf/sites-enabled/camo.conf", use_sudo=True)
+    sudo('ufw allow 80')
+    put(os.path.join(env.NEWSBLUR_PATH, 'config/nginx.imageproxy.conf'), "/usr/local/nginx/conf/sites-enabled/imageproxy.conf", use_sudo=True)
     sudo("/etc/init.d/nginx restart")
     
     

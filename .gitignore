@@ -9,6 +9,7 @@ celerybeat.pid
 media/iphone/NewsBlur/build
 media/iphone/build
 build/
+certbot.conf
 .DS_Store
 **/*.perspectivev*
 .vscode/*
