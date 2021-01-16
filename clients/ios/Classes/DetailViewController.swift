@@ -195,6 +195,8 @@ class DetailViewController: DetailObjCViewController {
             viewController.horizontalPageViewController = horizontalPageViewController
             viewController.currentController = makeStoryController(for: -2)
             
+            print("DetailViewController setViewControllers: \(String(describing: viewController))")
+            
             horizontalPageViewController?.setViewControllers([viewController], direction: .forward, animated: false, completion: nil)
         }
     }
