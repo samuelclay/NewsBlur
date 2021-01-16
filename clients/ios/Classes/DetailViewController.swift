@@ -128,6 +128,14 @@ class DetailViewController: DetailObjCViewController {
     /// The horizontal page view controller.
     var horizontalPageViewController: HorizontalPageViewController?
     
+    /// Enable paging upwards and/or downwards.
+    ///
+    /// - Parameter up: Allow paging up to the previous story.
+    /// - Parameter down: Allow paging down to the next story.
+    @objc(allowPagingUp:down:) func allowPaging(up: Bool, down: Bool) {
+        horizontalPageViewController?.currentController?.allowPaging(up: up, down: down)
+    }
+    
     /// Returns the currently displayed story view controller, or `nil` if none.
     @objc var currentStoryController: StoryDetailViewController? {
         return horizontalPageViewController?.currentController?.currentController

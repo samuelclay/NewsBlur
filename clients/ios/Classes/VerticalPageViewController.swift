@@ -45,6 +45,33 @@ class VerticalPageViewController: UIPageViewController {
     /// The next story view controller, if it has been requested, otherwise `nil`.
     var nextController: StoryDetailViewController?
     
+    /// The internal scroll view that drives the page controller.
+    var scrollView: UIScrollView? {
+        return view.subviews.filter { $0 is UIScrollView }.first as? UIScrollView
+    }
+    
+    private var isPageUpEnabled = true
+    private var isPageDownEnabled = true
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        self.scrollView?.delegate = self
+    }
+    
+    /// Updates whether paging up and/or down is enabled.
+    func allowPaging(up: Bool, down: Bool) {
+        isPageUpEnabled = up
+        isPageDownEnabled = down
+        
+        if !isPageUpEnabled {
+            print("Page Up Disabled")
+        }
+        if !isPageDownEnabled {
+            print("Page Down Disabled")
+        }
+    }
+    
     /// Clear the previous and next story view controllers.
     func reset() {
         previousController = nil
@@ -65,5 +92,34 @@ class VerticalPageViewController: UIPageViewController {
         reset()
         
         super.setViewControllers(viewControllers, direction: direction, animated: animated, completion: completion)
+    }
+}
+
+extension VerticalPageViewController: UIScrollViewDelegate {
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        print("contentOffset = \(scrollView.contentOffset.y)")
+        
+        if !self.isPageUpEnabled {
+            disableUpScroll(scrollView)
+        }
+        if !self.isPageDownEnabled {
+            disableDownScroll(scrollView)
+        }
+    }
+    
+    private func disableUpScroll(_ scrollView: UIScrollView) {
+        let viewHeight = view.bounds.height
+        
+        if scrollView.contentOffset.y < viewHeight {
+            scrollView.setContentOffset(CGPoint(x: 0, y: viewHeight), animated: false)
+        }
+    }
+    
+    private func disableDownScroll(_ scrollView: UIScrollView) {
+        let viewHeight = view.bounds.height
+        
+        if scrollView.contentOffset.y > viewHeight {
+            scrollView.setContentOffset(CGPoint(x: 0, y: viewHeight), animated: false)
+        }
     }
 }
