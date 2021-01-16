@@ -48,7 +48,14 @@ class HorizontalPageViewController: UIPageViewController {
     }
     
     override func setViewControllers(_ viewControllers: [UIViewController]?, direction: UIPageViewController.NavigationDirection, animated: Bool, completion: ((Bool) -> Void)? = nil) {
+        guard self.viewControllers != viewControllers else {
+            print("HorizontalPageViewController setViewControllers: \(String(describing: viewControllers)), ignoring as already set")
+            return
+        }
+        
         reset()
+        
+        print("HorizontalPageViewController setViewControllers: \(String(describing: viewControllers)), current: \(String(describing: self.viewControllers))")
         
         super.setViewControllers(viewControllers, direction: direction, animated: animated, completion: completion)
     }
