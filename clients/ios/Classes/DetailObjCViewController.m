@@ -1278,6 +1278,8 @@
         [appDelegate.feedDetailViewController redrawUnreadStory];
 //    }
     
+    [appDelegate.detailViewController allowPagingUp:YES down:NO];
+    
     if (!appDelegate.storiesCollection.inSearch) {
         [self.currentStoryController becomeFirstResponder];
     }

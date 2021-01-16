@@ -1456,6 +1456,8 @@
         }
         
         [self storeScrollPosition:YES];
+        
+        [appDelegate.detailViewController allowPagingUp:atTop down:atBottom];
     }
 }
 
