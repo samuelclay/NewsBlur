@@ -133,19 +133,15 @@
             android:name=".activity.MuteConfig"
             android:launchMode="singleTask"
             android:label="@string/mute_sites"/>
-        
-        <activity 
-            android:name=".activity.SearchForFeeds" android:launchMode="singleTop" >
-        	<intent-filter>
-            	<action android:name="android.intent.action.SEARCH" />
-        	</intent-filter>
-        	<meta-data android:name="android.app.searchable" android:resource="@xml/searchable"/>    
-    	</activity>
-        
+
+        <activity
+            android:name=".activity.SearchForFeeds"
+            android:launchMode="singleTop" />
+
         <activity
             android:name=".activity.SocialFeedReading"/>
 
-        <service 
+        <service
             android:name=".service.NBSyncService"
             android:permission="android.permission.BIND_JOB_SERVICE" />
         <service android:name=".widget.WidgetRemoteViewsService"
