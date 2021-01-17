@@ -2084,10 +2084,12 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     
     void (^pop)(void) = ^{
         if (!self.isPhoneOrCompact) {
-            [self.appDelegate.feedsNavigationController popToRootViewControllerAnimated:YES];
+//            [self.appDelegate.feedsNavigationController popToRootViewControllerAnimated:YES];
+            [self.splitViewController showColumn:UISplitViewControllerColumnPrimary];
             [self.appDelegate.masterContainerViewController transitionFromFeedDetail];
         } else {
-            [self.appDelegate.feedsNavigationController popToViewController:[self.appDelegate.feedsNavigationController.viewControllers objectAtIndex:0] animated:YES];
+//            [self.appDelegate.feedsNavigationController popToViewController:[self.appDelegate.feedsNavigationController.viewControllers objectAtIndex:0] animated:YES];
+            [self.splitViewController showColumn:UISplitViewControllerColumnPrimary];
         }
     };
     
@@ -2443,10 +2445,11 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 
     [self.appDelegate POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self.appDelegate reloadFeedsView:YES];
-        [self.appDelegate.feedsNavigationController
-         popToViewController:[self.appDelegate.feedsNavigationController.viewControllers
-                              objectAtIndex:0]
-         animated:YES];
+//        [self.appDelegate.feedsNavigationController
+//         popToViewController:[self.appDelegate.feedsNavigationController.viewControllers
+//                              objectAtIndex:0]
+//         animated:YES];
+        [self.splitViewController showColumn:UISplitViewControllerColumnPrimary];
         [MBProgressHUD hideHUDForView:self.view animated:YES];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         [self requestFailed:error];
@@ -2469,10 +2472,11 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     
     [appDelegate POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self.appDelegate reloadFeedsView:YES];
-        [self.appDelegate.feedsNavigationController
-         popToViewController:[self.appDelegate.feedsNavigationController.viewControllers
-                              objectAtIndex:0]
-         animated:YES];
+//        [self.appDelegate.feedsNavigationController
+//         popToViewController:[self.appDelegate.feedsNavigationController.viewControllers
+//                              objectAtIndex:0]
+//         animated:YES];
+         [self.splitViewController showColumn:UISplitViewControllerColumnPrimary];
         [MBProgressHUD hideHUDForView:self.view animated:YES];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         [self requestFailed:error];
@@ -2498,8 +2502,9 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     [params setObject:activeIdentifiers forKey:@"approved_feeds"];
     [appDelegate POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self.appDelegate reloadFeedsView:YES];
-        [self.appDelegate.feedsNavigationController popToViewController:[self.appDelegate.feedsNavigationController.viewControllers objectAtIndex:0]
-                                                          animated:YES];
+//        [self.appDelegate.feedsNavigationController popToViewController:[self.appDelegate.feedsNavigationController.viewControllers objectAtIndex:0]
+//                                                          animated:YES];
+        [self.splitViewController showColumn:UISplitViewControllerColumnPrimary];
         [MBProgressHUD hideHUDForView:self.view animated:YES];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         [self requestFailed:error];

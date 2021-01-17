@@ -1564,7 +1564,8 @@
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         [self loadFeedDetailView];
     } else if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
-        [self.feedsNavigationController popToRootViewControllerAnimated:NO];
+//        [self.feedsNavigationController popToRootViewControllerAnimated:NO];
+        [self.splitViewController showColumn:UISplitViewControllerColumnPrimary];
         [self hidePopoverAnimated:NO completion:^{
             if (self.feedsNavigationController.presentedViewController) {
                 [self.feedsNavigationController dismissViewControllerAnimated:NO completion:^{
@@ -1609,7 +1610,8 @@
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         [self loadFeedDetailView];
     } else if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
-        [self.feedsNavigationController popToRootViewControllerAnimated:NO];
+//        [self.feedsNavigationController popToRootViewControllerAnimated:NO];
+        [self.splitViewController showColumn:UISplitViewControllerColumnPrimary];
         [self hidePopoverAnimated:YES completion:^{
             if (self.feedsNavigationController.presentedViewController) {
                 [self.feedsNavigationController dismissViewControllerAnimated:YES completion:^{
@@ -1625,7 +1627,8 @@
 - (void)loadStarredDetailViewWithStory:(NSString *)contentId
                       showFindingStory:(BOOL)showHUD {
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
-        [self.feedsNavigationController popToRootViewControllerAnimated:NO];
+//        [self.feedsNavigationController popToRootViewControllerAnimated:NO];
+        [self.splitViewController showColumn:UISplitViewControllerColumnPrimary];
         [self.feedsNavigationController dismissViewControllerAnimated:YES completion:nil];
         [self hidePopoverAnimated:NO];
     }
@@ -1879,6 +1882,7 @@
         }
         
         [navController showViewController:feedDetailViewController sender:self];
+        [self.splitViewController showColumn:UISplitViewControllerColumnSupplementary];
     }
     
     if (!transferFromDashboard) {
@@ -1897,7 +1901,8 @@
 - (void)openDashboardRiverForStory:(NSString *)contentId
                   showFindingStory:(BOOL)showHUD {
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
-        [self.feedsNavigationController popToRootViewControllerAnimated:NO];
+//        [self.feedsNavigationController popToRootViewControllerAnimated:NO];
+        [self.splitViewController showColumn:UISplitViewControllerColumnPrimary];
         [self.feedsNavigationController dismissViewControllerAnimated:YES completion:nil];
         [self hidePopoverAnimated:NO];
     }
@@ -2228,11 +2233,12 @@
 }
 
 - (void)hideStoryDetailView {
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-        [self.masterContainerViewController transitionFromFeedDetail];
-    } else {
-        [self.feedsNavigationController popViewControllerAnimated:YES];
-    }
+    [self.splitViewController showColumn:UISplitViewControllerColumnSupplementary];
+//    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+//        [self.masterContainerViewController transitionFromFeedDetail];
+//    } else {
+//        [self.feedsNavigationController popViewControllerAnimated:YES];
+//    }
 }
 
 #pragma mark -
@@ -2240,18 +2246,21 @@
 
 - (void)handleUserActivity:(NSUserActivity *)activity {
     if ([activity.activityType isEqualToString:@"com.newsblur.refresh"]) {
-        [self.feedsNavigationController popToRootViewControllerAnimated:NO];
+//        [self.feedsNavigationController popToRootViewControllerAnimated:NO];
+        [self.splitViewController showColumn:UISplitViewControllerColumnPrimary];
         [self.feedsViewController refreshFeedList];
     } else if ([activity.activityType isEqualToString:@"com.newsblur.gotoFolder"]) {
         NSString *folder = activity.userInfo[@"folder"];
         
-        [self.feedsNavigationController popToRootViewControllerAnimated:NO];
+//        [self.feedsNavigationController popToRootViewControllerAnimated:NO];
+        [self.splitViewController showColumn:UISplitViewControllerColumnPrimary];
         [self loadRiverFeedDetailView:self.feedDetailViewController withFolder:folder];
     } else if ([activity.activityType isEqualToString:@"com.newsblur.gotoFeed"]) {
         NSString *folder = activity.userInfo[@"folder"];
         NSString *feedID = activity.userInfo[@"feedID"];
         
-        [self.feedsNavigationController popToRootViewControllerAnimated:NO];
+//        [self.feedsNavigationController popToRootViewControllerAnimated:NO];
+        [self.splitViewController showColumn:UISplitViewControllerColumnPrimary];
         [self loadFolder:folder feedID:feedID];
     }
 }

@@ -419,10 +419,11 @@
 
 - (void)transitionFromFeedDetail {
     if (appDelegate.detailViewController.storyTitlesOnLeft) {
-        [appDelegate.feedsNavigationController
-         popToViewController:[appDelegate.feedsNavigationController.viewControllers
-                              objectAtIndex:0]
-         animated:YES];
+//        [appDelegate.feedsNavigationController
+//         popToViewController:[appDelegate.feedsNavigationController.viewControllers
+//                              objectAtIndex:0]
+//         animated:YES];
+        [self.splitViewController showColumn:UISplitViewControllerColumnSupplementary];
         [appDelegate hideStoryDetailView];
     } else {
         [appDelegate.masterContainerViewController transitionFromFeedDetail];
@@ -950,10 +951,11 @@
             }];
         } else if (!appDelegate.feedDetailViewController.pageFinished &&
                    !appDelegate.feedDetailViewController.pageFetching) {
-            [appDelegate.feedsNavigationController
-             popToViewController:[appDelegate.feedsNavigationController.viewControllers
-                                  objectAtIndex:0]
-             animated:YES];
+//            [appDelegate.feedsNavigationController
+//             popToViewController:[appDelegate.feedsNavigationController.viewControllers
+//                                  objectAtIndex:0]
+//             animated:YES];
+            [self.splitViewController showColumn:UISplitViewControllerColumnSupplementary];
             [appDelegate hideStoryDetailView];
         }
     } else if (!outOfBounds) {
@@ -1827,10 +1829,11 @@
         self.waitingForNextUnreadFromServer = YES;
         [fdvc fetchNextPage:nil];
     } else if (nextLocation == -1) {
-        [appDelegate.feedsNavigationController
-         popToViewController:[appDelegate.feedsNavigationController.viewControllers
-                              objectAtIndex:0]
-         animated:YES];
+//        [appDelegate.feedsNavigationController
+//         popToViewController:[appDelegate.feedsNavigationController.viewControllers
+//                              objectAtIndex:0]
+//         animated:YES];
+        [self.splitViewController showColumn:UISplitViewControllerColumnSupplementary];
         [appDelegate hideStoryDetailView];
     } else {
         [self changePage:nextLocation];
@@ -1843,10 +1846,11 @@
     self.circularProgressView.hidden = NO;
     id previousStoryId = [appDelegate.storiesCollection popReadStory];
     if (!previousStoryId || previousStoryId == [appDelegate.activeStory objectForKey:@"story_hash"]) {
-        [appDelegate.feedsNavigationController
-         popToViewController:[appDelegate.feedsNavigationController.viewControllers
-                              objectAtIndex:0]
-         animated:YES];
+//        [appDelegate.feedsNavigationController
+//         popToViewController:[appDelegate.feedsNavigationController.viewControllers
+//                              objectAtIndex:0]
+//         animated:YES];
+        [self.splitViewController showColumn:UISplitViewControllerColumnSupplementary];
         [appDelegate hideStoryDetailView];
     } else {
         NSInteger previousLocation = [appDelegate.storiesCollection locationOfStoryId:previousStoryId];
