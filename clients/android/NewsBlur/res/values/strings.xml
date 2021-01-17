@@ -15,7 +15,7 @@
     <string name="login_retrieving_feeds">Retrieving feeds…</string>
     <string name="login_next">Next</string>
     
-    <string name="title_feed_search">Search for feeds</string>
+    <string name="search_for_feed">Search for feeds</string>
 
     <string name="loading">Loading…</string>
     <string name="orig_text_loading">Fetching story text…</string>
