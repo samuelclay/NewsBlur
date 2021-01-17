@@ -920,7 +920,8 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 }
 
 - (IBAction)tapAddSite:(id)sender {
-    [self.appDelegate.addSiteNavigationController popToRootViewControllerAnimated:NO];
+//    [self.appDelegate.addSiteNavigationController popToRootViewControllerAnimated:NO];
+    [self.splitViewController showColumn:UISplitViewControllerColumnPrimary];
     
     [self.appDelegate showPopoverWithViewController:self.appDelegate.addSiteNavigationController contentSize:CGSizeMake(320, 96) barButtonItem:self.addBarButton];
     
