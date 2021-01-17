@@ -577,8 +577,8 @@
     NSString *feedID = [coder decodeObjectOfClass:[NSString class] forKey:@"feed_id"];
     
     if (folder != nil || feedID != nil) {
-        self.restoringFolder = folder;
-        self.restoringFeedID = feedID;
+//        self.restoringFolder = folder;
+//        self.restoringFeedID = feedID;
     }
 }
 

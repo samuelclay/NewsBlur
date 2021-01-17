@@ -1278,7 +1278,7 @@
         [appDelegate.feedDetailViewController redrawUnreadStory];
 //    }
     
-    [appDelegate.detailViewController allowPagingUp:YES down:NO];
+    [appDelegate.detailViewController allowPagingUp:YES down:self.currentStoryController.isSinglePage];
     
     if (!appDelegate.storiesCollection.inSearch) {
         [self.currentStoryController becomeFirstResponder];
