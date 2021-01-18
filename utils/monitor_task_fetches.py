@@ -46,7 +46,7 @@ def main():
         r.set(monitor_key, feeds_fetched)
         r.expire(monitor_key, 60*60*3) # 3 hours
 
-        print(" ---> Feeds fetched falling! %s" % (feeds_fetched))
+        print(" ---> Feeds fetched falling! %s %s" % (feeds_fetched, failed))
     else:
         print(" ---> Feeds fetched OK: %s" % (feeds_fetched))
         
