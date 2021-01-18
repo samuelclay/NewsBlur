@@ -34,7 +34,7 @@ services:
       - app-files:/srv/newsblur
   nginx:
     container_name: nginx
-    image: nginx:1.13
+    image: nginx:1.19.6
     ports:
       - 81:81
     depends_on:
@@ -55,7 +55,7 @@ services:
 
   postgres:
     container_name: postgres
-    image: postgres:9.6
+    image: postgres:13.1
     environment:
       - POSTGRES_USER=newsblur
       - POSTGRES_PASSWORD=newsblur
@@ -65,7 +65,7 @@ services:
       - ./docker/volumes/postgres:/var/lib/postgresql/data
 
   redis:
-    image: redis:3
+    image: redis:3.2.6
     ports:
       - '6579:6579'
     container_name: redis
@@ -78,7 +78,7 @@ services:
 
   elasticsearch:
     container_name: elasticsearch
-    image: elasticsearch:1.7
+    image: elasticsearch:2.4.4
     ports:
       - '9200:9200'
     volumes:
@@ -164,7 +164,7 @@ services:
   celeryd_beat:
     container_name: celeryd_beat
     image: newsblur/newsblur_python3
-    command: "celery worker -A newsblur_web --loglevel=INFO -Q beat_tasks -c 3"
+    command: "celery worker -A newsblur_web --loglevel=INFO -Q cron_queue -c 3"
     environment: 
       - DOCKERBUILD=True
     volumes:
