@@ -7,6 +7,7 @@ import subprocess
 import requests
 from newsblur import settings
 import socket
+import redis
 import pymongo
 
 def main():
@@ -35,7 +36,7 @@ def main():
     if failed:
         r.set(monitor_key, feeds_fetched)
         r.expire(monitor_key, 60*60*3) # 3 hours
-        
+
         requests.post(
                 "https://api.mailgun.net/v2/%s/messages" % settings.MAILGUN_SERVER_NAME,
                 auth=("api", settings.MAILGUN_ACCESS_KEY),
