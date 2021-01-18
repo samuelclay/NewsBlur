@@ -18,17 +18,24 @@ def main():
     admin_email = settings.ADMINS[0][1]
     failed = False
     feeds_fetched = 0
-    
+    FETCHES_DROP_AMOUNT = 0
+    monitor_key = "Monitor:task_fetches"
+    r = redis.Redis(connection_pool=settings.REDIS_ANALYTICS_POOL)
+
     try:
         client = pymongo.MongoClient('mongodb://%s' % settings.MONGO_DB['host'])
         feeds_fetched = client.newsblur.statistics.find_one({"key": "feeds_fetched"})['value']
+        redis_task_fetches = int(r.get(monitor_key, feeds_fetched))
     except Exception, e:
         failed = e
     
-    if feeds_fetched < 5000000:
+    if feeds_fetched < 5000000 and feeds_fetched <= (redis_task_fetches - FETCHES_DROP_AMOUNT):
         failed = True
-    
+
     if failed:
+        r.set(monitor_key, feeds_fetched)
+        r.expire(monitor_key, 60*60*3) # 3 hours
+        
         requests.post(
                 "https://api.mailgun.net/v2/%s/messages" % settings.MAILGUN_SERVER_NAME,
                 auth=("api", settings.MAILGUN_ACCESS_KEY),
