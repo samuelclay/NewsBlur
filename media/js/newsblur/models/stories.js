@@ -51,7 +51,7 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
         // First do a naive strip, which is faster than rendering which makes network calls
         content = content && content.replace(/<(?:.|\n)*?>/gm, '');
         content = content && Inflector.stripTags(content);
-        content = content && content.replace('&nbsp;', ' ');
+        content = content && content.replaceAll(' ‌', ' '); // Invisible space, boo
 
         return _.string.prune(_.string.trim(content), length || 150, "...");
     },
