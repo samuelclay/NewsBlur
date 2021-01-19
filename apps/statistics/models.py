@@ -184,7 +184,7 @@ class MStatistics(mongo.Document):
             cls.objects(key=key).update_one(upsert=True, set__key=key, set__value=value)
     
     @classmethod
-    def collect_statistics_for_db(cls):
+    def collect_statistics_for_db(cls, debug=False):
         lag = db_functions.mongo_max_replication_lag(settings.MONGODB)
         cls.set('mongodb_replication_lag', lag)
         
@@ -202,6 +202,8 @@ class MStatistics(mongo.Document):
                 for m in range(60):
                     minute = start_hours_ago + datetime.timedelta(minutes=m)
                     key = "DB:%s:%s" % (db, minute.strftime('%s'))
+                    if debug:
+                        print(" -> %s:c" % key)
                     pipe.get("%s:c" % key)
                     pipe.get("%s:t" % key)
     

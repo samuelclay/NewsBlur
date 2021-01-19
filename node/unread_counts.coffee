@@ -35,14 +35,14 @@ if SECURE
         key: privateKey
         cert: certificate
     app = require('https').createServer options
-    io = require('socket.io')(app, path: "/v2/socket.io")
+    io = require('socket.io')(app, path: "/v3/socket.io")
     app.listen options.port
     log.debug "Listening securely on port #{options.port}"
 else
     options = 
         port: 8888
     app = require('http').createServer()
-    io = require('socket.io')(app, path: "/v2/socket.io")
+    io = require('socket.io')(app, path: "/v3/socket.io")
     app.listen options.port
     log.debug "Listening on port #{options.port}"
 

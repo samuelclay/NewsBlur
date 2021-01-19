@@ -190,7 +190,7 @@ LOGGING = {
         'mail_admins': {
             'level': 'CRITICAL',
             'class': 'django.utils.log.AdminEmailHandler',
-            'filters': ['require_debug_false'],
+            # 'filters': ['require_debug_false'],
             'include_html': True,
         },
         # 'sentry': {
@@ -279,11 +279,6 @@ SESSION_COOKIE_HTTPONLY = False
 SENTRY_DSN              = 'https://XXXNEWSBLURXXX@app.getsentry.com/99999999'
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
 DATA_UPLOAD_MAX_NUMBER_FIELDS = None # Handle long /reader/complete_river calls
-
-ANYMAIL = {
-    "MAILGUN_API_KEY": "<your Mailgun key>",
-    "MAILGUN_SENDER_DOMAIN": 'mg.example.com',  # your Mailgun domain, if needed
-}
 EMAIL_BACKEND = 'anymail.backends.mailgun.EmailBackend'
 
 # ==============
@@ -656,6 +651,16 @@ TEMPLATES = [
         },
     }
 ]
+
+# =========
+# = Email =
+# =========
+
+ANYMAIL = {
+    "MAILGUN_API_KEY": MAILGUN_ACCESS_KEY,
+    "MAILGUN_SENDER_DOMAIN": MAILGUN_SERVER_NAME,
+}
+
 # =========
 # = Mongo =
 # =========
