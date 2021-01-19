@@ -161,7 +161,7 @@ class Profile(models.Model):
     def activate_premium(self, never_expire=False):
         from apps.profile.tasks import EmailNewPremium
         
-        EmailNewPremium().delay(user_id=self.user.pk)
+        EmailNewPremium.delay(user_id=self.user.pk)
         
         was_premium = self.is_premium
         self.is_premium = True
