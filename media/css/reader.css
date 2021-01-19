@@ -5290,10 +5290,13 @@ form.opml_import_form input {
     max-width: 1200px;
     display: flex;
     flex-direction: row;
-    flex-flow: row wrap;
+    flex-flow: row nowrap;
     position: relative;
 }
 @media screen and (max-width: 1100px) {
+    .NB-splash-modules {
+        flex-flow: row wrap;
+    }
     .NB-splash-modules .NB-modules-center,
     .NB-splash-modules .NB-account-wide {
         flex: 1 1 auto;
