@@ -166,7 +166,7 @@ backend maintenance
 {{ maintenance }}
 
 listen stats
-  bind :1936 ssl crt newsblur.pem
+  bind :1936 ssl crt newsblur.com.crt
   stats enable
   stats hide-version
   stats realm Haproxy\ Statistics
