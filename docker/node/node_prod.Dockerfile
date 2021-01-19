@@ -30,5 +30,5 @@ RUN       set -ex \
 
 COPY ./node/package.json /usr/src/app/package.json
 COPY ./node/package-lock.json /usr/src/app/package-lock.json
-COPY ./node /usr/src/app/ 
 RUN npm install
+COPY ./node .
