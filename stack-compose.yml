@@ -70,7 +70,6 @@ services:
     networks:
       - nb_overlay
       
-
   redis:
     image: redis:3.2.6
     ports:
@@ -95,6 +94,10 @@ services:
     #  - redis-data:/redis.var.lib:/var/lib/redis
     command: redis-server --port 6378
     deploy:
+      resources:
+        limits:
+          cpus: '0.01'
+          memory: 200M
       placement:
         constraints:
           - node.hostname==db-redis-story
@@ -224,6 +227,10 @@ services:
     environment: 
       - DOCKERBUILD=True
     deploy:
+      resources:
+        limits:
+          cpus: '0.01'
+          memory: 100M
       placement:
         constraints:
           - node.labels.service==celery
@@ -236,6 +243,10 @@ services:
       - DOCKERBUILD=True
     user: "${CURRENT_UID}:${CURRENT_GID}"
     deploy:
+      resources:
+        limits:
+          cpus: '0.01'
+          memory: 100M
       replicas: 3
       placement:
         constraints:
@@ -250,6 +261,10 @@ services:
       - DOCKERBUILD=True
     user: "${CURRENT_UID}:${CURRENT_GID}"
     deploy:
+      resources:
+        limits:
+          cpus: '0.01'
+          memory: 100M
       placement:
         constraints:
           - node.labels.service==celery
@@ -263,6 +278,10 @@ services:
       - DOCKERBUILD=True
     user: "${CURRENT_UID}:${CURRENT_GID}"
     deploy:
+      resources:
+        limits:
+          cpus: '0.01'
+          memory: 100M
       placement:
         constraints:
           - node.labels.service==celery
@@ -277,6 +296,10 @@ services:
 
     user: $CURRENT_UID:$CURRENT_GID
     deploy:
+      resources:
+        limits:
+          cpus: '0.01'
+          memory: 100M
       placement:
         constraints:
           - node.labels.service==celery
@@ -290,6 +313,10 @@ services:
       - DOCKERBUILD=True
     user: $CURRENT_UID:$CURRENT_GID
     deploy:
+      resources:
+        limits:
+          cpus: '0.01'
+          memory: 100M
       placement:
         constraints:
           - node.labels.service==celery
@@ -305,6 +332,10 @@ services:
       - DOCKERBUILD=True
     user: $CURRENT_UID:$CURRENT_GID
     deploy:
+      resources:
+        limits:
+          cpus: '0.01'
+          memory: 100M
       replicas: 2
       placement:
         constraints:
@@ -314,7 +345,7 @@ services:
 
   monitor:
     image: newsblur/newsblur_python3 
-    command: bash -c "python /srv/newsblur/newsblur/flask_monitor/db_monitor.py"
+    command: bash -c "python /srv/newsblur/flask_monitor/db_monitor.py"
     environment: 
       - DOCKERBUILD=True
     ports:
@@ -337,25 +368,23 @@ services:
       - 443:443
       - 1936:1936
     deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 900M
       placement:
         constraints:
           - node.hostname==haproxy
     networks:
       - nb_overlay
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
 networks:
   nb_overlay:
     driver: "overlay"
 
 volumes:
   app-files:
-    driver_opts:
-      type: nfs
-      device: $PWD
-      o: bind
   nginx:
-    driver: overlay2
-    driver_opts:
-      type: nfs
-      device: $PWD/docker/nginx/
   elasticsearch-data:
   db-mongo-data:
