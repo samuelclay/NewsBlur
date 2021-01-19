@@ -7,7 +7,7 @@ import sys
 if '/srv/newsblur' not in ' '.join(sys.path):
     sys.path.append("/srv/newsblur")
 
-os.environ['DJANGO_SETTINGS_MODULE'] = 'newsblur.settings'
+os.environ['DJANGO_SETTINGS_MODULE'] = 'newsblur_web.settings'
 from django.conf import settings
 
 ACCESS_KEY  = settings.S3_ACCESS_KEY
