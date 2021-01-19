@@ -1,4 +1,4 @@
-version: '3'
+version: '3.9'
 services:
   newsblur_web:
     hostname: nb.com
@@ -7,39 +7,30 @@ services:
       - DOCKERBUILD=True
     stdin_open: true
     tty: true
-    links:
+    depends_on:
       - db_mongo
       - postgres
       - elasticsearch
       - redis
-    restart: always
     depends_on:
       - db_mongo
       - postgres
       - redis
       - elasticsearch
-    ulimits:
-      nproc: 10000
-      nofile:
-        soft: 10000
-        hard: 10000
     ports:
       - '8000:8000'
-    # only use gunicorn if the TEST env variable is not "True"
     command: bash -c 'if [[ -z "${TEST}" && "${TEST}" = "True"  ]] ; then echo "starting test env"; else gunicorn --bind :8000 newsblur_web.wsgi:application; fi'
-    volumes: 
-      - app-files:/srv/newsblur
     deploy:
-      #placement:
-      #  constraints: 
-      #    - node.name == app
-      #    - node.name == app-counts
-      #    - node.name == app-refresh
-      #    - node.name == app-push
-      replicas: 5
-      
+      placement:
+        max_replicas_per_node: 4
+        constraints: 
+          - node.labels.service==app
+      replicas: 4
+    networks:
+      - nb_overlay
+            
   nginx:
-    image: nginx:1.13
+    image: nginx:1.19.6
     ports:
       - 81:81
     depends_on:
@@ -52,48 +43,107 @@ services:
     - original_pages
     - original_text
     - node_websocket
-    environment: 
-      - DOCKERBUILD=True
-    volumes:
-    - app-files:/srv/newsblur
     deploy:
-      #placement:
-      #  constraints: [node.name == app]
-      replicas: 5
+      placement:
+        constraints: 
+          - node.hostname==app
 
+    networks:
+      - nb_overlay
+    #volumes:
+    #  - ./docker/nginx/:/etc/nginx/conf.d
+      
   postgres:
-    image: postgres:9.6
+    image: postgres:13.1
     environment:
       - POSTGRES_USER=newsblur
       - POSTGRES_PASSWORD=newsblur
     ports:
       - '5432:5432'
-    volumes:
-      - postgres-data:/var/lib/postgresql/data
+    #volumes:
+    #  - postgres-data:/var/lib/postgresql/data
     deploy:
-      #placement:
-      #  constraints: [node.label.name == postgres]
+      placement:
+        constraints: 
+          - node.hostname==postgres
       replicas: 1
-
+    networks:
+      - nb_overlay
+      
 
   redis:
-    image: newsblur/redis:latest
+    image: redis:3.2.6
     ports:
       - '6379:6379'
-    volumes:
-      - redis-data:/data
-      - redis-data:/redis.var.lib:/var/lib/redis
+    #volumes:
+    #  - redis-data:/data
+    #  - redis-data:/redis.var.lib:/var/lib/redis
     command: redis-server --port 6379
     deploy:
-      replicas: 4
+      placement:
+        constraints:
+          - node.hostname==db-redis
+    networks:
+      - nb_overlay
 
+  redis-story:
+    image: redis:3.2.6
+    ports:
+      - '6378:6378'
+    #volumes:
+    #  - redis-data:/data
+    #  - redis-data:/redis.var.lib:/var/lib/redis
+    command: redis-server --port 6378
+    deploy:
+      placement:
+        constraints:
+          - node.hostname==db-redis-story
+    networks:
+      - nb_overlay
+#          - node.hostname==db-redis-sessions
+#          - node.hostname==db-redis-pubsub  
+  redis-sessions:
+    image: redis:3.2.6
+    ports:
+      - '6377:6377'
+    #volumes:
+    #  - redis-data:/data
+    #  - redis-data:/redis.var.lib:/var/lib/redis
+    command: redis-server --port 6377
+    deploy:
+      placement:
+        constraints:
+          - node.hostname==db-redis-sessions
+    networks:
+      - nb_overlay
+  redis-pubsub:
+    image: redis:3.2.6
+    ports:
+      - '6376:6376'
+    #volumes:
+    #  - redis-data:/data
+    #  - redis-data:/redis.var.lib:/var/lib/redis
+    command: redis-server --port 6376
+    deploy:
+      placement:
+        constraints:
+          - node.hostname==db-redis-pubsub
+    networks:
+      - nb_overlay
+  
   elasticsearch:
     image: elasticsearch:1.7
     ports:
       - '9200:9200'
     volumes:
       - elasticsearch-data:/usr/share/elasticsearch/data
-
+    deploy:
+      placement:
+        constraints:
+          - node.hostname==elasticsearch
+    networks:
+      - nb_overlay
+      
   db_mongo:
     image: mongo:3.2
     ports:
@@ -102,25 +152,40 @@ services:
     volumes:
       - db-mongo-data:/data/db
     deploy:
-      replicas: 3
-  
+      placement:
+        constraints:
+          - node.hostname==db-mongo
+    networks:
+      - nb_overlay  
 
   original_pages:
     image: newsblur/node_prod
     environment:
-      - NODE_ENV=development
+      - NODE_ENV=docker
     command: node original_page.js
     ports:
       - 3060:3060
-
+    deploy:
+      placement:
+        constraints:
+          - node.hostname==node
+    networks:
+      - nb_overlay
+      
   original_text:
     image: newsblur/node_prod
     environment:
-      - NODE_ENV=development
+      - NODE_ENV=docker
     ports:
       - 4040:4040
     command: node original_text.js
-
+    deploy:
+      placement:
+        constraints:
+          - node.hostname==node
+    networks:
+      - nb_overlay
+    
   favicons:
     image: newsblur/node_prod
     environment:
@@ -131,7 +196,13 @@ services:
     command: node favicons.js
     depends_on: 
       - postgres
-
+    deploy:
+      placement:
+        constraints:
+          - node.hostname==node
+    networks:
+      - nb_overlay
+      
   node_websocket:
     image: newsblur/node_prod
     environment:
@@ -140,98 +211,121 @@ services:
     stop_signal: HUP
     ports:
       - 8888:8888
-
-  celerybeat:
+    deploy:
+      placement:
+        constraints:
+          - node.hostname==node
+    networks:
+      - nb_overlay
+      
+  task_celerybeat_scheduler:
     image: newsblur/newsblur_python3
     command: bash -c "mkdir -p data && celery beat -A newsblur_web --schedule=/srv/newsblur/data/celerybeat-schedule.db --loglevel=INFO --pidfile=/srv/celeryd.pid"
     environment: 
       - DOCKERBUILD=True
-    volumes:
-      - app-files:/srv/newsblur
-
-  celeryd:
+    deploy:
+      placement:
+        constraints:
+          - node.labels.service==celery
+    networks:
+      - nb_overlay
+  task:
     image: newsblur/newsblur_python3
     command: "celery worker -A newsblur_web --loglevel=INFO -Q new_feeds,push_feeds,update_feeds"
-    volumes:
-      - app-files:/srv/newsblur
     environment: 
       - DOCKERBUILD=True
     user: "${CURRENT_UID}:${CURRENT_GID}"
     deploy:
       replicas: 3
-
-  celeryd_beat:
+      placement:
+        constraints:
+          - node.labels.service==celery
+    networks:
+      - nb_overlay
+      
+  task_cron_queue:
     image: newsblur/newsblur_python3
-    command: "celery worker -A newsblur_web --loglevel=INFO -Q beat_tasks -c 3"
+    command: "celery worker -A newsblur_web --loglevel=INFO -Q cron_queue -c 3"
     environment: 
       - DOCKERBUILD=True
-    volumes:
-      - app-files:/srv/newsblur
     user: "${CURRENT_UID}:${CURRENT_GID}"
-
-  celeryd_beat_feeds:
+    deploy:
+      placement:
+        constraints:
+          - node.labels.service==celery
+    networks:
+      - nb_overlay
+      
+  task_beat_feeds:
     image: newsblur/newsblur_python3
     command: "celery worker -A newsblur_web --loglevel=INFO -Q beat_feeds_task -c 1"
     environment: 
       - DOCKERBUILD=True
-    volumes:
-      - app-files:/srv/newsblur
     user: "${CURRENT_UID}:${CURRENT_GID}"
-
-  celeryd_news:
-    image: newsblur/newsblur_python3
-    command: "celery worker -A newsblur_web --loglevel=INFO -Q new_feeds,push_feeds"
-    environment: 
-      - DOCKERBUILD=True
-    volumes:
-      - app-files:/srv/newsblur
-    user: "${CURRENT_UID}:${CURRENT_GID}"
-
-  celeryd_search_indexer:
+    deploy:
+      placement:
+        constraints:
+          - node.labels.service==celery
+    networks:
+      - nb_overlay
+      
+  task_search_indexer:
     image: newsblur/newsblur_python3
     command: "celery worker -A newsblur_web --loglevel=INFO -Q search_indexer -c 4"
     environment: 
       - DOCKERBUILD=True
-    volumes:
-      - app-files:/srv/newsblur
 
     user: $CURRENT_UID:$CURRENT_GID
+    deploy:
+      placement:
+        constraints:
+          - node.labels.service==celery
+    networks:
+      - nb_overlay
 
-  celeryd_search_indexer_tasker:
+  task_search_indexer_tasker:
     image: newsblur/newsblur_python3
     command: "celery worker -A newsblur_web --loglevel=INFO -Q search_indexer_tasker -c 2"
     environment: 
       - DOCKERBUILD=True
-    volumes:
-      - app-files:/srv/newsblur
     user: $CURRENT_UID:$CURRENT_GID
+    deploy:
+      placement:
+        constraints:
+          - node.labels.service==celery
+    networks:
+      - nb_overlay
 
-  celeryd_work_queue:
+  task_work_queue:
     image: newsblur/newsblur_python3
     command: bash -c "celery worker -A newsblur_web --loglevel=INFO -Q work_queue"
     ports:
       - 82:82
     environment: 
       - DOCKERBUILD=True
-    volumes:
-      - app-files:/srv/newsblur
     user: $CURRENT_UID:$CURRENT_GID
     deploy:
       replicas: 2
-
+      placement:
+        constraints:
+          - node.labels.service==celery
+    networks:
+      - nb_overlay
 
   monitor:
     image: newsblur/newsblur_python3 
-    command: bash -c "python /srv/newsblur/flask_monitor/db_monitor.py"
+    command: bash -c "python /srv/newsblur/newsblur/flask_monitor/db_monitor.py"
     environment: 
       - DOCKERBUILD=True
-    volumes:
-      - app-files:/srv/newsblur
     ports:
       - 5579:5579
-
+    deploy:
+      placement:
+        constraints:
+          - node.hostname==monitor
+    networks:
+      - nb_overlay
   haproxy:
-    domainname: 'nb.local.com'
     image: newsblur/haproxy
     dns: 127.0.0.11
     depends_on: 
@@ -242,15 +336,26 @@ services:
       - 80:80
       - 443:443
       - 1936:1936
-    environment: 
-      - DOCKERBUILD=True
-    volumes:
-      - app-files:/srv/newsblur
+    deploy:
+      placement:
+        constraints:
+          - node.hostname==haproxy
+    networks:
+      - nb_overlay
+networks:
+  nb_overlay:
+    driver: "overlay"
 
 volumes:
   app-files:
-  postgres-data:
-  redis-data:
+    driver_opts:
+      type: nfs
+      device: $PWD
+      o: bind
+  nginx:
+    driver: overlay2
+    driver_opts:
+      type: nfs
+      device: $PWD/docker/nginx/
   elasticsearch-data:
   db-mongo-data:
-  
