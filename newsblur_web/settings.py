@@ -708,6 +708,12 @@ CELERY_REDIS_DB_NUM = 4
 SESSION_REDIS_DB = 5
 CELERY_BROKER_URL = "redis://%s:%s/%s" % (REDIS['host'], REDIS_PORT,CELERY_REDIS_DB_NUM)
 CELERY_RESULT_BACKEND = CELERY_BROKER_URL
+BROKER_TRANSPORT_OPTIONS = {
+    "max_retries": 3, 
+    "interval_start": 0, 
+    "interval_step": 0.2, 
+    "interval_max": 0.5
+}
 
 SESSION_REDIS = {
     'host': REDIS_SESSIONS['host'],

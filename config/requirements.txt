@@ -2,7 +2,7 @@ anyjson==0.3.3
 bleach==3.2.1
 beautifulsoup4==4.9.3
 boto==2.49.0
-celery>=4.0,<5
+celery>=5,<6
 chardet==3.0.4
 cssutils==1.0.2
 django-compress==1.0.1
