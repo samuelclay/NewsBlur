@@ -167,7 +167,7 @@ class SignupForm(forms.Form):
         RNewUserQueue.add_user(new_user.pk)
         
         if new_user.email:
-            EmailNewUser().delay(user_id=new_user.pk)
+            EmailNewUser.delay(user_id=new_user.pk)
         
         if getattr(settings, 'AUTO_PREMIUM_NEW_USERS', False):
             new_user.profile.activate_premium()

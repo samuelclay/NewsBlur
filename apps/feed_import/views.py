@@ -46,7 +46,7 @@ def opml_upload(request):
                 folders = opml_importer.try_processing()
             except TimeoutError:
                 folders = None
-                ProcessOPML().delay(request.user.pk)
+                ProcessOPML.delay(request.user.pk)
                 feed_count = opml_importer.count_feeds_in_opml()
                 logging.user(request, "~FR~SBOPML upload took too long, found %s feeds. Tasking..." % feed_count)
                 payload = dict(folders=folders, delayed=True, feed_count=feed_count)
