@@ -9,7 +9,7 @@ from optparse import OptionParser
 from requests.exceptions import ConnectionError
 
 sys.path.insert(0, '/srv/newsblur')
-os.environ['DJANGO_SETTINGS_MODULE'] = 'newsblur.settings'
+os.environ['DJANGO_SETTINGS_MODULE'] = 'newsblur_web.settings'
 import fabfile
 
 NEWSBLUR_USERNAME = 'sclay'

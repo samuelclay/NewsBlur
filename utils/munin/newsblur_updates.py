@@ -2,7 +2,7 @@
 import redis
 from utils.munin.base import MuninGraph
 import os
-os.environ["DJANGO_SETTINGS_MODULE"] = "newsblur.settings"
+os.environ["DJANGO_SETTINGS_MODULE"] = "newsblur_web.settings"
 import django
 django.setup()
 
