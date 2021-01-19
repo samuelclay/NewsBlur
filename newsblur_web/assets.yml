@@ -2,6 +2,8 @@
 
 # Use the Google Closure Compiler to minify JavaScript
 javascript_compressor: closure
+compressor_options:
+  language_in: "ECMASCRIPT6"
 
 # YUI for CSS (not cssmin)
 css_compressor: yui
