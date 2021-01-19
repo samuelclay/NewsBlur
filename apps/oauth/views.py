@@ -67,7 +67,7 @@ def twitter_connect(request):
         social_services.syncing_twitter = True
         social_services.save()
 
-        SyncTwitterFriends().delay(user_id=request.user.pk)
+        SyncTwitterFriends.delay(user_id=request.user.pk)
         
         logging.user(request, "~BB~FRFinishing Twitter connect")
         return {}
@@ -131,7 +131,7 @@ def facebook_connect(request):
         social_services.syncing_facebook = True
         social_services.save()
         
-        SyncFacebookFriends().delay(user_id=request.user.pk)
+        SyncFacebookFriends.delay(user_id=request.user.pk)
         
         logging.user(request, "~BB~FRFinishing Facebook connect")
         return {}

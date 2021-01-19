@@ -595,7 +595,7 @@ class ProcessFeed:
         
         # Push notifications
         if ret_values['new'] > 0 and MUserFeedNotification.feed_has_users(self.feed.pk) > 0:
-            QueueNotifications().delay(self.feed.pk, ret_values['new'])
+            QueueNotifications.delay(self.feed.pk, ret_values['new'])
             
         # All Done
         logging.debug('   ---> [%-30s] ~FYParsed Feed: %snew=%s~SN~FY %sup=%s~SN same=%s%s~SN %serr=%s~SN~FY total=~SB%s' % (

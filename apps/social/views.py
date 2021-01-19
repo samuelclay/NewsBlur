@@ -619,7 +619,7 @@ def mark_story_as_shared(request):
             })
         if source_user_id:
             shared_story.set_source_user_id(int(source_user_id))
-        UpdateRecalcForSubscription().delay(subscription_user_id=request.user.pk,
+        UpdateRecalcForSubscription.delay(subscription_user_id=request.user.pk,
                                           shared_story_id=str(shared_story.id))
         logging.user(request, "~FCSharing ~FM%s: ~SB~FB%s" % (story.story_title[:20], comments[:30]))
     else:
@@ -657,7 +657,7 @@ def mark_story_as_shared(request):
     if post_to_services:
         for service in post_to_services:
             if service not in shared_story.posted_to_services:
-                PostToService().delay(shared_story_id=str(shared_story.id), service=service)
+                PostToService.delay(shared_story_id=str(shared_story.id), service=service)
     
     if shared_story.source_user_id and shared_story.comments:
         EmailStoryReshares.apply_async(kwargs=dict(shared_story_id=str(shared_story.id)),
