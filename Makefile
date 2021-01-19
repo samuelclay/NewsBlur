@@ -52,3 +52,12 @@ keys:
 	- openssl req -new -nodes -newkey rsa:2048 -keyout config/certificates/localhost.key -out config/certificates/localhost.csr -subj "/C=US/ST=YourState/L=YourCity/O=Example-Certificates/CN=localhost.local"
 	- openssl x509 -req -sha256 -days 1024 -in config/certificates/localhost.csr -CA config/certificates/RootCA.pem -CAkey config/certificates/RootCA.key -CAcreateserial -extfile config/domains.ext -out config/certificates/localhost.crt
 	- cat config/certificates/localhost.crt config/certificates/localhost.key > config/certificates/localhost.pem
+
+images:
+	- docker image build . --file=docker/newsblur_base_image.Dockerfile --tag=newsblur/newsblur_python3
+	- docker image build . --file=docker/node/node_prod.Dockerfile --tag=newsblur/node_prod
+	- docker push newsblur/newsblur_python3
+	- docker push newsblur/node_prod
+
+deploy:
+	- docker stack deploy --with-registry-auth -c stack-compose.yml dev-stack
