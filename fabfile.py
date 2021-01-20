@@ -1493,8 +1493,8 @@ def setup_newsletter_monitor():
     
 @parallel
 def setup_queue_monitor():
-    sudo('/etc/cron.hourly/monitor_work_queue')
     sudo('ln -fs %s/utils/monitor_work_queue.py /etc/cron.hourly/monitor_work_queue' % env.NEWSBLUR_PATH)
+    sudo('/etc/cron.hourly/monitor_work_queue')
     
 @parallel
 def setup_redis_monitor():
