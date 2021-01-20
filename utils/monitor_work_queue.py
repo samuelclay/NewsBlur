@@ -31,7 +31,7 @@ def main():
     except Exception, e:
         failed = e
     
-    if work_queue_size > 100 and work_queue_size >= (redis_work_queue - QUEUE_DROP_AMOUNT):
+    if work_queue_size > 100 and work_queue_size > (redis_work_queue + QUEUE_DROP_AMOUNT):
         failed = True
 
     if failed:
