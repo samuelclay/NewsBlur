@@ -1,0 +1,13 @@
+---
+- hosts: postgres
+  remote_user: tt
+  vars:
+    - update_apt_cache: yes
+  vars_files:
+    - env_vars/base.yml
+    - env_vars/dev.yml
+    - env_vars/postgresql.yml
+    
+  roles:
+      - postgresql
+      - docker

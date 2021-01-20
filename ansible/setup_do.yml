@@ -1,0 +1,24 @@
+---
+
+- hosts: localhost
+  connection: local
+  remote_user: nb
+  vars:
+    - update_apt_cache: yes
+  vars_files:
+    - env_vars/droplet.yml
+  
+  tasks:
+    - name: Create a new droplet
+      community.digitalocean.digital_ocean_droplet:
+        state: present
+        name: app01
+        size: "{{ droplet_size }}"
+        region: "{{ droplet_region }}"
+        image: "{{ droplet_image }}"
+        wait_timeout: 500
+        ssh_keys: [ "{{ droplet_ssh_key_id }}" ]
+      register: new_box
+
+    - debug:
+        msg: "ID is {{ new_box.data.droplet.id }}, IP is {{ new_box.data.ip_address }}"

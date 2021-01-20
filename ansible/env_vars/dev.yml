@@ -1,0 +1,4 @@
+---
+
+git_ssh_pub_key: "~/srv/secrets-newsblur/keys/newsblur.key.pub"
+git_ssh_priv_key: "~/srv/secrets-newsblur/keys/newsblur.key"

@@ -1,0 +1,33 @@
+---
+- name: Ensure git, zsh, ssl are the latest versions
+  apt: name={{ sys_packages }} update_cache={{ update_apt_cache }} state=latest
+  become: yes
+  tags: packages
+
+- name: Copy zshrc
+  copy: src=zshrc.txt dest=~/.zshrc
+
+- name: Installing Zsh and git
+  apt: pkg=zsh,git state=latest
+  register: installation
+
+- name: Set zsh as default shell
+  user: name=nb shell=/usr/bin/zsh
+  become: yes
+  
+- name: Cloning  oh-my-zsh
+  git:
+    repo=https://github.com/robbyrussell/oh-my-zsh
+    dest=~/.oh-my-zsh
+  when: installation is success
+  register: cloning
+  
+- name: Copy toprc
+  copy: src=toprc.txt dest=~/.toprc
+ 
+- name: Copy motd
+  become: yes
+  copy: src=motd.txt dest=/etc/update-motd.d/52-nb-motd mode=0755
+
+- include: ufw.yml
+  become: yes

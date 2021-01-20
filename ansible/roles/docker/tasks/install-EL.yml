@@ -1,0 +1,34 @@
+---
+# tasks file for docker-ce-ansible-role
+
+- name: Remove previous docker installation
+  yum:
+    name: "{{ item.package }}"
+    state: absent
+  with_items: "{{ docker_cleanup_packages_EL }}"
+
+- name: Install prerequisite packages
+  yum:
+    name: "{{ item.package }}"
+    state: present
+  with_items: "{{ docker_prerequisite_packages_EL }}"
+
+- name: Import Docker CE repository gpg key
+  rpm_key:
+    key: https://download.docker.com/linux/centos/gpg
+    state: present
+
+- name: Add Docker CE repository
+  get_url:
+    url: https://download.docker.com/linux/centos/docker-ce.repo
+    dest: /etc/yum.repos.d/docker-ce.repo
+    force: yes
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Install Docker CE
+  yum:
+    name: docker-ce
+    state: present
+    update_cache: yes
