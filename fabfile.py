@@ -828,15 +828,14 @@ def copy_certificates():
     run('ln -fs %s %s' % (privkey_path, os.path.join(cert_path, 'newsblur.com.crt.key'))) # HAProxy
     put(os.path.join(env.SECRETS_PATH, 'certificates/comodo/dhparams.pem'), cert_path)
     put(os.path.join(env.SECRETS_PATH, 'certificates/ios/aps_development.pem'), cert_path)
+
+    # Export aps.cer from Apple issued certificate using Keychain Assistant
     # openssl x509 -in aps.cer -inform DER -outform PEM -out aps.pem
     put(os.path.join(env.SECRETS_PATH, 'certificates/ios/aps.pem'), cert_path)
     # Export aps.p12 from aps.cer using Keychain Assistant
     # openssl pkcs12 -in aps.p12 -out aps.p12.pem -nodes
     put(os.path.join(env.SECRETS_PATH, 'certificates/ios/aps.p12.pem'), cert_path)
-    # run('cat %s/newsblur.com.crt > %s/newsblur.pem' % (cert_path, cert_path))
-    # run('echo "\n" >> %s/newsblur.pem' % (cert_path))
-    # run('cat %s/newsblur.com.key >> %s/newsblur.pem' % (cert_path, cert_path))
-
+    
 def setup_certbot():
     sudo('snap install --classic certbot')
     sudo('snap set certbot trust-plugin-with-root=ok')
@@ -1491,6 +1490,11 @@ def setup_feeds_fetched_monitor():
 def setup_newsletter_monitor():
     sudo('ln -fs %s/utils/monitor_newsletter_delivery.py /etc/cron.hourly/monitor_newsletter_delivery' % env.NEWSBLUR_PATH)
     sudo('/etc/cron.hourly/monitor_newsletter_delivery')
+    
+@parallel
+def setup_queue_monitor():
+    sudo('/etc/cron.hourly/monitor_work_queue')
+    sudo('ln -fs %s/utils/monitor_work_queue.py /etc/cron.hourly/monitor_work_queue' % env.NEWSBLUR_PATH)
     
 @parallel
 def setup_redis_monitor():
