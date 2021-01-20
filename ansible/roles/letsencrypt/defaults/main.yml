@@ -1,0 +1,14 @@
+---
+  letsencrypt_src_directory: /usr/local/share/letsencrypt
+  letsencrypt_venv: "{{ letsencrypt_src_directory }}/env"
+  letsencrypt_cert_domains:
+    - turntouch.com
+    - www.turntouch.com
+  letsencrypt_webroot_path: /usr/share/nginx/html
+  letsencrypt_authenticator: webroot
+  letsencrypt_email: "samuel@turntouch.com"
+  letsencrypt_command: "{{ letsencrypt_venv }}/bin/letsencrypt --agree-tos --text {% for domain in letsencrypt_cert_domains %}-d {{ domain }} {% endfor %}--email {{ letsencrypt_email }} {% if letsencrypt_server is defined %}--server {{ letsencrypt_server }}{% endif %} --expand"
+  letsencrypt_renewal_frequency:
+    day: "*"
+    hour: 0
+    minute: 0

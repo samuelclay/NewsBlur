@@ -1,0 +1,70 @@
+---
+  - apt: update_cache=yes cache_valid_time=3600
+    become: yes
+
+  - name: Install depends
+    apt: name={{ item }} state=present
+    become: yes
+    with_items:
+      - python
+      - python-dev
+      - python-virtualenv
+      - gcc
+      - dialog
+      - libaugeas0
+      - libssl-dev
+      - libffi-dev
+      - ca-certificates
+      - python-pip
+      - git
+
+  - name: Install virtualenv (Debian)
+    apt: name={{ item }} state=present
+    become: yes
+    with_items:
+      - virtualenv
+    when: ansible_distribution == 'Debian'
+
+  - name: Install python depends
+    become: yes
+    pip: virtualenv="{{ letsencrypt_venv }}" virtualenv_site_packages=no name={{ item }} state=latest
+    with_items:
+      - setuptools
+      - pip
+
+  - name: More python depends
+    become: yes
+    pip: virtualenv="{{ letsencrypt_venv }}" virtualenv_site_packages=no name=letsencrypt
+
+  - name: Attempt to get the certificate using the webroot authenticator
+    command: "{{ letsencrypt_command }} -a webroot --webroot-path {{ letsencrypt_webroot_path }} certonly"
+    become: yes
+    args:
+      creates: "/etc/letsencrypt/live/{{ letsencrypt_cert_domains[0] }}"
+    when: letsencrypt_authenticator == "webroot"
+    ignore_errors: True
+
+  - name: Attempt to get the certificate using the standalone authenticator (in case eg the webserver isn't running yet)
+    command: "{{ letsencrypt_command }} -a standalone auth"
+    become: yes
+    args:
+      creates: "/etc/letsencrypt/live/{{ letsencrypt_cert_domains[0] }}"
+
+  - name: Fix the renewal file
+    ini_file: section=renewalparams option={{ item.key }} value={{ item.value }} dest="/etc/letsencrypt/renewal/{{ letsencrypt_cert_domains[0] }}.conf"
+    become: yes
+    with_dict:
+      os_packages_only: False
+      verb: certonly
+      noninteractive_mode: False
+      uir: False
+      hsts: False
+
+  - name: Fix the webroot map in the renewal file
+    ini_file: section="[webroot_map]" option={{ item }} value={{ letsencrypt_webroot_path }} dest="/etc/letsencrypt/renewal/{{ letsencrypt_cert_domains[0] }}.conf"
+    become: yes
+    with_items: "{{ letsencrypt_cert_domains }}"
+
+  - name: Install renewal cron
+    become: yes
+    cron: name="Let's Encrypt Renewal" day="{{ letsencrypt_renewal_frequency.day }}" hour="{{ letsencrypt_renewal_frequency.hour }}" minute="{{ letsencrypt_renewal_frequency.minute }}" job="{{ letsencrypt_venv }}/bin/letsencrypt renew > /dev/null"

@@ -1,0 +1,21 @@
+---
+
+github_directory: github.com/samuelclay/newsblur
+git_web_repo: ssh://git@{{ github_directory }}
+git_secrets_repo: ssh://git@github.com/samuelclay/newsblur-secrets
+
+create_user: nb
+local_key: "{{ lookup('file', lookup('env','HOME') + '/.ssh/id_rsa.pub') }}"
+copy_local_key: "{{ lookup('file', '/srv/secrets-newsblur/keys/docker.key.pub') }}"
+sys_packages: [ 
+  'git', 
+  'python3', 
+  'python3-dev', 
+  'zsh', 
+  'openssl', 
+  'libssl-dev', 
+  'libssl-doc', 
+  'build-essential', 
+  'ntp', 
+  'htop' 
+]

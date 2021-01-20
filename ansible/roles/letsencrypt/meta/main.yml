@@ -1,0 +1,21 @@
+---
+galaxy_info:
+  author: Finn Herzfeld
+  description: Generate TLS certificates and get them signed by Let's Encrypt.
+  issue_tracker_url: https://github.com/thefinn93/ansible-letsencrypt/issues
+  license: GPL
+  min_ansible_version: 1.2
+
+  platforms:
+    - name: Ubuntu
+      versions:
+        - trusty
+    - name: Debian
+      versions:
+        - jessie
+
+  categories:
+    - networking
+    - web
+
+dependencies: []
