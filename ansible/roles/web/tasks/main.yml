@@ -1,1 +1,19 @@
 ---
+- name: Pull NewsBlur web app image from Docker Hub
+  become: yes
+  docker_image:
+    name: newsblur/newsblur_python3
+    source: pull
+
+- name: Start NewsBlur Web Docker container
+  become: yes
+  docker_container:
+    name: newsblur_web
+    image: newsblur/newsblur_python3
+    env:
+      DOCKERBUILD: "True"
+    state: started
+    command: gunicorn --bind :8000 newsblur_web.wsgi:application
+    ports:
+      - "8000:8000"
+    restart_policy: unless-stopped
