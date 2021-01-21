@@ -41,7 +41,7 @@ def main():
                 data={"from": "NewsBlur Task Monitor: %s <admin@%s.newsblur.com>" % (hostname, hostname),
                       "to": [admin_email],
                       "subject": "%s feeds fetched falling: %s (from %s)" % (hostname, feeds_fetched, redis_task_fetches),
-                      "text": "Feed fetches are falling: %s (from %s)" % (feeds_fetched, redis_task_fetches)})
+                      "text": "Feed fetches are falling: %s (from %s) %s" % (feeds_fetched, redis_task_fetches, failed)})
 
         r.set(monitor_key, feeds_fetched)
         r.expire(monitor_key, 60*60*3) # 3 hours
