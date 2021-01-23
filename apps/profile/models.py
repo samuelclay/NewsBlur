@@ -1219,7 +1219,6 @@ class MEmailUnsubscribe(mongo.Document):
         'indexes': ['user_id', 
                     {'fields': ['user_id', 'email_type'], 
                      'unique': True,
-                     'types': False,
                     }],
     }
     
