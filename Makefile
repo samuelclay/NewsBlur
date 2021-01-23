@@ -52,3 +52,7 @@ keys:
 	- openssl req -new -nodes -newkey rsa:2048 -keyout config/certificates/localhost.key -out config/certificates/localhost.csr -subj "/C=US/ST=YourState/L=YourCity/O=Example-Certificates/CN=localhost.local"
 	- openssl x509 -req -sha256 -days 1024 -in config/certificates/localhost.csr -CA config/certificates/RootCA.pem -CAkey config/certificates/RootCA.key -CAcreateserial -extfile config/domains.ext -out config/certificates/localhost.crt
 	- cat config/certificates/localhost.crt config/certificates/localhost.key > config/certificates/localhost.pem
+
+# Lists all Digital Ocean machines, DO_API_TOKEN must be set
+list:
+	- doctl compute droplet list

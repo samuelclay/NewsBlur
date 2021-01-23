@@ -16,7 +16,6 @@ RUN       set -ex \
                     libblas-dev \
                     libffi-dev \
                     libjpeg-dev \
-                    default-libmysqlclient-dev \
                     libpq-dev \
                     libreadline6-dev \
                     liblapack-dev \

@@ -55,7 +55,7 @@ services:
 
   postgres:
     container_name: postgres
-    image: postgres:9.6
+    image: postgres:13.1
     environment:
       - POSTGRES_USER=newsblur
       - POSTGRES_PASSWORD=newsblur

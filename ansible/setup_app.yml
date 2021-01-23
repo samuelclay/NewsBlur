@@ -9,4 +9,5 @@
   roles:
       # - base
       # - docker
+      - nginx
       - web
