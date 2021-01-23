@@ -27,7 +27,7 @@ def main():
     try:
         client = pymongo.MongoClient('mongodb://%s' % settings.MONGO_DB['host'])
         feeds_fetched = client.newsblur.statistics.find_one({"key": "feeds_fetched"})['value']
-        redis_task_fetches = int(r.get(monitor_key))
+        redis_task_fetches = int(r.get(monitor_key) or 0)
     except Exception, e:
         failed = e
     
