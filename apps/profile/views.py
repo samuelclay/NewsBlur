@@ -710,8 +710,8 @@ def email_optout(request):
 @json.json_view
 def ios_subscription_status(request):
     logging.debug(" ---> iOS Subscription Status: %s" % request.body)
-    
-    subject = "iOS Subscription Status"
+    data = json.decode(request.body)
+    subject = "iOS Subscription Status: %s" % data.get('notification_type', "[missing]")
     message = """%s""" % (request.body)
     mail_admins(subject, message)
     
