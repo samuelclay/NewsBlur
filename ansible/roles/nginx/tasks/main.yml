@@ -1,0 +1,25 @@
+---
+- name: Pull latest nginx image from Docker Hub
+  become: yes
+  docker_image:
+    name: nginx:1.19
+    source: pull
+
+- name: Start nginx docker container
+  become: yes
+  docker_container:
+    name: nginx
+    image: nginx:1.19
+    env:
+      DOCKERBUILD: "True"
+    state: started
+    ports:
+      - "80:80"
+    restart_policy: unless-stopped
+    expose:
+      - "80"
+    volumes:
+      - /srv/newsblur/docker/nginx:/etc/nginx/conf.d
+    volumes_from:
+      - newsblur_web
+
