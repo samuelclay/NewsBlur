@@ -27,7 +27,7 @@ def main():
 
     try:
         work_queue_size = int(r.llen("work_queue"))
-        redis_work_queue = int(r_monitor.get(monitor_key))
+        redis_work_queue = int(r_monitor.get(monitor_key) or 0)
     except Exception as e:
         failed = e
     
@@ -41,7 +41,7 @@ def main():
                 data={"from": "NewsBlur Queue Monitor: %s <admin@%s.newsblur.com>" % (hostname, hostname),
                       "to": [admin_email],
                       "subject": "%s work queue rising: %s (from %s)" % (hostname, work_queue_size, redis_work_queue),
-                      "text": "Work queue is rising: %s (from %s)" % (work_queue_size, redis_work_queue)})
+                      "text": "Work queue is rising: %s (from %s) %s" % (work_queue_size, redis_work_queue, failed)})
 
         r_monitor.set(monitor_key, work_queue_size)
         r_monitor.expire(monitor_key, 60*60*3) # 3 hours
