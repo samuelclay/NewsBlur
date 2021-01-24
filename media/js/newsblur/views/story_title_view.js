@@ -206,7 +206,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
     show_content_preview: function() {
         var preference = NEWSBLUR.assets.preference('show_content_preview');
         if (!preference) return preference;
-        var max_length = preference == 'small' ? 150 : preference == 'medium' ? 300 : 500;
+        var max_length = preference == 'small' ? 300 : preference == 'medium' ? 600 : 1000;
 
         if (this.options.override_layout == 'grid' || 
             NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout') == 'grid') {
