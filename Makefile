@@ -1,3 +1,8 @@
+<<<<<<< HEAD
+=======
+SHELL := /bin/bash
+newsblur := $(shell docker ps -qf "name=newsblur_web")
+>>>>>>> Makefile: specify SHELL bash
 CURRENT_UID := $(shell id -u)
 CURRENT_GID := $(shell id -g)
 
@@ -78,6 +83,7 @@ images: build node_image web_image
 
 # Tasks
 deploy:
+<<<<<<< HEAD
 	- ansible-playbook ansible/deploy_app.yml
 deploy_node:
 	- ansible-playbook ansible/deploy_node.yml
@@ -106,3 +112,6 @@ perf-ui:
 perf-docker:
 	- docker build . --file=./perf/Dockerfile --tag=perf-docker
 	- docker run -it -p 8089:8089 perf-docker locust -f locust.py
+=======
+	- docker stack deploy --with-registry-auth -c stack-compose.yml dev-stack
+>>>>>>> Makefile: specify SHELL bash
