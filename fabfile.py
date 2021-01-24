@@ -529,8 +529,8 @@ def virtualenv():
 
 def setup_pip():
     with cd(env.VENDOR_PATH), settings(warn_only=True):
-        run('curl https://bootstrap.pypa.io/get-pip.py --output get-pip.py')
-        sudo('python2 get-pip.py')
+        run('curl https://bootstrap.pypa.io/2.6/get-pip.py | sudo python2')
+        # sudo('python2 get-pip.py')
 
 
 @parallel
@@ -546,9 +546,9 @@ def pip():
                 sudo('mkswap /swapfile')
                 sudo('swapon /swapfile')
         sudo('chown %s.%s -R %s' % (env.user, env.user, os.path.join(env.NEWSBLUR_PATH, 'venv')))
-        run('easy_install -U pip')
-        run('pip install --upgrade pip')
-        run('pip install --upgrade setuptools')
+        # run('easy_install -U pip')
+        # run('pip install --upgrade pip')
+        # run('pip install --upgrade setuptools')
         run('pip install -r requirements.txt')
         if role == "task":
             with settings(warn_only=True):
@@ -865,15 +865,14 @@ def copy_certificates():
     run('ln -fs %s %s' % (privkey_path, os.path.join(cert_path, 'newsblur.com.crt.key'))) # HAProxy
     put(os.path.join(env.SECRETS_PATH, 'certificates/comodo/dhparams.pem'), cert_path)
     put(os.path.join(env.SECRETS_PATH, 'certificates/ios/aps_development.pem'), cert_path)
+
+    # Export aps.cer from Apple issued certificate using Keychain Assistant
     # openssl x509 -in aps.cer -inform DER -outform PEM -out aps.pem
     put(os.path.join(env.SECRETS_PATH, 'certificates/ios/aps.pem'), cert_path)
     # Export aps.p12 from aps.cer using Keychain Assistant
     # openssl pkcs12 -in aps.p12 -out aps.p12.pem -nodes
     put(os.path.join(env.SECRETS_PATH, 'certificates/ios/aps.p12.pem'), cert_path)
-    # run('cat %s/newsblur.com.crt > %s/newsblur.pem' % (cert_path, cert_path))
-    # run('echo "\n" >> %s/newsblur.pem' % (cert_path))
-    # run('cat %s/newsblur.com.key >> %s/newsblur.pem' % (cert_path, cert_path))
-
+    
 def setup_certbot():
     sudo('snap install --classic certbot')
     sudo('snap set certbot trust-plugin-with-root=ok')
@@ -1252,7 +1251,7 @@ def disable_thp():
     sudo('update-rc.d disable-transparent-hugepages defaults')
     
 def setup_mongo():
-    MONGODB_VERSION = "3.2.22"
+    MONGODB_VERSION = "3.4.24"
     pull()
     disable_thp()
     sudo('systemctl enable rc-local.service') # Enable rc.local
@@ -1263,11 +1262,11 @@ def setup_mongo():
        echo never > /sys/kernel/mm/transparent_hugepage/defrag\n\
     fi\n\n\
     exit 0" | sudo tee /etc/rc.local')
-    sudo('curl -fsSL https://www.mongodb.org/static/pgp/server-3.2.asc | sudo apt-key add -')
+    sudo('curl -fsSL https://www.mongodb.org/static/pgp/server-3.4.asc | sudo apt-key add -')
     # sudo('echo "deb http://downloads-distro.mongodb.org/repo/ubuntu-upstart dist 10gen" | sudo tee /etc/apt/sources.list.d/mongodb.list')
     # sudo('echo "\ndeb http://downloads-distro.mongodb.org/repo/debian-sysvinit dist 10gen" | sudo tee -a /etc/apt/sources.list')
     # sudo('echo "deb http://repo.mongodb.org/apt/ubuntu trusty/mongodb-org/3.2 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.2.list')
-    sudo('echo "deb http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.2 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.2.list')
+    sudo('echo "deb http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.4.list')
     sudo('apt-get update')
     sudo('apt-get install -y mongodb-org=%s mongodb-org-server=%s mongodb-org-shell=%s mongodb-org-mongos=%s mongodb-org-tools=%s' %
          (MONGODB_VERSION, MONGODB_VERSION, MONGODB_VERSION, MONGODB_VERSION, MONGODB_VERSION))
@@ -1528,6 +1527,11 @@ def setup_feeds_fetched_monitor():
 def setup_newsletter_monitor():
     sudo('ln -fs %s/utils/monitor_newsletter_delivery.py /etc/cron.hourly/monitor_newsletter_delivery' % env.NEWSBLUR_PATH)
     sudo('/etc/cron.hourly/monitor_newsletter_delivery')
+    
+@parallel
+def setup_queue_monitor():
+    sudo('ln -fs %s/utils/monitor_work_queue.py /etc/cron.hourly/monitor_work_queue' % env.NEWSBLUR_PATH)
+    sudo('/etc/cron.hourly/monitor_work_queue')
     
 @parallel
 def setup_redis_monitor():

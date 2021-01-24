@@ -2098,12 +2098,15 @@ class Feed(models.Model):
         if self.min_to_decay and not force and not premium_speed:
             return self.min_to_decay
         
+        from apps.notifications.models import MUserFeedNotification
+
         if premium_speed:
             self.active_premium_subscribers += 1
         
         spd  = self.stories_last_month / 30.0
         subs = (self.active_premium_subscribers + 
                 ((self.active_subscribers - self.active_premium_subscribers) / 10.0))
+        notification_count = MUserFeedNotification.objects.filter(feed_id=self.pk).count()
         # Calculate sub counts: 
         #   SELECT COUNT(*) FROM feeds WHERE active_premium_subscribers > 10 AND stories_last_month >= 30;
         #   SELECT COUNT(*) FROM feeds WHERE active_premium_subscribers > 1 AND active_premium_subscribers < 10 AND stories_last_month >= 30;
@@ -2162,6 +2165,10 @@ class Feed(models.Model):
             if len(fetch_history['push_history']):
                 total = total * 12
         
+        # Any notifications means a 30 min minumum
+        if notification_count > 0:
+            total = min(total, 30)
+
         # 4 hour max for premiums, 48 hour max for free
         if subs >= 1:
             total = min(total, 60*4*1)
