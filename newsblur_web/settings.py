@@ -368,8 +368,8 @@ CELERY_TASK_ROUTES = {
         "binding_key": "update_feeds"
     },
     "beat-tasks": {
-        "queue": "beat_tasks",
-        "binding_key": "beat_tasks"
+        "queue": "cron_queue",
+        "binding_key": "cron_queue"
     },
     "search-indexer": {
         "queue": "search_indexer",
@@ -401,10 +401,10 @@ CELERY_TASK_QUEUES = {
         "exchange_type": "direct",
         "binding_key": "update_feeds"
     },
-    "beat_tasks": {
-        "exchange": "beat_tasks",
+    "cron_queue": {
+        "exchange": "cron_queue",
         "exchange_type": "direct",
-        "binding_key": "beat_tasks"
+        "binding_key": "cron_queue"
     },
     "beat_feeds_task": {
         "exchange": "beat_feeds_task",
@@ -454,52 +454,52 @@ CELERY_BEAT_SCHEDULE = {
     'freshen-homepage': {
         'task': 'freshen-homepage',
         'schedule': datetime.timedelta(hours=1),
-        'options': {'queue': 'beat_tasks'},
+        'options': {'queue': 'cron_queue'},
     },
     'collect-stats': {
         'task': 'collect-stats',
         'schedule': datetime.timedelta(minutes=1),
-        'options': {'queue': 'beat_tasks'},
+        'options': {'queue': 'cron_queue'},
     },
     'collect-feedback': {
         'task': 'collect-feedback',
         'schedule': datetime.timedelta(minutes=1),
-        'options': {'queue': 'beat_tasks'},
+        'options': {'queue': 'cron_queue'},
     },
     'share-popular-stories': {
         'task': 'share-popular-stories',
         'schedule': datetime.timedelta(minutes=10),
-        'options': {'queue': 'beat_tasks'},
+        'options': {'queue': 'cron_queue'},
     },
     'clean-analytics': {
         'task': 'clean-analytics',
         'schedule': datetime.timedelta(hours=12),
-        'options': {'queue': 'beat_tasks', 'timeout': 720*10},
+        'options': {'queue': 'cron_queue', 'timeout': 720*10},
     },
     'reimport-stripe-history': {
         'task': 'reimport-stripe-history',
         'schedule': datetime.timedelta(hours=6),
-        'options': {'queue': 'beat_tasks'},
+        'options': {'queue': 'cron_queue'},
     },
     'clean-spam': {
         'task': 'clean-spam',
         'schedule': datetime.timedelta(hours=1),
-        'options': {'queue': 'beat_tasks'},
+        'options': {'queue': 'cron_queue'},
     },
     'clean-social-spam': {
         'task': 'clean-social-spam',
         'schedule': datetime.timedelta(hours=6),
-        'options': {'queue': 'beat_tasks'},
+        'options': {'queue': 'cron_queue'},
     },
     'premium-expire': {
         'task': 'premium-expire',
         'schedule': datetime.timedelta(hours=24),
-        'options': {'queue': 'beat_tasks'},
+        'options': {'queue': 'cron_queue'},
     },
     'activate-next-new-user': {
         'task': 'activate-next-new-user',
         'schedule': datetime.timedelta(minutes=5),
-        'options': {'queue': 'beat_tasks'},
+        'options': {'queue': 'cron_queue'},
     },
 }
 

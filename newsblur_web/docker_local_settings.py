@@ -104,12 +104,15 @@ CELERY_RESULT_BACKEND = BROKER_URL
 
 REDIS = {
     'host': 'redis',
+    'port': 6579
 }
 REDIS_PUBSUB = {
     'host': 'redis',
+    'port': 6579
 }
 REDIS_STORY = {
     'host': 'redis',
+    'port': 6579
 }
 REDIS_SESSIONS = {
     'host': 'redis',
