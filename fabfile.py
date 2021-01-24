@@ -529,8 +529,8 @@ def virtualenv():
 
 def setup_pip():
     with cd(env.VENDOR_PATH), settings(warn_only=True):
-        run('curl https://bootstrap.pypa.io/get-pip.py --output get-pip.py')
-        sudo('python2 get-pip.py')
+        run('curl https://bootstrap.pypa.io/2.6/get-pip.py | sudo python2')
+        # sudo('python2 get-pip.py')
 
 
 @parallel
@@ -546,9 +546,9 @@ def pip():
                 sudo('mkswap /swapfile')
                 sudo('swapon /swapfile')
         sudo('chown %s.%s -R %s' % (env.user, env.user, os.path.join(env.NEWSBLUR_PATH, 'venv')))
-        run('easy_install -U pip')
-        run('pip install --upgrade pip')
-        run('pip install --upgrade setuptools')
+        # run('easy_install -U pip')
+        # run('pip install --upgrade pip')
+        # run('pip install --upgrade setuptools')
         run('pip install -r requirements.txt')
         if role == "task":
             with settings(warn_only=True):
@@ -1252,7 +1252,7 @@ def disable_thp():
     sudo('update-rc.d disable-transparent-hugepages defaults')
     
 def setup_mongo():
-    MONGODB_VERSION = "3.2.22"
+    MONGODB_VERSION = "3.4.24"
     pull()
     disable_thp()
     sudo('systemctl enable rc-local.service') # Enable rc.local
@@ -1263,11 +1263,11 @@ def setup_mongo():
        echo never > /sys/kernel/mm/transparent_hugepage/defrag\n\
     fi\n\n\
     exit 0" | sudo tee /etc/rc.local')
-    sudo('curl -fsSL https://www.mongodb.org/static/pgp/server-3.2.asc | sudo apt-key add -')
+    sudo('curl -fsSL https://www.mongodb.org/static/pgp/server-3.4.asc | sudo apt-key add -')
     # sudo('echo "deb http://downloads-distro.mongodb.org/repo/ubuntu-upstart dist 10gen" | sudo tee /etc/apt/sources.list.d/mongodb.list')
     # sudo('echo "\ndeb http://downloads-distro.mongodb.org/repo/debian-sysvinit dist 10gen" | sudo tee -a /etc/apt/sources.list')
     # sudo('echo "deb http://repo.mongodb.org/apt/ubuntu trusty/mongodb-org/3.2 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.2.list')
-    sudo('echo "deb http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.2 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.2.list')
+    sudo('echo "deb http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.4.list')
     sudo('apt-get update')
     sudo('apt-get install -y mongodb-org=%s mongodb-org-server=%s mongodb-org-shell=%s mongodb-org-mongos=%s mongodb-org-tools=%s' %
          (MONGODB_VERSION, MONGODB_VERSION, MONGODB_VERSION, MONGODB_VERSION, MONGODB_VERSION))
