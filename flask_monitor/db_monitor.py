@@ -103,7 +103,7 @@ def db_check_redis_story():
         abort(404)
 
 @app.route("/db_check/redis_pubsub")
-def db_check_redis_story():
+def db_check_redis_pubsub():
     redis_host = getattr(settings, 'REDIS', {'host': 'db_redis_pubsub'})
     try:
         r = redis.Redis(redis_host['host'], db=1)

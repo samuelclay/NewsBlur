@@ -30,3 +30,4 @@ RUN       set -ex \
             && apt-get purge -y --auto-remove ${buildDeps} \
             && rm -rf /var/lib/apt/lists/*
 COPY ./config /etc/supervisor/conf.d/
+COPY . /srv/newsblur
