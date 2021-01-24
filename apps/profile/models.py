@@ -489,6 +489,8 @@ class Profile(models.Model):
     def latest_paypal_email(self):
         ipn = PayPalIPN.objects.filter(custom=self.user.username)
         if not len(ipn):
+            ipn = PayPalIPN.objects.filter(payer_email=self.user.email)
+        if not len(ipn):
             return
         
         return ipn[0].payer_email
