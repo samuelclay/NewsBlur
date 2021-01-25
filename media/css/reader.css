@@ -3392,7 +3392,7 @@ body {
     width: 100%;
     height: 14px;
     z-index: 0;
-    background: transparent url('/../../../media/img/circular/module_cutoff.png?1359681369') repeat-x left bottom;
+    background: transparent url('/media/embed/circular/module_cutoff.png') repeat-x left bottom;
 }
 .NB-story-content-wrapper .NB-story-content-expander .NB-story-content-expander-text,
 .NB-story-content-wrapper .NB-story-content-expander .NB-story-content-expander-pages {

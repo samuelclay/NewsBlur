@@ -1181,7 +1181,7 @@ border-bottom-color: #303739;
     background-color: #191b1c;
 }
 .NB-dark .NB-story-content-wrapper .NB-story-content-expander .NB-story-cutoff {
-    display: none;
+    background: transparent url('/media/embed/circular/module_cutoff_dark.png') repeat-x left bottom;
 }
 /*
 .NB-dark .NB-feeds-header-river-container .NB-feeds-header {
