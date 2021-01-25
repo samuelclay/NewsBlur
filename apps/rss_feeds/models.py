@@ -365,7 +365,7 @@ class Feed(models.Model):
             return feed, False
         except cls.DoesNotExist:
             feed = cls(**defaults)
-            feed.save()
+            feed = feed.save()
             return feed, True
         
     @classmethod
