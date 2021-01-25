@@ -199,15 +199,18 @@ class PageImporter(object):
                     requests.adapters.ReadTimeout) as e:
                 logging.debug('   ***> [%-30s] Original story fetch failed using requests: %s' % (self.feed.log_title[:30], e))
                 return
-        try:
-            data = response.text
-        except (LookupError, TypeError):
-            data = response.content
+        # try:
+        data = response.text
+        # except (LookupError, TypeError):
+        #     data = response.content
+        # import pdb; pdb.set_trace()
 
-        if response.encoding and response.encoding != 'utf-8':
+        if response.encoding and response.encoding.lower() != 'utf-8':
+            logging.debug(f" -> ~FBEncoding is {response.encoding}, re-encoding...")
             try:
-                data = data.encode(response.encoding)
+                data = data.encode('utf-8').decode('utf-8')
             except (LookupError, UnicodeEncodeError):
+                logging.debug(f" -> ~FRRe-encoding failed!")
                 pass
 
         if data:
@@ -221,7 +224,7 @@ class PageImporter(object):
         return html
     
     def save_story(self, html):
-        self.story.original_page_z = zlib.compress(html)
+        self.story.original_page_z = zlib.compress(html.encode('utf-8'))
         try:
             self.story.save()
         except NotUniqueError:

@@ -188,6 +188,9 @@ class OPMLImporter(Importer):
                         feed=feed_db, 
                         user=self.user)
                 except UserSubscription.DoesNotExist:
+                    us = None
+                
+                if not us:
                     us = UserSubscription(
                         feed=feed_db, 
                         user=self.user,

@@ -23,6 +23,7 @@ def timelimit(timeout):
                     threading.Thread.__init__(self)
                     self.result = None
                     self.error = None
+                    self.exc_info = None
                     
                     self.setDaemon(True)
                     self.start()
@@ -30,17 +31,19 @@ def timelimit(timeout):
                 def run(self):
                     try:
                         self.result = function(*args, **kw)
-                    except:
-                        self.error = sys.exc_info()
+                    except BaseException as e:
+                        self.error = e
+                        self.exc_info = sys.exc_info()
             c = Dispatch()
+            dispatch = c
             c.join(timeout)
             if c.is_alive():
                 raise TimeoutError('took too long')
             if c.error:
-                tb = ''.join(traceback.format_exception(c.error[0], c.error[1], c.error[2]))
+                tb = ''.join(traceback.format_exception(c.exc_info[0], c.exc_info[1], c.exc_info[2]))
                 logging.debug(tb)
-                mail_admins('Error in timeout: %s' % c.error[0], tb)
-                raise c.error[0](c.error[1]).with_traceback(c.error[2])
+                mail_admins('Error in timeout: %s' % c.exc_info[0], tb)
+                raise c.error
             return c.result
         return _2
     return _1
