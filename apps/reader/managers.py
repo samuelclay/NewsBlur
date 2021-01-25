@@ -8,7 +8,7 @@ class UserSubscriptionManager(models.Manager):
     def get(self, *args, **kwargs):
         try:
             return super(UserSubscriptionManager, self).get(*args, **kwargs)
-        except self.model.DoesNotExist:
+        except self.model.DoesNotExist as exception:
             if isinstance(kwargs.get('feed'), int):
                 feed_id = kwargs.get('feed')
             elif 'feed' in kwargs:
@@ -32,5 +32,4 @@ class UserSubscriptionManager(models.Manager):
                 logging.debug(" ---> [%s] ~BRFound dupe UserSubscription: ~SB%s (%s)" % (user and user.username, feed, feed_id))
                 return super(UserSubscriptionManager, self).get(*args, **kwargs)
             else:
-                exc_info = sys.exc_info()
-                raise exc_info[1]
+                raise exception

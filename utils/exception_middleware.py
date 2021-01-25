@@ -9,7 +9,7 @@ class ConsoleExceptionMiddleware:
         print("######################## Exception #############################")
         print(('\n'.join(traceback.format_exception(*(exc_info or sys.exc_info())))))
         print("----------------------------------------------------------------")
-        pprint(inspect.trace()[-1][0].f_locals)
+        # pprint(inspect.trace()[-1][0].f_locals)
         print("################################################################")
         
         #pprint(request)
