@@ -369,7 +369,7 @@ class Profile(models.Model):
         if self.stripe_id:
             stripe.api_key = settings.STRIPE_SECRET
             stripe_customer = stripe.Customer.retrieve(self.stripe_id)
-            stripe_payments = stripe.Charge.all(customer=stripe_customer.id).data
+            stripe_payments = stripe.Charge.list(customer=stripe_customer.id).data
             if partial:
                 stripe_payments[0].refund(amount=1200)
                 refunded = 12
