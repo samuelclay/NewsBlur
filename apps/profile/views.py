@@ -542,7 +542,7 @@ def refund_premium(request):
     user = User.objects.get(pk=user_id)
     try:
         refunded = user.profile.refund_premium(partial=partial)
-    except stripe.InvalidRequestError as e:
+    except stripe.error.InvalidRequestError as e:
         refunded = e
     except PayPalAPIResponseError as e:
         refunded = e
