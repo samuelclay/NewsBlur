@@ -1,0 +1,12 @@
+plugin: constructed
+strict: False
+
+groups:
+  web: inventory_hostname.startswith('app') or inventory_hostname.startswith('node') or inventory_hostname.startswith('work') or inventory_hostname.startswith('push')
+  app: inventory_hostname.startswith('app') or inventory_hostname.startswith('push')
+  # work: inventory_hostname.startswith('work')
+  node: inventory_hostname.startswith('node')
+  # debug: inventory_hostname.startswith('debug')
+  db: inventory_hostname.startswith('db')
+  task: inventory_hostname.startswith('task')
+  search: inventory_hostname.startswith('search')
