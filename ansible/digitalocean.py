@@ -455,6 +455,9 @@ class DigitalOceanInventory(object):
 
             self.add_host(droplet['name'], dest)
 
+            roledef = re.split(r"([0-9]+)", droplet['name'])[0]
+            self.add_host(roledef, dest)
+
             # groups that are always present
             for group in ('digital_ocean',
                           'region_' + droplet['region']['slug'],
@@ -462,14 +465,15 @@ class DigitalOceanInventory(object):
                           'size_' + droplet['size']['slug'],
                           'distro_' + DigitalOceanInventory.to_safe(droplet['image']['distribution']),
                           'status_' + droplet['status']):
-                self.add_host(group, dest)
+                # self.add_host(group, dest)
+                pass
 
             # groups that are not always present
             for group in (droplet['image']['slug'],
                           droplet['image']['name']):
                 if group:
                     image = 'image_' + DigitalOceanInventory.to_safe(group)
-                    self.add_host(image, dest)
+                    # self.add_host(image, dest)
 
             if droplet['tags']:
                 for tag in droplet['tags']:

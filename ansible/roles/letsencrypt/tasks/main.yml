@@ -68,3 +68,13 @@
   - name: Install renewal cron
     become: yes
     cron: name="Let's Encrypt Renewal" day="{{ letsencrypt_renewal_frequency.day }}" hour="{{ letsencrypt_renewal_frequency.hour }}" minute="{{ letsencrypt_renewal_frequency.minute }}" job="{{ letsencrypt_venv }}/bin/letsencrypt renew > /dev/null"
+
+  - name: Fetch certificate and store in secrets repo
+    fetch:
+      src: /etc/letsencrypt/live/newsblur.com/fullchain.pem
+      dest: /src/secrets-newsblur/certificates/newsblur.com.pem
+
+  - name: Fetch private key and store in secrets repo
+    fetch:
+      src: /etc/letsencrypt/live/newsblur.com/privkey.pem
+      dest: /src/secrets-newsblur/certificates/newsblur.com.key
