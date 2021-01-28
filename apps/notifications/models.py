@@ -70,7 +70,6 @@ class MUserFeedNotification(mongo.Document):
         'indexes': ['feed_id',
                     {'fields': ['user_id', 'feed_id'], 
                      'unique': True,
-                     'types': False,
                     }],
         'allow_inheritance': False,
     }
