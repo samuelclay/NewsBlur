@@ -15,5 +15,6 @@ with open(TOKEN_FILE) as f:
 #                 '/srv/newsblur/ansible/inventories/digital_ocean.ini', 
 #                 shell=True)
 
+# Install from https://github.com/do-community/do-ansible-inventory/releases
 subprocess.call('do-ansible-inventory --out /srv/newsblur/ansible/inventories/digital_ocean.ini', 
                 shell=True)
