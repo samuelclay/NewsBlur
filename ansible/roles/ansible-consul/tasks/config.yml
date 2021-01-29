@@ -1,0 +1,44 @@
+---
+# File: config.yml - Consul configuration tasks
+
+- name: Create configuration
+  copy:
+    dest: "{{ item.dest }}"
+    owner: "{{ consul_user }}"
+    group: "{{ consul_group }}"
+    content: "{{ lookup('template', 'templates/config.json.j2') | to_nice_json }}"
+    mode: 0600
+  with_items:
+    - dest: "{{ consul_config_path }}/config.json"
+      config_version: "{{ consul_node_role }}"
+      when: true
+    - dest: "{{ consul_config_path }}/bootstrap.json"
+      config_version: bootstrap
+      when: "{{ consul_debug | bool }}"
+    - dest: "{{ consul_config_path }}/server.json"
+      config_version: server
+      when: "{{ consul_debug | bool }}"
+    - dest: "{{ consul_config_path }}/client.json"
+      config_version: client
+      when: "{{ consul_debug | bool }}"
+  when:
+    - item.when
+  notify:
+    - restart consul
+
+- name: Create custom configuration
+  copy:
+    dest: "{{ consul_configd_path }}/50custom.json"
+    owner: "{{ consul_user }}"
+    group: "{{ consul_group }}"
+    content: "{{ lookup('template', 'templates/configd_50custom.json.j2') | to_nice_json }}"
+    mode: 0600
+  when:
+    - consul_config_custom is defined
+  notify:
+    - restart consul
+
+- name: Set fact list with custom configuration file
+  set_fact:
+    managed_files: "{{ managed_files |default([]) }} + \
+      [ '{{ consul_configd_path }}/50custom.json' ]"

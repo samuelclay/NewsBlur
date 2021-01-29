@@ -1,0 +1,44 @@
+# Default all keys to read-only
+key "" {
+  policy = "read"
+}
+key "foo/" {
+  policy = "write"
+}
+key "foo/private/" {
+  # Deny access to the dir "foo/private"
+  policy = "deny"
+}
+
+# Default all services to allow registration. Also permits all
+# services to be discovered.
+service "" {
+    policy = "write"
+}
+
+# Deny registration access to services prefixed "secure-".
+# Discovery of the service is still allowed in read mode.
+service "secure-" {
+    policy = "read"
+}
+
+# Allow firing any user event by default.
+event "" {
+    policy = "write"
+}
+
+# Deny firing events prefixed with "destroy-".
+event "destroy-" {
+    policy = "deny"
+}
+
+# Default prepared queries to read-only.
+query "" {
+    policy = "read"
+}
+
+# Read-only mode for the encryption keyring by default (list only)
+keyring = "read"
+
+# Read-only mode for Consul operator interfaces (list only)
+operator = "read"

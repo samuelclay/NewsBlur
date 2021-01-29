@@ -1,0 +1,59 @@
+---
+# File: encrypt_gossip.yml - Gossip encryption tasks for Consul
+
+- block:
+    - name: Read gossip encryption key from previously boostrapped server
+      shell: 'cat {{ consul_config_path }}/bootstrap/config.json | grep "encrypt" | sed -E ''s/"encrypt": "(.+)",?/\1/'' | sed ''s/^ *//;s/ *$//'''
+      register: consul_key_read
+      run_once: true
+
+    - name: Save gossip encryption key from existing configuration
+      set_fact: consul_raw_key={{ consul_key_read.stdout }}
+      ignore_errors: true
+
+  when:
+    - consul_raw_key is not defined
+    - bootstrap_state.stat.exists | bool
+
+- name: Write gossip encryption key locally for use with new servers
+  copy:
+    content: "{{ consul_raw_key }}"
+    dest: /tmp/consul_raw.key
+    mode: 0600
+  become: false
+  vars:
+    ansible_become: false
+  when:
+    - consul_raw_key is defined
+    - bootstrap_state.stat.exists | bool
+  delegate_to: 127.0.0.1
+
+- name: Read gossip encryption key for servers that require it
+  set_fact: consul_raw_key="{{ lookup('file', '/tmp/consul_raw.key') }}"
+  when:
+    - consul_raw_key is not defined
+    - bootstrap_state.stat.exists | bool
+
+- name: Delete gossip encryption key file
+  file:
+    path: /tmp/consul_raw.key
+    state: absent
+  become: false
+  vars:
+    ansible_become: false
+  when:
+    - consul_raw_key is defined
+    - bootstrap_state.stat.exists | bool
+  delegate_to: 127.0.0.1
+
+- block:
+    - name: Generate gossip encryption key
+      shell: "PATH={{ consul_bin_path }}:$PATH consul keygen"
+      register: consul_keygen
+      run_once: true
+
+    - name: Write gossip encryption key to fact
+      set_fact: consul_raw_key={{ consul_keygen.stdout }}
+  when:
+    - consul_raw_key is not defined
+    - not bootstrap_state.stat.exists | bool

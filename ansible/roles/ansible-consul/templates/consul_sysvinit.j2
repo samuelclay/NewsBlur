@@ -1,0 +1,96 @@
+#!/bin/bash
+#
+# chkconfig:   2345 95 95
+# description: Consul service discovery framework
+# processname: consul
+# pidfile: {{ consul_run_path }}/consul.pid
+
+{% if ansible_distribution == "Ubuntu" %}
+. /lib/lsb/init-functions
+{% else %}
+. /etc/init.d/functions
+{% endif %}
+
+CONSUL={{ consul_bin_path }}/consul
+CONFIG={{ consul_config_path }}/config.json
+CONFIGD={{ consul_configd_path }}
+PID_FILE={{ consul_run_path }}/consul.pid
+LOCK_FILE=/var/lock/subsys/consul
+{% if consul_ui_legacy %}
+CONSUL_UI_LEGACY=true
+{% endif %}
+
+[ -e /etc/sysconfig/consul ] && . /etc/sysconfig/consul
+
+export GOMAXPROCS=$(nproc)
+
+mkrundir() {
+        [ ! -d {{ consul_run_path }} ] && mkdir -p {{ consul_run_path }}
+        chown {{ consul_user }} {{ consul_run_path }}
+}
+
+KILLPROC_OPT="-p ${PID_FILE}"
+mkpidfile() {
+        mkrundir
+        [ ! -f "${PID_FILE}" ] && pidofproc "${CONSUL}" > "${PID_FILE}"
+        chown -R {{ consul_user }} {{ consul_run_path }}
+        if [ $? -ne 0 ] ; then
+            rm "${PID_FILE}"
+            KILLPROC_OPT=""
+        fi
+}
+
+start() {
+        echo -n "Starting consul: "
+        mkrundir
+        mkpidfile
+        # [ -f "${PID_FILE}" ] && rm "${PID_FILE}"
+        daemon --user={{ consul_user }} \
+            --pidfile="${PID_FILE}" \
+            "${CONSUL}" agent -config-file="${CONFIG}" -config-dir="${CONFIGD}" -pid-file="${PID_FILE}" &
+        retcode=$?
+        touch ${LOCK_FILE}
+        return "${retcode}"
+}
+
+stop() {
+        echo -n "Shutting down consul: "
+        if ("${CONSUL}" info 2>/dev/null | grep -q 'server = false' 2>/dev/null) ; then
+            "${CONSUL}" leave
+        fi
+
+        mkpidfile
+        killproc "${KILLPROC_OPT}" "${CONSUL}" -SIGTERM
+
+        retcode=$?
+        rm -f "${LOCK_FILE}" "${PID_FILE}"
+        return "${retcode}"
+}
+
+case "$1" in
+    start)
+        start
+        ;;
+    stop)
+        stop
+        ;;
+    status)
+        "${CONSUL}" info
+        ;;
+    restart)
+        stop
+        start
+        ;;
+    reload)
+        mkpidfile
+        killproc "${KILLPROC_OPT}" "${CONSUL}" -HUP
+        ;;
+    condrestart)
+        [ -f ${LOCK_FILE} ] && restart || :
+        ;;
+    *)
+        echo "Usage: consul {start|stop|status|reload|restart}"
+        exit 1
+        ;;
+esac
+exit $?

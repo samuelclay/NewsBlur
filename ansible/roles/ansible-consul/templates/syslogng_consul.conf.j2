@@ -1,0 +1,3 @@
+destination d_consul { file("{{ consul_log_path }}/{{ consul_log_file }}"); };
+filter f_consul { facility({{ consul_syslog_facility }}); };
+log { source(s_sys); filter(f_consul); destination(d_consul); };

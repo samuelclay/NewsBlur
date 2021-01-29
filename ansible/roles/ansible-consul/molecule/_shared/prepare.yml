@@ -1,0 +1,15 @@
+---
+- name: Prepare
+  hosts: localhost
+  connection: local
+
+  tasks:
+    - name: Install OS packages
+      package:
+        name: unzip
+      become: true
+
+    - name: Install netaddr dependency on controlling host
+      pip:
+        name: netaddr
+      become: false

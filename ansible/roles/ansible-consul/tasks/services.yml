@@ -1,0 +1,68 @@
+---
+## File: services.yml - services configuration
+
+- name: "Configure consul services"
+  template:
+    dest: "{{ consul_configd_path }}/service_{{ item.name }}.json"
+    src: service.json.j2
+    owner: "{{ consul_user }}"
+    group: "{{ consul_group }}"
+    mode: 0644
+  with_items: "{{ consul_services }}"
+  notify:
+    - restart consul
+
+- name: Get the list of service config file
+  find:
+    paths: "{{ consul_configd_path }}"
+    file_type: file
+  register: services_enabled_unix
+  when: ansible_os_family != 'Windows'
+
+- name: Get the list of service config file [Windows]
+  win_find:
+    paths: "{{ consul_configd_path }}"
+    file_type: file
+  register: services_enabled_windows
+  when: ansible_os_family == 'Windows'
+
+- name: set var for enabled services
+  set_fact:
+    services_enabled_files: "{{ services_enabled_unix['files'] }}"
+  when: ansible_os_family != 'Windows'
+
+- name: set var for enabled services [Windows]
+  set_fact:
+    services_enabled_files: "{{ services_enabled_windows['files'] }}"
+  when: ansible_os_family == 'Windows'
+
+- name: Set fact with list of existing configuration files
+  set_fact:
+    list_current_service_config: "{{ list_current_service_config |default([]) + [ item.path ] }}"
+  with_items: "{{ services_enabled_files }}"
+
+- name: Set fact with list of service we manage
+  set_fact:
+    managed_files: "{{ managed_files |default([]) }} + \
+    [ '{{ consul_configd_path }}/service_{{ item.name }}.json' ]"
+  with_items: "{{ consul_services }}"
+
+- name: Delete non declared services
+  file:
+    path: "{{ item }}"
+    state: absent
+  when: ansible_os_family != 'Windows' and item not in managed_files
+  with_items: "{{ list_current_service_config }}"
+  ignore_errors: "{{ ansible_check_mode }}"
+  notify:
+    - restart consul
+
+- name: Delete non declared services [Windows]
+  win_file:
+    path: "{{ item }}"
+    state: absent
+  when: ansible_os_family == 'Windows' and item not in managed_files
+  with_items: "{{ list_current_service_config }}"
+  ignore_errors: "{{ ansible_check_mode }}"
+  notify:
+    - restart consul

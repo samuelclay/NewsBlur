@@ -1,0 +1,28 @@
+---
+# File: main.yml - Handlers for Consul
+
+- name: restart consul
+  import_tasks: restart_consul.yml
+
+- name: start consul
+  import_tasks: start_consul.yml
+
+- name: reload consul configuration
+  import_tasks: reload_consul_conf.yml
+
+- name: restart dnsmasq
+  service:
+    name: dnsmasq
+    state: restarted
+
+- name: restart rsyslog
+  import_tasks: restart_rsyslog.yml
+
+- name: restart syslog-ng
+  import_tasks: restart_syslogng.yml
+
+- name: restart syslog-ng
+  import_tasks: restart_syslogng.yml
+
+- name: start snapshot
+  import_tasks: start_snapshot.yml

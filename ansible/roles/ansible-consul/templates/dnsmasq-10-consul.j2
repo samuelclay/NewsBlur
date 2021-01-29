@@ -1,0 +1,52 @@
+{# Enable forward lookups for the consul domain with conditional delegation -#}
+{% if consul_delegate_datacenter_dns | bool -%}
+server=/{{ consul_datacenter }}.{{ consul_domain }}/{{ consul_dnsmasq_consul_address }}#{{ consul_ports.dns }}
+{% if consul_alt_domain -%}
+server=/{{ consul_datacenter }}.{{ consul_alt_domain }}/{{ consul_dnsmasq_consul_address }}#{{ consul_ports.dns }}
+{% endif -%}
+{% else %}
+server=/{{ consul_domain }}/{{ consul_dnsmasq_consul_address }}#{{ consul_ports.dns }}
+{% if consul_alt_domain -%}
+server=/{{ consul_alt_domain }}/{{ consul_dnsmasq_consul_address }}#{{ consul_ports.dns }}
+{% endif -%}
+{% endif -%}
+
+{# Only bind to specific interfaces -#}
+{% if consul_dnsmasq_bind_interfaces | bool -%}
+bind-interfaces
+{% endif -%}
+
+{# Reverse DNS lookups -#}
+{% for revserver in consul_dnsmasq_revservers -%}
+    rev-server={{ revserver }},{{ consul_dnsmasq_consul_address }}#{{ consul_ports.dns }}
+{% endfor -%}
+
+{# Only accept DNS queries from hosts in the local subnet -#}
+{% if consul_dnsmasq_local_service | bool -%}
+    local-service
+{% endif -%}
+
+{# Don't poll /etc/resolv.conf for changes -#}
+{% if consul_dnsmasq_no_poll | bool -%}
+    no-poll
+{% endif -%}
+
+{# Dont use /etc/resolv.conf to get upstream servers -#}
+{% if consul_dnsmasq_no_resolv | bool -%}
+    no-resolv
+{% endif -%}
+
+{# Upstream DNS servers -#}
+{% for server in consul_dnsmasq_servers -%}
+    server={{ server }}
+{% endfor -%}
+
+{# Custom listen addresses -#}
+{% for address in consul_dnsmasq_listen_addresses -%}
+    listen-address={{ address }}
+{% endfor -%}
+
+{# Cache size -#}
+{% if consul_dnsmasq_cache > 0 -%}
+    cache-size={{ consul_dnsmasq_cache }}
+{% endif -%}

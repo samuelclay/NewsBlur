@@ -1,0 +1,81 @@
+---
+# File: install_remote.yml - package installation tasks for Consul
+
+- name: Install OS packages
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items: "{{ consul_os_packages }}"
+  tags: installation
+
+- name: Validate remote Consul directory
+  file:
+    path: /tmp/consul
+    state: directory
+    mode: 0700
+
+- name: Read Consul package checksum file
+  stat:
+    path: "/tmp/consul/consul_{{ consul_version }}_SHA256SUMS"
+  register: consul_checksum
+  changed_when: false
+  tags: installation
+
+- name: Download Consul package checksum file
+  get_url:
+    url: "{{ consul_checksum_file_url }}"
+    dest: "/tmp/consul/consul_{{ consul_version }}_SHA256SUMS"
+    validate_certs: false
+  tags: installation
+  when: not consul_checksum.stat.exists | bool
+
+- name: Read Consul package checksum
+  shell: "grep {{ consul_pkg }} /tmp/consul/consul_{{ consul_version }}_SHA256SUMS"
+  register: consul_sha256
+  changed_when: false
+  tags:
+    - installation
+    - skip_ansible_lint
+
+- name: Check Consul package file
+  stat:
+    path: "/tmp/consul/{{ consul_pkg }}"
+  register: consul_package
+  tags: installation
+
+- name: Download Consul
+  get_url:
+    url: "{{ consul_zip_url }}"
+    dest: "/tmp/consul/{{ consul_pkg }}"
+    checksum: "sha256:{{ consul_sha256.stdout.split(' ')|first }}"
+    timeout: 42
+  register: consul_download
+  tags: installation
+
+- name: Unarchive Consul and install binary
+  unarchive:
+    remote_src: true
+    src: "/tmp/consul/{{ consul_pkg }}"
+    dest: "{{ consul_bin_path }}"
+    owner: "{{ consul_user }}"
+    group: "{{ consul_group }}"
+    mode: 0755
+  register: consul_install
+  notify:
+    - restart consul
+  when: consul_download is changed
+  tags: installation
+
+- name: Daemon reload systemd in case the binaries upgraded
+  systemd: daemon_reload=yes
+  become: true
+  when:
+    - ansible_service_mgr == "systemd"
+    - consul_install_upgrade | bool
+    - consul_install is changed
+
+- name: Cleanup
+  file:
+    path: "/tmp/consul"
+    state: absent
+  tags: installation

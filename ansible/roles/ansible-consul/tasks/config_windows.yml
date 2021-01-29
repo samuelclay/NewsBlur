@@ -1,0 +1,38 @@
+---
+# File: config_windows.yml - Consul configuration tasks for Windows
+
+- name: Create configuration
+  win_copy:
+    dest: "{{ item.dest }}"
+    content: "{{ lookup('template', 'templates/config.json.j2') | to_nice_json }}"
+  with_items:
+    - dest: "{{ consul_config_path }}/config.json"
+      config_version: "{{ consul_node_role }}"
+      when: true
+    - dest: "{{ consul_config_path }}/bootstrap.json"
+      config_version: "bootstrap"
+      when: "{{ consul_debug | bool }}"
+    - dest: "{{ consul_config_path }}/server.json"
+      config_version: "server"
+      when: "{{ consul_debug | bool }}"
+    - dest: "{{ consul_config_path }}/client.json"
+      config_version: "client"
+      when: "{{ consul_debug | bool }}"
+  when:
+    - item.when
+  notify:
+    - restart consul
+
+- name: Create custom configuration
+  win_copy:
+    dest: "{{ consul_configd_path }}/50custom.json"
+    content: "{{ lookup('template', 'templates/configd_50custom.json.j2') | to_nice_json }}"
+  when:
+    - consul_config_custom is defined
+  notify:
+    - restart consul
+
+- name: Set fact list with custom configuration file
+  set_fact:
+    managed_files: "{{ managed_files |default([]) }} + \
+      [ '{{ consul_configd_path }}/50custom.json' ]"

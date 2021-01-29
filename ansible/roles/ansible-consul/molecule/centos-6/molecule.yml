@@ -1,0 +1,9 @@
+---
+platforms:
+  - name: centos-6
+    groups:
+      - consul_instances
+    image: dokken/centos-6
+    dockerfile: ../_shared/Dockerfile.j2
+    capabilities:
+      - SYS_ADMIN

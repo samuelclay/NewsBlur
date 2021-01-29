@@ -1,0 +1,11 @@
+---
+platforms:
+  - name: fedora-28
+    groups:
+      - consul_instances
+    image: dokken/fedora-28
+    dockerfile: ../_shared/Dockerfile.j2
+    capabilities:
+      - SYS_ADMIN
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro

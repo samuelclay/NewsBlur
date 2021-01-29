@@ -1,0 +1,8 @@
+---
+# File: Solaris.yml - Solaris OS variables for Consul
+
+consul_os_packages:
+  - unzip
+
+consul_pkg: "consul_{{ consul_version }}_solaris_amd64.zip"
+consul_smf_manifest: "/opt/local/lib/svc/manifest/consul.xml"

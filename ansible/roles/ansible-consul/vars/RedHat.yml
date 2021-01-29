@@ -1,0 +1,13 @@
+---
+# File: RedHat.yml - Red Hat OS variables for Consul
+
+consul_os_packages:
+  - "{% if ( ansible_distribution  == 'Fedora' and ansible_distribution_version is version('28', '<') ) or \
+      ( ansible_distribution  == 'CentOS' and ansible_distribution_version is version('8', '<') ) or \
+      ( ansible_distribution  == 'OracleLinux' and ansible_distribution_version is version('8', '<') ) \
+    %}\
+      libselinux-python\
+    {% else %}\
+      python3-libselinux\
+    {% endif %}"
+  - unzip

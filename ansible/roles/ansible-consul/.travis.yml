@@ -1,0 +1,40 @@
+---
+dist: bionic
+
+language: python
+python: 3.6
+virtualenv:
+  system_site_packages: true
+
+services: docker
+
+env:
+  - SCENARIO=centos-6
+  - SCENARIO=centos-7
+  - SCENARIO=centos-8
+  - SCENARIO=debian-8
+  - SCENARIO=debian-9
+  - SCENARIO=debian-10
+  - SCENARIO=fedora-26
+  - SCENARIO=fedora-27
+  - SCENARIO=fedora-28
+  - SCENARIO=fedora-29
+  - SCENARIO=fedora-30
+  - SCENARIO=fedora-31
+  - SCENARIO=oraclelinux-6
+  - SCENARIO=oraclelinux-7
+  - SCENARIO=ubuntu-16.04
+  - SCENARIO=ubuntu-18.04
+
+cache:
+  - pip
+
+install:
+  # Install test dependencies.
+  - pip3 install -r requirements.txt
+
+script:
+  - molecule --base-config molecule/_shared/base.yml test --scenario-name ${SCENARIO}
+
+notifications:
+  webhooks: https://galaxy.ansible.com/api/v1/notifications/
