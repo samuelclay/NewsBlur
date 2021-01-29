@@ -11,5 +11,5 @@
       - base
       - docker
       - consul
+      - consul-manager
       - haproxy
-      - {role: etchosts, tags: 'etchosts'}
