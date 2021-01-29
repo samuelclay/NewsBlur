@@ -3,10 +3,10 @@ strict: False
 
 groups:
   web: inventory_hostname.startswith('app') or inventory_hostname.startswith('node') or inventory_hostname.startswith('work') or inventory_hostname.startswith('push')
-  app: inventory_hostname.startswith('app') or inventory_hostname.startswith('push')
+  app: (inventory_hostname.startswith('app') or inventory_hostname.startswith('push')) and inventory_hostname != 'app'
   # work: inventory_hostname.startswith('work')
-  node: inventory_hostname.startswith('node')
+  node: inventory_hostname.startswith('node') and inventory_hostname != 'node'
   # debug: inventory_hostname.startswith('debug')
   db: inventory_hostname.startswith('db')
-  task: inventory_hostname.startswith('task')
+  task: inventory_hostname.startswith('task') and inventory_hostname != 'task'
   search: inventory_hostname.startswith('search')

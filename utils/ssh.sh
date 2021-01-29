@@ -20,4 +20,4 @@ WHITE='\033[01;37m'
 
 ipaddr=`python /srv/newsblur/utils/hostname_ssh.py $1`
 printf "\n ${BLUE}---> ${LBLUE}Connecting to ${LGREEN}$1${BLUE} / ${LRED}$ipaddr${BLUE} <--- ${RESTORE}\n\n"
-ssh -l sclay -i /srv/secrets-newsblur/keys/newsblur.key $ipaddr
+ssh -l nb -i /srv/secrets-newsblur/keys/docker.key $ipaddr
