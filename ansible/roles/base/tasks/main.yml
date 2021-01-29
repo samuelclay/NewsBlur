@@ -15,7 +15,7 @@
   user: name=nb shell=/usr/bin/zsh
   become: yes
   
-- name: Cloning  oh-my-zsh
+- name: Cloning oh-my-zsh
   git:
     repo=https://github.com/robbyrussell/oh-my-zsh
     dest=~/.oh-my-zsh
@@ -25,9 +25,9 @@
 - name: Copy toprc
   copy: src=toprc.txt dest=~/.toprc
  
-- name: Copy motd
+- name: "Copy motd for {{ motd_role }}"
   become: yes
-  copy: src=motd.txt dest=/etc/update-motd.d/52-nb-motd mode=0755
+  copy: "src=motd.{{ motd_role }}.txt dest=/etc/update-motd.d/52-nb-motd mode=0755"
 
 - include: ufw.yml
   become: yes

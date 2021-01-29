@@ -3,8 +3,8 @@
 import os
 import subprocess
 
-# TOKEN_FILE = "/srv/secrets-newsblur/keys/digital_ocean.token"
-TOKEN_FILE = "/srv/secrets-newsblur/keys/digital_ocean.readprod.token"
+TOKEN_FILE = "/srv/secrets-newsblur/keys/digital_ocean.token"
+# TOKEN_FILE = "/srv/secrets-newsblur/keys/digital_ocean.readprod.token"
 
 with open(TOKEN_FILE) as f:
     token = f.read().strip()

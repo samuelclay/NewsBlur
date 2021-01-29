@@ -17,5 +17,5 @@ sys_packages: [
   'libssl-doc', 
   'build-essential', 
   'ntp', 
-  'htop' 
+  'htop'
 ]

@@ -1,25 +1,19 @@
-. /etc/profile
-
-# Path to your oh-my-zsh configuration.
-plugins=(git osx ruby gem github pip rails)
 export ZSH=$HOME/.oh-my-zsh
-
-# Set to the name theme to load.
-# Look in ~/.oh-my-zsh/themes/
+export CLICOLOR='1'
 export ZSH_THEME="risto"
+export DISABLE_AUTO_UPDATE=true
 
-export DISABLE_AUTO_UPDATE="true"
+export WORKON_HOME=/srv/newsblur/venv
+export PROJECT_HOME=/srv/newsblur
+# source /usr/local/bin/virtualenvwrapper.sh
 
-# Set to this to use case-sensitive completion
-export CASE_SENSITIVE="true"
-export LC_COLLATE='C'
+plugins=(git github pip)
 source $ZSH/oh-my-zsh.sh
 
-
-export DISABLE_AUTO_UPDATE="true"
 export PYTHONSTARTUP=$HOME/.pystartup
 export LSCOLORS='gxgxcxdxBxegedabagacad'
-
+export GOROOT=/srv/code/go
+export GOPATH=/srv/code/go
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
 zstyle ':completion:*' list-colors "=(#b) #([0-9]#)*=36=31"
 setopt  COMPLETE_IN_WORD
@@ -48,8 +42,11 @@ alias ls='ls -pFa --color'
 alias cd..='cd ..'
 
 alias smtp='python -m smtpd -n -c DebuggingServer 127.0.0.1:1025'
-alias tltt='echo "----------------\n"; tail -f /var/log/turntouch-web/turntouch-web.log'
-alias sshtt=/srv/turntouch-web/scripts/ssh.sh
-alias cdtw=/srv/turntouch-web
+alias tlnb='echo "----------------\n"; tail -f logs/newsblur.log'
+alias sshnb='ssh sclay@app10.newsblur.com'
+alias sp='~/newsblur/manage.py shell_plus --use-pythonrc'
+alias cdsg='cd ~/staging'
+alias cdnb='cd ~/newsblur'
+alias sshdo=/srv/newsblur/utils/ssh.sh
 
-cd /srv/turntouch-web
+cd /srv/newsblur

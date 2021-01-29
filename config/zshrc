@@ -5,9 +5,9 @@ export DISABLE_AUTO_UPDATE=true
 
 export WORKON_HOME=/srv/newsblur/venv
 export PROJECT_HOME=/srv/newsblur
-source /usr/local/bin/virtualenvwrapper.sh
+# source /usr/local/bin/virtualenvwrapper.sh
 
-plugins=(git github pip virtualenvwrapper)
+plugins=(git github pip)
 source $ZSH/oh-my-zsh.sh
 
 export PYTHONSTARTUP=$HOME/.pystartup

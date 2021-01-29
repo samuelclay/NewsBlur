@@ -1,0 +1,37 @@
+#!/bin/sh
+
+bold=`echo "\033[1m"`
+regular=`echo "\033[0m"`
+black=`echo "\033[30;40m"`
+red=`echo "\033[31;40m"`
+green=`echo "\033[32;40m"`
+yellow=`echo "\033[33;40m"`
+blue=`echo "\033[34;40m"`
+magenta=`echo "\033[35;40m"`
+cyan=`echo "\033[36;40m"`
+white=`echo "\033[37;40m"`
+
+cat <<EOMOTD
+$bold  
+            $cyan^^                   $yellow@@@@@@@@@
+       $cyan^^       ^^            $yellow@@@@@@@@@@@@@@@
+                            $yellow@@@@@@@@@@@@@@@@@@              $cyan^^
+                           $yellow@@@@@@@@@@@@@@@@@@@@
+ $bold$blue~~~~ ~~ ~~~~~ ~~~~~~~~ ~~ $regular$yellow&&&&&&&&&&&&&&&&&&&&$bold$blue ~~~~~~~ ~~~~~~~~~~~ ~~~
+ $bold$blue~         ~~   ~  ~       $regular$yellow~~~~~~~~~~~~~~~~~~~~$bold$blue ~       ~~     ~~ ~
+ $bold$blue  ~      ~~      ~~ ~~ ~~  $regular$yellow~~~~~~~~~~~~~ ~~~~$bold$blue  ~     ~~~    ~ ~~~  ~ $bold$blue~~
+ $bold$blue  ~  ~~     ~         ~      $regular$yellow~~~~~~  ~~ ~~~$bold$blue       ~~ ~ ~~  ~~ ~
+ $bold$blue~  ~       ~ ~      ~           $regular$yellow~~ ~~~~~~$bold$blue  ~      ~~  ~             $bold$blue~~
+ $bold$blue      ~             ~        ~      ~      ~~   ~             ~ 
+$green
+    888b    |                                 888~~\  888                 
+    |Y88b   |  e88~~8e  Y88b    e    /  d88~\ 888   | 888 888  888 888-~\ 
+    | Y88b  | d888  88b  Y88b  d8b  /  C888   888 _/  888 888  888 888    
+    |  Y88b | 8888__888   Y888/Y88b/    Y88b  888  \  888 888  888 888    
+    |   Y88b| Y888    ,    Y8/  Y8/      888D 888   | 888 888  888 888    
+    |    Y888  "88___/      Y    Y     \_88P  888__/  888 "88_-888 888    
+                                                                          
+ $red                               App Server
+$regular$white
+EOMOTD
+
