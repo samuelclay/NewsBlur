@@ -60,6 +60,16 @@ list:
 ansible-deps:
 	ansible-galaxy install -p roles -r ansible/roles/requirements.yml --roles-path ansible/roles
 
+# Move to Terraform
+setup_do:
+	ansible-playbook ansible/setup_do.yml -e "name=app01"
+
+setup_root:
+	ansible-playbook ansible/setup_root.yml -l app01
+
+setup_app:
+	ansible-playbook ansible/setup_app.yml
+
 images:
 	- docker image build . --file=docker/newsblur_base_image.Dockerfile --tag=newsblur/newsblur_python3
 	- docker image build . --file=docker/node/node_prod.Dockerfile --tag=newsblur/node_prod
