@@ -1,0 +1,6 @@
+---
+# File: Archlinux.yml - Archlinux variables for Consul
+consul_os_packages:
+  - git
+  - unzip
+consul_syslog_enable: false

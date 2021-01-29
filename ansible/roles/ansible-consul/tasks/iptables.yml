@@ -1,0 +1,48 @@
+---
+# File: iptables.yml - iptables tasks for Consul
+
+- name: Install iptables
+  apt:
+    name: iptables
+
+- name: Redirect local DNS (1/4)
+  iptables:
+    table: nat
+    chain: PREROUTING
+    protocol: udp
+    match: udp
+    destination_port: 53
+    jump: REDIRECT
+    to_ports: 8600
+
+- name: Redirect local DNS (2/4)
+  iptables:
+    table: nat
+    chain: PREROUTING
+    protocol: tcp
+    match: tcp
+    destination_port: 53
+    jump: REDIRECT
+    to_ports: 8600
+
+- name: Redirect local DNS (3/4)
+  iptables:
+    table: nat
+    chain: OUTPUT
+    protocol: udp
+    match: udp
+    destination_port: 53
+    jump: REDIRECT
+    to_ports: 8600
+    destination: localhost
+
+- name: Redirect local DNS (4/4)
+  iptables:
+    table: nat
+    chain: OUTPUT
+    protocol: tcp
+    match: tcp
+    destination_port: 53
+    jump: REDIRECT
+    to_ports: 8600
+    destination: localhost

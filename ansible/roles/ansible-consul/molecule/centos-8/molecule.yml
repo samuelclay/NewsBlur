@@ -1,0 +1,11 @@
+---
+platforms:
+  - name: centos-8
+    groups:
+      - consul_instances
+    image: dokken/centos-8
+    dockerfile: ../_shared/Dockerfile.j2
+    capabilities:
+      - SYS_ADMIN
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro

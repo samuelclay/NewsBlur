@@ -1,0 +1,65 @@
+---
+# File: install_remote.yml - package installation tasks for Consul
+
+- name: Validate remote Consul directory
+  win_file:
+    path: /tmp/consul
+    state: directory
+
+- name: Verify TLS1.2 is used
+  win_regedit:
+    path: HKLM:\SOFTWARE\Microsoft\.NETFramework\v4.0.30319
+    name: SchUseStrongCrypto
+    data: 1
+    type: dword
+
+- name: Read Consul package checksum file
+  win_stat:
+    path: "/tmp/consul/consul_{{ consul_version }}_SHA256SUMS"
+  register: consul_checksum
+  tags: installation
+
+- name: Download Consul package checksum file
+  win_get_url:
+    url: "{{ consul_checksum_file_url }}"
+    dest: "/tmp/consul/consul_{{ consul_version }}_SHA256SUMS"
+  tags: installation
+  when: not consul_checksum.stat.exists | bool
+
+- name: Read Consul package checksum
+  win_shell: "findstr {{ consul_pkg }} /tmp/consul/consul_{{ consul_version }}_SHA256SUMS"
+  args:
+    chdir: /tmp/consul
+  register: consul_pkg_checksum
+  tags: installation
+
+- name: Download Consul
+  win_get_url:
+    url: "{{ consul_zip_url }}"
+    dest: "/tmp/consul/{{ consul_pkg }}"
+  tags: installation
+
+- name: Calculate checksum
+  win_stat:
+    path: "/tmp/consul/{{ consul_pkg }}"
+    checksum_algorithm: sha256
+  register: consul_pkg_hash
+  tags: installation
+
+- name: Compare checksum to hashfile
+  fail:
+    msg: "Checksum {{ consul_pkg_checksum.stdout.split(' ') | first }} did not match calculated SHA256 {{ consul_pkg_hash.stat.checksum }}!"
+  when:
+    - consul_pkg_hash.stat.checksum != (consul_pkg_checksum.stdout.split(' ') | first)
+
+- name: Unarchive Consul and install binary
+  win_unzip:
+    src: "/tmp/consul/{{ consul_pkg }}"
+    dest: "{{ consul_bin_path }}"
+  tags: installation
+
+- name: Cleanup
+  win_file:
+    path: "/tmp/consul"
+    state: absent
+  tags: installation

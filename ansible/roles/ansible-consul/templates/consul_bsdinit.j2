@@ -1,0 +1,49 @@
+#!/bin/sh
+
+# PROVIDE: consul
+# REQUIRE: LOGIN
+# KEYWORD: shutdown
+
+# shellcheck disable=SC1091
+. /etc/rc.subr
+
+name="consul"
+# shellcheck disable=2034
+rcvar=$(set_rcvar)
+
+
+load_rc_config $name
+# shellcheck disable=2154
+: "${consul_enable="NO"}"
+# shellcheck disable=2154
+: "${consul_users="consul"}"
+
+# shellcheck disable=2034
+restart_cmd=consul_restart
+# shellcheck disable=2034
+start_cmd=consul_start
+# shellcheck disable=2034
+stop_cmd=consul_stop
+
+consul_start() {
+    echo "Starting ${name}."
+    for user in ${consul_users}; do
+        mkdir {{ consul_run_path }}
+        chown -R "{{ consul_user }}:{{ consul_group }}" {{ consul_run_path }}
+        su -m "${user}" -c "{{ consul_bin_path }}/consul agent -config-file={{ consul_config_path }}/config.json -config-dir={{ consul_configd_path }} -pid-file={{ consul_run_path }}/consul.pid&"
+    done
+}
+
+consul_stop() {
+    echo "Stopping $name."
+    pids=$(pgrep consul)
+    pkill consul
+    wait_for_pids "${pids}"
+}
+
+consul_restart() {
+    consul_stop
+    consul_start
+}
+
+run_rc_command "$1"

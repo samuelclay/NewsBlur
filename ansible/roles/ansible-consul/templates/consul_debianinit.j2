@@ -1,0 +1,129 @@
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides:          consul
+# Required-Start:    $local_fs $remote_fs
+# Required-Stop:     $local_fs $remote_fs
+# Default-Start:     2 3 4 5
+# Default-Stop:      S 0 1 6
+# Short-Description: Distributed service discovery framework
+# Description:       Distributed service discovery / health check framework
+### END INIT INFO
+
+# Do NOT "set -e"
+
+# PATH should only include /usr/* if it runs after the mountnfs.sh script
+
+PATH="{{ consul_bin_path }}:/usr/sbin:/usr/bin:/sbin:/bin"
+DESC="Consul service discovery framework"
+NAME="consul"
+DAEMON="{{ consul_bin_path }}/${NAME}"
+PIDFILE="{{ consul_run_path }}/${NAME}.pid"
+DAEMON_ARGS="agent -config-file={{ consul_config_path }}/config.json -config-dir={{ consul_configd_path }}"
+USER={{ consul_user }}
+SCRIPTNAME=/etc/init.d/"${NAME}"
+
+# Exit if Consul is not installed
+[ -x "${DAEMON}" ] || exit 0
+
+# Read default variables file
+[ -r /etc/default/"${NAME}" ] && . /etc/default/"${NAME}"
+
+# Source rcS variables
+[ -f /etc/default/rcS ] && . /etc/default/rcS
+
+# Source LSB functions
+. /lib/lsb/init-functions
+
+# Make sure PID dir exists
+mkrundir() {
+        [ ! -d {{ consul_run_path }} ] && mkdir -p {{ consul_run_path }}
+        chown {{ consul_user }} {{ consul_run_path }}
+}
+
+# Start the Consul service
+do_start() {
+    echo "Starting consul and backgrounding"
+    mkrundir
+    start-stop-daemon --start --quiet --pidfile "${PIDFILE}" --exec "${DAEMON}" --chuid "${USER}" --background --make-pidfile --test > /dev/null \
+        || return 1
+    start-stop-daemon --start --quiet --pidfile "${PIDFILE}" --exec "${DAEMON}" --chuid "${USER}" --background --make-pidfile -- \
+        ${DAEMON_ARGS} \
+        || return 2
+
+    echo -n "Waiting for Consul service..."
+    for i in `seq 1 30`; do
+        if ! start-stop-daemon --quiet --stop --test --pidfile "${PIDFILE}" --exec "${DAEMON}" --user "${USER}"; then
+            echo " FAIL: consul process died"
+            return 2
+        fi
+        if "${DAEMON}" info >/dev/null; then
+            echo " OK"
+            return 0
+        fi
+        echo -n .
+        sleep 1
+    done
+    echo " FAIL: consul process is alive, but is not listening."
+    return 2
+}
+
+# Stop the Consul service
+do_stop() {
+    "${DAEMON}" leave
+    start-stop-daemon --stop --quiet --retry=TERM/30/KILL/5 --pidfile "${PIDFILE}" --name "${NAME}"
+    RETVAL="$?"
+    [ "${RETVAL}" = 2 ] && return 2
+    start-stop-daemon --stop --quiet --oknodo --retry=0/30/KILL/5 --exec "${DAEMON}"
+    [ "$?" = 2 ] && return 2
+    rm -f "${PIDFILE}"
+    return "${RETVAL}"
+}
+
+# Reload Consul
+do_reload() {
+    start-stop-daemon --stop --signal 1 --quiet --pidfile "${PIDFILE}" --name "${NAME}"
+    return 0
+}
+
+case "$1" in
+  start)
+    [ "${VERBOSE}" != no ] && log_daemon_msg "Starting ${DESC}" "${NAME}"
+    do_start
+    case "$?" in
+        0|1) [ "${VERBOSE}" != no ] && log_end_msg 0 ;;
+        2) [ "${VERBOSE}" != no ] && log_end_msg 1 ;;
+    esac
+    ;;
+  stop)
+    [ "${VERBOSE}" != no ] && log_daemon_msg "Stopping ${DESC}" "${NAME}"
+    do_stop
+    case "$?" in
+        0|1) [ "${VERBOSE}" != no ] && log_end_msg 0 ;;
+        2) [ "${VERBOSE}" != no ] && log_end_msg 1 ;;
+    esac
+    ;;
+  restart|force-reload)
+    log_daemon_msg "Restarting ${DESC}" "${NAME}"
+    do_stop
+    case "$?" in
+      0|1)
+        do_start
+        case "$?" in
+            0) log_end_msg 0 ;;
+            1) log_end_msg 1 ;;
+            *) log_end_msg 1 ;;
+        esac
+        ;;
+      *)
+        # Stop failed
+        log_end_msg 1
+        ;;
+    esac
+    ;;
+  *)
+    echo "Usage: ${SCRIPTNAME} {start|stop|restart|force-reload}" >&2
+    exit 3
+    ;;
+esac
+
+:
