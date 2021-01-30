@@ -44,6 +44,10 @@ NSString * const ThemeStyleDark = @"dark";
 
 @implementation ThemeManager
 
++ (instancetype)shared {
+    return [self themeManager];
+}
+
 + (instancetype)themeManager {
     static id themeManager = nil;
     static dispatch_once_t onceToken;
@@ -216,6 +220,16 @@ NSString * const ThemeStyleDark = @"dark";
     } else {
         return image;
     }
+}
+
+- (void)updateNavigationController:(UINavigationController *)navigationController {
+    navigationController.navigationBar.tintColor = [UINavigationBar appearance].tintColor;
+    navigationController.navigationBar.barTintColor = UIColorFromLightSepiaMediumDarkRGB(0xE3E6E0, 0xFFFFC5, 0x222222, 0x111111);
+    navigationController.navigationBar.backgroundColor = [UINavigationBar appearance].backgroundColor;
+}
+
+- (void)updateBackgroundOfView:(UIView *)view {
+    view.backgroundColor = UIColorFromLightDarkRGB(0xe0e0e0, 0x111111);
 }
 
 - (void)updateTextAttributesForSegmentedControl:(UISegmentedControl *)segmentedControl forState:(UIControlState)state foregroundColor:(UIColor *)foregroundColor {
