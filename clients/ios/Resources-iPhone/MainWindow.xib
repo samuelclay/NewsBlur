@@ -33,6 +33,7 @@
                 <outlet property="premiumViewController" destination="GXC-Ze-HBm" id="wZ1-Qy-e0X"/>
                 <outlet property="shareViewController" destination="131" id="132"/>
                 <outlet property="storyDetailViewController" destination="92" id="173"/>
+                <outlet property="storyPagesViewController" destination="170" id="172"/>
                 <outlet property="trainerViewController" destination="174" id="176"/>
                 <outlet property="userProfileViewController" destination="141" id="142"/>
                 <outlet property="window" destination="12" id="78"/>
@@ -66,6 +67,14 @@
                 <outlet property="appDelegate" destination="3" id="105"/>
             </connections>
             <point key="canvasLocation" x="-677" y="-1136"/>
+        </viewController>
+        <viewController restorationIdentifier="StoryPagesViewController" nibName="StoryPagesViewController" automaticallyAdjustsScrollViewInsets="NO" id="170" customClass="StoryPagesViewController">
+            <extendedEdge key="edgesForExtendedLayout"/>
+            <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" prompted="NO"/>
+            <connections>
+                <outlet property="appDelegate" destination="3" id="171"/>
+            </connections>
+            <point key="canvasLocation" x="-1564" y="-1165"/>
         </viewController>
         <viewController nibName="LoginViewController" id="102" userLabel="Login View Controller" customClass="LoginViewController">
             <extendedEdge key="edgesForExtendedLayout"/>

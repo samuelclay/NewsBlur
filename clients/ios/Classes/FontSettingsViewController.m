@@ -180,19 +180,19 @@
 - (IBAction)changeFontSize:(id)sender {
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     if ([sender selectedSegmentIndex] == 0) {
-        [self.appDelegate.detailViewController changeFontSize:@"xs"];
+        [self.appDelegate.storyPagesViewController changeFontSize:@"xs"];
         [userPreferences setObject:@"xs" forKey:@"story_font_size"];
     } else if ([sender selectedSegmentIndex] == 1) {
-        [self.appDelegate.detailViewController changeFontSize:@"small"];
+        [self.appDelegate.storyPagesViewController changeFontSize:@"small"];
         [userPreferences setObject:@"small" forKey:@"story_font_size"];
     } else if ([sender selectedSegmentIndex] == 2) {
-        [self.appDelegate.detailViewController changeFontSize:@"medium"];
+        [self.appDelegate.storyPagesViewController changeFontSize:@"medium"];
         [userPreferences setObject:@"medium" forKey:@"story_font_size"];
     } else if ([sender selectedSegmentIndex] == 3) {
-        [self.appDelegate.detailViewController changeFontSize:@"large"];
+        [self.appDelegate.storyPagesViewController changeFontSize:@"large"];
         [userPreferences setObject:@"large" forKey:@"story_font_size"];
     } else if ([sender selectedSegmentIndex] == 4) {
-        [self.appDelegate.detailViewController changeFontSize:@"xl"];
+        [self.appDelegate.storyPagesViewController changeFontSize:@"xl"];
         [userPreferences setObject:@"xl" forKey:@"story_font_size"];
     }
     [userPreferences synchronize];
@@ -201,19 +201,19 @@
 - (IBAction)changeLineSpacing:(id)sender {
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     if ([sender selectedSegmentIndex] == 0) {
-        [self.appDelegate.detailViewController changeLineSpacing:@"xs"];
+        [self.appDelegate.storyPagesViewController changeLineSpacing:@"xs"];
         [userPreferences setObject:@"xs" forKey:@"story_line_spacing"];
     } else if ([sender selectedSegmentIndex] == 1) {
-        [self.appDelegate.detailViewController changeLineSpacing:@"small"];
+        [self.appDelegate.storyPagesViewController changeLineSpacing:@"small"];
         [userPreferences setObject:@"small" forKey:@"story_line_spacing"];
     } else if ([sender selectedSegmentIndex] == 2) {
-        [self.appDelegate.detailViewController changeLineSpacing:@"medium"];
+        [self.appDelegate.storyPagesViewController changeLineSpacing:@"medium"];
         [userPreferences setObject:@"medium" forKey:@"story_line_spacing"];
     } else if ([sender selectedSegmentIndex] == 3) {
-        [self.appDelegate.detailViewController changeLineSpacing:@"large"];
+        [self.appDelegate.storyPagesViewController changeLineSpacing:@"large"];
         [userPreferences setObject:@"large" forKey:@"story_line_spacing"];
     } else if ([sender selectedSegmentIndex] == 4) {
-        [self.appDelegate.detailViewController changeLineSpacing:@"xl"];
+        [self.appDelegate.storyPagesViewController changeLineSpacing:@"xl"];
         [userPreferences setObject:@"xl" forKey:@"story_line_spacing"];
     }
     [userPreferences synchronize];
@@ -223,21 +223,21 @@
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     [userPreferences setBool:[sender selectedSegmentIndex] == 0 forKey:@"story_full_screen"];
     [userPreferences synchronize];
-    [self.appDelegate.detailViewController changedFullscreen];
+    [self.appDelegate.storyPagesViewController changedFullscreen];
 }
 
 - (IBAction)changeAutoscroll:(id)sender {
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     [userPreferences setBool:[sender selectedSegmentIndex] == 1 forKey:@"story_autoscroll"];
     [userPreferences synchronize];
-    [self.appDelegate.detailViewController changedAutoscroll];
+    [self.appDelegate.storyPagesViewController changedAutoscroll];
 }
 
 //- (IBAction)changeScrollOrientation:(id)sender {
 //    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
 //    [userPreferences setBool:[sender selectedSegmentIndex] == 0 forKey:@"scroll_stories_horizontally"];
 //    [userPreferences synchronize];
-//    [self.appDelegate.detailViewController changedScrollOrientation];
+//    [self.appDelegate.storyPagesViewController changedScrollOrientation];
 //}
 
 - (IBAction)changeTheme:(id)sender {
@@ -378,17 +378,17 @@
     } else if (indexPath.row == 1) {
         [self.appDelegate.storiesCollection toggleStorySaved];
         [self.appDelegate.feedDetailViewController reloadData];
-        [self.appDelegate.detailViewController refreshHeaders];
+        [self.appDelegate.storyPagesViewController refreshHeaders];
     } else if (indexPath.row == 2) {
         [self.appDelegate.storiesCollection toggleStoryUnread];
         [self.appDelegate.feedDetailViewController reloadData];
-        [self.appDelegate.detailViewController refreshHeaders];
+        [self.appDelegate.storyPagesViewController refreshHeaders];
     } else if (indexPath.row == 3) {
-        [self.appDelegate.detailViewController openSendToDialog:self.appDelegate.detailViewController.fontSettingsButton];
+        [self.appDelegate.storyPagesViewController openSendToDialog:self.appDelegate.storyPagesViewController.fontSettingsButton];
     } else if (indexPath.row == 4) {
-        [self.appDelegate openTrainStory:self.appDelegate.detailViewController.fontSettingsButton];
+        [self.appDelegate openTrainStory:self.appDelegate.storyPagesViewController.fontSettingsButton];
     } else if (indexPath.row == 5) {
-        [self.appDelegate.detailViewController.currentStoryController openShareDialog];
+        [self.appDelegate.storyPagesViewController.currentPage openShareDialog];
     } else if (indexPath.row == 6) {
         [self showFontList];
     }
@@ -400,8 +400,8 @@
 //            [self.appDelegate.masterContainerViewController hidePopover];
 //        }
 //    } else {
-//        [self.appDelegate.detailViewController.popoverController dismissPopoverAnimated:YES];
-//        self.appDelegate.detailViewController.popoverController = nil;
+//        [self.appDelegate.storyPagesViewController.popoverController dismissPopoverAnimated:YES];
+//        self.appDelegate.storyPagesViewController.popoverController = nil;
 //    }
 //    
 //    [tableView deselectRowAtIndexPath:indexPath animated:YES];

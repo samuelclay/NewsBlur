@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.iPad.XIB" version="3.0" toolsVersion="17503.1" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.iPad.XIB" version="3.0" toolsVersion="17701" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES">
     <device id="ipad9_7" orientation="portrait" layout="fullscreen" appearance="light"/>
     <dependencies>
-        <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17502"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17703"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -34,6 +33,7 @@
                 <outlet property="premiumViewController" destination="Nno-Ma-6TQ" id="0Ex-VU-Hek"/>
                 <outlet property="shareViewController" destination="168" id="272"/>
                 <outlet property="storyDetailViewController" destination="92" id="93"/>
+                <outlet property="storyPagesViewController" destination="290" id="lNi-vY-38g"/>
                 <outlet property="trainerViewController" destination="287" id="289"/>
                 <outlet property="userProfileViewController" destination="235" id="236"/>
                 <outlet property="userTagsViewController" destination="v2Q-Hh-f3K" id="5CE-5l-aoS"/>
@@ -45,6 +45,7 @@
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <simulatedStatusBarMetrics key="simulatedStatusBarMetrics" statusBarStyle="blackOpaque"/>
+            <point key="canvasLocation" x="50" y="154"/>
         </window>
         <viewController nibName="AddSiteViewController" id="121" userLabel="Add Site View Controller" customClass="AddSiteViewController">
             <extendedEdge key="edgesForExtendedLayout"/>
@@ -153,6 +154,12 @@
             <connections>
                 <outlet property="appDelegate" destination="3" id="271"/>
             </connections>
+            <point key="canvasLocation" x="-63" y="-1123"/>
+        </viewController>
+        <viewController restorationIdentifier="StoryPagesViewController" id="290" customClass="StoryPagesViewController" customModule="NewsBlur" customModuleProvider="target">
+            <extendedEdge key="edgesForExtendedLayout"/>
+            <simulatedStatusBarMetrics key="simulatedStatusBarMetrics" statusBarStyle="blackOpaque"/>
+            <point key="canvasLocation" x="50" y="-485"/>
         </viewController>
         <viewController restorationIdentifier="StoryDetailView" nibName="StoryDetailViewController" id="92" customClass="StoryDetailViewController">
             <extendedEdge key="edgesForExtendedLayout"/>
@@ -160,6 +167,7 @@
             <connections>
                 <outlet property="appDelegate" destination="3" id="105"/>
             </connections>
+            <point key="canvasLocation" x="702" y="-514"/>
         </viewController>
         <viewController id="235" customClass="UserProfileViewController">
             <extendedEdge key="edgesForExtendedLayout"/>
@@ -174,6 +182,7 @@
             <connections>
                 <outlet property="appDelegate" destination="3" id="267"/>
             </connections>
+            <point key="canvasLocation" x="-716" y="-525"/>
         </viewController>
         <navigationController restorationIdentifier="MainNavigation" title="Main" id="173">
             <extendedEdge key="edgesForExtendedLayout"/>

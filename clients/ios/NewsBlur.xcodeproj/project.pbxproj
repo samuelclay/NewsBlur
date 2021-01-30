@@ -18,10 +18,9 @@
 		170E3CD324F8A89B009CE819 /* HorizontalPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 170E3CD224F8A89B009CE819 /* HorizontalPageViewController.swift */; };
 		170E3CD724F8AB0D009CE819 /* FeedDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 170E3CD624F8AB0D009CE819 /* FeedDetailViewController.swift */; };
 		1715D02B2166B3F900227731 /* PremiumManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 1715D02A2166B3F900227731 /* PremiumManager.m */; };
+		171B6FFD25C4C7C8008638A9 /* StoryPagesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 171B6FFC25C4C7C8008638A9 /* StoryPagesViewController.swift */; };
 		1721C9D12497F91A00B0EDC4 /* mute_gray.png in Resources */ = {isa = PBXBuildFile; fileRef = 1721C9D02497F91900B0EDC4 /* mute_gray.png */; };
-		172AD25E251D9011000BB264 /* VerticalPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 172AD25D251D9011000BB264 /* VerticalPageViewController.swift */; };
 		172AD264251D901D000BB264 /* HorizontalPageDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 172AD263251D901D000BB264 /* HorizontalPageDelegate.swift */; };
-		172AD26A251D9028000BB264 /* VerticalPageDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 172AD269251D9028000BB264 /* VerticalPageDelegate.swift */; };
 		172AD274251D9F40000BB264 /* Storyboards.swift in Sources */ = {isa = PBXBuildFile; fileRef = 172AD273251D9F40000BB264 /* Storyboards.swift */; };
 		17362ADD23639B4E00A0FCCC /* OfflineFetchText.m in Sources */ = {isa = PBXBuildFile; fileRef = 17362ADC23639B4E00A0FCCC /* OfflineFetchText.m */; };
 		1740C6881C10FD75005EA453 /* theme_color_dark.png in Resources */ = {isa = PBXBuildFile; fileRef = 1740C6841C10FD75005EA453 /* theme_color_dark.png */; };
@@ -429,8 +428,8 @@
 		FF688E4F16E6B3E1003B7B42 /* traverse_done@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF688E4D16E6B3E1003B7B42 /* traverse_done@2x.png */; };
 		FF688E5216E6B8D0003B7B42 /* traverse_background.png in Resources */ = {isa = PBXBuildFile; fileRef = FF688E5016E6B8D0003B7B42 /* traverse_background.png */; };
 		FF688E5316E6B8D0003B7B42 /* traverse_background@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF688E5116E6B8D0003B7B42 /* traverse_background@2x.png */; };
-		FF6A233216448E0700E15989 /* DetailObjCViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FF6A233116448E0700E15989 /* DetailObjCViewController.m */; };
-		FF6A23391644957800E15989 /* StoryPageControl.xib in Resources */ = {isa = PBXBuildFile; fileRef = FF6A23361644903900E15989 /* StoryPageControl.xib */; };
+		FF6A233216448E0700E15989 /* StoryPagesObjCViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FF6A233116448E0700E15989 /* StoryPagesObjCViewController.m */; };
+		FF6A23391644957800E15989 /* StoryPagesViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = FF6A23361644903900E15989 /* StoryPagesViewController.xib */; };
 		FF6DD31E1AEDF9F300F1F53A /* menu_icn_rename.png in Resources */ = {isa = PBXBuildFile; fileRef = FF6DD31C1AEDF9F300F1F53A /* menu_icn_rename.png */; };
 		FF6DD31F1AEDF9F300F1F53A /* menu_icn_rename@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF6DD31D1AEDF9F300F1F53A /* menu_icn_rename@2x.png */; };
 		FF753CCE175858FC00344EC9 /* FMDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = FF753CC4175858FC00344EC9 /* FMDatabase.m */; };
@@ -684,10 +683,9 @@
 		170E3CD624F8AB0D009CE819 /* FeedDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedDetailViewController.swift; sourceTree = "<group>"; };
 		1715D0292166B3F900227731 /* PremiumManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PremiumManager.h; sourceTree = "<group>"; };
 		1715D02A2166B3F900227731 /* PremiumManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PremiumManager.m; sourceTree = "<group>"; };
+		171B6FFC25C4C7C8008638A9 /* StoryPagesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoryPagesViewController.swift; sourceTree = "<group>"; };
 		1721C9D02497F91900B0EDC4 /* mute_gray.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = mute_gray.png; sourceTree = "<group>"; };
-		172AD25D251D9011000BB264 /* VerticalPageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerticalPageViewController.swift; sourceTree = "<group>"; };
 		172AD263251D901D000BB264 /* HorizontalPageDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HorizontalPageDelegate.swift; sourceTree = "<group>"; };
-		172AD269251D9028000BB264 /* VerticalPageDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerticalPageDelegate.swift; sourceTree = "<group>"; };
 		172AD273251D9F40000BB264 /* Storyboards.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Storyboards.swift; sourceTree = "<group>"; };
 		17362ADB23639B4E00A0FCCC /* OfflineFetchText.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = OfflineFetchText.h; path = offline/OfflineFetchText.h; sourceTree = "<group>"; };
 		17362ADC23639B4E00A0FCCC /* OfflineFetchText.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = OfflineFetchText.m; path = offline/OfflineFetchText.m; sourceTree = "<group>"; };
@@ -1233,9 +1231,9 @@
 		FF688E4D16E6B3E1003B7B42 /* traverse_done@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "traverse_done@2x.png"; sourceTree = "<group>"; };
 		FF688E5016E6B8D0003B7B42 /* traverse_background.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = traverse_background.png; sourceTree = "<group>"; };
 		FF688E5116E6B8D0003B7B42 /* traverse_background@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "traverse_background@2x.png"; sourceTree = "<group>"; };
-		FF6A233016448E0700E15989 /* DetailObjCViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DetailObjCViewController.h; sourceTree = "<group>"; };
-		FF6A233116448E0700E15989 /* DetailObjCViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DetailObjCViewController.m; sourceTree = "<group>"; };
-		FF6A23361644903900E15989 /* StoryPageControl.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = StoryPageControl.xib; path = ../Classes/StoryPageControl.xib; sourceTree = "<group>"; };
+		FF6A233016448E0700E15989 /* StoryPagesObjCViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StoryPagesObjCViewController.h; sourceTree = "<group>"; };
+		FF6A233116448E0700E15989 /* StoryPagesObjCViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StoryPagesObjCViewController.m; sourceTree = "<group>"; };
+		FF6A23361644903900E15989 /* StoryPagesViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = StoryPagesViewController.xib; path = ../Classes/StoryPagesViewController.xib; sourceTree = "<group>"; };
 		FF6DD31C1AEDF9F300F1F53A /* menu_icn_rename.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = menu_icn_rename.png; sourceTree = "<group>"; };
 		FF6DD31D1AEDF9F300F1F53A /* menu_icn_rename@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "menu_icn_rename@2x.png"; sourceTree = "<group>"; };
 		FF753CC3175858FC00344EC9 /* FMDatabase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMDatabase.h; sourceTree = "<group>"; };
@@ -1896,13 +1894,11 @@
 		431B857415A1324200DCE497 /* Story */ = {
 			isa = PBXGroup;
 			children = (
-				176A5C7924F8BD1B009E8DF9 /* DetailViewController.swift */,
-				FF6A233016448E0700E15989 /* DetailObjCViewController.h */,
-				FF6A233116448E0700E15989 /* DetailObjCViewController.m */,
+				171B6FFC25C4C7C8008638A9 /* StoryPagesViewController.swift */,
+				FF6A233016448E0700E15989 /* StoryPagesObjCViewController.h */,
+				FF6A233116448E0700E15989 /* StoryPagesObjCViewController.m */,
 				170E3CD224F8A89B009CE819 /* HorizontalPageViewController.swift */,
 				172AD263251D901D000BB264 /* HorizontalPageDelegate.swift */,
-				172AD25D251D9011000BB264 /* VerticalPageViewController.swift */,
-				172AD269251D9028000BB264 /* VerticalPageDelegate.swift */,
 				1787082F24F8B3A50000C82B /* StoryDetailViewController.swift */,
 				7842ECF511D44A530066CF9D /* StoryDetailObjCViewController.h */,
 				7842ECF611D44A530066CF9D /* StoryDetailObjCViewController.m */,
@@ -2309,7 +2305,7 @@
 				43B8F01F156603170008733D /* NewsBlurViewController.xib */,
 				43081E2115AFE84200B24D7A /* ShareViewController.xib */,
 				43B8F021156603170008733D /* StoryDetailViewController.xib */,
-				FF6A23361644903900E15989 /* StoryPageControl.xib */,
+				FF6A23361644903900E15989 /* StoryPagesViewController.xib */,
 				FF67D3B6168977690057A7DA /* TrainerViewController.xib */,
 				43A4BAEA15C893E300F3B8D4 /* FriendsListViewController.xib */,
 			);
@@ -2385,6 +2381,7 @@
 				172AD273251D9F40000BB264 /* Storyboards.swift */,
 				170E3CCE24F8A5D8009CE819 /* SplitViewController.swift */,
 				170E3CD024F8A664009CE819 /* SplitViewDelegate.swift */,
+				176A5C7924F8BD1B009E8DF9 /* DetailViewController.swift */,
 				436ACA8B15BF1088004E01CC /* NBContainerViewController.h */,
 				436ACA8C15BF1088004E01CC /* NBContainerViewController.m */,
 				17432C7D1C533FBC003F8FD6 /* MenuViewController.h */,
@@ -2837,7 +2834,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 1120;
-				LastUpgradeCheck = 1230;
+				LastUpgradeCheck = 1240;
 				ORGANIZATIONNAME = NewsBlur;
 				TargetAttributes = {
 					1749390F1C251BFE003D98AA = {
@@ -3126,7 +3123,7 @@
 				FF5F3A8B162B8390008DBE3E /* car.png in Resources */,
 				FF41309D162CEC7100DDB6A7 /* time.png in Resources */,
 				FF4130A0162CECAE00DDB6A7 /* email.png in Resources */,
-				FF6A23391644957800E15989 /* StoryPageControl.xib in Resources */,
+				FF6A23391644957800E15989 /* StoryPagesViewController.xib in Resources */,
 				FF67D3B7168977690057A7DA /* TrainerViewController.xib in Resources */,
 				FF67D3BB168A70630057A7DA /* trainer.css in Resources */,
 				FF3FA8951BB26B6A001F7C32 /* copy_link@2x.png in Resources */,
@@ -3401,7 +3398,6 @@
 				FFC0E5AC1F7AC00A0023B9D9 /* AFImageDownloader.m in Sources */,
 				FFC0E5AE1F7AC00A0023B9D9 /* AFNetworkActivityIndicatorManager.m in Sources */,
 				FFC0E5B11F7AC00A0023B9D9 /* AFNetworkReachabilityManager.m in Sources */,
-				172AD26A251D9028000BB264 /* VerticalPageDelegate.swift in Sources */,
 				FFC0E5B31F7AC00A0023B9D9 /* AFSecurityPolicy.m in Sources */,
 				FFC0E5B51F7AC00A0023B9D9 /* AFURLRequestSerialization.m in Sources */,
 				FFC0E5B71F7AC00A0023B9D9 /* AFURLResponseSerialization.m in Sources */,
@@ -3415,6 +3411,7 @@
 				17EB50601BE46A900021358B /* FontListViewController.m in Sources */,
 				FF0FAEB117B084D2008651F9 /* OfflineCleanImages.m in Sources */,
 				43F44B1C159D8DBC00F48F8A /* FeedTableCell.m in Sources */,
+				171B6FFD25C4C7C8008638A9 /* StoryPagesViewController.swift in Sources */,
 				1D3623260D0F684500981E51 /* NewsBlurAppDelegate.m in Sources */,
 				17432C861C5343C0003F8FD6 /* FeedChooserTitleView.m in Sources */,
 				28D7ACF80DDB3853001CB0EB /* FeedsObjCViewController.m in Sources */,
@@ -3439,7 +3436,6 @@
 				17731A9D23DFAD3D00759A7D /* ImportExportPreferences.swift in Sources */,
 				FFD1D7311459B63500E46F89 /* BaseViewController.m in Sources */,
 				FF34FD6D1E9D93CB0062F8ED /* IASKSwitch.m in Sources */,
-				172AD25E251D9011000BB264 /* VerticalPageViewController.swift in Sources */,
 				FF9B8BB217F2351A0036A41C /* NBBarButtonItem.m in Sources */,
 				FF2D8CE514893BC000057B80 /* MoveSiteViewController.m in Sources */,
 				433323CD158968ED0025064D /* FirstTimeUserViewController.m in Sources */,
@@ -3515,7 +3511,7 @@
 				17432C7F1C533FBC003F8FD6 /* MenuViewController.m in Sources */,
 				FFF8B3AF1F847505001AB95E /* NBDashboardNavigationBar.m in Sources */,
 				17E635AF1C548C580075338E /* FeedChooserItem.m in Sources */,
-				FF6A233216448E0700E15989 /* DetailObjCViewController.m in Sources */,
+				FF6A233216448E0700E15989 /* StoryPagesObjCViewController.m in Sources */,
 				FF67D3B2168924C40057A7DA /* TrainerViewController.m in Sources */,
 				FF1660CD16D6FD8A00AF8541 /* SmallInteractionCell.m in Sources */,
 				FF34FD6E1E9D93CB0062F8ED /* IASKTextField.m in Sources */,

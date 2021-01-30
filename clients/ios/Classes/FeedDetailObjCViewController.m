@@ -577,8 +577,8 @@
     NSString *feedID = [coder decodeObjectOfClass:[NSString class] forKey:@"feed_id"];
     
     if (folder != nil || feedID != nil) {
-//        self.restoringFolder = folder;
-//        self.restoringFeedID = feedID;
+        self.restoringFolder = folder;
+        self.restoringFeedID = feedID;
     }
 }
 
@@ -632,7 +632,7 @@
     [storiesCollection setStories:nil];
     [storiesCollection setFeedUserProfiles:nil];
     storiesCollection.storyCount = 0;
-    [appDelegate.detailViewController resetPageControllers];
+    [appDelegate.storyPagesViewController resetPages];
     
     storiesCollection.inSearch = NO;
     storiesCollection.searchQuery = nil;
@@ -1179,10 +1179,10 @@
     [self renderStories:confirmedNewStories];
     
     if (!self.isPhoneOrCompact) {
-        [appDelegate.detailViewController resizeScrollView];
-        [appDelegate.detailViewController setStoryFromScroll:YES];
+        [appDelegate.storyPagesViewController resizeScrollView];
+        [appDelegate.storyPagesViewController setStoryFromScroll:YES];
     }
-    [appDelegate.detailViewController advanceToNextUnread];
+    [appDelegate.storyPagesViewController advanceToNextUnread];
     
     if (!storiesCollection.storyCount) {
         if ([results objectForKey:@"message"] && ![[results objectForKey:@"message"] isKindOfClass:[NSNull class]]) {
@@ -2275,7 +2275,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     
     [viewController addThemeSegmentedControl];
     
-    UINavigationController *navController = self.navigationController ?: appDelegate.detailViewController.navigationController;
+    UINavigationController *navController = self.navigationController ?: appDelegate.storyPagesViewController.navigationController;
     
     [viewController showFromNavigationController:navController barButtonItem:self.settingsBarButton];
 }
