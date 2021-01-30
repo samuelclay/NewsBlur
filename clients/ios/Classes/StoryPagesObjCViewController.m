@@ -674,6 +674,8 @@
     [currentPage clearStory];
     [nextPage clearStory];
     [previousPage clearStory];
+    
+    [currentPage hideStory];
 
     CGRect frame = self.scrollView.frame;
     self.scrollView.contentSize = frame.size;
