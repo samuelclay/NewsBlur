@@ -13,7 +13,7 @@
             <objects>
                 <viewController storyboardIdentifier="DetailViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="djW-7k-haK" customClass="DetailViewController" customModule="NewsBlur" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="jTZ-4O-xyT">
-                        <rect key="frame" x="0.0" y="0.0" width="1194" height="834"/>
+                        <rect key="frame" x="0.0" y="0.0" width="818.5" height="834"/>
                         <subviews>
                             <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="bPa-u1-Aml">
                                 <rect key="frame" x="0.0" y="50" width="1194" height="604"/>
@@ -73,304 +73,30 @@
                                     </mask>
                                 </variation>
                             </view>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="4vK-W4-ayS">
-                                <rect key="frame" x="0.0" y="583" width="1194" height="51"/>
-                                <subviews>
-                                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" image="traverse_background.png" translatesAutoresizingMaskIntoConstraints="NO" id="PLd-RZ-773">
-                                        <rect key="frame" x="1028" y="4" width="160" height="44"/>
-                                        <constraints>
-                                            <constraint firstAttribute="width" constant="160" id="SOi-6Y-1cH"/>
-                                            <constraint firstAttribute="height" constant="44" id="yra-hO-9Gh"/>
-                                        </constraints>
-                                    </imageView>
-                                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" image="traverse_background.png" translatesAutoresizingMaskIntoConstraints="NO" id="zfl-mN-y0T">
-                                        <rect key="frame" x="4" y="4" width="143" height="44"/>
-                                        <constraints>
-                                            <constraint firstAttribute="width" constant="143" id="v9X-2X-Bgb"/>
-                                            <constraint firstAttribute="height" constant="44" id="vg2-XI-Vnl"/>
-                                        </constraints>
-                                    </imageView>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="oct-Cn-9L0">
-                                        <rect key="frame" x="1034" y="9" width="43" height="34"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="34" id="8OI-gJ-c5x"/>
-                                            <constraint firstAttribute="width" constant="43" id="kNF-2d-gY1"/>
-                                        </constraints>
-                                        <fontDescription key="fontDescription" type="boldSystem" pointSize="13"/>
-                                        <inset key="contentEdgeInsets" minX="0.0" minY="0.0" maxX="20" maxY="0.0"/>
-                                        <state key="normal" backgroundImage="traverse_previous.png">
-                                            <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        </state>
-                                        <state key="disabled" backgroundImage="traverse_previous_off.png"/>
-                                        <state key="highlighted">
-                                            <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        </state>
-                                        <connections>
-                                            <action selector="doPreviousStory:" destination="djW-7k-haK" eventType="touchUpInside" id="pgb-NN-Zmi"/>
-                                        </connections>
-                                    </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ZoU-af-wjh">
-                                        <rect key="frame" x="1078" y="9" width="104" height="34"/>
-                                        <constraints>
-                                            <constraint firstAttribute="width" constant="104" id="Esh-zh-12I"/>
-                                            <constraint firstAttribute="height" constant="34" id="LWH-y8-6oO"/>
-                                        </constraints>
-                                        <fontDescription key="fontDescription" name="Helvetica-Bold" family="Helvetica" pointSize="13"/>
-                                        <inset key="titleEdgeInsets" minX="2" minY="0.0" maxX="0.0" maxY="0.0"/>
-                                        <state key="normal" title="NEXT" backgroundImage="traverse_next.png">
-                                            <color key="titleColor" red="0.51764705879999995" green="0.52549019610000003" blue="0.50196078430000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                            <color key="titleShadowColor" red="0.49803921569999998" green="0.49803921569999998" blue="0.49803921569999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        </state>
-                                        <state key="selected">
-                                            <color key="titleColor" red="0.1969947517" green="0.1969947517" blue="0.1969947517" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        </state>
-                                        <state key="highlighted">
-                                            <color key="titleColor" red="0.33333334329999997" green="0.33333334329999997" blue="0.33333334329999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        </state>
-                                        <connections>
-                                            <action selector="doNextUnreadStory:" destination="djW-7k-haK" eventType="touchUpInside" id="7Ye-5J-1dI"/>
-                                        </connections>
-                                    </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Mhr-a8-MQd">
-                                        <rect key="frame" x="9" y="9" width="87" height="34"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="34" id="8lr-m8-D43"/>
-                                            <constraint firstAttribute="width" constant="87" id="fH9-Ji-sL9"/>
-                                        </constraints>
-                                        <fontDescription key="fontDescription" name="Helvetica-Bold" family="Helvetica" pointSize="13"/>
-                                        <inset key="titleEdgeInsets" minX="16" minY="0.0" maxX="0.0" maxY="0.0"/>
-                                        <state key="normal" title="TEXT" backgroundImage="traverse_text.png">
-                                            <color key="titleColor" red="0.51726847890000005" green="0.52641934160000003" blue="0.5003217459" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                            <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        </state>
-                                        <state key="selected">
-                                            <color key="titleColor" red="0.1969947517" green="0.1969947517" blue="0.1969947517" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        </state>
-                                        <state key="highlighted">
-                                            <color key="titleColor" red="0.33333334329999997" green="0.33333334329999997" blue="0.33333334329999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        </state>
-                                        <connections>
-                                            <action selector="toggleTextView:" destination="djW-7k-haK" eventType="touchUpInside" id="BcX-EA-coX"/>
-                                        </connections>
-                                    </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Teu-p1-Gy0">
-                                        <rect key="frame" x="97" y="9" width="44" height="34"/>
-                                        <constraints>
-                                            <constraint firstAttribute="width" constant="44" id="GHI-MI-CDD"/>
-                                            <constraint firstAttribute="height" constant="34" id="UIz-s9-jVY"/>
-                                        </constraints>
-                                        <fontDescription key="fontDescription" name="Helvetica-Bold" family="Helvetica" pointSize="13"/>
-                                        <inset key="contentEdgeInsets" minX="0.0" minY="0.0" maxX="20" maxY="0.0"/>
-                                        <state key="normal" backgroundImage="traverse_send.png">
-                                            <color key="titleColor" red="0.51726847890000005" green="0.52641934160000003" blue="0.5003217459" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                            <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        </state>
-                                        <state key="selected">
-                                            <color key="titleColor" red="0.1969947517" green="0.1969947517" blue="0.1969947517" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        </state>
-                                        <state key="highlighted">
-                                            <color key="titleColor" red="0.33333334329999997" green="0.33333334329999997" blue="0.33333334329999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        </state>
-                                        <connections>
-                                            <action selector="openSendToDialog:" destination="djW-7k-haK" eventType="touchUpInside" id="9U3-UM-kcf"/>
-                                        </connections>
-                                    </button>
-                                    <activityIndicatorView opaque="NO" contentMode="scaleToFill" hidesWhenStopped="YES" animating="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="wpt-1g-x7w">
-                                        <rect key="frame" x="1084" y="16" width="20" height="20"/>
-                                        <constraints>
-                                            <constraint firstAttribute="width" constant="20" id="GBn-Oz-urx"/>
-                                            <constraint firstAttribute="height" constant="20" id="wo2-Qz-ku4"/>
-                                        </constraints>
-                                        <color key="color" red="0.5383990407" green="0.54777079819999996" blue="0.51707810160000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                    </activityIndicatorView>
-                                </subviews>
-                                <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
-                                <constraints>
-                                    <constraint firstAttribute="bottom" secondItem="wpt-1g-x7w" secondAttribute="bottom" constant="15" id="03o-Tx-Ngx"/>
-                                    <constraint firstAttribute="trailing" secondItem="ZoU-af-wjh" secondAttribute="trailing" constant="12" id="9oi-95-ua5"/>
-                                    <constraint firstAttribute="bottom" secondItem="Teu-p1-Gy0" secondAttribute="bottom" constant="8" id="DhJ-Vd-Zos"/>
-                                    <constraint firstAttribute="bottom" secondItem="ZoU-af-wjh" secondAttribute="bottom" constant="8" id="F4M-Gs-4Q8"/>
-                                    <constraint firstAttribute="trailing" secondItem="PLd-RZ-773" secondAttribute="trailing" constant="6" id="KIb-u5-yKl"/>
-                                    <constraint firstItem="Mhr-a8-MQd" firstAttribute="top" secondItem="4vK-W4-ayS" secondAttribute="top" constant="9" id="Lm9-bw-Gae"/>
-                                    <constraint firstItem="wpt-1g-x7w" firstAttribute="top" secondItem="4vK-W4-ayS" secondAttribute="top" constant="16" id="Onq-vt-9IB"/>
-                                    <constraint firstItem="oct-Cn-9L0" firstAttribute="top" secondItem="4vK-W4-ayS" secondAttribute="top" constant="9" id="Sb8-ah-WTX"/>
-                                    <constraint firstAttribute="bottom" secondItem="PLd-RZ-773" secondAttribute="bottom" constant="3" id="XVE-t8-vex"/>
-                                    <constraint firstItem="Mhr-a8-MQd" firstAttribute="leading" secondItem="4vK-W4-ayS" secondAttribute="leading" constant="9" id="cUF-Cc-QxF"/>
-                                    <constraint firstAttribute="height" constant="51" id="eDx-IM-t3r"/>
-                                    <constraint firstAttribute="bottom" secondItem="Mhr-a8-MQd" secondAttribute="bottom" constant="8" id="elN-qs-zPt"/>
-                                    <constraint firstItem="Teu-p1-Gy0" firstAttribute="leading" secondItem="Mhr-a8-MQd" secondAttribute="trailing" constant="1" id="fVb-wU-tzk"/>
-                                    <constraint firstItem="ZoU-af-wjh" firstAttribute="top" secondItem="4vK-W4-ayS" secondAttribute="top" constant="9" id="fng-rP-yJD"/>
-                                    <constraint firstItem="ZoU-af-wjh" firstAttribute="leading" secondItem="oct-Cn-9L0" secondAttribute="trailing" constant="1" id="g6D-iX-NZ0"/>
-                                    <constraint firstAttribute="bottom" secondItem="oct-Cn-9L0" secondAttribute="bottom" constant="8" id="iUr-Cf-Q16"/>
-                                    <constraint firstItem="PLd-RZ-773" firstAttribute="top" secondItem="4vK-W4-ayS" secondAttribute="top" constant="4" id="kPd-Dz-5Mp"/>
-                                    <constraint firstItem="zfl-mN-y0T" firstAttribute="leading" secondItem="4vK-W4-ayS" secondAttribute="leading" constant="4" id="p37-nQ-da5"/>
-                                    <constraint firstItem="wpt-1g-x7w" firstAttribute="leading" secondItem="oct-Cn-9L0" secondAttribute="trailing" constant="7" id="pie-9C-6lc"/>
-                                    <constraint firstItem="Teu-p1-Gy0" firstAttribute="top" secondItem="4vK-W4-ayS" secondAttribute="top" constant="9" id="r6J-NM-Wih"/>
-                                    <constraint firstItem="ZoU-af-wjh" firstAttribute="leading" secondItem="oct-Cn-9L0" secondAttribute="trailing" constant="1" id="sAq-ce-nf3"/>
-                                    <constraint firstItem="zfl-mN-y0T" firstAttribute="top" secondItem="4vK-W4-ayS" secondAttribute="top" constant="4" id="u2K-Za-5uE"/>
-                                    <constraint firstItem="Teu-p1-Gy0" firstAttribute="leading" secondItem="Mhr-a8-MQd" secondAttribute="trailing" constant="1" id="vqy-97-fJY"/>
-                                    <constraint firstAttribute="bottom" secondItem="zfl-mN-y0T" secondAttribute="bottom" constant="3" id="zAW-8Q-Srb"/>
-                                </constraints>
-                            </view>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="hfm-Pf-oeW">
-                                <rect key="frame" x="517" y="532" width="160" height="44"/>
-                                <subviews>
-                                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" image="traverse_background.png" translatesAutoresizingMaskIntoConstraints="NO" id="DhZ-K9-Ohx">
-                                        <rect key="frame" x="0.0" y="0.0" width="160" height="44"/>
-                                        <constraints>
-                                            <constraint firstAttribute="width" constant="160" id="pgM-aj-MFu"/>
-                                            <constraint firstAttribute="height" constant="44" id="whT-PJ-xOd"/>
-                                        </constraints>
-                                    </imageView>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Xtc-sh-knL">
-                                        <rect key="frame" x="6" y="5" width="36" height="34"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="34" id="2pi-Ji-rYh"/>
-                                            <constraint firstAttribute="width" constant="36" id="GUg-uM-GcI"/>
-                                        </constraints>
-                                        <fontDescription key="fontDescription" type="boldSystem" pointSize="13"/>
-                                        <inset key="contentEdgeInsets" minX="0.0" minY="0.0" maxX="20" maxY="0.0"/>
-                                        <state key="normal" backgroundImage="autoscroll_off.png">
-                                            <color key="titleColor" red="0.51764705879999995" green="0.52549019610000003" blue="0.50196078430000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        </state>
-                                        <state key="disabled" backgroundImage="traverse_previous_off.png"/>
-                                        <state key="highlighted">
-                                            <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        </state>
-                                        <connections>
-                                            <action selector="autoscrollDisable:" destination="djW-7k-haK" eventType="touchUpInside" id="xy6-pJ-Zar"/>
-                                        </connections>
-                                    </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="WoA-Tv-FTT">
-                                        <rect key="frame" x="43" y="5" width="36" height="34"/>
-                                        <constraints>
-                                            <constraint firstAttribute="width" constant="36" id="DLV-4U-iIU"/>
-                                            <constraint firstAttribute="height" constant="34" id="hGu-E7-dg7"/>
-                                        </constraints>
-                                        <fontDescription key="fontDescription" type="boldSystem" pointSize="13"/>
-                                        <inset key="contentEdgeInsets" minX="0.0" minY="0.0" maxX="20" maxY="0.0"/>
-                                        <state key="normal" backgroundImage="autoscroll_resume.png">
-                                            <color key="titleColor" red="0.51764705879999995" green="0.52549019610000003" blue="0.50196078430000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        </state>
-                                        <state key="disabled" backgroundImage="traverse_previous_off.png"/>
-                                        <state key="highlighted">
-                                            <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        </state>
-                                        <connections>
-                                            <action selector="autoscrollPauseResume:" destination="djW-7k-haK" eventType="touchUpInside" id="nkL-6Z-mrc"/>
-                                        </connections>
-                                    </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="x4P-S0-dR7">
-                                        <rect key="frame" x="80" y="5" width="36" height="34"/>
-                                        <constraints>
-                                            <constraint firstAttribute="width" constant="36" id="kGz-Tf-Nfz"/>
-                                            <constraint firstAttribute="height" constant="34" id="wsh-s4-baM"/>
-                                        </constraints>
-                                        <fontDescription key="fontDescription" type="boldSystem" pointSize="13"/>
-                                        <inset key="contentEdgeInsets" minX="0.0" minY="0.0" maxX="20" maxY="0.0"/>
-                                        <state key="normal" backgroundImage="autoscroll_slower.png">
-                                            <color key="titleColor" red="0.51764705879999995" green="0.52549019610000003" blue="0.50196078430000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        </state>
-                                        <state key="disabled" backgroundImage="traverse_previous_off.png"/>
-                                        <state key="highlighted">
-                                            <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        </state>
-                                        <connections>
-                                            <action selector="autoscrollSlower:" destination="djW-7k-haK" eventType="touchUpInside" id="JIU-Gg-Lt9"/>
-                                        </connections>
-                                    </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xZB-Qu-u2n">
-                                        <rect key="frame" x="117" y="5" width="37" height="34"/>
-                                        <constraints>
-                                            <constraint firstAttribute="width" constant="37" id="Uc8-iE-dwS"/>
-                                            <constraint firstAttribute="height" constant="34" id="eBL-Sp-Fbq"/>
-                                        </constraints>
-                                        <fontDescription key="fontDescription" type="boldSystem" pointSize="13"/>
-                                        <inset key="contentEdgeInsets" minX="0.0" minY="0.0" maxX="20" maxY="0.0"/>
-                                        <state key="normal" backgroundImage="autoscroll_faster.png">
-                                            <color key="titleColor" red="0.51764705879999995" green="0.52549019610000003" blue="0.50196078430000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        </state>
-                                        <state key="disabled" backgroundImage="traverse_previous_off.png"/>
-                                        <state key="highlighted">
-                                            <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        </state>
-                                        <connections>
-                                            <action selector="autoscrollFaster:" destination="djW-7k-haK" eventType="touchUpInside" id="8aA-ma-ybu"/>
-                                        </connections>
-                                    </button>
-                                </subviews>
-                                <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="160" id="8JN-0x-Wxg"/>
-                                    <constraint firstItem="x4P-S0-dR7" firstAttribute="leading" secondItem="WoA-Tv-FTT" secondAttribute="trailing" constant="1" id="9d0-El-qfS"/>
-                                    <constraint firstItem="xZB-Qu-u2n" firstAttribute="centerY" secondItem="hfm-Pf-oeW" secondAttribute="centerY" id="Fum-wZ-lMO"/>
-                                    <constraint firstItem="Xtc-sh-knL" firstAttribute="leading" secondItem="DhZ-K9-Ohx" secondAttribute="leading" constant="6" id="LGD-tR-0md"/>
-                                    <constraint firstAttribute="height" constant="44" id="McX-ZT-Oa5"/>
-                                    <constraint firstItem="xZB-Qu-u2n" firstAttribute="leading" secondItem="x4P-S0-dR7" secondAttribute="trailing" constant="1" id="S9q-9z-hqL"/>
-                                    <constraint firstItem="WoA-Tv-FTT" firstAttribute="centerY" secondItem="hfm-Pf-oeW" secondAttribute="centerY" id="Uxl-g3-HeW"/>
-                                    <constraint firstItem="WoA-Tv-FTT" firstAttribute="leading" secondItem="Xtc-sh-knL" secondAttribute="trailing" constant="1" id="b8m-Mq-cvm"/>
-                                    <constraint firstItem="DhZ-K9-Ohx" firstAttribute="centerY" secondItem="hfm-Pf-oeW" secondAttribute="centerY" id="mrl-fB-AqE"/>
-                                    <constraint firstItem="DhZ-K9-Ohx" firstAttribute="centerX" secondItem="hfm-Pf-oeW" secondAttribute="centerX" id="nU9-HN-T6z"/>
-                                    <constraint firstItem="x4P-S0-dR7" firstAttribute="centerY" secondItem="hfm-Pf-oeW" secondAttribute="centerY" id="ngp-qt-zlU"/>
-                                    <constraint firstItem="Xtc-sh-knL" firstAttribute="centerY" secondItem="hfm-Pf-oeW" secondAttribute="centerY" id="yw5-gp-mD8"/>
-                                </constraints>
-                            </view>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="rKh-Md-Ci2"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="4vK-W4-ayS" firstAttribute="leading" secondItem="jTZ-4O-xyT" secondAttribute="leading" id="AFV-14-jnc"/>
                             <constraint firstAttribute="trailing" secondItem="5M7-bO-MVK" secondAttribute="trailing" id="Bge-if-1kj"/>
-                            <constraint firstItem="5M7-bO-MVK" firstAttribute="bottom" secondItem="hfm-Pf-oeW" secondAttribute="bottom" constant="90" id="DIG-xz-1US"/>
-                            <constraint firstItem="hfm-Pf-oeW" firstAttribute="centerX" secondItem="jTZ-4O-xyT" secondAttribute="centerX" id="Grz-1P-qjc"/>
                             <constraint firstItem="rKh-Md-Ci2" firstAttribute="top" secondItem="bPa-u1-Aml" secondAttribute="top" id="JN4-aj-xiN"/>
-                            <constraint firstAttribute="trailing" secondItem="4vK-W4-ayS" secondAttribute="trailing" id="JVw-MX-f4R"/>
                             <constraint firstItem="bPa-u1-Aml" firstAttribute="leading" secondItem="jTZ-4O-xyT" secondAttribute="leading" id="Px6-tP-Snv"/>
                             <constraint firstItem="tFd-Uv-aMP" firstAttribute="top" secondItem="bPa-u1-Aml" secondAttribute="bottom" id="SGz-wm-mAv"/>
                             <constraint firstItem="5M7-bO-MVK" firstAttribute="leading" secondItem="jTZ-4O-xyT" secondAttribute="leading" id="Tg9-DU-zcP"/>
-                            <constraint firstItem="tFd-Uv-aMP" firstAttribute="top" secondItem="4vK-W4-ayS" secondAttribute="bottom" constant="20" id="YVh-UJ-d3j"/>
                             <constraint firstAttribute="bottom" secondItem="tFd-Uv-aMP" secondAttribute="bottom" constant="168" id="c9d-f5-wud"/>
-                            <constraint firstItem="5M7-bO-MVK" firstAttribute="bottom" secondItem="4vK-W4-ayS" secondAttribute="bottom" constant="32" id="efm-qO-UF1"/>
                             <constraint firstAttribute="trailing" secondItem="tFd-Uv-aMP" secondAttribute="trailing" id="h2I-ng-gxc"/>
                             <constraint firstAttribute="bottom" secondItem="5M7-bO-MVK" secondAttribute="bottom" id="nSX-TU-ART"/>
-                            <constraint firstItem="tFd-Uv-aMP" firstAttribute="top" secondItem="hfm-Pf-oeW" secondAttribute="bottom" constant="78" id="phm-3P-lxo"/>
                             <constraint firstItem="5M7-bO-MVK" firstAttribute="top" secondItem="tFd-Uv-aMP" secondAttribute="bottom" id="v7j-Eh-lGD"/>
                             <constraint firstItem="tFd-Uv-aMP" firstAttribute="leading" secondItem="jTZ-4O-xyT" secondAttribute="leading" id="wzt-O8-Ild"/>
                             <constraint firstAttribute="trailing" secondItem="bPa-u1-Aml" secondAttribute="trailing" id="xth-oH-VTF"/>
                         </constraints>
-                        <variation key="default">
-                            <mask key="constraints">
-                                <exclude reference="DIG-xz-1US"/>
-                                <exclude reference="efm-qO-UF1"/>
-                            </mask>
-                        </variation>
                     </view>
                     <navigationItem key="navigationItem" id="OyA-BF-OGR"/>
                     <connections>
-                        <outlet property="autoscrollBackgroundImageView" destination="DhZ-K9-Ohx" id="JlX-4q-aYI"/>
-                        <outlet property="autoscrollBottomContainerBottomConstraint" destination="DIG-xz-1US" id="SRV-nP-Wrx"/>
-                        <outlet property="autoscrollDisableButton" destination="Xtc-sh-knL" id="HH8-tu-4lg"/>
-                        <outlet property="autoscrollFasterButton" destination="xZB-Qu-u2n" id="ora-na-Jht"/>
-                        <outlet property="autoscrollPauseResumeButton" destination="WoA-Tv-FTT" id="G89-JX-DAM"/>
-                        <outlet property="autoscrollSlowerButton" destination="x4P-S0-dR7" id="5r5-Ix-oSv"/>
-                        <outlet property="autoscrollTopContainerBottomConstraint" destination="phm-3P-lxo" id="1se-rX-o1p"/>
-                        <outlet property="autoscrollView" destination="hfm-Pf-oeW" id="uLO-sQ-E0v"/>
                         <outlet property="bottomContainerView" destination="5M7-bO-MVK" id="Tqo-s5-kGB"/>
-                        <outlet property="buttonNext" destination="ZoU-af-wjh" id="Bg3-Bc-32l"/>
-                        <outlet property="buttonPrevious" destination="oct-Cn-9L0" id="GQY-2J-pfy"/>
-                        <outlet property="buttonSend" destination="Teu-p1-Gy0" id="cLM-Zi-gs0"/>
-                        <outlet property="buttonText" destination="Mhr-a8-MQd" id="bXI-fg-Y5m"/>
                         <outlet property="dividerView" destination="tFd-Uv-aMP" id="d0U-lI-Ukb"/>
                         <outlet property="dividerViewBottomConstraint" destination="c9d-f5-wud" id="0kK-IS-Yql"/>
-                        <outlet property="dragBarImageView" destination="xeQ-Iz-FR0" id="JfY-AN-erg"/>
-                        <outlet property="loadingIndicator" destination="wpt-1g-x7w" id="6Re-nf-bHo"/>
-                        <outlet property="prevNextBackgroundImageView" destination="PLd-RZ-773" id="adi-Gt-uX1"/>
-                        <outlet property="textStorySendBackgroundImageView" destination="zfl-mN-y0T" id="lD1-7s-izZ"/>
                         <outlet property="topContainerTopConstraint" destination="JN4-aj-xiN" id="BFs-GY-GpX"/>
                         <outlet property="topContainerView" destination="bPa-u1-Aml" id="nUk-aR-0ix"/>
-                        <outlet property="traverseBottomContainerBottomConstraint" destination="efm-qO-UF1" id="cEE-UD-KiD"/>
-                        <outlet property="traverseTopContainerBottomConstraint" destination="YVh-UJ-d3j" id="d4B-Vw-6hb"/>
-                        <outlet property="traverseView" destination="4vK-W4-ayS" id="yvU-Yp-1YP"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="AQD-wG-11i" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -704,20 +430,10 @@
     </scenes>
     <resources>
         <image name="all.png" width="19.5" height="12.5"/>
-        <image name="autoscroll_faster.png" width="37" height="34"/>
-        <image name="autoscroll_off.png" width="36" height="34"/>
-        <image name="autoscroll_resume.png" width="36" height="34"/>
-        <image name="autoscroll_slower.png" width="36" height="34"/>
         <image name="big_world.png" width="30.719999313354492" height="30.719999313354492"/>
         <image name="drag_icon.png" width="96" height="24"/>
         <image name="nav_icn_add.png" width="49.454544067382812" height="64"/>
         <image name="nav_icn_settings.png" width="15.359999656677246" height="12.239999771118164"/>
-        <image name="traverse_background.png" width="113" height="46"/>
-        <image name="traverse_next.png" width="104" height="34"/>
-        <image name="traverse_previous.png" width="43" height="34"/>
-        <image name="traverse_previous_off.png" width="43" height="34"/>
-        <image name="traverse_send.png" width="44" height="34"/>
-        <image name="traverse_text.png" width="94" height="34"/>
         <image name="unread_blue.png" width="49.5" height="12.5"/>
         <image name="unread_green.png" width="49" height="12.5"/>
         <image name="unread_yellow.png" width="58" height="12.5"/>

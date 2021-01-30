@@ -42,7 +42,7 @@
 @property (nonatomic, strong) DashboardViewController *dashboardViewController;
 @property (nonatomic, strong) StoryDetailViewController *storyDetailViewController;
 @property (nonatomic, strong) OriginalStoryViewController *originalViewController;
-@property (nonatomic, strong) DetailViewController *detailViewController;
+@property (nonatomic, strong) StoryPagesViewController *storyPagesViewController;
 @property (nonatomic, strong) ShareViewController *shareViewController;
 @property (nonatomic, strong) UIView *storyTitlesStub;
 @property (readwrite) BOOL storyTitlesOnLeft;
@@ -66,7 +66,7 @@
 @synthesize dashboardViewController;
 @synthesize storyDetailViewController;
 @synthesize originalViewController;
-@synthesize detailViewController;
+@synthesize storyPagesViewController;
 @synthesize shareViewController;
 @synthesize feedDetailIsVisible;
 @synthesize originalViewIsVisible;
@@ -112,7 +112,7 @@
     self.feedDetailViewController = appDelegate.feedDetailViewController;
     self.storyDetailViewController = appDelegate.storyDetailViewController;
     self.originalViewController = appDelegate.originalStoryViewController;
-    self.detailViewController = appDelegate.detailViewController;
+    self.storyPagesViewController = appDelegate.storyPagesViewController;
     self.shareViewController = appDelegate.shareViewController;
     
     // adding dashboardViewController 
@@ -125,7 +125,7 @@
     [self.view addSubview:self.masterNavigationController.view];
     [self.masterNavigationController didMoveToParentViewController:self];
     
-    UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:self.detailViewController];
+    UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:self.storyPagesViewController];
     self.storyNavigationController = nav;
     self.storyNavigationController.navigationBar.translucent = NO;
     self.storyNavigationController.view.layer.masksToBounds = NO;
@@ -225,7 +225,7 @@
                 
                 [self performSelector:@selector(delayedReorientPages:) withObject:networkOperationIdentifier afterDelay:0.5];
             } else {
-                [self.detailViewController reorientPages];
+                [self.storyPagesViewController reorientPages];
             }
         }
     }];
@@ -254,7 +254,7 @@
 }
 
 - (void)delayedReorientPages:(NSString *)identifier {
-    [self.detailViewController reorientPages];
+    [self.storyPagesViewController reorientPages];
     [appDelegate endNetworkOperation:identifier];
 }
 
@@ -271,16 +271,16 @@
     self.masterNavigationController.view.frame = CGRectMake(0, 0, self.masterWidth, self.view.bounds.size.height);
     
     if (!isCompact) {
-        if (self.masterNavigationController.topViewController == self.detailViewController) {
+        if (self.masterNavigationController.topViewController == self.storyPagesViewController) {
             [self.masterNavigationController popToViewController:self.feedDetailViewController animated:NO];
         }
         
-        if (self.storyNavigationController.topViewController != self.detailViewController) {
-            [self.storyNavigationController pushViewController:self.detailViewController animated:NO];
-            self.detailViewController.isAnimatedIntoPlace = NO;
+        if (self.storyNavigationController.topViewController != self.storyPagesViewController) {
+            [self.storyNavigationController pushViewController:self.storyPagesViewController animated:NO];
+            self.storyPagesViewController.isAnimatedIntoPlace = NO;
         }
         
-        [self.detailViewController hidePages];
+        [self.storyPagesViewController hidePages];
     }
 }
 
@@ -320,7 +320,7 @@
     self.originalNavigationController.navigationBar.barTintColor = [UINavigationBar appearance].barTintColor;
     
     UIView *titleLabel = [appDelegate makeFeedTitle:appDelegate.storiesCollection.activeFeed];
-    self.detailViewController.navigationItem.titleView = titleLabel;
+    self.storyPagesViewController.navigationItem.titleView = titleLabel;
 }
 
 #pragma mark -
@@ -334,7 +334,7 @@
     
     if (self.feedDetailIsVisible) {
         [self.feedDetailViewController encodeRestorableStateWithCoder:coder];
-        [self.detailViewController encodeRestorableStateWithCoder:coder];
+        [self.storyPagesViewController encodeRestorableStateWithCoder:coder];
     }
 }
 
@@ -350,7 +350,7 @@
         
         [self transitionToFeedDetail:YES animated:NO];
         [self.feedDetailViewController decodeRestorableStateWithCoder:coder];
-        [self.detailViewController decodeRestorableStateWithCoder:coder];
+        [self.storyPagesViewController decodeRestorableStateWithCoder:coder];
     }
 }
 
@@ -371,7 +371,7 @@
         [self.appDelegate showPopoverWithViewController:self.appDelegate.userProfileNavigationController contentSize:CGSizeMake(320, 454) barButtonItem:sender];
     } else {
         CGRect frame = [sender CGRectValue];
-        [self.appDelegate showPopoverWithViewController:self.appDelegate.userProfileNavigationController contentSize:CGSizeMake(320, 454) sourceView:self.detailViewController.view sourceRect:frame];
+        [self.appDelegate showPopoverWithViewController:self.appDelegate.userProfileNavigationController contentSize:CGSizeMake(320, 454) sourceView:self.storyPagesViewController.view sourceRect:frame];
     }
 }
 
@@ -386,7 +386,7 @@
         [self.appDelegate showPopoverWithViewController:self.appDelegate.trainerViewController contentSize:CGSizeMake(420, 382) sourceView:cell sourceRect:cell.bounds];
     } else {
         CGRect frame = [sender CGRectValue];
-        [self.appDelegate showPopoverWithViewController:self.appDelegate.trainerViewController contentSize:CGSizeMake(420, 382) sourceView:self.detailViewController.view sourceRect:frame];
+        [self.appDelegate showPopoverWithViewController:self.appDelegate.trainerViewController contentSize:CGSizeMake(420, 382) sourceView:self.storyPagesViewController.view sourceRect:frame];
     }
 }
 
@@ -407,7 +407,7 @@
 }
 
 - (void)syncNextPreviousButtons {
-    [self.detailViewController setNextPreviousButtons];
+    [self.storyPagesViewController setNextPreviousButtons];
 }
 
 #pragma mark - UIPopoverPresentationControllerDelegate
@@ -441,7 +441,7 @@
     self.masterNavigationController.view.frame = CGRectMake(0, 0, self.masterWidth, vb.size.height);
     self.dashboardViewController.view.frame = CGRectMake(self.masterWidth, 0, vb.size.width - self.masterWidth, vb.size.height);
     rightBorder.frame = CGRectMake(self.masterWidth-1, 0, 1, CGRectGetHeight(self.view.bounds));
-    self.detailViewController.navigationItem.leftBarButtonItem = self.detailViewController.buttonBack;
+    self.storyPagesViewController.navigationItem.leftBarButtonItem = self.storyPagesViewController.buttonBack;
 }
 
 - (void)layoutFeedDetailScreen {
@@ -451,11 +451,11 @@
     UIInterfaceOrientation orientation = self.appDelegate.window.windowScene.interfaceOrientation;
 	if (UIInterfaceOrientationIsPortrait(orientation) && !self.storyTitlesOnLeft) {
         // add the back button
-        self.detailViewController.navigationItem.leftBarButtonItem = self.detailViewController.buttonBack;
+        self.storyPagesViewController.navigationItem.leftBarButtonItem = self.storyPagesViewController.buttonBack;
         
         // set center title
         UIView *titleLabel = [appDelegate makeFeedTitle:appDelegate.storiesCollection.activeFeed];
-        self.detailViewController.navigationItem.titleView = titleLabel;
+        self.storyPagesViewController.navigationItem.titleView = titleLabel;
         
         if ([[self.masterNavigationController viewControllers] containsObject:self.feedDetailViewController]) {
             [self.masterNavigationController popViewControllerAnimated:NO];
@@ -475,7 +475,7 @@
                                                                   vb.size.width, vb.size.height);
     } else {
         // remove the back button
-        self.detailViewController.navigationItem.leftBarButtonItem = nil;
+        self.storyPagesViewController.navigationItem.leftBarButtonItem = nil;
 
         if (![[self.masterNavigationController viewControllers] containsObject:self.feedDetailViewController]) {
             [self.masterNavigationController pushViewController:self.feedDetailViewController animated:NO];        
@@ -508,10 +508,10 @@
             self.leftBorder.hidden = NO;
             
             // remove the back button
-            self.detailViewController.navigationItem.leftBarButtonItem = nil;
+            self.storyPagesViewController.navigationItem.leftBarButtonItem = nil;
             
             // remove center title
-            self.detailViewController.navigationItem.titleView = nil;
+            self.storyPagesViewController.navigationItem.titleView = nil;
             
             [self.masterNavigationController popToRootViewControllerAnimated:NO];
             if (![[self.masterNavigationController viewControllers] containsObject:self.feedDetailViewController]) {
@@ -525,7 +525,7 @@
                 self.storyNavigationController.view.frame = CGRectMake(self.masterWidth-1, 0, vb.size.width - self.masterWidth + 1, vb.size.height);
             } completion:^(BOOL finished) {
                 [self.feedDetailViewController checkScroll];
-                [self.appDelegate.detailViewController refreshPages];
+                [self.appDelegate.storyPagesViewController refreshPages];
                 [self.appDelegate adjustStoryDetailWebView];
                 [self.feedDetailViewController.storyTitlesTable reloadData];
             }];
@@ -549,11 +549,11 @@
         self.leftBorder.hidden = YES;
         
         // add the back button
-        self.detailViewController.navigationItem.leftBarButtonItem = self.detailViewController.buttonBack;
+        self.storyPagesViewController.navigationItem.leftBarButtonItem = self.storyPagesViewController.buttonBack;
         
         // set center title
         UIView *titleLabel = [appDelegate makeFeedTitle:appDelegate.storiesCollection.activeFeed];
-        self.detailViewController.navigationItem.titleView = titleLabel;
+        self.storyPagesViewController.navigationItem.titleView = titleLabel;
         
         [UIView animateWithDuration:NB_DEFAULT_SLIDER_INTERVAL delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
             self.masterNavigationController.view.frame = CGRectMake(-1 * self.masterWidth, 0, self.masterWidth, vb.size.height);
@@ -567,7 +567,7 @@
             self.feedDetailViewController.view.frame = CGRectMake(0, self.storyTitlesYCoordinate, vb.size.width, vb.size.height - self.storyTitlesYCoordinate);
             self.storyTitlesStub.hidden = YES;
             [self.feedDetailViewController checkScroll];
-            [self.appDelegate.detailViewController refreshPages];
+            [self.appDelegate.storyPagesViewController refreshPages];
             [self.appDelegate adjustStoryDetailWebView];
             [self.feedDetailViewController.storyTitlesTable reloadData];
         }];    
@@ -605,17 +605,17 @@
         // reset the storyDetailViewController components
 //        self.detailViewController.currentStoryController.webView.hidden = YES;
 //        self.detailViewController.nextPage.webView.hidden = YES;
-        self.detailViewController.navigationItem.rightBarButtonItems = nil;
-        [self.detailViewController hidePages];
+        self.storyPagesViewController.navigationItem.rightBarButtonItems = nil;
+        [self.storyPagesViewController hidePages];
         NSInteger unreadCount = appDelegate.unreadCount;
         if (unreadCount == 0) {
-            self.detailViewController.circularProgressView.percentage = 1;
+            self.storyPagesViewController.circularProgressView.percentage = 1;
         } else {
-            self.detailViewController.circularProgressView.percentage = 0;
+            self.storyPagesViewController.circularProgressView.percentage = 0;
         }
 
         UIView *titleLabel = [appDelegate makeFeedTitle:appDelegate.storiesCollection.activeFeed];
-        self.detailViewController.navigationItem.titleView = titleLabel;
+        self.storyPagesViewController.navigationItem.titleView = titleLabel;
         
         [self setupStoryTitlesPosition];
     }
@@ -624,11 +624,11 @@
     UIInterfaceOrientation orientation = self.appDelegate.window.windowScene.interfaceOrientation;
 	if (UIInterfaceOrientationIsPortrait(orientation) && !self.storyTitlesOnLeft) {
         // Force the story page control to load.
-        [detailViewController view];
+        [storyPagesViewController view];
         // CASE: story titles on bottom
         if (resetLayout) {
-            self.detailViewController.navigationItem.leftBarButtonItem = self.detailViewController.buttonBack;
-            self.detailViewController.navigationItem.rightBarButtonItems = self.feedDetailViewController.navigationItem.rightBarButtonItems;
+            self.storyPagesViewController.navigationItem.leftBarButtonItem = self.storyPagesViewController.buttonBack;
+            self.storyPagesViewController.navigationItem.rightBarButtonItems = self.feedDetailViewController.navigationItem.rightBarButtonItems;
 
         [self.view insertSubview:self.feedDetailViewController.view
                     aboveSubview:self.storyNavigationController.view];
@@ -673,7 +673,7 @@
             [self interactiveTransitionFromFeedDetail:1];
 
             UIView *titleLabel = [appDelegate makeFeedTitle:appDelegate.storiesCollection.activeFeed];
-            self.detailViewController.navigationItem.titleView = titleLabel;
+            self.storyPagesViewController.navigationItem.titleView = titleLabel;
         }
         self.leftBorder.hidden = NO;
         
@@ -785,7 +785,7 @@
     [self.originalViewController viewWillDisappear:YES];
     self.originalViewIsVisible = NO;
 
-    [self.detailViewController becomeFirstResponder];
+    [self.storyPagesViewController becomeFirstResponder];
     
     [UIView animateWithDuration:0.35 delay:0
                         options:UIViewAnimationOptionCurveEaseOut
@@ -940,7 +940,7 @@
     [self.appDelegate hidePopover];
     CGRect vb = [self.view bounds];
     self.isSharingStory = YES;
-    self.detailViewController.traverseView.hidden = YES;
+    self.storyPagesViewController.traverseView.hidden = YES;
     
     // adding shareViewController
     [self.shareNavigationController removeFromParentViewController];
@@ -951,9 +951,9 @@
 
     self.shareNavigationController.view.frame = CGRectMake(self.storyNavigationController.view.frame.origin.x, 
                                                            vb.size.height,
-                                                           self.detailViewController.view.frame.size.width,
+                                                           self.storyPagesViewController.view.frame.size.width,
                                                            NB_DEFAULT_SHARE_HEIGHT);
-    [self.detailViewController resizeScrollView];
+    [self.storyPagesViewController resizeScrollView];
     
     self.shareViewController.view.frame = CGRectMake(0,
                                            0, 
@@ -974,7 +974,7 @@
     [self.appDelegate hidePopover];
     CGRect vb = [self.view bounds];
     self.isSharingStory = NO;
-    self.detailViewController.traverseView.hidden = NO;
+    self.storyPagesViewController.traverseView.hidden = NO;
     
     if ([self.shareViewController.commentField isFirstResponder] && self.keyboardIsShown) {
         self.isHidingStory = YES; // the flag allows the keyboard animation to also slide down the share view
@@ -1182,8 +1182,8 @@
      } completion:^(BOOL finished) {
          if (self.keyboardIsShown) {
              self.storyNavigationController.view.frame = storyNavigationFrame;
-             [self.detailViewController.currentStoryController scrolltoComment];
-             [self.detailViewController resizeScrollView];
+             [self.storyPagesViewController.currentPage scrolltoComment];
+             [self.storyPagesViewController resizeScrollView];
          } else {
              // remove the shareNavigationController after keyboard slides down
              if (self.isHidingStory) {

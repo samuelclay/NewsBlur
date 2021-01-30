@@ -1,5 +1,5 @@
 //
-//  DetailObjCViewController.h
+//  StoryPagesObjCViewController.h
 //  NewsBlur
 //
 //  Created by Samuel Clay on 11/2/12.
@@ -14,7 +14,7 @@
 
 @class StoryDetailViewController;
 
-@interface DetailObjCViewController : BaseViewController
+@interface StoryPagesObjCViewController : BaseViewController
 <UIScrollViewDelegate, UIPopoverControllerDelegate, UIPopoverPresentationControllerDelegate, UIGestureRecognizerDelegate> {
     NewsBlurAppDelegate *appDelegate;
     THCircularProgressView *circularProgressView;
@@ -38,11 +38,12 @@
 }
 
 @property (nonatomic, strong) NewsBlurAppDelegate *appDelegate;
-//@property (nonatomic) StoryDetailViewController *currentPage;
-//@property (nonatomic) StoryDetailViewController *nextPage;
-//@property (nonatomic) StoryDetailViewController *previousPage;
+@property (nonatomic) StoryDetailViewController *currentPage;
+@property (nonatomic) StoryDetailViewController *nextPage;
+@property (nonatomic) StoryDetailViewController *previousPage;
 @property (nonatomic, strong) IBOutlet UIScrollView *scrollView;
 @property (nonatomic, strong) IBOutlet UIPageControl *pageControl;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *scrollViewTopConstraint;
 
 @property (weak, nonatomic) IBOutlet UIView *autoscrollView;
 @property (weak, nonatomic) IBOutlet UIImageView *autoscrollBackgroundImageView;
@@ -50,8 +51,7 @@
 @property (weak, nonatomic) IBOutlet UIButton *autoscrollPauseResumeButton;
 @property (weak, nonatomic) IBOutlet UIButton *autoscrollSlowerButton;
 @property (weak, nonatomic) IBOutlet UIButton *autoscrollFasterButton;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *autoscrollTopContainerBottomConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *autoscrollBottomContainerBottomConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *autoscrollBottomConstraint;
 
 @property (nonatomic, strong) IBOutlet UIActivityIndicatorView *loadingIndicator;
 @property (nonatomic) IBOutlet UIImageView *textStorySendBackgroundImageView;
@@ -63,8 +63,8 @@
 @property (nonatomic) IBOutlet UIButton *buttonSend;
 @property (nonatomic) UIBarButtonItem *buttonBack;
 @property (nonatomic) IBOutlet UIBarButtonItem *buttonAction;
-@property (nonatomic) IBOutlet UIView *dividerView;
-//@property (nonatomic) IBOutlet NSLayoutConstraint *dividerViewBottomConstraint;
+@property (nonatomic) IBOutlet UIView *bottomSize;
+@property (nonatomic) IBOutlet NSLayoutConstraint *bottomSizeHeightConstraint;
 @property (nonatomic) IBOutlet UIBarButtonItem * spacerBarButton;
 @property (nonatomic) IBOutlet UIBarButtonItem * spacer2BarButton;
 @property (nonatomic) IBOutlet UIBarButtonItem * spacer3BarButton;
@@ -76,15 +76,15 @@
 @property (nonatomic) IBOutlet UIBarButtonItem *originalStoryButton;
 @property (nonatomic, strong) IBOutlet UIBarButtonItem *subscribeButton;
 @property (nonatomic) IBOutlet UIImageView *dragBarImageView;
-@property (nonatomic) IBOutlet NSLayoutConstraint *traverseTopContainerBottomConstraint;
-@property (nonatomic) IBOutlet NSLayoutConstraint *traverseBottomContainerBottomConstraint;
+@property (nonatomic) IBOutlet NSLayoutConstraint *traverseBottomConstraint;
+@property (nonatomic) IBOutlet NSLayoutConstraint *scrollBottomConstraint;
 @property (nonatomic) IBOutlet UIView *statusBarBackgroundView;
 @property (nonatomic) BOOL autoscrollAvailable;
 @property (nonatomic) BOOL autoscrollActive;
 @property (nonatomic) NSTimeInterval autoscrollSpeed;
 @property (readwrite) BOOL traversePinned;
 @property (readwrite) BOOL traverseFloating;
-//@property (readwrite) CGFloat inTouchMove;
+@property (readwrite) CGFloat inTouchMove;
 @property (assign) BOOL isDraggingScrollview;
 @property (assign) BOOL isAnimatedIntoPlace;
 @property (assign) BOOL waitingForNextUnreadFromServer;
@@ -97,21 +97,19 @@
 @property (nonatomic, readonly) BOOL allowFullscreen;
 @property (nonatomic) BOOL forceNavigationBarShown;
 @property (nonatomic) BOOL currentlyTogglingNavigationBar;
-@property (nonatomic, readonly) BOOL isPortraitOrientation;
 @property (nonatomic, readonly) BOOL isHorizontal;
 @property (nonatomic) BOOL temporarilyMarkedUnread;
-@property (nonatomic, readonly) NSInteger storiesCount;
 
 - (void)resizeScrollView;
-- (BOOL)pageIndexIsValid:(NSInteger)pageIndex;
 - (void)applyNewIndex:(NSInteger)newIndex pageController:(StoryDetailViewController *)pageController;
 - (void)layoutForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
 - (void)updateStatusBarState;
 - (void)setNavigationBarHidden:(BOOL)hide;
 - (void)setNavigationBarHidden:(BOOL)hide alsoTraverse:(BOOL)alsoTraverse;
-//- (void)adjustDragBar:(UIInterfaceOrientation)orientation;
+- (void)adjustDragBar:(UIInterfaceOrientation)orientation;
 
 - (void)transitionFromFeedDetail;
+- (void)resetPages;
 - (void)hidePages;
 - (void)refreshPages;
 - (void)reorientPages;
@@ -144,9 +142,6 @@
 - (IBAction)showOriginalSubview:(id)sender;
 
 - (void)flashCheckmarkHud:(NSString *)messageType;
-
-- (void)adjustTraversePosition:(CGFloat)position;
-- (void)adjustAutoscrollPosition:(CGFloat)position;
 
 - (void)tappedStory;
 - (void)showAutoscrollBriefly:(BOOL)briefly;

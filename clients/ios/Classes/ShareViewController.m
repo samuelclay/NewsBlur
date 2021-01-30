@@ -336,7 +336,7 @@
 # pragma mark Share Story
 
 - (IBAction)doShareThisStory:(id)sender {
-    [appDelegate.detailViewController showShareHUD:@"Sharing"];
+    [appDelegate.storyPagesViewController showShareHUD:@"Sharing"];
     NSString *urlString = [NSString stringWithFormat:@"%@/social/share_story",
                            self.appDelegate.url];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
@@ -392,15 +392,15 @@
     [self replaceStory:[results objectForKey:@"story"] withReplyId:nil];
     [appDelegate.feedDetailViewController redrawUnreadStory];
 
-    [MBProgressHUD hideHUDForView:appDelegate.detailViewController.view animated:NO];
-    [MBProgressHUD hideHUDForView:appDelegate.detailViewController.currentStoryController.view animated:NO];
+    [MBProgressHUD hideHUDForView:appDelegate.storyPagesViewController.view animated:NO];
+    [MBProgressHUD hideHUDForView:appDelegate.storyPagesViewController.currentPage.view animated:NO];
 }
 
 # pragma mark
 # pragma mark Reply to Story
 
 - (IBAction)doReplyToComment:(id)sender {
-    [appDelegate.detailViewController showShareHUD:@"Replying"];
+    [appDelegate.storyPagesViewController showShareHUD:@"Replying"];
     NSString *comments = commentField.text;
     if ([comments length] == 0) {
         return;
@@ -442,11 +442,11 @@
 }
 
 - (void)requestFailed:(NSError *)error statusCode:(NSInteger)statusCode {
-    [MBProgressHUD hideHUDForView:appDelegate.detailViewController.view animated:NO];
-    [MBProgressHUD hideHUDForView:appDelegate.detailViewController.currentStoryController.view animated:NO];
+    [MBProgressHUD hideHUDForView:appDelegate.storyPagesViewController.view animated:NO];
+    [MBProgressHUD hideHUDForView:appDelegate.storyPagesViewController.currentPage.view animated:NO];
 
     NSLog(@"Error: %@", error);
-    [appDelegate.detailViewController.currentStoryController informError:error statusCode:statusCode];
+    [appDelegate.storyPagesViewController.currentPage informError:error statusCode:statusCode];
 }
 
 - (void)replaceStory:(NSDictionary *)newStory withReplyId:(NSString *)replyId {
@@ -455,7 +455,7 @@
 
     // update the current story and the activeFeedStories
     appDelegate.activeStory = newStoryParsed;
-    [appDelegate.detailViewController.currentStoryController setActiveStoryAtIndex:-1];
+    [appDelegate.storyPagesViewController.currentPage setActiveStoryAtIndex:-1];
 
     NSMutableArray *newActiveFeedStories = [[NSMutableArray alloc] init];
     
@@ -473,7 +473,7 @@
     appDelegate.storiesCollection.activeFeedStories = [NSArray arrayWithArray:newActiveFeedStories];
     
     self.commentField.text = nil;
-    [appDelegate.detailViewController.currentStoryController refreshComments:replyId];
+    [appDelegate.storyPagesViewController.currentPage refreshComments:replyId];
     [appDelegate changeActiveFeedDetailRow];
 }
 

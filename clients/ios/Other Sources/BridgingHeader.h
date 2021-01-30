@@ -12,6 +12,6 @@
 
 #import "FeedsObjCViewController.h"
 #import "FeedDetailObjCViewController.h"
-#import "DetailObjCViewController.h"
+#import "StoryPagesObjCViewController.h"
 #import "StoryDetailObjCViewController.h"
 #import "OriginalStoryViewController.h"

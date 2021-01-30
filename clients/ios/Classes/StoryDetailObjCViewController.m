@@ -65,7 +65,8 @@
 }
 
 - (NSString *)description {
-    return [NSString stringWithFormat:@"%@: page %@, '%@'", [super description], @(pageIndex), activeStory[@"story_title"]];
+    NSString *page = appDelegate.storyPagesViewController.currentPage == self ? @"currentPage" : appDelegate.storyPagesViewController.previousPage == self ? @"previousPage" : appDelegate.storyPagesViewController.nextPage == self ? @"nextPage" : @"unattached page";
+    return [NSString stringWithFormat:@"%@", page];
 }
 
 - (void)viewDidLoad {
@@ -95,7 +96,7 @@
     self.webView.allowsLinkPreview = YES;
 //    self.webView.multipleTouchEnabled = NO;
     
-    [self.webView.scrollView setAlwaysBounceVertical:appDelegate.detailViewController.isHorizontal];
+    [self.webView.scrollView setAlwaysBounceVertical:appDelegate.storyPagesViewController.isHorizontal];
     [self.webView.scrollView setDelaysContentTouches:NO];
     [self.webView.scrollView setDecelerationRate:UIScrollViewDecelerationRateNormal];
     [self.webView.scrollView setAutoresizingMask:(UIViewAutoresizingFlexibleWidth |
@@ -197,7 +198,7 @@
                 [self.webView evaluateJavaScript:[NSString stringWithFormat:@"linkAt(%li, %li, 'id');", (long)pt.x,(long)pt.y] completionHandler:^(NSString *identifier, NSError *error) {
                     [self.webView evaluateJavaScript:[NSString stringWithFormat:@"linkAt(%li, %li, 'outerHTML');", (long)pt.x,(long)pt.y] completionHandler:^(NSString *outerHTML, NSError *error) {
                         if ([identifier isEqualToString:@"NB-story"] || ![outerHTML containsString:@"NB-"]) {
-                            [self.appDelegate.detailViewController tappedStory];
+                            [self.appDelegate.storyPagesViewController tappedStory];
                         }
                     }];
                 }];
@@ -207,7 +208,7 @@
             
             // Ignore links, videos, and iframes (e.g. embedded YouTube videos).
             if (![@[@"A", @"VIDEO", @"IFRAME"] containsObject:tagName]) {
-                [self.appDelegate.detailViewController tappedStory];
+                [self.appDelegate.storyPagesViewController tappedStory];
             }
         }];
     }
@@ -257,7 +258,7 @@
         }
         inDoubleTap = NO;
         [self performSelector:@selector(deferredEnableScrolling) withObject:nil afterDelay:0.0];
-        appDelegate.detailViewController.autoscrollActive = NO;
+        appDelegate.storyPagesViewController.autoscrollActive = NO;
     }
 }
 
@@ -266,8 +267,8 @@
         return;
     }
     
-    appDelegate.detailViewController.forceNavigationBarShown = gestureRecognizer.scale < 1;
-    [appDelegate.detailViewController changedFullscreen];
+    appDelegate.storyPagesViewController.forceNavigationBarShown = gestureRecognizer.scale < 1;
+    [appDelegate.storyPagesViewController changedFullscreen];
 }
 
 - (void)screenEdgeSwipe:(UITapGestureRecognizer *)gestureRecognizer {
@@ -276,7 +277,7 @@
                          isEqualToString:@"pop_to_story_list"];
     
 //    if (swipeEnabled && gestureRecognizer.state == UIGestureRecognizerStateBegan) {
-//        [appDelegate.detailViewController setNavigationBarHidden:NO];
+//        [appDelegate.storyPagesViewController setNavigationBarHidden:NO];
 //    }
     
     if (swipeEnabled && gestureRecognizer.state == UIGestureRecognizerStateEnded) {
@@ -358,7 +359,7 @@
     UIInterfaceOrientation orientation = self.view.window.windowScene.interfaceOrientation;
     [super viewWillLayoutSubviews];
     dispatch_async(dispatch_get_main_queue(), ^{
-        [self.appDelegate.detailViewController layoutForInterfaceOrientation:orientation];
+        [self.appDelegate.storyPagesViewController layoutForInterfaceOrientation:orientation];
         [self changeWebViewWidth];
         [self drawFeedGradient];
     });
@@ -612,7 +613,7 @@
     dispatch_async(dispatch_get_main_queue(), ^{
 //        NSLog(@"Drawing Story: %@", [self.activeStory objectForKey:@"story_title"]);
         [self loadHTMLString:htmlTopAndBottom];
-        [self.appDelegate.detailViewController setTextButton:(StoryDetailViewController *)self];
+        [self.appDelegate.storyPagesViewController setTextButton:(StoryDetailViewController *)self];
     });
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
@@ -623,14 +624,14 @@
 }
 
 - (void)drawFeedGradient {
-    BOOL shouldHideStatusBar = appDelegate.detailViewController.shouldHideStatusBar;
+    BOOL shouldHideStatusBar = appDelegate.storyPagesViewController.shouldHideStatusBar;
     CGFloat yOffset = -1;
     NSString *feedIdStr = [NSString stringWithFormat:@"%@",
                            [self.activeStory
                             objectForKey:@"story_feed_id"]];
     NSDictionary *feed = [appDelegate getFeed:feedIdStr];
     
-    if (appDelegate.detailViewController.currentlyTogglingNavigationBar && !appDelegate.detailViewController.isNavigationBarHidden) {
+    if (appDelegate.storyPagesViewController.currentlyTogglingNavigationBar && !appDelegate.storyPagesViewController.isNavigationBarHidden) {
         yOffset -= 25;
     }
     
@@ -661,11 +662,11 @@
     }
     [self.webView insertSubview:feedTitleGradient aboveSubview:self.webView.scrollView];
     
-    if (appDelegate.detailViewController.view.safeAreaInsets.top > 0.0 && [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone && shouldHideStatusBar) {
-        feedTitleGradient.alpha = appDelegate.detailViewController.isNavigationBarHidden ? 1 : 0;
+    if (appDelegate.storyPagesViewController.view.safeAreaInsets.top > 0.0 && [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone && shouldHideStatusBar) {
+        feedTitleGradient.alpha = appDelegate.storyPagesViewController.isNavigationBarHidden ? 1 : 0;
         
         [UIView animateWithDuration:0.3 animations:^{
-            self.feedTitleGradient.alpha = self.appDelegate.detailViewController.isNavigationBarHidden ? 0 : 1;
+            self.feedTitleGradient.alpha = self.appDelegate.storyPagesViewController.isNavigationBarHidden ? 0 : 1;
         }];
     }
 }
@@ -1326,8 +1327,8 @@
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
     if ([keyPath isEqual:@"contentOffset"]) {
-        BOOL isHorizontal = appDelegate.detailViewController.isHorizontal;
-        BOOL isNavBarHidden = appDelegate.detailViewController.isNavigationBarHidden;
+        BOOL isHorizontal = appDelegate.storyPagesViewController.isHorizontal;
+        BOOL isNavBarHidden = appDelegate.storyPagesViewController.isNavigationBarHidden;
         
         if (self.webView.scrollView.contentOffset.y < (-1 * self.feedTitleGradient.frame.size.height + 1 + self.webView.scrollView.verticalScrollIndicatorInsets.top)) {
             // Pulling
@@ -1370,15 +1371,15 @@
             }
         }
         
-        if (appDelegate.detailViewController.currentStoryController != self) return;
+        if (appDelegate.storyPagesViewController.currentPage != self) return;
 
         int webpageHeight = self.webView.scrollView.contentSize.height;
         int viewportHeight = self.view.frame.size.height;
         int topPosition = self.webView.scrollView.contentOffset.y;
         
-        CGFloat bottomInset = appDelegate.detailViewController.view.safeAreaInsets.bottom;
+        CGFloat bottomInset = appDelegate.storyPagesViewController.view.safeAreaInsets.bottom;
         
-        int safeBottomMargin = (-1 * bottomInset / 2) + 20;
+        int safeBottomMargin = -1 * bottomInset / 2;
         int bottomPosition = webpageHeight - topPosition - viewportHeight;
         BOOL singlePage = webpageHeight - 200 <= viewportHeight;
         BOOL atBottom = bottomPosition < 150;
@@ -1389,75 +1390,73 @@
             hasScrolled = YES;
         }
         
-        if (!isNavBarHidden && self.canHideNavigationBar && !nearTop && appDelegate.detailViewController.autoscrollActive) {
-            [appDelegate.detailViewController setNavigationBarHidden:YES];
+        if (!isNavBarHidden && self.canHideNavigationBar && !nearTop && appDelegate.storyPagesViewController.autoscrollActive) {
+            [appDelegate.storyPagesViewController setNavigationBarHidden:YES];
         }
         
         if (!atTop && !atBottom && !singlePage) {
-            BOOL traversalVisible = appDelegate.detailViewController.traverseView.alpha > 0;
+            BOOL traversalVisible = appDelegate.storyPagesViewController.traverseView.alpha > 0;
             
             // Hide
             [UIView animateWithDuration:.3 delay:0
                                 options:UIViewAnimationOptionCurveEaseInOut
             animations:^{
-                self.appDelegate.detailViewController.traverseView.alpha = 0;
+                self.appDelegate.storyPagesViewController.traverseView.alpha = 0;
                 
                 if (traversalVisible) {
-                    [self.appDelegate.detailViewController hideAutoscrollImmediately];
+                    [self.appDelegate.storyPagesViewController hideAutoscrollImmediately];
                 }
             } completion:^(BOOL finished) {
                 
             }];
         } else if (singlePage || !isHorizontal) {
-            appDelegate.detailViewController.traverseView.alpha = 1;
+            appDelegate.storyPagesViewController.traverseView.alpha = 1;
 //            NSLog(@" ---> Bottom position: %d", bottomPosition);
             if (bottomPosition >= 0 || !isHorizontal) {
-                [appDelegate.detailViewController adjustTraversePosition:safeBottomMargin];
+                appDelegate.storyPagesViewController.traverseBottomConstraint.constant = safeBottomMargin;
             } else {
                 if (webpageHeight > 0) {
-                    [appDelegate.detailViewController adjustTraversePosition:viewportHeight - (webpageHeight - topPosition) + safeBottomMargin];
+                    appDelegate.storyPagesViewController.traverseBottomConstraint.constant = viewportHeight - (webpageHeight - topPosition) + safeBottomMargin;
                 } else {
-                    [appDelegate.detailViewController adjustTraversePosition:safeBottomMargin];
+                    appDelegate.storyPagesViewController.traverseBottomConstraint.constant = safeBottomMargin;
                 }
             }
         } else if (!singlePage && (atTop && !atBottom)) {
             // Pin to bottom of viewport, regardless of scrollview
-            appDelegate.detailViewController.traversePinned = YES;
-            appDelegate.detailViewController.traverseFloating = NO;
-            [appDelegate.detailViewController.view layoutIfNeeded];
+            appDelegate.storyPagesViewController.traversePinned = YES;
+            appDelegate.storyPagesViewController.traverseFloating = NO;
+            [appDelegate.storyPagesViewController.view layoutIfNeeded];
 
-            [appDelegate.detailViewController adjustTraversePosition:safeBottomMargin];
+            appDelegate.storyPagesViewController.traverseBottomConstraint.constant = safeBottomMargin;
             [UIView animateWithDuration:.3 delay:0
                                 options:UIViewAnimationOptionCurveEaseInOut
              animations:^{
-                [self.appDelegate.detailViewController.view layoutIfNeeded];
-                self.appDelegate.detailViewController.traverseView.alpha = 1;
+                [self.appDelegate.storyPagesViewController.view layoutIfNeeded];
+                self.appDelegate.storyPagesViewController.traverseView.alpha = 1;
             } completion:nil];
-        } else if (appDelegate.detailViewController.traverseView.alpha == 1 &&
-                   appDelegate.detailViewController.traversePinned) {
+        } else if (appDelegate.storyPagesViewController.traverseView.alpha == 1 &&
+                   appDelegate.storyPagesViewController.traversePinned) {
             // Scroll with bottom of scrollview, but smoothly
-            appDelegate.detailViewController.traverseFloating = YES;
-            [appDelegate.detailViewController.view layoutIfNeeded];
+            appDelegate.storyPagesViewController.traverseFloating = YES;
+            [appDelegate.storyPagesViewController.view layoutIfNeeded];
 
-            [appDelegate.detailViewController adjustTraversePosition:safeBottomMargin];
+            appDelegate.storyPagesViewController.traverseBottomConstraint.constant = safeBottomMargin;
             [UIView animateWithDuration:.3 delay:0
                                 options:UIViewAnimationOptionCurveEaseInOut
              animations:^{
-                 [self.appDelegate.detailViewController.view layoutIfNeeded];
+                 [self.appDelegate.storyPagesViewController.view layoutIfNeeded];
              } completion:^(BOOL finished) {
-                 self.appDelegate.detailViewController.traversePinned = NO;
+                 self.appDelegate.storyPagesViewController.traversePinned = NO;
              }];
         } else {
             // Scroll with bottom of scrollview
-            appDelegate.detailViewController.traversePinned = NO;
-            appDelegate.detailViewController.traverseFloating = YES;
-            appDelegate.detailViewController.traverseView.alpha = 1;
-            [appDelegate.detailViewController adjustTraversePosition:viewportHeight - (webpageHeight - topPosition) + safeBottomMargin];
+            appDelegate.storyPagesViewController.traversePinned = NO;
+            appDelegate.storyPagesViewController.traverseFloating = YES;
+            appDelegate.storyPagesViewController.traverseView.alpha = 1;
+            appDelegate.storyPagesViewController.traverseBottomConstraint.constant = viewportHeight - (webpageHeight - topPosition) + safeBottomMargin;
         }
         
         [self storeScrollPosition:YES];
-        
-        [appDelegate.detailViewController allowPagingUp:atTop down:atBottom];
     }
 }
 
@@ -1832,7 +1831,7 @@
         appDelegate.tryFeedCategory &&
         ([[self.activeStory objectForKey:@"id"] isEqualToString:appDelegate.tryFeedStoryId] ||
          [[self.activeStory objectForKey:@"story_hash"] isEqualToString:appDelegate.tryFeedStoryId])) {
-        [MBProgressHUD hideHUDForView:appDelegate.detailViewController.view animated:YES];
+        [MBProgressHUD hideHUDForView:appDelegate.storyPagesViewController.view animated:YES];
         
         if ([appDelegate.tryFeedCategory isEqualToString:@"comment_like"] ||
             [appDelegate.tryFeedCategory isEqualToString:@"comment_reply"]) {
@@ -1905,7 +1904,7 @@
 }
 
 - (BOOL)canHideNavigationBar {
-    if (!appDelegate.detailViewController.allowFullscreen) {
+    if (!appDelegate.storyPagesViewController.allowFullscreen) {
         NSLog(@"canHideNavigationBar: no, toggle is off");  // log
         return NO;
     }
@@ -1924,7 +1923,7 @@
 #pragma mark Actions
 
 - (void)toggleLikeComment:(BOOL)likeComment {
-    [appDelegate.detailViewController showShareHUD:@"Favoriting"];
+    [appDelegate.storyPagesViewController showShareHUD:@"Favoriting"];
     NSString *urlString;
     if (likeComment) {
         urlString = [NSString stringWithFormat:@"%@/social/like_comment",
@@ -1970,8 +1969,8 @@
     
     appDelegate.storiesCollection.activeFeedStories = [NSArray arrayWithArray:newActiveFeedStories];
     
-    [MBProgressHUD hideHUDForView:appDelegate.detailViewController.view animated:NO];
-    [MBProgressHUD hideHUDForView:appDelegate.detailViewController.currentStoryController.view animated:NO];
+    [MBProgressHUD hideHUDForView:appDelegate.storyPagesViewController.view animated:NO];
+    [MBProgressHUD hideHUDForView:appDelegate.storyPagesViewController.currentPage.view animated:NO];
     [self refreshComments:@"like"];
 } 
 
@@ -1979,8 +1978,8 @@
 - (void)requestFailed:(NSError *)error statusCode:(NSInteger)statusCode {
     NSLog(@"Error in story detail: %@", error);
     
-    [MBProgressHUD hideHUDForView:appDelegate.detailViewController.view animated:NO];
-    [MBProgressHUD hideHUDForView:appDelegate.detailViewController.currentStoryController.view animated:NO];
+    [MBProgressHUD hideHUDForView:appDelegate.storyPagesViewController.view animated:NO];
+    [MBProgressHUD hideHUDForView:appDelegate.storyPagesViewController.currentPage.view animated:NO];
 
     [self informError:error statusCode:statusCode];
 }
@@ -2114,7 +2113,7 @@
                 
                 UIPopoverPresentationController *popover = [alert popoverPresentationController];
                 popover.sourceRect = CGRectMake(pt.x, pt.y, 1, 1);
-                popover.sourceView = self.appDelegate.detailViewController.view;
+                popover.sourceView = self.appDelegate.storyPagesViewController.view;
                 [self presentViewController:alert animated:YES completion:nil];
             }];
         }];
@@ -2129,7 +2128,7 @@
             if (!href || ![href length]) return;
             
             NSValue *ptValue = [NSValue valueWithCGPoint:pt];
-            [self.appDelegate showSendTo:self.appDelegate.detailViewController
+            [self.appDelegate showSendTo:self.appDelegate.storyPagesViewController
                              sender:ptValue
                             withUrl:url
                          authorName:nil
@@ -2142,7 +2141,7 @@
 }
 
 - (CGPoint)pointForEvent:(NSNotification*)notification {
-    if (self != appDelegate.detailViewController.currentStoryController) return CGPointZero;
+    if (self != appDelegate.storyPagesViewController.currentPage) return CGPointZero;
     if (!self.view.window) return CGPointZero;
     
     CGPoint pt;
@@ -2168,10 +2167,10 @@
 }
 
 - (CGPoint)pointForGesture:(UIGestureRecognizer *)gestureRecognizer {
-    if (self != appDelegate.detailViewController.currentStoryController) return CGPointZero;
+    if (self != appDelegate.storyPagesViewController.currentPage) return CGPointZero;
     if (!self.view.window) return CGPointZero;
     
-    CGPoint pt = [gestureRecognizer locationInView:appDelegate.detailViewController.currentStoryController.webView];
+    CGPoint pt = [gestureRecognizer locationInView:appDelegate.storyPagesViewController.currentPage.webView];
     
     // convert point from view to HTML coordinate system
 //    CGPoint offset  = [self.webView scrollOffset];
@@ -2188,7 +2187,7 @@
 
 - (void)fetchImage:(NSURL *)url copy:(BOOL)copy save:(BOOL)save {
     [MBProgressHUD hideHUDForView:self.webView animated:YES];
-    [appDelegate.detailViewController showShareHUD:copy ?
+    [appDelegate.storyPagesViewController showShareHUD:copy ?
                                                @"Copying..." : @"Saving..."];
     
     AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
@@ -2229,7 +2228,7 @@
 # pragma mark Subscribing to blurblog
 
 - (void)subscribeToBlurblog {
-    [appDelegate.detailViewController showShareHUD:@"Following"];
+    [appDelegate.storyPagesViewController showShareHUD:@"Following"];
     NSString *urlString = [NSString stringWithFormat:@"%@/social/follow",
                      self.appDelegate.url];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
@@ -2246,14 +2245,14 @@
 }
 
 - (void)finishSubscribeToBlurblog:(NSDictionary *)results {
-    [MBProgressHUD hideHUDForView:appDelegate.detailViewController.view animated:NO];
+    [MBProgressHUD hideHUDForView:appDelegate.storyPagesViewController.view animated:NO];
     self.storyHUD = [MBProgressHUD showHUDAddedTo:self.webView animated:YES];
     self.storyHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"37x-Checkmark.png"]];
     self.storyHUD.mode = MBProgressHUDModeCustomView;
     self.storyHUD.removeFromSuperViewOnHide = YES;  
     self.storyHUD.labelText = @"Followed";
     [self.storyHUD hide:YES afterDelay:1];
-    appDelegate.detailViewController.navigationItem.leftBarButtonItem = nil;
+    appDelegate.storyPagesViewController.navigationItem.leftBarButtonItem = nil;
     [appDelegate reloadFeedsView:NO];
 }
 
@@ -2298,7 +2297,7 @@
 
 - (void)flashCheckmarkHud:(NSString *)messageType {
     [MBProgressHUD hideHUDForView:self.webView animated:NO];
-    [MBProgressHUD hideHUDForView:appDelegate.detailViewController.currentStoryController.view animated:NO];
+    [MBProgressHUD hideHUDForView:appDelegate.storyPagesViewController.currentPage.view animated:NO];
     self.storyHUD = [MBProgressHUD showHUDAddedTo:self.webView animated:YES];
     self.storyHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"37x-Checkmark.png"]];
     self.storyHUD.mode = MBProgressHUDModeCustomView;
@@ -2495,7 +2494,7 @@
 - (void)showStoryView {
     self.inTextView = NO;
     [MBProgressHUD hideHUDForView:self.webView animated:YES];
-    [appDelegate.detailViewController setTextButton:(StoryDetailViewController *)self];
+    [appDelegate.storyPagesViewController setTextButton:(StoryDetailViewController *)self];
     [self drawStory];
 }
 
@@ -2503,8 +2502,8 @@
     if (!self.activeStoryId || !self.activeStory) return;
     self.inTextView = YES;
 //    NSLog(@"Fetching Text: %@", [self.activeStory objectForKey:@"story_title"]);
-    if (self.activeStory == appDelegate.detailViewController.currentStoryController.activeStory) {
-        [self.appDelegate.detailViewController showFetchingTextNotifier];
+    if (self.activeStory == appDelegate.storyPagesViewController.currentPage.activeStory) {
+        [self.appDelegate.storyPagesViewController showFetchingTextNotifier];
     }
     NSString *storyId = [self.activeStory objectForKey:@"id"];
     
@@ -2518,21 +2517,21 @@
 }
 
 - (void)failedFetchText {
-    [self.appDelegate.detailViewController hideNotifier];
+    [self.appDelegate.storyPagesViewController hideNotifier];
     [MBProgressHUD hideHUDForView:self.webView animated:YES];
-    if (self.activeStory == appDelegate.detailViewController.currentStoryController.activeStory) {
+    if (self.activeStory == appDelegate.storyPagesViewController.currentPage.activeStory) {
         [self informError:@"Could not fetch text"];
     }
     self.inTextView = NO;
-    [appDelegate.detailViewController setTextButton:(StoryDetailViewController *)self];
+    [appDelegate.storyPagesViewController setTextButton:(StoryDetailViewController *)self];
 }
 
 - (void)finishFetchText:(NSString *)text storyId:(NSString *)storyId {
     if (![storyId isEqualToString:[self.activeStory objectForKey:@"id"]]) {
-        [self.appDelegate.detailViewController hideNotifier];
+        [self.appDelegate.storyPagesViewController hideNotifier];
         [MBProgressHUD hideHUDForView:self.webView animated:YES];
         self.inTextView = NO;
-        [appDelegate.detailViewController setTextButton:(StoryDetailViewController *)self];
+        [appDelegate.storyPagesViewController setTextButton:(StoryDetailViewController *)self];
         return;
     }
     
@@ -2543,7 +2542,7 @@
     }
     self.activeStory = newActiveStory;
     
-    [self.appDelegate.detailViewController hideNotifier];
+    [self.appDelegate.storyPagesViewController hideNotifier];
     [MBProgressHUD hideHUDForView:self.webView animated:YES];
     
     self.inTextView = YES;
@@ -2557,9 +2556,9 @@
     if (!self.activeStoryId || !self.activeStory) return;
     self.inTextView = YES;
 //    NSLog(@"Fetching Changes: %@", [self.activeStory objectForKey:@"story_title"]);
-    if (self.activeStory == appDelegate.detailViewController.currentStoryController.activeStory) {
+    if (self.activeStory == appDelegate.storyPagesViewController.currentPage.activeStory) {
         dispatch_async(dispatch_get_main_queue(), ^{
-            [self.appDelegate.detailViewController showFetchingTextNotifier];
+            [self.appDelegate.storyPagesViewController showFetchingTextNotifier];
         });
     }
     
@@ -2577,13 +2576,13 @@
 }
 
 - (void)failedFetchStoryChanges:(NSError *)error {
-    [self.appDelegate.detailViewController hideNotifier];
+    [self.appDelegate.storyPagesViewController hideNotifier];
     [MBProgressHUD hideHUDForView:self.webView animated:YES];
-    if (self.activeStory == appDelegate.detailViewController.currentStoryController.activeStory) {
+    if (self.activeStory == appDelegate.storyPagesViewController.currentPage.activeStory) {
         [self informError:@"Could not fetch changes"];
     }
     self.inTextView = NO;
-    [appDelegate.detailViewController setTextButton:(StoryDetailViewController *)self];
+    [appDelegate.storyPagesViewController setTextButton:(StoryDetailViewController *)self];
 }
 
 - (void)finishFetchStoryChanges:(NSDictionary *)results storyId:(NSString *)storyId {
@@ -2593,10 +2592,10 @@
     }
     
     if (![storyId isEqualToString:self.activeStory[@"id"]]) {
-        [self.appDelegate.detailViewController hideNotifier];
+        [self.appDelegate.storyPagesViewController hideNotifier];
         [MBProgressHUD hideHUDForView:self.webView animated:YES];
         self.inTextView = NO;
-        [appDelegate.detailViewController setTextButton:(StoryDetailViewController *)self];
+        [appDelegate.storyPagesViewController setTextButton:(StoryDetailViewController *)self];
         return;
     }
     
@@ -2608,7 +2607,7 @@
     }
     self.activeStory = newActiveStory;
     
-    [self.appDelegate.detailViewController hideNotifier];
+    [self.appDelegate.storyPagesViewController hideNotifier];
     [MBProgressHUD hideHUDForView:self.webView animated:YES];
     
     self.inTextView = YES;

@@ -93,14 +93,15 @@
 @synthesize premiumNavigationController;
 @synthesize userProfileNavigationController;
 @synthesize masterContainerViewController;
+@synthesize detailViewController;
 @synthesize dashboardViewController;
 @synthesize feedsViewController;
 @synthesize feedsMenuViewController;
 @synthesize feedDetailViewController;
 @synthesize friendsListViewController;
 @synthesize fontSettingsViewController;
+@synthesize storyPagesViewController;
 @synthesize storyDetailViewController;
-@synthesize detailViewController;
 @synthesize shareViewController;
 @synthesize loginViewController;
 @synthesize addSiteViewController;
@@ -270,13 +271,13 @@
         self.launchedShortcutItem = nil;
     }
     
-    if (detailViewController.temporarilyMarkedUnread && [storiesCollection isStoryUnread:activeStory]) {
+    if (storyPagesViewController.temporarilyMarkedUnread && [storiesCollection isStoryUnread:activeStory]) {
         [storiesCollection markStoryRead:activeStory];
         [storiesCollection syncStoryAsRead:activeStory];
-        detailViewController.temporarilyMarkedUnread = NO;
+        storyPagesViewController.temporarilyMarkedUnread = NO;
         
         [self.feedDetailViewController reloadData];
-        [self.detailViewController refreshHeaders];
+        [self.storyPagesViewController refreshHeaders];
     }
 }
 
@@ -338,8 +339,10 @@
         return self.feedsViewController;
     } else if ([identifier isEqualToString:@"FeedDetailViewController"]) {
         return self.feedDetailViewController;
-//    } else if ([identifier isEqualToString:@"DetailViewController"]) {
-//        return self.detailViewController;
+    } else if ([identifier isEqualToString:@"DetailViewController"]) {
+        return self.detailViewController;
+    } else if ([identifier isEqualToString:@"StoryPagesViewController"]) {
+        return self.storyPagesViewController;
     } else if ([identifier isEqualToString:@"SplitViewController"]) {
         return self.splitViewController;
     } else {
@@ -991,12 +994,12 @@
             //            // that on finger up the link will open.
             CGPoint pt = [(NSValue *)sender CGPointValue];
             CGRect rect = CGRectMake(pt.x, pt.y, 1, 1);
-            ////            [[OSKPresentationManager sharedInstance] presentActivitySheetForContent:content presentingViewController:vc popoverFromRect:rect inView:self.detailViewController.view permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES options:options];
+            ////            [[OSKPresentationManager sharedInstance] presentActivitySheetForContent:content presentingViewController:vc popoverFromRect:rect inView:self.storyPagesViewController.view permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES options:options];
             
             //            [[OSKPresentationManager sharedInstance] presentActivitySheetForContent:content
             //                                                           presentingViewController:vc options:options];
             popPC.sourceRect = rect;
-            popPC.sourceView = self.detailViewController.view;
+            popPC.sourceView = self.storyPagesViewController.view;
         } else {
             popPC.sourceRect = [sender frame];
             popPC.sourceView = [sender superview];
@@ -1039,7 +1042,7 @@
         
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {        
         [self.masterContainerViewController transitionFromShareView];
-        [self.detailViewController becomeFirstResponder];
+        [self.storyPagesViewController becomeFirstResponder];
     } else if (!self.showingSafariViewController) {
         [self.feedsNavigationController dismissViewControllerAnimated:YES completion:nil];
         [self.shareViewController.commentField resignFirstResponder];
@@ -1075,6 +1078,7 @@
     self.dashboardViewController = [DashboardViewController new];
     self.feedsMenuViewController = [FeedsMenuViewController new];
     self.friendsListViewController = [FriendsListViewController new];
+    self.storyPagesViewController = [StoryPagesViewController new];
     self.storyDetailViewController = [StoryDetailViewController new];
     self.loginViewController = [LoginViewController new];
     self.addSiteViewController = [AddSiteViewController new];
@@ -1294,7 +1298,7 @@
     
     [self.userTagsViewController view]; // Force viewDidLoad
     CGRect frame = [sender CGRectValue];
-    [self showPopoverWithViewController:self.userTagsViewController contentSize:CGSizeMake(220, 382) sourceView:self.detailViewController.view sourceRect:frame];
+    [self showPopoverWithViewController:self.userTagsViewController contentSize:CGSizeMake(220, 382) sourceView:self.storyPagesViewController.view sourceRect:frame];
 }
 
 #pragma mark - UIPopoverPresentationControllerDelegate
@@ -1514,7 +1518,7 @@
         detailViewController.navigationItem.titleView = [self makeFeedTitle:storiesCollection.activeFeed];
         
         [self.feedDetailViewController checkScroll];
-        [self.detailViewController refreshPages];
+        [self.storyPagesViewController refreshPages];
         [self adjustStoryDetailWebView];
         [self.feedDetailViewController.storyTitlesTable reloadData];
         
@@ -1644,7 +1648,7 @@
     
     if (showHUD) {
         if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-            [self.detailViewController showShareHUD:@"Finding story..."];
+            [self.storyPagesViewController showShareHUD:@"Finding story..."];
         } else {
             MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.feedDetailViewController.view animated:YES];
             HUD.labelText = @"Finding story...";
@@ -1918,7 +1922,7 @@
     
     if (showHUD) {
         if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-            [self.detailViewController showShareHUD:@"Finding story..."];
+            [self.storyPagesViewController showShareHUD:@"Finding story..."];
         } else {
             MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.feedDetailViewController.view animated:YES];
             HUD.labelText = @"Finding story...";
@@ -1927,9 +1931,10 @@
 }
 
 - (void)adjustStoryDetailWebView {
-    [detailViewController updateStoryControllers:^(StoryDetailViewController * _Nonnull storyController) {
-        [storyController changeWebViewWidth];
-    }];
+    // change the web view
+    [storyPagesViewController.currentPage changeWebViewWidth];
+    [storyPagesViewController.nextPage changeWebViewWidth];
+    [storyPagesViewController.previousPage changeWebViewWidth];
 }
 
 - (void)calibrateStoryTitles {
@@ -2022,9 +2027,9 @@
     if (activeStoryLocation >= 0) {
         BOOL animated = ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad &&
                          !self.tryFeedCategory);
-        [self.detailViewController view];
-        [self.detailViewController.view setNeedsLayout];
-        [self.detailViewController.view layoutIfNeeded];
+        [self.storyPagesViewController view];
+        [self.storyPagesViewController.view setNeedsLayout];
+        [self.storyPagesViewController.view layoutIfNeeded];
         
         NSDictionary *params = @{@"location" : @(activeStoryLocation), @"animated" : @(animated)};
         
@@ -2035,12 +2040,12 @@
         }
     }
 
-    [MBProgressHUD hideHUDForView:self.detailViewController.view animated:YES];
+    [MBProgressHUD hideHUDForView:self.storyPagesViewController.view animated:YES];
 }
 
 - (void)deferredChangePage:(NSDictionary *)params {
-    [self.detailViewController changePage:[params[@"location"] integerValue] animated:[params[@"animated"] boolValue]];
-    [self.detailViewController animateIntoPlace:YES];
+    [self.storyPagesViewController changePage:[params[@"location"] integerValue] animated:[params[@"animated"] boolValue]];
+    [self.storyPagesViewController animateIntoPlace:YES];
     [self.splitViewController showColumn:UISplitViewControllerColumnSecondary];
     [self showDetailViewController:self.detailViewController sender:self];
 }
@@ -2173,7 +2178,7 @@
     config.entersReaderIfAvailable = useReader;
     self.safariViewController = [[SFSafariViewController alloc] initWithURL:url configuration:config];
     self.safariViewController.delegate = self;
-    [self.detailViewController setNavigationBarHidden:NO];
+    [self.storyPagesViewController setNavigationBarHidden:NO];
     [feedsNavigationController presentViewController:self.safariViewController animated:YES completion:nil];
 }
 
@@ -2193,7 +2198,7 @@
 //        self.navigationController.view.frame = CGRectMake(self.navigationController.view.frame.origin.x, self.navigationController.view.frame.origin.y, self.isPortrait ? 270.0 : 370.0, self.navigationController.view.frame.size.height);
 //    }
     
-    [self.detailViewController reorientPages];
+    [self.storyPagesViewController reorientPages];
 }
 
 - (void)navigationController:(UINavigationController *)_navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
@@ -2227,7 +2232,7 @@
         [self.masterContainerViewController transitionFromOriginalView];
     } else {
         if ([[feedsNavigationController viewControllers] containsObject:originalStoryViewController]) {
-            [feedsNavigationController popToViewController:detailViewController animated:YES];
+            [feedsNavigationController popToViewController:storyPagesViewController animated:YES];
         }
     }
 }
@@ -2807,57 +2812,63 @@
 }
 
 - (void)finishMarkAsRead:(NSDictionary *)story {
-    for (StoryDetailViewController *page in detailViewController.storyControllers) {
+    if (!storyPagesViewController.previousPage || !storyPagesViewController.currentPage || !storyPagesViewController.nextPage) return;
+    for (StoryDetailViewController *page in @[storyPagesViewController.previousPage,
+                                              storyPagesViewController.currentPage,
+                                              storyPagesViewController.nextPage]) {
         if ([[page.activeStory objectForKey:@"story_hash"]
              isEqualToString:[story objectForKey:@"story_hash"]] && page.isRecentlyUnread) {
             page.isRecentlyUnread = NO;
-            [detailViewController refreshHeaders];
+            [storyPagesViewController refreshHeaders];
         }
     }
 }
 
 - (void)finishMarkAsUnread:(NSDictionary *)story {
-    for (StoryDetailViewController *page in detailViewController.storyControllers) {
+    if (!storyPagesViewController.previousPage || !storyPagesViewController.currentPage || !storyPagesViewController.nextPage) return;
+    for (StoryDetailViewController *page in @[storyPagesViewController.previousPage,
+                                              storyPagesViewController.currentPage,
+                                              storyPagesViewController.nextPage]) {
         if ([[page.activeStory objectForKey:@"story_hash"]
              isEqualToString:[story objectForKey:@"story_hash"]]) {
             page.isRecentlyUnread = YES;
-            [detailViewController refreshHeaders];
+            [storyPagesViewController refreshHeaders];
         }
     }
-    [detailViewController setNextPreviousButtons];
+    [storyPagesViewController setNextPreviousButtons];
     originalStoryCount += 1;
 }
 
 - (void)failedMarkAsUnread:(NSDictionary *)params {
-    if (![detailViewController failedMarkAsUnread:params]) {
+    if (![storyPagesViewController failedMarkAsUnread:params]) {
         [feedDetailViewController failedMarkAsUnread:params];
-        [detailViewController failedMarkAsUnread:params];
+        [storyPagesViewController failedMarkAsUnread:params];
     }
     [feedDetailViewController reloadData];
 }
 
 - (void)finishMarkAsSaved:(NSDictionary *)params {
-    [detailViewController finishMarkAsSaved:params];
+    [storyPagesViewController finishMarkAsSaved:params];
     [feedDetailViewController finishMarkAsSaved:params];
 }
 
 - (void)failedMarkAsSaved:(NSDictionary *)params {
-    if (![detailViewController failedMarkAsSaved:params]) {
+    if (![storyPagesViewController failedMarkAsSaved:params]) {
         [feedDetailViewController failedMarkAsSaved:params];
-        [detailViewController failedMarkAsSaved:params];
+        [storyPagesViewController failedMarkAsSaved:params];
     }
     [feedDetailViewController reloadData];
 }
 
 - (void)finishMarkAsUnsaved:(NSDictionary *)params {
-    [detailViewController finishMarkAsUnsaved:params];
+    [storyPagesViewController finishMarkAsUnsaved:params];
     [feedDetailViewController finishMarkAsUnsaved:params];
 }
 
 - (void)failedMarkAsUnsaved:(NSDictionary *)params {
-    if (![detailViewController failedMarkAsUnsaved:params]) {
+    if (![storyPagesViewController failedMarkAsUnsaved:params]) {
         [feedDetailViewController failedMarkAsUnsaved:params];
-        [detailViewController failedMarkAsUnsaved:params];
+        [storyPagesViewController failedMarkAsUnsaved:params];
     }
     [feedDetailViewController reloadData];
 }
@@ -3021,7 +3032,7 @@
     } else {
         CGRect frame = [sender CGRectValue];
         
-        [self showPopoverWithViewController:viewController contentSize:contentSize sourceView:self.detailViewController.view sourceRect:frame];
+        [self showPopoverWithViewController:viewController contentSize:contentSize sourceView:self.storyPagesViewController.view sourceRect:frame];
     }
 }
 
@@ -3553,7 +3564,7 @@
     if (self.trainerViewController.isViewLoaded && self.trainerViewController.view.window) {
         view = self.trainerViewController;
     } else {
-        view = self.detailViewController.currentStoryController;
+        view = self.storyPagesViewController.currentPage;
     }
     
     NSHTTPURLResponse *response = (NSHTTPURLResponse *)task.response;
@@ -3583,7 +3594,7 @@
     [authors setObject:[NSNumber numberWithInt:authorScore] forKey:author];
     [feedClassifiers setObject:authors forKey:@"authors"];
     [storiesCollection.activeClassifiers setObject:feedClassifiers forKey:feedId];
-    [self.detailViewController refreshHeaders];
+    [self.storyPagesViewController refreshHeaders];
     [self.trainerViewController refresh];
     
     NSString *urlString = [NSString stringWithFormat:@"%@/classifier/save",
@@ -3627,7 +3638,7 @@
     [tags setObject:[NSNumber numberWithInt:tagScore] forKey:tag];
     [feedClassifiers setObject:tags forKey:@"tags"];
     [storiesCollection.activeClassifiers setObject:feedClassifiers forKey:feedId];
-    [self.detailViewController refreshHeaders];
+    [self.storyPagesViewController refreshHeaders];
     [self.trainerViewController refresh];
     
     NSString *urlString = [NSString stringWithFormat:@"%@/classifier/save",
@@ -3675,7 +3686,7 @@
     [titles setObject:[NSNumber numberWithInteger:titleScore] forKey:title];
     [feedClassifiers setObject:titles forKey:@"titles"];
     [storiesCollection.activeClassifiers setObject:feedClassifiers forKey:feedId];
-    [self.detailViewController refreshHeaders];
+    [self.storyPagesViewController refreshHeaders];
     [self.trainerViewController refresh];
     
     NSString *urlString = [NSString stringWithFormat:@"%@/classifier/save",
@@ -3717,7 +3728,7 @@
     [feeds setObject:[NSNumber numberWithInt:feedScore] forKey:feedId];
     [feedClassifiers setObject:feeds forKey:@"feeds"];
     [storiesCollection.activeClassifiers setObject:feedClassifiers forKey:feedId];
-    [self.detailViewController refreshHeaders];
+    [self.storyPagesViewController refreshHeaders];
     [self.trainerViewController refresh];
     
     NSString *urlString = [NSString stringWithFormat:@"%@/classifier/save",
@@ -3745,7 +3756,7 @@
     if (self.trainerViewController.isViewLoaded && self.trainerViewController.view.window) {
         view = self.trainerViewController;
     } else {
-        view = self.detailViewController.currentStoryController;
+        view = self.storyPagesViewController.currentPage;
     }
     if (httpResponse.statusCode == 503) {
         return [view informError:@"In maintenance mode"];

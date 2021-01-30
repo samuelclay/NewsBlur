@@ -34,6 +34,7 @@
 @class FriendsListViewController;
 @class FontSettingsViewController;
 @class DetailViewController;
+@class StoryPagesViewController;
 @class StoryDetailViewController;
 @class ShareViewController;
 @class LoginViewController;
@@ -68,12 +69,13 @@ SFSafariViewControllerDelegate>  {
     UINavigationController *notificationsNavigationController;
     UINavigationController *premiumNavigationController;
     NBContainerViewController *masterContainerViewController;
-
+    DetailViewController *detailViewController;
+    
     FirstTimeUserViewController *firstTimeUserViewController;
     FirstTimeUserAddSitesViewController *firstTimeUserAddSitesViewController;
     FirstTimeUserAddFriendsViewController *firstTimeUserAddFriendsViewController;
     FirstTimeUserAddNewsBlurViewController *firstTimeUserAddNewsBlurViewController;
-                                    
+    
     DashboardViewController *dashboardViewController;
     FeedsViewController *feedsViewController;
     FeedsMenuViewController *feedsMenuViewController;
@@ -81,8 +83,8 @@ SFSafariViewControllerDelegate>  {
     FriendsListViewController *friendsListViewController;
     FontSettingsViewController *fontSettingsViewController;
     
+    StoryPagesViewController *storyPagesViewController;
     StoryDetailViewController *storyDetailViewController;
-    DetailViewController *detailViewController;
     ShareViewController *shareViewController;
     LoginViewController *loginViewController;
     AddSiteViewController *addSiteViewController;
@@ -174,13 +176,14 @@ SFSafariViewControllerDelegate>  {
 @property (nonatomic) UINavigationController *userProfileNavigationController;
 @property (nonatomic) UINavigationController *originalStoryViewNavController;
 @property (nonatomic) IBOutlet NBContainerViewController *masterContainerViewController;
+@property (nonatomic) IBOutlet DetailViewController *detailViewController;
 @property (nonatomic) IBOutlet DashboardViewController *dashboardViewController;
 @property (nonatomic) IBOutlet FeedsViewController *feedsViewController;
 @property (nonatomic) IBOutlet FeedsMenuViewController *feedsMenuViewController;
 @property (nonatomic) IBOutlet FeedDetailViewController *feedDetailViewController;
 @property (nonatomic, strong) UINavigationController *feedDetailMenuNavigationController;
 @property (nonatomic) IBOutlet FriendsListViewController *friendsListViewController;
-@property (nonatomic) IBOutlet DetailViewController *detailViewController;
+@property (nonatomic) IBOutlet StoryPagesViewController *storyPagesViewController;
 @property (nonatomic) IBOutlet StoryDetailViewController *storyDetailViewController;
 @property (nonatomic) IBOutlet LoginViewController *loginViewController;
 @property (nonatomic, strong) UINavigationController *addSiteNavigationController;
