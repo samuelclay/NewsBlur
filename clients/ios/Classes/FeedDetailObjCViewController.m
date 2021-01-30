@@ -633,6 +633,7 @@
     [storiesCollection setFeedUserProfiles:nil];
     storiesCollection.storyCount = 0;
     [appDelegate.storyPagesViewController resetPages];
+    [appDelegate.storyPagesViewController hidePages];
     
     storiesCollection.inSearch = NO;
     storiesCollection.searchQuery = nil;
