@@ -10,6 +10,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ThemeManager.h"
 #import "FeedsObjCViewController.h"
 #import "FeedDetailObjCViewController.h"
 #import "StoryPagesObjCViewController.h"

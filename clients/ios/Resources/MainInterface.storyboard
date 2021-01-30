@@ -93,6 +93,7 @@
                     <navigationItem key="navigationItem" id="OyA-BF-OGR"/>
                     <connections>
                         <outlet property="bottomContainerView" destination="5M7-bO-MVK" id="Tqo-s5-kGB"/>
+                        <outlet property="dividerImageView" destination="xeQ-Iz-FR0" id="RUn-UW-GFA"/>
                         <outlet property="dividerView" destination="tFd-Uv-aMP" id="d0U-lI-Ukb"/>
                         <outlet property="dividerViewBottomConstraint" destination="c9d-f5-wud" id="0kK-IS-Yql"/>
                         <outlet property="topContainerTopConstraint" destination="JN4-aj-xiN" id="BFs-GY-GpX"/>

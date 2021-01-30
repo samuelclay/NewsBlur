@@ -123,6 +123,9 @@ class DetailViewController: BaseViewController {
     /// Draggable divider view.
     @IBOutlet weak var dividerView: UIView!
     
+    /// Indicator image in the divider view.
+    @IBOutlet weak var dividerImageView: UIImageView!
+    
     /// Top container view top constraint. May need to adjust this for fullscreen on iPhone.
     @IBOutlet weak var topContainerTopConstraint: NSLayoutConstraint!
     
@@ -156,6 +159,19 @@ class DetailViewController: BaseViewController {
         checkViewControllers()
         
         appDelegate.feedsViewController.loadOfflineFeeds(false)
+    }
+    
+    @objc override func updateTheme() {
+        super.updateTheme()
+        
+        guard let manager = ThemeManager.shared else {
+            return
+        }
+        
+        manager.update(navigationController)
+        manager.updateBackground(of: view)
+        
+        dividerImageView.image = manager.themedImage(UIImage(named: "drag_icon.png"))
     }
     
     @objc func adjustForAutoscroll() {
