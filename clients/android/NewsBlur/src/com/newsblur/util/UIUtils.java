@@ -181,6 +181,10 @@ public class UIUtils {
         return ((float) px) / context.getResources().getDisplayMetrics().density;
     }
 
+    public static float getDisplayWidthPx(Context context) {
+	    return context.getResources().getDisplayMetrics().widthPixels;
+    }
+
     /**
      * Sets the alpha of a view, totally hiding the view if the alpha is so low
      * as to be invisible, but also obeying intended visibility.
