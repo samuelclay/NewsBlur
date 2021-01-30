@@ -226,7 +226,7 @@
     self.traverseBottomConstraint.constant = 50;
     
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
-        self.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects:
+        appDelegate.detailViewController.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects:
                                                    originalStoryButton,
                                                    separatorBarButton,
                                                    fontSettingsButton, nil];
@@ -327,8 +327,8 @@
             titleImageView.contentMode = UIViewContentModeScaleAspectFit;
             [titleImageViewWrapper addSubview:titleImageView];
             [titleImageViewWrapper setFrame:titleImageView.frame];
-            if (!self.navigationItem.titleView) {
-                self.navigationItem.titleView = titleImageViewWrapper;
+            if (!appDelegate.detailViewController.navigationItem.titleView) {
+                appDelegate.detailViewController.navigationItem.titleView = titleImageViewWrapper;
             }
             titleImageView.hidden = NO;
         } else {
@@ -344,7 +344,7 @@
             [titleImageView setImage:titleImage];
             [titleImageViewWrapper addSubview:titleImageView];
             [titleImageViewWrapper setFrame:titleImageView.frame];
-            self.navigationItem.titleView = titleImageViewWrapper;
+            appDelegate.detailViewController.navigationItem.titleView = titleImageViewWrapper;
         }
     }
     
@@ -354,7 +354,7 @@
     self.isAnimatedIntoPlace = NO;
     currentPage.view.hidden = NO;
     
-    self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc]
+    self.navigationController.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc]
                                              initWithTitle:@" "
                                              style:UIBarButtonItemStylePlain
                                              target:nil action:nil];
@@ -374,7 +374,7 @@
         [appDelegate.storiesCollection.activeFeed objectForKey:@"username"]) {
         self.subscribeButton.title = [NSString stringWithFormat:@"Follow %@",
                                       [appDelegate.storiesCollection.activeFeed objectForKey:@"username"]];
-        self.navigationItem.leftBarButtonItem = self.subscribeButton;
+        appDelegate.detailViewController.navigationItem.leftBarButtonItem = self.subscribeButton;
         //        self.subscribeButton.tintColor = UIColorFromRGB(0x0a6720);
     }
     appDelegate.isTryFeedView = NO;
@@ -394,7 +394,7 @@
 - (void)viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
     
-    self.navigationItem.leftBarButtonItem = nil;
+    appDelegate.detailViewController.navigationItem.leftBarButtonItem = nil;
     
     [self.navigationController.barHideOnSwipeGestureRecognizer removeTarget:self action:@selector(barHideSwipe:)];
 }
@@ -669,7 +669,7 @@
 }
 
 - (void)resetPages {
-    self.navigationItem.titleView = nil;
+    appDelegate.detailViewController.navigationItem.titleView = nil;
 
     [currentPage clearStory];
     [nextPage clearStory];
@@ -1060,7 +1060,7 @@
     traversePinned = YES;
     
     if (!self.isPhoneOrCompact) {
-        self.traverseBottomConstraint.constant = 0;
+        self.traverseBottomConstraint.constant = 20;
     } else {
         self.traverseBottomConstraint.constant = -1 * self.view.safeAreaInsets.bottom/2;
     }
@@ -1311,12 +1311,12 @@
     
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         if (appDelegate.detailViewController.storyTitlesOnLeft) {
-            self.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects:
+            appDelegate.detailViewController.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects:
                                                        originalStoryButton,
                                                        separatorBarButton,
                                                        fontSettingsButton, nil];
         } else {
-            self.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects:
+            appDelegate.detailViewController.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects:
                                                        originalStoryButton,
                                                        separatorBarButton,
                                                        fontSettingsButton,

@@ -719,10 +719,17 @@
             if (![cell isKindOfClass:[FeedDetailTableCell class]]) return;
             if ([cell.storyImageUrl isEqualToString:imageUrl]) {
                 NSIndexPath *indexPath = [self.storyTitlesTable indexPathForCell:cell];
-                [self.storyTitlesTable beginUpdates];
+                NSInteger numberOfRows = [self.storyTitlesTable numberOfRowsInSection:0];
+                
+                if (indexPath.row >= numberOfRows) {
+                    NSLog(@"row %@ is greater than the number of rows: %@", @(indexPath.row), @(numberOfRows));  // log
+                    continue;
+                }
+                
+//                [self.storyTitlesTable beginUpdates];
                 [self.storyTitlesTable reloadRowsAtIndexPaths:@[indexPath]
                                              withRowAnimation:UITableViewRowAnimationNone];
-                [self.storyTitlesTable endUpdates];
+//                [self.storyTitlesTable endUpdates];
                 break;
             }
         }

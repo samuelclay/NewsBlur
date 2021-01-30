@@ -1413,12 +1413,12 @@
             appDelegate.storyPagesViewController.traverseView.alpha = 1;
 //            NSLog(@" ---> Bottom position: %d", bottomPosition);
             if (bottomPosition >= 0 || !isHorizontal) {
-                appDelegate.storyPagesViewController.traverseBottomConstraint.constant = safeBottomMargin;
+                appDelegate.storyPagesViewController.traverseBottomConstraint.constant = safeBottomMargin + 20;
             } else {
                 if (webpageHeight > 0) {
-                    appDelegate.storyPagesViewController.traverseBottomConstraint.constant = viewportHeight - (webpageHeight - topPosition) + safeBottomMargin;
+                    appDelegate.storyPagesViewController.traverseBottomConstraint.constant = viewportHeight - (webpageHeight - topPosition) + safeBottomMargin + 20;
                 } else {
-                    appDelegate.storyPagesViewController.traverseBottomConstraint.constant = safeBottomMargin;
+                    appDelegate.storyPagesViewController.traverseBottomConstraint.constant = safeBottomMargin + 20;
                 }
             }
         } else if (!singlePage && (atTop && !atBottom)) {
@@ -1427,7 +1427,7 @@
             appDelegate.storyPagesViewController.traverseFloating = NO;
             [appDelegate.storyPagesViewController.view layoutIfNeeded];
 
-            appDelegate.storyPagesViewController.traverseBottomConstraint.constant = safeBottomMargin;
+            appDelegate.storyPagesViewController.traverseBottomConstraint.constant = safeBottomMargin + 20;
             [UIView animateWithDuration:.3 delay:0
                                 options:UIViewAnimationOptionCurveEaseInOut
              animations:^{
@@ -1440,7 +1440,7 @@
             appDelegate.storyPagesViewController.traverseFloating = YES;
             [appDelegate.storyPagesViewController.view layoutIfNeeded];
 
-            appDelegate.storyPagesViewController.traverseBottomConstraint.constant = safeBottomMargin;
+            appDelegate.storyPagesViewController.traverseBottomConstraint.constant = safeBottomMargin + 20;
             [UIView animateWithDuration:.3 delay:0
                                 options:UIViewAnimationOptionCurveEaseInOut
              animations:^{
@@ -1453,7 +1453,7 @@
             appDelegate.storyPagesViewController.traversePinned = NO;
             appDelegate.storyPagesViewController.traverseFloating = YES;
             appDelegate.storyPagesViewController.traverseView.alpha = 1;
-            appDelegate.storyPagesViewController.traverseBottomConstraint.constant = viewportHeight - (webpageHeight - topPosition) + safeBottomMargin;
+            appDelegate.storyPagesViewController.traverseBottomConstraint.constant = viewportHeight - (webpageHeight - topPosition) + safeBottomMargin + 20;
         }
         
         [self storeScrollPosition:YES];
