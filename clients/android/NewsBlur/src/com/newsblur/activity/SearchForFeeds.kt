@@ -92,17 +92,17 @@ class SearchForFeeds : NbActivity(), OnFeedSearchResultClickListener, AddFeedPro
         object : AsyncTask<Void?, Void?, Array<FeedResult>?>() {
             override fun onPreExecute() {
                 super.onPreExecute()
-                binding!!.loadingCircle.visibility = View.VISIBLE
-                binding!!.clearText.visibility = View.GONE
+                binding.loadingCircle.visibility = View.VISIBLE
+                binding.clearText.visibility = View.GONE
             }
 
             override fun doInBackground(vararg params: Void?): Array<FeedResult>? {
-                return apiManager!!.searchForFeed(query.toString())
+                return apiManager.searchForFeed(query.toString())
             }
 
             override fun onPostExecute(result: Array<FeedResult>?) {
-                binding!!.loadingCircle.visibility = View.GONE
-                binding!!.clearText.visibility = View.VISIBLE
+                binding.loadingCircle.visibility = View.GONE
+                binding.clearText.visibility = View.VISIBLE
                 syncSearchResults(result ?: arrayOf())
             }
 
