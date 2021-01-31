@@ -303,6 +303,9 @@
 }
 
 - (BOOL)application:(UIApplication *)application shouldRestoreSecureApplicationState:(NSCoder *)coder {
+    #warning hack: state restoration temporarily disabled due to iPhone issues
+    return NO;
+    
     NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
     NSString *option = [preferences stringForKey:@"restore_state"];
     

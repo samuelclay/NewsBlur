@@ -278,8 +278,8 @@
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     BOOL swipeEnabled = [[userPreferences stringForKey:@"story_detail_swipe_left_edge"]
                          isEqualToString:@"pop_to_story_list"];;
-    self.navigationController.hidesBarsOnSwipe = self.allowFullscreen;
-    [self.navigationController.barHideOnSwipeGestureRecognizer addTarget:self action:@selector(barHideSwipe:)];
+//    self.navigationController.hidesBarsOnSwipe = self.allowFullscreen;
+//    [self.navigationController.barHideOnSwipeGestureRecognizer addTarget:self action:@selector(barHideSwipe:)];
     
     self.navigationController.interactivePopGestureRecognizer.enabled = swipeEnabled;
     self.navigationController.interactivePopGestureRecognizer.delegate = self;
@@ -396,14 +396,14 @@
     
     appDelegate.detailViewController.navigationItem.leftBarButtonItem = nil;
     
-    [self.navigationController.barHideOnSwipeGestureRecognizer removeTarget:self action:@selector(barHideSwipe:)];
+//    [self.navigationController.barHideOnSwipeGestureRecognizer removeTarget:self action:@selector(barHideSwipe:)];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     
     previousPage.view.hidden = YES;
-    self.navigationController.hidesBarsOnSwipe = NO;
+//    self.navigationController.hidesBarsOnSwipe = NO;
     self.navigationController.interactivePopGestureRecognizer.enabled = YES;
     self.navigationController.interactivePopGestureRecognizer.delegate = self.standardInteractivePopGestureDelegate;
     self.autoscrollActive = NO;
@@ -570,6 +570,8 @@
             self.currentPage.webView.scrollView.contentOffset = newOffset;
         }
         
+        [self.appDelegate.detailViewController adjustForAutoscroll];
+        
         if (alsoTraverse) {
              [self.view layoutIfNeeded];
             self.traverseView.alpha = hide ? 0 : 1;
@@ -652,21 +654,21 @@
     return [[[NSUserDefaults standardUserDefaults] objectForKey:@"scroll_stories_horizontally"] boolValue];
 }
 
-- (void)barHideSwipe:(UIPanGestureRecognizer *)recognizer {
-    BOOL isBarHidden = self.isNavigationBarHidden;
-    
-    if (recognizer.state == UIGestureRecognizerStateEnded && isBarHidden != self.wasNavigationBarHidden) {
-        self.wasNavigationBarHidden = isBarHidden;
-        
-        if (!self.shouldHideStatusBar) {
-            [currentPage drawFeedGradient];
-        }
-        
-        if (!self.isHorizontal) {
-            [self reorientPages];
-        }
-    }
-}
+//- (void)barHideSwipe:(UIPanGestureRecognizer *)recognizer {
+//    BOOL isBarHidden = self.isNavigationBarHidden;
+//
+//    if (recognizer.state == UIGestureRecognizerStateEnded && isBarHidden != self.wasNavigationBarHidden) {
+//        self.wasNavigationBarHidden = isBarHidden;
+//
+//        if (!self.shouldHideStatusBar) {
+//            [currentPage drawFeedGradient];
+//        }
+//
+//        if (!self.isHorizontal) {
+//            [self reorientPages];
+//        }
+//    }
+//}
 
 - (void)resetPages {
     appDelegate.detailViewController.navigationItem.titleView = nil;
@@ -1588,7 +1590,7 @@
 - (void)changedFullscreen {
     BOOL wantHidden = self.allowFullscreen;
     
-    self.navigationController.hidesBarsOnSwipe = self.allowFullscreen;
+//    self.navigationController.hidesBarsOnSwipe = self.allowFullscreen;
     
     [self setNavigationBarHidden:wantHidden alsoTraverse:YES];
 }
@@ -1611,15 +1613,15 @@
 
 - (void)updateStatusBarTheme {
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
-        [self.statusBarBackgroundView removeFromSuperview];
-        
-        CGRect statusRect = CGRectMake(0, 0, self.view.bounds.size.width, self.statusBarHeight);
-        
-        self.statusBarBackgroundView = [[UIView alloc] initWithFrame:statusRect];
-        self.statusBarBackgroundView.backgroundColor = self.navigationController.navigationBar.barTintColor;
-        
-        [self.navigationController.view addSubview:self.statusBarBackgroundView];
-        self.statusBarBackgroundView.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin;
+//        [self.statusBarBackgroundView removeFromSuperview];
+//
+//        CGRect statusRect = CGRectMake(0, 0, self.view.bounds.size.width, self.statusBarHeight);
+//
+//        self.statusBarBackgroundView = [[UIView alloc] initWithFrame:statusRect];
+//        self.statusBarBackgroundView.backgroundColor = self.navigationController.navigationBar.barTintColor;
+//
+//        [self.navigationController.view addSubview:self.statusBarBackgroundView];
+//        self.statusBarBackgroundView.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin;
         
         [self updateStatusBarState];
     }
@@ -1719,8 +1721,8 @@
 - (void)tappedStory {
     if (self.autoscrollAvailable) {
         [self showAutoscrollBriefly:YES];
-    } else if (self.allowFullscreen) {
-        [self setNavigationBarHidden: !self.isNavigationBarHidden];
+//    } else if (self.allowFullscreen) {
+//        [self setNavigationBarHidden: !self.isNavigationBarHidden];
     }
 }
 
@@ -1732,7 +1734,7 @@
     
     if (self.autoscrollView.alpha == 0) {
         if (self.isPhoneOrCompact) {
-            self.autoscrollBottomConstraint.constant = 50;
+            self.autoscrollBottomConstraint.constant = 70;
         } else {
             self.autoscrollBottomConstraint.constant = 0;
         }

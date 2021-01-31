@@ -907,7 +907,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 - (void)backgroundLoadNotificationStory {
     if (self.appDelegate.tryFeedFeedId && !self.appDelegate.isTryFeedView) {
         [self.appDelegate loadFeed:self.appDelegate.tryFeedFeedId withStory:self.appDelegate.tryFeedStoryId animated:NO];
-    } else if (!self.appDelegate.isCompactWidth) {
+    } else if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad && !self.appDelegate.isCompactWidth) {
         [self.appDelegate loadRiverFeedDetailView:self.appDelegate.feedDetailViewController withFolder:@"everything"];
     }
 }

@@ -1383,6 +1383,7 @@
         int bottomPosition = webpageHeight - topPosition - viewportHeight;
         BOOL singlePage = webpageHeight - 200 <= viewportHeight;
         BOOL atBottom = bottomPosition < 150;
+        BOOL pullingDown = topPosition < 0;
         BOOL atTop = topPosition < 10;
         BOOL nearTop = topPosition < 100;
         
@@ -1390,8 +1391,13 @@
             hasScrolled = YES;
         }
         
-        if (!isNavBarHidden && self.canHideNavigationBar && !nearTop && appDelegate.storyPagesViewController.autoscrollActive) {
+        if (!isNavBarHidden && self.canHideNavigationBar && !nearTop) {
+//            if (appDelegate.storyPagesViewController.autoscrollActive) {
             [appDelegate.storyPagesViewController setNavigationBarHidden:YES];
+        }
+        
+        if (isNavBarHidden && pullingDown) {
+            [appDelegate.storyPagesViewController setNavigationBarHidden:NO];
         }
         
         if (!atTop && !atBottom && !singlePage) {
