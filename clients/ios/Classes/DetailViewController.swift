@@ -161,6 +161,7 @@ class DetailViewController: BaseViewController {
         appDelegate.feedsViewController.loadOfflineFeeds(false)
     }
     
+    /// Update the theme.
     @objc override func updateTheme() {
         super.updateTheme()
         
@@ -172,14 +173,18 @@ class DetailViewController: BaseViewController {
         manager.updateBackground(of: view)
         
         dividerImageView.image = manager.themedImage(UIImage(named: "drag_icon.png"))
+        view.backgroundColor = navigationController?.navigationBar.barTintColor;
     }
     
+    /// Adjusts the container when autoscrolling. Only applies to iPhone.
     @objc func adjustForAutoscroll() {
         if UIDevice.current.userInterfaceIdiom == .phone, let controller = storyPagesViewController, !controller.isNavigationBarHidden {
             topContainerTopConstraint.constant = -44
         } else {
             topContainerTopConstraint.constant = 0
         }
+        
+        updateTheme()
     }
     
     override func viewDidLoad() {

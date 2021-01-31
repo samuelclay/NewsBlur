@@ -13,7 +13,7 @@
             <objects>
                 <viewController storyboardIdentifier="DetailViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="djW-7k-haK" customClass="DetailViewController" customModule="NewsBlur" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="jTZ-4O-xyT">
-                        <rect key="frame" x="0.0" y="0.0" width="1194" height="834"/>
+                        <rect key="frame" x="0.0" y="0.0" width="818.5" height="834"/>
                         <subviews>
                             <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="bPa-u1-Aml">
                                 <rect key="frame" x="0.0" y="50" width="1194" height="604"/>
@@ -177,7 +177,7 @@
                                 </constraints>
                             </view>
                             <toolbar clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translucent="NO" translatesAutoresizingMaskIntoConstraints="NO" id="pWr-U1-GMQ">
-                                <rect key="frame" x="101" y="764" width="318" height="50"/>
+                                <rect key="frame" x="96" y="764" width="328" height="50"/>
                                 <items>
                                     <barButtonItem image="nav_icn_add.png" width="34" style="plain" id="Wu8-MQ-nN6">
                                         <connections>
@@ -187,7 +187,7 @@
                                     <barButtonItem style="plain" systemItem="flexibleSpace" id="Em8-Dp-DwK"/>
                                     <barButtonItem id="ohG-9s-dlt">
                                         <segmentedControl key="customView" contentMode="center" contentHorizontalAlignment="left" contentVerticalAlignment="top" apportionsSegmentWidthsByContent="YES" segmentControlStyle="plain" selectedSegmentIndex="0" id="ADC-ot-Aao">
-                                            <rect key="frame" x="34" y="9" width="250" height="32"/>
+                                            <rect key="frame" x="41.5" y="9" width="250" height="32"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             <segments>
                                                 <segment title="" image="all.png" width="36"/>
@@ -213,10 +213,10 @@
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="hRx-bd-6Da" firstAttribute="top" secondItem="B68-yP-FpJ" secondAttribute="topMargin" id="33F-U6-DjY"/>
-                            <constraint firstItem="pWr-U1-GMQ" firstAttribute="leading" secondItem="B68-yP-FpJ" secondAttribute="leadingMargin" constant="-15" id="6Ck-3q-gU2"/>
+                            <constraint firstItem="pWr-U1-GMQ" firstAttribute="leading" secondItem="B68-yP-FpJ" secondAttribute="leadingMargin" constant="-20" id="6Ck-3q-gU2"/>
                             <constraint firstItem="pWr-U1-GMQ" firstAttribute="top" secondItem="hRx-bd-6Da" secondAttribute="bottom" id="96U-Nk-Lrg"/>
                             <constraint firstItem="pWr-U1-GMQ" firstAttribute="top" secondItem="hRx-bd-6Da" secondAttribute="bottom" id="gIn-2c-HGI"/>
-                            <constraint firstAttribute="trailingMargin" secondItem="pWr-U1-GMQ" secondAttribute="trailing" constant="-15" id="hrX-Bt-Ta2"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="pWr-U1-GMQ" secondAttribute="trailing" constant="-20" id="hrX-Bt-Ta2"/>
                             <constraint firstItem="hRx-bd-6Da" firstAttribute="trailing" secondItem="zHe-OK-YwO" secondAttribute="trailing" id="uwt-28-3hy"/>
                             <constraint firstItem="hRx-bd-6Da" firstAttribute="leading" secondItem="zHe-OK-YwO" secondAttribute="leading" id="vxe-gN-94P"/>
                             <constraint firstItem="pWr-U1-GMQ" firstAttribute="bottom" secondItem="zHe-OK-YwO" secondAttribute="bottom" id="znm-Mg-YTQ"/>

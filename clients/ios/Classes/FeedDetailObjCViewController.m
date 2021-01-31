@@ -716,14 +716,18 @@
 
 - (void)showStoryImage:(NSString *)imageUrl {
     dispatch_async(dispatch_get_main_queue(), ^{
+        [self.storyTitlesTable reloadData];
+        
         for (FeedDetailTableCell *cell in [self.storyTitlesTable visibleCells]) {
             if (![cell isKindOfClass:[FeedDetailTableCell class]]) return;
             if ([cell.storyImageUrl isEqualToString:imageUrl]) {
                 NSIndexPath *indexPath = [self.storyTitlesTable indexPathForCell:cell];
                 NSInteger numberOfRows = [self.storyTitlesTable numberOfRowsInSection:0];
                 
+                NSLog(@"showStoryImage for row %@ of %@", @(indexPath.row), @(numberOfRows));  // log
+                
                 if (indexPath.row >= numberOfRows) {
-                    NSLog(@"row %@ is greater than the number of rows: %@", @(indexPath.row), @(numberOfRows));  // log
+                    NSLog(@"⚠️ row %@ is greater than the number of rows: %@", @(indexPath.row), @(numberOfRows));  // log
                     continue;
                 }
                 
