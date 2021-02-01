@@ -13,6 +13,9 @@ else:
 
 app = Flask(__name__)
 
+PRIMARY_STATE = 1
+SECONDARY_STATE = 2
+
 @app.route("/db_check/postgres")
 def db_check_postgres():
     connect_params = "dbname='%s' user='%s' password='%s' host='%s' port='%s'" % (
@@ -72,7 +75,30 @@ def db_check_mongo():
     except:
         abort(502)
     
-    return str(db.stories.count())
+    stories = db.stories.count()
+    if not stories:
+        abort(503)
+    
+    status = client.admin.command('replSetGetStatus')
+    members = status['members']
+    primary_optime = None
+    oldest_secondary_optime = None
+    for member in members:
+        member_state = member['state']
+        optime = member['optime']
+        if member_state == PRIMARY_STATE:
+            primary_optime = optime.time
+        elif member_state == SECONDARY_STATE:
+            if not oldest_secondary_optime or optime.time < oldest_secondary_optime:
+                oldest_secondary_optime = optime.time
+
+    if not primary_optime or not oldest_secondary_optime:
+        abort(505)
+
+    if primary_optime - oldest_secondary_optime > 100:
+        abort(506)
+
+    return str(stories)
 
 @app.route("/db_check/redis")
 def db_check_redis():

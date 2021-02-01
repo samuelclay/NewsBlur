@@ -26,6 +26,13 @@ _.extend(NEWSBLUR.ReaderNotifications.prototype, {
         if (this.feed_id) {
             this.initialize_feed(this.feed_id);
         }
+
+        $('input[name=notification_title_only]', this.$modal).each(function() {
+            if ($(this).val() == NEWSBLUR.Preferences.notification_title_only) {
+                $(this).attr('checked', true);
+                return false;
+            }
+        });
         
         this.$modal.bind('click', $.rescope(this.handle_click, this));
         this.$modal.bind('change', $.rescope(this.handle_change, this));
@@ -78,6 +85,33 @@ _.extend(NEWSBLUR.ReaderNotifications.prototype, {
                 $.make('div', { className: 'NB-icon' }),
                 'Notifications',
                 $.make('div', { className: 'NB-icon-dropdown' })
+            ]),
+            $.make('div', { className: 'NB-fieldset NB-modal-submit' }, [
+                $.make('fieldset', [
+                    $.make('legend', 'Notification Preferences'),
+                    $.make('div', { className: 'NB-modal-section NB-modal-section-preferences'}, [
+                        $.make('div', { className: 'NB-preference NB-preference-notification-title-only' }, [
+                            $.make('div', { className: 'NB-preference-options' }, [
+                                $.make('div', [
+                                    $.make('input', { id: 'NB-preference-notificationtitleonly-1', type: 'radio', name: 'notification_title_only', value: 0 }),
+                                    $.make('label', { 'for': 'NB-preference-notificationtitleonly-1' }, [
+                                        'See the story title and a short content preview'
+                                    ])
+                                ]),
+                                $.make('div', [
+                                    $.make('input', { id: 'NB-preference-notificationtitleonly-2', type: 'radio', name: 'notification_title_only', value: 1 }),
+                                    $.make('label', { 'for': 'NB-preference-notificationtitleonly-2' }, [
+                                        'Only see the full story title'
+                                    ])
+                                ])
+                            ]),
+                            $.make('div', { className: 'NB-preference-label' }, [
+                                'Story preview',
+                                $.make('div', { className: 'NB-preference-sublabel' }, '')
+                            ])
+                        ])
+                    ])
+                ])
             ]),
             (this.feed && $.make('div', { className: 'NB-fieldset NB-modal-submit' }, [
                 $.make('fieldset', [
@@ -187,6 +221,11 @@ _.extend(NEWSBLUR.ReaderNotifications.prototype, {
             self.first_load = false;
             self.initialize_feed(feed_id);
             self.get_feed_settings();
+        });
+        $.targetIs(e, { tagSelector: '[name=notification_title_only]' }, function ($t, $p) {
+            var notification_title_only = self.$modal.find("input[name=notification_title_only]:checked").val();
+            console.log(['notification_title_only', notification_title_only]);
+            NEWSBLUR.assets.preference('notification_title_only', notification_title_only);
         });
     }
     
