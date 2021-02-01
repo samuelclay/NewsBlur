@@ -7,10 +7,8 @@ terraform {
   }
 }
 
-variable "do_token" {}
-
 provider "digitalocean" {
-  token = var.do_token
+  token = file("/srv/secrets-newsblur/keys/digital_ocean.token")
 }
 
 resource "digitalocean_ssh_key" "default" {
