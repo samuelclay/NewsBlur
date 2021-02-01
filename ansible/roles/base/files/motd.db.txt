@@ -13,27 +13,56 @@ white=`echo "\033[37;40m"`
 
 cat <<EOMOTD
 $bold  
-            $cyan^^                   $yellow@@@@@@@@@
-       $cyan^^       ^^            $yellow@@@@@@@@@@@@@@@
-                            $yellow@@@@@@@@@@@@@@@@@@              $cyan^^
-                           $yellow@@@@@@@@@@@@@@@@@@@@
- $bold$blue~~~~ ~~ ~~~~~ ~~~~~~~~ ~~ $regular$yellow&&&&&&&&&&&&&&&&&&&&$bold$blue ~~~~~~~ ~~~~~~~~~~~ ~~~
- $bold$blue~         ~~   ~  ~       $regular$yellow~~~~~~~~~~~~~~~~~~~~$bold$blue ~       ~~     ~~ ~
- $bold$blue  ~      ~~      ~~ ~~ ~~  $regular$yellow~~~~~~~~~~~~~ ~~~~$bold$blue  ~     ~~~    ~ ~~~  ~ $bold$blue~~
- $bold$blue  ~  ~~     ~         ~      $regular$yellow~~~~~~  ~~ ~~~$bold$blue       ~~ ~ ~~  ~~ ~
- $bold$blue~  ~       ~ ~      ~           $regular$yellow~~ ~~~~~~$bold$blue  ~      ~~  ~             $bold$blue~~
- $bold$blue      ~             ~        ~      ~      ~~   ~             ~ 
-$green
-    888b    |                                 888~~\  888                 
-    |Y88b   |  e88~~8e  Y88b    e    /  d88~\ 888   | 888 888  888 888-~\ 
-    | Y88b  | d888  88b  Y88b  d8b  /  C888   888 _/  888 888  888 888    
-    |  Y88b | 8888__888   Y888/Y88b/    Y88b  888  \  888 888  888 888    
-    |   Y88b| Y888    ,    Y8/  Y8/      888D 888   | 888 888  888 888    
-    |    Y888  "88___/      Y    Y     \_88P  888__/  888 "88_-888 888    
-                                                                          
- $red                               DB Server
-                                                                                                
+                                               $white               __
+                                               $white         _   .'.-'.
+                                               $white       .'-'. ||  ||
+                                               $white   _   || || :\_.'/
+$yellow                               .-.       ___   $white .'-.\ :\_'/  '-''
+$yellow                              _L $cyano$yellow|_.-'''   '-.$white ;\_'/  '-'
+$yellow                            _f $cyano$yellow\-'          /_. $white'-'
+$yellow                        ,-'' '-'              /
+$yellow                       /                    .'
+$yellow                      |                   .'             $white   .--.
+$yellow                       \              _.-'               $white   '-' |
+$yellow                        |        __.-'                   $white  .- ''
+$yellow                       ,-.     ''|                       $white |
+$yellow                      /  |       |                       $white  '-.
+$yellow                      \_ |       |              _  .-.   $white   _ '
+$yellow                       /'|       |             ' . ' | $regular _.-$bold$red'7P'
+$yellow                      |  |       ;              \ \| |$regular-' _.-''
+$yellow                      \_ |        ;           $regular_,-''$bold| |$regular.-'
+$yellow                       /'|        |          $regular()$bold_,.-j f.-.
+$yellow                      |  |        |           .'') (_.-.j
+$yellow                      \_ ;        ;          (  <   (__.'
+                       / '        ;           \  '    /
+                      |   |        \          /      ;
+                       \_ |         ''--.___.'       |
+                      /' .'                          ;
+                      \.'                  _        /
+                      /                     '.    .'
+                    .'                        \.-'
+                   /                           '.
+                  ;                              \ 
+                  |                               '
+                  '         /                      \ 
+                 ;         /       $green NewsBlur $yellow       \ 
+                 |        Y                          ;
+                 ;         \         $redDB Server$yellow        .
+                 '        t-'                         ;
+                  \  \  \  \                          ;
+                  7'._f_.'-'                          |
+                  \_|                                 |
+                  /'|                                 ;
+                  \_;                                 '
+     .-.          f  '                               /
+  .'  ,-'          \_|                              /
+ /   |     _  __ .-7 /                            .'
+ |    '-.r'_'Y__\L.-'                          _.'
+ '                        ;              _..--' |
+  '.                      ,              |      '.
+    '-._                 /|              '.       |
+        '''--..._____..-' '--...__         \------'
+                                  ''-------'
 $regular$white
-
 EOMOTD
 
