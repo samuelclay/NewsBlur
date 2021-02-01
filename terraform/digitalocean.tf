@@ -22,7 +22,7 @@ resource "digitalocean_droplet" "www" {
   name     = "www"
   region   = var.droplet_region
   size     = var.droplet_size
-  ssh_keys = []
+  ssh_keys = [digitalocean_ssh_key.default.fingerprint]
 }
 
 resource "digitalocean_droplet" "app" {
@@ -30,7 +30,7 @@ resource "digitalocean_droplet" "app" {
   name     = "app"
   region   = var.droplet_region
   size     = var.droplet_size
-  ssh_keys = []
+  ssh_keys = [digitalocean_ssh_key.default.fingerprint]
 }
 
 
@@ -39,7 +39,7 @@ resource "digitalocean_droplet" "app-counts" {
   name     = "app-counts"
   region   = var.droplet_region
   size     = var.droplet_size
-  ssh_keys = []
+  ssh_keys = [digitalocean_ssh_key.default.fingerprint]
 }
 
 resource "digitalocean_droplet" "app-push" {
@@ -47,7 +47,7 @@ resource "digitalocean_droplet" "app-push" {
   name     = "app-push"
   region   = var.droplet_region
   size     = var.droplet_size
-  ssh_keys = []
+  ssh_keys = [digitalocean_ssh_key.default.fingerprint]
 }
 
 resource "digitalocean_droplet" "app-refresh" {
@@ -55,7 +55,7 @@ resource "digitalocean_droplet" "app-refresh" {
   name     = "app-refresh"
   region   = var.droplet_region
   size     = var.droplet_size
-  ssh_keys = []
+  ssh_keys = [digitalocean_ssh_key.default.fingerprint]
 }
 
 resource "digitalocean_droplet" "node-text" {
