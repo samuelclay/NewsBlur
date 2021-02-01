@@ -317,6 +317,10 @@ class Profile(models.Model):
             (not self.premium_expire or self.premium_expire > datetime.datetime.now())):
             self.activate_premium()
 
+    def preference_value(self, key, default=None):
+        preferences = json.decode(self.preferences)
+        return preferences.get(key, default)
+
     @classmethod
     def reimport_stripe_history(cls, limit=10, days=7, starting_after=None):
         stripe.api_key = settings.STRIPE_SECRET
