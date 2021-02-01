@@ -10,6 +10,9 @@ import redis
 import pyes
 app = Flask(__name__)
 
+PRIMARY_STATE = 1
+SECONDARY_STATE = 2
+
 @app.route("/db_check/postgres")
 def db_check_postgres():
     connect_params = "dbname='%s' user='%s' password='%s' host='%s' port='%s'" % (
