@@ -25,6 +25,39 @@ resource "digitalocean_droplet" "www" {
   ssh_keys = []
 }
 
+resource "digitalocean_droplet" "app" {
+  image    = var.droplet_os
+  name     = "app"
+  region   = var.droplet_region
+  size     = var.droplet_size
+  ssh_keys = []
+}
+
+
+resource "digitalocean_droplet" "app-counts" {
+  image    = var.droplet_os
+  name     = "app-counts"
+  region   = var.droplet_region
+  size     = var.droplet_size
+  ssh_keys = []
+}
+
+resource "digitalocean_droplet" "app-push" {
+  image    = var.droplet_os
+  name     = "app-push"
+  region   = var.droplet_region
+  size     = var.droplet_size
+  ssh_keys = []
+}
+
+resource "digitalocean_droplet" "app-refresh" {
+  image    = var.droplet_os
+  name     = "app-refresh"
+  region   = var.droplet_region
+  size     = var.droplet_size
+  ssh_keys = []
+}
+
 resource "digitalocean_droplet" "node-text" {
   image    = var.droplet_os
   name     = "node-text"
@@ -57,41 +90,41 @@ resource "digitalocean_droplet" "elasticsearch" {
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
 }
 
-resource "digitalocean_droplet" "redis" {
+resource "digitalocean_droplet" "db-redis" {
   image    = var.droplet_os
-  name     = "redis"
+  name     = "db-redis"
   region   = var.droplet_region
   size     = var.droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
 }
 
-resource "digitalocean_droplet" "redis-sessions" {
+resource "digitalocean_droplet" "db-redis-sessions" {
   image    = var.droplet_os
-  name     = "redis-sessions"
+  name     = "db-redis-sessions"
   region   = var.droplet_region
   size     = var.droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
 }
 
-resource "digitalocean_droplet" "redis-story" {
+resource "digitalocean_droplet" "db-redis-story" {
   image    = var.droplet_os
-  name     = "redis-story"
+  name     = "db-redis-story"
   region   = var.droplet_region
   size     = var.droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
 }
 
-resource "digitalocean_droplet" "redis-pubsub" {
+resource "digitalocean_droplet" "db-redis-pubsub" {
   image    = var.droplet_os
-  name     = "redis-pubsub"
+  name     = "db-redis-pubsub"
   region   = var.droplet_region
   size     = var.droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
 }
 
-resource "digitalocean_droplet" "postgres" {
+resource "digitalocean_droplet" "db-postgres" {
   image    = var.droplet_os
-  name     = "postgres"
+  name     = "db-postgres"
   region   = var.droplet_region
   size     = var.droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
