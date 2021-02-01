@@ -1328,7 +1328,7 @@ def setup_redis(slave=False):
 def setup_munin():
     sudo('apt-get update')
     sudo('apt-get install -y munin munin-node munin-plugins-extra spawn-fcgi')
-    # put('config/munin.conf', '/etc/munin/munin.conf', use_sudo=True) # Only use on main munin
+    put('config/munin.conf', '/etc/munin/munin.conf', use_sudo=True) # Only use on main munin
     put('config/spawn_fcgi_munin_graph.conf', '/etc/init.d/spawn_fcgi_munin_graph', use_sudo=True)
     put('config/spawn_fcgi_munin_html.conf', '/etc/init.d/spawn_fcgi_munin_html', use_sudo=True)
     sudo('chmod u+x /etc/init.d/spawn_fcgi_munin_graph')

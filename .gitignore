@@ -74,3 +74,6 @@ clients/android/NewsBlur/settings.gradle
 /docker/volumes/*
 
 **/node_modules
+
+# Remove in dashboard3
+ansible 
