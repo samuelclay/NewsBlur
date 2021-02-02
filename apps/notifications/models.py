@@ -13,6 +13,7 @@ from apps.rss_feeds.models import MStory, Feed
 from apps.reader.models import UserSubscription
 from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifierFeed, MClassifierTag
 from apps.analyzer.models import compute_story_score
+from utils.view_functions import is_true
 from utils.story_functions import truncate_chars
 from utils import log as logging
 from utils import mongoengine_fields
@@ -172,7 +173,7 @@ class MUserFeedNotification(mongo.Document):
             
         return classifiers
     
-    def title_and_body(self, story, usersub):
+    def title_and_body(self, story, usersub, notification_title_only=False):
         def replace_with_newlines(element):
             text = ''
             for elem in element.recursiveChildGenerator():
@@ -187,11 +188,13 @@ class MUserFeedNotification(mongo.Document):
         feed_title = usersub.user_title or usersub.feed.feed_title
         # title = "%s: %s" % (feed_title, story['story_title'])
         title = feed_title
-        subtitle = HTMLParser().unescape(story['story_title'])
-        # body = HTMLParser().unescape(strip_tags(story['story_content']))
-        soup = BeautifulSoup(story['story_content'].strip(), features="lxml")
-        # print story['story_content']
-        body = replace_with_newlines(soup)
+        if notification_title_only:
+            subtitle = None
+            body = HTMLParser().unescape(story['story_title'])
+        else:
+            subtitle = HTMLParser().unescape(story['story_title'])
+            soup = BeautifulSoup(story['story_content'].strip(), features="lxml")
+            body = replace_with_newlines(soup)
         body = truncate_chars(body.strip(), 600)
         if not body:
             body = " "
@@ -235,7 +238,8 @@ class MUserFeedNotification(mongo.Document):
                     enhanced=True)
         
         tokens = MUserNotificationTokens.get_tokens_for_user(self.user_id)
-        title, subtitle, body = self.title_and_body(story, usersub)
+        notification_title_only = is_true(user.profile.preference_value('notification_title_only'))
+        title, subtitle, body = self.title_and_body(story, usersub, notification_title_only)
         image_url = None
         if len(story['image_urls']):
             image_url = story['image_urls'][0]
