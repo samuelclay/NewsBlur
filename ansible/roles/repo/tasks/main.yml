@@ -1,0 +1,6 @@
+---
+- name: Pull newsblur_web github
+  become: yes
+  git:
+    repo: https://github.com/samuelclay/NewsBlur.git
+    dest: /srv/newsblur/
