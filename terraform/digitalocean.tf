@@ -82,6 +82,13 @@ resource "digitalocean_droplet" "node-favicons" {
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
 }
 
+resource "digitalocean_droplet" "node-page" {
+  image    = var.droplet_os
+  name     = "node-page"
+  region   = var.droplet_region
+  size     = var.droplet_size
+  ssh_keys = [digitalocean_ssh_key.default.fingerprint]
+}
 resource "digitalocean_droplet" "elasticsearch" {
   image    = var.droplet_os
   name     = "elasticsearch"
