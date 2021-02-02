@@ -25,9 +25,9 @@ resource "digitalocean_droplet" "www" {
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
 }
 
-resource "digitalocean_droplet" "app" {
+resource "digitalocean_droplet" "app-django" {
   image    = var.droplet_os
-  name     = "app"
+  name     = "app-django"
   region   = var.droplet_region
   size     = var.droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
