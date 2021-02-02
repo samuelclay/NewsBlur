@@ -1,0 +1,68 @@
+---
+
+- name: Set up node containers
+  hosts: node
+  remote_user: nb
+  vars_files:
+    - env_vars/base.yml
+  vars:
+    - update_apt_cache: yes
+    - motd_role: app
+  roles:
+  - base
+  - docker
+  - repo
+  tasks:
+  - name: Start node_websocket container
+    docker_container:
+      name: node_websocket
+      image: newsblur/newsblur_node
+      state: started
+      command: node unread_counts.js
+      env:
+        NODE_ENV: "docker"
+      restart_policy: unless-stopped
+      ports:
+      - '8888:8888'
+      volumes:
+      - /srv/newsblur/node:/usr/src/app
+  - name: Start original_pages container
+    docker_container:
+      name: original_pages
+      image: newsblur/newsblur_node
+      command: node original_page.js
+      state: started
+      env:
+        NODE_ENV: "docker"
+      restart_policy: unless-stopped
+      ports:
+      - '3060:3060'
+      volumes:
+      - /srv/newsblur/node:/usr/src/app
+  - name: Start original_text container
+    docker_container:
+      name: original_text
+      image: newsblur/newsblur_node
+      command: node original_text.js
+      state: started
+      env:
+        NODE_ENV: "docker"
+      restart_policy: unless-stopped
+      ports:
+      - '4040:4040'
+      volumes:
+      - /srv/newsblur/node:/usr/src/app
+  - name: Start favicons container
+    docker_container:
+      name: favicons
+      image: newsblur/newsblur_node
+      command: node favicons.js
+      state: started
+      env:
+        NODE_ENV: "docker"
+      restart_policy: unless-stopped
+      ports:
+      - '3030:3030'
+      volumes:
+      - /srv/newsblur/node:/usr/src/app
+
