@@ -1,0 +1,106 @@
+---
+
+- name: Set up db-redis container
+  hosts: db-redis
+  remote_user: nb
+  roles:
+    - base
+    - docker
+    - repo
+  vars:
+    - update_apt_cache: yes
+  vars_files:
+    - env_vars/base.yml
+  tasks:
+  - name: Start db-redis docker container
+    become: yes
+    docker_container:
+      name: db-redis-pubsub
+      image: redis:3.2.6
+      state: started
+      ports:
+        - 6379:6379
+      restart_policy: unless-stopped
+      volumes:
+        - /srv/newsblur/docker/volumes/redis:/data
+        - /srv/newsblur/config/redis.conf:/usr/local/etc/redis_server.conf
+        - /srv/newsblur/config/redis_docker.conf:/etc/redis_server.conf
+        - /srv/newsblur/docker/volumes/redis.var.lib:/var/lib/redis
+
+- name: Set up redis-pubsub container
+  hosts: db-redis-pubsub
+  remote_user: nb
+  roles:
+    - base
+    - docker
+  vars:
+    - update_apt_cache: yes
+  vars_files:
+    - env_vars/base.yml
+  tasks:
+  - name: Start db-redis-pubsub docker container
+    become: yes
+    docker_container:
+      name: db-redis-pubsub
+      image: redis:3.2.6
+      state: started
+      ports:
+        - 6379:6379
+      restart_policy: unless-stopped
+      volumes:
+        - /srv/newsblur/docker/volumes/redis:/data
+        - /srv/newsblur/config/redis.conf:/usr/local/etc/redis_server.conf
+        - /srv/newsblur/config/redis_docker.conf:/etc/redis_server.conf
+        - /srv/newsblur/docker/volumes/redis.var.lib:/var/lib/redis
+
+- name: Set up redis-story container
+  hosts: db-redis-story
+  remote_user: nb
+  roles:
+    - base
+    - docker
+  vars:
+    - update_apt_cache: yes
+  vars_files:
+    - env_vars/base.yml
+  tasks:
+  - name: Start db-redis-story docker container
+    become: yes
+    docker_container:
+      name: db-redis-story
+      image: redis:3.2.6
+      state: started
+      ports:
+        - 6379:6379
+      restart_policy: unless-stopped
+      volumes:
+        - /srv/newsblur/docker/volumes/redis:/data
+        - /srv/newsblur/config/redis.conf:/usr/local/etc/redis_server.conf
+        - /srv/newsblur/config/redis_docker.conf:/etc/redis_server.conf
+        - /srv/newsblur/docker/volumes/redis.var.lib:/var/lib/redis
+
+- name: Set up redis-sessions container
+  hosts: db-redis-sessions
+  remote_user: nb
+  roles:
+    - base
+    - docker
+  vars:
+    - update_apt_cache: yes
+  vars_files:
+    - env_vars/base.yml
+  tasks:
+  - name: Start db-redis-sessions docker container
+    become: yes
+    docker_container:
+      name: db-redis
+      image: redis:3.2.6
+      state: started
+      ports:
+        - 6379:6379
+      restart_policy: unless-stopped
+      volumes:
+        - /srv/newsblur/docker/volumes/redis:/data
+        - /srv/newsblur/config/redis.conf:/usr/local/etc/redis_server.conf
+        - /srv/newsblur/config/redis_docker.conf:/etc/redis_server.conf
+        - /srv/newsblur/docker/volumes/redis.var.lib:/var/lib/redis
