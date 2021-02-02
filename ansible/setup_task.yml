@@ -1,0 +1,80 @@
+---
+- name: Set up task containers
+  hosts: task
+  remote_user: nb
+  vars_files:
+    - env_vars/base.yml
+  vars:
+    - update_apt_cache: yes
+    - motd_role: app
+  roles:
+    - base
+    - docker
+    - repo
+  tasks:
+    - name: Start task_celery docker container
+      docker_container:
+        name: task_celery
+        image: newsblur/newsblur_python3
+        state: started
+        env:
+          DOCKERBUILD: "True"
+        command: "celery worker -A newsblur_web --loglevel=INFO -Q new_feeds,push_feeds,update_feeds"
+        restart_policy: unless-stopped
+        volumes:
+          - /srv/newsblur:/srv/newsblur
+    - name: Start task_cron_queue docker container
+      docker_container:
+        name: task_cron_queue
+        image: newsblur/newsblur_python3
+        state: started
+        env:
+          DOCKERBUILD: "True"
+        restart_policy: unless-stopped
+        command: "celery worker -A newsblur_web --loglevel=INFO -Q cron_queue -c 3"
+        volumes:
+          - /srv/newsblur:/srv/newsblur
+    - name: Start task_beat_feeds docker container
+      docker_container:
+        name: task_beat_feeds
+        image: newsblur/newsblur_python3
+        state: started
+        env:
+          DOCKERBUILD: "True"
+        restart_policy: unless-stopped
+        command: "celery worker -A newsblur_web --loglevel=INFO -Q beat_feeds_task -c 1"
+        volumes:
+          - /srv/newsblur:/srv/newsblur
+    - name: Start task_search_indexer docker container
+      docker_container:
+        name: task_search_indexer
+        image: newsblur/newsblur_python3
+        state: started
+        env:
+          DOCKERBUILD: "True"
+        restart_policy: unless-stopped
+        command: "celery worker -A newsblur_web --loglevel=INFO -Q search_indexer -c 4"
+        volumes:
+          - /srv/newsblur:/srv/newsblur
+    - name: Start task_search_indexer_tasker docker container
+      docker_container:
+        name: task_search_indexer_tasker
+        image: newsblur/newsblur_python3
+        state: started
+        env:
+          DOCKERBUILD: "True"
+        restart_policy: unless-stopped
+        command: "celery worker -A newsblur_web --loglevel=INFO -Q search_indexer_tasker -c 2"
+        volumes:
+          - /srv/newsblur:/srv/newsblur
+    - name: Start task_work_queue docker container
+      docker_container:
+        name: task_work_queue
+        image: newsblur/newsblur_python3
+        state: started
+        env:
+          DOCKERBUILD: "True"
+        restart_policy: unless-stopped
+        command: bash -c "celery worker -A newsblur_web --loglevel=INFO -Q work_queue"
+        volumes:
+          - /srv/newsblur:/srv/newsblur
