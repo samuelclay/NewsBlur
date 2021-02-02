@@ -1,0 +1,30 @@
+---
+
+- name: Set up task containers
+  hosts: task
+  remote_user: nb
+  vars_files:
+    - env_vars/base.yml
+  vars:
+    - update_apt_cache: yes
+    - motd_role: app
+  roles:
+  - base
+  - docker
+  - repo
+  tasks:
+  - name: Start postgres container
+    docker_container:
+      name: postgres
+      image: postgres:13.1
+      state: started
+      env:
+        DOCKERBUILD: "True"
+        POSTGRES_USER: newsblur
+        POSTGRES_PASSWORD: newsblur
+      restart_policy: unless-stopped
+      ports:
+      - '5432:5432'
+      volumes:
+      - /srv/newsblur/docker/volumes/postgres:/var/lib/postgresql/data
+
