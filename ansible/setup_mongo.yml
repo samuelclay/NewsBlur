@@ -1,0 +1,26 @@
+---
+- name: Set up mongo db container
+  hosts: db-mongo
+  remote_user: nb
+  vars:
+    - update_apt_cache: yes
+    - motd_role: app
+  vars_files:
+    - env_vars/base.yml
+  
+  roles:
+      - base
+      - docker
+      - repo
+  tasks:
+    - name: Start db-mongo docker container
+      become: yes
+      docker_container:
+        name: db-mongo
+        image: mongo:3.6
+        state: started
+        ports:
+          - 27017:27017
+        restart_policy: unless-stopped
+        volumes:
+          - /srv/newsblur/docker/volumes/db_mongo:/data/db
