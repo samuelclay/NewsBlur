@@ -10,3 +10,4 @@ groups:
   db: inventory_hostname.startswith('db')
   task: inventory_hostname.startswith('task') and inventory_hostname != 'task'
   search: inventory_hostname.startswith('search')
+  db-redis-user: inventory_hostname.startswith('db-redis')
