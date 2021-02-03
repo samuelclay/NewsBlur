@@ -1,0 +1,34 @@
+---
+- name: Start {{ item.container_name }} docker container
+  become: yes
+  with_items:
+    - { 
+      container_name: task_celery,
+      command: "celery worker -A newsblur_web --loglevel=INFO -Q new_feeds,push_feeds,update_feeds" 
+    }
+    - {
+      container_name: task_beat_feeds,
+      command: "celery worker -A newsblur_web --loglevel=INFO -Q beat_feeds_task -c 1" 
+    }
+    - {
+      container_name: task_search_indexer,
+      command: "celery worker -A newsblur_web --loglevel=INFO -Q search_indexer -c 4"
+    }
+    - {
+      container_name: task_search_indexer_tasker,
+      command: "celery worker -A newsblur_web --loglevel=INFO -Q search_indexer_tasker -c 2"
+    }
+    - {
+      container_name: task_work_queue,
+      command: "celery worker -A newsblur_web --loglevel=INFO -Q work_queue"
+    }
+  docker_container:
+    name: "{{ item.container_name }}"
+    image: newsblur/newsblur_python3
+    state: started
+    env:
+      DOCKERBUILD: "True"
+    restart_policy: unless-stopped
+    command: "{{ item.command }}"
+    volumes:
+      - /srv/newsblur:/srv/newsblur
