@@ -444,7 +444,8 @@ hr {
 /* = Feed List = */
 /* ============= */
 
-#NB-feeds-list-loader {
+.NB-feeds-list-loader,
+.NB-feeds-list-error {
   background: transparent url("/media/embed/reader/sun_loader_light.svg") no-repeat 0 0;
   background-size: 52px;
   color: rgba(0, 0, 0, .2);
@@ -459,6 +460,14 @@ hr {
   width: 125px;
   z-index: 10;
   cursor: default;
+}
+.NB-feeds-list-error {
+    display: none;
+    background: transparent url("/media/embed/reader/warning.gif") no-repeat 16px 8px;
+    background-size: 32px;  
+}
+.NB-button.NB-feeds-list-retry {
+    margin: 14px 0;
 }
 .NB-feeds-list-empty {
   background: transparent url("/media/embed/reader/big_world.png") no-repeat center 0;
