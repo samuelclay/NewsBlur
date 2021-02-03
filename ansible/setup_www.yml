@@ -12,3 +12,4 @@
       - docker
       - consul-manager
       - haproxy
+      - monitor
