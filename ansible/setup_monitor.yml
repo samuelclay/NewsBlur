@@ -7,21 +7,7 @@ vars:
 vars_files:
   - env_vars/base.yml
 roles:
-    - base
-    - docker
-    - repo
-tasks:
-- name: Start monitor docker container
-  become: yes
-  docker_container:
-    name: monitor
-    image: newsblur/newsblur_python3
-    env:
-      DOCKERBUILD: "True"
-    state: started
-    command: bash -c "python /srv/newsblur/flask_monitor/db_monitor.py"
-    ports:
-      - 5000:5000
-    restart_policy: unless-stopped
-    volumes:
-      - /srv/newsblur:/srv/newsblur
+  - base
+  - docker
+  - repo
+  - monitor
