@@ -5299,17 +5299,16 @@ form.opml_import_form input {
 }
 @media screen and (max-width: 1100px) {
     .NB-splash-modules {
-        flex-flow: row wrap;
+        display: block;
     }
     .NB-splash-modules .NB-modules-center,
     .NB-splash-modules .NB-account-wide {
-        flex: 1 1 auto;
+        max-width: none;
     }
     .NB-splash-modules .NB-modules-center {
         margin-right: 0;
     }
     .NB-splash-modules .NB-account-wide {
-        max-width: none;
         margin: 0 24px;
     }
 }
