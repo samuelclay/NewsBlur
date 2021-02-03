@@ -10,6 +10,6 @@
   roles:
       - base
       - docker
+      - repo
       - consul-manager
-      - haproxy
       - monitor
