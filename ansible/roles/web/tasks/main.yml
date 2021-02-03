@@ -17,3 +17,5 @@
     ports:
       - "8000:8000"
     restart_policy: unless-stopped
+    volumes:
+      - /srv/newsblur:/srv/newsblur
