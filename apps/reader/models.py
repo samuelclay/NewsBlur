@@ -1330,9 +1330,16 @@ class UserSubscriptionFolders(models.Model):
                         # Check every existing folder at that level to see if it already exists
                         for ef, existing_folder in enumerate(new_folder):
                             if type(existing_folder) == dict and list(existing_folder.keys())[0] == f_k:
-                                merged = list(set(f_v+list(existing_folder.values())[0]))
-                                logging.info(f" ---> ~FRFound repeat folder: {f_k} \n\tExisting: {f_v}\n\tMerging: {list(existing_folder.values())[0]}\n\tBecomes: {merged}")
-                                new_folder[ef] = {f_k: _compact(merged)}
+                                existing_folder_feed_ids = list(existing_folder.values())[0]
+                                merged = list(set(f_v+existing_folder_feed_ids))
+                                if f_v != existing_folder_feed_ids:
+                                    logging.info(f" ---> ~FRFound repeat folder: {f_k} \n\t"
+                                                f"~FBExisting: {f_v}\n\t"
+                                                f"~FCMerging: {list(existing_folder.values())[0]}\n\t"
+                                                f"~FYBecomes: {merged}")
+                                    new_folder[ef] = {f_k: _compact(merged)}
+                                else:
+                                    logging.info(f" ---> ~FRFound repeat folder ~FY{f_k}~FR, no difference in feeds")
                                 break
                         else:
                             # If no match, then finally we can add the folder
