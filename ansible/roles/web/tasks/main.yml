@@ -1,10 +1,4 @@
 ---
-- name: Pull NewsBlur web app image from Docker Hub
-  become: yes
-  docker_image:
-    name: newsblur/newsblur_python3
-    source: pull
-
 - name: Start NewsBlur Web Docker container
   become: yes
   docker_container:

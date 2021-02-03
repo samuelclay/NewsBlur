@@ -1,10 +1,4 @@
 ---
-- name: Pull latest nginx image from Docker Hub
-  become: yes
-  docker_image:
-    name: nginx:1.19
-    source: pull
-
 - name: Start nginx docker container
   become: yes
   docker_container:
