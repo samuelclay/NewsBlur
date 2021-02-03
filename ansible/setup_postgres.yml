@@ -1,7 +1,7 @@
 ---
 
 - name: Set up task containers
-  hosts: postgres
+  hosts: db-postgres
   remote_user: nb
   vars_files:
     - env_vars/base.yml
@@ -13,3 +13,4 @@
   - docker
   - repo
   - postgres
+  - consul
