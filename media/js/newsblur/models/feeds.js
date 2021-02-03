@@ -288,7 +288,8 @@ NEWSBLUR.Collections.Feeds = Backbone.Collection.extend({
 
         options = _.extend({
             data: data,
-            silent: true
+            silent: true,
+            error: _.bind(this.handle_error, this)
         }, options);
         return Backbone.Collection.prototype.fetch.call(this, options);
     },
@@ -301,6 +302,11 @@ NEWSBLUR.Collections.Feeds = Backbone.Collection.extend({
         this.ensure_authenticated(data);
         
         return data.feeds;
+    },
+
+    handle_error: function (model, resp, options) {
+        console.log(['Error loading feeds', model, resp, options]);
+        
     },
     
     deselect: function() {
