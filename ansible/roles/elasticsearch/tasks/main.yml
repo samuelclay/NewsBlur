@@ -1,0 +1,16 @@
+---
+- name: Start Elasticsearch Docker container
+  become: yes
+  docker_container:
+    name: elasticsearch
+    image: elasticsearch:2.4.4
+    state: started
+    ports:
+      - '9200:9200'
+    restart_policy: unless-stopped
+    depends_on: 
+      - nginx
+      - newsblur_web
+      - redis
+    volumes:
+      - /srv/newsblur/docker/volumes/elasticsearch:/usr/share/elasticsearch/data
