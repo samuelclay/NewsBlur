@@ -1,0 +1,20 @@
+---
+- name: Start {{ item }} docker container
+  become: yes
+  with_items:
+    - "db-redis-user"
+    - "db-redis-story"
+    - "db-redis-sessions"
+    - "db-redis-pubsub"
+  docker_container:
+    name: "{{ item }}"
+    image: redis:3.2.6
+    state: started
+    ports:
+      - 6379:6379
+    restart_policy: unless-stopped
+    volumes:
+      - /srv/newsblur/docker/volumes/redis:/data
+      - /srv/newsblur/config/redis.conf:/usr/local/etc/redis_server.conf
+      - /srv/newsblur/config/redis_docker.conf:/etc/redis_server.conf
+      - /srv/newsblur/docker/volumes/redis.var.lib:/var/lib/redis
