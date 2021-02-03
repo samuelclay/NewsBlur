@@ -6,7 +6,7 @@
     - env_vars/base.yml
   vars:
     - update_apt_cache: yes
-    - motd_role: app
+    - motd_role: task
   roles:
     - base
     - docker
