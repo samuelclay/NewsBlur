@@ -13,7 +13,7 @@ provider "digitalocean" {
 
 resource "digitalocean_ssh_key" "default" {
   name       = "NB_SSH_Key"
-  public_key = file("~/.ssh/id_rsa.pub")
+  public_key = file("/srv/secrets-newsblur/keys/docker.key.pub")
 }
 
 
@@ -23,6 +23,12 @@ resource "digitalocean_droplet" "www" {
   region   = var.droplet_region
   size     = var.droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
+  provisioner "local-exec" {
+    command = "cd ../ansible; python3 generate.py"
+  }
+  provisioner "local-exec" {
+    command = "cd ..; ansible-playbook -e publickey=/srv/secrets-newsblur/keys/docker.key.pub ansible/setup_root.yml"
+  }
 }
 
 resource "digitalocean_droplet" "app-django" {
@@ -31,8 +37,13 @@ resource "digitalocean_droplet" "app-django" {
   region   = var.droplet_region
   size     = var.droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
+  provisioner "local-exec" {
+    command = "cd ../ansible; python3 generate.py"
+  }
+  provisioner "local-exec" {
+    command = "cd ..; ansible-playbook -e publickey=/srv/secrets-newsblur/keys/docker.key.pub ansible/setup_root.yml"
+  }
 }
-
 
 resource "digitalocean_droplet" "app-counts" {
   image    = var.droplet_os
@@ -40,6 +51,12 @@ resource "digitalocean_droplet" "app-counts" {
   region   = var.droplet_region
   size     = var.droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
+  provisioner "local-exec" {
+    command = "cd ../ansible; python3 generate.py"
+  }
+  provisioner "local-exec" {
+    command = "cd ..; ansible-playbook -e publickey=/srv/secrets-newsblur/keys/docker.key.pub ansible/setup_root.yml"
+  }
 }
 
 resource "digitalocean_droplet" "app-push" {
@@ -48,6 +65,12 @@ resource "digitalocean_droplet" "app-push" {
   region   = var.droplet_region
   size     = var.droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
+  provisioner "local-exec" {
+    command = "cd ../ansible; python3 generate.py"
+  }
+  provisioner "local-exec" {
+    command = "cd ..; ansible-playbook -e publickey=/srv/secrets-newsblur/keys/docker.key.pub ansible/setup_root.yml"
+  }
 }
 
 resource "digitalocean_droplet" "app-refresh" {
@@ -56,6 +79,12 @@ resource "digitalocean_droplet" "app-refresh" {
   region   = var.droplet_region
   size     = var.droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
+  provisioner "local-exec" {
+    command = "cd ../ansible; python3 generate.py"
+  }
+  provisioner "local-exec" {
+    command = "cd ..; ansible-playbook -e publickey=/srv/secrets-newsblur/keys/docker.key.pub ansible/setup_root.yml"
+  }
 }
 
 resource "digitalocean_droplet" "node-text" {
@@ -64,6 +93,12 @@ resource "digitalocean_droplet" "node-text" {
   region   = var.droplet_region
   size     = var.droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
+  provisioner "local-exec" {
+    command = "cd ../ansible; python3 generate.py"
+  }
+  provisioner "local-exec" {
+    command = "cd ..; ansible-playbook -e publickey=/srv/secrets-newsblur/keys/docker.key.pub ansible/setup_root.yml"
+  }
 }
 
 resource "digitalocean_droplet" "node-socket" {
@@ -72,6 +107,12 @@ resource "digitalocean_droplet" "node-socket" {
   region   = var.droplet_region
   size     = var.droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
+  provisioner "local-exec" {
+    command = "cd ../ansible; python3 generate.py"
+  }
+  provisioner "local-exec" {
+    command = "cd ..; ansible-playbook -e publickey=/srv/secrets-newsblur/keys/docker.key.pub ansible/setup_root.yml"
+  }
 }
 
 resource "digitalocean_droplet" "node-favicons" {
@@ -80,6 +121,12 @@ resource "digitalocean_droplet" "node-favicons" {
   region   = var.droplet_region
   size     = var.droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
+  provisioner "local-exec" {
+    command = "cd ../ansible; python3 generate.py"
+  }
+  provisioner "local-exec" {
+    command = "cd ..; ansible-playbook -e publickey=/srv/secrets-newsblur/keys/docker.key.pub ansible/setup_root.yml"
+  }
 }
 
 resource "digitalocean_droplet" "node-page" {
@@ -88,21 +135,40 @@ resource "digitalocean_droplet" "node-page" {
   region   = var.droplet_region
   size     = var.droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
+  provisioner "local-exec" {
+    command = "cd ../ansible; python3 generate.py"
+  }
+  provisioner "local-exec" {
+    command = "cd ..; ansible-playbook -e publickey=/srv/secrets-newsblur/keys/docker.key.pub ansible/setup_root.yml"
+  }
 }
+
 resource "digitalocean_droplet" "elasticsearch" {
   image    = var.droplet_os
   name     = "elasticsearch"
   region   = var.droplet_region
   size     = var.droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
+  provisioner "local-exec" {
+    command = "cd ../ansible; python3 generate.py"
+  }
+  provisioner "local-exec" {
+    command = "cd ..; ansible-playbook -e publickey=/srv/secrets-newsblur/keys/docker.key.pub ansible/setup_root.yml"
+  }
 }
 
-resource "digitalocean_droplet" "db-redis" {
+resource "digitalocean_droplet" "db-redis-user" {
   image    = var.droplet_os
-  name     = "db-redis"
+  name     = "db-redis-user"
   region   = var.droplet_region
   size     = var.droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
+  provisioner "local-exec" {
+    command = "cd ../ansible; python3 generate.py"
+  }
+  provisioner "local-exec" {
+    command = "cd ..; ansible-playbook -e publickey=/srv/secrets-newsblur/keys/docker.key.pub ansible/setup_root.yml"
+  }
 }
 
 resource "digitalocean_droplet" "db-redis-sessions" {
@@ -111,6 +177,12 @@ resource "digitalocean_droplet" "db-redis-sessions" {
   region   = var.droplet_region
   size     = var.droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
+  provisioner "local-exec" {
+    command = "cd ../ansible; python3 generate.py"
+  }
+  provisioner "local-exec" {
+    command = "cd ..; ansible-playbook -e publickey=/srv/secrets-newsblur/keys/docker.key.pub ansible/setup_root.yml"
+  }
 }
 
 resource "digitalocean_droplet" "db-redis-story" {
@@ -119,6 +191,12 @@ resource "digitalocean_droplet" "db-redis-story" {
   region   = var.droplet_region
   size     = var.droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
+  provisioner "local-exec" {
+    command = "cd ../ansible; python3 generate.py"
+  }
+  provisioner "local-exec" {
+    command = "cd ..; ansible-playbook -e publickey=/srv/secrets-newsblur/keys/docker.key.pub ansible/setup_root.yml"
+  }
 }
 
 resource "digitalocean_droplet" "db-redis-pubsub" {
@@ -127,6 +205,12 @@ resource "digitalocean_droplet" "db-redis-pubsub" {
   region   = var.droplet_region
   size     = var.droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
+  provisioner "local-exec" {
+    command = "cd ../ansible; python3 generate.py"
+  }
+  provisioner "local-exec" {
+    command = "cd ..; ansible-playbook -e publickey=/srv/secrets-newsblur/keys/docker.key.pub ansible/setup_root.yml"
+  }
 }
 
 resource "digitalocean_droplet" "db-postgres" {
@@ -135,6 +219,12 @@ resource "digitalocean_droplet" "db-postgres" {
   region   = var.droplet_region
   size     = var.droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
+  provisioner "local-exec" {
+    command = "cd ../ansible; python3 generate.py"
+  }
+  provisioner "local-exec" {
+    command = "cd ..; ansible-playbook -e publickey=/srv/secrets-newsblur/keys/docker.key.pub ansible/setup_root.yml"
+  }
 }
 
 resource "digitalocean_droplet" "db-mongo" {
@@ -143,6 +233,12 @@ resource "digitalocean_droplet" "db-mongo" {
   region   = var.droplet_region
   size     = var.droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
+  provisioner "local-exec" {
+    command = "cd ../ansible; python3 generate.py"
+  }
+  provisioner "local-exec" {
+    command = "cd ..; ansible-playbook -e publickey=/srv/secrets-newsblur/keys/docker.key.pub ansible/setup_root.yml"
+  }
 }
 
 resource "digitalocean_droplet" "task" {
@@ -151,4 +247,10 @@ resource "digitalocean_droplet" "task" {
   region   = var.droplet_region
   size     = var.droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
+  provisioner "local-exec" {
+    command = "cd ../ansible; python3 generate.py"
+  }
+  provisioner "local-exec" {
+    command = "cd ..; ansible-playbook -e publickey=/srv/secrets-newsblur/keys/docker.key.pub ansible/setup_root.yml"
+  }
 }
