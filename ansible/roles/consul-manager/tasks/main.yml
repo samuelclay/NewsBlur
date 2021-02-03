@@ -1,0 +1,13 @@
+---
+- name: Start registrator Docker container
+  become: yes
+  docker_container:
+    name: consul-{{ ansible_hostname }}
+    image: progrium/consul
+    restart_policy: always
+    state: started
+    command: -server -bootstrap -ui-dir /ui
+    ports:
+    - 8500:8500
+    - 8400:8400
+    - 8600:53/udp
