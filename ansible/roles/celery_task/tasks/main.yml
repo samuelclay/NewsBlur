@@ -1,5 +1,5 @@
 ---
-- name: Start {{ item.container_name }} docker container
+- name: "Start docker containers"
   become: yes
   with_items:
     - { 
