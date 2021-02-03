@@ -1,0 +1,37 @@
+---
+- name: Start node docker containers
+  become: yes
+  with_items:
+    - { 
+      container_name: 'node_websocket',
+      ports: '8888:8888',
+      command: 'node unread_counts.js',
+    }
+    - {
+      container_name: 'original_pages',
+      ports: '3060:3060',
+      command: 'node original_page.js',
+    }
+    - {
+      container_name: 'original_text',
+      ports: '4040:4040',
+      command: 'node original_text.js',
+    }
+    - {
+      container_name: 'favicons',
+      ports: '3030:3030',
+      command: 'node favicons.js',
+    }
+
+  docker_container:
+    name: "{{ item.container_name }}"
+    image: newsblur/newsblur_node
+    state: started
+    command: "{{ item.command }}"
+    ports:
+      - "{{ item.ports }}"
+    env:
+      NODE_ENV: "docker"
+    restart_policy: unless-stopped
+    volumes:
+      - /srv/newsblur/node:/usr/src/app
