@@ -1327,13 +1327,22 @@ class UserSubscriptionFolders(models.Model):
                     new_folder.append(item)
                 elif isinstance(item, dict):
                     for f_k, f_v in list(item.items()):
-                        new_folder.append({f_k: _compact(f_v)})
+                        # Check every existing folder at that level to see if it already exists
+                        for ef, existing_folder in enumerate(new_folder):
+                            if type(existing_folder) == dict and list(existing_folder.keys())[0] == f_k:
+                                merged = list(set(f_v+list(existing_folder.values())[0]))
+                                logging.info(f" ---> ~FRFound repeat folder: {f_k} \n\tExisting: {f_v}\n\tMerging: {list(existing_folder.values())[0]}\n\tBecomes: {merged}")
+                                new_folder[ef] = {f_k: _compact(merged)}
+                                break
+                        else:
+                            # If no match, then finally we can add the folder
+                            new_folder.append({f_k: _compact(f_v)})
             return new_folder
         
         new_folders = _compact(folders)
         compact_msg = " ---> Compacting from %s to %s" % (folders, new_folders)
         new_folders = json.encode(new_folders)
-        if len(self.folders) != len(new_folders):
+        if json.encode(self.folders) != json.encode(new_folders):
             logging.info(compact_msg)
             logging.info(" ---> Compacting from %s bytes to %s bytes" % (len(self.folders), len(new_folders)))
             self.folders = new_folders
