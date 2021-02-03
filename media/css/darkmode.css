@@ -993,7 +993,8 @@ text-shadow: none;
 /* = Feed Pane = */
 /* ============= */
 
-.NB-dark #NB-feeds-list-loader {
+.NB-dark .NB-feeds-list-loader,
+.NB-dark .NB-feeds-list-error {
     color: rgba(255, 255, 255, .4);
     text-shadow: 0 1px 0 rgba(0, 0, 0, .3);
     background: transparent url("/media/embed/reader/sun_loader_dark.svg") no-repeat 0 0;
