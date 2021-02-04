@@ -315,12 +315,12 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
             
             if (NEWSBLUR.assets.view_setting(this.model.get('river_id'), 'order') == 'newest') {
                 if (timestamp < last_timestamp) {
-                    // console.log(['New story older than last/oldest dashboard story', timestamp, '<', last_timestamp]);
+                    console.log(['New story older than last/oldest dashboard story', timestamp, '<', last_timestamp]);
                     return;
                 }
             } else {
                 if (timestamp > last_timestamp) {
-                    // console.log(['New story older than last/newest dashboard story', timestamp, '<', last_timestamp]);
+                    console.log(['New story older than last/newest dashboard story', timestamp, '<', last_timestamp]);
                     return;
                 }
             }
