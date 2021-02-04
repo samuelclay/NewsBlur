@@ -25,6 +25,7 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
         
         $('.NB-callout-ftux .NB-callout-text').text('Loading feeds...');
         this.$s.$feed_link_loader.css({'display': 'block'});
+        this.$s.$feed_link_error.css({'display': 'none'});
         NEWSBLUR.assets.feeds.bind('reset', _.bind(function(options) {
             this.make_feeds(options);
     
@@ -48,7 +49,7 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
         NEWSBLUR.assets.starred_feeds.bind('change:selected', this.scroll_to_selected, this);
         NEWSBLUR.assets.searches_feeds.bind('change:selected', this.scroll_to_selected, this);
         if (!NEWSBLUR.assets.folders.size()) {
-            NEWSBLUR.assets.load_feeds();
+            NEWSBLUR.assets.load_feeds(null, _.bind(this.handle_error, this));
         }
         NEWSBLUR.assets.feeds.bind('add', this.update_dashboard_count, this);
         NEWSBLUR.assets.feeds.bind('remove', this.update_dashboard_count, this);
@@ -86,6 +87,8 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
         this.$el.html(this.folder_view.el);
         this.$el.animate({'opacity': 1}, {'duration': 700});
         // this.count_collapsed_unread_stories();
+
+        this.$s.$feed_link_error.css({'display': 'none'});
         this.$s.$feed_link_loader.fadeOut(250, _.bind(function() {
             this.$s.$feed_link_loader.css({'display': 'none'});
         }, this));
@@ -142,6 +145,22 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
         }
         
         return this;
+    },
+
+    handle_error: function (model, resp, options) {
+        console.log(['Error loading feeds', model, resp, options]);
+        
+        this.$s.$feed_link_error.css({ 'display': 'block' });
+        this.$s.$feed_link_loader.css({'display': 'none'});
+    },
+
+    retry: function () {
+        if (!NEWSBLUR.assets.folders.size()) {
+            this.$s.$feed_link_loader.css({'display': 'block'});
+            this.$s.$feed_link_error.css({'display': 'none'});
+    
+            NEWSBLUR.assets.load_feeds(null, _.bind(this.handle_error, this));
+        }
     },
     
     toggle_filter_feeds: function() {

@@ -39,7 +39,8 @@
                 $text_view: $('.NB-text-view'),
                 $intelligence_slider: $('.NB-intelligence-slider'),
                 $mouse_indicator: $('#mouse-indicator'),
-                $feed_link_loader: $('#NB-feeds-list-loader'),
+                $feed_link_loader: $('.NB-feeds-list-loader'),
+                $feed_link_error: $('.NB-feeds-list-error'),
                 $feeds_progress: $('#NB-progress'),
                 $dashboard: $('.NB-feeds-header-dashboard'),
                 $river_sites_header: $('.NB-feeds-header-river-sites'),
@@ -138,9 +139,9 @@
             
             NEWSBLUR.assets.feeds.bind('reset', _.bind(function () {
                 this.load_dashboard_rivers();
+                this.load_intelligence_slider();
             }, this));
 
-            this.load_intelligence_slider();
             this.handle_mouse_indicator_hover();
             this.handle_login_and_signup_forms();
             this.handle_wakeup();
@@ -5731,6 +5732,7 @@
             this.flags['count_unreads_after_import_working'] = false;
             clearTimeout(this.locks['animate_progress_bar']);
             this.$s.$feed_link_loader.fadeOut(250);
+            this.$s.$feed_link_error.css({'display': 'none'});
             this.setup_feed_refresh();
             if (!this.flags['has_unfetched_feeds']) {
                 this.hide_progress_bar();
@@ -5997,7 +5999,11 @@
             var stopPropagation = false;
             
             // NEWSBLUR.log(['click', e, e.button]);            
-            
+
+            $.targetIs(e, { tagSelector: '.NB-feeds-list-retry' }, function($t, $p){
+                NEWSBLUR.app.feed_list.retry();
+            });  
+
             // = Taskbar ======================================================
             
             $.targetIs(e, { tagSelector: '.NB-task-add' }, function($t, $p){
