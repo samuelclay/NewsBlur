@@ -11,5 +11,4 @@
       - base
       - docker
       - repo
-      - consul-manager
       - monitor
