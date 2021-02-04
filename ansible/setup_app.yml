@@ -12,4 +12,4 @@
     - docker
     - web
     - nginx
-    - consul
+    - consul-client

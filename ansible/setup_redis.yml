@@ -13,4 +13,4 @@
     - docker
     - repo
     - redis
-    - consul
+    - consul-client
