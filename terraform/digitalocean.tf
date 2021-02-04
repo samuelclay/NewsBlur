@@ -253,6 +253,7 @@ resource "digitalocean_droplet" "task" {
   provisioner "local-exec" {
     command = "cd ..; ansible-playbook -l task ansible/setup_root.yml"
   }
+}
 
 resource "digitalocean_droplet" "consul-manager" {
   image    = var.droplet_os
