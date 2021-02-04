@@ -859,9 +859,6 @@ hr {
     opacity: 1;
 }
 */
-.NB-feedlist .folder.NB-selected > .folder_title .feed_counts_floater {
-    margin-right: 24px;
-}
     
 .NB-feedlist .feed.NB-toplevel:hover .feed_favicon {
     display: none;
