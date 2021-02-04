@@ -1,11 +1,15 @@
 ---
 - name: Start consul Docker container
   become: yes
-
+  vars:
+    JOIN_IP: $(ssh nb@206.189.183.186 sudo docker inspect -f '{{.NetworkSettings.IPAddress}}' consul-www)
   docker_container:
-    name: "registrator-{{ ansible_hostname }}"
-    network_mode: host
-    image: gliderlabs/registrator:latest
-    volumes:
-    - /var/run/docker.sock:/tmp/docker.sock
-    command: "-ip {{ hostvars['www']['ansible_host'] }} consul://127.0.0.1:8500/"
+    name: consul-{{ ansible_hostname }}
+    image: progrium/consul
+    restart_policy: always
+    state: started
+    ports:
+    - 8500:8500
+    - 8400:8400
+    - 8600:53/udp
+    command: "-join {{ JOIN_IP }}"
