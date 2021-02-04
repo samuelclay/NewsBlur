@@ -90,7 +90,7 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
         this.$(".NB-module-river-settings").html($options);
     },
     
-    feeds: function () {
+    feeds: function (include_read) {
         var river_id = this.model.get('river_id');
 
         if (_.string.startsWith(river_id, 'feed:')) {
@@ -107,13 +107,13 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
 
         var feeds;
         var visible_only = NEWSBLUR.assets.view_setting(river_id, 'read_filter') == 'unread';
-        if (visible_only) {
+        if (visible_only && !include_read) {
             feeds = _.pluck(active_folder.feeds_with_unreads(), 'id');
         }
         if (!feeds || !feeds.length) {
             feeds = active_folder.feed_ids_in_folder();
         }
-        
+        console.log(['River feeds', river_id, feeds.length, feeds]);
         return feeds;
     },
     
@@ -315,12 +315,12 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
             
             if (NEWSBLUR.assets.view_setting(this.model.get('river_id'), 'order') == 'newest') {
                 if (timestamp < last_timestamp) {
-                    // console.log(['New story older than last/oldest dashboard story', timestamp, '<', last_timestamp]);
+                    console.log(['New story older than last/oldest dashboard story', timestamp, '<', last_timestamp]);
                     return;
                 }
             } else {
                 if (timestamp > last_timestamp) {
-                    // console.log(['New story older than last/newest dashboard story', timestamp, '<', last_timestamp]);
+                    console.log(['New story older than last/newest dashboard story', timestamp, '<', last_timestamp]);
                     return;
                 }
             }
@@ -338,16 +338,17 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
             if (feed_stories_per_month > NEWSBLUR.assets.preference('infrequent_stories_per_month')) {
                 return;
             }
-        }
-
-        if (this.options.global_feed) {
+        } else if (this.options.global_feed) {
             // Global Shared Stories don't come in real-time (yet)
             return;
+        } else if (!_.contains(this.feeds(true), parseInt(feed_id, 10))) {
+            console.log(['New story not in folder', this.model.get('river_id'), feed_id, this.feeds()]);
+            return;
         }
-
+        
         var subs = feed.get('num_subscribers');
         var delay = subs * 2; // 1,000 subs = 2 seconds
-        console.log(['Fetching dashboard story', story_hash, delay + 'ms delay']);
+        console.log(['Fetching dashboard story', this.model.get('river_id'), story_hash, delay + 'ms delay']);
         
         _.delay(_.bind(function() {
             NEWSBLUR.assets.add_dashboard_story(story_hash, this.options.dashboard_stories);
