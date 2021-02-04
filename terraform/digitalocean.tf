@@ -27,7 +27,7 @@ resource "digitalocean_droplet" "www" {
     command = "cd ../ansible; python3 generate.py"
   }
   provisioner "local-exec" {
-    command = "cd ..; ansible-playbook -e publickey=/srv/secrets-newsblur/keys/docker.key.pub ansible/setup_root.yml"
+    command = "cd ..; ansible-playbook -l www ansible/setup_root.yml"
   }
 }
 
@@ -41,7 +41,7 @@ resource "digitalocean_droplet" "app-django" {
     command = "cd ../ansible; python3 generate.py"
   }
   provisioner "local-exec" {
-    command = "cd ..; ansible-playbook -e publickey=/srv/secrets-newsblur/keys/docker.key.pub ansible/setup_root.yml"
+    command = "cd ..; ansible-playbook -l app-django ansible/setup_root.yml"
   }
 }
 
@@ -55,7 +55,7 @@ resource "digitalocean_droplet" "app-counts" {
     command = "cd ../ansible; python3 generate.py"
   }
   provisioner "local-exec" {
-    command = "cd ..; ansible-playbook -e publickey=/srv/secrets-newsblur/keys/docker.key.pub ansible/setup_root.yml"
+    command = "cd ..; ansible-playbook -l app-counts ansible/setup_root.yml"
   }
 }
 
@@ -69,7 +69,7 @@ resource "digitalocean_droplet" "app-push" {
     command = "cd ../ansible; python3 generate.py"
   }
   provisioner "local-exec" {
-    command = "cd ..; ansible-playbook -e publickey=/srv/secrets-newsblur/keys/docker.key.pub ansible/setup_root.yml"
+    command = "cd ..; ansible-playbook -l app-push ansible/setup_root.yml"
   }
 }
 
@@ -83,7 +83,7 @@ resource "digitalocean_droplet" "app-refresh" {
     command = "cd ../ansible; python3 generate.py"
   }
   provisioner "local-exec" {
-    command = "cd ..; ansible-playbook -e publickey=/srv/secrets-newsblur/keys/docker.key.pub ansible/setup_root.yml"
+    command = "cd ..; ansible-playbook -l app-refresh ansible/setup_root.yml"
   }
 }
 
@@ -97,7 +97,7 @@ resource "digitalocean_droplet" "node-text" {
     command = "cd ../ansible; python3 generate.py"
   }
   provisioner "local-exec" {
-    command = "cd ..; ansible-playbook -e publickey=/srv/secrets-newsblur/keys/docker.key.pub ansible/setup_root.yml"
+    command = "cd ..; ansible-playbook -l node-text ansible/setup_root.yml"
   }
 }
 
@@ -111,7 +111,7 @@ resource "digitalocean_droplet" "node-socket" {
     command = "cd ../ansible; python3 generate.py"
   }
   provisioner "local-exec" {
-    command = "cd ..; ansible-playbook -e publickey=/srv/secrets-newsblur/keys/docker.key.pub ansible/setup_root.yml"
+    command = "cd ..; ansible-playbook -l node-socket ansible/setup_root.yml"
   }
 }
 
@@ -125,7 +125,7 @@ resource "digitalocean_droplet" "node-favicons" {
     command = "cd ../ansible; python3 generate.py"
   }
   provisioner "local-exec" {
-    command = "cd ..; ansible-playbook -e publickey=/srv/secrets-newsblur/keys/docker.key.pub ansible/setup_root.yml"
+    command = "cd ..; ansible-playbook -l node-favicons ansible/setup_root.yml"
   }
 }
 
@@ -139,7 +139,7 @@ resource "digitalocean_droplet" "node-page" {
     command = "cd ../ansible; python3 generate.py"
   }
   provisioner "local-exec" {
-    command = "cd ..; ansible-playbook -e publickey=/srv/secrets-newsblur/keys/docker.key.pub ansible/setup_root.yml"
+    command = "cd ..; ansible-playbook -l node-page ansible/setup_root.yml"
   }
 }
 
@@ -153,7 +153,7 @@ resource "digitalocean_droplet" "elasticsearch" {
     command = "cd ../ansible; python3 generate.py"
   }
   provisioner "local-exec" {
-    command = "cd ..; ansible-playbook -e publickey=/srv/secrets-newsblur/keys/docker.key.pub ansible/setup_root.yml"
+    command = "cd ..; ansible-playbook -l elasticsearch ansible/setup_root.yml"
   }
 }
 
@@ -167,7 +167,7 @@ resource "digitalocean_droplet" "db-redis-user" {
     command = "cd ../ansible; python3 generate.py"
   }
   provisioner "local-exec" {
-    command = "cd ..; ansible-playbook -e publickey=/srv/secrets-newsblur/keys/docker.key.pub ansible/setup_root.yml"
+    command = "cd ..; ansible-playbook -l db-redis-user ansible/setup_root.yml"
   }
 }
 
@@ -181,7 +181,7 @@ resource "digitalocean_droplet" "db-redis-sessions" {
     command = "cd ../ansible; python3 generate.py"
   }
   provisioner "local-exec" {
-    command = "cd ..; ansible-playbook -e publickey=/srv/secrets-newsblur/keys/docker.key.pub ansible/setup_root.yml"
+    command = "cd ..; ansible-playbook -l db-redis-session ansible/setup_root.yml"
   }
 }
 
@@ -195,7 +195,7 @@ resource "digitalocean_droplet" "db-redis-story" {
     command = "cd ../ansible; python3 generate.py"
   }
   provisioner "local-exec" {
-    command = "cd ..; ansible-playbook -e publickey=/srv/secrets-newsblur/keys/docker.key.pub ansible/setup_root.yml"
+    command = "cd ..; ansible-playbook -l db-redis-story ansible/setup_root.yml"
   }
 }
 
@@ -209,7 +209,7 @@ resource "digitalocean_droplet" "db-redis-pubsub" {
     command = "cd ../ansible; python3 generate.py"
   }
   provisioner "local-exec" {
-    command = "cd ..; ansible-playbook -e publickey=/srv/secrets-newsblur/keys/docker.key.pub ansible/setup_root.yml"
+    command = "cd ..; ansible-playbook -l db-redis-pubsub ansible/setup_root.yml"
   }
 }
 
@@ -223,7 +223,7 @@ resource "digitalocean_droplet" "db-postgres" {
     command = "cd ../ansible; python3 generate.py"
   }
   provisioner "local-exec" {
-    command = "cd ..; ansible-playbook -e publickey=/srv/secrets-newsblur/keys/docker.key.pub ansible/setup_root.yml"
+    command = "cd ..; ansible-playbook -l db-postgres ansible/setup_root.yml"
   }
 }
 
@@ -237,7 +237,7 @@ resource "digitalocean_droplet" "db-mongo" {
     command = "cd ../ansible; python3 generate.py"
   }
   provisioner "local-exec" {
-    command = "cd ..; ansible-playbook -e publickey=/srv/secrets-newsblur/keys/docker.key.pub ansible/setup_root.yml"
+    command = "cd ..; ansible-playbook -l db-mongo ansible/setup_root.yml"
   }
 }
 
@@ -251,6 +251,6 @@ resource "digitalocean_droplet" "task" {
     command = "cd ../ansible; python3 generate.py"
   }
   provisioner "local-exec" {
-    command = "cd ..; ansible-playbook -e publickey=/srv/secrets-newsblur/keys/docker.key.pub ansible/setup_root.yml"
+    command = "cd ..; ansible-playbook -l task ansible/setup_root.yml"
   }
 }
