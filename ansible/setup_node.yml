@@ -14,5 +14,5 @@
     - docker
     - repo
     - node
-    - consul
+    - consul-client
 
