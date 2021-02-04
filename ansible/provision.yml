@@ -1,0 +1,17 @@
+- hosts: all
+  gather_facts: no
+  strategy: free
+  tasks:
+    - include: setup_app.yml
+      when:  "'' in ansible_hostname"
+    - include: setup_elasticsearch.yml
+      when: "'search' in group_names"
+    - include: setup_mongo.yml
+      when: "'mongo' in ansible_hostname"
+    - include: setup_node.yml
+      when: "'node' in group_names"
+    - include: setup_postgres.yml
+      when: "'postgres' in ansible_hostname"
+    - include: setup_redis.yml
+      when: "'redis' in ansible_hostname"
+  
