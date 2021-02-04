@@ -144,7 +144,7 @@ def pre_process_story(entry, encoding):
     
     if 'summary_detail' in entry and entry['summary_detail'].get('type', None) == 'text/plain':
         try:
-            entry['story_content'] = feedparser._sanitizeHTML(entry['story_content'], encoding, 'text/plain')
+            entry['story_content'] = feedparser.sanitizer._sanitize_html(entry['story_content'], encoding, 'text/plain')
             if encoding and not isinstance(entry['story_content'], str):
                 entry['story_content'] = entry['story_content'].decode(encoding, 'ignore')
         except UnicodeEncodeError:
