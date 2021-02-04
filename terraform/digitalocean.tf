@@ -253,4 +253,17 @@ resource "digitalocean_droplet" "task" {
   provisioner "local-exec" {
     command = "cd ..; ansible-playbook -l task ansible/setup_root.yml"
   }
+
+resource "digitalocean_droplet" "consul-manager" {
+  image    = var.droplet_os
+  name     = "consul-manager"
+  region   = var.droplet_region
+  size     = var.droplet_size
+  ssh_keys = [digitalocean_ssh_key.default.fingerprint]
+  provisioner "local-exec" {
+    command = "cd ../ansible; python3 generate.py"
+  }
+  provisioner "local-exec" {
+    command = "cd ..; ansible-playbook -l consul-manager ansible/setup_root.yml"
+  }
 }
