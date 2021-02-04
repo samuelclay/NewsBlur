@@ -12,3 +12,4 @@
       - docker
       - repo
       - monitor
+      - consul-client
