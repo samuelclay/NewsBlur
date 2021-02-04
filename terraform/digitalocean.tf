@@ -43,6 +43,9 @@ resource "digitalocean_droplet" "app-django" {
   provisioner "local-exec" {
     command = "cd ..; ansible-playbook -l app-django ansible/setup_root.yml"
   }
+  provisioner "local-exec" {
+    command = "cd ..; ansible-playbook -l app-django ansible/provision.yml"
+  }
 }
 
 resource "digitalocean_droplet" "app-counts" {
@@ -56,6 +59,9 @@ resource "digitalocean_droplet" "app-counts" {
   }
   provisioner "local-exec" {
     command = "cd ..; ansible-playbook -l app-counts ansible/setup_root.yml"
+  }
+  provisioner "local-exec" {
+    command = "cd ..; ansible-playbook -l app-counts ansible/provision.yml"
   }
 }
 
@@ -71,6 +77,9 @@ resource "digitalocean_droplet" "app-push" {
   provisioner "local-exec" {
     command = "cd ..; ansible-playbook -l app-push ansible/setup_root.yml"
   }
+  provisioner "local-exec" {
+    command = "cd ..; ansible-playbook -l app-push ansible/provision.yml"
+  }
 }
 
 resource "digitalocean_droplet" "app-refresh" {
@@ -84,6 +93,9 @@ resource "digitalocean_droplet" "app-refresh" {
   }
   provisioner "local-exec" {
     command = "cd ..; ansible-playbook -l app-refresh ansible/setup_root.yml"
+  }
+  provisioner "local-exec" {
+    command = "cd ..; ansible-playbook -l app-refresh ansible/provision.yml"
   }
 }
 
@@ -99,6 +111,9 @@ resource "digitalocean_droplet" "node-text" {
   provisioner "local-exec" {
     command = "cd ..; ansible-playbook -l node-text ansible/setup_root.yml"
   }
+  provisioner "local-exec" {
+    command = "cd ..; ansible-playbook -l node-text ansible/provision.yml"
+  }
 }
 
 resource "digitalocean_droplet" "node-socket" {
@@ -112,6 +127,9 @@ resource "digitalocean_droplet" "node-socket" {
   }
   provisioner "local-exec" {
     command = "cd ..; ansible-playbook -l node-socket ansible/setup_root.yml"
+  }
+  provisioner "local-exec" {
+    command = "cd ..; ansible-playbook -l node-socket ansible/provision.yml"
   }
 }
 
@@ -127,6 +145,9 @@ resource "digitalocean_droplet" "node-favicons" {
   provisioner "local-exec" {
     command = "cd ..; ansible-playbook -l node-favicons ansible/setup_root.yml"
   }
+  provisioner "local-exec" {
+    command = "cd ..; ansible-playbook -l node-favicons ansible/provision.yml"
+  }
 }
 
 resource "digitalocean_droplet" "node-page" {
@@ -140,6 +161,9 @@ resource "digitalocean_droplet" "node-page" {
   }
   provisioner "local-exec" {
     command = "cd ..; ansible-playbook -l node-page ansible/setup_root.yml"
+  }
+  provisioner "local-exec" {
+    command = "cd ..; ansible-playbook -l node-page ansible/provision.yml"
   }
 }
 
@@ -155,6 +179,9 @@ resource "digitalocean_droplet" "elasticsearch" {
   provisioner "local-exec" {
     command = "cd ..; ansible-playbook -l elasticsearch ansible/setup_root.yml"
   }
+  provisioner "local-exec" {
+    command = "cd ..; ansible-playbook -l elasticsearch ansible/provision.yml"
+  }
 }
 
 resource "digitalocean_droplet" "db-redis-user" {
@@ -168,6 +195,9 @@ resource "digitalocean_droplet" "db-redis-user" {
   }
   provisioner "local-exec" {
     command = "cd ..; ansible-playbook -l db-redis-user ansible/setup_root.yml"
+  }
+  provisioner "local-exec" {
+    command = "cd ..; ansible-playbook -l db-redis-user ansible/provision.yml"
   }
 }
 
@@ -183,6 +213,9 @@ resource "digitalocean_droplet" "db-redis-sessions" {
   provisioner "local-exec" {
     command = "cd ..; ansible-playbook -l db-redis-session ansible/setup_root.yml"
   }
+  provisioner "local-exec" {
+    command = "cd ..; ansible-playbook -l db-redis-sessions ansible/provision.yml"
+  }
 }
 
 resource "digitalocean_droplet" "db-redis-story" {
@@ -196,6 +229,9 @@ resource "digitalocean_droplet" "db-redis-story" {
   }
   provisioner "local-exec" {
     command = "cd ..; ansible-playbook -l db-redis-story ansible/setup_root.yml"
+  }
+  provisioner "local-exec" {
+    command = "cd ..; ansible-playbook -l db-redis-story ansible/provision.yml"
   }
 }
 
@@ -211,6 +247,9 @@ resource "digitalocean_droplet" "db-redis-pubsub" {
   provisioner "local-exec" {
     command = "cd ..; ansible-playbook -l db-redis-pubsub ansible/setup_root.yml"
   }
+  provisioner "local-exec" {
+    command = "cd ..; ansible-playbook -l db-redis-pubsub ansible/provision.yml"
+  }
 }
 
 resource "digitalocean_droplet" "db-postgres" {
@@ -224,6 +263,9 @@ resource "digitalocean_droplet" "db-postgres" {
   }
   provisioner "local-exec" {
     command = "cd ..; ansible-playbook -l db-postgres ansible/setup_root.yml"
+  }
+  provisioner "local-exec" {
+    command = "cd ..; ansible-playbook -l db-postgres ansible/provision.yml"
   }
 }
 
@@ -239,6 +281,9 @@ resource "digitalocean_droplet" "db-mongo" {
   provisioner "local-exec" {
     command = "cd ..; ansible-playbook -l db-mongo ansible/setup_root.yml"
   }
+  provisioner "local-exec" {
+    command = "cd ..; ansible-playbook -l db-mongo ansible/provision.yml"
+  }
 }
 
 resource "digitalocean_droplet" "task" {
@@ -253,6 +298,9 @@ resource "digitalocean_droplet" "task" {
   provisioner "local-exec" {
     command = "cd ..; ansible-playbook -l task ansible/setup_root.yml"
   }
+  provisioner "local-exec" {
+    command = "cd ..; ansible-playbook -l task ansible/provision.yml"
+  }
 }
 
 resource "digitalocean_droplet" "consul-manager" {
@@ -266,5 +314,8 @@ resource "digitalocean_droplet" "consul-manager" {
   }
   provisioner "local-exec" {
     command = "cd ..; ansible-playbook -l consul-manager ansible/setup_root.yml"
+  }
+  provisioner "local-exec" {
+    command = "cd ..; ansible-playbook -l consul-manager ansible/provision.yml"
   }
 }
