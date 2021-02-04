@@ -3,14 +3,16 @@
 - name: Set up node containers
   hosts: node
   remote_user: nb
+  become: true
   vars_files:
     - env_vars/base.yml
   vars:
     - update_apt_cache: yes
     - motd_role: app
   roles:
-  - base
-  - docker
-  - repo
-  - node
+    - base
+    - docker
+    - repo
+    - node
+    - consul
 

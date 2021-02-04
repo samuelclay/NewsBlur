@@ -1,5 +1,5 @@
 ---
-- name: Setup elasticsearch
+- name: Setup elasticsearch container
   hosts: search-elasticsearch
   remote_user: nb
   vars:
@@ -8,7 +8,8 @@
   vars_files:
     - env_vars/base.yml
   roles:
-      - base
-      - docker
-      - repo
-      - elasticsearch
+    - base
+    - docker
+    - repo
+    - elasticsearch
+    - consul

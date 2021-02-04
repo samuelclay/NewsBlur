@@ -12,3 +12,4 @@
     - docker
     - repo
     - celery_task
+    - consul

@@ -1,5 +1,6 @@
 ---
-- name: Start registrator Docker container
+
+- name: Start Consul Manager (server) Docker container
   become: yes
   docker_container:
     name: consul-{{ ansible_hostname }}
