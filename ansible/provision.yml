@@ -1,17 +1,15 @@
-- hosts: all
-  gather_facts: no
-  strategy: free
-  tasks:
-    - include: setup_app.yml
-      when:  "'' in ansible_hostname"
-    - include: setup_elasticsearch.yml
-      when: "'search' in group_names"
-    - include: setup_mongo.yml
-      when: "'mongo' in ansible_hostname"
-    - include: setup_node.yml
-      when: "'node' in group_names"
-    - include: setup_postgres.yml
-      when: "'postgres' in ansible_hostname"
-    - include: setup_redis.yml
-      when: "'redis' in ansible_hostname"
-  
+---
+- import_playbook: setup_app.yml
+  when: "'app' in inventory_hostname"
+- import_playbook: setup_elasticsearch.yml
+  when: "'search' in group_names"
+- import_playbook: setup_mongo.yml
+  when: "'mongo' in inventory_hostname"
+- import_playbook: setup_node.yml
+  when: "'node' in group_names"
+- import_playbook: setup_postgres.yml
+  when: "'postgres' in inventory_hostname"
+- import_playbook: setup_redis.yml
+  when: "'redis' in inventory_hostname"
+- import_playbook: setup_consul_manager.yml
+  when: "'consul-manager' in inventory_hostname"
