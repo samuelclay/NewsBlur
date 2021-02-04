@@ -1,0 +1,11 @@
+---
+- name: Start consul Docker container
+  become: yes
+
+  docker_container:
+    name: "registrator-{{ ansible_hostname }}"
+    network_mode: host
+    image: gliderlabs/registrator:latest
+    volumes:
+    - /var/run/docker.sock:/tmp/docker.sock
+    command: "-ip {{ hostvars['www']['ansible_host'] }} consul://127.0.0.1:8500/"

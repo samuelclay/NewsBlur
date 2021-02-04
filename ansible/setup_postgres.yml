@@ -3,14 +3,15 @@
 - name: Set up task containers
   hosts: db-postgres
   remote_user: nb
+  become: true
   vars_files:
     - env_vars/base.yml
   vars:
     - update_apt_cache: yes
     - motd_role: db
   roles:
-  - base
-  - docker
-  - repo
-  - postgres
-  - consul
+    - base
+    - docker
+    - repo
+    - postgres
+    - consul

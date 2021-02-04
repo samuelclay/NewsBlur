@@ -9,7 +9,8 @@
     - env_vars/base.yml
   
   roles:
-      - base
-      - docker
-      - repo
-      - mongo
+    - base
+    - docker
+    - repo
+    - mongo
+    - consul
