@@ -1,0 +1,13 @@
+---
+- hosts: consul-manager
+  remote_user: nb
+  vars:
+    - update_apt_cache: yes
+    - motd_role: app
+  vars_files:
+    - env_vars/base.yml
+    
+  roles:
+      - base
+      - docker
+      - consul-manager
