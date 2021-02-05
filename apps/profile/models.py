@@ -1531,7 +1531,7 @@ class MCustomStyling(mongo.Document):
 
 
 class MDashboardRiver(mongo.Document):
-    user_id = mongo.IntField(unique_with=('river_id'))
+    user_id = mongo.IntField(unique_with=('river_id', 'river_side', 'river_order'))
     river_id = mongo.StringField()
     river_side = mongo.StringField()
     river_order = mongo.IntField()
