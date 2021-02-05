@@ -1541,7 +1541,10 @@ class MDashboardRiver(mongo.Document):
     }
 
     def __str__(self):
-        u = User.objects.get(pk=self.user_id)
+        try:
+            u = User.objects.get(pk=self.user_id)
+        except User.DoesNotExist:
+            u = "<missing user>"
         return f"{u} ({self.river_side}/{self.river_order}): {self.river_id}"
         
     def canonical(self):
