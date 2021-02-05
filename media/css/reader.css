@@ -736,8 +736,10 @@ hr {
     text-shadow: 0 1px 0 rgba(250, 250, 250, .4);
 
     text-overflow: ellipsis;
+    display: -webkit-box;
     -webkit-line-clamp: 1;
-    -webkit-box-orient: vertical;
+    -webkit-box-orient: vertical;  
+    overflow: hidden;
     white-space: nowrap;
 }
 
@@ -1367,9 +1369,10 @@ hr {
     overflow: hidden;
     line-height: 24px;
     text-overflow: ellipsis;
-    -webkit-line-clamp: 1;
-    -webkit-box-orient: vertical;
     display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;  
+    overflow: hidden;
 }
 .NB-feedbar .NB-feedbar-options-container {
     float: right;
@@ -1890,15 +1893,16 @@ hr {
 }
 
 .NB-storytitles-content-preview {
+    margin: 3px 0;
     color: #B6B6B6;
     font-size: 11px;
     line-height: 2.2em;
     overflow: hidden;
     font-weight: normal;
-    height: 20px;
     text-overflow: ellipsis;
+    display: -webkit-box;
     -webkit-line-clamp: 1;
-    -webkit-box-orient: vertical;
+    -webkit-box-orient: vertical;  
     
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
@@ -1907,8 +1911,10 @@ hr {
 
 }
 .NB-story-pane-west .NB-storytitles-content-preview {
+    display: -webkit-box;
     -webkit-line-clamp: 2;
-    line-clamp: 2;
+    -webkit-box-orient: vertical;  
+    overflow: hidden;
     line-height: 16px;
     height: auto;
     padding: 6px 0 0;
@@ -1918,11 +1924,15 @@ hr {
 }
 .NB-content-preview-medium .NB-story-pane-west .NB-storytitles-content-preview {
     -webkit-line-clamp: 4;
-    line-clamp: 4;
+}
+.NB-content-preview-medium .NB-storytitles-content-preview {
+    -webkit-line-clamp: 2;
+}
+.NB-content-preview-large .NB-storytitles-content-preview {
+    -webkit-line-clamp: 3;
 }
 .NB-content-preview-large .NB-story-pane-west .NB-storytitles-content-preview {
     -webkit-line-clamp: 6;
-    line-clamp: 6;
 }
 .NB-theme-feed-size-xs .NB-storytitles-content-preview {
     font-size: 10px;
