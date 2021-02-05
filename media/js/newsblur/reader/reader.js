@@ -4725,9 +4725,15 @@
                     NEWSBLUR.assets.save_dashboard_river("river:infrequent", "left", 1, _.bind(function () {
                         NEWSBLUR.assets.save_dashboard_river("river:global", "left", 2, _.bind(function () {
                             this.load_dashboard_rivers();
-                        }, this));
-                    }, this));
-                }, this));
+                        }, this), function (e) {
+                            console.log(['Error saving dashbaord river', e]);
+                    });
+                    }, this), function (e) {
+                        console.log(['Error saving dashbaord river', e]);
+                });
+                }, this), function (e) {
+                        console.log(['Error saving dashbaord river', e]);
+                });
             }            
         },
 
