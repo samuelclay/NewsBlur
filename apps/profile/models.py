@@ -1580,7 +1580,7 @@ class MDashboardRiver(mongo.Document):
             river = cls.get_user(user_id, river_side=river_side, river_order=river_order)
         
         if not river:
-            river = cls.objects.create(user_id=user_id, river_id=river_id)
+            river = cls.objects.create(user_id=user_id, river_id=river_id, river_side=river_side, river_order=river_order)
 
         river.river_id = river_id
         river.river_side = river_side
