@@ -1,10 +1,10 @@
 ---
-- name: Start consul Docker container
+- name: Start consul client Docker container
   become: yes
-  vars:
-    JOIN_IP: $(ssh nb@206.189.183.186 sudo docker inspect -f '{{.NetworkSettings.IPAddress}}' consul-www)
+  #vars:
+  #  JOIN_IP: $(ssh nb@{{lookup('file', '/srv/newsblur/consul/consul_manager_ip.txt')}} docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' consul-manager)
   docker_container:
-    name: consul-{{ ansible_hostname }}
+    name: consul-client
     image: progrium/consul
     restart_policy: always
     state: started
@@ -12,4 +12,4 @@
     - 8500:8500
     - 8400:8400
     - 8600:53/udp
-    command: "-join {{ JOIN_IP }}"
+    #command: "-join {{ JOIN_IP }}"
