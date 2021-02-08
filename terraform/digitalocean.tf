@@ -24,10 +24,22 @@ resource "digitalocean_droplet" "www" {
   size     = var.droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
+    command = "python3 ../ansible/check_droplet.py www"
+  }
+  provisioner "local-exec" {
     command = "cd ../ansible; python3 generate.py"
   }
   provisioner "local-exec" {
     command = "cd ..; ansible-playbook -l www ansible/setup_root.yml"
+  }
+  provisioner "local-exec" {
+    command = "cd ..; ansible-playbook -l www ansible/provision.yml"
+  }
+  connection {
+    host = self.ipv4_address
+    user = "root"
+    type = "ssh"
+    timeout = "2m"
   }
 }
 
@@ -38,6 +50,9 @@ resource "digitalocean_droplet" "app-django" {
   size     = var.droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
+    command = "python3 ../ansible/check_droplet.py app-django"
+  }
+  provisioner "local-exec" {
     command = "cd ../ansible; python3 generate.py"
   }
   provisioner "local-exec" {
@@ -45,6 +60,12 @@ resource "digitalocean_droplet" "app-django" {
   }
   provisioner "local-exec" {
     command = "cd ..; ansible-playbook -l app-django ansible/provision.yml"
+  }
+  connection {
+    host = self.ipv4_address
+    user = "root"
+    type = "ssh"
+    timeout = "2m"
   }
 }
 
@@ -55,6 +76,9 @@ resource "digitalocean_droplet" "app-counts" {
   size     = var.droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
+    command = "python3 ../ansible/check_droplet.py app-counts"
+  }
+  provisioner "local-exec" {
     command = "cd ../ansible; python3 generate.py"
   }
   provisioner "local-exec" {
@@ -62,6 +86,12 @@ resource "digitalocean_droplet" "app-counts" {
   }
   provisioner "local-exec" {
     command = "cd ..; ansible-playbook -l app-counts ansible/provision.yml"
+  }
+  connection {
+    host = self.ipv4_address
+    user = "root"
+    type = "ssh"
+    timeout = "2m"
   }
 }
 
@@ -72,6 +102,9 @@ resource "digitalocean_droplet" "app-push" {
   size     = var.droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
+    command = "python3 ../ansible/check_droplet.py app-push"
+  }
+  provisioner "local-exec" {
     command = "cd ../ansible; python3 generate.py"
   }
   provisioner "local-exec" {
@@ -79,6 +112,12 @@ resource "digitalocean_droplet" "app-push" {
   }
   provisioner "local-exec" {
     command = "cd ..; ansible-playbook -l app-push ansible/provision.yml"
+  }
+  connection {
+    host = self.ipv4_address
+    user = "root"
+    type = "ssh"
+    timeout = "2m"
   }
 }
 
@@ -89,6 +128,9 @@ resource "digitalocean_droplet" "app-refresh" {
   size     = var.droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
+    command = "python3 ../ansible/check_droplet.py app-refresh"
+  }
+  provisioner "local-exec" {
     command = "cd ../ansible; python3 generate.py"
   }
   provisioner "local-exec" {
@@ -97,7 +139,14 @@ resource "digitalocean_droplet" "app-refresh" {
   provisioner "local-exec" {
     command = "cd ..; ansible-playbook -l app-refresh ansible/provision.yml"
   }
+  connection {
+    host = self.ipv4_address
+    user = "root"
+    type = "ssh"
+    timeout = "2m"
+  }
 }
+
 
 resource "digitalocean_droplet" "node-text" {
   image    = var.droplet_os
@@ -106,6 +155,9 @@ resource "digitalocean_droplet" "node-text" {
   size     = var.droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
+    command = "python3 ../ansible/check_droplet.py node-text"
+  }
+  provisioner "local-exec" {
     command = "cd ../ansible; python3 generate.py"
   }
   provisioner "local-exec" {
@@ -113,6 +165,12 @@ resource "digitalocean_droplet" "node-text" {
   }
   provisioner "local-exec" {
     command = "cd ..; ansible-playbook -l node-text ansible/provision.yml"
+  }
+  connection {
+    host = self.ipv4_address
+    user = "root"
+    type = "ssh"
+    timeout = "2m"
   }
 }
 
@@ -123,6 +181,9 @@ resource "digitalocean_droplet" "node-socket" {
   size     = var.droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
+    command = "python3 ../ansible/check_droplet.py node-socket"
+  }
+  provisioner "local-exec" {
     command = "cd ../ansible; python3 generate.py"
   }
   provisioner "local-exec" {
@@ -130,6 +191,12 @@ resource "digitalocean_droplet" "node-socket" {
   }
   provisioner "local-exec" {
     command = "cd ..; ansible-playbook -l node-socket ansible/provision.yml"
+  }
+  connection {
+    host = self.ipv4_address
+    user = "root"
+    type = "ssh"
+    timeout = "2m"
   }
 }
 
@@ -140,6 +207,9 @@ resource "digitalocean_droplet" "node-favicons" {
   size     = var.droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
+    command = "python3 ../ansible/check_droplet.py node-favicons"
+  }
+  provisioner "local-exec" {
     command = "cd ../ansible; python3 generate.py"
   }
   provisioner "local-exec" {
@@ -147,6 +217,12 @@ resource "digitalocean_droplet" "node-favicons" {
   }
   provisioner "local-exec" {
     command = "cd ..; ansible-playbook -l node-favicons ansible/provision.yml"
+  }
+  connection {
+    host = self.ipv4_address
+    user = "root"
+    type = "ssh"
+    timeout = "2m"
   }
 }
 
@@ -157,6 +233,9 @@ resource "digitalocean_droplet" "node-page" {
   size     = var.droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
+    command = "python3 ../ansible/check_droplet.py node-page"
+  }
+  provisioner "local-exec" {
     command = "cd ../ansible; python3 generate.py"
   }
   provisioner "local-exec" {
@@ -164,6 +243,12 @@ resource "digitalocean_droplet" "node-page" {
   }
   provisioner "local-exec" {
     command = "cd ..; ansible-playbook -l node-page ansible/provision.yml"
+  }
+  connection {
+    host = self.ipv4_address
+    user = "root"
+    type = "ssh"
+    timeout = "2m"
   }
 }
 
@@ -174,6 +259,9 @@ resource "digitalocean_droplet" "elasticsearch" {
   size     = var.droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
+    command = "python3 ../ansible/check_droplet.py elasticsearch"
+  }
+  provisioner "local-exec" {
     command = "cd ../ansible; python3 generate.py"
   }
   provisioner "local-exec" {
@@ -181,6 +269,12 @@ resource "digitalocean_droplet" "elasticsearch" {
   }
   provisioner "local-exec" {
     command = "cd ..; ansible-playbook -l elasticsearch ansible/provision.yml"
+  }
+  connection {
+    host = self.ipv4_address
+    user = "root"
+    type = "ssh"
+    timeout = "2m"
   }
 }
 
@@ -191,6 +285,9 @@ resource "digitalocean_droplet" "db-redis-user" {
   size     = var.droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
+    command = "python3 ../ansible/check_droplet.py db-redis-user"
+  }
+  provisioner "local-exec" {
     command = "cd ../ansible; python3 generate.py"
   }
   provisioner "local-exec" {
@@ -198,6 +295,12 @@ resource "digitalocean_droplet" "db-redis-user" {
   }
   provisioner "local-exec" {
     command = "cd ..; ansible-playbook -l db-redis-user ansible/provision.yml"
+  }
+  connection {
+    host = self.ipv4_address
+    user = "root"
+    type = "ssh"
+    timeout = "2m"
   }
 }
 
@@ -208,13 +311,22 @@ resource "digitalocean_droplet" "db-redis-sessions" {
   size     = var.droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
+    command = "python3 ../ansible/check_droplet.py db-redis-sessions"
+  }
+  provisioner "local-exec" {
     command = "cd ../ansible; python3 generate.py"
   }
   provisioner "local-exec" {
-    command = "cd ..; ansible-playbook -l db-redis-session ansible/setup_root.yml"
+    command = "cd ..; ansible-playbook -l db-redis-sessions ansible/setup_root.yml"
   }
   provisioner "local-exec" {
     command = "cd ..; ansible-playbook -l db-redis-sessions ansible/provision.yml"
+  }
+  connection {
+    host = self.ipv4_address
+    user = "root"
+    type = "ssh"
+    timeout = "2m"
   }
 }
 
@@ -225,6 +337,9 @@ resource "digitalocean_droplet" "db-redis-story" {
   size     = var.droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
+    command = "python3 ../ansible/check_droplet.py db-redis-story"
+  }
+  provisioner "local-exec" {
     command = "cd ../ansible; python3 generate.py"
   }
   provisioner "local-exec" {
@@ -232,6 +347,12 @@ resource "digitalocean_droplet" "db-redis-story" {
   }
   provisioner "local-exec" {
     command = "cd ..; ansible-playbook -l db-redis-story ansible/provision.yml"
+  }
+  connection {
+    host = self.ipv4_address
+    user = "root"
+    type = "ssh"
+    timeout = "2m"
   }
 }
 
@@ -242,6 +363,9 @@ resource "digitalocean_droplet" "db-redis-pubsub" {
   size     = var.droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
+    command = "python3 ../ansible/check_droplet.py db-redis-pubsub"
+  }
+  provisioner "local-exec" {
     command = "cd ../ansible; python3 generate.py"
   }
   provisioner "local-exec" {
@@ -249,6 +373,12 @@ resource "digitalocean_droplet" "db-redis-pubsub" {
   }
   provisioner "local-exec" {
     command = "cd ..; ansible-playbook -l db-redis-pubsub ansible/provision.yml"
+  }
+  connection {
+    host = self.ipv4_address
+    user = "root"
+    type = "ssh"
+    timeout = "2m"
   }
 }
 
@@ -259,6 +389,9 @@ resource "digitalocean_droplet" "db-postgres" {
   size     = var.droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
+    command = "python3 ../ansible/check_droplet.py db-postgres"
+  }
+  provisioner "local-exec" {
     command = "cd ../ansible; python3 generate.py"
   }
   provisioner "local-exec" {
@@ -266,6 +399,12 @@ resource "digitalocean_droplet" "db-postgres" {
   }
   provisioner "local-exec" {
     command = "cd ..; ansible-playbook -l db-postgres ansible/provision.yml"
+  }
+  connection {
+    host = self.ipv4_address
+    user = "root"
+    type = "ssh"
+    timeout = "2m"
   }
 }
 
@@ -276,6 +415,9 @@ resource "digitalocean_droplet" "db-mongo" {
   size     = var.droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
+    command = "python3 ../ansible/check_droplet.py db-mongo"
+  }
+  provisioner "local-exec" {
     command = "cd ../ansible; python3 generate.py"
   }
   provisioner "local-exec" {
@@ -284,11 +426,20 @@ resource "digitalocean_droplet" "db-mongo" {
   provisioner "local-exec" {
     command = "cd ..; ansible-playbook -l db-mongo ansible/provision.yml"
   }
+  connection {
+    host = self.ipv4_address
+    user = "root"
+    type = "ssh"
+    timeout = "2m"
+  }
 }
 
 resource "digitalocean_droplet" "task" {
   image    = var.droplet_os
   name     = "task"
+  provisioner "local-exec" {
+    command = "python3 ../ansible/check_droplet.py task"
+  }
   region   = var.droplet_region
   size     = var.droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
@@ -301,6 +452,12 @@ resource "digitalocean_droplet" "task" {
   provisioner "local-exec" {
     command = "cd ..; ansible-playbook -l task ansible/provision.yml"
   }
+  connection {
+    host = self.ipv4_address
+    user = "root"
+    type = "ssh"
+    timeout = "2m"
+  }
 }
 
 resource "digitalocean_droplet" "consul-manager" {
@@ -310,6 +467,9 @@ resource "digitalocean_droplet" "consul-manager" {
   size     = var.droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
+    command = "python3 ../ansible/check_droplet.py consul-manager"
+  }
+  provisioner "local-exec" {
     command = "cd ../ansible; python3 generate.py"
   }
   provisioner "local-exec" {
@@ -317,5 +477,14 @@ resource "digitalocean_droplet" "consul-manager" {
   }
   provisioner "local-exec" {
     command = "cd ..; ansible-playbook -l consul-manager ansible/provision.yml"
+  }
+  provisioner "local-exec" {
+    command = "cd ../consul; python3 get_consul_manager_ip.py"
+  }
+  connection {
+    host = self.ipv4_address
+    user = "root"
+    type = "ssh"
+    timeout = "2m"
   }
 }
