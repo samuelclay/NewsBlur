@@ -77,3 +77,4 @@ clients/android/NewsBlur/settings.gradle
 
 # Remove in dashboard3
 ansible 
+terraform
