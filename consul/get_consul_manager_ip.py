@@ -14,6 +14,6 @@ consul_manager_droplet = [d for d in my_droplets if d.name == "consul-manager"][
 consul_manager_ip_address = consul_manager_droplet.ip_address
 
 # write or overwrite the consul-manager ip
-if "consul_manager_ip.txt" not in os.listdir('ansible'):
-    with open('consul_manager_ip.txt', 'w') as f:
+if "consul_manager_ip.txt" not in os.listdir('/srv/newsblur/consul/'):
+    with open('/srv/newsblur/consul/consul_manager_ip.txt', 'w') as f:
        f.write(consul_manager_ip_address)
