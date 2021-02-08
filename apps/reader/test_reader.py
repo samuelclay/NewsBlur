@@ -4,7 +4,6 @@ from django.test import TestCase
 from django.urls import reverse
 from django.conf import settings
 from mongoengine.connection import connect, disconnect
-<<<<<<< HEAD:apps/reader/test_reader.py
 
 class Test_Reader(TestCase):
     fixtures = [
@@ -12,14 +11,6 @@ class Test_Reader(TestCase):
         'apps/rss_feeds/fixtures/rss_feeds.json', 
         'subscriptions.json', #'stories.json', 
         'apps/rss_feeds/fixtures/gawker1.json']
-=======
-from apps.reader.models import UserSubscriptionFolders
-class ReaderTest(TestCase):
-    fixtures = ['../../rss_feeds/fixtures/rss_feeds.json', 
-                'subscriptions.json', 'stories.json', 
-                '../../rss_feeds/fixtures/gawker1.json']
-    
->>>>>>> master:apps/reader/tests.py
     
     def setUp(self):
         disconnect()
