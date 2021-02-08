@@ -1,6 +1,6 @@
 ---
 - name: Set up redis containers
-  hosts: db-redis-user
+  hosts: db-redis
   remote_user: nb
   become: true
   vars:
