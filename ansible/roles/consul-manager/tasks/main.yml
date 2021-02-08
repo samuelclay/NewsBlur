@@ -3,7 +3,7 @@
 - name: Start Consul Manager (server) Docker container
   become: yes
   docker_container:
-    name: consul-{{ ansible_hostname }}
+    name: consul-manager
     image: progrium/consul
     restart_policy: always
     state: started
