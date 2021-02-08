@@ -1,4 +1,3 @@
-newsblur := $(shell docker ps -qf "name=newsblur_web")
 CURRENT_UID := $(shell id -u)
 CURRENT_GID := $(shell id -g)
 
@@ -23,6 +22,7 @@ shell:
 	- - CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker-compose exec newsblur_web ./manage.py shellplus
 # allows user to exec into newsblur_web and use pdb.
 debug:
+	- newsblur := $(shell docker ps -qf "name=newsblur_web")
 	- CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker attach ${newsblur}
 
 # brings down containers
@@ -53,9 +53,9 @@ keys:
 	- openssl x509 -req -sha256 -days 1024 -in config/certificates/localhost.csr -CA config/certificates/RootCA.pem -CAkey config/certificates/RootCA.key -CAcreateserial -extfile config/domains.ext -out config/certificates/localhost.crt
 	- cat config/certificates/localhost.crt config/certificates/localhost.key > config/certificates/localhost.pem
 
-# Lists all Digital Ocean machines, DO_API_TOKEN must be set
+# Lists all Digital Ocean machines
 list:
-	- doctl compute droplet list
+	- doctl -t `cat /srv/secrets-newsblur/keys/digital_ocean.token` compute droplet list
 
 ansible-deps:
 	ansible-galaxy install -p roles -r ansible/roles/requirements.yml --roles-path ansible/roles
