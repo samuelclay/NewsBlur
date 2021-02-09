@@ -17,7 +17,7 @@ domains_list:
   - popular.global.newsblur.com
 
 ssl_certificate: /srv/newsblur/config/certificates/newsblur.com.pem
-ssl_certificate_key: /srv/newsblur/config/certificates/newsblur.com.key
+ssl_certificate_key: /srv/newsblur/config/certificates/newsblur.com.pem.key
 dnsimple_credentials_path: /srv/newsblur/config/certificates/certbot.conf
 
 # DNS email (used for Cloudflare, LuaDNS)

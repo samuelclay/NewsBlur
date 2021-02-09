@@ -14,4 +14,7 @@
     expose:
       - "80"
     volumes:
+      - /srv/newsblur:/srv/newsblur
+      - /etc/letsencrypt/live/newsblur.com/:/etc/letsencrypt/live/newsblur.com/
+      - /etc/letsencrypt/archive/newsblur.com/:/etc/letsencrypt/archive/newsblur.com/
       - /srv/newsblur/docker/haproxy:/usr/local/etc/haproxy
