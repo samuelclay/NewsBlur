@@ -20,6 +20,8 @@ ansible_inventory_cmd = f'do-ansible-inventory -t {api_token} --out /srv/newsblu
 subprocess.call(ansible_inventory_cmd, 
                 shell=True)
 
+exit() # Too many requests if we run the below code
+
 do = digitalocean.Manager(token=api_token)
 droplets = do.get_all_droplets()
 
@@ -27,6 +29,7 @@ print("\n ---> Checking droplets: %s\n" % (' '.join([d.name for d in droplets]))
 
 
 def check_droplets_created():
+    i = 0
     droplets = do.get_all_droplets()
 
     for instance in droplets:

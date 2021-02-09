@@ -9,5 +9,7 @@ groups:
   # debug: inventory_hostname.startswith('debug')
   db: inventory_hostname.startswith('db')
   task: inventory_hostname.startswith('task') and inventory_hostname != 'task'
-  search: inventory_hostname.startswith('search')
-  dbredis: inventory_hostname.startswith('db-redis')
+  search: inventory_hostname.startswith('elasticsearch')
+  db_redis: inventory_hostname.startswith('db-redis')
+  db_postgres: inventory_hostname.startswith('db-postgres')
+  db_mongo: inventory_hostname.startswith('db-mongo')

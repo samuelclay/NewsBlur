@@ -1,0 +1,17 @@
+---
+- name: Start HAProxcy docker container
+  become: yes
+  docker_container:
+    name: haproxy
+    image: haproxy:latest
+    env:
+      DOCKERBUILD: "True"
+    state: started
+    ports:
+      - "80:80"
+    restart_policy: unless-stopped
+    container_default_behavior: compatibility
+    expose:
+      - "80"
+    volumes:
+      - /srv/newsblur/docker/haproxy:/usr/local/etc/haproxy
