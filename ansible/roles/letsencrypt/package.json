@@ -1,0 +1,22 @@
+{
+  "name": "ansible-letsencrypt",
+  "version": "0.2.0",
+  "description": "The ansible role for generating letsencrypt certificates",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/auxilincom/ansible-letsencrypt.git"
+  },
+  "author": "Auxilin",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/auxilincom/ansible-letsencrypt/issues"
+  },
+  "scripts": {
+    "add-contributor": "all-contributors add",
+    "generate-contributors": "all-contributors generate"
+  },
+  "homepage": "https://github.com/auxilincom/ansible-letsencrypt#readme",
+  "devDependencies": {
+    "all-contributors-cli": "6.7.0"
+  }
+}

@@ -1,14 +1,54 @@
----
-  letsencrypt_src_directory: /usr/local/share/letsencrypt
-  letsencrypt_venv: "{{ letsencrypt_src_directory }}/env"
-  letsencrypt_cert_domains:
-    - turntouch.com
-    - www.turntouch.com
-  letsencrypt_webroot_path: /usr/share/nginx/html
-  letsencrypt_authenticator: webroot
-  letsencrypt_email: "samuel@turntouch.com"
-  letsencrypt_command: "{{ letsencrypt_venv }}/bin/letsencrypt --agree-tos --text {% for domain in letsencrypt_cert_domains %}-d {{ domain }} {% endfor %}--email {{ letsencrypt_email }} {% if letsencrypt_server is defined %}--server {{ letsencrypt_server }}{% endif %} --expand"
-  letsencrypt_renewal_frequency:
-    day: "*"
-    hour: 0
-    minute: 0
+# Use certbot dns provider (use this if you need wildcard sertificate) or certbot itselt.
+use_dns_plugin: yes
+
+# Version of certbot or certbot dns plugin (if use_dns_plugin is true), see other versions here: https://hub.docker.com/r/certbot/certbot/tags/
+certbot_version: latest
+
+# Dsn plugin that will be used with certbot (when use_dns_plugin is true), list of plugins can be found here: https://github.com/certbot/certbot
+dns_plugin: "dnsimple"
+
+# Email that will be used for notifications 
+email: "samuel@newsblur.com"
+
+# List of domain for which you want to get a certificates
+domains_list:
+  - newsblur.com
+  - '"*.newsblur.com"'
+  - popular.global.newsblur.com
+
+ssl_certificate: /srv/newsblur/config/certificates/newsblur.com.pem
+ssl_certificate_key: /srv/newsblur/config/certificates/newsblur.com.key
+dnsimple_credentials_path: /srv/newsblur/config/certificates/certbot.conf
+
+# DNS email (used for Cloudflare, LuaDNS)
+dns_email: ""
+# DNS api key (used for Cloudflare, CloudXNS, DNS Made Easy, NS1)
+dns_api_key: ""
+# DNS secret key (used for CloudXNS, DNS Made Easy)
+dns_secret_key: ""
+# DNS token (used for DigitalOcean, DNSimple, LuaDNS)
+dns_token: ""
+# DNS key (used for Linode)
+dns_key: ""
+# DNS endpoint (used for OVH)
+dns_endpoint: ""
+# DNS application key (used for OVH)
+dns_application_key: ""
+# DNS application secret (used for OVH)
+dns_application_secret: ""
+# DNS consumer key (used for OVH)
+dns_consumer_key: ""
+# Target DNS server (used for RFC 2136)
+dns_server: ""
+# Target DNS port (used for RFC 2136)
+dns_port: ""
+# TSIG key name (used for RFC 2136)
+dns_name: ""
+# TSIG key secret (used for RFC 2136)
+dns_secret: ""
+# TSIG key algorithm (used for RFC 2136)
+dns_algorithm: ""
+# DNS access key id (used for route 53)
+dns_access_key_id: ""
+# DNS secret access key id (used for route 53)
+dns_secret_access_key: ""
