@@ -2,7 +2,6 @@
 - name: Set up redis containers
   hosts: db_redis
   remote_user: nb
-  become: true
   vars:
     - update_apt_cache: yes
     - motd_role: db

@@ -7,4 +7,4 @@ WORKDIR   /srv/newsblur
 RUN /bin/bash -c 'echo "ENABLED=1" | tee /etc/default/haproxy'
 RUN /bin/bash -c 'mkdir -p /srv/newsblur/config/certificates/'
 COPY 'config/haproxy_rsyslog.conf' '/etc/rsyslog.d/49-haproxy.conf'
-COPY './docker/haproxy/haproxy.conf' '/usr/local/etc/haproxy/haproxy.cfg'
+COPY './docker/haproxy/haproxy.dev.conf' '/usr/local/etc/haproxy/haproxy.cfg'
