@@ -13,51 +13,51 @@ white=`echo "\033[37;40m"`
 
 cat <<EOMOTD
 $bold  
-                                               $white               __
-                                               $white         _   .'.-'.
-                                               $white       .'-'. ||  ||
-                                               $white   _   || || :\_.'/
-$yellow                               .-.       ___   $white .'-.\ :\_'/  '-''
-$yellow                              _L $cyano$yellow|_.-'''   '-.$white ;\_'/  '-'
-$yellow                            _f $cyano$yellow\-'          /_. $white'-'
-$yellow                        ,-'' '-'              /
-$yellow                       /                    .'
-$yellow                      |                   .'             $white   .--.
-$yellow                       \              _.-'               $white   '-' |
-$yellow                        |        __.-'                   $white  .- ''
-$yellow                       ,-.     ''|                       $white |
-$yellow                      /  |       |                       $white  '-.
-$yellow                      \_ |       |              _  .-.   $white   _ '
-$yellow                       /'|       |             ' . ' | $regular$yellow _.-$bold$red'7P'
-$yellow                      |  |       ;              \ \| |$regular$yellow-' _.-''
-$yellow                      \_ |        ;           $regular$yellow_,-''$bold$yellow| |$regular$yellow.-'
-$yellow                       /'|        |          $regular$yellow()$bold$yellow_,.-j f.-.
-$bold $yellow                     |  |        |           .'') (_.-.j
-                      \_ ;        ;          (  <   (__.'
-                       / '        ;           \  '    /
-                      |   |        \          /      ;
-                       \_ |         ''--.___.'       |
-                      /' .'                          ;
-                      \.'                  _        /
-                      /                     '.    .'
+                                               $yellow               __
+                                               $yellow         _   .'.-'.
+                                               $yellow       .'-'. ||  ||
+                                               $yellow   _   || || :\_.'/
+$magenta                               .-.       ___   $yellow .'-.\ :\_'/  '-''
+$magenta                              _L$cyan o$magenta|_.-'''   '-.$yellow ;\_'/  '-'
+$magenta                            _f$cyan o$magenta\-'          /_. $yellow'-'
+$magenta                        ,-'' '-'              /
+$magenta                       /                    .'
+$magenta                      |                   .'             $yellow   .--.
+$magenta                       \              _.-'               $yellow   '-' |
+$magenta                        |        __.-'                   $yellow  .- ''
+$magenta                       $green,$magenta-.     ''|                       $yellow |
+$magenta                    $green  /  $magenta|       |                       $yellow  '-.
+$magenta                    $green  \_ $magenta|       |              _  .-.   $yellow   _ '
+$magenta                    $green   /'$magenta|       |             ' . ' | $regular$yellow _.-$bold$red'7P'
+$magenta                    $green  |  $magenta|       ;              \ \| |$regular$yellow-' _.-$bold$red''
+$magenta                    $green  \_ $magenta|        ;          $regular$yellow _,-''$bold$magenta| |$regular$yellow.-' $bold
+$magenta                    $green   /'$magenta|        |          $regular$yellow()_,-$bold$magenta j f$regular$magenta.-. $bold
+$magenta                    $green  |  $magenta|        |           .'') (_.-.j
+$magenta                    $green  \_ $magenta;        ;          (  <   (__.'
+$magenta                    $green   / $magenta'        ;           \  '    /
+$magenta                    $green  |  $magenta |        \          /      ;
+$magenta                    $green   \_$magenta |         ''--.___.'       |
+$magenta                    $green  /' $magenta.'                          ;
+$magenta                    $green  \.$magenta'                  _        /
+$magenta                      /                     '.    .'
                     .'                        \.-'
                    /                           '.
                   ;                              \ 
                   |                               '
                   '         /                      \ 
-                 ;         /       $regular$red NewsBlur $bold$yellow       \ 
+                 ;         /       $regular$red NewsBlur $bold$magenta       \ 
                  |        Y                          ;
-                 ;         \        $red DB Server$yellow        .
+                 ;         \        $red DB Server$magenta        .
                  '        t-'                         ;
                   \  \  \  \                          ;
-                  7'._f_.'-'                          |
-                  \_|                                 |
-                  /'|                                 ;
-                  \_;                                 '
-     .-.          f  '                               /
-  .'  ,-'          \_|                              /
- /   |     _  __ .-7 /                            .'
- |    '-.r'_'Y__\L.-'                          _.'
+$magenta          $green        7$magenta'._f_.'-'                          |
+$magenta          $green        \_$magenta|                                 |
+$magenta          $green        /'$magenta|                                 ;
+$magenta          $green        \_$magenta;                                 '
+$magenta     .-.  $green        f $magenta '                               /
+$magenta  .'  ,-' $green         \_$magenta|                              /
+$magenta /   |    $green _  __ .-7 $magenta/                            .'
+$magenta |    '-.r'_'Y__\L.-'                          _.'
  '                        ;              _..--' |
   '.                      ,              |      '.
     '-._                 /|              '.       |
