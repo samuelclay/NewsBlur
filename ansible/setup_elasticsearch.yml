@@ -1,6 +1,6 @@
 ---
 - name: Setup elasticsearch container
-  hosts: search-elasticsearch
+  hosts: search
   remote_user: nb
   vars:
     - update_apt_cache: yes

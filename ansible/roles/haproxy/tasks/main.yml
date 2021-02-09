@@ -1,17 +1,17 @@
 ---
-- name: Start nginx docker container
+- name: Start HAProxcy docker container
   become: yes
   docker_container:
-    name: nginx
-    image: nginx:1.19
+    name: haproxy
+    image: haproxy:latest
     env:
       DOCKERBUILD: "True"
     state: started
     ports:
       - "80:80"
     restart_policy: unless-stopped
+    container_default_behavior: compatibility
     expose:
       - "80"
     volumes:
-      - /srv/newsblur/docker/nginx:/etc/nginx/conf.d
-
+      - /srv/newsblur/docker/haproxy:/usr/local/etc/haproxy

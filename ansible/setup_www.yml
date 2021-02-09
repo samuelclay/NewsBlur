@@ -10,6 +10,7 @@
   roles:
       - base
       - docker
-      - repo
+      - {role: 'repo', tags: 'repo'}
       - monitor
       - consul-client
+      - {role: 'haproxy', tags: 'haproxy'}

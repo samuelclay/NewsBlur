@@ -1,7 +1,7 @@
 ---
 
 - name: Set up task containers
-  hosts: db-postgres
+  hosts: db_postgres
   remote_user: nb
   become: true
   vars_files:

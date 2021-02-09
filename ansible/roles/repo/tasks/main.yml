@@ -1,6 +1,14 @@
 ---
-- name: Pull newsblur_web github
+- name: Ensure repo directory
   become: yes
+  file:
+    path: /srv/newsblur
+    state: directory
+    owner: "{{ ansible_effective_user_id|int }}"
+    group: "{{ ansible_effective_group_id|int }}"
+    recurse: yes
+
+- name: Pull newsblur_web github
   git:
     repo: https://github.com/samuelclay/NewsBlur.git
     dest: /srv/newsblur/

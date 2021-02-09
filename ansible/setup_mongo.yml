@@ -1,6 +1,6 @@
 ---
 - name: Set up mongo db container
-  hosts: db-mongo
+  hosts: db_mongo
   remote_user: nb
   vars:
     - update_apt_cache: yes
