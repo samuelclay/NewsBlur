@@ -1,0 +1,9 @@
+AddressFamily inet
+TCPKeepAlive=yes
+ServerAliveInterval=15
+ServerAliveCountMax=6
+StrictHostKeyChecking=no
+Compression=yes
+ForwardAgent=yes
+ControlMaster auto
+ControlPath /tmp/ssh_mux_%h_%p_%r
