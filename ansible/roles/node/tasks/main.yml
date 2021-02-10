@@ -5,22 +5,27 @@
     - container_name: node_websocket
       ports: 8888:8888
       command: node unread_counts.js
-
+      target_host: 'node-socket'
     - container_name: 'original_pages'
       ports: '3060:3060'
       command: 'node original_page.js'
+      target_host: 'node_page'
     - container_name: 'original_text'
       ports: '4040:4040'
       command: 'node original_text.js'
+      target_host: 'node_text'
     - container_name: 'favicons'
       ports: '3030:3030'
       command: 'node favicons.js'
+      target_host: 'node-favicons'
 
+  when: "'{{item.target_host}}' in ansible_hostname"
   docker_container:
     name: "{{ item.container_name }}"
     image: newsblur/newsblur_node
     state: started
     command: "{{ item.command }}"
+    pull: true
     ports:
       - "{{ item.ports }}"
     env:
