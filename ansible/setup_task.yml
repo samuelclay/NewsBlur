@@ -11,5 +11,6 @@
     - base
     - docker
     - repo
+    - {role: 'consul', tags: 'consul'}
     - celery_task
     - consul-client

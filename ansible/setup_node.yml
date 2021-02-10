@@ -13,6 +13,7 @@
     - base
     - docker
     - repo
+    - {role: 'consul', tags: 'consul'}
     - node
     - consul-client
 

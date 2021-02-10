@@ -8,10 +8,11 @@
     - env_vars/base.yml
     
   roles:
-      - base
-      - docker
-      - {role: 'repo', tags: 'repo'}
-      - {role: 'letsencrypt', tags: 'letsencrypt'}
-      - monitor
-      - consul-client
-      - {role: 'haproxy', tags: 'haproxy'}
+    - base
+    - docker
+    - {role: 'repo', tags: 'repo'}
+    - {role: 'letsencrypt', tags: 'letsencrypt'}
+    - monitor
+    - {role: 'consul', tags: 'consul'}
+    - consul-client
+    - {role: 'haproxy', tags: 'haproxy'}

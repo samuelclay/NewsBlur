@@ -13,5 +13,6 @@
     - base
     - docker
     - repo
+    - {role: 'consul', tags: 'consul'}
     - postgres
     - consul-client
