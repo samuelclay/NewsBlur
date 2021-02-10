@@ -1,0 +1,28 @@
+[color]
+  ui = auto
+  branch = auto
+  diff = auto
+  status = auto
+[color "branch"]
+  current = green bold
+  local = green
+  remote = yellow
+[color "diff"]
+  meta = blue bold
+  frag = blue 
+  old = red bold
+  new = green bold
+[color "status"]
+  added = green
+  changed = yellow
+  untracked = blue bold
+[alias]
+  co = checkout
+  st = status
+  ci = commit
+  br = branch
+  df = diff
+  pl = pull
+  ps = push
+[branch]
+  autosetupmerge = true

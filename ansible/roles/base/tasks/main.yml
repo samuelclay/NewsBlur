@@ -25,6 +25,12 @@
 - name: Copy toprc
   copy: src=toprc.txt dest=~/.toprc
  
+- name: Copy gitconfig
+  copy: src=gitconfig.txt dest=~/.gitconfig
+
+- name: Copy ssh config
+  copy: src=sshconf.txt dest=~/.ssh/config
+ 
 - name: "Copy motd for {{ motd_role }}"
   become: yes
   copy: "src=motd.{{ motd_role }}.txt dest=/etc/update-motd.d/52-nb-motd mode=0755"
