@@ -12,5 +12,6 @@
     - base
     - docker
     - repo
+    - {role: 'consul', tags: 'consul'}
     - mongo
     - consul-client

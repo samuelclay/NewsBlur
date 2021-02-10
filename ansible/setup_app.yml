@@ -11,5 +11,6 @@
     - base
     - docker
     - web
+    - {role: 'consul', tags: 'consul'}
     - {role: 'nginx', tags: 'nginx'}
     - consul-client
