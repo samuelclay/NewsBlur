@@ -1,14 +1,6 @@
 ---
 
-- name: Start Consul Manager (server) Docker container
-  become: yes
-  docker_container:
-    name: consul-manager
-    image: progrium/consul
-    restart_policy: always
-    state: started
-    command: -server -bootstrap -ui-dir /ui
-    ports:
-    - 8500:8500
-    - 8400:8400
-    - 8600:53/udp
+- name: Start Consul Server
+  vars:
+    manager_ip: "167.172.142.207" # need to change this to use var from get_consul_manager_ip.py
+  command: "consul agent -server -config-file=/consul.json --advertise {{ manager_ip }}"
