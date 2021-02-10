@@ -19,3 +19,14 @@
   template:
     src: consul.json.j2
     dest: /srv/newsblur/consul/consul.json
+
+- name: Register Manager IP
+  script: /srv/newsblur/ansible/roles/consul/tasks/get_consul_manager_ip.py
+  register: consul_manager_ip
+  delegate_to: 127.0.0.1
+
+- name: Write Manager IP to {{ ansible_ssh_host }}
+  copy:
+    content: "{{ consul_manager_ip.stdout|trim }}"
+    dest: /srv/newsblur/consul/consul_manager_ip.txt
+  when: consul_manager_ip
