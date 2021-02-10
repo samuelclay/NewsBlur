@@ -10,4 +10,5 @@
   roles:
       - base
       - docker
-      - consul-manager
+      - {role: 'consul', tags: 'consul'}
+      - {role: 'consul-manager', tags: 'consul'}

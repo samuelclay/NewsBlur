@@ -6,10 +6,16 @@
     state: present
 
 - name: Install Consul
+  become: yes
   apt: 
     name: consul
 
+- name: Ensure consul dir exists
+  file:
+    path: /srv/newsblur/consul
+    state: directory
+
 - name: Create config file
   template:
-    src: /srv/newsblur/consul/consul.json.j2
-    dest: /consul.json
+    src: consul.json.j2
+    dest: /srv/newsblur/consul/consul.json
