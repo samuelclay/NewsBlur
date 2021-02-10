@@ -1,12 +1,15 @@
+---
 - name: Ensure group "consul" exists
   become: true
-  ansible.builtin.group:
+  group:
     name: consul
     state: present
+
 - name: Install Consul
   apt: 
     name: consul
+
 - name: Create config file
-  ansible.builtin.template:
+  template:
     src: /srv/newsblur/consul/consul.json.j2
     dest: /consul.json

@@ -1,6 +1,19 @@
 ---
 - name: Start node docker containers
   become: yes
+  docker_container:
+    name: "{{ item.container_name }}"
+    image: newsblur/newsblur_node
+    state: started
+    command: "{{ item.command }}"
+    pull: true
+    ports:
+      - "{{ item.ports }}"
+    env:
+      NODE_ENV: "docker"
+    restart_policy: unless-stopped
+    volumes:
+      - /srv/newsblur/node:/usr/src/app
   with_items:
     - container_name: node_websocket
       ports: 8888:8888
@@ -18,18 +31,4 @@
       ports: '3030:3030'
       command: 'node favicons.js'
       target_host: 'node-favicons'
-
   when: "'{{item.target_host}}' in ansible_hostname"
-  docker_container:
-    name: "{{ item.container_name }}"
-    image: newsblur/newsblur_node
-    state: started
-    command: "{{ item.command }}"
-    pull: true
-    ports:
-      - "{{ item.ports }}"
-    env:
-      NODE_ENV: "docker"
-    restart_policy: unless-stopped
-    volumes:
-      - /srv/newsblur/node:/usr/src/app
