@@ -817,11 +817,17 @@ def assemble_certificates():
         local('pwd')
         local('cat STAR_newsblur_com.crt EssentialSSLCA_2.crt ComodoUTNSGCCA.crt UTNAddTrustSGCCA.crt AddTrustExternalCARoot.crt > newsblur.com.crt')
         
-def copy_certificates():
+def copy_certificates(copy=False):
     cert_path = os.path.join(env.NEWSBLUR_PATH, 'config/certificates')
     run('mkdir -p %s' % cert_path)
     fullchain_path = "/etc/letsencrypt/live/newsblur.com/fullchain.pem"
     privkey_path = "/etc/letsencrypt/live/newsblur.com/privkey.pem"
+
+    if copy:
+        sudo('mkdir -p %s' % os.path.dirname(fullchain_path))
+        put(os.path.join(env.SECRETS_PATH, 'certificates/newsblur.com.pem'), fullchain_path, use_sudo=True)
+        put(os.path.join(env.SECRETS_PATH, 'certificates/newsblur.com.key'), privkey_path, use_sudo=True)
+
     run('ln -fs %s %s' % (fullchain_path, os.path.join(cert_path, 'newsblur.com.crt')))
     run('ln -fs %s %s' % (fullchain_path, os.path.join(cert_path, 'newsblur.com.pem'))) # For backwards compatibility with hard-coded nginx configs
     run('ln -fs %s %s' % (privkey_path, os.path.join(cert_path, 'newsblur.com.key')))
