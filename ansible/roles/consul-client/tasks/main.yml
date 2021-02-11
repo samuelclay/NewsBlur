@@ -1,10 +1,8 @@
 ---
-# TODO
-#- name: Register consul_manager_ip
-#  become: yes
-#  shell: python3 consul/get_consul_manager_ip.py
-#  register: consul_manager_ip
-- name: Start consul
-  vars:
-    join_addr: "167.172.142.207"
-  command: "consul agent -config-file=/consul.json --join {{ join_addr }}"
+- name: Register Manager IP
+  script: /srv/newsblur/ansible/roles/consul/tasks/get_consul_manager_ip.py
+  register: consul_manager_ip
+  delegate_to: 127.0.0.1
+
+- name: Start consul agent
+  command: "consul agent -config-file=/srv/newsblur/consul/consul.json"

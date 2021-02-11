@@ -1,6 +1,13 @@
 ---
+- name: Allow consul-manager 8301
+  ufw: rule=allow port=8301
+  become: yes
+  tags: ufw
+
+- name: Register Manager IP
+  script: /srv/newsblur/ansible/roles/consul/tasks/get_consul_manager_ip.py
+  register: consul_manager_ip
+  delegate_to: 127.0.0.1
 
 - name: Start Consul Server
-  vars:
-    manager_ip: "167.172.142.207" # need to change this to use var from get_consul_manager_ip.py
-  command: "consul agent -server -config-file=/consul.json --advertise {{ manager_ip }}"
+  command: "consul agent -server -config-file=/srv/newsblur/consul/consul.json --advertise {{ consul_manager_ip.stdout|trim }}"
