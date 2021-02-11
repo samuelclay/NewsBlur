@@ -9,6 +9,8 @@ os.environ['DJANGO_SETTINGS_MODULE'] = 'newsblur_web.settings'
 
 if __name__ == '__main__':
     doapi = digitalocean.Manager(token=settings.DO_TOKEN_SSH)
+    if len(sys.argv) > 2 and sys.argv[2] == "old":
+        doapi = digitalocean.Manager(token=settings.DO_TOKEN_FABRIC)
     droplets = doapi.get_all_droplets()
     for droplet in droplets:
         if sys.argv[1] == droplet.name:

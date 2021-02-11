@@ -18,6 +18,11 @@ LPURPLE='\033[01;35m'
 LCYAN='\033[01;36m'
 WHITE='\033[01;37m'
 
-ipaddr=`python /srv/newsblur/utils/hostname_ssh.py $1`
+ipaddr=`python /srv/newsblur/utils/hostname_ssh.py $1 $2`
 printf "\n ${BLUE}---> ${LBLUE}Connecting to ${LGREEN}$1${BLUE} / ${LRED}$ipaddr${BLUE} <--- ${RESTORE}\n\n"
-ssh -l nb -i /srv/secrets-newsblur/keys/docker.key $ipaddr
+if [ "$2" == "old" ];
+then
+    ssh -l sclay -i /srv/secrets-newsblur/keys/newsblur.key $ipaddr
+else
+    ssh -l nb -i /srv/secrets-newsblur/keys/docker.key $ipaddr
+fi
