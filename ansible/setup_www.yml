@@ -14,5 +14,5 @@
     - {role: 'letsencrypt', tags: 'letsencrypt'}
     - monitor
     - {role: 'consul', tags: 'consul'}
-    - consul-client
+    - {role: 'consul-client', tags: 'consul'}
     - {role: 'haproxy', tags: 'haproxy'}

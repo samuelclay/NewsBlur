@@ -1,6 +1,7 @@
 {
-  "datacenter": "dc1",
-  "data_dir": "/tmp/consul",
+  "datacenter": "nyc1",
+  "data_dir": "/srv/newsblur/consul",
   "log_level": "INFO",
-  "advertise_addr": "{{ ansible_ssh_host }}"
+  "retry_join": ["{{ consul_manager_ip.stdout|trim }}"],
+  "bind_addr": "{% raw %}{{GetInterfaceIP \"eth0\"}}{% endraw %}"
 }
