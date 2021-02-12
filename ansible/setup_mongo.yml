@@ -13,5 +13,5 @@
     - docker
     - repo
     - {role: 'consul', tags: 'consul'}
+    - {role: 'consul-client', tags: 'consul'}
     - mongo
-    - consul-client

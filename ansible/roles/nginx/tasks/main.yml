@@ -14,6 +14,7 @@
       - "80"
     volumes:
       - /srv/newsblur/docker/nginx:/etc/nginx/conf.d
+      - /srv/newsblur/:/srv/newsblur
 
 - name: Register nginx in consul
   become: yes
