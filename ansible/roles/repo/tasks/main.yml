@@ -8,7 +8,17 @@
     owner: nb
     group: nb
 
+- name: Ensure nb /srv/newsblur owner
+  become: yes
+  file:
+    path: /srv/newsblur
+    state: directory
+    owner: nb
+    group: nb
+    recurse: yes
+
 - name: Pull newsblur_web github
   git:
     repo: https://github.com/samuelclay/NewsBlur.git
     dest: /srv/newsblur/
+    version: dashboard3

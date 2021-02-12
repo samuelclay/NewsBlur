@@ -1,11 +1,12 @@
 {
   "datacenter": "nyc1",
   "data_dir": "/var/lib/consul",
-  "log_level": "DEBUG",
+  "log_level": "INFO",
   "enable_syslog": true,
   "advertise_addr": "{{ consul_manager_ip.stdout|trim }}",
   "bind_addr": "0.0.0.0",
   "client_addr": "0.0.0.0",
+  "server": true,
   "bootstrap": true,
   "ui": true
 }

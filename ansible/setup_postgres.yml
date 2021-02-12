@@ -14,5 +14,5 @@
     - docker
     - repo
     - {role: 'consul', tags: 'consul'}
+    - {role: 'consul-client', tags: 'consul'}
     - postgres
-    - consul-client

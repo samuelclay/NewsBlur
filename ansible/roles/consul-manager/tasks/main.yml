@@ -1,14 +1,4 @@
 ---
-- name: Allow consul-manager port 8301
-  ufw: rule=allow port={{ item }}
-  become: yes
-  tags: ufw
-  with_items:
-    - 8301
-    - 8300
-    - 8500
-    - 8600
-
 - name: Register Manager IP
   script: /srv/newsblur/ansible/roles/consul/tasks/get_consul_manager_ip.py
   register: consul_manager_ip

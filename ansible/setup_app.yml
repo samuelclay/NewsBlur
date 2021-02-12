@@ -8,10 +8,10 @@
     - env_vars/base.yml
     
   roles:
-    - base
-    - docker
-    - {role: 'repo', tags: 'repo'}
-    - web
+    - {role: 'base', tags: 'base'}
     - {role: 'consul', tags: 'consul'}
     - {role: 'consul-client', tags: 'consul'}
+    - {role: 'docker', tags: 'docker'}
+    - {role: 'repo', tags: 'repo'}
+    - {role: 'web', tags: 'web'}
     - {role: 'nginx', tags: 'nginx'}
