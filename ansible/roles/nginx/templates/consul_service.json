@@ -1,7 +1,9 @@
 {
-"service": {
-"name": "nginx",
-"tags": ["web"],
-"port": 80
-}
+    "service": {
+        "name": "nginx",
+        "tags": [
+            "web"
+        ],
+        "port": 80
+    }
 }
