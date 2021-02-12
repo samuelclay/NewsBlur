@@ -4,6 +4,7 @@
   docker_container:
     name: newsblur_web
     image: newsblur/newsblur_python3
+    container_default_behavior: no_defaults
     env:
       DOCKERBUILD: "True"
     state: started
@@ -20,3 +21,11 @@
   copy:
     src: /srv/secrets-newsblur/settings/app_settings.py
     dest: /srv/newsblur/newsblur_web/local_settings.py
+
+- name: Register web app in consul
+  become: yes
+  template:
+    src: consul_service.json
+    dest: /etc/consul.d/newsblur_web.json
+  notify:
+    - reload consul

@@ -1,0 +1,9 @@
+{
+    "service": {
+        "name": "newsblur_web",
+        "tags": [
+            "web"
+        ],
+        "port": 8000
+    }
+}  
