@@ -10,7 +10,8 @@
   roles:
     - base
     - docker
+    - {role: 'repo', tags: 'repo'}
     - web
     - {role: 'consul', tags: 'consul'}
+    - {role: 'consul-client', tags: 'consul'}
     - {role: 'nginx', tags: 'nginx'}
-    - consul-client

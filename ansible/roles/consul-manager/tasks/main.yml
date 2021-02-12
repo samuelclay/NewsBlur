@@ -1,13 +1,31 @@
 ---
-- name: Allow consul-manager 8301
-  ufw: rule=allow port=8301
+- name: Allow consul-manager port 8301
+  ufw: rule=allow port={{ item }}
   become: yes
   tags: ufw
+  with_items:
+    - 8301
+    - 8300
+    - 8500
+    - 8600
 
 - name: Register Manager IP
   script: /srv/newsblur/ansible/roles/consul/tasks/get_consul_manager_ip.py
   register: consul_manager_ip
   delegate_to: 127.0.0.1
 
-- name: Start Consul Server
-  command: "consul agent -server -config-file=/srv/newsblur/consul/consul.json --advertise {{ consul_manager_ip.stdout|trim }}"
+- name: Create config file
+  become: yes
+  template:
+    src: consul_manager.json.j2
+    dest: /etc/consul.d/newsblur.json
+  notify:
+    - restart consul
+
+- name: Start Consul
+  become: yes
+  service:
+    name: consul
+    state: started
+    enabled: true
+        

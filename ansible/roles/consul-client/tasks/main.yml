@@ -1,8 +1,21 @@
 ---
+
 - name: Register Manager IP
   script: /srv/newsblur/ansible/roles/consul/tasks/get_consul_manager_ip.py
   register: consul_manager_ip
   delegate_to: 127.0.0.1
 
-- name: Start consul agent
-  command: "consul agent -config-file=/srv/newsblur/consul/consul.json"
+- name: Create config file
+  become: yes
+  template:
+    src: consul.json.j2
+    dest: /etc/consul.d/newsblur.json
+  notify:
+    - restart consul
+
+- name: Start Consul
+  become: yes
+  service:
+    name: consul
+    state: started
+    enabled: true

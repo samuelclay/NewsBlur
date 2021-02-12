@@ -42,11 +42,9 @@ alias ls='ls -pFa --color'
 alias cd..='cd ..'
 
 alias smtp='python -m smtpd -n -c DebuggingServer 127.0.0.1:1025'
-alias tlnb='echo "----------------\n"; tail -f logs/newsblur.log'
-alias sshnb='ssh sclay@app10.newsblur.com'
-alias sp='~/newsblur/manage.py shell_plus --use-pythonrc'
-alias cdsg='cd ~/staging'
-alias cdnb='cd ~/newsblur'
+alias tlnb='echo "----------------\n"; tail -f /srv/newsblur/logs/newsblur.log'
+alias sp='/srv/newsblur/manage.py shell_plus --use-pythonrc'
+alias cdnb='cd /srv/newsblur'
 alias sshdo=/srv/newsblur/utils/ssh.sh
 
 cd /srv/newsblur

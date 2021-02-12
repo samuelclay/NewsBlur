@@ -3,6 +3,7 @@
   apt: name={{ sys_packages }} update_cache={{ update_apt_cache }} state=latest
   become: yes
   tags: packages
+  ignore_errors: yes
 
 - name: Copy zshrc
   copy: src=zshrc.txt dest=~/.zshrc
