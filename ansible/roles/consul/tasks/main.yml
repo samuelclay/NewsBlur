@@ -4,6 +4,7 @@
   become: yes
   tags: ufw
   with_items:
+    - "8300"
     - "8301"
 
 - name: Ensure group "consul" exists

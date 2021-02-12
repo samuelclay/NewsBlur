@@ -11,7 +11,7 @@ with open(TOKEN_FILE) as f:
 manager = digitalocean.Manager(token=token)
 my_droplets = manager.get_all_droplets()
 consul_manager_droplet = [d for d in my_droplets if d.name == "consul-manager"][0]
-consul_manager_ip_address = consul_manager_droplet.ip_address
+consul_manager_ip_address = consul_manager_droplet.private_ip_address
 
 print(consul_manager_ip_address)
 

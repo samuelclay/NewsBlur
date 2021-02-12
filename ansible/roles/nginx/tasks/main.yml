@@ -10,6 +10,7 @@
     ports:
       - "80:80"
     restart_policy: unless-stopped
+    container_default_behavior: no_defaults
     expose:
       - "80"
     volumes:
@@ -22,4 +23,4 @@
     src: consul_service.json
     dest: /etc/consul.d/nginx.json
   notify:
-    - restart consul
+    - reload consul
