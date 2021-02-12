@@ -1,0 +1,6 @@
+server=/consul/127.0.0.1#8600
+
+{# Upstream DNS servers -#}
+{% for server in consul_dnsmasq_servers -%}
+    server={{ server }}
+{% endfor -%}

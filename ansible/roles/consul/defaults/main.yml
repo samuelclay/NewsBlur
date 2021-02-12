@@ -1,0 +1,22 @@
+consul_dnsmasq_servers:
+  - 8.8.8.8
+  - 8.8.4.4
+
+### Paths
+consul_bin_path: "/usr/local/bin"
+consul_config_path: "/etc/consul"
+consul_configd_path: "{{ consul_config_path }}/consul.d"
+consul_bootstrap_state: "{{ consul_config_path }}/.consul_bootstrapped"
+consul_data_path: "/var/consul"
+consul_log_path: "{{ lookup('env','CONSUL_LOG_PATH') | default('/var/log/consul', true) }}"
+consul_log_file: "{{ lookup('env','CONSUL_LOG_FILE') | default('consul.log', true) }}"
+consul_run_path: "/run/consul"
+consul_binary: "{{ consul_bin_path }}/consul"
+
+### System user and group
+consul_manage_user: true
+consul_user: "consul"
+consul_manage_group: true
+consul_group: "bin"
+consul_systemd_restart_sec: 42
+consul_systemd_limit_nofile: 65536

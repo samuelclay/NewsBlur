@@ -1,4 +1,13 @@
 ---
+- name: Ensure /srv directory exists
+  become: yes
+  file:
+    path: /srv
+    state: directory
+    mode: 0755
+    owner: nb
+    group: nb
+
 - name: Pull newsblur_web github
   git:
     repo: https://github.com/samuelclay/NewsBlur.git

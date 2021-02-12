@@ -15,3 +15,10 @@
     volumes:
       - /srv/newsblur/docker/nginx:/etc/nginx/conf.d
 
+- name: Register nginx in consul
+  become: yes
+  template:
+    src: consul_service.json
+    dest: /etc/consul.d/nginx.json
+  notify:
+    - restart consul

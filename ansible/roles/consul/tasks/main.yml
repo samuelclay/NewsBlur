@@ -10,22 +10,54 @@
   apt: 
     name: consul
 
-- name: Ensure consul dir exists
-  file:
-    path: /srv/newsblur/consul
-    state: directory
+###########
+# Dnsmasq #
+########### 
 
-- name: Register Manager IP
-  script: /srv/newsblur/ansible/roles/consul/tasks/get_consul_manager_ip.py
-  register: consul_manager_ip
-  delegate_to: 127.0.0.1
+- name: Install Dnsmasq package
+  become: yes
+  apt:
+    name: dnsmasq
+    state: present
 
-- name: Create config file
+- name: Enable dnsmasq service
+  become: yes
+  service:
+    name: dnsmasq
+    enabled: true
+
+- name: Bind dnsmasq to localhost
+  become: yes
+  lineinfile: dest=/etc/dnsmasq.conf state=present line='listen-address=127.0.0.1'
+
+- name: Add localhost to resolv.conf
+  become: yes
+  lineinfile: dest=/etc/resolv.conf state=present line='nameserver 127.0.0.1' insertbefore=BOF
+
+- name: user=root dnsmasq
+  become: yes
+  lineinfile: dest=/etc/dnsmasq.conf state=present line='user=root'
+
+- name: Stop systemd-resolved
+  become: yes
+  systemd:
+    name: systemd-resolved
+    state: stopped
+    enabled: no
+    masked: yes
+
+- name: Launch dnsmasq
+  become: yes
+  service:
+    name: dnsmasq
+    state: started
+
+- name: Create Dnsmasq configuration
+  become: yes
   template:
-    src: consul.json.j2
-    dest: /srv/newsblur/consul/consul.json
-
-- name: Write Manager IP to a file
-  copy:
-    content: "{{ consul_manager_ip.stdout|trim }}"
-    dest: /srv/newsblur/consul/consul_manager_ip.txt
+    src: dnsmasq-10-consul.j2
+    dest: /etc/dnsmasq.d/10-consul
+    owner: root
+    group: root
+    mode: 0644
+  notify: restart dnsmasq

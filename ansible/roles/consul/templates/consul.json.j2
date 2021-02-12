@@ -1,7 +1,0 @@
-{
-  "datacenter": "nyc1",
-  "data_dir": "/srv/newsblur/consul",
-  "log_level": "INFO",
-  "retry_join": ["{{ consul_manager_ip.stdout|trim }}"],
-  "bind_addr": "{% raw %}{{GetInterfaceIP \"eth0\"}}{% endraw %}"
-}
