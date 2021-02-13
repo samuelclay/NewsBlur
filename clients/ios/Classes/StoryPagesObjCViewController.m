@@ -481,9 +481,12 @@
 }
 
 - (BOOL)shouldHideStatusBar {
-    NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
+    // Disabled for now, as not working currently.
+    return NO;
     
-    return [preferences boolForKey:@"story_hide_status_bar"];
+//    NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
+//
+//    return [preferences boolForKey:@"story_hide_status_bar"];
 }
 
 - (BOOL)isNavigationBarHidden {
@@ -528,12 +531,12 @@
     
     CGPoint oldOffset = currentPage.webView.scrollView.contentOffset;
     CGFloat navHeight = self.navigationController.navigationBar.bounds.size.height;
-    CGFloat statusAdjustment = 20.0;
+    CGFloat statusAdjustment = 0.0;
     
-    // The top inset is zero when the status bar is hidden, so using the bottom one to confirm.
-    if (self.view.safeAreaInsets.top > 0.0 || self.view.safeAreaInsets.bottom > 0.0) {
-        statusAdjustment = 0.0;
-    }
+//    // The top inset is zero when the status bar is hidden, so using the bottom one to confirm.
+//    if (self.view.safeAreaInsets.top > 0.0 || self.view.safeAreaInsets.bottom > 0.0) {
+//        statusAdjustment = 0.0;
+//    }
     
     if (oldOffset.y < 0.0) {
         oldOffset.y = 0.0;
@@ -543,7 +546,6 @@
     CGFloat absoluteAdjustment = navHeight + statusAdjustment;
     CGFloat totalAdjustment = sign * absoluteAdjustment;
     CGPoint newOffset = CGPointMake(oldOffset.x, oldOffset.y + totalAdjustment);
-    BOOL singlePage = currentPage.isSinglePage;
     
     if (alsoTraverse) {
         self.traversePinned = YES;
@@ -561,29 +563,28 @@
         }
     }
     
-    [UIView animateWithDuration:0.2 animations:^{
-        if (!self.isHorizontal) {
-            [self reorientPages];
-        }
+    self.currentPage.webView.scrollView.contentOffset = newOffset;
+    
+    [self.appDelegate.detailViewController adjustForAutoscroll];
+    
+    if (alsoTraverse) {
+        [self.view layoutIfNeeded];
+        self.traverseView.alpha = hide ? 0 : 1;
         
-        if (!singlePage) {
-            self.currentPage.webView.scrollView.contentOffset = newOffset;
+        if (hide) {
+            [self hideAutoscrollImmediately];
         }
-        
-        [self.appDelegate.detailViewController adjustForAutoscroll];
-        
-        if (alsoTraverse) {
-             [self.view layoutIfNeeded];
-            self.traverseView.alpha = hide ? 0 : 1;
-            
-            if (hide) {
-                [self hideAutoscrollImmediately];
-            }
-        }
-    }];
+    }
     
     if (!hide) {
         [self resizeScrollView];
+    }
+    
+    if (!self.isHorizontal) {
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC),
+                       dispatch_get_main_queue(), ^{
+            [self reorientPages];
+        });
     }
     
     [UIView animateWithDuration:0.2 animations:^{
