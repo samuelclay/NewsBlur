@@ -1006,6 +1006,7 @@
 - (void)scrollViewDidScroll:(UIScrollView *)sender {
 //    [sender setContentOffset:CGPointMake(sender.contentOffset.x, 0)];
     if (inRotation) return;
+    NSInteger currentPageIndex = currentPage.pageIndex;
     CGSize size = self.scrollView.frame.size;
     CGPoint offset = self.scrollView.contentOffset;
     CGFloat pageAmount = self.isHorizontal ? size.width : size.height;
@@ -1059,17 +1060,17 @@
         [self setStoryFromScroll];
 //    }
     
+    if (currentPage.pageIndex == currentPageIndex) {
+        return;
+    }
+    
     [self showAutoscrollBriefly:YES];
     
     // Stick to bottom
     traversePinned = YES;
     
-    if (!self.isPhoneOrCompact) {
-        self.traverseBottomConstraint.constant = 20;
-    } else {
-        self.traverseBottomConstraint.constant = -1 * self.view.safeAreaInsets.bottom/2;
-    }
-
+    self.traverseBottomConstraint.constant = (-1 * self.view.safeAreaInsets.bottom / 2) + 20;
+    
     [UIView animateWithDuration:.24 delay:0
                         options:UIViewAnimationOptionCurveEaseInOut
                      animations:^{
