@@ -8,9 +8,13 @@
     ports:
       - '9200:9200'
     restart_policy: unless-stopped
-    depends_on: 
-      - nginx
-      - newsblur_web
-      - redis
     volumes:
       - /srv/newsblur/docker/volumes/elasticsearch:/usr/share/elasticsearch/data
+
+- name: Register elasticsearch in consul
+  become: yes
+  template:
+    src: consul_service.json
+    dest: /etc/consul.d/elasticsearch.json
+  notify:
+    - reload consul
