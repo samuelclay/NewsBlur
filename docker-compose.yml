@@ -252,7 +252,7 @@ services:
     environment: 
       - DOCKERBUILD=True
     volumes:
-      - ./docker/haproxy/haproxy.conf:/usr/local/etc/haproxy/haproxy.cfg
+      - ./docker/haproxy/haproxy.docker-compose.conf:/usr/local/etc/haproxy/haproxy.cfg
       - app-files:/srv/newsblur
 
 volumes:
