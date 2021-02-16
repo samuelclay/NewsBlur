@@ -1,5 +1,5 @@
 ---
-- name: Set up redis containers
+- name: Set up redis server
   hosts: db_redis
   remote_user: nb
   vars:
@@ -13,4 +13,4 @@
     - repo
     - {role: 'consul', tags: 'consul'}
     - {role: 'consul-client', tags: 'consul'}
-    - redis
+    - {role: 'redis', tags: 'redis'}

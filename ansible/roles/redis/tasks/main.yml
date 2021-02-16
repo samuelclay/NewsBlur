@@ -13,3 +13,11 @@
       - /srv/newsblur/config/redis.conf:/usr/local/etc/redis_server.conf
       - /srv/newsblur/config/redis_docker.conf:/etc/redis_server.conf
       - /srv/newsblur/docker/volumes/redis.var.lib:/var/lib/redis
+
+- name: Register redis in consul
+  become: yes
+  template:
+    src: consul_service.json
+    dest: /etc/consul.d/newsblur_web.json
+  notify:
+    - reload consul
