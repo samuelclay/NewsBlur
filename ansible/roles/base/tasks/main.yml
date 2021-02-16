@@ -1,4 +1,20 @@
 ---
+
+- name: Start systemd-resolved in case it was stopped
+  become: yes
+  systemd:
+    name: systemd-resolved
+    state: started
+    enabled: yes
+    masked: no
+
+- name: Stop dnsmasq
+  become: yes
+  service:
+    name: dnsmasq
+    state: stopped
+    enabled: no
+
 - name: Ensure git, zsh, ssl are the latest versions
   apt: name={{ sys_packages }} update_cache={{ update_apt_cache }} state=latest
   become: yes
