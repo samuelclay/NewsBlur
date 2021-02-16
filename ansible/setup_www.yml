@@ -11,8 +11,8 @@
     - base
     - docker
     - {role: 'repo', tags: 'repo'}
-    - {role: 'letsencrypt', tags: 'letsencrypt'}
-    - monitor
+    #- {role: 'letsencrypt', tags: 'letsencrypt'}
     - {role: 'consul', tags: 'consul'}
     - {role: 'consul-client', tags: 'consul'}
+    - {role: 'monitor', tags: 'monitor'}
     - {role: 'haproxy', tags: 'haproxy'}

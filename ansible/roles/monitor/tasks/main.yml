@@ -13,3 +13,11 @@
     restart_policy: unless-stopped
     volumes:
       - /srv/newsblur:/srv/newsblur
+
+- name: Register monitor in consul
+  become: yes
+  template:
+    src: consul_service.json
+    dest: /etc/consul.d/monitor.json
+  notify:
+    - reload consul
