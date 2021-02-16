@@ -32,3 +32,17 @@
     command: "{{ item.command }}"
     volumes:
       - /srv/newsblur:/srv/newsblur
+
+- name: Register celery_task in consul
+  become: yes
+  with_items:
+    - service_name: task_celery
+    - service_name: task_beat_feeds
+    - service_name: task_search_indexer
+    - service_name: task_search_indexer_tasker
+    - service_name: task_work_queue
+  template:
+    src: consul_service.json
+    dest: /etc/consul.d/celery_task.json
+  notify:
+    - reload consul

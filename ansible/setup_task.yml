@@ -13,4 +13,4 @@
     - repo
     - {role: 'consul', tags: 'consul'}
     - {role: 'consul-client', tags: 'consul'}
-    - celery_task
+    - {role: 'celery_task', tags: 'celery_task'}
