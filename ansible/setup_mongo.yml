@@ -14,4 +14,4 @@
     - repo
     - {role: 'consul', tags: 'consul'}
     - {role: 'consul-client', tags: 'consul'}
-    - mongo
+    - {role: 'mongo', tags: 'mongo'}

@@ -1,0 +1,9 @@
+{
+    "service": {
+        "name": "db-mongo",
+        "tags": [
+            "db"
+        ],
+        "port": 27017
+    }
+}  
