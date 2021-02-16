@@ -18,3 +18,11 @@
       - /etc/letsencrypt/live/newsblur.com/:/etc/letsencrypt/live/newsblur.com/
       - /etc/letsencrypt/archive/newsblur.com/:/etc/letsencrypt/archive/newsblur.com/
       - /srv/newsblur/docker/haproxy:/usr/local/etc/haproxy
+
+- name: Register haproxy in consul
+  become: yes
+  template:
+    src: consul_service.json
+    dest: /etc/consul.d/haproxy.json
+  notify:
+    - reload consul
