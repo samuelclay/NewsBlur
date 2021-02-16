@@ -13,4 +13,4 @@
     - repo
     - {role: 'consul', tags: 'consul'}
     - {role: 'consul-client', tags: 'consul'}
-    - elasticsearch
+    - {role: 'elasticsearch', tags: 'elasticsearch'}
