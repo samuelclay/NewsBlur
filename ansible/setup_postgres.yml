@@ -15,4 +15,4 @@
     - repo
     - {role: 'consul', tags: 'consul'}
     - {role: 'consul-client', tags: 'consul'}
-    - postgres
+    - {role: 'postgres', tags: 'postgres'}
