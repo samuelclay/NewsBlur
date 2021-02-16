@@ -6,6 +6,7 @@
   register: consul_manager_ip
 
 - name: Ensure /etc/consul.d exists
+  become: yes
   file:
     path: /etc/consul.d
     state: directory
