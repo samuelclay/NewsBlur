@@ -1,0 +1,9 @@
+{
+    "service": {
+        "name": "postgres",
+        "tags": [
+            "db"
+        ],
+        "port": 5432
+    }
+}  
