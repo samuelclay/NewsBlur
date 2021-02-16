@@ -1,6 +1,6 @@
 {
     "service": {
-        "name": "newsblur_web",
+        "name": "{{ ansible_hostname }}",
         "tags": [
             "web"
         ],
