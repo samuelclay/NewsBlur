@@ -1,0 +1,9 @@
+{
+    "service": {
+        "name": "{{ ansible_hostname }}",
+        "tags": [
+            "redis"
+        ],
+        "port": 6379
+    }
+}  
