@@ -32,3 +32,23 @@
       command: 'node favicons.js'
       target_host: 'node-favicons'
   when: "'{{item.target_host}}' in ansible_hostname"
+
+
+- name: Register nodes in consul
+  become: yes
+  template:
+    src: consul_service.json
+    dest: /etc/consul.d/{{item.target_host}}.json
+
+  with_items:
+    - port: 8888
+      target_host: 'node-socket'
+    - port: 3060
+      target_host: 'node-page'
+    - port: 4040
+      target_host: 'node-text'
+    - port: 3030
+      target_host: 'node-favicons'
+  notify:
+    - reload consul
+  when: "'{{item.target_host}}' in ansible_hostname"

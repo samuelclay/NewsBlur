@@ -1,0 +1,9 @@
+{
+    "service": {
+        "name": "{{ item.target_host }}",
+        "tags": [
+            "node"
+        ],
+        "port": {{ item.port }}
+    }
+}  
