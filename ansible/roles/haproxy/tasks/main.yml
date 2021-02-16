@@ -1,5 +1,10 @@
 ---
-- name: Start HAProxcy docker container
+- name: Template haproxy.cfg file
+  template:
+    src: /srv/newsblur/docker/haproxy/haproxy.consul.cfg.j2
+    dest: /srv/newsblur/docker/haproxy/haproxy.consul.cfg
+    
+- name: Start HAProxy docker container
   become: yes
   docker_container:
     name: haproxy
@@ -15,9 +20,7 @@
       - "80"
     volumes:
       - /srv/newsblur:/srv/newsblur
-      - /etc/letsencrypt/live/newsblur.com/:/etc/letsencrypt/live/newsblur.com/
-      - /etc/letsencrypt/archive/newsblur.com/:/etc/letsencrypt/archive/newsblur.com/
-      - /srv/newsblur/docker/haproxy:/usr/local/etc/haproxy
+      - /srv/newsblur/docker/haproxy/haproxy.consul.cfg:/etc/haproxy/haproxy.cfg
 
 - name: Register haproxy in consul
   become: yes
