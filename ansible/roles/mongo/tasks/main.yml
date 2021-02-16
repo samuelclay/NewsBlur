@@ -10,3 +10,11 @@
     restart_policy: unless-stopped
     volumes:
       - /srv/newsblur/docker/volumes/db_mongo:/data/db
+
+- name: Register mongo in consul
+  become: yes
+  template:
+    src: consul_service.json
+    dest: /etc/consul.d/mongo.json
+  notify:
+    - reload consul
