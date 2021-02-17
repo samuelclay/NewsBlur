@@ -119,7 +119,7 @@ services:
     container_name: node_favicons
     environment:
       - NODE_ENV=docker
-      - MONGO_PORT=29019
+      - MONGODB_PORT=29019
     ports:
       - 3030:3030
     command: node favicons.js
@@ -252,7 +252,7 @@ services:
     environment: 
       - DOCKERBUILD=True
     volumes:
-      - ./docker/haproxy/haproxy.docker-compose.conf:/usr/local/etc/haproxy/haproxy.cfg
+      - ./docker/haproxy/haproxy.docker-compose.cfg:/usr/local/etc/haproxy/haproxy.cfg
       - app-files:/srv/newsblur
 
 volumes:
