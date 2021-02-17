@@ -9,9 +9,10 @@
     
   roles:
     - {role: 'base', tags: 'base'}
+    - {role: 'repo', tags: 'repo'}
+    - {role: 'dnsmasq', tags: 'consul'}
     - {role: 'consul', tags: 'consul'}
     - {role: 'consul-client', tags: 'consul'}
     - {role: 'docker', tags: 'docker'}
-    - {role: 'repo', tags: 'repo'}
     - {role: 'web', tags: 'web'}
     - {role: 'nginx', tags: 'nginx'}

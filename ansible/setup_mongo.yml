@@ -12,6 +12,7 @@
     - base
     - docker
     - repo
+    - {role: 'dnsmasq', tags: 'consul'}
     - {role: 'consul', tags: 'consul'}
     - {role: 'consul-client', tags: 'consul'}
     - {role: 'mongo', tags: 'mongo'}
