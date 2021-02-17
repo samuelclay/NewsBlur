@@ -16,3 +16,10 @@
     name: dnsmasq
     state: restarted
 
+- name: reload consul service
+  become: yes
+  service:
+    name: consul
+    state: reloaded
+  listen: reload consul
+
