@@ -10,12 +10,6 @@
 - name: reload consul configuration
   import_tasks: reload_consul_conf.yml
 
-- name: restart dnsmasq
-  become: yes
-  service:
-    name: dnsmasq
-    state: restarted
-
 - name: reload consul service
   become: yes
   service:

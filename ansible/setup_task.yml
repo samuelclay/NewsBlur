@@ -11,6 +11,7 @@
     - base
     - docker
     - repo
+    - {role: 'dnsmasq', tags: 'consul'}
     - {role: 'consul', tags: 'consul'}
     - {role: 'consul-client', tags: 'consul'}
     - {role: 'celery_task', tags: 'celery_task'}

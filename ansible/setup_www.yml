@@ -11,6 +11,7 @@
     - base
     - docker
     - {role: 'repo', tags: 'repo'}
+    - {role: 'dnsmasq', tags: 'consul'}
     - {role: 'consul', tags: 'consul'}
     - {role: 'consul-client', tags: 'consul'}
     - {role: 'monitor', tags: 'monitor'}
