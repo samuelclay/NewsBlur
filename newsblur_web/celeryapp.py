@@ -5,7 +5,7 @@ from django.apps import apps
 # set the default Django settings module for the 'celery' program.
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'newsblur_web.settings')
 
-app = Celery('newsblur')
+app = Celery('newsblur_web')
 
 # Using a string here means the worker doesn't have to serialize
 # the configuration object to child processes.
