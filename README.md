@@ -63,6 +63,11 @@
     will be redirected to https://localhost/profile/stripe_form. Hit
     the back button a few times, and you will be inside the app.
 
+## Making docker-compose work with your database
+To make docker-compose work with your database, upgrade your local database to the docker-compose version and then volumize the database data path by changing the `./docker/volumes/` part of the volume directive in the service to point to your local database's data directory.
+
+To make docker-compose work with an older database version, change the image version for the database service in the docker-compose file.
+
 ## Contribution Instructions
 
 * Making Changes:
