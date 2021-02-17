@@ -1,9 +1,9 @@
 ---
 
 - name: Register Manager IP
-  delegate_to: 127.0.0.1
   script: /srv/newsblur/ansible/roles/consul/tasks/get_consul_manager_ip.py
   register: consul_manager_ip
+  delegate_to: 127.0.0.1
 
 - name: Ensure /etc/consul.d exists
   become: yes
