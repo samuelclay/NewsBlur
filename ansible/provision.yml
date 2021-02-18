@@ -16,4 +16,4 @@
 - import_playbook: setup_task.yml
   when: "'task' in inventory_hostname"
 - import_playbook: setup_consul_manager.yml
-  when: "'db-consul' in inventory_hostname"
+  when: "'consul' in inventory_hostname"

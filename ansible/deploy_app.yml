@@ -1,5 +1,5 @@
 ---
-- hosts: NewsBlur_Docker
+- hosts: app,node
   remote_user: nb
   gather_facts: false
   vars_files:
@@ -9,16 +9,8 @@
     - include: roles/supervisor/handlers/main.yml
 
   tasks:
-    - name: Deploy Web | Pull master from github
-      git: repo={{ git_web_repo }} dest={{ goapp_gopath }}
-      
-    - name: Deploy Web | Pull secrets from github
-      git: repo={{ git_secrets_repo }} dest={{ secrets_path }}
-      
-    - name: Deploy Web | Build turntouch-web
-      environment: "{{ goapp_environment }}"
-      shell: make build chdir={{ goapp_gopath }}
-      
-    - name: Deploy Web | Reload supervisor
-      shell: supervisorctl reload
-      become: yes
+    - name: Pull newsblur_web github
+      git:
+        repo: https://github.com/samuelclay/NewsBlur.git
+        dest: /srv/newsblur/
+        version: dashboard3

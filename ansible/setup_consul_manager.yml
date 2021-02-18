@@ -1,5 +1,6 @@
 ---
-- hosts: consul-manager
+- name: SETUP -> consul manager containers
+  hosts: db-consul
   remote_user: nb
   vars:
     - update_apt_cache: yes
@@ -8,7 +9,8 @@
     - env_vars/base.yml
     
   roles:
-      - base
-      - docker
-      - {role: 'consul', tags: 'consul'}
-      - {role: 'consul-manager', tags: 'consul'}
+    - {role: 'base', tags: 'base'}
+    - {role: 'docker', tags: 'docker'}
+    - {role: 'repo', tags: 'repo'}
+    - {role: 'consul', tags: 'consul'}
+    - {role: 'consul-manager', tags: 'consul'}
