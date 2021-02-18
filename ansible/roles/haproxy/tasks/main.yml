@@ -42,4 +42,5 @@
   debug: 
     msg: Reloading HAProxy
   notify: reload haproxy
+  when: updated_config.changed
   changed_when: updated_config.changed

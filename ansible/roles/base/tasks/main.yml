@@ -4,10 +4,12 @@
   apt: name={{ sys_packages }} update_cache={{ update_apt_cache }} state=latest
   become: yes
   tags: packages
-  ignore_errors: yes
+  # ignore_errors: yes
 
 - name: Copy zshrc
-  copy: src=zshrc.txt dest=~/.zshrc
+  copy: 
+    src: zshrc.txt 
+    dest: /home/nb/.zshrc
 
 - name: Installing Zsh and git
   apt: pkg=zsh,git state=latest

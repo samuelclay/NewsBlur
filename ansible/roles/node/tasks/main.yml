@@ -49,6 +49,8 @@
       target_host: 'node-text'
     - port: 3030
       target_host: 'node-favicons'
+    - port: 80
+      target_host: 'node-images'
   notify:
     - reload consul
   when: "'{{item.target_host}}' in ansible_hostname"
