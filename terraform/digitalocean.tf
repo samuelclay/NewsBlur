@@ -23,9 +23,28 @@ resource "digitalocean_ssh_key" "default" {
   public_key = file("/srv/secrets-newsblur/keys/docker.key.pub")
 }
 
+# #################
+# #   Resources   #
+# #################
+
+resource "digitalocean_droplet" "consul-manager" {
+  image    = var.droplet_os
+  name     = "consul-manager"
+  region   = var.droplet_region
+  size     = var.droplet_size
+  ssh_keys = [digitalocean_ssh_key.default.fingerprint]
+  provisioner "local-exec" {
+    command = "/srv/newsblur/ansible/generate.py; sleep 120"
+  }
+  provisioner "local-exec" {
+    command = "cd ..; ansible-playbook -l consul-manager ansible/setup_root.yml"
+  }
+  provisioner "local-exec" {
+    command = "cd ..; ansible-playbook -l consul-manager ansible/provision.yml"
+  }
+}
 
 resource "digitalocean_droplet" "www" {
-  count    = 1
   image    = var.droplet_os
   name     = "www"
   region   = var.droplet_region
@@ -179,9 +198,9 @@ resource "digitalocean_droplet" "node-page" {
   }
 }
 
-resource "digitalocean_droplet" "elasticsearch" {
+resource "digitalocean_droplet" "db-elasticsearch" {
   image    = var.droplet_os
-  name     = "elasticsearch"
+  name     = "db-elasticsearch"
   region   = var.droplet_region
   size     = var.droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
@@ -189,10 +208,10 @@ resource "digitalocean_droplet" "elasticsearch" {
     command = "/srv/newsblur/ansible/generate.py; sleep 120"
   }
   provisioner "local-exec" {
-    command = "cd ..; ansible-playbook -l elasticsearch ansible/setup_root.yml"
+    command = "cd ..; ansible-playbook -l db-elasticsearch ansible/setup_root.yml"
   }
   provisioner "local-exec" {
-    command = "cd ..; ansible-playbook -l elasticsearch ansible/provision.yml"
+    command = "cd ..; ansible-playbook -l db-elasticsearch ansible/provision.yml"
   }
 }
 
@@ -298,9 +317,10 @@ resource "digitalocean_droplet" "db-mongo" {
   }
 }
 
-resource "digitalocean_droplet" "task" {
+resource "digitalocean_droplet" "task-celery" {
+  count    = 2
   image    = var.droplet_os
-  name     = "task"
+  name     = "task-celery"
   region   = var.droplet_region
   size     = var.droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
@@ -308,16 +328,16 @@ resource "digitalocean_droplet" "task" {
     command = "/srv/newsblur/ansible/generate.py; sleep 120"
   }
   provisioner "local-exec" {
-    command = "cd ..; ansible-playbook -l task ansible/setup_root.yml"
+    command = "cd ..; ansible-playbook -l task-celery ansible/setup_root.yml"
   }
   provisioner "local-exec" {
-    command = "cd ..; ansible-playbook -l task ansible/provision.yml"
+    command = "cd ..; ansible-playbook -l task-celery ansible/provision.yml"
   }
 }
 
-resource "digitalocean_droplet" "consul-manager" {
+resource "digitalocean_droplet" "task-work" {
   image    = var.droplet_os
-  name     = "consul-manager"
+  name     = "task-work"
   region   = var.droplet_region
   size     = var.droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
@@ -325,9 +345,43 @@ resource "digitalocean_droplet" "consul-manager" {
     command = "/srv/newsblur/ansible/generate.py; sleep 120"
   }
   provisioner "local-exec" {
-    command = "cd ..; ansible-playbook -l consul-manager ansible/setup_root.yml"
+    command = "cd ..; ansible-playbook -l task-work ansible/setup_root.yml"
   }
   provisioner "local-exec" {
-    command = "cd ..; ansible-playbook -l consul-manager ansible/provision.yml"
+    command = "cd ..; ansible-playbook -l task-work ansible/provision.yml"
+  }
+}
+
+resource "digitalocean_droplet" "task-search" {
+  image    = var.droplet_os
+  name     = "task-search"
+  region   = var.droplet_region
+  size     = var.droplet_size
+  ssh_keys = [digitalocean_ssh_key.default.fingerprint]
+  provisioner "local-exec" {
+    command = "/srv/newsblur/ansible/generate.py; sleep 120"
+  }
+  provisioner "local-exec" {
+    command = "cd ..; ansible-playbook -l task-search ansible/setup_root.yml"
+  }
+  provisioner "local-exec" {
+    command = "cd ..; ansible-playbook -l task-search ansible/provision.yml"
+  }
+}
+
+resource "digitalocean_droplet" "task-beat" {
+  image    = var.droplet_os
+  name     = "task-beat"
+  region   = var.droplet_region
+  size     = var.droplet_size
+  ssh_keys = [digitalocean_ssh_key.default.fingerprint]
+  provisioner "local-exec" {
+    command = "/srv/newsblur/ansible/generate.py; sleep 120"
+  }
+  provisioner "local-exec" {
+    command = "cd ..; ansible-playbook -l task-beat ansible/setup_root.yml"
+  }
+  provisioner "local-exec" {
+    command = "cd ..; ansible-playbook -l task-beat ansible/provision.yml"
   }
 }

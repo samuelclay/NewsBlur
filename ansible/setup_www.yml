@@ -15,4 +15,5 @@
     - {role: 'consul', tags: 'consul'}
     - {role: 'consul-client', tags: 'consul'}
     - {role: 'monitor', tags: 'monitor'}
+    - {role: 'letsencrypt', tags: 'letsencrypt'}
     - {role: 'haproxy', tags: 'haproxy'}

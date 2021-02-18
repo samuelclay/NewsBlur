@@ -1,4 +1,5 @@
 - name: Create base directories
+  become: yes
   file: path="{{ item }}" state=directory
   with_items:
     - "/etc/letsencrypt"
