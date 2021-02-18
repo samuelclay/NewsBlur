@@ -15,10 +15,16 @@ except IOError:
     print(f" ---> Missing Digital Ocean API token: {TOKEN_FILE}")
     exit()
 
+outfile = "/srv/newsblur/ansible/inventories/digital_ocean.ini"
+
 # Install from https://github.com/do-community/do-ansible-inventory/releases
-ansible_inventory_cmd = f'do-ansible-inventory -t {api_token} --out /srv/newsblur/ansible/inventories/digital_ocean.ini'
-subprocess.call(ansible_inventory_cmd, 
-                shell=True)
+ansible_inventory_cmd = f'do-ansible-inventory -t {api_token} --out {outfile}'
+subprocess.call(ansible_inventory_cmd, shell=True)
+
+with open(outfile, 'r') as original: 
+    data = original.read()
+with open(outfile, 'w') as modified: 
+    modified.write("127.0.0.1 ansible_connection=local\n" + data)
 
 exit() # Too many requests if we run the below code
 
