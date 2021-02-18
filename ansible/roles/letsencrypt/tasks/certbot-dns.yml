@@ -30,6 +30,7 @@
     image: "certbot/dns-{{ dns_plugin }}:{{ certbot_version }}"
     state: started
     restart_policy: no
+    container_default_behavior: no_defaults
     volumes:
       - "/etc/letsencrypt:/etc/letsencrypt"
       - "/var/lib/letsencrypt:/var/lib/letsencrypt"
@@ -40,7 +41,7 @@
       --dns-{{ dns_plugin }} --dns-{{ dns_plugin }}-propagation-seconds 60
       --dns-{{ dns_plugin }}-credentials {{ dnsimple_credentials_path }}
       --server https://acme-v02.api.letsencrypt.org/directory
-  when: use_dns_plugin|bool
+  # when: use_dns_plugin|bool
   tags:
     - certbot-dns
 
