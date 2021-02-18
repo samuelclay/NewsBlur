@@ -1,6 +1,5 @@
 ---
 - hosts: app,node
-  remote_user: nb
   gather_facts: false
   vars_files:
     - env_vars/base.yml

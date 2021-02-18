@@ -1,7 +1,6 @@
 ---
 - name: SETUP -> node containers
   hosts: node
-  remote_user: nb
   become: true
   vars_files:
     - env_vars/base.yml

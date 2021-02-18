@@ -6,8 +6,14 @@ import sys
 import subprocess
 import digitalocean
 
-TOKEN_FILE = "/srv/secrets-newsblur/keys/digital_ocean.token"
-# TOKEN_FILE = "/srv/secrets-newsblur/keys/digital_ocean.readprod.token"
+OLD = False
+# Uncomment below line to use existing servers
+# OLD = True
+
+if OLD:
+    TOKEN_FILE = "/srv/secrets-newsblur/keys/digital_ocean.readprod.token"
+else:
+    TOKEN_FILE = "/srv/secrets-newsblur/keys/digital_ocean.token"
 
 try:
     api_token = open(TOKEN_FILE, 'r').read().strip()
@@ -15,7 +21,7 @@ except IOError:
     print(f" ---> Missing Digital Ocean API token: {TOKEN_FILE}")
     exit()
 
-outfile = "/srv/newsblur/ansible/inventories/digital_ocean.ini"
+outfile = f"/srv/newsblur/ansible/inventories/digital_ocean{'.old' if OLD else ''}.ini"
 
 # Install from https://github.com/do-community/do-ansible-inventory/releases
 ansible_inventory_cmd = f'do-ansible-inventory -t {api_token} --out {outfile}'

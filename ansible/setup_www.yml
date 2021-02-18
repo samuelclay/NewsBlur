@@ -1,7 +1,6 @@
 ---
 - name: SETUP -> www containers
   hosts: www
-  remote_user: nb
   vars:
     - update_apt_cache: yes
     - motd_role: app
