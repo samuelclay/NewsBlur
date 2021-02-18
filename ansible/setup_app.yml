@@ -1,5 +1,6 @@
 ---
-- hosts: all
+- name: SETUP -> app containers
+  hosts: app
   remote_user: nb
   vars:
     - update_apt_cache: yes
@@ -9,10 +10,10 @@
     
   roles:
     - {role: 'base', tags: 'base'}
+    - {role: 'docker', tags: 'docker'}
     - {role: 'repo', tags: 'repo'}
     - {role: 'dnsmasq', tags: 'consul'}
     - {role: 'consul', tags: 'consul'}
     - {role: 'consul-client', tags: 'consul'}
-    - {role: 'docker', tags: 'docker'}
     - {role: 'web', tags: 'web'}
     - {role: 'nginx', tags: 'nginx'}

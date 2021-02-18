@@ -1,5 +1,6 @@
 ---
-- hosts: www
+- name: SETUP -> www containers
+  hosts: www
   remote_user: nb
   vars:
     - update_apt_cache: yes
@@ -8,8 +9,8 @@
     - env_vars/base.yml
     
   roles:
-    - base
-    - docker
+    - {role: 'base', tags: 'base'}
+    - {role: 'docker', tags: 'docker'}
     - {role: 'repo', tags: 'repo'}
     - {role: 'dnsmasq', tags: 'consul'}
     - {role: 'consul', tags: 'consul'}

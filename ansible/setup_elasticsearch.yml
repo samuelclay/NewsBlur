@@ -1,6 +1,6 @@
 ---
-- name: Setup elasticsearch container
-  hosts: search
+- name: SETUP -> elasticsearch containers
+  hosts: elasticsearch
   remote_user: nb
   vars:
     - update_apt_cache: yes
@@ -8,9 +8,9 @@
   vars_files:
     - env_vars/base.yml
   roles:
-    - base
-    - docker
-    - repo
+    - {role: 'base', tags: 'base'}
+    - {role: 'docker', tags: 'docker'}
+    - {role: 'repo', tags: 'repo'}
     - {role: 'dnsmasq', tags: 'consul'}
     - {role: 'consul', tags: 'consul'}
     - {role: 'consul-client', tags: 'consul'}
