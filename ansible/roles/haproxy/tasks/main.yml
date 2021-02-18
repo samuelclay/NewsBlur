@@ -7,7 +7,14 @@
     dest: /etc/consul.d/haproxy.json
   notify:
     - reload consul
-    
+
+- name: Allow haproxy stats port
+  ufw: rule=allow port={{ item }}
+  become: yes
+  tags: ufw
+  with_items:
+    - "1936"
+
 - name: Template haproxy.cfg file
   template:
     src: /srv/newsblur/docker/haproxy/haproxy.consul.cfg.j2
@@ -15,12 +22,13 @@
   register: updated_config
 
 - name: Reload HAProxy
+  become: yes
   docker_container:
     name: "haproxy"
     state: started
     force_kill: true
     kill_signal: HUP
-  when: updated_config|bool
+  when: updated_config.changed
 
 - name: Start HAProxy docker container
   become: yes
