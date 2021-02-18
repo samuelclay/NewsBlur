@@ -1,7 +1,7 @@
 ---
 - hosts: all
   become: true
-  strategy: free
+  # strategy: free
   remote_user: root
   vars_files:
     - env_vars/base.yml
