@@ -1,6 +1,6 @@
 {
     "service": {
-        "name": "elasticsearch",
+        "name": "db-elasticsearch",
         "tags": [
             "db"
         ],

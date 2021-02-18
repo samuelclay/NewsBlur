@@ -1,26 +1,4 @@
 ---
-- name: Template haproxy.cfg file
-  template:
-    src: /srv/newsblur/docker/haproxy/haproxy.consul.cfg.j2
-    dest: /srv/newsblur/docker/haproxy/haproxy.consul.cfg
-    
-- name: Start HAProxy docker container
-  become: yes
-  docker_container:
-    name: haproxy
-    image: haproxy:latest
-    env:
-      DOCKERBUILD: "True"
-    state: started
-    ports:
-      - "80:80"
-    restart_policy: unless-stopped
-    container_default_behavior: compatibility
-    expose:
-      - "80"
-    volumes:
-      - /srv/newsblur:/srv/newsblur
-      - /srv/newsblur/docker/haproxy/haproxy.consul.cfg:/etc/haproxy/haproxy.cfg
 
 - name: Register haproxy in consul
   become: yes
@@ -29,3 +7,35 @@
     dest: /etc/consul.d/haproxy.json
   notify:
     - reload consul
+    
+- name: Template haproxy.cfg file
+  template:
+    src: /srv/newsblur/docker/haproxy/haproxy.consul.cfg.j2
+    dest: /srv/newsblur/docker/haproxy/haproxy.consul.cfg
+  register: updated_config
+
+- name: Reload HAProxy
+  docker_container:
+    name: "haproxy"
+    state: started
+    force_kill: true
+    kill_signal: HUP
+  when: updated_config|bool
+
+- name: Start HAProxy docker container
+  become: yes
+  docker_container:
+    name: haproxy
+    image: haproxy:latest
+    env:
+      DOCKERBUILD: "True"
+    state: started
+    network_mode: host # This exposes port 80
+    restart_policy: unless-stopped
+    container_default_behavior: compatibility
+    volumes:
+      - /srv/newsblur:/srv/newsblur
+      - /srv/newsblur/docker/haproxy/haproxy.consul.cfg:/usr/local/etc/haproxy/haproxy.cfg 
+      - /etc/letsencrypt/live/newsblur.com:/etc/letsencrypt/live/newsblur.com
+      - /etc/letsencrypt/archive/newsblur.com:/etc/letsencrypt/archive/newsblur.com
+

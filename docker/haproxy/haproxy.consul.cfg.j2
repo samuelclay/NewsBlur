@@ -102,13 +102,11 @@ backend nginx
     balance roundrobin
     option httpchk GET /_nginxchk
     http-check expect rstatus 200|503
-    server nginx01 app:81 check inter 3000ms
-    server-template nginx 1 nginx.service.nyc1.consul:81 resolvers consul check inter 3000ms
+    server-template nginx 1 app-django.service.nyc1.consul:80 resolvers consul check inter 3000ms
 
 backend app
     balance roundrobin
     option httpchk GET /_haproxychk
-    server app01 app:8000 check inter 3000ms
     server-template app 1 app-django.service.nyc1.consul:8000 resolvers consul check inter 3000ms
 
 backend app_counts
@@ -129,7 +127,7 @@ backend work
     balance roundrobin
     option httpchk GET http://monitor.service.nyc1.consul:5579/work_check/celeryd_work_queue
     http-check expect rstatus 200|503|301
-    server-template work 1 celery_task.service.nyc1.consul:82 check inter 30000ms
+    server-template work 1 task-work.service.nyc1.consul:82 check inter 30000ms
 
 backend postgres
     option httpchk GET http://monitor.service.nyc1.consul:5579/db_check/postgres
@@ -152,15 +150,15 @@ backend db_redis_sessions
 backend db_redis_pubsub
     option httpchk GET http://monitor.service.nyc1.consul:5579/db_check/redis_pubsub
 
-backend elasticsearch
+backend db_elasticsearch
     option httpchk GET http://monitor.service.nyc1.consul:5579/db_check/elasticsearch
-    server-template elasticsearch 1 elasticsearch.service.nyc1.consul:9300 check inter 2000ms
+    server-template elasticsearch 1 db-elasticsearch.service.nyc1.consul:9300 check inter 2000ms
 
 backend maintenance
     option httpchk HEAD /maintenance
     http-check expect status 404
     http-check send-state
-    server nginx nginx:81 check inter 3000ms
+    server nginx haproxy.service.nyc1.consul:81 check inter 3000ms
 
 listen stats
 bind :1936 ssl crt {{ ssl_certificate }}

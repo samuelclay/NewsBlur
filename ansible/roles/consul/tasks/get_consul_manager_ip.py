@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/srv/newsblur/venv/newsblur3/bin/python
 import os
 import digitalocean
 

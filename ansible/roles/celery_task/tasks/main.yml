@@ -1,27 +1,6 @@
 ---
 - name: "Start docker containers"
   become: yes
-  with_items:
-    - { 
-      container_name: task_celery,
-      command: "celery worker -A newsblur_web --loglevel=INFO -Q new_feeds,push_feeds,update_feeds" 
-    }
-    - {
-      container_name: task_beat_feeds,
-      command: "celery worker -A newsblur_web --loglevel=INFO -Q beat_feeds_task -c 1" 
-    }
-    - {
-      container_name: task_search_indexer,
-      command: "celery worker -A newsblur_web --loglevel=INFO -Q search_indexer -c 4"
-    }
-    - {
-      container_name: task_search_indexer_tasker,
-      command: "celery worker -A newsblur_web --loglevel=INFO -Q search_indexer_tasker -c 2"
-    }
-    - {
-      container_name: task_work_queue,
-      command: "celery worker -A newsblur_web --loglevel=INFO -Q work_queue"
-    }
   docker_container:
     name: "{{ item.container_name }}"
     image: newsblur/newsblur_python3
@@ -32,17 +11,29 @@
     command: "{{ item.command }}"
     volumes:
       - /srv/newsblur:/srv/newsblur
+  when: "item.container_name in inventory_hostname"
+  with_items:
+    - container_name: task-celery
+      command: "celery worker -A newsblur_web --loglevel=INFO -Q new_feeds,push_feeds,update_feeds" 
+    - container_name: task-beat
+      command: "celery worker -A newsblur_web --loglevel=INFO -Q beat_feeds_task -c 1" 
+    - container_name: task-search
+      command: "celery worker -A newsblur_web --loglevel=INFO -Q search_indexer -c 4"
+    - container_name: task-search
+      command: "celery worker -A newsblur_web --loglevel=INFO -Q search_indexer_tasker -c 2"
+    - container_name: task-work
+      command: "celery worker -A newsblur_web --loglevel=INFO -Q work_queue"
 
 - name: Register celery_task in consul
   become: yes
-  with_items:
-    - service_name: task_celery
-    - service_name: task_beat_feeds
-    - service_name: task_search_indexer
-    - service_name: task_search_indexer_tasker
-    - service_name: task_work_queue
   template:
     src: consul_service.json
     dest: /etc/consul.d/celery_task.json
   notify:
     - reload consul
+  when: "item.service_name in inventory_hostname"
+  with_items:
+    - service_name: task-celery
+    - service_name: task-beat
+    - service_name: task-search
+    - service_name: task-work
