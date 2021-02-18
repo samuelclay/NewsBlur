@@ -27,9 +27,9 @@ resource "digitalocean_ssh_key" "default" {
 # #   Resources   #
 # #################
 
-resource "digitalocean_droplet" "consul-manager" {
+resource "digitalocean_droplet" "db-consul" {
   image    = var.droplet_os
-  name     = "consul-manager"
+  name     = "db-consul"
   region   = var.droplet_region
   size     = var.droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
@@ -37,10 +37,10 @@ resource "digitalocean_droplet" "consul-manager" {
     command = "/srv/newsblur/ansible/generate.py; sleep 120"
   }
   provisioner "local-exec" {
-    command = "cd ..; ansible-playbook -l consul-manager ansible/setup_root.yml"
+    command = "cd ..; ansible-playbook -l db-consul ansible/setup_root.yml"
   }
   provisioner "local-exec" {
-    command = "cd ..; ansible-playbook -l consul-manager ansible/provision.yml"
+    command = "cd ..; ansible-playbook -l db-consul ansible/provision.yml"
   }
 }
 
@@ -64,7 +64,7 @@ resource "digitalocean_droplet" "www" {
 resource "digitalocean_droplet" "app-django" {
   count    = 2
   image    = var.droplet_os
-  name     = "app-django"
+  name     = "app-django${count.index+1}"
   region   = var.droplet_region
   size     = var.droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
@@ -320,7 +320,7 @@ resource "digitalocean_droplet" "db-mongo" {
 resource "digitalocean_droplet" "task-celery" {
   count    = 2
   image    = var.droplet_os
-  name     = "task-celery"
+  name     = "task-celery${count.index+1}"
   region   = var.droplet_region
   size     = var.droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
