@@ -1,7 +1,6 @@
 ---
 - name: SETUP -> consul manager containers
   hosts: db-consul
-  remote_user: nb
   vars:
     - update_apt_cache: yes
     - motd_role: db

@@ -1,4 +1,16 @@
 ---
+- name: Allow haproxy stats port
+  ufw: rule=allow port={{ item }}
+  become: yes
+  tags: ufw
+  with_items:
+    - "8000"
+
+- name: Copy app secrets
+  copy:
+    src: /srv/secrets-newsblur/settings/docker_settings.py
+    dest: /srv/newsblur/newsblur_web/local_settings.py
+
 - name: Start NewsBlur Web Docker container
   become: yes
   docker_container:
@@ -6,21 +18,13 @@
     image: newsblur/newsblur_python3
     container_default_behavior: no_defaults
     env:
-      DOCKERBUILD: "True"
+      DOCKERBUILD: ""
     state: started
     command: gunicorn --bind :8000 newsblur_web.wsgi:application
-    ports:
-      - "8000:8000"
-    expose:
-      - "8000"
+    network_mode: host
     restart_policy: unless-stopped
     volumes:
       - /srv/newsblur:/srv/newsblur
-
-- name: Copy app secrets
-  copy:
-    src: /srv/secrets-newsblur/settings/app_settings.py
-    dest: /srv/newsblur/newsblur_web/local_settings.py
 
 - name: Register web app in consul
   become: yes

@@ -1,6 +1,5 @@
 ---
 - hosts: all
-  remote_user: nb
   vars:
     - update_apt_cache: yes
   vars_files:

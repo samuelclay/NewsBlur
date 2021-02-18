@@ -1,0 +1,15 @@
+plugin: constructed
+strict: False
+
+groups:
+  web: inventory_hostname.startswith('app')
+  app: inventory_hostname.startswith('app')
+  node: inventory_hostname.startswith('node')
+  db: inventory_hostname.startswith('db')
+  task: inventory_hostname.startswith('task')
+  search: inventory_hostname.startswith('db-elasticsearch')
+  elasticsearch: inventory_hostname.startswith('db-elasticsearch')
+  redis: inventory_hostname.startswith('db-redis')
+  postgres: inventory_hostname.startswith('db-postgres')
+  mongo: inventory_hostname.startswith('db-mongo')
+  consul: inventory_hostname.startswith('db-consul')

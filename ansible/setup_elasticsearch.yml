@@ -1,7 +1,6 @@
 ---
 - name: SETUP -> elasticsearch containers
   hosts: elasticsearch
-  remote_user: nb
   vars:
     - update_apt_cache: yes
     - motd_role: db
