@@ -15,9 +15,18 @@
   become: yes
   lineinfile: dest=/etc/dnsmasq.conf state=present line='listen-address=127.0.0.1'
 
+- name: Check if resolv.conf exists
+  become: yes
+  stat: 
+    path: /etc/resolv.conf
+  register: resolvconf
+
+# - debug: msg="{{resolvconf}}"
+
 - name: Add localhost to resolv.conf
   become: yes
   lineinfile: dest=/etc/resolv.conf state=present line='nameserver 127.0.0.1' insertbefore=BOF
+  when: resolvconf.stat.readable
 
 - name: user=root dnsmasq
   become: yes

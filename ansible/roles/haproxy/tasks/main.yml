@@ -21,15 +21,6 @@
     dest: /srv/newsblur/docker/haproxy/haproxy.consul.cfg
   register: updated_config
 
-- name: Reload HAProxy
-  become: yes
-  docker_container:
-    name: "haproxy"
-    state: started
-    force_kill: true
-    kill_signal: HUP
-  when: updated_config.changed
-
 - name: Start HAProxy docker container
   become: yes
   docker_container:
@@ -47,3 +38,8 @@
       - /etc/letsencrypt/live/newsblur.com:/etc/letsencrypt/live/newsblur.com
       - /etc/letsencrypt/archive/newsblur.com:/etc/letsencrypt/archive/newsblur.com
 
+- name: Reload HAProxy configuration
+  debug: 
+    msg: Reloading HAProxy
+  notify: reload haproxy
+  changed_when: updated_config.changed

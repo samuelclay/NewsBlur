@@ -7,3 +7,13 @@
     name: consul
     state: reloaded
   listen: reload consul
+
+- name: reload haproxy configuration
+  become: yes
+  docker_container:
+    name: haproxy
+    state: started
+    container_default_behavior: no_defaults
+    force_kill: True
+    kill_signal: HUP
+  listen: reload haproxy
