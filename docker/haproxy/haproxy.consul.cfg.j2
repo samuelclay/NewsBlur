@@ -9,14 +9,6 @@ global
     log 127.0.0.1 local0 notice
     # log 127.0.0.1 local1 info
 
-resolvers docker
-    nameserver dns1 127.0.0.11:53
-
-resolvers consul
-  nameserver consul 127.0.0.1:8600
-  accepted_payload_size 8192
-  hold valid 5s
-
 defaults
     log global
     maxconn 100000
