@@ -10,6 +10,6 @@ groups:
   search: inventory_hostname.startswith('db-elasticsearch')
   elasticsearch: inventory_hostname.startswith('db-elasticsearch')
   redis: inventory_hostname.startswith('db-redis')
-  postgres: inventory_hostname.startswith('db-postgres')
+  postgres: inventory_hostname.startswith('db01')
   mongo: inventory_hostname.startswith('db-mongo')
   consul: inventory_hostname.startswith('db-consul')
