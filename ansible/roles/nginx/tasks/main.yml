@@ -11,7 +11,7 @@
     restart_policy: unless-stopped
     container_default_behavior: no_defaults
     volumes:
-      - /srv/newsblur/docker/nginx/nginx.consul.conf:/etc/nginx/conf.d/nginx.consul.conf
+      - /srv/newsblur/docker/nginx/nginx.consul.conf:/etc/nginx/conf.d/default.conf
       - /srv/newsblur/:/srv/newsblur
 
 - name: Register nginx in consul
