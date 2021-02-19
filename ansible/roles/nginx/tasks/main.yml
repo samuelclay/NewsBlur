@@ -14,7 +14,7 @@
     expose:
       - "80"
     volumes:
-      - /srv/newsblur/docker/nginx:/etc/nginx/conf.d
+      - /srv/newsblur/docker/nginx/nginx.consul.conf:/etc/nginx/conf.d/nginx.consul.conf
       - /srv/newsblur/:/srv/newsblur
 
 - name: Register nginx in consul
