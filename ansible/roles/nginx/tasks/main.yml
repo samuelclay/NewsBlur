@@ -7,12 +7,9 @@
     env:
       DOCKERBUILD: "True"
     state: started
-    ports:
-      - "80:80"
+    network_mode: host # This exposes port 80
     restart_policy: unless-stopped
     container_default_behavior: no_defaults
-    expose:
-      - "80"
     volumes:
       - /srv/newsblur/docker/nginx/nginx.consul.conf:/etc/nginx/conf.d/nginx.consul.conf
       - /srv/newsblur/:/srv/newsblur
