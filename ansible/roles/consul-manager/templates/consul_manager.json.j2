@@ -1,9 +1,9 @@
 {
   "datacenter": "nyc1",
   "log_level": "INFO",
-  "enable_syslog": true,
+  "enable_syslog": false,
   "advertise_addr": "{{ consul_manager_ip.stdout|trim }}",
-  "bind_addr": "{% raw %}{{GetInterfaceIP \"eth1\"}}{% endraw %}",
+  "bind_addr": "{% raw %}{{ GetAllInterfaces | include \"name\" \"^eth\" | include \"flags\" \"forwardable|up\" | attr \"address\" }}{% endraw %}",
   "client_addr": "0.0.0.0",
   "server": true,
   "bootstrap": true,

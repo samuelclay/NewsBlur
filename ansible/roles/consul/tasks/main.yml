@@ -8,14 +8,35 @@
     - "8300"
     - "8301"
 
-- name: Ensure group "consul" exists
-  become: true
-  group:
-    name: consul
+- name: Add the HashiCorp GPG key
+  become: yes
+  apt_key:
+    url: https://apt.releases.hashicorp.com/gpg
     state: present
 
-- name: Install Consul
+- name: Add the official HashiCorp Linux repository.
   become: yes
-  apt: 
-    name: consul
+  apt_repository:
+    repo: "deb [arch=amd64] https://apt.releases.hashicorp.com {{ ansible_distribution_release }} main"
 
+- name: Installing Consul
+  become: yes
+  apt:
+    pkg: consul
+    state: latest
+
+- name: Register Manager IP
+  run_once: yes
+  become: no
+  register: consul_manager_ip
+  local_action: command /srv/newsblur/ansible/roles/consul/tasks/get_consul_manager_ip.py
+
+- name: Found consul manager IP
+  debug:
+    msg: "IP is {{ consul_manager_ip.stdout }}"
+  
+- name: Ensure /etc/consul.d exists
+  become: yes
+  file:
+    path: /etc/consul.d
+    state: directory
