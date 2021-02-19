@@ -11,5 +11,6 @@
     - {role: 'base', tags: 'base'}
     - {role: 'docker', tags: 'docker'}
     - {role: 'repo', tags: 'repo'}
+    - {role: 'dnsmasq', tags: 'dnsmasq'}
     - {role: 'consul', tags: 'consul'}
     - {role: 'consul-manager', tags: 'consul'}
