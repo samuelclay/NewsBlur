@@ -84,6 +84,7 @@ backend app_counts
     balance roundrobin
     option httpchk GET /_haproxychk
     server-template app-counts 1 app-counts.service.nyc1.consul:8000 check inter 3000ms
+    
 backend app_refresh
     balance roundrobin
     option httpchk GET /_haproxychk
