@@ -11,5 +11,5 @@ groups:
   elasticsearch: inventory_hostname.startswith('db-elasticsearch')
   redis: inventory_hostname.startswith('db-redis')
   postgres: inventory_hostname.startswith('db01')
-  mongo: inventory_hostname.startswith('db-mongo')
+  mongo: inventory_hostname in ['db20d', 'db22', 'db23a', 'db30']
   consul: inventory_hostname.startswith('db-consul')

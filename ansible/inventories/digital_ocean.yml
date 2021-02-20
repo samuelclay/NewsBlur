@@ -4,9 +4,9 @@ strict: False
 groups:
   web: inventory_hostname.startswith('app')
   app: inventory_hostname.startswith('app')
-  work: inventory_hostname.startswith('work')
+  work: inventory_hostname.startswith('work') and inventory_hostname != "work"
   node: inventory_hostname.startswith('node')
-  debug: inventory_hostname.startswith('debug')
+  # debug: inventory_hostname.startswith('debug')
   db: inventory_hostname.startswith('db')
   task: inventory_hostname.startswith('task')
   search: inventory_hostname.startswith('db-elasticsearch')
