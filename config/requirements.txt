@@ -25,7 +25,7 @@ Fabric>=1.14.0,<2
 Fabric2==2.5.0
 feedparser>=6,<7
 flask==1.1.2
-gunicorn==20.0.4
+gunicorn==19.7.1
 hiredis==1.1.0
 httplib2==0.18.1
 image==1.5.33
@@ -57,7 +57,7 @@ redis==3.5.3
 requests==2.25.0
 scipy==1.5.4
 seacucumber==1.5.2
-sentry-sdk==0.19.4
+sentry-sdk==0.20.3
 sgmllib3k==1.0.0
 simplejson==3.17.2
 six==1.15.0

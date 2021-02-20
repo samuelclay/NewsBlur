@@ -17,6 +17,7 @@
     name: newsblur_web
     image: newsblur/newsblur_python3
     container_default_behavior: no_defaults
+    pull: yes
     env:
       DOCKERBUILD: ""
     state: started

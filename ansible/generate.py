@@ -7,8 +7,9 @@ import subprocess
 import digitalocean
 
 OLD = False
-# Uncomment below line to use existing servers
-# OLD = True
+# Set env var OLD=1 to use existing servers
+if os.environ.get('OLD', False):
+    OLD = True
 
 if OLD:
     TOKEN_FILE = "/srv/secrets-newsblur/keys/digital_ocean.readprod.token"
