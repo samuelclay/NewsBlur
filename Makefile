@@ -12,7 +12,7 @@ rebuild:
 #creates newsblur, builds new images, and creates/refreshes SSL keys
 nb:
 	- CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker-compose down
-	- [[ -d config/certificates ]] && echo "keys exist" || rm -r config/certificates
+	- [[ -d config/certificates ]] && echo "keys exist" || make keys
 	- CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker-compose up -d --build --remove-orphans
 	- cd node && npm install & cd ..
 	- docker-compose exec newsblur_web ./manage.py migrate
@@ -44,7 +44,6 @@ test:
 	#- CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} DJANGO_SETTINGS_MODULE=newsblur_web.test_settings docker-compose exec newsblur_web pytest --ignore ./vendor --verbosity 3
 
 keys:
-	- rm config/certificates
 	- mkdir config/certificates
 	- openssl dhparam -out config/certificates/dhparam-2048.pem 2048
 	- openssl req -x509 -nodes -new -sha256 -days 1024 -newkey rsa:2048 -keyout config/certificates/RootCA.key -out config/certificates/RootCA.pem -subj "/C=US/CN=Example-Root-CA"
