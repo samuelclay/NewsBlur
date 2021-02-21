@@ -258,8 +258,8 @@ public class FeedUtils {
         Set<FeedSet> impactedFeeds = dbHelper.setStoryReadState(story, read);
         NbActivity.updateAllActivities(NbActivity.UPDATE_STORY);
 
-        triggerSync(context);
         NBSyncService.addRecountCandidates(impactedFeeds);
+        triggerSync(context);
     }
 
     /**
