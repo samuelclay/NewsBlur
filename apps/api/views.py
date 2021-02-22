@@ -497,3 +497,10 @@ def save_story(request, token=None):
     response['Access-Control-Allow-Methods'] = 'POST'
     
     return response
+
+def ip_addresses(request):
+    import digitalocean
+    doapi = digitalocean.Manager(token=settings.DO_TOKEN_FABRIC)
+    droplets = doapi.get_all_droplets()
+    addresses = '\n'.join([d.ip_address for d in droplets])
+    return HttpResponse(addresses, content_type='text/plain')
