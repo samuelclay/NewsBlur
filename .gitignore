@@ -9,6 +9,7 @@ celerybeat.pid
 media/iphone/NewsBlur/build
 media/iphone/build
 build/
+certbot.conf
 .DS_Store
 **/*.perspectivev*
 .vscode/*
@@ -73,3 +74,7 @@ clients/android/NewsBlur/settings.gradle
 /docker/volumes/*
 
 **/node_modules
+
+# Remove in dashboard3
+ansible 
+terraform

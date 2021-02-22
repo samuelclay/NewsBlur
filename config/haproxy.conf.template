@@ -32,7 +32,7 @@ defaults
   
 frontend public
   bind :80
-  bind :443 ssl crt newsblur.pem ciphers ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-SHA256:ECDHE-RSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-RSA-AES256-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES128-SHA:AES256-SHA256:AES256-SHA no-sslv3
+  bind :443 ssl crt newsblur.com.crt ciphers ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-SHA256:ECDHE-RSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-RSA-AES256-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES128-SHA:AES256-SHA256:AES256-SHA no-sslv3
   rspadd Strict-Transport-Security:\ max-age=0;\ includeSubDomains
   option http-server-close
 
@@ -50,7 +50,10 @@ frontend public
   monitor fail  if nginx_dead
   monitor fail  if mx_mode
 
+  use_backend imageproxy if { hdr_end(host) -i imageproxy.newsblur.com }
+  use_backend push if { hdr_end(host) -i push.newsblur.com }
   use_backend node_socket if { path_beg /v2/socket.io/ }
+  use_backend node_socket3 if { path_beg /v3/socket.io/ }
   use_backend node_favicon if { path_beg /rss_feeds/icon/ }
   use_backend node_text if { path_beg /rss_feeds/original_text_fetcher }
   use_backend nginx if { path_beg /media/ }
@@ -66,10 +69,20 @@ frontend public
   use_backend gunicorn_refresh if is_refresh_feeds
   use_backend gunicorn unless gunicorn_dead || nginx_dead
  
+backend imageproxy
+  option httpchk HEAD /sc,sN1megONJiGNy-CCvqzVPTv-TWRhgSKhFlf61XAYESl4=/http:/samuelclay.com/static/images/2019%20-%20Cuba.jpg
+  http-check expect rstatus 200|301
+  server imageproxy01 imageproxy:80    check inter 2000ms
+
 backend node_socket
   http-check expect rstatus 200|503
   balance roundrobin
 {{ node_socket }}
+
+backend node_socket3
+  http-check expect rstatus 200|503
+  balance roundrobin
+{{ node_socket3 }}
  
 backend node_favicon
  http-check expect rstatus 200|503
@@ -127,9 +140,9 @@ backend postgres
   
 backend mongo
   option httpchk GET /db_check/mongo
-  server mongo-db20e        db20e:5000              check inter 2000ms
+  server mongo-db20d        db20d:5000              check inter 2000ms
+  server mongo-db22         db22:5000               check inter 2000ms
   server mongo-db23a        db23a:5000              check inter 2000ms
-  server mongo-db25a        db25a:5000              check inter 2000ms
   server mongo-db30         db30:5000               check inter 2000ms
   
 backend redis
@@ -147,13 +160,13 @@ backend elasticsearch
   server es-search01        db_search:5000          check inter 2000ms
 
 backend maintenance
-  option httpchk HEAD /maintenance HTTP/1.1\r\nHost:\ www
+  option httpchk HEAD /maintenance
   http-check expect status 404
   http-check send-state
 {{ maintenance }}
 
 listen stats
-  bind :1936 ssl crt newsblur.pem
+  bind :1936 ssl crt newsblur.com.crt
   stats enable
   stats hide-version
   stats realm Haproxy\ Statistics
