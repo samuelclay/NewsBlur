@@ -4,7 +4,7 @@ strict: False
 groups:
   web: inventory_hostname.startswith('app')
   app: inventory_hostname.startswith('app')
-  work: inventory_hostname.startswith('work') and inventory_hostname != "work"
+  # work: inventory_hostname.startswith('work') and inventory_hostname != "work"
   node: inventory_hostname.startswith('node')
   # debug: inventory_hostname.startswith('debug')
   db: inventory_hostname.startswith('db')

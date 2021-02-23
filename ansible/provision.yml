@@ -1,19 +1,19 @@
 ---
 - import_playbook: setup_app.yml
-  when: "'app' in inventory_hostname"
+  when: "'app' in group_names"
 - import_playbook: setup_www.yml
-  when: "'www' in inventory_hostname"
+  when: "'www' in group_names"
 - import_playbook: setup_node.yml
-  when: "'node' in inventory_hostname"
+  when: "'node' in group_names"
 - import_playbook: setup_postgres.yml
-  when: "'postgres' in inventory_hostname"
+  when: "'postgres' in group_names"
 - import_playbook: setup_mongo.yml
-  when: "'mongo' in inventory_hostname"
+  when: "'mongo' in group_names"
 - import_playbook: setup_redis.yml
-  when: "'redis' in inventory_hostname"
+  when: "'redis' in group_names"
 - import_playbook: setup_elasticsearch.yml
-  when: "'elasticsearch' in inventory_hostname"
+  when: "'elasticsearch' in group_names"
 - import_playbook: setup_task.yml
-  when: "'task' in inventory_hostname"
+  when: "'task' in group_names"
 - import_playbook: setup_consul_manager.yml
-  when: "'consul' in inventory_hostname"
+  when: "'consul' in group_names"

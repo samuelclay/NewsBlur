@@ -31,13 +31,17 @@
   with_items:
     - 10.0.0.0/8
 
+- debug:
+    msg: "{{ groups['oldandnew'] | map('extract', hostvars, ['ansible_host']) }}"
+  tags: firewallx
+  
 - name: Allow all access from inventory hosts
   become: yes
   ufw:
     rule: allow
     src: '{{ item }}'
   with_items: "{{ groups['oldandnew'] | map('extract', hostvars, ['ansible_host']) }}"
-  tags: ufwall
+  tags: firewall
 
 - name: Start ufw
   ufw: state=enabled

@@ -1,11 +1,11 @@
 ---
 - name: SETUP -> app containers
   hosts: app
+  vars_files:
+    - env_vars/base.yml
   vars:
     - update_apt_cache: yes
     - motd_role: app
-  vars_files:
-    - env_vars/base.yml
     
   roles:
     - {role: 'base', tags: 'base'}
