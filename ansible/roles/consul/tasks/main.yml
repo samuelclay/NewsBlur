@@ -1,13 +1,4 @@
 ---
-# TODO: Close firewall and remove below line. Firewall should exclude all but known IPs.
-- name: Allow consul-manager ports
-  ufw: rule=allow port={{ item }}
-  become: yes
-  tags: ufw
-  with_items:
-    - "8300"
-    - "8301"
-
 - name: Add the HashiCorp GPG key
   become: yes
   apt_key:

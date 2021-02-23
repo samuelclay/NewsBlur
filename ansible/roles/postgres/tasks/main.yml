@@ -1,5 +1,6 @@
 ---
 - name: Start postgres container
+  become: yes
   docker_container:
     name: postgres
     image: postgres:13.1

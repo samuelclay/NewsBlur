@@ -77,5 +77,5 @@ deploy:
 	- docker stack deploy --with-registry-auth -c stack-compose.yml dev-stack
 
 firewall:
-	- ansible-playbook ansible/provision.yml --tags firewallx -l db
+	- ansible-playbook ansible/provision.yml --tags firewall -l db
 
