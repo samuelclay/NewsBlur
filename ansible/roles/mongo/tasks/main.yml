@@ -16,5 +16,6 @@
   template:
     src: consul_service.json
     dest: /etc/consul.d/mongo.json
+  tags: consul
   notify:
     - reload consul
