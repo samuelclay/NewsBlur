@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.SystemClock;
 
-import com.newsblur.R;
 import com.newsblur.util.Log;
 import com.newsblur.util.PrefsUtils;
 

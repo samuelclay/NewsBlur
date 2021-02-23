@@ -8,9 +8,11 @@ import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.appcompat.widget.AppCompatEditText;
+
 import com.newsblur.R;
 
-public class SelectOnlyEditText extends EditText {
+public class SelectOnlyEditText extends AppCompatEditText {
 
     private Context context;
     private boolean forceSelection = false;
@@ -28,11 +30,6 @@ public class SelectOnlyEditText extends EditText {
 
     public SelectOnlyEditText(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        this.context = context;
-    }
-
-    public SelectOnlyEditText(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
         this.context = context;
     }
 
@@ -61,6 +58,7 @@ public class SelectOnlyEditText extends EditText {
 
     @Override
     protected void onSelectionChanged(int start, int end) {
+        super.onSelectionChanged(start, end);
         if (forceSelection && (start == end)) {
             selectAll();
             if (context != null) {
