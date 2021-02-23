@@ -15,7 +15,7 @@
     <string name="login_retrieving_feeds">Retrieving feeds…</string>
     <string name="login_next">Next</string>
     
-    <string name="title_feed_search">Search for feeds</string>
+    <string name="search_for_feed">Search for feeds</string>
 
     <string name="loading">Loading…</string>
     <string name="orig_text_loading">Fetching story text…</string>
@@ -56,7 +56,7 @@
     <string name="top_level">TOP LEVEL</string>
 	
 	<string name="send_brief">%1$s %2$s</string>
-	<string name="send_full">%1$s \n\n\"%2$s\" \n\n%3$s \n\n--\nShared with NewsBlur.com</string>
+	<string name="send_full">%1$s \n\%2$s \n\n%3$s \n\n—\nShared with NewsBlur.com</string>
 	<string name="share_comment_hint">Comment (Optional)</string>
 	<string name="share_newsblur">Share \"%s\" to your Blurblog?</string>
     <string name="share_this">SHARE</string>
@@ -200,11 +200,9 @@
     <string name="story_hide_changes">Hide Story Changes</string>
     <string name="story_changes_loading">Story Changes Loading ...</string>
     <string name="your_feeds_search_hint">Search your feeds</string>
-    <string name="feed_search_hint">Search term or feed URL</string>
     <string name="story_search_hint">Search for stories</string>
     <string name="empty_search_notice">Type a search term to begin</string>
     <string name="menu_add_feed">Add new feed</string>
-    <string name="menu_search">Search</string>
     <string name="adding_feed_progress">Adding feed…</string>
     <string name="add_folder_name">Please enter folder name</string>
     <string name="add_new_folder">+ Add new folder</string>
