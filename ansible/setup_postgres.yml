@@ -1,12 +1,12 @@
 ---
 - name: SETUP -> postgresql containers
   hosts: postgres
-  become: true
   vars_files:
     - env_vars/base.yml
   vars:
     - update_apt_cache: yes
     - motd_role: db
+
   roles:
     - {role: 'base', tags: 'base'}
     - {role: 'docker', tags: 'docker'}

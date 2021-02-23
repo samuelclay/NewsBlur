@@ -1,3 +1,5 @@
-[oldandnew]
-NewsBlur
-NewsBlur_Docker
+plugin: constructed
+strict: False
+
+groups:
+  oldandnew: group_names | intersect(["NewsBlur", "NewsBlur_Docker"])

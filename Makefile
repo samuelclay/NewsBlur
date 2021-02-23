@@ -65,11 +65,17 @@ plan:
 apply:
 	terraform -chdir=terraform apply
 
+# Docker
 images:
 	- docker image build . --file=docker/newsblur_base_image.Dockerfile --tag=newsblur/newsblur_python3
 	- docker image build . --file=docker/node/node_prod.Dockerfile --tag=newsblur/node_prod
 	- docker push newsblur/newsblur_python3
 	- docker push newsblur/node_prod
 
+# Tasks
 deploy:
 	- docker stack deploy --with-registry-auth -c stack-compose.yml dev-stack
+
+firewall:
+	- ansible-playbook ansible/provision.yml --tags firewallx -l db
+
