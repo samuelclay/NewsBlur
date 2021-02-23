@@ -575,15 +575,20 @@ class Feed(models.Model):
         r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
 
         tasked_feeds = r.zrange('tasked_feeds', 0, -1)
-        logging.debug(" ---> ~FRDraining %s tasked feeds..." % len(tasked_feeds))
-        r.sadd('queued_feeds', *tasked_feeds)
-        r.zremrangebyrank('tasked_feeds', 0, -1)
-
-        errored_feeds = r.zrange('error_feeds', 0, -1)
-        logging.debug(" ---> ~FRDraining %s errored feeds..." % len(errored_feeds))
-        r.sadd('queued_feeds', *errored_feeds)
-        r.zremrangebyrank('error_feeds', 0, -1)
+        if tasked_feeds:
+            logging.debug(" ---> ~FRDraining %s tasked feeds..." % len(tasked_feeds))
+            r.sadd('queued_feeds', *tasked_feeds)
+            r.zremrangebyrank('tasked_feeds', 0, -1)
+        else:
+            logging.debug(" ---> No tasked feeds to drain")
         
+        errored_feeds = r.zrange('error_feeds', 0, -1)
+        if errored_feeds:
+            logging.debug(" ---> ~FRDraining %s errored feeds..." % len(errored_feeds))
+            r.sadd('queued_feeds', *errored_feeds)
+            r.zremrangebyrank('error_feeds', 0, -1)
+        else:
+            logging.debug(" ---> No errored feeds to drain")
     def update_all_statistics(self, has_new_stories=False, force=False):
         recount = not self.counts_converted_to_redis        
         count_extra = False
