@@ -704,18 +704,19 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
         @Override
         public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-            if ((e1.getX() > 10f) &&                  // the gesture should not start too close to the left edge and
-                ((e2.getX()-e1.getX()) > 50f) &&      // move horizontally to the right and
-                (Math.abs(e1.getY()-e2.getY()) < 25f) // have minimal vertical travel, so we don't capture scrolling gestures
-                ) {
+            float displayWidthPx = UIUtils.getDisplayWidthPx(context);
+            float edgeWithNavGesturesPaddingPx = UIUtils.dp2px(context, 40);
+            float rightEdgeNavGesturePaddingPx = displayWidthPx - edgeWithNavGesturesPaddingPx;
+            if (e1.getX() > edgeWithNavGesturesPaddingPx && // the gesture should not start too close to the left edge and
+                e2.getX() - e1.getX() > 50f && // move horizontally to the right and
+                Math.abs(distanceY) < 25f) { // have minimal vertical travel, so we don't capture scrolling gestures
                 vh.gestureL2R = true;
                 vh.gestureDebounce = true;
                 return true;
             }
-            if ((e1.getX() > 10f) &&                  // the gesture should not start too close to the left edge and
-                ((e1.getX()-e2.getX()) > 50f) &&      // move horizontally to the left and
-                (Math.abs(e1.getY()-e2.getY()) < 25f) // have minimal vertical travel, so we don't capture scrolling gestures
-                ) {
+            if (e1.getX() < rightEdgeNavGesturePaddingPx && // the gesture should not start too close to the right edge and
+                e1.getX() - e2.getX() > 50f && // move horizontally to the left and
+                Math.abs(distanceY) < 25f) { // have minimal vertical travel, so we don't capture scrolling gestures
                 vh.gestureR2L = true;
                 vh.gestureDebounce = true;
                 return true;
