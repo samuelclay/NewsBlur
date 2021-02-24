@@ -35,6 +35,7 @@
 
 
 - name: Register nodes in consul
+  tags: consul
   become: yes
   template:
     src: consul_service.json

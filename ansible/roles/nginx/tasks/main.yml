@@ -15,6 +15,7 @@
       - /srv/newsblur/:/srv/newsblur
 
 - name: Register nginx in consul
+  tags: consul
   become: yes
   template:
     src: consul_service.json

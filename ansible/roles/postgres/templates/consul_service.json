@@ -1,6 +1,6 @@
 {
     "service": {
-        "name": "postgres",
+        "name": "db-postgres",
         "tags": [
             "db"
         ],

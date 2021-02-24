@@ -29,6 +29,7 @@
       - /srv/newsblur:/srv/newsblur
 
 - name: Register web app in consul
+  tags: consul
   become: yes
   template:
     src: consul_service.json

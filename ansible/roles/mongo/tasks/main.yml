@@ -12,10 +12,10 @@
       - /srv/newsblur/docker/volumes/db_mongo:/data/db
 
 - name: Register mongo in consul
+  tags: consul
   become: yes
   template:
     src: consul_service.json
     dest: /etc/consul.d/mongo.json
-  tags: consul
   notify:
     - reload consul
