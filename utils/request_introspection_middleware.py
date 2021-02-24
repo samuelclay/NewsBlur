@@ -7,12 +7,12 @@ IGNORE_PATHS = [
 
 class DumpRequestMiddleware:
     def process_request(self, request):
-        if settings.DEBUG:
+        if settings.DEBUG and request.path not in IGNORE_PATHS:
             request_data = request.POST or request.GET
             request_items = request_data.items()
-            if request_items:
+            if len(request_items):
                 logging.debug(" ---> ~FC%s ~SN~FK~BC%s~BT~ST ~FC%s~BK~FC" % (request.method, request.path, dict(request_items)))
-            elif request.path not in IGNORE_PATHS:
+            else:
                 logging.debug(" ---> ~FC%s ~SN~FK~BC%s~BT~ST" % (request.method, request.path))
 
     def __init__(self, get_response=None):
