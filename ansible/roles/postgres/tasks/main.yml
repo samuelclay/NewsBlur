@@ -15,8 +15,8 @@
     volumes:
     - /srv/newsblur/docker/volumes/postgres:/var/lib/postgresql/data
 
-
 - name: Register postgres in consul
+  tags: consul
   become: yes
   template:
     src: consul_service.json

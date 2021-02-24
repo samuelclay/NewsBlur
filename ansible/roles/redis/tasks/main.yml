@@ -15,6 +15,7 @@
       - /srv/newsblur/docker/volumes/redis.var.lib:/var/lib/redis
 
 - name: Register redis in consul
+  tags: consul
   become: yes
   template:
     src: consul_service.json
