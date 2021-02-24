@@ -43,7 +43,7 @@ alias cd..='cd ..'
 
 alias smtp='python -m smtpd -n -c DebuggingServer 127.0.0.1:1025'
 alias tlnb='echo "----------------\n"; tail -f /srv/newsblur/logs/newsblur.log'
-alias sp='/srv/newsblur/manage.py shell_plus --use-pythonrc'
+alias sp='sudo docker exec -it newsblur_web python manage.py shell_plus'
 alias cdnb='cd /srv/newsblur'
 alias sshdo=/srv/newsblur/utils/ssh.sh
 

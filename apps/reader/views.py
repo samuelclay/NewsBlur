@@ -69,6 +69,7 @@ BANNED_URLS = [
 ALLOWED_SUBDOMAINS = [
     'dev', 
     'www', 
+    'beta', 
     'debug', 
     'debug3', 
     'nb',

@@ -27,6 +27,7 @@
     restart_policy: unless-stopped
     volumes:
       - /srv/newsblur:/srv/newsblur
+      - /etc/hosts:/etc/hosts
 
 - name: Register web app in consul
   tags: consul
