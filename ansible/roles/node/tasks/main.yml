@@ -8,13 +8,10 @@
     command: "{{ item.command }}"
     container_default_behavior: no_defaults
     pull: true
-    ports:
-      - "{{ item.ports }}"
+    network_mode: host
     env:
       NODE_ENV: "production"
     restart_policy: unless-stopped
-    volumes:
-      - /srv/newsblur/node:/srv/newsblur/node
   with_items:
     - container_name: node_socket
       ports: 8888:8888
@@ -41,7 +38,6 @@
   template:
     src: consul_service.json
     dest: /etc/consul.d/{{item.target_host}}.json
-
   with_items:
     - port: 8888
       target_host: 'node-socket'

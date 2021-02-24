@@ -125,7 +125,7 @@ backend node_text
 backend node_page
     http-check expect rstatus 200|503
     # check if there is a check for this
-    option httpchk GET /rss_feeds/original_text_fetcher?test=1
+    option httpchk GET /original_page/1?test=1
     balance roundrobin
     server-template node-page 1 node-page.service.nyc1.consul:3060 check inter 3000ms
 

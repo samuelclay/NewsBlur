@@ -24,6 +24,9 @@
 
   app.get(/^\/original_page\/(\d+)\/?/, (req, res) => {
     var etag, feedId, feedIdDir, filePath, lastModified;
+    if (req.query.test) {
+      return res.end("OK");
+    }
     feedId = parseInt(req.params[0], 10);
     etag = req.header('If-None-Match');
     lastModified = req.header('If-Modified-Since');
