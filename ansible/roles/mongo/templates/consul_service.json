@@ -1,6 +1,7 @@
 {
     "service": {
-        "name": "db-mongo",
+        "name": "{{ inventory_hostname|regex_replace('\d+', '') }}",
+        "id": "{{ inventory_hostname }}",
         "tags": [
             "db"
         ],
