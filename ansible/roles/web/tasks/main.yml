@@ -22,7 +22,7 @@
     env:
       DOCKERBUILD: ""
     state: started
-    command: gunicorn --bind :8000 newsblur_web.wsgi:application
+    command: gunicorn --config /srv/newsblur/config/gunicorn_conf.py newsblur_web.wsgi:application
     network_mode: host
     restart_policy: unless-stopped
     volumes:
