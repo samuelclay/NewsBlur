@@ -13,7 +13,6 @@
 
 - name: Installing Zsh and git
   apt: pkg=zsh,git state=latest
-  register: installation
 
 - name: Set zsh as default shell
   user: name=nb shell=/usr/bin/zsh
@@ -21,10 +20,9 @@
   
 - name: Cloning oh-my-zsh
   git:
-    repo=https://github.com/robbyrussell/oh-my-zsh
-    dest=~/.oh-my-zsh
-  when: installation is success
-  register: cloning
+    repo: https://github.com/robbyrussell/oh-my-zsh
+    dest: /home/nb/.oh-my-zsh
+    force: yes
   
 - name: Copy toprc
   copy: src=toprc.txt dest=~/.toprc

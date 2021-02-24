@@ -6,32 +6,33 @@
     image: newsblur/newsblur_node
     state: started
     command: "{{ item.command }}"
+    container_default_behavior: no_defaults
     pull: true
     ports:
       - "{{ item.ports }}"
     env:
-      NODE_ENV: "docker"
+      NODE_ENV: "production"
     restart_policy: unless-stopped
     volumes:
-      - /srv/newsblur/node:/usr/src/app
+      - /srv/newsblur/node:/srv/newsblur/node
   with_items:
-    - container_name: node_websocket
+    - container_name: node_socket
       ports: 8888:8888
       command: node unread_counts.js
       target_host: 'node-socket'
     - container_name: 'original_pages'
       ports: '3060:3060'
       command: 'node original_page.js'
-      target_host: 'node_page'
+      target_host: 'node-page'
     - container_name: 'original_text'
       ports: '4040:4040'
       command: 'node original_text.js'
-      target_host: 'node_text'
+      target_host: 'node-text'
     - container_name: 'favicons'
       ports: '3030:3030'
       command: 'node favicons.js'
       target_host: 'node-favicons'
-  when: "'{{item.target_host}}' in ansible_hostname"
+  when: item.target_host in inventory_hostname
 
 
 - name: Register nodes in consul
@@ -54,4 +55,4 @@
       target_host: 'node-images'
   notify:
     - reload consul
-  when: "'{{item.target_host}}' in ansible_hostname"
+  when: item.target_host in inventory_hostname
