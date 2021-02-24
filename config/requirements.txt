@@ -30,6 +30,7 @@ hiredis==1.1.0
 httplib2==0.18.1
 image==1.5.33
 isodate==0.6.0
+locust==1.4.3
 lxml==4.6.2
 mock==4.0.2
 mongoengine==0.21.0

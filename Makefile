@@ -79,3 +79,13 @@ deploy:
 firewall:
 	- ansible-playbook ansible/provision.yml --tags firewall -l db
 
+# performance tests
+perf-cli:
+	locust -f perf/locust.py --headless -u $(users) -r $(rate) --run-time 5m --host=$(host)
+
+perf-ui:
+	locust -f perf/locust.py
+
+perf-docker:
+	- docker build . --file=./perf/Dockerfile --tag=perf-docker
+	- docker run -it -p 8089:8089 perf-docker locust -f locust.py
