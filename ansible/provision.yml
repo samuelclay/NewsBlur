@@ -15,7 +15,7 @@
   when: "'elasticsearch' in group_names"
 - import_playbook: setup_task.yml
   when: "'task' in group_names"
-- import_playbook: setup_debug.yml
-  when: "'debugs' in group_names"
+# - import_playbook: setup_debug.yml
+#   when: "'debugs' in group_names"
 - import_playbook: setup_consul_manager.yml
   when: "'consul' in group_names"

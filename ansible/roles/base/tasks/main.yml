@@ -50,3 +50,10 @@
     owner: "{{ ansible_effective_user_id|int }}"
     group: "{{ ansible_effective_group_id|int }}"
     recurse: yes
+
+- name: Copy /etc/hosts from old installation (remove when upgraded)
+  become: yes
+  copy:
+    src: /srv/secrets-newsblur/configs/hosts
+    dest: /etc/hosts
+  tags: hosts
