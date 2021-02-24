@@ -2,7 +2,7 @@ from django.conf import settings
 from utils import log as logging
 
 IGNORE_PATHS = [
-    "_haproxychk",
+    "/_haproxychk",
 ]
 
 class DumpRequestMiddleware:
