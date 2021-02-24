@@ -19,6 +19,6 @@
   become: yes
   template:
     src: consul_service.json
-    dest: /etc/consul.d/newsblur_web.json
+    dest: /etc/consul.d/redis.json
   notify:
     - reload consul

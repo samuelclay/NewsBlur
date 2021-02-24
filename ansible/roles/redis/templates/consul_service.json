@@ -1,6 +1,7 @@
 {
     "service": {
-        "name": "{{ ansible_hostname }}",
+        "name": "{{ inventory_hostname|regex_replace('\d+', '') }}",
+        "id": "{{ inventory_hostname }}",
         "tags": [
             "redis"
         ],

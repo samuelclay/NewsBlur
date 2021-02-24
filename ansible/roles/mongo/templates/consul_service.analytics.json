@@ -1,6 +1,6 @@
 {
     "service": {
-        "name": "{{ inventory_hostname|regex_replace('\d+', '') }}",
+        "name": "{{ inventory_hostname|regex_replace('[0-9]+', '') }}",
         "id": "{{ inventory_hostname }}",
         "tags": [
             "db"

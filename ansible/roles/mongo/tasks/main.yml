@@ -2,7 +2,7 @@
 - name: Start db-mongo docker container
   become: yes
   docker_container:
-    name: db-mongo
+    name: mongo
     image: mongo:3.6
     state: started
     ports:
@@ -17,5 +17,16 @@
   template:
     src: consul_service.json
     dest: /etc/consul.d/mongo.json
+  when: (inventory_hostname | regex_replace('[0-9]+', '')) == 'db-mongo'
+  notify:
+    - reload consul
+
+- name: Register mongo-analytics in consul
+  tags: consul
+  become: yes
+  template:
+    src: consul_service.analytics.json
+    dest: /etc/consul.d/mongo.json
+  when: (inventory_hostname | regex_replace('[0-9]+', '')) == 'db-mongo-analytics'
   notify:
     - reload consul
