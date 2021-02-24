@@ -68,9 +68,9 @@ apply:
 # Docker
 images:
 	- docker image build . --file=docker/newsblur_base_image.Dockerfile --tag=newsblur/newsblur_python3
-	- docker image build . --file=docker/node/node_prod.Dockerfile --tag=newsblur/node_prod
+	- docker image build . --file=docker/node/node_base.Dockerfile --tag=newsblur/newsblur_node
 	- docker push newsblur/newsblur_python3
-	- docker push newsblur/node_prod
+	- docker push newsblur/newsblur_node
 
 # Tasks
 deploy:
