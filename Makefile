@@ -1,6 +1,8 @@
 CURRENT_UID := $(shell id -u)
 CURRENT_GID := $(shell id -g)
 
+.PHONY: node
+
 #creates newsblur, but does not rebuild images or create keys
 start:
 	- CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker-compose up -d
@@ -66,15 +68,28 @@ apply:
 	terraform -chdir=terraform apply
 
 # Docker
-images:
+build_web:
 	- docker image build . --file=docker/newsblur_base_image.Dockerfile --tag=newsblur/newsblur_python3
-	- docker image build . --file=docker/node/node_base.Dockerfile --tag=newsblur/newsblur_node
+build_node: 
+	- docker image build . --file=docker/node/Dockerfile --tag=newsblur/newsblur_node
+build: build_web build_node
+
+images: build
 	- docker push newsblur/newsblur_python3
+	- docker push newsblur/newsblur_node
+
+node_image: build_node
 	- docker push newsblur/newsblur_node
 
 # Tasks
 deploy:
 	- ansible-playbook ansible/deploy_app.yml
+
+app:
+	- ansible-playbook ansible/provision.yml -l app --tags web
+
+node:
+	- ansible-playbook ansible/provision.yml -l node --tags node
 
 firewall:
 	- ansible-playbook ansible/provision.yml --tags firewall -l db
