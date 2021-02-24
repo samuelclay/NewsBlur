@@ -74,7 +74,7 @@ images:
 
 # Tasks
 deploy:
-	- docker stack deploy --with-registry-auth -c stack-compose.yml dev-stack
+	- ansible-playbook ansible/deploy_app.yml
 
 firewall:
 	- ansible-playbook ansible/provision.yml --tags firewall -l db
