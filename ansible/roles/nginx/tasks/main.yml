@@ -22,3 +22,7 @@
     dest: /etc/consul.d/nginx.json
   notify:
     - reload consul
+
+- name: Restart nginx
+  become: yes
+  command: docker restart nginx

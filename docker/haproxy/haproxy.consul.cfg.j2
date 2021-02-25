@@ -77,7 +77,7 @@ backend nginx
     balance roundrobin
     option httpchk GET /_nginxchk
     http-check expect rstatus 200|503
-    server-template nginx 5 _app-django._tcp.service.nyc1.consul:80 check inter 3000ms resolvers consul resolve-opts allow-dup-ip
+    server-template nginx 5 _nginx._tcp.service.nyc1.consul:80 check inter 3000ms resolvers consul resolve-opts allow-dup-ip
 
 backend app_django
     balance roundrobin
