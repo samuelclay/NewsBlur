@@ -12,12 +12,15 @@
     image: newsblur/newsblur_python3
     state: started
     pull: yes
+    container_default_behavior: no_defaults
     env:
       DOCKERBUILD: ""
     restart_policy: unless-stopped
+    network_mode: host
     command: "{{ item.command }}"
     volumes:
       - /srv/newsblur:/srv/newsblur
+      - /etc/hosts:/etc/hosts
   when: "item.container_name in inventory_hostname"
   with_items:
     - container_name: task-celery
