@@ -101,7 +101,7 @@ backend app_push
 
 backend work
     balance roundrobin
-    option httpchk GET http://monitor.service.nyc1.consul:5579/work_check/celeryd_work_queue
+    option httpchk GET http://monitor.service.nyc1.consul:5000/work_check/celeryd_work_queue
     http-check expect rstatus 200|503|301
     server-template work 1 _task-work._tcp.service.nyc1.consul:82 check inter 30000ms resolvers consul resolve-opts allow-dup-ip
 
@@ -133,31 +133,31 @@ backend node_page
     server-template node-page 1 _node-page._tcp.service.nyc1.consul:3060 check inter 3000ms resolvers consul resolve-opts allow-dup-ip
 
 backend postgres
-    option httpchk GET http://monitor.service.nyc1.consul:5579/db_check/postgres
+    option httpchk GET http://monitor.service.nyc1.consul:5000/db_check/postgres
     server-template postgresql 1 _db-postgres._tcp.service.nyc1.consul:5432 check inter 30000ms resolvers consul resolve-opts allow-dup-ip init-addr none
 
 backend mongo
-    option httpchk GET http://monitor.service.nyc1.consul:5579/db_check/mongo
+    option httpchk GET http://monitor.service.nyc1.consul:5000/db_check/mongo
     server-template mongo 4 _db-mongo._tcp.service.nyc1.consul:27017 check inter 2000ms resolvers consul resolve-opts allow-dup-ip init-addr none
 
 backend db_redis_user
-    option httpchk GET http://monitor:5579/db_check/redis
+    option httpchk GET http://monitor:5000/db_check/redis
     server-template db-redis-user 1 _db-redis-user._tcp.service.nyc1.consul:6379 check inter 2000ms resolvers consul resolve-opts allow-dup-ip init-addr none
 
 backend db_redis_story
-    option httpchk GET http://monitor.service.nyc1.consul:5579/db_check/redis_story
+    option httpchk GET http://monitor.service.nyc1.consul:5000/db_check/redis_story
     server-template db-redis-story 1 _db-redis-story._tcp.service.nyc1.consul:6379 check inter 2000ms resolvers consul resolve-opts allow-dup-ip init-addr none
 
 backend db_redis_sessions
-    option httpchk GET http://monitor.service.nyc1.consul:5579/db_check/redis_sessions
+    option httpchk GET http://monitor.service.nyc1.consul:5000/db_check/redis_sessions
     server-template db-redis-sessions 1 _db-redis-sessions._tcp.service.nyc1.consul:6379 check inter 2000ms resolvers consul resolve-opts allow-dup-ip init-addr none
 
 backend db_redis_pubsub
-    option httpchk GET http://monitor.service.nyc1.consul:5579/db_check/redis_pubsub
+    option httpchk GET http://monitor.service.nyc1.consul:5000/db_check/redis_pubsub
     server-template db-redis-pubsub 1 _db-redis-pubsub._tcp.service.nyc1.consul:6379 check inter 2000ms resolvers consul resolve-opts allow-dup-ip init-addr none
 
 backend db_elasticsearch
-    option httpchk GET http://monitor.service.nyc1.consul:5579/db_check/elasticsearch
+    option httpchk GET http://monitor.service.nyc1.consul:5000/db_check/elasticsearch
     server-template elasticsearch 1 _db-elasticsearch._tcp.service.nyc1.consul:9300 check inter 2000ms resolvers consul resolve-opts allow-dup-ip init-addr none
 
 backend maintenance
