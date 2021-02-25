@@ -45,3 +45,9 @@
   notify: reload haproxy
   when: updated_config.changed
   changed_when: updated_config.changed
+
+- name: Restart HAProxy
+  debug: 
+    msg: Restarting HAProxy
+  changed_when: yes
+  notify: restart haproxy
