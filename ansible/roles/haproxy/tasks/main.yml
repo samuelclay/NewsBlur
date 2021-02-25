@@ -32,7 +32,7 @@
     state: started
     network_mode: host # This exposes port 80
     restart_policy: unless-stopped
-    container_default_behavior: compatibility
+    container_default_behavior: no_defaults
     volumes:
       - /srv/newsblur:/srv/newsblur
       - /srv/newsblur/docker/haproxy/haproxy.consul.cfg:/usr/local/etc/haproxy/haproxy.cfg 

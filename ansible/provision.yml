@@ -2,7 +2,7 @@
 - import_playbook: setup_app.yml
   when: "'app' in group_names"
 - import_playbook: setup_www.yml
-  when: "'www' in group_names"
+  when: "'haproxy' in group_names"
 - import_playbook: setup_node.yml
   when: "'node' in group_names"
 - import_playbook: setup_postgres.yml

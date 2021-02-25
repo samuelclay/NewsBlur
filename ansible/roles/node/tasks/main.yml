@@ -12,22 +12,24 @@
     env:
       NODE_ENV: "production"
     restart_policy: unless-stopped
+    volumes:
+      - /srv/newsblur/node:/srv/node
   with_items:
     - container_name: node_socket
       ports: 8888:8888
-      command: node unread_counts.js
+      command: node /srv/node/unread_counts.js
       target_host: 'node-socket'
     - container_name: 'original_pages'
       ports: '3060:3060'
-      command: 'node original_page.js'
+      command: 'node /srv/node/original_page.js'
       target_host: 'node-page'
     - container_name: 'original_text'
       ports: '4040:4040'
-      command: 'node original_text.js'
+      command: 'node /srv/node/original_text.js'
       target_host: 'node-text'
     - container_name: 'favicons'
       ports: '3030:3030'
-      command: 'node favicons.js'
+      command: 'node /srv/node/favicons.js'
       target_host: 'node-favicons'
   when: item.target_host in inventory_hostname
 

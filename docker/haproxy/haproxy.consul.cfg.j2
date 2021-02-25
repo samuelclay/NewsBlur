@@ -9,6 +9,10 @@ global
     log 127.0.0.1 local0 notice
     # log 127.0.0.1 local1 info
 
+resolvers consul
+    nameserver consul 127.0.0.1:53
+    accepted_payload_size 8192 # allow larger DNS payloads
+
 defaults
     log global
     maxconn 100000
@@ -73,92 +77,94 @@ backend nginx
     balance roundrobin
     option httpchk GET /_nginxchk
     http-check expect rstatus 200|503
-    server-template nginx 5 app-django.service.nyc1.consul:80 check inter 3000ms
+    server-template nginx 5 _app-django._tcp.service.nyc1.consul:80 check inter 3000ms resolvers consul resolve-opts allow-dup-ip
 
 backend app_django
     balance roundrobin
     option httpchk GET /_haproxychk
-    server-template app-django 5 app-django.service.nyc1.consul:8000 check inter 3000ms
+    server-template app-django 5 _app-django._tcp.service.nyc1.consul:8000 check inter 3000ms resolvers consul resolve-opts allow-dup-ip
 
 backend app_counts
     balance roundrobin
     option httpchk GET /_haproxychk
-    server-template app-counts 1 app-counts.service.nyc1.consul:8000 check inter 3000ms
+    server-template app-counts 1 _app-counts._tcp.service.nyc1.consul:8000 check inter 3000ms resolvers consul resolve-opts allow-dup-ip
     
 backend app_refresh
     balance roundrobin
     option httpchk GET /_haproxychk
-    server-template app-refresh 1 app-refresh.service.nyc1.consul:8000 check inter 3000ms
+    server-template app-refresh 1 _app-refresh._tcp.service.nyc1.consul:8000 check inter 3000ms resolvers consul resolve-opts allow-dup-ip
 
 backend app_push
     balance roundrobin
     option httpchk GET /_haproxychk
-    server-template app-push 1 app-push.service.nyc1.consul:8000 check inter 3000ms
+    server-template app-push 1 _app-push._tcp.service.nyc1.consul:8000 check inter 3000ms resolvers consul resolve-opts allow-dup-ip
 
 backend work
     balance roundrobin
     option httpchk GET http://monitor.service.nyc1.consul:5579/work_check/celeryd_work_queue
     http-check expect rstatus 200|503|301
-    server-template work 1 task-work.service.nyc1.consul:82 check inter 30000ms
+    server-template work 1 _task-work._tcp.service.nyc1.consul:82 check inter 30000ms resolvers consul resolve-opts allow-dup-ip
 
 backend node_images
     option httpchk HEAD /sc,sN1megONJiGNy-CCvqzVPTv-TWRhgSKhFlf61XAYESl4=/http:/samuelclay.com/static/images/2019%20-%20Cuba.jpg
     http-check expect rstatus 200|301
-    server-template node-images 1 node-images.service.nyc1.consul:80 check inter 2000ms
+    server-template node-images 1 _node-images._tcp.service.nyc1.consul:80 check inter 2000ms resolvers consul resolve-opts allow-dup-ip
 
 backend node_socket
     balance roundrobin
-    server-template node-socket 1 node-socket.service.nyc1.consul:8888 check inter 3000ms
+    server-template node-socket 1 _node-socket._tcp.service.nyc1.consul:8888 check inter 3000ms resolvers consul resolve-opts allow-dup-ip
 
 backend node_favicon
     http-check expect rstatus 200|503
     option httpchk GET /rss_feeds/icon/1
     balance roundrobin
-    server-template node-favicons 1 node-favicons.service.nyc1.consul:3030 check inter 3000ms
+    server-template node-favicons 1 _node-favicons._tcp.service.nyc1.consul:3030 check inter 3000ms resolvers consul resolve-opts allow-dup-ip
 
 backend node_text
     http-check expect rstatus 200|503
     option httpchk GET /rss_feeds/original_text_fetcher?test=1
     balance roundrobin
-    server-template node-text 1 node-text.service.nyc1.consul:4040 check inter 3000ms
+    server-template node-text 1 _node-text._tcp.service.nyc1.consul:4040 check inter 3000ms resolvers consul resolve-opts allow-dup-ip
 
 backend node_page
     http-check expect rstatus 200|503
-    # check if there is a check for this
     option httpchk GET /original_page/1?test=1
     balance roundrobin
-    server-template node-page 1 node-page.service.nyc1.consul:3060 check inter 3000ms
+    server-template node-page 1 _node-page._tcp.service.nyc1.consul:3060 check inter 3000ms resolvers consul resolve-opts allow-dup-ip
 
 backend postgres
     option httpchk GET http://monitor.service.nyc1.consul:5579/db_check/postgres
-    server-template postgres 1 postgres.service.nyc1.consul:5432 check inter 30000ms
+    server-template postgresql 1 _db-postgres._tcp.service.nyc1.consul:5432 check inter 30000ms resolvers consul resolve-opts allow-dup-ip init-addr none
 
 backend mongo
     option httpchk GET http://monitor.service.nyc1.consul:5579/db_check/mongo
-    server-template mongo 4 db-mongo.service.nyc1.consul:27017 check inter 2000ms
+    server-template mongo 4 _db-mongo._tcp.service.nyc1.consul:27017 check inter 2000ms resolvers consul resolve-opts allow-dup-ip init-addr none
 
-backend db_redis
+backend db_redis_user
     option httpchk GET http://monitor:5579/db_check/redis
-    # redis, redis_pubsub, redis_sessions, redis_story droplets are necessary
-    # in docker swarm although not routed with haproxy
+    server-template db-redis-user 1 _db-redis-user._tcp.service.nyc1.consul:6379 check inter 2000ms resolvers consul resolve-opts allow-dup-ip init-addr none
+
 backend db_redis_story
     option httpchk GET http://monitor.service.nyc1.consul:5579/db_check/redis_story
+    server-template db-redis-story 1 _db-redis-story._tcp.service.nyc1.consul:6379 check inter 2000ms resolvers consul resolve-opts allow-dup-ip init-addr none
 
 backend db_redis_sessions
     option httpchk GET http://monitor.service.nyc1.consul:5579/db_check/redis_sessions
+    server-template db-redis-sessions 1 _db-redis-sessions._tcp.service.nyc1.consul:6379 check inter 2000ms resolvers consul resolve-opts allow-dup-ip init-addr none
 
 backend db_redis_pubsub
     option httpchk GET http://monitor.service.nyc1.consul:5579/db_check/redis_pubsub
+    server-template db-redis-pubsub 1 _db-redis-pubsub._tcp.service.nyc1.consul:6379 check inter 2000ms resolvers consul resolve-opts allow-dup-ip init-addr none
 
 backend db_elasticsearch
     option httpchk GET http://monitor.service.nyc1.consul:5579/db_check/elasticsearch
-    server-template elasticsearch 1 db-elasticsearch.service.nyc1.consul:9300 check inter 2000ms
+    server-template elasticsearch 1 _db-elasticsearch._tcp.service.nyc1.consul:9300 check inter 2000ms resolvers consul resolve-opts allow-dup-ip init-addr none
 
 backend maintenance
     option httpchk HEAD /maintenance
     http-check expect status 404
     http-check send-state
-    server nginx haproxy.service.nyc1.consul:81 check inter 3000ms
+    server nginx _haproxy._tcp.service.nyc1.consul:81 check inter 3000ms init-addr none
 
 listen stats
 bind :1936 ssl crt {{ ssl_certificate }}

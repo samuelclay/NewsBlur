@@ -1,0 +1,31 @@
+---
+- hosts: node
+  gather_facts: false
+  vars_files:
+    - env_vars/base.yml
+    - env_vars/dev.yml
+
+  tasks:
+    - name: Pull newsblur_web github
+      git:
+        repo: https://github.com/samuelclay/NewsBlur.git
+        dest: /srv/newsblur/
+        version: dashboard3
+      register: pulled
+    
+    - name: Reload node
+      become: yes
+      command: "docker kill --signal=HUP {{ item.container_name }}"
+      when: item.target_host in inventory_hostname
+      with_items:
+        - container_name: node_socket
+          target_host: 'node-socket'
+        - container_name: 'original_pages'
+          target_host: 'node-page'
+        - container_name: 'original_text'
+          target_host: 'node-text'
+        - container_name: 'favicons'
+          target_host: 'node-favicons'
+        - container_name: 'imageproxy'
+          target_host: 'node-images'
+

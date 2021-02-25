@@ -54,16 +54,13 @@ keys:
 	- openssl x509 -req -sha256 -days 1024 -in config/certificates/localhost.csr -CA config/certificates/RootCA.pem -CAkey config/certificates/RootCA.key -CAcreateserial -out config/certificates/localhost.crt
 	- cat config/certificates/localhost.crt config/certificates/localhost.key > config/certificates/localhost.pem
 
-# Lists all Digital Ocean machines
+# Digital Ocean / Terraform
 list:
 	- doctl -t `cat /srv/secrets-newsblur/keys/digital_ocean.token` compute droplet list
-
 ansible-deps:
 	ansible-galaxy install -p roles -r ansible/roles/requirements.yml --roles-path ansible/roles
-
 plan:
 	terraform -chdir=terraform plan 
-
 apply:
 	terraform -chdir=terraform apply
 
@@ -73,24 +70,27 @@ build_web:
 build_node: 
 	- docker image build . --file=docker/node/Dockerfile --tag=newsblur/newsblur_node
 build: build_web build_node
-
 images: build
 	- docker push newsblur/newsblur_python3
 	- docker push newsblur/newsblur_node
-
 node_image: build_node
 	- docker push newsblur/newsblur_node
 
 # Tasks
 deploy:
 	- ansible-playbook ansible/deploy_app.yml
+deploy_node:
+	- ansible-playbook ansible/deploy_node.yml
+deploy_task:
+	- ansible-playbook ansible/deploy_task.yml
 
+# Provision
 app:
 	- ansible-playbook ansible/provision.yml -l app --tags web
-
 node:
 	- ansible-playbook ansible/provision.yml -l node --tags node
-
+www:
+	- ansible-playbook ansible/provision.yml -l haproxy --tags haproxy
 firewall:
 	- ansible-playbook ansible/provision.yml --tags firewall -l db
 
