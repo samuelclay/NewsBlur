@@ -1,0 +1,21 @@
+---
+- hosts: www
+  gather_facts: false
+  vars_files:
+    - env_vars/base.yml
+    - env_vars/dev.yml
+    - roles/letsencrypt/defaults/main.yml
+  handlers:
+    - include: roles/haproxy/handlers/main.yml
+
+  tasks:
+    - name: Template haproxy.cfg file
+      template:
+        src: /srv/newsblur/docker/haproxy/haproxy.consul.cfg.j2
+        dest: /srv/newsblur/docker/haproxy/haproxy.consul.cfg
+    
+    - name: Reload haproxy
+      debug: 
+        msg: Gracefully reloading HAProxy
+      changed_when: yes
+      notify: reload haproxy
