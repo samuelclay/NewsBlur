@@ -599,6 +599,7 @@ if not DEBUG:
         # django.contrib.auth) you may enable sending PII data.
         send_default_pii=True
     )
+    sentry_sdk.utils.MAX_STRING_LENGTH = 8192
     
 COMPRESS = not DEBUG
 ACCOUNT_ACTIVATION_DAYS = 30
