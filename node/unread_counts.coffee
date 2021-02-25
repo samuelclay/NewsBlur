@@ -2,9 +2,14 @@ fs     = require 'fs'
 redis  = require 'redis'
 log    = require './log.js'
 
-DEV = process.env.NODE_ENV == 'development'
-DOCKER = process.env.NODE_ENV == 'docker'
-REDIS_SERVER = if process.env.NODE_ENV == 'development' then 'localhost' else if DOCKER then 'redis' else 'db_redis_pubsub'
+ENV_DEV = process.env.NODE_ENV == 'development'
+ENV_PROD = process.env.NODE_ENV == 'production'
+ENV_DOCKER = process.env.NODE_ENV == 'docker'
+REDIS_SERVER = "redis"
+if ENV_DEV
+    REDIS_SERVER = 'localhost'
+else if ENV_PROD
+    REDIS_SERVER = 'db-redis-user.service.nyc1.consul'
 SECURE = !!process.env.NODE_SSL
 REDIS_PORT = if DOCKER then 6579 else 6379
 

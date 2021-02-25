@@ -3,9 +3,15 @@ server = require('http').Server(app)
 mongo = require 'mongodb'
 log    = require './log.js'
 
-DEV = process.env.NODE_ENV == 'development'
-DOCKER = process.env.NODE_ENV == "docker"
-MONGODB_SERVER = if DEV then 'localhost' else 'db_mongo'
+
+ENV_DEV = process.env.NODE_ENV == 'development'
+ENV_PROD = process.env.NODE_ENV == 'production'
+ENV_DOCKER = process.env.NODE_ENV == 'docker'
+MONGODB_SERVER = "db_mongo"
+if ENV_DEV
+    MONGODB_SERVER = 'localhost'
+else if ENV_PROD
+    MONGODB_SERVER = 'db-mongo.service.nyc1.consul'
 MONGODB_PORT = parseInt(process.env.MONGODB_PORT or 27017, 10)
 
 log.debug "Starting NewsBlur Favicon server..."
