@@ -2,9 +2,10 @@ plugin: constructed
 strict: False
 
 groups:
+  haproxy: inventory_hostname.startswith('www')
   web: inventory_hostname.startswith('app')
   app: inventory_hostname.startswith('app')
-  # work: inventory_hostname.startswith('work') and inventory_hostname != "work"
+  work: inventory_hostname.startswith('app-work')
   node: inventory_hostname.startswith('node')
   # debugs: inventory_hostname.startswith('debug')
   db: inventory_hostname.startswith('db')

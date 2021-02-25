@@ -34,12 +34,22 @@
   with_items:
     - 10.0.0.0/8
   
-- name: Allow all access from inventory hosts
+- name: Allow all access from inventory hosts old + new
   ufw:
     rule: allow
     src: '{{ item }}'
   with_items: "{{ groups['oldandnew'] | map('extract', hostvars, ['ansible_host']) }}"
   when: "'oldandnew' in groups"
+  tags: 
+    - firewall
+    - ufw
+
+- name: Allow all access from inventory hosts with docker
+  ufw:
+    rule: allow
+    src: '{{ item }}'
+  with_items: "{{ groups['NewsBlur_Docker'] | map('extract', hostvars, ['ansible_host']) }}"
+  when: "'oldandnew' not in groups"
   tags: 
     - firewall
     - ufw

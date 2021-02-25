@@ -1,5 +1,5 @@
 FROM node:14.4.0
-WORKDIR /srv/newsblur/node
+WORKDIR /srv
 ENV NODE_ENV=production
 
 # Install app dependencies
@@ -8,5 +8,3 @@ ENV NODE_ENV=production
 COPY node/package*.json ./
 
 RUN npm install
-
-COPY node/*.js ./
