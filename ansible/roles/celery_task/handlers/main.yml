@@ -8,3 +8,19 @@
     state: reloaded
   listen: reload consul
 
+- name: reload task-celery
+  become: yes
+  command: "docker kill --signal HUP task-celery"
+  listen: reload task-celery
+- name: reload task-beat
+  become: yes
+  command: "docker kill --signal HUP task-beat"
+  listen: reload task-beat
+- name: reload task-search
+  become: yes
+  command: "docker kill --signal HUP task-search"
+  listen: reload task-search
+- name: reload task-work
+  become: yes
+  command: "docker kill --signal HUP task-work"
+  listen: reload task-work

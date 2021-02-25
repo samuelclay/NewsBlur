@@ -1,12 +1,19 @@
 ---
+- name: Copy app secrets
+  copy:
+    src: /srv/secrets-newsblur/settings/docker_settings.py
+    dest: /srv/newsblur/newsblur_web/local_settings.py
+  register: app_changed
+
 - name: "Start docker containers"
   become: yes
   docker_container:
     name: "{{ item.container_name }}"
     image: newsblur/newsblur_python3
     state: started
+    pull: yes
     env:
-      DOCKERBUILD: "True"
+      DOCKERBUILD: ""
     restart_policy: unless-stopped
     command: "{{ item.command }}"
     volumes:
@@ -38,3 +45,15 @@
     - service_name: task-beat
     - service_name: task-search
     - service_name: task-work
+
+- name: Reload celery
+  debug: 
+    msg: Reloading celery
+  notify: "reload {{ item.container_name }}"
+  when: app_changed.changed and item.container_name in inventory_hostname
+  with_items:
+    - container_name: task-celery
+    - container_name: task-beat
+    - container_name: task-search
+    - container_name: task-work
+  changed_when: app_changed.changed

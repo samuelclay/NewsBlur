@@ -4,6 +4,7 @@
   docker_container:
     name: monitor
     image: newsblur/newsblur_python3
+    pull: yes
     env:
       DOCKERBUILD: "True"
     state: started
