@@ -164,7 +164,7 @@ backend maintenance
     option httpchk HEAD /maintenance
     http-check expect status 404
     http-check send-state
-    server nginx _haproxy._tcp.service.nyc1.consul:81 check inter 3000ms init-addr none
+    server nginx app-django1.node.nyc1.consul:80 check inter 3000ms
 
 listen stats
 bind :1936 ssl crt {{ ssl_certificate }}

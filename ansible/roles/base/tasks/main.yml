@@ -55,3 +55,10 @@
     src: /srv/secrets-newsblur/configs/hosts
     dest: /etc/hosts
   tags: hosts
+
+- name: "Add inventory_hostname to /etc/hosts"
+  become: yes
+  lineinfile:
+    path: /etc/hosts
+    line: "127.0.0.1 {{ inventory_hostname }}"
+  tags: hosts
