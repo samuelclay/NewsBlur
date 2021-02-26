@@ -1282,7 +1282,7 @@ class Feed(models.Model):
             try:
                 existing_story, story_has_changed = _1(story, story_content, 
                                                        existing_stories, new_story_hashes)
-            except TimeoutError as e:
+            except TimeoutError:
                 logging.debug('   ---> [%-30s] ~SB~FRExisting story check timed out...' % (self.log_title[:30]))
                 existing_story = None
                 story_has_changed = False
@@ -1338,7 +1338,7 @@ class Feed(models.Model):
                     original_content = zlib.decompress(existing_story.story_content_z)
                 # print 'Type: %s %s' % (type(original_content), type(story_content))
                 if story_content and len(story_content) > 10:
-                    if "<code" in story_content:
+                    if b"<code" in story_content:
                         # Don't mangle stories with code, just use new
                         story_content_diff = story_content
                     else:

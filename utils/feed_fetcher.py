@@ -4,6 +4,7 @@ import traceback
 import multiprocessing
 
 import django
+from sentry_sdk.api import F
 django.setup()
 
 import urllib.request, urllib.error, urllib.parse
@@ -30,6 +31,7 @@ import feedparser
 from utils.story_functions import pre_process_story, strip_tags, linkify
 from utils import log as logging
 from utils.feed_functions import timelimit, TimeoutError
+from sentry_sdk import capture_exception, flush
 from qurl import qurl
 from bs4 import BeautifulSoup
 from mongoengine import connect, connection
@@ -643,7 +645,15 @@ class FeedFetcherWorker:
     def refresh_feed(self, feed_id):
         """Update feed, since it may have changed"""
         return Feed.get_by_id(feed_id)
-        
+    
+    def sentry_process_feed_wrapper(self, feed_queue):
+        try:
+            return self.process_feed_wrapper(feed_queue)
+        except Exception as e:
+            capture_exception(e)
+            flush()
+            raise
+    
     def process_feed_wrapper(self, feed_queue):
         connection._connections = {}
         connection._connection_settings ={}
@@ -950,4 +960,4 @@ class Dispatcher:
 
 def dispatch_workers(feed_queue, options):
     worker = FeedFetcherWorker(options)
-    return worker.process_feed_wrapper(feed_queue)
+    return worker.sentry_process_feed_wrapper(feed_queue)
