@@ -2547,6 +2547,7 @@ class MStory(mongo.Document):
     @classmethod
     def trim_feed(cls, cutoff, feed_id=None, feed=None, verbose=True):
         extra_stories_count = 0
+        cutoff = int(cutoff)
         if not feed_id and not feed:
             return extra_stories_count
         
