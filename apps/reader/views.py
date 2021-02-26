@@ -88,7 +88,7 @@ def index(request, **kwargs):
     
     subdomain = get_subdomain(request)
     if request.method == "GET" and subdomain and subdomain not in ALLOWED_SUBDOMAINS:
-        username = request.subdomain
+        username = request.subdomain or subdomain
         if '.' in username:
             username = username.split('.')[0]
         user = User.objects.filter(username=username)
