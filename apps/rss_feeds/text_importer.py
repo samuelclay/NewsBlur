@@ -144,6 +144,12 @@ class TextImporter:
         original_story_content = self.story and self.story.story_content_z and zlib.decompress(self.story.story_content_z)
         if not original_story_content:
             original_story_content = ""
+        story_image_urls = self.story and self.story.image_urls
+        if not story_image_urls:
+            story_image_urls = []
+        
+        content = self.add_hero_image(content, story_image_urls)
+
         if content and len(content) > len(original_story_content):
             if self.story and not skip_save:
                 self.story.original_text_z = zlib.compress(smart_str(content).encode())
@@ -167,6 +173,24 @@ class TextImporter:
         
         if return_document:
             return dict(content=content, title=title, url=url, doc=original_text_doc, image=image)
+
+        return content
+
+    def add_hero_image(self, content, image_urls):
+        # Need to have images in the original story to add to the text that may not have any images
+        if not len(image_urls): 
+            return content
+        
+        content_soup = BeautifulSoup(content, features="lxml")
+
+        content_imgs = content_soup.findAll('img')
+        for img in content_imgs:
+            if img.get('src') in image_urls:
+                image_urls.remove(img.get('src'))
+        
+        if len(image_urls):
+            image_content = f'<img src="{image_urls[0]}">'
+            content = f"{image_content}\n {content}"
 
         return content
 
@@ -201,7 +225,7 @@ class TextImporter:
                 url = "https://www.newsblur.com/rss_feeds/original_text_fetcher?url=%s" % url
             
         try:
-            r = requests.get(url, headers=headers, verify=False, timeout=15)
+            r = requests.get(url, headers=headers, timeout=15)
             r.connection.close()
         except (AttributeError, SocketError, requests.ConnectionError,
                 requests.models.MissingSchema, requests.sessions.InvalidSchema,
