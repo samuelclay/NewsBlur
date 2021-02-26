@@ -1384,7 +1384,7 @@
         BOOL singlePage = webpageHeight - 200 <= viewportHeight;
         BOOL atBottom = bottomPosition < 150;
         BOOL pullingDown = topPosition < 0;
-        BOOL atTop = topPosition < 10;
+        BOOL atTop = topPosition < 50;
         BOOL nearTop = topPosition < 100;
         
         if (!hasScrolled && topPosition != 0) {
