@@ -24,7 +24,7 @@
 
   SECURE = !!process.env.NODE_SSL;
 
-  REDIS_PORT = DOCKER ? 6579 : 6379;
+  REDIS_PORT = ENV_DOCKER ? 6579 : 6379;
 
   // client = redis.createClient 6379, REDIS_SERVER
 
@@ -34,10 +34,10 @@
   // rclient     = redis.createClient 6379, REDIS_SERVER
   log.debug("Starting NewsBlur unread count server...");
 
-  if (!DEV && !process.env.NODE_ENV) {
+  if (!ENV_DEV && !process.env.NODE_ENV) {
     log.debug("Specify NODE_ENV=<development,production>");
     return;
-  } else if (DEV) {
+  } else if (ENV_DEV) {
     log.debug("Running as development server");
   } else {
     log.debug("Running as production server");

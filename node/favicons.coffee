@@ -15,17 +15,17 @@ else if ENV_PROD
 MONGODB_PORT = parseInt(process.env.MONGODB_PORT or 27017, 10)
 
 log.debug "Starting NewsBlur Favicon server..."
-if !DEV and !process.env.NODE_ENV
+if !ENV_DEV and !process.env.NODE_ENV
     log.debug "Specify NODE_ENV=<development,docker,production>"
     return
-else if DEV
+else if ENV_DEV
     log.debug "Running as development server"
-else if DOCKER
+else if ENV_DOCKER
     log.debug "Running as docker server"
 else
     log.debug "Running as production server"
     
-if DEV or DOCKER
+if ENV_DEV or ENV_DOCKER
     url = "mongodb://#{MONGODB_SERVER}:#{MONGODB_PORT}/newsblur"
 else
     url = "mongodb://#{MONGODB_SERVER}:#{MONGODB_PORT}/newsblur?replicaSet=nbset&readPreference=secondaryPreferred"
@@ -61,7 +61,7 @@ do ->
                 res.status(200).send body
             else
                 log.debug "Redirect: #{feed_id}, etag: #{etag}/#{docs?.color} " + if err then "(err: #{err})" else ""
-                if DEV
+                if ENV_DEV
                     res.redirect '/media/img/icons/circular/world.png' 
                 else
                     res.redirect 'https://www.newsblur.com/media/img/icons/circular/world.png' 
