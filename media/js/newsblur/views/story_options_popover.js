@@ -10,6 +10,8 @@ NEWSBLUR.StoryOptionsPopover = NEWSBLUR.ReaderPopover.extend({
             top: 12,
             left: -64
         },
+        'show_contentpreview': true,
+        'show_imagepreview': true,
         'overlay_bottom': true,
         'popover_class': 'NB-style-popover-container'
     },
@@ -18,6 +20,7 @@ NEWSBLUR.StoryOptionsPopover = NEWSBLUR.ReaderPopover.extend({
         "click .NB-font-family-option": "change_font_family",
         "click .NB-story-font-size-option": "change_story_font_size",
         "click .NB-feed-font-size-option": "change_feed_font_size",
+        "click .NB-view-setting-option": "change_view_setting",
         "click .NB-line-spacing-option": "change_line_spacing",
         "click .NB-story-titles-pane-option": "change_story_titles_pane",
         "click .NB-single-story-option": "change_single_story",
@@ -140,7 +143,7 @@ NEWSBLUR.StoryOptionsPopover = NEWSBLUR.ReaderPopover.extend({
                 ]))
             ]),
             $.make('div', { className: 'NB-popover-section' }, [
-                $.make('div', { className: 'NB-popover-section-title' }, 'Font Size - Stories'),
+                $.make('div', { className: 'NB-popover-section-title' }, 'Story styling'),
                 $.make('ul', { className: 'segmented-control NB-options-story-font-size' }, [
                     $.make('li', { className: 'NB-story-font-size-option NB-options-font-size-xs' }, 'XS'),
                     $.make('li', { className: 'NB-story-font-size-option NB-options-font-size-s' }, 'S'),
@@ -155,14 +158,25 @@ NEWSBLUR.StoryOptionsPopover = NEWSBLUR.ReaderPopover.extend({
                     $.make('li', { className: 'NB-line-spacing-option NB-options-line-spacing-l' }, $.make('div', { className: 'NB-icon' })),
                     $.make('li', { className: 'NB-line-spacing-option NB-options-line-spacing-xl' }, $.make('div', { className: 'NB-icon' }))
                 ]),
-                $.make('div', { className: 'NB-popover-section-title' }, 'Font Size - Feeds'),
+                $.make('div', { className: 'NB-popover-section-title' }, 'Feed title styling'),
                 $.make('ul', { className: 'segmented-control NB-options-feed-font-size' }, [
                     $.make('li', { className: 'NB-feed-font-size-option NB-options-font-size-xs' }, 'XS'),
                     $.make('li', { className: 'NB-feed-font-size-option NB-options-font-size-s' }, 'S'),
                     $.make('li', { className: 'NB-feed-font-size-option NB-options-font-size-m NB-active' }, 'M'),
                     $.make('li', { className: 'NB-feed-font-size-option NB-options-font-size-l' }, 'L'),
                     $.make('li', { className: 'NB-feed-font-size-option NB-options-font-size-xl' }, 'XL')
-                ])
+                ]),
+                (this.options.show_contentpreview && $.make('ul', { className: 'segmented-control NB-menu-manage-view-setting-contentpreview' }, [
+                    $.make('li', { className: 'NB-view-setting-option NB-view-setting-contentpreview-title' }, 'Title only'),
+                    $.make('li', { className: 'NB-view-setting-option NB-view-setting-contentpreview-small' }, $.make('div', { className: 'NB-icon' })),
+                    $.make('li', { className: 'NB-view-setting-option NB-view-setting-contentpreview-medium' }, $.make('div', { className: 'NB-icon' })),
+                    $.make('li', { className: 'NB-view-setting-option NB-view-setting-contentpreview-large' }, $.make('div', { className: 'NB-icon' })),
+                ])),
+                (this.options.show_imagepreview && $.make('ul', { className: 'segmented-control NB-menu-manage-view-setting-imagepreview' }, [
+                    $.make('li', { className: 'NB-view-setting-option NB-view-setting-imagepreview-none' }, 'No image'),
+                    $.make('li', { className: 'NB-view-setting-option NB-view-setting-imagepreview-small' }, 'Small'),
+                    $.make('li', { className: 'NB-view-setting-option NB-view-setting-imagepreview-large' }, 'Large'),
+                ]))
             ])
         ]));
         
@@ -178,10 +192,13 @@ NEWSBLUR.StoryOptionsPopover = NEWSBLUR.ReaderPopover.extend({
         var single_story = NEWSBLUR.assets.preference('feed_view_single_story');
         var grid_columns = NEWSBLUR.assets.preference('grid_columns');
         var grid_height = NEWSBLUR.assets.preference('grid_height');
+        var image_preview = NEWSBLUR.assets.preference('show_image_preview');
+        var content_preview = NEWSBLUR.assets.preference('show_content_preview');
         
         this.$('.NB-font-family-option').removeClass('NB-active');
         this.$('.NB-options-font-family-'+font_family).addClass('NB-active');
 
+        this.$('.NB-view-setting-option').removeClass('NB-active');
         this.$('.NB-feed-font-size-option').removeClass('NB-active');
         this.$('.NB-story-font-size-option').removeClass('NB-active');
         this.$('.NB-options-story-font-size .NB-options-font-size-'+story_font_size).addClass('NB-active');
@@ -198,6 +215,14 @@ NEWSBLUR.StoryOptionsPopover = NEWSBLUR.ReaderPopover.extend({
         this.$('.NB-options-grid-columns-'+grid_columns).addClass('NB-active');
         this.$('.NB-grid-height-option').removeClass('NB-active');
         this.$('.NB-options-grid-height-'+grid_height).addClass('NB-active');
+
+        this.$('.NB-view-setting-contentpreview-title').toggleClass('NB-active', content_preview == '0' || content_preview == "title");
+        this.$('.NB-view-setting-contentpreview-small').toggleClass('NB-active', content_preview == "small");
+        this.$('.NB-view-setting-contentpreview-medium').toggleClass('NB-active', content_preview == "1" || content_preview == "medium");
+        this.$('.NB-view-setting-contentpreview-large').toggleClass('NB-active', content_preview == "large");
+        this.$('.NB-view-setting-imagepreview-none').toggleClass('NB-active', image_preview == "0" || image_preview == "none");
+        this.$('.NB-view-setting-imagepreview-small').toggleClass('NB-active', image_preview == "small");
+        this.$('.NB-view-setting-imagepreview-large').toggleClass('NB-active', image_preview == "1" || image_preview == "large");
 
         NEWSBLUR.reader.$s.$taskbar_options.addClass('NB-active');
         
@@ -412,6 +437,36 @@ NEWSBLUR.StoryOptionsPopover = NEWSBLUR.ReaderPopover.extend({
             NEWSBLUR.app.story_titles.override_grid();
             NEWSBLUR.reader.resize_window();
         });
+    },
+
+    change_view_setting: function(e) {
+        var $target = $(e.currentTarget);
+        var options = {};
+        
+        if ($target.hasClass("NB-view-setting-contentpreview-title")) {
+            NEWSBLUR.assets.preference('show_content_preview', "title");
+            NEWSBLUR.reader.apply_story_styling(true);
+        } else if ($target.hasClass("NB-view-setting-contentpreview-small")) {
+            NEWSBLUR.assets.preference('show_content_preview', "small");
+            NEWSBLUR.reader.apply_story_styling(true);
+        } else if ($target.hasClass("NB-view-setting-contentpreview-medium")) {
+            NEWSBLUR.assets.preference('show_content_preview', "medium");
+            NEWSBLUR.reader.apply_story_styling(true);
+        } else if ($target.hasClass("NB-view-setting-contentpreview-large")) {
+            NEWSBLUR.assets.preference('show_content_preview', "large");
+            NEWSBLUR.reader.apply_story_styling(true);
+        } else if ($target.hasClass("NB-view-setting-imagepreview-none")) {
+            NEWSBLUR.assets.preference('show_image_preview', "none");
+            NEWSBLUR.reader.apply_story_styling(true);
+        } else if ($target.hasClass("NB-view-setting-imagepreview-small")) {
+            NEWSBLUR.assets.preference('show_image_preview', "small");
+            NEWSBLUR.reader.apply_story_styling(true);
+        } else if ($target.hasClass("NB-view-setting-imagepreview-large")) {
+            NEWSBLUR.assets.preference('show_image_preview', "large");
+            NEWSBLUR.reader.apply_story_styling(true);
+        }
+        
+        this.show_correct_options();
     },
     
     open_premium_modal: function(e) {

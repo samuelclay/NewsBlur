@@ -973,11 +973,11 @@ hr {
     float: right;
     font-weight: bold;
     color: #FFF;
-    padding: 3px 1px 1px;
+    padding: 2px 1px 1px;
     margin: 3px 1px 0;
     background-color: #8eb6e8;
     display: none;
-    line-height: 10px;
+    line-height: 11px;
     border-radius: 4px;
 /*    border-top: 1px solid rgba(255, 255, 255, .4);*/
     border-bottom: 1px solid rgba(0, 0, 0, .1);
@@ -1896,7 +1896,7 @@ hr {
     margin: 3px 0;
     color: #B6B6B6;
     font-size: 11px;
-    line-height: 2.2em;
+    line-height: 1.2em;
     overflow: hidden;
     font-weight: normal;
     text-overflow: ellipsis;
@@ -2612,7 +2612,7 @@ hr {
 /* ==================== */
 
 body {
-    font-family:  "Lucida Grande", Verdana, "Helvetica Neue", Helvetica, sans-serif;
+    font-family: 'Whitney A', 'Whitney B', -apple-system, BlinkMacSystemFont, "Lucida Grande", Verdana, "Helvetica Neue", Helvetica, sans-serif;
 }
 
 .NB-theme-sans-serif-alt1 #story_pane {
@@ -5044,6 +5044,7 @@ background: transparent;
     font-weight: bold;
 }
 .NB-filter-popover .NB-menu-manage-view-setting-contentpreview .NB-icon,
+.NB-style-popover .NB-menu-manage-view-setting-contentpreview .NB-icon,
 .NB-style-popover .NB-options-line-spacing .NB-icon {
     width: 32px;
     height: 20px;
@@ -5052,13 +5053,16 @@ background: transparent;
     background-repeat: no-repeat;
     margin: 0 auto;
 }
-.NB-filter-popover .NB-view-setting-contentpreview-small .NB-icon {
+.NB-filter-popover .NB-view-setting-contentpreview-small .NB-icon,
+.NB-style-popover .NB-view-setting-contentpreview-small .NB-icon {
     background-image: url("/media/embed/reader/content_preview_small.png");
 }
-.NB-filter-popover .NB-view-setting-contentpreview-medium .NB-icon {
+.NB-filter-popover .NB-view-setting-contentpreview-medium .NB-icon,
+.NB-style-popover .NB-view-setting-contentpreview-medium .NB-icon {
     background-image: url("/media/embed/reader/content_preview_medium.png");
 }
-.NB-filter-popover .NB-view-setting-contentpreview-large .NB-icon {
+.NB-filter-popover .NB-view-setting-contentpreview-large .NB-icon,
+.NB-style-popover .NB-view-setting-contentpreview-large .NB-icon {
     background-image: url("/media/embed/reader/content_preview_large.png");
 }
 .NB-style-popover .NB-options-line-spacing-xs .NB-icon {
@@ -5128,7 +5132,7 @@ background: transparent;
     padding: 1px 4px;
     line-height: 10px;
     margin: 2px 4px 0;
-    font-family: "Lucida Grande", Verdana, "Helvetica Neue", Helvetica, sans-serif;
+    /* font-family: "Lucida Grande", Verdana, "Helvetica Neue", Helvetica, sans-serif; */
 }
 .NB-style-popover .NB-premium-explainer {
     font-size: 10px;
@@ -5383,7 +5387,7 @@ form.opml_import_form input {
     margin: 0;
     padding: 0;
     font-weight: 300;
-    font-family: "Lucida Grande", Verdana, "Helvetica Neue", Helvetica, sans-serif;
+    /* font-family: "Lucida Grande", Verdana, "Helvetica Neue", Helvetica, sans-serif; */
 }
 
 .NB-splash-info .NB-splash-links .NB-splash-link {
@@ -8182,7 +8186,7 @@ form.opml_import_form input {
   padding: 8px;
   margin: 0;
   border: 1px solid #E0E0E0;
-  font-family: "Lucida Grande", Verdana, Arial, Helvetica, sans-serif;
+  /* font-family: "Lucida Grande", Verdana, Arial, Helvetica, sans-serif; */
 }
 .NB-modal-recommend .NB-modal-recommend-credit {
   color: #505050;
@@ -8313,7 +8317,7 @@ form.opml_import_form input {
   padding: 8px 0 0 8px;
   margin: 0;
   border: 1px solid #808080;
-  font-family: "Lucida Grande", Verdana, Arial, Helvetica, sans-serif;
+  /* font-family: "Lucida Grande", Verdana, Arial, Helvetica, sans-serif; */
 }
 .NB-modal-email .NB-modal-email-to-container,
 .NB-modal-email .NB-modal-email-from-container {
@@ -9850,7 +9854,7 @@ form.opml_import_form input {
 .NB-modal-goodies .NB-goodies-contenthandler-button {
     display: inline-block;
     float: right;
-    font-family: 'Lucida Grande', Verdana, sans-serif;
+    /* font-family: 'Lucida Grande', Verdana, sans-serif; */
     font-weight: bold;
     font-size: 11px;
     border-radius: 8px;
@@ -12459,7 +12463,8 @@ form.opml_import_form input {
 .NB-filter-popover-container .popover-content {
     padding: 0;
 }
-.NB-filter-popover .segmented-control {
+.NB-filter-popover .segmented-control,
+.NB-style-popover .segmented-control {
     margin: 4px 0 0;
     line-height: 18px;
     float: none;
@@ -12477,14 +12482,21 @@ form.opml_import_form input {
     padding-left: 10px;
     padding-right: 10px;
 }
-.NB-filter-popover .segmented-control.NB-menu-manage-view-setting-contentpreview li {
+.NB-filter-popover .segmented-control.NB-menu-manage-view-setting-contentpreview li,
+.NB-style-popover .segmented-control.NB-menu-manage-view-setting-contentpreview li {
+    padding: 2px 9px 2px;
+    font-size: 11px;
     width: 30px;
     height: 20px;
 }
-.NB-filter-popover .segmented-control.NB-menu-manage-view-setting-contentpreview li.NB-view-setting-contentpreview-title {
+.NB-filter-popover .segmented-control.NB-menu-manage-view-setting-contentpreview li.NB-view-setting-contentpreview-title,
+.NB-style-popover .segmented-control.NB-menu-manage-view-setting-contentpreview li.NB-view-setting-contentpreview-title {
     width: 64px;
 }
-.NB-filter-popover .segmented-control.NB-menu-manage-view-setting-imagepreview li {
+.NB-filter-popover .segmented-control.NB-menu-manage-view-setting-imagepreview li,
+.NB-style-popover .segmented-control.NB-menu-manage-view-setting-imagepreview li {
+    padding: 2px 7px 2px;
+    font-size: 11px;
     width: 62px;
 }
 .NB-filter-popover .segmented-control .NB-unread-icon,
@@ -12572,9 +12584,12 @@ form.opml_import_form input {
 .NB-popover-section-title {
     color: #585A55;
     text-transform: uppercase;
-    margin: 0 0 10px;
+    margin: 12px 0 10px;
     font-size: 12px;
     font-weight: bold;
+}
+.NB-popover-section-title:first-child {
+    margin-top: 0;
 }
 .NB-popover-section {
     padding: 22px 18px 22px;
