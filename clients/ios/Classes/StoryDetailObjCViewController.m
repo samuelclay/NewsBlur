@@ -1462,6 +1462,7 @@
             appDelegate.storyPagesViewController.traverseBottomConstraint.constant = viewportHeight - (webpageHeight - topPosition) + safeBottomMargin;
         }
         
+        [appDelegate.storyPagesViewController resizeScrollView];
         [self storeScrollPosition:YES];
     }
 }
