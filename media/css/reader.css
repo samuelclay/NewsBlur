@@ -12489,6 +12489,9 @@ form.opml_import_form input {
     width: 30px;
     height: 20px;
 }
+.NB-filter-popover .segmented-control.NB-menu-manage-view-setting-contentpreview li {
+    padding: 2px 12px 2px;
+}
 .NB-filter-popover .segmented-control.NB-menu-manage-view-setting-contentpreview li.NB-view-setting-contentpreview-title,
 .NB-style-popover .segmented-control.NB-menu-manage-view-setting-contentpreview li.NB-view-setting-contentpreview-title {
     width: 64px;
@@ -12498,6 +12501,9 @@ form.opml_import_form input {
     padding: 2px 7px 2px;
     font-size: 11px;
     width: 62px;
+}
+.NB-filter-popover .segmented-control.NB-menu-manage-view-setting-imagepreview li {
+    padding: 2px 12px 2px;
 }
 .NB-filter-popover .segmented-control .NB-unread-icon,
 .NB-filter-popover .segmented-control .NB-focus-icon {
