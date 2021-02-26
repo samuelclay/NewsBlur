@@ -1,0 +1,25 @@
+---
+- hosts: task
+  gather_facts: false
+  vars_files:
+    - env_vars/base.yml
+    - env_vars/dev.yml
+
+  tasks:
+    - name: Pull newsblur_web github
+      git:
+        repo: https://github.com/samuelclay/NewsBlur.git
+        dest: /srv/newsblur/
+        version: dashboard3
+      register: pulled
+    
+    - name: Reload celery
+      become: yes
+      command: "docker kill --signal=HUP {{ item.service_name }}"
+      when: pulled.changed and item.container_name in inventory_hostname
+      with_items:
+        - service_name: task-celery
+        - service_name: task-beat
+        - service_name: task-search
+        - service_name: task-work
+
