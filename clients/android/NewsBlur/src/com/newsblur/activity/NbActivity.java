@@ -3,7 +3,6 @@ package com.newsblur.activity;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentActivity;
 import android.widget.Toast;
 
 import com.newsblur.util.FeedUtils;
