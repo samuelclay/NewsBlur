@@ -70,11 +70,11 @@ build_web:
 build_node: 
 	- docker image build . --file=docker/node/Dockerfile --tag=newsblur/newsblur_node
 build: build_web build_node
-images: build
+web_image:
 	- docker push newsblur/newsblur_python3
-	- docker push newsblur/newsblur_node
 node_image: build_node
 	- docker push newsblur/newsblur_node
+images: build node_image web_image
 
 # Tasks
 deploy:

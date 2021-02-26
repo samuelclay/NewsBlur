@@ -268,7 +268,7 @@ def strip_comments__lxml(html_string=""):
         html = lxml.html.fromstring(html_string)
         clean_html = cleaner.clean_html(html)
 
-        return lxml.etree.tostring(clean_html)
+        return lxml.etree.tostring(clean_html).decode()
     except (XMLSyntaxError, ParserError):
         return html_string
 
