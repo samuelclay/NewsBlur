@@ -4,7 +4,6 @@ import traceback
 import multiprocessing
 
 import django
-from sentry_sdk.api import F
 django.setup()
 
 import urllib.request, urllib.error, urllib.parse
