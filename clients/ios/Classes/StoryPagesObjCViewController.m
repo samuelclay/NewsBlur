@@ -223,7 +223,7 @@
     [self.view addConstraint:self.notifier.topOffsetConstraint];
     [self.notifier hideNow];
     
-    self.traverseBottomConstraint.constant = 50;
+    self.traverseBottomConstraint.constant = appDelegate.detailViewController.view.safeAreaInsets.bottom / 2;
     
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
         appDelegate.detailViewController.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects:
@@ -555,7 +555,7 @@
             int safeBottomMargin = 0;
             
             if (self.isPhoneOrCompact) {
-                safeBottomMargin = -1 * self.view.safeAreaInsets.bottom/2;
+                safeBottomMargin = appDelegate.detailViewController.view.safeAreaInsets.bottom / 2;
             }
             
             self.traverseBottomConstraint.constant = safeBottomMargin;
@@ -1069,7 +1069,7 @@
     // Stick to bottom
     traversePinned = YES;
     
-    self.traverseBottomConstraint.constant = (-1 * self.view.safeAreaInsets.bottom / 2) + 20;
+    self.traverseBottomConstraint.constant = appDelegate.detailViewController.view.safeAreaInsets.bottom / 2;
     
     [UIView animateWithDuration:.24 delay:0
                         options:UIViewAnimationOptionCurveEaseInOut
