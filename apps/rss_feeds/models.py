@@ -2836,6 +2836,7 @@ class MStory(mongo.Document):
         
         if not original_text_z or force:
             feed = Feed.get_by_id(self.story_feed_id)
+            self.extract_image_urls(force=force, text=False)
             ti = TextImporter(self, feed=feed, request=request, debug=debug)
             original_doc = ti.fetch(return_document=True)
             original_text = original_doc.get('content') if original_doc else None
