@@ -168,7 +168,7 @@ class FetchFeed:
                                                 agent=self.feed.user_agent,
                                                 etag=etag,
                                                 modified=modified)
-                except (TypeError, ValueError, KeyError, EOFError, MemoryError, urllib.error.URLError) as e:
+                except (TypeError, ValueError, KeyError, EOFError, MemoryError, urllib.error.URLError, ConnectionResetError) as e:
                     logging.debug('   ***> [%-30s] ~FRFeed fetch error: %s' % 
                                   (self.feed.log_title[:30], e))
                     pass
