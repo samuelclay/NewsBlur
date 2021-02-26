@@ -2205,7 +2205,7 @@ class Feed(models.Model):
                               '~SB%s errors. Time: %s min' % (
                               self.log_title[:30], self.errors_since_good, total))
         
-        random_factor = random.randint(0, total) / 4
+        random_factor = random.randint(0, int(total)) / 4
         next_scheduled_update = datetime.datetime.utcnow() + datetime.timedelta(
                                 minutes = total + random_factor)
         original_min_to_decay = self.min_to_decay
