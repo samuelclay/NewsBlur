@@ -28,18 +28,18 @@
 
   log.debug("Starting NewsBlur Favicon server...");
 
-  if (!DEV && !process.env.NODE_ENV) {
+  if (!ENV_DEV && !process.env.NODE_ENV) {
     log.debug("Specify NODE_ENV=<development,docker,production>");
     return;
-  } else if (DEV) {
+  } else if (ENV_DEV) {
     log.debug("Running as development server");
-  } else if (DOCKER) {
+  } else if (ENV_DOCKER) {
     log.debug("Running as docker server");
   } else {
     log.debug("Running as production server");
   }
 
-  if (DEV || DOCKER) {
+  if (ENV_DEV || ENV_DOCKER) {
     url = `mongodb://${MONGODB_SERVER}:${MONGODB_PORT}/newsblur`;
   } else {
     url = `mongodb://${MONGODB_SERVER}:${MONGODB_PORT}/newsblur?replicaSet=nbset&readPreference=secondaryPreferred`;
@@ -83,7 +83,7 @@
           return res.status(200).send(body);
         } else {
           log.debug(`Redirect: ${feed_id}, etag: ${etag}/${docs != null ? docs.color : void 0} ` + (err ? `(err: ${err})` : ""));
-          if (DEV) {
+          if (ENV_DEV) {
             return res.redirect('/media/img/icons/circular/world.png');
           } else {
             return res.redirect('https://www.newsblur.com/media/img/icons/circular/world.png');

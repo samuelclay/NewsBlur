@@ -11,7 +11,7 @@ if ENV_DEV
 else if ENV_PROD
     REDIS_SERVER = 'db-redis-user.service.nyc1.consul'
 SECURE = !!process.env.NODE_SSL
-REDIS_PORT = if DOCKER then 6579 else 6379
+REDIS_PORT = if ENV_DOCKER then 6579 else 6379
 
 # client = redis.createClient 6379, REDIS_SERVER
 
@@ -22,10 +22,10 @@ REDIS_PORT = if DOCKER then 6579 else 6379
 
 
 log.debug "Starting NewsBlur unread count server..."
-if !DEV and !process.env.NODE_ENV
+if !ENV_DEV and !process.env.NODE_ENV
     log.debug "Specify NODE_ENV=<development,production>"
     return
-else if DEV
+else if ENV_DEV
     log.debug "Running as development server"
 else
     log.debug "Running as production server"
