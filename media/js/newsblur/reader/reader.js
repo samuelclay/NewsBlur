@@ -5145,7 +5145,7 @@
         },
 
         handle_realtime_update: function (username, message) {
-            if (_.isNumber(username)) {
+            if (_.isNumber(username) || !isNaN(username)) {
                 var feed_id = username;
                 NEWSBLUR.log(['Real-time feed update', feed_id, message]);
                 var feed = this.model.get_feed(feed_id);
