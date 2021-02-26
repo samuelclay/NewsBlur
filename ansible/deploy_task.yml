@@ -16,7 +16,7 @@
     - name: Reload celery
       become: yes
       command: "docker kill --signal=HUP {{ item.service_name }}"
-      when: pulled.changed and item.container_name in inventory_hostname
+      when: item.service_name in inventory_hostname
       with_items:
         - service_name: task-celery
         - service_name: task-beat
