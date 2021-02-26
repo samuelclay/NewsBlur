@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.Map;
 
 import static android.graphics.Bitmap.Config.ARGB_8888;
-import static com.google.android.material.appbar.AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS;
 import static com.google.android.material.appbar.AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL;
 import static com.google.android.material.appbar.AppBarLayout.LayoutParams.SCROLL_FLAG_SNAP;
 
@@ -182,6 +181,10 @@ public class UIUtils {
         return ((float) px) / context.getResources().getDisplayMetrics().density;
     }
 
+    public static float getDisplayWidthPx(Context context) {
+	    return context.getResources().getDisplayMetrics().widthPixels;
+    }
+
     /**
      * Sets the alpha of a view, totally hiding the view if the alpha is so low
      * as to be invisible, but also obeying intended visibility.
@@ -218,7 +221,7 @@ public class UIUtils {
         // enabled scrolling app bar only for reading
         if (activity instanceof Reading) {
             AppBarLayout.LayoutParams p = (AppBarLayout.LayoutParams) toolbar.getLayoutParams();
-            p.setScrollFlags(SCROLL_FLAG_SCROLL | SCROLL_FLAG_ENTER_ALWAYS | SCROLL_FLAG_SNAP);
+            p.setScrollFlags(SCROLL_FLAG_SCROLL | SCROLL_FLAG_SNAP);
             toolbar.setLayoutParams(p);
         }
 

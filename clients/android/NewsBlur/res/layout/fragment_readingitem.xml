@@ -1,199 +1,197 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent">
 
     <!-- The two views in this top FrameLayout are swapped when HTML5 webview custom content wants to be displayed -->
 
-    <com.newsblur.view.ReadingScrollView
-        android:id="@+id/reading_scrollview"
+    <RelativeLayout
+        android:id="@+id/reading_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        style="?readingBackground"
-        >
+        android:layout_height="match_parent">
 
-        <LinearLayout
+        <FrameLayout
+            android:id="@+id/row_item_feed_header"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:focusable="true"
-            android:focusableInTouchMode="true"
-            >
+            android:minHeight="6dp"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp">
 
-            <RelativeLayout
+            <ImageView
+                android:id="@+id/reading_feed_icon"
+                android:layout_width="17dp"
+                android:layout_height="17dp"
+                android:layout_marginStart="16dp"
+                android:contentDescription="@string/description_row_folder_icon" />
+
+            <TextView
+                android:id="@+id/reading_feed_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingBottom="8dp"
-                style="?rowItemHeaderBackground">
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="40dp"
+                android:ellipsize="end"
+                android:lines="1"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+        </FrameLayout>
+
+        <View
+            android:id="@+id/item_feed_border"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_below="@id/row_item_feed_header"
+            android:background="@color/gray55" />
+
+        <com.newsblur.view.ReadingScrollView
+            android:id="@+id/reading_scrollview"
+            style="?readingBackground"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/item_feed_border">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:orientation="vertical">
 
                 <RelativeLayout
-                    android:id="@+id/row_item_feed_header"
-                    android:layout_height="wrap_content"
+                    style="?rowItemHeaderBackground"
                     android:layout_width="match_parent"
-                    android:minHeight="6dp"
-                    android:paddingTop="4dp"
-                    android:paddingBottom="4dp" >
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="8dp">
 
-                    <ImageView
-                        android:id="@+id/reading_feed_icon"
-                        android:layout_width="17dp"
-                        android:layout_height="17dp"
-                        android:layout_alignParentLeft="true"
-                        android:layout_marginLeft="16dp"
-                        android:layout_marginRight="5dp"
-                        android:contentDescription="@string/description_row_folder_icon" />
+                    <ImageButton
+                        android:id="@+id/story_context_menu_button"
+                        style="?android:attr/actionOverflowButtonStyle"
+                        android:layout_width="34dp"
+                        android:layout_height="34dp"
+                        android:layout_alignParentRight="true"
+                        android:layout_margin="5dp"
+                        android:contentDescription="@string/description_menu" />
 
                     <TextView
-                        android:id="@+id/reading_feed_title"
+                        android:id="@+id/reading_item_title"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_toRightOf="@id/reading_feed_icon"
-                        android:layout_centerVertical="true"
-                        android:ellipsize="end"
-                        android:lines="1"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginRight="16dp"
+                        android:layout_toLeftOf="@id/story_context_menu_button"
+                        android:textSize="17sp" />
+
+                    <TextView
+                        android:id="@+id/reading_item_date"
+                        style="?readingItemMetadata"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/reading_item_title"
+                        android:layout_alignLeft="@id/reading_item_title"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginRight="12dp"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/reading_item_authors"
+                        style="?readingItemMetadata"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignTop="@id/reading_item_date"
+                        android:layout_toRightOf="@id/reading_item_date"
+                        android:maxLines="1"
+                        android:minWidth="80dp"
                         android:textSize="12sp"
                         android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/reading_story_changes"
+                        style="?readingItemMetadata"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/reading_item_date"
+                        android:layout_alignLeft="@id/reading_item_title"
+                        android:drawableStart="@drawable/ic_file_edit"
+                        android:drawablePadding="6dp"
+                        android:gravity="center_vertical"
+                        android:paddingTop="8dp"
+                        android:paddingBottom="4dp"
+                        android:text="@string/story_show_changes"
+                        android:textSize="12sp"
+                        android:visibility="gone" />
+
+                    <com.newsblur.view.FlowLayout
+                        android:id="@+id/reading_item_tags"
+                        android:layout_width="match_parent"
+                        android:layout_height="17dp"
+                        android:layout_below="@id/reading_story_changes"
+                        android:layout_alignLeft="@id/reading_item_title"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginBottom="8dp" />
 
                 </RelativeLayout>
 
                 <View
-                    android:id="@+id/item_feed_border"
+                    style="?itemHeaderDivider"
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:layout_below="@id/row_item_feed_header"
-                    android:background="@color/gray55"/>
+                    android:layout_gravity="bottom" />
 
-                <ImageButton
-                    android:id="@+id/story_context_menu_button"
-                    android:layout_width="34dp"
-                    android:layout_height="34dp"
-                    android:layout_margin="5dp"
-                    style="?android:attr/actionOverflowButtonStyle"
-                    android:contentDescription="@string/description_menu"
-                    android:layout_below="@id/item_feed_border"
-                    android:layout_alignParentRight="true" />
+                <include layout="@layout/include_reading_share_bar" />
 
-                <TextView
-                    android:id="@+id/reading_item_title"
+                <View
+                    android:id="@+id/share_bar_underline"
+                    style="?android:divider"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginRight="16dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginLeft="16dp"
-                    android:layout_below="@id/item_feed_border"
-                    android:layout_toLeftOf="@id/story_context_menu_button"
-                    android:textSize="17sp" />
-
-                <TextView
-                    android:id="@+id/reading_item_date"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/reading_item_title"
-                    android:layout_alignLeft="@id/reading_item_title"
-                    android:layout_marginRight="12dp"
-                    android:layout_marginTop="8dp"
-                    style="?readingItemMetadata"
-                    android:textSize="12sp" />
-
-                <TextView
-                    android:id="@+id/reading_item_authors"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignTop="@id/reading_item_date"
-                    android:layout_toRightOf="@id/reading_item_date"
-                    android:maxLines="1"
-                    android:minWidth="80dp"
-                    style="?readingItemMetadata"
-                    android:textSize="12sp"
-                    android:textStyle="bold"/>
-
-                <TextView
-                    android:id="@+id/reading_story_changes"
-                    style="?readingItemMetadata"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/reading_item_date"
-                    android:layout_alignLeft="@id/reading_item_title"
-                    android:paddingTop="8dp"
-                    android:gravity="center_vertical"
-                    android:paddingBottom="4dp"
-                    android:drawablePadding="6dp"
-                    android:drawableStart="@drawable/ic_file_edit"
-                    android:text="@string/story_show_changes"
-                    android:textSize="12sp"
+                    android:layout_height="3dp"
                     android:visibility="gone" />
 
-                <com.newsblur.view.FlowLayout
-                    android:id="@+id/reading_item_tags"
+                <TextView
+                    android:id="@+id/reading_textloading"
+                    style="?readingBackground"
                     android:layout_width="match_parent"
-                    android:layout_height="17dp"
-                    android:layout_alignLeft="@id/reading_item_title"
-                    android:layout_below="@id/reading_story_changes"
-                    android:layout_marginBottom="8dp"
-                    android:layout_marginTop="8dp" />
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:paddingTop="5dp"
+                    android:paddingBottom="5dp"
+                    android:text="@string/orig_text_loading"
+                    android:textSize="16sp"
+                    android:textStyle="italic"
+                    android:visibility="gone" />
 
-            </RelativeLayout>
+                <TextView
+                    android:id="@+id/reading_textmodefailed"
+                    style="?readingBackground"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:paddingTop="5dp"
+                    android:paddingBottom="5dp"
+                    android:text="@string/orig_text_failed"
+                    android:textSize="16sp"
+                    android:textStyle="italic"
+                    android:visibility="gone" />
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_gravity="bottom"
-                style="?itemHeaderDivider" />
+                <com.newsblur.view.NewsblurWebview
+                    android:id="@+id/reading_webview"
+                    style="?readingBackground"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginRight="10dp"
+                    android:scrollbars="none" />
 
-            <include layout="@layout/include_reading_share_bar" />
+                <include layout="@layout/include_reading_item_comment" />
 
-            <View
-                android:id="@+id/share_bar_underline"
-                android:layout_width="match_parent"
-                android:layout_height="3dp"
-                style="?android:divider"
-                android:visibility="gone" />
+            </LinearLayout>
 
-            <TextView
-                android:id="@+id/reading_textloading"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingTop="5dp"
-                android:paddingBottom="5dp"
-                style="?readingBackground"
-                android:gravity="center_horizontal"
-                android:text="@string/orig_text_loading"
-                android:textSize="16sp"
-                android:textStyle="italic"
-                android:visibility="gone"
-            />
+        </com.newsblur.view.ReadingScrollView>
 
-            <TextView
-                android:id="@+id/reading_textmodefailed"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingTop="5dp"
-                android:paddingBottom="5dp"
-                style="?readingBackground"
-                android:gravity="center_horizontal"
-                android:text="@string/orig_text_failed"
-                android:textSize="16sp"
-                android:textStyle="italic"
-                android:visibility="gone"
-            />
-
-            <com.newsblur.view.NewsblurWebview
-                android:id="@+id/reading_webview"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                style="?readingBackground"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
-                android:layout_marginTop="12dp"
-                android:scrollbars="none"
-            />
-
-           <include
-               layout="@layout/include_reading_item_comment" />
-            
-        </LinearLayout>
-
-    </com.newsblur.view.ReadingScrollView>
+    </RelativeLayout>
 
     <FrameLayout
         android:id="@+id/custom_view_container"

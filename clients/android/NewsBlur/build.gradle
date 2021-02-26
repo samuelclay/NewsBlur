@@ -1,5 +1,5 @@
 buildscript {
-    ext.kotlin_version = '1.4.20'
+    ext.kotlin_version = '1.4.30'
     repositories {
         mavenCentral()
         maven {
@@ -9,7 +9,7 @@ buildscript {
         google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.1.1'
+        classpath 'com.android.tools.build:gradle:4.1.2'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
@@ -29,7 +29,7 @@ apply plugin: 'checkstyle'
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation 'androidx.fragment:fragment-ktx:1.2.5'
+    implementation 'androidx.fragment:fragment-ktx:1.3.0'
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
     implementation 'com.squareup.okhttp3:okhttp:4.9.0'
@@ -37,20 +37,20 @@ dependencies {
     implementation 'com.android.billingclient:billing:3.0.2'
     implementation 'nl.dionsegijn:konfetti:1.2.2'
     implementation 'com.github.jinatonic.confetti:confetti:1.1.2'
-    implementation 'com.google.android.play:core:1.9.0'
-    implementation "com.google.android.material:material:1.2.1"
+    implementation 'com.google.android.play:core:1.9.1'
+    implementation "com.google.android.material:material:1.3.0"
     implementation "androidx.preference:preference-ktx:1.1.1"
     implementation "androidx.browser:browser:1.3.0"
 }
 
 android {
-    compileSdkVersion 29
+    compileSdkVersion 30
     defaultConfig {
         applicationId "com.newsblur"
         minSdkVersion 21
-        targetSdkVersion 29
-        versionCode 180
-        versionName "10.2.1b1"
+        targetSdkVersion 30
+        versionCode 182
+        versionName "10.2.1b3"
     }
     compileOptions.with {
         sourceCompatibility = JavaVersion.VERSION_1_8
