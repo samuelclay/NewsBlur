@@ -22,4 +22,36 @@
         - service_name: task-beat
         - service_name: task-search
         - service_name: task-work
+      register: 
 
+    - name: Stop celery
+      become: yes
+      docker_container:
+        state: stopped
+        name: "{{ item.service_name }}"
+        container_default_behavior: no_defaults
+      when: item.service_name in inventory_hostname
+      with_items:
+        - service_name: task-celery
+        - service_name: task-beat
+        - service_name: task-search
+        - service_name: task-work
+      tags:
+        - never
+        - stop
+
+    - name: Start celery
+      become: yes
+      docker_container:
+        state: started
+        name: "{{ item.service_name }}"
+        container_default_behavior: no_defaults
+      when: item.service_name in inventory_hostname
+      with_items:
+        - service_name: task-celery
+        - service_name: task-beat
+        - service_name: task-search
+        - service_name: task-work
+      tags:
+        - never
+        - start
