@@ -17,6 +17,7 @@ from apps.rss_feeds.models import MFeedPage
 from utils.feed_functions import timelimit, TimeoutError
 from OpenSSL.SSL import Error as OpenSSLError
 from pyasn1.error import PyAsn1Error
+from sentry_sdk import capture_exception, flush
 # from utils.feed_functions import mail_feed_error_to_admin
 
 BROKEN_PAGES = [
@@ -149,9 +150,10 @@ class PageImporter(object):
             logging.debug('[%d] ! -------------------------' % (self.feed.id,))
             self.feed.save_page_history(500, "Error", tb)
             # mail_feed_error_to_admin(self.feed, e, local_vars=locals())
-            if (not settings.DEBUG and hasattr(settings, 'RAVEN_CLIENT') and
-                settings.RAVEN_CLIENT):
-                settings.RAVEN_CLIENT.captureException()
+            if (not settings.DEBUG and hasattr(settings, 'SENTRY_DSN') and
+                settings.SENTRY_DSN):
+                capture_exception(e)
+                flush()
             if not urllib_fallback:
                 self.fetch_page(urllib_fallback=True)
         else:
