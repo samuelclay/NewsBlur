@@ -82,7 +82,7 @@ DAYS_OF_UNREAD_FREE = 9999
 TEST_DEBUG = True
 DEBUG = True
 SITE_ID = 2
-RAVEN_CLIENT = None
+SENTRY_DSN = None
 HOMEPAGE_USERNAME = 'conesus'
 SERVER_NAME = 'test_newsblur'
 # from django.db import connection

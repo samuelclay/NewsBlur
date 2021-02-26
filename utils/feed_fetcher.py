@@ -750,8 +750,6 @@ class FeedFetcherWorker:
                 feed.save_feed_history(feed_code, 'Timeout', e)
                 fetched_feed = None
             except Exception as e:
-                capture_exception(e)
-                flush()
                 logging.debug('[%d] ! -------------------------' % (feed_id,))
                 tb = traceback.format_exc()
                 logging.error(tb)
@@ -763,9 +761,11 @@ class FeedFetcherWorker:
                 feed_code = 500
                 fetched_feed = None
                 # mail_feed_error_to_admin(feed, e, local_vars=locals())
-                if (not settings.DEBUG and hasattr(settings, 'RAVEN_CLIENT') and
-                    settings.RAVEN_CLIENT):
-                    settings.RAVEN_CLIENT.captureException()
+                if (not settings.DEBUG and hasattr(settings, 'SENTRY_DSN') and
+                    settings.SENTRY_DSN):
+                    capture_exception(e)
+                    flush()
+
 
             if not feed_code:
                 if ret_feed == FEED_OK:
@@ -813,10 +813,11 @@ class FeedFetcherWorker:
                     fetched_feed = None
                     page_data = None
                     # mail_feed_error_to_admin(feed, e, local_vars=locals())
-                    if (not settings.DEBUG and hasattr(settings, 'RAVEN_CLIENT') and
-                        settings.RAVEN_CLIENT):
-                        settings.RAVEN_CLIENT.captureException()
-                
+                    if (not settings.DEBUG and hasattr(settings, 'SENTRY_DSN') and
+                        settings.SENTRY_DSN):
+                        capture_exception(e)
+                        flush()
+                                        
                 feed = self.refresh_feed(feed.pk)
                 logging.debug('   ---> [%-30s] ~FYFetching icon: %s' % (feed.log_title[:30], feed.feed_link))
                 force = self.options['force']
@@ -839,9 +840,10 @@ class FeedFetcherWorker:
                     logging.debug('[%d] ! -------------------------' % (feed_id,))
                     # feed.save_feed_history(560, "Icon Error", tb)
                     # mail_feed_error_to_admin(feed, e, local_vars=locals())
-                    if (not settings.DEBUG and hasattr(settings, 'RAVEN_CLIENT') and
-                        settings.RAVEN_CLIENT):
-                        settings.RAVEN_CLIENT.captureException()
+                    if (not settings.DEBUG and hasattr(settings, 'SENTRY_DSN') and
+                        settings.SENTRY_DSN):
+                        capture_exception(e)
+                        flush()
             else:
                 logging.debug('   ---> [%-30s] ~FBSkipping page fetch: (%s on %s stories) %s' % (feed.log_title[:30], self.feed_trans[ret_feed], feed.stories_last_month, '' if feed.has_page else ' [HAS NO PAGE]'))
             
