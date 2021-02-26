@@ -1338,7 +1338,7 @@ class Feed(models.Model):
                     original_content = zlib.decompress(existing_story.story_content_z)
                 # print 'Type: %s %s' % (type(original_content), type(story_content))
                 if story_content and len(story_content) > 10:
-                    if b"<code" in story_content:
+                    if "<code" in story_content:
                         # Don't mangle stories with code, just use new
                         story_content_diff = story_content
                     else:
