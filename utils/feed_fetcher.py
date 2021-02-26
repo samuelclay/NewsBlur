@@ -645,14 +645,6 @@ class FeedFetcherWorker:
         """Update feed, since it may have changed"""
         return Feed.get_by_id(feed_id)
     
-    def sentry_process_feed_wrapper(self, feed_queue):
-        try:
-            return self.process_feed_wrapper(feed_queue)
-        except Exception as e:
-            capture_exception(e)
-            flush()
-            raise
-    
     def process_feed_wrapper(self, feed_queue):
         connection._connections = {}
         connection._connection_settings ={}
@@ -758,6 +750,8 @@ class FeedFetcherWorker:
                 feed.save_feed_history(feed_code, 'Timeout', e)
                 fetched_feed = None
             except Exception as e:
+                capture_exception(e)
+                flush()
                 logging.debug('[%d] ! -------------------------' % (feed_id,))
                 tb = traceback.format_exc()
                 logging.error(tb)
@@ -959,4 +953,4 @@ class Dispatcher:
 
 def dispatch_workers(feed_queue, options):
     worker = FeedFetcherWorker(options)
-    return worker.sentry_process_feed_wrapper(feed_queue)
+    return worker.process_feed_wrapper(feed_queue)

@@ -75,7 +75,7 @@ class PushSubscriptionManager(models.Manager):
                                                   feed=feed, hub=hub, force_retry=True)
             else:
                 logging.debug(u'   ---> [%-30s] ~FR~BKFeed failed to subscribe to push: %s (code: %s)' % (
-                              unicode(subscription.feed)[:30], error[:100], response and response.status_code))
+                              subscription.feed.log_title[:30], error[:100], response and response.status_code))
 
         subscription.save()
         feed.setup_push()
