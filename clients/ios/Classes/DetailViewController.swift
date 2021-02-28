@@ -132,6 +132,11 @@ class DetailViewController: BaseViewController {
     /// Bottom constraint of the divider view.
     @IBOutlet weak var dividerViewBottomConstraint: NSLayoutConstraint!
     
+    /// The navigation controller managed by the split view controller, that encloses the immediate navigation controller of the detail view when in compact layout.
+    @objc var parentNavigationController: UINavigationController? {
+        return navigationController?.parent as? UINavigationController
+    }
+    
     /// The feed detail navigation controller in the supplementary pane, loaded from the storyboard.
     var supplementaryFeedDetailNavigationController: UINavigationController?
     
