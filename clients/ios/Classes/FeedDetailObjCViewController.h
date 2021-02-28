@@ -53,6 +53,7 @@
 @property (nonatomic) UISearchBar *searchBar;
 @property (nonatomic) IBOutlet UIView *messageView;
 @property (nonatomic) IBOutlet UILabel *messageLabel;
+@property (nonatomic, strong) id standardInteractivePopGestureDelegate;
 
 @property (nonatomic, readwrite) BOOL pageFetching;
 @property (nonatomic, readwrite) BOOL pageFinished;

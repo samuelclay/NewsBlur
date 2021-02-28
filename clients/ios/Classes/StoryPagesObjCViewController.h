@@ -90,7 +90,6 @@
 @property (nonatomic) MBProgressHUD *storyHUD;
 @property (nonatomic, strong) NBNotifier *notifier;
 @property (nonatomic) NSInteger scrollingToPage;
-@property (nonatomic, strong) id standardInteractivePopGestureDelegate;
 @property (nonatomic, readonly) BOOL shouldHideStatusBar;
 @property (nonatomic, readonly) BOOL isNavigationBarHidden;
 @property (nonatomic, readonly) BOOL allowFullscreen;

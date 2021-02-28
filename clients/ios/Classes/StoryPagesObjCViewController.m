@@ -271,18 +271,11 @@
     
     self.currentlyTogglingNavigationBar = NO;
     
-    if (self.standardInteractivePopGestureDelegate == nil) {
-        self.standardInteractivePopGestureDelegate = self.navigationController.interactivePopGestureRecognizer.delegate;
-    }
-    
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     BOOL swipeEnabled = [[userPreferences stringForKey:@"story_detail_swipe_left_edge"]
                          isEqualToString:@"pop_to_story_list"];;
-//    self.navigationController.hidesBarsOnSwipe = self.allowFullscreen;
-//    [self.navigationController.barHideOnSwipeGestureRecognizer addTarget:self action:@selector(barHideSwipe:)];
     
-    self.navigationController.interactivePopGestureRecognizer.enabled = swipeEnabled;
-    self.navigationController.interactivePopGestureRecognizer.delegate = self;
+    appDelegate.detailViewController.parentNavigationController.interactivePopGestureRecognizer.enabled = swipeEnabled;
     
     if (self.isPhoneOrCompact) {
         if (!appDelegate.storiesCollection.isSocialView) {
@@ -404,8 +397,9 @@
     
     previousPage.view.hidden = YES;
 //    self.navigationController.hidesBarsOnSwipe = NO;
-    self.navigationController.interactivePopGestureRecognizer.enabled = YES;
-    self.navigationController.interactivePopGestureRecognizer.delegate = self.standardInteractivePopGestureDelegate;
+    appDelegate.detailViewController.parentNavigationController.interactivePopGestureRecognizer.enabled = YES;
+    [appDelegate.detailViewController.parentNavigationController setNavigationBarHidden:NO animated:YES];
+    
     self.autoscrollActive = NO;
 }
 
@@ -528,6 +522,17 @@
     self.wasNavigationBarHidden = hide;
     
     [self.navigationController setNavigationBarHidden:hide animated:YES];
+    
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+    BOOL swipeEnabled = [[userPreferences stringForKey:@"story_detail_swipe_left_edge"]
+                         isEqualToString:@"pop_to_story_list"];;
+    appDelegate.detailViewController.parentNavigationController.interactivePopGestureRecognizer.enabled = swipeEnabled;
+    
+    if (hide) {
+        appDelegate.detailViewController.parentNavigationController.interactivePopGestureRecognizer.delegate = self;
+    } else if (appDelegate.feedDetailViewController.standardInteractivePopGestureDelegate != nil) {
+        appDelegate.detailViewController.parentNavigationController.interactivePopGestureRecognizer.delegate = appDelegate.feedDetailViewController.standardInteractivePopGestureDelegate;
+    }
     
     CGPoint oldOffset = currentPage.webView.scrollView.contentOffset;
     CGFloat navHeight = self.navigationController.navigationBar.bounds.size.height;
