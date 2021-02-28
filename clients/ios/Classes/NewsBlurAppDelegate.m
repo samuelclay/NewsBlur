@@ -1521,7 +1521,11 @@
         detailViewController.navigationItem.titleView = [self makeFeedTitle:storiesCollection.activeFeed];
         
         [self.feedDetailViewController checkScroll];
-        [self.storyPagesViewController refreshPages];
+        
+        if ([[UIDevice currentDevice] userInterfaceIdiom] != UIUserInterfaceIdiomPhone) {
+            [self.storyPagesViewController refreshPages];
+        }
+        
         [self adjustStoryDetailWebView];
         [self.feedDetailViewController.storyTitlesTable reloadData];
         
