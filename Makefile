@@ -1,3 +1,4 @@
+SHELL := /bin/bash
 newsblur := $(shell docker ps -qf "name=newsblur_web")
 CURRENT_UID := $(shell id -u)
 CURRENT_GID := $(shell id -g)
