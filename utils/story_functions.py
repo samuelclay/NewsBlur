@@ -8,7 +8,7 @@ import sys
 from random import randint
 from html.parser import HTMLParser
 from lxml.html.diff import tokenize, fixup_ins_del_tags, htmldiff_tokens
-from lxml.etree import ParserError, XMLSyntaxError
+from lxml.etree import ParserError, XMLSyntaxError, SerialisationError
 import lxml.html, lxml.etree
 from lxml.html.clean import Cleaner
 from itertools import chain
@@ -269,7 +269,7 @@ def strip_comments__lxml(html_string=""):
         clean_html = cleaner.clean_html(html)
 
         return lxml.etree.tostring(clean_html).decode()
-    except (XMLSyntaxError, ParserError):
+    except (XMLSyntaxError, ParserError, SerialisationError):
         return html_string
 
 def prep_for_search(html):
