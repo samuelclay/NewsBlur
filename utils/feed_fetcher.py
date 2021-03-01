@@ -159,7 +159,10 @@ class FetchFeed:
                     self.fpf = feedparser.parse(self.raw_feed,
                                                 response_headers=response_headers)
                     if self.options.get('debug', False):
-                        logging.debug(" ---> [%-30s] ~FBFeed fetch status %s: %s length / %s" % (self.feed.log_title[:30], raw_feed.status_code, len(smart_str(raw_feed.content)), raw_feed.headers))
+                        logging.debug(" ---> [%-30s] ~FBFeed fetch status %s: %s length / %s" % (self.feed.log_title[:30], 
+                                                                                                 raw_feed.status_code, 
+                                                                                                 len(smart_str(raw_feed.content)), 
+                                                                                                 raw_feed.headers))
             except Exception as e:
                 logging.debug("   ***> [%-30s] ~FRFeed failed to fetch with request, trying feedparser: %s" % (self.feed.log_title[:30], str(e)[:100]))
             
@@ -169,7 +172,9 @@ class FetchFeed:
                                                 agent=self.feed.user_agent,
                                                 etag=etag,
                                                 modified=modified)
-                except (TypeError, ValueError, KeyError, EOFError, MemoryError, urllib.error.URLError, http.client.InvalidURL, ConnectionResetError) as e:
+                except (TypeError, ValueError, KeyError, EOFError, MemoryError, 
+                        urllib.error.URLError, http.client.InvalidURL, 
+                        http.client.IncompleteRead, ConnectionResetError) as e:
                     logging.debug('   ***> [%-30s] ~FRFeed fetch error: %s' % 
                                   (self.feed.log_title[:30], e))
                     pass
@@ -320,7 +325,9 @@ class FetchFeed:
                 minutes = duration_sec / 60
                 seconds = duration_sec - (minutes*60)
                 duration = "%s:%s" % ('{0:02d}'.format(round(minutes)), '{0:02d}'.format(round(seconds)))
-            content = """<div class="NB-youtube-player"><iframe allowfullscreen="true" src="%s?iv_load_policy=3"></iframe></div>
+            content = """<div class="NB-youtube-player">
+                            <iframe allowfullscreen="true" src="%s?iv_load_policy=3"></iframe>
+                         </div>
                          <div class="NB-youtube-stats"><small>
                              <b>From:</b> <a href="%s">%s</a><br />
                              <b>Duration:</b> %s<br />
@@ -374,9 +381,7 @@ class ProcessFeed:
             if self.options['verbose']:
                 if self.fpf.bozo and self.fpf.status != 304:
                     logging.debug('   ---> [%-30s] ~FRBOZO exception: %s ~SB(%s entries)' % (
-                                  self.feed.log_title[:30],
-                                  self.fpf.bozo_exception,
-                                  len(self.fpf.entries)))
+                                  self.feed.log_title[:30], self.fpf.bozo_exception, len(self.fpf.entries)))
                     
             if self.fpf.status == 304:
                 self.feed = self.feed.save()
@@ -397,14 +402,16 @@ class ProcessFeed:
                     self.feed.feed_address = address
                 if not self.feed.known_good:
                     self.feed.fetched_once = True
-                    logging.debug("   ---> [%-30s] ~SB~SK~FRFeed is %s'ing. Refetching..." % (self.feed.log_title[:30], self.fpf.status))
+                    logging.debug("   ---> [%-30s] ~SB~SK~FRFeed is %s'ing. Refetching..." % (
+                        self.feed.log_title[:30], self.fpf.status))
                     self.feed = self.feed.schedule_feed_fetch_immediately()
                 if not self.fpf.entries:
                     self.feed = self.feed.save()
                     self.feed.save_feed_history(self.fpf.status, "HTTP Redirect")
                     return FEED_ERRHTTP, ret_values
             if self.fpf.status >= 400:
-                logging.debug("   ---> [%-30s] ~SB~FRHTTP Status code: %s. Checking address..." % (self.feed.log_title[:30], self.fpf.status))
+                logging.debug("   ---> [%-30s] ~SB~FRHTTP Status code: %s. Checking address..." % (
+                              self.feed.log_title[:30], self.fpf.status))
                 fixed_feed = None
                 if not self.feed.known_good:
                     fixed_feed, feed = self.feed.check_feed_link_for_feed_address()
@@ -422,7 +429,9 @@ class ProcessFeed:
 
         if self.fpf and not self.fpf.entries:
             if self.fpf.bozo and isinstance(self.fpf.bozo_exception, feedparser.NonXMLContentType):
-                logging.debug("   ---> [%-30s] ~SB~FRFeed is Non-XML. %s entries. Checking address..." % (self.feed.log_title[:30], len(self.fpf.entries)))
+                logging.debug("   ---> [%-30s] ~SB~FRFeed is Non-XML. %s entries. Checking address..." % (
+                    self.feed.log_title[:30], 
+                    len(self.fpf.entries)))
                 fixed_feed = None
                 if not self.feed.known_good:
                     fixed_feed, feed = self.feed.check_feed_link_for_feed_address()
@@ -433,7 +442,8 @@ class ProcessFeed:
                 self.feed = self.feed.save()
                 return FEED_ERRPARSE, ret_values
             elif self.fpf.bozo and isinstance(self.fpf.bozo_exception, xml.sax._exceptions.SAXException):
-                logging.debug("   ---> [%-30s] ~SB~FRFeed has SAX/XML parsing issues. %s entries. Checking address..." % (self.feed.log_title[:30], len(self.fpf.entries)))
+                logging.debug("   ---> [%-30s] ~SB~FRFeed has SAX/XML parsing issues. %s entries. Checking address..." % (
+                              self.feed.log_title[:30], len(self.fpf.entries)))
                 fixed_feed = None
                 if not self.feed.known_good:
                     fixed_feed, feed = self.feed.check_feed_link_for_feed_address()
@@ -487,7 +497,8 @@ class ProcessFeed:
             if self.options['force'] and new_feed_link:
                 new_feed_link = qurl(new_feed_link, remove=['_'])
             if new_feed_link != self.feed.feed_link:
-                logging.debug("   ---> [%-30s] ~SB~FRFeed's page is different: %s to %s" % (self.feed.log_title[:30], self.feed.feed_link, new_feed_link))               
+                logging.debug("   ---> [%-30s] ~SB~FRFeed's page is different: %s to %s" % (
+                              self.feed.log_title[:30], self.feed.feed_link, new_feed_link))               
                 redirects, non_redirects = self.feed.count_redirects_in_history('page')
                 self.feed.save_page_history(301, "HTTP Redirect (%s to go)" % (10-len(redirects)))
                 if len(redirects) >= 10 or len(non_redirects) == 0:
@@ -521,15 +532,13 @@ class ProcessFeed:
                     new_story_guid = str(story.get('published'))
                     if self.options['verbose']:
                         logging.debug('   ---> [%-30s] ~FBReplacing guid (%s) with timestamp: %s' % (
-                                      self.feed.log_title[:30],
-                                      story.get('guid'), new_story_guid))
+                                      self.feed.log_title[:30], story.get('guid'), new_story_guid))
                     story['guid'] = new_story_guid
                 else:
                     new_story_guid = Feed.get_permalink(story)
                     if self.options['verbose']:
                         logging.debug('   ---> [%-30s] ~FBReplacing guid (%s) with permalink: %s' % (
-                                      self.feed.log_title[:30],
-                                      story.get('guid'), new_story_guid))
+                                      self.feed.log_title[:30], story.get('guid'), new_story_guid))
                     story['guid'] = new_story_guid
             story['story_hash'] = MStory.feed_guid_hash_unsaved(self.feed.pk, story.get('guid'))
             stories.append(story)
@@ -541,8 +550,8 @@ class ProcessFeed:
         story_hashes = list(set(story_hashes))
         if self.options['verbose'] or settings.DEBUG:
             logging.debug('   ---> [%-30s] ~FBFound ~SB%s~SN guids, adding ~SB%s~SN/%s guids from db' % (
-                          self.feed.log_title[:30],
-                          original_story_hash_count, len(story_hashes)-original_story_hash_count, 
+                          self.feed.log_title[:30], original_story_hash_count, 
+                          len(story_hashes)-original_story_hash_count, 
                           len(story_hashes_in_unread_cutoff)))
         
         
