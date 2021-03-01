@@ -362,7 +362,7 @@ def load_social_page(request, user_id, username=None, **kwargs):
         user_following_social_profile = user_social_profile.is_following_user(social_user_id)
     social_profile = MSocialProfile.get_user(social_user_id)
     
-    if '.dev' in username:
+    if username and '.dev' in username:
         username = username.replace('.dev', '')
     current_tab = "blurblogs"
     global_feed = False
