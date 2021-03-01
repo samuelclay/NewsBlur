@@ -1,6 +1,5 @@
 import requests
 import re
-import urllib.parse
 import traceback
 import feedparser
 import time
@@ -130,7 +129,11 @@ class PageImporter(object):
         except (ValueError, urllib.error.URLError, http.client.BadStatusLine, http.client.InvalidURL,
                 requests.exceptions.ConnectionError) as e:
             self.feed.save_page_history(401, "Bad URL", e)
-            fp = feedparser.parse(self.feed.feed_address)
+            try:
+                fp = feedparser.parse(self.feed.feed_address)
+            except (urllib.error.HTTPError) as e:
+                self.feed.save_page_history(e.code, e.msg, e.fp.read())
+                return html
             feed_link = fp.feed.get('link', "")
             self.feed.save()
             logging.debug('   ***> [%-30s] Page fetch failed: %s' % (self.feed.log_title[:30], e))
