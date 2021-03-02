@@ -274,7 +274,7 @@ def truncate_chars(value, max_length):
     except UnicodeDecodeError:
         pass
     if len(value) <= max_length:
-        return value
+        return value.decode('utf-8', 'ignore')
  
     truncd_val = value[:max_length]
     if value[max_length] != " ":
