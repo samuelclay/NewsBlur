@@ -1494,8 +1494,7 @@ class MSharedStory(mongo.DynamicDocument):
     
     @property
     def decoded_story_title(self):
-        h = html_parser.HTMLParser()
-        return h.unescape(self.story_title)
+        return html.unescape(self.story_title)
         
     def canonical(self):
         return {
