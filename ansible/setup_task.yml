@@ -13,4 +13,5 @@
     - {role: 'dnsmasq', tags: 'dnsmasq'}
     - {role: 'consul', tags: 'consul'}
     - {role: 'consul-client', tags: 'consul'}
+    - {role: 'apns', tags: 'apns'}
     - {role: 'celery_task', tags: 'celery'}
