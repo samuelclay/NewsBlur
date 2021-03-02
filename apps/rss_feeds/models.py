@@ -11,7 +11,7 @@ import hashlib
 import redis
 import base64
 import pymongo
-import html.parser
+import html
 import urllib.parse
 from collections import defaultdict
 from operator import itemgetter
@@ -2457,8 +2457,7 @@ class MStory(mongo.Document):
     
     @property
     def decoded_story_title(self):
-        h = html.parser.HTMLParser()
-        return h.unescape(self.story_title)
+        return html.unescape(self.story_title)
 
     def save(self, *args, **kwargs):
         story_title_max = MStory._fields['story_title'].max_length
