@@ -81,6 +81,7 @@ DATABASES = {
         'USER': 'newsblur',
         'PASSWORD': 'newsblur',
         'HOST': 'postgres',
+        'POST': 5432
     },
 }
 
