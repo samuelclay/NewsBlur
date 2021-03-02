@@ -14,3 +14,4 @@
     - {role: 'consul', tags: 'consul'}
     - {role: 'consul-client', tags: 'consul'}
     - {role: 'elasticsearch', tags: 'elasticsearch'}
+    - {role: 'monitor', tags: 'monitor'}

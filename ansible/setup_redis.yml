@@ -14,3 +14,4 @@
     - {role: 'consul', tags: 'consul'}
     - {role: 'consul-client', tags: 'consul'}
     - {role: 'redis', tags: 'redis'}
+    - {role: 'monitor', tags: 'monitor'}
