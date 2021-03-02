@@ -4,6 +4,7 @@ import datetime
 import time
 import zlib
 import hashlib
+import html as pyhtml
 import redis
 import re
 import mongoengine as mongo
@@ -1494,7 +1495,7 @@ class MSharedStory(mongo.DynamicDocument):
     
     @property
     def decoded_story_title(self):
-        return html.unescape(self.story_title)
+        return pyhtml.unescape(self.story_title)
         
     def canonical(self):
         return {
