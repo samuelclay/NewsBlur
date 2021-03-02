@@ -302,12 +302,13 @@ class MUserFeedNotification(mongo.Document):
         soup = BeautifulSoup(story_content.strip(), features="lxml")
         fqdn = Site.objects.get_current().domain
         
+        # Convert videos in newsletters to images
         for iframe in soup("iframe"):
             url = dict(iframe.attrs).get('src', "")
             youtube_id = self.extract_youtube_id(url)
             if youtube_id:
-                a = Tag(soup, 'a', [('href', url)])
-                img = Tag(soup, 'img', [('style', "display: block; 'background-image': \"url(https://%s/img/reader/youtube_play.png), url(http://img.youtube.com/vi/%s/0.jpg)\"" % (fqdn, youtube_id)), ('src', 'http://img.youtube.com/vi/%s/0.jpg' % youtube_id)])
+                a = soup.new_tag('a', href=url)
+                img = soup.new_tag('img', style="display: block; 'background-image': \"url(https://%s/img/reader/youtube_play.png), url(http://img.youtube.com/vi/%s/0.jpg)\"" % (fqdn, youtube_id), src='http://img.youtube.com/vi/%s/0.jpg' % youtube_id)
                 a.insert(0, img)
                 iframe.replaceWith(a)
             else:
