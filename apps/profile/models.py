@@ -1114,7 +1114,7 @@ def paypal_signup(sender, **kwargs):
         pass
     user.profile.activate_premium()
     user.profile.cancel_premium_stripe()
-    user.profile.cancel_premium_paypal(second_most_recent_only=True)
+    # user.profile.cancel_premium_paypal(second_most_recent_only=True)
 valid_ipn_received.connect(paypal_signup)
 
 def paypal_payment_history_sync(sender, **kwargs):
