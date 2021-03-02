@@ -9,8 +9,8 @@ import pyes
 if os.getenv("DOCKERBUILD") == "True":
     import newsblur_web.docker_local_settings as settings
 else:
-    import flask_monitor.flask_settings as settings
-
+    import newsblur_web.local_settings as settings
+        
 app = Flask(__name__)
 
 PRIMARY_STATE = 1
