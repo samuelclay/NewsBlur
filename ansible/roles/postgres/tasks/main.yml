@@ -5,8 +5,8 @@
     name: postgres
     image: postgres:13.1
     state: started
+    hostname: postgres
     env:
-      DOCKERBUILD: "True"
       POSTGRES_USER: newsblur
       POSTGRES_PASSWORD: newsblur
     restart_policy: unless-stopped
