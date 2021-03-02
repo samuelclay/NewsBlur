@@ -5,6 +5,19 @@
         "tags": [
             "redis"
         ],
-        "port": 6379
+        "port": 6379,
+        "checks": [{
+            "id": "{{inventory_hostname}}-ping",
+            {% if inventory_hostname == 'db-redis-story' %}
+    "http": "http://127.0.0.1:5000/db_check/redis_story",
+            {% elif inventory_hostname == 'db-redis-user' %}
+    "http": "http://127.0.0.1:5000/db_check/redis",
+            {% elif inventory_hostname == 'db-redis-pubsub' %}
+    "http": "http://127.0.0.1:5000/db_check/redis_pubsub",
+            {% elif inventory_hostname == 'db-redis-sessions' %}
+    "http": "http://127.0.0.1:5000/db_check/redis_sessions",            
+            {% endif %}
+    "interval": "15s"
+        }]
     }
 }  
