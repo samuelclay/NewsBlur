@@ -4,9 +4,9 @@ import struct
 import dateutil
 import hashlib
 import base64
+import html
 import sys
 from random import randint
-from html.parser import HTMLParser
 from lxml.html.diff import tokenize, fixup_ins_del_tags, htmldiff_tokens
 from lxml.etree import ParserError, XMLSyntaxError, SerialisationError
 import lxml.html, lxml.etree
@@ -208,25 +208,11 @@ def attach_media_scripts(content):
     if 'imgur-embed-pub' in content and '<script' not in content:
         content += '<script async src="https://s.imgur.com/min/embed.js" charset="utf-8"></script>'
     return content
-        
-    
-class MLStripper(HTMLParser):
-    def __init__(self):
-        self.reset()
-        self.fed = []
-    def handle_data(self, d):
-        self.fed.append(d)
-    def get_data(self):
-        return ' '.join(self.fed)
 
 def strip_tags(html):
     if not html:
         return ''
     return strip_tags_django(html)
-    
-    s = MLStripper()
-    s.feed(html)
-    return s.get_data()
 
 def strip_comments(html_string):
     return COMMENTS_RE.sub('', html_string)
