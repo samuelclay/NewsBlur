@@ -15,3 +15,4 @@
     - {role: 'consul', tags: 'consul'}
     - {role: 'consul-client', tags: 'consul'}
     - {role: 'mongo', tags: 'mongo'}
+    - {role: 'monitor', tags: 'monitor'}
