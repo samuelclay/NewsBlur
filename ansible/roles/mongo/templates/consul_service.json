@@ -5,6 +5,11 @@
         "tags": [
             "db"
         ],
-        "port": 27017
+        "port": 27017,
+        "checks": [{
+            "id": "mongo-ping",
+            "http": "http://127.0.0.1:5000/db_check/mongo",
+            "interval": "15s"
+        }]
     }
 }  

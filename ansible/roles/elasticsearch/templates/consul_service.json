@@ -4,6 +4,11 @@
         "tags": [
             "db"
         ],
-        "port": 9200
+        "port": 9200,
+        "checks": [{
+            "id": "es-ping",
+            "http": "http://127.0.0.1:5000/db_check/elasticsearch",
+            "interval": "15s"
+        }]
     }
 }  

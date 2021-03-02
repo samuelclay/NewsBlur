@@ -4,6 +4,11 @@
         "tags": [
             "db"
         ],
-        "port": 5432
+        "port": 5432,
+        "checks": [{
+            "id": "postgres-ping",
+            "http": "http://127.0.0.1:5000/db_check/postgres",
+            "interval": "15s"
+          }]
     }
 }  
