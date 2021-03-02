@@ -1,5 +1,4 @@
 SHELL := /bin/bash
-newsblur := $(shell docker ps -qf "name=newsblur_web")
 CURRENT_UID := $(shell id -u)
 CURRENT_GID := $(shell id -g)
 
@@ -95,6 +94,8 @@ node:
 	- ansible-playbook ansible/provision.yml -l node --tags node
 www:
 	- ansible-playbook ansible/provision.yml -l haproxy --tags haproxy
+celery:
+	- ansible-playbook ansible/provision.yml -l task --tags celery
 firewall:
 	- ansible-playbook ansible/provision.yml --tags firewall -l db
 
