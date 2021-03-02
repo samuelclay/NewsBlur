@@ -1,5 +1,6 @@
 import datetime
 import enum
+import html
 import redis
 import mongoengine as mongo
 from boto.ses.connection import BotoServerError
@@ -17,7 +18,6 @@ from utils.view_functions import is_true
 from utils.story_functions import truncate_chars
 from utils import log as logging
 from utils import mongoengine_fields
-from html.parser import HTMLParser
 from vendor.apns import APNs, Payload
 from bs4 import BeautifulSoup, Tag
 import urllib.parse
@@ -154,7 +154,7 @@ class MUserFeedNotification(mongo.Document):
                     user_feed_notification.last_notification_date = story['story_date']
                     user_feed_notification.save()
                 
-                story['story_content'] = HTMLParser().unescape(story['story_content'])
+                story['story_content'] = html.unescape(story['story_content'])
                 
                 sent = user_feed_notification.push_story_notification(story, classifiers, usersub)
                 if sent: 
@@ -190,9 +190,9 @@ class MUserFeedNotification(mongo.Document):
         title = feed_title
         if notification_title_only:
             subtitle = None
-            body = HTMLParser().unescape(story['story_title'])
+            body = html.unescape(story['story_title'])
         else:
-            subtitle = HTMLParser().unescape(story['story_title'])
+            subtitle = html.unescape(story['story_title'])
             soup = BeautifulSoup(story['story_content'].strip(), features="lxml")
             body = replace_with_newlines(soup)
         body = truncate_chars(body.strip(), 600)
