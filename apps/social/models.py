@@ -34,11 +34,10 @@ from vendor import pynliner
 from utils import log as logging
 from utils import json_functions as json
 from utils.feed_functions import relative_timesince, chunks
-from utils.story_functions import truncate_chars, strip_tags, linkify, image_size
+from utils.story_functions import truncate_chars, strip_tags, linkify
 from utils.image_functions import ImageOps
 from utils.scrubber import SelectiveScriptScrubber
 from utils import s3_utils
-from io import BytesIO
 
 try:
     from apps.social.spam import detect_spammers
@@ -2340,14 +2339,7 @@ class MSharedStory(mongo.DynamicDocument):
         for image_source in self.image_urls[:10]:
             if any(ignore in image_source for ignore in IGNORE_IMAGE_SOURCES):
                 continue
-            req = requests.get(image_source, headers=headers, stream=True, timeout=10)
-            try:
-                datastream = BytesIO(req.content)
-                width, height = ImageOps.image_size(datastream)
-            except IOError as e:
-                logging.debug(" ***> Couldn't read image: %s / %s" % (e, image_source))
-                datastream = BytesIO(req.content[:100])
-                _, width, height = image_size(datastream)
+            width, height = ImageOps.image_size(image_source, headers=headers)
             # if width <= 16 or height <= 16:
             #     continue
             image_sizes.append({'src': image_source, 'size': (width, height)})
