@@ -375,10 +375,6 @@ CELERY_TASK_ROUTES = {
         "queue": "search_indexer",
         "binding_key": "search_indexer"
     },
-    "search-indexer-tasker": {
-        "queue": "search_indexer_tasker",
-        "binding_key": "search_indexer_tasker"
-    },
 }
 CELERY_TASK_QUEUES = {
     "work_queue": {
@@ -415,11 +411,6 @@ CELERY_TASK_QUEUES = {
         "exchange": "search_indexer",
         "exchange_type": "direct",
         "binding_key": "search_indexer"
-    },
-    "search_indexer_tasker": {
-        "exchange": "search_indexer_tasker",
-        "exchange_type": "direct",
-        "binding_key": "search_indexer_tasker"
     },
 }
 CELERY_TASK_DEFAULT_QUEUE = "work_queue"
