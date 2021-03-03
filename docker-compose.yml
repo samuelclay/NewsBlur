@@ -202,16 +202,6 @@ services:
 
     user: $CURRENT_UID:$CURRENT_GID
 
-  celeryd_search_indexer_tasker:
-    container_name: celeryd_search_indexer_tasker
-    image: newsblur/newsblur_python3
-    command: "celery worker -A newsblur_web --loglevel=INFO -Q search_indexer_tasker -c 2"
-    environment: 
-      - DOCKERBUILD=True
-    volumes:
-      - app-files:/srv/newsblur
-    user: $CURRENT_UID:$CURRENT_GID
-
   celeryd_work_queue:
     container_name: celeryd_work_queue
     image: newsblur/newsblur_python3

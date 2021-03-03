@@ -34,8 +34,6 @@
       command: "celery worker -A newsblur_web --loglevel=INFO -Q beat_feeds_task -c 1" 
     - container_name: task-search
       command: "celery worker -A newsblur_web --loglevel=INFO -Q search_indexer -c 4"
-    - container_name: task-search
-      command: "celery worker -A newsblur_web --loglevel=INFO -Q search_indexer_tasker -c 2"
     - container_name: task-work
       command: "celery worker -A newsblur_web --loglevel=INFO -Q work_queue"
 

@@ -9,6 +9,7 @@ import mongoengine as mongo
 from django.conf import settings
 from django.contrib.auth.models import User
 from apps.search.tasks import IndexSubscriptionsForSearch
+from apps.search.tasks import FinishIndexSubscriptionsForSearch
 from apps.search.tasks import IndexSubscriptionsChunkForSearch
 from apps.search.tasks import IndexFeedsForSearch
 from utils import log as logging
@@ -50,7 +51,7 @@ class MUserSearch(mongo.Document):
 
     def schedule_index_subscriptions_for_search(self):
         IndexSubscriptionsForSearch.apply_async(kwargs=dict(user_id=self.user_id), 
-                                                queue='search_indexer_tasker')
+                                                queue='search_indexer')
         
     # Should be run as a background task
     def index_subscriptions_for_search(self):
@@ -75,18 +76,26 @@ class MUserSearch(mongo.Document):
                 continue
         
         feed_id_chunks = [c for c in chunks(feed_ids, 6)]
-        logging.user(user, "~FCIndexing ~SB%s feeds~SN in %s chunks..." % 
+        logging.user(user, "~FCIndexing ~SB%s feeds~SN in %s chunks..." %
                      (total, len(feed_id_chunks)))
         
-        tasks = [IndexSubscriptionsChunkForSearch.s(feed_ids=feed_id_chunk,
-                                                    user_id=self.user_id
-                                                    ).set(queue='search_indexer')
-                 for feed_id_chunk in feed_id_chunks]
-        group = celery.group(*tasks)
-        res = group.apply_async(queue='search_indexer')
-        res.join_native(disable_sync_subtasks=False)
+        search_chunks = [IndexSubscriptionsChunkForSearch.s(feed_ids=feed_id_chunk,
+                                                            user_id=self.user_id
+                                                            ).set(queue='search_indexer')
+                         for feed_id_chunk in feed_id_chunks]
+        callback = FinishIndexSubscriptionsForSearch.s(user_id=self.user_id,
+                                                       start=start).set(queue='search_indexer')
+        celery.chord(search_chunks)(callback)
+
+    def finish_index_subscriptions_for_search(self, start):
+        from apps.reader.models import UserSubscription
         
+        r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
+        user = User.objects.get(pk=self.user_id)
+        subscriptions = UserSubscription.objects.filter(user=user).only('feed')
+        total = subscriptions.count()
         duration = time.time() - start
+
         logging.user(user, "~FCIndexed ~SB%s feeds~SN in ~FM~SB%s~FC~SN sec." % 
                      (total, round(duration, 2)))
         r.publish(user.username, 'search_index_complete:done')
