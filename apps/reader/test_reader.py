@@ -137,3 +137,13 @@ class Test_Reader(TestCase):
         compact_folders = usf.folders
 
         self.assertNotEquals(dupe_folders, compact_folders)
+    
+    def test_compact_user_subscription_folders2(self):
+        usf = UserSubscriptionFolders.objects.get(user=User.objects.all()[0])
+        usf.folders = '[2, 3, {"Bloglets": [423, 424, 425]}, {"Blogs": [426, 427, 428, 429, 430, {"Photo Blogs": [550, 551, 552, 553, 554, 555, 556]}, {"Photo Blogs": [551, 552, 553, 554, 555, 556]}, {"Travel": [557, 558]}, {"Travel": [557, 559]}, 943, {"Link Blogs": [467, 468, 469, 470, {"Travel": [557, 558]}, {"Travel": [557, 559]}]}, {"Link Blogs": [467, 468, 469, 470, {"Travel": [557, 558]}, {"Travel": [557, 559, 558]}]}]}]'
+        usf.save()
+        dupe_folders = usf.folders
+        usf.compact()
+        compact_folders = usf.folders
+
+        self.assertNotEquals(dupe_folders, compact_folders)
