@@ -6,24 +6,30 @@ import time
 import select
 import subprocess
 import sys
+import json
 from requests.exceptions import ConnectionError
 
 sys.path.insert(0, '/srv/newsblur')
 os.environ['DJANGO_SETTINGS_MODULE'] = 'newsblur_web.settings'
-import fabfile
 
-NEWSBLUR_USERNAME = 'sclay'
+NEWSBLUR_USERNAME = 'nb'
 IGNORE_HOSTS = [
-    'push',
+    'app-push',
 ]
 
 def main(role="app", role2="work", command=None, path=None):
     delay = 1
 
+    hosts = subprocess.check_output(['ansible-inventory', '--list'])
+    if not hosts:
+        print(" ***> Could not load ansible-inventory!")
+        return
+    hosts = json.loads(hosts)
+
     while True:
         try:
-            streams = create_streams_for_roles(role, role2, command=command, path=path)
-            print(" --- Loading %s App Log Tails ---" % len(streams))
+            streams = create_streams_for_roles(hosts, role, role2, command=command, path=path)
+            print(" --- Loading %s %s/%s Log Tails ---" % (len(streams), role, role2))
             read_streams(streams)
         # except UnicodeDecodeError: # unexpected end of data
         #     print " --- Lost connections - Retrying... ---"
@@ -38,9 +44,8 @@ def main(role="app", role2="work", command=None, path=None):
             print(" --- End of Logging ---")
             break
 
-def create_streams_for_roles(role, role2, command=None, path=None):
+def create_streams_for_roles(hosts, role, role2, command=None, path=None):
     streams = list()
-    hosts = fabfile.assign_digitalocean_roledefs(split=True)
     found = set()
 
     if not path:
@@ -48,19 +53,19 @@ def create_streams_for_roles(role, role2, command=None, path=None):
     if not command:
         command = "tail -f"
     if role in hosts:
-        for hostname in (hosts[role] + hosts[role2]):
+        for hostname in (hosts[role]['hosts'] + hosts[role2]['hosts']):
             if any(h in hostname for h in IGNORE_HOSTS) and role != 'push': continue
-            follow_host(streams, found, hostname, command, path)
+            follow_host(hosts, streams, found, hostname, command, path)
     else:
         host = role
         role = re.search(r'([^0-9]+)', host).group()
         for hostname in hosts[role]:
             if hostname['name'] == host:
-                follow_host(streams, found, hostname, command, path)
+                follow_host(hosts, streams, found, hostname, command, path)
 
     return streams
 
-def follow_host(streams, found, hostname, command=None, path=None):
+def follow_host(hosts, streams, found, hostname, command=None, path=None):
     if isinstance(hostname, dict):
         address = hostname['address']
         hostname = hostname['name']
@@ -69,18 +74,12 @@ def follow_host(streams, found, hostname, command=None, path=None):
     elif isinstance(hostname, tuple):
         hostname, address = hostname[0], hostname[1]
     else:
-        address = hostname
+        address = hosts['_meta']['hostvars'][hostname]['ansible_host']
+        print(" ---> Following %s %s" % (hostname, address))
     if hostname in found: return
-    if 'ec2' in hostname:
-        s = subprocess.Popen(["ssh", 
-                              "-i", os.path.expanduser(os.path.join(fabfile.env.SECRETS_PATH,
-                                                                    "keys/ec2.pem")),
-                              address, "%s %s" % (command, path)], stdout=subprocess.PIPE)
-    else:
-        s = subprocess.Popen(["ssh", "-l", NEWSBLUR_USERNAME, 
-                              "-i", os.path.expanduser(os.path.join(fabfile.env.SECRETS_PATH,
-                                                                    "keys/newsblur.key")),
-                              address, "%s %s" % (command, path)], stdout=subprocess.PIPE)
+    s = subprocess.Popen(["ssh", "-l", NEWSBLUR_USERNAME, 
+                            "-i", os.path.expanduser("/srv/secrets-newsblur/keys/docker.key"),
+                            address, "%s %s" % (command, path)], stdout=subprocess.PIPE)
     s.name = hostname
     streams.append(s)
     found.add(hostname)
@@ -98,10 +97,11 @@ def read_streams(streams):
                     streams.remove(stream)
                     break
                 try:
-                    combination_message = "[%-6s] %s" % (stream.name[:6], data)
+                    combination_message = "[%-12s] %s" % (stream.name[:12], data.decode())
                 except UnicodeDecodeError:
                     continue
                 sys.stdout.write(combination_message)
+                sys.stdout.flush()
                 break
 
 if __name__ == "__main__":
