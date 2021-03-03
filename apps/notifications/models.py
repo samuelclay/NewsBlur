@@ -147,7 +147,8 @@ class MUserFeedNotification(mongo.Document):
                     logging.debug("Sent too many, ignoring...")
                     continue                    
                 if story['story_date'] <= last_notification_date and not force:
-                    logging.debug("Story date older than last notification date: %s <= %s" % (story['story_date'], last_notification_date))
+                    if settings.DEBUG:
+                        logging.debug("Story date older than last notification date: %s <= %s" % (story['story_date'], last_notification_date))
                     continue
                 
                 if story['story_date'] > user_feed_notification.last_notification_date:
