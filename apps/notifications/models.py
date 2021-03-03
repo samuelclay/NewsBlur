@@ -139,12 +139,14 @@ class MUserFeedNotification(mongo.Document):
             classifiers = user_feed_notification.classifiers(usersub)
 
             if classifiers == None:
-                logging.debug("Has no usersubs")
+                if settings.DEBUG:
+                    logging.debug("Has no usersubs")
                 continue
 
             for story in stories:
                 if sent_count >= 3:
-                    logging.debug("Sent too many, ignoring...")
+                    if settings.DEBUG:
+                        logging.debug("Sent too many, ignoring...")
                     continue                    
                 if story['story_date'] <= last_notification_date and not force:
                     if settings.DEBUG:
