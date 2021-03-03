@@ -79,12 +79,12 @@ class MUserSearch(mongo.Document):
                      (total, len(feed_id_chunks)))
         
         tasks = [IndexSubscriptionsChunkForSearch.s(feed_ids=feed_id_chunk,
-                                                      user_id=self.user_id
-                                                      ).set(queue='search_indexer')
+                                                    user_id=self.user_id
+                                                    ).set(queue='search_indexer')
                  for feed_id_chunk in feed_id_chunks]
         group = celery.group(*tasks)
         res = group.apply_async(queue='search_indexer')
-        res.join_native()
+        res.join_native(disable_sync_subtasks=False)
         
         duration = time.time() - start
         logging.user(user, "~FCIndexed ~SB%s feeds~SN in ~FM~SB%s~FC~SN sec." % 
