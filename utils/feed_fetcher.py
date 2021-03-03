@@ -174,7 +174,8 @@ class FetchFeed:
                                                 modified=modified)
                 except (TypeError, ValueError, KeyError, EOFError, MemoryError, 
                         urllib.error.URLError, http.client.InvalidURL, 
-                        http.client.IncompleteRead, ConnectionResetError) as e:
+                        http.client.BadStatusLine, http.client.IncompleteRead, 
+                        ConnectionResetError) as e:
                     logging.debug('   ***> [%-30s] ~FRFeed fetch error: %s' % 
                                   (self.feed.log_title[:30], e))
                     pass
