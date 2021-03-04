@@ -3059,6 +3059,7 @@ class MStarredStoryCounts(mongo.Document):
                           'count': c.count, 
                           'is_highlights': c.is_highlights, 
                           'feed_address': c.rss_url, 
+                          'active': True,
                           'feed_id': c.feed_id} 
                          for c in counts],
                         key=lambda x: (x.get('tag', '') or '').lower())
@@ -3211,6 +3212,7 @@ class MSavedSearch(mongo.Document):
         searches = sorted([{'query': s.query, 
                             'feed_address': s.rss_url, 
                             'feed_id': s.feed_id,
+                            'active': True,
                            } for s in searches],
                           key=lambda x: (x.get('query', '') or '').lower())
         return searches

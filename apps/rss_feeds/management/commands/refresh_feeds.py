@@ -3,6 +3,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from apps.statistics.models import MStatistics
 from apps.rss_feeds.models import Feed
+from apps.reader.models import UserSubscription
 from optparse import make_option
 from utils import feed_fetcher
 from utils.management_functions import daemonize
@@ -49,7 +50,8 @@ class Command(BaseCommand):
         if options['force']:
             feeds = Feed.objects.all()
         elif options['username']:
-            feeds = Feed.objects.filter(subscribers__user=User.objects.get(username=options['username']))
+            usersubs = UserSubscription.objects.filter(user=User.objects.get(username=options['username']), active=True)
+            feeds = Feed.objects.filter(pk__in=usersubs.values('feed_id'))
         elif options['feed']:
             feeds = Feed.objects.filter(pk=options['feed'])
         else:

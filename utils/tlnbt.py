@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from . import tlnb
+import tlnb
 import sys
 
 if __name__ == "__main__":

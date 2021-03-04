@@ -9,8 +9,8 @@ import json
 __author__ = "Dananjaya Ramanayake <dananjaya86@gmail.com>, Samuel Clay <samuel@newsblur.com>"
 __version__ = "1.0"
 
-API_URL = "http://www.newsblur.com/"
-# API_URL = "http://nb.local.host:8000/"
+API_URL = "https://www.newsblur.com/"
+# API_URL = "https://nb.local.host:8000/"
 
 
 class request():

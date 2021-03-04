@@ -4,6 +4,7 @@ import datetime
 import time
 import zlib
 import hashlib
+import html as pyhtml
 import redis
 import re
 import mongoengine as mongo
@@ -33,11 +34,10 @@ from vendor import pynliner
 from utils import log as logging
 from utils import json_functions as json
 from utils.feed_functions import relative_timesince, chunks
-from utils.story_functions import truncate_chars, strip_tags, linkify, image_size
+from utils.story_functions import truncate_chars, strip_tags, linkify
 from utils.image_functions import ImageOps
 from utils.scrubber import SelectiveScriptScrubber
 from utils import s3_utils
-from io import BytesIO
 
 try:
     from apps.social.spam import detect_spammers
@@ -187,7 +187,7 @@ class MSocialProfile(mongo.Document):
             
     @property
     def blurblog_url(self):
-        return "http://%s.%s/" % (
+        return "https://%s.%s/" % (
             self.username_slug,
             Site.objects.get_current().domain.replace('www.', ''))
     
@@ -370,6 +370,7 @@ class MSocialProfile(mongo.Document):
             'feed_link': self.blurblog_url,
             'protected': self.protected,
             'private': self.private,
+            'active': True,
         }
         if not compact:
             params.update({
@@ -824,6 +825,7 @@ class MSocialSubscription(mongo.Document):
     needs_unread_recalc = mongo.BooleanField(default=False)
     feed_opens = mongo.IntField(default=0)
     is_trained = mongo.BooleanField(default=False)
+    active = mongo.BooleanField(default=True)
     
     meta = {
         'collection': 'social_subscription',
@@ -903,6 +905,7 @@ class MSocialSubscription(mongo.Document):
     def canonical(self):
         return {
             'user_id': self.user_id,
+            'active': self.active,
             'subscription_user_id': self.subscription_user_id,
             'nt': self.unread_count_neutral,
             'ps': self.unread_count_positive,
@@ -1494,7 +1497,7 @@ class MSharedStory(mongo.DynamicDocument):
     
     @property
     def decoded_story_title(self):
-        return html.unescape(self.story_title)
+        return pyhtml.unescape(self.story_title)
         
     def canonical(self):
         return {
@@ -2339,14 +2342,7 @@ class MSharedStory(mongo.DynamicDocument):
         for image_source in self.image_urls[:10]:
             if any(ignore in image_source for ignore in IGNORE_IMAGE_SOURCES):
                 continue
-            req = requests.get(image_source, headers=headers, stream=True, timeout=10)
-            try:
-                datastream = BytesIO(req.content)
-                width, height = ImageOps.image_size(datastream)
-            except IOError as e:
-                logging.debug(" ***> Couldn't read image: %s / %s" % (e, image_source))
-                datastream = BytesIO(req.content[:100])
-                _, width, height = image_size(datastream)
+            width, height = ImageOps.image_size(image_source, headers=headers)
             # if width <= 16 or height <= 16:
             #     continue
             image_sizes.append({'src': image_source, 'size': (width, height)})
