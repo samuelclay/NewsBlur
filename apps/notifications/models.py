@@ -18,7 +18,9 @@ from utils.view_functions import is_true
 from utils.story_functions import truncate_chars
 from utils import log as logging
 from utils import mongoengine_fields
-from vendor.apns import APNs, Payload
+from apns2.errors import BadDeviceToken
+from apns2.client import APNsClient
+from apns2.payload import Payload
 from bs4 import BeautifulSoup, Tag
 import urllib.parse
 
@@ -237,10 +239,7 @@ class MUserFeedNotification(mongo.Document):
     def send_ios(self, story, user, usersub):
         if not self.is_ios: return
 
-        apns = APNs(use_sandbox=False, 
-                    cert_file='/srv/newsblur/config/certificates/aps.pem',
-                    key_file='/srv/newsblur/config/certificates/aps.p12.pem',
-                    enhanced=True)
+        apns = APNsClient('/srv/newsblur/config/certificates/aps.pem', use_sandbox=False)
         
         tokens = MUserNotificationTokens.get_tokens_for_user(self.user_id)
         notification_title_only = is_true(user.profile.preference_value('notification_title_only'))
@@ -250,11 +249,7 @@ class MUserFeedNotification(mongo.Document):
             image_url = story['image_urls'][0]
             # print image_url
         
-        def response_listener(error_response):
-            logging.user(user, "~FRAPNS client get error-response: " + str(error_response))
-
-        apns.gateway_server.register_response_listener(response_listener)
-        
+        confirmed_ios_tokens = []
         for token in tokens.ios_tokens:
             logging.user(user, '~BMStory notification by iOS: ~FY~SB%s~SN~BM~FY/~SB%s' % 
                                        (story['story_title'][:50], usersub.feed.feed_title[:50]))
@@ -267,7 +262,16 @@ class MUserFeedNotification(mongo.Document):
                                       'story_feed_id': story['story_feed_id'],
                                       'image_url': image_url,
                                      })
-            apns.gateway_server.send_notification(token, payload)
+            try:
+                apns.send_notification(token, payload)
+            except BadDeviceToken:
+                logging.user(user, '~BMiOS token expired: ~FR~SB%s' % (token[:50]))
+            else:
+                confirmed_ios_tokens += token
+
+        if len(confirmed_ios_tokens) < len(tokens.ios_tokens):
+            tokens.ios_tokens = confirmed_ios_tokens
+            tokens.save()
         
     def send_android(self, story):
         if not self.is_android: return

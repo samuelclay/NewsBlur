@@ -1,5 +1,6 @@
 # -e git://github.com/tweepy/tweepy.git#egg=tweepy
 anyjson==0.3.3
+apns2==0.7.2
 beautifulsoup4==4.9.3
 bleach==3.2.1
 boto==2.49.0
