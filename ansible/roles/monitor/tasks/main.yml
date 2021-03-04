@@ -16,8 +16,6 @@
     name: monitor
     image: newsblur/flask_monitor
     pull: yes
-    env:
-      DOCKERBUILD: "True"
     state: started
     command: bash -c "python /srv/newsblur/flask_monitor/db_monitor.py"
     ports:
