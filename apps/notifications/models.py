@@ -139,15 +139,18 @@ class MUserFeedNotification(mongo.Document):
             classifiers = user_feed_notification.classifiers(usersub)
 
             if classifiers == None:
-                logging.debug("Has no usersubs")
+                if settings.DEBUG:
+                    logging.debug("Has no usersubs")
                 continue
 
             for story in stories:
                 if sent_count >= 3:
-                    logging.debug("Sent too many, ignoring...")
+                    if settings.DEBUG:
+                        logging.debug("Sent too many, ignoring...")
                     continue                    
                 if story['story_date'] <= last_notification_date and not force:
-                    logging.debug("Story date older than last notification date: %s <= %s" % (story['story_date'], last_notification_date))
+                    if settings.DEBUG:
+                        logging.debug("Story date older than last notification date: %s <= %s" % (story['story_date'], last_notification_date))
                     continue
                 
                 if story['story_date'] > user_feed_notification.last_notification_date:
@@ -207,10 +210,12 @@ class MUserFeedNotification(mongo.Document):
     def push_story_notification(self, story, classifiers, usersub):
         story_score = self.story_score(story, classifiers)
         if self.is_focus and story_score <= 0:
-            logging.debug("Is focus, but story is hidden")
+            if settings.DEBUG:
+                logging.debug("Is focus, but story is hidden")
             return False
         elif story_score < 0:
-            logging.debug("Is unread, but story is hidden")
+            if settings.DEBUG:
+                logging.debug("Is unread, but story is hidden")
             return False
         
         user = User.objects.get(pk=self.user_id)
@@ -302,12 +307,13 @@ class MUserFeedNotification(mongo.Document):
         soup = BeautifulSoup(story_content.strip(), features="lxml")
         fqdn = Site.objects.get_current().domain
         
+        # Convert videos in newsletters to images
         for iframe in soup("iframe"):
             url = dict(iframe.attrs).get('src', "")
             youtube_id = self.extract_youtube_id(url)
             if youtube_id:
-                a = Tag(soup, 'a', [('href', url)])
-                img = Tag(soup, 'img', [('style', "display: block; 'background-image': \"url(https://%s/img/reader/youtube_play.png), url(http://img.youtube.com/vi/%s/0.jpg)\"" % (fqdn, youtube_id)), ('src', 'http://img.youtube.com/vi/%s/0.jpg' % youtube_id)])
+                a = soup.new_tag('a', href=url)
+                img = soup.new_tag('img', style="display: block; 'background-image': \"url(https://%s/img/reader/youtube_play.png), url(http://img.youtube.com/vi/%s/0.jpg)\"" % (fqdn, youtube_id), src='http://img.youtube.com/vi/%s/0.jpg' % youtube_id)
                 a.insert(0, img)
                 iframe.replaceWith(a)
             else:

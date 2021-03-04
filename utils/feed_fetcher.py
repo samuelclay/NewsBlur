@@ -174,7 +174,8 @@ class FetchFeed:
                                                 modified=modified)
                 except (TypeError, ValueError, KeyError, EOFError, MemoryError, 
                         urllib.error.URLError, http.client.InvalidURL, 
-                        http.client.IncompleteRead, ConnectionResetError) as e:
+                        http.client.BadStatusLine, http.client.IncompleteRead, 
+                        ConnectionResetError) as e:
                     logging.debug('   ***> [%-30s] ~FRFeed fetch error: %s' % 
                                   (self.feed.log_title[:30], e))
                     pass
@@ -184,7 +185,10 @@ class FetchFeed:
                 logging.debug('   ***> [%-30s] ~FRTurning off headers...' % 
                               (self.feed.log_title[:30]))
                 self.fpf = feedparser.parse(address, agent=self.feed.user_agent)
-            except (TypeError, ValueError, KeyError, EOFError, MemoryError, urllib.error.URLError, http.client.InvalidURL, ConnectionResetError) as e:
+            except (TypeError, ValueError, KeyError, EOFError, MemoryError, 
+                    urllib.error.URLError, http.client.InvalidURL, 
+                    http.client.BadStatusLine, http.client.IncompleteRead, 
+                    ConnectionResetError) as e:
                 logging.debug('   ***> [%-30s] ~FRFetch failed: %s.' % 
                               (self.feed.log_title[:30], e))
                 return FEED_ERRHTTP, None

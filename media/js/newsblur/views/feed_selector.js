@@ -31,7 +31,7 @@ NEWSBLUR.Views.FeedSelector = Backbone.View.extend({
 
         this.$el.show();
         $input.val('');
-        $input.focus();
+        console.log(["Focus on feed selector", $input]);
         NEWSBLUR.app.feed_list.options.feed_chooser = true;
         NEWSBLUR.assets.feeds.trigger('reset', {feed_selector: true});
         $feed_list.addClass('NB-selector-active');
@@ -44,6 +44,8 @@ NEWSBLUR.Views.FeedSelector = Backbone.View.extend({
         if (NEWSBLUR.reader.flags['sidebar_closed']) {
             NEWSBLUR.reader.layout.outerLayout.show('west', true);
         }
+
+        $input.focus();
     },
     
     hide_feed_selector: function() {

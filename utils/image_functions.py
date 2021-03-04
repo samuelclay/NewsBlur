@@ -1,10 +1,11 @@
 """Operations for images through the PIL."""
 
+import urllib.request
 from PIL import Image
+from PIL import ImageFile
 from PIL import ImageOps as PILOps
 from PIL.ExifTags import TAGS
 from io import BytesIO
-from vendor import reseekfile
 
 PROFILE_PICTURE_SIZES = {
     'fullsize': (256, 256),
@@ -71,7 +72,21 @@ class ImageOps:
         return image
     
     @classmethod
-    def image_size(cls, datastream):
-        datastream = reseekfile.ReseekFile(datastream)
-        image = Image.open(datastream)
-        return image.size
+    def image_size(cls, url, headers=None):
+        if not headers: headers = {}
+        req = urllib.request.Request(url, data=None, headers=headers)
+        file = urllib.request.urlopen(req)
+        size = file.headers.get("content-length")
+        if size: 
+            size = int(size)
+        p = ImageFile.Parser()
+        while True:
+            data = file.read(1024)
+            if not data:
+                break
+            p.feed(data)
+            if p.image:
+                return p.image.size
+                break
+        file.close()
+        return None, None

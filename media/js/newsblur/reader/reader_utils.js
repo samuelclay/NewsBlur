@@ -165,6 +165,7 @@ NEWSBLUR.utils = {
         
         var make_feed_option = function(feed) {
             if (!feed.get('feed_title')) return;
+            if (!feed.get('active')) return;
             var prefix = 'feed:';
             if (feed.is_starred()) prefix = '';
             else if (feed.is_social()) prefix = '';
