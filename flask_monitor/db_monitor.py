@@ -6,11 +6,8 @@ import pymongo
 import redis
 import pyes
 
-if os.getenv("DOCKERBUILD") == "True":
-    import newsblur_web.docker_local_settings as settings
-else:
-    import newsblur_web.flask_settings as settings
-        
+from newsblur_web import settings
+
 app = Flask(__name__)
 
 PRIMARY_STATE = 1
