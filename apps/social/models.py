@@ -370,6 +370,7 @@ class MSocialProfile(mongo.Document):
             'feed_link': self.blurblog_url,
             'protected': self.protected,
             'private': self.private,
+            'active': True,
         }
         if not compact:
             params.update({
@@ -824,6 +825,7 @@ class MSocialSubscription(mongo.Document):
     needs_unread_recalc = mongo.BooleanField(default=False)
     feed_opens = mongo.IntField(default=0)
     is_trained = mongo.BooleanField(default=False)
+    active = mongo.BooleanField(default=True)
     
     meta = {
         'collection': 'social_subscription',
@@ -903,6 +905,7 @@ class MSocialSubscription(mongo.Document):
     def canonical(self):
         return {
             'user_id': self.user_id,
+            'active': self.active,
             'subscription_user_id': self.subscription_user_id,
             'nt': self.unread_count_neutral,
             'ps': self.unread_count_positive,
