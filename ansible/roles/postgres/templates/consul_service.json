@@ -7,7 +7,7 @@
         "port": 5432,
         "checks": [{
             "id": "postgres-ping",
-            "http": "http://127.0.0.1:5579/db_check/postgres",
+            "http": "http://{{ ansible_ssh_host }}:5579/db_check/postgres",
             "interval": "15s"
           }]
     }
