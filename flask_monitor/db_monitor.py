@@ -13,13 +13,14 @@ app = Flask(__name__)
 PRIMARY_STATE = 1
 SECONDARY_STATE = 2
 
+LOCAL_HOST = "127.0.0.1"
 @app.route("/db_check/postgres")
 def db_check_postgres():
     connect_params = "dbname='%s' user='%s' password='%s' host='%s' port='%s'" % (
         settings.DATABASES['default']['NAME'],
         settings.DATABASES['default']['USER'],
         settings.DATABASES['default']['PASSWORD'],
-        settings.DATABASES['default']['HOST'],
+        LOCAL_HOST,
         settings.DATABASES['default']['PORT'],
     )
     try:
@@ -47,7 +48,7 @@ def db_check_mysql():
     )
     try:
 
-        conn = pymysql.connect(host=settings.DATABASES['default']['HOST'],
+        conn = pymysql.connect(host=LOCAL_HOST,
                                port=settings.DATABASES['default']['PORT'],
                                user=settings.DATABASES['default']['USER'],
                                passwd=settings.DATABASES['default']['PASSWORD'],
@@ -67,7 +68,7 @@ def db_check_mysql():
 @app.route("/db_check/mongo")
 def db_check_mongo():
     try:
-        client = pymongo.MongoClient('mongodb://%s' % settings.MONGO_DB['host'])
+        client = pymongo.MongoClient('mongodb://%s' % LOCAL_HOST)
         db = client.newsblur
     except:
         abort(502)
@@ -99,9 +100,8 @@ def db_check_mongo():
 
 @app.route("/db_check/redis")
 def db_check_redis():
-    redis_host = getattr(settings, 'REDIS', {'host': 'db_redis'})
     try:
-        r = redis.Redis(redis_host['host'], db=0)
+        r = redis.Redis(LOCAL_HOST, db=0)
     except:
         abort(502)
     
@@ -113,9 +113,8 @@ def db_check_redis():
 
 @app.route("/db_check/redis_story")
 def db_check_redis_story():
-    redis_host = getattr(settings, 'REDIS', {'host': 'db_redis_story'})
     try:
-        r = redis.Redis(redis_host['host'], db=1)
+        r = redis.Redis(LOCAL_HOST, db=1)
     except:
         abort(502)
     
@@ -127,9 +126,8 @@ def db_check_redis_story():
 
 @app.route("/db_check/redis_pubsub")
 def db_check_redis_pubsub():
-    redis_host = getattr(settings, 'REDIS', {'host': 'db_redis_pubsub'})
     try:
-        r = redis.Redis(redis_host['host'], db=1)
+        r = redis.Redis(redis_host, db=1)
     except:
         abort(502)
     
@@ -143,9 +141,8 @@ def db_check_redis_pubsub():
 
 @app.route("/db_check/redis_sessions")
 def db_check_redis_sessions():
-    redis_host = getattr(settings, 'REDIS', {'host': 'db_redis_sessions'})
     try:
-        r = redis.Redis(redis_host['host'], db=5)
+        r = redis.Redis(LOCAL_HOST, db=5)
     except:
         abort(502)
     
@@ -157,9 +154,8 @@ def db_check_redis_sessions():
 
 @app.route("/db_check/elasticsearch")
 def db_check_elasticsearch():
-    es_host = getattr(settings, 'ELASTICSEARCH_FEED_HOSTS', ['db_search_feed:9200'])
     try:
-        conn = pyes.ES(es_host)
+        conn = pyes.ES(LOCAL_HOST)
     except:
         abort(502)
     
