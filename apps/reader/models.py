@@ -142,7 +142,7 @@ class UserSubscription(models.Model):
                 unread_stories_key        = 'U:%s:%s' % (user_id, feed_id)
                 unread_ranked_stories_key = 'zU:%s:%s' % (user_id, feed_id)
                 expire_unread_stories_key = False
-            
+                
                 max_score = current_time
                 if read_filter == 'unread':
                     # +1 for the intersection b/w zF and F, which carries an implicit score of 1.

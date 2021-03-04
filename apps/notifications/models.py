@@ -210,10 +210,12 @@ class MUserFeedNotification(mongo.Document):
     def push_story_notification(self, story, classifiers, usersub):
         story_score = self.story_score(story, classifiers)
         if self.is_focus and story_score <= 0:
-            logging.debug("Is focus, but story is hidden")
+            if settings.DEBUG:
+                logging.debug("Is focus, but story is hidden")
             return False
         elif story_score < 0:
-            logging.debug("Is unread, but story is hidden")
+            if settings.DEBUG:
+                logging.debug("Is unread, but story is hidden")
             return False
         
         user = User.objects.get(pk=self.user_id)

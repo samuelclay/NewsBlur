@@ -2,7 +2,9 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
     
     events: {
         "click .NB-module-search-add-url"   : "add_url",
-        "click .NB-feedbar-options" : "open_options_popover"
+        "click .NB-feedbar-options" : "open_options_popover",
+        "click .NB-module-river-favicon" : "reload",
+        "click .NB-module-river-title" : "open_river"
     },
     
     initialize: function () {
@@ -116,6 +118,10 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
         console.log(['River feeds', river_id, feeds.length, feeds]);
         return feeds;
     },
+
+    open_river: function () {
+        this.open_story();
+    },
     
     // ===========
     // = Refresh =
@@ -147,6 +153,10 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
     
     redraw: function () {
         this.story_titles.render();
+    },
+
+    reload: function () {
+        this.load_stories();
     },
 
     load_stories: function(options) {
@@ -253,7 +263,7 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
         var river_id = this.model.get('river_id');
         var options = {
             dashboard_transfer: this.options.dashboard_stories,
-            story_id: story.id
+            story_id: story && story.id
         };
         console.log(['Opening dashboard story', story, this.options]);
 
