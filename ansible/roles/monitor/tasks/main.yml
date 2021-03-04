@@ -21,7 +21,7 @@
     state: started
     command: bash -c "python /srv/newsblur/flask_monitor/db_monitor.py"
     ports:
-      - 5000:5579
+      - 5579:5579
     restart_policy: unless-stopped
     volumes:
       - /srv/newsblur:/srv/newsblur
