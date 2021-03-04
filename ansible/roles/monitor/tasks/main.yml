@@ -18,17 +18,8 @@
     pull: yes
     state: started
     command: bash -c "python /srv/newsblur/flask_monitor/db_monitor.py"
-    ports:
-      - 5579:5579
     restart_policy: unless-stopped
     volumes:
       - /srv/newsblur:/srv/newsblur
+    network_mode: host
 
-- name: Register monitor in consul
-  tags: consul
-  become: yes
-  template:
-    src: consul_service.json
-    dest: /etc/consul.d/monitor.json
-  notify:
-    - reload consul
