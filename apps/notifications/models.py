@@ -35,6 +35,7 @@ class MUserNotificationTokens(mongo.Document):
     '''A user's push notification tokens'''
     user_id                  = mongo.IntField()
     ios_tokens               = mongo.ListField(mongo.StringField(max_length=1024))
+    use_sandbox              = mongo.BooleanField(default=False)
     
     meta = {
         'collection': 'notification_tokens',
@@ -239,9 +240,9 @@ class MUserFeedNotification(mongo.Document):
     def send_ios(self, story, user, usersub):
         if not self.is_ios: return
 
-        apns = APNsClient('/srv/newsblur/config/certificates/aps.pem', use_sandbox=False)
-        
         tokens = MUserNotificationTokens.get_tokens_for_user(self.user_id)
+        apns = APNsClient('/srv/newsblur/config/certificates/aps.p12.pem', use_sandbox=tokens.use_sandbox)
+        
         notification_title_only = is_true(user.profile.preference_value('notification_title_only'))
         title, subtitle, body = self.title_and_body(story, usersub, notification_title_only)
         image_url = None
@@ -263,11 +264,13 @@ class MUserFeedNotification(mongo.Document):
                                       'image_url': image_url,
                                      })
             try:
-                apns.send_notification(token, payload)
+                apns.send_notification(token, payload, topic="com.newsblur.NewsBlur")
             except BadDeviceToken:
                 logging.user(user, '~BMiOS token expired: ~FR~SB%s' % (token[:50]))
             else:
-                confirmed_ios_tokens += token
+                confirmed_ios_tokens.append(token)
+                if settings.DEBUG:
+                    logging.user(user, '~BMiOS token good: ~FB~SB%s / %s' % (token[:50], len(confirmed_ios_tokens)))
 
         if len(confirmed_ios_tokens) < len(tokens.ios_tokens):
             tokens.ios_tokens = confirmed_ios_tokens

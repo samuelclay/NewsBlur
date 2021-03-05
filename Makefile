@@ -71,7 +71,7 @@ build_web:
 build_node: 
 	- docker image build . --file=docker/node/Dockerfile --tag=newsblur/newsblur_node
 build: build_web build_node
-web_image:
+web_image: build_web
 	- docker push newsblur/newsblur_python3
 node_image: build_node
 	- docker push newsblur/newsblur_node
