@@ -328,7 +328,7 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
             newFragment.show(getActivity().getSupportFragmentManager(), "dialog");
 			return true;
 		} else if (item.getItemId() == R.id.menu_send_story) {
-			FeedUtils.sendStoryBrief(story, getActivity());
+			FeedUtils.sendStoryUrl(story, getActivity());
 			return true;
 		} else if (item.getItemId() == R.id.menu_send_story_full) {
 			FeedUtils.sendStoryFull(story, getActivity());

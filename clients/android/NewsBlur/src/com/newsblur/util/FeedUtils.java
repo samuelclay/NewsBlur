@@ -397,13 +397,13 @@ public class FeedUtils {
         doAction(ra, context);
     }
 
-    public static void sendStoryBrief(Story story, Context context) {
+    public static void sendStoryUrl(Story story, Context context) {
         if (story == null) return;
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("text/plain");
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.putExtra(Intent.EXTRA_SUBJECT, story.title);
-        intent.putExtra(Intent.EXTRA_TEXT, String.format(context.getResources().getString(R.string.send_brief), story.title, story.permalink));
+        intent.putExtra(Intent.EXTRA_TEXT, story.permalink);
         context.startActivity(Intent.createChooser(intent, "Send using"));
     }
 

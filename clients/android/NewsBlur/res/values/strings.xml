@@ -55,7 +55,6 @@
 
     <string name="top_level">TOP LEVEL</string>
 	
-	<string name="send_brief">%1$s %2$s</string>
 	<string name="send_full">%1$s \n\%2$s \n\n%3$s \n\n—\nShared with NewsBlur.com</string>
 	<string name="share_comment_hint">Comment (Optional)</string>
 	<string name="share_newsblur">Share \"%s\" to your Blurblog?</string>
