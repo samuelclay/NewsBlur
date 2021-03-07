@@ -8,7 +8,7 @@ cssutils==1.0.1
 django-compress==1.0.1
 django-cors-middleware==1.3.1
 django-extensions==1.6.7
-django-mailgun==0.9.1
+django-anymail[mailgun]==7.2.1
 django-oauth-toolkit==1.1.2
 django-paypal==1.0
 django-qurl==0.1.1
@@ -27,7 +27,7 @@ image==1.5.27
 isodate==0.5.4
 lxml==3.6.4
 mock==2.0.0
-mongoengine==0.17.0
+mongoengine==0.19.1
 PyMySQL==0.9.3
 ndg-httpsclient==0.4.2
 nltk==3.4.5
@@ -39,7 +39,7 @@ psycopg2==2.8.3
 pyasn1==0.1.9
 pyes==0.99.6
 pyflakes==1.3.0
-pymongo==3.4.0
+pymongo==3.11.2
 pyopenssl>=17.5.0
 python-dateutil==2.6.0
 python-digitalocean==1.13.2
@@ -57,3 +57,4 @@ tweepy==3.5.0
 # -e git://github.com/tweepy/tweepy.git#egg=tweepy
 xlsxwriter==0.9.6
 urllib3==1.26.2
+virtualenvwrapper==4.8.4
