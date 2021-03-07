@@ -291,6 +291,8 @@
     <string name="settings_enable_offline_sum">Periodically fetch stories in background</string>
     <string name="settings_enable_image_prefetch">Download Images</string>
     <string name="settings_enable_image_prefetch_sum">Pre-fetch images for offline reading</string>
+    <string name="settings_enable_text_prefetch">Download Text</string>
+    <string name="settings_enable_text_prefetch_sum">Pre-fetch text for offline reading</string>
     <string name="settings_keep_old_stories">Keep Stories after Reading</string>
     <string name="settings_keep_old_stories_sum">Disable to reduce storage usage</string>
 
