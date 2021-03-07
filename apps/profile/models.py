@@ -288,23 +288,24 @@ class Profile(models.Model):
         oldest_recent_payment_date = None
         free_lifetime_premium = False
         for payment in payment_history:
+            # Don't use free gift premiums in calculation for expiration
             if payment.payment_amount == 0:
+                logging.user(self.user, "~BY~SN~FWFree lifetime premium")
                 free_lifetime_premium = True
+                continue
+
+            # Only update exiration if payment in the last year
             if payment.payment_date > last_year:
                 recent_payments_count += 1
                 if not oldest_recent_payment_date or payment.payment_date < oldest_recent_payment_date:
                     oldest_recent_payment_date = payment.payment_date
         
-        if free_lifetime_premium:
-            logging.user(self.user, "~BY~SN~FWFree lifetime premium")
-            self.premium_expire = None
-            self.save()
-        elif oldest_recent_payment_date:
+        if oldest_recent_payment_date:
             new_premium_expire = (oldest_recent_payment_date +
                                   datetime.timedelta(days=365*recent_payments_count))
             # Only move premium expire forward, never earlier. Also set expiration if not premium.
             if (force_expiration or 
-                (set_premium_expire and not self.premium_expire) or 
+                (set_premium_expire and not self.premium_expire and not free_lifetime_premium) or 
                 (self.premium_expire and new_premium_expire > self.premium_expire)):
                 self.premium_expire = new_premium_expire
                 self.save()
@@ -315,6 +316,10 @@ class Profile(models.Model):
         if (set_premium_expire and not self.is_premium and
             (not self.premium_expire or self.premium_expire > datetime.datetime.now())):
             self.activate_premium()
+
+    def preference_value(self, key, default=None):
+        preferences = json.decode(self.preferences)
+        return preferences.get(key, default)
 
     @classmethod
     def reimport_stripe_history(cls, limit=10, days=7, starting_after=None):
@@ -487,6 +492,8 @@ class Profile(models.Model):
     @property
     def latest_paypal_email(self):
         ipn = PayPalIPN.objects.filter(custom=self.user.username)
+        if not len(ipn):
+            ipn = PayPalIPN.objects.filter(payer_email=self.user.email)
         if not len(ipn):
             return
         
@@ -1090,6 +1097,12 @@ def paypal_signup(sender, **kwargs):
         user = User.objects.get(username__iexact=ipn_obj.custom)
     except User.DoesNotExist:
         user = User.objects.get(email__iexact=ipn_obj.payer_email)
+    except User.DoesNotExist:
+        logging.debug(" ---> Paypal subscription not found during flagging: %s/%s" % (
+            ipn_obj.payer_email,
+            ipn_obj.custom))    
+        return {"code": -1, "message": "User doesn't exist."}
+
     logging.user(user, "~BC~SB~FBPaypal subscription signup")
     try:
         if not user.email:
@@ -1108,6 +1121,12 @@ def paypal_payment_history_sync(sender, **kwargs):
         user = User.objects.get(username__iexact=ipn_obj.custom)
     except User.DoesNotExist:
         user = User.objects.get(email__iexact=ipn_obj.payer_email)
+    except User.DoesNotExist:
+        logging.debug(" ---> Paypal subscription not found during flagging: %s/%s" % (
+            ipn_obj.payer_email,
+            ipn_obj.custom))
+        return {"code": -1, "message": "User doesn't exist."}
+
     logging.user(user, "~BC~SB~FBPaypal subscription payment")
     try:
         user.profile.setup_premium_history()
@@ -1122,25 +1141,18 @@ def paypal_payment_was_flagged(sender, **kwargs):
     except User.DoesNotExist:
         if ipn_obj.payer_email:
             user = User.objects.get(email__iexact=ipn_obj.payer_email)
+    except User.DoesNotExist:
+        logging.debug(" ---> Paypal subscription not found during flagging: %s/%s" % (
+            ipn_obj.payer_email,
+            ipn_obj.custom))
+        return {"code": -1, "message": "User doesn't exist."}
+        
     try:
         user.profile.setup_premium_history()
         logging.user(user, "~BC~SB~FBPaypal subscription payment flagged")
     except:
         return {"code": -1, "message": "User doesn't exist."}
 invalid_ipn_received.connect(paypal_payment_was_flagged)
-
-def paypal_recurring_payment_history_sync(sender, **kwargs):
-    ipn_obj = sender
-    try:
-        user = User.objects.get(username__iexact=ipn_obj.custom)
-    except User.DoesNotExist:
-        user = User.objects.get(email__iexact=ipn_obj.payer_email)
-    logging.user(user, "~BC~SB~FBPaypal subscription recurring payment")
-    try:
-        user.profile.setup_premium_history()
-    except:
-        return {"code": -1, "message": "User doesn't exist."}
-valid_ipn_received.connect(paypal_recurring_payment_history_sync)
 
 def stripe_signup(sender, full_json, **kwargs):
     stripe_id = full_json['data']['object']['customer']
@@ -1213,7 +1225,6 @@ class MEmailUnsubscribe(mongo.Document):
         'indexes': ['user_id', 
                     {'fields': ['user_id', 'email_type'], 
                      'unique': True,
-                     'types': False,
                     }],
     }
     

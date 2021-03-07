@@ -45,12 +45,16 @@ class DBProfilerMiddleware:
             random.random() < .01):
             request.activated_segments.append('db_profiler')
             connection.use_debug_cursor = True
+            setattr(settings, 'ORIGINAL_DEBUG', settings.DEBUG)
+            settings.DEBUG = True
 
     def process_celery(self): 
         setattr(self, 'activated_segments', [])        
         if random.random() < .01:
             self.activated_segments.append('db_profiler')
             connection.use_debug_cursor = True
+            setattr(settings, 'ORIGINAL_DEBUG', settings.DEBUG)
+            settings.DEBUG = True
             return self
     
     def process_exception(self, request, exception):
@@ -134,10 +138,18 @@ class SQLLogToConsoleMiddleware:
                 'redis': sum([float(q['time']) for q in queries if q.get('redis')]),
             }
             setattr(request, 'sql_times_elapsed', times_elapsed)
+        else:
+            print(" ***> No queries")
+        if not getattr(settings, 'ORIGINAL_DEBUG', settings.DEBUG):
+            settings.DEBUG = False
+
         return response
         
     def process_celery(self, profiler):
         self.process_response(profiler, None)
+
+        if not getattr(settings, 'ORIGINAL_DEBUG', settings.DEBUG):
+            settings.DEBUG = False
 
 SIMPSONS_QUOTES = [
     ("Homer", "D'oh."),

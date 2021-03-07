@@ -9088,6 +9088,7 @@ form.opml_import_form input {
     opacity: 0;
 }
 
+.NB-modal-notifications .NB-preference-label,
 .NB-modal-feed-settings .NB-preference-label,
 .NB-modal-folder-settings .NB-preference-label {
     float: left;
@@ -9095,6 +9096,7 @@ form.opml_import_form input {
     width: 102px;
     clear: both;
 }
+.NB-modal-notifications .NB-preference-options,
 .NB-modal-feed-settings .NB-preference-options,
 .NB-modal-folder-settings .NB-preference-options {
     margin: 6px 0;
@@ -9127,15 +9129,10 @@ form.opml_import_form input {
     width: 100%;
 }
 .NB-modal-notifications .NB-preference-label {
-    float: left;
-    margin: 10px 0;
-    width: 102px;
-    clear: both;
+    clear: none;
 }
 .NB-modal-notifications .NB-preference-options {
-    margin: 6px 0;
-    float: left;
-    overflow: hidden;
+    float: right;
 }
 .NB-modal-notifications .NB-modal-section-site {
     margin: 12px 0 0;
@@ -9995,6 +9992,7 @@ form.opml_import_form input {
     padding-right: 12px;
 }
 
+.NB-modal-notifications .NB-preference,
 .NB-modal-preferences .NB-preference {
   overflow: hidden;
   margin: 12px 0 0;

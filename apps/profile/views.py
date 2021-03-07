@@ -567,9 +567,13 @@ def upgrade_premium(request):
 @json.json_view
 def never_expire_premium(request):
     user_id = request.POST.get('user_id')
+    years = int(request.POST.get('years', 0))
     user = User.objects.get(pk=user_id)
     if user.profile.is_premium:
-        user.profile.premium_expire = None
+        if years:
+            user.profile.premium_expire = datetime.datetime.now() + datetime.timedelta(days=365*years)
+        else:
+            user.profile.premium_expire = None
         user.profile.save()
         return {'code': 1}
     
@@ -706,8 +710,8 @@ def email_optout(request):
 @json.json_view
 def ios_subscription_status(request):
     logging.debug(" ---> iOS Subscription Status: %s" % request.body)
-    
-    subject = "iOS Subscription Status"
+    data = json.decode(request.body)
+    subject = "iOS Subscription Status: %s" % data.get('notification_type', "[missing]")
     message = """%s""" % (request.body)
     mail_admins(subject, message)
     
