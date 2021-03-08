@@ -15,4 +15,5 @@
     - {role: 'consul', tags: 'consul'}
     - {role: 'consul-client', tags: 'consul'}
     - {role: 'web', tags: 'web'}
+    - {role: 'node', tags: 'node'}
     - {role: 'nginx', tags: 'nginx'}

@@ -7,9 +7,10 @@
   # ignore_errors: yes
 
 - name: Copy zshrc
-  copy: 
-    src: zshrc.txt 
+  template: 
+    src: zshrc.txt.j2
     dest: /home/nb/.zshrc
+  tags: zsh
 
 - name: Installing Zsh and git
   apt: pkg=zsh,git state=latest
