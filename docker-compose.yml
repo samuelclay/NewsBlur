@@ -24,7 +24,7 @@ services:
     expose:
       - '8000'
     # only use gunicorn if the TEST env variable is not "True"
-    command: bash -c 'if [ -z "$${TEST}" ] ; then echo "starting test env"; else gunicorn --bind :8000 newsblur_web.wsgi:application; fi'
+    command: bash -c 'if [[ -z "${TEST}" && "${TEST}" = "True"  ]] ; then echo "starting test env"; else gunicorn --bind :8000 newsblur_web.wsgi:application; fi'
     volumes: 
       - app-files:/srv/newsblur
   nginx:
