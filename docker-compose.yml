@@ -62,7 +62,7 @@ services:
   db_redis:
     image: redis:3.2.6
     ports:
-      - '6579:6579'
+      - 6579:6579
     container_name: db_redis
     volumes:
       - ./docker/volumes/redis:/data
@@ -230,6 +230,9 @@ services:
       - nginx
       - newsblur_web
       - db_redis
+      - db_postgres
+      - db_elasticsearch
+      - db_mongo
     ports:
       - 80:80
       - 443:443
