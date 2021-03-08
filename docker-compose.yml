@@ -10,17 +10,12 @@ services:
       - DOCKERBUILD=True
     stdin_open: true
     tty: true
-    links:
-      - db_mongo
-      - postgres
-      - elasticsearch
-      - redis
     restart: always
     depends_on:
       - db_mongo
-      - postgres
-      - redis
-      - elasticsearch
+      - db_postgres
+      - db_redis
+      - db_elasticsearch
     ulimits:
       nproc: 10000
       nofile:
@@ -40,10 +35,10 @@ services:
     depends_on:
     - newsblur_web
     - favicons
-    - postgres
-    - redis
+    - db_postgres
+    - db_redis
     - db_mongo
-    - elasticsearch
+    - db_elasticsearch
     - original_pages
     - original_text
     - node_websocket
@@ -53,8 +48,8 @@ services:
     - ./docker/nginx/nginx.local.conf:/etc/nginx/conf.d/nginx.conf
     - app-files:/srv/newsblur
 
-  postgres:
-    container_name: postgres
+  db_postgres:
+    container_name: db_postgres
     image: postgres:13.1
     environment:
       - POSTGRES_USER=newsblur
@@ -64,11 +59,11 @@ services:
     volumes:
       - ./docker/volumes/postgres:/var/lib/postgresql/data
 
-  redis:
+  db_redis:
     image: redis:3.2.6
     ports:
       - '6579:6579'
-    container_name: redis
+    container_name: db_redis
     volumes:
       - ./docker/volumes/redis:/data
       - ./config/redis.conf:/usr/local/etc/redis_server.conf
@@ -76,8 +71,8 @@ services:
       - ./docker/volumes/redis.var.lib:/var/lib/redis
     command: redis-server --port 6579
 
-  elasticsearch:
-    container_name: elasticsearch
+  db_elasticsearch:
+    container_name: db_elasticsearch
     image: elasticsearch:2.4.4
     ports:
       - '9200:9200'
@@ -124,7 +119,7 @@ services:
       - 3030:3030
     command: node favicons.js
     depends_on: 
-      - postgres
+      - db_postgres
     volumes: 
       - node-files:/usr/src/app
 
@@ -234,7 +229,7 @@ services:
     depends_on: 
       - nginx
       - newsblur_web
-      - redis
+      - db_redis
     ports:
       - 80:80
       - 443:443
