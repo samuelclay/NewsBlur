@@ -18,7 +18,7 @@ from utils.view_functions import is_true
 from utils.story_functions import truncate_chars
 from utils import log as logging
 from utils import mongoengine_fields
-from apns2.errors import BadDeviceToken
+from apns2.errors import BadDeviceToken, Unregistered
 from apns2.client import APNsClient
 from apns2.payload import Payload
 from bs4 import BeautifulSoup, Tag
@@ -265,7 +265,7 @@ class MUserFeedNotification(mongo.Document):
                                      })
             try:
                 apns.send_notification(token, payload, topic="com.newsblur.NewsBlur")
-            except BadDeviceToken:
+            except (BadDeviceToken, Unregistered):
                 logging.user(user, '~BMiOS token expired: ~FR~SB%s' % (token[:50]))
             else:
                 confirmed_ios_tokens.append(token)
