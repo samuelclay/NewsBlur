@@ -86,6 +86,8 @@ deploy_task:
 	- ansible-playbook ansible/deploy_task.yml
 deploy_www:
 	- ansible-playbook ansible/deploy_www.yml
+deploy_work:
+	- ansible-playbook ansible/deploy_work.yml
 
 # Provision
 app:
