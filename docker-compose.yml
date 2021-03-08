@@ -249,10 +249,10 @@ volumes:
   app-files:
     driver_opts:
       type: nfs
-      device: $PWD
+      device: /${PWD}
       o: bind
   node-files:
     driver_opts:
       type: nfs
-      device: $PWD/node
+      device: /${PWD}/node
       o: bind
