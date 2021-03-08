@@ -209,17 +209,6 @@ services:
       - app-files:/srv/newsblur
     user: $CURRENT_UID:$CURRENT_GID
 
-  monitor:
-    container_name: monitor
-    image: newsblur/newsblur_python3 
-    command: bash -c "python /srv/newsblur/flask_monitor/db_monitor.py"
-    environment: 
-      - DOCKERBUILD=True
-    volumes:
-      - app-files:/srv/newsblur
-    ports:
-      - 5579:5579
-
   haproxy:
     domainname: 'nb.local.com'
     container_name: haproxy
