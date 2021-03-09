@@ -21,5 +21,6 @@
     restart_policy: unless-stopped
     volumes:
       - /srv/newsblur:/srv/newsblur
+    ports: 
+      - 5000:5579
     network_mode: host
-
