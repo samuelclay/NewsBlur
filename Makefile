@@ -64,6 +64,8 @@ plan:
 	terraform -chdir=terraform plan 
 apply:
 	terraform -chdir=terraform apply
+generate:
+	- ./ansible/utils/generate.py
 
 # Docker
 build_web:
