@@ -99,12 +99,6 @@ backend app_push
     option httpchk GET /_haproxychk
     server-template app-push 1 _app-push._tcp.service.nyc1.consul:8000 check inter 3000ms resolvers consul resolve-opts allow-dup-ip
 
-backend work
-    balance roundrobin
-    option httpchk GET http://monitor.service.nyc1.consul:5000/work_check/celeryd_work_queue
-    http-check expect rstatus 200|503|301
-    server-template work 1 _task-work._tcp.service.nyc1.consul:82 check inter 30000ms resolvers consul resolve-opts allow-dup-ip
-
 backend node_images
     option httpchk HEAD /sc,sN1megONJiGNy-CCvqzVPTv-TWRhgSKhFlf61XAYESl4=/http:/samuelclay.com/static/images/2019%20-%20Cuba.jpg
     http-check expect rstatus 200|301
@@ -141,7 +135,7 @@ backend mongo
     server-template mongo 4 _db-mongo._tcp.service.nyc1.consul:27017 check inter 2000ms resolvers consul resolve-opts allow-dup-ip init-addr none
 
 backend db_redis_user
-    option httpchk GET http://monitor:5000/db_check/redis
+    option httpchk GET http://monitor.service.nyc1.consul:5000/db_check/redis
     server-template db-redis-user 1 _db-redis-user._tcp.service.nyc1.consul:6379 check inter 2000ms resolvers consul resolve-opts allow-dup-ip init-addr none
 
 backend db_redis_story
