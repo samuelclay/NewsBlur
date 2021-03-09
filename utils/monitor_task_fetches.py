@@ -34,6 +34,8 @@ def main():
     if feeds_fetched < 5000000:
         if redis_task_fetches > 0 and feeds_fetched <= (redis_task_fetches - FETCHES_DROP_AMOUNT):
             failed = True
+        elif redis_task_fetches <= 0:
+            failed = True
 
     if failed:
         requests.post(
