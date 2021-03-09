@@ -5066,7 +5066,7 @@
             } else if (force || !this.socket || !this.socket.connected) {
                 var server = window.location.protocol + '//' + window.location.hostname;
                 var https = _.string.startsWith(window.location.protocol, 'https');
-                var local = _.any(['nb.local.com'], function(hostname) {
+                var local = false && _.any(['nb.local.com'], function(hostname) {
                     return _.string.contains(window.location.host, hostname);
                 });
                 var port = https ? 443 : 80;
