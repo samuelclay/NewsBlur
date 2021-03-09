@@ -4,7 +4,7 @@ services:
   newsblur_web:
     hostname: nb.com
     container_name: newsblur_web
-    image: newsblur/newsblur_python3
+    image: newsblur/newsblur_python3:latest
     dns_search:
       - nb.com
     environment: 
@@ -98,7 +98,7 @@ services:
     ports:
       - 3060:3060
     volumes: 
-      - node-files:/usr/src/app
+      - node-files:/srv
  
   original_text:
     image: newsblur/newsblur_node
@@ -109,7 +109,7 @@ services:
       - 4040:4040
     command: node original_text.js
     volumes: 
-      - node-files:/usr/src/app
+      - node-files:/srv
   
   favicons:
     image: newsblur/newsblur_node
@@ -123,7 +123,7 @@ services:
     depends_on: 
       - db_postgres
     volumes: 
-      - node-files:/usr/src/app
+      - node-files:/srv
 
   node_websocket:
     container_name: node_websocket
@@ -135,7 +135,7 @@ services:
     ports:
       - 8888:8888
     volumes: 
-      - node-files:/usr/src/app
+      - node-files:/srv
   
   celerybeat:
     container_name: celerybeat
