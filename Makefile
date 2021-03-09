@@ -94,13 +94,13 @@ deploy_work:
 	- ansible-playbook ansible/deploy_work.yml
 
 # Provision
-app:
+setup_app:
 	- ansible-playbook ansible/provision.yml -l app --tags web
-node:
+setup_node:
 	- ansible-playbook ansible/provision.yml -l node --tags node
-www:
+setup_www:
 	- ansible-playbook ansible/provision.yml -l haproxy --tags haproxy
-celery:
+setup_celery:
 	- ansible-playbook ansible/provision.yml -l task --tags celery
 firewall:
 	- ansible-playbook ansible/provision.yml --tags firewall -l db
