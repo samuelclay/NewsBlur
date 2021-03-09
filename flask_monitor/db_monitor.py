@@ -105,7 +105,11 @@ def db_check_redis():
     except:
         abort(502)
     
-    randkey = r.randomkey()
+    try:
+        randkey = r.randomkey()
+    except:
+        abort(504)
+
     if randkey:
         return str(randkey)
     else:
@@ -118,7 +122,11 @@ def db_check_redis_story():
     except:
         abort(502)
     
-    randkey = r.randomkey()
+    try:
+        randkey = r.randomkey()
+    except:
+        abort(504)
+
     if randkey:
         return str(randkey)
     else:
@@ -131,7 +139,11 @@ def db_check_redis_pubsub():
     except:
         abort(502)
     
-    pubsub_numpat = r.pubsub_numpat()
+    try:
+        pubsub_numpat = r.pubsub_numpat()
+    except:
+        abort(504)
+
     if pubsub_numpat:
         return str(pubsub_numpat)
     else:
@@ -146,7 +158,11 @@ def db_check_redis_sessions():
     except:
         abort(502)
     
-    randkey = r.randomkey()
+    try:
+        randkey = r.randomkey()
+    except:
+        abort(504)
+
     if randkey:
         return str(randkey)
     else:
