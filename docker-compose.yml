@@ -160,9 +160,7 @@ services:
   haproxy:
     domainname: 'nb.local.com'
     container_name: haproxy
-    build:
-      context: .
-      dockerfile: docker/haproxy/Dockerfile
+    image: haproxy:1.8.22
     depends_on: 
       - nginx
       - newsblur_web
