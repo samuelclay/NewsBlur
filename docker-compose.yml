@@ -25,7 +25,7 @@ services:
     expose:
       - 8000
     # only use gunicorn if the TEST env variable is not "True"
-    command: bash -c 'if [[ -z "${TEST}" && "${TEST}" = "True"  ]] ; then echo "starting test env"; else gunicorn --bind :8000 newsblur_web.wsgi:application; fi'
+    entrypoint: newsblur_web/entrypoint.sh
     volumes: 
       - app-files:/srv/newsblur
   
@@ -56,6 +56,11 @@ services:
     environment:
       - POSTGRES_USER=newsblur
       - POSTGRES_PASSWORD=newsblur
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     ports:
       - 5434:5432
     volumes:
