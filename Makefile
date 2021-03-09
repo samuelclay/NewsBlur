@@ -30,7 +30,7 @@ debug:
 
 # brings down containers
 nb-down:
-	- docker-compose -f docker-compose.dev.yml down
+	- docker-compose -f docker-compose.yml down
 
 # runs tests
 test:
@@ -81,6 +81,7 @@ push_monitor: build_monitor
 	- docker push newsblur/newsblur_monitor
 push_images: push_web push_node push_monitor
 push: build_images push_images
+
 # Tasks
 deploy:
 	- ansible-playbook ansible/deploy_app.yml
