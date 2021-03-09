@@ -62,7 +62,8 @@ def opml_upload(request):
                 feeds = UserSubscription.objects.filter(user=request.user).values()
                 payload = dict(folders=folders, feeds=feeds)
                 logging.user(request, "~FR~SBOPML Upload: ~SK%s~SN~SB~FR feeds" % (len(feeds)))
-            
+                UserSubscription.queue_new_feeds(request.user)
+                UserSubscription.refresh_stale_feeds(request.user, exclude_new=True)
         else:
             message = "Attach an .opml file."
             code = -1

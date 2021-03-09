@@ -18,3 +18,5 @@ def ProcessOPML(user_id):
     user.profile.send_upload_opml_finished_email(feed_count)
     logging.user(user, "~FR~SBOPML upload (task): ~SK%s~SN~SB~FR feeds" % (feed_count))
 
+    UserSubscription.queue_new_feeds(user)
+    UserSubscription.refresh_stale_feeds(user, exclude_new=True)
