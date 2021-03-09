@@ -1,5 +1,6 @@
 version: '3'
 services:
+
   newsblur_web:
     hostname: nb.com
     container_name: newsblur_web
@@ -22,11 +23,12 @@ services:
         soft: 10000
         hard: 10000
     expose:
-      - '8000'
+      - 8000
     # only use gunicorn if the TEST env variable is not "True"
     command: bash -c 'if [[ -z "${TEST}" && "${TEST}" = "True"  ]] ; then echo "starting test env"; else gunicorn --bind :8000 newsblur_web.wsgi:application; fi'
     volumes: 
       - app-files:/srv/newsblur
+  
   nginx:
     container_name: nginx
     image: nginx:1.19.6
@@ -55,7 +57,7 @@ services:
       - POSTGRES_USER=newsblur
       - POSTGRES_PASSWORD=newsblur
     ports:
-      - '5434:5432'
+      - 5434:5432
     volumes:
       - ./docker/volumes/postgres:/var/lib/postgresql/data
 
@@ -75,7 +77,7 @@ services:
     container_name: db_elasticsearch
     image: elasticsearch:2.4.4
     ports:
-      - '9200:9200'
+      - 9200:9200
     volumes:
       - ./docker/volumes/elasticsearch:/usr/share/elasticsearch/data
 
@@ -98,6 +100,7 @@ services:
       - 3060:3060
     volumes: 
       - node-files:/usr/src/app
+ 
   original_text:
     image: newsblur/newsblur_node
     container_name: node_original_text
@@ -145,69 +148,15 @@ services:
       - app-files:/srv/newsblur
       - ./config:/etc/supervisor/conf.d/
 
-  
-  celeryd:
-    container_name: celeryd
+  task_celery:
+    container_name: task_celery
     image: newsblur/newsblur_python3
-    command: "celery worker -A newsblur_web --loglevel=INFO -Q new_feeds,push_feeds,update_feeds"
+    command: "celery worker -A newsblur_web --loglevel=INFO"
     volumes:
       - app-files:/srv/newsblur
     environment: 
       - DOCKERBUILD=True
     user: "${CURRENT_UID}:${CURRENT_GID}"
-
-  celeryd_beat:
-    container_name: celeryd_beat
-    image: newsblur/newsblur_python3
-    command: "celery worker -A newsblur_web --loglevel=INFO -Q cron_queue -c 3"
-    environment: 
-      - DOCKERBUILD=True
-    volumes:
-      - app-files:/srv/newsblur
-    user: "${CURRENT_UID}:${CURRENT_GID}"
-
-  celeryd_beat_feeds:
-    container_name: celeryd_beat_feeds
-    image: newsblur/newsblur_python3
-    command: "celery worker -A newsblur_web --loglevel=INFO -Q beat_feeds_task -c 1"
-    environment: 
-      - DOCKERBUILD=True
-    volumes:
-      - app-files:/srv/newsblur
-    user: "${CURRENT_UID}:${CURRENT_GID}"
-
-  celeryd_news:
-    container_name: celeryd_news
-    image: newsblur/newsblur_python3
-    command: "celery worker -A newsblur_web --loglevel=INFO -Q new_feeds,push_feeds"
-    environment: 
-      - DOCKERBUILD=True
-    volumes:
-      - app-files:/srv/newsblur
-    user: "${CURRENT_UID}:${CURRENT_GID}"
-
-  celeryd_search_indexer:
-    container_name: celeryd_search_indexer
-    image: newsblur/newsblur_python3
-    command: "celery worker -A newsblur_web --loglevel=INFO -Q search_indexer -c 4"
-    environment: 
-      - DOCKERBUILD=True
-    volumes:
-      - app-files:/srv/newsblur
-
-    user: $CURRENT_UID:$CURRENT_GID
-
-  celeryd_work_queue:
-    container_name: celeryd_work_queue
-    image: newsblur/newsblur_python3
-    command: bash -c "celery worker -A newsblur_web --loglevel=INFO -Q work_queue"
-    ports:
-      - 82:82
-    environment: 
-      - DOCKERBUILD=True
-    volumes:
-      - app-files:/srv/newsblur
-    user: $CURRENT_UID:$CURRENT_GID
 
   haproxy:
     domainname: 'nb.local.com'
