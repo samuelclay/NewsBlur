@@ -67,11 +67,10 @@ services:
       - 6579:6579
     container_name: db_redis
     volumes:
-      - ./docker/volumes/redis:/data
-      - ./config/redis.conf:/usr/local/etc/redis_server.conf
-      - ./config/redis_docker.conf:/etc/redis_server.conf
-      - ./docker/volumes/redis.var.lib:/var/lib/redis
-    command: redis-server --port 6579
+      - ./config/redis.conf:/etc/redis/redis.conf
+      - ./config/redis_docker.conf:/etc/redis/redis_server.conf
+      - ./docker/volumes/redis:/var/lib/redis
+    command: redis-server /etc/redis/redis.conf --port 6579
 
   db_elasticsearch:
     container_name: db_elasticsearch
