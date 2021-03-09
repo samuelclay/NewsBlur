@@ -63,6 +63,8 @@
     will be redirected to https://localhost/profile/stripe_form. Hit
     the back button a few times, and you will be inside the app.
 
+    Note: If you are using Google Chrome you will be warned that you are using a self signed certificate. In order to get around this warning you must type "thisisunsafe" as per https://dblazeski.medium.com/chrome-bypass-net-err-cert-invalid-for-development-daefae43eb12
+
 ## Making docker-compose work with your database
 To make docker-compose work with your database, upgrade your local database to the docker-compose version and then volumize the database data path by changing the `./docker/volumes/` part of the volume directive in the service to point to your local database's data directory.
 
