@@ -70,13 +70,17 @@ build_web:
 	- docker image build . --file=docker/newsblur_base_image.Dockerfile --tag=newsblur/newsblur_python3
 build_node: 
 	- docker image build . --file=docker/node/Dockerfile --tag=newsblur/newsblur_node
-build: build_web build_node
-web_image: build_web
+build_monitor: 
+	- docker image build . --file=docker/monitor/Dockerfile --tag=newsblur/newsblur_monitor
+build_images: build_web build_node build_monitor
+push_web: build_web
 	- docker push newsblur/newsblur_python3
-node_image: build_node
+push_node: build_node
 	- docker push newsblur/newsblur_node
-images: build node_image web_image
-
+push_monitor: build_monitor
+	- docker push newsblur/newsblur_monitor
+push_images: push_web push_node push_monitor
+push: build_images push_images
 # Tasks
 deploy:
 	- ansible-playbook ansible/deploy_app.yml
