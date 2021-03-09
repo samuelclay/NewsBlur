@@ -8,7 +8,7 @@
         "port": 27017,
         "checks": [{
             "id": "mongo-analytics-ping",
-            "http": "http://127.0.0:5000/db_check/mongo",
+            "http": "http://{{ ansible_ssh_host }}:5579/db_check/mongo",
             "interval": "15s"
         }]
     }
