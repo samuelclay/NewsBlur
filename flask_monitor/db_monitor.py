@@ -27,7 +27,7 @@ def db_check_postgres():
         conn = psycopg2.connect(connect_params)
     except:
         print(" ---> Postgres can't connect to the database: %s" % connect_params)
-        abort(502)
+        abort(503)
 
     cur = conn.cursor()
     cur.execute("""SELECT id FROM feeds ORDER BY feeds.id DESC LIMIT 1""")
@@ -35,7 +35,7 @@ def db_check_postgres():
     for row in rows:
         return str(row[0])
     
-    abort(404)
+    abort(504)
 
 @app.route("/db_check/mysql")
 def db_check_mysql():
@@ -55,7 +55,7 @@ def db_check_mysql():
                                db=settings.DATABASES['default']['NAME'])
     except:
         print(" ---> Mysql can't connect to the database: %s" % connect_params)
-        abort(502)
+        abort(503)
 
     cur = conn.cursor()
     cur.execute("""SELECT id FROM feeds ORDER BY feeds.id DESC LIMIT 1""")
@@ -63,7 +63,7 @@ def db_check_mysql():
     for row in rows:
         return str(row[0])
     
-    abort(404)
+    abort(504)
 
 @app.route("/db_check/mongo")
 def db_check_mongo():
@@ -71,11 +71,11 @@ def db_check_mongo():
         client = pymongo.MongoClient('mongodb://%s' % LOCAL_HOST)
         db = client.newsblur
     except:
-        abort(502)
+        abort(503)
     
     stories = db.stories.count()
     if not stories:
-        abort(503)
+        abort(504)
     
     status = client.admin.command('replSetGetStatus')
     members = status['members']
@@ -103,7 +103,7 @@ def db_check_redis():
     try:
         r = redis.Redis(LOCAL_HOST, db=0)
     except:
-        abort(502)
+        abort(503)
     
     try:
         randkey = r.randomkey()
@@ -113,14 +113,14 @@ def db_check_redis():
     if randkey:
         return str(randkey)
     else:
-        abort(404)
+        abort(505)
 
 @app.route("/db_check/redis_story")
 def db_check_redis_story():
     try:
         r = redis.Redis(LOCAL_HOST, db=1)
     except:
-        abort(502)
+        abort(503)
     
     try:
         randkey = r.randomkey()
@@ -130,14 +130,14 @@ def db_check_redis_story():
     if randkey:
         return str(randkey)
     else:
-        abort(404)
+        abort(505)
 
 @app.route("/db_check/redis_pubsub")
 def db_check_redis_pubsub():
     try:
         r = redis.Redis(redis_host, db=1)
     except:
-        abort(502)
+        abort(503)
     
     try:
         pubsub_numpat = r.pubsub_numpat()
@@ -147,7 +147,7 @@ def db_check_redis_pubsub():
     if pubsub_numpat:
         return str(pubsub_numpat)
     else:
-        abort(404)
+        abort(505)
 
     
 
@@ -156,7 +156,7 @@ def db_check_redis_sessions():
     try:
         r = redis.Redis(LOCAL_HOST, db=5)
     except:
-        abort(502)
+        abort(503)
     
     try:
         randkey = r.randomkey()
@@ -166,14 +166,14 @@ def db_check_redis_sessions():
     if randkey:
         return str(randkey)
     else:
-        abort(404)
+        abort(505)
 
 @app.route("/db_check/elasticsearch")
 def db_check_elasticsearch():
     try:
         conn = pyes.ES(LOCAL_HOST)
     except:
-        abort(502)
+        abort(503)
     
     if conn.indices.exists_index('feeds-index'):
         return str("Index exists, but didn't try search")
@@ -184,7 +184,7 @@ def db_check_elasticsearch():
         # else:
         #     abort(404)
     else:
-        abort(404)    
+        abort(504)    
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5579)
