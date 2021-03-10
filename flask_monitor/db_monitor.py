@@ -187,4 +187,5 @@ def db_check_elasticsearch():
         abort(504)    
 
 if __name__ == "__main__":
+    print(" ---> Starting NewsBlur DB monitor flask server...")
     app.run(host="0.0.0.0", port=5579)
