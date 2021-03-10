@@ -4,5 +4,5 @@
   "enable_syslog": false,
   "start_join": ["{{ consul_manager_ip.stdout|trim }}"],
   "bind_addr": "{% raw %}{{ GetAllInterfaces | include \"name\" \"^eth\" | include \"flags\" \"forwardable|up\" | attr \"address\" }}{% endraw %}",
-  "ui": true
+  "ui_config": {"enabled": true}
 }

@@ -3,7 +3,7 @@
   become: yes
   docker_container:
     name: redis
-    image: redis:3.2.6
+    image: redis:6.2.1
     state: started
     ports:
       - 6379:6379
