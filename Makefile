@@ -95,6 +95,8 @@ deploy_www:
 	- ansible-playbook ansible/deploy_www.yml
 deploy_work:
 	- ansible-playbook ansible/deploy_work.yml
+deploy_monitor:
+	- ansible-playbook ansible/deploy_monitor.yml
 
 # Provision
 setup_app:
