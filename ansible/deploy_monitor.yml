@@ -15,4 +15,4 @@
     
     - name: Reload monitor
       become: yes
-      command: "docker kill --signal=HUP monitor"
+      command: "docker restart monitor"
