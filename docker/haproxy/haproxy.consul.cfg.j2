@@ -77,7 +77,7 @@ backend nginx
     balance roundrobin
     option httpchk GET /_nginxchk
     http-check expect rstatus 200|503
-    server-template nginx 5 _nginx._tcp.service.nyc1.consul:80 check inter 3000ms resolvers consul resolve-opts allow-dup-ip
+    server-template app-nginx 5 _app-nginx._tcp.service.nyc1.consul:80 check inter 3000ms resolvers consul resolve-opts allow-dup-ip
 
 backend app_django
     balance roundrobin
@@ -127,32 +127,40 @@ backend node_page
     server-template node-page 1 _node-page._tcp.service.nyc1.consul:3060 check inter 3000ms resolvers consul resolve-opts allow-dup-ip
 
 backend postgres
-    option httpchk GET http://monitor.service.nyc1.consul:5000/db_check/postgres
-    server-template postgresql 1 _db-postgres._tcp.service.nyc1.consul:5432 check inter 30000ms resolvers consul resolve-opts allow-dup-ip init-addr none
+    option httpchk GET /db_check/postgres
+    server db-postgres db-postgres.node.nyc1.consul:5579 check inter 30000ms resolvers consul resolve-opts allow-dup-ip init-addr none
 
 backend mongo
-    option httpchk GET http://monitor.service.nyc1.consul:5000/db_check/mongo
-    server-template mongo 4 _db-mongo._tcp.service.nyc1.consul:27017 check inter 2000ms resolvers consul resolve-opts allow-dup-ip init-addr none
+    option httpchk GET /db_check/mongo
+    server-template db-mongo 6 _db-mongo._tcp.service.nyc1.consul:5579 check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
+
+backend mongo5000
+    option httpchk GET /db_check/mongo
+    server-template mongo-db2x 6 _db-mongo._tcp.service.nyc1.consul:5000 check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
+
+backend mongo_analytics
+    option httpchk GET /db_check/mongo
+    server db-mongo-analytics db-mongo-analytics.node.nyc1.consul:5579 check inter 2000ms resolvers consul resolve-opts allow-dup-ip init-addr none
 
 backend db_redis_user
-    option httpchk GET http://monitor.service.nyc1.consul:5000/db_check/redis
-    server-template db-redis-user 1 _db-redis-user._tcp.service.nyc1.consul:6379 check inter 2000ms resolvers consul resolve-opts allow-dup-ip init-addr none
+    option httpchk GET /db_check/redis
+    server db-redis-user db-redis-user.node.nyc1.consul:5579 check inter 2000ms resolvers consul resolve-opts allow-dup-ip init-addr none
 
 backend db_redis_story
-    option httpchk GET http://monitor.service.nyc1.consul:5000/db_check/redis_story
-    server-template db-redis-story 1 _db-redis-story._tcp.service.nyc1.consul:6379 check inter 2000ms resolvers consul resolve-opts allow-dup-ip init-addr none
+    option httpchk GET /db_check/redis_story
+    server db-redis-story db-redis-story.node.nyc1.consul:5579 check inter 2000ms resolvers consul resolve-opts allow-dup-ip init-addr none
 
 backend db_redis_sessions
-    option httpchk GET http://monitor.service.nyc1.consul:5000/db_check/redis_sessions
-    server-template db-redis-sessions 1 _db-redis-sessions._tcp.service.nyc1.consul:6379 check inter 2000ms resolvers consul resolve-opts allow-dup-ip init-addr none
+    option httpchk GET /db_check/redis_sessions
+    server db-redis-sessions db-redis-sessions.node.nyc1.consul:5579 check inter 2000ms resolvers consul resolve-opts allow-dup-ip init-addr none
 
 backend db_redis_pubsub
-    option httpchk GET http://monitor.service.nyc1.consul:5000/db_check/redis_pubsub
-    server-template db-redis-pubsub 1 _db-redis-pubsub._tcp.service.nyc1.consul:6379 check inter 2000ms resolvers consul resolve-opts allow-dup-ip init-addr none
+    option httpchk GET /db_check/redis_pubsub
+    server db-redis-pubsub db-redis-pubsub.node.nyc1.consul:5579 check inter 2000ms resolvers consul resolve-opts allow-dup-ip init-addr none
 
 backend db_elasticsearch
-    option httpchk GET http://monitor.service.nyc1.consul:5000/db_check/elasticsearch
-    server-template elasticsearch 1 _db-elasticsearch._tcp.service.nyc1.consul:9300 check inter 2000ms resolvers consul resolve-opts allow-dup-ip init-addr none
+    option httpchk GET /db_check/elasticsearch
+    server elasticsearch db-elasticsearch.node.nyc1.consul:5579 check inter 2000ms resolvers consul resolve-opts allow-dup-ip init-addr none
 
 backend maintenance
     option httpchk HEAD /maintenance

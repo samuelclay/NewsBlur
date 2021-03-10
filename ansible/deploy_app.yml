@@ -16,4 +16,4 @@
     - name: Reload gunicorn
       become: yes
       command: "docker kill --signal=HUP newsblur_web"
-      when: pulled.changed
+      # when: pulled.changed

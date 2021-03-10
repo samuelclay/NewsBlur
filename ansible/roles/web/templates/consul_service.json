@@ -5,6 +5,11 @@
         "tags": [
             "web"
         ],
-        "port": 8000
+        "port": 8000,
+        "checks": [{
+            "id": "{{inventory_hostname}}-web-ping",
+            "http": "http://localhost:8000/_haproxychk",
+            "interval": "15s"
+          }]
     }
 }  
