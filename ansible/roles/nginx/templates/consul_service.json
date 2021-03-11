@@ -1,7 +1,7 @@
 {
     "service": {
         "name": "app-nginx",
-        "id": "{{ inventory_hostname }}",
+        "id": "{{ inventory_hostname }}-nginx",
         "tags": [
             "web"
         ],

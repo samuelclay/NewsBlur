@@ -4,3 +4,5 @@ server=/consul/127.0.0.1#8600
 {% for server in consul_dnsmasq_servers -%}
     server={{ server }}
 {% endfor -%}
+
+no-resolv

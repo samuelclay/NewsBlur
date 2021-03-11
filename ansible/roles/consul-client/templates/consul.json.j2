@@ -1,8 +1,13 @@
 {
   "datacenter": "nyc1",
+  "data_dir": "/opt/consul",
   "log_level": "INFO",
   "enable_syslog": false,
-  "start_join": ["{{ consul_manager_ip.stdout|trim }}"],
-  "bind_addr": "{% raw %}{{ GetAllInterfaces | include \"name\" \"^eth\" | include \"flags\" \"forwardable|up\" | attr \"address\" }}{% endraw %}",
+  "retry_join": ["{{ consul_manager_ip.stdout|trim }}"],
+  "advertise_addr": "{% raw %}{{ GetAllInterfaces | include \"name\" \"^eth\" | include \"flags\" \"forwardable|up\" | attr \"address\" }}{% endraw %}",
+  "bind_addr": "0.0.0.0",
+  "addresses": {
+    "http": "0.0.0.0"
+  },
   "ui_config": {"enabled": true}
 }
