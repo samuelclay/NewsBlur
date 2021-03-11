@@ -152,7 +152,7 @@ def db_check_redis_pubsub():
     except:
         abort(504)
 
-    if pubsub_numpat:
+    if isinstance(pubsub_numpat, int):
         return str(pubsub_numpat)
     else:
         abort(505)
