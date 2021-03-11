@@ -1,7 +1,7 @@
 flask==1.1.2
 pymongo==3.11.2
 psycopg2>=2,<3
-redis==2.10.5
+redis==3.5.3
 pyes==0.99.6
 pymysql==0.10.1
 celery>=4,<5
