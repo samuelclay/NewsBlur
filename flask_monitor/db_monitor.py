@@ -135,7 +135,7 @@ def db_check_redis_story():
 @app.route("/db_check/redis_pubsub")
 def db_check_redis_pubsub():
     try:
-        r = redis.Redis(redis_host, db=1)
+        r = redis.Redis(LOCAL_HOST, db=1)
     except:
         abort(503)
     
@@ -144,7 +144,7 @@ def db_check_redis_pubsub():
     except:
         abort(504)
 
-    if pubsub_numpat:
+    if pubsub_numpat or isinstance(pubsub_numpat, long):
         return str(pubsub_numpat)
     else:
         abort(505)
@@ -153,6 +153,10 @@ def db_check_redis_pubsub():
 
 @app.route("/db_check/redis_sessions")
 def db_check_redis_sessions():
+<<<<<<< HEAD:flask_monitor/db_monitor.py
+=======
+    redis_host = getattr(settings, 'REDIS_SESSIONS', {'host': 'db_redis_sessions'})
+>>>>>>> master:flask/db_monitor.py
     try:
         r = redis.Redis(LOCAL_HOST, db=5)
     except:
@@ -165,6 +169,24 @@ def db_check_redis_sessions():
 
     if randkey:
         return str(randkey)
+    else:
+        abort(505)
+
+@app.route("/db_check/redis_pubsub")
+def db_check_redis_pubsub():
+    redis_host = getattr(settings, 'REDIS_PUBSUB', {'host': 'db_redis_pubsub'})
+    try:
+        r = redis.Redis(redis_host['host'], db=1)
+    except:
+        abort(503)
+    
+    try:
+        pubsub_numpat = r.pubsub_numpat()
+    except:
+        abort(504)
+
+    if isinstance(pubsub_numpat, long):
+        return str(pubsub_numpat)
     else:
         abort(505)
 
