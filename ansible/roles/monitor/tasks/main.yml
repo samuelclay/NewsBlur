@@ -14,13 +14,12 @@
   become: yes
   docker_container:
     name: monitor
-    image: newsblur/flask_monitor
+    image: newsblur/newsblur_monitor:latest
     pull: yes
     state: started
     command: bash -c "python /srv/newsblur/flask_monitor/db_monitor.py"
     restart_policy: unless-stopped
+    container_default_behavior: no_defaults
     volumes:
       - /srv/newsblur:/srv/newsblur
-    ports: 
-      - 5000:5579
     network_mode: host
