@@ -25,10 +25,10 @@ defaults
     option httplog
     option redispatch
     option abortonclose
-    # timeout connect 10s
-    # timeout client 10s
-    # timeout server 30s
-    # timeout tunnel 1h
+    timeout connect 10s
+    timeout client 10s
+    timeout server 30s
+    timeout tunnel 1h
     retries 3
     errorfile 502 /srv/newsblur/templates/502.http
     errorfile 503 /srv/newsblur/templates/502.http
@@ -78,11 +78,17 @@ frontend public
 backend nginx
     option httpchk GET /_nginxchk
     http-check expect rstatus 200|503
-    server-template app-nginx 5 _app-nginx._tcp.service.nyc1.consul:80 check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
+    default-server check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
+    {% for host in groups.web %}
+        server {{host}}-nginx {{host}}.node.nyc1.consul:80
+    {% endfor %}
 
 backend app_django
     option httpchk GET /_haproxychk
-    server-template app-django 5 _app-django._tcp.service.nyc1.consul:8000 check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
+    default-server check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
+    {% for host in groups.django %}
+        server {{host}}-web {{host}}.node.nyc1.consul:8000
+    {% endfor %}
 
 backend app_counts
     balance roundrobin
@@ -130,17 +136,19 @@ backend postgres
     option httpchk GET /db_check/postgres
     server db-postgres db-postgres.node.nyc1.consul:5579 check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
 
-# backend mongo
-#     option httpchk GET /db_check/mongo
-#     server-template db-mongo 6 _db-mongo._tcp.service.nyc1.consul:5579 check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
+backend mongo
+    option httpchk GET /db_check/mongo
+    default-server check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
+    {% for host in groups.mongo %}
+        server {{host}} {{host}}.node.nyc1.consul:5579
+    {% endfor %}
 
-# backend mongo5000
-#     option httpchk GET /db_check/mongo
-#     server-template mongo-db2x 6 _db-mongo._tcp.service.nyc1.consul:5000 check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
-
-# backend mongo_analytics
-#     option httpchk GET /db_check/mongo
-#     server db-mongo-analytics db-mongo-analytics.node.nyc1.consul:5579 check inter 2000ms resolvers consul resolve-opts allow-dup-ip init-addr none
+backend mongo_analytics
+    option httpchk GET /db_check/mongo
+    default-server check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
+    {% for host in groups.mongo_analytics %}
+        server {{host}} {{host}}.node.nyc1.consul:5579
+    {% endfor %}
 
 backend db_redis_user
     option httpchk GET /db_check/redis

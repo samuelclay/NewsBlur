@@ -27,25 +27,18 @@
   docker_container:
     name: haproxy
     image: haproxy:latest
+    pull: yes
     env:
-      DOCKERBUILD: "True"
+      DOCKERBUILD: ""
     state: started
     network_mode: host # This exposes port 80
     restart_policy: unless-stopped
     container_default_behavior: no_defaults
-    mounts:
-      - source: /srv/newsblur
-        target: /srv/newsblur
-        type: bind
-      - source: /srv/newsblur/docker/haproxy/haproxy.consul.cfg
-        target: /usr/local/etc/haproxy/haproxy.cfg
-        type: bind
-      - source: /etc/letsencrypt/live/newsblur.com
-        target: /etc/letsencrypt/live/newsblur.com
-        type: bind
-      - source: /etc/letsencrypt/archive/newsblur.com
-        target: /etc/letsencrypt/archive/newsblur.com
-        type: bind
+    volumes:
+      - /srv/newsblur/docker/haproxy/haproxy.consul.cfg:/usr/local/etc/haproxy/haproxy.cfg:consistent
+      - /srv/newsblur:/srv/newsblur:consistent
+      - /etc/letsencrypt/live/newsblur.com:/etc/letsencrypt/live/newsblur.com:consistent
+      - /etc/letsencrypt/archive/newsblur.com:/etc/letsencrypt/archive/newsblur.com:consistent
 
 - name: Reload HAProxy configuration
   debug: 

@@ -2,17 +2,29 @@ plugin: constructed
 strict: False
 
 groups:
+  
   haproxy: inventory_hostname.startswith('www')
+
   web: inventory_hostname.startswith('app')
   app: inventory_hostname.startswith('app')
+  django: inventory_hostname.startswith('app-django')
+  refresh: inventory_hostname.startswith('app-refresh')
+  counts: inventory_hostname.startswith('app-counts')
+  push: inventory_hostname.startswith('app-counts')
+
   work: inventory_hostname.startswith('task-work')
+
   node: inventory_hostname.startswith('node')
+
   # debugs: inventory_hostname.startswith('debug')
-  db: inventory_hostname.startswith('db')
+
   task: inventory_hostname.startswith('task')
+  
+  db: inventory_hostname.startswith('db')
   search: inventory_hostname.startswith('db-elasticsearch')
   elasticsearch: inventory_hostname.startswith('db-elasticsearch')
   redis: inventory_hostname.startswith('db-redis')
   postgres: inventory_hostname.startswith('db-postgres')
   mongo: inventory_hostname.startswith('db-mongo')
+  mongo_analytics: inventory_hostname.startswith('db-mongo-analytics')
   consul: inventory_hostname.startswith('db-consul')
