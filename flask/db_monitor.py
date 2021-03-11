@@ -141,6 +141,7 @@ def db_check_redis_sessions():
 
 @app.route("/db_check/redis_pubsub")
 def db_check_redis_pubsub():
+    redis_host = getattr(settings, 'REDIS', {'host': 'db_redis_pubsub'})
     try:
         r = redis.Redis(redis_host, db=1)
     except:
