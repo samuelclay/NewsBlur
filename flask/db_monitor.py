@@ -139,6 +139,23 @@ def db_check_redis_sessions():
     else:
         abort(404)
 
+@app.route("/db_check/redis_pubsub")
+def db_check_redis_pubsub():
+    try:
+        r = redis.Redis(redis_host, db=1)
+    except:
+        abort(503)
+    
+    try:
+        pubsub_numpat = r.pubsub_numpat()
+    except:
+        abort(504)
+
+    if pubsub_numpat:
+        return str(pubsub_numpat)
+    else:
+        abort(505)
+
 @app.route("/db_check/elasticsearch")
 def db_check_elasticsearch():
     es_host = getattr(settings, 'ELASTICSEARCH_FEED_HOSTS', ['db_search_feed:9200'])
