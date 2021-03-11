@@ -153,10 +153,6 @@ def db_check_redis_pubsub():
 
 @app.route("/db_check/redis_sessions")
 def db_check_redis_sessions():
-<<<<<<< HEAD:flask_monitor/db_monitor.py
-=======
-    redis_host = getattr(settings, 'REDIS_SESSIONS', {'host': 'db_redis_sessions'})
->>>>>>> master:flask/db_monitor.py
     try:
         r = redis.Redis(LOCAL_HOST, db=5)
     except:
