@@ -113,7 +113,7 @@ def db_check_redis():
 
 @app.route("/db_check/redis_story")
 def db_check_redis_story():
-    redis_host = getattr(settings, 'REDIS', {'host': 'db_redis_story'})
+    redis_host = getattr(settings, 'REDIS_STORY', {'host': 'db_redis_story'})
     try:
         r = redis.Redis(redis_host['host'], db=1)
     except:
@@ -127,7 +127,7 @@ def db_check_redis_story():
 
 @app.route("/db_check/redis_sessions")
 def db_check_redis_sessions():
-    redis_host = getattr(settings, 'REDIS', {'host': 'db_redis_sessions'})
+    redis_host = getattr(settings, 'REDIS_SESSIONS', {'host': 'db_redis_sessions'})
     try:
         r = redis.Redis(redis_host['host'], db=5)
     except:
@@ -141,9 +141,9 @@ def db_check_redis_sessions():
 
 @app.route("/db_check/redis_pubsub")
 def db_check_redis_pubsub():
-    redis_host = getattr(settings, 'REDIS', {'host': 'db_redis_pubsub'})
+    redis_host = getattr(settings, 'REDIS_PUBSUB', {'host': 'db_redis_pubsub'})
     try:
-        r = redis.Redis(redis_host, db=1)
+        r = redis.Redis(redis_host['host'], db=1)
     except:
         abort(503)
     
