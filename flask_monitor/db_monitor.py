@@ -132,25 +132,6 @@ def db_check_redis_story():
     else:
         abort(505)
 
-@app.route("/db_check/redis_pubsub")
-def db_check_redis_pubsub():
-    try:
-        r = redis.Redis(LOCAL_HOST, db=1)
-    except:
-        abort(503)
-    
-    try:
-        pubsub_numpat = r.pubsub_numpat()
-    except:
-        abort(504)
-
-    if pubsub_numpat or isinstance(pubsub_numpat, long):
-        return str(pubsub_numpat)
-    else:
-        abort(505)
-
-    
-
 @app.route("/db_check/redis_sessions")
 def db_check_redis_sessions():
     try:
@@ -170,9 +151,8 @@ def db_check_redis_sessions():
 
 @app.route("/db_check/redis_pubsub")
 def db_check_redis_pubsub():
-    redis_host = getattr(settings, 'REDIS_PUBSUB', {'host': 'db_redis_pubsub'})
     try:
-        r = redis.Redis(redis_host['host'], db=1)
+        r = redis.Redis(LOCAL_HOST, db=1)
     except:
         abort(503)
     
@@ -181,7 +161,7 @@ def db_check_redis_pubsub():
     except:
         abort(504)
 
-    if isinstance(pubsub_numpat, long):
+    if pubsub_numpat or isinstance(pubsub_numpat, long):
         return str(pubsub_numpat)
     else:
         abort(505)
