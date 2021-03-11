@@ -5,4 +5,5 @@ server=/consul/127.0.0.1#8600
     server={{ server }}
 {% endfor -%}
 
+{# dnsmasq should not needlessly read /etc/resolv.conf #}
 no-resolv
