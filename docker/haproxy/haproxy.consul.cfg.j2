@@ -7,7 +7,7 @@ global
     tune.maxrewrite 8196
     tune.ssl.default-dh-param 2048
     log 127.0.0.1 local0 notice
-    # log 127.0.0.1 local1 info
+    log 127.0.0.1 local1 info
 
 resolvers consul
     nameserver consul 127.0.0.1:53
@@ -25,14 +25,16 @@ defaults
     option httplog
     option redispatch
     option abortonclose
-    timeout connect 10s
-    timeout client 10s
-    timeout server 30s
-    timeout tunnel 1h
+    # timeout connect 10s
+    # timeout client 10s
+    # timeout server 30s
+    # timeout tunnel 1h
     retries 3
     errorfile 502 /srv/newsblur/templates/502.http
     errorfile 503 /srv/newsblur/templates/502.http
     errorfile 504 /srv/newsblur/templates/502.http
+
+    # balance roundrobin
 
 frontend public
     bind :80
@@ -74,30 +76,28 @@ frontend public
     use_backend app_django unless gunicorn_dead || nginx_dead
 
 backend nginx
-    balance roundrobin
     option httpchk GET /_nginxchk
     http-check expect rstatus 200|503
-    server-template app-nginx 5 _app-nginx._tcp.service.nyc1.consul:80 check inter 3000ms resolvers consul resolve-opts allow-dup-ip
+    server-template app-nginx 5 _app-nginx._tcp.service.nyc1.consul:80 check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
 
 backend app_django
-    balance roundrobin
     option httpchk GET /_haproxychk
-    server-template app-django 5 _app-django._tcp.service.nyc1.consul:8000 check inter 3000ms resolvers consul resolve-opts allow-dup-ip
+    server-template app-django 5 _app-django._tcp.service.nyc1.consul:8000 check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
 
 backend app_counts
     balance roundrobin
     option httpchk GET /_haproxychk
-    server-template app-counts 1 _app-counts._tcp.service.nyc1.consul:8000 check inter 3000ms resolvers consul resolve-opts allow-dup-ip
+    server-template app-counts 1 _app-counts._tcp.service.nyc1.consul:8000 check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
     
 backend app_refresh
     balance roundrobin
     option httpchk GET /_haproxychk
-    server-template app-refresh 1 _app-refresh._tcp.service.nyc1.consul:8000 check inter 3000ms resolvers consul resolve-opts allow-dup-ip
+    server-template app-refresh 1 _app-refresh._tcp.service.nyc1.consul:8000 check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
 
 backend app_push
     balance roundrobin
     option httpchk GET /_haproxychk
-    server-template app-push 1 _app-push._tcp.service.nyc1.consul:8000 check inter 3000ms resolvers consul resolve-opts allow-dup-ip
+    server-template app-push 1 _app-push._tcp.service.nyc1.consul:8000 check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
 
 backend node_images
     option httpchk HEAD /sc,sN1megONJiGNy-CCvqzVPTv-TWRhgSKhFlf61XAYESl4=/http:/samuelclay.com/static/images/2019%20-%20Cuba.jpg
@@ -106,41 +106,41 @@ backend node_images
 
 backend node_socket
     balance roundrobin
-    server-template node-socket 1 _node-socket._tcp.service.nyc1.consul:8888 check inter 3000ms resolvers consul resolve-opts allow-dup-ip
+    server-template node-socket 1 _node-socket._tcp.service.nyc1.consul:8888 check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
 
 backend node_favicon
     http-check expect rstatus 200|503
     option httpchk GET /rss_feeds/icon/1
     balance roundrobin
-    server-template node-favicons 1 _node-favicons._tcp.service.nyc1.consul:3030 check inter 3000ms resolvers consul resolve-opts allow-dup-ip
+    server-template node-favicons 1 _node-favicons._tcp.service.nyc1.consul:3030 check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
 
 backend node_text
     http-check expect rstatus 200|503
     option httpchk GET /rss_feeds/original_text_fetcher?test=1
     balance roundrobin
-    server-template node-text 1 _node-text._tcp.service.nyc1.consul:4040 check inter 3000ms resolvers consul resolve-opts allow-dup-ip
+    server-template node-text 1 _node-text._tcp.service.nyc1.consul:4040 check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
 
 backend node_page
     http-check expect rstatus 200|503
     option httpchk GET /original_page/1?test=1
     balance roundrobin
-    server-template node-page 1 _node-page._tcp.service.nyc1.consul:3060 check inter 3000ms resolvers consul resolve-opts allow-dup-ip
+    server-template node-page 1 _node-page._tcp.service.nyc1.consul:3060 check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
 
 backend postgres
     option httpchk GET /db_check/postgres
-    server db-postgres db-postgres.node.nyc1.consul:5579 check inter 30000ms resolvers consul resolve-opts allow-dup-ip init-addr none
+    server db-postgres db-postgres.node.nyc1.consul:5579 check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
 
-backend mongo
-    option httpchk GET /db_check/mongo
-    server-template db-mongo 6 _db-mongo._tcp.service.nyc1.consul:5579 check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
+# backend mongo
+#     option httpchk GET /db_check/mongo
+#     server-template db-mongo 6 _db-mongo._tcp.service.nyc1.consul:5579 check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
 
-backend mongo5000
-    option httpchk GET /db_check/mongo
-    server-template mongo-db2x 6 _db-mongo._tcp.service.nyc1.consul:5000 check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
+# backend mongo5000
+#     option httpchk GET /db_check/mongo
+#     server-template mongo-db2x 6 _db-mongo._tcp.service.nyc1.consul:5000 check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
 
-backend mongo_analytics
-    option httpchk GET /db_check/mongo
-    server db-mongo-analytics db-mongo-analytics.node.nyc1.consul:5579 check inter 2000ms resolvers consul resolve-opts allow-dup-ip init-addr none
+# backend mongo_analytics
+#     option httpchk GET /db_check/mongo
+#     server db-mongo-analytics db-mongo-analytics.node.nyc1.consul:5579 check inter 2000ms resolvers consul resolve-opts allow-dup-ip init-addr none
 
 backend db_redis_user
     option httpchk GET /db_check/redis
@@ -166,7 +166,7 @@ backend maintenance
     option httpchk HEAD /maintenance
     http-check expect status 404
     http-check send-state
-    server nginx app-django1.node.nyc1.consul:80 check inter 3000ms
+    server nginx app-django1.node.nyc1.consul:80 check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
 
 listen stats
 bind :1936 ssl crt {{ ssl_certificate }}

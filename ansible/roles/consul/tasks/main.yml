@@ -33,3 +33,11 @@
   file:
     path: /etc/consul.d
     state: directory
+
+- name: Remove default /etc/consul.d/consul.hcl
+  become: yes
+  copy:
+    src: consul.hcl
+    dest: /etc/consul.d/consul.hcl
+    force: yes
+    mode: 0644

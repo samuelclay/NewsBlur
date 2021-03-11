@@ -1,15 +1,15 @@
 {
     "service": {
         "name": "{{ inventory_hostname|regex_replace('\d+', '') }}",
-        "id": "{{ inventory_hostname }}",
+        "id": "{{ inventory_hostname }}-web",
         "tags": [
             "web"
         ],
         "port": 8000,
         "checks": [{
             "id": "{{inventory_hostname}}-web-ping",
-            "http": "http://localhost:8000/_haproxychk",
+            "http": "http://{{ ansible_ssh_host }}:8000/_haproxychk",
             "interval": "15s"
-          }]
+        }]
     }
 }  
