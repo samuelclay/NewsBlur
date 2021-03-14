@@ -13,10 +13,14 @@ services:
     tty: true
     restart: always
     depends_on:
-      - db_mongo
-      - db_postgres
-      - db_redis
-      - db_elasticsearch
+      db_mongo:
+        condition: service_started
+      db_postgres:
+        condition: service_healthy
+      db_redis:
+        condition: service_started
+      db_elasticsearch:
+        condition: service_started
     ulimits:
       nproc: 10000
       nofile:
@@ -177,8 +181,6 @@ services:
       - 80:80
       - 443:443
       - 1936:1936
-    environment: 
-      - DOCKERBUILD=True
     volumes:
       - ./docker/haproxy/haproxy.docker-compose.cfg:/usr/local/etc/haproxy/haproxy.cfg
       - app-files:/srv/newsblur
