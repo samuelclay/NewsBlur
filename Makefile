@@ -16,8 +16,8 @@ rebuild:
 nb:
 	- CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker-compose down
 	- [[ -d config/certificates ]] && echo "keys exist" || make keys
-	- CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker-compose up -d --build --remove-orphans
 	- cd node && npm install & cd ..
+	- CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker-compose up -d --build --remove-orphans
 	- docker-compose exec newsblur_web ./manage.py migrate
 	- docker-compose exec newsblur_web ./manage.py loaddata config/fixtures/bootstrap.json
 
