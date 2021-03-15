@@ -1,5 +1,7 @@
 {
   "datacenter": "nyc1",
+  "data_dir": "/opt/consul",
+  "enable_debug": true,
   "log_level": "INFO",
   "enable_syslog": false,
   "advertise_addr": "{{ consul_manager_ip.stdout|trim }}",

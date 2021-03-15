@@ -18,21 +18,41 @@
     - container_name: node_socket
       ports: 8888:8888
       command: node /srv/node/unread_counts.js
-      target_host: 'node-socket'
-    - container_name: 'original_pages'
-      ports: '3060:3060'
-      command: 'node /srv/node/original_page.js'
-      target_host: 'node-page'
-    - container_name: 'original_text'
-      ports: '4040:4040'
-      command: 'node /srv/node/original_text.js'
-      target_host: 'node-text'
-    - container_name: 'favicons'
-      ports: '3030:3030'
-      command: 'node /srv/node/favicons.js'
-      target_host: 'node-favicons'
+      target_host: node-socket
+    - container_name: original_pages
+      ports: 3060:3060
+      command: node /srv/node/original_page.js
+      target_host: node-page
+    - container_name: original_text
+      ports: 4040:4040
+      command: node /srv/node/original_text.js
+      target_host: node-text
+    - container_name: favicons
+      ports: 3030:3030
+      command: node /srv/node/favicons.js
+      target_host: node-favicons
   when: item.target_host in inventory_hostname
 
+- name: Start non-newsblur node docker containers
+  become: yes
+  docker_container:
+    name: "{{ item.container_name }}"
+    image: "{{ item.image }}"
+    state: started
+    container_default_behavior: no_defaults
+    pull: true
+    network_mode: host
+    env:
+      NODE_ENV: "production"
+    restart_policy: unless-stopped
+    volumes:
+      - /srv/newsblur/node:/srv/node
+  with_items:
+    - container_name: imageproxy
+      image: willnorris/imageproxy
+      ports: 8080:8080
+      target_host: node-images
+  when: item.target_host in inventory_hostname
 
 - name: Register nodes in consul
   tags: consul
@@ -42,15 +62,15 @@
     dest: /etc/consul.d/{{item.target_host}}.json
   with_items:
     - port: 8888
-      target_host: 'node-socket'
+      target_host: node-socket
     - port: 3060
-      target_host: 'node-page'
+      target_host: node-page
     - port: 4040
-      target_host: 'node-text'
+      target_host: node-text
     - port: 3030
-      target_host: 'node-favicons'
-    - port: 80
-      target_host: 'node-images'
+      target_host: node-favicons
+    - port: 8080
+      target_host: node-images
   notify:
     - reload consul
   when: item.target_host in inventory_hostname

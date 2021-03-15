@@ -1,0 +1,16 @@
+---
+- name: SETUP -> staging containers
+  hosts: staging
+  vars_files:
+    - env_vars/base.yml
+  vars:
+    - update_apt_cache: yes
+    - motd_role: app
+    
+  roles:
+    - {role: 'base', tags: 'base'}
+    - {role: 'docker', tags: 'docker'}
+    - {role: 'repo', tags: 'repo'}
+    - {role: 'dnsmasq', tags: 'dnsmasq'}
+    - {role: 'consul', tags: 'consul'}
+    - {role: 'consul-client', tags: 'consul'}
