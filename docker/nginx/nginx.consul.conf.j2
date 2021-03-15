@@ -1,6 +1,10 @@
 
 server {
+    {% if disable_consul_services is not defined %}
     listen   80;
+    {% else %}
+    listen   81;
+    {% endif %}
 
     client_max_body_size 4M;
     server_name *.newsblur.com newsblur.com;

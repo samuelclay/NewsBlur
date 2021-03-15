@@ -6,6 +6,7 @@
   vars:
     - update_apt_cache: yes
     - motd_role: app
+    - disable_consul_services: yes
     
   roles:
     - {role: 'base', tags: 'base'}
@@ -14,3 +15,10 @@
     - {role: 'dnsmasq', tags: 'dnsmasq'}
     - {role: 'consul', tags: 'consul'}
     - {role: 'consul-client', tags: 'consul'}
+
+    - {role: 'letsencrypt', tags: 'letsencrypt'}
+    - {role: 'haproxy', tags: 'haproxy'}
+    - {role: 'web', tags: 'web'}
+    - {role: 'nginx', tags: 'nginx'}
+    - {role: 'node', tags: 'node'}
+
