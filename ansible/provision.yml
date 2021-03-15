@@ -21,3 +21,5 @@
   when: "'consul' in group_names"
 - import_playbook: setup_staging.yml
   when: "'staging' in group_names"
+- import_playbook: setup_discovery.yml
+  when: "'discovery' in inventory_hostname"

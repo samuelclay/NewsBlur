@@ -39,20 +39,20 @@ services:
     ports:
       - 81:81
     depends_on:
-    - newsblur_web
-    - favicons
-    - db_postgres
-    - db_redis
-    - db_mongo
-    - db_elasticsearch
-    - original_pages
-    - original_text
-    - node_websocket
+      - newsblur_web
+      - favicons
+      - db_postgres
+      - db_redis
+      - db_mongo
+      - db_elasticsearch
+      - original_pages
+      - original_text
+      - node_websocket
     environment: 
       - DOCKERBUILD=True
     volumes:
-    - ./docker/nginx/nginx.local.conf:/etc/nginx/conf.d/nginx.conf
-    - app-files:/srv/newsblur
+      - ./docker/nginx/nginx.local.conf:/etc/nginx/conf.d/nginx.conf
+      - app-files:/srv/newsblur
 
   db_postgres:
     container_name: db_postgres
