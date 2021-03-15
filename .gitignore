@@ -40,6 +40,11 @@ vendor/mms-agent/settings.py
 apps/social/spam.py
 venv*
 
+# Docker
+docker/haproxy/haproxy.consul.cfg
+docker/haproxy/haproxy.staging.cfg
+docker/nginx/nginx.consul.conf
+
 # ----------------------
 # Android
 # ----------------------
