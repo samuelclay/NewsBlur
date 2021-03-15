@@ -13,13 +13,13 @@ services:
     tty: true
     restart: always
     depends_on:
-      db_mongo:
+      - db_mongo:
         condition: service_started
-      db_postgres:
+      - db_postgres:
         condition: service_healthy
-      db_redis:
+      - db_redis:
         condition: service_started
-      db_elasticsearch:
+      - db_elasticsearch:
         condition: service_started
     ulimits:
       nproc: 10000
