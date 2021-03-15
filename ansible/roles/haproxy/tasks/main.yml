@@ -19,9 +19,18 @@
 
 - name: Template haproxy.cfg file
   template:
-    src: /srv/newsblur/docker/haproxy/haproxy.consul.cfg.j2
+    src: "/srv/newsblur/docker/haproxy/haproxy.consul.cfg.j2"
     dest: /srv/newsblur/docker/haproxy/haproxy.consul.cfg
   notify: reload haproxy
+  when: disable_consul_services is not defined
+  register: updated_config
+
+- name: Copy staging haproxy.cfg file
+  copy:
+    src: /srv/newsblur/docker/haproxy/haproxy.staging.cfg
+    dest: /srv/newsblur/docker/haproxy/haproxy.consul.cfg
+  notify: reload haproxy
+  when: disable_consul_services is defined
   register: updated_config
 
 - name: Start HAProxy docker container

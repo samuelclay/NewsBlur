@@ -70,6 +70,8 @@ ALLOWED_SUBDOMAINS = [
     'dev', 
     'www', 
     'beta', 
+    'staging', 
+    'discovery', 
     'debug', 
     'debug3', 
     'nb',
