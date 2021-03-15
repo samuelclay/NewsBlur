@@ -1,4 +1,12 @@
 ---
+- name: Template nginx.conf file
+  template:
+    src: /srv/newsblur/docker/nginx/nginx.consul.conf.j2
+    dest: /srv/newsblur/docker/nginx/nginx.consul.conf
+  notify: restart nginx
+  register: updated_config
+
+
 - name: Start nginx docker container
   become: yes
   docker_container:
@@ -22,7 +30,4 @@
     dest: /etc/consul.d/nginx.json
   notify:
     - reload consul
-
-- name: Restart nginx
-  become: yes
-  command: docker restart nginx
+  when: disable_consul_services is not defined

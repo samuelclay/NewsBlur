@@ -73,4 +73,4 @@
       target_host: node-images
   notify:
     - reload consul
-  when: item.target_host in inventory_hostname
+  when: item.target_host in inventory_hostname and disable_consul_services is not defined

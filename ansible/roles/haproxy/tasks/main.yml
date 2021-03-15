@@ -8,6 +8,7 @@
     dest: /etc/consul.d/haproxy.json
   notify:
     - reload consul
+  when: disable_consul_services is not defined
 
 - name: Allow haproxy stats port
   ufw: rule=allow port={{ item }}
@@ -20,6 +21,7 @@
   template:
     src: /srv/newsblur/docker/haproxy/haproxy.consul.cfg.j2
     dest: /srv/newsblur/docker/haproxy/haproxy.consul.cfg
+  notify: reload haproxy
   register: updated_config
 
 - name: Start HAProxy docker container
@@ -39,13 +41,6 @@
       - /srv/newsblur:/srv/newsblur:consistent
       - /etc/letsencrypt/live/newsblur.com:/etc/letsencrypt/live/newsblur.com:consistent
       - /etc/letsencrypt/archive/newsblur.com:/etc/letsencrypt/archive/newsblur.com:consistent
-
-- name: Reload HAProxy configuration
-  debug: 
-    msg: Reloading HAProxy
-  notify: reload haproxy
-  when: updated_config.changed
-  changed_when: updated_config.changed
 
 - name: Restart HAProxy
   debug: 

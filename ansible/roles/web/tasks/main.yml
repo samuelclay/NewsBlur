@@ -40,6 +40,7 @@
   template:
     src: consul_service.json
     dest: /etc/consul.d/newsblur_web.json
+  when: disable_consul_services is not defined
   notify:
     - reload consul
 
