@@ -19,3 +19,5 @@
 #   when: "'debugs' in group_names"
 - import_playbook: setup_consul_manager.yml
   when: "'consul' in group_names"
+- import_playbook: setup_staging.yml
+  when: "'staging' in group_names"

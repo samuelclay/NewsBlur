@@ -15,10 +15,13 @@ groups:
   work: inventory_hostname.startswith('task-work')
 
   node: inventory_hostname.startswith('node')
+  node_socket: inventory_hostname.startswith('node-socket')
 
   # debugs: inventory_hostname.startswith('debug')
 
   task: inventory_hostname.startswith('task')
+  
+  staging: inventory_hostname.startswith('staging')
   
   db: inventory_hostname.startswith('db')
   search: inventory_hostname.startswith('db-elasticsearch')

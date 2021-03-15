@@ -133,6 +133,40 @@ resource "digitalocean_droplet" "app-refresh" {
   }
 }
 
+resource "digitalocean_droplet" "staging-web" {
+  image    = var.droplet_os
+  name     = "staging-web"
+  region   = var.droplet_region
+  size     = var.droplet_size_20
+  ssh_keys = [digitalocean_ssh_key.default.fingerprint]
+  provisioner "local-exec" {
+    command = "/srv/newsblur/ansible/utils/generate.py; sleep 120"
+  }
+  provisioner "local-exec" {
+    command = "cd ..; ansible-playbook -l ${self.name} ansible/setup_root.yml"
+  }
+  provisioner "local-exec" {
+    command = "cd ..; ansible-playbook -l ${self.name} ansible/provision.yml"
+  }
+}
+
+resource "digitalocean_droplet" "discovery" {
+  image    = var.droplet_os
+  name     = "discovery"
+  region   = var.droplet_region
+  size     = var.droplet_size_120
+  ssh_keys = [digitalocean_ssh_key.default.fingerprint]
+  provisioner "local-exec" {
+    command = "/srv/newsblur/ansible/utils/generate.py; sleep 120"
+  }
+  provisioner "local-exec" {
+    command = "cd ..; ansible-playbook -l ${self.name} ansible/setup_root.yml"
+  }
+  provisioner "local-exec" {
+    command = "cd ..; ansible-playbook -l ${self.name} ansible/provision.yml"
+  }
+}
+
 resource "digitalocean_droplet" "node-text" {
   image    = var.droplet_os
   name     = "node-text"
@@ -151,8 +185,9 @@ resource "digitalocean_droplet" "node-text" {
 }
 
 resource "digitalocean_droplet" "node-socket" {
+  count    = 2
   image    = var.droplet_os
-  name     = "node-socket"
+  name     = "node-socket${count.index+1}"
   region   = var.droplet_region
   size     = var.droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
