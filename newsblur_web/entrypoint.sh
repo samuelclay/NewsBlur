@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
 if [[ -z "${TEST}" && "${TEST}" = "True"  ]]
 then echo "starting test env"
