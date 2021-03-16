@@ -1,0 +1,78 @@
+---
+
+- name: Ensure directories required
+  file:
+    dest: '{{ item }}'
+    state: directory
+  with_items:
+    - /etc/netdata
+    - /etc/netdata/conf.d
+    - /etc/netdata/charts.d
+    - /etc/netdata/node.d
+    - /etc/netdata/plugins.d
+    - /etc/netdata/python.d
+
+- name: Set system hostname as netdata hostname
+  copy:
+    dest: /etc/netdata/conf.d/netdata.conf
+    content: |
+      [global]
+        hostname = {{ hostname }}
+  register: netdata_conf
+
+- name: Set environment variables
+  template:
+    dest: /etc/netdata/environment
+    src: environment.j2
+    mode: 0600
+  register: configuration
+
+- name: Install netdata systemctl service
+  copy:
+    dest: /etc/systemd/system/netdata.service
+    content: |
+      [Unit]
+      Description=Netdata metrics daemon
+      After=docker.service
+      Requires=docker.service
+
+      [Service]
+      RemainAfterExit=yes
+      TimeoutSec=infinity
+
+      ExecStartPre=/usr/bin/docker pull luzifer/netdata:{{ version }}
+      ExecStartPre=-/usr/bin/docker rm -f netdata
+
+      ExecStart=/usr/bin/docker run -d --cap-add SYS_PTRACE \
+                                    --security-opt=apparmor:unconfined \
+                                    -v /proc:/host/proc:ro \
+                                    -v /sys:/host/sys:ro \
+                                    -v /etc/netdata:/override:ro \
+                                    -v /var/run/docker.sock:/var/run/docker.sock \
+                                    -v /var/lib/netdata:/var/lib/netdata \
+                                    -p 19999:19999 \
+                                    --env-file=/etc/netdata/environment \
+                                    --name=netdata \
+                                    luzifer/netdata:{{ version }}
+
+      ExecReload=/usr/bin/docker restart netdata
+
+      ExecStop=/usr/bin/docker stop netdata
+
+      [Install]
+      WantedBy=multi-user.target
+  register: service
+
+- name: Activate netdata service
+  systemd:
+    daemon_reload: yes
+    enabled: yes
+    name: netdata.service
+    state: restarted
+  when: service.changed
+
+- name: Reload configuration when required
+  systemd:
+    name: netdata.service
+    state: reloaded
+  when: (configuration.changed or netdata_conf.changed) and not service.changed
