@@ -97,16 +97,10 @@ deploy_work:
 	- ansible-playbook ansible/deploy_work.yml
 deploy_monitor:
 	- ansible-playbook ansible/deploy_monitor.yml
+deploy_staging:
+	- ansible-playbook ansible/deploy_staging.yml
 
 # Provision
-setup_app:
-	- ansible-playbook ansible/provision.yml -l app --tags web
-setup_node:
-	- ansible-playbook ansible/provision.yml -l node --tags node
-setup_www:
-	- ansible-playbook ansible/provision.yml -l haproxy --tags haproxy
-setup_celery:
-	- ansible-playbook ansible/provision.yml -l task --tags celery
 firewall:
 	- ansible-playbook ansible/provision.yml --tags firewall -l db
 

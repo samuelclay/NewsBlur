@@ -1,0 +1,19 @@
+---
+- hosts: app
+  gather_facts: false
+  vars_files:
+    - env_vars/base.yml
+    - env_vars/dev.yml
+
+  tasks:
+    - name: Pull newsblur_web github
+      git:
+        repo: https://github.com/samuelclay/NewsBlur.git
+        dest: /srv/newsblur/
+        version: dashboard3
+      register: pulled
+    
+    - name: Reload gunicorn
+      become: yes
+      command: "docker kill --signal=HUP newsblur_web"
+      # when: pulled.changed
