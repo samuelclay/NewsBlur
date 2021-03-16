@@ -5,8 +5,6 @@ services:
     hostname: nb.com
     container_name: newsblur_web
     image: newsblur/newsblur_python3:latest
-    dns_search:
-      - nb.com
     environment: 
       - DOCKERBUILD=True
     stdin_open: true
