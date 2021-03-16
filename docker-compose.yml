@@ -92,51 +92,18 @@ services:
     volumes:
       - ./docker/volumes/db_mongo:/data/db
 
-  original_pages:
+  newsblur_node:
     image: newsblur/newsblur_node
-    container_name: node_original_page
+    container_name: node
     environment:
       - NODE_ENV=development
-    command: node original_page.js
-    ports:
-      - 3060:3060
-    volumes: 
-      - node-files:/srv
- 
-  original_text:
-    image: newsblur/newsblur_node
-    container_name: node_original_text
-    environment:
-      - NODE_ENV=development
-    ports:
-      - 4040:4040
-    command: node original_text.js
-    volumes: 
-      - node-files:/srv
-  
-  favicons:
-    image: newsblur/newsblur_node
-    container_name: node_favicons
-    environment:
-      - NODE_ENV=docker
       - MONGODB_PORT=29019
-    ports:
-      - 3030:3030
-    command: node favicons.js
+    command: node newsblur.js
+    stop_signal: HUP
     depends_on: 
       - db_postgres
-    volumes: 
-      - node-files:/srv
-
-  node_websocket:
-    container_name: node_websocket
-    image: newsblur/newsblur_node
-    environment:
-      - NODE_ENV=docker
-    command: node unread_counts.js
-    stop_signal: HUP
     ports:
-      - 8888:8888
+      - 8008:8008
     volumes: 
       - node-files:/srv
   
@@ -167,6 +134,7 @@ services:
     depends_on: 
       - nginx
       - newsblur_web
+      - newsblur_node
       - db_redis
       - db_postgres
       - db_elasticsearch

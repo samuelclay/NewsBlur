@@ -1688,10 +1688,10 @@ class Feed(models.Model):
         return sorted_popularity
             
     def well_read_score(self):
+        """Average percentage of stories read vs published across recently active subscribers"""
         from apps.reader.models import UserSubscription
         from apps.social.models import MSharedStory
                 
-        # Average percentage of stories read vs published across recently active subscribers
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         p = r.pipeline()
         
