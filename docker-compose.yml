@@ -25,7 +25,7 @@ services:
     expose:
       - 8000
     # only use gunicorn if the TEST env variable is not "True"
-    command: /bin/bash -c newsblur_web/entrypoint.sh
+    entrypoint: /bin/sh -c newsblur_web/entrypoint.sh
     volumes: 
       - app-files:/srv/newsblur
   
