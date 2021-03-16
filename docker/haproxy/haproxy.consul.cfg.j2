@@ -114,26 +114,26 @@ backend node_socket
     balance roundrobin
     default-server check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
     {% for host in groups.node_socket %}
-        server {{host}} {{host}}.node.nyc1.consul:8888
+        server {{host}} {{host}}.node.nyc1.consul:8008
     {% endfor %}
 
 backend node_favicon
     http-check expect rstatus 200|503
     option httpchk GET /rss_feeds/icon/1
     balance roundrobin
-    server-template node-favicons 1 _node-favicons._tcp.service.nyc1.consul:3030 check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
+    server-template node-favicons 1 _node-favicons._tcp.service.nyc1.consul:8008 check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
 
 backend node_text
     http-check expect rstatus 200|503
     option httpchk GET /rss_feeds/original_text_fetcher?test=1
     balance roundrobin
-    server-template node-text 1 _node-text._tcp.service.nyc1.consul:4040 check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
+    server-template node-text 1 _node-text._tcp.service.nyc1.consul:8008 check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
 
 backend node_page
     http-check expect rstatus 200|503
     option httpchk GET /original_page/1?test=1
     balance roundrobin
-    server-template node-page 1 _node-page._tcp.service.nyc1.consul:3060 check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
+    server-template node-page 1 _node-page._tcp.service.nyc1.consul:8008 check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
 
 backend postgres
     option httpchk GET /db_check/postgres

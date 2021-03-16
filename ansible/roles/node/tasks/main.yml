@@ -2,10 +2,10 @@
 - name: Start node docker containers
   become: yes
   docker_container:
-    name: "{{ item.container_name }}"
+    name: node
     image: newsblur/newsblur_node
     state: started
-    command: "{{ item.command }}"
+    command: node /srv/node/newsblur.js
     container_default_behavior: no_defaults
     pull: true
     network_mode: host
@@ -15,23 +15,11 @@
     volumes:
       - /srv/newsblur/node:/srv/node
   with_items:
-    - container_name: node_socket
-      ports: 8888:8888
-      command: node /srv/node/unread_counts.js
-      target_host: node-socket
-    - container_name: original_pages
-      ports: 3060:3060
-      command: node /srv/node/original_page.js
-      target_host: node-page
-    - container_name: original_text
-      ports: 4040:4040
-      command: node /srv/node/original_text.js
-      target_host: node-text
-    - container_name: favicons
-      ports: 3030:3030
-      command: node /srv/node/favicons.js
-      target_host: node-favicons
-  when: item.target_host in inventory_hostname
+    - node-socket
+    - node-page
+    - node-text
+    - node-favicons
+  when: item in inventory_hostname
 
 - name: Start non-newsblur node docker containers
   become: yes
@@ -59,18 +47,13 @@
   become: yes
   template:
     src: consul_service.json
-    dest: /etc/consul.d/{{item.target_host}}.json
+    dest: /etc/consul.d/{{item}}.json
   with_items:
-    - port: 8888
-      target_host: node-socket
-    - port: 3060
-      target_host: node-page
-    - port: 4040
-      target_host: node-text
-    - port: 3030
-      target_host: node-favicons
-    - port: 8080
-      target_host: node-images
+    - node-socket
+    - node-page
+    - node-text
+    - node-favicons
+    - node-images
   notify:
     - reload consul
-  when: item.target_host in inventory_hostname and disable_consul_services is not defined
+  when: item in inventory_hostname and disable_consul_services is not defined
