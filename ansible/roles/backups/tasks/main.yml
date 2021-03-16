@@ -1,0 +1,74 @@
+---
+  - name: Ensure backups directory
+    file:
+      path: /srv/newsblur/backups
+      state: directory
+
+  - name: Ensure pip installed
+    become: yes
+    package:
+      name: python3-pip
+      state: present
+
+  - name: Ensure boto installed
+    pip:
+      name: boto3
+
+  - name: Set backup vars
+    set_fact:
+      redis_story_filename: backup_redis_story_2021-03-15-04-00.rdb.gz
+      postgres_filename: backup_postgresql_2021-03-15-04-00.sql.gz
+      mongo_filename: backup_mongo_2021-03-15-04-00.tgz
+      redis_filename: backup_redis_2021-03-15-04-00.rdb.gz
+    tags: restore_postgres, restore_mongo, restore_redis, restore_redis_story
+
+  - name: Download archives
+    amazon.aws.aws_s3:
+      bucket: newsblur_backups
+      object: "{{ item.dir }}{{ item.file }}"
+      dest: "/srv/newsblur/backups/{{ item.file }}"
+      mode: get
+      overwrite: different
+      aws_access_key: "{{ lookup('ini', 'aws_access_key_id section=default file=/srv/secrets-newsblur/keys/aws.s3.token') }}"
+      aws_secret_key: "{{ lookup('ini', 'aws_secret_access_key section=default file=/srv/secrets-newsblur/keys/aws.s3.token') }}"
+    with_items:
+      - dir: /redis_story/
+        file: "{{ redis_story_filename }}"
+      - dir: /postgres/
+        file: "{{ postgres_filename }}"
+      - dir: /mongo/
+        file: "{{ mongo_filename }}"
+      - dir: /backup_redis/
+        file: "{{ redis_filename }}"
+  
+  - name: Restore postgres
+    block:
+      - name: move postgres archive
+        become: yes
+        command: "mv -f /srv/newsblur/backups/{{ postgres_filename }} /srv/newsblur/docker/volumes/postgres"
+        ignore_errors: yes
+        
+      - name: pg_restore
+        become: yes
+        command: |
+          docker exec -i db_postgres bash -c 
+          "pg_restore -U newsblur --role=newsblur --dbname=newsblur /var/lib/postgresql/data/{{ postgres_filename }}"
+    tags: never,restore_postgres
+  
+  - name: Restore mongo
+    block:
+      - name: Untgz mongo archive
+        command: "tar -xzf /srv/newsblur/backups/{{ mongo_filename }}"
+        ignore_errors: yes
+
+      - name: move mongo archive
+        become: yes
+        command: "mv -f /srv/newsblur/backups/{{ mongo_filename|regex_replace('.tgz$', '') }} /srv/newsblur/docker/volumes/db_mongo"
+        ignore_errors: yes
+        
+      - name: mongorestore
+        become: yes
+        command: |
+          docker exec -i db_mongo bash -c 
+          "mongorestore --port 29019 --drop /data/db/{{ mongo_filename|regex_replace('.tgz$', '') }}/"
+    tags: never,restore_mongo
