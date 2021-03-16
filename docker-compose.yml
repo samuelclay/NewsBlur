@@ -9,7 +9,7 @@ services:
       - DOCKERBUILD=True
     stdin_open: true
     tty: true
-    restart: always
+    restart: unless-stopped
     depends_on:
       - db_mongo
       - db_postgres

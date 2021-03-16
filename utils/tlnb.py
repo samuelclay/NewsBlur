@@ -17,7 +17,7 @@ IGNORE_HOSTS = [
     'app-push',
 ]
 
-def main(role="app", role2="work", command=None, path=None):
+def main(role="app", role2="app", command=None, path=None):
     delay = 1
 
     hosts = subprocess.check_output(['ansible-inventory', '--list'])
