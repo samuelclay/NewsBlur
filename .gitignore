@@ -39,7 +39,7 @@ templates/maintenance_on.html
 vendor/mms-agent/settings.py
 apps/social/spam.py
 venv*
-backups
+./backups/
 
 # Docker
 docker/haproxy/haproxy.consul.cfg
