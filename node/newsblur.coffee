@@ -23,8 +23,9 @@ if not ENV_DEV and not ENV_PROD and not ENV_DOCKER
   throw new Error("Set envvar NODE_ENV=<development,docker,production>")
 
 if ENV_PROD
-  Sentry.init({
+  Sentry.init
     dsn: process.env.SENTRY_DSN,
+    debug: true,
     integrations: [
       new Sentry.Integrations.Http({ tracing: true }),
       new Tracing.Integrations.Express({ 
@@ -32,7 +33,6 @@ if ENV_PROD
       })
     ],
     tracesSampleRate: 1.0
-  })
 
   app.use(Sentry.Handlers.requestHandler())
   app.use(Sentry.Handlers.tracingHandler())

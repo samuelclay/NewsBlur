@@ -15,7 +15,7 @@
     
     - name: Reload node
       become: yes
-      command: "docker kill --signal=HUP {{ item.container_name }}"
+      command: "docker restart {{ item.container_name }}"
       when: item.target_host in inventory_hostname
       with_items:
         - container_name: node
@@ -26,4 +26,6 @@
           target_host: node-text
         - container_name: node
           target_host: node-favicons
+        - container_name: node
+          target_host: staging-web
 
