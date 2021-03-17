@@ -108,7 +108,7 @@ backend app_push
 backend node_images
     option httpchk HEAD /sc,sN1megONJiGNy-CCvqzVPTv-TWRhgSKhFlf61XAYESl4=/http:/samuelclay.com/static/images/2019%20-%20Cuba.jpg
     http-check expect rstatus 200|301
-    server-template node-images 1 _node-images._tcp.service.nyc1.consul:8080 check inter 2000ms resolvers consul resolve-opts allow-dup-ip
+    server-template node-images 1 _node-images._tcp.service.nyc1.consul:8088 check inter 2000ms resolvers consul resolve-opts allow-dup-ip
 
 backend node_socket
     balance roundrobin
