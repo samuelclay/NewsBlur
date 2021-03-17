@@ -1,9 +1,11 @@
+Sentry = require "@sentry/node"
+Tracing = require "@sentry/tracing"
 app = require('express')()
 server = require('http').createServer(app)
 log    = require './log.js'
-Sentry = require "@sentry/node"
-Tracing = require "@sentry/tracing"
-require('dotenv').config()
+envresult = require('dotenv').config()
+if envresult.error
+  throw envresult.error
 
 original_page = require('./original_page.js').original_page
 original_text = require('./original_text.js').original_text

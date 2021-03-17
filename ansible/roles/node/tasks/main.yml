@@ -4,6 +4,14 @@
     src: /srv/secrets-newsblur/settings/dotenv.env
     dest: /srv/newsblur/node/.env
   register: app_changed
+  notify: restart node
+  with_items:
+    - node-socket
+    - node-page
+    - node-text
+    - node-favicons
+    - staging
+  when: item in inventory_hostname
 
 - name: Add SERVER_NAME to app secrets
   lineinfile:
