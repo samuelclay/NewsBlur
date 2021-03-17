@@ -19,6 +19,7 @@
     - node-page
     - node-text
     - node-favicons
+    - staging
   when: item in inventory_hostname
 
 - name: Start non-newsblur node docker containers
