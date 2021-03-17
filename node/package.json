@@ -5,9 +5,12 @@
   "main": "favicons.js",
   "dependencies": {
     "@postlight/mercury-parser": "^2.2.0",
+    "@sentry/node": "^6.2.2",
+    "@sentry/tracing": "^6.2.2",
     "bufferutil": "^4.0.3",
     "cjs": "0.0.11",
     "connect-busboy": "^0.0.2",
+    "dotenv": "^8.2.0",
     "esm": "^3.2.25",
     "express": "^4.17.1",
     "json-loader": "^0.5.7",

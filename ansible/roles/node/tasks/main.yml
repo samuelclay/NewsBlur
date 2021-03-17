@@ -1,4 +1,15 @@
 ---
+- name: Copy node secrets
+  copy:
+    src: /srv/secrets-newsblur/settings/dotenv.env
+    dest: /srv/newsblur/node/.env
+  register: app_changed
+
+- name: Add SERVER_NAME to app secrets
+  lineinfile:
+    path: /srv/newsblur/.env
+    line: 'SERVER_NAME = "{{ inventory_hostname }}"'
+
 - name: Start node docker containers
   become: yes
   docker_container:

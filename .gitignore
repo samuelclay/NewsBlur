@@ -14,6 +14,7 @@ certbot.conf
 .DS_Store
 **/*.perspectivev*
 .vscode/*
+.env
 data/
 config/certificates
 **/*.xcuserstate
