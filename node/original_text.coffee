@@ -2,11 +2,11 @@ Mercury = require('@postlight/mercury-parser')
 log    = require './log.js'
 
 original_text = (app) =>
-    DEV = process.env.NODE_ENV == 'development'
+    DEV = process.env.NODE_ENV == 'development' || process.env.NODE_ENV == 'docker'
 
     log.debug "Starting NewsBlur Original Text Fetcher / Mercury Parser..."
     if !DEV and !process.env.NODE_ENV
-        log.debug "Specify NODE_ENV=<development,production>"
+        log.debug "Specify NODE_ENV=<development,docker,production>"
         return
     else if DEV
         log.debug "Running as development server"

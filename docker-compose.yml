@@ -26,6 +26,24 @@ services:
     entrypoint: /bin/sh -c newsblur_web/entrypoint.sh
     volumes: 
       - app-files:/srv/newsblur
+
+  newsblur_node:
+    image: newsblur/newsblur_node:latest
+    container_name: node
+    environment:
+      - NODE_ENV=docker
+      - MONGODB_PORT=29019
+    command: node newsblur.js
+    restart: unless-stopped
+    stop_signal: HUP
+    depends_on: 
+      - db_mongo
+      - db_postgres
+      - db_redis
+    ports:
+      - 8008:8008
+    volumes: 
+      - node-files:/srv
   
   nginx:
     container_name: nginx
@@ -34,14 +52,11 @@ services:
       - 81:81
     depends_on:
       - newsblur_web
-      - favicons
+      - newsblur_node
       - db_postgres
       - db_redis
       - db_mongo
       - db_elasticsearch
-      - original_pages
-      - original_text
-      - node_websocket
     environment: 
       - DOCKERBUILD=True
     volumes:
@@ -91,21 +106,6 @@ services:
     command: mongod --smallfiles --port 29019
     volumes:
       - ./docker/volumes/db_mongo:/data/db
-
-  newsblur_node:
-    image: newsblur/newsblur_node
-    container_name: node
-    environment:
-      - NODE_ENV=development
-      - MONGODB_PORT=29019
-    command: node newsblur.js
-    stop_signal: HUP
-    depends_on: 
-      - db_postgres
-    ports:
-      - 8008:8008
-    volumes: 
-      - node-files:/srv
   
   celerybeat:
     container_name: celerybeat
