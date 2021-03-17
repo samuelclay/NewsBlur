@@ -222,7 +222,7 @@ class TextImporter:
             headers["content-type"] = "application/json"
             headers["x-api-key"] = mercury_api_key
             if settings.DEBUG:
-                url = "http://nb.local.com:4040/rss_feeds/original_text_fetcher?url=%s" % url
+                url = "http://nb.local.com:8008/rss_feeds/original_text_fetcher?url=%s" % url
             else:
                 url = "https://www.newsblur.com/rss_feeds/original_text_fetcher?url=%s" % url
             
