@@ -29,4 +29,3 @@ RUN       set -ex \
             && pip install -r requirements.txt \
             && apt-get purge -y --auto-remove ${buildDeps} \
             && rm -rf /var/lib/apt/lists/*
-COPY ./config /etc/supervisor/conf.d/
