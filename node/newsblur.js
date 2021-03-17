@@ -4,7 +4,7 @@
 
   app = require('express')();
 
-  server = require('http').Server(app);
+  server = require('http').createServer(app);
 
   log = require('./log.js');
 
@@ -26,6 +26,6 @@
 
   log.debug("Starting NewsBlur Node Server");
 
-  app.listen(8008);
+  server.listen(8008);
 
 }).call(this);
