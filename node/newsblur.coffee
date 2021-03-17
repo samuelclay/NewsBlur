@@ -1,5 +1,5 @@
 app = require('express')()
-server = require('http').Server(app)
+server = require('http').createServer(app)
 log    = require './log.js'
 
 original_page = require('./original_page.js').original_page
@@ -13,4 +13,4 @@ favicons(app)
 unread_counts(server)
 
 log.debug "Starting NewsBlur Node Server"
-app.listen(8008)
+server.listen(8008)

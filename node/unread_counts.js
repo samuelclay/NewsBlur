@@ -33,6 +33,8 @@
       return;
     } else if (ENV_DEV) {
       log.debug("Running as development server");
+    } else if (ENV_DOCKER) {
+      log.debug("Running as docker server");
     } else {
       log.debug("Running as production server");
     }
