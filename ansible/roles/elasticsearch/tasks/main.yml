@@ -3,7 +3,7 @@
   become: yes
   docker_container:
     name: elasticsearch
-    image: elasticsearch:2.4.4
+    image: elasticsearch:1.7.6
     state: started
     ports:
       - '9200:9200'
