@@ -46,16 +46,9 @@
     Sentry.init({
       dsn: process.env.SENTRY_DSN,
       debug: true,
-      integrations: [
-        new Sentry.Integrations.Http({
-          tracing: true
-        }),
-        new Tracing.Integrations.Express({app})
-      ],
       tracesSampleRate: 1.0
     });
     app.use(Sentry.Handlers.requestHandler());
-    app.use(Sentry.Handlers.tracingHandler());
   }
 
   original_page(app);
