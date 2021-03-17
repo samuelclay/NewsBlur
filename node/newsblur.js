@@ -12,10 +12,16 @@
 
   log = require('./log.js');
 
-  envresult = require('dotenv').config();
+  envresult = require('dotenv').config({
+    path: 'node/.env'
+  });
 
   if (envresult.error) {
-    throw envresult.error;
+    // throw envresult.error
+    envresult = require('dotenv').config();
+    if (envresult.error) {
+      throw envresult.error;
+    }
   }
 
   original_page = require('./original_page.js').original_page;
