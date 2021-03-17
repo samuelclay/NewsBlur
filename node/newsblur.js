@@ -45,6 +45,7 @@
   if (ENV_PROD) {
     Sentry.init({
       dsn: process.env.SENTRY_DSN,
+      debug: true,
       integrations: [
         new Sentry.Integrations.Http({
           tracing: true
