@@ -1,5 +1,5 @@
 ---
-- hosts: node
+- hosts: node,staging
   gather_facts: false
   vars_files:
     - env_vars/base.yml
@@ -26,6 +26,4 @@
           target_host: node-text
         - container_name: node
           target_host: node-favicons
-        - container_name: imageproxy
-          target_host: node-images
 
