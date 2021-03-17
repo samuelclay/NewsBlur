@@ -7,7 +7,7 @@
 
 - name: Add SERVER_NAME to app secrets
   lineinfile:
-    path: /srv/newsblur/.env
+    path: /srv/newsblur/node/.env
     line: 'SERVER_NAME = "{{ inventory_hostname }}"'
 
 - name: Start node docker containers

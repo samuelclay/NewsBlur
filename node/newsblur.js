@@ -51,7 +51,7 @@
 
   app.use(Sentry.Handlers.errorHandler());
 
-  log.debug("Starting NewsBlur Node Server");
+  log.debug(`Starting NewsBlur Node Server: ${process.env.SERVER_NAME}`);
 
   server.listen(8008);
 
