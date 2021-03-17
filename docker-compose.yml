@@ -92,7 +92,7 @@ services:
 
   db_elasticsearch:
     container_name: db_elasticsearch
-    image: elasticsearch:2.4.4
+    image: elasticsearch:1.7.6
     ports:
       - 9200:9200
     volumes:
