@@ -5,7 +5,7 @@ mkdirp = require 'mkdirp'
 log    = require './log.js'
 
 original_page = (app) =>
-    DEV = process.env.NODE_ENV == 'development'
+    DEV = process.env.NODE_ENV == 'development' || process.env.NODE_ENV == 'docker'
 
     DB_PATH = if DEV then 'originals' else '/srv/originals'
 
