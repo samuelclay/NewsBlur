@@ -47,7 +47,7 @@ if ENV_PROD
     throw new Error("Debugging Sentry")
 
   app.use(Sentry.Handlers.errorHandler())
-  log.debug "Setitng up Sentry debugging: #{process.env.SENTRY_DSN.substr(0, 20)}..."
+  log.debug "Setting up Sentry debugging: #{process.env.SENTRY_DSN.substr(0, 20)}..."
 
 log.debug "Starting NewsBlur Node Server: #{process.env.SERVER_NAME}"
 server.listen(8008)
