@@ -29,7 +29,8 @@
     state: started
     container_default_behavior: no_defaults
     pull: true
-    network_mode: host
+    ports: 
+      - "{{ item.ports }}"
     env:
       NODE_ENV: "production"
     restart_policy: unless-stopped
@@ -38,7 +39,7 @@
   with_items:
     - container_name: imageproxy
       image: willnorris/imageproxy
-      ports: 8080:8080
+      ports: 8088:8080
       target_host: node-images
   when: item.target_host in inventory_hostname
 
@@ -47,13 +48,18 @@
   become: yes
   template:
     src: consul_service.json
-    dest: /etc/consul.d/{{item}}.json
+    dest: /etc/consul.d/{{item.target_host}}.json
   with_items:
-    - node-socket
-    - node-page
-    - node-text
-    - node-favicons
-    - node-images
+    - target_host: node-socket
+      port: 8008
+    - target_host: node-page
+      port: 8008
+    - target_host: node-text
+      port: 8008
+    - target_host: node-favicons
+      port: 8008
+    - target_host: node-images
+      port: 8088
   notify:
     - reload consul
-  when: item in inventory_hostname and disable_consul_services is not defined
+  when: item.target_host in inventory_hostname and disable_consul_services is not defined

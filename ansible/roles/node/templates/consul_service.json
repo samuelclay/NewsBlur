@@ -1,24 +1,25 @@
 {
     "service": {
         "name": "{{ inventory_hostname|regex_replace('\d+', '') }}",
-        "id": "{{ inventory_hostname }}-web",
+        "id": "{{ inventory_hostname }}",
         "tags": [
-            "web"
+            "web",
+            "node"
         ],
-        "port": 8008
+        "port": {{ item.port }}
 
         {% if item.target_host in ["node-images", "node-favicons", "node-text", "node-page"] %} 
                                ,
         "checks": [{
-            "id": "{{inventory_hostname}}-node-ping",
+            "id": "{{inventory_hostname}}-ping",
             {% if item.target_host == "node-images" %}
-            "http": "http://{{ ansible_ssh_host }}:8080/sc,sN1megONJiGNy-CCvqzVPTv-TWRhgSKhFlf61XAYESl4=/http:/samuelclay.com/static/images/2019%20-%20Cuba.jpg",
+            "http": "http://{{ ansible_ssh_host }}:{{ item.port }}/sc,sN1megONJiGNy-CCvqzVPTv-TWRhgSKhFlf61XAYESl4=/http:/samuelclay.com/static/images/2019%20-%20Cuba.jpg",
             {% elif item.target_host == "node-favicons" %}
-            "http": "http://{{ ansible_ssh_host }}:8008/rss_feeds/icon/1",
+            "http": "http://{{ ansible_ssh_host }}:{{ item.port }}/rss_feeds/icon/1",
             {% elif item.target_host == "node-text" %}
-            "http": "http://{{ ansible_ssh_host }}:8008/rss_feeds/original_text_fetcher?test=1",
+            "http": "http://{{ ansible_ssh_host }}:{{ item.port }}/rss_feeds/original_text_fetcher?test=1",
             {% elif item.target_host == "node-page" %}
-            "http": "http://{{ ansible_ssh_host }}:8008/original_page/1?test=1",
+            "http": "http://{{ ansible_ssh_host }}:{{ item.port }}/original_page/1?test=1",
             {% endif %}
             "interval": "15s"
         }]
