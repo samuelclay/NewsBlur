@@ -27,7 +27,8 @@
   
 - name: Copy toprc
   copy: src=toprc.txt dest=~/.toprc
- 
+  tags: zsh
+
 - name: Copy gitconfig
   copy: src=gitconfig.txt dest=~/.gitconfig
 
