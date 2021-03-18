@@ -197,10 +197,6 @@ class SearchStory:
         return "%s-index" % cls.name
         
     @classmethod
-    def type_name(cls):
-        return "%s-type" % cls.name
-        
-    @classmethod
     def create_elasticsearch_mapping(cls, delete=False):
         if delete:
             cls.ES.indices.delete(cls.index_name(), ignore=404)
@@ -263,14 +259,14 @@ class SearchStory:
             "date"      : story_date,
         }
         try:
-            cls.ES.index(doc, "%s-index" % cls.name, "%s-type" % cls.name, story_hash)
+            cls.ES.index(body=doc, index=cls.index_name(), id=story_hash)
         except elasticsearch.exceptions.ConnectionError:
             logging.debug(" ***> ~FRNo search server available.")
     
     @classmethod
     def remove(cls, story_hash):
         try:
-            cls.ES.delete("%s-index" % cls.name, "%s-type" % cls.name, story_hash)
+            cls.ES.delete(index=cls.index_name(), id=story_hash)
         except elasticsearch.exceptions.ConnectionError:
             logging.debug(" ***> ~FRNo search server available.")
         
@@ -287,10 +283,10 @@ class SearchStory:
             query    = re.sub(r'([^\s\w_\-])+', ' ', query) # Strip non-alphanumeric
         sort     = "date:desc" if order == "newest" else "date:asc"
         string_q = pyes.query.QueryStringQuery(query, default_operator="AND")
-        feed_q   = pyes.query.TermsQuery('feed_id', feed_ids[:1000])
+        feed_q   = pyes.query.TermsQuery('feed_id', feed_ids[:2000])
         q        = pyes.query.BoolQuery(must=[string_q, feed_q])
         try:
-            results  = cls.ES.search(q, indices=cls.index_name(), doc_types=[cls.type_name()],
+            results  = cls.ES.search(q, indices=cls.index_name(),
                                      partial_fields={}, sort=sort, start=offset, size=limit)
         except elasticsearch.exceptions.ConnectionError:
             logging.debug(" ***> ~FRNo search server available.")
@@ -317,7 +313,7 @@ class SearchStory:
         sort     = "date:desc" if order == "newest" else "date:asc"
         string_q = pyes.query.QueryStringQuery(query, default_operator="AND")
         try:
-            results  = cls.ES.search(string_q, indices=cls.index_name(), doc_types=[cls.type_name()],
+            results  = cls.ES.search(string_q, indices=cls.index_name(),
                                      partial_fields={}, sort=sort, start=offset, size=limit)
         except elasticsearch.exceptions.ConnectionError:
             logging.debug(" ***> ~FRNo search server available.")
@@ -353,10 +349,6 @@ class SearchFeed:
     def index_name(cls):
         return "%s-index" % cls.name
         
-    @classmethod
-    def type_name(cls):
-        return "%s-type" % cls.name
-
     @classmethod
     def create_elasticsearch_mapping(cls, delete=False):
         if delete:
@@ -436,8 +428,8 @@ class SearchFeed:
             "num_subscribers"   : num_subscribers,
         }
         try:
-            cls.ES().index(doc, cls.index_name(), cls.type_name(), feed_id)
-        except pyes.exceptions.NoServerAvailable:
+            cls.ES().index(body=doc, index=cls.index_name(), id=feed_id)
+        except elasticsearch.exceptions.ConnectionError:
             logging.debug(" ***> ~FRNo search server available.")
 
     @classmethod
@@ -445,7 +437,7 @@ class SearchFeed:
         try:
             cls.ES().default_indices = cls.index_name()
             cls.ES().indices.refresh()
-        except pyes.exceptions.NoServerAvailable:
+        except elasticsearch.exceptions.ConnectionError:
             logging.debug(" ***> ~FRNo search server available.")
             return []
         
@@ -458,7 +450,7 @@ class SearchFeed:
         q.add_should(pyes.query.MatchQuery('link', text, analyzer="simple", cutoff_frequency=0.0005, minimum_should_match="75%"))
         q.add_should(pyes.query.MatchQuery('title', text, analyzer="simple", cutoff_frequency=0.0005, minimum_should_match="75%"))
         q = pyes.Search(q, min_score=1)
-        results = cls.ES().search(query=q, size=max_subscribers, doc_types=[cls.type_name()], sort="num_subscribers:desc")
+        results = cls.ES().search(query=q, size=max_subscribers, sort="num_subscribers:desc")
 
         return results
     
