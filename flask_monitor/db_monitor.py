@@ -4,7 +4,7 @@ import psycopg2
 import pymysql
 import pymongo
 import redis
-import pyes
+from elasticsearch import Elasticsearch
 
 from newsblur_web import settings
 
