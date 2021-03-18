@@ -391,7 +391,7 @@ resource "digitalocean_droplet" "db-mongo-analytics" {
 }
 
 resource "digitalocean_droplet" "task-celery" {
-  count    = 2
+  count    = 10
   image    = var.droplet_os
   name     = "task-celery${count.index+1}"
   region   = var.droplet_region
@@ -412,40 +412,6 @@ resource "digitalocean_droplet" "task-work" {
   count    = 2
   image    = var.droplet_os
   name     = "task-work${count.index+1}"
-  region   = var.droplet_region
-  size     = var.droplet_size
-  ssh_keys = [digitalocean_ssh_key.default.fingerprint]
-  provisioner "local-exec" {
-    command = "/srv/newsblur/ansible/utils/generate.py; sleep 120"
-  }
-  provisioner "local-exec" {
-    command = "cd ..; ansible-playbook -l ${self.name} ansible/setup_root.yml"
-  }
-  provisioner "local-exec" {
-    command = "cd ..; ansible-playbook -l ${self.name} ansible/provision.yml"
-  }
-}
-
-resource "digitalocean_droplet" "task-search" {
-  image    = var.droplet_os
-  name     = "task-search"
-  region   = var.droplet_region
-  size     = var.droplet_size
-  ssh_keys = [digitalocean_ssh_key.default.fingerprint]
-  provisioner "local-exec" {
-    command = "/srv/newsblur/ansible/utils/generate.py; sleep 120"
-  }
-  provisioner "local-exec" {
-    command = "cd ..; ansible-playbook -l ${self.name} ansible/setup_root.yml"
-  }
-  provisioner "local-exec" {
-    command = "cd ..; ansible-playbook -l ${self.name} ansible/provision.yml"
-  }
-}
-
-resource "digitalocean_droplet" "task-beat" {
-  image    = var.droplet_os
-  name     = "task-beat"
   region   = var.droplet_region
   size     = var.droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]

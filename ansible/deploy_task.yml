@@ -19,8 +19,6 @@
       when: item.service_name in inventory_hostname
       with_items:
         - service_name: task-celery
-        - service_name: task-beat
-        - service_name: task-search
         - service_name: task-work
       register: 
 
@@ -33,8 +31,6 @@
       when: item.service_name in inventory_hostname
       with_items:
         - service_name: task-celery
-        - service_name: task-beat
-        - service_name: task-search
         - service_name: task-work
       tags:
         - never
@@ -49,8 +45,6 @@
       when: item.service_name in inventory_hostname
       with_items:
         - service_name: task-celery
-        - service_name: task-beat
-        - service_name: task-search
         - service_name: task-work
       tags:
         - never

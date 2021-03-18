@@ -29,13 +29,9 @@
   when: "item.container_name in inventory_hostname"
   with_items:
     - container_name: task-celery
-      command: "celery worker -A newsblur_web --loglevel=INFO -Q new_feeds,push_feeds,update_feeds" 
-    - container_name: task-beat
-      command: "celery worker -A newsblur_web --loglevel=INFO -Q beat_feeds_task -c 1" 
-    - container_name: task-search
-      command: "celery worker -A newsblur_web --loglevel=INFO -Q search_indexer -c 4"
+      command: "celery worker -A newsblur_web --loglevel=INFO -Q new_feeds,push_feeds,update_feeds,search_indexer" 
     - container_name: task-work
-      command: "celery worker -A newsblur_web --loglevel=INFO -Q work_queue"
+      command: "celery worker -A newsblur_web --loglevel=INFO -Q beat_feeds_task,work_queue,cron_queue"
 
 - name: Register celery_task in consul
   tags: consul
@@ -48,8 +44,6 @@
   when: "item.service_name in inventory_hostname"
   with_items:
     - service_name: task-celery
-    - service_name: task-beat
-    - service_name: task-search
     - service_name: task-work
 
 - name: Reload celery
@@ -59,7 +53,5 @@
   when: app_changed.changed and item.container_name in inventory_hostname
   with_items:
     - container_name: task-celery
-    - container_name: task-beat
-    - container_name: task-search
     - container_name: task-work
   changed_when: app_changed.changed

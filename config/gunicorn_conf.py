@@ -1,3 +1,4 @@
+import os
 import psutil
 import math
 
@@ -29,3 +30,5 @@ if workers <= 4:
 if workers > 8:
     workers = 8
 
+if os.environ.get('DOCKERBUILD', False):
+    workers = 1
