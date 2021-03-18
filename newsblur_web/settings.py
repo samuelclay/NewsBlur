@@ -170,11 +170,6 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'verbose'
         },
-        'pyes':{
-            'level': 'DEBUG',
-            'class': 'logging.StreamHandler',
-            'formatter': 'verbose'
-        },
         'vendor.apns':{
             'level': 'DEBUG',
             'class': 'logging.StreamHandler',
@@ -219,11 +214,6 @@ LOGGING = {
             'propagate': False,
         },
         'readability': {
-            'handlers': ['console', 'log_file'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-        'pyes': {
             'handlers': ['console', 'log_file'],
             'level': 'DEBUG',
             'propagate': False,

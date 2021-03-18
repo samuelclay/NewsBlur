@@ -2,7 +2,7 @@ import re
 import time
 import datetime
 import pymongo
-import pyes
+import elasticsearch
 import redis
 import celery
 import mongoengine as mongo
@@ -189,7 +189,7 @@ class MUserSearch(mongo.Document):
 
 class SearchStory:
     
-    ES = pyes.ES(settings.ELASTICSEARCH_STORY_HOSTS)
+    ES = elasticsearch.Elasticsearch(settings.ELASTICSEARCH_STORY_HOSTS)
     name = "stories"
     
     @classmethod
@@ -203,51 +203,54 @@ class SearchStory:
     @classmethod
     def create_elasticsearch_mapping(cls, delete=False):
         if delete:
-            cls.ES.indices.delete_index_if_exists("%s-index" % cls.name)
-        cls.ES.indices.create_index_if_missing("%s-index" % cls.name)
+            cls.ES.indices.delete(cls.index_name(), ignore=404)
+        try:
+            cls.ES.indices.create(cls.index_name())
+        except elasticsearch.exceptions.RequestError as e:
+            if 'already exists' in str(e):
+                pass
+            else:
+                raise e
+        
         mapping = { 
             'title': {
                 'boost': 3.0,
-                'index': 'analyzed',
-                'store': 'no',
-                'type': 'string',
+                'store': False,
+                'type': 'text',
                 'analyzer': 'standard',
             },
             'content': {
                 'boost': 1.0,
-                'index': 'analyzed',
-                'store': 'no',
-                'type': 'string',
+                'store': False,
+                'type': 'text',
                 'analyzer': 'simple',
             },
             'tags': {
                 'boost': 2.0,
-                'index': 'analyzed',
-                'store': 'no',
-                'type': 'string',
-                'analyzer': 'standard',
+                'store': False,
+                'type': 'keyword',
             },
             'author': {
                 'boost': 1.0,
-                'index': 'analyzed',
-                'store': 'no',
-                'type': 'string',   
+                'store': False,
+                'type': 'text',   
                 'analyzer': 'simple',
             },
             'feed_id': {
-                'store': 'no',
+                'store': False,
                 'type': 'integer'
             },
             'date': {
-                'store': 'no',
+                'store': False,
                 'type': 'date',
             }
         }
-        cls.ES.indices.put_mapping("%s-type" % cls.name, {
+        cls.ES.indices.put_mapping(index=cls.index_name(), body={
             'properties': mapping,
             '_source': {'enabled': False},
-        }, ["%s-index" % cls.name])
-        
+        })
+        cls.ES.indices.flush()
+
     @classmethod
     def index(cls, story_hash, story_title, story_content, story_tags, story_author, story_feed_id, 
               story_date):
@@ -261,19 +264,19 @@ class SearchStory:
         }
         try:
             cls.ES.index(doc, "%s-index" % cls.name, "%s-type" % cls.name, story_hash)
-        except pyes.exceptions.NoServerAvailable:
+        except elasticsearch.exceptions.ConnectionError:
             logging.debug(" ***> ~FRNo search server available.")
     
     @classmethod
     def remove(cls, story_hash):
         try:
             cls.ES.delete("%s-index" % cls.name, "%s-type" % cls.name, story_hash)
-        except pyes.exceptions.NoServerAvailable:
+        except elasticsearch.exceptions.ConnectionError:
             logging.debug(" ***> ~FRNo search server available.")
         
     @classmethod
     def drop(cls):
-        cls.ES.indices.delete_index_if_exists("%s-index" % cls.name)
+        cls.ES.indices.delete(cls.index_name(), ignore=404)
         
     @classmethod
     def query(cls, feed_ids, query, order, offset, limit, strip=False):
@@ -289,7 +292,7 @@ class SearchStory:
         try:
             results  = cls.ES.search(q, indices=cls.index_name(), doc_types=[cls.type_name()],
                                      partial_fields={}, sort=sort, start=offset, size=limit)
-        except pyes.exceptions.NoServerAvailable:
+        except elasticsearch.exceptions.ConnectionError:
             logging.debug(" ***> ~FRNo search server available.")
             return []
 
@@ -298,7 +301,7 @@ class SearchStory:
         
         try:
             result_ids = [r.get_id() for r in results]
-        except pyes.InvalidQuery as e:
+        except elasticsearch.exceptions.ElasticsearchException as e:
             logging.info(" ---> ~FRInvalid search query \"%s\": %s" % (query, e))
             return []
         
@@ -316,7 +319,7 @@ class SearchStory:
         try:
             results  = cls.ES.search(string_q, indices=cls.index_name(), doc_types=[cls.type_name()],
                                      partial_fields={}, sort=sort, start=offset, size=limit)
-        except pyes.exceptions.NoServerAvailable:
+        except elasticsearch.exceptions.ConnectionError:
             logging.debug(" ***> ~FRNo search server available.")
             return []
 
@@ -325,7 +328,7 @@ class SearchStory:
         
         try:
             result_ids = [r.get_id() for r in results]
-        except pyes.InvalidQuery as e:
+        except elasticsearch.exceptions.ElasticsearchException as e:
             logging.info(" ---> ~FRInvalid search query \"%s\": %s" % (query, e))
             return []
         
@@ -341,8 +344,8 @@ class SearchFeed:
     @classmethod
     def ES(cls):
         if cls._es_client is None:
-            cls._es_client = pyes.ES(settings.ELASTICSEARCH_FEED_HOSTS)
-            if not cls._es_client.indices.exists_index(cls.index_name()):
+            cls._es_client = elasticsearch.Elasticsearch(settings.ELASTICSEARCH_FEED_HOSTS)
+            if not cls._es_client.indices.exists(cls.index_name()):
                 cls.create_elasticsearch_mapping()
         return cls._es_client
     
@@ -357,9 +360,16 @@ class SearchFeed:
     @classmethod
     def create_elasticsearch_mapping(cls, delete=False):
         if delete:
-            cls.ES().indices.delete_index_if_exists(cls.index_name())
+            cls.ES().indices.delete(cls.index_name(), ignore=404)
+        try:
+            cls.ES().indices.create(cls.index_name())
+        except elasticsearch.exceptions.RequestError as e:
+            if 'already exists' in str(e):
+                pass
+            else:
+                raise e
 
-        settings =  {
+        settings = {
             "index" : {
                 "analysis": {
                     "analyzer": {
@@ -379,21 +389,22 @@ class SearchFeed:
                 }
             }
         }
-        cls.ES().indices.create_index_if_missing(cls.index_name(), settings)
+        cls.ES().indices.close(cls.index_name())
+        cls.ES().indices.put_settings(body=settings, index=cls.index_name())
+        cls.ES().indices.open(cls.index_name())
 
         mapping = {
             "address": {
                 "analyzer": "edgengram_analyzer",
                 "store": False,
                 "term_vector": "with_positions_offsets",
-                "type": "string"
+                "type": "text"
             },
             "feed_id": {
                 "store": True,
-                "type": "string"
+                "type": "text"
             },
             "num_subscribers": {
-                "index": "analyzed",
                 "store": True,
                 "type": "long"
             },
@@ -401,18 +412,18 @@ class SearchFeed:
                 "analyzer": "edgengram_analyzer",
                 "store": False,
                 "term_vector": "with_positions_offsets",
-                "type": "string"
+                "type": "text"
             },
             "link": {
                 "analyzer": "edgengram_analyzer",
                 "store": False,
                 "term_vector": "with_positions_offsets",
-                "type": "string"
+                "type": "text"
             }
         }
-        cls.ES().indices.put_mapping(cls.type_name(), {
+        cls.ES().indices.put_mapping(index=cls.index_name(), body={
             'properties': mapping,
-        }, [cls.index_name()])
+        })
         cls.ES().indices.flush()
 
     @classmethod
