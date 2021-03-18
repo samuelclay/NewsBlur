@@ -17,7 +17,7 @@ IGNORE_HOSTS = [
     'app-push',
 ]
 
-def main(role="app", role2="app", command=None, path=None):
+def main(roles=None, command=None, path=None):
     delay = 1
 
     hosts = subprocess.check_output(['ansible-inventory', '--list'])
@@ -26,10 +26,13 @@ def main(role="app", role2="app", command=None, path=None):
         return
     hosts = json.loads(hosts)
 
+    if not roles:
+        roles = ['app']
+
     while True:
         try:
-            streams = create_streams_for_roles(hosts, role, role2, command=command, path=path)
-            print(" --- Loading %s %s/%s Log Tails ---" % (len(streams), role, role2))
+            streams = create_streams_for_roles(hosts, roles, command=command, path=path)
+            print(" --- Loading %s %s Log Tails ---" % (len(streams), roles))
             read_streams(streams)
         # except UnicodeDecodeError: # unexpected end of data
         #     print " --- Lost connections - Retrying... ---"
@@ -44,7 +47,7 @@ def main(role="app", role2="app", command=None, path=None):
             print(" --- End of Logging ---")
             break
 
-def create_streams_for_roles(hosts, role, role2, command=None, path=None):
+def create_streams_for_roles(hosts, roles, command=None, path=None):
     streams = list()
     found = set()
 
@@ -52,16 +55,17 @@ def create_streams_for_roles(hosts, role, role2, command=None, path=None):
         path = "/srv/newsblur/logs/newsblur.log"
     if not command:
         command = "tail -f"
-    if role in hosts:
-        for hostname in (hosts[role]['hosts'] + hosts[role2]['hosts']):
-            if any(h in hostname for h in IGNORE_HOSTS) and role != 'push': continue
-            follow_host(hosts, streams, found, hostname, command, path)
-    else:
-        host = role
-        role = re.search(r'([^0-9]+)', host).group()
-        for hostname in hosts[role]:
-            if hostname['name'] == host:
+    for role in roles:
+        if role in hosts:
+            for hostname in hosts[role]['hosts']:
+                if any(h in hostname for h in IGNORE_HOSTS) and role != 'push': continue
                 follow_host(hosts, streams, found, hostname, command, path)
+        else:
+            host = role
+            role = re.search(r'([^0-9]+)', host).group()
+            for hostname in hosts[role]:
+                if hostname['name'] == host:
+                    follow_host(hosts, streams, found, hostname, command, path)
 
     return streams
 
