@@ -957,7 +957,7 @@ class Dispatcher:
         self.feeds_count = feeds_count
             
     def run_jobs(self):
-        if self.options['single_threaded']:
+        if self.options['single_threaded'] or self.num_threads == 1:
             return dispatch_workers(self.feeds_queue[0], self.options)
         else:
             for i in range(self.num_threads):
