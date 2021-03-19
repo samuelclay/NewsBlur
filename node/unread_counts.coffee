@@ -3,7 +3,7 @@ redis  = require 'redis'
 log    = require './log.js'
 
 unread_counts = (server) =>
-    ENV_DEV = process.env.NODE_ENV == 'development'
+    ENV_DEV = process.env.NODE_ENV == 'development' or process.env.NODE_ENV == 'debug'
     ENV_PROD = process.env.NODE_ENV == 'production'
     ENV_DOCKER = process.env.NODE_ENV == 'docker'
     REDIS_SERVER = "db_redis"

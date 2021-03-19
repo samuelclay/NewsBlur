@@ -14,7 +14,7 @@
 
   original_page = (app) => {
     var DB_PATH, DEV, splitFeedId;
-    DEV = process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'docker';
+    DEV = process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'docker' || process.env.NODE_ENV === 'debug';
     DB_PATH = DEV ? 'originals' : '/srv/originals';
     app.use(busboy());
     app.get(/^\/original_page\/(\d+)\/?/, (req, res) => {

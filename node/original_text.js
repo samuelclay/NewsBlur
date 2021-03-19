@@ -8,10 +8,10 @@
 
   original_text = (app) => {
     var DEV;
-    DEV = process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'docker';
+    DEV = process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'docker' || process.env.NODE_ENV === 'debug';
     log.debug("Starting NewsBlur Original Text Fetcher / Mercury Parser...");
     if (!DEV && !process.env.NODE_ENV) {
-      log.debug("Specify NODE_ENV=<development,docker,production>");
+      log.debug("Specify NODE_ENV=<debug,development,docker,production>");
       return;
     } else if (DEV) {
       log.debug("Running as development server");

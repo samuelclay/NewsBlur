@@ -10,7 +10,7 @@
 
   unread_counts = (server) => {
     var ENV_DEV, ENV_DOCKER, ENV_PROD, REDIS_PORT, REDIS_SERVER, SECURE, io;
-    ENV_DEV = process.env.NODE_ENV === 'development';
+    ENV_DEV = process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'debug';
     ENV_PROD = process.env.NODE_ENV === 'production';
     ENV_DOCKER = process.env.NODE_ENV === 'docker';
     REDIS_SERVER = "db_redis";
