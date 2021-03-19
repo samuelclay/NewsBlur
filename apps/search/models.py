@@ -3,6 +3,7 @@ import time
 import datetime
 import pymongo
 import elasticsearch
+import elasticsearch_dsl
 import redis
 import celery
 import mongoengine as mongo
@@ -289,22 +290,32 @@ class SearchStory:
         
         if strip:
             query    = re.sub(r'([^\s\w_\-])+', ' ', query) # Strip non-alphanumeric
-        sort     = "date:desc" if order == "newest" else "date:asc"
-        string_q = pyes.query.QueryStringQuery(query, default_operator="AND")
-        feed_q   = pyes.query.TermsQuery('feed_id', feed_ids[:2000])
-        q        = pyes.query.BoolQuery(must=[string_q, feed_q])
-        try:
-            results  = cls.ES().search(q, indices=cls.index_name(),
-                                       partial_fields={}, sort=sort, start=offset, size=limit)
-        except elasticsearch.exceptions.ConnectionError:
-            logging.debug(" ***> ~FRNo search server available.")
-            return []
+        sort     = "-date" if order == "newest" else "date"
+        s = elasticsearch_dsl.Search(using=cls.ES(), index=cls.index_name())
+        string_q = elasticsearch_dsl.Q('query_string', query=query)
+        feed_q = elasticsearch_dsl.Q('terms', feed_id=feed_ids[:2000])
+        search_q = string_q & feed_q
+        s = s.sort(sort)[offset:offset+limit]
+        s.query(search_q)
+        results = s.execute()
 
-        logging.info(" ---> ~FG~SNSearch ~FCstories~FG for: ~SB%s~SN (across %s feed%s)" % 
-                     (query, len(feed_ids), 's' if len(feed_ids) != 1 else ''))
+        # string_q = pyes.query.QueryStringQuery(query, default_operator="AND")
+        # feed_q   = pyes.query.TermsQuery('feed_id', feed_ids[:2000])
+        # q        = pyes.query.BoolQuery(must=[string_q, feed_q])
+        # try:
+        #     results  = cls.ES().search(q, indices=cls.index_name(),
+        #                                partial_fields={}, sort=sort, start=offset, size=limit)
+        # except elasticsearch.exceptions.ConnectionError:
+        #     logging.debug(" ***> ~FRNo search server available.")
+        #     return []
+
+        logging.info(" ---> ~FG~SNSearch ~FCstories~FG for: ~SB%s~SN, ~SB%s~SN results (across %s feed%s)" % 
+                     (query, len(results), len(feed_ids), 's' if len(feed_ids) != 1 else ''))
         
         try:
-            result_ids = [r.get_id() for r in results]
+            result_ids = [r.meta.id for r in results]
+        except AttributeError:
+            import pdb; pdb.set_trace()
         except elasticsearch.exceptions.ElasticsearchException as e:
             logging.info(" ---> ~FRInvalid search query \"%s\": %s" % (query, e))
             return []
