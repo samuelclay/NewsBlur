@@ -7,8 +7,9 @@
   log = require('./log.js');
 
   favicons = (app) => {
-    var ENV_DEV, ENV_DOCKER, ENV_PROD, MONGODB_PORT, MONGODB_SERVER, url;
-    ENV_DEV = process.env.NODE_ENV === 'development';
+    var ENV_DEBUG, ENV_DEV, ENV_DOCKER, ENV_PROD, MONGODB_PORT, MONGODB_SERVER, url;
+    ENV_DEBUG = process.env.NODE_ENV === 'debug';
+    ENV_DEV = process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'development';
     ENV_PROD = process.env.NODE_ENV === 'production';
     ENV_DOCKER = process.env.NODE_ENV === 'docker';
     MONGODB_SERVER = "db_mongo";
@@ -19,9 +20,11 @@
     }
     MONGODB_PORT = parseInt(process.env.MONGODB_PORT || 27017, 10);
     log.debug("Starting NewsBlur Favicon server...");
-    if (!ENV_DEV && !process.env.NODE_ENV) {
-      log.debug("Specify NODE_ENV=<development,docker,production>");
+    if (!process.env.NODE_ENV) {
+      log.debug("Specify NODE_ENV=<debug,development,docker,production>");
       return;
+    } else if (ENV_DEBUG) {
+      log.debug("Running as debug favicons server");
     } else if (ENV_DEV) {
       log.debug("Running as development server");
     } else if (ENV_DOCKER) {
@@ -29,10 +32,10 @@
     } else {
       log.debug("Running as production server");
     }
-    if (ENV_DEV || ENV_DOCKER) {
-      url = `mongodb://${MONGODB_SERVER}:${MONGODB_PORT}/newsblur`;
-    } else {
+    if (ENV_PROD) {
       url = `mongodb://${MONGODB_SERVER}:${MONGODB_PORT}/newsblur?replicaSet=nbset&readPreference=secondaryPreferred`;
+    } else {
+      url = `mongodb://${MONGODB_SERVER}:${MONGODB_PORT}/newsblur`;
     }
     return (async function() {
       var client, collection, db, err;
@@ -56,22 +59,30 @@
         var etag, feed_id;
         feed_id = parseInt(req.params[0], 10);
         etag = req.header('If-None-Match');
-        log.debug(`Feed: ${feed_id} ` + (etag ? ` / ${etag}` : ""));
+        if (ENV_DEBUG) {
+          log.debug(`Feed: ${feed_id} ` + (etag ? ` / ${etag}` : ""));
+        }
         return collection.findOne({
           _id: feed_id
         }, function(err, docs) {
           var body;
           if (!err && etag && docs && (docs != null ? docs.color : void 0) === etag) {
-            log.debug(`Cached: ${feed_id}, etag: ${etag}/${docs != null ? docs.color : void 0} ` + (err ? `(err: ${err})` : ""));
+            if (ENV_DEBUG) {
+              log.debug(`Cached: ${feed_id}, etag: ${etag}/${docs != null ? docs.color : void 0} ` + (err ? `(err: ${err})` : ""));
+            }
             return res.sendStatus(304);
           } else if (!err && docs && docs.data) {
-            log.debug(`Req: ${feed_id}, etag: ${etag}/${docs != null ? docs.color : void 0} ` + (err ? `(err: ${err})` : ""));
+            if (ENV_DEBUG) {
+              log.debug(`Req: ${feed_id}, etag: ${etag}/${docs != null ? docs.color : void 0} ` + (err ? `(err: ${err})` : ""));
+            }
             res.header('etag', docs.color);
             body = new Buffer(docs.data, 'base64');
             res.set("Content-Type", "image/png");
             return res.status(200).send(body);
           } else {
-            log.debug(`Redirect: ${feed_id}, etag: ${etag}/${docs != null ? docs.color : void 0} ` + (err ? `(err: ${err})` : ""));
+            if (ENV_DEBUG) {
+              log.debug(`Redirect: ${feed_id}, etag: ${etag}/${docs != null ? docs.color : void 0} ` + (err ? `(err: ${err})` : ""));
+            }
             if (ENV_DEV) {
               return res.redirect('/media/img/icons/circular/world.png');
             } else {

@@ -2,7 +2,8 @@ mongo = require 'mongodb'
 log    = require './log.js'
 
 favicons = (app) =>
-    ENV_DEV = process.env.NODE_ENV == 'development'
+    ENV_DEBUG = process.env.NODE_ENV == 'debug'
+    ENV_DEV = process.env.NODE_ENV == 'development' or process.env.NODE_ENV == 'development'
     ENV_PROD = process.env.NODE_ENV == 'production'
     ENV_DOCKER = process.env.NODE_ENV == 'docker'
     MONGODB_SERVER = "db_mongo"
@@ -13,9 +14,11 @@ favicons = (app) =>
     MONGODB_PORT = parseInt(process.env.MONGODB_PORT or 27017, 10)
 
     log.debug "Starting NewsBlur Favicon server..."
-    if !ENV_DEV and !process.env.NODE_ENV
-        log.debug "Specify NODE_ENV=<development,docker,production>"
+    if !process.env.NODE_ENV
+        log.debug "Specify NODE_ENV=<debug,development,docker,production>"
         return
+    else if ENV_DEBUG
+        log.debug "Running as debug favicons server"
     else if ENV_DEV
         log.debug "Running as development server"
     else if ENV_DOCKER
@@ -23,10 +26,10 @@ favicons = (app) =>
     else
         log.debug "Running as production server"
         
-    if ENV_DEV or ENV_DOCKER
-        url = "mongodb://#{MONGODB_SERVER}:#{MONGODB_PORT}/newsblur"
-    else
+    if ENV_PROD
         url = "mongodb://#{MONGODB_SERVER}:#{MONGODB_PORT}/newsblur?replicaSet=nbset&readPreference=secondaryPreferred"
+    else
+        url = "mongodb://#{MONGODB_SERVER}:#{MONGODB_PORT}/newsblur"
 
     do ->
         try
@@ -46,19 +49,23 @@ favicons = (app) =>
         app.get /\/rss_feeds\/icon\/(\d+)\/?/, (req, res) =>
             feed_id = parseInt(req.params[0], 10)
             etag = req.header('If-None-Match')
-            log.debug "Feed: #{feed_id} " + if etag then " / #{etag}" else ""
+            if ENV_DEBUG
+                log.debug "Feed: #{feed_id} " + if etag then " / #{etag}" else ""
             collection.findOne _id: feed_id, (err, docs) ->
                 if not err and etag and docs and docs?.color == etag
-                    log.debug "Cached: #{feed_id}, etag: #{etag}/#{docs?.color} " + if err then "(err: #{err})" else ""
+                    if ENV_DEBUG
+                        log.debug "Cached: #{feed_id}, etag: #{etag}/#{docs?.color} " + if err then "(err: #{err})" else ""
                     res.sendStatus 304
                 else if not err and docs and docs.data
-                    log.debug "Req: #{feed_id}, etag: #{etag}/#{docs?.color} " + if err then "(err: #{err})" else ""
+                    if ENV_DEBUG
+                        log.debug "Req: #{feed_id}, etag: #{etag}/#{docs?.color} " + if err then "(err: #{err})" else ""
                     res.header 'etag', docs.color
                     body = new Buffer(docs.data, 'base64')
                     res.set("Content-Type", "image/png")
                     res.status(200).send body
                 else
-                    log.debug "Redirect: #{feed_id}, etag: #{etag}/#{docs?.color} " + if err then "(err: #{err})" else ""
+                    if ENV_DEBUG
+                        log.debug "Redirect: #{feed_id}, etag: #{etag}/#{docs?.color} " + if err then "(err: #{err})" else ""
                     if ENV_DEV
                         res.redirect '/media/img/icons/circular/world.png' 
                     else
