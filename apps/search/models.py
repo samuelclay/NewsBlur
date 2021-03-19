@@ -189,8 +189,16 @@ class MUserSearch(mongo.Document):
 
 class SearchStory:
     
-    ES = elasticsearch.Elasticsearch(settings.ELASTICSEARCH_STORY_HOSTS)
+    _es_client = None
     name = "stories"
+    
+    @classmethod
+    def ES(cls):
+        if cls._es_client is None:
+            cls._es_client = elasticsearch.Elasticsearch(settings.ELASTICSEARCH_STORY_HOSTS)
+            if not cls._es_client.indices.exists(cls.index_name()):
+                cls.create_elasticsearch_mapping()
+        return cls._es_client
     
     @classmethod
     def index_name(cls):
@@ -199,9 +207,9 @@ class SearchStory:
     @classmethod
     def create_elasticsearch_mapping(cls, delete=False):
         if delete:
-            cls.ES.indices.delete(cls.index_name(), ignore=404)
+            cls.ES().indices.delete(cls.index_name(), ignore=404)
         try:
-            cls.ES.indices.create(cls.index_name())
+            cls.ES().indices.create(cls.index_name())
         except elasticsearch.exceptions.RequestError as e:
             if 'already exists' in str(e):
                 pass
@@ -241,11 +249,11 @@ class SearchStory:
                 'type': 'date',
             }
         }
-        cls.ES.indices.put_mapping(index=cls.index_name(), body={
+        cls.ES().indices.put_mapping(index=cls.index_name(), body={
             'properties': mapping,
             '_source': {'enabled': False},
         })
-        cls.ES.indices.flush()
+        cls.ES().indices.flush()
 
     @classmethod
     def index(cls, story_hash, story_title, story_content, story_tags, story_author, story_feed_id, 
@@ -259,25 +267,25 @@ class SearchStory:
             "date"      : story_date,
         }
         try:
-            cls.ES.index(body=doc, index=cls.index_name(), id=story_hash)
+            cls.ES().index(body=doc, index=cls.index_name(), id=story_hash)
         except elasticsearch.exceptions.ConnectionError:
             logging.debug(" ***> ~FRNo search server available.")
     
     @classmethod
     def remove(cls, story_hash):
         try:
-            cls.ES.delete(index=cls.index_name(), id=story_hash)
+            cls.ES().delete(index=cls.index_name(), id=story_hash)
         except elasticsearch.exceptions.ConnectionError:
             logging.debug(" ***> ~FRNo search server available.")
         
     @classmethod
     def drop(cls):
-        cls.ES.indices.delete(cls.index_name(), ignore=404)
+        cls.ES().indices.delete(cls.index_name(), ignore=404)
         
     @classmethod
     def query(cls, feed_ids, query, order, offset, limit, strip=False):
         cls.create_elasticsearch_mapping()
-        cls.ES.indices.refresh()
+        cls.ES().indices.refresh()
         
         if strip:
             query    = re.sub(r'([^\s\w_\-])+', ' ', query) # Strip non-alphanumeric
@@ -286,8 +294,8 @@ class SearchStory:
         feed_q   = pyes.query.TermsQuery('feed_id', feed_ids[:2000])
         q        = pyes.query.BoolQuery(must=[string_q, feed_q])
         try:
-            results  = cls.ES.search(q, indices=cls.index_name(),
-                                     partial_fields={}, sort=sort, start=offset, size=limit)
+            results  = cls.ES().search(q, indices=cls.index_name(),
+                                       partial_fields={}, sort=sort, start=offset, size=limit)
         except elasticsearch.exceptions.ConnectionError:
             logging.debug(" ***> ~FRNo search server available.")
             return []
@@ -306,15 +314,15 @@ class SearchStory:
     @classmethod
     def global_query(cls, query, order, offset, limit, strip=False):
         cls.create_elasticsearch_mapping()
-        cls.ES.indices.refresh()
+        cls.ES().indices.refresh()
         
         if strip:
             query    = re.sub(r'([^\s\w_\-])+', ' ', query) # Strip non-alphanumeric
         sort     = "date:desc" if order == "newest" else "date:asc"
         string_q = pyes.query.QueryStringQuery(query, default_operator="AND")
         try:
-            results  = cls.ES.search(string_q, indices=cls.index_name(),
-                                     partial_fields={}, sort=sort, start=offset, size=limit)
+            results  = cls.ES().search(string_q, indices=cls.index_name(),
+                                       partial_fields={}, sort=sort, start=offset, size=limit)
         except elasticsearch.exceptions.ConnectionError:
             logging.debug(" ***> ~FRNo search server available.")
             return []
@@ -335,7 +343,6 @@ class SearchFeed:
     
     _es_client = None
     name = "feeds"
-
 
     @classmethod
     def ES(cls):
