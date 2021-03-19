@@ -23,6 +23,7 @@ Django>=3.1,<3.2
 dnspython==2.0.0
 dopy==0.3.7
 elasticsearch>=7.0.0,<8.0.0
+elasticsearch-dsl>=7.0.0,<8.0.0
 Fabric>=1.14.0,<2
 Fabric2==2.5.0
 feedparser>=6,<7
