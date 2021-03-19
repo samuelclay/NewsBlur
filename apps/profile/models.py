@@ -465,8 +465,8 @@ class Profile(models.Model):
         try:
             subscriptions = stripe.Subscription.list(customer=stripe_customer)
             for subscription in subscriptions.data:
-                stripe.Subscription.delete(subscription['subscription'])
-                logging.user(self.user, "~FRCanceling Stripe subscription: %s" % subscription['subscription'])
+                stripe.Subscription.delete(subscription['id'])
+                logging.user(self.user, "~FRCanceling Stripe subscription: %s" % subscription['id'])
         except stripe.error.InvalidRequestError:
             logging.user(self.user, "~FRFailed to cancel Stripe subscription")
             return
