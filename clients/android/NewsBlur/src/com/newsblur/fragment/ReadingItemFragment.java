@@ -227,11 +227,6 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
                 clickShare();
             }
         });
-
-        if (selectedFeedView == DefaultFeedView.STORY && story.hasModifications) {
-            binding.readingStoryChanges.setVisibility(View.VISIBLE);
-            binding.readingStoryChanges.setOnClickListener(v -> loadStoryChanges());
-        }
 	}
 
     @Override
@@ -452,6 +447,18 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
 
         if (story.tags.length <= 0) {
             binding.readingItemTags.setVisibility(View.GONE);
+        }
+
+        if (selectedFeedView == DefaultFeedView.STORY && story.hasModifications) {
+            binding.readingStoryChanges.setVisibility(View.VISIBLE);
+            binding.readingStoryChanges.setOnClickListener(v -> loadStoryChanges());
+        }
+
+        if (story.starred && story.starredTimestamp != 0) {
+            String savedTimestampText = String.format(getResources().getString(R.string.story_saved_timestamp),
+                    StoryUtils.formatLongDate(getActivity(), story.starredTimestamp));
+            binding.readingItemSavedTimestamp.setVisibility(View.VISIBLE);
+            binding.readingItemSavedTimestamp.setText(savedTimestampText);
         }
 
 		binding.readingItemAuthors.setOnClickListener(new OnClickListener() {

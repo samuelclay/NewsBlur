@@ -197,7 +197,8 @@
 
     <string name="story_show_changes">Show Story Changes</string>
     <string name="story_hide_changes">Hide Story Changes</string>
-    <string name="story_changes_loading">Story Changes Loading ...</string>
+    <string name="story_changes_loading">Story Changes Loading …</string>
+    <string name="story_saved_timestamp">Saved %s</string>
     <string name="your_feeds_search_hint">Search your feeds</string>
     <string name="story_search_hint">Search for stories</string>
     <string name="empty_search_notice">Type a search term to begin</string>

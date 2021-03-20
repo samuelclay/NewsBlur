@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -114,14 +115,14 @@
                         android:layout_height="wrap_content"
                         android:layout_below="@id/reading_item_date"
                         android:layout_alignLeft="@id/reading_item_title"
-                        android:drawableStart="@drawable/ic_file_edit"
                         android:drawablePadding="6dp"
                         android:gravity="center_vertical"
                         android:paddingTop="8dp"
                         android:paddingBottom="4dp"
                         android:text="@string/story_show_changes"
                         android:textSize="12sp"
-                        android:visibility="gone" />
+                        android:visibility="gone"
+                        app:drawableStartCompat="@drawable/ic_file_edit" />
 
                     <com.newsblur.view.FlowLayout
                         android:id="@+id/reading_item_tags"
@@ -131,6 +132,20 @@
                         android:layout_alignLeft="@id/reading_item_title"
                         android:layout_marginTop="8dp"
                         android:layout_marginBottom="8dp" />
+
+                    <TextView
+                        android:id="@+id/reading_item_saved_timestamp"
+                        style="?readingItemMetadata"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/reading_item_tags"
+                        android:layout_alignLeft="@id/reading_item_tags"
+                        android:drawablePadding="2dp"
+                        android:gravity="center_vertical"
+                        android:textSize="12sp"
+                        android:visibility="gone"
+                        app:drawableStartCompat="@drawable/ic_clock" />
+
 
                 </RelativeLayout>
 

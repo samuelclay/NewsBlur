@@ -15,7 +15,7 @@ public class SavedStoriesItemsList extends ItemsList {
         if (fs.getSingleSavedTag() != null) {
             title = title + " - " + fs.getSingleSavedTag();
         }
-        UIUtils.setupToolbar(this, R.drawable.clock, title, false);
+        UIUtils.setupToolbar(this, R.drawable.ic_clock, title, false);
 	}
 
     @Override

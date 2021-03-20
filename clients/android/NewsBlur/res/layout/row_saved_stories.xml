@@ -13,7 +13,7 @@
         android:layout_marginLeft="12dp"
         android:layout_marginRight="12dp"
         android:contentDescription="@string/description_row_folder_icon"
-        android:src="@drawable/clock" />
+        android:src="@drawable/ic_clock" />
 
     <ImageView
         android:id="@+id/row_folder_indicator"
