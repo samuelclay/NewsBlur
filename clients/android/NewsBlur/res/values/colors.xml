@@ -126,13 +126,10 @@
     <color name="negative">#CC2A2E</color>
 
     <color name="tag_red">#D89595</color>
-    <color name="tag_red_shadow">#D29090</color>
     <color name="tag_red_text">#FFFFFF</color>
     <color name="tag_green">#AACFA6</color>
-    <color name="tag_green_shadow">#A4C7A0</color>
     <color name="tag_green_text">#FFFFFF</color>
     <color name="tag_gray">#E0E0DE</color>
-    <color name="tag_gray_shadow">#C9C9C8</color>
     <color name="tag_bg_dark">#757575</color>
 
     <color name="newsblur_blue">#319DC5</color>

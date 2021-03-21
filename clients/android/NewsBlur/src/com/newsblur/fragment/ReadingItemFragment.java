@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -17,6 +16,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.PopupMenu;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.DialogFragment;
 import android.text.TextUtils;
 import android.util.Log;
@@ -28,8 +28,8 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.webkit.WebView.HitTestResult;
-import android.widget.TextView;
 
+import com.google.android.material.chip.Chip;
 import com.newsblur.R;
 import com.newsblur.activity.FeedItemsList;
 import com.newsblur.activity.NbActivity;
@@ -496,51 +496,34 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
 	}
 
 	private void setupTagsAndIntel() {
-        int tag_green_text = UIUtils.getColor(getActivity(), R.color.tag_green_text);
-        int tag_red_text = UIUtils.getColor(getActivity(), R.color.tag_red_text);
-        Drawable tag_green_background = UIUtils.getDrawable(getActivity(), R.drawable.tag_background_positive);
-        Drawable tag_red_background = UIUtils.getDrawable(getActivity(), R.drawable.tag_background_negative);
-
         binding.readingItemTags.removeAllViews();
 		for (String tag : story.tags) {
-            // TODO: these textviews with compound images are buggy, but stubbed in to let colourblind users
-            //       see what is going on. these should be replaced with proper Chips when the v28 Chip lib
-            //       is in full release.
-            View v = getLayoutInflater().inflate(R.layout.tag_view, null);
+            View v = getLayoutInflater().inflate(R.layout.chip_view, null);
 
-            TextView tagText = (TextView) v.findViewById(R.id.tag_text);
-            tagText.setText(tag);
+            Chip chip = v.findViewById(R.id.chip);
+            chip.setText(tag);
 
             if (classifier != null && classifier.tags.containsKey(tag)) {
                 switch (classifier.tags.get(tag)) {
                 case Classifier.LIKE:
-                    UIUtils.setViewBackground(tagText, tag_green_background);
-                    tagText.setTextColor(tag_green_text);
-                    Drawable icon_like = UIUtils.getDrawable(getActivity(), R.drawable.ic_like_active);
-                    icon_like.setBounds(0, 0, 30, 30);
-                    tagText.setCompoundDrawables(null, null, icon_like, null);
-                    tagText.setCompoundDrawablePadding(8);
+                    chip.setChipBackgroundColorResource(R.color.tag_green);
+                    chip.setTextColor(ContextCompat.getColor(requireContext(), R.color.tag_green_text));
+                    chip.setChipIcon(ContextCompat.getDrawable(requireContext(), R.drawable.ic_thumb_up));
                     break;
                 case Classifier.DISLIKE:
-                    UIUtils.setViewBackground(tagText, tag_red_background);
-                    tagText.setTextColor(tag_red_text);
-                    Drawable icon_dislike = UIUtils.getDrawable(getActivity(), R.drawable.ic_dislike_active);
-                    icon_dislike.setBounds(0, 0, 30, 30);
-                    tagText.setCompoundDrawables(null, null, icon_dislike, null);
-                    tagText.setCompoundDrawablePadding(8);
+                    chip.setChipBackgroundColorResource(R.color.tag_red);
+                    chip.setTextColor(ContextCompat.getColor(requireContext(), R.color.tag_red_text));
+                    chip.setChipIcon(ContextCompat.getDrawable(requireContext(), R.drawable.ic_thumb_down));
                     break;
                 }
             }
 
             // tapping tags in saved stories doesn't bring up training
             if (!(fs.isAllSaved() || (fs.getSingleSavedTag() != null))) {
-                v.setOnClickListener(new OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        if (story.feedId.equals("0")) return; // cannot train on feedless stories
-                        StoryIntelTrainerFragment intelFrag = StoryIntelTrainerFragment.newInstance(story, fs);
-                        intelFrag.show(getParentFragmentManager(), StoryIntelTrainerFragment.class.getName());
-                    }
+                v.setOnClickListener(view -> {
+                    if (story.feedId.equals("0")) return; // cannot train on feedless stories
+                    StoryIntelTrainerFragment intelFrag = StoryIntelTrainerFragment.newInstance(story, fs);
+                    intelFrag.show(getParentFragmentManager(), StoryIntelTrainerFragment.class.getName());
                 });
             }
 
