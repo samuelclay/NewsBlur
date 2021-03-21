@@ -64,7 +64,7 @@
                     style="?rowItemHeaderBackground"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:paddingBottom="8dp">
+                    android:paddingBottom="16dp">
 
                     <ImageButton
                         android:id="@+id/story_context_menu_button"
@@ -124,14 +124,15 @@
                         android:visibility="gone"
                         app:drawableStartCompat="@drawable/ic_file_edit" />
 
-                    <com.newsblur.view.FlowLayout
+                    <com.google.android.material.chip.ChipGroup
                         android:id="@+id/reading_item_tags"
                         android:layout_width="match_parent"
-                        android:layout_height="17dp"
+                        android:layout_height="wrap_content"
                         android:layout_below="@id/reading_story_changes"
                         android:layout_alignLeft="@id/reading_item_title"
                         android:layout_marginTop="8dp"
-                        android:layout_marginBottom="8dp" />
+                        app:chipSpacingHorizontal="4dp"
+                        app:chipSpacingVertical="4dp" />
 
                     <TextView
                         android:id="@+id/reading_item_saved_timestamp"
@@ -140,12 +141,12 @@
                         android:layout_height="wrap_content"
                         android:layout_below="@+id/reading_item_tags"
                         android:layout_alignLeft="@id/reading_item_tags"
+                        android:layout_marginTop="8dp"
                         android:drawablePadding="2dp"
                         android:gravity="center_vertical"
                         android:textSize="12sp"
                         android:visibility="gone"
                         app:drawableStartCompat="@drawable/ic_clock" />
-
 
                 </RelativeLayout>
 
