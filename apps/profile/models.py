@@ -501,6 +501,30 @@ class Profile(models.Model):
         
         return ipn[0].payer_email
     
+    def update_email(self, new_email):
+        from apps.social.models import MSocialProfile
+
+        if self.user.email == new_email:
+            return
+
+        self.user.email = new_email
+        self.user.save()
+        
+        sp = MSocialProfile.get_user(self.user.pk)
+        sp.email = new_email
+        sp.save()
+
+        if self.stripe_id:
+            stripe_customer = self.stripe_customer()
+            stripe_customer.update({'email': new_email})
+            stripe_customer.save()
+
+    def stripe_customer(self):
+        if self.stripe_id:
+            stripe.api_key = settings.STRIPE_SECRET
+            stripe_customer = stripe.Customer.retrieve(self.stripe_id)
+            return stripe_customer
+    
     def activate_ios_premium(self, transaction_identifier=None, amount=36):
         payments = PaymentHistory.objects.filter(user=self.user,
                                                  payment_identifier=transaction_identifier,
