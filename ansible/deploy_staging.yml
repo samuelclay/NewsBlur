@@ -1,5 +1,5 @@
 ---
-- hosts: app
+- hosts: staging
   gather_facts: false
   vars_files:
     - env_vars/base.yml
