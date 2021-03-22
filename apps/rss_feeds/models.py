@@ -286,7 +286,7 @@ class Feed(models.Model):
             SearchFeed.create_elasticsearch_mapping(delete=True)
         
         last_pk = cls.objects.latest('pk').pk
-        for f in xrange(offset, last_pk, 1000):
+        for f in range(offset, last_pk, 1000):
             print(" ---> {f} / {last_pk} ({pct}%)".format(f=f, last_pk=last_pk, pct=str(float(f)/last_pk*100)[:2]))
             feeds = Feed.objects.filter(pk__in=range(f, f+1000), 
                                         active=True,

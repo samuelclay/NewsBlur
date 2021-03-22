@@ -213,7 +213,7 @@ class SearchStory:
             cls.ES().indices.create(cls.index_name())
         except elasticsearch.exceptions.RequestError as e:
             if 'already exists' in str(e):
-                pass
+                return
             else:
                 raise e
         
@@ -222,13 +222,13 @@ class SearchStory:
                 'boost': 3.0,
                 'store': False,
                 'type': 'text',
-                'analyzer': 'standard',
+                'analyzer': 'snowball',
             },
             'content': {
                 'boost': 1.0,
                 'store': False,
                 'type': 'text',
-                'analyzer': 'simple',
+                'analyzer': 'snowball',
             },
             'tags': {
                 'boost': 2.0,
@@ -290,13 +290,14 @@ class SearchStory:
         
         if strip:
             query    = re.sub(r'([^\s\w_\-])+', ' ', query) # Strip non-alphanumeric
-        sort     = "-date" if order == "newest" else "date"
+
+        sort = "-date" if order == "newest" else "date"
         s = elasticsearch_dsl.Search(using=cls.ES(), index=cls.index_name())
-        string_q = elasticsearch_dsl.Q('query_string', query=query)
+        string_q = elasticsearch_dsl.Q('query_string', query=query, default_operator="AND")
         feed_q = elasticsearch_dsl.Q('terms', feed_id=feed_ids[:2000])
         search_q = string_q & feed_q
+        s = s.query(search_q)
         s = s.sort(sort)[offset:offset+limit]
-        s.query(search_q)
         results = s.execute()
 
         # string_q = pyes.query.QueryStringQuery(query, default_operator="AND")
@@ -329,14 +330,22 @@ class SearchStory:
         
         if strip:
             query    = re.sub(r'([^\s\w_\-])+', ' ', query) # Strip non-alphanumeric
-        sort     = "date:desc" if order == "newest" else "date:asc"
-        string_q = pyes.query.QueryStringQuery(query, default_operator="AND")
-        try:
-            results  = cls.ES().search(string_q, indices=cls.index_name(),
-                                       partial_fields={}, sort=sort, start=offset, size=limit)
-        except elasticsearch.exceptions.ConnectionError:
-            logging.debug(" ***> ~FRNo search server available.")
-            return []
+
+        sort = "-date" if order == "newest" else "date"
+        s = elasticsearch_dsl.Search(using=cls.ES(), index=cls.index_name())
+        string_q = elasticsearch_dsl.Q('query_string', query=query, default_operator="AND")
+        s = s.query(string_q)
+        s = s.sort(sort)[offset:offset+limit]
+        results = s.execute()
+
+        # sort     = "date:desc" if order == "newest" else "date:asc"
+        # string_q = pyes.query.QueryStringQuery(query, default_operator="AND")
+        # try:
+        #     results  = cls.ES().search(string_q, indices=cls.index_name(),
+        #                                partial_fields={}, sort=sort, start=offset, size=limit)
+        # except elasticsearch.exceptions.ConnectionError:
+        #     logging.debug(" ***> ~FRNo search server available.")
+        #     return []
 
         logging.info(" ---> ~FG~SNSearch ~FCstories~FG for: ~SB%s~SN (across all feeds)" % 
                      (query))
@@ -375,7 +384,7 @@ class SearchFeed:
             cls.ES().indices.create(cls.index_name())
         except elasticsearch.exceptions.RequestError as e:
             if 'already exists' in str(e):
-                pass
+                return
             else:
                 raise e
 
@@ -439,11 +448,11 @@ class SearchFeed:
     @classmethod
     def index(cls, feed_id, title, address, link, num_subscribers):
         doc = {
-            "feed_id"           : feed_id,
-            "title"             : title,
-            "address"           : address,
-            "link"              : link,
-            "num_subscribers"   : num_subscribers,
+            "feed_id": feed_id,
+            "title": title,
+            "address": address,
+            "link": link,
+            "num_subscribers": num_subscribers,
         }
         try:
             cls.ES().index(body=doc, index=cls.index_name(), id=feed_id)
@@ -458,17 +467,28 @@ class SearchFeed:
         except elasticsearch.exceptions.ConnectionError:
             logging.debug(" ***> ~FRNo search server available.")
             return []
-        
+
         if settings.DEBUG:
             max_subscribers = 1
-        
-        logging.info("~FGSearch ~FCfeeds~FG: ~SB%s" % text)
-        q = pyes.query.BoolQuery()
-        q.add_should(pyes.query.MatchQuery('address', text, analyzer="simple", cutoff_frequency=0.0005, minimum_should_match="75%"))
-        q.add_should(pyes.query.MatchQuery('link', text, analyzer="simple", cutoff_frequency=0.0005, minimum_should_match="75%"))
-        q.add_should(pyes.query.MatchQuery('title', text, analyzer="simple", cutoff_frequency=0.0005, minimum_should_match="75%"))
-        q = pyes.Search(q, min_score=1)
-        results = cls.ES().search(query=q, size=max_subscribers, sort="num_subscribers:desc")
+
+        s = elasticsearch_dsl.Search(using=cls.ES(), index=cls.index_name())
+        address = elasticsearch_dsl.Q('match', address=text)
+        link = elasticsearch_dsl.Q('match', link=text)
+        title = elasticsearch_dsl.Q('match', title=text)
+        search_q = address | link | title
+        s = s.query(search_q).extra(cutoff_frequency="0.0005", minimum_should_match="75%")
+        s = s.sort("-num_subscribers")
+        body = s.to_dict()
+        print(f"Before: {body}")
+        results = s.execute()
+
+        # q = pyes.query.BoolQuery()
+        # q.add_should(pyes.query.MatchQuery('address', text, analyzer="simple", cutoff_frequency=0.0005, minimum_should_match="75%"))
+        # q.add_should(pyes.query.MatchQuery('link', text, analyzer="simple", cutoff_frequency=0.0005, minimum_should_match="75%"))
+        # q.add_should(pyes.query.MatchQuery('title', text, analyzer="simple", cutoff_frequency=0.0005, minimum_should_match="75%"))
+        # q = pyes.Search(q, min_score=1)
+        # results = cls.ES().search(query=q, size=max_subscribers, sort="num_subscribers:desc")
+        logging.info("~FGSearch ~FCfeeds~FG: ~SB%s~SN, ~SB%s~SN results" % (text, len(results)))
 
         return results
     
