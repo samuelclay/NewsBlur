@@ -9,6 +9,7 @@
   tasks:
     - name: Leave consul
       command: consul leave
+      ignore_errors: yes
 
     - name: Pull newsblur_web github
       git:

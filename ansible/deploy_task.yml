@@ -20,7 +20,6 @@
       with_items:
         - service_name: task-celery
         - service_name: task-work
-      register: 
 
     - name: Stop celery
       become: yes
