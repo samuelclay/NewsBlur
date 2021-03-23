@@ -45,12 +45,11 @@
     network_mode: host # This exposes port 80
     restart_policy: unless-stopped
     container_default_behavior: no_defaults
+    command: "haproxy -f /srv/newsblur/docker/haproxy/haproxy.consul.cfg"
     volumes:
-      - /srv/newsblur/docker/haproxy/haproxy.consul.cfg:/usr/local/etc/haproxy/haproxy.cfg:consistent
       - /srv/newsblur:/srv/newsblur:consistent
       - /etc/letsencrypt/live/newsblur.com:/etc/letsencrypt/live/newsblur.com:consistent
       - /etc/letsencrypt/archive/newsblur.com:/etc/letsencrypt/archive/newsblur.com:consistent
-
 - name: Restart HAProxy
   debug: 
     msg: Restarting HAProxy
