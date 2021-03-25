@@ -1664,6 +1664,8 @@ class RNewUserQueue:
     def user_position(cls, user_id):
         r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
         position = r.zrank(cls.KEY, user_id)
+        if position is None:
+            return 1
         if position >= 0:
             return position + 1
     
