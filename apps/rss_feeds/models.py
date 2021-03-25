@@ -13,7 +13,6 @@ import base64
 import pymongo
 import html
 import urllib.parse
-import urlparse
 from collections import defaultdict
 from operator import itemgetter
 from bson.objectid import ObjectId
@@ -2805,7 +2804,7 @@ class MStory(mongo.Document):
                 continue
             if image_url and len(image_url) >= 1024:
                 continue
-            image_url = urlparse.urljoin(self.story_permalink, image_url)
+            image_url = urllib.parse.urljoin(self.story_permalink, image_url)
             image_urls.append(image_url)
                 
         if not image_urls:
