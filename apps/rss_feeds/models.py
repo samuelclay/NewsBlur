@@ -1260,7 +1260,7 @@ class Feed(models.Model):
                           self.log_title[:30],
                           len(stories),
                           len(list(existing_stories.keys()))))
-        @timelimit(2)
+        @timelimit(5)
         def _1(story, story_content, existing_stories, new_story_hashes):
             existing_story, story_has_changed = self._exists_story(story, story_content, 
                                                                    existing_stories, new_story_hashes)
