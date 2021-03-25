@@ -207,7 +207,7 @@ def isXMLRelatedLink(link):
 
 r_brokenRedirect = re.compile('<newLocation[^>]*>(.*?)</newLocation>', re.S)
 def tryBrokenRedirect(data):
-    if '<newLocation' in data:
+    if b'<newLocation' in data:
         newuris = r_brokenRedirect.findall(data)
         if newuris and newuris[0]: return newuris[0].strip()
 
