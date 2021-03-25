@@ -4707,6 +4707,7 @@
                 return;
             }
             if (!force && NEWSBLUR.app.dashboard_rivers) return;
+            if (!NEWSBLUR.Globals.is_authenticated) return;
 
             NEWSBLUR.app.dashboard_rivers = {
                 'left': new NEWSBLUR.Views.DashboardRivers({ side: 'left' }),
