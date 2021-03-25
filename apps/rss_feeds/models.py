@@ -1999,7 +1999,7 @@ class Feed(models.Model):
             link = entry.get('id')
         return link
     
-    def _exists_story(self, story, story_content, existing_stories, new_story_hashes):
+    def _exists_story(self, story, story_content, existing_stories, new_story_hashes, lightweight=False):
         story_in_system = None
         story_has_changed = False
         story_link = self.get_permalink(story)
@@ -2059,6 +2059,9 @@ class Feed(models.Model):
                 existing_story.story_title == story.get('title')):
                 similiar_length_min = 20
             
+            # Skip content check if already failed due to a timeout. This way we catch titles
+            if lightweight: continue
+
             if (seq
                 and story_content
                 and len(story_content) > similiar_length_min
@@ -2442,6 +2445,9 @@ class MStory(mongo.Document):
     RE_STORY_HASH = re.compile(r"^(\d{1,10}):(\w{6})$")
     RE_RS_KEY = re.compile(r"^RS:(\d+):(\d+)$")
 
+    def __str__(self):
+        return f"{self.story_hash}: {self.story_title[:20]} ({len(self.story_content_z)} bytes)"
+    
     @property
     def guid_hash(self):
         return hashlib.sha1((self.story_guid).encode(encoding='utf-8')).hexdigest()[:6]
