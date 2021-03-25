@@ -28,6 +28,7 @@ from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
 from django.template.defaultfilters import slugify
 from django.utils.encoding import smart_bytes, smart_str
+from django.utils.encoding import DjangoUnicodeDecodeError
 from mongoengine.queryset import OperationError, Q, NotUniqueError
 from mongoengine.errors import ValidationError
 from vendor.timezones.utilities import localtime_for_timezone
@@ -1877,7 +1878,10 @@ class Feed(models.Model):
         if (not show_changes and 
             hasattr(story_db, 'story_latest_content_z') and 
             story_db.story_latest_content_z):
-            latest_story_content = smart_str(zlib.decompress(story_db.story_latest_content_z))
+            try:
+                latest_story_content = smart_str(zlib.decompress(story_db.story_latest_content_z))
+            except DjangoUnicodeDecodeError:
+                latest_story_content = zlib.decompress(story_db.story_latest_content_z)
         if story_db.story_content_z:
             story_content = smart_str(zlib.decompress(story_db.story_content_z))
         
