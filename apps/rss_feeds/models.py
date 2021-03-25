@@ -296,7 +296,10 @@ class Feed(models.Model):
                 Feed.objects.get(pk=feed_id).index_feed_for_search()
         
     def index_feed_for_search(self):
-        if self.num_subscribers > 1 and not self.branch_from_feed and not self.is_newsletter:
+        min_subscribers = 1
+        if settings.DEBUG:
+            min_subscribers = 0
+        if self.num_subscribers > min_subscribers and not self.branch_from_feed and not self.is_newsletter:
             SearchFeed.index(feed_id=self.pk, 
                              title=self.feed_title, 
                              address=self.feed_address, 
@@ -305,13 +308,13 @@ class Feed(models.Model):
     
     def index_stories_for_search(self):
         if self.search_indexed: return
-
-        self.search_indexed = True
-        self.save()
             
         stories = MStory.objects(story_feed_id=self.pk)
         for story in stories:
             story.index_story_for_search()
+
+        self.search_indexed = True
+        self.save()
     
     def sync_redis(self):
         return MStory.sync_feed_redis(self.pk)

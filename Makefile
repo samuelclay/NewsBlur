@@ -114,3 +114,6 @@ perf-ui:
 perf-docker:
 	- docker build . --file=./perf/Dockerfile --tag=perf-docker
 	- docker run -it -p 8089:8089 perf-docker locust -f locust.py
+
+clean:
+	- find . -name \*.pyc -delete

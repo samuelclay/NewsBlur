@@ -127,6 +127,9 @@ SESSION_REDIS_DB = 5
 ELASTICSEARCH_FEED_HOSTS = ["db_elasticsearch:9200"]
 ELASTICSEARCH_STORY_HOSTS = ["db_elasticsearch:9200"]
 
+ELASTICSEARCH_FEED_HOST = "http://db_elasticsearch:9200"
+ELASTICSEARCH_STORY_HOST = "http://db_elasticsearch:9200"
+
 BACKED_BY_AWS = {
     'pages_on_node': False,
     'pages_on_s3': False,

@@ -1,15 +1,15 @@
 ---
 - hosts: app
   gather_facts: false
-  serial: "50%"
+  # serial: "50%"
   vars_files:
     - env_vars/base.yml
     - env_vars/dev.yml
 
   tasks:
-    - name: Leave consul
-      command: consul leave
-      ignore_errors: yes
+    # - name: Leave consul
+    #   command: consul leave
+    #   ignore_errors: yes
 
     - name: Pull newsblur_web github
       git:

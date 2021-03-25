@@ -2,10 +2,10 @@ import re
 import time
 import datetime
 import pymongo
-import elasticsearch
-import elasticsearch_dsl
+import pyelasticsearch
 import redis
 import celery
+import html
 import mongoengine as mongo
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -196,9 +196,8 @@ class SearchStory:
     @classmethod
     def ES(cls):
         if cls._es_client is None:
-            cls._es_client = elasticsearch.Elasticsearch(settings.ELASTICSEARCH_STORY_HOSTS)
-            if not cls._es_client.indices.exists(cls.index_name()):
-                cls.create_elasticsearch_mapping()
+            cls._es_client = pyelasticsearch.ElasticSearch(settings.ELASTICSEARCH_STORY_HOST)
+            cls.create_elasticsearch_mapping()
         return cls._es_client
     
     @classmethod
@@ -208,14 +207,13 @@ class SearchStory:
     @classmethod
     def create_elasticsearch_mapping(cls, delete=False):
         if delete:
-            cls.ES().indices.delete(cls.index_name(), ignore=404)
+            cls.ES().delete_index(cls.index_name())
+
         try:
-            cls.ES().indices.create(cls.index_name())
-        except elasticsearch.exceptions.RequestError as e:
-            if 'already exists' in str(e):
-                return
-            else:
-                raise e
+            cls.ES().create_index(cls.index_name())
+            logging.debug(" ---> ~FCCreating search index for ~FM%s" % cls.index_name())
+        except pyelasticsearch.IndexAlreadyExistsError:
+            return
         
         mapping = { 
             'title': {
@@ -250,15 +248,16 @@ class SearchStory:
                 'type': 'date',
             }
         }
-        cls.ES().indices.put_mapping(index=cls.index_name(), body={
+        cls.ES().put_mapping(index=cls.index_name(), doc_type='story-type', mapping={
             'properties': mapping,
-            '_source': {'enabled': False},
         })
-        cls.ES().indices.flush()
+        cls.ES().flush(cls.index_name())
 
     @classmethod
     def index(cls, story_hash, story_title, story_content, story_tags, story_author, story_feed_id, 
               story_date):
+        cls.create_elasticsearch_mapping()
+
         doc = {
             "content"   : story_content,
             "title"     : story_title,
@@ -268,37 +267,65 @@ class SearchStory:
             "date"      : story_date,
         }
         try:
-            cls.ES().index(body=doc, index=cls.index_name(), id=story_hash)
-        except elasticsearch.exceptions.ConnectionError:
-            logging.debug(" ***> ~FRNo search server available.")
+            cls.ES().index(index=cls.index_name(), doc_type='story-type', doc=doc, id=story_hash)
+        except pyelasticsearch.ElasticHttpError as e:
+            logging.debug(" ***> ~FRNo search server available for story indexing.")
+            if settings.DEBUG:
+                raise e
     
     @classmethod
     def remove(cls, story_hash):
         try:
             cls.ES().delete(index=cls.index_name(), id=story_hash)
-        except elasticsearch.exceptions.ConnectionError:
-            logging.debug(" ***> ~FRNo search server available.")
+        except pyelasticsearch.ElasticHttpError:
+            logging.debug(" ***> ~FRNo search server available for story deletion.")
         
     @classmethod
     def drop(cls):
-        cls.ES().indices.delete(cls.index_name(), ignore=404)
+        try:
+            cls.ES().delete_index(cls.index_name())
+        except pyelasticsearch.ElasticHttpNotFoundError:
+            logging.debug(" ***> ~FBNo index found, nothing to drop.")
+
         
     @classmethod
     def query(cls, feed_ids, query, order, offset, limit, strip=False):
-        cls.create_elasticsearch_mapping()
-        cls.ES().indices.refresh()
+        try:
+            cls.ES().flush(index=cls.index_name())
+        except pyelasticsearch.ElasticHttpError:
+            logging.debug(" ***> ~FRNo search server available.")
+            return []
         
         if strip:
-            query    = re.sub(r'([^\s\w_\-])+', ' ', query) # Strip non-alphanumeric
+            query = re.sub(r'([^\s\w_\-])+', ' ', query) # Strip non-alphanumeric
+        query = html.unescape(query)
 
-        sort = "-date" if order == "newest" else "date"
-        s = elasticsearch_dsl.Search(using=cls.ES(), index=cls.index_name())
-        string_q = elasticsearch_dsl.Q('query_string', query=query, default_operator="AND")
-        feed_q = elasticsearch_dsl.Q('terms', feed_id=feed_ids[:2000])
-        search_q = string_q & feed_q
-        s = s.query(search_q)
-        s = s.sort(sort)[offset:offset+limit]
-        results = s.execute()
+        body = {
+            "query": {
+                "bool": {
+                    "must": [
+                        {"query_string": { "query": query, "default_operator": "AND" }},
+                        {"terms": { "feed_id": feed_ids[:2000] }},
+                    ]
+                }
+            },
+            'sort': [{'date': {'order': 'desc' if order == "newest" else "asc"}}],
+            'from': offset,
+            'size': limit
+        }
+        try:
+            results  = cls.ES().search(body, index=cls.index_name())
+        except pyelasticsearch.ElasticHttpError as e:
+            logging.debug(" ***> ~FRNo search server available for querying: %s" % e)
+            return []
+
+        # s = elasticsearch_dsl.Search(using=cls.ES(), index=cls.index_name())
+        # string_q = elasticsearch_dsl.Q('query_string', query=query, default_operator="AND")
+        # feed_q = elasticsearch_dsl.Q('terms', feed_id=feed_ids[:2000])
+        # search_q = string_q & feed_q
+        # s = s.query(search_q)
+        # s = s.sort(sort)[offset:offset+limit]
+        # results = s.execute()
 
         # string_q = pyes.query.QueryStringQuery(query, default_operator="AND")
         # feed_q   = pyes.query.TermsQuery('feed_id', feed_ids[:2000])
@@ -311,13 +338,11 @@ class SearchStory:
         #     return []
 
         logging.info(" ---> ~FG~SNSearch ~FCstories~FG for: ~SB%s~SN, ~SB%s~SN results (across %s feed%s)" % 
-                     (query, len(results), len(feed_ids), 's' if len(feed_ids) != 1 else ''))
+                     (query, len(results['hits']['hits']), len(feed_ids), 's' if len(feed_ids) != 1 else ''))
         
         try:
-            result_ids = [r.meta.id for r in results]
-        except AttributeError:
-            import pdb; pdb.set_trace()
-        except elasticsearch.exceptions.ElasticsearchException as e:
+            result_ids = [r['_id'] for r in results['hits']['hits']]
+        except Exception as e:
             logging.info(" ---> ~FRInvalid search query \"%s\": %s" % (query, e))
             return []
         
@@ -326,18 +351,30 @@ class SearchStory:
     @classmethod
     def global_query(cls, query, order, offset, limit, strip=False):
         cls.create_elasticsearch_mapping()
-        cls.ES().indices.refresh()
+        cls.ES().refresh()
         
         if strip:
-            query    = re.sub(r'([^\s\w_\-])+', ' ', query) # Strip non-alphanumeric
+            query = re.sub(r'([^\s\w_\-])+', ' ', query) # Strip non-alphanumeric
+        query = html.unescape(query)
 
-        sort = "-date" if order == "newest" else "date"
-        s = elasticsearch_dsl.Search(using=cls.ES(), index=cls.index_name())
-        string_q = elasticsearch_dsl.Q('query_string', query=query, default_operator="AND")
-        s = s.query(string_q)
-        s = s.sort(sort)[offset:offset+limit]
-        results = s.execute()
-
+        body = {
+            "query": {
+                "bool": {
+                    "must": [
+                        {"query_string": { "query": query, "default_operator": "AND" }},
+                    ]
+                }
+            },
+            'sort': [{'date': {'order': 'desc' if order == "newest" else "asc"}}],
+            'from': offset,
+            'size': limit
+        }
+        try:
+            results  = cls.ES().search(body, index=cls.index_name())
+        except pyelasticsearch.ElasticHttpError as e:
+            logging.debug(" ***> ~FRNo search server available for querying: %s" % e)
+            return []
+        
         # sort     = "date:desc" if order == "newest" else "date:asc"
         # string_q = pyes.query.QueryStringQuery(query, default_operator="AND")
         # try:
@@ -351,8 +388,8 @@ class SearchStory:
                      (query))
         
         try:
-            result_ids = [r.get_id() for r in results]
-        except elasticsearch.exceptions.ElasticsearchException as e:
+            result_ids = [r['_id'] for r in results['hits']['hits']]
+        except Exception as e:
             logging.info(" ---> ~FRInvalid search query \"%s\": %s" % (query, e))
             return []
         
@@ -367,9 +404,8 @@ class SearchFeed:
     @classmethod
     def ES(cls):
         if cls._es_client is None:
-            cls._es_client = elasticsearch.Elasticsearch(settings.ELASTICSEARCH_FEED_HOSTS)
-            if not cls._es_client.indices.exists(cls.index_name()):
-                cls.create_elasticsearch_mapping()
+            cls._es_client = pyelasticsearch.ElasticSearch(settings.ELASTICSEARCH_FEED_HOST)
+            cls.create_elasticsearch_mapping()
         return cls._es_client
     
     @classmethod
@@ -379,42 +415,38 @@ class SearchFeed:
     @classmethod
     def create_elasticsearch_mapping(cls, delete=False):
         if delete:
-            cls.ES().indices.delete(cls.index_name(), ignore=404)
-        try:
-            cls.ES().indices.create(cls.index_name())
-        except elasticsearch.exceptions.RequestError as e:
-            if 'already exists' in str(e):
-                return
-            else:
-                raise e
+            logging.debug(" ---> ~FRDeleting search index for ~FM%s" % cls.index_name())
+            cls.ES().delete_index(cls.index_name())
 
-        settings = {
-            "index" : {
-                "analysis": {
-                    "analyzer": {
-                        "edgengram_analyzer": {
-                            "filter": ["edgengram"],
-                            "tokenizer": "lowercase",
-                            "type": "custom"
+        try:
+            index_settings = {
+                "index" : {
+                    "analysis": {
+                        "analyzer": {
+                            "edgengram_analyzer": {
+                                "filter": ["edgengram_analyzer"],
+                                "tokenizer": "lowercase",
+                                "type": "custom"
+                            },
                         },
-                    },
-                    "filter": {
-                        "edgengram": {
-                            "max_gram": "15",
-                            "min_gram": "1",
-                            "type": "edgeNGram"
-                        },
+                        "filter": {
+                            "edgengram_analyzer": {
+                                "max_gram": "15",
+                                "min_gram": "1",
+                                "type": "edge_ngram"
+                            },
+                        }
                     }
                 }
             }
-        }
-        cls.ES().indices.close(cls.index_name())
-        cls.ES().indices.put_settings(body=settings, index=cls.index_name())
-        cls.ES().indices.open(cls.index_name())
-
+            cls.ES().create_index(cls.index_name(), settings=index_settings)
+            logging.debug(" ---> ~FCCreating search index for ~FM%s" % cls.index_name())
+        except pyelasticsearch.IndexAlreadyExistsError:
+            return
+        
         mapping = {
-            "address": {
-                "analyzer": "edgengram_analyzer",
+            "feed_address": {
+                'analyzer': 'snowball',
                 "store": False,
                 "term_vector": "with_positions_offsets",
                 "type": "text"
@@ -428,59 +460,76 @@ class SearchFeed:
                 "type": "long"
             },
             "title": {
-                "analyzer": "edgengram_analyzer",
+                "analyzer": "snowball",
                 "store": False,
                 "term_vector": "with_positions_offsets",
                 "type": "text"
             },
             "link": {
-                "analyzer": "edgengram_analyzer",
+                "analyzer": "snowball",
                 "store": False,
                 "term_vector": "with_positions_offsets",
                 "type": "text"
             }
         }
-        cls.ES().indices.put_mapping(index=cls.index_name(), body={
+        cls.ES().put_mapping(index=cls.index_name(), doc_type='feeds-type', mapping={
             'properties': mapping,
         })
-        cls.ES().indices.flush()
+        cls.ES().flush(cls.index_name())
 
     @classmethod
     def index(cls, feed_id, title, address, link, num_subscribers):
         doc = {
             "feed_id": feed_id,
             "title": title,
-            "address": address,
+            "feed_address": address,
             "link": link,
             "num_subscribers": num_subscribers,
         }
         try:
-            cls.ES().index(body=doc, index=cls.index_name(), id=feed_id)
-        except elasticsearch.exceptions.ConnectionError:
-            logging.debug(" ***> ~FRNo search server available.")
+            cls.ES().index(index=cls.index_name(), doc_type='feeds-type', doc=doc, id=feed_id)
+        except pyelasticsearch.ElasticHttpError:
+            logging.debug(" ***> ~FRNo search server available for feed indexing.")
 
     @classmethod
     def query(cls, text, max_subscribers=5):
         try:
-            cls.ES().default_indices = cls.index_name()
-            cls.ES().indices.refresh()
-        except elasticsearch.exceptions.ConnectionError:
-            logging.debug(" ***> ~FRNo search server available.")
+            cls.ES().flush(index=cls.index_name())
+        except pyelasticsearch.ElasticHttpError:
+            logging.debug(" ***> ~FRNo search server available for feed querying.")
             return []
 
         if settings.DEBUG:
             max_subscribers = 1
+        
+        body = {
+            "query": {
+                "bool": {
+                    "should": [
+                        {"match": { "address": { "query": text, 'cutoff_frequency': "0.0005", 'minimum_should_match': "75%" } }},
+                        {"match": { "title": { "query": text, 'cutoff_frequency': "0.0005", 'minimum_should_match': "75%" } }},
+                        {"match": { "link": { "query": text, 'cutoff_frequency': "0.0005", 'minimum_should_match': "75%" } }},
+                    ]
+                }
+            },
+            'sort': [{'num_subscribers': {'order': 'desc'}}],
+        }
+        try:
+            results  = cls.ES().search(body, doc_type='feeds-type', index=cls.index_name())
+        except pyelasticsearch.ElasticHttpError as e:
+            logging.debug(" ***> ~FRNo search server available for feed querying: %s" % e)
+            return []
 
-        s = elasticsearch_dsl.Search(using=cls.ES(), index=cls.index_name())
-        address = elasticsearch_dsl.Q('match', address=text)
-        link = elasticsearch_dsl.Q('match', link=text)
-        title = elasticsearch_dsl.Q('match', title=text)
-        search_q = address | link | title
-        s = s.query(search_q).extra(cutoff_frequency="0.0005", minimum_should_match="75%")
-        s = s.sort("-num_subscribers")
-        body = s.to_dict()
-        print(f"Before: {body}")
-        results = s.execute()
+        # s = elasticsearch_dsl.Search(using=cls.ES(), index=cls.index_name())
+        # address = elasticsearch_dsl.Q('match', address=text)
+        # link = elasticsearch_dsl.Q('match', link=text)
+        # title = elasticsearch_dsl.Q('match', title=text)
+        # search_q = address | link | title
+        # s = s.query(search_q).extra(cutoff_frequency="0.0005", minimum_should_match="75%")
+        # s = s.sort("-num_subscribers")
+        # body = s.to_dict()
+        # print(f"Before: {body}")
+        # results = s.execute()
 
         # q = pyes.query.BoolQuery()
         # q.add_should(pyes.query.MatchQuery('address', text, analyzer="simple", cutoff_frequency=0.0005, minimum_should_match="75%"))
@@ -488,9 +537,10 @@ class SearchFeed:
         # q.add_should(pyes.query.MatchQuery('title', text, analyzer="simple", cutoff_frequency=0.0005, minimum_should_match="75%"))
         # q = pyes.Search(q, min_score=1)
         # results = cls.ES().search(query=q, size=max_subscribers, sort="num_subscribers:desc")
-        logging.info("~FGSearch ~FCfeeds~FG: ~SB%s~SN, ~SB%s~SN results" % (text, len(results)))
+        
+        logging.info("~FGSearch ~FCfeeds~FG: ~SB%s~SN, ~SB%s~SN results" % (text, len(results['hits']['hits'])))
 
-        return results
+        return results['hits']['hits']
     
     @classmethod
     def export_csv(cls):
