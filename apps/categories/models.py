@@ -29,10 +29,10 @@ class MCategory(mongo.Document):
             for feed_id in category.feed_ids:
                 feed = Feed.get_by_id(feed_id)
                 if feed:
-                    logging.info(f" ---> Keeping feed: {feed_id} {feed}")
+                    logging.info(f" \t---> Keeping feed: {feed_id} {feed}")
                     keep_feed_ids.append(feed.pk)
                 else:
-                    logging.info(f" ---> Skipping missing feed: {feed_id}")
+                    logging.info(f" \t***> Skipping missing feed: {feed_id}")
             category.feed_ids = keep_feed_ids
             category.save()
 
