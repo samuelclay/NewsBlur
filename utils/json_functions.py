@@ -66,7 +66,7 @@ def json_encode(data, *args, **kwargs):
             ret = _model(data)
         # here we need to encode the string as unicode (otherwise we get utf-16 in the json-response)
         elif isinstance(data, bytes):
-            ret = smart_str(data)
+            ret = data.decode('utf-8', 'ignore')
         elif isinstance(data, str):
             ret = smart_str(data)
         elif isinstance(data, Exception):
