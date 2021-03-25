@@ -4701,13 +4701,13 @@
         // ====================
 
         load_dashboard_rivers: function (force) {
+            if (!NEWSBLUR.Globals.is_authenticated) return;
             if (!NEWSBLUR.assets.dashboard_rivers.length) {
                 // Create dashboard rivers if none exist by choosing folders
                 this.choose_dashboard_rivers();
                 return;
             }
             if (!force && NEWSBLUR.app.dashboard_rivers) return;
-            if (!NEWSBLUR.Globals.is_authenticated) return;
 
             NEWSBLUR.app.dashboard_rivers = {
                 'left': new NEWSBLUR.Views.DashboardRivers({ side: 'left' }),
