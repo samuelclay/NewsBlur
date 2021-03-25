@@ -4,7 +4,7 @@ from apps.rss_feeds.models import Feed
 from apps.reader.models import UserSubscription, UserSubscriptionFolders
 from utils import json_functions as json
 from utils.feed_functions import add_object_to_folder
-
+from utils import log as logging
 
 class MCategory(mongo.Document):
     title = mongo.StringField()
@@ -20,6 +20,22 @@ class MCategory(mongo.Document):
     def __str__(self):
         return "%s: %s sites" % (self.title, len(self.feed_ids))
     
+    @classmethod
+    def audit(cls):
+        categories = cls.objects.all()
+        for category in categories:
+            logging.info(f" ---> Auditing category: {category} {category.feed_ids}")
+            keep_feed_ids = []
+            for feed_id in category.feed_ids:
+                feed = Feed.get_by_id(feed_id)
+                if feed:
+                    logging.info(f" ---> Keeping feed: {feed_id} {feed}")
+                    keep_feed_ids.append(feed.pk)
+                else:
+                    logging.info(f" ---> Skipping missing feed: {feed_id}")
+            category.feed_ids = keep_feed_ids
+            category.save()
+
     @classmethod
     def add(cls, title, description):
         return cls.objects.create(title=title, description=description)

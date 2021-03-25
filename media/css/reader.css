@@ -6825,7 +6825,7 @@ form.opml_import_form input {
     );
      -moz-box-shadow:0 2px 0px #ebc17c;
     box-shadow:0 2px 0px #ebc17c;
-    margin-bottom: 2px;
+    margin-bottom: 24px;
     padding: 12px;
     overflow: hidden;
 	font-size: 15px;
