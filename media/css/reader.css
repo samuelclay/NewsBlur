@@ -740,7 +740,7 @@ hr {
     -webkit-line-clamp: 1;
     -webkit-box-orient: vertical;  
     overflow: hidden;
-    white-space: nowrap;
+    word-break: break-all;
 }
 
 .NB-feedlist .feed .NB-feedlist-manage-icon,
