@@ -2053,7 +2053,6 @@
 - (void)deferredChangePage:(NSDictionary *)params {
     [self.storyPagesViewController changePage:[params[@"location"] integerValue] animated:[params[@"animated"] boolValue]];
     [self.storyPagesViewController animateIntoPlace:YES];
-    [self.splitViewController showColumn:UISplitViewControllerColumnSecondary];
     [self showDetailViewController:self.detailViewController sender:self];
 }
 
