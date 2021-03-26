@@ -991,7 +991,7 @@
         [pageController clearStory];
         
         //TODO: might want to check if overlay display, or something, to avoid doing this on compact layout
-        [self.splitViewController showColumn:UISplitViewControllerColumnPrimary];
+        [self.splitViewController showColumn:UISplitViewControllerColumnSupplementary];
     }
     
     if (!suppressRedraw) {
@@ -1198,6 +1198,7 @@
             [self setStoryFromScroll];
         }
     }
+    [appDelegate.splitViewController showColumn:UISplitViewControllerColumnSecondary];
     [self becomeFirstResponder];
 }
 
