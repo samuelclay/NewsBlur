@@ -24,6 +24,6 @@ class FeedsViewController: FeedsObjCViewController {
         }
         
         loadWorkItem = workItem
-        DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(250), execute: workItem)
+        DispatchQueue.main.asyncAfter(deadline: .now() + (isOffline ? .seconds(1) : .milliseconds(100)), execute: workItem)
     }
 }
