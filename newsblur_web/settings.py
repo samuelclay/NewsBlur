@@ -651,6 +651,7 @@ MONGO_DB_DEFAULTS = {
     'name': 'newsblur',
     'host': f'db_mongo:{MONGO_PORT}',
     'alias': 'default',
+    'unicode_decode_error_handler': 'ignore',
     'connect': False,
 }
 MONGO_DB = dict(MONGO_DB_DEFAULTS, **MONGO_DB)
