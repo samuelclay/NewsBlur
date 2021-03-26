@@ -1727,7 +1727,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         this.make_request('/categories/subscribe', {category: categories}, _.bind(function(data) {
             callback(data);
         }, this), error_callback, {
-            request_type: 'GET'
+            request_type: 'POST'
         });
     },
     
