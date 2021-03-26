@@ -122,7 +122,7 @@ def dashboard(request, **kwargs):
     statistics        = MStatistics.all()
     social_profile    = MSocialProfile.get_user(user.pk)
     custom_styling    = MCustomStyling.get_user(user.pk)
-    dashboard_rivers  = MDashboardRiver.get_user(user.pk)
+    dashboard_rivers  = MDashboardRiver.get_user_rivers(user.pk)
     preferences       = json.decode(user.profile.preferences)
     
     if not user.is_active:
@@ -329,7 +329,7 @@ def load_feeds(request):
     social_feeds = MSocialSubscription.feeds(**social_params)
     social_profile = MSocialProfile.profile(user.pk)
     social_services = MSocialServices.profile(user.pk)
-    dashboard_rivers = MDashboardRiver.get_user(user.pk)
+    dashboard_rivers = MDashboardRiver.get_user_rivers(user.pk)
 
     categories = None
     if not user_subs:
@@ -2743,7 +2743,7 @@ def save_dashboard_river(request):
     logging.user(request, "~FCSaving dashboard river: ~SB%s~SN (%s %s)" % (river_id, river_side, river_order))
 
     MDashboardRiver.save_user(request.user.pk, river_id, river_side, river_order)
-    dashboard_rivers = MDashboardRiver.get_user(request.user.pk)
+    dashboard_rivers = MDashboardRiver.get_user_rivers(request.user.pk)
 
     return {
         'dashboard_rivers': dashboard_rivers,

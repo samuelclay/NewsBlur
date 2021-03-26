@@ -11,6 +11,8 @@ from apps.social.models import MActivity
 from apps.profile.models import blank_authenticate, RNewUserQueue
 from utils import log as logging
 from dns.resolver import query, NXDOMAIN, NoNameservers, NoAnswer
+from dns.resolver import NoResolverConfiguration
+
 
 class LoginForm(forms.Form):
     username = forms.CharField(label=_("Username or Email"), max_length=30,
@@ -121,6 +123,9 @@ class SignupForm(forms.Form):
                     raise forms.ValidationError('Sorry, that email is invalid.')
             except (NXDOMAIN, NoNameservers, NoAnswer):
                 raise forms.ValidationError('Sorry, that email is invalid.')
+            except NoResolverConfiguration as e:
+                logging.info(f" ***> ~FRFailed to check spamminess of domain: ~FY{domain} ~FR{e}")
+                pass
         return self.cleaned_data['email']
     
     def clean(self):

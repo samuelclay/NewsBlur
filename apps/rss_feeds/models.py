@@ -28,6 +28,7 @@ from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
 from django.template.defaultfilters import slugify
 from django.utils.encoding import smart_bytes, smart_str
+from django.utils.encoding import DjangoUnicodeDecodeError
 from mongoengine.queryset import OperationError, Q, NotUniqueError
 from mongoengine.errors import ValidationError
 from vendor.timezones.utilities import localtime_for_timezone
@@ -343,7 +344,7 @@ class Feed(models.Model):
     @classmethod
     def autocomplete(self, prefix, limit=5):
         results = SearchFeed.query(prefix)
-        feed_ids = [result.feed_id for result in results[:5]]
+        feed_ids = [result['_source']['feed_id'] for result in results[:5]]
 
         # results = SearchQuerySet().autocomplete(address=prefix).order_by('-num_subscribers')[:limit]
         # 
@@ -1877,7 +1878,10 @@ class Feed(models.Model):
         if (not show_changes and 
             hasattr(story_db, 'story_latest_content_z') and 
             story_db.story_latest_content_z):
-            latest_story_content = smart_str(zlib.decompress(story_db.story_latest_content_z))
+            try:
+                latest_story_content = smart_str(zlib.decompress(story_db.story_latest_content_z))
+            except DjangoUnicodeDecodeError:
+                latest_story_content = zlib.decompress(story_db.story_latest_content_z)
         if story_db.story_content_z:
             story_content = smart_str(zlib.decompress(story_db.story_content_z))
         
@@ -1999,7 +2003,7 @@ class Feed(models.Model):
             link = entry.get('id')
         return link
     
-    def _exists_story(self, story, story_content, existing_stories, new_story_hashes):
+    def _exists_story(self, story, story_content, existing_stories, new_story_hashes, lightweight=False):
         story_in_system = None
         story_has_changed = False
         story_link = self.get_permalink(story)
@@ -2059,6 +2063,9 @@ class Feed(models.Model):
                 existing_story.story_title == story.get('title')):
                 similiar_length_min = 20
             
+            # Skip content check if already failed due to a timeout. This way we catch titles
+            if lightweight: continue
+
             if (seq
                 and story_content
                 and len(story_content) > similiar_length_min
@@ -2442,6 +2449,9 @@ class MStory(mongo.Document):
     RE_STORY_HASH = re.compile(r"^(\d{1,10}):(\w{6})$")
     RE_RS_KEY = re.compile(r"^RS:(\d+):(\d+)$")
 
+    def __str__(self):
+        return f"{self.story_hash}: {self.story_title[:20]} ({len(self.story_content_z)} bytes)"
+    
     @property
     def guid_hash(self):
         return hashlib.sha1((self.story_guid).encode(encoding='utf-8')).hexdigest()[:6]
@@ -2794,6 +2804,7 @@ class MStory(mongo.Document):
                 continue
             if image_url and len(image_url) >= 1024:
                 continue
+            image_url = urllib.parse.urljoin(self.story_permalink, image_url)
             image_urls.append(image_url)
                 
         if not image_urls:

@@ -72,13 +72,14 @@
             {% render_recommended_feed unmoderated_feeds 1 %}
         {% endif %}
         
+        {% render_account_module %}
+
         <div class="NB-account NB-module">
             <h5 class="NB-module-header">
                 NewsBlur
             </h5>
 
             <div class="NB-account-left">
-                {% render_account_module %}
                 {% render_statistics_graphs statistics %}    
             </div>
             <div class="NB-account-right">

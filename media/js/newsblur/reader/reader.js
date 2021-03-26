@@ -4701,6 +4701,7 @@
         // ====================
 
         load_dashboard_rivers: function (force) {
+            if (!NEWSBLUR.Globals.is_authenticated) return;
             if (!NEWSBLUR.assets.dashboard_rivers.length) {
                 // Create dashboard rivers if none exist by choosing folders
                 this.choose_dashboard_rivers();

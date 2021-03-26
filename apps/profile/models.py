@@ -1581,7 +1581,11 @@ class MDashboardRiver(mongo.Document):
         }
     
     @classmethod
-    def get_user(cls, user_id, river_id=None, river_side=None, river_order=None):
+    def get_user_rivers(cls, user_id):
+        return cls.objects(user_id=user_id)
+
+    @classmethod
+    def get_user_by_river_id(cls, user_id, river_id=None, river_side=None, river_order=None):
         if river_id:
             try:
                 return cls.objects.get(user_id=user_id, river_id=river_id)
@@ -1592,21 +1596,17 @@ class MDashboardRiver(mongo.Document):
                 return cls.objects.get(user_id=user_id, river_side=river_side, river_order=river_order)
             except MDashboardRiver.DoesNotExist:
                 return None
-        
-        return cls.objects(user_id=user_id)
 
     @classmethod
     def save_user(cls, user_id, river_id, river_side, river_order):
         river = None
 
-        if river_id:
-            river = cls.get_user(user_id, river_id=river_id)
+        if not river:
+            river = cls.get_user_by_river_id(user_id, river_side=river_side, river_order=river_order)
         
         if not river:
-            river = cls.get_user(user_id, river_side=river_side, river_order=river_order)
-        
-        if not river:
-            river = cls.objects.create(user_id=user_id, river_id=river_id, river_side=river_side, river_order=river_order)
+            river = cls.objects.create(user_id=user_id, river_id=river_id, 
+                                       river_side=river_side, river_order=river_order)
 
         river.river_id = river_id
         river.river_side = river_side
@@ -1664,6 +1664,8 @@ class RNewUserQueue:
     def user_position(cls, user_id):
         r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
         position = r.zrank(cls.KEY, user_id)
+        if position is None:
+            return -1
         if position >= 0:
             return position + 1
     
