@@ -20,7 +20,12 @@
     
     - name: Reload gunicorn
       become: yes
-      command: "docker kill --signal=HUP newsblur_web"
+      block:
+        - name: Find gunicorn master process
+          shell: "ps -C gunicorn fch -o pid | head -n 1"
+          register: psaux
+        - name: Reload gunicorn
+          command: "kill -HUP {{ psaux.stdout }}"
       # when: pulled.changed
 
     - name: Start Consul
