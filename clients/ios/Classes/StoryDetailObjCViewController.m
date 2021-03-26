@@ -139,6 +139,13 @@
     doubleDoubleTapGesture.delegate = self;
     [self.webView addGestureRecognizer:doubleDoubleTapGesture];
     
+    UILongPressGestureRecognizer *longPressGesture = [[UILongPressGestureRecognizer alloc]
+                                                      initWithTarget:self
+                                                      action:@selector(longPress:)];
+    longPressGesture.numberOfTouchesRequired = 1;
+    longPressGesture.delegate = self;
+    [self.webView addGestureRecognizer:longPressGesture];
+    
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
         UIPinchGestureRecognizer *pinchGesture = [[UIPinchGestureRecognizer alloc]
                                                   initWithTarget:self action:@selector(pinchGesture:)];
@@ -259,6 +266,20 @@
         inDoubleTap = NO;
         [self performSelector:@selector(deferredEnableScrolling) withObject:nil afterDelay:0.0];
         appDelegate.storyPagesViewController.autoscrollActive = NO;
+    }
+}
+
+- (void)longPress:(UILongPressGestureRecognizer *)gestureRecognizer {
+    if (gestureRecognizer.state == UIGestureRecognizerStateBegan) {
+        CGPoint pt = [self pointForGesture:gestureRecognizer];
+        if (pt.x == CGPointZero.x && pt.y == CGPointZero.y) return;
+        if (inDoubleTap) return;
+        
+        [webView evaluateJavaScript:[NSString stringWithFormat:@"linkAt(%li, %li, 'tagName');", (long)pt.x,(long)pt.y] completionHandler:^(NSString *tagName, NSError *error) {
+            if ([tagName isEqualToString:@"IMG"]) {
+                [self showImageMenu:pt];
+            }
+        }];
     }
 }
 
