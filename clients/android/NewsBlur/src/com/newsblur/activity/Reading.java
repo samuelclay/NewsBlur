@@ -775,7 +775,7 @@ public abstract class Reading extends NbActivity implements OnPageChangeListener
     public void overlaySend(View v) {
         if ((readingAdapter == null) || (pager == null)) return;
 		Story story = readingAdapter.getStory(pager.getCurrentItem());
-        FeedUtils.sendStoryBrief(story, this);
+        FeedUtils.sendStoryUrl(story, this);
     }
 
     public void overlayText(View v) {

@@ -25,7 +25,7 @@
         <item name="selectorStoryBackground">@style/selectorStoryBackground</item>
         <item name="rowItemHeaderBackground">@style/rowItemHeaderBackground</item>
         <item name="readingItemMetadata">@style/readingItemMetadata</item>
-        <item name="tag">@style/tag</item>
+        <item name="chip">@style/chip</item>
         <item name="actionButtons">@style/actionButtons</item>
         <item name="storyButtons">@style/storyButtons</item>
         <item name="shareBarBackground">@style/shareBarBackground</item>
@@ -76,7 +76,7 @@
         <item name="selectorStoryBackground">@style/selectorStoryBackground.dark</item>
         <item name="rowItemHeaderBackground">@style/rowItemHeaderBackground.dark</item>
         <item name="readingItemMetadata">@style/readingItemMetadata.dark</item>
-        <item name="tag">@style/tag.dark</item>
+        <item name="chip">@style/chip.dark</item>
         <item name="actionButtons">@style/actionButtons.dark</item>
         <item name="storyButtons">@style/storyButtons.dark</item>
         <item name="shareBarBackground">@style/shareBarBackground.dark</item>
@@ -128,7 +128,7 @@
         <item name="selectorStoryBackground">@style/selectorStoryBackground.black</item>
         <item name="rowItemHeaderBackground">@style/rowItemHeaderBackground.black</item>
         <item name="readingItemMetadata">@style/readingItemMetadata.dark</item>
-        <item name="tag">@style/tag.dark</item>
+        <item name="chip">@style/chip.dark</item>
         <item name="actionButtons">@style/actionButtons.dark</item>
         <item name="storyButtons">@style/storyButtons.dark</item>
         <item name="shareBarBackground">@style/shareBarBackground.black</item>

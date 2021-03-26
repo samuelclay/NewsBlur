@@ -15,7 +15,7 @@
     <attr name="selectorStoryBackground" format="string" />
     <attr name="rowItemHeaderBackground" format="string" />
     <attr name="readingItemMetadata" format="string" />
-    <attr name="tag" format="string" />
+    <attr name="chip" format="string" />
     <attr name="actionButtons" format="string" />
     <attr name="storyButtons" format="string" />
     <attr name="shareBarBackground" format="string" />
