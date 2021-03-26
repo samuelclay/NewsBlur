@@ -40,6 +40,7 @@ public class StoryTypeAdapter implements JsonDeserializer<Story> {
 
         // Convert story_timestamp to milliseconds
         story.timestamp = story.timestamp * 1000;
+        story.starredTimestamp = story.starredTimestamp * 1000;
 
         // replace http image urls with https
         if (httpSniff.matcher(story.content).find() && story.secureImageUrls != null && story.secureImageUrls.size() > 0) {

@@ -154,13 +154,13 @@
         <item name="android:textColor">@color/half_white</item>
     </style>
 
-    <style name="tag">
+    <style name="chip">
         <item name="android:textColor">@color/gray55</item>
-        <item name="android:background">@drawable/tag_background_neutral</item>
+        <item name="chipBackgroundColor">@color/tag_gray</item>
     </style>
-    <style name="tag.dark">
-        <item name="android:textColor">@color/tag_gray_shadow</item>
-        <item name="android:background">@drawable/tag_background_dark</item>
+    <style name="chip.dark">
+        <item name="android:textColor">@color/tag_gray</item>
+        <item name="chipBackgroundColor">@color/tag_bg_dark</item>
     </style>
 
     <style name="actionButtons">
