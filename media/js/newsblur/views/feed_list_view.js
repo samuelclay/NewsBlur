@@ -300,13 +300,15 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
 
     load_url_next_param: function(route_found) {
         var next = $.getQueryString('next') || $.getQueryString('test');
-        // console.log(['load_url_next_param', next, route_found]);
+        if (next) console.log(['load_url_next_param', next, route_found]);
         if (next == 'optout') {
             NEWSBLUR.reader.open_account_modal({'animate_email': true});
         } else if (next == 'goodies') {
             NEWSBLUR.reader.open_goodies_modal();
         } else if (next == 'newsletters') {
             NEWSBLUR.reader.open_newsletters_modal();
+        } else if (next == 'preferences') {
+            NEWSBLUR.reader.open_preferences_modal();
         } else if (next == 'friends') {
             NEWSBLUR.reader.open_friends_modal();
         } else if (next == 'account') {
@@ -351,7 +353,7 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
     load_default_folder: function() {
         var default_folder = NEWSBLUR.assets.preference('default_folder');
         
-        if (!default_folder || default_folder == "") {
+        if (!default_folder || default_folder == "" || default_folder == "river:") {
             NEWSBLUR.reader.open_river_stories();
         } else {
             var folder = NEWSBLUR.assets.get_folder(default_folder);
