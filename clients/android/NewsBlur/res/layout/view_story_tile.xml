@@ -61,7 +61,7 @@
 
     <ImageView
         android:id="@+id/story_item_saved_icon"
-        android:src="@drawable/clock"
+        android:src="@drawable/ic_clock"
         android:layout_width="20dp"
         android:layout_height="20dp"
         android:layout_above="@id/story_item_feedtitle"
