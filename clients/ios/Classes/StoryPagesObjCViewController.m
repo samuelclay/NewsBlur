@@ -1415,11 +1415,17 @@
         [buttonText setAlpha:1];
         [buttonSend setEnabled:YES];
         [buttonSend setAlpha:1];
+        
+        fontSettingsButton.enabled = YES;
+        originalStoryButton.enabled = YES;
     } else {
         [buttonText setEnabled:NO];
         [buttonText setAlpha:.4];
         [buttonSend setEnabled:NO];
         [buttonSend setAlpha:.4];
+        
+        fontSettingsButton.enabled = NO;
+        originalStoryButton.enabled = NO;
     }
     
     [buttonSend setBackgroundImage:[[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"traverse_send.png"]]
