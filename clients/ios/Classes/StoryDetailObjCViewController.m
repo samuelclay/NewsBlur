@@ -690,6 +690,7 @@
     self.webView.hidden = YES;
     self.noStoryMessage.hidden = NO;
     [self.activityIndicator stopAnimating];
+    [appDelegate.storyPagesViewController setTextButton];
 }
 
 #pragma mark -
