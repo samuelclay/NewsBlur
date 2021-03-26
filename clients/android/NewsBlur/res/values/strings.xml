@@ -55,7 +55,6 @@
 
     <string name="top_level">TOP LEVEL</string>
 	
-	<string name="send_brief">%1$s %2$s</string>
 	<string name="send_full">%1$s \n\%2$s \n\n%3$s \n\n—\nShared with NewsBlur.com</string>
 	<string name="share_comment_hint">Comment (Optional)</string>
 	<string name="share_newsblur">Share \"%s\" to your Blurblog?</string>
@@ -198,7 +197,8 @@
 
     <string name="story_show_changes">Show Story Changes</string>
     <string name="story_hide_changes">Hide Story Changes</string>
-    <string name="story_changes_loading">Story Changes Loading ...</string>
+    <string name="story_changes_loading">Story Changes Loading …</string>
+    <string name="story_saved_timestamp">Saved %s</string>
     <string name="your_feeds_search_hint">Search your feeds</string>
     <string name="story_search_hint">Search for stories</string>
     <string name="empty_search_notice">Type a search term to begin</string>
@@ -292,6 +292,8 @@
     <string name="settings_enable_offline_sum">Periodically fetch stories in background</string>
     <string name="settings_enable_image_prefetch">Download Images</string>
     <string name="settings_enable_image_prefetch_sum">Pre-fetch images for offline reading</string>
+    <string name="settings_enable_text_prefetch">Download Text</string>
+    <string name="settings_enable_text_prefetch_sum">Pre-fetch text for offline reading</string>
     <string name="settings_keep_old_stories">Keep Stories after Reading</string>
     <string name="settings_keep_old_stories_sum">Disable to reduce storage usage</string>
 

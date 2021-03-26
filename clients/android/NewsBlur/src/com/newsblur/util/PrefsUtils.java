@@ -718,6 +718,11 @@ public class PrefsUtils {
         return prefs.getBoolean(PrefConstants.ENABLE_IMAGE_PREFETCH, false);
     }
 
+    public static boolean isTextPrefetchEnabled(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        return prefs.getBoolean(PrefConstants.ENABLE_TEXT_PREFETCH, true);
+    }
+
     /**
      * Compares the user's setting for when background data use is allowed against the
      * current network status and sees if it is okay to sync.
