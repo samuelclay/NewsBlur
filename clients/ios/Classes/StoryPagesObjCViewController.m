@@ -254,8 +254,6 @@
     [self addKeyCommandWithInput:@"s" modifierFlags:UIKeyModifierShift action:@selector(openShareDialog) discoverabilityTitle:@"Share This Story"];
     [self addKeyCommandWithInput:@"c" modifierFlags:0 action:@selector(scrolltoComment) discoverabilityTitle:@"Scroll to Comments"];
     [self addKeyCommandWithInput:@"t" modifierFlags:0 action:@selector(openStoryTrainerFromKeyboard:) discoverabilityTitle:@"Open Story Trainer"];
-    [self addCancelKeyCommandWithAction:@selector(backToDashboard:) discoverabilityTitle:@"Dashboard"];
-    [self addKeyCommandWithInput:@"d" modifierFlags:UIKeyModifierShift action:@selector(backToDashboard:) discoverabilityTitle:@"Dashboard"];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
