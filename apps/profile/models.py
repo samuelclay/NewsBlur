@@ -1582,17 +1582,6 @@ class MDashboardRiver(mongo.Document):
     
     @classmethod
     def get_user_rivers(cls, user_id):
-        if river_id:
-            try:
-                return cls.objects.get(user_id=user_id, river_id=river_id)
-            except MDashboardRiver.DoesNotExist:
-                return None
-        elif river_side and river_order:
-            try:
-                return cls.objects.get(user_id=user_id, river_side=river_side, river_order=river_order)
-            except MDashboardRiver.DoesNotExist:
-                return None
-        
         return cls.objects(user_id=user_id)
 
     @classmethod
