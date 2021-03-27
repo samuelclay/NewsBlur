@@ -34,11 +34,11 @@
 #import "PremiumManager.h"
 #import "NewsBlur-Swift.h"
 
-static const CGFloat kPhoneTableViewRowHeight = 6.0f;
-static const CGFloat kTableViewRowHeight = 6.0f;
-static const CGFloat kBlurblogTableViewRowHeight = 7.0f;
-static const CGFloat kPhoneBlurblogTableViewRowHeight = 7.0f;
-static const CGFloat kFolderTitleHeight = 10.0f;
+static const CGFloat kPhoneTableViewRowHeight = 8.0f;
+static const CGFloat kTableViewRowHeight = 8.0f;
+static const CGFloat kBlurblogTableViewRowHeight = 9.0f;
+static const CGFloat kPhoneBlurblogTableViewRowHeight = 9.0f;
+static const CGFloat kFolderTitleHeight = 12.0f;
 static UIFont *userLabelFont;
 
 static NSArray<NSString *> *NewsBlurTopSectionNames;
@@ -130,7 +130,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     [self.searchBar setAutocapitalizationType:UITextAutocapitalizationTypeNone];
     self.feedTitlesTable.tableHeaderView = self.searchBar;
     
-    userLabelFont = [UIFont fontWithName:@"Helvetica-Bold" size:14.0];
+    userLabelFont = [UIFont fontWithName:@"WhitneySSm-Medium" size:15.0];
     
     imageCache = [[NSCache alloc] init];
     [imageCache setDelegate:self];
@@ -1427,7 +1427,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     }
     
     UIFontDescriptor *fontDescriptor = [self fontDescriptorUsingPreferredSize:UIFontTextStyleCaption1];
-    UIFont *font = [UIFont fontWithDescriptor:fontDescriptor size:0.0];
+    UIFont *font = [UIFont fontWithName:@"WhitneySSm-Medium" size:fontDescriptor.pointSize];
     return height + font.pointSize*2;
 }
 
@@ -1449,15 +1449,15 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     
     if (![userPreferences boolForKey:@"use_system_font_size"]) {
         if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"xs"]) {
-            fontDescriptor = [fontDescriptor fontDescriptorWithSize:10.0f];
-        } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"small"]) {
             fontDescriptor = [fontDescriptor fontDescriptorWithSize:11.0f];
+        } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"small"]) {
+            fontDescriptor = [fontDescriptor fontDescriptorWithSize:13.0f];
         } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"medium"]) {
-            fontDescriptor = [fontDescriptor fontDescriptorWithSize:12.0f];
+            fontDescriptor = [fontDescriptor fontDescriptorWithSize:14.0f];
         } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"large"]) {
-            fontDescriptor = [fontDescriptor fontDescriptorWithSize:15.0f];
-        } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"xl"]) {
             fontDescriptor = [fontDescriptor fontDescriptorWithSize:17.0f];
+        } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"xl"]) {
+            fontDescriptor = [fontDescriptor fontDescriptorWithSize:19.0f];
         }
     }
     return fontDescriptor;
@@ -1466,7 +1466,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 - (UIView *)tableView:(UITableView *)tableView 
             viewForHeaderInSection:(NSInteger)section {
     UIFontDescriptor *fontDescriptor = [self fontDescriptorUsingPreferredSize:UIFontTextStyleCaption1];
-    UIFont *font = [UIFont fontWithDescriptor:fontDescriptor size:0.0];
+    UIFont *font = [UIFont fontWithName:@"WhitneySSm-Medium" size:fontDescriptor.pointSize];
     NSInteger height = kFolderTitleHeight;
     
     CGRect rect = CGRectMake(0.0, 0.0, tableView.frame.size.width, height + font.pointSize*2);
@@ -1518,7 +1518,7 @@ heightForHeaderInSection:(NSInteger)section {
     }
 
     UIFontDescriptor *fontDescriptor = [self fontDescriptorUsingPreferredSize:UIFontTextStyleCaption1];
-    UIFont *font = [UIFont fontWithDescriptor:fontDescriptor size:0.0];
+    UIFont *font = [UIFont fontWithName:@"WhitneySSm-Medium" size:fontDescriptor.pointSize];
     NSInteger height = kFolderTitleHeight;
     
     return height + font.pointSize*2;
@@ -2314,7 +2314,7 @@ heightForHeaderInSection:(NSInteger)section {
     [userInfoView addSubview:yellowIcon];
     
     neutralCount = [[UILabel alloc] init];
-    neutralCount.font = [UIFont fontWithName:@"Helvetica" size:11];
+    neutralCount.font = [UIFont fontWithName:@"WhitneySSm-Book" size:12];
     neutralCount.textColor = UIColorFromRGB(0x707070);
     neutralCount.backgroundColor = [UIColor clearColor];
     [userInfoView addSubview:neutralCount];
@@ -2323,7 +2323,7 @@ heightForHeaderInSection:(NSInteger)section {
     [userInfoView addSubview:greenIcon];
     
     positiveCount = [[UILabel alloc] init];
-    positiveCount.font = [UIFont fontWithName:@"Helvetica" size:11];
+    positiveCount.font = [UIFont fontWithName:@"WhitneySSm-Book" size:12];
     positiveCount.textColor = UIColorFromRGB(0x707070);
     positiveCount.backgroundColor = [UIColor clearColor];
     [userInfoView addSubview:positiveCount];

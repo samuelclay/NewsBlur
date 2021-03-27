@@ -49,6 +49,10 @@
 		174939141C251BFE003D98AA /* ShareViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 174939131C251BFE003D98AA /* ShareViewController.m */; };
 		174939171C251BFE003D98AA /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 174939151C251BFE003D98AA /* MainInterface.storyboard */; };
 		1749391B1C251BFE003D98AA /* Share Extension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 174939101C251BFE003D98AA /* Share Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		17495166260ED61A003E900B /* ak-icon-infrequent.png in Resources */ = {isa = PBXBuildFile; fileRef = 17495165260ED619003E900B /* ak-icon-infrequent.png */; };
+		1749516E260ED640003E900B /* content_preview_medium.png in Resources */ = {isa = PBXBuildFile; fileRef = 1749516B260ED63F003E900B /* content_preview_medium.png */; };
+		1749516F260ED640003E900B /* content_preview_small.png in Resources */ = {isa = PBXBuildFile; fileRef = 1749516C260ED63F003E900B /* content_preview_small.png */; };
+		17495170260ED640003E900B /* content_preview_large.png in Resources */ = {isa = PBXBuildFile; fileRef = 1749516D260ED640003E900B /* content_preview_large.png */; };
 		1750658F1C5730FB00072BF5 /* barbutton_selection_off.png in Resources */ = {isa = PBXBuildFile; fileRef = 1750658C1C5730FB00072BF5 /* barbutton_selection_off.png */; };
 		175065901C5730FB00072BF5 /* barbutton_selection_off@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1750658D1C5730FB00072BF5 /* barbutton_selection_off@2x.png */; };
 		175065911C5730FB00072BF5 /* barbutton_selection_off@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1750658E1C5730FB00072BF5 /* barbutton_selection_off@3x.png */; };
@@ -722,6 +726,10 @@
 		174939161C251BFE003D98AA /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
 		174939181C251BFE003D98AA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		174939211C251E43003D98AA /* Share Extension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "Share Extension.entitlements"; sourceTree = "<group>"; };
+		17495165260ED619003E900B /* ak-icon-infrequent.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ak-icon-infrequent.png"; sourceTree = "<group>"; };
+		1749516B260ED63F003E900B /* content_preview_medium.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = content_preview_medium.png; sourceTree = "<group>"; };
+		1749516C260ED63F003E900B /* content_preview_small.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = content_preview_small.png; sourceTree = "<group>"; };
+		1749516D260ED640003E900B /* content_preview_large.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = content_preview_large.png; sourceTree = "<group>"; };
 		1750658C1C5730FB00072BF5 /* barbutton_selection_off.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = barbutton_selection_off.png; sourceTree = "<group>"; };
 		1750658D1C5730FB00072BF5 /* barbutton_selection_off@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "barbutton_selection_off@2x.png"; sourceTree = "<group>"; };
 		1750658E1C5730FB00072BF5 /* barbutton_selection_off@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "barbutton_selection_off@3x.png"; sourceTree = "<group>"; };
@@ -2099,6 +2107,9 @@
 				1740C68C1C110665005EA453 /* theme_color_dark@2x.png */,
 				1740C6941C1110BA005EA453 /* theme_color_dark-sel.png */,
 				1740C6951C1110BA005EA453 /* theme_color_dark-sel@2x.png */,
+				1749516D260ED640003E900B /* content_preview_large.png */,
+				1749516B260ED63F003E900B /* content_preview_medium.png */,
+				1749516C260ED63F003E900B /* content_preview_small.png */,
 				FF4151C116DEDF9D0013E84B /* markread.png */,
 				FF4151C216DEDF9D0013E84B /* markread@2x.png */,
 				FF4151BA16DED7D10013E84B /* bar-separator.png */,
@@ -2125,6 +2136,7 @@
 				FF85BF7216D6A972002D334D /* ak-icon-allstories.png */,
 				FF85BF7316D6A972002D334D /* ak-icon-blurblogs.png */,
 				FF85BF7016D6A90D002D334D /* ak-icon-global.png */,
+				17495165260ED619003E900B /* ak-icon-infrequent.png */,
 				FF85BF6216D5A5A8002D334D /* nav_icn_add.png */,
 				FF29709716DD9F7400E92F85 /* nav_icn_add@2x.png */,
 				FF85BF5E16D5A587002D334D /* nav_icn_activity_hover.png */,
@@ -2953,6 +2965,7 @@
 				17BE5A771C5DDA8C0075F92C /* barbutton_sort_desc@3x.png in Resources */,
 				FF3A3E0B1BFBBB5900ADC01A /* ChronicleSSm-Medium.otf in Resources */,
 				FF3A3E101BFBBB6600ADC01A /* GothamNarrow-MediumItalic.otf in Resources */,
+				1749516F260ED640003E900B /* content_preview_small.png in Resources */,
 				FF3A3E0C1BFBBB5B00ADC01A /* ChronicleSSm-MediumItalic.otf in Resources */,
 				FF3A3E0D1BFBBB5E00ADC01A /* GothamNarrow-Book.otf in Resources */,
 				17AACFE822279A3C00DE6EA4 /* autoscroll_off@2x.png in Resources */,
@@ -2969,6 +2982,7 @@
 				43B8F022156603180008733D /* AddSiteAutocompleteCell.xib in Resources */,
 				43B8F023156603180008733D /* AddSiteViewController.xib in Resources */,
 				43B8F025156603180008733D /* FeedDetailViewController.xib in Resources */,
+				1749516E260ED640003E900B /* content_preview_medium.png in Resources */,
 				17432C7C1C533E89003F8FD6 /* MenuViewController.xib in Resources */,
 				17C5BA741CA39EE400F5961C /* unread_blue_icn@2x.png in Resources */,
 				43B8F026156603180008733D /* LoginViewController.xib in Resources */,
@@ -3048,6 +3062,7 @@
 				43A4BADD15C866FA00F3B8D4 /* popoverArrowDownSimple.png in Resources */,
 				175FAC4C23AB34EB002AC38C /* menu_icn_widget.png in Resources */,
 				43A4BADE15C866FA00F3B8D4 /* popoverArrowLeft.png in Resources */,
+				17495170260ED640003E900B /* content_preview_large.png in Resources */,
 				FFC486AC19CA410000F4758F /* logo_50.png in Resources */,
 				176129601C630AEB00702FE4 /* mute_feed_off.png in Resources */,
 				17C67DA12138B2D20027CCAE /* traverse_previous_vert.png in Resources */,
@@ -3138,6 +3153,7 @@
 				FF85BF6016D5A587002D334D /* nav_icn_activity_hover.png in Resources */,
 				FF85BF6116D5A587002D334D /* nav_icn_settings.png in Resources */,
 				FF83FF0C1FB5371E008DAC0F /* g_icn_greensun@2x.png in Resources */,
+				17495166260ED61A003E900B /* ak-icon-infrequent.png in Resources */,
 				FF85BF6316D5A5A8002D334D /* nav_icn_add.png in Resources */,
 				FF85BF7116D6A90D002D334D /* ak-icon-global.png in Resources */,
 				FFC486AD19CA410000F4758F /* logo_100.png in Resources */,

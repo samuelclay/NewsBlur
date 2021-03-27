@@ -423,8 +423,8 @@
     cell.feedTitle.textColor = UIColorFromRGB(NEWSBLUR_BLACK_COLOR);
     cell.feedUrl.text = [result objectForKey:@"value"];
     cell.feedUrl.textColor = UIColorFromFixedRGB(NEWSBLUR_LINK_COLOR);
-    cell.feedSubs.text = [[NSString stringWithFormat:@"%@ subscriber%@",
-                           [NSString stringWithFormat:@"%@", [numberFormatter stringFromNumber:theScore]], subs == 1 ? @"" : @"s"] uppercaseString];
+    cell.feedSubs.text = [NSString stringWithFormat:@"%@ subscriber%@",
+                           [NSString stringWithFormat:@"%@", [numberFormatter stringFromNumber:theScore]], subs == 1 ? @"" : @"s"];
     cell.feedSubs.textColor = UIColorFromRGB(0x808080);
     cell.feedFavicon.image = faviconImage;
     cell.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);

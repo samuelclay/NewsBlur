@@ -271,7 +271,7 @@
         UILabel *categoryTitleLabel = [UILabel new];
         categoryTitleLabel.translatesAutoresizingMaskIntoConstraints = NO;
         categoryTitleLabel.text = @"You can always add your own individual sites.";
-        categoryTitleLabel.font = [UIFont fontWithName:@"Helvetica" size:14];
+        categoryTitleLabel.font = [UIFont fontWithName:@"WhitneySSm-Book" size:15];
         [categoryTitleView addSubview:categoryTitleLabel];
         categoryTitleLabel.textColor = [UIColor darkGrayColor];
         categoryTitleLabel.backgroundColor = [UIColor clearColor];
@@ -294,7 +294,7 @@
     headerBtn.translatesAutoresizingMaskIntoConstraints = NO;
     headerBtn.tag = section + 1000;
     [headerBtn setBackgroundImage:buttonImage forState:UIControlStateNormal];
-    headerBtn.titleLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size:14];
+    headerBtn.titleLabel.font = [UIFont fontWithName:@"WhitneySSm-Medium" size:15];
     
     headerBtn.titleLabel.shadowColor = UIColorFromRGB(0x1E5BDB);
     headerBtn.titleLabel.shadowOffset = CGSizeMake(0, 1);

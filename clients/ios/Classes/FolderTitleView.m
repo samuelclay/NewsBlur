@@ -118,25 +118,25 @@
     // Folder title
     UIColor *textColor = UIColorFromRGB(0x4C4D4A);
     UIFontDescriptor *boldFontDescriptor = [self fontDescriptorUsingPreferredSize:UIFontTextStyleCaption1];
-    UIFont *font = [UIFont fontWithDescriptor: boldFontDescriptor size:0.0];
+    UIFont *font = [UIFont fontWithName:@"WhitneySSm-Medium" size:boldFontDescriptor.pointSize];
     NSInteger titleOffsetY = ((rect.size.height - font.pointSize) / 2) - 1;
     NSString *folderTitle;
     if (section == NewsBlurTopSectionGlobalSharedStories) {
-        folderTitle = [@"Global Shared Stories" uppercaseString];
+        folderTitle = @"Global Shared Stories";
     } else if (section == NewsBlurTopSectionAllSharedStories) {
-        folderTitle = [@"All Shared Stories" uppercaseString];
+        folderTitle = @"All Shared Stories";
     } else if (section == NewsBlurTopSectionInfrequentSiteStories) {
-        folderTitle = [@"Infrequent Site Stories" uppercaseString];
+        folderTitle = @"Infrequent Site Stories";
     } else if (section == NewsBlurTopSectionAllStories) {
-        folderTitle = [@"All Stories" uppercaseString];
+        folderTitle = @"All Stories";
     } else if ([folderName isEqual:@"read_stories"]) {
-        folderTitle = [@"Read Stories" uppercaseString];
+        folderTitle = @"Read Stories";
     } else if ([folderName isEqual:@"saved_stories"]) {
-        folderTitle = [@"Saved Stories" uppercaseString];
+        folderTitle = @"Saved Stories";
     } else if ([folderName isEqual:@"saved_searches"]) {
-        folderTitle = [@"Saved Searches" uppercaseString];
+        folderTitle = @"Saved Searches";
     } else {
-        folderTitle = [[appDelegate.dictFoldersArray objectAtIndex:section] uppercaseString];
+        folderTitle = [appDelegate.dictFoldersArray objectAtIndex:section];
     }
     UIColor *shadowColor = UIColorFromRGB(0xF0F2E9);
     CGContextSetShadowWithColor(context, CGSizeMake(0, 1), 0, [shadowColor CGColor]);
@@ -231,7 +231,7 @@
             folderImageViewX = 8;
         }
     } else if (section == 2) {
-        folderImage = [UIImage imageNamed:@"ak-icon-allstories.png"];
+        folderImage = [UIImage imageNamed:@"ak-icon-infrequent.png"];
         if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
             folderImageViewX = 10;
         } else {
@@ -307,15 +307,15 @@
 
     if (![userPreferences boolForKey:@"use_system_font_size"]) {
         if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"xs"]) {
-            fontDescriptorSize = [fontDescriptorSize fontDescriptorWithSize:10.0f];
-        } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"small"]) {
             fontDescriptorSize = [fontDescriptorSize fontDescriptorWithSize:11.0f];
+        } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"small"]) {
+            fontDescriptorSize = [fontDescriptorSize fontDescriptorWithSize:13.0f];
         } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"medium"]) {
-            fontDescriptorSize = [fontDescriptorSize fontDescriptorWithSize:12.0f];
+            fontDescriptorSize = [fontDescriptorSize fontDescriptorWithSize:14.0f];
         } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"large"]) {
-            fontDescriptorSize = [fontDescriptorSize fontDescriptorWithSize:15.0f];
-        } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"xl"]) {
             fontDescriptorSize = [fontDescriptorSize fontDescriptorWithSize:17.0f];
+        } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"xl"]) {
+            fontDescriptorSize = [fontDescriptorSize fontDescriptorWithSize:19.0f];
         }
     }
     

@@ -6,6 +6,11 @@
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
+    <customFonts key="customFonts">
+        <array key="WhitneySSm-Medium-Bas.otf">
+            <string>WhitneySSm-Medium</string>
+        </array>
+    </customFonts>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="StoryPagesViewController">
             <connections>
@@ -86,7 +91,7 @@
                                 <constraint firstAttribute="width" constant="104" id="HmV-1Q-KBz"/>
                                 <constraint firstAttribute="height" constant="34" id="aS7-gc-RoE"/>
                             </constraints>
-                            <fontDescription key="fontDescription" name="Helvetica-Bold" family="Helvetica" pointSize="13"/>
+                            <fontDescription key="fontDescription" name="WhitneySSm-Medium" family="Whitney SSm" pointSize="13"/>
                             <inset key="titleEdgeInsets" minX="2" minY="0.0" maxX="0.0" maxY="0.0"/>
                             <state key="normal" title="NEXT" backgroundImage="traverse_next.png">
                                 <color key="titleColor" red="0.51764705882352935" green="0.52549019607843139" blue="0.50196078431372548" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -109,7 +114,7 @@
                                 <constraint firstAttribute="width" constant="87" id="7sp-Ah-Pe4"/>
                                 <constraint firstAttribute="height" constant="34" id="eL3-sd-n5q"/>
                             </constraints>
-                            <fontDescription key="fontDescription" name="Helvetica-Bold" family="Helvetica" pointSize="13"/>
+                            <fontDescription key="fontDescription" name="WhitneySSm-Medium" family="Whitney SSm" pointSize="13"/>
                             <inset key="titleEdgeInsets" minX="16" minY="0.0" maxX="0.0" maxY="0.0"/>
                             <state key="normal" title="TEXT" backgroundImage="traverse_text.png">
                                 <color key="titleColor" red="0.51726847887039185" green="0.52641934156417847" blue="0.50032174587249756" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -132,7 +137,7 @@
                                 <constraint firstAttribute="height" constant="34" id="Mn9-G7-LOb"/>
                                 <constraint firstAttribute="width" constant="44" id="O2d-0S-56R"/>
                             </constraints>
-                            <fontDescription key="fontDescription" name="Helvetica-Bold" family="Helvetica" pointSize="13"/>
+                            <fontDescription key="fontDescription" name="WhitneySSm-Medium" family="Whitney SSm" pointSize="13"/>
                             <inset key="contentEdgeInsets" minX="0.0" minY="0.0" maxX="20" maxY="0.0"/>
                             <state key="normal" backgroundImage="traverse_send.png">
                                 <color key="titleColor" red="0.51726847887039185" green="0.52641934156417847" blue="0.50032174587249756" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

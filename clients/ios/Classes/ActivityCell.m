@@ -80,7 +80,7 @@
     NSString *content = [activity objectForKey:@"content"];
     NSString *comment = [NSString stringWithFormat:@"\"%@\"", content];
     NSString *title = [self stripFormatting:[NSString stringWithFormat:@"%@", [activity objectForKey:@"title"]]];
-    NSString *time = [[NSString stringWithFormat:@"%@ ago", [activity objectForKey:@"time_since"]] uppercaseString];
+    NSString *time = [NSString stringWithFormat:@"%@ ago", [activity objectForKey:@"time_since"]];
     NSString *withUserUsername = @"";
     NSString *username = [NSString stringWithFormat:@"%@", [userProfile objectForKey:@"username"]];
         
@@ -156,7 +156,7 @@
     NSString *txtWithTime = [NSString stringWithFormat:@"%@\n \n%@", txt, time];
     NSMutableAttributedString* attrStr = [[NSMutableAttributedString alloc] initWithString:txtWithTime];
     
-    [attrStr setAttributes:@{NSFontAttributeName:[UIFont fontWithName:@"Helvetica" size:13]} range:NSMakeRange(0, [txtWithTime length])];
+    [attrStr setAttributes:@{NSFontAttributeName:[UIFont fontWithName:@"WhitneySSm-Book" size:14]} range:NSMakeRange(0, [txtWithTime length])];
     if (self.highlighted) {
         [attrStr addAttributes:@{NSForegroundColorAttributeName:UIColorFromRGB(0xffffff)} range:NSMakeRange(0, [txtWithTime length])];
     } else {
@@ -175,7 +175,7 @@
     [attrStr addAttributes:@{NSForegroundColorAttributeName:UIColorFromRGB(NEWSBLUR_LINK_COLOR)} range:[txtWithTime rangeOfString:title]];
     [attrStr addAttributes:@{NSForegroundColorAttributeName:UIColorFromRGB(0x666666)} range:[txtWithTime rangeOfString:comment]];
     [attrStr addAttributes:@{NSForegroundColorAttributeName:UIColorFromRGB(0x999999)} range:[txtWithTime rangeOfString:time]];
-    [attrStr addAttributes:@{NSFontAttributeName:[UIFont fontWithName:@"Helvetica" size:11]} range:[txtWithTime rangeOfString:time]];
+    [attrStr addAttributes:@{NSFontAttributeName:[UIFont fontWithName:@"WhitneySSm-Book" size:12]} range:[txtWithTime rangeOfString:time]];
     NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle defaultParagraphStyle] mutableCopy];
     paragraphStyle.lineBreakMode = NSLineBreakByWordWrapping;
     [attrStr addAttributes:@{NSParagraphStyleAttributeName: paragraphStyle} range:NSMakeRange(0, [txtWithTime length])];

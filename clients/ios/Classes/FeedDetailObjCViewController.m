@@ -34,9 +34,9 @@
 #import "StoryTitleAttributedString.h"
 #import "NewsBlur-Swift.h"
 
-#define kTableViewRowHeight 46;
-#define kTableViewRiverRowHeight 68;
-#define kTableViewShortRowDifference 17;
+#define kTableViewRowHeight 50;
+#define kTableViewRiverRowHeight 72;
+#define kTableViewShortRowDifference 16;
 
 @interface FeedDetailObjCViewController ()
 
@@ -1571,7 +1571,7 @@
     }
     
     if ([[story objectForKey:@"story_authors"] class] != [NSNull class]) {
-        cell.storyAuthor = [[[story objectForKey:@"story_authors"] uppercaseString] stringByReplacingOccurrencesOfString:@"\"" withString:@""];
+        cell.storyAuthor = [[story objectForKey:@"story_authors"] stringByReplacingOccurrencesOfString:@"\"" withString:@""];
     } else {
         cell.storyAuthor = @"";
     }
@@ -1796,7 +1796,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
             height = height - kTableViewShortRowDifference;
         }
         UIFontDescriptor *fontDescriptor = [self fontDescriptorUsingPreferredSize:UIFontTextStyleCaption1];
-        UIFont *font = [UIFont fontWithDescriptor:fontDescriptor size:0.0];
+        UIFont *font = [UIFont fontWithName:@"WhitneySSm-Medium" size:fontDescriptor.pointSize];
         if ([self isShortTitles] && self.textSize != FeedDetailTextSizeTitleOnly) {
             return height + font.pointSize * 3.25;
         } else if (self.textSize != FeedDetailTextSizeTitleOnly) {
@@ -1840,19 +1840,21 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 
     if (![userPreferences boolForKey:@"use_system_font_size"]) {
         if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"xs"]) {
-            fontDescriptor = [fontDescriptor fontDescriptorWithSize:10.0f];
-        } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"small"]) {
             fontDescriptor = [fontDescriptor fontDescriptorWithSize:11.0f];
+        } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"small"]) {
+            fontDescriptor = [fontDescriptor fontDescriptorWithSize:13.0f];
         } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"medium"]) {
-            fontDescriptor = [fontDescriptor fontDescriptorWithSize:12.0f];
+            fontDescriptor = [fontDescriptor fontDescriptorWithSize:14.0f];
         } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"large"]) {
-            fontDescriptor = [fontDescriptor fontDescriptorWithSize:15.0f];
-        } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"xl"]) {
             fontDescriptor = [fontDescriptor fontDescriptorWithSize:17.0f];
+        } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"xl"]) {
+            fontDescriptor = [fontDescriptor fontDescriptorWithSize:19.0f];
         }
     }
     return fontDescriptor;
 }
+
+
 
 - (BOOL)isShortTitles {
     UIInterfaceOrientation orientation = self.view.window.windowScene.interfaceOrientation;
@@ -2232,7 +2234,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         }];
     }
     
-    [viewController addSegmentedControlWithTitles:@[@"Newest First", @"Oldest"] selectIndex:[appDelegate.storiesCollection.activeOrder isEqualToString:@"newest"] ? 0 : 1 selectionShouldDismiss:YES handler:^(NSUInteger selectedIndex) {
+    [viewController addSegmentedControlWithTitles:@[@"Newest first", @"Oldest"] selectIndex:[appDelegate.storiesCollection.activeOrder isEqualToString:@"newest"] ? 0 : 1 selectionShouldDismiss:YES handler:^(NSUInteger selectedIndex) {
         if (selectedIndex == 0) {
             [userPreferences setObject:@"newest" forKey:[self.appDelegate.storiesCollection orderKey]];
         } else {
@@ -2259,7 +2261,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     }
     
     NSString *preferenceKey = @"story_list_preview_text_size";
-    NSArray *titles = @[@"Title", @"1", @"2", @"3"];
+    NSArray *titles = @[@"Title", @"content_preview_small.png", @"content_preview_medium.png", @"content_preview_large.png"];
     NSArray *values = @[@"title", @"short", @"medium", @"long"];
     
     [viewController addSegmentedControlWithTitles:titles values:values preferenceKey:preferenceKey selectionShouldDismiss:YES handler:^(NSUInteger selectedIndex) {

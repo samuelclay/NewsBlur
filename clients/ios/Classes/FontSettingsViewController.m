@@ -309,32 +309,32 @@
     cell.imageView.tintColor = UIColorFromRGB(0x303030);
 
     if (indexPath.row == 0) {
-        cell.textLabel.text = [@"Delete This Site" uppercaseString];
+        cell.textLabel.text = @"Delete this site";
         cell.imageView.image = [UIImage imageNamed:@"menu_icn_delete.png"];
     } else if (indexPath.row == 1) {
         bool isSaved = [[self.appDelegate.activeStory objectForKey:@"starred"] boolValue];
         if (isSaved) {
-            cell.textLabel.text = [@"Unsave this story" uppercaseString];
+            cell.textLabel.text = @"Unsave this story";
         } else {
-            cell.textLabel.text = [@"Save this story" uppercaseString];
+            cell.textLabel.text = @"Save this story";
         }
         cell.imageView.image = [UIImage imageNamed:@"clock.png"];
     } else if (indexPath.row == 2) {
         bool isRead = [[self.appDelegate.activeStory objectForKey:@"read_status"] boolValue];
         if (isRead) {
-            cell.textLabel.text = [@"Mark as unread" uppercaseString];
+            cell.textLabel.text = @"Mark as unread";
         } else {
-            cell.textLabel.text = [@"Mark as read" uppercaseString];
+            cell.textLabel.text = @"Mark as read";
         }
         cell.imageView.image = [UIImage imageNamed:@"g_icn_unread.png"];
     } else if (indexPath.row == 3) {
-        cell.textLabel.text = [@"Send to..." uppercaseString];
+        cell.textLabel.text = @"Send to...";
         cell.imageView.image = [UIImage imageNamed:@"menu_icn_mail.png"];
     } else if (indexPath.row == 4) {
-        cell.textLabel.text = [@"Train this story" uppercaseString];
+        cell.textLabel.text = @"Train this story";
         cell.imageView.image = [UIImage imageNamed:@"menu_icn_train.png"];
     } else if (indexPath.row == 5) {
-        cell.textLabel.text = [@"Share this story" uppercaseString];
+        cell.textLabel.text = @"Share this story";
         cell.imageView.image = [UIImage imageNamed:@"menu_icn_share.png"];
     } else if (indexPath.row == 6) {
         NSString *fontStyle = [[NSUserDefaults standardUserDefaults] stringForKey:@"fontStyle"];
@@ -411,7 +411,7 @@
     MenuViewController *controller = [MenuViewController new];
     controller.title = @"Positive?";
     
-    [controller addTitle:@"Delete This Site" iconName:@"menu_icn_delete.png" destructive:YES selectionShouldDismiss:YES handler:^{
+    [controller addTitle:@"Delete this site" iconName:@"menu_icn_delete.png" destructive:YES selectionShouldDismiss:YES handler:^{
         [self deleteSite];
     }];
     
@@ -465,7 +465,7 @@
     [self.fontSizeSegment setTitle:@"L" forSegmentAtIndex:3];
     [self.fontSizeSegment setTitle:@"XL" forSegmentAtIndex:4];
     self.fontSizeSegment.backgroundColor = UIColorFromRGB(0xeeeeee);
-    [self.fontSizeSegment setTitleTextAttributes:@{NSFontAttributeName:[UIFont fontWithName:@"Helvetica-Bold" size:11.0f]} forState:UIControlStateNormal];
+    [self.fontSizeSegment setTitleTextAttributes:@{NSFontAttributeName:[UIFont fontWithName:@"WhitneySSm-Medium" size:12.0f]} forState:UIControlStateNormal];
     [self.fontSizeSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:0];
     [self.fontSizeSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:1];
     [self.fontSizeSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:2];
@@ -509,10 +509,10 @@
     cell.backgroundColor = UIColorFromRGB(0xffffff);
     
     self.fullscreenSegment.frame = CGRectMake(8, 7, cell.frame.size.width - 8*2, kMenuOptionHeight - 7*2);
-    [self.fullscreenSegment setTitle:[@"Full Screen" uppercaseString] forSegmentAtIndex:0];
-    [self.fullscreenSegment setTitle:[@"Toolbar" uppercaseString] forSegmentAtIndex:1];
+    [self.fullscreenSegment setTitle:@"Full Screen" forSegmentAtIndex:0];
+    [self.fullscreenSegment setTitle:@"Toolbar" forSegmentAtIndex:1];
     self.fullscreenSegment.backgroundColor = UIColorFromRGB(0xeeeeee);
-    [self.fullscreenSegment setTitleTextAttributes:@{NSFontAttributeName:[UIFont fontWithName:@"Helvetica-Bold" size:11.0f]} forState:UIControlStateNormal];
+    [self.fullscreenSegment setTitleTextAttributes:@{NSFontAttributeName:[UIFont fontWithName:@"WhitneySSm-Medium" size:12.0f]} forState:UIControlStateNormal];
     [self.fullscreenSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:0];
     [self.fullscreenSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:1];
     
@@ -531,10 +531,10 @@
     cell.backgroundColor = UIColorFromRGB(0xffffff);
     
     self.autoscrollSegment.frame = CGRectMake(8, 7, cell.frame.size.width - 8*2, kMenuOptionHeight - 7*2);
-    [self.autoscrollSegment setTitle:[@"Manual Scroll" uppercaseString] forSegmentAtIndex:0];
-    [self.autoscrollSegment setTitle:[@"Auto Scroll" uppercaseString] forSegmentAtIndex:1];
+    [self.autoscrollSegment setTitle:@"Manual scroll" forSegmentAtIndex:0];
+    [self.autoscrollSegment setTitle:@"Auto scroll" forSegmentAtIndex:1];
     self.autoscrollSegment.backgroundColor = UIColorFromRGB(0xeeeeee);
-    [self.autoscrollSegment setTitleTextAttributes:@{NSFontAttributeName:[UIFont fontWithName:@"Helvetica-Bold" size:11.0f]} forState:UIControlStateNormal];
+    [self.autoscrollSegment setTitleTextAttributes:@{NSFontAttributeName:[UIFont fontWithName:@"WhitneySSm-Medium" size:12.0f]} forState:UIControlStateNormal];
     [self.autoscrollSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:0];
     [self.autoscrollSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:1];
     
@@ -553,10 +553,10 @@
     cell.backgroundColor = UIColorFromRGB(0xffffff);
     
     self.scrollOrientationSegment.frame = CGRectMake(8, 7, cell.frame.size.width - 8*2, kMenuOptionHeight - 7*2);
-    [self.scrollOrientationSegment setTitle:[@"⏩ Horizontal" uppercaseString] forSegmentAtIndex:0];
-    [self.scrollOrientationSegment setTitle:[@"⏬ Vertical" uppercaseString] forSegmentAtIndex:1];
+    [self.scrollOrientationSegment setTitle:@"⏩ Horizontal" forSegmentAtIndex:0];
+    [self.scrollOrientationSegment setTitle:@"⏬ Vertical" forSegmentAtIndex:1];
     self.scrollOrientationSegment.backgroundColor = UIColorFromRGB(0xeeeeee);
-    [self.scrollOrientationSegment setTitleTextAttributes:@{NSFontAttributeName:[UIFont fontWithName:@"Helvetica-Bold" size:11.0f]} forState:UIControlStateNormal];
+    [self.scrollOrientationSegment setTitleTextAttributes:@{NSFontAttributeName:[UIFont fontWithName:@"WhitneySSm-Medium" size:12.0f]} forState:UIControlStateNormal];
     [self.scrollOrientationSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:0];
     [self.scrollOrientationSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:1];
     

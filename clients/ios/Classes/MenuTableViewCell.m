@@ -16,7 +16,7 @@
     if (self) {
         // Initialization code
         self.destructive = NO;
-        self.textLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size:14.0];
+        self.textLabel.font = [UIFont fontWithName:@"WhitneySSm-Medium" size:15.0];
         [self setSeparatorInset:UIEdgeInsetsMake(0, 38, 0, 0)];
         UIView *background = [[UIView alloc] init];
         [background setBackgroundColor:UIColorFromRGB(0xFFFFFF)];
