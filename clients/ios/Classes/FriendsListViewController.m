@@ -290,9 +290,9 @@ viewForHeaderInSection:(NSInteger)section {
                 msg.text = @"No results.";
                 msg.textColor = UIColorFromRGB(0x7a7a7a);
                 if (vb.size.width > 320) {
-                    msg.font = [UIFont fontWithName:@"Helvetica-Bold" size: 20.0];
+                    msg.font = [UIFont fontWithName:@"WhitneySSm-Medium" size: 21.0];
                 } else {
-                    msg.font = [UIFont fontWithName:@"Helvetica-Bold" size: 14.0];
+                    msg.font = [UIFont fontWithName:@"WhitneySSm-Medium" size: 15.0];
                 }
                 msg.textAlignment = NSTextAlignmentCenter;
             }
@@ -300,34 +300,6 @@ viewForHeaderInSection:(NSInteger)section {
         }
         
     } 
-//    else {
-//        
-//        int userCount = [self.suggestedUserProfiles count];
-//        if (!userCount) {
-//            // add a NO FRIENDS TO SUGGEST message on either the first or second row depending on iphone/ipad
-//            int row = 0;
-//            if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-//                row = 1;
-//            }
-//            
-//            if (indexPath.row == row) {
-//                UILabel *msg = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, vb.size.width, 140)];
-//                [cell.contentView addSubview:msg];
-//                msg.text = @"Nobody left to recommend.  Good job!";
-//                msg.textColor = UIColorFromRGB(0x7a7a7a);
-//                if (vb.size.width > 320) {
-//                    msg.font = [UIFont fontWithName:@"Helvetica-Bold" size: 20.0];
-//                } else {
-//                    msg.font = [UIFont fontWithName:@"Helvetica-Bold" size: 14.0];
-//                }
-//                msg.textAlignment = NSTextAlignmentCenter;
-//            }
-//        } else {
-//            cell.accessoryType = UITableViewCellAccessoryDetailDisclosureButton;
-//            [badge refreshWithProfile:[self.suggestedUserProfiles objectAtIndex:indexPath.row] showStats:NO withWidth:vb.size.width - 35 - 10];
-//            [cell.contentView addSubview:badge];
-//        }
-//    }
     
     cell.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
     cell.selectionStyle = UITableViewCellSelectionStyleNone;

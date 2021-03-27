@@ -181,9 +181,9 @@ viewForHeaderInSection:(NSInteger)section {
         msg.text = @"No notifications yet.";
         msg.textColor = UIColorFromRGB(0x7a7a7a);
         if (vb.size.width > 320) {
-            msg.font = [UIFont fontWithName:@"Helvetica-Bold" size: 20.0];
+            msg.font = [UIFont fontWithName:@"WhitneySSm-Medium" size: 21.0];
         } else {
-            msg.font = [UIFont fontWithName:@"Helvetica-Bold" size: 14.0];
+            msg.font = [UIFont fontWithName:@"WhitneySSm-Medium" size: 15.0];
         }
         msg.textAlignment = NSTextAlignmentCenter;
         

@@ -60,7 +60,7 @@
     NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle defaultParagraphStyle] mutableCopy];
     paragraphStyle.lineBreakMode = NSLineBreakByTruncatingTail;
     paragraphStyle.alignment = NSTextAlignmentLeft;
-    [self.title.uppercaseString drawInRect:CGRectMake(36.0, titleOffsetY, rect.size.width - 36 - 36, font.pointSize)
+    [self.title drawInRect:CGRectMake(36.0, titleOffsetY, rect.size.width - 36 - 36, font.pointSize)
      withAttributes:@{NSFontAttributeName: font,
                       NSForegroundColorAttributeName: textColor,
                       NSParagraphStyleAttributeName: paragraphStyle}];

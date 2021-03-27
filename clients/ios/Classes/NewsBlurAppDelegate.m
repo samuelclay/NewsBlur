@@ -3374,7 +3374,7 @@
         titleLabel.textAlignment = NSTextAlignmentLeft;
         titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
         titleLabel.numberOfLines = 1;
-        titleLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size:11.0];
+        titleLabel.font = [UIFont fontWithName:@"WhitneySSm-Medium" size:11.0];
         titleLabel.shadowOffset = CGSizeMake(0, 1);
         if ([[feed objectForKey:@"favicon_text_color"] class] != [NSNull class]) {
             BOOL lightText = [[feed objectForKey:@"favicon_text_color"]
@@ -3447,7 +3447,7 @@
     }
     titleLabel.backgroundColor = [UIColor clearColor];
     titleLabel.textAlignment = NSTextAlignmentLeft;
-    titleLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size:15.0];
+    titleLabel.font = [UIFont fontWithName:@"WhitneySSm-Medium" size:16.0];
     titleLabel.textColor = UIColorFromRGB(0x4D4C4A);
     titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     titleLabel.numberOfLines = 1;
@@ -3469,7 +3469,7 @@
             titleImage = [UIImage imageNamed:@"ak-icon-allstories.png"];
         } else if (storiesCollection.isRiverView &&
                    [storiesCollection.activeFolder isEqualToString:@"infrequent"]) {
-            titleImage = [UIImage imageNamed:@"ak-icon-allstories.png"];
+            titleImage = [UIImage imageNamed:@"ak-icon-infrequent.png"];
         } else if (storiesCollection.isSavedView && storiesCollection.activeSavedStoryTag) {
             titleImage = [UIImage imageNamed:@"tag.png"];
         } else if ([storiesCollection.activeFolder isEqualToString:@"read_stories"]) {
@@ -3518,7 +3518,7 @@
     } else if ([folder isEqualToString:@"everything"]) {
         return [UIImage imageNamed:@"ak-icon-allstories.png"];
     } else if ([folder isEqualToString:@"infrequent"]) {
-        return [UIImage imageNamed:@"ak-icon-allstories.png"];
+        return [UIImage imageNamed:@"ak-icon-infrequent.png"];
     } else if ([folder isEqualToString:@"read_stories"]) {
         return [UIImage imageNamed:@"g_icn_folder_read.png"];
     } else if ([folder isEqualToString:@"saved_searches"]) {

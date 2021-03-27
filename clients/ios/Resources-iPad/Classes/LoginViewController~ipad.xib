@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.iPad.XIB" version="3.0" toolsVersion="16096" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.iPad.XIB" version="3.0" toolsVersion="17701" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES">
     <device id="ipad9_7" orientation="portrait" layout="fullscreen" appearance="light"/>
     <dependencies>
-        <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16086"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17703"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <customFonts key="customFonts">
@@ -12,6 +11,9 @@
         </array>
         <array key="WhitneySSm-Light-Bas.otf">
             <string>WhitneySSm-Light</string>
+        </array>
+        <array key="WhitneySSm-Medium-Bas.otf">
+            <string>WhitneySSm-Medium</string>
         </array>
         <array key="WhitneySSm-Semibold-Bas.otf">
             <string>WhitneySSm-Semibold</string>
@@ -64,7 +66,7 @@
                             <rect key="frame" x="93" y="60" width="300" height="16"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <fontDescription key="fontDescription" name="WhitneySSm-Semibold" family="Whitney SSm" pointSize="13"/>
-                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                            <color key="textColor" systemColor="darkTextColor"/>
                             <nil key="highlightedColor"/>
                             <color key="shadowColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         </label>
@@ -72,8 +74,8 @@
                             <rect key="frame" x="93" y="84" width="139" height="34"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
-                            <fontDescription key="fontDescription" name="Helvetica" family="Helvetica" pointSize="18"/>
+                            <color key="textColor" systemColor="darkTextColor"/>
+                            <fontDescription key="fontDescription" name="WhitneySSm-Medium" family="Whitney SSm" pointSize="18"/>
                             <textInputTraits key="textInputTraits" autocorrectionType="no" keyboardType="emailAddress" returnKeyType="next"/>
                             <connections>
                                 <outlet property="delegate" destination="-1" id="19"/>
@@ -83,7 +85,7 @@
                             <rect key="frame" x="245" y="60" width="300" height="16"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <fontDescription key="fontDescription" name="WhitneySSm-Semibold" family="Whitney SSm" pointSize="13"/>
-                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                            <color key="textColor" systemColor="darkTextColor"/>
                             <nil key="highlightedColor"/>
                             <color key="shadowColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         </label>
@@ -91,8 +93,8 @@
                             <rect key="frame" x="245" y="84" width="148" height="34"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
-                            <fontDescription key="fontDescription" name="Helvetica" family="Helvetica" pointSize="18"/>
+                            <color key="textColor" systemColor="darkTextColor"/>
+                            <fontDescription key="fontDescription" name="WhitneySSm-Medium" family="Whitney SSm" pointSize="18"/>
                             <textInputTraits key="textInputTraits" autocorrectionType="no" keyboardType="alphabet" returnKeyType="go" secureTextEntry="YES"/>
                             <connections>
                                 <outlet property="delegate" destination="-1" id="20"/>
@@ -110,7 +112,7 @@
                             <rect key="frame" x="93" y="144" width="300" height="20"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <fontDescription key="fontDescription" name="WhitneySSm-Semibold" family="Whitney SSm" pointSize="13"/>
-                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                            <color key="textColor" systemColor="darkTextColor"/>
                             <nil key="highlightedColor"/>
                             <color key="shadowColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         </label>
@@ -118,8 +120,8 @@
                             <rect key="frame" x="93" y="172" width="300" height="34"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
-                            <fontDescription key="fontDescription" name="Helvetica" family="Helvetica" pointSize="18"/>
+                            <color key="textColor" systemColor="darkTextColor"/>
+                            <fontDescription key="fontDescription" name="WhitneySSm-Medium" family="Whitney SSm" pointSize="18"/>
                             <textInputTraits key="textInputTraits" autocorrectionType="no" keyboardType="emailAddress" returnKeyType="join"/>
                             <connections>
                                 <outlet property="delegate" destination="-1" id="48"/>
@@ -129,7 +131,7 @@
                             <rect key="frame" x="194" y="234" width="111" height="32"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <fontDescription key="fontDescription" name="WhitneySSm-Bold" family="Whitney SSm" pointSize="15"/>
-                            <state key="normal" title="SIGN UP" backgroundImage="orange_button.png">
+                            <state key="normal" title="Sign Up" backgroundImage="orange_button.png">
                                 <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             </state>
@@ -154,7 +156,7 @@
                             <rect key="frame" x="100" y="63" width="300" height="14"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <fontDescription key="fontDescription" name="WhitneySSm-Semibold" family="Whitney SSm" pointSize="13"/>
-                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                            <color key="textColor" systemColor="darkTextColor"/>
                             <nil key="highlightedColor"/>
                             <color key="shadowColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         </label>
@@ -162,8 +164,8 @@
                             <rect key="frame" x="100" y="85" width="300" height="34"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
-                            <fontDescription key="fontDescription" name="Helvetica" family="Helvetica" pointSize="18"/>
+                            <color key="textColor" systemColor="darkTextColor"/>
+                            <fontDescription key="fontDescription" name="WhitneySSm-Medium" family="Whitney SSm" pointSize="18"/>
                             <textInputTraits key="textInputTraits" autocorrectionType="no" keyboardType="emailAddress" returnKeyType="next"/>
                             <connections>
                                 <outlet property="delegate" destination="-1" id="124"/>
@@ -173,7 +175,7 @@
                             <rect key="frame" x="100" y="142" width="300" height="16"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <fontDescription key="fontDescription" name="WhitneySSm-Semibold" family="Whitney SSm" pointSize="13"/>
-                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                            <color key="textColor" systemColor="darkTextColor"/>
                             <nil key="highlightedColor"/>
                             <color key="shadowColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         </label>
@@ -181,8 +183,8 @@
                             <rect key="frame" x="100" y="163" width="300" height="34"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
-                            <fontDescription key="fontDescription" name="Helvetica" family="Helvetica" pointSize="18"/>
+                            <color key="textColor" systemColor="darkTextColor"/>
+                            <fontDescription key="fontDescription" name="WhitneySSm-Medium" family="Whitney SSm" pointSize="18"/>
                             <textInputTraits key="textInputTraits" autocorrectionType="no" keyboardType="alphabet" returnKeyType="go" secureTextEntry="YES"/>
                             <connections>
                                 <outlet property="delegate" destination="-1" id="125"/>
@@ -200,7 +202,7 @@
                             <rect key="frame" x="194" y="234" width="111" height="32"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <fontDescription key="fontDescription" name="WhitneySSm-Bold" family="Whitney SSm" pointSize="15"/>
-                            <state key="normal" title="LOGIN" backgroundImage="orange_button.png">
+                            <state key="normal" title="Login" backgroundImage="orange_button.png">
                                 <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             </state>
@@ -221,7 +223,7 @@
                                 <action selector="findLoginFrom1Password:" destination="-1" eventType="touchDown" id="mKJ-Ck-efB"/>
                             </connections>
                         </button>
-                        <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Qvq-7C-yQC" userLabel="Forgot?">
+                        <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Qvq-7C-yQC" userLabel="Forgot?">
                             <rect key="frame" x="340" y="134" width="60" height="30"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <fontDescription key="fontDescription" name="WhitneySSm-Light" family="Whitney SSm" pointSize="13"/>
@@ -246,7 +248,7 @@
                     <fontDescription key="fontDescription" name="WhitneySSm-Bold" family="Whitney SSm" pointSize="15"/>
                     <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <nil key="highlightedColor"/>
-                    <color key="shadowColor" cocoaTouchSystemColor="darkTextColor"/>
+                    <color key="shadowColor" systemColor="darkTextColor"/>
                 </label>
                 <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" fixedFrame="YES" hidesWhenStopped="YES" style="white" translatesAutoresizingMaskIntoConstraints="NO" id="25">
                     <rect key="frame" x="296" y="196" width="20" height="20"/>
@@ -262,7 +264,7 @@
                             <fontDescription key="fontDescription" name="WhitneySSm-Bold" family="Whitney SSm" pointSize="15"/>
                             <inset key="contentEdgeInsets" minX="0.0" minY="0.0" maxX="50" maxY="0.0"/>
                             <inset key="titleEdgeInsets" minX="16" minY="0.0" maxX="0.0" maxY="0.0"/>
-                            <state key="normal" title="SIGN UP" image="fountain_pen.png">
+                            <state key="normal" title="Sign up" image="fountain_pen.png">
                                 <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             </state>
@@ -280,7 +282,7 @@
                             <fontDescription key="fontDescription" name="WhitneySSm-Bold" family="Whitney SSm" pointSize="15"/>
                             <inset key="contentEdgeInsets" minX="50" minY="0.0" maxX="0.0" maxY="0.0"/>
                             <inset key="titleEdgeInsets" minX="16" minY="0.0" maxX="0.0" maxY="0.0"/>
-                            <state key="normal" title="LOGIN" image="user.png">
+                            <state key="normal" title="Login" image="user.png">
                                 <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             </state>
@@ -316,5 +318,8 @@
         <image name="orange_button.png" width="111" height="32"/>
         <image name="user.png" width="50" height="50"/>
         <image name="user_on.png" width="50" height="50"/>
+        <systemColor name="darkTextColor">
+            <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
     </resources>
 </document>

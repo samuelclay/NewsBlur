@@ -143,15 +143,15 @@ static UIFont *indicatorFont = nil;
     fontDescriptor = [UIFontDescriptor preferredFontDescriptorWithTextStyle:textStyle];
     if (![userPreferences boolForKey:@"use_system_font_size"]) {
         if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"xs"]) {
-            fontDescriptor = [fontDescriptor fontDescriptorWithSize:11.0f];
-        } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"small"]) {
             fontDescriptor = [fontDescriptor fontDescriptorWithSize:12.0f];
+        } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"small"]) {
+            fontDescriptor = [fontDescriptor fontDescriptorWithSize:14.0f];
         } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"medium"]) {
-            fontDescriptor = [fontDescriptor fontDescriptorWithSize:13.0f];
-        } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"large"]) {
             fontDescriptor = [fontDescriptor fontDescriptorWithSize:15.0f];
-        } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"xl"]) {
+        } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"large"]) {
             fontDescriptor = [fontDescriptor fontDescriptorWithSize:17.0f];
+        } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"xl"]) {
+            fontDescriptor = [fontDescriptor fontDescriptorWithSize:19.0f];
         }
     }
     
@@ -236,11 +236,11 @@ static UIFont *indicatorFont = nil;
 
     if (cell.isRiverOrSocial) {
         if (cell.isRead) {
-            font = [UIFont fontWithDescriptor:fontDescriptor size:0.0];
+            font = [UIFont fontWithName:@"WhitneySSm-Book" size:fontDescriptor.pointSize];
             textColor = UIColorFromLightSepiaMediumDarkRGB(0x808080, 0x808080, 0xB0B0B0, 0x707070);
         } else {
             UIFontDescriptor *boldFontDescriptor = [fontDescriptor fontDescriptorWithSymbolicTraits: UIFontDescriptorTraitBold];
-            font = [UIFont fontWithDescriptor: boldFontDescriptor size:fontDescriptor.pointSize];
+            font = [UIFont fontWithName:@"WhitneySSm-Medium" size:boldFontDescriptor.pointSize];
             textColor = UIColorFromLightSepiaMediumDarkRGB(0x606060, 0x606060, 0xD0D0D0, 0x909090);
             
         }
@@ -267,11 +267,11 @@ static UIFont *indicatorFont = nil;
     
     // story title
     if (cell.isRead) {
-        font = [UIFont fontWithDescriptor:fontDescriptor size:0.0];
+        font = [UIFont fontWithName:@"WhitneySSm-Book" size:fontDescriptor.pointSize];
         textColor = UIColorFromLightSepiaMediumDarkRGB(0x585858, 0x585858, 0x989898, 0x888888);
     } else {
         UIFontDescriptor *boldFontDescriptor = [fontDescriptor fontDescriptorWithSymbolicTraits: UIFontDescriptorTraitBold];
-        font = [UIFont fontWithDescriptor: boldFontDescriptor size:fontDescriptor.pointSize];
+        font = [UIFont fontWithName:@"WhitneySSm-Medium" size:boldFontDescriptor.pointSize];
         textColor = UIColorFromLightSepiaMediumDarkRGB(0x333333, 0x333333, 0xD0D0D0, 0xCCCCCC);
     }
     if (cell.highlighted || cell.selected) {
@@ -335,10 +335,10 @@ static UIFont *indicatorFont = nil;
         
         if (cell.isRead) {
             textColor = UIColorFromLightSepiaMediumDarkRGB(0xB8B8B8, 0xB8B8B8, 0xA0A0A0, 0x707070);
-            font = [UIFont fontWithDescriptor:fontDescriptor size:0.0];
+            font = [UIFont fontWithName:@"WhitneySSm-Book" size:fontDescriptor.pointSize];
         } else {
             textColor = UIColorFromLightSepiaMediumDarkRGB(0x404040, 0x404040, 0xC0C0C0, 0xB0B0B0);
-            font = [UIFont fontWithDescriptor:fontDescriptor size:0.0];
+            font = [UIFont fontWithName:@"WhitneySSm-Book" size:fontDescriptor.pointSize];
         }
         if (cell.highlighted || cell.selected) {
             if (cell.isRead) {
@@ -363,10 +363,10 @@ static UIFont *indicatorFont = nil;
     
     if (cell.isRead) {
         textColor = UIColorFromLightSepiaMediumDarkRGB(0xBABDD1, 0xBABDD1, 0x52535d, 0x21366e);
-        font = [UIFont fontWithName:@"Helvetica" size:10];
+        font = [UIFont fontWithName:@"WhitneySSm-Book" size:11];
     } else {
         textColor = UIColorFromLightSepiaMediumDarkRGB(0x262C6C, 0x262C6C, 0x363C5C, 0x21468e);
-        font = [UIFont fontWithName:@"Helvetica-Bold" size:10];
+        font = [UIFont fontWithName:@"WhitneySSm-Medium" size:11];
     }
     
     if (cell.highlighted || cell.selected) {
@@ -391,10 +391,10 @@ static UIFont *indicatorFont = nil;
     // Story author
     if (cell.isRead) {
         textColor = UIColorFromLightSepiaMediumDarkRGB(0xB8B8B8, 0xB8B8B8, 0x909090, 0x404040);
-        font = [UIFont fontWithName:@"Helvetica-Bold" size:10];
+        font = [UIFont fontWithName:@"WhitneySSm-Medium" size:11];
     } else {
         textColor = UIColorFromLightSepiaMediumDarkRGB(0xA6A8A2, 0xA6A8A2, 0x909090, 0x505050);
-        font = [UIFont fontWithName:@"Helvetica-Bold" size:10];
+        font = [UIFont fontWithName:@"WhitneySSm-Medium" size:11];
     }
     if (cell.highlighted || cell.selected) {
         if (cell.isRead) {

@@ -289,7 +289,7 @@
                 titleImage = [UIImage imageNamed:@"ak-icon-allstories.png"];
             } else if (appDelegate.storiesCollection.isRiverView &&
                        [appDelegate.storiesCollection.activeFolder isEqualToString:@"infrequent"]) {
-                titleImage = [UIImage imageNamed:@"ak-icon-allstories.png"];
+                titleImage = [UIImage imageNamed:@"ak-icon-infrequent.png"];
             } else if (appDelegate.storiesCollection.isSavedView &&
                        appDelegate.storiesCollection.activeSavedStoryTag) {
                 titleImage = [UIImage imageNamed:@"tag.png"];
@@ -1388,11 +1388,11 @@
     if ((nextIndex == -1 && unreadCount > 0 && !pageFinished) ||
         nextIndex != -1) {
         NSString *nextName = self.isHorizontal ? @"traverse_next.png" : @"traverse_next_vert.png";
-        [buttonNext setTitle:[@"Next" uppercaseString] forState:UIControlStateNormal];
+        [buttonNext setTitle:@"Next" forState:UIControlStateNormal];
         [buttonNext setBackgroundImage:[[ThemeManager themeManager] themedImage:[UIImage imageNamed:nextName]]
                               forState:UIControlStateNormal];
     } else {
-        [buttonNext setTitle:[@"Done" uppercaseString] forState:UIControlStateNormal];
+        [buttonNext setTitle:@"Done" forState:UIControlStateNormal];
         [buttonNext setBackgroundImage:[[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"traverse_done.png"]]
                               forState:UIControlStateNormal];
     }
@@ -1431,12 +1431,12 @@
                           forState:UIControlStateNormal];
     
     if (storyViewController.inTextView) {
-        [buttonText setTitle:[@"Story" uppercaseString] forState:UIControlStateNormal];
+        [buttonText setTitle:@"Story" forState:UIControlStateNormal];
         [buttonText setBackgroundImage:[[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"traverse_text_on.png"]]
                               forState:0];
         self.buttonText.titleEdgeInsets = UIEdgeInsetsMake(0, 26, 0, 0);
     } else {
-        [buttonText setTitle:[@"Text" uppercaseString] forState:UIControlStateNormal];
+        [buttonText setTitle:@"Text" forState:UIControlStateNormal];
         [buttonText setBackgroundImage:[[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"traverse_text.png"]]
                               forState:0];
         self.buttonText.titleEdgeInsets = UIEdgeInsetsMake(0, 22, 0, 0);

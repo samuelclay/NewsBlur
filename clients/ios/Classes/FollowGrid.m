@@ -37,7 +37,7 @@
     // username
     UILabel *user = [[UILabel alloc] initWithFrame:CGRectZero];
     user.textColor = UIColorFromRGB(NEWSBLUR_LINK_COLOR);
-    user.font = [UIFont fontWithName:@"Helvetica-Bold" size:18];
+    user.font = [UIFont fontWithName:@"WhitneySSm-Medium" size:11];
     user.backgroundColor = [UIColor clearColor];
     user.frame = CGRectMake(0, 10, 100, 22);
     user.text = @"roy"; 

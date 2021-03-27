@@ -4,6 +4,11 @@
         <deployment defaultVersion="1792" identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3742"/>
     </dependencies>
+    <customFonts key="customFonts">
+        <array key="WhitneySSm-Medium-Bas.otf">
+            <string>WhitneySSm-Medium</string>
+        </array>
+    </customFonts>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="AddSiteAutocompleteCell"/>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
@@ -17,7 +22,7 @@
                     <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Daring Fireball" lineBreakMode="tailTruncation" minimumFontSize="12" id="5">
                         <rect key="frame" x="26" y="3" width="158" height="21"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                        <fontDescription key="fontDescription" name="Helvetica" family="Helvetica" pointSize="15"/>
+                        <fontDescription key="fontDescription" name="WhitneySSm-Medium" family="Whitney SSm" pointSize="15"/>
                         <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                         <color key="highlightedColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <size key="shadowOffset" width="0.0" height="1"/>
@@ -25,14 +30,14 @@
                     <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="http://daringfireball.net/feeds/extra/parameters/that/might/be/truncated/rss.xml" lineBreakMode="middleTruncation" minimumFontSize="10" id="6">
                         <rect key="frame" x="6" y="20" width="306" height="21"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
-                        <fontDescription key="fontDescription" name="Helvetica" family="Helvetica" pointSize="11"/>
+                        <fontDescription key="fontDescription" name="WhitneySSm-Medium" family="Whitney SSm" pointSize="11"/>
                         <color key="textColor" red="0.36056621319999999" green="0.3860340491" blue="0.58659329380000003" alpha="1" colorSpace="deviceRGB"/>
                         <color key="highlightedColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     </label>
                     <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="3,123 subscribers" textAlignment="right" lineBreakMode="tailTruncation" minimumFontSize="9" id="7">
                         <rect key="frame" x="192" y="3" width="120" height="21"/>
                         <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
-                        <fontDescription key="fontDescription" name="Helvetica-Bold" family="Helvetica" pointSize="10"/>
+                        <fontDescription key="fontDescription" name="WhitneySSm-Medium" family="Whitney SSm" pointSize="10"/>
                         <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                         <color key="highlightedColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     </label>

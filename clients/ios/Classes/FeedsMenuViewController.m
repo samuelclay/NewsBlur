@@ -44,26 +44,26 @@
 - (void)rebuildOptions {
     if ([appDelegate.activeUsername isEqualToString:@"samuel"] || [appDelegate.activeUsername isEqualToString:@"Dejal"]) {
         self.menuOptions = [[NSArray alloc]
-                            initWithObjects:[@"Preferences" uppercaseString],
-                                            [@"Mute Sites" uppercaseString],
-                                            [@"Organize Sites" uppercaseString],
-                                            [@"Widget Sites" uppercaseString],
-                                            [@"Notifications" uppercaseString],
-                                            [@"Find Friends" uppercaseString],
-                                            [appDelegate.isPremium ? @"Premium Account": @"Upgrade to Premium" uppercaseString],
-                                            [@"Logout" uppercaseString],
-                                            [@"Login as..." uppercaseString],
+                            initWithObjects:@"Preferences",
+                                            @"Mute Sites",
+                                            @"Organize Sites",
+                                            @"Widget Sites",
+                                            @"Notifications",
+                                            @"Find Friends",
+                                            appDelegate.isPremium ? @"Premium Account": @"Upgrade to Premium",
+                                            @"Logout",
+                                            @"Login as...",
                                             nil];
     } else {
         self.menuOptions = [[NSArray alloc]
-                            initWithObjects:[@"Preferences" uppercaseString],
-                                            [@"Mute Sites" uppercaseString],
-                                            [@"Organize Sites" uppercaseString],
-                                            [@"Widget Sites" uppercaseString],
-                                            [@"Notifications" uppercaseString],
-                                            [@"Find Friends" uppercaseString],
-                                            [appDelegate.isPremium ? @"Premium Account": @"Upgrade to Premium" uppercaseString],
-                                            [@"Logout" uppercaseString], nil];
+                            initWithObjects:@"Preferences",
+                                            @"Mute Sites",
+                                            @"Organize Sites",
+                                            @"Widget Sites",
+                                            @"Notifications",
+                                            @"Find Friends",
+                                            appDelegate.isPremium ? @"Premium Account": @"Upgrade to Premium",
+                                            @"Logout", nil];
     }
     
     self.menuTableView.backgroundColor = UIColorFromRGB(0xECEEEA);
@@ -81,7 +81,7 @@
     
     [self.fontSizeSegment
      setTitleTextAttributes:@{NSFontAttributeName:
-                                  [UIFont fontWithName:@"Helvetica-Bold" size:11.0f]}
+                                  [UIFont fontWithName:@"WhitneySSm-Medium" size:12.0f]}
      forState:UIControlStateNormal];
     
     if([userPreferences stringForKey:@"feed_list_font_size"]){
@@ -295,7 +295,7 @@
     [self.fontSizeSegment setTitle:@"L" forSegmentAtIndex:3];
     [self.fontSizeSegment setTitle:@"XL" forSegmentAtIndex:4];
     self.fontSizeSegment.backgroundColor = UIColorFromRGB(0xeeeeee);
-    [self.fontSizeSegment setTitleTextAttributes:@{NSFontAttributeName:[UIFont fontWithName:@"Helvetica-Bold" size:11.0f]} forState:UIControlStateNormal];
+    [self.fontSizeSegment setTitleTextAttributes:@{NSFontAttributeName:[UIFont fontWithName:@"WhitneySSm-Medium" size:12.0f]} forState:UIControlStateNormal];
     [self.fontSizeSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:0];
     [self.fontSizeSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:1];
     [self.fontSizeSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:2];

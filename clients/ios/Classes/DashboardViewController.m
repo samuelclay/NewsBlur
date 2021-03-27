@@ -43,7 +43,7 @@
     
     [self.segmentedButton
      setTitleTextAttributes:@{NSFontAttributeName:
-                                  [UIFont fontWithName:@"Helvetica-Bold" size:11.0f]}
+                                  [UIFont fontWithName:@"WhitneySSm-Medium" size:12.0f]}
      forState:UIControlStateNormal];
     
     CGRect topToolbarFrame = self.topToolbar.frame;

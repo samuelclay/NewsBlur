@@ -63,7 +63,7 @@ NSString * const MenuHandler = @"handler";
 
 - (CGSize)preferredContentSize {
     CGSize size = CGSizeMake(100.0, 0.0);
-    UIFont *font = [UIFont fontWithName:@"Helvetica-Bold" size:14.0];
+    UIFont *font = [UIFont fontWithName:@"WhitneySSm-Medium" size:15.0];
     
     for (NSDictionary *item in self.items) {
         if (item[MenuSegmentTitles]) {
@@ -86,7 +86,7 @@ NSString * const MenuHandler = @"handler";
 }
 
 - (void)addTitle:(NSString *)title iconImage:(UIImage *)image destructive:(BOOL)isDestructive selectionShouldDismiss:(BOOL)selectionShouldDismiss handler:(MenuItemHandler)handler {
-    [self.items addObject:@{MenuTitle: title.uppercaseString, MenuIcon: image, MenuDestructive: @(isDestructive), MenuSelectionShouldDismiss: @(selectionShouldDismiss), MenuHandler: handler}];
+    [self.items addObject:@{MenuTitle: title, MenuIcon: image, MenuDestructive: @(isDestructive), MenuSelectionShouldDismiss: @(selectionShouldDismiss), MenuHandler: handler}];
 }
 
 - (void)addTitle:(NSString *)title iconName:(NSString *)iconName selectionShouldDismiss:(BOOL)selectionShouldDismiss handler:(MenuItemHandler)handler {
@@ -202,14 +202,23 @@ NSString * const MenuHandler = @"handler";
     NSArray *segmentTitles = item[MenuSegmentTitles];
     
     for (NSUInteger idx = 0; idx < segmentTitles.count; idx++) {
-        [segmentedControl insertSegmentWithTitle:[segmentTitles[idx] uppercaseString] atIndex:idx animated:NO];
+        NSString *title = segmentTitles[idx];
+        
+        if ([title hasSuffix:@".png"]) {
+            UIImage *image = [UIImage imageNamed:title];
+            
+            [segmentedControl insertSegmentWithImage:image atIndex:idx animated:NO];
+        } else {
+            [segmentedControl insertSegmentWithTitle:title atIndex:idx animated:NO];
+        }
+        
         [segmentedControl setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:idx];
     }
     
     segmentedControl.selectedSegmentIndex = [item[MenuSegmentIndex] integerValue];
     segmentedControl.tag = row;
     segmentedControl.backgroundColor = UIColorFromRGB(0xeeeeee);
-    [segmentedControl setTitleTextAttributes:@{NSFontAttributeName : [UIFont fontWithName:@"Helvetica-Bold" size:11.0]} forState:UIControlStateNormal];
+    [segmentedControl setTitleTextAttributes:@{NSFontAttributeName : [UIFont fontWithName:@"WhitneySSm-Medium" size:12.0]} forState:UIControlStateNormal];
     [segmentedControl addTarget:self action:@selector(segmentedValueChanged:) forControlEvents:UIControlEventValueChanged];
     
     [[ThemeManager themeManager] updateSegmentedControl:segmentedControl];
