@@ -2765,9 +2765,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     self.searchBar.nb_searchField.textColor = UIColorFromRGB(NEWSBLUR_BLACK_COLOR);
     self.searchBar.nb_searchField.tintColor = UIColorFromRGB(NEWSBLUR_BLACK_COLOR);
     
-    if (self.isPhoneOrCompact) {
-        self.navigationItem.titleView = [appDelegate makeFeedTitle:storiesCollection.activeFeed];
-    }
+    self.appDelegate.detailViewController.navigationItem.titleView = [appDelegate makeFeedTitle:storiesCollection.activeFeed];
     
     if ([ThemeManager themeManager].isDarkTheme) {
         self.storyTitlesTable.indicatorStyle = UIScrollViewIndicatorStyleWhite;
