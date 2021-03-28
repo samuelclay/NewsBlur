@@ -663,7 +663,7 @@
     
     self.feedTitleGradient = [appDelegate
                               makeFeedTitleGradient:feed
-                              withRect:CGRectMake(0, yOffset, CGRectGetWidth(self.view.bounds), 21)]; // 1024 hack for self.webView.frame.size.width
+                              withRect:CGRectMake(0, yOffset, CGRectGetWidth(self.view.bounds), 25)]; // 1024 hack for self.webView.frame.size.width
     self.feedTitleGradient.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     self.feedTitleGradient.tag = FEED_TITLE_GRADIENT_TAG; // Not attached yet. Remove old gradients, first.
     
@@ -677,7 +677,7 @@
         appDelegate.storiesCollection.isSocialView ||
         appDelegate.storiesCollection.isSavedView ||
         appDelegate.storiesCollection.isReadView) {
-        self.webView.scrollView.scrollIndicatorInsets = UIEdgeInsetsMake(20, 0, 0, 0);
+        self.webView.scrollView.scrollIndicatorInsets = UIEdgeInsetsMake(24, 0, 0, 0);
     } else {
         self.webView.scrollView.scrollIndicatorInsets = UIEdgeInsetsMake(9, 0, 0, 0);
     }
