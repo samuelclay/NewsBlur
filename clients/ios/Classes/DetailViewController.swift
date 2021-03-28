@@ -178,7 +178,8 @@ class DetailViewController: BaseViewController {
         manager.updateBackground(of: view)
         
         dividerImageView.image = manager.themedImage(UIImage(named: "drag_icon.png"))
-        view.backgroundColor = navigationController?.navigationBar.barTintColor;
+        view.backgroundColor = navigationController?.navigationBar.barTintColor
+        navigationController?.navigationBar.barStyle = manager.isDarkTheme ? .black : .default
     }
     
     /// Adjusts the container when autoscrolling. Only applies to iPhone.
