@@ -3374,7 +3374,7 @@
         titleLabel.textAlignment = NSTextAlignmentLeft;
         titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
         titleLabel.numberOfLines = 1;
-        titleLabel.font = [UIFont fontWithName:@"WhitneySSm-Medium" size:11.0];
+        titleLabel.font = [UIFont fontWithName:@"WhitneySSm-Medium" size:13.0];
         titleLabel.shadowOffset = CGSizeMake(0, 1);
         if ([[feed objectForKey:@"favicon_text_color"] class] != [NSNull class]) {
             BOOL lightText = [[feed objectForKey:@"favicon_text_color"]
@@ -3390,12 +3390,12 @@
             titleLabel.textColor = UIColorFromFixedRGB(NEWSBLUR_WHITE_COLOR);
             titleLabel.shadowColor = UIColorFromFixedRGB(NEWSBLUR_BLACK_COLOR);
         }
-        titleLabel.frame = CGRectMake(32, 1, rect.size.width-32, 20);
+        titleLabel.frame = CGRectMake(32, 2, rect.size.width-32, 22);
         
         NSString *feedIdStr = [NSString stringWithFormat:@"%@", [feed objectForKey:@"id"]];
         UIImage *titleImage = [self getFavicon:feedIdStr];
         UIImageView *titleImageView = [[UIImageView alloc] initWithImage:titleImage];
-        titleImageView.frame = CGRectMake(8, 3, 16.0, 16.0);
+        titleImageView.frame = CGRectMake(8, 5, 16.0, 16.0);
         [titleLabel addSubview:titleImageView];
         
         [gradientView addSubview:titleLabel];
