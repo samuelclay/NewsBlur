@@ -102,7 +102,7 @@ public class ReadingAction implements Serializable {
         ra.type = ActionType.SAVE;
         ra.storyHash = hash;
         if (userTags == null) {
-            ra.userTags = new ArrayList<String>();
+            ra.userTags = new ArrayList<>();
         } else {
             ra.userTags = userTags;
         }

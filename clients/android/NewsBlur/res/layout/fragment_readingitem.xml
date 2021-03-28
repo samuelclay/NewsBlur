@@ -148,6 +148,17 @@
                         android:visibility="gone"
                         app:drawableStartCompat="@drawable/ic_clock" />
 
+                    <com.google.android.material.chip.ChipGroup
+                        android:id="@+id/reading_item_user_tags"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/reading_item_saved_timestamp"
+                        android:layout_alignLeft="@id/reading_item_title"
+                        android:layout_marginTop="8dp"
+                        android:visibility="gone"
+                        app:chipSpacingHorizontal="4dp"
+                        app:chipSpacingVertical="4dp" />
+
                 </RelativeLayout>
 
                 <View

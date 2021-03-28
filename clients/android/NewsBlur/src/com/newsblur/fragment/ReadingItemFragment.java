@@ -530,6 +530,29 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
 			binding.readingItemTags.addView(v);
 		}
 
+		if (story.userTags.length > 0) {
+		    for (int i = 0; i <= story.userTags.length; i++) {
+                View v = getLayoutInflater().inflate(R.layout.chip_view, null);
+                Chip chip = v.findViewById(R.id.chip);
+
+                if (i < story.userTags.length) {
+                    chip.setText(story.userTags[i]);
+                    chip.setChipIcon(ContextCompat.getDrawable(requireContext(), R.drawable.tag));
+                } else {
+                    chip.setText(getString(R.string.add_tag));
+                    chip.setChipIcon(ContextCompat.getDrawable(requireContext(), R.drawable.ic_add_gray75));
+                }
+
+                v.setOnClickListener(view -> {
+                    StoryUserTagsFragment userTagsFragment = StoryUserTagsFragment.newInstance(story, fs);
+                    userTagsFragment.show(getParentFragmentManager(), StoryUserTagsFragment.class.getName());
+                });
+                binding.readingItemUserTags.addView(v);
+            }
+
+            binding.readingItemUserTags.setVisibility(View.VISIBLE);
+        }
+
         if (!TextUtils.isEmpty(story.authors)) {
             binding.readingItemAuthors.setText("•   " + story.authors);
             if (classifier != null && classifier.authors.containsKey(story.authors)) {
