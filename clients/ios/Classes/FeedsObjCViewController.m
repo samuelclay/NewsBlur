@@ -1059,6 +1059,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     
     self.navigationController.navigationBar.tintColor = [UINavigationBar appearance].tintColor;
     self.navigationController.navigationBar.barTintColor = [UINavigationBar appearance].barTintColor;
+    self.navigationController.navigationBar.barStyle = ThemeManager.shared.isDarkTheme ? UIBarStyleBlack : UIBarStyleDefault;
     self.navigationController.toolbar.tintColor = [UIToolbar appearance].tintColor;
     self.navigationController.toolbar.barTintColor = [UIToolbar appearance].barTintColor;
     self.feedViewToolbar.tintColor = [UINavigationBar appearance].tintColor;
