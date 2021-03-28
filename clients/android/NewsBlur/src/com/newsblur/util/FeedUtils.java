@@ -88,6 +88,10 @@ public class FeedUtils {
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
+    public static void updateSavedStoryTags(final Story story, final Context context, final List<String> userTags) {
+        setStorySaved(story.storyHash, true, context, userTags);
+    }
+
     public static void setStorySaved(final String storyHash, final boolean saved, final Context context) {
         List<String> userTags = new ArrayList<>();
         if(FeedUtils.currentFolderName != null){
