@@ -18,7 +18,7 @@ x_forwarded_for_header = "X-FORWARDED-FOR"
 forwarded_allow_ips = "*"
 limit_request_line = 16000
 limit_request_fields = 1000
-worker_tmp_dir = /dev/shm
+worker_tmp_dir = "/dev/shm"
 
 if GIGS_OF_MEMORY > NUM_CPUS:
     workers = NUM_CPUS
