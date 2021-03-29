@@ -7,7 +7,7 @@ from django.views import View
 class TasksPipeline(View):
 
     def get(self, request):
-        return self.stats
+        return JsonResponse(self.stats)
     
     @property
     def stats(self):
@@ -28,5 +28,9 @@ class TasksPipeline(View):
                 "total":        {"$avg": "$total"},
             },
         }])
-        
-        return list(stats)[0]
+        stats = list(stats)
+        if stats:
+            print(stats)
+            return list(stats)[0]
+        else:
+            return {}

@@ -7,9 +7,10 @@ class AppServers(View):
 
     def get(self, request):
         servers = dict((("%s" % s['_id'].replace('-', ''), s['feeds']) for s in self.stats))
-        servers['total'] = self.total[0]['feeds']
-        return JsonResponse(servers)
-    
+        if self.total:
+            servers['total'] = self.total[0]['feeds']
+            return JsonResponse(servers)
+        return JsonResponse({})
     @property
     def stats(self):
         stats = settings.MONGOANALYTICSDB.nbanalytics.page_loads.aggregate([{
@@ -28,10 +29,7 @@ class AppServers(View):
         return list(stats)
         
     @property
-    def total(self):
-        import datetime
-        from django.conf import settings
-        
+    def total(self):        
         stats = settings.MONGOANALYTICSDB.nbanalytics.page_loads.aggregate([{
             "$match": {
                 "date": {
