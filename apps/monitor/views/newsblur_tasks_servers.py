@@ -8,7 +8,10 @@ class TasksServers(View):
 
     def get(self, request):
         servers = dict((("%s" % s['_id'].replace('-', ''), s['feeds']) for s in self.stats))
-        servers['total'] = self.total[0]['feeds']
+        if self.total:
+            servers['total'] = self.total[0]['feeds']
+        else:
+            servers['total'] = {}
         return JsonResponse(servers)
     
     @property

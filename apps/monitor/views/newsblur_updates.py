@@ -1,6 +1,7 @@
 import redis
 
 from django.http import JsonResponse
+from django.conf import settings
 from django.views import View
 
 class Updates(View):
