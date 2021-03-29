@@ -146,7 +146,22 @@ services:
     volumes:
       - ./docker/haproxy/haproxy.docker-compose.cfg:/usr/local/etc/haproxy/haproxy.cfg
       - app-files:/srv/newsblur
-
+  netdata:
+    container_name: netdata
+    image: netdata/netdata
+    ports: 
+    - 19999:19999
+    volumes:
+    - ./docker/netdata/netdatalib:/var/lib/netdata
+    - ./docker/netdata/netdatacache:/var/cache/netdata
+    - ./docker/netdata/netdataconfig/data_request.conf:/usr/lib/netdata/conf.d/python.d/data_request.conf 
+    - ./docker/netdata/netdataconfig/netdata.conf:/etc/netdata/netdata.conf
+    - ./docker/netdata/netdataconfig/data_request.py:/usr/libexec/netdata/python.d/data_request.py
+    - /etc/passwd:/host/etc/passwd:ro
+    - /etc/group:/host/etc/group:ro
+    - /proc:/host/proc:ro
+    - /sys:/host/sys:ro
+    - /etc/os-release:/host/etc/os-release:ro
 volumes:
   app-files:
     driver_opts:
