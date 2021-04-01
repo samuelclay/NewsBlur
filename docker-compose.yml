@@ -164,11 +164,13 @@ services:
     - /etc/os-release:/host/etc/os-release:ro
 volumes:
   app-files:
+    driver: local
     driver_opts:
       type: nfs
       device: ${PWD}
       o: bind
   node-files:
+    driver: local
     driver_opts:
       type: nfs
       device: ${PWD}/node
