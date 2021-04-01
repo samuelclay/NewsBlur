@@ -201,6 +201,7 @@ class Feed(models.Model):
             'favicon_url': self.favicon_url,
             's3_page': self.s3_page,
             's3_icon': self.s3_icon,
+            'disabled_page': not self.has_page,
         }
         
         if include_favicon:
@@ -218,8 +219,6 @@ class Feed(models.Model):
             feed['exception_type'] = None
             feed['exception_code'] = self.exception_code
         
-        if not self.has_page:
-            feed['disabled_page'] = True
         if full:
             feed['average_stories_per_month'] = self.average_stories_per_month
             feed['tagline'] = self.data.feed_tagline
