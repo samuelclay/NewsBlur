@@ -22,7 +22,7 @@ nb:
 	- docker-compose exec newsblur_web ./manage.py loaddata config/fixtures/bootstrap.json
 
 shell:
-	- - CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker-compose exec newsblur_web ./manage.py shellplus
+	- - CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker-compose exec newsblur_web ./manage.py shell_plus
 # allows user to exec into newsblur_web and use pdb.
 debug:
 	- newsblur := $(shell docker ps -qf "name=newsblur_web")
