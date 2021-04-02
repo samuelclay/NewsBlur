@@ -405,7 +405,7 @@ class UserSubscription(models.Model):
                 us.save()
         
             if not skip_fetch and feed.last_update < datetime.datetime.utcnow() - datetime.timedelta(days=1):
-                feed = feed.update()
+                feed = feed.update(verbose=True)
             
             from apps.social.models import MActivity
             MActivity.new_feed_subscription(user_id=user.pk, feed_id=feed.pk, feed_title=feed.title)
