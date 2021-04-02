@@ -21,4 +21,4 @@
     - {role: 'web', tags: 'web'}
     - {role: 'nginx', tags: 'nginx'}
     - {role: 'node', tags: 'node'}
-
+    - {role: 'netdata', tags: 'netdata'}
