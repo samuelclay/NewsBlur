@@ -1,0 +1,3 @@
+netdata_token: "{{ lookup('file', '/srv/secrets-newsblur/keys/netdata_token') }}"
+netdata_room: "{{ lookup('file', '/srv/secrets-newsblur/keys/netdata_room') }}"
+netdata_url: https://app.netdata.cloud

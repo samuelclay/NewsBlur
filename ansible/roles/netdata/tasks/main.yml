@@ -1,6 +1,7 @@
 ---
 
 - name: Ensure directories required
+  become: yes
   file:
     dest: '{{ item }}'
     state: directory
@@ -13,6 +14,7 @@
     - /etc/netdata/python.d
 
 - name: Set system hostname as netdata hostname
+  become: yes
   copy:
     dest: /etc/netdata/conf.d/netdata.conf
     content: |
@@ -21,58 +23,41 @@
   register: netdata_conf
 
 - name: Set environment variables
+  become: yes
   template:
     dest: /etc/netdata/environment
     src: environment.j2
     mode: 0600
   register: configuration
 
-- name: Install netdata systemctl service
-  copy:
-    dest: /etc/systemd/system/netdata.service
-    content: |
-      [Unit]
-      Description=Netdata metrics daemon
-      After=docker.service
-      Requires=docker.service
+- name: Setup Netdata docker container
+  become: yes
+  docker_container:
+    name: netdata
+    state: started
+    image: netdata/netdata
+    ports: 19999:19999
+    hostname: "{{ ansible_hostname }}"
+    volumes:
+    - /srv/newsblur/docker/netdata/netdatalib:/var/lib/netdata
+    - /srv/newsblur/docker/netdata/netdatacache:/var/cache/netdata
+    - /srv/newsblur/docker/netdata/netdata.conf:/etc/netdata/netdata.conf
+    - /srv/newsblur/docker/netdata/netdataconfig/python.d/newsblur_data_request.py:/usr/libexec/netdata/python.d/newsblur_data_request.chart.py
+    - /srv/newsblur/docker/netdata/netdataconfig/python.d.conf:/usr/lib/netdata/conf.d/python.d.conf 
+    - /srv/newsblur/docker/netdata/netdataconfig/python.d/newsblur_data_request.conf:/usr/lib/netdata/conf.d/python.d/newsblur_data_request.conf
+    - /srv/newsblur/utils/netdata/config/go.d.conf:/usr/lib/netdata/conf.d/go.d.conf
 
-      [Service]
-      RemainAfterExit=yes
-      TimeoutSec=infinity
+    - /etc/passwd:/host/etc/passwd:ro
+    - /etc/group:/host/etc/group:ro
+    - /proc:/host/proc:ro
+    - /sys:/host/sys:ro
+    - /etc/os-release:/host/etc/os-release:ro
+    restart: yes
+  
+- name: Wait for netdata to start
+  wait_for: port=19999 delay=10
 
-      ExecStartPre=/usr/bin/docker pull luzifer/netdata:{{ version }}
-      ExecStartPre=-/usr/bin/docker rm -f netdata
-
-      ExecStart=/usr/bin/docker run -d --cap-add SYS_PTRACE \
-                                    --security-opt=apparmor:unconfined \
-                                    -v /proc:/host/proc:ro \
-                                    -v /sys:/host/sys:ro \
-                                    -v /etc/netdata:/override:ro \
-                                    -v /var/run/docker.sock:/var/run/docker.sock \
-                                    -v /var/lib/netdata:/var/lib/netdata \
-                                    -p 19999:19999 \
-                                    --env-file=/etc/netdata/environment \
-                                    --name=netdata \
-                                    luzifer/netdata:{{ version }}
-
-      ExecReload=/usr/bin/docker restart netdata
-
-      ExecStop=/usr/bin/docker stop netdata
-
-      [Install]
-      WantedBy=multi-user.target
-  register: service
-
-- name: Activate netdata service
-  systemd:
-    daemon_reload: yes
-    enabled: yes
-    name: netdata.service
-    state: restarted
-  when: service.changed
-
-- name: Reload configuration when required
-  systemd:
-    name: netdata.service
-    state: reloaded
-  when: (configuration.changed or netdata_conf.changed) and not service.changed
+- name: Add netdata agent to war room
+  become: yes
+  ignore_errors: yes
+  command: docker exec netdata netdata-claim.sh -token={{ netdata_token }} -rooms={{ netdata_room }} -url={{ netdata_url }} -hostname={{ ansible_hostname }}
