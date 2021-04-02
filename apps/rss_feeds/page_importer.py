@@ -6,6 +6,7 @@ import time
 import urllib.request, urllib.error, urllib.parse
 import http.client
 import zlib
+from django.contrib.sites.models import Site
 from mongoengine.queryset import NotUniqueError
 from socket import error as SocketError
 from boto.s3.key import Key
@@ -87,7 +88,7 @@ class PageImporter(object):
                     request = urllib.request.Request(feed_link, headers=self.headers)
                     response = urllib.request.urlopen(request)
                     time.sleep(0.01) # Grrr, GIL.
-                    data = response.read()
+                    data = response.read().decode(response.headers.get_content_charset() or 'utf-8')
                 else:
                     try:
                         response = requests.get(feed_link, headers=self.headers, timeout=10)
@@ -99,10 +100,7 @@ class PageImporter(object):
                         logging.debug('   ***> [%-30s] Page fetch failed using requests: %s' % (self.feed.log_title[:30], e))
                         self.save_no_page(reason="Page fetch failed")
                         return
-                    # try:
                     data = response.text
-                    # except (LookupError, TypeError):
-                    #     data = response.content
                     if response.encoding and response.encoding.lower() != 'utf-8':
                         logging.debug(f" -> ~FBEncoding is {response.encoding}, re-encoding...")
                         try:
@@ -110,11 +108,6 @@ class PageImporter(object):
                         except (LookupError, UnicodeEncodeError):
                             logging.debug(f" -> ~FRRe-encoding failed!")
                             pass
-                    # if response.encoding and response.encoding != 'utf-8':
-                    #     try:
-                    #         data = data.encode(response.encoding)
-                    #     except LookupError:
-                    #         pass
             else:
                 try:
                     data = open(feed_link, 'r').read()
