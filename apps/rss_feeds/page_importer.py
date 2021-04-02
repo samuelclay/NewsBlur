@@ -228,7 +228,7 @@ class PageImporter(object):
         return html
     
     def save_story(self, html):
-        self.story.original_page_z = zlib.compress(html.encode('utf-8'))
+        self.story.original_page_z = compress_string(html.encode('utf-8'))
         try:
             self.story.save()
         except NotUniqueError:
@@ -298,11 +298,11 @@ class PageImporter(object):
                     logging.debug('   ---> [%-30s] ~FYNo change in page data: %s' % (self.feed.log_title[:30], self.feed.feed_link))
                 else:
                     # logging.debug('   ---> [%-30s] ~FYChange in page data: %s (%s/%s %s/%s)' % (self.feed.log_title[:30], self.feed.feed_link, type(html), type(feed_page.page()), len(html), len(feed_page.page())))
-                    feed_page.page_data = zlib.compress(html.encode('utf-8'))
+                    feed_page.page_data = compress_string(html.encode('utf-8'))
                     feed_page.save()
             except MFeedPage.DoesNotExist:
                 feed_page = MFeedPage.objects.create(feed_id=self.feed.pk, 
-                                                     page_data=zlib.compress(html.encode('utf-8')))
+                                                     page_data=compress_string(html.encode('utf-8')))
             return feed_page
     
     def save_page_node(self, html):
@@ -312,7 +312,7 @@ class PageImporter(object):
             self.feed.pk,
         )
         response = requests.post(url, files={
-            'original_page': compress_string(html),
+            'original_page': compress_string(html.encode('utf-8')),
             # 'original_page': html,
         })
         if response.status_code == 200:
