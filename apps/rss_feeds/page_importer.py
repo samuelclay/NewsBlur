@@ -324,7 +324,7 @@ class PageImporter(object):
         k.set_metadata('Content-Encoding', 'gzip')
         k.set_metadata('Content-Type', 'text/html')
         k.set_metadata('Access-Control-Allow-Origin', '*')
-        k.set_contents_from_string(compress_string(html))
+        k.set_contents_from_string(compress_string(html.encode('utf-8')))
         k.set_acl('public-read')
         
         try:
