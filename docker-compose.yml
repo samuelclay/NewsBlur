@@ -167,12 +167,16 @@ services:
     image: netdata/netdata
     ports: 
     - 19999:19999
+    environment:
+    - MONITOR_URL=https://haproxy:443/monitor
     volumes:
     - ./docker/netdata/netdatalib:/var/lib/netdata
     - ./docker/netdata/netdatacache:/var/cache/netdata
-    - ./docker/netdata/netdataconfig/data_request.conf:/usr/lib/netdata/conf.d/python.d/data_request.conf 
-    - ./docker/netdata/netdataconfig/netdata.conf:/etc/netdata/netdata.conf
-    - ./docker/netdata/netdataconfig/data_request.py:/usr/libexec/netdata/python.d/data_request.py
+    - ./docker/netdata/netdata.conf:/etc/netdata/netdata.conf
+    - ./docker/netdata/netdataconfig/python.d/newsblur_data_request.py:/usr/libexec/netdata/python.d/newsblur_data_request.chart.py
+    - ./docker/netdata/netdataconfig/python.d.conf:/usr/lib/netdata/conf.d/python.d.conf 
+    - ./docker/netdata/netdataconfig/python.d/newsblur_data_request.conf:/usr/lib/netdata/conf.d/python.d/newsblur_data_request.conf
+    - ./utils/netdata/config/go.d.conf:/usr/lib/netdata/conf.d/go.d.conf
     - /etc/passwd:/host/etc/passwd:ro
     - /etc/group:/host/etc/group:ro
     - /proc:/host/proc:ro
