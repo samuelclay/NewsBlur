@@ -61,26 +61,26 @@
         socket.on("error", function(err) {
           return log.debug(`Error (socket): ${err}`);
         });
-        if ((ref = socket.client) != null) {
+        if ((ref = socket.subscribe) != null) {
           ref.quit();
         }
-        socket.client = redis.createClient(REDIS_PORT, REDIS_SERVER);
-        socket.client.on("error", (err) => {
+        socket.subscribe = redis.createClient(REDIS_PORT, REDIS_SERVER);
+        socket.subscribe.on("error", (err) => {
           var ref1;
           log.info(this.username, `Error: ${err} (${this.feeds.length} feeds)`);
-          return (ref1 = socket.client) != null ? ref1.quit() : void 0;
+          return (ref1 = socket.subscribe) != null ? ref1.quit() : void 0;
         });
-        socket.client.on("connect", () => {
+        socket.subscribe.on("connect", () => {
           var feeds_story;
           log.info(this.username, `Connected (${this.feeds.length} feeds, ${ip}),` + ` (${io.engine.clientsCount} connected) ` + ` ${SECURE ? "(SSL)" : "(non-SSL)"}`);
-          socket.client.subscribe(this.feeds);
+          socket.subscribe.subscribe(this.feeds);
           feeds_story = this.feeds.map(function(f) {
             return `${f}:story`;
           });
-          socket.client.subscribe(feeds_story);
-          return socket.client.subscribe(this.username);
+          socket.subscribe.subscribe(feeds_story);
+          return socket.subscribe.subscribe(this.username);
         });
-        return socket.client.on('message', (channel, message) => {
+        return socket.subscribe.on('message', (channel, message) => {
           var event_name;
           event_name = 'feed:update';
           if (channel === this.username) {
@@ -94,7 +94,7 @@
       });
       return socket.on('disconnect', () => {
         var ref, ref1;
-        if ((ref = socket.client) != null) {
+        if ((ref = socket.subscribe) != null) {
           ref.quit();
         }
         return log.info(this.username, `Disconnect (${(ref1 = this.feeds) != null ? ref1.length : void 0} feeds, ${ip}),` + ` there are now ${io.engine.clientsCount} users. ` + ` ${SECURE ? "(SSL)" : "(non-SSL)"}`);

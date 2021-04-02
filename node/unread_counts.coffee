@@ -55,21 +55,21 @@ unread_counts = (server) =>
             
             socket.on "error", (err) ->
                 log.debug "Error (socket): #{err}"
-            socket.client?.quit()
-            socket.client = redis.createClient REDIS_PORT, REDIS_SERVER
-            socket.client.on "error", (err) =>
+            socket.subscribe?.quit()
+            socket.subscribe = redis.createClient REDIS_PORT, REDIS_SERVER
+            socket.subscribe.on "error", (err) =>
                 log.info @username, "Error: #{err} (#{@feeds.length} feeds)"
-                socket.client?.quit()
-            socket.client.on "connect", =>
+                socket.subscribe?.quit()
+            socket.subscribe.on "connect", =>
                 log.info @username, "Connected (#{@feeds.length} feeds, #{ip})," +
                         " (#{io.engine.clientsCount} connected) " +
                         " #{if SECURE then "(SSL)" else "(non-SSL)"}"
-                socket.client.subscribe @feeds
+                socket.subscribe.subscribe @feeds
                 feeds_story = @feeds.map (f) -> "#{f}:story"
-                socket.client.subscribe feeds_story
-                socket.client.subscribe @username
+                socket.subscribe.subscribe feeds_story
+                socket.subscribe.subscribe @username
 
-            socket.client.on 'message', (channel, message) =>
+            socket.subscribe.on 'message', (channel, message) =>
                 event_name = 'feed:update'
                 if channel == @username
                     event_name = 'user:update'
@@ -79,7 +79,7 @@ unread_counts = (server) =>
                 socket.emit event_name, channel, message
 
         socket.on 'disconnect', () =>
-            socket.client?.quit()
+            socket.subscribe?.quit()
             log.info @username, "Disconnect (#{@feeds?.length} feeds, #{ip})," +
                         " there are now #{io.engine.clientsCount} users. " +
                         " #{if SECURE then "(SSL)" else "(non-SSL)"}"
