@@ -48,7 +48,7 @@ unread_counts = (server) =>
         socket.on 'subscribe:feeds', (@feeds, @username) =>
             log.info @username, "Connecting (#{@feeds.length} feeds, #{ip})," +
                     " (#{io.engine.clientsCount} connected) " +
-                    " #{if SECURE then "(SSL)" else "(non-SSL)"}"
+                    " #{if SECURE then "(SSL)" else ""}"
             
             if not @username
                 return
