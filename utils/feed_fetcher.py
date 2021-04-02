@@ -144,7 +144,8 @@ class FetchFeed:
                     logging.debug("   ***> [%-30s] ~FRFeed fetch was %s status code, trying fake user agent: %s" % (self.feed.log_title[:30], raw_feed.status_code, raw_feed.headers))
                     raw_feed = requests.get(self.feed.feed_address, headers=self.feed.fetch_headers(fake=True), timeout=15)
                 
-                if raw_feed.content and 'application/json' in raw_feed.headers.get('Content-Type', ""):
+                json_feed_content_type = any(json_feed in raw_feed.headers.get('Content-Type', "") for json_feed in ['application/feed+json', 'application/json'])
+                if raw_feed.content and json_feed_content_type:
                     # JSON Feed
                     json_feed = self.fetch_json_feed(address, raw_feed)
                     if not json_feed:
@@ -158,7 +159,7 @@ class FetchFeed:
                     self.raw_feed = smart_str(raw_feed.content)
                     self.fpf = feedparser.parse(self.raw_feed,
                                                 response_headers=response_headers)
-                    if self.options.get('debug', False):
+                    if self.options['verbose']:
                         logging.debug(" ---> [%-30s] ~FBFeed fetch status %s: %s length / %s" % (self.feed.log_title[:30], 
                                                                                                  raw_feed.status_code, 
                                                                                                  len(smart_str(raw_feed.content)), 
