@@ -361,7 +361,7 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
         console.log(['Fetching dashboard story', this.model.get('river_id'), story_hash, delay + 'ms delay']);
         
         _.delay(_.bind(function() {
-            NEWSBLUR.assets.add_dashboard_story(story_hash, this.options.dashboard_stories);
+            // NEWSBLUR.assets.add_dashboard_story(story_hash, this.options.dashboard_stories);
         }, this), Math.random() * delay);
         
     },
