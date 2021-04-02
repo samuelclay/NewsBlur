@@ -45,6 +45,16 @@ services:
     volumes: 
       - node-files:/srv
   
+  imageproxy:
+    image: willnorris/imageproxy:latest
+    container_name: imageproxy
+    entrypoint: /app/imageproxy -addr 0.0.0.0:8088 -cache /tmp/imageproxy -verbose
+    restart: unless-stopped
+    ports:
+      - 8088:8088
+    volumes:
+      - /tmp:/tmp/imageproxy
+  
   nginx:
     container_name: nginx
     image: nginx:1.19.6
@@ -92,9 +102,13 @@ services:
 
   db_elasticsearch:
     container_name: db_elasticsearch
-    image: elasticsearch:7.11.1
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.11.1
+    mem_limit: 512mb
+    environment:
+      - discovery.type=single-node
     ports:
       - 9200:9200
+      - 9300:9300
     volumes:
       - ./docker/volumes/elasticsearch:/usr/share/elasticsearch/data
 
@@ -130,11 +144,12 @@ services:
   haproxy:
     domainname: 'nb.local.com'
     container_name: haproxy
-    image: haproxy:1.8.22
+    image: haproxy:latest
     depends_on: 
       - nginx
       - newsblur_web
       - newsblur_node
+      - imageproxy
       - db_redis
       - db_postgres
       - db_elasticsearch
@@ -146,6 +161,7 @@ services:
     volumes:
       - ./docker/haproxy/haproxy.docker-compose.cfg:/usr/local/etc/haproxy/haproxy.cfg
       - app-files:/srv/newsblur
+  
   netdata:
     container_name: netdata
     image: netdata/netdata
@@ -162,6 +178,7 @@ services:
     - /proc:/host/proc:ro
     - /sys:/host/sys:ro
     - /etc/os-release:/host/etc/os-release:ro
+
 volumes:
   app-files:
     driver: local
