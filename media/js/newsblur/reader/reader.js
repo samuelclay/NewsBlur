@@ -3075,7 +3075,7 @@
             var feed_id = this.active_story_view();
             var feed = this.model.get_feed(feed_id);
             view = view || this.story_view;
-            // NEWSBLUR.log(['switch_taskbar_view', view, options.skip_save_type, feed]);
+            NEWSBLUR.log(['switch_taskbar_view', view, options.skip_save_type, feed]);
             
             if (view == 'page' && feed && feed.get('has_exception') && 
                 feed.get('exception_type') == 'page') {
@@ -5253,7 +5253,6 @@
         },
 
         setup_feed_refresh: function(new_feeds) {
-            var self = this;
             var refresh_interval = this.constants.FEED_REFRESH_INTERVAL;
             var feed_count = this.model.feeds.size();
             
@@ -5286,8 +5285,8 @@
             clearInterval(this.flags.feed_refresh);
             
             this.flags.feed_refresh = setInterval(function() {
-                if (!self.flags['pause_feed_refreshing']) {
-                    self.force_feeds_refresh();
+                if (!NEWSBLUR.reader.flags['pause_feed_refreshing']) {
+                    NEWSBLUR.reader.force_feeds_refresh();
                 }
             }, refresh_interval);
             this.flags.refresh_interval = parseInt(refresh_interval / 1000, 10);
@@ -5304,17 +5303,16 @@
         },
         
         force_feed_refresh: function(feed_id, new_feed_id) {
-            var self = this;
             feed_id  = feed_id || this.active_feed;
             new_feed_id = _.isNumber(new_feed_id) && new_feed_id || feed_id;
             console.log(["force_feed_refresh", feed_id, new_feed_id]);
             this.force_feeds_refresh(function() {
                 // Open the feed back up if it is being refreshed and is still open.
-                if (self.active_feed == feed_id || self.active_feed == new_feed_id) {
-                    self.open_feed(new_feed_id, {force: true});
+                if (NEWSBLUR.reader.active_feed == feed_id || NEWSBLUR.reader.active_feed == new_feed_id) {
+                    NEWSBLUR.reader.open_feed(new_feed_id, {force: true});
                 }
                 
-                self.check_feed_fetch_progress();
+                NEWSBLUR.reader.check_feed_fetch_progress();
             }, true, new_feed_id, NEWSBLUR.app.taskbar_info.show_stories_error);
         },
         
