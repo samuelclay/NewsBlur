@@ -1,7 +1,6 @@
 FROM       python:3.9-slim
 WORKDIR   /srv/newsblur
 ENV       PYTHONPATH=/srv/newsblur
-COPY      config/requirements.txt /srv/newsblur/
 RUN       set -ex \
           && rundDeps=' \
                   libpq5 \
@@ -25,7 +24,8 @@ RUN       set -ex \
                     zlib1g-dev \
                             ' \
             && apt-get update \
-            && apt-get install -y $rundDeps $buildDeps --no-install-recommends \
-            && pip install -r requirements.txt \
+            && apt-get install -y $rundDeps $buildDeps --no-install-recommends
+COPY      config/requirements.txt /srv/newsblur/
+RUN       pip install -r requirements.txt \
             && apt-get purge -y --auto-remove ${buildDeps} \
             && rm -rf /var/lib/apt/lists/*
