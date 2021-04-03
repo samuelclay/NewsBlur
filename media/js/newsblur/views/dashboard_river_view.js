@@ -131,12 +131,18 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
         if (NEWSBLUR.Globals.debug) return;
         
         // Reload dashboard graphs every N minutes.
-        var reload_interval = NEWSBLUR.Globals.is_staff ? 60*1000 : 15*60*1000;
+        var reload_interval = NEWSBLUR.Globals.is_staff ? 15*60*1000 : 15*60*1000;
         // var reload_interval = 60*60*1000;
         // console.log(['setup_dashboard_refresh', this.refresh_interval]);
         
         clearTimeout(this.refresh_interval);
-        this.refresh_interval = setTimeout(_.bind(function() {
+        this.refresh_interval = setTimeout(_.bind(function () {
+                
+            if (NEWSBLUR.reader.flags['deactivate_refresh_dashboard']) {
+                console.log(['...NOT refreshing dashboard', this.model.get('river_id')]);
+                return;
+            }
+
             if (NEWSBLUR.reader.active_feed == this.model.get('river_id')) {
                 // Currently reading the river, so don't reload because it'll break the cache.
                 console.log(['Currently reading river, so not reloading dashboard river', NEWSBLUR.reader.active_feed]);
@@ -144,6 +150,7 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
             } else {
                 this.load_stories();
             }
+
         }, this), reload_interval * (Math.random() * (1.25 - 0.75) + 0.75));
     },
     
@@ -361,6 +368,11 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
         var delay = subs * 2; // 1,000 subs = 2 seconds
         console.log(['Fetching dashboard story', this.model.get('river_id'), story_hash, delay + 'ms delay']);
         
+        if (NEWSBLUR.reader.flags['deactivate_new_dashboard_story']) {
+            console.log(['...NOT Fetching dashboard story', this.model.get('river_id')]);
+            return;
+        }
+
         _.delay(_.bind(function() {
             NEWSBLUR.assets.add_dashboard_story(story_hash, this.options.dashboard_stories);
         }, this), Math.random() * delay);
