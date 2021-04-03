@@ -25,7 +25,7 @@ services:
     # only use gunicorn if the TEST env variable is not "True"
     entrypoint: /bin/sh -c newsblur_web/entrypoint.sh
     volumes: 
-      - app-files:/srv/newsblur
+      - ${PWD}:/srv/newsblur
 
   newsblur_node:
     image: newsblur/newsblur_node:latest
@@ -43,7 +43,7 @@ services:
     ports:
       - 8008:8008
     volumes: 
-      - node-files:/srv
+      - ${PWD}/node:/srv
   
   imageproxy:
     image: willnorris/imageproxy:latest
@@ -71,7 +71,7 @@ services:
       - DOCKERBUILD=True
     volumes:
       - ./docker/nginx/nginx.local.conf:/etc/nginx/conf.d/nginx.conf
-      - app-files:/srv/newsblur
+      - ${PWD}:/srv/newsblur
 
   db_postgres:
     container_name: db_postgres
@@ -128,7 +128,7 @@ services:
     environment: 
       - DOCKERBUILD=True
     volumes:
-      - app-files:/srv/newsblur
+      - ${PWD}:/srv/newsblur
       - ./config:/etc/supervisor/conf.d/
 
   task_celery:
@@ -136,7 +136,7 @@ services:
     image: newsblur/newsblur_python3
     command: "celery worker -A newsblur_web --loglevel=INFO"
     volumes:
-      - app-files:/srv/newsblur
+      - ${PWD}:/srv/newsblur
     environment: 
       - DOCKERBUILD=True
     user: "${CURRENT_UID}:${CURRENT_GID}"
@@ -160,7 +160,7 @@ services:
       - 1936:1936
     volumes:
       - ./docker/haproxy/haproxy.docker-compose.cfg:/usr/local/etc/haproxy/haproxy.cfg
-      - app-files:/srv/newsblur
+      - ${PWD}:/srv/newsblur
   
   netdata:
     container_name: netdata
@@ -182,17 +182,3 @@ services:
     - /proc:/host/proc:ro
     - /sys:/host/sys:ro
     - /etc/os-release:/host/etc/os-release:ro
-
-volumes:
-  app-files:
-    driver: local
-    driver_opts:
-      type: nfs
-      device: ${PWD}
-      o: bind
-  node-files:
-    driver: local
-    driver_opts:
-      type: nfs
-      device: ${PWD}/node
-      o: bind
