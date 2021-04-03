@@ -47,7 +47,7 @@ class JSONFetcher:
             'title': item.get('title', ""),
             'link': item.get('external_url', item.get('url', "")),
             'description': item.get('content_html', item.get('content_text', "")),
-            'author_name': item.get('author', {}).get('name', ""),
+            'author_name': item.get('authors', item.get('author', {})).get('name', ""),
             'categories': item.get('tags', []),
             'unique_id': str(item.get('id', item.get('url', ""))),
             'pubdate': date_published,
