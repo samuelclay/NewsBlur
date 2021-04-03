@@ -13,7 +13,7 @@
         version: dashboard3
       register: pulled
     
-    - name: Reload node
+    - name: Restart node
       become: yes
       command: "docker restart {{ item.container_name }}"
       when: item.target_host in inventory_hostname

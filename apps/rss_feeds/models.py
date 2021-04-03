@@ -2385,7 +2385,13 @@ class MFeedPage(mongo.Document):
     }
     
     def page(self):
-        return zlib.decompress(self.page_data)
+        try:
+            return zlib.decompress(self.page_data)
+        except zlib.error as e:
+            logging.debug(" ***> Zlib decompress error: %s" % e)
+            self.page_data = None
+            self.save()
+            return 
         
     @classmethod
     def get_data(cls, feed_id):
@@ -2394,7 +2400,13 @@ class MFeedPage(mongo.Document):
         if feed_page:
             page_data_z = feed_page[0].page_data
             if page_data_z:
-                data = zlib.decompress(page_data_z)
+                try:
+                    data = zlib.decompress(page_data_z)
+                except zlib.error as e:
+                    logging.debug(" ***> Zlib decompress error: %s" % e)
+                    self.page_data = None
+                    self.save()
+                    return 
         
         if not data:
             dupe_feed = DuplicateFeed.objects.filter(duplicate_feed_id=feed_id)

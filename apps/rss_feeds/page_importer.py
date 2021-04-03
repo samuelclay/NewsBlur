@@ -6,11 +6,12 @@ import time
 import urllib.request, urllib.error, urllib.parse
 import http.client
 import zlib
+from django.contrib.sites.models import Site
 from mongoengine.queryset import NotUniqueError
 from socket import error as SocketError
 from boto.s3.key import Key
 from django.conf import settings
-from django.utils.text import compress_string
+from django.utils.text import compress_string as compress_string_with_gzip
 from utils import log as logging
 from apps.rss_feeds.models import MFeedPage
 from utils.feed_functions import timelimit, TimeoutError
@@ -87,7 +88,7 @@ class PageImporter(object):
                     request = urllib.request.Request(feed_link, headers=self.headers)
                     response = urllib.request.urlopen(request)
                     time.sleep(0.01) # Grrr, GIL.
-                    data = response.read()
+                    data = response.read().decode(response.headers.get_content_charset() or 'utf-8')
                 else:
                     try:
                         response = requests.get(feed_link, headers=self.headers, timeout=10)
@@ -99,10 +100,7 @@ class PageImporter(object):
                         logging.debug('   ***> [%-30s] Page fetch failed using requests: %s' % (self.feed.log_title[:30], e))
                         self.save_no_page(reason="Page fetch failed")
                         return
-                    # try:
                     data = response.text
-                    # except (LookupError, TypeError):
-                    #     data = response.content
                     if response.encoding and response.encoding.lower() != 'utf-8':
                         logging.debug(f" -> ~FBEncoding is {response.encoding}, re-encoding...")
                         try:
@@ -110,11 +108,6 @@ class PageImporter(object):
                         except (LookupError, UnicodeEncodeError):
                             logging.debug(f" -> ~FRRe-encoding failed!")
                             pass
-                    # if response.encoding and response.encoding != 'utf-8':
-                    #     try:
-                    #         data = data.encode(response.encoding)
-                    #     except LookupError:
-                    #         pass
             else:
                 try:
                     data = open(feed_link, 'r').read()
@@ -319,7 +312,7 @@ class PageImporter(object):
             self.feed.pk,
         )
         response = requests.post(url, files={
-            'original_page': compress_string(html),
+            'original_page': zlib.compress(html.encode('utf-8')),
             # 'original_page': html,
         })
         if response.status_code == 200:
@@ -331,7 +324,7 @@ class PageImporter(object):
         k.set_metadata('Content-Encoding', 'gzip')
         k.set_metadata('Content-Type', 'text/html')
         k.set_metadata('Access-Control-Allow-Origin', '*')
-        k.set_contents_from_string(compress_string(html))
+        k.set_contents_from_string(compress_string_with_gzip(html.encode('utf-8')))
         k.set_acl('public-read')
         
         try:
