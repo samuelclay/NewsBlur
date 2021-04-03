@@ -26,7 +26,7 @@ Fabric>=1.14.0,<2
 Fabric2==2.5.0
 feedparser>=6,<7
 flask==1.1.2
-gunicorn==19.7.1
+gunicorn==20.0.4
 hiredis==1.1.0
 httplib2==0.18.1
 image==1.5.33
