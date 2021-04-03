@@ -132,7 +132,7 @@ class Service(SimpleService):
     def order_charts(self):
         chart_order = []
         for chart in CHART_REQUEST_CONFIG.keys():
-            chart_order.append
+            chart_order.append(chart)
         return chart_order
     
     def build_charts(self):
