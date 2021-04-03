@@ -183,6 +183,7 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
     
     post_load_stories: function (data) {
         // console.log(['post_load_stories', this.model.get('river_id'), this.options.dashboard_stories.length, data, data.stories.length])
+        this.story_titles.end_loading();
         this.fill_out({ new_stories: data.stories.length });
         this.cache.story_hashes = this.options.dashboard_stories.pluck('story_hash');
     },
@@ -361,7 +362,7 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
         console.log(['Fetching dashboard story', this.model.get('river_id'), story_hash, delay + 'ms delay']);
         
         _.delay(_.bind(function() {
-            // NEWSBLUR.assets.add_dashboard_story(story_hash, this.options.dashboard_stories);
+            NEWSBLUR.assets.add_dashboard_story(story_hash, this.options.dashboard_stories);
         }, this), Math.random() * delay);
         
     },
