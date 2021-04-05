@@ -200,6 +200,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         $endline.css({'background': '#FFF'});
         this.$el.append($endline);
         
+        clearInterval(this.feed_stories_loading);
         $endline.animate({'backgroundColor': '#E1EBFF'}, {'duration': 550, 'easing': 'easeInQuad'})
                 .animate({'backgroundColor': '#5C89C9'}, {'duration': 1550, 'easing': 'easeOutQuad'})
                 .animate({'backgroundColor': '#E1EBFF'}, 1050);

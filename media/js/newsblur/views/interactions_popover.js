@@ -86,6 +86,7 @@ NEWSBLUR.InteractionsPopover = NEWSBLUR.ReaderPopover.extend({
         var $endline = $.make('div', { className: "NB-end-line NB-short" });
         $endline.css({'background': '#FFF'});
         this.$(".NB-"+this.options.tab+"-container").append($endline);
+        clearInterval(this.interactions_loading);
         
         $endline.animate({'backgroundColor': '#E1EBFF'}, {'duration': 550, 'easing': 'easeInQuad'})
                 .animate({'backgroundColor': '#5C89C9'}, {'duration': 1550, 'easing': 'easeOutQuad'})

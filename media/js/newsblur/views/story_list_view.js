@@ -331,6 +331,7 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
         $endline.css({'background': '#FFF'});
         $feed_scroll.append($endline);
         
+        clearInterval(this.feed_stories_loading);
         $endline.animate({'backgroundColor': '#E1EBFF'}, {'duration': 550, 'easing': 'easeInQuad'})
                 .animate({'backgroundColor': '#5C89C9'}, {'duration': 1550, 'easing': 'easeOutQuad'})
                 .animate({'backgroundColor': '#E1EBFF'}, 1050);
