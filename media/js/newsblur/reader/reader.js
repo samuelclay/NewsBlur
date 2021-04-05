@@ -5986,7 +5986,8 @@
         // = Unfetched Feeds =
         // ===================
         
-        setup_unfetched_feed_check: function() {
+        setup_unfetched_feed_check: function () {
+            clearInterval(this.locks.unfetched_feed_check);
             this.locks.unfetched_feed_check = setInterval(_.bind(function() {
                 var unfetched_feeds = NEWSBLUR.assets.unfetched_feeds();
                 if (unfetched_feeds.length) {

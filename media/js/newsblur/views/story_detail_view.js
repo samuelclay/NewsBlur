@@ -523,6 +523,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         
         if (content_height < max_height) return;
         // console.log(["max height", max_height, content_height, content_height / max_height]);
+        clearInterval(this._fetch_interval);
         this._fetch_interval = setInterval(function() {
             NEWSBLUR.app.story_list.fetch_story_locations_in_feed_view();
         }, 250);
