@@ -1543,9 +1543,9 @@ def load_river_stories__redis(request):
                 new_stories.append(story)
         stories = new_stories
         
-    # if page >= 1:
+    # if page > 1:
     #     import random
-    #     time.sleep(random.randint(3, 6))
+    #     time.sleep(random.randint(10, 16))
     
     diff = time.time() - start
     timediff = round(float(diff), 2)

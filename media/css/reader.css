@@ -2190,6 +2190,12 @@ hr {
     background-image:  no-repeat center center;
     overflow: hidden;
     clear: both;
+    animation: end-line-animation 1.7s ease infinite;
+}
+@keyframes end-line-animation { 
+    0%{background-color:#E1EBFF}
+    38%{background-color:#5C89C9}
+    100%{background-color:#E1EBFF}
 }
 .NB-module-river .NB-end-line {
     border-top: none;
