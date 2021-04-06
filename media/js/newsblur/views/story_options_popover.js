@@ -174,8 +174,18 @@ NEWSBLUR.StoryOptionsPopover = NEWSBLUR.ReaderPopover.extend({
                 ])),
                 (this.options.show_imagepreview && $.make('ul', { className: 'segmented-control NB-menu-manage-view-setting-imagepreview' }, [
                     $.make('li', { className: 'NB-view-setting-option NB-view-setting-imagepreview-none' }, 'No image'),
-                    $.make('li', { className: 'NB-view-setting-option NB-view-setting-imagepreview-small' }, 'Small'),
-                    $.make('li', { className: 'NB-view-setting-option NB-view-setting-imagepreview-large' }, 'Large'),
+                    $.make('li', { className: 'NB-view-setting-option NB-view-setting-imagepreview-small-left' }, [
+                        $.make('img', { className: 'NB-icon', src: NEWSBLUR.Globals['MEDIA_URL']+'img/reader/image_preview_small_left.png' })
+                    ]),
+                    $.make('li', { className: 'NB-view-setting-option NB-view-setting-imagepreview-large-left' }, [
+                        $.make('img', { className: 'NB-icon', src: NEWSBLUR.Globals['MEDIA_URL']+'img/reader/image_preview_large_left.png' })
+                    ]),
+                    $.make('li', { className: 'NB-view-setting-option NB-view-setting-imagepreview-large-right' }, [
+                        $.make('img', { className: 'NB-icon', src: NEWSBLUR.Globals['MEDIA_URL']+'img/reader/image_preview_large_right.png' })
+                    ]),
+                    $.make('li', { className: 'NB-view-setting-option NB-view-setting-imagepreview-small-right' }, [
+                        $.make('img', { className: 'NB-icon', src: NEWSBLUR.Globals['MEDIA_URL']+'img/reader/image_preview_small_right.png' })
+                    ])
                 ]))
             ])
         ]));
@@ -192,7 +202,7 @@ NEWSBLUR.StoryOptionsPopover = NEWSBLUR.ReaderPopover.extend({
         var single_story = NEWSBLUR.assets.preference('feed_view_single_story');
         var grid_columns = NEWSBLUR.assets.preference('grid_columns');
         var grid_height = NEWSBLUR.assets.preference('grid_height');
-        var image_preview = NEWSBLUR.assets.preference('show_image_preview');
+        var image_preview = NEWSBLUR.assets.preference('image_preview');
         var content_preview = NEWSBLUR.assets.preference('show_content_preview');
         
         this.$('.NB-font-family-option').removeClass('NB-active');
@@ -221,8 +231,10 @@ NEWSBLUR.StoryOptionsPopover = NEWSBLUR.ReaderPopover.extend({
         this.$('.NB-view-setting-contentpreview-medium').toggleClass('NB-active', content_preview == "1" || content_preview == "medium");
         this.$('.NB-view-setting-contentpreview-large').toggleClass('NB-active', content_preview == "large");
         this.$('.NB-view-setting-imagepreview-none').toggleClass('NB-active', image_preview == "0" || image_preview == "none");
-        this.$('.NB-view-setting-imagepreview-small').toggleClass('NB-active', image_preview == "small");
-        this.$('.NB-view-setting-imagepreview-large').toggleClass('NB-active', image_preview == "1" || image_preview == "large");
+        this.$('.NB-view-setting-imagepreview-small-left').toggleClass('NB-active', image_preview == "small-left");
+        this.$('.NB-view-setting-imagepreview-small-right').toggleClass('NB-active', image_preview == "small-right");
+        this.$('.NB-view-setting-imagepreview-large-left').toggleClass('NB-active', image_preview == "large-left");
+        this.$('.NB-view-setting-imagepreview-large-right').toggleClass('NB-active', image_preview == "1" || image_preview == "large-right");
 
         NEWSBLUR.reader.$s.$taskbar_options.addClass('NB-active');
         
@@ -456,13 +468,19 @@ NEWSBLUR.StoryOptionsPopover = NEWSBLUR.ReaderPopover.extend({
             NEWSBLUR.assets.preference('show_content_preview', "large");
             NEWSBLUR.reader.apply_story_styling(true);
         } else if ($target.hasClass("NB-view-setting-imagepreview-none")) {
-            NEWSBLUR.assets.preference('show_image_preview', "none");
+            NEWSBLUR.assets.preference('image_preview', "none");
             NEWSBLUR.reader.apply_story_styling(true);
-        } else if ($target.hasClass("NB-view-setting-imagepreview-small")) {
-            NEWSBLUR.assets.preference('show_image_preview', "small");
+        } else if ($target.hasClass("NB-view-setting-imagepreview-small-left")) {
+            NEWSBLUR.assets.preference('image_preview', "small-left");
             NEWSBLUR.reader.apply_story_styling(true);
-        } else if ($target.hasClass("NB-view-setting-imagepreview-large")) {
-            NEWSBLUR.assets.preference('show_image_preview', "large");
+        } else if ($target.hasClass("NB-view-setting-imagepreview-small-right")) {
+            NEWSBLUR.assets.preference('image_preview', "small-right");
+            NEWSBLUR.reader.apply_story_styling(true);
+        } else if ($target.hasClass("NB-view-setting-imagepreview-large-left")) {
+            NEWSBLUR.assets.preference('image_preview', "large-left");
+            NEWSBLUR.reader.apply_story_styling(true);
+        } else if ($target.hasClass("NB-view-setting-imagepreview-large-right")) {
+            NEWSBLUR.assets.preference('image_preview', "large-right");
             NEWSBLUR.reader.apply_story_styling(true);
         }
         

@@ -505,13 +505,31 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                     $.make('div', { className: 'NB-preference NB-preference-showimagepreview' }, [
                         $.make('div', { className: 'NB-preference-options' }, [
                             $.make('div', [
-                                $.make('input', { id: 'NB-preference-showimagepreview-1', type: 'radio', name: 'show_image_preview', value: 1 }),
-                                $.make('label', { 'for': 'NB-preference-showimagepreview-1' }, [
-                                    'Show an image thumbnail in the story title'
+                                $.make('input', { id: 'NB-preference-showimagepreview-sl', type: 'radio', name: 'image_preview', value: "small-left" }),
+                                $.make('label', { 'for': 'NB-preference-showimagepreview-sl' }, [
+                                    'Show a small image thumbnail on the left side of the story title'
                                 ])
                             ]),
                             $.make('div', [
-                                $.make('input', { id: 'NB-preference-showimagepreview-0', type: 'radio', name: 'show_image_preview', value: 0 }),
+                                $.make('input', { id: 'NB-preference-showimagepreview-sr', type: 'radio', name: 'image_preview', value: "small-right" }),
+                                $.make('label', { 'for': 'NB-preference-showimagepreview-sr' }, [
+                                    'Show a small image thumbnail on the right side of the story title'
+                                ])
+                            ]),
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-showimagepreview-ll', type: 'radio', name: 'image_preview', value: "large-left" }),
+                                $.make('label', { 'for': 'NB-preference-showimagepreview-ll' }, [
+                                    'Show a large image thumbnail on the left side of the story title'
+                                ])
+                            ]),
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-showimagepreview-lr', type: 'radio', name: 'image_preview', value: "large-right" }),
+                                $.make('label', { 'for': 'NB-preference-showimagepreview-lr' }, [
+                                    'Show a large image thumbnail on the right side of the story title'
+                                ])
+                            ]),
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-showimagepreview-0', type: 'radio', name: 'image_preview', value: "none" }),
                                 $.make('label', { 'for': 'NB-preference-showimagepreview-0' }, [
                                     'Don\'t show a thumbnail'
                                 ])
@@ -1053,8 +1071,8 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                 return false;
             }
         });
-        $('input[name=show_image_preview]', $modal).each(function() {
-            if ($(this).val() == NEWSBLUR.Preferences.show_image_preview) {
+        $('input[name=image_preview]', $modal).each(function() {
+            if ($(this).val() == NEWSBLUR.Preferences.image_preview) {
                 $(this).prop('checked', true);
                 return false;
             }
