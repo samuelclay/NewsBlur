@@ -20,7 +20,7 @@
     container_default_behavior: no_defaults
     env:
       DOCKERBUILD: ""
-    restart_policy: unless-stopped
+    restart_policy: always
     network_mode: host
     command: "{{ item.command }}"
     volumes:
