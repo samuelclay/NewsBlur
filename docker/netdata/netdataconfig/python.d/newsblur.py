@@ -1,32 +1,32 @@
-# -*- coding: utf-8 -*-
-# Description: example netdata python.d module
-# Author: Put your name here (your github login)
-# SPDX-License-Identifier: GPL-3.0-or-later
-
 from random import SystemRandom
-
 from bases.FrameworkServices.SimpleService import SimpleService
 
 priority = 90000
 
 ORDER = [
     'app-servers',
-    'feed-counts'
+    'app-times',
+    'classifiers'
 ]
 
 CHARTS = {
     'app-servers': {
         # 'options': [name, title, units, family, context, charttype]
-        'options': [None, 'App Servers', 'Total', 'family', 'context', 'stacked'], # line indicates that it is a line graph
+        'options': [None, 'App Server Page Loads', None, None, 'context', 'stacked'], # line indicates that it is a line graph
         'lines': [
             ['app servers total'] #must be a valid key in 'get_data()'s return 
         ]
     },
-    'feed-counts': {
-        # 'options': [name, title, units, family, context, charttype]
-        'options': [None, 'Feed Counts', 'Total', 'family', 'context', 'line'], # line indicates that it is a line graph
+    'app-times': {
+        'options': [None, 'NewsBlur App Times', None, None, 'context', 'stacked'], # line indicates that it is a line graph
         'lines': [
-            ['feed counts total'] #must be a valid key in 'get_data()'s return 
+            ['app times total']
+        ]
+    },
+    'classifiers': {
+        'options': [None, 'Classifiers', None, None, 'context', 'stacked'], # line indicates that it is a line graph
+        'lines': [
+            ['classifiers feeds']
         ]
     }
 }
@@ -48,12 +48,11 @@ class Service(SimpleService):
 
     def get_data(self):
 
-
-
         data = dict()
         charts = {
             "app-servers": "app servers total",
-            "feed-counts": "feed counts total"
+            "app-times": "app times total",
+            "classifiers": "classifiers feeds"
         }
         for chart, dimension_id in charts.items():
 
