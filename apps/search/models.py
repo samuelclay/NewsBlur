@@ -3,7 +3,9 @@ import time
 import datetime
 import pymongo
 import pyelasticsearch
+import elasticsearch
 import redis
+import urllib3
 import celery
 import html
 import mongoengine as mongo
@@ -214,6 +216,9 @@ class SearchStory:
             logging.debug(" ---> ~FCCreating search index for ~FM%s" % cls.index_name())
         except pyelasticsearch.IndexAlreadyExistsError:
             return
+        except (pyelasticsearch.ElasticHttpError, elasticsearch.exceptions.ConnectionError, urllib3.exceptions.NewConnectionError) as e:
+            logging.debug(" ***> ~FRNo search server available for creating story mapping.")
+            return
         
         mapping = { 
             'title': {
@@ -268,10 +273,10 @@ class SearchStory:
         }
         try:
             cls.ES().index(index=cls.index_name(), doc_type='story-type', doc=doc, id=story_hash)
-        except pyelasticsearch.ElasticHttpError as e:
+        except (pyelasticsearch.ElasticHttpError, elasticsearch.exceptions.ConnectionError, urllib3.exceptions.NewConnectionError) as e:
             logging.debug(" ***> ~FRNo search server available for story indexing.")
-            if settings.DEBUG:
-                raise e
+            # if settings.DEBUG:
+            #     raise e
     
     @classmethod
     def remove(cls, story_hash):

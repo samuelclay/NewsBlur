@@ -1533,15 +1533,15 @@ def load_river_stories__redis(request):
         stories = new_stories
     
     # Clean stories to remove potentially old stories on dashboard
-    if initial_dashboard:
-        new_stories = []
-        now = datetime.datetime.utcnow()
-        hour = now + datetime.timedelta(hours=1)
-        month_ago = now - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
-        for story in stories:
-            if story['story_date'] >= month_ago and story['story_date'] < hour:
-                new_stories.append(story)
-        stories = new_stories
+    # if initial_dashboard:
+    #     new_stories = []
+    #     now = datetime.datetime.utcnow()
+    #     hour = now + datetime.timedelta(hours=1)
+    #     month_ago = now - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
+    #     for story in stories:
+    #         if story['story_date'] >= month_ago and story['story_date'] < hour:
+    #             new_stories.append(story)
+    #     stories = new_stories
         
     # if page > 1:
     #     import random
