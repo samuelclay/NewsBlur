@@ -23,7 +23,7 @@
         android:layout_toRightOf="@id/row_read_icon"
         android:paddingBottom="9dp"
         android:paddingTop="9dp"
-        android:text="@string/read_stories_row_title"
+        android:text="@string/read_stories_title"
         android:textStyle="bold" />
 
     <View

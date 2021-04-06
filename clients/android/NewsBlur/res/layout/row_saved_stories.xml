@@ -33,7 +33,7 @@
         android:layout_toRightOf="@id/row_saved_icon"
         android:paddingBottom="9dp"
         android:paddingTop="9dp"
-        android:text="@string/saved_stories_row_title"
+        android:text="@string/saved_stories_title"
         android:textStyle="bold" />
 
     <TextView

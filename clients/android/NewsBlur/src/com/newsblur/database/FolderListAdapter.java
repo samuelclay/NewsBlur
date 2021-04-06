@@ -20,8 +20,10 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.ExpandableListView;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.newsblur.R;
@@ -288,6 +290,11 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
         } else {
             if (v == null) v = inflater.inflate(R.layout.row_feed, parent, false);
             Feed f = activeFolderChildren.get(groupPosition).get(childPosition);
+            FrameLayout containerTitle = v.findViewById(R.id.row_title);
+            int rowMarginStart = isRowAllStories(groupPosition) ? 0 : UIUtils.dp2px(context, 32);
+            RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) containerTitle.getLayoutParams();
+            lp.setMarginStart(rowMarginStart);
+            containerTitle.setLayoutParams(lp);
             TextView nameView =((TextView) v.findViewById(R.id.row_feedname));
             nameView.setText(f.title);
             nameView.setTextSize(textSize * defaultTextSize_childName);

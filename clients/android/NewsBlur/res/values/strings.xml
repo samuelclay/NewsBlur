@@ -39,35 +39,29 @@
     <string name="title_rename_feed">Rename Feed %s</string>
     <string name="title_rename_folder">Rename Folder %s</string>
 
-	<string name="all_stories_row_title">ALL STORIES</string>
 	<string name="all_stories_title">All Stories</string>
-	<string name="infrequent_row_title">INFREQUENT SITE STORIES</string>
 	<string name="infrequent_title">Infrequent Site Stories</string>
-	<string name="all_shared_stories_row_title">ALL SHARED STORIES</string>
 	<string name="all_shared_stories_title">All Shared Stories</string>
-    <string name="global_shared_stories_row_title">GLOBAL SHARED STORIES</string>
     <string name="global_shared_stories_title">Global Shared Stories</string>
-	<string name="read_stories_row_title">READ STORIES</string>
 	<string name="read_stories_title">Read Stories</string>
-	<string name="saved_stories_row_title">SAVED STORIES</string>
 	<string name="saved_stories_title">Saved Stories</string>
-    <string name="saved_searches_row_title">SAVED SEARCHES</string>
+    <string name="saved_searches_title">Saved Searches</string>
 
     <string name="top_level">TOP LEVEL</string>
 	
 	<string name="send_full">%1$s \n\%2$s \n\n%3$s \n\n—\nShared with NewsBlur.com</string>
 	<string name="share_comment_hint">Comment (Optional)</string>
 	<string name="share_newsblur">Share \"%s\" to your Blurblog?</string>
-    <string name="share_this">SHARE</string>
-    <string name="already_shared">SHARED</string>
-    <string name="share_this_story">SHARE</string>
-    <string name="unshare">DELETE SHARE</string>
-    <string name="update_shared">UPDATE COMMENT</string>
-    <string name="feed_name_save">RENAME FEED</string>
-    <string name="folder_name_save">RENAME FOLDER</string>
+    <string name="share_this">Share</string>
+    <string name="already_shared">Shared</string>
+    <string name="share_this_story">Share</string>
+    <string name="unshare">Delete share</string>
+    <string name="update_shared">Update comment</string>
+    <string name="feed_name_save">Rename feed</string>
+    <string name="folder_name_save">Rename folder</string>
 
-	<string name="save_this">SAVE</string>
-	<string name="unsave_this">REMOVE FROM SAVED</string>
+	<string name="save_this">Save</string>
+	<string name="unsave_this">Remove from saved</string>
 
     <string name="overlay_next">NEXT</string>
     <string name="overlay_done">DONE</string>
@@ -77,10 +71,10 @@
     <string name="overlay_story">STORY</string>
     <string name="orig_text_failed">Sorry, the story\'s text could not be extracted.</string>
 
-    <string name="state_all">ALL</string>
-    <string name="state_unread">UNREAD</string>
-    <string name="state_focus">FOCUS</string>
-    <string name="state_saved">SAVED</string>
+    <string name="state_all">All</string>
+    <string name="state_unread">Unread</string>
+    <string name="state_focus">Focus</string>
+    <string name="state_saved">Saved</string>
 
 	<string name="reply_to">Reply to \"%s\"</string>
     <string name="edit_reply">Edit reply</string>
@@ -88,7 +82,7 @@
     <string name="edit_reply_delete">DELTE REPLY</string>
 	
 	<string name="alert_dialog_ok">OKAY</string>
-	<string name="alert_dialog_cancel">CANCEL</string>
+	<string name="alert_dialog_cancel">@android:string/cancel</string>
 	<string name="alert_dialog_done">DONE</string>
 	<string name="alert_dialog_openlink">OPEN LINK</string>
 	<string name="alert_dialog_openimage">OPEN IMAGE</string>
@@ -219,7 +213,7 @@
 
     <string name="description_add_new_folder_icon">Add new folder icon</string>
 
-    <string name="menu_loginas">Login as...</string>
+    <string name="menu_loginas">Login as…</string>
 
     <string name="loginas_title">Login As User</string>
 
@@ -262,7 +256,7 @@
     <string name="widget">Widget</string>
     <string name="title_widget_setup">Tap to setup in NewsBlur</string>
     <string name="title_no_subscriptions">No active subscriptions detected</string>
-    <string name="title_widget_loading">Loading...</string>
+    <string name="title_widget_loading">Loading…</string>
     
     <string name="premium_subscribers_folder">Reading by folder is only available to</string>
     <string name="premium_subscribers_search">Search is only available to</string>
@@ -447,16 +441,16 @@
 
     <string name="settings_gestures">Gestures</string>
 
-    <string name="sync_status_housekeeping">Tidying up...</string>
-    <string name="sync_status_actions">Catching up %d reading actions...</string>
-    <string name="sync_status_recounts">Catching up reading actions...</string>
-    <string name="sync_status_ffsync">On its way...</string>
-    <string name="sync_status_cleanup">Cleaning up...</string>
+    <string name="sync_status_housekeeping">Tidying up…</string>
+    <string name="sync_status_actions">Catching up %d reading actions…</string>
+    <string name="sync_status_recounts">Catching up reading actions…</string>
+    <string name="sync_status_ffsync">On its way…</string>
+    <string name="sync_status_cleanup">Cleaning up…</string>
     <string name="sync_status_starred">Sync saved stories actions…</string>
-    <string name="sync_status_stories">Fetching fresh stories...</string>
-    <string name="sync_status_unreads">Storing%sunread stories...</string>
-    <string name="sync_status_text">Storing text for %s stories...</string>
-    <string name="sync_status_images">Storing %s images...</string>
+    <string name="sync_status_stories">Fetching fresh stories…</string>
+    <string name="sync_status_unreads">Storing%sunread stories…</string>
+    <string name="sync_status_text">Storing text for %s stories…</string>
+    <string name="sync_status_images">Storing %s images…</string>
     <string name="sync_status_offline">Offline</string>
     <string name="sync_status_feed_add">Adding feed …</string>
 
