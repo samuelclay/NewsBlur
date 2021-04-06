@@ -1006,27 +1006,27 @@ hr {
     line-height: 11px;
 }
 .NB-theme-feed-size-xs .NB-feeds-header .unread_count {
-    margin-top: 4px;
+    margin-top: 6px;
     padding-top: 3px;
     padding-bottom: 2px;
 }
 .NB-theme-feed-size-s .NB-feeds-header .unread_count {
-    margin-top: 4px;
+    margin-top: 6px;
     padding-top: 2px;
     padding-bottom: 2px;
 }
 .NB-theme-feed-size-m .NB-feeds-header .unread_count {
-    margin-top: 4px;
+    margin-top: 6px;
     padding-top: 2px;
     padding-bottom: 2px;
 }
 .NB-theme-feed-size-l .NB-feeds-header .unread_count {
-    margin-top: 3px;
+    margin-top: 5px;
     padding-top: 4px;
     padding-bottom: 3px;
 }
 .NB-theme-feed-size-xl .NB-feeds-header .unread_count {
-    margin-top: 3px;
+    margin-top: 5px;
     padding-top: 4px;
     padding-bottom: 3px;
 }
@@ -3076,7 +3076,7 @@ body {
 
 .NB-feed-story .NB-feed-story-author-wrapper {
     float: left;
-    font-size: 12px;
+    font-size: 13px;
     color: #757B6B;
 /*    text-shadow: 0 1px 0 rgba(255, 255, 255, .3);*/
     margin: 6px 8px 0 0;
@@ -3158,7 +3158,7 @@ body {
     border-radius: 4px;
     
     padding: 1px 5px;
-    margin: 8px 4px 3px 0;
+    margin: 8px 4px 5px 0;
     line-height: 14px;
     background-color: rgba(0, 0, 0, .1);
     color: #959B8B;
@@ -4543,7 +4543,7 @@ body {
 
 .NB-feeds-header .NB-feeds-header-icon {
     position: absolute;
-    top: 6px;
+    top: 8px;
     left: 2px;
     width: 16px;
     height: 16px;
@@ -4551,7 +4551,7 @@ body {
 
 .NB-feeds-header .NB-feeds-header-title {
     display: block;
-    padding: 2px 4px 2px 23px;
+    padding: 4px 4px 4px 23px;
     text-decoration: none;
     color: #545454;
     overflow: hidden;
