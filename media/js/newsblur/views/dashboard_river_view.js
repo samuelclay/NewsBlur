@@ -10,7 +10,7 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
     
     initialize: function () {
         var $river_on_dashboard = $(".NB-dashboard-rivers-" + this.model.get('river_side') + " .NB-dashboard-river-order-" + this.model.get('river_order'));
-        console.log(['Initialize dashboard river', this.model, this.$el, this.el, $river_on_dashboard])
+        // console.log(['Initialize dashboard river', this.model, this.$el, this.el, $river_on_dashboard])
         // if ($river_on_dashboard.length) {
         //     this.setElement($river_on_dashboard);
         // }
@@ -137,7 +137,7 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
         if (!feeds || !feeds.length) {
             feeds = active_folder.feed_ids_in_folder();
         }
-        console.log(['River feeds', river_id, feeds.length, feeds]);
+        // console.log(['River feeds', river_id, feeds.length, feeds]);
         return feeds;
     },
 
