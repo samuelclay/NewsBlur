@@ -84,3 +84,6 @@ clients/android/NewsBlur/settings.gradle
 **/node_modules
 *.tfstate*
 .terraform*
+
+/docker/netdata/netdatacache/*
+/docker/netdata/netdatalib/*
