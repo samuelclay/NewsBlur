@@ -42,9 +42,9 @@
     - /srv/newsblur/docker/netdata/netdatalib:/var/lib/netdata
     - /srv/newsblur/docker/netdata/netdatacache:/var/cache/netdata
     - /srv/newsblur/docker/netdata/netdata.conf:/etc/netdata/netdata.conf
-    - /srv/newsblur/docker/netdata/netdataconfig/python.d/newsblur_data_request.py:/usr/libexec/netdata/python.d/newsblur_data_request.chart.py
+    - /srv/newsblur/docker/netdata/netdataconfig/python.d/newsblur.py:/usr/libexec/netdata/python.d/newsblur.chart.py
     - /srv/newsblur/docker/netdata/netdataconfig/python.d.conf:/usr/lib/netdata/conf.d/python.d.conf 
-    - /srv/newsblur/docker/netdata/netdataconfig/python.d/newsblur_data_request.conf:/usr/lib/netdata/conf.d/python.d/newsblur_data_request.conf
+    - /srv/newsblur/docker/netdata/netdataconfig/python.d/newsblur.conf:/usr/lib/netdata/conf.d/python.d/newsblur.conf
     - /srv/newsblur/utils/netdata/config/go.d.conf:/usr/lib/netdata/conf.d/go.d.conf
 
     - /etc/passwd:/host/etc/passwd:ro
