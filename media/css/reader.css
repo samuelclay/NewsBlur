@@ -3008,11 +3008,18 @@ body {
     max-width: 100%;
 }
 .NB-feed-story .NB-feed-story-content img {
-    max-width: 100% !important;
+    max-width: calc(100% + 56px) !important;
+    margin-left: -28px;
     width: auto;
     height: auto;
-  
-  /* See http://www.newsblur.com/site/1031643/le-21me for width: auto, height: auto */
+    
+    /* See http://www.newsblur.com/site/1031643/le-21me for width: auto, height: auto */
+}
+.NB-feed-story .NB-feed-story-content img.NB-small-image {
+    max-width: 100% !important;    
+    margin-left: 0;
+}
+.NB-feed-story .NB-feed-story-content img.NB-large-image {
 }
 
 .NB-feed-story .NB-feed-story-content video {

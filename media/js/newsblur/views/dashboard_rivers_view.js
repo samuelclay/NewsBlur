@@ -15,7 +15,7 @@ NEWSBLUR.Views.DashboardRivers = Backbone.View.extend({
                 dashboard_stories: new NEWSBLUR.Collections.Stories(),
                 model: river
             });
-            console.log(['Adding river', side, river.get('river_id'), river_view, river_view.$el, this.$el])
+            // console.log(['Adding river', side, river.get('river_id'), river_view, river_view.$el, this.$el])
             this.$el.append(river_view.$el);
             
             return river_view;
