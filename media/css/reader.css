@@ -3018,7 +3018,7 @@ body {
 .NB-feed-story .NB-feed-story-content img.NB-small-image {
     max-width: 100% !important;    
     margin-left: 0;
-    width: auto;
+    width: auto !important;
 }
 .NB-feed-story .NB-feed-story-content img.NB-large-image {
 }
