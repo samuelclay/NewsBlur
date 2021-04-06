@@ -4,7 +4,8 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
         "click .NB-module-search-add-url"   : "add_url",
         "click .NB-feedbar-options" : "open_options_popover",
         "click .NB-module-river-favicon" : "reload",
-        "click .NB-module-river-title" : "open_river"
+        "click .NB-module-river-title": "open_river",
+        "click .NB-dashboard-column-option": "choose_columns"
     },
     
     initialize: function () {
@@ -55,6 +56,16 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
     render: function () {
         var $river = $(_.template('<div class="NB-module NB-module-river NB-dashboard-river NB-dashboard-river-order-<%= river_order %>">\
             <h5 class="NB-module-header">\
+                <div class="NB-dashboard-column-control <% if (parseInt(river_order, 10) == 0) { %>NB-active<% } %>">\
+                    <ul class="segmented-control NB-dashboard-columns-control">\
+                        <li class="NB-dashboard-column-option NB-dashboard-columns-control-1">\
+                            <img src="/media/img/reader/columns_single.png" class="NB-icon">\
+                        </li>\
+                        <li class="NB-dashboard-column-option NB-dashboard-columns-control-2">\
+                            <img src="/media/img/reader/columns_double.png" class="NB-icon">\
+                        </li>\
+                    </ul>\
+                </div>\
                 <div class="NB-module-river-settings NB-javascript"></div>\
                 <div class="NB-module-river-favicon"><img src="<%= favicon_url %>"></div>\
                 <div class="NB-module-river-title"><%= river_title %></div>\
@@ -69,12 +80,23 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
         ', {
             favicon_url: this.model.favicon_url(),
             river_title: NEWSBLUR.reader.feed_title(this.model.get('river_id')),
-            river_order: this.model.get('river_order')
+            river_order: this.model.get('river_order'),
+            single_column: parseInt(NEWSBLUR.assets.preference('dashboard_columns'), 10) == 1
         }));
 
         this.$el.html($river);
+        this.render_columns();
 
         return this;
+    },
+
+    render_columns: function () {
+        var columns = NEWSBLUR.assets.preference('dashboard_columns');
+        
+        this.$(".NB-dashboard-columns-control-1").toggleClass('NB-active', columns == 1);
+        this.$(".NB-dashboard-columns-control-2").toggleClass('NB-active', columns == 2);
+
+        NEWSBLUR.reader.add_body_classes();
     },
 
     options_template: function () {
@@ -164,6 +186,15 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
 
     reload: function () {
         this.load_stories();
+    },
+
+    choose_columns: function ($event) {
+        var single_column = $($event.currentTarget).hasClass('NB-dashboard-columns-control-1');
+        var double_column = $($event.currentTarget).hasClass('NB-dashboard-columns-control-2');
+        var columns = single_column ? 1 : 2;
+
+        NEWSBLUR.assets.preference('dashboard_columns', columns);
+        this.render_columns();
     },
 
     load_stories: function(options) {
