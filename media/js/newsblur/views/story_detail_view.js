@@ -140,7 +140,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                     largest = this.width;
                     $largest = $(this);
                 }
-                if (this.width >= 320 && this.height >= 50) {
+                if (this.naturalWidth >= 320 && this.naturalHeight >= 50) {
                     $(this).addClass('NB-large-image');
                 } else {
                     $(this).addClass('NB-small-image');
