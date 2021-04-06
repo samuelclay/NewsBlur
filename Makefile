@@ -85,21 +85,29 @@ push_images: push_web push_node push_monitor
 push: build_images push_images
 
 # Tasks
-deploy:
+deploy_web:
 	- ansible-playbook ansible/deploy_app.yml
+deploy: deploy_web
 deploy_node:
 	- ansible-playbook ansible/deploy_node.yml
+node: deploy_node
 deploy_task:
 	- ansible-playbook ansible/deploy_task.yml
+task: deploy_task
 deploy_www:
 	- ansible-playbook ansible/deploy_www.yml
+www: deploy_www
 deploy_work:
 	- ansible-playbook ansible/deploy_work.yml
+work: deploy_work
 deploy_monitor:
 	- ansible-playbook ansible/deploy_monitor.yml
+monitor: deploy_monitor
 deploy_staging:
 	- ansible-playbook ansible/deploy_staging.yml
-
+staging: deploy_staging
+celery_stop:
+	- ansible-playbook ansible/deploy_task.yml --tags stop
 # Provision
 firewall:
 	- ansible-playbook ansible/provision.yml --tags firewall -l db
