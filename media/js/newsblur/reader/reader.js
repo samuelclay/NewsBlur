@@ -517,6 +517,7 @@
             this.$s.$body.toggleClass('NB-is-anonymous',      NEWSBLUR.Globals.is_anonymous);
             this.$s.$body.toggleClass('NB-is-authenticated',  NEWSBLUR.Globals.is_authenticated);
             this.$s.$body.toggleClass('NB-pref-full-width-story', !!this.model.preference('full_width_story'));
+            this.$s.$body.toggleClass('NB-dashboard-columns-single', this.model.preference('dashboard_columns') == 1);
             this.$s.$body.removeClass('NB-story-layout-full')
                          .removeClass('NB-story-layout-split')
                          .removeClass('NB-story-layout-list')
@@ -1315,7 +1316,7 @@
             this.$s.$river_blurblogs_header.removeClass('NB-selected');
             this.$s.$river_global_header.removeClass('NB-selected');
             this.$s.$tryfeed_header.removeClass('NB-selected');
-            this.$s.$body.removeClass('NB-view-river');
+            this.$s.$layout.removeClass('NB-view-river');
             $('.task_view_page', this.$s.$taskbar).removeClass('NB-disabled');
             $('.task_view_story', this.$s.$taskbar).removeClass('NB-disabled');
             $('.task_view_page', this.$s.$taskbar).removeClass('NB-task-return');
@@ -1852,7 +1853,7 @@
                 this.flags['starred_tag'] = null;
             }
             this.flags['starred_view'] = true;
-            this.$s.$body.addClass('NB-view-river');
+            this.$s.$layout.addClass('NB-view-river');
             this.flags.river_view = true;
 			
             $('.task_view_page', this.$s.$taskbar).addClass('NB-disabled');
@@ -1924,7 +1925,7 @@
 
             this.iframe_scroll = null;
             this.$s.$read_header.addClass('NB-selected');
-            this.$s.$body.addClass('NB-view-river');
+            this.$s.$layout.addClass('NB-view-river');
             this.flags.river_view = true;
 
             $('.task_view_page', this.$s.$taskbar).addClass('NB-disabled');
@@ -2021,7 +2022,7 @@
             }
             this.iframe_scroll = null;
             this.flags['opening_feed'] = true;
-            this.$s.$body.addClass('NB-view-river');
+            this.$s.$layout.addClass('NB-view-river');
             this.flags.river_view = true;
             
             $('.task_view_page', this.$s.$taskbar).addClass('NB-disabled');
@@ -2147,7 +2148,7 @@
             
             this.iframe_scroll = null;
             this.flags['opening_feed'] = true;
-            this.$s.$body.addClass('NB-view-river');
+            this.$s.$layout.addClass('NB-view-river');
             this.flags.river_view = true;
             this.flags.social_view = true;
             this.flags.global_blurblogs = options.global;
@@ -2275,7 +2276,7 @@
             }
             this.set_correct_story_view_for_feed(this.active_feed);
             this.make_feed_title_in_stories();
-            this.$s.$body.addClass('NB-view-river');
+            this.$s.$layout.addClass('NB-view-river');
             
             // TODO: Only make feed the default for blurblogs, not overriding an explicit pref.
             this.switch_taskbar_view(this.story_view);

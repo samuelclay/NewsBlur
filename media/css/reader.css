@@ -1757,12 +1757,12 @@ hr {
 .NB-image-preview-large-left .NB-story-title {
     padding-left: 116px;
 }
-.NB-image-preview-small-left.NB-view-river .NB-story-title,
-.NB-image-preview-large-left.NB-view-river .NB-story-title {
+.NB-image-preview-small-left .NB-view-river .NB-story-title,
+.NB-image-preview-large-left .NB-view-river .NB-story-title {
     padding-left: 242px;
 }
-.NB-image-preview-small-left.NB-view-river .NB-story-pane-west .NB-story-title,
-.NB-image-preview-large-left.NB-view-river .NB-story-pane-west .NB-story-title {
+.NB-image-preview-small-left .NB-view-river .NB-story-pane-west .NB-story-title,
+.NB-image-preview-large-left .NB-view-river .NB-story-pane-west .NB-story-title {
     padding-left: 142px;
 }
 
@@ -5405,6 +5405,19 @@ form.opml_import_form input {
         margin: 0 24px;
     }
 }
+.NB-dashboard-columns-single .NB-splash-modules {
+    display: block;
+}
+.NB-dashboard-columns-single .NB-splash-modules .NB-modules-center,
+.NB-dashboard-columns-single .NB-splash-modules .NB-account-wide {
+    max-width: none;
+}
+.NB-dashboard-columns-single .NB-splash-modules .NB-modules-center {
+    margin-right: 0;
+}
+.NB-dashboard-columns-single .NB-splash-modules .NB-account-wide {
+    margin: 0 24px;
+}
 .NB-splash-info {
   width: 100%;
   height: 55px;
@@ -7017,6 +7030,27 @@ form.opml_import_form input {
 .NB-module-river .NB-module-river-title {
     display: inline-block;
     cursor: pointer;
+}
+.NB-module-river .NB-dashboard-column-control {
+    float: left;
+    line-height: 0;
+    display: none;
+}
+.NB-module-river .NB-dashboard-column-control.NB-active {
+    display: inline-block;
+}
+.NB-module-river .NB-dashboard-column-control li {
+    width: 32px;
+    margin: -2px 0 -4px;
+    padding: 5px 0;
+}
+.NB-module-river .NB-dashboard-column-control li img {
+    opacity: 0.3;
+    width: 16px;
+    height: 16px;
+}
+.NB-module-river .NB-dashboard-column-control li.NB-active img {
+    opacity: 0.5;
 }
 .NB-module-river .NB-view-river {
     box-shadow: 0 1px 2px rgba(0,0,0,0.1);
