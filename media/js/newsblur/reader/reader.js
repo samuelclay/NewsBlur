@@ -3052,9 +3052,11 @@
             $body.addClass('NB-content-preview-' + NEWSBLUR.Preferences['show_content_preview']);
             
             $body.removeClass('NB-image-preview-none')
-                .removeClass('NB-image-preview-small')
-                .removeClass('NB-image-preview-large');
-            $body.addClass('NB-image-preview-' + NEWSBLUR.Preferences['show_image_preview']);
+                .removeClass('NB-image-preview-small-left')
+                .removeClass('NB-image-preview-small-right')
+                .removeClass('NB-image-preview-large-left')
+                .removeClass('NB-image-preview-large-right');
+            $body.addClass('NB-image-preview-' + NEWSBLUR.Preferences['image_preview']);
             
             if (reset_stories) {
                 this.show_story_titles_above_intelligence_level({ 'animate': true, 'follow': true });

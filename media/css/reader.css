@@ -685,7 +685,7 @@ hr {
   height: 16px;
   position: absolute;
   right: 4px;
-  top: 2px;
+  top: 4px;
   display: none;
 }
 #feed_list .feed.NB-feed-unfetched .NB-feed-unfetched-icon {
@@ -818,7 +818,7 @@ hr {
     display: none;
 }
 .NB-feeds-header .NB-feedlist-collapse-icon {
-    top: 2px;
+    top: 4px;
 }
 .NB-theme-feed-size-xs .NB-feedlist .folder .folder_title .NB-feedlist-collapse-icon,
 .NB-theme-feed-size-s .NB-feedlist .folder .folder_title .NB-feedlist-collapse-icon {
@@ -1718,11 +1718,7 @@ hr {
     border-top: 1px solid #FFF;
     border-bottom: 1px solid #F9F8F4;
 }
-.NB-story-title.NB-has-image {
-}
-.NB-story-pane-west .NB-story-title.NB-has-image {
-    padding-right: 90px;
-}
+
 .NB-theme-feed-size-xs .NB-story-title {
     font-size: 12px;
     line-height: 14px;
@@ -1739,6 +1735,7 @@ hr {
     font-size: 19px;
     line-height: 22px;
 }
+
 .NB-story-pane-west .NB-story-title {
     padding-right: 4px;
     padding-left: 32px;
@@ -1747,8 +1744,28 @@ hr {
     padding-left: 148px;
 }
 .NB-view-river .NB-story-pane-west .NB-story-title {
-    padding-left: 48px;
+    padding-left: 56px;
 }
+.NB-image-preview-small-right .NB-story-title.NB-has-image,
+.NB-image-preview-large-right .NB-story-title.NB-has-image {
+    padding-right: 90px;
+}
+/* Ragged right but not ragged left
+.NB-image-preview-small-left .NB-story-title.NB-has-image,
+.NB-image-preview-large-left .NB-story-title.NB-has-image */
+.NB-image-preview-small-left .NB-story-title,
+.NB-image-preview-large-left .NB-story-title {
+    padding-left: 116px;
+}
+.NB-image-preview-small-left.NB-view-river .NB-story-title,
+.NB-image-preview-large-left.NB-view-river .NB-story-title {
+    padding-left: 242px;
+}
+.NB-image-preview-small-left.NB-view-river .NB-story-pane-west .NB-story-title,
+.NB-image-preview-large-left.NB-view-river .NB-story-pane-west .NB-story-title {
+    padding-left: 142px;
+}
+
 .NB-story-title .NB-storytitles-feed-border-inner,
 .NB-story-title .NB-storytitles-feed-border-outer {
     position: absolute;
@@ -1773,20 +1790,12 @@ hr {
     left: 0;
     top: 2px;
 }
-.NB-story-title .NB-storytitles-story-image {
-    position: absolute;
-    right: 0;
-    width: 86px;
-    height: 100%;
-    background-size: 40%, cover;
-    background-position: 50% 50%, 50% 30%;
-    background-repeat: no-repeat;
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
-}
 .NB-story-pane-west .NB-story-title .NB-storytitles-sentiment {
     left: 4px;
+}
+.NB-image-preview-small-left .NB-story-title .NB-storytitles-sentiment,
+.NB-image-preview-large-left .NB-story-title .NB-storytitles-sentiment {
+    left: 90px;
 }
 .NB-story-title.NB-story-positive .NB-storytitles-sentiment {
     background: transparent url('/media/embed/icons/circular/g_icn_focus.png') no-repeat 13px 6px;
@@ -1806,7 +1815,23 @@ hr {
     background: transparent url('/media/embed/icons/circular/g_icn_starred.png') no-repeat 13px 6px;
     background-size: 8px;
 }
-
+.NB-story-title .NB-storytitles-story-image {
+    position: absolute;
+    right: 0;
+    width: 86px;
+    height: 100%;
+    background-size: 40%, cover;
+    background-position: 50% 50%, 50% 30%;
+    background-repeat: no-repeat;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+.NB-image-preview-small-left .NB-story-title .NB-storytitles-story-image,
+.NB-image-preview-large-left .NB-story-title .NB-storytitles-story-image {
+    right: inherit;
+    left: 8px;
+}
 .NB-story-title.NB-story-starred .NB-storytitles-star,
 .NB-story-title.read.NB-story-starred .NB-storytitles-star {
     width: 16px;
@@ -2008,7 +2033,7 @@ hr {
     position: absolute;
 }
 .NB-story-pane-west .NB-story-title .NB-story-feed {
-    left: -18px;
+    left: -22px;
 }
 .NB-view-river .NB-story-title .NB-story-feed {
     display: block;
@@ -2074,7 +2099,10 @@ hr {
 .NB-story-pane-west .NB-story-title .NB-story-manage-icon {
     left: 4px;
 }
-
+.NB-image-preview-small-left .NB-story-title .NB-story-manage-icon,
+.NB-image-preview-large-left .NB-story-title .NB-story-manage-icon {
+    left: 90px;
+}
 .NB-story-title:hover .NB-story-manage-icon {
     display: block;
 }
@@ -2120,7 +2148,8 @@ hr {
     right: 0;
     font-size: 12px;
 }
-.NB-story-title.NB-has-image .story_date {
+.NB-image-preview-small-right .NB-story-title.NB-has-image .story_date,
+.NB-image-preview-large-right .NB-story-title.NB-has-image .story_date {
     width: 236px;
 }
 .NB-theme-feed-size-xs .NB-story-title .story_date {
@@ -2152,7 +2181,6 @@ hr {
 .NB-story-title.read .story_date {
     color: #B6B6B6;
 }
-
 
 .NB-story-title.NB-selected,
 .NB-interaction:hover:not(.NB-disabled) {
@@ -2384,22 +2412,28 @@ hr {
 .NB-layout-grid.NB-grid-height-s .NB-story-grid .NB-storytitles-story-image {
     height: 112px;
 }
-.NB-image-preview-small .NB-grid-height-m .NB-story-grid .NB-storytitles-story-image {
+.NB-image-preview-small-left .NB-grid-height-m .NB-story-grid .NB-storytitles-story-image,
+.NB-image-preview-small-right .NB-grid-height-m .NB-story-grid .NB-storytitles-story-image {
     height: 146px;
 }
-.NB-image-preview-large .NB-grid-height-m .NB-story-grid .NB-storytitles-story-image {
+.NB-image-preview-large-left .NB-grid-height-m .NB-story-grid .NB-storytitles-story-image,
+.NB-image-preview-large-right .NB-grid-height-m .NB-story-grid .NB-storytitles-story-image {
     height: 204px;
 }
-.NB-image-preview-small .NB-grid-height-l .NB-story-grid .NB-storytitles-story-image {
+.NB-image-preview-small-left .NB-grid-height-l .NB-story-grid .NB-storytitles-story-image,
+.NB-image-preview-small-right .NB-grid-height-l .NB-story-grid .NB-storytitles-story-image {
     height: 152px;
 }
-.NB-image-preview-large .NB-grid-height-l .NB-story-grid .NB-storytitles-story-image {
+.NB-image-preview-large-left .NB-grid-height-l .NB-story-grid .NB-storytitles-story-image,
+.NB-image-preview-large-right .NB-grid-height-l .NB-story-grid .NB-storytitles-story-image {
     height: 264px;
 }
-.NB-image-preview-small .NB-grid-height-xl .NB-story-grid .NB-storytitles-story-image {
+.NB-image-preview-small-left .NB-grid-height-xl .NB-story-grid .NB-storytitles-story-image,
+.NB-image-preview-small-right .NB-grid-height-xl .NB-story-grid .NB-storytitles-story-image {
     height: 202px;
 }
-.NB-image-preview-large .NB-grid-height-xl .NB-story-grid .NB-storytitles-story-image {
+.NB-image-preview-large-left .NB-grid-height-xl .NB-story-grid .NB-storytitles-story-image,
+.NB-image-preview-large-right .NB-grid-height-xl .NB-story-grid .NB-storytitles-story-image {
     height: 324px;
 }
 .NB-layout-grid.NB-grid-height-xs.NB-grid-columns-3 .NB-story-grid .NB-storytitles-author,
@@ -2731,7 +2765,14 @@ body {
     display: none;
     height: 0;
 }
-.NB-image-preview-small:not(.NB-story-layout-grid) .NB-storytitles-story-image {
+.NB-image-preview-small-left:not(.NB-story-layout-grid) .NB-storytitles-story-image {
+    width: 62px;
+    height: 70%;
+    left: 24px;
+    top: 12px;
+    border-radius: 6px;
+}
+.NB-image-preview-small-right:not(.NB-story-layout-grid) .NB-storytitles-story-image {
     width: 62px;
     height: 70%;
     right: 12px;
@@ -12530,14 +12571,24 @@ form.opml_import_form input {
 .NB-style-popover .segmented-control.NB-menu-manage-view-setting-contentpreview li.NB-view-setting-contentpreview-title {
     width: 64px;
 }
+.NB-filter-popover .segmented-control.NB-menu-manage-view-setting-imagepreview li.NB-view-setting-imagepreview-none,
+.NB-style-popover .segmented-control.NB-menu-manage-view-setting-imagepreview li.NB-view-setting-imagepreview-none {
+    width: 64px;
+    padding: 5px 12px;
+}
 .NB-filter-popover .segmented-control.NB-menu-manage-view-setting-imagepreview li,
 .NB-style-popover .segmented-control.NB-menu-manage-view-setting-imagepreview li {
-    padding: 2px 7px 2px;
+    padding: 6px 9px 2px;
     font-size: 12px;
-    width: 62px;
+    width: 16px;
 }
 .NB-filter-popover .segmented-control.NB-menu-manage-view-setting-imagepreview li {
-    padding: 2px 12px 2px;
+    padding-left: 12px;
+    padding-right: 12px;
+}
+.NB-menu-manage-view-setting-imagepreview .NB-icon {
+    width: 16px;
+    height: 16px;
 }
 .NB-filter-popover .segmented-control .NB-unread-icon,
 .NB-filter-popover .segmented-control .NB-focus-icon {
