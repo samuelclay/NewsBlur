@@ -671,7 +671,7 @@ class Feed(models.Model):
                     self.feed_address = feed_address
                     feed = self.save()
                     feed.count_subscribers()
-                    feed.schedule_feed_fetch_immediately()
+                    # feed.schedule_feed_fetch_immediately() # Don't fetch as it can get stuck in a loop
                     feed.has_feed_exception = False
                     feed.active = True
                     feed = feed.save()
