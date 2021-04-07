@@ -28,7 +28,9 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
         // NEWSBLUR.assets.stories.bind('change:selected', this.check_read_stories, this);
         this.model.unbind('change:river_id');
         this.model.bind('change:river_id', _.bind(this.initialize, this));
-                
+        this.model.unbind("change:columns");
+        this.model.bind("change:columns", _.bind(this.on_column_change, this));
+
         this.render();
 
         return this;
@@ -197,6 +199,13 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
         var columns = single_column ? 1 : 2;
 
         NEWSBLUR.assets.preference('dashboard_columns', columns);
+        NEWSBLUR.app.dashboard_rivers.left.rivers.forEach(function (river) {
+            console.log('Set river columns', river, columns);
+            river.model.set('columns', columns);
+        });
+    },
+
+    on_column_change: function () {
         this.render_columns();
         this.redraw();
     },
