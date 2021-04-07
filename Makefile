@@ -29,8 +29,9 @@ debug:
 	- CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker attach ${newsblur}
 
 # brings down containers
-nb-down:
+down:
 	- docker-compose -f docker-compose.yml down
+nb-down: down
 
 # runs tests
 test:
