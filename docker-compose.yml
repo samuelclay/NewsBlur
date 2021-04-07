@@ -111,6 +111,7 @@ services:
       - 9300:9300
     volumes:
       - ./docker/volumes/elasticsearch:/usr/share/elasticsearch/data
+      - ./config/elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
 
   db_mongo:
     container_name: db_mongo
