@@ -4,10 +4,10 @@ import os
 import requests
         
 MONITOR_URL = os.getenv("MONITOR_URL")
-if MONITOR_URL == "https://haproxy:443/monitor":
+if MONITOR_URL == "https://haproxy/monitor":
     verify = False
 else:
-    verify = False
+    verify = True
 
 
 endpoints = {

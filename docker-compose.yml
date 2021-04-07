@@ -168,7 +168,7 @@ services:
     ports: 
     - 19999:19999
     environment:
-    - MONITOR_URL=https://haproxy:443/monitor
+    - MONITOR_URL=https://haproxy/monitor
     volumes:
     - ./docker/netdata/netdatalib:/var/lib/netdata
     - ./docker/netdata/netdatacache:/var/cache/netdata
