@@ -1,6 +1,44 @@
 from random import SystemRandom
 from bases.FrameworkServices.SimpleService import SimpleService
+import os
+import requests
 
+class Monitor():
+        
+    MONITOR_URL = os.getenv("MONITOR_URL")
+    if MONITOR_URL == "https://haproxy:443/monitor":
+        verify = False
+    else:
+        verify = False
+
+    def __init__(self):
+
+        endpoints = {
+            "app_servers": "/app-servers",
+            "app_times": "/app-times",
+            "classifiers": "/classifiers",
+            "db_times": "/db-times",
+            "errors": "/errors",
+            "feed_counts": "/feed-counts",
+            "feeds": "/feeds",
+            "load_times": "/load-times",
+            "stories": "/stories",
+            "task_codes": "/task-codes",
+            "task_pipeline": "/task-pipeline",
+            "task_servers": "/task-servers",
+            "task_times": "/task-times",
+            "updates": "/updates",
+            "users": "/users",
+        }
+
+        for name, endpoint in endpoints.items():
+            setattr(self, name, self.call_monitor(endpoint))
+
+    def call_monitor(self, endpoint):
+        uri = self.MONITOR_URL + endpoint
+        res = requests.get(uri, verify=self.verify)
+        return res.json()
+        
 priority = 90000
 
 ORDER = [
@@ -38,9 +76,7 @@ class Service(SimpleService):
         self.order = ORDER
         self.definitions = CHARTS
         self.random = SystemRandom()
-        self.num_lines = 1
-        self.lower = self.configuration.get('lower', 0)
-        self.upper = self.configuration.get('upper', 100)
+        self.monitor = Monitor()
 
     @staticmethod
     def check():
@@ -59,5 +95,5 @@ class Service(SimpleService):
             if dimension_id not in self.charts[chart]:
                 self.charts[chart].add_dimension([dimension_id])
 
-            data[dimension_id] = self.random.randint(self.lower, self.upper)
+            data[dimension_id] = self.random.randint(0, 100)
         return data
