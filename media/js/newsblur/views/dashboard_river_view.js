@@ -30,25 +30,6 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
         this.model.bind('change:river_id', _.bind(this.initialize, this));
                 
         this.render();
-        
-        this.$stories = this.$(".NB-module-item .NB-story-titles");
-        
-        // console.log(['dashboard stories view', this.$stories, this.options, this.$stories.el]);
-        
-        this.story_titles = new NEWSBLUR.Views.StoryTitlesView({
-            el: this.$stories.get(0),
-            collection: this.options.dashboard_stories,
-            $story_titles: this.$stories,
-            override_layout: 'split',
-            on_dashboard: this
-        });
-        this.page = 1;
-        this.cache = {
-            story_hashes: []
-        };
-        this.setup_dashboard_refresh();
-        this.load_stories();
-        this.options_template();
 
         return this;
     },
@@ -72,7 +53,7 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
             </h5>\
             \
             <div class="NB-view-river">\
-                <div class="NB-module-item NB-story-pane-west">\
+                <div class="NB-module-item <% if (single_column) { %>NB-story-pane-south<% } else { %>NB-story-pane-west<% } %>">\
                     <div class="NB-story-titles"></div>\
                 </div>\
             </div>\
@@ -81,12 +62,31 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
             favicon_url: this.model.favicon_url(),
             river_title: NEWSBLUR.reader.feed_title(this.model.get('river_id')),
             river_order: this.model.get('river_order'),
-            single_column: parseInt(NEWSBLUR.assets.preference('dashboard_columns'), 10) == 1
+            single_column: NEWSBLUR.assets.preference('dashboard_columns') == 1
         }));
 
         this.$el.html($river);
         this.render_columns();
 
+        this.$stories = this.$(".NB-module-item .NB-story-titles");
+        
+        // console.log(['dashboard stories view', this.$stories, this.options, this.$stories.el]);
+        
+        this.story_titles = new NEWSBLUR.Views.StoryTitlesView({
+            el: this.$stories.get(0),
+            collection: this.options.dashboard_stories,
+            $story_titles: this.$stories,
+            override_layout: 'split',
+            on_dashboard: this
+        });
+        this.page = 1;
+        this.cache = {
+            story_hashes: []
+        };
+        this.setup_dashboard_refresh();
+        this.load_stories();
+        this.options_template();
+        
         return this;
     },
 
@@ -97,6 +97,9 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
         this.$(".NB-dashboard-columns-control-2").toggleClass('NB-active', columns == 2);
 
         NEWSBLUR.reader.add_body_classes();
+
+        this.$(".NB-module-item").toggleClass("NB-story-pane-south", columns == 1);
+        this.$(".NB-module-item").toggleClass("NB-story-pane-west", columns != 1);
     },
 
     options_template: function () {
@@ -195,6 +198,7 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
 
         NEWSBLUR.assets.preference('dashboard_columns', columns);
         this.render_columns();
+        this.redraw();
     },
 
     load_stories: function(options) {
