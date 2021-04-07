@@ -3465,7 +3465,7 @@ body {
 .NB-story-content-wrapper.NB-story-content-wrapper-height-fudged {
     max-height: none;
 }
-.NB-story-content-wrapper .NB-story-content-expander {
+.NB-story-content-expander {
     display: none;
     position: absolute;
     bottom: 0;
@@ -3478,18 +3478,18 @@ body {
     margin: 28px 0 0;
     padding: 0 28px 28px;
 }
-.NB-story-content-wrapper .NB-story-content-expander .NB-story-content-expander-inner {
+.NB-story-content-expander .NB-story-content-expander-inner {
     position: relative;
     padding: 18px 25px 14px 0;
     height: 28px;
 }
-.NB-story-content-wrapper .NB-story-content-expander:hover {
+.NB-story-content-expander:hover {
     color: #306187;
 }
-.NB-story-content-wrapper .NB-story-content-expander:active {
+.NB-story-content-expander:active {
     color: #722125;
 }
-.NB-story-content-wrapper .NB-story-content-expander .NB-story-cutoff {
+.NB-story-content-expander .NB-story-cutoff {
     position: absolute;
     top: -14px;
     left: -28px;
@@ -3498,11 +3498,11 @@ body {
     z-index: 0;
     background: transparent url('/media/embed/circular/module_cutoff.png') repeat-x left bottom;
 }
-.NB-story-content-wrapper .NB-story-content-expander .NB-story-content-expander-text,
-.NB-story-content-wrapper .NB-story-content-expander .NB-story-content-expander-pages {
+.NB-story-content-expander .NB-story-content-expander-text,
+.NB-story-content-expander .NB-story-content-expander-pages {
     display: inline-block;
 }
-.NB-story-content-wrapper .NB-story-content-expander .NB-story-content-expander-pages {
+.NB-story-content-expander .NB-story-content-expander-pages {
     line-height: 8px;
     padding: 0 12px;
     font-size: 24px;
@@ -3510,7 +3510,7 @@ body {
     vertical-align: middle;
 }
 @media screen and (max-width: 580px) {
-    .NB-story-content-wrapper .NB-story-content-expander .NB-story-content-expander-pages {
+    .NB-story-content-expander .NB-story-content-expander-pages {
         padding: 0 4px;
         font-size: 17px;
     }
