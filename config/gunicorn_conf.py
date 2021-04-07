@@ -33,4 +33,4 @@ if workers > 8:
     workers = 8
 
 if os.environ.get('DOCKERBUILD', False):
-    workers = 1
+    workers = 2
