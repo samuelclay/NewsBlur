@@ -1705,7 +1705,7 @@ hr {
     position: relative;
     cursor: pointer;
     font-weight: bold;
-    padding: 0px 236px 0px 28px;
+    padding: 0px 154px 0px 28px;
     text-decoration: none;
     color: #272727;
     line-height: 15px;
@@ -2142,7 +2142,7 @@ hr {
 
 .NB-story-title .story_date {
     position: absolute;
-    width: 172px;
+    width: 140px;
     top: 5px;
     right: 0;
     font-size: 12px;
