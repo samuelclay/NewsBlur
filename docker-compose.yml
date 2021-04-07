@@ -173,6 +173,7 @@ services:
     - ./docker/netdata/netdatalib:/var/lib/netdata
     - ./docker/netdata/netdatacache:/var/cache/netdata
     - ./docker/netdata/netdataconfig/netdata.conf:/etc/netdata/netdata.conf
-    - ./docker/netdata/netdataconfig/python.d/newsblur.py:/usr/libexec/netdata/python.d/newsblur.chart.py
     - ./docker/netdata/netdataconfig/python.d.conf:/usr/lib/netdata/conf.d/python.d.conf 
-    - ./docker/netdata/netdataconfig/python.d/newsblur.conf:/usr/lib/netdata/conf.d/python.d/newsblur.conf
+      # the configurations for the newsblur_chart
+    - ./docker/netdata/netdataconfig/conf/app_servers.conf:/usr/lib/netdata/conf.d/python.d/app_servers.conf
+    - ./docker/netdata/netdataconfig/charts/app_servers.py:/usr/libexec/netdata/python.d/app_servers.chart.py

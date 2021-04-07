@@ -1,4 +1,3 @@
-from random import SystemRandom
 from bases.FrameworkServices.SimpleService import SimpleService
 import os
 import requests
@@ -12,20 +11,6 @@ else:
 
 endpoints = {
     "app_servers": "/app-servers",
-    "app_times": "/app-times",
-    "classifiers": "/classifiers",
-    "db_times": "/db-times",
-    "errors": "/errors",
-    "feed_counts": "/feed-counts",
-    "feeds": "/feeds",
-    "load_times": "/load-times",
-    "stories": "/stories",
-    "task_codes": "/task-codes",
-    "task_pipeline": "/task-pipeline",
-    "task_servers": "/task-servers",
-    "task_times": "/task-times",
-    "updates": "/updates",
-    "users": "/users",
 }
 
 def call_monitor(endpoint):
@@ -48,7 +33,6 @@ class Service(SimpleService):
                 
             }
         }
-        self.random = SystemRandom()
 
     @staticmethod
     def check():
