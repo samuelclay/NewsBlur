@@ -2779,7 +2779,11 @@ body {
     border-radius: 6px;
 }
 .NB-image-preview-small-left.NB-story-layout-list .NB-storytitles-story-image,
-.NB-image-preview-small-right.NB-story-layout-list .NB-storytitles-story-image {
+.NB-image-preview-small-right.NB-story-layout-list .NB-storytitles-story-image,
+.NB-image-preview-small-left.NB-story-layout-split .NB-story-pane-south .NB-storytitles-story-image,
+.NB-image-preview-small-right.NB-story-layout-split .NB-story-pane-south .NB-storytitles-story-image,
+.NB-image-preview-small-left.NB-story-layout-split .NB-story-pane-north .NB-storytitles-story-image,
+.NB-image-preview-small-right.NB-story-layout-split .NB-story-pane-north .NB-storytitles-story-image {
     top: 4px;
 }
 .NB-theme-sans-serif.NB-theme-size-xs .NB-feed-story {
