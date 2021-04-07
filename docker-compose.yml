@@ -176,5 +176,3 @@ services:
     - ./docker/netdata/netdataconfig/python.d/newsblur.py:/usr/libexec/netdata/python.d/newsblur.chart.py
     - ./docker/netdata/netdataconfig/python.d.conf:/usr/lib/netdata/conf.d/python.d.conf 
     - ./docker/netdata/netdataconfig/python.d/newsblur.conf:/usr/lib/netdata/conf.d/python.d/newsblur.conf
-    - ./utils/netdata/config/go.d.conf:/usr/lib/netdata/conf.d/go.d.conf
-    - /etc/passwd:/host/etc/passwd:ro
