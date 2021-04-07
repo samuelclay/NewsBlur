@@ -9,10 +9,6 @@ else:
     verify = True
 
 
-endpoints = {
-    "app_servers": "/app-servers",
-}
-
 def call_monitor(endpoint):
     uri = MONITOR_URL + endpoint
     res = requests.get(uri, verify=verify)
@@ -29,7 +25,7 @@ class Service(SimpleService):
             'app-servers': {
                 # 'options': [name, title, units, family, context, charttype]
                 'options': [None, 'App Server Page Loads', None, None, 'context', 'stacked'], # line indicates that it is a line graph
-                'lines': [[key] for key in call_monitor(endpoints['app_servers'])] #must be a valid key in 'get_data()'s return 
+                'lines': [[key] for key in call_monitor("/app-servers")] #must be a valid key in 'get_data()'s return 
                 
             }
         }
@@ -40,9 +36,9 @@ class Service(SimpleService):
 
     def get_data(self):
         data = {}
-        api_data = call_monitor(endpoints['app_servers'])
+        api_data = call_monitor("/app-servers")
 
-        for key in call_monitor(endpoints['app_servers']).keys():
+        for key in call_monitor("/app-servers").keys():
             dimension_id = key
 
             if dimension_id not in self.charts['app-servers']:
