@@ -28,7 +28,6 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         this.original_preferences = this.serialize_preferences();
         
         this.$modal.bind('click', $.rescope(this.handle_click, this));
-        this.$modal.bind('click', $.rescope(this.handle_click, this));
     },
     
     make_modal: function() {
