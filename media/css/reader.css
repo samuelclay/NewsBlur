@@ -3475,8 +3475,8 @@ body {
     color: #1a9fff;
     font-size: 13px;
     background: #fff;
-    margin: 28px 28px 0;
-    padding-bottom: 28px;
+    margin: 28px 0 0;
+    padding: 0 28px 28px;
 }
 .NB-story-content-wrapper .NB-story-content-expander .NB-story-content-expander-inner {
     position: relative;
@@ -3492,7 +3492,7 @@ body {
 .NB-story-content-wrapper .NB-story-content-expander .NB-story-cutoff {
     position: absolute;
     top: -14px;
-    left: 0;
+    left: -28px;
     width: 100%;
     height: 14px;
     z-index: 0;
