@@ -41,6 +41,9 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
             this.options.feed_id = "starred"; // Ignore tags
             this.options['show_readfilter'] = false;
         }
+        
+        // console.log("Opening feed options", this.options, this.options.feed_id);
+        
         NEWSBLUR.ReaderPopover.prototype.initialize.call(this, this.options);
         this.model = NEWSBLUR.assets;
         this.render();
