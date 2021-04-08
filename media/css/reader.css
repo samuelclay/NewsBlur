@@ -2217,6 +2217,9 @@ hr {
     background-image:  no-repeat center center;
     overflow: hidden;
     clear: both;
+}
+.NB-load-line {
+    background: none;
     animation: end-line-animation 1.7s ease infinite;
 }
 @keyframes end-line-animation { 

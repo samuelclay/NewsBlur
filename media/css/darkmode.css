@@ -1157,10 +1157,20 @@ border-bottom-color: #303739;
 /* Bottom banner (NB logo) */
 .NB-dark .NB-end-line,
 .NB-dark .NB-feed-story-endbar {
-    background: none;
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#242529), to(#1e1f22));
     background-color: #1B2325;
     border-top-color: #303739;
     border-bottom: 1px solid #111111;
+}
+
+
+.NB-dark .NB-end-line {
+    animation: dark-end-line-animation 1.7s ease infinite;
+}
+@keyframes dark-end-line-animation { 
+    0%{background-color:#242529}
+    38%{background-color:#273a55}
+    100%{background-color:#242529}
 }
 
 /* Search header */
