@@ -10,7 +10,7 @@ groups:
   django: inventory_hostname.startswith('app-django')
   refresh: inventory_hostname.startswith('app-refresh')
   counts: inventory_hostname.startswith('app-counts')
-  push: inventory_hostname.startswith('app-counts')
+  push: inventory_hostname.startswith('app-push')
 
   work: inventory_hostname.startswith('task-work')
 

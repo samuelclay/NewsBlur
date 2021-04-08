@@ -62,7 +62,7 @@ resource "digitalocean_droplet" "www" {
 }
 
 resource "digitalocean_droplet" "app-django" {
-  count    = 2
+  count    = 3
   image    = var.droplet_os
   name     = "app-django${count.index+1}"
   region   = var.droplet_region
@@ -80,7 +80,7 @@ resource "digitalocean_droplet" "app-django" {
 }
 
 resource "digitalocean_droplet" "app-counts" {
-  count    = 1
+  count    = 2
   image    = var.droplet_os
   name     = "app-counts${count.index+1}"
   region   = var.droplet_region
@@ -98,7 +98,7 @@ resource "digitalocean_droplet" "app-counts" {
 }
 
 resource "digitalocean_droplet" "app-push" {
-  count    = 1
+  count    = 2
   image    = var.droplet_os
   name     = "app-push${count.index+1}"
   region   = var.droplet_region
@@ -116,7 +116,7 @@ resource "digitalocean_droplet" "app-push" {
 }
 
 resource "digitalocean_droplet" "app-refresh" {
-  count    = 1
+  count    = 2
   image    = var.droplet_os
   name     = "app-refresh${count.index+1}"
   region   = var.droplet_region

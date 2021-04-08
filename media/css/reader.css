@@ -3012,9 +3012,9 @@ body {
     max-width: 100%;
 }
 .NB-feed-story .NB-feed-story-content img {
-    max-width: calc(100% + 56px) !important;
+    max-width: calc(100% - 56px * -1) !important;
     margin-left: -28px;
-    width: calc(100% + 56px) !important;
+    width: calc(100% - 56px * -1) !important;
     height: auto;
     
     /* See http://www.newsblur.com/site/1031643/le-21me for width: auto, height: auto */
