@@ -17,6 +17,27 @@
     path: /srv/newsblur/newsblur_web/local_settings.py
     line: 'SERVER_NAME = "{{ inventory_hostname }}"'
 
+- name: Ensure static dir exists
+  file:
+    path: /srv/newsblur/static
+    state: directory
+  tags:
+    - static
+
+- name: Install pip
+  become: yes
+  apt: name=python3-pip state=latest
+  tags:
+    - static
+
+- name: Install boto3 and botocore with pip3 module
+  pip:
+    name: 
+    - boto3
+    - botocore
+  tags:
+    - static
+
 - name: Start NewsBlur Web Docker container
   become: yes
   docker_container:
