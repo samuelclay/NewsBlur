@@ -1,6 +1,6 @@
 {
     "service": {
-        "name": "{{ inventory_hostname|regex_replace('[0-9]+', '') }}",
+        "name": "{% if inventory_hostname.startswith('db-mongo') %}{{ inventory_hostname|regex_replace('\d+', '') }}{% else %}db-mongo-analytics{% endif %}",
         "id": "{{ inventory_hostname }}",
         "tags": [
             "db"
@@ -8,7 +8,7 @@
         "port": 27017,
         "checks": [{
             "id": "mongo-analytics-ping",
-            "http": "http://{{ ansible_ssh_host }}:5579/db_check/mongo",
+            "http": "{% if inventory_hostname.startswith('db-mongo') %}http://{{ ansible_ssh_host }}:5579/db_check/mongo{% else %}http://{{ ansible_ssh_host }}:5000/db_check/mongo{% endif %}",
             "interval": "15s"
         }]
     }
