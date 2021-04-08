@@ -115,6 +115,23 @@ def db_check_redis():
     else:
         abort(505)
 
+@app.route("/db_check/redis_user")
+def db_check_redis():
+    try:
+        r = redis.Redis(LOCAL_HOST, db=0)
+    except:
+        abort(503)
+    
+    try:
+        randkey = r.randomkey()
+    except:
+        abort(504)
+
+    if randkey:
+        return str(randkey)
+    else:
+        abort(505)
+
 @app.route("/db_check/redis_story")
 def db_check_redis_story():
     try:
