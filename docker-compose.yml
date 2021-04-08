@@ -176,8 +176,10 @@ services:
     - ./docker/netdata/netdataconfig/netdata.conf:/etc/netdata/netdata.conf
     - ./docker/netdata/netdataconfig/python.d.conf:/usr/lib/netdata/conf.d/python.d.conf 
     # the configurations for the app_servers chart
-    - ./docker/netdata/netdataconfig/conf/app_servers.conf:/usr/lib/netdata/conf.d/python.d/app_servers.conf
+    - ./docker/netdata/netdataconfig/conf/:/usr/lib/netdata/conf.d/python.d/
+
+    # these must be done one by one because there is a python_modules directory that is required for netdata
+    # that lives in the destination directory
     - ./docker/netdata/netdataconfig/charts/app_servers.py:/usr/libexec/netdata/python.d/app_servers.chart.py
-    # the configuration for the app_times chart
-    - ./docker/netdata/netdataconfig/conf/app_times.conf:/usr/lib/netdata/conf.d/python.d/app_times.conf
     - ./docker/netdata/netdataconfig/charts/app_times.py:/usr/libexec/netdata/python.d/app_times.chart.py
+  
