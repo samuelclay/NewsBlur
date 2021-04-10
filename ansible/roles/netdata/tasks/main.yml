@@ -1,51 +1,34 @@
 ---
 
-- name: Ensure directories required
-  become: yes
-  file:
-    dest: '{{ item }}'
-    state: directory
-  with_items:
-    - /etc/netdata
-    - /etc/netdata/conf.d
-    - /etc/netdata/charts.d
-    - /etc/netdata/node.d
-    - /etc/netdata/plugins.d
-    - /etc/netdata/python.d
-
-- name: Set system hostname as netdata hostname
+- name: Enable python.d
   become: yes
   copy:
     dest: /etc/netdata/conf.d/netdata.conf
     content: |
-      [global]
-        hostname = {{ hostname }}
+      [plugins]
+        go.d = no
+        python.d = yes
   register: netdata_conf
-
-- name: Set environment variables
-  become: yes
-  template:
-    dest: /etc/netdata/environment
-    src: environment.j2
-    mode: 0600
-  register: configuration
 
 - name: Setup Netdata docker container
   become: yes
   docker_container:
     name: netdata
     state: started
+    healthcheck:
+      test: curl localhost:19999
     image: netdata/netdata
     ports: 19999:19999
     hostname: "{{ ansible_hostname }}"
+    env:
+      MONITOR_URL: "https://{{ ansible_ssh_host }}/monitor"
+      STAGING: "True"
     volumes:
-    - /srv/newsblur/docker/netdata/netdatalib:/var/lib/netdata
-    - /srv/newsblur/docker/netdata/netdatacache:/var/cache/netdata
-    - /srv/newsblur/docker/netdata/netdata.conf:/etc/netdata/netdata.conf
-    - /srv/newsblur/docker/netdata/netdataconfig/python.d/newsblur.py:/usr/libexec/netdata/python.d/newsblur.chart.py
+    - /etc/netdata/conf.d/netdata.conf:/etc/netdata/netdata.conf
     - /srv/newsblur/docker/netdata/netdataconfig/python.d.conf:/usr/lib/netdata/conf.d/python.d.conf 
-    - /srv/newsblur/docker/netdata/netdataconfig/python.d/newsblur.conf:/usr/lib/netdata/conf.d/python.d/newsblur.conf
-    - /srv/newsblur/utils/netdata/config/go.d.conf:/usr/lib/netdata/conf.d/go.d.conf
+    - /srv/newsblur/docker/netdata/netdataconfig/conf/:/usr/lib/netdata/conf.d/python.d/
+    - /srv/newsblur/docker/netdata/netdataconfig/charts/app_servers.py:/usr/libexec/netdata/python.d/app_servers.chart.py
+    - /srv/newsblur/docker/netdata/netdataconfig/charts/app_times.py:/usr/libexec/netdata/python.d/app_times.chart.py
 
     - /etc/passwd:/host/etc/passwd:ro
     - /etc/group:/host/etc/group:ro
@@ -53,7 +36,7 @@
     - /sys:/host/sys:ro
     - /etc/os-release:/host/etc/os-release:ro
     restart: yes
-  
+
 - name: Wait for netdata to start
   wait_for: port=19999 delay=10
 
