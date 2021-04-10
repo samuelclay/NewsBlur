@@ -3,7 +3,9 @@ import os
 import requests
         
 MONITOR_URL = os.getenv("MONITOR_URL")
-if MONITOR_URL == "https://haproxy/monitor":
+STAGING = os.getenv("STAGING")
+
+if MONITOR_URL == "https://haproxy/monitor" or STAGING:
     verify = False
 else:
     verify = True
