@@ -216,7 +216,7 @@ class SearchStory:
             logging.debug(" ---> ~FCCreating search index for ~FM%s" % cls.index_name())
         except pyelasticsearch.IndexAlreadyExistsError:
             return
-        except (pyelasticsearch.ElasticHttpError, elasticsearch.exceptions.ConnectionError, urllib3.exceptions.NewConnectionError) as e:
+        except (pyelasticsearch.ElasticHttpError, elasticsearch.exceptions.ConnectionError, urllib3.exceptions.NewConnectionError, urllib3.exceptions.ConnectTimeoutError) as e:
             logging.debug(" ***> ~FRNo search server available for creating story mapping.")
             return
         
