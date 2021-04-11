@@ -30,7 +30,7 @@ import redis
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.redis import RedisIntegration
-from sentry_sdk.integrations.redis import CeleryIntegration
+from sentry_sdk.integrations.celery import CeleryIntegration
 import django.http
 import re
 from mongoengine import connect
