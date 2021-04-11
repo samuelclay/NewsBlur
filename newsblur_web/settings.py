@@ -30,6 +30,7 @@ import redis
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.redis import RedisIntegration
+from sentry_sdk.integrations.redis import CeleryIntegration
 import django.http
 import re
 from mongoengine import connect
@@ -569,12 +570,12 @@ if not DEBUG:
     )
     sentry_sdk.init(
         dsn=SENTRY_DSN,
-        integrations=[DjangoIntegration(), RedisIntegration()],
+        integrations=[DjangoIntegration(), RedisIntegration(), CeleryIntegration()],
 
         # Set traces_sample_rate to 1.0 to capture 100%
         # of transactions for performance monitoring.
         # We recommend adjusting this value in production,
-        traces_sample_rate=1.0,
+        traces_sample_rate=0.01,
 
         # If you wish to associate users to errors (assuming you are using
         # django.contrib.auth) you may enable sending PII data.
