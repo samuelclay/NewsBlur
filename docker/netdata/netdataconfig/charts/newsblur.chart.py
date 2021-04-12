@@ -31,11 +31,12 @@ class Service(SimpleService):
         self.order = [
             self.configuration.get("chart_name")
         ]
+        self.monitor_data = call_monitor(self.endpoint)
         self.definitions = {
             self.chart_name: {
                 # 'options': [name, title, units, family, context, charttype]
                 'options': [None, self.title, None, None, self.context, self.chart_type], # line indicates that it is a line graph
-                'lines': [[key] for key in call_monitor(self.endpoint)] #must be a valid key in 'get_data()'s return 
+                'lines': [[key] for key in self.monitor_data] #must be a valid key in 'get_data()'s return 
                 
             }
         }
@@ -48,7 +49,7 @@ class Service(SimpleService):
         data = {}
         api_data = call_monitor(self.endpoint)
 
-        for key in call_monitor(self.endpoint).keys():
+        for key in api_data.keys():
             dimension_id = key
 
             if dimension_id not in self.charts[self.chart_name]:
