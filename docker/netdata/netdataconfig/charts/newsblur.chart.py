@@ -34,7 +34,7 @@ class Service(SimpleService):
         self.definitions = {
             self.chart_name: {
                 # 'options': [name, title, units, family, context, charttype]
-                'options': [None, self.title, None, None, self.context, 'stacked'], # line indicates that it is a line graph
+                'options': [None, self.title, None, None, self.context, self.chart_type], # line indicates that it is a line graph
                 'lines': [[key] for key in call_monitor(self.endpoint)] #must be a valid key in 'get_data()'s return 
                 
             }
