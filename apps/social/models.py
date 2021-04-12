@@ -163,7 +163,10 @@ class MSocialProfile(mongo.Document):
     
     @property
     def user(self):
-        return User.objects.get(pk=self.user_id)
+        try:
+            return User.objects.get(pk=self.user_id)
+        except User.DoesNotExist:
+            return None
 
     def save(self, *args, **kwargs):
         if not self.subscription_count:
@@ -360,7 +363,7 @@ class MSocialProfile(mongo.Document):
         params = {
             'id': 'social:%s' % self.user_id,
             'user_id': self.user_id,
-            'username': self.user.username,
+            'username': self.user.username if self.user else "[deleted]",
             'photo_url': self.email_photo_url,
             'large_photo_url': self.large_photo_url,
             'location': self.location,
