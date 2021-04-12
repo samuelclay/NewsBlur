@@ -1,15 +1,5 @@
 ---
 
-- name: Enable python.d
-  become: yes
-  copy:
-    dest: /etc/netdata/conf.d/netdata.conf
-    content: |
-      [plugins]
-        go.d = no
-        python.d = yes
-  register: netdata_conf
-
 - name: Setup Netdata docker container
   become: yes
   docker_container:
@@ -24,11 +14,10 @@
       MONITOR_URL: "https://{{ ansible_ssh_host }}/monitor"
       STAGING: "True"
     volumes:
-    - /etc/netdata/conf.d/netdata.conf:/etc/netdata/netdata.conf
+    - /srv/newsblur/docker/netdata/netdataconfig/netdata.conf:/etc/netdata/netdata.conf
     - /srv/newsblur/docker/netdata/netdataconfig/python.d.conf:/usr/lib/netdata/conf.d/python.d.conf 
     - /srv/newsblur/docker/netdata/netdataconfig/conf/:/usr/lib/netdata/conf.d/python.d/
-    - /srv/newsblur/docker/netdata/netdataconfig/charts/app_servers.py:/usr/libexec/netdata/python.d/app_servers.chart.py
-    - /srv/newsblur/docker/netdata/netdataconfig/charts/app_times.py:/usr/libexec/netdata/python.d/app_times.chart.py
+    - /srv/newsblur/docker/netdata/netdataconfig/charts/newsblur.chart.py:/usr/libexec/netdata/python.d/newsblur.chart.py
 
     - /etc/passwd:/host/etc/passwd:ro
     - /etc/group:/host/etc/group:ro
@@ -36,9 +25,6 @@
     - /sys:/host/sys:ro
     - /etc/os-release:/host/etc/os-release:ro
     restart: yes
-
-- name: Wait for netdata to start
-  wait_for: port=19999 delay=10
 
 - name: Add netdata agent to war room
   become: yes
