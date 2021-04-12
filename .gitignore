@@ -42,9 +42,9 @@ apps/social/spam.py
 venv*
 /backups
 
-# Docker
+# Docker Jinja templates
 docker/haproxy/haproxy.consul.cfg
-docker/haproxy/haproxy.staging.cfg
+# docker/haproxy/haproxy.staging.cfg # Staging doesn't use jinja templates, so no need to ignore
 docker/nginx/nginx.consul.conf
 
 # ----------------------
