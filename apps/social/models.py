@@ -111,7 +111,7 @@ class MRequestInvite(mongo.Document):
 
 class MSocialProfile(mongo.Document):
     user_id              = mongo.IntField(unique=True)
-    username             = mongo.StringField(max_length=30, unique=True)
+    username             = mongo.StringField(max_length=30)
     email                = mongo.StringField()
     bio                  = mongo.StringField(max_length=160)
     blurblog_title       = mongo.StringField(max_length=256)
