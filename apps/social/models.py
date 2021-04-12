@@ -144,7 +144,7 @@ class MSocialProfile(mongo.Document):
     
     meta = {
         'collection': 'social_profile',
-        'indexes': ['user_id', 'following_user_ids', 'follower_user_ids', 'unfollowed_user_ids', 'requested_follow_user_ids'],
+        'indexes': ['user_id', 'username', 'following_user_ids', 'follower_user_ids', 'unfollowed_user_ids', 'requested_follow_user_ids'],
         'allow_inheritance': False,
     }
     
