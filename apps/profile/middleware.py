@@ -154,7 +154,7 @@ class SQLLogToConsoleMiddleware:
                     query['sql'] = re.sub(r'UPDATE', '~FY~SBUPDATE', query['sql'])
                     query['sql'] = re.sub(r'DELETE', '~FR~SBDELETE', query['sql'])
             t = Template("{% for sql in sqllog %}{% if not forloop.first %}                  {% endif %}[{{forloop.counter}}] ~FC{{sql.time}}s~FW: {{sql.sql|safe}}{% if not forloop.last %}\n{% endif %}{% endfor %}")
-            if settings.DEBUG:
+            if settings.DEBUG and settings.DEBUG_QUERIES:
                 logging.debug(t.render(Context({
                     'sqllog': queries,
                     'count': len(queries),
