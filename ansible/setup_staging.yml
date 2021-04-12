@@ -6,7 +6,7 @@
   vars:
     - update_apt_cache: yes
     - motd_role: app
-    #- disable_consul_services: yes
+    - disable_consul_services: yes
     
   roles:
     - {role: 'base', tags: 'base'}
