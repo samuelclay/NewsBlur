@@ -1,7 +1,8 @@
 from bases.FrameworkServices.SimpleService import SimpleService
 import os
 import requests
-        
+
+requests.packages.urllib3.disable_warnings() 
 MONITOR_URL = os.getenv("MONITOR_URL")
 STAGING = os.getenv("STAGING")
 
