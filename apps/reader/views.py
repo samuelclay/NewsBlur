@@ -1360,6 +1360,7 @@ def load_river_stories__redis(request):
     include_hidden    = is_true(get_post.get('include_hidden', False))
     include_feeds     = is_true(get_post.get('include_feeds', False))
     initial_dashboard = is_true(get_post.get('initial_dashboard', False))
+    on_dashboard      = is_true(get_post.get('dashboard', False))
     infrequent        = is_true(get_post.get('infrequent', False))
     if infrequent:
         infrequent = get_post.get('infrequent')
@@ -1549,9 +1550,10 @@ def load_river_stories__redis(request):
     
     diff = time.time() - start
     timediff = round(float(diff), 2)
-    logging.user(request, "~FYLoading ~FC%sriver stories~FY: ~SBp%s~SN (%s/%s "
+    logging.user(request, "~FY%sLoading ~FC%sriver stories~FY: ~SBp%s~SN (%s/%s "
                                "stories, ~SN%s/%s/%s feeds, %s/%s)" % 
-                               ("~FB~SBinfrequent~SN~FC " if infrequent else "",
+                               ("~FCAuto-" if on_dashboard else "",
+                                "~FB~SBinfrequent~SN~FC " if infrequent else "",
                                 page, len(stories), len(mstories), len(found_feed_ids), 
                                 len(feed_ids), len(original_feed_ids), order, read_filter))
 
