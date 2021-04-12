@@ -198,6 +198,7 @@ def load_river_blurblog(request):
     read_filter       = request.GET.get('read_filter', 'unread')
     relative_user_id  = request.GET.get('relative_user_id', None)
     global_feed       = request.GET.get('global_feed', None)
+    on_dashboard      = is_true(request.GET.get('dashboard', False))
     now               = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
 
     if global_feed:
@@ -322,10 +323,11 @@ def load_river_blurblog(request):
 
     diff = time.time() - start
     timediff = round(float(diff), 2)
-    logging.user(request, "~FYLoading ~FCriver ~FMblurblogs~FC stories~FY: ~SBp%s~SN (%s/%s "
+    logging.user(request, "~FY%sLoading ~FCriver ~FMblurblogs~FC stories~FY: ~SBp%s~SN (%s/%s "
                                "stories, ~SN%s/%s/%s feeds)" % 
-                               (page, len(stories), len(mstories), len(story_feed_ids), 
-                               len(social_user_ids), len(original_user_ids)))
+                               ("~FCAuto-" if on_dashboard else "",
+                                page, len(stories), len(mstories), len(story_feed_ids), 
+                                len(social_user_ids), len(original_user_ids)))
     
     
     return {
