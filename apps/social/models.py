@@ -111,6 +111,8 @@ class MRequestInvite(mongo.Document):
 
 class MSocialProfile(mongo.Document):
     user_id              = mongo.IntField(unique=True)
+    username             = mongo.StringField(max_length=30)
+    email                = mongo.StringField()
     bio                  = mongo.StringField(max_length=160)
     blurblog_title       = mongo.StringField(max_length=256)
     custom_bgcolor       = mongo.StringField(max_length=50)
@@ -142,9 +144,8 @@ class MSocialProfile(mongo.Document):
     
     meta = {
         'collection': 'social_profile',
-        'indexes': ['user_id', 'following_user_ids', 'follower_user_ids', 'unfollowed_user_ids', 'requested_follow_user_ids'],
+        'indexes': ['user_id', 'username', 'following_user_ids', 'follower_user_ids', 'unfollowed_user_ids', 'requested_follow_user_ids'],
         'allow_inheritance': False,
-        'strict': False, # Removed email and username
     }
     
     def __str__(self):
