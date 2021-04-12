@@ -1102,10 +1102,11 @@ def follow(request):
     }
     follow_subscription = MSocialSubscription.feeds(calculate_all_scores=True, **social_params)
     
-    if follow_profile.protected:
-        logging.user(request, "~BB~FR~SBRequested~SN follow from: ~SB%s" % follow_profile.username)
-    else:
-        logging.user(request, "~BB~FRFollowing: ~SB%s" % follow_profile.username)
+    if follow_profile.user:
+        if follow_profile.protected:
+            logging.user(request, "~BB~FR~SBRequested~SN follow from: ~SB%s" % follow_profile.user.username)
+        else:
+            logging.user(request, "~BB~FRFollowing: ~SB%s" % follow_profile.user.username)
     
     return {
         "user_profile": profile.canonical(include_follows=True), 
