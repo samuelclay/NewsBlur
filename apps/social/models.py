@@ -312,7 +312,7 @@ class MSocialProfile(mongo.Document):
     
     @property
     def title(self):
-        return self.blurblog_title if self.blurblog_title else (self.user.username if self.user else "[deleted]") + "'s blurblog"
+        return self.blurblog_title if self.blurblog_title else self.user.username + "'s blurblog"
         
     def feed(self):
         params = self.canonical(compact=True)

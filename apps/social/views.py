@@ -744,7 +744,7 @@ def save_comment_reply(request):
     if commenter_profile.protected and not commenter_profile.is_followed_by_user(request.user.pk):
         return json.json_response(request, {
             'code': -1, 
-            'message': 'You must be following %s to reply to them.' % (commenter_profile.user.username if commenter_profile.user else "[deleted]"),
+            'message': 'You must be following %s to reply to them.' % commenter_profile.username,
         })
     
     try:
