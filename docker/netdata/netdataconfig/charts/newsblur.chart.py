@@ -23,6 +23,7 @@ class Service(SimpleService):
         self.chart_name = self.configuration.get("chart_name")
         self.endpoint = self.configuration.get("endpoint")
         self.context = self.configuration.get("context")
+        self.chart_type = self.configuration.get("type", "line")
         self.order = [
             self.configuration.get("chart_name")
         ]
