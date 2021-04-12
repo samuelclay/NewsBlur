@@ -574,8 +574,7 @@ def feed_unread_count(request):
         else:
             feed_title = feed_ids[0]
     elif len(social_feed_ids) == 1:
-        social_profile = MSocialProfile.objects.get(user_id=social_feed_ids[0].replace('social:', ''))
-        feed_title = social_profile.user.username if social_profile.user else "[deleted]"
+        feed_title = MSocialProfile.objects.get(user_id=social_feed_ids[0].replace('social:', '')).username
     else:
         feed_title = "%s feeds" % (len(feeds) + len(social_feeds))
     logging.user(request, "~FBUpdating unread count on: %s" % feed_title)
