@@ -1761,7 +1761,7 @@ class MSharedStory(mongo.DynamicDocument):
     @classmethod
     def share_popular_stories(cls, cutoff=None, days=None, interactive=True):
         publish_new_stories = False
-        popular_profile = MSocialProfile.objects.get(username='popular')
+        popular_profile = MSocialProfile.objects.get(user_id=User.objects.get(username='popular').pk)
         popular_user = User.objects.get(pk=popular_profile.user_id)
         week_ago = datetime.datetime.now() - datetime.timedelta(days=7)
         shared_feed_ids = [str(s.story_feed_id) 
