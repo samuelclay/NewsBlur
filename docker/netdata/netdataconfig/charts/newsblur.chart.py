@@ -14,8 +14,11 @@ else:
 def call_monitor(endpoint):
     uri = MONITOR_URL + endpoint
     res = requests.get(uri, verify=verify)
-    return res.json()
-     
+    try:
+        return res.json()
+    except:
+        return {}
+
 class Service(SimpleService):
     def __init__(self, configuration=None, name=None):
         SimpleService.__init__(self, configuration=configuration, name=name)
