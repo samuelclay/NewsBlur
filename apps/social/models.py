@@ -111,8 +111,6 @@ class MRequestInvite(mongo.Document):
 
 class MSocialProfile(mongo.Document):
     user_id              = mongo.IntField(unique=True)
-    username             = mongo.StringField(max_length=30, unique=True)
-    email                = mongo.StringField()
     bio                  = mongo.StringField(max_length=160)
     blurblog_title       = mongo.StringField(max_length=256)
     custom_bgcolor       = mongo.StringField(max_length=50)
@@ -146,10 +144,11 @@ class MSocialProfile(mongo.Document):
         'collection': 'social_profile',
         'indexes': ['user_id', 'following_user_ids', 'follower_user_ids', 'unfollowed_user_ids', 'requested_follow_user_ids'],
         'allow_inheritance': False,
+        'strict': False, # Removed email and username
     }
     
     def __str__(self):
-        return "%s [%s] following %s/%s, shared %s" % (self.username, self.user_id, 
+        return "%s following %s/%s, shared %s" % (self.user,
                                   self.following_count, self.follower_count, self.shared_stories_count)
     
     @classmethod
@@ -161,10 +160,12 @@ class MSocialProfile(mongo.Document):
             profile.save()
 
         return profile
-        
+    
+    @property
+    def user(self):
+        return User.objects.get(pk=self.user_id)
+
     def save(self, *args, **kwargs):
-        if not self.username:
-            self.import_user_fields()
         if not self.subscription_count:
             self.count_follows(skip_save=True)
         if self.bio and len(self.bio) > MSocialProfile.bio.max_length:
@@ -248,7 +249,7 @@ class MSocialProfile(mongo.Document):
     
     @property
     def username_slug(self):
-        return slugify(self.username)
+        return slugify(self.user.username)
         
     def count_stories(self):
         # Popular Publishers
@@ -308,7 +309,7 @@ class MSocialProfile(mongo.Document):
     
     @property
     def title(self):
-        return self.blurblog_title if self.blurblog_title else self.username + "'s blurblog"
+        return self.blurblog_title if self.blurblog_title else self.user.username + "'s blurblog"
         
     def feed(self):
         params = self.canonical(compact=True)
@@ -359,7 +360,7 @@ class MSocialProfile(mongo.Document):
         params = {
             'id': 'social:%s' % self.user_id,
             'user_id': self.user_id,
-            'username': self.username,
+            'username': self.user.username,
             'photo_url': self.email_photo_url,
             'large_photo_url': self.large_photo_url,
             'location': self.location,
@@ -427,11 +428,6 @@ class MSocialProfile(mongo.Document):
             return [u for u in self.follower_user_ids if u != self.user_id]
         return self.follower_user_ids
         
-    def import_user_fields(self, skip_save=False):
-        user = User.objects.get(pk=self.user_id)
-        self.username = user.username
-        self.email = user.email
-
     def count_follows(self, skip_save=False):
         self.subscription_count = UserSubscription.objects.filter(user__pk=self.user_id).count()
         self.shared_stories_count = MSharedStory.objects.filter(user_id=self.user_id).count()
@@ -451,7 +447,7 @@ class MSocialProfile(mongo.Document):
         else:
             followee = MSocialProfile.get_user(user_id)
         
-        logging.debug(" ---> ~FB~SB%s~SN (%s) following %s" % (self.username, self.user_id, user_id))
+        logging.debug(" ---> ~FB~SB%s~SN (%s) following %s" % (self.user.username, self.user_id, user_id))
         
         if not followee.protected or force:
             if user_id not in self.following_user_ids:
@@ -612,7 +608,7 @@ class MSocialProfile(mongo.Document):
         
         text    = render_to_string('mail/email_new_follower.txt', data)
         html    = render_to_string('mail/email_new_follower.xhtml', data)
-        subject = "%s is now following your Blurblog on NewsBlur!" % follower_profile.username
+        subject = "%s is now following your Blurblog on NewsBlur!" % follower_profile.user.username
         msg     = EmailMultiAlternatives(subject, text, 
                                          from_email='NewsBlur <%s>' % settings.HELLO_EMAIL,
                                          to=['%s <%s>' % (user.username, user.email)])
@@ -622,7 +618,7 @@ class MSocialProfile(mongo.Document):
         MSentEmail.record(receiver_user_id=user.pk, sending_user_id=follower_user_id,
                           email_type='new_follower')
                 
-        logging.user(user, "~BB~FM~SBSending email for new follower: %s" % follower_profile.username)
+        logging.user(user, "~BB~FM~SBSending email for new follower: %s" % follower_profile.user.username)
 
     def send_email_for_follow_request(self, follower_user_id):
         user = User.objects.get(pk=self.user_id)
@@ -666,7 +662,7 @@ class MSocialProfile(mongo.Document):
         
         text    = render_to_string('mail/email_follow_request.txt', data)
         html    = render_to_string('mail/email_follow_request.xhtml', data)
-        subject = "%s has requested to follow your Blurblog on NewsBlur" % follower_profile.username
+        subject = "%s has requested to follow your Blurblog on NewsBlur" % follower_profile.user.username
         msg     = EmailMultiAlternatives(subject, text, 
                                          from_email='NewsBlur <%s>' % settings.HELLO_EMAIL,
                                          to=['%s <%s>' % (user.username, user.email)])
@@ -676,7 +672,7 @@ class MSocialProfile(mongo.Document):
         MSentEmail.record(receiver_user_id=user.pk, sending_user_id=follower_user_id,
                           email_type='follow_request')
                 
-        logging.user(user, "~BB~FM~SBSending email for follow request: %s" % follower_profile.username)
+        logging.user(user, "~BB~FM~SBSending email for follow request: %s" % follower_profile.user.username)
             
     def save_feed_story_history_statistics(self):
         """
@@ -1165,7 +1161,7 @@ class MSocialSubscription(mongo.Document):
             self.needs_unread_recalc = True
             self.save()
     
-        sub_username = MSocialProfile.get_user(self.subscription_user_id).username
+        sub_username = User.objects.get(pk=self.subscription_user_id).username
         
         if len(story_hashes) > 1:
             logging.user(request, "~FYRead %s stories in social subscription: %s" % (len(story_hashes), sub_username))
