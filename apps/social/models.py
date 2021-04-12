@@ -252,7 +252,7 @@ class MSocialProfile(mongo.Document):
     
     @property
     def username_slug(self):
-        return slugify(self.user.username)
+        return slugify(self.user.username if self.user else "[deleted]")
         
     def count_stories(self):
         # Popular Publishers
