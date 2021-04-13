@@ -1,12 +1,12 @@
 ---
-- name: SETUP -> debug containers
-  hosts: debugs
+- name: SETUP -> postgresql containers
+  hosts: postgres
   vars_files:
-    - env_vars/base.yml
+    - ../env_vars/base.yml
   vars:
     - update_apt_cache: yes
-    - motd_role: app
-    
+    - motd_role: db
+
   roles:
     - {role: 'base', tags: 'base'}
     - {role: 'docker', tags: 'docker'}
@@ -14,6 +14,5 @@
     - {role: 'dnsmasq', tags: 'dnsmasq'}
     - {role: 'consul', tags: 'consul'}
     - {role: 'consul-client', tags: 'consul'}
-    - {role: 'web', tags: 'web'}
-    - {role: 'node', tags: 'node'}
-    - {role: 'nginx', tags: 'nginx'}
+    - {role: 'postgres', tags: 'postgres'}
+    - {role: 'monitor', tags: 'monitor'}

@@ -87,33 +87,34 @@ push: build_images push_images
 
 # Tasks
 deploy_web:
-	- ansible-playbook ansible/deploy_app.yml
+	- ansible-playbook ansible/deploy.yml -l app
 deploy_static:
-	- ansible-playbook ansible/deploy_app.yml --tags static
+	- ansible-playbook ansible/deploy.yml -l app --tags static
 deploy: deploy_web
+app: deploy_web
 deploy_node:
-	- ansible-playbook ansible/deploy_node.yml
+	- ansible-playbook ansible/deploy.yml -l node
 node: deploy_node
 deploy_task:
-	- ansible-playbook ansible/deploy_task.yml
+	- ansible-playbook ansible/deploy.yml -l task
 task: deploy_task
 deploy_www:
-	- ansible-playbook ansible/deploy_www.yml
+	- ansible-playbook ansible/deploy.yml -l www
 www: deploy_www
 deploy_work:
-	- ansible-playbook ansible/deploy_work.yml
+	- ansible-playbook ansible/deploy.yml -l work
 work: deploy_work
 deploy_monitor:
-	- ansible-playbook ansible/deploy_monitor.yml
+	- ansible-playbook ansible/deploy.yml -l db
 monitor: deploy_monitor
 deploy_staging:
-	- ansible-playbook ansible/deploy_staging.yml
+	- ansible-playbook ansible/deploy.yml -l staging
 staging: deploy_staging
 celery_stop:
-	- ansible-playbook ansible/deploy_task.yml --tags stop
+	- ansible-playbook ansible/deploy.yml -l task --tags stop
 # Provision
 firewall:
-	- ansible-playbook ansible/provision.yml --tags firewall -l db
+	- ansible-playbook ansible/setup.yml -l db --tags firewall
 
 # performance tests
 perf-cli:

@@ -1,9 +1,9 @@
 ---
-- hosts: db
+- hosts: work
   gather_facts: false
   vars_files:
-    - env_vars/base.yml
-    - env_vars/dev.yml
+    - ../env_vars/base.yml
+    - ../env_vars/dev.yml
 
   tasks:
     - name: Pull newsblur_web github
@@ -13,6 +13,7 @@
         version: dashboard3
       register: pulled
     
-    - name: Reload monitor
+    - name: Reload celery
       become: yes
-      command: "docker restart monitor"
+      command: "docker kill --signal=HUP task-work"
+      when: '"task-work" in inventory_hostname'
