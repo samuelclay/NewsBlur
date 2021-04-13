@@ -39,8 +39,8 @@ class Service(SimpleService):
                 'lines': [[key] for key in self.monitor_data] #must be a valid key in 'get_data()'s return 
                 
             }
+            # add a chart to calculate time that it takes to make the calls to monitor
         }
-
     @staticmethod
     def check():
         return True
