@@ -1,12 +1,12 @@
 ---
-- name: SETUP -> app containers
-  hosts: app
+- name: SETUP -> node containers
+  hosts: node
+  become: true
   vars_files:
-    - env_vars/base.yml
+    - ../env_vars/base.yml
   vars:
     - update_apt_cache: yes
     - motd_role: app
-    
   roles:
     - {role: 'base', tags: 'base'}
     - {role: 'docker', tags: 'docker'}
@@ -14,5 +14,5 @@
     - {role: 'dnsmasq', tags: 'dnsmasq'}
     - {role: 'consul', tags: 'consul'}
     - {role: 'consul-client', tags: 'consul'}
-    - {role: 'web', tags: 'web'}
-    - {role: 'nginx', tags: 'nginx'}
+    - {role: 'node', tags: 'node'}
+

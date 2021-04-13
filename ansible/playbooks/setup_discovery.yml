@@ -2,7 +2,7 @@
 - name: SETUP -> discovery containers
   hosts: discovery
   vars_files:
-    - env_vars/base.yml
+    - ../env_vars/base.yml
   vars:
     - update_apt_cache: yes
     - motd_role: app
