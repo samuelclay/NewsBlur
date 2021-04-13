@@ -16,7 +16,10 @@ def call_monitor(endpoint):
     uri = MONITOR_URL + endpoint
     res = requests.get(uri, verify=verify)
     try:
-        return res.json()
+        data = res.json()
+        if data.get("total"):
+            del data['total']
+        return data
     except:
         return {}
 
@@ -49,8 +52,7 @@ class Service(SimpleService):
         data = {}
         api_data = call_monitor(self.endpoint)
 
-        for key in api_data.keys():
-            dimension_id = key
+        for dimension_id in api_data.keys():
 
             if dimension_id not in self.charts[self.chart_name]:
                 self.charts[self.chart_name].add_dimension([dimension_id])
