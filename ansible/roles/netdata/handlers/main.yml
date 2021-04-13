@@ -1,0 +1,6 @@
+---
+- name: restart netdata
+  become: yes
+  docker_container:
+    name: netdata
+    restart: yes
