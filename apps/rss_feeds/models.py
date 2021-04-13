@@ -1713,7 +1713,7 @@ class Feed(models.Model):
         
         now = datetime.datetime.now().strftime('%s')
         unread_cutoff = self.unread_cutoff.strftime('%s')
-        story_count = len(r.zrangebyscore("zF:$s" % self.pk, max=now, min=unread_cutoff))
+        story_count = len(r.zrangebyscore("zF:%s" % self.pk, max=now, min=unread_cutoff))
         if reader_count and story_count:
             average_pct = (sum(counts) / float(reader_count)) / float(story_count)
         else:
