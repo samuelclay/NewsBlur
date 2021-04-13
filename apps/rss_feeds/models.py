@@ -1711,8 +1711,9 @@ class Feed(models.Model):
         counts = [c for c in counts if c > 0]
         reader_count = len(counts)
         
-        story_count = MStory.objects(story_feed_id=self.pk,
-                                     story_date__gte=self.unread_cutoff).count()
+        now = datetime.datetime.now().strftime('%s')
+        unread_cutoff = self.unread_cutoff.strftime('%s')
+        story_count = len(r.zrangebyscore("zF:"+str(f.pk), max=now, min=unread_cutoff))
         if reader_count and story_count:
             average_pct = (sum(counts) / float(reader_count)) / float(story_count)
         else:
