@@ -1,15 +1,9 @@
 ---
-- name: Enable python.d
-  become: yes
-  copy:
-    dest: /etc/netdata/conf.d/netdata.conf
-    content: |
-      [plugins]
-        go.d = no
-        python.d = yes
-      [web]
-        mode = none
-  register: netdata_conf
+- name: Copy netdata.conf template
+  template:
+    src: /srv/newsblur/docker/netdata/netdataconfig/netdata.conf.j2
+    dest: /srv/newsblur/docker/netdata/netdataconfig/netdata.conf
+  notify: restart netdata
 
 - name: Setup Netdata docker container
   become: yes

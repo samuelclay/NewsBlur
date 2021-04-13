@@ -44,6 +44,7 @@ venv*
 
 # Docker Jinja templates
 docker/haproxy/haproxy.consul.cfg
+docker/netdata/netdataconfig/netdata.conf
 # docker/haproxy/haproxy.staging.cfg # Staging doesn't use jinja templates, so no need to ignore
 docker/nginx/nginx.consul.conf
 
