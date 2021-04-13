@@ -1,5 +1,15 @@
 ---
 
+- name: Enable python.d
+  become: yes
+  copy:
+    dest: /etc/netdata/conf.d/netdata.conf
+    content: |
+      [plugins]
+        go.d = no
+        python.d = yes
+  register: netdata_conf
+
 - name: Setup Netdata docker container
   become: yes
   docker_container:
@@ -14,7 +24,7 @@
       MONITOR_URL: "https://{{ ansible_ssh_host }}/monitor"
       STAGING: "True"
     volumes:
-    - /srv/newsblur/docker/netdata/netdataconfig/netdata.conf:/etc/netdata/netdata.conf
+    - /etc/netdata/conf.d/netdata.conf:/etc/netdata/netdata.conf
     - /srv/newsblur/docker/netdata/netdataconfig/python.d.conf:/usr/lib/netdata/conf.d/python.d.conf 
     - /srv/newsblur/docker/netdata/netdataconfig/conf/:/usr/lib/netdata/conf.d/python.d/
     - /srv/newsblur/docker/netdata/netdataconfig/charts/newsblur.chart.py:/usr/libexec/netdata/python.d/newsblur.chart.py
