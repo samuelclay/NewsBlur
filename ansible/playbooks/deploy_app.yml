@@ -1,5 +1,6 @@
 ---
-- hosts: app,staging
+- name: DEPLOY -> app
+  hosts: app,staging
   gather_facts: false
   # serial: "50%"
   vars_files:

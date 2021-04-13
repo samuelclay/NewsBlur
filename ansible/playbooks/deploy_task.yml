@@ -1,5 +1,6 @@
 ---
-- hosts: task
+- name: DEPLOY -> task
+  hosts: task
   gather_facts: false
   vars_files:
     - ../env_vars/base.yml
