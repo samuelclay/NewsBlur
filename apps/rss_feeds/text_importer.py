@@ -188,8 +188,10 @@ class TextImporter:
             # Since NewsBlur proxies all http images over https, the url can change, so acknowledge urls
             # that are https on the original text but http on the feed
             if not img.get('src'): continue
-            if img.get('src') in image_urls or img.get('src').replace('https:', 'http:') in image_urls:
+            if img.get('src') in image_urls:
                 image_urls.remove(img.get('src'))
+            elif img.get('src').replace('https:', 'http:') in image_urls:
+                image_urls.remove(img.get('src').replace('https:', 'http:'))
         
         if len(image_urls):
             image_content = f'<img src="{image_urls[0]}">'
