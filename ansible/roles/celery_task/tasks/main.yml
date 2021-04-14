@@ -33,6 +33,16 @@
     - container_name: task-work
       command: "celery worker -A newsblur_web --loglevel=INFO -Q beat_feeds_task,work_queue,cron_queue"
 
+- name: Restart docker to force docker container settings to hold
+  become: yes
+  service:
+    name: docker
+    state: restarted
+  tags:
+    - never
+    - celery
+    - restart
+
 - name: Register celery_task in consul
   tags: consul
   become: yes
