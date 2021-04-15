@@ -18,6 +18,10 @@ body {
     scrollbar-color: #C2C2C2 #FAFAFA;
 }
 
+.NB-body-main {
+    background-color: #F7F8F5;
+}
+
 /*::-webkit-scrollbar {
     width: 12px;
 }
@@ -4789,37 +4793,51 @@ body {
 .NB-feed-taskbar {
     overflow: hidden;
 }
-.NB-feed-taskbar .NB-task-button {
+.NB-task-button {
     padding: 10px 7px;
     cursor: pointer;
     opacity: .9;
 }
-.NB-feed-taskbar .NB-task-button:hover {
+.NB-task-button:hover {
     opacity: 1;
 }
-.NB-feed-taskbar .NB-task-button.NB-disabled,
-.NB-feed-taskbar .NB-task-button.NB-disabled:hover {
+.NB-task-button.NB-disabled,
+.NB-task-button.NB-disabled:hover {
     opacity: .2;
     cursor: default;
 }
 #story_taskbar .NB-task-story-next-unread {
     min-width: 32px;
 }
-.NB-feed-taskbar .NB-task-add {
+.NB-task-add {
     float: left;
 }
-.NB-feed-taskbar .NB-task-manage {
+.NB-task-manage {
     float: right;
+    margin-right: 16px;
 }
-.NB-feed-taskbar .NB-task-image {
+.NB-task-drag {
+    position: absolute;
+    bottom: 0;
+    left: -16px;
+    cursor: w-resize;
+    padding-left: 0;
+    padding-right: 0;
+    width: 16px;
+    height: 36px;
+    background: transparent url('/media/embed/reader/drag_handle.png') no-repeat center center;
+    background-size: 16px 36px;
+    opacity: 0.5;
+}
+.NB-task-image {
     width: 16px;
     height: 16px;
 }
-.NB-feed-taskbar .NB-task-add .NB-task-image {
+.NB-task-add .NB-task-image {
     background: transparent url('/media/embed/icons/circular/nav_icn_add.png') no-repeat 0 0;
     background-size: 16px;
 }
-.NB-feed-taskbar .NB-task-manage .NB-task-image {
+.NB-task-manage .NB-task-image {
     background: transparent url('/media/embed/icons/circular/nav_icn_settings.png') no-repeat 0 0;
     background-size: 16px;
 }

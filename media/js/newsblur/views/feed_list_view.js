@@ -110,6 +110,8 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
                 });
             }
 
+            $('.NB-task-add').removeClass('NB-disabled');
+            $('.NB-task-drag').removeClass('NB-disabled');
             if (folders.length) {
                 $('.NB-task-manage').removeClass('NB-disabled');
                 $('.NB-callout-ftux').fadeOut(500);
