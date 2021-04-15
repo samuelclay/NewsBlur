@@ -436,6 +436,7 @@
             }
             
             this.adjust_for_narrow_window();
+            this.add_drag_handles();
         },
         
         apply_tipsy_titles: function() {
@@ -469,20 +470,25 @@
             }).tipsy('enable');
         },
         
-        save_feed_pane_size: function(w, pane, $pane, state, options, name) {
-            var feed_pane_size = state.size;
+        save_feed_pane_size: function(pane, $pane, state, options, name) {
+            if (!this.layout.outerLayout) return;
+
+            var feed_pane_size = this.layout.outerLayout.state.west.size;
             
             $('#NB-splash').css('left', feed_pane_size);
             this.adjust_for_narrow_window();
             this.flags.set_feed_pane_size = this.flags.set_feed_pane_size || _.debounce( _.bind(function() {
                 var feed_pane_size = this.layout.outerLayout.state.west.size;
+                // console.log('debounced save_feed_pane_size', this, feed_pane_size);
                 this.model.preference('feed_pane_size', feed_pane_size);
                 this.flags.set_feed_pane_size = null;
             }, this), 1000);
             this.flags.set_feed_pane_size();
         },
         
-        save_story_titles_pane_size: function(w, pane, $pane, state, options, name) {
+        save_story_titles_pane_size: function(pane, $pane, state, options, name) {
+            if (!this.layout.contentLayout) return;
+
             this.flags.scrolling_by_selecting_story_title = true;
             clearTimeout(this.locks.scrolling);
             
@@ -512,6 +518,13 @@
             
         },
         
+        add_drag_handles: function () {
+            var $resizer = NEWSBLUR.reader.layout.outerLayout.resizers.west;
+            $resizer.append($.make('div', { className: "NB-task-drag" }, [
+                $.make('div', { className: "NB-task-image" })
+            ])).css('overflow', 'visible');
+        },
+
         add_body_classes: function() {
             this.$s.$body.toggleClass('NB-is-premium',        NEWSBLUR.Globals.is_premium);
             this.$s.$body.toggleClass('NB-is-anonymous',      NEWSBLUR.Globals.is_anonymous);
