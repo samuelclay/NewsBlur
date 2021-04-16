@@ -520,6 +520,8 @@
         
         add_drag_handles: function () {
             var $resizer = NEWSBLUR.reader.layout.outerLayout.resizers.west;
+            if ($resizer.find(".NB-task-drag").length) return;
+            
             $resizer.append($.make('div', { className: "NB-task-drag" }, [
                 $.make('div', { className: "NB-task-image" })
             ])).css('overflow', 'visible');

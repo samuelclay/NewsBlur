@@ -1803,7 +1803,11 @@ hr {
 }
 .NB-image-preview-small-left:not(.NB-story-layout-grid) .NB-story-title .NB-storytitles-sentiment,
 .NB-image-preview-large-left:not(.NB-story-layout-grid) .NB-story-title .NB-storytitles-sentiment {
-    left: 90px;
+    left: 89px;
+}
+
+.NB-image-preview-small-left:not(.NB-story-layout-grid) .NB-view-river .NB-story-pane-west .NB-story-title .NB-storytitles-sentiment,
+.NB-image-preview-large-left:not(.NB-story-layout-grid) .NB-view-river .NB-story-pane-west .NB-story-title .NB-storytitles-sentiment {
     top: 24px;
 }
 .NB-story-title.NB-story-positive .NB-storytitles-sentiment {
@@ -2113,6 +2117,9 @@ hr {
 .NB-image-preview-small-left:not(.NB-story-layout-grid) .NB-story-title .NB-story-manage-icon,
 .NB-image-preview-large-left:not(.NB-story-layout-grid) .NB-story-title .NB-story-manage-icon {
     left: 90px;
+}
+.NB-image-preview-small-left:not(.NB-story-layout-grid) .NB-view-river .NB-story-pane-west .NB-story-title .NB-story-manage-icon,
+.NB-image-preview-large-left:not(.NB-story-layout-grid) .NB-view-river .NB-story-pane-west .NB-story-title .NB-story-manage-icon {
     top: 24px;
 }
 .NB-story-title:hover .NB-story-manage-icon {
