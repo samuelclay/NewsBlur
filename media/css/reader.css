@@ -4831,7 +4831,7 @@ body {
     height: 36px;
     background: transparent url('/media/embed/reader/drag_handle.png') no-repeat center center;
     background-size: 16px 36px;
-    opacity: 0.5;
+    opacity: 0.1;
 }
 .NB-task-image {
     width: 16px;
