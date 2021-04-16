@@ -90,8 +90,8 @@
               FEED_REFRESH_INTERVAL: (1000 * 60) * 1, // 1 minute
               FILL_OUT_PAGES: 100,
               FIND_NEXT_UNREAD_STORY_TRIES: 100,
-              RIVER_STORIES_FOR_STANDARD_ACCOUNT: 5,
-              MIN_FEED_LIST_SIZE: 206,
+              RIVER_STORIES_FOR_STANDARD_ACCOUNT: 3,
+              MIN_FEED_LIST_SIZE: 225,
               MIN_STORY_LIST_SIZE: 68
             };
     
@@ -265,9 +265,9 @@
             
             var pane = this.layout.outerLayout.panes.west;
             var width = this.layout.outerLayout.state.west.size;
-            pane.toggleClass("NB-narrow-pane-blue", width < 290);
-            pane.toggleClass("NB-narrow-pane-green", width < 259);
-            pane.toggleClass("NB-narrow-pane-yellow", width < 236);
+            pane.toggleClass("NB-narrow-pane-blue", width < 306);
+            pane.toggleClass("NB-narrow-pane-green", width < 278);
+            pane.toggleClass("NB-narrow-pane-yellow", width < 258);
             
             this.apply_tipsy_titles();
         },
