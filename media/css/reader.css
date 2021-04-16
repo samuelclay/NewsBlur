@@ -623,6 +623,7 @@ hr {
     border-top: 1px solid #F7F8F5;
     border-bottom: 1px solid #F7F8F5;
     padding-right: 2px;
+    padding-bottom: 3px;
     background-color: #F7F8F5;
 }
 
@@ -721,6 +722,9 @@ hr {
     width: 16px;
     height: 16px;
 }
+.NB-theme-feed-size-s .NB-feedlist img.feed_favicon {
+    top: 3px;
+}
 .NB-theme-feed-size-m .NB-feedlist img.feed_favicon {
     top: 4px;
 }
@@ -732,7 +736,7 @@ hr {
 }
 .NB-feedlist .feed_title {
     display: block;
-    padding: 5px 40px 3px 23px;
+    padding: 5px 40px 0 23px;
     text-decoration: none;
     color: rgba(0,0,0,.7);
     line-height: 1.3em;
