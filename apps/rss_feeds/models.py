@@ -910,20 +910,24 @@ class Feed(models.Model):
                     self.feed_title,
                 ), end=' ')
     
-    def _split_favicon_color(self):
-        color = self.favicon_color
-        if color:
-            splitter = lambda s, p: [s[i:i+p] for i in range(0, len(s), p)]
-            red, green, blue = splitter(color[:6], 2)
-            return red, green, blue
-        return None, None, None
+    def _split_favicon_color(self, color=None):
+        if not color:
+            color = self.favicon_color
+        if not color:
+            return None, None, None
+        splitter = lambda s, p: [s[i:i+p] for i in range(0, len(s), p)]
+        red, green, blue = splitter(color[:6], 2)
+        return red, green, blue
         
     def favicon_fade(self):
-        red, green, blue = self._split_favicon_color()
+        return self.adjust_color(adjust=30)
+    
+    def adjust_color(self, color=None, adjust=0):
+        red, green, blue = self._split_favicon_color(color=color)
         if red and green and blue:
-            fade_red = hex(min(int(red, 16) + 35, 255))[2:].zfill(2)
-            fade_green = hex(min(int(green, 16) + 35, 255))[2:].zfill(2)
-            fade_blue = hex(min(int(blue, 16) + 35, 255))[2:].zfill(2)
+            fade_red = hex(min(int(red, 16) + adjust, 255))[2:].zfill(2)
+            fade_green = hex(min(int(green, 16) + adjust, 255))[2:].zfill(2)
+            fade_blue = hex(min(int(blue, 16) + adjust, 255))[2:].zfill(2)
             return "%s%s%s" % (fade_red, fade_green, fade_blue)
 
     def favicon_border(self):
