@@ -112,9 +112,12 @@ deploy_staging:
 staging: deploy_staging
 celery_stop:
 	- ansible-playbook ansible/deploy.yml -l task --tags stop
+
 # Provision
 firewall:
-	- ansible-playbook ansible/setup.yml -l db --tags firewall
+	- ansible-playbook ansible/all.yml -l db --tags firewall
+oldfirewall:
+	- ANSIBLE_CONFIG=/srv/newsblur/ansible.old.cfg ansible-playbook ansible/all.yml  -l db --tags firewall
 
 # performance tests
 perf-cli:
