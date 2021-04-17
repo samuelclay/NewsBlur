@@ -40,7 +40,6 @@
     state: restarted
   tags:
     - never
-    - celery
     - restart
 
 - name: Register celery_task in consul
