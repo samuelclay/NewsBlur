@@ -1,4 +1,4 @@
-version: '2'
+version: '3'
 services:
 
   newsblur_web:
@@ -79,11 +79,11 @@ services:
     environment:
       - POSTGRES_USER=newsblur
       - POSTGRES_PASSWORD=newsblur
-    # healthcheck:
-    #   test: ["CMD-SHELL", "pg_isready -U postgres"]
-    #   interval: 10s
-    #   timeout: 5s
-    #   retries: 5
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     ports:
       - 5434:5432
     volumes:
@@ -173,8 +173,7 @@ services:
     volumes:
     - ./docker/netdata/netdatalib:/var/lib/netdata
     - ./docker/netdata/netdatacache:/var/cache/netdata
-    - ./docker/netdata/netdataconfig/netdata.conf:/etc/netdata/netdata.conf
+    - ./docker/netdata/netdataconfig/netdata.conf.j2:/etc/netdata/netdata.conf
     - ./docker/netdata/netdataconfig/python.d.conf:/usr/lib/netdata/conf.d/python.d.conf 
     - ./docker/netdata/netdataconfig/conf/:/usr/lib/netdata/conf.d/python.d/
     - ./docker/netdata/netdataconfig/charts/newsblur.chart.py:/usr/libexec/netdata/python.d/newsblur.chart.py
-  
