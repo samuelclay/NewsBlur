@@ -107,7 +107,7 @@ class FetchFeed:
                 logging.debug('   ***> [%-30s] ~FRYouTube fetch failed: %s.' % 
                               (self.feed.log_title[:30], address))
                 return FEED_ERRHTTP, None
-            self.fpf = feedparser.parse(youtube_feed)
+            self.fpf = feedparser.parse(youtube_feed, sanitize_html=False)
         elif re.match(r'(https?)?://twitter.com/\w+/?', qurl(address, remove=['_'])):
             twitter_feed = self.fetch_twitter(address)
             if not twitter_feed:
