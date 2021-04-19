@@ -12,6 +12,7 @@ import random
 import requests
 import html.parser as html_parser
 import tweepy
+import pynliner
 from collections import defaultdict
 from bs4 import BeautifulSoup
 from mongoengine.queryset import Q
@@ -30,7 +31,6 @@ from apps.rss_feeds.text_importer import TextImporter
 from apps.rss_feeds.page_importer import PageImporter
 from apps.profile.models import Profile, MSentEmail
 from vendor import facebook
-from vendor import pynliner
 from utils import log as logging
 from utils import json_functions as json
 from utils.feed_functions import relative_timesince, chunks
