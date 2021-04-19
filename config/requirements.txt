@@ -52,6 +52,7 @@ pytest==6.1.2
 python-dateutil==2.8.1
 python-digitalocean==1.16.0
 python-gflags==3.1.2
+pynliner==0.8
 pytz==2020.4
 pyyaml==5.3.1
 raven==6.10.0
