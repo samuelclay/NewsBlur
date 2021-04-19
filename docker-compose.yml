@@ -25,7 +25,7 @@ services:
     # only use gunicorn if the TEST env variable is not "True"
     entrypoint: /bin/sh -c newsblur_web/entrypoint.sh
     volumes: 
-      - app-files:/srv/newsblur
+      - ${PWD}:/srv/newsblur
 
   newsblur_node:
     image: newsblur/newsblur_node:latest
@@ -43,7 +43,17 @@ services:
     ports:
       - 8008:8008
     volumes: 
-      - node-files:/srv
+      - ${PWD}/node:/srv
+  
+  imageproxy:
+    image: willnorris/imageproxy:latest
+    container_name: imageproxy
+    entrypoint: /app/imageproxy -addr 0.0.0.0:8088 -cache /tmp/imageproxy -verbose
+    restart: unless-stopped
+    ports:
+      - 8088:8088
+    volumes:
+      - /tmp:/tmp/imageproxy
   
   nginx:
     container_name: nginx
@@ -61,7 +71,7 @@ services:
       - DOCKERBUILD=True
     volumes:
       - ./docker/nginx/nginx.local.conf:/etc/nginx/conf.d/nginx.conf
-      - app-files:/srv/newsblur
+      - ${PWD}:/srv/newsblur
 
   db_postgres:
     container_name: db_postgres
@@ -92,11 +102,16 @@ services:
 
   db_elasticsearch:
     container_name: db_elasticsearch
-    image: elasticsearch:7.11.1
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.11.1
+    mem_limit: 512mb
+    environment:
+      - discovery.type=single-node
     ports:
       - 9200:9200
+      - 9300:9300
     volumes:
       - ./docker/volumes/elasticsearch:/usr/share/elasticsearch/data
+      - ./config/elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
 
   db_mongo:
     container_name: db_mongo
@@ -114,7 +129,7 @@ services:
     environment: 
       - DOCKERBUILD=True
     volumes:
-      - app-files:/srv/newsblur
+      - ${PWD}:/srv/newsblur
       - ./config:/etc/supervisor/conf.d/
 
   task_celery:
@@ -122,7 +137,7 @@ services:
     image: newsblur/newsblur_python3
     command: "celery worker -A newsblur_web --loglevel=INFO"
     volumes:
-      - app-files:/srv/newsblur
+      - ${PWD}:/srv/newsblur
     environment: 
       - DOCKERBUILD=True
     user: "${CURRENT_UID}:${CURRENT_GID}"
@@ -130,11 +145,12 @@ services:
   haproxy:
     domainname: 'nb.local.com'
     container_name: haproxy
-    image: haproxy:1.8.22
+    image: haproxy:latest
     depends_on: 
       - nginx
       - newsblur_web
       - newsblur_node
+      - imageproxy
       - db_redis
       - db_postgres
       - db_elasticsearch
@@ -145,31 +161,19 @@ services:
       - 1936:1936
     volumes:
       - ./docker/haproxy/haproxy.docker-compose.cfg:/usr/local/etc/haproxy/haproxy.cfg
-      - app-files:/srv/newsblur
+      - ${PWD}:/srv/newsblur
+  
   netdata:
     container_name: netdata
     image: netdata/netdata
     ports: 
     - 19999:19999
+    environment:
+    - MONITOR_URL=https://haproxy/monitor
     volumes:
     - ./docker/netdata/netdatalib:/var/lib/netdata
     - ./docker/netdata/netdatacache:/var/cache/netdata
-    - ./docker/netdata/netdataconfig/data_request.conf:/usr/lib/netdata/conf.d/python.d/data_request.conf 
-    - ./docker/netdata/netdataconfig/netdata.conf:/etc/netdata/netdata.conf
-    - ./docker/netdata/netdataconfig/data_request.py:/usr/libexec/netdata/python.d/data_request.py
-    - /etc/passwd:/host/etc/passwd:ro
-    - /etc/group:/host/etc/group:ro
-    - /proc:/host/proc:ro
-    - /sys:/host/sys:ro
-    - /etc/os-release:/host/etc/os-release:ro
-volumes:
-  app-files:
-    driver_opts:
-      type: nfs
-      device: ${PWD}
-      o: bind
-  node-files:
-    driver_opts:
-      type: nfs
-      device: ${PWD}/node
-      o: bind
+    - ./docker/netdata/netdataconfig/netdata.conf.j2:/etc/netdata/netdata.conf
+    - ./docker/netdata/netdataconfig/python.d.conf:/usr/lib/netdata/conf.d/python.d.conf 
+    - ./docker/netdata/netdataconfig/conf/:/usr/lib/netdata/conf.d/python.d/
+    - ./docker/netdata/netdataconfig/charts/newsblur.chart.py:/usr/libexec/netdata/python.d/newsblur.chart.py

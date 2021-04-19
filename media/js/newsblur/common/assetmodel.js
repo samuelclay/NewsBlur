@@ -595,7 +595,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             }
             
             if (data.stories && first_load) {
-                console.log(['first load river', data.stories.length, ' stories']);
+                // console.log(['first load river', data.stories.length, ' stories']);
                 this.feed_tags = data.feed_tags || {};
                 this.feed_authors = data.feed_authors || {};
                 this.active_feed = this.get_feed(feed_id);
@@ -610,7 +610,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                 this.starred_stories = data.starred_stories;
                 this.stories.reset(data.stories, {added: data.stories.length});
             } else if (data.stories) {
-                console.log(['adding to river', data.stories.length, ' stories']);
+                // console.log(['adding to river', data.stories.length, ' stories']);
                 this.stories.add(data.stories, {silent: true});
                 this.stories.trigger('add', {added: data.stories.length});
             }

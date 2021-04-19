@@ -16,7 +16,7 @@
 
   - name: Set backup vars
     set_fact:
-      redis_story_filename: backup_redis_story_2021-03-15-04-00.rdb.gz
+      redis_story_filename: backup_redis_story_2021-04-13-04-00.rdb.gz
       postgres_filename: backup_postgresql_2021-03-15-04-00.sql.gz
       mongo_filename: backup_mongo_2021-03-15-04-00.tgz
       redis_filename: backup_redis_2021-03-15-04-00.rdb.gz
@@ -34,12 +34,13 @@
     with_items:
       - dir: /redis_story/
         file: "{{ redis_story_filename }}"
-      - dir: /postgres/
-        file: "{{ postgres_filename }}"
-      - dir: /mongo/
-        file: "{{ mongo_filename }}"
-      - dir: /backup_redis/
-        file: "{{ redis_filename }}"
+      # - dir: /postgres/
+      #   file: "{{ postgres_filename }}"
+      # - dir: /mongo/
+      #   file: "{{ mongo_filename }}"
+      # - dir: /backup_redis/
+      #   file: "{{ redis_filename }}"
+    tags: restore_postgres, restore_mongo, restore_redis, restore_redis_story
   
   - name: Restore postgres
     block:
@@ -72,3 +73,11 @@
           docker exec -i db_mongo bash -c 
           "mongorestore --port 29019 --drop /data/db/{{ mongo_filename|regex_replace('.tgz$', '') }}/"
     tags: never,restore_mongo
+
+  - name: Restore redis-story
+    block:
+      - name: move redis archive
+        become: yes
+        command: "mv -f /srv/newsblur/backups/{{ redis_story_filename }} /srv/newsblur/docker/volumes/redis/dump.rdb"
+        ignore_errors: yes
+    tags: never,restore_redis_story

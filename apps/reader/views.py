@@ -596,7 +596,8 @@ def feed_unread_count(request):
         else:
             feed_title = feed_ids[0]
     elif len(social_feed_ids) == 1:
-        feed_title = MSocialProfile.objects.get(user_id=social_feed_ids[0].replace('social:', '')).username
+        social_profile = MSocialProfile.objects.get(user_id=social_feed_ids[0].replace('social:', ''))
+        feed_title = social_profile.user.username if social_profile.user else "[deleted]"
     else:
         feed_title = "%s feeds" % (len(feeds) + len(social_feeds))
     logging.user(request, "~FBUpdating unread count on: %s" % feed_title)
@@ -1360,6 +1361,7 @@ def load_river_stories__redis(request):
     include_hidden    = is_true(get_post.get('include_hidden', False))
     include_feeds     = is_true(get_post.get('include_feeds', False))
     initial_dashboard = is_true(get_post.get('initial_dashboard', False))
+    on_dashboard      = is_true(get_post.get('dashboard', False))
     infrequent        = is_true(get_post.get('infrequent', False))
     if infrequent:
         infrequent = get_post.get('infrequent')
@@ -1533,25 +1535,26 @@ def load_river_stories__redis(request):
         stories = new_stories
     
     # Clean stories to remove potentially old stories on dashboard
-    if initial_dashboard:
-        new_stories = []
-        now = datetime.datetime.utcnow()
-        hour = now + datetime.timedelta(hours=1)
-        month_ago = now - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
-        for story in stories:
-            if story['story_date'] >= month_ago and story['story_date'] < hour:
-                new_stories.append(story)
-        stories = new_stories
+    # if initial_dashboard:
+    #     new_stories = []
+    #     now = datetime.datetime.utcnow()
+    #     hour = now + datetime.timedelta(hours=1)
+    #     month_ago = now - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
+    #     for story in stories:
+    #         if story['story_date'] >= month_ago and story['story_date'] < hour:
+    #             new_stories.append(story)
+    #     stories = new_stories
         
-    # if page >= 1:
+    # if page > 1:
     #     import random
-    #     time.sleep(random.randint(3, 6))
+    #     time.sleep(random.randint(10, 16))
     
     diff = time.time() - start
     timediff = round(float(diff), 2)
-    logging.user(request, "~FYLoading ~FC%sriver stories~FY: ~SBp%s~SN (%s/%s "
+    logging.user(request, "~FY%sLoading ~FC%sriver stories~FY: ~SBp%s~SN (%s/%s "
                                "stories, ~SN%s/%s/%s feeds, %s/%s)" % 
-                               ("~FB~SBinfrequent~SN~FC " if infrequent else "",
+                               ("~FCAuto-" if on_dashboard else "",
+                                "~FB~SBinfrequent~SN~FC " if infrequent else "",
                                 page, len(stories), len(mstories), len(found_feed_ids), 
                                 len(feed_ids), len(original_feed_ids), order, read_filter))
 

@@ -19,6 +19,7 @@ forwarded_allow_ips = "*"
 limit_request_line = 16000
 limit_request_fields = 1000
 worker_tmp_dir = "/dev/shm"
+reload = True
 
 if GIGS_OF_MEMORY > NUM_CPUS:
     workers = NUM_CPUS
@@ -32,4 +33,4 @@ if workers > 8:
     workers = 8
 
 if os.environ.get('DOCKERBUILD', False):
-    workers = 1
+    workers = 2

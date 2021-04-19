@@ -1557,12 +1557,18 @@ class MCustomStyling(mongo.Document):
 
 
 class MDashboardRiver(mongo.Document):
-    user_id = mongo.IntField(unique_with=('river_id', 'river_side', 'river_order'))
+    user_id = mongo.IntField(unique_with=())
     river_id = mongo.StringField()
     river_side = mongo.StringField()
     river_order = mongo.IntField()
 
     meta = {
+        'collection': 'dashboard_river',
+        'allow_inheritance': False,
+        'indexes': ['user_id', 
+                    {'fields': ['user_id', 'river_id', 'river_side', 'river_order'], 
+                     'unique': True,
+                    }],
         'ordering': ['river_order']
     }
 
@@ -1585,24 +1591,11 @@ class MDashboardRiver(mongo.Document):
         return cls.objects(user_id=user_id)
 
     @classmethod
-    def get_user_by_river_id(cls, user_id, river_id=None, river_side=None, river_order=None):
-        if river_id:
-            try:
-                return cls.objects.get(user_id=user_id, river_id=river_id)
-            except MDashboardRiver.DoesNotExist:
-                return None
-        elif river_side and river_order:
-            try:
-                return cls.objects.get(user_id=user_id, river_side=river_side, river_order=river_order)
-            except MDashboardRiver.DoesNotExist:
-                return None
-
-    @classmethod
     def save_user(cls, user_id, river_id, river_side, river_order):
-        river = None
-
-        if not river:
-            river = cls.get_user_by_river_id(user_id, river_side=river_side, river_order=river_order)
+        try:
+            river = cls.objects.get(user_id=user_id, river_side=river_side, river_order=river_order)
+        except cls.DoesNotExist:
+            river = None
         
         if not river:
             river = cls.objects.create(user_id=user_id, river_id=river_id, 

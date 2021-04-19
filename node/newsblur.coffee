@@ -42,5 +42,5 @@ if ENV_PROD
   app.use(Sentry.Handlers.errorHandler())
   log.debug "Setting up Sentry debugging: #{process.env.SENTRY_DSN.substr(0, 20)}..."
 
-log.debug "Starting NewsBlur Node Server: #{process.env.SERVER_NAME}"
+log.debug "Starting NewsBlur Node Server: #{process.env.SERVER_NAME || 'localhost'}"
 server.listen(8008)

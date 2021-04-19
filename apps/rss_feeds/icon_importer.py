@@ -22,7 +22,7 @@ from apps.rss_feeds.models import MFeedPage, MFeedIcon
 from utils.facebook_fetcher import FacebookFetcher
 from utils import log as logging
 from utils.feed_functions import timelimit, TimeoutError
-from OpenSSL.SSL import Error as OpenSSLError
+from OpenSSL.SSL import Error as OpenSSLError, SESS_CACHE_NO_INTERNAL_STORE
 from pyasn1.error import PyAsn1Error
 from requests.packages.urllib3.exceptions import LocationParseError
 
@@ -53,51 +53,51 @@ class IconImporter(object):
             image, image_file, icon_url = self.fetch_image_from_page_data()
         if not image:
             image, image_file, icon_url = self.fetch_image_from_path(force=self.force)
-
-        if image:
-            image = self.normalize_image(image)
-            try:
-                color = self.determine_dominant_color_in_image(image)
-            except (IndexError, ValueError, MemoryError):
-                logging.debug("   ---> [%-30s] ~SN~FRFailed to measure icon" % self.feed.log_title[:30])
-                return
-            try:
-                image_str = self.string_from_image(image)
-            except TypeError:
-                return
-
-            if len(image_str) > 500000:
-                image = None
-            if (image and
-                (self.force or
-                 self.feed_icon.data != image_str or
-                 self.feed_icon.icon_url != icon_url or
-                 self.feed_icon.not_found or
-                 (settings.BACKED_BY_AWS.get('icons_on_s3') and not self.feed.s3_icon))):
-                logging.debug("   ---> [%-30s] ~SN~FBIcon difference:~FY color:%s (%s/%s) data:%s url:%s notfound:%s no-s3:%s" % (
-                    self.feed.log_title[:30],
-                    self.feed_icon.color != color, self.feed_icon.color, color,
-                    self.feed_icon.data != image_str,
-                    self.feed_icon.icon_url != icon_url,
-                    self.feed_icon.not_found,
-                    settings.BACKED_BY_AWS.get('icons_on_s3') and not self.feed.s3_icon))
-                self.feed_icon.data = image_str
-                self.feed_icon.icon_url = icon_url
-                self.feed_icon.color = color
-                self.feed_icon.not_found = False
-                self.feed_icon.save()
-                if settings.BACKED_BY_AWS.get('icons_on_s3'):
-                    self.save_to_s3(image_str)
-            if self.feed.favicon_color != color:
-                self.feed.favicon_color = color
-                self.feed.favicon_not_found = False
-                self.feed.save(update_fields=['favicon_color', 'favicon_not_found'])
-
+        
         if not image:
             self.feed_icon.not_found = True
             self.feed_icon.save()
             self.feed.favicon_not_found = True
             self.feed.save()
+            return False
+        
+        image = self.normalize_image(image)
+        try:
+            color = self.determine_dominant_color_in_image(image)
+        except (IndexError, ValueError, MemoryError):
+            logging.debug("   ---> [%-30s] ~SN~FRFailed to measure icon" % self.feed.log_title[:30])
+            return
+        try:
+            image_str = self.string_from_image(image)
+        except TypeError:
+            return
+
+        if len(image_str) > 500000:
+            image = None
+        if (image and
+            (self.force or
+                self.feed_icon.data != image_str or
+                self.feed_icon.icon_url != icon_url or
+                self.feed_icon.not_found or
+                (settings.BACKED_BY_AWS.get('icons_on_s3') and not self.feed.s3_icon))):
+            logging.debug("   ---> [%-30s] ~SN~FBIcon difference:~FY color:%s (%s/%s) data:%s url:%s notfound:%s no-s3:%s" % (
+                self.feed.log_title[:30],
+                self.feed_icon.color != color, self.feed_icon.color, color,
+                self.feed_icon.data != image_str,
+                self.feed_icon.icon_url != icon_url,
+                self.feed_icon.not_found,
+                settings.BACKED_BY_AWS.get('icons_on_s3') and not self.feed.s3_icon))
+            self.feed_icon.data = image_str
+            self.feed_icon.icon_url = icon_url
+            self.feed_icon.color = color
+            self.feed_icon.not_found = False
+            self.feed_icon.save()
+            if settings.BACKED_BY_AWS.get('icons_on_s3'):
+                self.save_to_s3(image_str)
+        if self.feed.favicon_color != color:
+            self.feed.favicon_color = color
+            self.feed.favicon_not_found = False
+            self.feed.save(update_fields=['favicon_color', 'favicon_not_found'])
             
         return not self.feed.favicon_not_found
 
@@ -382,8 +382,9 @@ class IconImporter(object):
         index_max = scipy.argmax(counts)
         peak = codes.astype(int)[index_max]
         color = "{:02x}{:02x}{:02x}".format(peak[0], peak[1], peak[2])
+        color = self.feed.adjust_color(color[:6], 21)
 
-        return color[:6]
+        return color
 
     def string_from_image(self, image):
         output = BytesIO()

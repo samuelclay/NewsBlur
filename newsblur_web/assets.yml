@@ -13,7 +13,7 @@ css_compressor: yui
 template_function: _.template
 
 # Location of static assets relative to CWD.
-public_root: "."
+public_root: /srv/newsblur/
 
 # Package data-uri and mhtml variants of stylesheets, with whitelisted 
 # images embedded inline.

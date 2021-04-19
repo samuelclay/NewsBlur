@@ -198,6 +198,7 @@ def load_river_blurblog(request):
     read_filter       = request.GET.get('read_filter', 'unread')
     relative_user_id  = request.GET.get('relative_user_id', None)
     global_feed       = request.GET.get('global_feed', None)
+    on_dashboard      = is_true(request.GET.get('dashboard', False))
     now               = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
 
     if global_feed:
@@ -322,10 +323,11 @@ def load_river_blurblog(request):
 
     diff = time.time() - start
     timediff = round(float(diff), 2)
-    logging.user(request, "~FYLoading ~FCriver ~FMblurblogs~FC stories~FY: ~SBp%s~SN (%s/%s "
+    logging.user(request, "~FY%sLoading ~FCriver ~FMblurblogs~FC stories~FY: ~SBp%s~SN (%s/%s "
                                "stories, ~SN%s/%s/%s feeds)" % 
-                               (page, len(stories), len(mstories), len(story_feed_ids), 
-                               len(social_user_ids), len(original_user_ids)))
+                               ("~FCAuto-" if on_dashboard else "",
+                                page, len(stories), len(mstories), len(story_feed_ids), 
+                                len(social_user_ids), len(original_user_ids)))
     
     
     return {
@@ -741,7 +743,7 @@ def save_comment_reply(request):
     if commenter_profile.protected and not commenter_profile.is_followed_by_user(request.user.pk):
         return json.json_response(request, {
             'code': -1, 
-            'message': 'You must be following %s to reply to them.' % commenter_profile.username,
+            'message': 'You must be following %s to reply to them.' % (commenter_profile.user.username if commenter_profile.user else "[deleted]"),
         })
     
     try:
@@ -1100,10 +1102,11 @@ def follow(request):
     }
     follow_subscription = MSocialSubscription.feeds(calculate_all_scores=True, **social_params)
     
-    if follow_profile.protected:
-        logging.user(request, "~BB~FR~SBRequested~SN follow from: ~SB%s" % follow_profile.username)
-    else:
-        logging.user(request, "~BB~FRFollowing: ~SB%s" % follow_profile.username)
+    if follow_profile.user:
+        if follow_profile.protected:
+            logging.user(request, "~BB~FR~SBRequested~SN follow from: ~SB%s" % follow_profile.user.username)
+        else:
+            logging.user(request, "~BB~FRFollowing: ~SB%s" % follow_profile.user.username)
     
     return {
         "user_profile": profile.canonical(include_follows=True), 
