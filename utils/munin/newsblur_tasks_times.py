@@ -17,9 +17,9 @@ class NBMuninGraph(MuninGraph):
         }
 
         stats = self.stats
-        graph['graph_order'] = ' '.join(sorted(s['_id'] for s in stats))
         graph.update(dict((("%s.label" % s['_id'], s['_id']) for s in stats)))
         graph.update(dict((("%s.draw" % s['_id'], 'LINE1') for s in stats)))
+        graph['graph_order'] = ' '.join(sorted(s['_id'] for s in stats))
 
         return graph
 
