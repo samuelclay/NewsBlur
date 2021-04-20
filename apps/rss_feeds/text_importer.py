@@ -225,9 +225,10 @@ class TextImporter:
             headers["content-type"] = "application/json"
             headers["x-api-key"] = mercury_api_key
             if settings.DEBUG:
-                url = "http://nb.local.com:8008/rss_feeds/original_text_fetcher?url=%s" % url
+                NEWSBLUR_URL = settings.NEWSBLUR_URL
+                url = f"http://{NEWSBLUR_URL}:8008/rss_feeds/original_text_fetcher?{url}=%s"
             else:
-                url = "https://www.newsblur.com/rss_feeds/original_text_fetcher?url=%s" % url
+                url = f"https://www.newsblur.com/rss_feeds/original_text_fetcher?url={url}"
             
         try:
             r = requests.get(url, headers=headers, timeout=15)

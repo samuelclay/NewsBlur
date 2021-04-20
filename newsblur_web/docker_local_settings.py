@@ -12,7 +12,7 @@ ADMINS                = (
 SERVER_EMAIL          = 'server@newsblur.com'
 HELLO_EMAIL           = 'hello@newsblur.com'
 NEWSBLUR_URL          = 'http://www.newsblur.com'
-SESSION_COOKIE_DOMAIN = '.nb.local.com'
+SESSION_COOKIE_DOMAIN = 'localhost'
 
 # ===================
 # = Global Settings =
@@ -166,7 +166,10 @@ DO_TOKEN_LOG = '0000000000000000000000000000000000000000000000000000000000000000
 DO_TOKEN_FABRIC = '0000000000000000000000000000000000000000000000000000000000000000'
 
 SERVER_NAME = "nblocalhost"
-NEWSBLUR_URL = 'http://nb.local.com'
+NEWSBLUR_URL = os.getenv("https://localhost")
+
+if NEWSBLUR_URL == 'https://localhost':
+    SESSION_COOKIE_DOMAIN = ".nb.local.com"
 
 SESSION_ENGINE = 'redis_sessions.session'
 
