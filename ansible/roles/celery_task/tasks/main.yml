@@ -1,13 +1,18 @@
 ---
-- name: Copy app secrets
+- name: Copy common secrets
   copy:
-    src: /srv/secrets-newsblur/settings/docker_settings.py
+    src: /srv/secrets-newsblur/settings/common_settings.py
     dest: /srv/newsblur/newsblur_web/local_settings.py
   register: app_changed
 
-- name: Add SERVER_NAME to app secrets
+- name: Copy task env
+  copy:
+    src: /srv/secrets-newsblur/settings/task_env.py
+    dest: /srv/newsblur/newsblur_web/task_env.py
+
+- name: Add SERVER_NAME to task env
   lineinfile:
-    path: /srv/newsblur/newsblur_web/local_settings.py
+    path: /srv/newsblur/newsblur_web/task_env.py
     line: 'SERVER_NAME = "{{ inventory_hostname }}"'
 
 - name: "Start docker containers"

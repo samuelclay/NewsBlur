@@ -558,10 +558,23 @@ S3_AVATARS_BUCKET_NAME = 'avatars.newsblur.com'
 # ==================
 # = Configurations =
 # ==================
+
 if DOCKERBUILD:
     from newsblur_web.docker_local_settings import *
 else:
     from newsblur_web.local_settings import *
+
+try:
+    from newsblur_web.task_env import *
+    print(" ---> Starting NewsBlur task server...")
+except ModuleNotFoundError:
+    pass
+try:
+    from newsblur_web.app_env import *
+    print(" ---> Starting NewsBlur app server...")
+except ModuleNotFoundError:
+    pass
+
 
 if not DEBUG:
     INSTALLED_APPS += (
