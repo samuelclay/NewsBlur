@@ -268,7 +268,7 @@ class Profile(models.Model):
             for stripe_id_model in self.user.stripe_ids.all():
                 stripe_id = stripe_id_model.stripe_id
                 stripe_customer = stripe.Customer.retrieve(stripe_id)
-                stripe_payments = stripe.Charge.all(customer=stripe_customer.id).data
+                stripe_payments = stripe.Charge.list(customer=stripe_customer.id).data
                 
                 for payment in stripe_payments:
                     created = datetime.datetime.fromtimestamp(payment.created)
@@ -332,7 +332,7 @@ class Profile(models.Model):
             logging.debug(" ---> At %s / %s" % (i, starting_after))
             i += 1
             try:
-                data = stripe.Charge.all(created={'gt': week}, count=limit, starting_after=starting_after)
+                data = stripe.Charge.list(created={'gt': week}, count=limit, starting_after=starting_after)
             except stripe.APIConnectionError:
                 time.sleep(10)
                 continue
