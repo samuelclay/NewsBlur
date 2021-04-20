@@ -143,7 +143,6 @@ services:
     user: "${CURRENT_UID}:${CURRENT_GID}"
 
   haproxy:
-    domainname: 'nb.local.com'
     container_name: haproxy
     image: haproxy:latest
     depends_on: 
