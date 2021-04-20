@@ -2151,7 +2151,7 @@ class Feed(models.Model):
             if subs > 1:
                 total = 60 - (spd * 60)
             else:
-                total = 60*12 - (spd * 60*12)
+                total = 60*6 - (spd * 60*6)
         elif spd == 0:
             if subs > 1:
                 total = 60 * 6
