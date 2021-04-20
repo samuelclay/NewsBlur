@@ -131,7 +131,6 @@ class PageImporter(object):
             try:
                 fp = feedparser.parse(self.feed.feed_address)
             except (urllib.error.HTTPError, urllib.error.URLError) as e:
-                self.feed.save_page_history(e.code, e.msg, e.fp.read())
                 return html
             feed_link = fp.feed.get('link', "")
             self.feed.save()
