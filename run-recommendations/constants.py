@@ -13,5 +13,17 @@ DENSE_FEATURES = ["premium_subs", "active_subs", "num_subs", "read_pct", "reader
 TARGET = ['is_following_feed']
 # need to save vocabulary sizes to use in creating features
 #Columns must be the same as SPARSE_FEATURES
-# these must be updated when adding new users and feeds
 VOCABULARY_SIZE = pd.DataFrame([608038,8112587], columns = ['user', 'feed_id'])
+
+
+# In[2]:
+
+
+get_ipython().system('jupyter nbconvert --to script Run-Recommendation-System-Script.ipynb')
+
+
+# In[ ]:
+
+
+
+
