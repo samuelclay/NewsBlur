@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
-
 
 import pandas as pd
 from sklearn.preprocessing import LabelEncoder, MinMaxScaler
@@ -20,13 +18,9 @@ from constants import (
     SPARSE_FEATURES,
     DENSE_FEATURES,
     TARGET,
-    VOCABULARY_SIZE 
+    VOCABULARY_SIZE
 
 )
-
-
-# In[ ]:
-
 
 user = sys.argv[1]
 # takes in list of feeds
@@ -62,11 +56,6 @@ input_df = input_df.merge(df2[['read_pct', 'feed_id', 'reader_count', 'reach_sco
                     left_on = 'feed_id', right_on = 'feed_id')
 
 
-# In[ ]:
-
-
-
-
 # scores['scores'] = scores['scores'].apply(lambda x: ast.literal_eval(x))
 # df2 = pd.json_normalize(scores['scores'])
 # df2['feed_id'] = scores['feed_id']
@@ -75,34 +64,20 @@ input_df = input_df.merge(df2[['read_pct', 'feed_id', 'reader_count', 'reach_sco
 
 assert input_df.columns == SPARSE_FEATURES + DENSE_FEATURES
 
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
 # normalize data
-# this must be done 
+# this must be done
 
 # mms = load(open('minmax.pkl', 'rb'))
 # lbe = load(open('lbe.pkl', 'rb'))
 for feat in SPARSE_FEATURES:
-    
+
         # need a labelEncoder for each feature
         lbe = load(open( feat + '-' + 'lbe.pkl', 'rb'))
-        input_df[feat] = lbe.fit_transform(input_df[feat])
-        
+        input_df[feat] = lbe.transform(input_df[feat])
+
 #mms = MinMaxScaler(feature_range=(0,1))
 mms = load(open('minmax.pkl', 'rb'))
-input_df[DENSE_FEATURES] = mms.fit_transform(input_df[DENSE_FEATURES])
-
-
-# In[ ]:
-
+input_df[DENSE_FEATURES] = mms.transform(input_df[DENSE_FEATURES])
 
 # values will be different here than when trained, need to make a schema of the trained data to use here
 # different as less feeds and only one user
@@ -110,40 +85,19 @@ fixlen_feature_columns = [SparseFeat(feat, vocabulary_size=input_df[feat].max() 
                        for i,feat in enumerate(SPARSE_FEATURES)] + [DenseFeat(feat, 1,)
                       for feat in DENSE_FEATURES]
 
-
-# In[ ]:
-
-
 linear_feature_columns = fixlen_feature_columns
 dnn_feature_columns = fixlen_feature_columns
-
-
-# In[ ]:
 
 
 feature_names = deepctr.feature_column.get_feature_names(linear_feature_columns + dnn_feature_columns)
 
 
-# In[ ]:
-
-
 test_model_input = {name:input_df[name] for name in feature_names}
-
-
-# In[ ]:
-
 
 model = keras.models.load_model('model.keras', custom_objects)
 
 
-# In[ ]:
-
-
 pred_ans = model.predict(test_model_input, batch_size=256)
-
-
-# In[ ]:
-
 
 # Some loss values from our run
 from sklearn.metrics import log_loss, roc_auc_score
@@ -151,29 +105,11 @@ print("test LogLoss", round(log_loss(test[target].values, pred_ans), 4))
 print("test AUC", round(roc_auc_score(test[target].values, pred_ans), 4))
 
 
-# In[ ]:
-
-
 # convert predictions to a little bit better format
 predictions = [i[0] for i in pred_ans]
-
-
-# In[ ]:
-
-
-# feeds = input_df['feed_id'].tolist()
-
-
-# In[ ]:
-
 
 # lets sort our predictions from highest to lowest
 results = sorted(dict(zip(feeds, predictions)).items(),  key=lambda x: x[1], reverse=True)
 
-
-# In[ ]:
-
-
 # this last step can be whatever you want to do with the recommendations
 pd.DataFrame(results, columns = ['feed_id', 'predictions']).to_csv('results.csv')
-
