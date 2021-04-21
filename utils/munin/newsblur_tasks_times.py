@@ -17,14 +17,14 @@ class NBMuninGraph(MuninGraph):
         }
 
         stats = self.stats
-        graph.update(dict((("%s.label" % s['_id'], s['_id']) for s in stats)))
-        graph.update(dict((("%s.draw" % s['_id'], 'LINE1') for s in stats)))
-        graph['graph_order'] = ' '.join(sorted(s['_id'] for s in stats))
+        graph.update(dict((("%s.label" % s['_id'].replace('-', ''), s['_id']) for s in stats)))
+        graph.update(dict((("%s.draw" % s['_id'].replace('-', ''), 'LINE1') for s in stats)))
+        graph['graph_order'] = ' '.join(sorted(s['_id'].replace('-', '') for s in stats))
 
         return graph
 
     def calculate_metrics(self):
-        servers = dict((("%s" % s['_id'], s['total']) for s in self.stats))
+        servers = dict((("%s" % s['_id'].replace('-', ''), s['total']) for s in self.stats))
 
         return servers
     
