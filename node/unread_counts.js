@@ -17,7 +17,7 @@
     if (ENV_DEV) {
       REDIS_SERVER = 'localhost';
     } else if (ENV_PROD) {
-      REDIS_SERVER = 'db-redis-user.service.nyc1.consul';
+      REDIS_SERVER = 'db-redis-pubsub.service.nyc1.consul';
     }
     SECURE = !!process.env.NODE_SSL;
     REDIS_PORT = ENV_DOCKER ? 6579 : 6379;
@@ -54,7 +54,7 @@
         var ref;
         this.feeds = feeds;
         this.username = username;
-        log.info(this.username, `Connecting (${this.feeds.length} feeds, ${ip}),` + ` (${io.engine.clientsCount} connected) ` + ` ${SECURE ? "(SSL)" : "(non-SSL)"}`);
+        log.info(this.username, `Connecting (${this.feeds.length} feeds, ${ip}),` + ` (${io.engine.clientsCount} connected) ` + ` ${SECURE ? "(SSL)" : ""}`);
         if (!this.username) {
           return;
         }

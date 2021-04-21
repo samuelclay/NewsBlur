@@ -201,6 +201,7 @@ class Feed(models.Model):
             'favicon_url': self.favicon_url,
             's3_page': self.s3_page,
             's3_icon': self.s3_icon,
+            'disabled_page': not self.has_page,
         }
         
         if include_favicon:
@@ -218,8 +219,6 @@ class Feed(models.Model):
             feed['exception_type'] = None
             feed['exception_code'] = self.exception_code
         
-        if not self.has_page:
-            feed['disabled_page'] = True
         if full:
             feed['average_stories_per_month'] = self.average_stories_per_month
             feed['tagline'] = self.data.feed_tagline
@@ -672,7 +671,7 @@ class Feed(models.Model):
                     self.feed_address = feed_address
                     feed = self.save()
                     feed.count_subscribers()
-                    feed.schedule_feed_fetch_immediately()
+                    # feed.schedule_feed_fetch_immediately() # Don't fetch as it can get stuck in a loop
                     feed.has_feed_exception = False
                     feed.active = True
                     feed = feed.save()
@@ -911,20 +910,24 @@ class Feed(models.Model):
                     self.feed_title,
                 ), end=' ')
     
-    def _split_favicon_color(self):
-        color = self.favicon_color
-        if color:
-            splitter = lambda s, p: [s[i:i+p] for i in range(0, len(s), p)]
-            red, green, blue = splitter(color[:6], 2)
-            return red, green, blue
-        return None, None, None
+    def _split_favicon_color(self, color=None):
+        if not color:
+            color = self.favicon_color
+        if not color:
+            return None, None, None
+        splitter = lambda s, p: [s[i:i+p] for i in range(0, len(s), p)]
+        red, green, blue = splitter(color[:6], 2)
+        return red, green, blue
         
     def favicon_fade(self):
-        red, green, blue = self._split_favicon_color()
+        return self.adjust_color(adjust=30)
+    
+    def adjust_color(self, color=None, adjust=0):
+        red, green, blue = self._split_favicon_color(color=color)
         if red and green and blue:
-            fade_red = hex(min(int(red, 16) + 35, 255))[2:].zfill(2)
-            fade_green = hex(min(int(green, 16) + 35, 255))[2:].zfill(2)
-            fade_blue = hex(min(int(blue, 16) + 35, 255))[2:].zfill(2)
+            fade_red = hex(min(int(red, 16) + adjust, 255))[2:].zfill(2)
+            fade_green = hex(min(int(green, 16) + adjust, 255))[2:].zfill(2)
+            fade_blue = hex(min(int(blue, 16) + adjust, 255))[2:].zfill(2)
             return "%s%s%s" % (fade_red, fade_green, fade_blue)
 
     def favicon_border(self):
@@ -1712,8 +1715,9 @@ class Feed(models.Model):
         counts = [c for c in counts if c > 0]
         reader_count = len(counts)
         
-        story_count = MStory.objects(story_feed_id=self.pk,
-                                     story_date__gte=self.unread_cutoff).count()
+        now = datetime.datetime.now().strftime('%s')
+        unread_cutoff = self.unread_cutoff.strftime('%s')
+        story_count = len(r.zrangebyscore("zF:%s" % self.pk, max=now, min=unread_cutoff))
         if reader_count and story_count:
             average_pct = (sum(counts) / float(reader_count)) / float(story_count)
         else:
@@ -2386,7 +2390,13 @@ class MFeedPage(mongo.Document):
     }
     
     def page(self):
-        return zlib.decompress(self.page_data)
+        try:
+            return zlib.decompress(self.page_data)
+        except zlib.error as e:
+            logging.debug(" ***> Zlib decompress error: %s" % e)
+            self.page_data = None
+            self.save()
+            return 
         
     @classmethod
     def get_data(cls, feed_id):
@@ -2395,7 +2405,13 @@ class MFeedPage(mongo.Document):
         if feed_page:
             page_data_z = feed_page[0].page_data
             if page_data_z:
-                data = zlib.decompress(page_data_z)
+                try:
+                    data = zlib.decompress(page_data_z)
+                except zlib.error as e:
+                    logging.debug(" ***> Zlib decompress error: %s" % e)
+                    self.page_data = None
+                    self.save()
+                    return 
         
         if not data:
             dupe_feed = DuplicateFeed.objects.filter(duplicate_feed_id=feed_id)

@@ -59,6 +59,10 @@ def utf8encode(tstr):
 # From: http://www.poromenos.org/node/87
 def levenshtein_distance(first, second):
     """Find the Levenshtein distance between two strings."""
+    if second and not first:
+        return -1 * len(second)
+    if first and not second:
+        return len(first)
     if len(first) > len(second):
         first, second = second, first
     if len(second) == 0:

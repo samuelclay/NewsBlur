@@ -177,7 +177,7 @@ NEWSBLUR.utils = {
                              $feeds_optgroup);
             
             if (feed.id == current_feed_id) {
-                $option.prop('selected', true);
+                $option.attr('selected', true);
             }
         };
         
@@ -216,7 +216,6 @@ NEWSBLUR.utils = {
             $chooser.append($folders_optgroup);
         }
         $chooser.append($feeds_optgroup);
-        $chooser.append($feeds_optgroup);
         if (!options.skip_social) {
             $chooser.append($social_feeds_optgroup);
         }
@@ -227,10 +226,15 @@ NEWSBLUR.utils = {
             $chooser.append($starred_feeds_optgroup);
         }
 
+        if (options.feed_id) {
+            $chooser.val(options.feed_id);
+        }
+
         return $chooser;
     },
     
-    make_folders: function(selected_folder_title, toplevel, select_name, include_special_folders) {
+    make_folders: function (selected_folder_title, toplevel, select_name, include_special_folders) {
+        // console.log('make_folders', selected_folder_title);
         var folders = NEWSBLUR.assets.get_folders();
         var $options = $.make('select', { className: 'NB-folders', name: select_name });
         
@@ -238,26 +242,26 @@ NEWSBLUR.utils = {
             var $option = $.make('option', { value: 'river:global' }, "Global Shared Stories");
             $options.append($option);
             if (selected_folder_title == "river:global") {
-                $option.prop('selected', true);
+                $option.attr('selected', true);
             }
             
             var $option = $.make('option', { value: 'river:blurblogs' }, "All Shared Stories");
             $options.append($option);    
             if (selected_folder_title == "river:blurblogs") {
-                $option.prop('selected', true);
+                $option.attr('selected', true);
             }
 
             var $option = $.make('option', { value: 'river:infrequent' }, "Infrequent Site Stories");
             $options.append($option);    
             if (selected_folder_title == "river:infrequent") {
-                $option.prop('selected', true);
+                $option.attr('selected', true);
             }
         }
 
         var $option = $.make('option', { value: 'river:' }, toplevel || "Top Level");
         $options.append($option);
         if (selected_folder_title == "river:") {
-            $option.prop('selected', true);
+            $option.attr('selected', true);
         }
 
         $options = this.make_folder_options($options, folders, '&nbsp;&nbsp;&nbsp;', selected_folder_title);
@@ -274,7 +278,7 @@ NEWSBLUR.utils = {
                 }, depth + ' ' + item.get('folder_title'));
                 $options.append($option);
                 if (item.get('folder_title') == selected_folder_title) {
-                    $option.prop('selected', true);
+                    $option.attr('selected', true);
                 }
                 $options = self.make_folder_options($options, item.folders, depth+'&nbsp;&nbsp;&nbsp;', selected_folder_title);
             }

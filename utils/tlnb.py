@@ -79,7 +79,7 @@ def follow_host(hosts, streams, found, hostname, command=None, path=None):
         hostname, address = hostname[0], hostname[1]
     else:
         address = hosts['_meta']['hostvars'][hostname]['ansible_host']
-        print(" ---> Following %s %s" % (hostname, address))
+        print(" ---> Following %s \t[%s]" % (hostname, address))
     if hostname in found: return
     s = subprocess.Popen(["ssh", "-l", NEWSBLUR_USERNAME, 
                             "-i", os.path.expanduser("/srv/secrets-newsblur/keys/docker.key"),
@@ -101,7 +101,7 @@ def read_streams(streams):
                     streams.remove(stream)
                     break
                 try:
-                    combination_message = "[%-12s] %s" % (stream.name[:12], data.decode())
+                    combination_message = "[%-13s] %s" % (stream.name[:13], data.decode())
                 except UnicodeDecodeError:
                     continue
                 sys.stdout.write(combination_message)

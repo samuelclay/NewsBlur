@@ -166,7 +166,7 @@ def json_response(request, response=None):
             print('\n'.join(traceback.format_exception(*exc_info)))
 
     json = json_encode(response)
-    return HttpResponse(json, content_type='application/json', status=code)
+    return HttpResponse(json, content_type='application/json; charset=utf-8', status=code)
 
 
 def main():

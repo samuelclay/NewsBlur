@@ -223,7 +223,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
     },
     
     show_image_preview: function () {
-        var show_image_preview = NEWSBLUR.assets.preference('show_image_preview');
+        var show_image_preview = NEWSBLUR.assets.preference('image_preview');
         if (!show_image_preview || show_image_preview == "none") {
             return false;
         }
