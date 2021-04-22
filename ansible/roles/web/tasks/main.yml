@@ -70,6 +70,10 @@
   notify:
     - reload consul
 
+- name: Setup logrotate
+  become: yes
+  copy: src=logrotate.conf dest=/etc/logrotate.d/newsblur mode=0755
+
 - name: Reload gunicorn
   debug: 
     msg: Reloading gunicorn

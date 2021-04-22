@@ -58,15 +58,7 @@
     when: claimed_result.stat.exists == false
     notify: restart netdata
     become: yes
-  when: reclaim == false
-
-- name: Check if reclaiming
-  debug: msg=Reclaiming
-  changed_when: yes
-  register: reclaim
-  tags:
-    - never
-    - reclaim
+  when: not reclaim
 
 - name: Re-claim a node to Netdata Cloud
   block:
@@ -82,8 +74,8 @@
     when: uuidgen_result.stat.exists == false
 
   - name: Reclaim the node with `-id=`
-    command: "docker exec netdata netdata-claim.sh -token={{ netdata_token }} -rooms={{ netdata_room }} -url={{ netdata_url }} -id=$(uuidgen) -hostname={{ ansible_hostname }}"
+    command: "bash -c \"docker exec netdata netdata-claim.sh -token={{ netdata_token }} -rooms={{ netdata_room }} -url={{ netdata_url }} -id=$(uuidgen) -hostname={{ ansible_hostname }}\""
     when: uuidgen_result.stat.exists == true
     notify: restart netdata
     become: yes
-  when: reclaim is defined
+  when: reclaim
