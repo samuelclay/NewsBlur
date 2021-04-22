@@ -51,7 +51,8 @@
             style="?readingBackground"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@+id/item_feed_border">
+            android:layout_below="@+id/item_feed_border"
+            android:scrollbars="vertical">
 
             <LinearLayout
                 android:layout_width="match_parent"
