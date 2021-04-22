@@ -414,7 +414,7 @@ CELERY_IMPORTS              = ("apps.rss_feeds.tasks",
                                "apps.feed_import.tasks",
                                "apps.search.tasks",
                                "apps.statistics.tasks",)
-CELERY_WORKER_CONCURRENCY         = 4
+CELERY_WORKER_CONCURRENCY         = 3
 CELERY_TASK_IGNORE_RESULT        = True
 CELERY_TASK_ACKS_LATE            = True # Retry if task fails
 CELERY_WORKER_MAX_TASKS_PER_CHILD = 10
@@ -558,10 +558,23 @@ S3_AVATARS_BUCKET_NAME = 'avatars.newsblur.com'
 # ==================
 # = Configurations =
 # ==================
+
 if DOCKERBUILD:
     from newsblur_web.docker_local_settings import *
 else:
     from newsblur_web.local_settings import *
+
+try:
+    from newsblur_web.task_env import *
+    print(" ---> Starting NewsBlur task server...")
+except ModuleNotFoundError:
+    pass
+try:
+    from newsblur_web.app_env import *
+    print(" ---> Starting NewsBlur app server...")
+except ModuleNotFoundError:
+    pass
+
 
 if not DEBUG:
     INSTALLED_APPS += (
