@@ -53,11 +53,9 @@
  1. Run `make nb` to build Newsblur containers. This will set up all necessary databases, celery tasks, node applications,
     flask database monitor, NGINX, and a Haproxy load balancer.
 
- 2. Add `127.0.0.1 nb.local.com` to your local /etc/hosts file
+ 2. Navigate to: 
 
- 3. Navigate to: 
-
-         https://nb.local.com 
+         https://localhost
 
     Create an account. At the end of the account creation process, you
     will be redirected to https://localhost/profile/stripe_form. Hit

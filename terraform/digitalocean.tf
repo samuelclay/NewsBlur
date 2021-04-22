@@ -391,7 +391,7 @@ resource "digitalocean_droplet" "db-mongo-analytics" {
 }
 
 resource "digitalocean_droplet" "task-celery" {
-  count    = 69
+  count    = 79
   image    = var.droplet_os
   name     = "task-celery${count.index+1}"
   region   = var.droplet_region

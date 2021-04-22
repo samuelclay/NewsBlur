@@ -150,7 +150,7 @@ hr {
 }
 
 .NB-account-wide {
-    max-width: 42%;
+    max-width: 38%;
     margin: 24px 24px 32px 0;
     display: flex;
     flex-direction: column;
@@ -2046,6 +2046,7 @@ hr {
 }
 .NB-story-pane-west .NB-story-title .NB-story-feed {
     left: -22px;
+    top: 9px;
 }
 .NB-view-river .NB-story-title .NB-story-feed {
     display: block;
@@ -2792,7 +2793,7 @@ body {
     width: 62px;
     height: 70%;
     left: 24px;
-    top: 12px;
+    top: 7px;
     border-radius: 6px;
 }
 .NB-image-preview-small-right:not(.NB-story-layout-grid) .NB-storytitles-story-image {
