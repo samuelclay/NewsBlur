@@ -121,21 +121,11 @@ services:
     command: mongod --smallfiles --port 29019
     volumes:
       - ./docker/volumes/db_mongo:/data/db
-  
-  celerybeat:
-    container_name: celerybeat
-    image: newsblur/newsblur_python3
-    command: bash -c "mkdir -p data && celery beat -A newsblur_web --schedule=/srv/newsblur/data/celerybeat-schedule.db --loglevel=INFO --pidfile=/srv/celeryd.pid"
-    environment: 
-      - DOCKERBUILD=True
-    volumes:
-      - ${PWD}:/srv/newsblur
-      - ./config:/etc/supervisor/conf.d/
 
   task_celery:
     container_name: task_celery
     image: newsblur/newsblur_python3
-    command: "celery worker -A newsblur_web --loglevel=INFO"
+    command: "celery worker -A newsblur_web -B --loglevel=INFO"
     volumes:
       - ${PWD}:/srv/newsblur
     environment: 

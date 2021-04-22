@@ -43,7 +43,7 @@
     - container_name: task-celery
       command: "celery worker -A newsblur_web --loglevel=INFO -Q new_feeds,push_feeds,update_feeds,search_indexer" 
     - container_name: task-work
-      command: "celery worker -A newsblur_web --loglevel=INFO -Q beat_feeds_task,work_queue,cron_queue"
+      command: "celery worker -A newsblur_web --loglevel=INFO -B -s /srv/newsblur/logs/celerybeat-schedule.db -Q beat_feeds_task,work_queue,cron_queue"
   tags:
     - start
 
