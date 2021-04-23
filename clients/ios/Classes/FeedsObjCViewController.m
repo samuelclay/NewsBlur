@@ -921,7 +921,8 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 
 - (IBAction)tapAddSite:(id)sender {
 //    [self.appDelegate.addSiteNavigationController popToRootViewControllerAnimated:NO];
-    [self.splitViewController showColumn:UISplitViewControllerColumnPrimary];
+//    [self.splitViewController showColumn:UISplitViewControllerColumnPrimary];
+    [self.appDelegate showFeedsListAnimated:NO];
     
     [self.appDelegate showPopoverWithViewController:self.appDelegate.addSiteNavigationController contentSize:CGSizeMake(320, 96) barButtonItem:self.addBarButton];
     
@@ -2313,6 +2314,7 @@ heightForHeaderInSection:(NSInteger)section {
     [appDelegate.folderCountCache removeObjectForKey:@"everything"];
     yellowIcon = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"g_icn_unread"]];
     [userInfoView addSubview:yellowIcon];
+    yellowIcon.hidden = YES;
     
     neutralCount = [[UILabel alloc] init];
     neutralCount.font = [UIFont fontWithName:@"WhitneySSm-Book" size:12];
@@ -2322,6 +2324,7 @@ heightForHeaderInSection:(NSInteger)section {
     
     greenIcon = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"g_icn_focus"]];
     [userInfoView addSubview:greenIcon];
+    greenIcon.hidden = YES;
     
     positiveCount = [[UILabel alloc] init];
     positiveCount.font = [UIFont fontWithName:@"WhitneySSm-Book" size:12];
@@ -2364,6 +2367,9 @@ heightForHeaderInSection:(NSInteger)section {
     positiveCount.frame = CGRectMake(CGRectGetMaxX(greenIcon.frame) + 2,
                                      CGRectGetMinY(greenIcon.frame) - 2, 100, 16);
     [positiveCount sizeToFit];
+    
+    yellowIcon.hidden = NO;
+    greenIcon.hidden = NO;
     
     NSUserDefaults *prefs = [NSUserDefaults standardUserDefaults];
     NSString *appUnreadBadge = [prefs stringForKey:@"app_unread_badge"];

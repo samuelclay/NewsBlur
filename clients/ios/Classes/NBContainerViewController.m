@@ -266,7 +266,7 @@
         return;
     }
     
-    self.appDelegate.compactWidth = isCompact ? size.width : 0.0;
+//    self.appDelegate.compactWidth = isCompact ? size.width : 0.0;
     
     self.masterNavigationController.view.frame = CGRectMake(0, 0, self.masterWidth, self.view.bounds.size.height);
     
@@ -285,9 +285,9 @@
 }
 
 - (NSInteger)masterWidth {
-    if (self.appDelegate.isCompactWidth) {
-        return self.appDelegate.compactWidth;
-    }
+//    if (self.appDelegate.isCompactWidth) {
+//        return self.appDelegate.compactWidth;
+//    }
     
     UIInterfaceOrientation orientation = self.appDelegate.window.windowScene.interfaceOrientation;
 	if (UIInterfaceOrientationIsLandscape(orientation)) {

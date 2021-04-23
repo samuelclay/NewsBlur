@@ -377,13 +377,13 @@
     } else if ([type startsWith:prefix]) {
         type = [type substringFromIndex:[prefix length]];
         if ([type isEqualToString:@"AddFeed"]) {
-            [self.feedsNavigationController popToRootViewControllerAnimated:NO];
+            [self showFeedsListAnimated:NO];
             [self performSelector:@selector(delayedAddSite) withObject:nil afterDelay:0.0];
         } else if ([type isEqualToString:@"AllStories"]) {
-            [self.feedsNavigationController popToRootViewControllerAnimated:NO];
+            [self showFeedsListAnimated:NO];
             [self.feedsViewController didSelectSectionHeaderWithTag:2];
         } else if ([type isEqualToString:@"Search"]) {
-            [self.feedsNavigationController popToRootViewControllerAnimated:NO];
+            [self showFeedsListAnimated:NO];
             [self.feedsViewController didSelectSectionHeaderWithTag:2];
             self.feedDetailViewController.storiesCollection.searchQuery = @"";
             self.feedDetailViewController.storiesCollection.savedSearchQuery = nil;
@@ -1576,7 +1576,8 @@
         [self loadFeedDetailView];
     } else if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
 //        [self.feedsNavigationController popToRootViewControllerAnimated:NO];
-        [self.splitViewController showColumn:UISplitViewControllerColumnPrimary];
+        [self showFeedsListAnimated:NO];
+//        [self.splitViewController showColumn:UISplitViewControllerColumnPrimary];
         [self hidePopoverAnimated:NO completion:^{
             if (self.feedsNavigationController.presentedViewController) {
                 [self.feedsNavigationController dismissViewControllerAnimated:NO completion:^{
@@ -1622,7 +1623,8 @@
         [self loadFeedDetailView];
     } else if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
 //        [self.feedsNavigationController popToRootViewControllerAnimated:NO];
-        [self.splitViewController showColumn:UISplitViewControllerColumnPrimary];
+//        [self.splitViewController showColumn:UISplitViewControllerColumnPrimary];
+        [self showFeedsListAnimated:NO];
         [self hidePopoverAnimated:YES completion:^{
             if (self.feedsNavigationController.presentedViewController) {
                 [self.feedsNavigationController dismissViewControllerAnimated:YES completion:^{
@@ -1639,7 +1641,8 @@
                       showFindingStory:(BOOL)showHUD {
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
 //        [self.feedsNavigationController popToRootViewControllerAnimated:NO];
-        [self.splitViewController showColumn:UISplitViewControllerColumnPrimary];
+//        [self.splitViewController showColumn:UISplitViewControllerColumnPrimary];
+        [self showFeedsListAnimated:NO];
         [self.feedsNavigationController dismissViewControllerAnimated:YES completion:nil];
         [self hidePopoverAnimated:NO];
     }
@@ -1721,7 +1724,8 @@
 }
 
 - (BOOL)isCompactWidth {
-    return self.compactWidth > 0.0;
+    return self.window.windowScene.traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassCompact;
+    //return self.compactWidth > 0.0;
 }
 
 - (void)confirmLogout {
@@ -1913,7 +1917,8 @@
                   showFindingStory:(BOOL)showHUD {
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
 //        [self.feedsNavigationController popToRootViewControllerAnimated:NO];
-        [self.splitViewController showColumn:UISplitViewControllerColumnPrimary];
+//        [self.splitViewController showColumn:UISplitViewControllerColumnPrimary];
+        [self showFeedsListAnimated:NO];
         [self.feedsNavigationController dismissViewControllerAnimated:YES completion:nil];
         [self hidePopoverAnimated:NO];
     }
@@ -2244,12 +2249,15 @@
 }
 
 - (void)hideStoryDetailView {
-    [self.splitViewController showColumn:UISplitViewControllerColumnSupplementary];
-//    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-//        [self.masterContainerViewController transitionFromFeedDetail];
-//    } else {
-//        [self.feedsNavigationController popViewControllerAnimated:YES];
-//    }
+    [self showFeedsListAnimated:YES];
+}
+
+- (void)showFeedsListAnimated:(BOOL)animated {
+    if (self.splitViewController.isCollapsed) {
+        [self.feedsNavigationController popToRootViewControllerAnimated:YES];
+    } else {
+        [self.splitViewController showColumn:UISplitViewControllerColumnSupplementary];
+    }
 }
 
 #pragma mark -
@@ -2258,20 +2266,23 @@
 - (void)handleUserActivity:(NSUserActivity *)activity {
     if ([activity.activityType isEqualToString:@"com.newsblur.refresh"]) {
 //        [self.feedsNavigationController popToRootViewControllerAnimated:NO];
-        [self.splitViewController showColumn:UISplitViewControllerColumnPrimary];
+//        [self.splitViewController showColumn:UISplitViewControllerColumnPrimary];
+        [self showFeedsListAnimated:NO];
         [self.feedsViewController refreshFeedList];
     } else if ([activity.activityType isEqualToString:@"com.newsblur.gotoFolder"]) {
         NSString *folder = activity.userInfo[@"folder"];
         
 //        [self.feedsNavigationController popToRootViewControllerAnimated:NO];
-        [self.splitViewController showColumn:UISplitViewControllerColumnPrimary];
+//        [self.splitViewController showColumn:UISplitViewControllerColumnPrimary];
+        [self showFeedsListAnimated:NO];
         [self loadRiverFeedDetailView:self.feedDetailViewController withFolder:folder];
     } else if ([activity.activityType isEqualToString:@"com.newsblur.gotoFeed"]) {
         NSString *folder = activity.userInfo[@"folder"];
         NSString *feedID = activity.userInfo[@"feedID"];
         
 //        [self.feedsNavigationController popToRootViewControllerAnimated:NO];
-        [self.splitViewController showColumn:UISplitViewControllerColumnPrimary];
+//        [self.splitViewController showColumn:UISplitViewControllerColumnPrimary];
+        [self showFeedsListAnimated:NO];
         [self loadFolder:folder feedID:feedID];
     }
 }

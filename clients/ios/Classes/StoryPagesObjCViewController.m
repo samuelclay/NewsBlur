@@ -1847,7 +1847,6 @@
 //         popToViewController:[appDelegate.feedsNavigationController.viewControllers
 //                              objectAtIndex:0]
 //         animated:YES];
-        [self.splitViewController showColumn:UISplitViewControllerColumnSupplementary];
         [appDelegate hideStoryDetailView];
     } else {
         [self changePage:nextLocation];

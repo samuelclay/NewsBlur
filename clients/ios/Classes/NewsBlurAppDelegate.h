@@ -288,7 +288,7 @@ SFSafariViewControllerDelegate>  {
 @property (nonatomic, readwrite) BOOL hasQueuedSavedStories;
 @property (nonatomic, readonly) BOOL showingSafariViewController;
 @property (nonatomic, readonly) BOOL isCompactWidth;
-@property (nonatomic) CGFloat compactWidth;
+//@property (nonatomic) CGFloat compactWidth;
 
 @property (nonatomic, strong) void (^backgroundCompletionHandler)(UIBackgroundFetchResult);
 
@@ -378,6 +378,7 @@ SFSafariViewControllerDelegate>  {
 - (void)showSafariViewControllerWithURL:(NSURL *)url useReader:(BOOL)useReader;
 - (void)closeOriginalStory;
 - (void)hideStoryDetailView;
+- (void)showFeedsListAnimated:(BOOL)animated;
 - (void)changeActiveFeedDetailRow;
 - (void)showShareView:(NSString *)type setUserId:(NSString *)userId setUsername:(NSString *)username setReplyId:(NSString *)commentIndex;
 - (void)hideShareView:(BOOL)resetComment;

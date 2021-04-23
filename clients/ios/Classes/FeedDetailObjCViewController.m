@@ -1392,7 +1392,7 @@
 }
 
 - (UITableViewCell *)makeLoadingCell {
-    NSInteger height = 40;
+    NSInteger height = 41;
     UITableViewCell *cell = [[UITableViewCell alloc]
                              initWithStyle:UITableViewCellStyleSubtitle
                              reuseIdentifier:@"NoReuse"];
@@ -2105,14 +2105,15 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     [self.appDelegate hidePopoverAnimated:YES];
     
     void (^pop)(void) = ^{
-        if (!self.isPhoneOrCompact) {
+        [self.appDelegate showFeedsListAnimated:YES];
+//        if (!self.isPhoneOrCompact) {
 //            [self.appDelegate.feedsNavigationController popToRootViewControllerAnimated:YES];
-            [self.splitViewController showColumn:UISplitViewControllerColumnPrimary];
-            [self.appDelegate.masterContainerViewController transitionFromFeedDetail];
-        } else {
+//            [self.splitViewController showColumn:UISplitViewControllerColumnPrimary];
+//            [self.appDelegate.masterContainerViewController transitionFromFeedDetail];
+//        } else {
 //            [self.appDelegate.feedsNavigationController popToViewController:[self.appDelegate.feedsNavigationController.viewControllers objectAtIndex:0] animated:YES];
-            [self.splitViewController showColumn:UISplitViewControllerColumnPrimary];
-        }
+//            [self.splitViewController showColumn:UISplitViewControllerColumnPrimary];
+//        }
     };
     
     [storiesCollection calculateStoryLocations];
