@@ -731,7 +731,11 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
         [sortDescriptors addObject:[NSSortDescriptor sortDescriptorWithKey:@"feed_opens" ascending:NO]];
     }
     
-    [sortDescriptors addObject:[NSSortDescriptor sortDescriptorWithKey:@"feed_title" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]];
+    NSSortDescriptor *titleDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"feed_title" ascending:YES comparator:^NSComparisonResult(id  _Nonnull obj1, id  _Nonnull obj2) {
+        return [[self sortableString:obj1] localizedStandardCompare:[self sortableString:obj2]];
+    }];
+    
+    [sortDescriptors addObject:titleDescriptor];
     
     // sort all the folders
     appDelegate.dictFoldersArray = [NSMutableArray array];
@@ -838,6 +842,24 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     [self loadNotificationStory];
 
     [[NSNotificationCenter defaultCenter] postNotificationName:@"FinishedLoadingFeedsNotification" object:nil];
+}
+
+- (NSString *)sortableString:(NSString *)original {
+    NSString *string = original.lowercaseString;
+    
+    string = [self stripPrefix:@"the " fromString:string];
+    string = [self stripPrefix:@"a " fromString:string];
+    string = [self stripPrefix:@"an " fromString:string];
+    
+    return string;
+}
+
+- (NSString *)stripPrefix:(NSString *)prefix fromString:(NSString *)original {
+    if ([original hasPrefix:prefix]) {
+        return [original substringFromIndex:prefix.length];
+    } else {
+        return original;
+    }
 }
 
 - (void)fixFolderNames:(NSMutableDictionary *)folders {
