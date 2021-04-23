@@ -59,7 +59,7 @@ public class ImageLoader {
     }
 	
     public PhotoToLoad displayImage(String url, ImageView imageView, float roundRadius, boolean cropSquare) {
-        return displayImage(url, imageView, roundRadius, cropSquare, Integer.MAX_VALUE, false);
+        return displayImage(url, imageView, roundRadius, cropSquare, imageView.getHeight(), false);
     }
 
     /**
@@ -179,8 +179,9 @@ public class ImageLoader {
             if (!isUrlMapped(photoToLoad.imageView, photoToLoad.url)) return;
 
             // callers frequently might botch this due to lazy view measuring
+            // limit max dimensions to 800px
             if (photoToLoad.maxDimPX < 1) {
-                photoToLoad.maxDimPX = Integer.MAX_VALUE;
+                photoToLoad.maxDimPX = 800;
             }
             
             // try from disk

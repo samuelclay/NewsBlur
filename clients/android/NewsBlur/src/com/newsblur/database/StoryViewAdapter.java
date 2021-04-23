@@ -397,7 +397,7 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 return true;
 
             case R.id.menu_send_story:
-                FeedUtils.sendStoryBrief(story, context);
+                FeedUtils.sendStoryUrl(story, context);
                 return true;
 
             case R.id.menu_send_story_full:
