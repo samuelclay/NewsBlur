@@ -554,7 +554,7 @@ static const CGFloat kFolderTitleHeight = 36.0;
             title = @"Top Level";
             iconName = @"menu_icn_all.png";
         } else {
-            NSArray *components = [title componentsSeparatedByString:@" - "];
+            NSArray *components = [title componentsSeparatedByString:@" ▸ "];
             title = components.lastObject;
             for (NSUInteger idx = 0; idx < components.count; idx++) {
                 title = [@"\t" stringByAppendingString:title];
