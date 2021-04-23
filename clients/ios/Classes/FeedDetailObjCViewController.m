@@ -2645,7 +2645,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
             } else if ([title isEqualToString:@"infrequent"]) {
                 continue;
             } else {
-                NSArray *components = [title componentsSeparatedByString:@" - "];
+                NSArray *components = [title componentsSeparatedByString:@" ▸ "];
                 title = components.lastObject;
                 for (NSUInteger idx = 0; idx < components.count; idx++) {
                     title = [@"\t" stringByAppendingString:title];

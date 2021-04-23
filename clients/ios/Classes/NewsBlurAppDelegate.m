@@ -3161,8 +3161,8 @@
         folderName = @"";
     }
     
-    if ([folderName containsString:@" - "]) {
-        NSInteger lastFolderLoc = [folderName rangeOfString:@" - "
+    if ([folderName containsString:@" ▸ "]) {
+        NSInteger lastFolderLoc = [folderName rangeOfString:@" ▸ "
                                                     options:NSBackwardsSearch].location;
         folderName = [folderName substringToIndex:lastFolderLoc];
     } else {
@@ -3178,8 +3178,8 @@
         [folderName isEqual:@"infrequent"]) {
         folderName = @"";
     }
-    if ([folderName containsString:@" - "]) {
-        NSInteger folder_loc = [folderName rangeOfString:@" - "
+    if ([folderName containsString:@" ▸ "]) {
+        NSInteger folder_loc = [folderName rangeOfString:@" ▸ "
                                                  options:NSBackwardsSearch].location;
         folderName = [folderName substringFromIndex:(folder_loc + 3)];
     }

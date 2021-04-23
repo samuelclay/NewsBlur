@@ -701,6 +701,8 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
         allFolders = [[results objectForKey:@"flat_folders_with_inactive"] mutableCopy];
     }
     
+    [self fixFolderNames:allFolders];
+    
     [allFolders setValue:socialFolder forKey:@"river_blurblogs"];
     [allFolders setValue:[[NSMutableArray alloc] init] forKey:@"river_global"];
     
@@ -836,6 +838,23 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     [self loadNotificationStory];
 
     [[NSNotificationCenter defaultCenter] postNotificationName:@"FinishedLoadingFeedsNotification" object:nil];
+}
+
+- (void)fixFolderNames:(NSMutableDictionary *)folders {
+    for (NSString *folderName in folders.copy) {
+        if ([folderName containsString:@" - "]) {
+            NSDictionary *folder = folders[folderName];
+            NSArray *components = [folderName componentsSeparatedByString:@" - "];
+            NSInteger count = components.count;
+            NSString *parentName = components[count - 2];
+            NSString *tidyName = [components componentsJoinedByString:@" ▸ "];
+            
+            if (folders[parentName] != nil) {
+                folders[folderName] = nil;
+                folders[tidyName] = folder;
+            }
+        }
+    }
 }
 
 - (void)cacheFeedRowLocations {

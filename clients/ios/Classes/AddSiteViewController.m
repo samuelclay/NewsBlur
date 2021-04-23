@@ -288,7 +288,7 @@
 
 - (NSString *)extractParentFolder {
     NSString *parent_folder = [self.inFolderInput text];
-    NSInteger folder_loc = [parent_folder rangeOfString:@" - " options:NSBackwardsSearch].location;
+    NSInteger folder_loc = [parent_folder rangeOfString:@" ▸ " options:NSBackwardsSearch].location;
     if ([parent_folder length] && folder_loc != NSNotFound) {
         parent_folder = [parent_folder substringFromIndex:(folder_loc + 3)];
     }
@@ -336,6 +336,7 @@
                        @"read_stories",
                        @"river_blurblogs",
                        @"river_global",
+                       @"infrequent",
                        @"everything"]);
 }
 
@@ -356,7 +357,7 @@
         NSString *title = folder;
         NSString *iconName = @"menu_icn_move.png";
         
-        NSArray *components = [title componentsSeparatedByString:@" - "];
+        NSArray *components = [title componentsSeparatedByString:@" ▸ "];
         title = components.lastObject;
         for (NSUInteger idx = 0; idx < components.count; idx++) {
             title = [@"\t" stringByAppendingString:title];
