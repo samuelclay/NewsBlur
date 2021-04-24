@@ -19,9 +19,13 @@ class SplitViewDelegate: NSObject, UISplitViewControllerDelegate {
         if let supplementaryNav = svc.viewController(for: .supplementary) as? UINavigationController,
            supplementaryNav.viewControllers.isEmpty,
            let primaryNav = svc.viewController(for: .primary) as? UINavigationController,
-           primaryNav.viewControllers.count > 1,
-           let feedDetail = primaryNav.viewControllers[1] as? FeedDetailViewController {
-            supplementaryNav.viewControllers = [feedDetail]
+           let feedsList = primaryNav.viewControllers[0] as? FeedsViewController {
+            if primaryNav.viewControllers.count > 1,
+               let feedDetail = primaryNav.viewControllers[1] as? FeedDetailViewController {
+                supplementaryNav.viewControllers = [feedDetail]
+            } else if let feedDetail = feedsList.appDelegate.feedDetailViewController {
+                supplementaryNav.viewControllers = [feedDetail]
+            }
         }
         
         if UIDevice.current.userInterfaceIdiom == .phone, proposedDisplayMode == .twoOverSecondary {

@@ -362,6 +362,11 @@
         spacerBarButton.width = -6;
         spacer2BarButton.width = 10;
     }
+    
+    if (storiesCollection == nil) {
+        [self.appDelegate loadRiverFeedDetailView:(FeedDetailViewController *)self withFolder:@"placeholder"];
+    }
+    
     if (storiesCollection.isSocialView) {
         spacerBarButton.width = -6;
         NSString *feedIdStr = [NSString stringWithFormat:@"%@", [storiesCollection.activeFeed objectForKey:@"id"]];
