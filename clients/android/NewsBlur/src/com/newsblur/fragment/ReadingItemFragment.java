@@ -52,6 +52,9 @@ import com.newsblur.util.StoryChangesState;
 import com.newsblur.util.StoryUtils;
 import com.newsblur.util.UIUtils;
 
+import org.jetbrains.annotations.NotNull;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -530,6 +533,30 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
 			binding.readingItemTags.addView(v);
 		}
 
+		binding.readingItemUserTags.removeAllViews();
+		if (story.userTags.length > 0) {
+		    for (int i = 0; i <= story.userTags.length; i++) {
+                View v = getLayoutInflater().inflate(R.layout.chip_view, null);
+                Chip chip = v.findViewById(R.id.chip);
+
+                if (i < story.userTags.length) {
+                    chip.setText(story.userTags[i]);
+                    chip.setChipIcon(ContextCompat.getDrawable(requireContext(), R.drawable.tag));
+                } else {
+                    chip.setText(getString(R.string.add_tag));
+                    chip.setChipIcon(ContextCompat.getDrawable(requireContext(), R.drawable.ic_add_gray75));
+                }
+
+                v.setOnClickListener(view -> {
+                    StoryUserTagsFragment userTagsFragment = StoryUserTagsFragment.newInstance(story, fs);
+                    userTagsFragment.show(getChildFragmentManager(), StoryUserTagsFragment.class.getName());
+                });
+                binding.readingItemUserTags.addView(v);
+            }
+
+            binding.readingItemUserTags.setVisibility(View.VISIBLE);
+        }
+
         if (!TextUtils.isEmpty(story.authors)) {
             binding.readingItemAuthors.setText("•   " + story.authors);
             if (classifier != null && classifier.authors.containsKey(story.authors)) {
@@ -920,6 +947,11 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
 
     public void flagWebviewError() {
         // TODO: enable a selective reload mechanism on load failures?
+    }
+
+    public void updateStorySavedTagList(@NotNull ArrayList<String> savedTagList) {
+        story.userTags = savedTagList.toArray(new String[]{});
+        setupTagsAndIntel();
     }
 
 	private class TextSizeReceiver extends BroadcastReceiver {
