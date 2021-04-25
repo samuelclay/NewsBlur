@@ -164,6 +164,12 @@ class DetailViewController: BaseViewController {
         checkViewControllers()
         
         appDelegate.feedsViewController.loadOfflineFeeds(false)
+        
+        if layout != .left, let controller = feedDetailViewController {
+            navigationItem.leftBarButtonItems = [controller.settingsBarButton]
+        } else {
+            navigationItem.leftBarButtonItems = []
+        }
     }
     
     /// Update the theme.
@@ -253,6 +259,7 @@ private extension DetailViewController {
                 remove(viewController: feedDetailViewController)
                 
                 feedDetailViewController = nil
+                appDelegate.feedDetailNavigationController = supplementaryFeedDetailNavigationController
                 appDelegate.feedDetailViewController = supplementaryFeedDetailViewController
                 appDelegate.splitViewController.setViewController(supplementaryFeedDetailNavigationController, for: .supplementary)
                 supplementaryFeedDetailNavigationController = nil
@@ -268,6 +275,7 @@ private extension DetailViewController {
                 
                 supplementaryFeedDetailNavigationController = appDelegate.feedDetailNavigationController
                 supplementaryFeedDetailViewController = appDelegate.feedDetailViewController
+                appDelegate.feedDetailNavigationController = nil
                 appDelegate.feedDetailViewController = feedDetailViewController
                 appDelegate.splitViewController.setViewController(nil, for: .supplementary)
             } else {

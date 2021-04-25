@@ -1880,7 +1880,7 @@
     
     detailViewController.navigationItem.titleView = [self makeFeedTitle:storiesCollection.activeFeed];
     
-    if (!isPlaceholder && feedDetailView == feedDetailViewController && feedDetailView.view.window == nil) {
+    if (self.isCompactWidth && !isPlaceholder && feedDetailView == feedDetailViewController && feedDetailView.view.window == nil) {
         UIBarButtonItem *newBackButton = [[UIBarButtonItem alloc] initWithTitle: @"All"
                                                                           style: UIBarButtonItemStylePlain
                                                                          target: nil
