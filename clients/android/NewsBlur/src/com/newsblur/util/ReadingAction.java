@@ -102,7 +102,7 @@ public class ReadingAction implements Serializable {
         ra.type = ActionType.SAVE;
         ra.storyHash = hash;
         if (userTags == null) {
-            ra.userTags = new ArrayList<String>();
+            ra.userTags = new ArrayList<>();
         } else {
             ra.userTags = userTags;
         }
@@ -418,12 +418,12 @@ public class ReadingAction implements Serializable {
                 break;
 
             case SAVE:
-                dbHelper.setStoryStarred(storyHash, true);
+                dbHelper.setStoryStarred(storyHash, userTags, true);
                 impact |= NbActivity.UPDATE_METADATA;
                 break;
 
             case UNSAVE:
-                dbHelper.setStoryStarred(storyHash, false);
+                dbHelper.setStoryStarred(storyHash, null, false);
                 impact |= NbActivity.UPDATE_METADATA;
                 break;
 
