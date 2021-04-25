@@ -27,7 +27,6 @@
                 <outlet property="fontSettingsViewController" destination="159" id="160"/>
                 <outlet property="friendsListViewController" destination="201" id="230"/>
                 <outlet property="loginViewController" destination="102" id="103"/>
-                <outlet property="masterContainerViewController" destination="264" id="266"/>
                 <outlet property="moveSiteViewController" destination="124" id="126"/>
                 <outlet property="notificationsViewController" destination="3z0-yS-4jT" id="LzV-NG-kRx"/>
                 <outlet property="premiumViewController" destination="Nno-Ma-6TQ" id="0Ex-VU-Hek"/>
@@ -175,14 +174,6 @@
             <connections>
                 <outlet property="appDelegate" destination="3" id="237"/>
             </connections>
-        </viewController>
-        <viewController restorationIdentifier="ContainerView" title="Main Container View Controller" id="264" customClass="NBContainerViewController">
-            <extendedEdge key="edgesForExtendedLayout"/>
-            <simulatedStatusBarMetrics key="simulatedStatusBarMetrics" statusBarStyle="blackOpaque"/>
-            <connections>
-                <outlet property="appDelegate" destination="3" id="267"/>
-            </connections>
-            <point key="canvasLocation" x="-716" y="-525"/>
         </viewController>
         <navigationController restorationIdentifier="MainNavigation" title="Main" id="173">
             <extendedEdge key="edgesForExtendedLayout"/>

@@ -7,7 +7,6 @@
 //
 
 #import "TrainerViewController.h"
-#import "NBContainerViewController.h"
 #import "StringHelper.h"
 #import "Utilities.h"
 #import "AFNetworking.h"

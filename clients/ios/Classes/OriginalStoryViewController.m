@@ -6,7 +6,7 @@
 //  Copyright 2010 NewsBlur. All rights reserved.
 //
 
-#import "NBContainerViewController.h"
+#import "NewsBlurAppDelegate.h"
 #import "OriginalStoryViewController.h"
 #import "NSString+HTML.h"
 #import "TransparentToolbar.h"
@@ -215,11 +215,11 @@
                              center.y);
         self.view.center = center;
         [recognizer setTranslation:CGPointZero inView:self.view];
-        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-            [appDelegate.masterContainerViewController interactiveTransitionFromOriginalView:percentage];
-        } else {
-            
-        }
+//        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+//            [appDelegate.masterContainerViewController interactiveTransitionFromOriginalView:percentage];
+//        } else {
+//
+//        }
     }
     
     if ([recognizer state] == UIGestureRecognizerStateEnded ||
@@ -231,21 +231,21 @@
             [self transitionToFeedDetail:recognizer];
         } else {
 //            NSLog(@"Original velocity: %f (at %.2f%%)", velocity, percentage*100);
-            if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-                [appDelegate.masterContainerViewController transitionToOriginalView:NO];
-            } else {
-                
-            }
+//            if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+//                [appDelegate.masterContainerViewController transitionToOriginalView:NO];
+//            } else {
+//
+//            }
         }
     }
 }
 
 - (void)transitionToFeedDetail:(UIGestureRecognizer *)recognizer {
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-        [appDelegate.masterContainerViewController transitionFromOriginalView];
-    } else {
-        
-    }
+//    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+//        [appDelegate.masterContainerViewController transitionFromOriginalView];
+//    } else {
+//        
+//    }
 }
 
 - (void)updateBarItems {

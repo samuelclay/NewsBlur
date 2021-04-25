@@ -15,7 +15,6 @@
 #import "ShareViewController.h"
 #import "Utilities.h"
 #import "NSString+HTML.h"
-#import "NBContainerViewController.h"
 #import "DataUtilities.h"
 #import "FMDatabase.h"
 #import "SBJson4.h"

@@ -13,7 +13,6 @@
 #import "ShareViewController.h"
 #import "Utilities.h"
 #import "NSString+HTML.h"
-#import "NBContainerViewController.h"
 #import "DataUtilities.h"
 #import "SBJson4.h"
 #import "UIBarButtonItem+Image.h"
@@ -206,12 +205,12 @@
     self.subscribeButton = subscribeBtn;
     
     // back button
-    UIBarButtonItem *backButton = [[UIBarButtonItem alloc]
-                                   initWithTitle:@"All Sites"
-                                   style:UIBarButtonItemStylePlain
-                                   target:self
-                                   action:@selector(transitionFromFeedDetail)];
-    self.buttonBack = backButton;
+//    UIBarButtonItem *backButton = [[UIBarButtonItem alloc]
+//                                   initWithTitle:@"All Sites"
+//                                   style:UIBarButtonItemStylePlain
+//                                   target:self
+//                                   action:@selector(transitionFromFeedDetail)];
+//    self.buttonBack = backButton;
     
     self.notifier = [[NBNotifier alloc] initWithTitle:@"Fetching text..."
                                            withOffset:CGPointMake(0.0, 0.0 /*self.bottomSize.frame.size.height*/)];
@@ -406,18 +405,18 @@
     return [currentPage becomeFirstResponder];
 }
 
-- (void)transitionFromFeedDetail {
-    if (appDelegate.masterContainerViewController.storyTitlesOnLeft) {
-        [appDelegate.feedsNavigationController
-         popToViewController:[appDelegate.feedsNavigationController.viewControllers
-                              objectAtIndex:0]
-         animated:YES];
-        [appDelegate hideStoryDetailView];
-        [self.splitViewController showColumn:UISplitViewControllerColumnSupplementary];
-    } else {
-        [appDelegate.masterContainerViewController transitionFromFeedDetail];
-    }
-}
+//- (void)transitionFromFeedDetail {
+//    if (appDelegate.masterContainerViewController.storyTitlesOnLeft) {
+//        [appDelegate.feedsNavigationController
+//         popToViewController:[appDelegate.feedsNavigationController.viewControllers
+//                              objectAtIndex:0]
+//         animated:YES];
+//        [appDelegate hideStoryDetailView];
+//        [self.splitViewController showColumn:UISplitViewControllerColumnSupplementary];
+//    } else {
+//        [appDelegate.masterContainerViewController transitionFromFeedDetail];
+//    }
+//}
 
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
     [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
@@ -777,37 +776,37 @@
     }
 }
 
-- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
-    UIInterfaceOrientation orientation = self.view.window.windowScene.interfaceOrientation;
-    
-    if (!self.isPhoneOrCompact &&
-        UIInterfaceOrientationIsPortrait(orientation)) {
-        UITouch *theTouch = [touches anyObject];
-        CGPoint tappedPt = [theTouch locationInView:self.view];
-        NSInteger fudge = appDelegate.masterContainerViewController.storyTitlesOnLeft ? -30 : -20;
-        BOOL inside = CGRectContainsPoint(CGRectInset(self.bottomSize.frame, 0, fudge), tappedPt);
-        BOOL attached = self.inTouchMove;
-        
-        if (theTouch.view == self.bottomSize || inside || attached) {
-            self.inTouchMove = YES;
-            CGPoint touchLocation = [theTouch locationInView:self.view];
-            CGFloat y = touchLocation.y;
-            [appDelegate.masterContainerViewController dragStoryToolbar:y];
-        }
-    }
-}
-
-- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
-    UIInterfaceOrientation orientation = self.view.window.windowScene.interfaceOrientation;
-    
-    if (!self.isPhoneOrCompact &&
-        UIInterfaceOrientationIsPortrait(orientation)) {
-        if (self.inTouchMove) {
-            self.inTouchMove = NO;
-            [appDelegate.masterContainerViewController adjustFeedDetailScreenForStoryTitles];
-        }
-    }
-}
+//- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
+//    UIInterfaceOrientation orientation = self.view.window.windowScene.interfaceOrientation;
+//
+//    if (!self.isPhoneOrCompact &&
+//        UIInterfaceOrientationIsPortrait(orientation)) {
+//        UITouch *theTouch = [touches anyObject];
+//        CGPoint tappedPt = [theTouch locationInView:self.view];
+//        NSInteger fudge = appDelegate.detailViewController.storyTitlesOnLeft ? -30 : -20;
+//        BOOL inside = CGRectContainsPoint(CGRectInset(self.bottomSize.frame, 0, fudge), tappedPt);
+//        BOOL attached = self.inTouchMove;
+//
+//        if (theTouch.view == self.bottomSize || inside || attached) {
+//            self.inTouchMove = YES;
+//            CGPoint touchLocation = [theTouch locationInView:self.view];
+//            CGFloat y = touchLocation.y;
+//            [appDelegate.masterContainerViewController dragStoryToolbar:y];
+//        }
+//    }
+//}
+//
+//- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
+//    UIInterfaceOrientation orientation = self.view.window.windowScene.interfaceOrientation;
+//
+//    if (!self.isPhoneOrCompact &&
+//        UIInterfaceOrientationIsPortrait(orientation)) {
+//        if (self.inTouchMove) {
+//            self.inTouchMove = NO;
+//            [appDelegate.masterContainerViewController adjustFeedDetailScreenForStoryTitles];
+//        }
+//    }
+//}
 
 - (BOOL)isPhoneOrCompact {
     return [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone || appDelegate.isCompactWidth;
@@ -1508,7 +1507,7 @@
         url = [NSURL URLWithDataRepresentation:[permalink dataUsingEncoding:NSUTF8StringEncoding] relativeToURL:nil];
     }
     
-    [appDelegate showOriginalStory:url];
+    [appDelegate showOriginalStory:url sender:originalStoryButton];
 }
 
 - (IBAction)tapProgressBar:(id)sender {
@@ -1635,12 +1634,12 @@
     }
 }
 
-- (void)backToDashboard:(id)sender {
-    UINavigationController *feedDetailNavigationController = appDelegate.feedDetailViewController.navigationController;
-    if (feedDetailNavigationController != nil)
-        [feedDetailNavigationController popViewControllerAnimated: YES];
-    [self transitionFromFeedDetail];
-}
+//- (void)backToDashboard:(id)sender {
+//    UINavigationController *feedDetailNavigationController = appDelegate.feedDetailViewController.navigationController;
+//    if (feedDetailNavigationController != nil)
+//        [feedDetailNavigationController popViewControllerAnimated: YES];
+//    [self transitionFromFeedDetail];
+//}
 
 #pragma mark -
 #pragma mark HUDs

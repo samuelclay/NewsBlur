@@ -6,7 +6,6 @@
 //
 
 #import "NewsBlurAppDelegate.h"
-#import "NBContainerViewController.h"
 #import "DashboardViewController.h"
 #import "MarkReadMenuViewController.h"
 #import "FeedsMenuViewController.h"
@@ -92,7 +91,7 @@
 @synthesize notificationsNavigationController;
 @synthesize premiumNavigationController;
 @synthesize userProfileNavigationController;
-@synthesize masterContainerViewController;
+//@synthesize masterContainerViewController;
 @synthesize detailViewController;
 @synthesize dashboardViewController;
 @synthesize feedsViewController;
@@ -1021,10 +1020,10 @@
       setReplyId:(NSString *)replyId {
     
     [self.shareViewController setCommentType:type];
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-        [self.masterContainerViewController transitionToShareView];
-        [self.shareViewController setSiteInfo:type setUserId:userId setUsername:username setReplyId:replyId];
-    } else {
+//    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+//        [self.masterContainerViewController transitionToShareView];
+//        [self.shareViewController setSiteInfo:type setUserId:userId setUsername:username setReplyId:replyId];
+//    } else {
         if (self.shareNavigationController == nil) {
             UINavigationController *shareNav = [[UINavigationController alloc]
                                                 initWithRootViewController:self.shareViewController];
@@ -1034,7 +1033,7 @@
         [self.feedsNavigationController presentViewController:self.shareNavigationController animated:YES completion:^{
             [self.shareViewController setSiteInfo:type setUserId:userId setUsername:username setReplyId:replyId];
         }];
-    }
+//    }
 }
 
 - (void)hideShareView:(BOOL)resetComment {
@@ -1043,10 +1042,11 @@
         self.shareViewController.currentType = nil;
     }
         
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {        
-        [self.masterContainerViewController transitionFromShareView];
-        [self.storyPagesViewController becomeFirstResponder];
-    } else if (!self.showingSafariViewController) {
+//    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+//        [self.masterContainerViewController transitionFromShareView];
+//        [self.storyPagesViewController becomeFirstResponder];
+//    } else
+    if (!self.showingSafariViewController) {
         [self.feedsNavigationController dismissViewControllerAnimated:YES completion:nil];
         [self.shareViewController.commentField resignFirstResponder];
     }
@@ -2066,6 +2066,10 @@
 }
 
 - (void)showOriginalStory:(NSURL *)url {
+    [self showOriginalStory:url sender:nil];
+}
+
+- (void)showOriginalStory:(NSURL *)url sender:(id)sender {
     NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
     
     if (!url) {
@@ -2139,7 +2143,7 @@
     } else if ([storyBrowser isEqualToString:@"inappsafarireader"]) {
         [self showSafariViewControllerWithURL:url useReader:YES];
     } else {
-        [self showInAppBrowser:url withCustomTitle:nil fromSender:nil];
+        [self showInAppBrowser:url withCustomTitle:nil fromSender:sender];
     }
 }
 
@@ -2163,7 +2167,9 @@
             [originalStoryViewController loadInitialStory];
             [self showPopoverWithViewController:originalStoryViewController contentSize:CGSizeMake(600.0, 1000.0) sourceView:cell sourceRect:cell.bounds];
         } else {
-            [self.masterContainerViewController transitionToOriginalView];
+            [originalStoryViewController view]; // Force viewDidLoad
+            [originalStoryViewController loadInitialStory];
+            [self showPopoverWithViewController:originalStoryViewController contentSize:CGSizeMake(600.0, 1000.0) sender:sender];
         }
     } else {
         if ([[feedsNavigationController viewControllers]
@@ -2232,7 +2238,7 @@
 
 - (void)closeOriginalStory {
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-        [self.masterContainerViewController transitionFromOriginalView];
+//        [self.masterContainerViewController transitionFromOriginalView];
     } else {
         if ([[feedsNavigationController viewControllers] containsObject:originalStoryViewController]) {
             [feedsNavigationController popToViewController:storyPagesViewController animated:YES];

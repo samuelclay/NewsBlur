@@ -45,7 +45,6 @@
 @class UserTagsViewController;
 @class OriginalStoryViewController;
 @class UserProfileViewController;
-@class NBContainerViewController;
 @class FeedChooserViewController;
 @class MenuViewController;
 @class IASKAppSettingsViewController;
@@ -68,7 +67,6 @@ SFSafariViewControllerDelegate>  {
     UINavigationController *trainNavigationController;
     UINavigationController *notificationsNavigationController;
     UINavigationController *premiumNavigationController;
-    NBContainerViewController *masterContainerViewController;
     DetailViewController *detailViewController;
     
     FirstTimeUserViewController *firstTimeUserViewController;
@@ -175,7 +173,6 @@ SFSafariViewControllerDelegate>  {
 @property (nonatomic) UINavigationController *premiumNavigationController;
 @property (nonatomic) UINavigationController *userProfileNavigationController;
 @property (nonatomic) UINavigationController *originalStoryViewNavController;
-@property (nonatomic) IBOutlet NBContainerViewController *masterContainerViewController;
 @property (nonatomic) IBOutlet DetailViewController *detailViewController;
 @property (nonatomic) IBOutlet DashboardViewController *dashboardViewController;
 @property (nonatomic) IBOutlet FeedsViewController *feedsViewController;
@@ -374,6 +371,7 @@ SFSafariViewControllerDelegate>  {
 - (void)reloadFeedsView:(BOOL)showLoader;
 - (void)setTitle:(NSString *)title;
 - (void)showOriginalStory:(NSURL *)url;
+- (void)showOriginalStory:(NSURL *)url sender:(id)sender;
 - (void)showInAppBrowser:(NSURL *)url withCustomTitle:(NSString *)customTitle fromSender:(id)sender;
 - (void)showSafariViewControllerWithURL:(NSURL *)url useReader:(BOOL)useReader;
 - (void)closeOriginalStory;

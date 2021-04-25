@@ -106,7 +106,7 @@
 - (void)setNavigationBarHidden:(BOOL)hide alsoTraverse:(BOOL)alsoTraverse;
 - (void)adjustDragBar:(UIInterfaceOrientation)orientation;
 
-- (void)transitionFromFeedDetail;
+//- (void)transitionFromFeedDetail;
 - (void)resetPages;
 - (void)hidePages;
 - (void)refreshPages;
