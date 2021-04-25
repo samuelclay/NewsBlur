@@ -418,12 +418,12 @@ public class ReadingAction implements Serializable {
                 break;
 
             case SAVE:
-                dbHelper.setStoryStarred(storyHash, true);
+                dbHelper.setStoryStarred(storyHash, userTags, true);
                 impact |= NbActivity.UPDATE_METADATA;
                 break;
 
             case UNSAVE:
-                dbHelper.setStoryStarred(storyHash, false);
+                dbHelper.setStoryStarred(storyHash, null, false);
                 impact |= NbActivity.UPDATE_METADATA;
                 break;
 
