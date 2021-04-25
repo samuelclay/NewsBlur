@@ -16,6 +16,7 @@ import com.newsblur.databinding.DialogStoryUserTagsBinding
 import com.newsblur.databinding.RowSavedTagBinding
 import com.newsblur.domain.StarredCount
 import com.newsblur.domain.Story
+import com.newsblur.service.NBSyncService
 import com.newsblur.util.FeedSet
 import com.newsblur.util.FeedUtils
 import com.newsblur.util.TagsAdapter
@@ -102,17 +103,14 @@ class StoryUserTagsFragment : DialogFragment(), LoaderManager.LoaderCallbacks<Cu
                 val sc = StarredCount()
                 sc.tag = binding.inputTagName.text.toString()
                 sc.count = 1
-                newTags.add(sc)
-                savedTags.add(sc)
-                notifyListAdapters()
-                binding.inputTagName.text.clear()
+                processNewTag(sc)
             }
         }
 
         val builder = AlertDialog.Builder(requireActivity())
         builder.setTitle("Saved Tags")
         builder.setView(view)
-        builder.setNegativeButton(R.string.alert_dialog_cancel) { dialogInterface, _ -> dialogInterface.dismiss() }
+        builder.setNegativeButton(R.string.alert_dialog_cancel, null)
         builder.setPositiveButton(R.string.dialog_story_tags_save) { _, _ -> saveTags() }
 
         story.tags.forEach {
@@ -124,7 +122,40 @@ class StoryUserTagsFragment : DialogFragment(), LoaderManager.LoaderCallbacks<Cu
             binding.containerStoryTags.addView(rowSavedTag)
         }
 
+        if (story.tags.isEmpty()) {
+            binding.textStoryTags.visibility = View.GONE
+            binding.containerStoryTags.visibility = View.GONE
+        }
+
         return builder.create()
+    }
+
+    private fun processNewTag(newTag: StarredCount) {
+        var foundExistingTag = false
+        if (otherTags.contains(newTag.tag)) {
+            val existingTag = otherTags[newTag.tag]!!
+            otherTags.remove(existingTag.tag)
+            existingTag.count += 1
+            savedTags.add(existingTag)
+            foundExistingTag = true
+        }
+
+        if (!foundExistingTag) {
+            savedTags.forEach {
+                if (it.tag == newTag.tag) {
+                    foundExistingTag = true
+                    return@forEach
+                }
+            }
+        }
+
+        if (!foundExistingTag) {
+            newTags.add(newTag)
+            savedTags.add(newTag)
+        }
+
+        updateListAdapters()
+        binding.inputTagName.text.clear()
     }
 
     private fun setTags(starredTags: ArrayList<StarredCount>) {
@@ -138,7 +169,7 @@ class StoryUserTagsFragment : DialogFragment(), LoaderManager.LoaderCallbacks<Cu
                 otherTags.remove(it)
             }
         }
-        notifyListAdapters()
+        updateListAdapters()
     }
 
     override fun onTagClickListener(starredTag: StarredCount, type: TagsAdapter.Type) {
@@ -160,20 +191,42 @@ class StoryUserTagsFragment : DialogFragment(), LoaderManager.LoaderCallbacks<Cu
                 otherTags[starredTag.tag] = starredTag
             }
         }
-        notifyListAdapters()
+        updateListAdapters()
     }
 
-    private fun notifyListAdapters() {
+    private fun updateListAdapters() {
         otherTagsAdapter.replaceAll(otherTags.values)
         savedTagsAdapter.replaceAll(savedTags)
+
+        if (otherTags.isNotEmpty()) {
+            binding.textOtherTags.visibility = View.VISIBLE
+            binding.listOtherTags.visibility = View.VISIBLE
+        } else {
+            binding.textOtherTags.visibility = View.GONE
+            binding.listOtherTags.visibility = View.GONE
+        }
+
+        if (savedTags.isNotEmpty()) {
+            binding.textSavedTags.visibility = View.VISIBLE
+            binding.listSavedTags.visibility = View.VISIBLE
+        } else {
+            binding.textSavedTags.visibility = View.GONE
+            binding.listSavedTags.visibility = View.GONE
+        }
+    }
+
+    private fun getSavedTagsList(): ArrayList<String> {
+        val tagList = ArrayList<String>(savedTags.size)
+        savedTags.forEach { tagList.add(it.tag) }
+        return tagList
     }
 
     private fun saveTags() {
-        if (savedTags.isNotEmpty()) {
-            //TODO: update saved story tags
-//            FeedUtils.updateSavedStoryTags(story, requireContext(), savedTags.toList())
-        } else {
-            this@StoryUserTagsFragment.dismiss()
+        val savedTagList = getSavedTagsList()
+        if (savedTagList.isNotEmpty()) {
+            NBSyncService.forceFeedsFolders()
+            FeedUtils.setStorySaved(story, true, requireContext(), savedTagList)
+            (parentFragment as ReadingItemFragment).updateStorySavedTagList(savedTagList)
         }
     }
 }

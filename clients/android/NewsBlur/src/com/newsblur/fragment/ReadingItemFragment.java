@@ -52,6 +52,9 @@ import com.newsblur.util.StoryChangesState;
 import com.newsblur.util.StoryUtils;
 import com.newsblur.util.UIUtils;
 
+import org.jetbrains.annotations.NotNull;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -530,6 +533,7 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
 			binding.readingItemTags.addView(v);
 		}
 
+		binding.readingItemUserTags.removeAllViews();
 		if (story.userTags.length > 0) {
 		    for (int i = 0; i <= story.userTags.length; i++) {
                 View v = getLayoutInflater().inflate(R.layout.chip_view, null);
@@ -545,7 +549,7 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
 
                 v.setOnClickListener(view -> {
                     StoryUserTagsFragment userTagsFragment = StoryUserTagsFragment.newInstance(story, fs);
-                    userTagsFragment.show(getParentFragmentManager(), StoryUserTagsFragment.class.getName());
+                    userTagsFragment.show(getChildFragmentManager(), StoryUserTagsFragment.class.getName());
                 });
                 binding.readingItemUserTags.addView(v);
             }
@@ -943,6 +947,11 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
 
     public void flagWebviewError() {
         // TODO: enable a selective reload mechanism on load failures?
+    }
+
+    public void updateStorySavedTagList(@NotNull ArrayList<String> savedTagList) {
+        story.userTags = savedTagList.toArray(new String[]{});
+        setupTagsAndIntel();
     }
 
 	private class TextSizeReceiver extends BroadcastReceiver {
