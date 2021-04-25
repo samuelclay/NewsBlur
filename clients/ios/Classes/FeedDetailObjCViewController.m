@@ -9,7 +9,6 @@
 #import <QuartzCore/QuartzCore.h>
 #import "FeedDetailObjCViewController.h"
 #import "NewsBlurAppDelegate.h"
-#import "NBContainerViewController.h"
 #import "FeedDetailTableCell.h"
 #import "UserProfileViewController.h"
 #import "NSString+HTML.h"
@@ -423,13 +422,13 @@
     [self.notifier setNeedsLayout];
     [appDelegate hideShareView:YES];
     
-    if (!self.isPhoneOrCompact &&
-        (appDelegate.detailViewController.storyTitlesOnLeft ||
-         !UIInterfaceOrientationIsPortrait(orientation)) &&
-        !self.isMovingFromParentViewController &&
-        !appDelegate.masterContainerViewController.interactiveOriginalTransition) {
-        [appDelegate.masterContainerViewController transitionToFeedDetail:NO];
-    }
+//    if (!self.isPhoneOrCompact &&
+//        (appDelegate.detailViewController.storyTitlesOnLeft ||
+//         !UIInterfaceOrientationIsPortrait(orientation)) &&
+//        !self.isMovingFromParentViewController &&
+//        !appDelegate.masterContainerViewController.interactiveOriginalTransition) {
+//        [appDelegate.masterContainerViewController transitionToFeedDetail:NO];
+//    }
     
     if (!!storiesCollection.inSearch && storiesCollection.feedPage == 1) {
         [self.storyTitlesTable setContentOffset:CGPointMake(0, CGRectGetHeight(self.searchBar.frame))];
@@ -510,7 +509,7 @@
     
     [self.searchBar resignFirstResponder];
     [self.appDelegate hidePopoverAnimated:YES];
-    UIInterfaceOrientation orientation = self.view.window.windowScene.interfaceOrientation;
+//    UIInterfaceOrientation orientation = self.view.window.windowScene.interfaceOrientation;
     
     if (self.isMovingToParentViewController) {
         appDelegate.inFindingStoryMode = NO;
@@ -518,12 +517,12 @@
         [MBProgressHUD hideHUDForView:self.view animated:YES];
     }
     
-    if (!self.isPhoneOrCompact &&
-        self.isMovingToParentViewController &&
-        (appDelegate.detailViewController.storyTitlesOnLeft ||
-         !UIInterfaceOrientationIsPortrait(orientation))) {
-        [appDelegate.masterContainerViewController transitionFromFeedDetail:NO];
-    }
+//    if (!self.isPhoneOrCompact &&
+//        self.isMovingToParentViewController &&
+//        (appDelegate.detailViewController.storyTitlesOnLeft ||
+//         !UIInterfaceOrientationIsPortrait(orientation))) {
+//        [appDelegate.masterContainerViewController transitionFromFeedDetail:NO];
+//    }
 }
 
 - (void)fadeSelectedCell {
@@ -1312,9 +1311,9 @@
         [self testForTryFeed];
     }
     
-    if (!self.isPhoneOrCompact) {
-        [appDelegate.masterContainerViewController syncNextPreviousButtons];
-    }
+//    if (!self.isPhoneOrCompact) {
+//        [appDelegate.masterContainerViewController syncNextPreviousButtons];
+//    }
     
     NSMutableArray *storyImageUrls = [NSMutableArray array];
     for (NSDictionary *story in newStories) {

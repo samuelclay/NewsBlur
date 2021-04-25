@@ -8,7 +8,6 @@
 
 #import "ThemeManager.h"
 #import "NewsBlurAppDelegate.h"
-#import "NBContainerViewController.h"
 #import "DashboardViewController.h"
 #import "OriginalStoryViewController.h"
 #import <AudioToolbox/AudioToolbox.h>

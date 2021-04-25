@@ -8,7 +8,6 @@
 
 #import "FeedsObjCViewController.h"
 #import "NewsBlurAppDelegate.h"
-#import "NBContainerViewController.h"
 #import "DashboardViewController.h"
 #import "InteractionsModule.h"
 #import "ActivityModule.h"
@@ -195,7 +194,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     userAvatarButton.hidden = YES;
     self.noFocusMessage.hidden = YES;
 
-    [self.navigationController.interactivePopGestureRecognizer addTarget:self action:@selector(handleGesture:)];
+//    [self.navigationController.interactivePopGestureRecognizer addTarget:self action:@selector(handleGesture:)];
     
     [self addKeyCommandWithInput:@"e" modifierFlags:UIKeyModifierCommand action:@selector(selectEverything:) discoverabilityTitle:@"Open All Stories"];
     [self addKeyCommandWithInput:UIKeyInputLeftArrow modifierFlags:0 action:@selector(selectPreviousIntelligence:) discoverabilityTitle:@"Switch Views"];
@@ -208,11 +207,11 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     
     [self resetRowHeights];
     
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad &&
-        !self.interactiveFeedDetailTransition) {
-        
-        [appDelegate.masterContainerViewController transitionFromFeedDetail];
-    }
+//    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad &&
+//        !self.interactiveFeedDetailTransition) {
+//
+//        [appDelegate.masterContainerViewController transitionFromFeedDetail];
+//    }
 //    NSLog(@"Feed List timing 0: %f", [NSDate timeIntervalSinceReferenceDate] - start);
     [super viewWillAppear:animated];
     
@@ -285,36 +284,36 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     [self becomeFirstResponder];
 }
 
-- (void)handleGesture:(UIScreenEdgePanGestureRecognizer *)gesture {
-    if ([[UIDevice currentDevice] userInterfaceIdiom] != UIUserInterfaceIdiomPad) return;
-    
-    self.interactiveFeedDetailTransition = YES;
-    
-    CGPoint point = [gesture locationInView:self.view];
-    CGFloat viewWidth = CGRectGetWidth(self.view.frame);
-    CGFloat percentage = MIN(point.x, viewWidth) / viewWidth;
-//    NSLog(@"back gesture: %d, %f - %f/%f", (int)gesture.state, percentage, point.x, viewWidth);
-    
-    if (gesture.state == UIGestureRecognizerStateBegan) {
-//        if (appDelegate.storiesCollection.transferredFromDashboard) {
-//            [appDelegate.dashboardViewController.storiesModule.storiesCollection
-//             transferStoriesFromCollection:appDelegate.storiesCollection];
-//            [appDelegate.dashboardViewController.storiesModule fadeSelectedCell:NO];
+//- (void)handleGesture:(UIScreenEdgePanGestureRecognizer *)gesture {
+//    if ([[UIDevice currentDevice] userInterfaceIdiom] != UIUserInterfaceIdiomPad) return;
+//
+//    self.interactiveFeedDetailTransition = YES;
+//
+//    CGPoint point = [gesture locationInView:self.view];
+//    CGFloat viewWidth = CGRectGetWidth(self.view.frame);
+//    CGFloat percentage = MIN(point.x, viewWidth) / viewWidth;
+////    NSLog(@"back gesture: %d, %f - %f/%f", (int)gesture.state, percentage, point.x, viewWidth);
+//
+//    if (gesture.state == UIGestureRecognizerStateBegan) {
+////        if (appDelegate.storiesCollection.transferredFromDashboard) {
+////            [appDelegate.dashboardViewController.storiesModule.storiesCollection
+////             transferStoriesFromCollection:appDelegate.storiesCollection];
+////            [appDelegate.dashboardViewController.storiesModule fadeSelectedCell:NO];
+////        }
+//    } else if (gesture.state == UIGestureRecognizerStateChanged) {
+//        [appDelegate.masterContainerViewController interactiveTransitionFromFeedDetail:percentage];
+//    } else if (gesture.state == UIGestureRecognizerStateEnded) {
+//        CGPoint velocity = [gesture velocityInView:self.view];
+//        if (velocity.x > 0) {
+//            [appDelegate.masterContainerViewController transitionFromFeedDetail];
+//        } else {
+////            // Returning back to view, cancelling pop animation.
+////            [appDelegate.masterContainerViewController transitionToFeedDetail:NO];
 //        }
-    } else if (gesture.state == UIGestureRecognizerStateChanged) {
-        [appDelegate.masterContainerViewController interactiveTransitionFromFeedDetail:percentage];
-    } else if (gesture.state == UIGestureRecognizerStateEnded) {
-        CGPoint velocity = [gesture velocityInView:self.view];
-        if (velocity.x > 0) {
-            [appDelegate.masterContainerViewController transitionFromFeedDetail];
-        } else {
-//            // Returning back to view, cancelling pop animation.
-//            [appDelegate.masterContainerViewController transitionToFeedDetail:NO];
-        }
-
-        self.interactiveFeedDetailTransition = NO;
-    }
-}
+//
+//        self.interactiveFeedDetailTransition = NO;
+//    }
+//}
 
 - (void)fadeSelectedCell {
     [self fadeCellWithIndexPath:[self.feedTitlesTable indexPathForSelectedRow]];
