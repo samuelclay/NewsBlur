@@ -45,12 +45,12 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
                             <%= NEWSBLUR.assets.view_setting("starred", "order") %>\
                         </span>\
                     </div>\
-                    <div class="NB-starred-icon"></div>\
+                    <img class="feed_favicon" src="<%= $.favicon("starred") %>">\
                     <div class="NB-feedlist-manage-icon"></div>\
                     <span class="folder_title_text"><%= folder_title %></span>\
                 </div>\
             ', {
-                folder_title: NEWSBLUR.reader.active_fake_folder_title()
+                folder_title: NEWSBLUR.reader.feed_title()
             }));
             this.search_view = new NEWSBLUR.Views.FeedSearchView({
                 feedbar_view: this
@@ -66,12 +66,12 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
                             <%= NEWSBLUR.assets.view_setting("read", "order") %>\
                         </span>\
                     </div>\
-                    <div class="NB-read-icon"></div>\
+                    <img class="feed_favicon" src="<%= $.favicon("read") %>">\
                     <div class="NB-feedlist-manage-icon"></div>\
                     <div class="folder_title_text"><%= folder_title %></div>\
                 </div>\
             ', {
-                folder_title: NEWSBLUR.reader.active_fake_folder_title()
+                folder_title: NEWSBLUR.reader.feed_title()
             }));
         } else if (this.showing_fake_folder) {
             $view = $(_.template('\
@@ -103,12 +103,12 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
                         <div class="NB-story-title-indicator-count"></div>\
                         <span class="NB-story-title-indicator-text">show hidden stories</span>\
                     </div>\
-                    <div class="NB-folder-icon"></div>\
+                    <div class="NB-folder-icon"><img class="feed_favicon" src="<%= $.favicon(folder_id) %>">\</div>\
                     <div class="NB-feedlist-manage-icon"></div>\
                     <span class="folder_title_text"><%= folder_title %></span>\
                 </div>\
             ', {
-                folder_title: NEWSBLUR.reader.active_fake_folder_title(),
+                folder_title: NEWSBLUR.reader.feed_title(),
                 folder_id: NEWSBLUR.reader.active_feed,
                 all_stories: NEWSBLUR.reader.active_feed == "river:" || NEWSBLUR.reader.active_feed == "river:infrequent",
                 infrequent_stories: NEWSBLUR.reader.active_feed == "river:infrequent",

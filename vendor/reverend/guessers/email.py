@@ -4,7 +4,7 @@
 # License as published by the Free Software Foundation.
 #
         
-from rfc822 import AddressList
+from vendor.rfc822 import AddressList
 
 from reverend.thomas import Bayes
 
@@ -91,13 +91,13 @@ class EmailClassifier(Bayes):
         c = msg.get('cc','')
         ac = AddressList(c).addresslist
         
-        if at > 5:
+        if len(at) > 5:
             r.append('to_more_than_5')
-        if at > 10:
+        if len(at) > 10:
             r.append('to_more_than_10')
-        if ac > 5:
+        if len(ac) > 5:
             r.append('cc_more_than_5')
-        if ac > 10:
+        if len(ac) > 10:
             r.append('cc_more_than_10')
                 
         return r

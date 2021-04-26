@@ -5,7 +5,6 @@ in this module. Configuration, querying, and manipulation can all be done
 with it.
 """
 
-import types
 import logging
 from pprint import pformat
 import warnings
@@ -20,11 +19,7 @@ from vendor.paypalapi.exceptions import (PayPalError,
                                PayPalConfigError)
 from vendor.paypalapi.compat import is_py3
 
-if is_py3:
-    #noinspection PyUnresolvedReferences
-    from urllib.parse import urlencode
-else:
-    from urllib import urlencode
+from urllib.parse import urlencode
 
 logger = logging.getLogger('paypal.interface')
 
@@ -65,9 +60,9 @@ class PayPalInterface(object):
             return kwargs
 
         unencoded_pairs = kwargs
-        for i in unencoded_pairs.keys():
+        for i in list(unencoded_pairs.keys()):
             #noinspection PyUnresolvedReferences
-            if isinstance(unencoded_pairs[i], types.UnicodeType):
+            if isinstance(unencoded_pairs[i], str):
                 unencoded_pairs[i] = unencoded_pairs[i].encode('utf-8')
         return unencoded_pairs
 
@@ -117,7 +112,7 @@ class PayPalInterface(object):
         if not response.success:
             logger.error('A PayPal API error was encountered.')
             safe_payload = dict((p, 'X' * len(v) if p in \
-                self.__credentials else v) for (p, v) in payload.items())
+                self.__credentials else v) for (p, v) in list(payload.items()))
             logger.error('PayPal NVP Query Key/Vals (credentials removed):' \
                 '\n%s' % pformat(safe_payload))
             logger.error('PayPal NVP Query Response')
@@ -150,7 +145,7 @@ class PayPalInterface(object):
         elif self.config.API_AUTHENTICATION_MODE == "UNIPAY":
             payload['SUBJECT'] = self.config.UNIPAY_SUBJECT
 
-        none_configs = [config for config, value in payload.iteritems()\
+        none_configs = [config for config, value in list(payload.items())\
                         if value is None]
         if none_configs:
             raise PayPalConfigError(
@@ -158,7 +153,7 @@ class PayPalInterface(object):
                 "interface's config." % none_configs)
 
         # all keys in the payload must be uppercase
-        for key, value in kwargs.items():
+        for key, value in list(kwargs.items()):
             payload[key.upper()] = value
 
         return {'data': payload,

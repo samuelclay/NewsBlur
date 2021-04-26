@@ -1,0 +1,19 @@
+---
+# File: main.yml - Handlers for Consul
+
+- name: reload consul configuration
+  become: yes
+  service:
+    name: consul
+    state: reloaded
+  listen: reload consul
+
+- name: reload nginx configuration
+  become: yes
+  command: docker kill --signal HUP nginx
+  listen: reload nginx
+
+- name: restart nginx
+  become: yes
+  command: docker restart nginx
+  listen: restart nginx

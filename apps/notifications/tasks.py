@@ -1,4 +1,4 @@
-from newsblur.celeryapp import app
+from newsblur_web.celeryapp import app
 from django.contrib.auth.models import User
 from apps.notifications.models import MUserFeedNotification
 from utils import log as logging

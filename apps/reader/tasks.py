@@ -1,5 +1,5 @@
 import datetime
-from newsblur.celeryapp import app
+from newsblur_web.celeryapp import app
 from utils import log as logging
 from django.contrib.auth.models import User
 from django.conf import settings

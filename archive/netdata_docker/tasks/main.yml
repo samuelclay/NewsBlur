@@ -1,0 +1,89 @@
+---
+- name: Copy netdata.conf template
+  template:
+    src: /srv/newsblur/docker/netdata/netdataconfig/netdata.conf.j2
+    dest: /srv/newsblur/docker/netdata/netdataconfig/netdata.conf
+  notify: restart netdata
+
+- name: Setup Netdata docker container
+  become: yes
+  docker_container:
+    name: netdata
+    state: started
+    healthcheck:
+      test: curl localhost:19999
+    image: netdata/netdata:latest
+    ports: 19999:19999
+    pull: yes
+    hostname: "{{ ansible_hostname }}"
+    container_default_behavior: no_defaults
+    capabilities:
+      - SYS_PTRACE
+    security_opts:
+      - apparmor:unconfined
+    env:
+      MONITOR_URL: "https://{{ ansible_ssh_host }}/monitor"
+      STAGING: "True"
+    volumes:
+      - /srv/newsblur/docker/netdata/netdataconfig/netdata.conf:/etc/netdata/netdata.conf
+      - /var/lib/netdata/cloud.d:/var/lib/netdata/cloud.d
+      - /srv/newsblur/docker/netdata/netdataconfig/python.d.conf:/usr/lib/netdata/conf.d/python.d.conf 
+      - /srv/newsblur/docker/netdata/netdataconfig/conf/:/usr/lib/netdata/conf.d/python.d/
+      - /srv/newsblur/docker/netdata/netdataconfig/charts/newsblur.chart.py:/usr/libexec/netdata/python.d/newsblur.chart.py
+      - /etc/passwd:/host/etc/passwd:ro
+      - /etc/group:/host/etc/group:ro
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /etc/os-release:/host/etc/os-release:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+  notify: restart netdata
+
+
+# - name: Add netdata agent to war room
+#   become: yes
+#   command: "docker exec netdata netdata-claim.sh -token={{ netdata_token }} -rooms={{ netdata_room }} -url={{ netdata_url }} -id=$(uuidgen) -hostname={{ ansible_hostname }}"
+
+- name: Claim to Netdata Cloud
+  block: 
+
+  - name: Check if node is already claimed
+    become: yes
+    # This check is used to prevent errors in the following task to claim the node to Netdata Cloud.
+    stat:
+      path: /var/lib/netdata/cloud.d/claimed_id
+    register: claimed_result
+
+  - name: Claim to Netdata Cloud
+    command: "docker exec netdata netdata-claim.sh -token={{ netdata_token }} -rooms={{ netdata_room }} -url={{ netdata_url }} -hostname={{ ansible_hostname }}"
+    when: claimed_result.stat.exists == false
+    notify: restart netdata
+    become: yes
+  when: reclaim == false
+
+- name: Check if reclaiming
+  debug: msg=Reclaiming
+  changed_when: yes
+  register: reclaim
+  tags:
+    - never
+    - reclaim
+
+- name: Re-claim a node to Netdata Cloud
+  block:
+
+  - name: Ensure `uuidgen` is installed
+    stat:
+      path: /usr/bin/uuidgen
+    register: uuidgen_result
+  
+  - name: Fail if `uuidgen` is not installed
+    fail:
+      msg: The system needs `uuidgen` installed to enable re-claiming.
+    when: uuidgen_result.stat.exists == false
+
+  - name: Reclaim the node with `-id=`
+    command: "docker exec netdata netdata-claim.sh -token={{ netdata_token }} -rooms={{ netdata_room }} -url={{ netdata_url }} -id=$(uuidgen) -hostname={{ ansible_hostname }}"
+    when: uuidgen_result.stat.exists == true
+    notify: restart netdata
+    become: yes
+  when: reclaim is defined

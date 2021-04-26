@@ -1,0 +1,33 @@
+### BEGIN INIT INFO
+# Provides: consul
+# Required-Start: $local_fs $remote_fs
+# Required-Stop: $local_fs $remote_fs
+# Default-Start: 2 3 4 5
+# Default-Stop: 0 1 6
+# Short-Description: Consul snapshot agent
+# Description: Consul service snapshot agent
+### END INIT INFO
+
+[Unit]
+Description=Consul snapshot agent
+Requires=network-online.target
+Requisite=consul.service
+After=network-online.target
+
+[Service]
+User={{ consul_user }}
+Group={{ consul_group }}
+PIDFile={{ consul_run_path }}/consul_snapshot.pid
+PermissionsStartOnly=true
+ExecStart={{ consul_bin_path }}/consul snapshot agent \
+-config-file={{ consul_config_path }}/consul_snapshot.json
+ExecReload=/bin/kill -HUP $MAINPID
+KillSignal=SIGTERM
+Restart=on-failure
+RestartSec=42s
+{% for var in consul_env_vars %}
+Environment={{ var }}
+{% endfor %}
+
+[Install]
+WantedBy=multi-user.target

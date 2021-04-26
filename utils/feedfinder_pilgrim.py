@@ -46,16 +46,16 @@ Also Jason Diamond, Brian Lalor for bug reporting and patches"""
 
 _debug = 0
 
-import sgmllib, urllib, urlparse, re, sys, robotparser
+import sgmllib, urllib.request, urllib.parse, urllib.error, urllib.parse, re, sys, urllib.robotparser
 import requests
-from StringIO import StringIO
+from io import StringIO
 from lxml import etree
 
 
 # XML-RPC support allows feedfinder to query Syndic8 for possible matches.
 # Python 2.3 now comes with this module by default, otherwise you can download it
 try:
-    import xmlrpclib # http://www.pythonware.com/products/xmlrpc/
+    import xmlrpc.client # http://www.pythonware.com/products/xmlrpc/
 except ImportError:
     xmlrpclib = None
 
@@ -67,28 +67,28 @@ if not dict:
         return rc
     
 def _debuglog(message):
-    if _debug: print message
+    if _debug: print(message)
     
 class URLGatekeeper:
     """a class to track robots.txt rules across multiple servers"""
     def __init__(self):
         self.rpcache = {} # a dictionary of RobotFileParser objects, by domain
-        self.urlopener = urllib.FancyURLopener()
+        self.urlopener = urllib.request.build_opener()
         self.urlopener.version = "NewsBlur Feed Finder (Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_1) AppleWebKit/534.48.3 (KHTML, like Gecko) Version/5.1 Safari/534.48.3)"
         _debuglog(self.urlopener.version)
         self.urlopener.addheaders = [('User-Agent', self.urlopener.version)]
         # self.urlopener.addheaders = [('User-Agent', self.urlopener.version), ('Accept', '*')]
-        robotparser.URLopener.version = self.urlopener.version
-        robotparser.URLopener.addheaders = self.urlopener.addheaders
+        #urllib.robotparser.URLopener.version = self.urlopener.version
+        #urllib.robotparser.URLopener.addheaders = self.urlopener.addheaders
         
     def _getrp(self, url):
-        protocol, domain = urlparse.urlparse(url)[:2]
-        if self.rpcache.has_key(domain):
+        protocol, domain = urllib.parse.urlparse(url)[:2]
+        if domain in self.rpcache:
             return self.rpcache[domain]
         baseurl = '%s://%s' % (protocol, domain)
-        robotsurl = urlparse.urljoin(baseurl, 'robots.txt')
+        robotsurl = urllib.parse.urljoin(baseurl, 'robots.txt')
         _debuglog('fetching %s' % robotsurl)
-        rp = robotparser.RobotFileParser(robotsurl)
+        rp = urllib.robotparser.RobotFileParser(robotsurl)
         try:
             rp.read()
         except:
@@ -119,7 +119,7 @@ class BaseParser(sgmllib.SGMLParser):
         
     def normalize_attrs(self, attrs):
         def cleanattr(v):
-            v = sgmllib.charref.sub(lambda m: unichr(int(m.groups()[0])), v)
+            v = sgmllib.charref.sub(lambda m: chr(int(m.groups()[0])), v)
             if not v: return
             v = v.strip()
             v = v.replace('&lt;', '<').replace('&gt;', '>').replace('&apos;', "'").replace('&quot;', '"').replace('&amp;', '&')
@@ -130,7 +130,7 @@ class BaseParser(sgmllib.SGMLParser):
         
     def do_base(self, attrs):
         attrsD = dict(self.normalize_attrs(attrs))
-        if not attrsD.has_key('href'): return
+        if 'href' not in attrsD: return
         self.baseuri = attrsD['href']
     
     def error(self, *a, **kw): pass # we're not picky
@@ -143,18 +143,18 @@ class LinkParser(BaseParser):
                   'application/x-atom+xml')
     def do_link(self, attrs):
         attrsD = dict(self.normalize_attrs(attrs))
-        if not attrsD.has_key('rel'): return
+        if 'rel' not in attrsD: return
         rels = attrsD['rel'].split()
         if 'alternate' not in rels: return
         if attrsD.get('type') not in self.FEED_TYPES: return
-        if not attrsD.has_key('href'): return
-        self.links.append(urlparse.urljoin(self.baseuri, attrsD['href']))
+        if 'href' not in attrsD: return
+        self.links.append(urllib.parse.urljoin(self.baseuri, attrsD['href']))
 
 class ALinkParser(BaseParser):
     def start_a(self, attrs):
         attrsD = dict(self.normalize_attrs(attrs))
-        if not attrsD.has_key('href'): return
-        self.links.append(urlparse.urljoin(self.baseuri, attrsD['href']))
+        if 'href' not in attrsD: return
+        self.links.append(urllib.parse.urljoin(self.baseuri, attrsD['href']))
 
 def makeFullURI(uri):
     if not uri: return
@@ -207,18 +207,18 @@ def isXMLRelatedLink(link):
 
 r_brokenRedirect = re.compile('<newLocation[^>]*>(.*?)</newLocation>', re.S)
 def tryBrokenRedirect(data):
-    if '<newLocation' in data:
+    if b'<newLocation' in data:
         newuris = r_brokenRedirect.findall(data)
         if newuris and newuris[0]: return newuris[0].strip()
 
 def couldBeFeedData(data):
     data = data.lower()
-    if data.count('<html'): return 0
-    return data.count('<rss') + data.count('<rdf') + data.count('<feed')
+    if data.count(b'<html'): return 0
+    return data.count(b'<rss') + data.count(b'<rdf') + data.count(b'<feed')
 
 def isFeed(uri):
     _debuglog('seeing if %s is a feed' % uri)
-    protocol = urlparse.urlparse(uri)
+    protocol = urllib.parse.urlparse(uri)
     if protocol[0] not in ('http', 'https'): return 0
     try:
         data = _gatekeeper.get(uri, check=False)
@@ -227,13 +227,16 @@ def isFeed(uri):
     count = couldBeFeedData(data)
     return count
 
+def cmp_(a, b):
+    return (a > b) - (a < b) 
+
 def sortFeeds(feed1Info, feed2Info):
-    return cmp(feed2Info['headlines_rank'], feed1Info['headlines_rank'])
+    return cmp_(feed2Info['headlines_rank'], feed1Info['headlines_rank'])
 
 def getFeedsFromSyndic8(uri):
     feeds = []
     try:
-        server = xmlrpclib.Server('http://www.syndic8.com/xmlrpc.php')
+        server = xmlrpc.client.Server('http://www.syndic8.com/xmlrpc.php')
         feedids = server.syndic8.FindFeeds(uri)
         infolist = server.syndic8.GetFeedInfo(feedids, ['headlines_rank','status','dataurl'])
         infolist.sort(sortFeeds)
@@ -270,7 +273,7 @@ def feeds(uri, all=False, querySyndic8=False, _recurs=None):
         except:
             outfeeds = []
     _debuglog('found %s feeds through LINK tags' % len(outfeeds))
-    outfeeds = filter(isFeed, outfeeds)
+    outfeeds = list(filter(isFeed, outfeeds))
     if all or not outfeeds:
         # no LINK tags, look for regular <A> links that point to feeds
         _debuglog('no LINK tags, looking at A tags')
@@ -281,16 +284,16 @@ def feeds(uri, all=False, querySyndic8=False, _recurs=None):
         _debuglog('no LINK tags, looking at local links')
         locallinks = getLocalLinks(links, fulluri)
         # look for obvious feed links on the same server
-        outfeeds.extend(filter(isFeed, filter(isFeedLink, locallinks)))
+        outfeeds.extend(list(filter(isFeed, list(filter(isFeedLink, locallinks)))))
         if all or not outfeeds:
             # look harder for feed links on the same server
-            outfeeds.extend(filter(isFeed, filter(isXMLRelatedLink, locallinks)))
+            outfeeds.extend(list(filter(isFeed, list(filter(isXMLRelatedLink, locallinks)))))
         if all or not outfeeds:
             # look for obvious feed links on another server
-            outfeeds.extend(filter(isFeed, filter(isFeedLink, links)))
+            outfeeds.extend(list(filter(isFeed, list(filter(isFeedLink, links)))))
         if all or not outfeeds:
             # look harder for feed links on another server
-            outfeeds.extend(filter(isFeed, filter(isXMLRelatedLink, links)))
+            outfeeds.extend(list(filter(isFeed, list(filter(isXMLRelatedLink, links)))))
     if all or not outfeeds:
         _debuglog('no A tags, guessing')
         suffixes = [ # filenames used by popular software:
@@ -302,12 +305,12 @@ def feeds(uri, all=False, querySyndic8=False, _recurs=None):
           'index.xml', # MT
           'index.rss' # Slash
         ]
-        outfeeds.extend(filter(isFeed, [urlparse.urljoin(fulluri, x) for x in suffixes]))
+        outfeeds.extend(list(filter(isFeed, [urllib.parse.urljoin(fulluri, x) for x in suffixes])))
     if (all or not outfeeds) and querySyndic8:
         # still no luck, search Syndic8 for feeds (requires xmlrpclib)
         _debuglog('still no luck, searching Syndic8')
         outfeeds.extend(getFeedsFromSyndic8(uri))
-    if hasattr(__builtins__, 'set') or __builtins__.has_key('set'):
+    if hasattr(__builtins__, 'set') or 'set' in __builtins__:
         outfeeds = list(set(outfeeds))
     return outfeeds
 
@@ -317,7 +320,7 @@ def feed(uri):
     #todo: give preference to certain feed formats
     feedlist = feeds(uri)
     if feedlist:
-        feeds_no_comments = filter(lambda f: 'comments' not in f.lower(), feedlist)
+        feeds_no_comments = [f for f in feedlist if 'comments' not in f.lower()]
         if feeds_no_comments:
             return feeds_no_comments[0]
         return feedlist[0]
@@ -338,25 +341,25 @@ def test():
         count += 1
         links = getLinks(data, uri)
         if not links:
-            print '\n*** FAILED ***', uri, 'could not find link'
+            print(('\n*** FAILED ***', uri, 'could not find link'))
             failed.append(uri)
         elif len(links) > 1:
-            print '\n*** FAILED ***', uri, 'found too many links'
+            print(('\n*** FAILED ***', uri, 'found too many links'))
             failed.append(uri)
         else:
-            atomdata = urllib.urlopen(links[0]).read()
+            atomdata = urllib.request.urlopen(links[0]).read()
             if atomdata.find('<link rel="alternate"') == -1:
-                print '\n*** FAILED ***', uri, 'retrieved something that is not a feed'
+                print(('\n*** FAILED ***', uri, 'retrieved something that is not a feed'))
                 failed.append(uri)
             else:
                 backlink = atomdata.split('href="').pop().split('"')[0]
                 if backlink != uri:
-                    print '\n*** FAILED ***', uri, 'retrieved wrong feed'
+                    print(('\n*** FAILED ***', uri, 'retrieved wrong feed'))
                     failed.append(uri)
         if data.find('<link rel="next" href="') == -1: break
-        uri = urlparse.urljoin(uri, data.split('<link rel="next" href="').pop().split('"')[0])
-    print
-    print count, 'tests executed,', len(failed), 'failed'
+        uri = urllib.parse.urljoin(uri, data.split('<link rel="next" href="').pop().split('"')[0])
+    print()
+    print((count, 'tests executed,', len(failed), 'failed'))
         
 if __name__ == '__main__':
     args = sys.argv[1:]
@@ -370,4 +373,4 @@ if __name__ == '__main__':
     if uri == 'test':
         test()
     else:
-        print "\n".join(getFeeds(uri))
+        print(("\n".join(getFeeds(uri))))

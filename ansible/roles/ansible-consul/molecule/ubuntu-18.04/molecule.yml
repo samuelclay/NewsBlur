@@ -1,0 +1,13 @@
+---
+platforms:
+  - name: ubuntu-18.04
+    groups:
+      - consul_instances
+    image: dokken/ubuntu-18.04
+    command: /lib/systemd/systemd
+    dockerfile: ../_shared/Dockerfile.j2
+    capabilities:
+      - SYS_ADMIN
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    privileged: true

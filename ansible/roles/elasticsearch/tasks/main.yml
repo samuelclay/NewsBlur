@@ -1,0 +1,21 @@
+---
+- name: Start Elasticsearch Docker container
+  become: yes
+  docker_container:
+    name: elasticsearch
+    image: elasticsearch:1.7.6
+    state: started
+    ports:
+      - '9200:9200'
+    restart_policy: unless-stopped
+    volumes:
+      - /srv/newsblur/docker/volumes/elasticsearch:/usr/share/elasticsearch/data
+
+- name: Register elasticsearch in consul
+  tags: consul
+  become: yes
+  template:
+    src: consul_service.json
+    dest: /etc/consul.d/elasticsearch.json
+  notify:
+    - reload consul

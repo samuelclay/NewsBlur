@@ -71,6 +71,35 @@ def render_getting_started(context):
         'social_profile': profile,
     }
 
+@register.inclusion_tag('reader/dashboard_rivers.xhtml', takes_context=True)
+def render_dashboard_rivers_left(context, dashboard_rivers):
+    user    = get_user(context['user'])
+
+    return {
+        'user': user,
+        'dashboard_rivers': dashboard_rivers,
+        'side': 'left'
+    }
+
+@register.inclusion_tag('reader/dashboard_rivers.xhtml', takes_context=True)
+def render_dashboard_rivers_right(context, dashboard_rivers):
+    user    = get_user(context['user'])
+
+    return {
+        'user': user,
+        'dashboard_rivers': dashboard_rivers,
+        'side': 'right'
+    }
+
+@register.inclusion_tag('reader/dashboard_river.xhtml', takes_context=True)
+def render_dashboard_river(context, dashboard_river):
+    user    = get_user(context['user'])
+
+    return {
+        'user': user,
+        'dashboard_river': dashboard_river,
+    }
+
 @register.inclusion_tag('reader/account_module.xhtml', takes_context=True)
 def render_account_module(context):
     user    = get_user(context['user'])
@@ -100,7 +129,7 @@ def render_footer(context, page=None):
 
 @register.filter
 def get(h, key):
-    print h, key
+    print(h, key)
     return h[key]
 
 @register.filter
@@ -140,7 +169,7 @@ def get_range( value ):
 
     Instead of 3 one may use the variable set in the views
     """
-    return range( value )
+    return list(range( value))
 
 @register.filter
 def commify(n):

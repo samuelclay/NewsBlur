@@ -5,7 +5,7 @@ your settings.py::
     EMAIL_BACKEND = 'seacucumber.backend.SESBackend'
 """
 from django.core.mail.backends.base import BaseEmailBackend
-from seacucumber.tasks import SendEmailTask
+from vendor.seacucumber.tasks import SendEmailTask
 
 class SESBackend(BaseEmailBackend):
     """

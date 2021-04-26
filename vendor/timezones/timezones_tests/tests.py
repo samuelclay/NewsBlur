@@ -12,7 +12,7 @@ import vendor.timezones.forms
 import vendor.timezones.timezones_tests.models as test_models
 
 from vendor.timezones.utilities import localtime_for_timezone, adjust_datetime_to_timezone
-
+from vendor import timezones
 
 
 class TimeZoneTestCase(TestCase):
@@ -29,7 +29,7 @@ class TimeZoneTestCase(TestCase):
     
     def assertFormIsValid(self, form):
         is_valid = form.is_valid()
-        self.assert_(is_valid,
+        self.assertTrue(is_valid,
             "Form did not validate (errors=%r, form=%r)" % (form._errors, form)
         )
 
@@ -75,16 +75,17 @@ class TimeZoneFieldTestCase(TimeZoneTestCase):
         f = timezones.forms.TimeZoneField()
         try:
             f.clean("BAD VALUE")
-        except forms.ValidationError, e:
+        except forms.ValidationError as e:
             self.assertEqual(e.messages, ["Select a valid choice. BAD VALUE is not one of the available choices."])
     
     def test_models_as_a_form(self):
         class ProfileForm(forms.ModelForm):
             class Meta:
                 model = test_models.Profile
+                fields = "__all__"
         form = ProfileForm()
         rendered = form.as_p()
-        self.assert_(
+        self.assertTrue(
             bool(re.search(r'<option value="[\w/]+">\([A-Z]+(?:\+|\-)\d{4}\)\s[\w/]+</option>', rendered)),
             "Did not find pattern in rendered form"
         )
@@ -93,14 +94,22 @@ class TimeZoneFieldTestCase(TimeZoneTestCase):
         class ProfileForm(forms.ModelForm):
             class Meta:
                 model = test_models.Profile
-        form = ProfileForm({"name": "Brian Rosner", "timezone": "America/Denver"})
+                fields = "__all__"
+        now = datetime.now()
+        tz = "America/Denver"
+        tz = "(GMT%s) %s" % (now.strftime("%z"), tz)
+        form = ProfileForm({"name": "Brian Rosner", "timezone": tz})
         self.assertFormIsValid(form)
     
     def test_models_modelform_save(self):
         class ProfileForm(forms.ModelForm):
             class Meta:
                 model = test_models.Profile
-        form = ProfileForm({"name": "Brian Rosner", "timezone": "America/Denver"})
+                fields = "__all__"
+        tz = "America/Denver"
+        now = datetime.now()
+        tz = "(GMT%s) %s" % (now.strftime("%z"), tz)
+        form = ProfileForm({"name": "Brian Rosner", "timezone": tz})
         self.assertFormIsValid(form)
         p = form.save()
     

@@ -8,6 +8,6 @@ while True:
     req = requests.get(url)
     content = req.content
     end = time.time()
-    print " ---> [%.4ss] Retrieved %s bytes - %s %s" % (end - start, len(content), req.status_code, req.reason)
+    print((" ---> [%s] Retrieved %s bytes - %s %s" % (str(end - start)[:4], len(content), req.status_code, req.reason)))
     time.sleep(5)
 

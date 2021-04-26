@@ -1,0 +1,102 @@
+---
+# File: asserts.yml - Asserts for this playbook
+
+- name: Check distribution compatibility
+  fail:
+    msg: "{{ ansible_distribution }} is not currently supported by this role."
+  when:
+    - ansible_distribution not in ['RedHat', 'CentOS', 'OracleLinux', 'Fedora', 'Debian', 'FreeBSD', 'SmartOS', 'Ubuntu', 'Archlinux', 'Alpine', 'Amazon']
+    - ansible_os_family != 'Windows'
+
+- name: Check CentOS, Red Hat or Oracle Linux version
+  fail:
+    msg: "{{ ansible_distribution_version }} is not a supported version."
+  when:
+    - ansible_distribution in ['RedHat', 'CentOS', 'OracleLinux']
+    - ansible_distribution_version is version_compare(6, '<')
+
+- name: Check Debian version
+  fail:
+    msg: "{{ ansible_distribution_version }} is not a supported version."
+  when:
+    - ansible_distribution == "Debian"
+    - (ansible_distribution_version != 'buster/sid') and (ansible_distribution_version is version_compare(8, '<'))
+
+- name: Check FreeBSD version
+  fail:
+    msg: "{{ ansible_distribution_version }} is not a supported version."
+  when:
+    - ansible_distribution == "FreeBSD"
+    - ansible_distribution_version is version_compare(10, '<')
+
+- name: Check Ubuntu version
+  fail:
+    msg: "{{ ansible_distribution_version }} is not a supported version."
+  when:
+    - ansible_distribution == "Ubuntu"
+    - ansible_distribution_version is version_compare(13.04, '<')
+
+- name: Check specified ethernet interface
+  fail:
+    msg: "The ethernet interface specified by consul_iface was not found."
+  when:
+    - ansible_os_family != 'Windows'
+    - consul_iface not in ansible_interfaces
+
+- name: Check iptables on Red Hat, CentOS or Oracle Linux
+  fail:
+    msg: "Use DNSmasq instead of iptables on {{ ansible_distribution }}."
+  when:
+    - consul_iptables_enable | bool
+    - ansible_distribution in ['RedHat', 'CentOS', 'OracleLinux']
+    - ansible_distribution_version is version_compare(6, '>=')
+
+- name: Check for both Dnsmasq and iptables enabled
+  fail:
+    msg: "EONEORTHEOTHER: DNSmasq and iptables together is not supported."
+  when:
+    - consul_dnsmasq_enable | bool
+    - consul_iptables_enable | bool
+
+- name: Check for iptables enabled but no recursors
+  fail:
+    msg: "Recursors are required if iptables is enabled."
+  when:
+    - consul_iptables_enable | bool
+    - consul_recursors | length == 0
+
+- name: Check consul_group_name is included in groups
+  fail:
+    msg: "consul_group_name must be included in groups."
+  when: consul_group_name not in groups
+
+- name: Fail if more than one bootstrap server is defined
+  fail:
+    msg: "You can not define more than one bootstrap server."
+  when:
+    - _consul_bootstrap_servers | length > 1
+
+- name: Fail if a bootstrap server is defined and bootstrap_expect is true
+  fail:
+    msg: "Can't use a bootstrap server and bootstrap_expect at the same time."
+  when:
+    - _consul_bootstrap_servers | length > 0
+    - consul_bootstrap_expect | bool
+
+# Check for unzip binary
+
+- name: Check if unzip is installed on control host
+  shell: "command -v unzip -h >/dev/null 2>&1"
+  become: false
+  changed_when: false
+  check_mode: false
+  run_once: true
+  register: is_unzip_installed
+  ignore_errors: true
+  delegate_to: 127.0.0.1
+
+- name: Install remotely if unzip is not installed on control host
+  set_fact:
+    consul_install_remotely: true
+  when:
+    - is_unzip_installed.rc == 1

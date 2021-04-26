@@ -20,7 +20,7 @@ Tools for interacting with OAuth 2.0 protected resources.
 __author__ = 'jcgregorio@google.com (Joe Gregorio)'
 
 import base64
-import clientsecrets
+import vendor.oauth2client.clientsecrets
 import copy
 import datetime
 import httplib2
@@ -28,23 +28,23 @@ import logging
 import os
 import sys
 import time
-import urllib
-import urlparse
+import urllib.request, urllib.parse, urllib.error
+from urllib.parse import urlparse
 
 from oauth2client import util
 from oauth2client.anyjson import simplejson
 
 HAS_OPENSSL = False
 try:
-  from oauth2client.crypt import Signer
-  from oauth2client.crypt import make_signed_jwt
-  from oauth2client.crypt import verify_signed_jwt_with_certs
+  from vendor.oauth2client.crypt import Signer
+  from vendor.oauth2client.crypt import make_signed_jwt
+  from vendor.oauth2client.crypt import verify_signed_jwt_with_certs
   HAS_OPENSSL = True
 except ImportError:
   pass
 
 try:
-  from urlparse import parse_qsl
+  from urllib.parse import parse_qsl
 except ImportError:
   from cgi import parse_qsl
 
@@ -536,7 +536,7 @@ class OAuth2Credentials(Credentials):
 
   def _generate_refresh_request_body(self):
     """Generate the body that will be used in the refresh request."""
-    body = urllib.urlencode({
+    body = urllib.parse.urlencode({
         'grant_type': 'refresh_token',
         'client_id': self.client_id,
         'client_secret': self.client_secret,
@@ -624,7 +624,7 @@ class OAuth2Credentials(Credentials):
           self.invalid = True
           if self.store:
             self.store.locked_put(self)
-      except StandardError:
+      except Exception:
         pass
       raise AccessTokenRefreshError(error_msg)
 
@@ -728,7 +728,7 @@ class AssertionCredentials(OAuth2Credentials):
   def _generate_refresh_request_body(self):
     assertion = self._generate_assertion()
 
-    body = urllib.urlencode({
+    body = urllib.parse.urlencode({
         'assertion_type': self.assertion_type,
         'assertion': assertion,
         'grant_type': 'assertion',
@@ -819,7 +819,7 @@ if HAS_OPENSSL:
 
     def _generate_assertion(self):
       """Generate the assertion that will be used in the request."""
-      now = long(time.time())
+      now = int(time.time())
       payload = {
           'aud': self.token_uri,
           'scope': self.scope,
@@ -915,7 +915,7 @@ def _parse_exchange_token_response(content):
   resp = {}
   try:
     resp = simplejson.loads(content)
-  except StandardError:
+  except Exception:
     # different JSON libs raise different exceptions,
     # so we just do a catch-all here
     resp = dict(parse_qsl(content))
@@ -1078,7 +1078,7 @@ class OAuth2WebServerFlow(Flow):
     query.update(self.params)
     parts = list(urlparse.urlparse(self.auth_uri))
     query.update(dict(parse_qsl(parts[4]))) # 4 is the index of the query part
-    parts[4] = urllib.urlencode(query)
+    parts[4] = urllib.parse.urlencode(query)
     return urlparse.urlunparse(parts)
 
   @util.positional(2)
@@ -1099,7 +1099,7 @@ class OAuth2WebServerFlow(Flow):
       refresh_token.
     """
 
-    if not (isinstance(code, str) or isinstance(code, unicode)):
+    if not (isinstance(code, str) or isinstance(code, str)):
       if 'code' not in code:
         if 'error' in code:
           error_msg = code['error']
@@ -1109,7 +1109,7 @@ class OAuth2WebServerFlow(Flow):
       else:
         code = code['code']
 
-    body = urllib.urlencode({
+    body = urllib.parse.urlencode({
         'grant_type': 'authorization_code',
         'client_id': self.client_id,
         'client_secret': self.client_secret,
@@ -1150,7 +1150,7 @@ class OAuth2WebServerFlow(Flow):
       logger.info('Failed to retrieve access token: %s' % content)
       if 'error' in d:
         # you never know what those providers got to say
-        error_msg = unicode(d['error'])
+        error_msg = str(d['error'])
       else:
         error_msg = 'Invalid response: %s.' % str(resp.status)
       raise FlowExchangeError(error_msg)

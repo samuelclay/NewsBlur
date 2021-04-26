@@ -1,0 +1,44 @@
+### BEGIN INIT INFO
+# Provides:          consul
+# Required-Start:    $local_fs $remote_fs
+# Required-Stop:     $local_fs $remote_fs
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Consul agent
+# Description:       Consul service discovery framework
+### END INIT INFO
+
+[Unit]
+Description=Consul agent
+Requires=network-online.target
+After=network-online.target
+
+[Service]
+User={{ consul_user }}
+Group={{ consul_group }}
+PIDFile={{ consul_run_path }}/consul.pid
+PermissionsStartOnly=true
+{% if consul_ui_legacy %}
+Environment=CONSUL_UI_LEGACY=true
+{% endif %}
+ExecStartPre=-/bin/mkdir -m 0750 -p {{ consul_run_path }}
+ExecStartPre=/bin/chown -R {{ consul_user }}:{{ consul_group }} {{ consul_run_path }}
+ExecStart={{ consul_bin_path }}/consul agent \
+    -config-file={{ consul_config_path }}/config.json \
+    -config-dir={{ consul_configd_path}} \
+    -pid-file={{ consul_run_path }}/consul.pid
+ExecReload=/bin/kill -HUP $MAINPID
+KillMode=process
+KillSignal=SIGTERM
+Restart=on-failure
+RestartSec={{ consul_systemd_restart_sec }}s
+StandardOutput=null
+StandardError=null
+{% for var in consul_env_vars %}
+Environment={{ var }}
+{% endfor %}
+LimitNOFILE={{ consul_systemd_limit_nofile }}
+AmbientCapabilities=CAP_NET_BIND_SERVICE
+
+[Install]
+WantedBy=multi-user.target

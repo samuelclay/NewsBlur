@@ -1,81 +1,168 @@
----
-version: '2'
+version: '3'
 services:
-  newsblur:
-    build:
-      context: .
-      dockerfile: docker/Dockerfile
-    image: newsblur
-    links:
-      - mongo
-      - postgres
-      - elasticsearch
-      - redis
-    ports:
-      - '8000:8000'
-    networks:
-      - front
-      - back
 
-  postgres:
-    image: postgres:9.6
+  newsblur_web:
+    hostname: nb.com
+    container_name: newsblur_web
+    image: newsblur/newsblur_python3:latest
+    environment: 
+      - DOCKERBUILD=True
+    stdin_open: true
+    tty: true
+    restart: unless-stopped
+    depends_on:
+      - db_mongo
+      - db_postgres
+      - db_redis
+      - db_elasticsearch
+    ulimits:
+      nproc: 10000
+      nofile:
+        soft: 10000
+        hard: 10000
+    expose:
+      - 8000
+    # only use gunicorn if the TEST env variable is not "True"
+    entrypoint: /bin/sh -c newsblur_web/entrypoint.sh
+    volumes: 
+      - ${PWD}:/srv/newsblur
+
+  newsblur_node:
+    image: newsblur/newsblur_node:latest
+    container_name: node
+    environment:
+      - NODE_ENV=docker
+      - MONGODB_PORT=29019
+    command: node newsblur.js
+    restart: unless-stopped
+    stop_signal: HUP
+    depends_on: 
+      - db_mongo
+      - db_postgres
+      - db_redis
+    ports:
+      - 8008:8008
+    volumes: 
+      - ${PWD}/node:/srv
+  
+  imageproxy:
+    image: willnorris/imageproxy:latest
+    container_name: imageproxy
+    entrypoint: /app/imageproxy -addr 0.0.0.0:8088 -cache /tmp/imageproxy -verbose
+    restart: unless-stopped
+    ports:
+      - 8088:8088
+    volumes:
+      - /tmp:/tmp/imageproxy
+  
+  nginx:
+    container_name: nginx
+    image: nginx:1.19.6
+    ports:
+      - 81:81
+    depends_on:
+      - newsblur_web
+      - newsblur_node
+      - db_postgres
+      - db_redis
+      - db_mongo
+      - db_elasticsearch
+    environment: 
+      - DOCKERBUILD=True
+    volumes:
+      - ./docker/nginx/nginx.local.conf:/etc/nginx/conf.d/nginx.conf
+      - ${PWD}:/srv/newsblur
+
+  db_postgres:
+    container_name: db_postgres
+    image: postgres:13.1
     environment:
       - POSTGRES_USER=newsblur
       - POSTGRES_PASSWORD=newsblur
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     ports:
-      - '5432:5432'
+      - 5434:5432
     volumes:
-      - ./docker/postgres:/docker-entrypoint-initdb.d
       - ./docker/volumes/postgres:/var/lib/postgresql/data
-    networks:
-      - back
 
-  redis:
-    image: redis:3
+  db_redis:
+    image: redis:3.2.6
     ports:
-      - '6379:6379'
+      - 6579:6579
+    container_name: db_redis
     volumes:
-      - ./docker/volumes/redis:/data
-      - ./config/redis.conf:/usr/local/etc/redis_server.conf
-      - ./config/redis_docker.conf:/etc/redis_server.conf
-      - ./docker/volumes/redis.var.lib:/var/lib/redis
-    command: /usr/local/bin/redis-server /usr/local/etc/redis_server.conf
-    networks:
-      - back
+      - ./config/redis.conf:/etc/redis/redis.conf
+      - ./config/redis_docker.conf:/etc/redis/redis_server.conf
+      - ./docker/volumes/redis:/var/lib/redis
+    command: redis-server /etc/redis/redis.conf --port 6579
 
-
-  elasticsearch:
-    image: elasticsearch:1.7
+  db_elasticsearch:
+    container_name: db_elasticsearch
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.11.1
+    mem_limit: 512mb
+    environment:
+      - discovery.type=single-node
     ports:
-      - '9200:9200'
+      - 9200:9200
+      - 9300:9300
     volumes:
       - ./docker/volumes/elasticsearch:/usr/share/elasticsearch/data
-    networks:
-      - back
+      - ./config/elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
 
-  mongo:
-    image: mongo:3.2
+  db_mongo:
+    container_name: db_mongo
+    image: mongo:3.6
     ports:
-      - '27017:27017'
-    command: mongod --smallfiles
+      - 29019:29019
+    command: mongod --smallfiles --port 29019
     volumes:
-      - ./docker/volumes/mongo:/data/db
-    networks:
-      - back
+      - ./docker/volumes/db_mongo:/data/db
 
-networks:
-    front:
-      driver: bridge
-# Note: below is optional, if you have an existing ingress bridge
-#      config:
-#        external:
-#            name: ingress
-    back:
-      driver: bridge
-      ipam:
-        driver: default
-# Note: below is optional, if you'd like the back bridge to use fewer IP addresses
-#        config:
-#        - subnet: 172.16.128.0/24
-#          gateway: 172.16.128.1
-      internal: true
+  task_celery:
+    container_name: task_celery
+    image: newsblur/newsblur_python3
+    command: "celery worker -A newsblur_web -B --loglevel=INFO"
+    volumes:
+      - ${PWD}:/srv/newsblur
+    environment: 
+      - DOCKERBUILD=True
+    user: "${CURRENT_UID}:${CURRENT_GID}"
+
+  haproxy:
+    container_name: haproxy
+    image: haproxy:latest
+    depends_on: 
+      - nginx
+      - newsblur_web
+      - newsblur_node
+      - imageproxy
+      - db_redis
+      - db_postgres
+      - db_elasticsearch
+      - db_mongo
+    ports:
+      - 80:80
+      - 443:443
+      - 1936:1936
+    volumes:
+      - ./docker/haproxy/haproxy.docker-compose.cfg:/usr/local/etc/haproxy/haproxy.cfg
+      - ${PWD}:/srv/newsblur
+  
+  netdata:
+    container_name: netdata
+    image: netdata/netdata
+    ports: 
+    - 19999:19999
+    environment:
+    - MONITOR_URL=https://haproxy/monitor
+    volumes:
+    - ./docker/netdata/netdatalib:/var/lib/netdata
+    - ./docker/netdata/netdatacache:/var/cache/netdata
+    - ./docker/netdata/netdataconfig/netdata.conf.j2:/etc/netdata/netdata.conf
+    - ./docker/netdata/netdataconfig/python.d.conf:/usr/lib/netdata/conf.d/python.d.conf 
+    - ./docker/netdata/netdataconfig/conf/:/usr/lib/netdata/conf.d/python.d/
+    - ./docker/netdata/netdataconfig/charts/newsblur.chart.py:/usr/libexec/netdata/python.d/newsblur.chart.py

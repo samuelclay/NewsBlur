@@ -1,0 +1,5 @@
+---
+# File: Debian.yml - Debian OS variables for Consul
+
+consul_os_packages:
+  - unzip

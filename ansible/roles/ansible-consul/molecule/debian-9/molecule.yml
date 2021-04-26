@@ -1,0 +1,13 @@
+---
+platforms:
+  - name: debian-9
+    groups:
+      - consul_instances
+    image: dokken/debian-9
+    command: /lib/systemd/systemd
+    dockerfile: ../_shared/Dockerfile.j2
+    capabilities:
+      - SYS_ADMIN
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    privileged: true

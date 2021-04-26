@@ -3,9 +3,9 @@ Supporting celery tasks go in this module. The primarily interesting one is
 SendEmailTask, which handles sending a single Django EmailMessage object.
 """
 from django.conf import settings
-from newsblur.celeryapp import app
+from newsblur_web.celeryapp import app
 from boto.ses import SESConnection
-from seacucumber.util import get_boto_ses_connection
+from vendor.seacucumber.util import get_boto_ses_connection
 
 class SendEmailTask(Task):
     """
@@ -39,7 +39,7 @@ class SendEmailTask(Task):
                 destinations=recipients,
                 raw_message=message,
             )
-        except Exception, exc:
+        except Exception as exc:
             self.retry(exc=exc)
 
         # We shouldn't ever block long enough to see this, but here it is
