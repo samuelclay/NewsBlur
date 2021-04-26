@@ -45,7 +45,7 @@ class MPopularityQuery(mongo.Document):
         return "%s - \"%s\"" % (self.email, self.query)
 
     def queue_email(self):
-        EmailPopularityQuery.delay(pk=self.pk)
+        EmailPopularityQuery.delay(pk=str(self.pk))
     
     @classmethod
     def ensure_all_sent(cls, queue=True):
