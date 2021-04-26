@@ -6,10 +6,9 @@ package com.newsblur.util;
 
 public class Font {
 
-    public static Font CHRONICLE = new Font(Type.OTF, "ChronicleSSm-Book.otf", "'SelectedFont'");
-    public static Font DEFAULT = new Font(Type.DEFAULT, null, null);
-    public static Font GOTHAM_NARROW = new Font(Type.OTF, "GothamNarrow-Book.otf", "'SelectedFont'");
-    public static Font WHITNEY = new Font(Type.OTF, "WhitneySSm-Book-Bas.otf", "'SelectedFont'");
+    public static Font CHRONICLE = new Font(Type.OTF, "chronicle_ssm_book.otf", "'SelectedFont'");
+    public static Font DEFAULT = new Font(Type.OTF, "whitney_ssm_book_bas.otf", "'SelectedFont'");
+    public static Font GOTHAM_NARROW = new Font(Type.OTF, "gotham_narrow_book.otf", "'SelectedFont'");
     public static Font NOTO_SANS = new Font(Type.WEB, "https://fonts.googleapis.com/css?family=Noto+Sans", "'Noto Sans', sans-serif");
     public static Font NOTO_SERIF = new Font(Type.WEB, "https://fonts.googleapis.com/css?family=Noto+Serif", "'Noto Serif', serif");
     public static Font OPEN_SANS_CONDENSED = new Font(Type.WEB, "https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300", "'Open Sans Condensed', sans-serif");
@@ -21,9 +20,9 @@ public class Font {
         DEFAULT
     }
 
-    private Type type;
-    private String resource;
-    private String fontFamily;
+    private final Type type;
+    private final String resource;
+    private final String fontFamily;
 
     private Font(Type type, String resource, String fontFamily) {
         this.type = type;
@@ -37,8 +36,6 @@ public class Font {
                 return CHRONICLE;
             case "GOTHAM_NARROW":
                 return GOTHAM_NARROW;
-            case "WHITNEY":
-                return WHITNEY;
             case "NOTO_SANS":
                 return NOTO_SANS;
             case "NOTO_SERIF":
@@ -61,11 +58,11 @@ public class Font {
         }
         builder.append("<style style=\"text/css\">");
         if (type == Type.OTF) {
-            builder.append("@font-face { font-family: 'SelectedFont'; src: url(\"file:///android_asset/fonts/");
+            builder.append("@font-face { font-family: 'SelectedFont'; src: url(\"file:///android_res/font/");
             builder.append(resource);
             builder.append("\") }\n");
         }
-        builder.append(String.format("body { font-size: %sem;", Float.toString(currentSize)));
+        builder.append(String.format("body { font-size: %sem;", currentSize));
         if (type != Type.DEFAULT) {
             builder.append("font-family: ");
             builder.append(fontFamily);

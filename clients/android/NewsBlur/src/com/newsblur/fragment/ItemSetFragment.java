@@ -300,7 +300,7 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
 
         if (getFeedSet().isMuted()) {
             binding.emptyViewText.setText(R.string.empty_list_view_muted_feed);
-            binding.emptyViewText.setTypeface(null, Typeface.NORMAL);
+            binding.emptyViewText.setTypeface(binding.emptyViewText.getTypeface(), Typeface.NORMAL);
             binding.emptyViewImage.setVisibility(View.VISIBLE);
             binding.topLoadingThrob.setVisibility(View.INVISIBLE);
             bottomProgressView.setVisibility(View.INVISIBLE);
@@ -318,7 +318,7 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
 
         if ( (!cursorSeenYet) || NBSyncService.isFeedSetSyncing(getFeedSet(), getActivity()) ) {
             binding.emptyViewText.setText(R.string.empty_list_view_loading);
-            binding.emptyViewText.setTypeface(null, Typeface.ITALIC);
+            binding.emptyViewText.setTypeface(binding.emptyViewText.getTypeface(), Typeface.ITALIC);
             binding.emptyViewImage.setVisibility(View.INVISIBLE);
 
             if (NBSyncService.isFeedSetStoriesFresh(getFeedSet())) {
@@ -336,7 +336,7 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
             } else {
                 binding.emptyViewText.setText(R.string.empty_list_view_no_stories);
             }
-            binding.emptyViewText.setTypeface(null, Typeface.NORMAL);
+            binding.emptyViewText.setTypeface(binding.emptyViewText.getTypeface(), Typeface.NORMAL);
             binding.emptyViewImage.setVisibility(View.VISIBLE);
 
             binding.topLoadingThrob.setVisibility(View.INVISIBLE);
