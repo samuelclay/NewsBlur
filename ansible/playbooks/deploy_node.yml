@@ -1,0 +1,32 @@
+---
+- name: DEPLOY -> node
+  hosts: node,staging
+  gather_facts: false
+  vars_files:
+    - ../env_vars/base.yml
+    - ../env_vars/dev.yml
+
+  tasks:
+    - name: Pull newsblur_web github
+      git:
+        repo: https://github.com/samuelclay/NewsBlur.git
+        dest: /srv/newsblur/
+        version: dashboard3
+      register: pulled
+    
+    - name: Restart node
+      become: yes
+      command: "docker restart {{ item.container_name }}"
+      when: item.target_host in inventory_hostname
+      with_items:
+        - container_name: node
+          target_host: node-socket
+        - container_name: node
+          target_host: node-page
+        - container_name: node
+          target_host: node-text
+        - container_name: node
+          target_host: node-favicons
+        - container_name: node
+          target_host: staging-web
+

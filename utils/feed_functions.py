@@ -3,13 +3,13 @@ import threading
 import sys
 import traceback
 import pprint
-import urllib
-import urlparse
+import urllib.request, urllib.parse, urllib.error
+import urllib.parse
 import random
 import warnings
 from django.core.mail import mail_admins
 from django.utils.translation import ungettext
-from django.utils.encoding import smart_unicode
+from django.utils.encoding import smart_str
 from utils import log as logging
 
 
@@ -23,6 +23,7 @@ def timelimit(timeout):
                     threading.Thread.__init__(self)
                     self.result = None
                     self.error = None
+                    self.exc_info = None
                     
                     self.setDaemon(True)
                     self.start()
@@ -30,17 +31,19 @@ def timelimit(timeout):
                 def run(self):
                     try:
                         self.result = function(*args, **kw)
-                    except:
-                        self.error = sys.exc_info()
+                    except BaseException as e:
+                        self.error = e
+                        self.exc_info = sys.exc_info()
             c = Dispatch()
+            dispatch = c
             c.join(timeout)
-            if c.isAlive():
-                raise TimeoutError, 'took too long'
+            if c.is_alive():
+                raise TimeoutError('took too long')
             if c.error:
-                tb = ''.join(traceback.format_exception(c.error[0], c.error[1], c.error[2]))
+                tb = ''.join(traceback.format_exception(c.exc_info[0], c.exc_info[1], c.exc_info[2]))
                 logging.debug(tb)
-                mail_admins('Error in timeout: %s' % c.error[0], tb)
-                raise c.error[0], c.error[1], c.error[2]
+                mail_admins('Error in timeout: %s' % c.exc_info[0], tb)
+                raise c.error
             return c.result
         return _2
     return _1
@@ -49,13 +52,17 @@ def timelimit(timeout):
 def utf8encode(tstr):
     """ Encodes a unicode string in utf-8
     """
-    msg = "utf8encode is deprecated. Use django.utils.encoding.smart_unicode instead."
+    msg = "utf8encode is deprecated. Use django.utils.encoding.smart_str instead."
     warnings.warn(msg, DeprecationWarning)
-    return smart_unicode(tstr)
+    return smart_str(tstr)
 
 # From: http://www.poromenos.org/node/87
 def levenshtein_distance(first, second):
     """Find the Levenshtein distance between two strings."""
+    if second and not first:
+        return -1 * len(second)
+    if first and not second:
+        return len(first)
     if len(first) > len(second):
         first, second = second, first
     if len(second) == 0:
@@ -67,7 +74,7 @@ def levenshtein_distance(first, second):
        distance_matrix[i][0] = i
     for j in range(second_length):
        distance_matrix[0][j]=j
-    for i in xrange(1, first_length):
+    for i in range(1, first_length):
         for j in range(1, second_length):
             deletion = distance_matrix[i-1][j] + 1
             insertion = distance_matrix[i][j-1] + 1
@@ -111,7 +118,7 @@ def _do_timesince(d, chunks, now=None):
 
 def relative_timesince(value):
     if not value:
-        return u''
+        return ''
 
     chunks = (
       (60 * 60 * 24, lambda n: ungettext('day', 'days', n)),
@@ -124,7 +131,7 @@ def relative_timesince(value):
     
 def relative_timeuntil(value):
     if not value:
-        return u''
+        return ''
 
     chunks = (
       (60 * 60, lambda n: ungettext('hour', 'hours', n)),
@@ -171,7 +178,7 @@ def format_relative_date(date, future=False):
 def add_object_to_folder(obj, in_folder, folders, parent='', added=False):
     obj_identifier = obj
     if isinstance(obj, dict):
-        obj_identifier = obj.keys()[0]
+        obj_identifier = list(obj.keys())[0]
 
     if ((not in_folder or in_folder == " ") and
         not parent and 
@@ -183,7 +190,7 @@ def add_object_to_folder(obj, in_folder, folders, parent='', added=False):
     child_folder_names = []
     for item in folders:
         if isinstance(item, dict):
-            child_folder_names.append(item.keys()[0])
+            child_folder_names.append(list(item.keys())[0])
     if isinstance(obj, dict) and in_folder.lower() == parent.lower():
         if obj_identifier not in child_folder_names:
             folders.append(obj)
@@ -191,7 +198,7 @@ def add_object_to_folder(obj, in_folder, folders, parent='', added=False):
         
     for k, v in enumerate(folders):
         if isinstance(v, dict):
-            for f_k, f_v in v.items():
+            for f_k, f_v in list(v.items()):
                 if f_k.lower() == in_folder.lower() and obj_identifier not in f_v and not added:
                     f_v.append(obj)
                     added = True
@@ -216,7 +223,7 @@ def mail_feed_error_to_admin(feed, e, local_vars=None, subject=None):
 ## {{{ http://code.activestate.com/recipes/576611/ (r11)
 from operator import itemgetter
 from heapq import nlargest
-from itertools import repeat, ifilter
+from itertools import repeat
 
 class Counter(dict):
     '''Dict subclass for counting hashable objects.  Sometimes called a bag
@@ -253,8 +260,8 @@ class Counter(dict):
 
         '''        
         if n is None:
-            return sorted(self.iteritems(), key=itemgetter(1), reverse=True)
-        return nlargest(n, self.iteritems(), key=itemgetter(1))
+            return sorted(iter(list(self.items())), key=itemgetter(1), reverse=True)
+        return nlargest(n, iter(list(self.items())), key=itemgetter(1))
 
     def elements(self):
         '''Iterator over elements repeating each as many times as its count.
@@ -267,7 +274,7 @@ class Counter(dict):
         elements() will ignore it.
 
         '''
-        for elem, count in self.iteritems():
+        for elem, count in list(self.items()):
             for _ in repeat(None, count):
                 yield elem
 
@@ -295,7 +302,7 @@ class Counter(dict):
             if hasattr(iterable, 'iteritems'):
                 if self:
                     self_get = self.get
-                    for elem, count in iterable.iteritems():
+                    for elem, count in list(iterable.items()):
                         self[elem] = self_get(elem, 0) + count
                 else:
                     dict.update(self, iterable) # fast path when counter is empty
@@ -393,7 +400,7 @@ class Counter(dict):
         result = Counter()
         if len(self) < len(other):
             self, other = other, self
-        for elem in ifilter(self.__contains__, other):
+        for elem in filter(self.__contains__, other):
             newcount = _min(self[elem], other[elem])
             if newcount > 0:
                 result[elem] = newcount
@@ -402,9 +409,9 @@ class Counter(dict):
 
 if __name__ == '__main__':
     import doctest
-    print doctest.testmod()
+    print((doctest.testmod()))
 ## end of http://code.activestate.com/recipes/576611/ }}}
 
 def chunks(l, n):
-    for i in xrange(0, len(l), n):
+    for i in range(0, len(l), n):
         yield l[i:i+n]

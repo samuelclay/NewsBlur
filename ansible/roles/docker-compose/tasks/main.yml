@@ -1,0 +1,6 @@
+---
+  - name: Run docker-compose.yml
+    become: yes
+    docker_compose:
+      project_src: /srv/newsblur
+      

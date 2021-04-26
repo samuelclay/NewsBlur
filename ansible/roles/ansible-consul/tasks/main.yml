@@ -1,0 +1,57 @@
+---
+# File: main.yml - Main tasks for Consul
+
+- name: Install python dependencies
+  when:
+    - consul_install_dependencies | bool
+  block:
+    - name: Install netaddr dependency on controlling host (with --user)
+      pip:
+        name: netaddr
+        extra_args: --user
+      delegate_to: 127.0.0.1
+      become: false
+      vars:
+        ansible_become: false
+      run_once: true
+      when: not is_virtualenv or is_virtualenv == None
+
+    - name: Install netaddr dependency on controlling host (virtualenv)
+      pip:
+        name: netaddr
+      delegate_to: 127.0.0.1
+      become: false
+      vars:
+        ansible_become: false
+      run_once: true
+      when: is_virtualenv is defined
+
+- name: Include checks/asserts
+  import_tasks: asserts.yml
+
+- name: Include OS-specific variables
+  include_vars: "{{ ansible_os_family }}.yml"
+  tags: always
+
+# -----------------------------------------------------------------------
+# Tasks for all *NIX operating systems
+# -----------------------------------------------------------------------
+- name: Include NIX tasks
+  include_tasks: nix.yml
+  when: ansible_os_family != 'Windows'
+
+# -----------------------------------------------------------------------
+# Tasks for Windows
+# -----------------------------------------------------------------------
+- name: Include Windows tasks
+  include_tasks: windows.yml
+  when: ansible_os_family == 'Windows'
+
+- name: Include services management
+  import_tasks: services.yml
+  when: consul_services is defined and consul_services|length>0
+  tags:
+    - consul_services
+
+- name: flush_handlers
+  meta: flush_handlers

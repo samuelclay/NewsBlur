@@ -1,0 +1,9 @@
+---
+# File: main.yml - Handlers for Consul
+
+- name: reload consul configuration
+  become: yes
+  service:
+    name: consul
+    state: reloaded
+  listen: reload consul

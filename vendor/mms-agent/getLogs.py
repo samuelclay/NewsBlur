@@ -60,7 +60,7 @@ class GetLogsThread( threading.Thread ):
                 if not self._processLogs( logConn ):
                     logConn = self.mmsAgent.closeDbConnection( self.hostKey, logConn )
 
-            except Exception, e:
+            except Exception as e:
                 logConn = self.mmsAgent.closeDbConnection( self.hostKey, logConn )
                 self.logger.error( 'Problem collecting log data from: ' + self.hostKey + " - exception: " + traceback.format_exc( e ) )
 
@@ -94,7 +94,7 @@ class GetLogsThread( threading.Thread ):
 
             return True
 
-        except Exception, e:
+        except Exception as e:
             self.logger.error( 'Problem collecting log data from: ' + self.hostKey + " - exception: " + traceback.format_exc( e ) )
             return False
 

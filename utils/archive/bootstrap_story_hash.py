@@ -6,7 +6,7 @@ from apps.rss_feeds.models import MStory, Feed
 db = settings.MONGODB
 batch = 0
 start = 0
-for f in xrange(start, Feed.objects.latest('pk').pk):
+for f in range(start, Feed.objects.latest('pk').pk):
     if f < batch*100000: continue
     start = time.time()
     try:
@@ -23,7 +23,7 @@ for f in xrange(start, Feed.objects.latest('pk').pk):
                 "story_hash": story.feed_guid_hash
             }})
         cp3 = time.time() - start
-        print "%s: %3s stories (%s/%s/%s)" % (f, count, round(cp1, 2), round(cp2, 2), round(cp3, 2))
-    except Exception, e:
-        print " ***> (%s) %s" % (f, e)
+        print(("%s: %3s stories (%s/%s/%s)" % (f, count, round(cp1, 2), round(cp2, 2), round(cp3, 2))))
+    except Exception as e:
+        print((" ***> (%s) %s" % (f, e)))
 

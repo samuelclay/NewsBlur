@@ -248,21 +248,21 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
         var $months = $.make('select', { name: 'month' });
         _.each(NEWSBLUR.utils.monthNames, function(name, i) {
             var $option = $.make('option', { value: i+"" }, name);
-            if (this_month == i) $option.attr('selected', 'selected');
+            if (this_month == i) $option.prop('selected', true);
             $months.append($option);
         });
 
         var $days = $.make('select', { name: 'day' });
         _.each(_.range(0, 31), function(name, i) {
             var $option = $.make('option', { value: i+1+"" }, i+1);
-            if (this_day == i+1) $option.attr('selected', 'selected');
+            if (this_day == i+1) $option.prop('selected', true);
             $days.append($option);
         });
 
         var $years = $.make('select', { name: 'year' });
         _.each(_.range(2009, this_year+1), function(name, i) {
             var $option = $.make('option', { value: name+"" }, name);
-            if (this_year == name) $option.attr('selected', 'selected');
+            if (this_year == name) $option.prop('selected', true);
             $years.append($option);
         });
         
@@ -400,7 +400,7 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
         var pref = this.model.preference;
         $('input[name=send_emails]', this.$modal).each(function() {
             if ($(this).val() == ""+pref('send_emails')) {
-                $(this).attr('checked', true);
+                $(this).prop('checked', true);
                 return false;
             }
         });

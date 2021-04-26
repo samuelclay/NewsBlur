@@ -1,0 +1,390 @@
+version: '3.9'
+services:
+  newsblur_web:
+    hostname: nb.com
+    image: newsblur/newsblur_python3
+    environment: 
+      - DOCKERBUILD=True
+    stdin_open: true
+    tty: true
+    depends_on:
+      - db_mongo
+      - postgres
+      - elasticsearch
+      - redis
+    depends_on:
+      - db_mongo
+      - postgres
+      - redis
+      - elasticsearch
+    ports:
+      - '8000:8000'
+    command: bash -c 'if [[ -z "${TEST}" && "${TEST}" = "True"  ]] ; then echo "starting test env"; else gunicorn --bind :8000 newsblur_web.wsgi:application; fi'
+    deploy:
+      placement:
+        max_replicas_per_node: 4
+        constraints: 
+          - node.labels.service==app
+      replicas: 4
+    networks:
+      - nb_overlay
+            
+  nginx:
+    image: nginx:1.19.6
+    ports:
+      - 81:81
+    depends_on:
+    - newsblur_web
+    - favicons
+    - postgres
+    - redis
+    - db_mongo
+    - elasticsearch
+    - original_pages
+    - original_text
+    - node_websocket
+    deploy:
+      placement:
+        constraints: 
+          - node.hostname==app
+
+    networks:
+      - nb_overlay
+    #volumes:
+    #  - ./docker/nginx/:/etc/nginx/conf.d
+      
+  postgres:
+    image: postgres:13.1
+    environment:
+      - POSTGRES_USER=newsblur
+      - POSTGRES_PASSWORD=newsblur
+    ports:
+      - '5432:5432'
+    #volumes:
+    #  - postgres-data:/var/lib/postgresql/data
+    deploy:
+      placement:
+        constraints: 
+          - node.hostname==postgres
+      replicas: 1
+    networks:
+      - nb_overlay
+      
+  redis:
+    image: redis:3.2.6
+    ports:
+      - '6379:6379'
+    #volumes:
+    #  - redis-data:/data
+    #  - redis-data:/redis.var.lib:/var/lib/redis
+    command: redis-server --port 6379
+    deploy:
+      placement:
+        constraints:
+          - node.hostname==db-redis
+    networks:
+      - nb_overlay
+
+  redis-story:
+    image: redis:3.2.6
+    ports:
+      - '6378:6378'
+    #volumes:
+    #  - redis-data:/data
+    #  - redis-data:/redis.var.lib:/var/lib/redis
+    command: redis-server --port 6378
+    deploy:
+      resources:
+        limits:
+          cpus: '0.01'
+          memory: 200M
+      placement:
+        constraints:
+          - node.hostname==db-redis-story
+    networks:
+      - nb_overlay
+#          - node.hostname==db-redis-sessions
+#          - node.hostname==db-redis-pubsub  
+  redis-sessions:
+    image: redis:3.2.6
+    ports:
+      - '6377:6377'
+    #volumes:
+    #  - redis-data:/data
+    #  - redis-data:/redis.var.lib:/var/lib/redis
+    command: redis-server --port 6377
+    deploy:
+      placement:
+        constraints:
+          - node.hostname==db-redis-sessions
+    networks:
+      - nb_overlay
+  redis-pubsub:
+    image: redis:3.2.6
+    ports:
+      - '6376:6376'
+    #volumes:
+    #  - redis-data:/data
+    #  - redis-data:/redis.var.lib:/var/lib/redis
+    command: redis-server --port 6376
+    deploy:
+      placement:
+        constraints:
+          - node.hostname==db-redis-pubsub
+    networks:
+      - nb_overlay
+  
+  elasticsearch:
+    image: elasticsearch:1.7
+    ports:
+      - '9200:9200'
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
+    deploy:
+      placement:
+        constraints:
+          - node.hostname==elasticsearch
+    networks:
+      - nb_overlay
+      
+  db_mongo:
+    image: mongo:3.2
+    ports:
+      - 27017:27017
+    command: mongod --smallfiles
+    volumes:
+      - db-mongo-data:/data/db
+    deploy:
+      placement:
+        constraints:
+          - node.hostname==db-mongo
+    networks:
+      - nb_overlay  
+
+  original_pages:
+    image: newsblur/node_prod
+    environment:
+      - NODE_ENV=docker
+    command: node original_page.js
+    ports:
+      - 3060:3060
+    deploy:
+      placement:
+        constraints:
+          - node.hostname==node
+    networks:
+      - nb_overlay
+      
+  original_text:
+    image: newsblur/node_prod
+    environment:
+      - NODE_ENV=docker
+    ports:
+      - 4040:4040
+    command: node original_text.js
+    deploy:
+      placement:
+        constraints:
+          - node.hostname==node
+    networks:
+      - nb_overlay
+    
+  favicons:
+    image: newsblur/node_prod
+    environment:
+      - NODE_ENV=docker
+      - MONGO_PORT=29019
+    ports:
+      - 3030:3030
+    command: node favicons.js
+    depends_on: 
+      - postgres
+    deploy:
+      placement:
+        constraints:
+          - node.hostname==node
+    networks:
+      - nb_overlay
+      
+  node_websocket:
+    image: newsblur/node_prod
+    environment:
+      - NODE_ENV=docker
+    command: node unread_counts.js
+    stop_signal: HUP
+    ports:
+      - 8888:8888
+    deploy:
+      placement:
+        constraints:
+          - node.hostname==node
+    networks:
+      - nb_overlay
+      
+  task_celerybeat_scheduler:
+    image: newsblur/newsblur_python3
+    command: bash -c "mkdir -p data && celery beat -A newsblur_web --schedule=/srv/newsblur/data/celerybeat-schedule.db --loglevel=INFO --pidfile=/srv/celeryd.pid"
+    environment: 
+      - DOCKERBUILD=True
+    deploy:
+      resources:
+        limits:
+          cpus: '0.01'
+          memory: 100M
+      placement:
+        constraints:
+          - node.labels.service==celery
+    networks:
+      - nb_overlay
+  task:
+    image: newsblur/newsblur_python3
+    command: "celery worker -A newsblur_web --loglevel=INFO -Q new_feeds,push_feeds,update_feeds"
+    environment: 
+      - DOCKERBUILD=True
+    user: "${CURRENT_UID}:${CURRENT_GID}"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.01'
+          memory: 100M
+      replicas: 3
+      placement:
+        constraints:
+          - node.labels.service==celery
+    networks:
+      - nb_overlay
+      
+  task_cron_queue:
+    image: newsblur/newsblur_python3
+    command: "celery worker -A newsblur_web --loglevel=INFO -Q cron_queue -c 3"
+    environment: 
+      - DOCKERBUILD=True
+    user: "${CURRENT_UID}:${CURRENT_GID}"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.01'
+          memory: 100M
+      placement:
+        constraints:
+          - node.labels.service==celery
+    networks:
+      - nb_overlay
+      
+  task_beat_feeds:
+    image: newsblur/newsblur_python3
+    command: "celery worker -A newsblur_web --loglevel=INFO -Q beat_feeds_task -c 1"
+    environment: 
+      - DOCKERBUILD=True
+    user: "${CURRENT_UID}:${CURRENT_GID}"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.01'
+          memory: 100M
+      placement:
+        constraints:
+          - node.labels.service==celery
+    networks:
+      - nb_overlay
+      
+  task_search_indexer:
+    image: newsblur/newsblur_python3
+    command: "celery worker -A newsblur_web --loglevel=INFO -Q search_indexer -c 4"
+    environment: 
+      - DOCKERBUILD=True
+
+    user: $CURRENT_UID:$CURRENT_GID
+    deploy:
+      resources:
+        limits:
+          cpus: '0.01'
+          memory: 100M
+      placement:
+        constraints:
+          - node.labels.service==celery
+    networks:
+      - nb_overlay
+
+  task_search_indexer_tasker:
+    image: newsblur/newsblur_python3
+    command: "celery worker -A newsblur_web --loglevel=INFO -Q search_indexer_tasker -c 2"
+    environment: 
+      - DOCKERBUILD=True
+    user: $CURRENT_UID:$CURRENT_GID
+    deploy:
+      resources:
+        limits:
+          cpus: '0.01'
+          memory: 100M
+      placement:
+        constraints:
+          - node.labels.service==celery
+    networks:
+      - nb_overlay
+
+  task_work_queue:
+    image: newsblur/newsblur_python3
+    command: bash -c "celery worker -A newsblur_web --loglevel=INFO -Q work_queue"
+    ports:
+      - 82:82
+    environment: 
+      - DOCKERBUILD=True
+    user: $CURRENT_UID:$CURRENT_GID
+    deploy:
+      resources:
+        limits:
+          cpus: '0.01'
+          memory: 100M
+      replicas: 2
+      placement:
+        constraints:
+          - node.labels.service==celery
+    networks:
+      - nb_overlay
+
+  monitor:
+    image: newsblur/newsblur_python3 
+    command: bash -c "python /srv/newsblur/flask_monitor/db_monitor.py"
+    environment: 
+      - DOCKERBUILD=True
+    ports:
+      - 5579:5579
+    deploy:
+      placement:
+        constraints:
+          - node.hostname==monitor
+    networks:
+      - nb_overlay
+  haproxy:
+    image: newsblur/haproxy
+    dns: 127.0.0.11
+    depends_on: 
+      - nginx
+      - newsblur_web
+      - redis
+    ports:
+      - 80:80
+      - 443:443
+      - 1936:1936
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 900M
+      placement:
+        constraints:
+          - node.hostname==haproxy
+    networks:
+      - nb_overlay
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+networks:
+  nb_overlay:
+    driver: "overlay"
+
+volumes:
+  app-files:
+  nginx:
+  elasticsearch-data:
+  db-mongo-data:

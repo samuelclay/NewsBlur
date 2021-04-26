@@ -1,26 +1,28 @@
-import urllib2
+import urllib.request
+import urllib.error
+import urllib.parse
 import lxml.html
 import numpy
 import scipy
 import scipy.misc
 import scipy.cluster
-import urlparse
 import struct
 import operator
 import gzip
 import datetime
 import requests
-import httplib
+import base64
+import http.client
 from PIL import BmpImagePlugin, PngImagePlugin, Image
 from socket import error as SocketError
 from boto.s3.key import Key
-from StringIO import StringIO
+from io import BytesIO
 from django.conf import settings
 from apps.rss_feeds.models import MFeedPage, MFeedIcon
 from utils.facebook_fetcher import FacebookFetcher
 from utils import log as logging
 from utils.feed_functions import timelimit, TimeoutError
-from OpenSSL.SSL import Error as OpenSSLError
+from OpenSSL.SSL import Error as OpenSSLError, SESS_CACHE_NO_INTERNAL_STORE
 from pyasn1.error import PyAsn1Error
 from requests.packages.urllib3.exceptions import LocationParseError
 
@@ -51,52 +53,51 @@ class IconImporter(object):
             image, image_file, icon_url = self.fetch_image_from_page_data()
         if not image:
             image, image_file, icon_url = self.fetch_image_from_path(force=self.force)
-
-        if image:
-            image = self.normalize_image(image)
-            try:
-                color = self.determine_dominant_color_in_image(image)
-            except IndexError:
-                return
-            except MemoryError:
-                return
-            try:
-                image_str = self.string_from_image(image)
-            except TypeError:
-                return
-
-            if len(image_str) > 500000:
-                image = None
-            if (image and
-                (self.force or
-                 self.feed_icon.data != image_str or
-                 self.feed_icon.icon_url != icon_url or
-                 self.feed_icon.not_found or
-                 (settings.BACKED_BY_AWS.get('icons_on_s3') and not self.feed.s3_icon))):
-                logging.debug("   ---> [%-30s] ~SN~FBIcon difference:~FY color:%s (%s/%s) data:%s url:%s notfound:%s no-s3:%s" % (
-                    self.feed.log_title[:30],
-                    self.feed_icon.color != color, self.feed_icon.color, color,
-                    self.feed_icon.data != image_str,
-                    self.feed_icon.icon_url != icon_url,
-                    self.feed_icon.not_found,
-                    settings.BACKED_BY_AWS.get('icons_on_s3') and not self.feed.s3_icon))
-                self.feed_icon.data = image_str
-                self.feed_icon.icon_url = icon_url
-                self.feed_icon.color = color
-                self.feed_icon.not_found = False
-                self.feed_icon.save()
-                if settings.BACKED_BY_AWS.get('icons_on_s3'):
-                    self.save_to_s3(image_str)
-            if self.feed.favicon_color != color:
-                self.feed.favicon_color = color
-                self.feed.favicon_not_found = False
-                self.feed.save(update_fields=['favicon_color', 'favicon_not_found'])
-
+        
         if not image:
             self.feed_icon.not_found = True
             self.feed_icon.save()
             self.feed.favicon_not_found = True
             self.feed.save()
+            return False
+        
+        image = self.normalize_image(image)
+        try:
+            color = self.determine_dominant_color_in_image(image)
+        except (IndexError, ValueError, MemoryError):
+            logging.debug("   ---> [%-30s] ~SN~FRFailed to measure icon" % self.feed.log_title[:30])
+            return
+        try:
+            image_str = self.string_from_image(image)
+        except TypeError:
+            return
+
+        if len(image_str) > 500000:
+            image = None
+        if (image and
+            (self.force or
+                self.feed_icon.data != image_str or
+                self.feed_icon.icon_url != icon_url or
+                self.feed_icon.not_found or
+                (settings.BACKED_BY_AWS.get('icons_on_s3') and not self.feed.s3_icon))):
+            logging.debug("   ---> [%-30s] ~SN~FBIcon difference:~FY color:%s (%s/%s) data:%s url:%s notfound:%s no-s3:%s" % (
+                self.feed.log_title[:30],
+                self.feed_icon.color != color, self.feed_icon.color, color,
+                self.feed_icon.data != image_str,
+                self.feed_icon.icon_url != icon_url,
+                self.feed_icon.not_found,
+                settings.BACKED_BY_AWS.get('icons_on_s3') and not self.feed.s3_icon))
+            self.feed_icon.data = image_str
+            self.feed_icon.icon_url = icon_url
+            self.feed_icon.color = color
+            self.feed_icon.not_found = False
+            self.feed_icon.save()
+            if settings.BACKED_BY_AWS.get('icons_on_s3'):
+                self.save_to_s3(image_str)
+        if self.feed.favicon_color != color:
+            self.feed.favicon_color = color
+            self.feed.favicon_not_found = False
+            self.feed.save(update_fields=['favicon_color', 'favicon_not_found'])
             
         return not self.feed.favicon_not_found
 
@@ -107,7 +108,7 @@ class IconImporter(object):
         k.key = self.feed.s3_icons_key
         k.set_metadata('Content-Type', 'image/png')
         k.set_metadata('Expires', expires)
-        k.set_contents_from_string(image_str.decode('base64'))
+        k.set_contents_from_string(base64.b64decode(image_str))
         k.set_acl('public-read')
 
         self.feed.s3_icon = True
@@ -127,7 +128,7 @@ class IconImporter(object):
         try:
             image_file.seek(0)
             header = struct.unpack('<3H', image_file.read(6))
-        except Exception, e:
+        except Exception:
             return
 
         # Check magic
@@ -136,9 +137,9 @@ class IconImporter(object):
 
         # Collect icon directories
         directories = []
-        for i in xrange(header[2]):
+        for i in range(header[2]):
             directory = list(struct.unpack('<4B2H2I', image_file.read(16)))
-            for j in xrange(3):
+            for j in range(3):
                 if not directory[j]:
                     directory[j] = 256
 
@@ -203,7 +204,7 @@ class IconImporter(object):
         elif settings.BACKED_BY_AWS.get('pages_on_s3') and self.feed.s3_page:
             key = settings.S3_CONN.get_bucket(settings.S3_PAGES_BUCKET_NAME).get_key(self.feed.s3_pages_key)
             compressed_content = key.get_contents_as_string()
-            stream = StringIO(compressed_content)
+            stream = BytesIO(compressed_content)
             gz = gzip.GzipFile(fileobj=stream)
             try:
                 content = gz.read()
@@ -222,10 +223,10 @@ class IconImporter(object):
                     requests.models.InvalidURL,
                     requests.models.ChunkedEncodingError,
                     requests.models.ContentDecodingError,
+                    http.client.IncompleteRead,
                     requests.adapters.ReadTimeout,
-                    httplib.IncompleteRead,
                     LocationParseError, OpenSSLError, PyAsn1Error,
-                    ValueError), e:
+                    ValueError) as e:
                 logging.debug(" ---> ~SN~FRFailed~FY to fetch ~FGfeed icon~FY: %s" % e)
         if url:
             image, image_file = self.get_image_from_url(url)
@@ -245,7 +246,7 @@ class IconImporter(object):
             url = self.feed_icon.icon_url
         if not url and self.feed.feed_link and len(self.feed.feed_link) > 6:
             try:
-                url = urlparse.urljoin(self.feed.feed_link, 'favicon.ico')
+                url = urllib.parse.urljoin(self.feed.feed_link, 'favicon.ico')
             except ValueError:
                 url = None
         if not url:
@@ -253,7 +254,7 @@ class IconImporter(object):
 
         image, image_file = self.get_image_from_url(url)
         if not image:
-            url = urlparse.urljoin(self.feed.feed_link, '/favicon.ico')
+            url = urllib.parse.urljoin(self.feed.feed_link, '/favicon.ico')
             image, image_file = self.get_image_from_url(url)
         # print 'Found: %s - %s' % (url, image)
         return image, image_file, url
@@ -263,7 +264,7 @@ class IconImporter(object):
         url = facebook_fetcher.favicon_url()
         image, image_file = self.get_image_from_url(url)
         if not image:
-            url = urlparse.urljoin(self.feed.feed_link, '/favicon.ico')
+            url = urllib.parse.urljoin(self.feed.feed_link, '/favicon.ico')
             image, image_file = self.get_image_from_url(url)
         # print 'Found: %s - %s' % (url, image)
         return image, image_file, url
@@ -287,8 +288,8 @@ class IconImporter(object):
                 'Accept': 'image/png,image/x-icon,image/*;q=0.9,*/*;q=0.8'
             }
             try:
-                request = urllib2.Request(url, headers=headers)
-                icon = urllib2.urlopen(request).read()
+                request = urllib.request.Request(url, headers=headers)
+                icon = urllib.request.urlopen(request).read()
             except Exception:
                 return None
             return icon
@@ -298,7 +299,7 @@ class IconImporter(object):
             return None, None
 
         try:
-            icon_file = StringIO(icon)
+            icon_file = BytesIO(icon)
             image = Image.open(icon_file)
         except (IOError, ValueError):
             return None, None
@@ -310,7 +311,7 @@ class IconImporter(object):
         if not content:
             return url
         try:
-            if isinstance(content, unicode):
+            if isinstance(content, str):
                 content = content.encode('utf-8')
             icon_path = lxml.html.fromstring(content).xpath(
                 '//link[@rel="icon" or @rel="shortcut icon"]/@href'
@@ -322,7 +323,7 @@ class IconImporter(object):
             if str(icon_path[0]).startswith('http'):
                 url = icon_path[0]
             else:
-                url = urlparse.urljoin(self.feed.feed_link, icon_path[0])
+                url = urllib.parse.urljoin(self.feed.feed_link, icon_path[0])
         return url
 
     def normalize_image(self, image):
@@ -380,13 +381,14 @@ class IconImporter(object):
         # Find the most frequent color, based on the counts.
         index_max = scipy.argmax(counts)
         peak = codes.astype(int)[index_max]
-        color = ''.join(chr(c) for c in peak).encode('hex')
+        color = "{:02x}{:02x}{:02x}".format(peak[0], peak[1], peak[2])
+        color = self.feed.adjust_color(color[:6], 21)
 
-        return color[:6]
+        return color
 
     def string_from_image(self, image):
-        output = StringIO()
+        output = BytesIO()
         image.save(output, 'png', quality=95)
         contents = output.getvalue()
         output.close()
-        return contents.encode('base64')
+        return base64.b64encode(contents).decode()

@@ -30,8 +30,7 @@ class PushSubscriptionManager(models.Manager):
         if lease_seconds is None:
             lease_seconds = getattr(settings, 'PUBSUBHUBBUB_LEASE_SECONDS',
                                    DEFAULT_LEASE_SECONDS)
-
-        feed = Feed.get_by_id(feed.pk)
+        feed = Feed.get_by_id(feed.id)
         subscription, created = self.get_or_create(feed=feed)
         signals.pre_subscribe.send(sender=subscription, created=created)
         subscription.set_expiration(lease_seconds)
@@ -76,7 +75,7 @@ class PushSubscriptionManager(models.Manager):
                                                   feed=feed, hub=hub, force_retry=True)
             else:
                 logging.debug(u'   ---> [%-30s] ~FR~BKFeed failed to subscribe to push: %s (code: %s)' % (
-                              unicode(subscription.feed)[:30], error[:100], response and response.status_code))
+                              subscription.feed.log_title[:30], error[:100], response and response.status_code))
 
         subscription.save()
         feed.setup_push()
@@ -122,8 +121,8 @@ class PushSubscription(models.Model):
     def generate_token(self, mode):
         assert self.pk is not None, \
             'Subscription must be saved before generating token'
-        token = mode[:20] + hashlib.sha1('%s%i%s' % (
-                settings.SECRET_KEY, self.pk, mode)).hexdigest()
+        token = mode[:20] + hashlib.sha1(('%s%i%s' % (
+                settings.SECRET_KEY, self.pk, mode)).encode(encoding='utf-8')).hexdigest()
         self.verify_token = token
         self.save()
         return token
@@ -167,7 +166,7 @@ class PushSubscription(models.Model):
                                   unicode(self.feed)[:30], hub_url, self_url))
                     
                     
-    def __unicode__(self):
+    def __str__(self):
         if self.verified:
             verified = u'verified'
         else:

@@ -1,0 +1,24 @@
+---
+- name: Start redis docker containers
+  become: yes
+  docker_container:
+    name: redis
+    image: redis:6.2.1
+    state: started
+    ports:
+      - 6379:6379
+    restart_policy: unless-stopped
+    volumes:
+      - /srv/newsblur/docker/volumes/redis:/data
+      - /srv/newsblur/config/redis.conf:/usr/local/etc/redis_server.conf
+      - /srv/newsblur/config/redis_docker.conf:/etc/redis_server.conf
+      - /srv/newsblur/docker/volumes/redis.var.lib:/var/lib/redis
+
+- name: Register redis in consul
+  tags: consul
+  become: yes
+  template:
+    src: consul_service.json
+    dest: /etc/consul.d/redis.json
+  notify:
+    - reload consul

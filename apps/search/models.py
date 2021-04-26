@@ -2,13 +2,17 @@ import re
 import time
 import datetime
 import pymongo
-import pyes
+import pyelasticsearch
+import elasticsearch
 import redis
+import urllib3
 import celery
+import html
 import mongoengine as mongo
 from django.conf import settings
 from django.contrib.auth.models import User
 from apps.search.tasks import IndexSubscriptionsForSearch
+from apps.search.tasks import FinishIndexSubscriptionsForSearch
 from apps.search.tasks import IndexSubscriptionsChunkForSearch
 from apps.search.tasks import IndexFeedsForSearch
 from utils import log as logging
@@ -50,7 +54,7 @@ class MUserSearch(mongo.Document):
 
     def schedule_index_subscriptions_for_search(self):
         IndexSubscriptionsForSearch.apply_async(kwargs=dict(user_id=self.user_id), 
-                                                queue='search_indexer_tasker')
+                                                queue='search_indexer')
         
     # Should be run as a background task
     def index_subscriptions_for_search(self):
@@ -75,18 +79,26 @@ class MUserSearch(mongo.Document):
                 continue
         
         feed_id_chunks = [c for c in chunks(feed_ids, 6)]
-        logging.user(user, "~FCIndexing ~SB%s feeds~SN in %s chunks..." % 
+        logging.user(user, "~FCIndexing ~SB%s feeds~SN in %s chunks..." %
                      (total, len(feed_id_chunks)))
         
-        tasks = [IndexSubscriptionsChunkForSearch.s(feed_ids=feed_id_chunk,
-                                                      user_id=self.user_id
-                                                      ).set(queue='search_indexer')
-                 for feed_id_chunk in feed_id_chunks]
-        group = celery.group(*tasks)
-        res = group.apply_async(queue='search_indexer')
-        res.join_native()
+        search_chunks = [IndexSubscriptionsChunkForSearch.s(feed_ids=feed_id_chunk,
+                                                            user_id=self.user_id
+                                                            ).set(queue='search_indexer')
+                         for feed_id_chunk in feed_id_chunks]
+        callback = FinishIndexSubscriptionsForSearch.s(user_id=self.user_id,
+                                                       start=start).set(queue='search_indexer')
+        celery.chord(search_chunks)(callback)
+
+    def finish_index_subscriptions_for_search(self, start):
+        from apps.reader.models import UserSubscription
         
+        r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
+        user = User.objects.get(pk=self.user_id)
+        subscriptions = UserSubscription.objects.filter(user=user).only('feed')
+        total = subscriptions.count()
         duration = time.time() - start
+
         logging.user(user, "~FCIndexed ~SB%s feeds~SN in ~FM~SB%s~FC~SN sec." % 
                      (total, round(duration, 2)))
         r.publish(user.username, 'search_index_complete:done')
@@ -151,8 +163,8 @@ class MUserSearch(mongo.Document):
         for user_search in user_searches:
             try:
                 user_search.remove()
-            except Exception, e:
-                print " ****> Error on search removal: %s" % e
+            except Exception as e:
+                print(" ****> Error on search removal: %s" % e)
         
     def remove(self):
         from apps.rss_feeds.models import Feed
@@ -180,68 +192,77 @@ class MUserSearch(mongo.Document):
 
 class SearchStory:
     
-    ES = pyes.ES(settings.ELASTICSEARCH_STORY_HOSTS)
+    _es_client = None
     name = "stories"
+    
+    @classmethod
+    def ES(cls):
+        if cls._es_client is None:
+            cls._es_client = pyelasticsearch.ElasticSearch(settings.ELASTICSEARCH_STORY_HOST)
+            cls.create_elasticsearch_mapping()
+        return cls._es_client
     
     @classmethod
     def index_name(cls):
         return "%s-index" % cls.name
         
     @classmethod
-    def type_name(cls):
-        return "%s-type" % cls.name
-        
-    @classmethod
     def create_elasticsearch_mapping(cls, delete=False):
         if delete:
-            cls.ES.indices.delete_index_if_exists("%s-index" % cls.name)
-        cls.ES.indices.create_index_if_missing("%s-index" % cls.name)
+            cls.ES().delete_index(cls.index_name())
+
+        try:
+            cls.ES().create_index(cls.index_name())
+            logging.debug(" ---> ~FCCreating search index for ~FM%s" % cls.index_name())
+        except pyelasticsearch.IndexAlreadyExistsError:
+            return
+        except (pyelasticsearch.ElasticHttpError, elasticsearch.exceptions.ConnectionError, urllib3.exceptions.NewConnectionError, urllib3.exceptions.ConnectTimeoutError) as e:
+            logging.debug(" ***> ~FRNo search server available for creating story mapping.")
+            return
+        
         mapping = { 
             'title': {
                 'boost': 3.0,
-                'index': 'analyzed',
-                'store': 'no',
-                'type': 'string',
-                'analyzer': 'standard',
+                'store': False,
+                'type': 'text',
+                'analyzer': 'snowball',
             },
             'content': {
                 'boost': 1.0,
-                'index': 'analyzed',
-                'store': 'no',
-                'type': 'string',
-                'analyzer': 'simple',
+                'store': False,
+                'type': 'text',
+                'analyzer': 'snowball',
             },
             'tags': {
                 'boost': 2.0,
-                'index': 'analyzed',
-                'store': 'no',
-                'type': 'string',
-                'analyzer': 'standard',
+                'store': False,
+                'type': 'keyword',
             },
             'author': {
                 'boost': 1.0,
-                'index': 'analyzed',
-                'store': 'no',
-                'type': 'string',   
+                'store': False,
+                'type': 'text',   
                 'analyzer': 'simple',
             },
             'feed_id': {
-                'store': 'no',
+                'store': False,
                 'type': 'integer'
             },
             'date': {
-                'store': 'no',
+                'store': False,
                 'type': 'date',
             }
         }
-        cls.ES.indices.put_mapping("%s-type" % cls.name, {
+        cls.ES().put_mapping(index=cls.index_name(), doc_type='story-type', mapping={
             'properties': mapping,
-            '_source': {'enabled': False},
-        }, ["%s-index" % cls.name])
-        
+        })
+        cls.ES().flush(cls.index_name())
+
     @classmethod
     def index(cls, story_hash, story_title, story_content, story_tags, story_author, story_feed_id, 
               story_date):
+        cls.create_elasticsearch_mapping()
+
         doc = {
             "content"   : story_content,
             "title"     : story_title,
@@ -251,45 +272,82 @@ class SearchStory:
             "date"      : story_date,
         }
         try:
-            cls.ES.index(doc, "%s-index" % cls.name, "%s-type" % cls.name, story_hash)
-        except pyes.exceptions.NoServerAvailable:
-            logging.debug(" ***> ~FRNo search server available.")
+            cls.ES().index(index=cls.index_name(), doc_type='story-type', doc=doc, id=story_hash)
+        except (pyelasticsearch.ElasticHttpError, elasticsearch.exceptions.ConnectionError, urllib3.exceptions.NewConnectionError) as e:
+            logging.debug(" ***> ~FRNo search server available for story indexing.")
+            # if settings.DEBUG:
+            #     raise e
     
     @classmethod
     def remove(cls, story_hash):
         try:
-            cls.ES.delete("%s-index" % cls.name, "%s-type" % cls.name, story_hash)
-        except pyes.exceptions.NoServerAvailable:
-            logging.debug(" ***> ~FRNo search server available.")
+            cls.ES().delete(index=cls.index_name(), id=story_hash)
+        except pyelasticsearch.ElasticHttpError:
+            logging.debug(" ***> ~FRNo search server available for story deletion.")
         
     @classmethod
     def drop(cls):
-        cls.ES.indices.delete_index_if_exists("%s-index" % cls.name)
+        try:
+            cls.ES().delete_index(cls.index_name())
+        except pyelasticsearch.ElasticHttpNotFoundError:
+            logging.debug(" ***> ~FBNo index found, nothing to drop.")
+
         
     @classmethod
     def query(cls, feed_ids, query, order, offset, limit, strip=False):
-        cls.create_elasticsearch_mapping()
-        cls.ES.indices.refresh()
-        
-        if strip:
-            query    = re.sub(r'([^\s\w_\-])+', ' ', query) # Strip non-alphanumeric
-        sort     = "date:desc" if order == "newest" else "date:asc"
-        string_q = pyes.query.QueryStringQuery(query, default_operator="AND")
-        feed_q   = pyes.query.TermsQuery('feed_id', feed_ids[:1000])
-        q        = pyes.query.BoolQuery(must=[string_q, feed_q])
         try:
-            results  = cls.ES.search(q, indices=cls.index_name(), doc_types=[cls.type_name()],
-                                     partial_fields={}, sort=sort, start=offset, size=limit)
-        except pyes.exceptions.NoServerAvailable:
+            cls.ES().flush(index=cls.index_name())
+        except pyelasticsearch.ElasticHttpError:
             logging.debug(" ***> ~FRNo search server available.")
             return []
+        
+        if strip:
+            query = re.sub(r'([^\s\w_\-])+', ' ', query) # Strip non-alphanumeric
+        query = html.unescape(query)
 
-        logging.info(" ---> ~FG~SNSearch ~FCstories~FG for: ~SB%s~SN (across %s feed%s)" % 
-                     (query, len(feed_ids), 's' if len(feed_ids) != 1 else ''))
+        body = {
+            "query": {
+                "bool": {
+                    "must": [
+                        {"query_string": { "query": query, "default_operator": "AND" }},
+                        {"terms": { "feed_id": feed_ids[:2000] }},
+                    ]
+                }
+            },
+            'sort': [{'date': {'order': 'desc' if order == "newest" else "asc"}}],
+            'from': offset,
+            'size': limit
+        }
+        try:
+            results  = cls.ES().search(body, index=cls.index_name())
+        except pyelasticsearch.ElasticHttpError as e:
+            logging.debug(" ***> ~FRNo search server available for querying: %s" % e)
+            return []
+
+        # s = elasticsearch_dsl.Search(using=cls.ES(), index=cls.index_name())
+        # string_q = elasticsearch_dsl.Q('query_string', query=query, default_operator="AND")
+        # feed_q = elasticsearch_dsl.Q('terms', feed_id=feed_ids[:2000])
+        # search_q = string_q & feed_q
+        # s = s.query(search_q)
+        # s = s.sort(sort)[offset:offset+limit]
+        # results = s.execute()
+
+        # string_q = pyes.query.QueryStringQuery(query, default_operator="AND")
+        # feed_q   = pyes.query.TermsQuery('feed_id', feed_ids[:2000])
+        # q        = pyes.query.BoolQuery(must=[string_q, feed_q])
+        # try:
+        #     results  = cls.ES().search(q, indices=cls.index_name(),
+        #                                partial_fields={}, sort=sort, start=offset, size=limit)
+        # except elasticsearch.exceptions.ConnectionError:
+        #     logging.debug(" ***> ~FRNo search server available.")
+        #     return []
+
+        logging.info(" ---> ~FG~SNSearch ~FCstories~FG for: ~SB%s~SN, ~SB%s~SN results (across %s feed%s)" % 
+                     (query, len(results['hits']['hits']), len(feed_ids), 's' if len(feed_ids) != 1 else ''))
         
         try:
-            result_ids = [r.get_id() for r in results]
-        except pyes.InvalidQuery, e:
+            result_ids = [r['_id'] for r in results['hits']['hits']]
+        except Exception as e:
             logging.info(" ---> ~FRInvalid search query \"%s\": %s" % (query, e))
             return []
         
@@ -298,25 +356,45 @@ class SearchStory:
     @classmethod
     def global_query(cls, query, order, offset, limit, strip=False):
         cls.create_elasticsearch_mapping()
-        cls.ES.indices.refresh()
+        cls.ES().refresh()
         
         if strip:
-            query    = re.sub(r'([^\s\w_\-])+', ' ', query) # Strip non-alphanumeric
-        sort     = "date:desc" if order == "newest" else "date:asc"
-        string_q = pyes.query.QueryStringQuery(query, default_operator="AND")
+            query = re.sub(r'([^\s\w_\-])+', ' ', query) # Strip non-alphanumeric
+        query = html.unescape(query)
+
+        body = {
+            "query": {
+                "bool": {
+                    "must": [
+                        {"query_string": { "query": query, "default_operator": "AND" }},
+                    ]
+                }
+            },
+            'sort': [{'date': {'order': 'desc' if order == "newest" else "asc"}}],
+            'from': offset,
+            'size': limit
+        }
         try:
-            results  = cls.ES.search(string_q, indices=cls.index_name(), doc_types=[cls.type_name()],
-                                     partial_fields={}, sort=sort, start=offset, size=limit)
-        except pyes.exceptions.NoServerAvailable:
-            logging.debug(" ***> ~FRNo search server available.")
+            results  = cls.ES().search(body, index=cls.index_name())
+        except pyelasticsearch.ElasticHttpError as e:
+            logging.debug(" ***> ~FRNo search server available for querying: %s" % e)
             return []
+        
+        # sort     = "date:desc" if order == "newest" else "date:asc"
+        # string_q = pyes.query.QueryStringQuery(query, default_operator="AND")
+        # try:
+        #     results  = cls.ES().search(string_q, indices=cls.index_name(),
+        #                                partial_fields={}, sort=sort, start=offset, size=limit)
+        # except elasticsearch.exceptions.ConnectionError:
+        #     logging.debug(" ***> ~FRNo search server available.")
+        #     return []
 
         logging.info(" ---> ~FG~SNSearch ~FCstories~FG for: ~SB%s~SN (across all feeds)" % 
                      (query))
         
         try:
-            result_ids = [r.get_id() for r in results]
-        except pyes.InvalidQuery, e:
+            result_ids = [r['_id'] for r in results['hits']['hits']]
+        except Exception as e:
             logging.info(" ---> ~FRInvalid search query \"%s\": %s" % (query, e))
             return []
         
@@ -328,13 +406,11 @@ class SearchFeed:
     _es_client = None
     name = "feeds"
 
-
     @classmethod
     def ES(cls):
         if cls._es_client is None:
-            cls._es_client = pyes.ES(settings.ELASTICSEARCH_FEED_HOSTS)
-            if not cls._es_client.indices.exists_index(cls.index_name()):
-                cls.create_elasticsearch_mapping()
+            cls._es_client = pyelasticsearch.ElasticSearch(settings.ELASTICSEARCH_FEED_HOST)
+            cls.create_elasticsearch_mapping()
         return cls._es_client
     
     @classmethod
@@ -342,105 +418,134 @@ class SearchFeed:
         return "%s-index" % cls.name
         
     @classmethod
-    def type_name(cls):
-        return "%s-type" % cls.name
-
-    @classmethod
     def create_elasticsearch_mapping(cls, delete=False):
         if delete:
-            cls.ES().indices.delete_index_if_exists(cls.index_name())
+            logging.debug(" ---> ~FRDeleting search index for ~FM%s" % cls.index_name())
+            cls.ES().delete_index(cls.index_name())
 
-        settings =  {
-            "index" : {
-                "analysis": {
-                    "analyzer": {
-                        "edgengram_analyzer": {
-                            "filter": ["edgengram"],
-                            "tokenizer": "lowercase",
-                            "type": "custom"
+        try:
+            index_settings = {
+                "index" : {
+                    "analysis": {
+                        "analyzer": {
+                            "edgengram_analyzer": {
+                                "filter": ["edgengram_analyzer"],
+                                "tokenizer": "lowercase",
+                                "type": "custom"
+                            },
                         },
-                    },
-                    "filter": {
-                        "edgengram": {
-                            "max_gram": "15",
-                            "min_gram": "1",
-                            "type": "edgeNGram"
-                        },
+                        "filter": {
+                            "edgengram_analyzer": {
+                                "max_gram": "15",
+                                "min_gram": "1",
+                                "type": "edge_ngram"
+                            },
+                        }
                     }
                 }
             }
-        }
-        cls.ES().indices.create_index_if_missing(cls.index_name(), settings)
-
+            cls.ES().create_index(cls.index_name(), settings=index_settings)
+            logging.debug(" ---> ~FCCreating search index for ~FM%s" % cls.index_name())
+        except pyelasticsearch.IndexAlreadyExistsError:
+            return
+        
         mapping = {
-            "address": {
-                "analyzer": "edgengram_analyzer",
+            "feed_address": {
+                'analyzer': 'snowball',
                 "store": False,
                 "term_vector": "with_positions_offsets",
-                "type": "string"
+                "type": "text"
             },
             "feed_id": {
                 "store": True,
-                "type": "string"
+                "type": "text"
             },
             "num_subscribers": {
-                "index": "analyzed",
                 "store": True,
                 "type": "long"
             },
             "title": {
-                "analyzer": "edgengram_analyzer",
+                "analyzer": "snowball",
                 "store": False,
                 "term_vector": "with_positions_offsets",
-                "type": "string"
+                "type": "text"
             },
             "link": {
-                "analyzer": "edgengram_analyzer",
+                "analyzer": "snowball",
                 "store": False,
                 "term_vector": "with_positions_offsets",
-                "type": "string"
+                "type": "text"
             }
         }
-        cls.ES().indices.put_mapping(cls.type_name(), {
+        cls.ES().put_mapping(index=cls.index_name(), doc_type='feeds-type', mapping={
             'properties': mapping,
-        }, [cls.index_name()])
-        cls.ES().indices.flush()
+        })
+        cls.ES().flush(cls.index_name())
 
     @classmethod
     def index(cls, feed_id, title, address, link, num_subscribers):
         doc = {
-            "feed_id"           : feed_id,
-            "title"             : title,
-            "address"           : address,
-            "link"              : link,
-            "num_subscribers"   : num_subscribers,
+            "feed_id": feed_id,
+            "title": title,
+            "feed_address": address,
+            "link": link,
+            "num_subscribers": num_subscribers,
         }
         try:
-            cls.ES().index(doc, cls.index_name(), cls.type_name(), feed_id)
-        except pyes.exceptions.NoServerAvailable:
-            logging.debug(" ***> ~FRNo search server available.")
+            cls.ES().index(index=cls.index_name(), doc_type='feeds-type', doc=doc, id=feed_id)
+        except pyelasticsearch.ElasticHttpError:
+            logging.debug(" ***> ~FRNo search server available for feed indexing.")
 
     @classmethod
     def query(cls, text, max_subscribers=5):
         try:
-            cls.ES().default_indices = cls.index_name()
-            cls.ES().indices.refresh()
-        except pyes.exceptions.NoServerAvailable:
-            logging.debug(" ***> ~FRNo search server available.")
+            cls.ES().flush(index=cls.index_name())
+        except pyelasticsearch.ElasticHttpError:
+            logging.debug(" ***> ~FRNo search server available for feed querying.")
             return []
-        
+
         if settings.DEBUG:
             max_subscribers = 1
         
-        logging.info("~FGSearch ~FCfeeds~FG: ~SB%s" % text)
-        q = pyes.query.BoolQuery()
-        q.add_should(pyes.query.MatchQuery('address', text, analyzer="simple", cutoff_frequency=0.0005, minimum_should_match="75%"))
-        q.add_should(pyes.query.MatchQuery('link', text, analyzer="simple", cutoff_frequency=0.0005, minimum_should_match="75%"))
-        q.add_should(pyes.query.MatchQuery('title', text, analyzer="simple", cutoff_frequency=0.0005, minimum_should_match="75%"))
-        q = pyes.Search(q, min_score=1)
-        results = cls.ES().search(query=q, size=max_subscribers, doc_types=[cls.type_name()], sort="num_subscribers:desc")
+        body = {
+            "query": {
+                "bool": {
+                    "should": [
+                        {"match": { "address": { "query": text, 'cutoff_frequency': "0.0005", 'minimum_should_match': "75%" } }},
+                        {"match": { "title": { "query": text, 'cutoff_frequency': "0.0005", 'minimum_should_match': "75%" } }},
+                        {"match": { "link": { "query": text, 'cutoff_frequency': "0.0005", 'minimum_should_match': "75%" } }},
+                    ]
+                }
+            },
+            'sort': [{'num_subscribers': {'order': 'desc'}}],
+        }
+        try:
+            results  = cls.ES().search(body, doc_type='feeds-type', index=cls.index_name())
+        except pyelasticsearch.ElasticHttpError as e:
+            logging.debug(" ***> ~FRNo search server available for feed querying: %s" % e)
+            return []
 
-        return results
+        # s = elasticsearch_dsl.Search(using=cls.ES(), index=cls.index_name())
+        # address = elasticsearch_dsl.Q('match', address=text)
+        # link = elasticsearch_dsl.Q('match', link=text)
+        # title = elasticsearch_dsl.Q('match', title=text)
+        # search_q = address | link | title
+        # s = s.query(search_q).extra(cutoff_frequency="0.0005", minimum_should_match="75%")
+        # s = s.sort("-num_subscribers")
+        # body = s.to_dict()
+        # print(f"Before: {body}")
+        # results = s.execute()
+
+        # q = pyes.query.BoolQuery()
+        # q.add_should(pyes.query.MatchQuery('address', text, analyzer="simple", cutoff_frequency=0.0005, minimum_should_match="75%"))
+        # q.add_should(pyes.query.MatchQuery('link', text, analyzer="simple", cutoff_frequency=0.0005, minimum_should_match="75%"))
+        # q.add_should(pyes.query.MatchQuery('title', text, analyzer="simple", cutoff_frequency=0.0005, minimum_should_match="75%"))
+        # q = pyes.Search(q, min_score=1)
+        # results = cls.ES().search(query=q, size=max_subscribers, sort="num_subscribers:desc")
+        
+        logging.info("~FGSearch ~FCfeeds~FG: ~SB%s~SN, ~SB%s~SN results" % (text, len(results['hits']['hits'])))
+
+        return results['hits']['hits']
     
     @classmethod
     def export_csv(cls):

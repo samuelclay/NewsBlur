@@ -1,0 +1,68 @@
+#!/bin/sh
+
+bold=`echo "\033[1m"`
+regular=`echo "\033[0m"`
+black=`echo "\033[30;40m"`
+red=`echo "\033[31;40m"`
+green=`echo "\033[32;40m"`
+yellow=`echo "\033[33;40m"`
+blue=`echo "\033[34;40m"`
+magenta=`echo "\033[35;40m"`
+cyan=`echo "\033[36;40m"`
+white=`echo "\033[37;40m"`
+
+cat <<EOMOTD
+$bold  
+                                               $yellow               __
+                                               $yellow         _   .'.-'.
+                                               $yellow       .'-'. ||  ||
+                                               $yellow   _   || || :\_.'/
+$magenta                               .-.       ___   $yellow .'-.\ :\_'/  '-''
+$magenta                              _L$cyan o$magenta|_.-'''   '-.$yellow ;\_'/  '-'
+$magenta                            _f$cyan o$magenta\-'          /_. $yellow'-'
+$magenta                        ,-'' '-'              /
+$magenta                       /                    .'
+$magenta                      |                   .'             $yellow   .--.
+$magenta                       \              _.-'               $yellow   '-' |
+$magenta                        |        __.-'                   $yellow  .- ''
+$magenta                       $green,$magenta-.     ''|                       $yellow |
+$magenta                    $green  /  $magenta|       |                       $yellow  '-.
+$magenta                    $green  \_ $magenta|       |              _  .-.   $yellow   _ '
+$magenta                    $green   /'$magenta|       |             ' . ' | $regular$yellow _.-$bold$red'7P'
+$magenta                    $green  |  $magenta|       ;              \ \| |$regular$yellow-' _.-$bold$red''
+$magenta                    $green  \_ $magenta|        ;          $regular$yellow _,-''$bold$magenta| |$regular$yellow.-' $bold
+$magenta                    $green   /'$magenta|        |          $regular$yellow()_,-$bold$magenta j f$regular$magenta.-. $bold
+$magenta                    $green  |  $magenta|        |           .'') (_.-.j
+$magenta                    $green  \_ $magenta;        ;          (  <   (__.'
+$magenta                    $green   / $magenta'        ;           \  '    /
+$magenta                    $green  |  $magenta |        \          /      ;
+$magenta                    $green   \_$magenta |         ''--.___.'       |
+$magenta                    $green  /' $magenta.'                          ;
+$magenta                    $green  \.$magenta'                  _        /
+$magenta                      /                     '.    .'
+                    .'                        \.-'
+                   /                           '.
+                  ;                              \ 
+                  |                               '
+                  '         /                      \ 
+                 ;         /       $regular$red NewsBlur $bold$magenta       \ 
+                 |        Y                          ;
+                 ;         \        $red DB Server$magenta        .
+                 '        t-'                         ;
+                  \  \  \  \                          ;
+$magenta          $green        7$magenta'._f_.'-'                          |
+$magenta          $green        \_$magenta|                                 |
+$magenta          $green        /'$magenta|                                 ;
+$magenta          $green        \_$magenta;                                 '
+$magenta     .-.  $green        f $magenta '                               /
+$magenta  .'  ,-' $green         \_$magenta|                              /
+$magenta /   |    $green _  __ .-7 $magenta/                            .'
+$magenta |    '-.r'_'Y__\L.-'                          _.'
+ '                        ;              _..--' |
+  '.                      ,              |      '.
+    '-._                 /|              '.       |
+        '''--..._____..-' '--...__         \------'
+                                  ''-------'
+$regular$white
+EOMOTD
+
