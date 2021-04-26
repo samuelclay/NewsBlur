@@ -98,7 +98,7 @@
         android:layout_below="@id/story_item_feedicon"
         android:layout_marginLeft="33dp"
         android:paddingTop="6dp"
-        android:paddingBottom="4dp"
+        android:paddingBottom="6dp"
         android:paddingRight="4dp"
         android:maxLines="2"
         android:ellipsize="end" />
@@ -110,7 +110,7 @@
         android:layout_toLeftOf="@id/story_item_thumbnail"
         android:layout_below="@id/story_item_title"
         android:layout_marginLeft="33dp"
-        android:paddingBottom="4dp"
+        android:paddingBottom="6dp"
         android:paddingRight="4dp"
         android:maxLines="2"
         android:ellipsize="end"
