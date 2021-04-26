@@ -666,11 +666,11 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         if (this.ignoreReadStatus || (! story.read)) {
             vh.storyAuthor.setAlpha(1.0f);
             vh.storySnippet.setAlpha(1.0f);
-            vh.storyTitleView.setTypeface(null, Typeface.BOLD);
+            vh.storyTitleView.setTypeface(vh.storyTitleView.getTypeface(), Typeface.BOLD);
         } else {
             vh.storyAuthor.setAlpha(READ_STORY_ALPHA);
             vh.storySnippet.setAlpha(READ_STORY_ALPHA);
-            vh.storyTitleView.setTypeface(null, Typeface.NORMAL);
+            vh.storyTitleView.setTypeface(vh.storyTitleView.getTypeface(), Typeface.NORMAL);
         }
     }
 

@@ -535,7 +535,6 @@
     <string name="default_browser">Default browser</string>
     <string name="font">Font</string>
     <string name="default_font">Default</string>
-    <string name="whitney_font">Whitney</string>
     <string name="gotham_narrow_font">Gotham Narrow</string>
     <string name="chronicle_font">Chronicle</string>
     <string name="noto_sans_font">Noto Sans</string>
@@ -577,7 +576,6 @@
         <item>@string/noto_sans_font</item>
         <item>@string/noto_serif_font</item>
         <item>@string/open_sans_condensed_font</item>
-        <item>@string/whitney_font</item>
     </string-array>
     <string-array name="default_font_values">
         <item>@string/anonymous_pro_font_prefvalue</item>
@@ -587,7 +585,6 @@
         <item>@string/noto_sans_font_prefvalue</item>
         <item>@string/noto_sans_font_prefvalue</item>
         <item>@string/open_sans_condensed_font_prefvalue</item>
-        <item>@string/whitney_font_prefvalue</item>
     </string-array>
     <string name="default_font_value">DEFAULT</string>
     <string name="default_default_browser">@string/system_default_prefvalue</string>
