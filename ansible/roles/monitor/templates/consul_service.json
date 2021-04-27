@@ -1,0 +1,9 @@
+{
+    "service": {
+        "name": "monitor",
+        "tags": [
+            "www"
+        ],
+        "port": 5000
+    }
+}  

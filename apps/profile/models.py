@@ -16,7 +16,7 @@ from django.conf import settings
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from django.core.mail import EmailMultiAlternatives
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.template.loader import render_to_string
 from apps.rss_feeds.models import Feed, MStory, MStarredStory
 from apps.rss_feeds.tasks import SchedulePremiumSetup
@@ -45,10 +45,10 @@ class Profile(models.Model):
     collapsed_folders = models.TextField(default="[]")
     feed_pane_size    = models.IntegerField(default=242)
     tutorial_finished = models.BooleanField(default=False)
-    hide_getting_started = models.NullBooleanField(default=False, null=True, blank=True)
-    has_setup_feeds   = models.NullBooleanField(default=False, null=True, blank=True)
-    has_found_friends = models.NullBooleanField(default=False, null=True, blank=True)
-    has_trained_intelligence = models.NullBooleanField(default=False, null=True, blank=True)
+    hide_getting_started = models.BooleanField(default=False, null=True, blank=True)
+    has_setup_feeds   = models.BooleanField(default=False, null=True, blank=True)
+    has_found_friends = models.BooleanField(default=False, null=True, blank=True)
+    has_trained_intelligence = models.BooleanField(default=False, null=True, blank=True)
     last_seen_on      = models.DateTimeField(default=datetime.datetime.now)
     last_seen_ip      = models.CharField(max_length=50, blank=True, null=True)
     dashboard_date    = models.DateTimeField(default=datetime.datetime.now)
@@ -57,7 +57,7 @@ class Profile(models.Model):
     stripe_4_digits   = models.CharField(max_length=4, blank=True, null=True)
     stripe_id         = models.CharField(max_length=24, blank=True, null=True)
     
-    def __unicode__(self):
+    def __str__(self):
         return "%s <%s> (Premium: %s)" % (self.user, self.user.email, self.is_premium)
     
     @property
@@ -90,11 +90,11 @@ class Profile(models.Model):
         try:
             super(Profile, self).save(*args, **kwargs)
         except DatabaseError:
-            print " ---> Profile not saved. Table isn't there yet."
+            print(" ---> Profile not saved. Table isn't there yet.")
     
     def delete_user(self, confirm=False, fast=False):
         if not confirm:
-            print " ---> You must pass confirm=True to delete this user."
+            print(" ---> You must pass confirm=True to delete this user.")
             return
         
         logging.user(self.user, "Deleting user: %s / %s" % (self.user.email, self.user.profile.last_seen_ip))
@@ -268,7 +268,7 @@ class Profile(models.Model):
             for stripe_id_model in self.user.stripe_ids.all():
                 stripe_id = stripe_id_model.stripe_id
                 stripe_customer = stripe.Customer.retrieve(stripe_id)
-                stripe_payments = stripe.Charge.all(customer=stripe_customer.id).data
+                stripe_payments = stripe.Charge.list(customer=stripe_customer.id).data
                 
                 for payment in stripe_payments:
                     created = datetime.datetime.fromtimestamp(payment.created)
@@ -332,7 +332,7 @@ class Profile(models.Model):
             logging.debug(" ---> At %s / %s" % (i, starting_after))
             i += 1
             try:
-                data = stripe.Charge.all(created={'gt': week}, count=limit, starting_after=starting_after)
+                data = stripe.Charge.list(created={'gt': week}, count=limit, starting_after=starting_after)
             except stripe.APIConnectionError:
                 time.sleep(10)
                 continue
@@ -344,7 +344,7 @@ class Profile(models.Model):
             customers = [c['customer'] for c in charges if 'customer' in c]
             for customer in customers:
                 if not customer:
-                    print " ***> No customer!"
+                    print(" ***> No customer!")
                     continue
                 try:
                     profile = Profile.objects.get(stripe_id=customer)
@@ -373,7 +373,7 @@ class Profile(models.Model):
         if self.stripe_id:
             stripe.api_key = settings.STRIPE_SECRET
             stripe_customer = stripe.Customer.retrieve(self.stripe_id)
-            stripe_payments = stripe.Charge.all(customer=stripe_customer.id).data
+            stripe_payments = stripe.Charge.list(customer=stripe_customer.id).data
             if partial:
                 stripe_payments[0].refund(amount=1200)
                 refunded = 12
@@ -463,11 +463,13 @@ class Profile(models.Model):
         stripe.api_key = settings.STRIPE_SECRET
         stripe_customer = stripe.Customer.retrieve(self.stripe_id)
         try:
-            stripe_customer.cancel_subscription()
-        except stripe.InvalidRequestError:
+            subscriptions = stripe.Subscription.list(customer=stripe_customer)
+            for subscription in subscriptions.data:
+                stripe.Subscription.delete(subscription['id'])
+                logging.user(self.user, "~FRCanceling Stripe subscription: %s" % subscription['id'])
+        except stripe.error.InvalidRequestError:
             logging.user(self.user, "~FRFailed to cancel Stripe subscription")
-
-        logging.user(self.user, "~FRCanceling Stripe subscription")
+            return
         
         return True
     
@@ -498,6 +500,30 @@ class Profile(models.Model):
             return
         
         return ipn[0].payer_email
+    
+    def update_email(self, new_email):
+        from apps.social.models import MSocialProfile
+
+        if self.user.email == new_email:
+            return
+
+        self.user.email = new_email
+        self.user.save()
+        
+        sp = MSocialProfile.get_user(self.user.pk)
+        sp.email = new_email
+        sp.save()
+
+        if self.stripe_id:
+            stripe_customer = self.stripe_customer()
+            stripe_customer.update({'email': new_email})
+            stripe_customer.save()
+
+    def stripe_customer(self):
+        if self.stripe_id:
+            stripe.api_key = settings.STRIPE_SECRET
+            stripe_customer = stripe.Customer.retrieve(self.stripe_id)
+            return stripe_customer
     
     def activate_ios_premium(self, transaction_identifier=None, amount=36):
         payments = PaymentHistory.objects.filter(user=self.user,
@@ -559,15 +585,15 @@ class Profile(models.Model):
                 has_profile = user.profile.last_seen_ip
             except Profile.DoesNotExist:
                 usernames.add(user.username)
-                print " ---> Missing profile: %-20s %-30s %-6s %-6s" % (user.username, user.email, opens, reads)
+                print(" ---> Missing profile: %-20s %-30s %-6s %-6s" % (user.username, user.email, opens, reads))
                 continue
 
             if opens is None and not reads and has_numbers:
                 usernames.add(user.username)
-                print " ---> Numerics: %-20s %-30s %-6s %-6s" % (user.username, user.email, opens, reads)
+                print(" ---> Numerics: %-20s %-30s %-6s %-6s" % (user.username, user.email, opens, reads))
             elif not has_profile:
                 usernames.add(user.username)
-                print " ---> No IP: %-20s %-30s %-6s %-6s" % (user.username, user.email, opens, reads)
+                print(" ---> No IP: %-20s %-30s %-6s %-6s" % (user.username, user.email, opens, reads))
         
         if not confirm: return usernames
         
@@ -615,7 +641,7 @@ class Profile(models.Model):
             else:
                 user_ids = dict([(us.user_id, us.active) 
                                  for us in UserSubscription.objects.filter(feed_id=feed_id).only('user', 'active')])
-            profiles = Profile.objects.filter(user_id__in=user_ids.keys()).values('user_id', 'last_seen_on', 'is_premium')
+            profiles = Profile.objects.filter(user_id__in=list(user_ids.keys())).values('user_id', 'last_seen_on', 'is_premium')
             feed = Feed.get_by_id(feed_id)
             
             if entire_feed_counted:
@@ -629,10 +655,10 @@ class Profile(models.Model):
                     muted_feed = not bool(user_ids[profile['user_id']])
                     if muted_feed:
                         last_seen_on = 0
-                    pipeline.zadd(key, {profile['user_id']: last_seen_on})
+                    pipeline.zadd(key, { profile['user_id']: last_seen_on })
                     total += 1
                     if profile['is_premium']:
-                        pipeline.zadd(premium_key, {profile['user_id']: last_seen_on})
+                        pipeline.zadd(premium_key, { profile['user_id']: last_seen_on })
                         premium += 1
                     else:
                         pipeline.zrem(premium_key, profile['user_id'])
@@ -645,7 +671,7 @@ class Profile(models.Model):
             
             if entire_feed_counted:
                 now = int(datetime.datetime.now().strftime('%s'))
-                r.zadd(key, {-1: now})
+                r.zadd(key, { -1: now })
                 r.expire(key, settings.SUBSCRIBER_EXPIRE*24*60*60)
                 r.zadd(premium_key, {-1: now})
                 r.expire(premium_key, settings.SUBSCRIBER_EXPIRE*24*60*60)
@@ -673,9 +699,9 @@ class Profile(models.Model):
                     last_seen_on = int(user.profile.last_seen_on.strftime('%s'))
                     if feed_ids is muted_feed_ids:
                         last_seen_on = 0
-                    pipeline.zadd(key, {user.pk: last_seen_on})
+                    pipeline.zadd(key, { user.pk: last_seen_on })
                     if user.profile.is_premium:
-                        pipeline.zadd(premium_key, {user.pk: last_seen_on})
+                        pipeline.zadd(premium_key, { user.pk: last_seen_on })
                     else:
                         pipeline.zrem(premium_key, user.pk)
                 pipeline.execute()
@@ -801,7 +827,7 @@ class Profile(models.Model):
     
     def send_forgot_password_email(self, email=None):
         if not self.user.email and not email:
-            print "Please provide an email address."
+            print("Please provide an email address.")
             return
         
         if not self.user.email and email:
@@ -822,7 +848,7 @@ class Profile(models.Model):
     
     def send_new_user_queue_email(self, force=False):
         if not self.user.email:
-            print "Please provide an email address."
+            print("Please provide an email address.")
             return
         
         params = dict(receiver_user_id=self.user.pk, email_type='new_user_queue')
@@ -848,7 +874,7 @@ class Profile(models.Model):
     
     def send_upload_opml_finished_email(self, feed_count):
         if not self.user.email:
-            print "Please provide an email address."
+            print("Please provide an email address.")
             return
         
         user    = self.user
@@ -865,7 +891,7 @@ class Profile(models.Model):
     
     def send_import_reader_finished_email(self, feed_count):
         if not self.user.email:
-            print "Please provide an email address."
+            print("Please provide an email address.")
             return
         
         user    = self.user
@@ -882,7 +908,7 @@ class Profile(models.Model):
     
     def send_import_reader_starred_finished_email(self, feed_count, starred_count):
         if not self.user.email:
-            print "Please provide an email address."
+            print("Please provide an email address.")
             return
         
         user    = self.user
@@ -1076,10 +1102,10 @@ class Profile(models.Model):
         
 
 class StripeIds(models.Model):
-    user = models.ForeignKey(User, related_name='stripe_ids', on_delete=models.CASCADE)
+    user = models.ForeignKey(User, related_name='stripe_ids', on_delete=models.CASCADE, null=True)
     stripe_id = models.CharField(max_length=24, blank=True, null=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s: %s" % (self.user.username, self.stripe_id)
 
         
@@ -1204,7 +1230,7 @@ def blank_authenticate(username, password=""):
         return user
         
     algorithm, salt, hash = user.password.split('$', 2)
-    encoded_blank = hashlib.sha1(salt + password).hexdigest()
+    encoded_blank = hashlib.sha1((salt + password).encode(encoding='utf-8')).hexdigest()
     encoded_username = authenticate(username=username, password=username)
     if encoded_blank == hash or encoded_username == user:
         return user
@@ -1228,7 +1254,7 @@ class MEmailUnsubscribe(mongo.Document):
                     }],
     }
     
-    def __unicode__(self):
+    def __str__(self):
         return "%s unsubscribed from %s on %s" % (self.user_id, self.email_type, self.date)
     
     @classmethod
@@ -1253,7 +1279,7 @@ class MSentEmail(mongo.Document):
         'indexes': ['sending_user_id', 'receiver_user_id', 'email_type'],
     }
     
-    def __unicode__(self):
+    def __str__(self):
         return "%s sent %s email to %s" % (self.sending_user_id, self.email_type, self.receiver_user_id)
     
     @classmethod
@@ -1269,7 +1295,7 @@ class PaymentHistory(models.Model):
     payment_provider = models.CharField(max_length=20)
     payment_identifier = models.CharField(max_length=100, null=True)
     
-    def __unicode__(self):
+    def __str__(self):
         return "[%s] $%s/%s" % (self.payment_date.strftime("%Y-%m-%d"), self.payment_amount,
                                 self.payment_provider)
     class Meta:
@@ -1300,7 +1326,7 @@ class PaymentHistory(models.Model):
             return payments, output
 
         output += "\nMonthly Totals:\n"
-        for m in reversed(range(months)):
+        for m in reversed(list(range(months))):
             now = datetime.datetime.now()
             start_date = datetime.datetime(now.year, now.month, 1) - dateutil.relativedelta.relativedelta(months=m)
             end_time = start_date + datetime.timedelta(days=31)
@@ -1316,7 +1342,7 @@ class PaymentHistory(models.Model):
         this_mtd_sum = 0
         last_mtd_count = 0
         this_mtd_count = 0
-        for y in reversed(range(years)):
+        for y in reversed(list(range(years))):
             now = datetime.datetime.now()
             start_date = datetime.datetime(now.year, now.month, 1) - dateutil.relativedelta.relativedelta(years=y)
             end_date = now - dateutil.relativedelta.relativedelta(years=y)
@@ -1336,7 +1362,7 @@ class PaymentHistory(models.Model):
         last_month_avg = 0
         last_month_sum = 0
         last_month_count = 0
-        for y in reversed(range(years)):
+        for y in reversed(list(range(years))):
             now = datetime.datetime.now()
             start_date = datetime.datetime(now.year, now.month, 1) - dateutil.relativedelta.relativedelta(years=y)
             end_time = start_date + datetime.timedelta(days=31)
@@ -1360,7 +1386,7 @@ class PaymentHistory(models.Model):
         last_ytd_sum = 0
         this_ytd_count = 0
         last_ytd_count = 0
-        for y in reversed(range(years)):
+        for y in reversed(list(range(years))):
             now = datetime.datetime.now()
             start_date = datetime.datetime(now.year, 1, 1) - dateutil.relativedelta.relativedelta(years=y)
             end_date = now - dateutil.relativedelta.relativedelta(years=y)
@@ -1380,7 +1406,7 @@ class PaymentHistory(models.Model):
         last_year_sum = 0
         last_year_count = 0
         annual = 0
-        for y in reversed(range(years)):
+        for y in reversed(list(range(years))):
             now = datetime.datetime.now()
             start_date = datetime.datetime(now.year, 1, 1) - dateutil.relativedelta.relativedelta(years=y)
             end_date = datetime.datetime(now.year, 1, 1) - dateutil.relativedelta.relativedelta(years=y-1) - datetime.timedelta(seconds=1)
@@ -1400,7 +1426,7 @@ class PaymentHistory(models.Model):
         total = cls.objects.all().aggregate(sum=Sum('payment_amount'))
         output += "\nTotal: $%s\n" % total['sum']
         
-        print output
+        print(output)
         
         return {'annual': annual, 'output': output}
 
@@ -1419,7 +1445,7 @@ class MGiftCode(mongo.Document):
         'indexes': ['gifting_user_id', 'receiving_user_id', 'created_date'],
     }
     
-    def __unicode__(self):
+    def __str__(self):
         return "%s gifted %s on %s: %s (redeemed %s times)" % (self.gifting_user_id, self.receiving_user_id, self.created_date, self.gift_code, self.redeemed)
     
     @property
@@ -1429,7 +1455,7 @@ class MGiftCode(mongo.Document):
     
     @staticmethod
     def create_code(gift_code=None):
-        u = unicode(uuid.uuid4())
+        u = str(uuid.uuid4())
         code = u[:8] + u[9:13]
         if gift_code:
             code = gift_code + code[len(gift_code):]
@@ -1455,7 +1481,7 @@ class MRedeemedCode(mongo.Document):
         'indexes': ['user_id', 'gift_code', 'redeemed_date'],
     }
     
-    def __unicode__(self):
+    def __str__(self):
         return "%s redeemed %s on %s" % (self.user_id, self.gift_code, self.redeemed_date)
     
     @classmethod
@@ -1495,7 +1521,7 @@ class MCustomStyling(mongo.Document):
         'indexes': ['user_id'],
     }
     
-    def __unicode__(self):
+    def __str__(self):
         return "%s custom style %s/%s %s" % (self.user_id, len(self.custom_css) if self.custom_css else "-", 
                                              len(self.custom_js) if self.custom_js else "-", self.updated_date)
     
@@ -1528,7 +1554,60 @@ class MCustomStyling(mongo.Document):
         styling.custom_css = css
         styling.custom_js = js
         styling.save()
+
+
+class MDashboardRiver(mongo.Document):
+    user_id = mongo.IntField(unique_with=())
+    river_id = mongo.StringField()
+    river_side = mongo.StringField()
+    river_order = mongo.IntField()
+
+    meta = {
+        'collection': 'dashboard_river',
+        'allow_inheritance': False,
+        'indexes': ['user_id', 
+                    {'fields': ['user_id', 'river_id', 'river_side', 'river_order'], 
+                     'unique': True,
+                    }],
+        'ordering': ['river_order']
+    }
+
+    def __str__(self):
+        try:
+            u = User.objects.get(pk=self.user_id)
+        except User.DoesNotExist:
+            u = "<missing user>"
+        return f"{u} ({self.river_side}/{self.river_order}): {self.river_id}"
         
+    def canonical(self):
+        return {
+            'river_id': self.river_id,
+            'river_side': self.river_side,
+            'river_order': self.river_order,
+        }
+    
+    @classmethod
+    def get_user_rivers(cls, user_id):
+        return cls.objects(user_id=user_id)
+
+    @classmethod
+    def save_user(cls, user_id, river_id, river_side, river_order):
+        try:
+            river = cls.objects.get(user_id=user_id, river_side=river_side, river_order=river_order)
+        except cls.DoesNotExist:
+            river = None
+        
+        if not river:
+            river = cls.objects.create(user_id=user_id, river_id=river_id, 
+                                       river_side=river_side, river_order=river_order)
+
+        river.river_id = river_id
+        river.river_side = river_side
+        river.river_order = river_order
+        river.save()
+
+        return river
+
 class RNewUserQueue:
     
     KEY = "new_user_queue"
@@ -1565,7 +1644,7 @@ class RNewUserQueue:
         r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
         now = time.time()
         
-        r.zadd(cls.KEY, {user_id: now})
+        r.zadd(cls.KEY, { user_id: now })
     
     @classmethod
     def user_count(cls):
@@ -1578,6 +1657,8 @@ class RNewUserQueue:
     def user_position(cls, user_id):
         r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
         position = r.zrank(cls.KEY, user_id)
+        if position is None:
+            return -1
         if position >= 0:
             return position + 1
     

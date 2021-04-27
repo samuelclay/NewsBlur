@@ -4,7 +4,7 @@
         "model": "reader.usersubscriptionfolders",
         "fields": {
             "folders": "[{\"Tech\": [1, 4, 5, {\"Deep Tech\": [6, 7]}]}, 2, 3, 8, 9, {\"Blogs\": [8, 9]}, 1]",
-            "user": 1
+            "user": 3
         }
     },
     {
@@ -13,6 +13,20 @@
         "fields": {
             "folders": "[5299728, 644144, 1187026, {\"Brainiacs & Opinion\": [569, 38, 3581, 183139, 1186180, 15]}, {\"Science & Technology\": [731503, 140145, 1272495, 76, 161, 39, {\"Hacker\": [5985150, 3323431]}]}, {\"Humor\": [212379, 3530, 5994357]}, {\"Videos\": [3240, 5168]}]",
             "user": 4
+        }
+    },
+    {
+        "pk": 1,
+        "model": "reader.usersubscription",
+        "fields": {
+            "feed": 1,
+            "unread_count_updated": "2009-08-01 00:23:42",
+            "mark_read_date": "2009-07-28 23:17:27",
+            "unread_count_neutral": 0,
+            "unread_count_positive": 0,
+            "unread_count_negative": 0,
+            "user": 3,
+            "last_read_date": "2009-07-28 23:17:27"
         }
     },
 
@@ -142,7 +156,7 @@
             "last_login": "2009-04-07 19:22:24", 
             "groups": [], 
             "user_permissions": [], 
-            "password": "sha1$7b94b$ac9e6cf08d0fa16a67e56e319c0935aeb26db2a2", 
+            "password": "pbkdf2_sha256$180000$fpQMtncRvf8S$n3XmosswKzC3ERp8IBfP+rup9S2g4Zk/MNLKiy9DQ4k=", 
             "email": "samuel@newsblur.com", 
             "date_joined": "2009-01-04 17:32:58"
         }
@@ -160,7 +174,7 @@
             "last_login": "2009-04-07 19:22:24", 
             "groups": [], 
             "user_permissions": [], 
-            "password": "sha1$7b94b$ac9e6cf08d0fa16a67e56e319c0935aeb26db2a2", 
+            "password": "pbkdf2_sha256$180000$b3uGYwPXtXCL$ws2B3Ue9br1zKYyTyYlUZu5aQua5kDBOGPMMxC3I6y4=", 
             "email": "dejal@newsblur.com", 
             "date_joined": "2009-01-04 17:32:58"
         }

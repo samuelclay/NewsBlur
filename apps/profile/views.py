@@ -11,7 +11,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.sites.models import Site
 from django.contrib.auth.models import User
 from django.contrib.admin.views.decorators import staff_member_required
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.shortcuts import render
 from django.core.mail import mail_admins
 from django.conf import settings
@@ -46,7 +46,7 @@ def set_preference(request):
     new_preferences = request.POST
     
     preferences = json.decode(request.user.profile.preferences)
-    for preference_name, preference_value in new_preferences.items():
+    for preference_name, preference_value in list(new_preferences.items()):
         if preference_value in ['true','false']: preference_value = True if preference_value == 'true' else False
         if preference_name in SINGLE_FIELD_PREFS:
             setattr(request.user.profile, preference_name, preference_value)
@@ -92,7 +92,7 @@ def login(request):
     if request.method == "POST":
         form = LoginForm(data=request.POST)
         if form.is_valid():
-            login_user(request, form.get_user())
+            login_user(request, form.get_user(), backend='django.contrib.auth.backends.ModelBackend')
             logging.user(form.get_user(), "~FG~BBOAuth Login~FW")
             return HttpResponseRedirect(request.POST['next'] or reverse('index'))
 
@@ -123,7 +123,7 @@ def signup(request):
         form = SignupForm(data=request.POST, prefix="signup")
         if form.is_valid() and not recaptcha_error:
             new_user = form.save()
-            login_user(request, new_user)
+            login_user(request, new_user, backend='django.contrib.auth.backends.ModelBackend')
             logging.user(new_user, "~FG~SB~BBNEW SIGNUP: ~FW%s" % new_user.email)
             new_user.profile.activate_free()
             return HttpResponseRedirect(request.POST['next'] or reverse('index'))
@@ -166,7 +166,7 @@ def set_account_settings(request):
         form.save()
         code = 1
     else:
-        message = form.errors[form.errors.keys()[0]][0]
+        message = form.errors[list(form.errors.keys())[0]][0]
     
     payload = {
         "username": request.user.username,
@@ -188,7 +188,7 @@ def set_view_setting(request):
     view_settings = json.decode(request.user.profile.view_settings)
     
     setting = view_settings.get(feed_id, {})
-    if isinstance(setting, basestring): setting = {'v': setting}
+    if isinstance(setting, str): setting = {'v': setting}
     if feed_view_setting: setting['v'] = feed_view_setting
     if feed_order_setting: setting['o'] = feed_order_setting
     if feed_read_filter_setting: setting['r'] = feed_read_filter_setting
@@ -212,7 +212,7 @@ def clear_view_setting(request):
     view_settings = json.decode(request.user.profile.view_settings)
     new_view_settings = {}
     removed = 0
-    for feed_id, view_setting in view_settings.items():
+    for feed_id, view_setting in list(view_settings.items()):
         if view_setting_type == 'layout' and 'l' in view_setting:
             del view_setting['l']
             removed += 1
@@ -497,7 +497,7 @@ def payment_history(request):
         "created_date": user.date_joined,
         "last_seen_date": user.profile.last_seen_on,
         "last_seen_ip": user.profile.last_seen_ip,
-        "timezone": unicode(user.profile.timezone),
+        "timezone": str(user.profile.timezone),
         "stripe_id": user.profile.stripe_id,
         "paypal_email": user.profile.latest_paypal_email,
         "profile": user.profile,
@@ -542,9 +542,9 @@ def refund_premium(request):
     user = User.objects.get(pk=user_id)
     try:
         refunded = user.profile.refund_premium(partial=partial)
-    except stripe.InvalidRequestError, e:
+    except stripe.error.InvalidRequestError as e:
         refunded = e
-    except PayPalAPIResponseError, e:
+    except PayPalAPIResponseError as e:
         refunded = e
 
     return {'code': 1 if refunded else -1, 'refunded': refunded}

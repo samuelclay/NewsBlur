@@ -3,7 +3,7 @@ import re
 import redis
 from django.contrib.sites.models import Site
 from django.core.mail import EmailMultiAlternatives
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.conf import settings
 from django.template.loader import render_to_string
 from django.utils.html import linebreaks

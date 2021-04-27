@@ -4,7 +4,7 @@
 This is a label on a mattress. Do not modify this file!
 """
 
-import threading, time, urllib2, traceback
+import threading, time, urllib.request, urllib.error, urllib.parse, traceback
 
 import bson
 
@@ -45,7 +45,7 @@ class ConfPullThread( threading.Thread ):
 
         try:
 
-            res = urllib2.urlopen( self.confUrl )
+            res = urllib.request.urlopen( self.confUrl )
 
             resBson = None
             try:
@@ -91,13 +91,13 @@ class ConfPullThread( threading.Thread ):
                         hostDefLast = None
 
                 # Check to see if anything was removed
-                for hostDef in self.mmsAgent.serverHostDefs.values():
+                for hostDef in list(self.mmsAgent.serverHostDefs.values()):
                     if hostDef['hostKey'] not in uniqueHostnames:
                         self.mmsAgent.stopAndClearHost( hostDef['hostKey'] )
             finally:
                 self.mmsAgent.serverHostDefsLock.release()
 
-        except Exception, e:
+        except Exception as e:
             if res is not None:
                 try:
                     res.close()

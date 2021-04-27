@@ -10,6 +10,10 @@ import pymongo
 from bson.errors import InvalidBSON
 
 class MongoDumpMiddleware(object):    
+
+    def __init__(self, get_response=None):
+        self.get_response = get_response
+
     def activated(self, request):
         return (settings.DEBUG_QUERIES or 
                 (hasattr(request, 'activated_segments') and
@@ -31,7 +35,9 @@ class MongoDumpMiddleware(object):
     def process_celery(self, profiler):
         if not self.activated(profiler): return
         self._used_msg_ids = []
-        if not getattr(MongoClient, '_logging', False):
+        if (not getattr(MongoClient, '_logging', False) and 
+            hasattr(MongoClient, '_send_message_with_response') and
+            hasattr(MongoReplicaSetClient, '_send_message_with_response')):
             # save old methods
             setattr(MongoClient, '_logging', True)
             if hasattr(MongoClient, '_send_message_with_response'):
@@ -66,6 +72,12 @@ class MongoDumpMiddleware(object):
             return result
         return instrumented_method
 
+    def __call__(self, request):
+        response = self.get_response(request)
+        response = self.process_response(request, response)
+
+        return response
+
 def _mongodb_decode_wire_protocol(message):
     """ http://www.mongodb.org/display/DOCS/Mongo+Wire+Protocol """
     MONGO_OPS = {
@@ -81,9 +93,9 @@ def _mongodb_decode_wire_protocol(message):
     _, msg_id, _, opcode, _ = struct.unpack('<iiiii', message[:20])
     op = MONGO_OPS.get(opcode, 'unknown')
     zidx = 20
-    collection_name_size = message[zidx:].find('\0')
+    collection_name_size = message[zidx:].find(b'\0')
     collection_name = message[zidx:zidx+collection_name_size]
-    if '.system.' in collection_name:
+    if b'.system.' in collection_name:
         return
     zidx += collection_name_size + 1
     skip, limit = struct.unpack('<ii', message[zidx:zidx+8])

@@ -1,4 +1,4 @@
-from BeautifulSoup import BeautifulSoup
+from bs4 import BeautifulSoup
 from glob import glob
 from collections import defaultdict
 from math import log, exp
@@ -72,7 +72,7 @@ def create_data(stories, lang="english", doc_limit=-1, delimiter=""):
   for story in stories:
     text = zlib.decompress(story.story_content_z)
     # text = story.story_title
-    text = ''.join(BeautifulSoup(text).findAll(text=True)).lower()
+    text = ''.join(BeautifulSoup(text, features="lxml").findAll(text=True)).lower()
     if delimiter:
       sections = text.split(delimiter)
     else:

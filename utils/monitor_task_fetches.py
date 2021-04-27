@@ -1,4 +1,4 @@
-#!/srv/newsblur/venv/newsblur/bin/python
+#!/srv/newsblur/venv/newsblur3/bin/python
 
 import sys
 sys.path.append('/srv/newsblur')
@@ -28,7 +28,7 @@ def main():
         client = pymongo.MongoClient('mongodb://%s' % settings.MONGO_DB['host'])
         feeds_fetched = client.newsblur.statistics.find_one({"key": "feeds_fetched"})['value']
         redis_task_fetches = int(r.get(monitor_key) or 0)
-    except Exception, e:
+    except Exception as e:
         failed = e
     
     if feeds_fetched < 5000000:

@@ -9,7 +9,6 @@ import logging
 import os
 from pprint import pformat
 
-from vendor.paypalapi.compat import basestring
 from vendor.paypalapi.exceptions import PayPalConfigError
 
 logger = logging.getLogger('paypal.settings')
@@ -119,7 +118,7 @@ class PayPalConfig(object):
         if 'API_CA_CERTS' in kwargs:
             self.API_CA_CERTS = kwargs['API_CA_CERTS']
 
-            if isinstance(self.API_CA_CERTS, basestring) and not os.path.exists(self.API_CA_CERTS):
+            if isinstance(self.API_CA_CERTS, str) and not os.path.exists(self.API_CA_CERTS):
                 # A CA Cert path was specified, but it's invalid.
                 raise PayPalConfigError('Invalid API_CA_CERTS')
 

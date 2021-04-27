@@ -1,0 +1,52 @@
+---
+# File: main.yml - Meta main
+galaxy_info:
+  author: Brian Shumate
+  description: Consul cluster role
+  company: Brian Shumate
+  license: BSD
+  min_ansible_version: 2.5
+
+  platforms:
+    - name: Alpine
+      versions:
+        - all
+    - name: ArchLinux
+      versions:
+        - all
+    - name: Debian
+      versions:
+        - jessie
+        - stretch
+    - name: EL
+      versions:
+        - 6
+        - 7
+        - 8
+    - name: Fedora
+      versions:
+        - 26
+        - 27
+        - 28
+        - 29
+        - 30
+        - 31
+    - name: FreeBSD
+      versions:
+        - 10.0
+        - 11.0
+    - name: Ubuntu
+      versions:
+        - xenial
+        - bionic
+    - name: Windows
+      versions:
+        - 2012R2
+
+  galaxy_tags:
+    - clustering
+    - monitoring
+    - networking
+    - system
+
+dependencies: []

@@ -206,12 +206,14 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
     show_content_preview: function() {
         var preference = NEWSBLUR.assets.preference('show_content_preview');
         if (!preference) return preference;
+        var max_length = preference == 'small' ? 300 : preference == 'medium' ? 600 : 1000;
 
         if (this.options.override_layout == 'grid' || 
             NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout') == 'grid') {
-            return this.model.content_preview('story_content', 500) || " ";
+            max_length = preference == 'small' ? 500 : preference == 'medium' ? 1000 : 1500;
+            return this.model.content_preview('story_content', max_length) || " ";
         }
-        var pruned_description = this.model.content_preview();
+        var pruned_description = this.model.content_preview('story_content', max_length) || " ";
         var pruned_title = this.model.content_preview('story_title');
         
         if (pruned_title.substr(0, 30) == pruned_description.substr(0, 30)) return false;
@@ -220,8 +222,9 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
         return pruned_description;
     },
     
-    show_image_preview: function() {
-        if (!NEWSBLUR.assets.preference('show_image_preview')) {
+    show_image_preview: function () {
+        var show_image_preview = NEWSBLUR.assets.preference('image_preview');
+        if (!show_image_preview || show_image_preview == "none") {
             return false;
         }
         
@@ -231,7 +234,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
         if (_.contains(['list', 'grid'], story_layout)) return true;
         if (story_layout == 'split' && _.contains(['north', 'south'], pane_anchor)) return true;
 
-        return this.model.image_url();
+        return !!this.model.image_url();
     },
     
     // ============
@@ -471,7 +474,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
         
         if (this.options.on_dashboard) {
             // console.log(['clicked story', this.model]);
-            NEWSBLUR.app.dashboard_river.open_story(this.model);
+            this.options.on_dashboard.open_story(this.model);
             return;
         }
         

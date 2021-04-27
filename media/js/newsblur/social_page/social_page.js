@@ -135,6 +135,7 @@ NEWSBLUR.Views.SocialPage = Backbone.View.extend({
         $next.animate({'bottom': -1 * innerheight}, this.next_animation_options);
         $button.addClass('NB-loading');
         
+        clearInterval(this.feed_stories_loading);
         $button.animate({'backgroundColor': '#5C89C9'}, 650)
                .animate({'backgroundColor': '#2B478C'}, 900);
         this.feed_stories_loading = setInterval(function() {

@@ -27,7 +27,7 @@ DAYS_OF_UNREAD_FREE = 9999
 TEST_DEBUG = True
 DEBUG = True
 SITE_ID = 2
-RAVEN_CLIENT = None
+SENTRY_DSN = None
 # from django.db import connection
 # cursor = connection.cursor()
 # cursor.execute('PRAGMA temp_store = MEMORY;')

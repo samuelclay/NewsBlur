@@ -2,20 +2,20 @@
 # Retooled by Samuel Clay, August 2011
 # Modified by Luke Hagan, 2011-11-05
 
-import urllib, urllib2
-import cookielib
+import urllib.request, urllib.parse
+import http.cookiejar
 import json
 
 __author__ = "Dananjaya Ramanayake <dananjaya86@gmail.com>, Samuel Clay <samuel@newsblur.com>"
 __version__ = "1.0"
 
-API_URL = "http://www.newsblur.com/"
-# API_URL = "http://nb.local.host:8000/"
+API_URL = "https://www.newsblur.com/"
+# API_URL = "https://nb.local.host:8000/"
 
 
 class request():
     
-    opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookielib.CookieJar()))
+    opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(http.cookiejar.CookieJar()))
     
     def __init__(self, endpoint=None, method='get'):
         self.endpoint = endpoint
@@ -25,7 +25,7 @@ class request():
         def wrapped(*args, **kwargs):
             params = func(*args, **kwargs) or {}
             url    = self.endpoint if self.endpoint else params.pop('url')
-            params = urllib.urlencode(params)
+            params = urllib.parse.urlencode(params)
             url    = "%s%s" % (API_URL, url)
             
             response = self.opener.open(url, params).read()

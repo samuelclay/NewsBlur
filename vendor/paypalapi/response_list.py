@@ -6,8 +6,8 @@ PayPal response parsing of list syntax.
 import logging
 import re
 
-from response import PayPalResponse
-from exceptions import PayPalAPIResponseError
+from vendor.paypalapi.response import PayPalResponse
+from vendor.paypalapi.exceptions import PayPalAPIResponseError
 
 logger = logging.getLogger('paypal.response')
 
@@ -30,7 +30,7 @@ class PayPalResponseList(PayPalResponse):
 
         self.list_items_dict = {}
 
-        for key in self.raw.keys():
+        for key in list(self.raw.keys()):
             match = L_regex.match(key)
             if match:
                 index = match.group(2)
@@ -62,5 +62,5 @@ class PayPalResponseList(PayPalResponse):
         return list(self.list_items_dict.values())
         
     def iteritems(self):
-         for key in self.list_items_dict.keys():
+         for key in list(self.list_items_dict.keys()):
             yield (key, self.list_items_dict[key])

@@ -86,13 +86,13 @@ class FacebookFetcher:
             social_services = MSocialServices.get_user(self.options.get('requesting_user_id'))
             facebook_api = social_services.facebook_api()
             if not facebook_api:
-                logging.debug(u'   ***> [%-30s] ~FRFacebook fetch failed: %s: No facebook API for %s' % 
+                logging.debug('   ***> [%-30s] ~FRFacebook fetch failed: %s: No facebook API for %s' % 
                               (self.feed.log_title[:30], self.feed.feed_address, self.options))
                 return
         else:
             usersubs = UserSubscription.objects.filter(feed=self.feed)
             if not usersubs:
-                logging.debug(u'   ***> [%-30s] ~FRFacebook fetch failed: %s: No subscriptions' % 
+                logging.debug('   ***> [%-30s] ~FRFacebook fetch failed: %s: No subscriptions' % 
                               (self.feed.log_title[:30], self.feed.feed_address))
                 return
 
@@ -108,7 +108,7 @@ class FacebookFetcher:
                     break
         
             if not facebook_api:
-                logging.debug(u'   ***> [%-30s] ~FRFacebook fetch failed: %s: No facebook API for %s' % 
+                logging.debug('   ***> [%-30s] ~FRFacebook fetch failed: %s: No facebook API for %s' % 
                               (self.feed.log_title[:30], self.feed.feed_address, usersubs[0].user.username))
                 return
         
@@ -117,10 +117,10 @@ class FacebookFetcher:
     def fetch_page_feed(self, facebook_user, page, fields):
         try:
             stories = facebook_user.get_object(page, fields=fields)
-        except GraphAPIError, e:
+        except GraphAPIError as e:
             message = str(e).lower()
             if 'session has expired' in message:
-                logging.debug(u'   ***> [%-30s] ~FRFacebook page failed/expired, disconnecting facebook: %s: %s' % 
+                logging.debug('   ***> [%-30s] ~FRFacebook page failed/expired, disconnecting facebook: %s: %s' % 
                               (self.feed.log_title[:30], self.feed.feed_address, e))
                 self.feed.save_feed_history(560, "Facebook Error: Expired token")
             return {}
@@ -137,7 +137,7 @@ class FacebookFetcher:
             return
         message = linebreaks(page_story['message'])
         created_date = page_story['created_time']
-        if isinstance(created_date, unicode):
+        if isinstance(created_date, str):
             created_date = dateutil.parser.parse(created_date)
         fields = facebook_user.get_object(page_story['id'], fields='permalink_url,link,attachments')
         permalink = fields.get('link', fields['permalink_url'])
@@ -175,7 +175,7 @@ class FacebookFetcher:
             return
         message = linebreaks(page_story['description'])
         created_date = page_story['updated_time']
-        if isinstance(created_date, unicode):
+        if isinstance(created_date, str):
             created_date = dateutil.parser.parse(created_date)
         permalink = facebook_user.get_object(page_story['id'], fields='permalink_url')['permalink_url']
         embed_html = facebook_user.get_object(page_story['id'], fields='embed_html')
@@ -206,16 +206,16 @@ class FacebookFetcher:
         page_name = self.extract_page_name()
         facebook_user = self.facebook_user()
         if not facebook_user:
-            logging.debug(u'   ***> [%-30s] ~FRFacebook icon failed, disconnecting facebook: %s' % 
+            logging.debug('   ***> [%-30s] ~FRFacebook icon failed, disconnecting facebook: %s' % 
                           (self.feed.log_title[:30], self.feed.feed_address))
             return
         
         try:
             picture_data = facebook_user.get_object(page_name, fields='picture')
-        except GraphAPIError, e:
+        except GraphAPIError as e:
             message = str(e).lower()
             if 'session has expired' in message:
-                logging.debug(u'   ***> [%-30s] ~FRFacebook icon failed/expired, disconnecting facebook: %s: %s' % 
+                logging.debug('   ***> [%-30s] ~FRFacebook icon failed/expired, disconnecting facebook: %s: %s' % 
                               (self.feed.log_title[:30], self.feed.feed_address, e))
             return
 

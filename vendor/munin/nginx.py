@@ -2,7 +2,7 @@
 
 import os
 import re
-import urllib
+import urllib.request
 from vendor.munin import MuninPlugin
 
 class MuninNginxPlugin(MuninPlugin):
@@ -22,4 +22,4 @@ class MuninNginxPlugin(MuninPlugin):
         return bool(self.get_status())
 
     def get_status(self):
-        return self.status_re.search(urllib.urlopen(self.url).read()).groupdict()
+        return self.status_re.search(urllib.request.urlopen(self.url).read()).groupdict()
