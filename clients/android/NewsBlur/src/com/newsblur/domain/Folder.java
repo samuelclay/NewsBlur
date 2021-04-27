@@ -52,7 +52,7 @@ public class Folder {
             builder.append(" - ");
         }
         builder.append(name);
-        return builder.toString().toUpperCase();
+        return builder.toString();
     }
 
     public String toString() {
