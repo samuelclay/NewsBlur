@@ -281,7 +281,7 @@ class SearchStory:
             "date"      : story_date,
         }
         try:
-            cls.ES().create(index=cls.index_name(), id=story_hash, body=doc)
+            cls.ES().create(index=cls.index_name(), id=story_hash, body=doc, doc_type='stories-type')
         except (elasticsearch.exceptions.ConnectionError, 
                 urllib3.exceptions.NewConnectionError) as e:
             logging.debug(f" ***> ~FRNo search server available for story indexing: {e}")
@@ -329,7 +329,7 @@ class SearchStory:
             'size': limit
         }
         try:
-            results  = cls.ES().search(body=body, index=cls.index_name())
+            results  = cls.ES().search(body=body, index=cls.index_name(), doc_type='stories-type')
         except elasticsearch.exceptions.RequestError as e:
             logging.debug(" ***> ~FRNo search server available for querying: %s" % e)
             return []
@@ -515,7 +515,7 @@ class SearchFeed:
             "num_subscribers": num_subscribers,
         }
         try:
-            cls.ES().create(index=cls.index_name(), id=feed_id, body=doc, doc_type='stories-type')
+            cls.ES().create(index=cls.index_name(), id=feed_id, body=doc, doc_type='feeds-type')
         except (elasticsearch.exceptions.ConnectionError, 
                 urllib3.exceptions.NewConnectionError) as e:
             logging.debug(f" ***> ~FRNo search server available for feed indexing: {e}")
@@ -551,7 +551,7 @@ class SearchFeed:
             'sort': [{'num_subscribers': {'order': 'desc'}}],
         }
         try:
-            results  = cls.ES().search(body=body, index=cls.index_name(), doc_type='stories-type')
+            results  = cls.ES().search(body=body, index=cls.index_name(), doc_type='feeds-type')
         except elasticsearch.exceptions.RequestError as e:
             logging.debug(" ***> ~FRNo search server available for querying: %s" % e)
             return []
