@@ -21,3 +21,6 @@
     - {role: 'web', tags: 'web'}
     - {role: 'nginx', tags: 'nginx'}
     - {role: 'node', tags: 'node'}
+    - {role: 'prometheus', tags: 'prometheus'}
+    - {role: 'node-exporter', tags: 'node-exporter'}
+    - {role: 'grafana', tags: 'grafana'}
