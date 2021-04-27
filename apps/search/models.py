@@ -556,7 +556,7 @@ class SearchFeed:
             'sort': [{'num_subscribers': {'order': 'desc'}}],
         }
         try:
-            results  = cls.ES().search(body=body, index=cls.index_name(), doc_type=cls.doc_type()
+            results  = cls.ES().search(body=body, index=cls.index_name(), doc_type=cls.doc_type())
         except elasticsearch.exceptions.RequestError as e:
             logging.debug(" ***> ~FRNo search server available for querying: %s" % e)
             return []
