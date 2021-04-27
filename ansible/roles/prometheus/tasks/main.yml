@@ -13,6 +13,8 @@
     network_mode: host
     restart_policy: unless-stopped
     command: '-config.file=/etc/prometheus/prometheus.yml'
+    ports:
+      - "9090:9090"
     volumes:
       - /srv/newsblur/docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
       - /srv/newsblur/docker/volumes/prometheus_data:/prometheus
