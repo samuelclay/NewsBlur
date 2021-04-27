@@ -49,7 +49,7 @@ public class Folder {
         for (String parentName : parents) {
             if (parentName.equals(AppConstants.ROOT_FOLDER)) continue;
             builder.append(parentName);
-            builder.append(" - ");
+            builder.append(" ▸ ");
         }
         builder.append(name);
         return builder.toString();
