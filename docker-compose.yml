@@ -102,7 +102,7 @@ services:
 
   db_elasticsearch:
     container_name: db_elasticsearch
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.11.1
+    image: docker.elastic.co/elasticsearch/elasticsearch:1.7.1
     mem_limit: 512mb
     environment:
       - discovery.type=single-node
