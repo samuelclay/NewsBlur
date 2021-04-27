@@ -204,6 +204,10 @@ class SearchStory:
     @classmethod
     def index_name(cls):
         return "%s-index" % cls.name
+    
+    @classmethod
+    def doc_type(cls):
+        return "%s-type" % cls.name
         
     @classmethod
     def create_elasticsearch_mapping(cls, delete=False):
@@ -281,7 +285,7 @@ class SearchStory:
             "date"      : story_date,
         }
         try:
-            cls.ES().create(index=cls.index_name(), id=story_hash, body=doc, doc_type='stories-type')
+            cls.ES().create(index=cls.index_name(), id=story_hash, body=doc, doc_type=cls.doc_type())
         except (elasticsearch.exceptions.ConnectionError, 
                 urllib3.exceptions.NewConnectionError) as e:
             logging.debug(f" ***> ~FRNo search server available for story indexing: {e}")
@@ -292,7 +296,7 @@ class SearchStory:
     @classmethod
     def remove(cls, story_hash):
         try:
-            cls.ES().delete(index=cls.index_name(), id=story_hash)
+            cls.ES().delete(index=cls.index_name(), id=story_hash, doc_type=cls.doc_type())
         except elasticsearch.exceptions.NotFoundError as e:
             logging.debug(f" ***> ~FRNo search server available for story deletion: {e}")
         
@@ -330,7 +334,7 @@ class SearchStory:
             'size': limit
         }
         try:
-            results  = cls.ES().search(body=body, index=cls.index_name(), doc_type='stories-type')
+            results  = cls.ES().search(body=body, index=cls.index_name(), doc_type=cls.doc_type())
         except elasticsearch.exceptions.RequestError as e:
             logging.debug(" ***> ~FRNo search server available for querying: %s" % e)
             return []
@@ -386,7 +390,7 @@ class SearchStory:
             'size': limit
         }
         try:
-            results  = cls.ES().search(body=body, index=cls.index_name())
+            results  = cls.ES().search(body=body, index=cls.index_name(), doc_type=cls.doc_type())
         except elasticsearch.exceptions.RequestError as e:
             logging.debug(" ***> ~FRNo search server available for querying: %s" % e)
             return []
@@ -516,7 +520,7 @@ class SearchFeed:
             "num_subscribers": num_subscribers,
         }
         try:
-            cls.ES().create(index=cls.index_name(), id=feed_id, body=doc, doc_type='feeds-type')
+            cls.ES().create(index=cls.index_name(), id=feed_id, body=doc, doc_type=cls.doc_type())
         except (elasticsearch.exceptions.ConnectionError, 
                 urllib3.exceptions.NewConnectionError) as e:
             logging.debug(f" ***> ~FRNo search server available for feed indexing: {e}")
@@ -552,7 +556,7 @@ class SearchFeed:
             'sort': [{'num_subscribers': {'order': 'desc'}}],
         }
         try:
-            results  = cls.ES().search(body=body, index=cls.index_name(), doc_type='feeds-type')
+            results  = cls.ES().search(body=body, index=cls.index_name(), doc_type=cls.doc_type()
         except elasticsearch.exceptions.RequestError as e:
             logging.debug(" ***> ~FRNo search server available for querying: %s" % e)
             return []
