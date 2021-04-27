@@ -167,7 +167,7 @@ services:
   node-exporter:
     image: prom/node-exporter
     ports:
-      - '9100:9100'
+      - 9100:9100
 
   grafana:
     image: grafana/grafana
@@ -176,6 +176,6 @@ services:
     depends_on:
       - prometheus
     ports:
-      - "3000:3000"
+      - 3000:3000
     volumes:
       - ./docker/volumes/grafana_data:/var/lib/grafana
