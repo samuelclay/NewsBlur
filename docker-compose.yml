@@ -152,17 +152,30 @@ services:
       - ./docker/haproxy/haproxy.docker-compose.cfg:/usr/local/etc/haproxy/haproxy.cfg
       - ${PWD}:/srv/newsblur
   
-  netdata:
-    container_name: netdata
-    image: netdata/netdata
-    ports: 
-    - 19999:19999
-    environment:
-    - MONITOR_URL=https://haproxy/monitor
+  prometheus:
+    container_name: prometheus
+    image: prom/prometheus:0.18.0
+    ports:
+      - 9090:9090
+    command: '-config.file=/etc/prometheus/prometheus.yml'
     volumes:
-    - ./docker/netdata/netdatalib:/var/lib/netdata
-    - ./docker/netdata/netdatacache:/var/cache/netdata
-    - ./docker/netdata/netdataconfig/netdata.conf.j2:/etc/netdata/netdata.conf
-    - ./docker/netdata/netdataconfig/python.d.conf:/usr/lib/netdata/conf.d/python.d.conf 
-    - ./docker/netdata/netdataconfig/conf/:/usr/lib/netdata/conf.d/python.d/
-    - ./docker/netdata/netdataconfig/charts/newsblur.chart.py:/usr/libexec/netdata/python.d/newsblur.chart.py
+      - ./docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./docker/volumes/prometheus_data:/prometheus
+    depends_on:
+      - node-exporter
+
+  node-exporter:
+    image: prom/node-exporter
+    ports:
+      - '9100:9100'
+
+  grafana:
+    image: grafana/grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=pass
+    depends_on:
+      - prometheus
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./docker/volumes/grafana_data:/var/lib/grafana
