@@ -4,8 +4,8 @@
   docker_container:
     name: grafana
     image: grafana/grafana
-    environment:
-      - GF_SECURITY_ADMIN_PASSWORD="{{ grafana_password }}"
+    env:
+      GF_SECURITY_ADMIN_PASSWORD: "{{ grafana_password }}"
     ports:
       - "3000:3000"
     volumes:
