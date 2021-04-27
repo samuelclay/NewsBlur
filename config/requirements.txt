@@ -43,7 +43,7 @@ pillow==8.0.1
 psutil==5.7.3
 psycopg2==2.8.6
 pyasn1==0.4.8
-pyelasticsearch>=1.4,<1.5
+elasticsearch>=7,<8
 pyflakes==2.2.0
 pymongo==3.11.2
 PyMySQL==0.10.1
