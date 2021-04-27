@@ -285,8 +285,9 @@ class SearchStory:
         except (elasticsearch.exceptions.ConnectionError, 
                 urllib3.exceptions.NewConnectionError) as e:
             logging.debug(f" ***> ~FRNo search server available for story indexing: {e}")
-            # if settings.DEBUG:
-            #     raise e
+        except elasticsearch.exceptions.ConflictError as e:
+            logging.debug(f" ***> ~FBAlready indexed story: {e}")
+
     
     @classmethod
     def remove(cls, story_hash):
