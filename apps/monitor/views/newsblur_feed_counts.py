@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.http import JsonResponse
+from django.shortcuts import render
 from django.views import View
 import redis
 from apps.rss_feeds.models import Feed, DuplicateFeed
@@ -37,12 +37,14 @@ class FeedCounts(View):
 
         r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
         
-        return JsonResponse({
+        data = {
             'scheduled_feeds': r.zcard('scheduled_updates'),
             'exception_feeds': exception_feeds,
             'exception_pages': exception_pages,
             'duplicate_feeds': duplicate_feeds,
             'active_feeds': active_feeds,
             'push_feeds': push_feeds,
-        })
+        }
+        return render(request, 'monitor/prometheus_data.html', {"data": data})
+
 

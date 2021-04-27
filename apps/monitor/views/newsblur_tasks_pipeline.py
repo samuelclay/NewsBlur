@@ -1,13 +1,14 @@
 import datetime
 
 from django.conf import settings
-from django.http import JsonResponse
+from django.shortcuts import render
 from django.views import View
 
 class TasksPipeline(View):
 
     def get(self, request):
-        return JsonResponse(self.stats)
+        data =self.stats
+        return render(request, 'monitor/prometheus_data.html', {"data": data})
     
     @property
     def stats(self):
