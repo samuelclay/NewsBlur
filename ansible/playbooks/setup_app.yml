@@ -16,4 +16,4 @@
     - {role: 'consul-client', tags: 'consul'}
     - {role: 'web', tags: 'web'}
     - {role: 'nginx', tags: 'nginx'}
-    - {role: 'netdata', tags: 'netdata'}
+    # - {role: 'netdata', tags: 'netdata'}
