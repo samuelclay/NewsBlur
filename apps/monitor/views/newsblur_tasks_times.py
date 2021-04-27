@@ -1,15 +1,16 @@
 import datetime
 
 from django.conf import settings
-from django.http import JsonResponse
+from django.shortcuts import render
 from django.views import View
 
 class TasksTimes(View):
 
     def get(self, request):
-        servers = dict((("%s" % s['_id'], s['total']) for s in self.stats))
+        data = dict((("%s" % s['_id'], s['total']) for s in self.stats))
 
-        return JsonResponse(servers)
+        return render(request, 'monitor/prometheus_data.html', {"data": data})
+
     
     @property
     def stats(self):
