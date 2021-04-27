@@ -36,10 +36,10 @@ class MuninPlugin(object):
                 conf.append('graph_%s %s' % (k, v))
 
         for field_name, field_args in self.fields:
-            for arg_name, arg_value in field_args.iteritems():
+            for arg_name, arg_value in field_args.items():
                 conf.append('%s.%s %s' % (field_name, arg_name, arg_value))
 
-        print "\n".join(conf)
+        print("\n".join(conf))
 
     def suggest(self):
         sys.exit(1)
@@ -50,17 +50,17 @@ class MuninPlugin(object):
             values = self.execute()
             if values:
                 for k, v in values.items():
-                    print "%s.value %s" % (k, v)
+                    print("%s.value %s" % (k, v))
         elif cmd == "autoconf":
             try:
                 ac = self.autoconf()
-            except Exception, exc:
-                print "no (%s)" % str(exc)
+            except Exception as exc:
+                print("no (%s)" % str(exc))
                 sys.exit(1)
             if not ac:
-                print "no"
+                print("no")
                 sys.exit(1)
-            print "yes"
+            print("yes")
         elif cmd == "config":
             self.config()
         elif cmd == "suggest":

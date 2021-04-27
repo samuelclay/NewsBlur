@@ -1,0 +1,19 @@
+---
+# File: main.yml - Handlers for Consul
+
+- name: restart consul
+  import_tasks: restart_consul.yml
+
+- name: start consul
+  import_tasks: start_consul.yml
+
+- name: reload consul configuration
+  import_tasks: reload_consul_conf.yml
+
+- name: reload consul service
+  become: yes
+  service:
+    name: consul
+    state: reloaded
+  listen: reload consul
+

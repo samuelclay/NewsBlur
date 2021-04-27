@@ -1,3 +1,4 @@
+import os
 import psutil
 import math
 
@@ -9,7 +10,7 @@ pidfile = "/srv/newsblur/logs/gunicorn.pid"
 logfile = "/srv/newsblur/logs/production.log"
 accesslog = "/srv/newsblur/logs/production.log"
 errorlog = "/srv/newsblur/logs/errors.log"
-loglevel = "debug"
+loglevel = "info"
 name = "newsblur"
 timeout = 120
 max_requests = 1000
@@ -17,6 +18,8 @@ x_forwarded_for_header = "X-FORWARDED-FOR"
 forwarded_allow_ips = "*"
 limit_request_line = 16000
 limit_request_fields = 1000
+worker_tmp_dir = "/dev/shm"
+reload = True
 
 if GIGS_OF_MEMORY > NUM_CPUS:
     workers = NUM_CPUS
@@ -29,3 +32,5 @@ if workers <= 4:
 if workers > 8:
     workers = 8
 
+if os.environ.get('DOCKERBUILD', False):
+    workers = 2

@@ -28,7 +28,7 @@ def main():
     try:
         work_queue_size = int(r.llen("work_queue"))
         redis_work_queue = int(r_monitor.get(monitor_key) or 0)
-    except Exception, e:
+    except Exception as e:
         failed = e
     
     if work_queue_size > 100 and work_queue_size > (redis_work_queue + QUEUE_DROP_AMOUNT):

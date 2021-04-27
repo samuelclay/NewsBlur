@@ -123,7 +123,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
                         $.make('td', { className: 'NB-intro-uptodate-follow NB-intro-uptodate-follow-twitter' }, [
                             $.make('input', { type: 'checkbox', id: 'NB-intro-uptodate-follow-samuelclay' }),
                             $.make('label', { 'for': 'NB-intro-uptodate-follow-samuelclay' }, [
-                                $.make('img', { src: "http://static.newsblur.com.s3.amazonaws.com/blog/Campeche%20Steps%20resized.jpeg", style: 'border-color: #505050;' }),
+                                $.make('img', { src: "https://s3.amazonaws.com/static.newsblur.com/blog/Campeche%20Steps%20resized.jpeg", style: 'border-color: #505050;' }),
                                 $.make('span', '@samuelclay')
                             ]),
                             $.make('iframe', { allowtransparency: "true", frameborder: "0", scrolling: "no", src: "//platform.twitter.com/widgets/follow_button.html?screen_name=samuelclay", width: 260, height: 20 })

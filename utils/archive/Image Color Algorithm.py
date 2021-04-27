@@ -36,7 +36,7 @@ counts, bins = scipy.histogram(vecs, len(codes))
 # Show colors for each code in its hex value.
 colors = [''.join(chr(c) for c in code).encode('hex') for code in codes]
 total = scipy.sum(counts)
-color_dist = dict(zip(colors, [count/float(total) for count in counts]))
+color_dist = dict(list(zip(colors, [count/float(total) for count in counts])))
 pprint(color_dist)
 
 # Find the most frequent color, based on the counts.

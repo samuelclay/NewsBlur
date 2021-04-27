@@ -10,7 +10,7 @@ from django.contrib.auth.models import User
 # from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.conf import settings
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.contrib.auth import login as login_user
 from apps.reader.forms import SignupForm
 from apps.reader.models import UserSubscription
@@ -62,7 +62,8 @@ def opml_upload(request):
                 feeds = UserSubscription.objects.filter(user=request.user).values()
                 payload = dict(folders=folders, feeds=feeds)
                 logging.user(request, "~FR~SBOPML Upload: ~SK%s~SN~SB~FR feeds" % (len(feeds)))
-            
+                UserSubscription.queue_new_feeds(request.user)
+                UserSubscription.refresh_stale_feeds(request.user, exclude_new=True)
         else:
             message = "Attach an .opml file."
             code = -1

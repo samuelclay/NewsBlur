@@ -1,0 +1,17 @@
+---
+# File: Windows.yml - Windows OS variables for Consul
+
+# paths
+consul_windows_path: /ProgramData/consul
+consul_bin_path: "{{consul_windows_path}}/bin"
+consul_config_path: "{{consul_windows_path}}/config"
+consul_configd_path: "{{consul_config_path}}.d/"
+consul_bootstrap_state: "{{consul_windows_path}}/.consul_bootstrapped"
+consul_data_path: "{{consul_windows_path}}/data"
+consul_log_path: "{{consul_windows_path}}/log"
+consul_run_path: "{{consul_windows_path}}"
+consul_binary: "{{consul_windows_path}}/bin/consul.exe"
+consul_syslog_enable: false
+
+# users
+consul_user: LocalSystem

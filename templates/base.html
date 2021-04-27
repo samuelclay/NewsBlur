@@ -1,4 +1,6 @@
 {% load utils_tags %}
+{% load static%}
+{% autoescape off %}
 <!DOCTYPE html>
 <html>
 <head>
@@ -34,7 +36,7 @@
     NEWSBLUR.Preferences = {
       'unread_view'             : 0,
       'lock_mouse_indicator'    : 300,
-      'feed_pane_size'          : {% firstof user_profile.feed_pane_size 258 %},
+      'feed_pane_size'          : {% firstof user_profile.feed_pane_size 278 %},
       'hide_getting_started'    : {{ user_profile.hide_getting_started|yesno:"true,false" }},
       'has_setup_feeds'         : {{ user_profile.has_setup_feeds|yesno:"true,false" }},
       'has_found_friends'       : {{ user_profile.has_found_friends|yesno:"true,false" }},
@@ -84,7 +86,7 @@
       'truncate_story'          : 'social',
       'autoopen_folder'         : false,
       'show_content_preview'    : true,
-      'show_image_preview'      : true,
+      'image_preview'           : 'small-left',
       'mark_read_on_scroll_titles' : false,
       'doubleclick_feed'        : 'open',
       'doubleclick_unread'      : 'markread',
@@ -96,7 +98,8 @@
       'story_share_instapaper'  : true,
       'story_share_email'       : true,
       'theme'                   : 'auto',
-      'highlights'              : true
+      'highlights'              : true,
+      'dashboard_columns'       : 2
     };
     NEWSBLUR.URLs = {
       'upload-avatar'           : "{% url "upload-avatar" %}",
@@ -115,12 +118,10 @@
   
   {% include_stylesheets "common" %}
   
-  {% if user_profile.is_premium %}
-    {% if debug %}
-        <link rel="stylesheet" type="text/css" delay="//cloud.typography.com/6565292/731824/css/fonts.css" href="" />
-    {% else %}
-        <link rel="stylesheet" type="text/css" delay="//cloud.typography.com/6565292/711824/css/fonts.css" href="" />
-    {% endif %}
+  {% if debug %}
+      <link rel="stylesheet" type="text/css" href="https://cloud.typography.com/6565292/731824/css/fonts.css" />
+  {% else %}
+      <link rel="stylesheet" type="text/css" href="https://cloud.typography.com/6565292/711824/css/fonts.css" />
   {% endif %}
   
 </head>
@@ -158,3 +159,4 @@
   
 </body>
 </html>
+{% endautoescape %}

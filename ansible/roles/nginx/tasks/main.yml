@@ -1,0 +1,33 @@
+---
+- name: Template nginx.conf file
+  template:
+    src: /srv/newsblur/docker/nginx/nginx.consul.conf.j2
+    dest: /srv/newsblur/docker/nginx/nginx.consul.conf
+  notify: restart nginx
+  register: updated_config
+
+
+- name: Start nginx docker container
+  become: yes
+  docker_container:
+    name: nginx
+    image: nginx:1.19
+    env:
+      DOCKERBUILD: "True"
+    state: started
+    network_mode: host # This exposes port 80
+    restart_policy: unless-stopped
+    container_default_behavior: no_defaults
+    volumes:
+      - /srv/newsblur/docker/nginx/nginx.consul.conf:/etc/nginx/conf.d/default.conf
+      - /srv/newsblur/:/srv/newsblur
+
+- name: Register nginx in consul
+  tags: consul
+  become: yes
+  template:
+    src: consul_service.json
+    dest: /etc/consul.d/nginx.json
+  notify:
+    - reload consul
+  when: disable_consul_services is not defined

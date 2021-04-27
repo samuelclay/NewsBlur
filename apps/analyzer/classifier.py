@@ -97,7 +97,7 @@ class Classifier:
 
         # Calculate the weighted average
         bp = ((weight*ap) + (totals*basic_prob)) / (weight+totals)
-        print feature, category, basic_prob, totals, bp
+        print(feature, category, basic_prob, totals, bp)
         return bp
 
 
@@ -161,7 +161,7 @@ class FisherClassifier(Classifier):
         # Loop through looking for the best result
         best = default
         max = 0.0
-        print self.categories(), item
+        print(self.categories(), item)
         for category in self.categories():
             p=self.fisher_probability(item, category)
             # Make sure it exceeds its minimum

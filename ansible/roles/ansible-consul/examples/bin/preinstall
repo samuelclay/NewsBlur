@@ -1,0 +1,72 @@
+#!/bin/bash
+
+# File: preinstall - convenience script to add Consul
+# VM node host information to /etc/hosts for Vagrant
+# shellcheck disable=SC2059
+
+consul1="10\.1\.42\.210"
+export txtblu='\e[0;34m' # Blue
+export txtgrn='\e[0;32m' # Green
+export txtred='\e[0;31m' # Red
+export txtylw='\e[0;33m' # Yellow
+export txtwht='\e[0;37m' # White
+
+# Log stuff
+function logmsg {
+    msgtype="$1"
+    msgtxt="$2"
+    case "${msgtype}" in
+        greeting)
+            printf "${txtblu}[*] ${msgtxt}\n"
+            ;;
+        info)
+            printf "${txtwht}[i] ${msgtxt}\n"
+            ;;
+        success)
+            printf "${txtgrn}[+] ${msgtxt}\n"
+            ;;
+        notice)
+            printf "${txtylw}[-] ${msgtxt}\n"
+            ;;
+        alert)
+            printf "${txtred}[!] ${msgtxt}\n" >&2
+            ;;
+        *)
+            printf "${txtwht}[@] ${msgtxt}\n" >&2
+            ;;
+    esac
+}
+
+# Check if sudo will need password
+function sudocheck {
+  logmsg info "Enter your user account password for sudo if prompted"
+  sudo true
+}
+
+# Add hosts entries if necessary
+function add_hosts {
+  if grep "${consul1}" /etc/hosts > /dev/null 2>&1; then
+    logmsg success "Consul VM node information present in /etc/hosts"
+  else
+    sudocheck
+    sudo sh -c "echo '# Consul Vagrant virtual machine hosts
+10.1.42.210 consul1.consul consul1
+10.1.42.220 consul2.consul consul2
+10.1.42.230 consul3.consul consul3
+' >> /etc/hosts"
+    logmsg success "Consul node host information added to /etc/hosts"
+  fi
+}
+
+# Install Vagrant Hosts plugin if necessary
+function vagrant_hosts_plugin {
+  if vagrant plugin list | grep vagrant-hosts > /dev/null 2>&1; then
+    logmsg success "Vagrant Hosts plugin is installed"
+  else
+    vagrant plugin install vagrant-hosts > /dev/null 2>&1
+    logmsg success "Installed Vagrant Hosts plugin"
+  fi
+}
+
+add_hosts
+vagrant_hosts_plugin

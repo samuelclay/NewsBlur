@@ -12,7 +12,7 @@ class TimedeltaField(BaseField):
     """
     def validate(self, value):
         if not isinstance(value, (timedelta, int, float)):
-            self.error(u'cannot parse timedelta "%r"' % value)
+            self.error('cannot parse timedelta "%r"' % value)
 
     def to_mongo(self, value):
         return self.prepare_query_value(None, value)
