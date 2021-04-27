@@ -47,7 +47,7 @@
             android:autofillHints="@null"
             android:textSize="14sp"
             android:hint="@string/new_folder_name_hint"
-            android:inputType="textCapCharacters"
+            android:inputType="textCapSentences"
             android:maxLines="1" />
 
         <ImageView
