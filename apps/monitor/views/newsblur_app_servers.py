@@ -1,16 +1,17 @@
 import datetime
 from django.conf import settings
 from django.views import View
-from django.http import JsonResponse
+from django.shortcuts import render
 
 class AppServers(View):
 
     def get(self, request):
-        servers = dict((("%s" % s['_id'].replace('-', ''), s['feeds']) for s in self.stats))
+        data = dict((("%s" % s['_id'].replace('-', ''), s['feeds']) for s in self.stats))
         if self.total:
-            servers['total'] = self.total[0]['feeds']
-            return JsonResponse(servers)
-        return JsonResponse({})
+            data['total'] = self.total[0]['feeds']
+
+        return render(request, 'monitor/prometheus_data.html', {"data": data})
+    
     @property
     def stats(self):
         stats = settings.MONGOANALYTICSDB.nbanalytics.page_loads.aggregate([{
