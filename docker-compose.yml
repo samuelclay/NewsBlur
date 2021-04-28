@@ -80,7 +80,7 @@ services:
       - POSTGRES_USER=newsblur
       - POSTGRES_PASSWORD=newsblur
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ["CMD-SHELL", "pg_isready -U newsblur"]
       interval: 10s
       timeout: 5s
       retries: 5
