@@ -44,7 +44,7 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
         
         this.$modal = $.make('div', { className: 'NB-modal-statistics NB-modal' }, [
             (!this.options.embedded && $.make('div', { className: 'NB-modal-feed-chooser-container'}, [
-                this.make_feed_chooser({skip_starred: true})
+                this.make_feed_chooser({skip_starred: true, feed_id: this.feed.id})
             ])),
             $.make('div', { className: 'NB-modal-loading' }),
             (!this.options.embedded && $.make('h2', { className: 'NB-modal-title' }, 'Statistics &amp; History')),
