@@ -822,7 +822,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         
         var pre_callback = function(data) {
             dashboard_stories.add(data.stories, {silent: true});
-            dashboard_stories.limit(NEWSBLUR.Globals.is_premium ? 5 : 3);
+            // dashboard_stories.limit(NEWSBLUR.Globals.is_premium ? 5 : 3); // Don't bother limiting on dashboard
             dashboard_stories.trigger('reset', {added: 1});
         };
         
