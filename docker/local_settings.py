@@ -11,15 +11,15 @@ ADMINS                = (
 
 SERVER_EMAIL          = 'server@newsblur.com'
 HELLO_EMAIL           = 'hello@newsblur.com'
-NEWSBLUR_URL          = 'http://docker.newsblur.com'
-SESSION_COOKIE_DOMAIN = '.newsblur.com'
+NEWSBLUR_URL          = 'https://localhost'
+SESSION_COOKIE_DOMAIN = 'localhost'
 
 # ===================
 # = Global Settings =
 # ===================
 
-DEBUG = True
-DEBUG_ASSETS = DEBUG
+DEBUG = False
+DEBUG_ASSETS = True
 MEDIA_URL = '/media/'
 SECRET_KEY = 'YOUR SECRET KEY'
 AUTO_PREMIUM_NEW_USERS = True
