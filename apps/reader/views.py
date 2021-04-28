@@ -1360,8 +1360,7 @@ def load_river_stories__redis(request):
     query             = get_post.get('query', '').strip()
     include_hidden    = is_true(get_post.get('include_hidden', False))
     include_feeds     = is_true(get_post.get('include_feeds', False))
-    initial_dashboard = is_true(get_post.get('initial_dashboard', False))
-    on_dashboard      = is_true(get_post.get('dashboard', False))
+    on_dashboard      = is_true(get_post.get('dashboard', False)) or is_true(get_post.get('on_dashboard', False))
     infrequent        = is_true(get_post.get('infrequent', False))
     if infrequent:
         infrequent = get_post.get('infrequent')
@@ -1423,7 +1422,7 @@ def load_river_stories__redis(request):
                 "read_filter": read_filter,
                 "usersubs": usersubs,
                 "cutoff_date": user.profile.unread_cutoff,
-                "cache_prefix": "dashboard:" if initial_dashboard else "",
+                "cache_prefix": "dashboard:" if on_dashboard else "",
             }
             story_hashes, unread_feed_story_hashes = UserSubscription.feed_stories(**params)
         else:
@@ -1534,17 +1533,6 @@ def load_river_stories__redis(request):
                 hidden_stories_removed += 1
         stories = new_stories
     
-    # Clean stories to remove potentially old stories on dashboard
-    # if initial_dashboard:
-    #     new_stories = []
-    #     now = datetime.datetime.utcnow()
-    #     hour = now + datetime.timedelta(hours=1)
-    #     month_ago = now - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
-    #     for story in stories:
-    #         if story['story_date'] >= month_ago and story['story_date'] < hour:
-    #             new_stories.append(story)
-    #     stories = new_stories
-        
     # if page > 1:
     #     import random
     #     time.sleep(random.randint(10, 16))
