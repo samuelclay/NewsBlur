@@ -11,15 +11,16 @@ ADMINS                = (
 
 SERVER_EMAIL          = 'server@newsblur.com'
 HELLO_EMAIL           = 'hello@newsblur.com'
-NEWSBLUR_URL          = 'http://www.newsblur.com'
+NEWSBLUR_URL          = 'https://localhost'
 SESSION_COOKIE_DOMAIN = 'localhost'
 
 # ===================
 # = Global Settings =
 # ===================
 DOCKERBUILD = True
-DEBUG = True
-DEBUG_ASSETS = DEBUG
+DEBUG = False
+# DEBUG = True
+DEBUG_ASSETS = True
 MEDIA_URL = '/media/'
 IMAGES_URL = '/imageproxy'
 SECRET_KEY = 'YOUR SECRET KEY'
