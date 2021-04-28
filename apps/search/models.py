@@ -435,6 +435,10 @@ class SearchFeed:
         return "%s-index" % cls.name
         
     @classmethod
+    def doc_type(cls):
+        return "%s-type" % cls.name
+        
+    @classmethod
     def create_elasticsearch_mapping(cls, delete=False):
         if delete:
             logging.debug(" ---> ~FRDeleting search index for ~FM%s" % cls.index_name())
