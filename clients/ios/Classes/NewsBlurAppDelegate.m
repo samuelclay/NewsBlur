@@ -535,12 +535,19 @@
 -(void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
     const char *data = [deviceToken bytes];
     NSMutableString *token = [NSMutableString string];
+    static NSMutableString *seenToken = nil;
     
     for (NSUInteger i = 0; i < [deviceToken length]; i++) {
         [token appendFormat:@"%02.2hhX", data[i]];
     }
     
-    NSLog(@" -> APNS token: %@", token);
+    if (seenToken && [seenToken isEqualToString:token]) {
+        NSLog(@" -> Already registered APNS token: %@", token);
+        return;
+    }
+    
+    NSLog(@" -> Registering APNS token: %@", token);
+    seenToken = token;
     NSString *url = [NSString stringWithFormat:@"%@/notifications/apns_token/", self.url];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
     [params setObject:token forKey:@"apns_token"];
