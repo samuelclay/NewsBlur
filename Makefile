@@ -93,10 +93,12 @@ push: build_images push_images
 # Tasks
 deploy_web:
 	- ansible-playbook ansible/deploy.yml -l app
-deploy_static:
-	- ansible-playbook ansible/deploy.yml -l app --tags static
 deploy: deploy_web
 app: deploy_web
+web: deploy_web
+deploy_static:
+	- ansible-playbook ansible/deploy.yml -l app --tags static
+static: deploy_static
 deploy_node:
 	- ansible-playbook ansible/deploy.yml -l node
 node: deploy_node
