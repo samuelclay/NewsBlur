@@ -440,6 +440,8 @@ class SearchFeed:
         
     @classmethod
     def doc_type(cls):
+        if settings.DOCKERBUILD:
+            return None
         return "%s-type" % cls.name
         
     @classmethod
