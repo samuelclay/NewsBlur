@@ -884,6 +884,10 @@ class Feed(models.Model):
             logging.debug("   ---> [%-30s] ~SN~FBCounting subscribers from ~FYpostgres~FB: ~FMt:~SB~FM%s~SN a:~SB%s~SN p:~SB%s~SN ap:~SB%s" % 
                           (self.log_title[:30], total, active, premium, active_premium))
 
+        if settings.DOCKERBUILD:
+            # Local installs enjoy 100% active feeds
+            active = total
+
         # If any counts have changed, save them
         self.num_subscribers = total
         self.active_subscribers = active
@@ -2549,8 +2553,11 @@ class MStory(mongo.Document):
                                         active=True,
                                         active_subscribers__gte=1)\
                                 .values_list('pk')
-            for feed_id, in feeds:
-                stories = cls.objects.filter(story_feed_id=feed_id)
+            for f, in feeds:
+                stories = cls.objects.filter(story_feed_id=f)
+                if not len(stories):
+                    continue
+                print(f"Indexing {len(stories)} stories in feed {f}")
                 for story in stories:
                     story.index_story_for_search()
 
