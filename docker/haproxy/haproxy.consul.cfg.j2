@@ -54,8 +54,9 @@ frontend public
     monitor fail if mx_mode
 
     # Redirect all HTTP traffic to HTTPS
-    redirect scheme https code 301 if !{ ssl_fc }
-
+    acl is_root path /
+    redirect scheme https if is_root !{ ssl_fc }
+    
     use_backend app_push if { hdr_end(host) -i push.newsblur.com }
     use_backend node_socket if { path_beg /v3/socket.io/ }
     use_backend node_favicon if { path_beg /rss_feeds/icon/ }
