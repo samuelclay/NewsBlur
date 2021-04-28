@@ -1,0 +1,20 @@
+---
+- name: Template file for prometheus
+  template:
+    src: /srv/newsblur/docker/prometheus/prometheus.yml.j2
+    dest: /srv/newsblur/docker/prometheus/prometheus.yml
+
+- name: Start prometheus docker container
+  become: yes
+  docker_container:
+    name: prometheus
+    image: prom/prometheus:0.18.0
+    state: started
+    network_mode: host
+    restart_policy: unless-stopped
+    command: '-config.file=/etc/prometheus/prometheus.yml'
+    ports:
+      - "9090:9090"
+    volumes:
+      - /srv/newsblur/docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - /srv/newsblur/docker/volumes/prometheus_data:/prometheus

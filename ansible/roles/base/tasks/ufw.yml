@@ -1,0 +1,59 @@
+---
+- name: Stop ufw and delete all rules
+  ufw: state=reset
+  tags: ufw
+
+- name: Set firewall default policy
+  ufw: state=disabled policy=reject
+  tags: ufw
+#
+# - name: Set ufw policy to deny all incoming connections
+#   ufw: policy=deny direction=incoming
+#   tags: ufw
+#
+# - name: Set ufw policy to allow all ougoing connections
+#   ufw: policy=allow direction=outgoing
+#   tags: ufw
+  
+- name: Allow ssh
+  ufw: rule=allow port=22
+  tags: ufw
+
+- name: Allow nginx
+  ufw: rule=allow port=80
+  tags: ufw
+
+- name: Allow nginx SSL
+  ufw: rule=allow port=443
+  tags: ufw
+
+- name: Allow all access from RFC1918 networks to this host
+  ufw:
+    rule: allow
+    src: '{{ item }}'
+  with_items:
+    - 10.0.0.0/8
+  
+- name: Allow all access from inventory hosts old + new
+  ufw:
+    rule: allow
+    src: '{{ item }}'
+  with_items: "{{ groups['oldandnew'] | map('extract', hostvars, ['ansible_host']) }}"
+  when: "'oldandnew' in groups"
+  tags: 
+    - firewall
+    - ufw
+
+- name: Allow all access from inventory hosts with docker
+  ufw:
+    rule: allow
+    src: '{{ item }}'
+  with_items: "{{ groups['NewsBlur_Docker'] | map('extract', hostvars, ['ansible_host']) }}"
+  when: "'oldandnew' not in groups"
+  tags: 
+    - firewall
+    - ufw
+
+- name: Start ufw
+  ufw: state=enabled
+  tags: ufw

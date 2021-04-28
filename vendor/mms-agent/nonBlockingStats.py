@@ -58,7 +58,7 @@ class NonBlockingMongoStatsThread( threading.Thread ):
                 if not self._collectNonBlockingStats( monitorConn ):
                     monitorConn = self.mmsAgent.closeDbConnection( self.hostKey, monitorConn )
 
-            except Exception, e:
+            except Exception as e:
                 monitorConn = self.mmsAgent.closeDbConnection( self.hostKey, monitorConn )
                 self.logger.error( 'Problem collecting non-blocking data from: ' + self.hostKey + " - exception: " + traceback.format_exc( e ) )
 
@@ -88,7 +88,7 @@ class NonBlockingMongoStatsThread( threading.Thread ):
 
             return True
 
-        except Exception, e:
+        except Exception as e:
             self.logger.warning( 'Problem collecting non-blocking data from (check if it is up and DNS): ' + self.hostKey + ' - ' +  traceback.format_exc( e ) )
             return False
 
@@ -112,20 +112,20 @@ class NonBlockingMongoStatsThread( threading.Thread ):
         # Try and get the command line operations
         try:
             root['cmdLineOpts'] = monitorConn.admin.command( 'getCmdLineOpts' )
-        except Exception, e:
+        except Exception as e:
             self.mmsAgent.handleOperationFailure( self.hostKey, 'getCmdLineOpts', e )
 
         # Get the connection pool stats.
         try:
             root['connPoolStats'] = monitorConn.admin.command( 'connPoolStats' )
-        except Exception, e:
+        except Exception as e:
             self.mmsAgent.handleOperationFailure( self.hostKey, 'connPoolStats', e )
 
         # Look for any startup warnings if this is a valid version of mongo.
         if self.mmsAgent.hasCommand( 'getLog', self.hostKey, monitorConn ):
             try:
                 root['startupWarnings'] = monitorConn.admin.command( { 'getLog' : 'startupWarnings' } )
-            except Exception, e:
+            except Exception as e:
                 self.mmsAgent.handleOperationFailure( self.hostKey, 'getLog.startupWarnings', e )
 
 
@@ -133,19 +133,19 @@ class NonBlockingMongoStatsThread( threading.Thread ):
         if self.mmsAgent.hasCommand( 'hostInfo', self.hostKey, monitorConn ):
             try:
                 root['hostInfo'] = monitorConn.admin.command( { 'hostInfo' : 1 } )
-            except Exception, e:
+            except Exception as e:
                 self.mmsAgent.handleOperationFailure( self.hostKey, 'hostInfo', e )
 
         # Try and get the isSelf data
         try:
             root['isSelf'] = monitorConn.admin.command( '_isSelf' )
-        except Exception, e:
+        except Exception as e:
             self.mmsAgent.handleOperationFailure( self.hostKey, '_isSelf', e )
 
         # Get the params.
         try:
             root['getParameterAll'] = monitorConn.admin.command( { 'getParameter' : '*' } )
-        except Exception, e:
+        except Exception as e:
             self.mmsAgent.handleOperationFailure( self.hostKey, 'getParameter.*', e )
 
         # Check occasionally to see if we can discover nodes
@@ -158,26 +158,26 @@ class NonBlockingMongoStatsThread( threading.Thread ):
 
                 try:
                     root['shardVersion'] = monitorConn.admin.command( { 'getShardVersion' : 'mdbfoo.foo' } )
-                except Exception, e:
+                except Exception as e:
                     self.mmsAgent.handleOperationFailure( self.hostKey, 'getShardVersion.mdbfoo.foo', e )
 
         elif isMaster['ismaster']:
             try:
                 root['shardVersion'] = monitorConn.admin.command( { 'getShardVersion' : 'mdbfoo.foo' } )
-            except Exception, e:
+            except Exception as e:
                 self.mmsAgent.handleOperationFailure( self.hostKey, 'getShardVersion.mdbfoo.foo', e )
 
         # Check to see if this is a mongod host
         try:
             if isMaster['ismaster'] and isMaster.get('msg', '') == 'isdbgrid':
                 root['netstat'] = monitorConn.admin.command( 'netstat' )
-        except pymongo.errors.OperationFailure, e:
+        except pymongo.errors.OperationFailure as e:
             self.mmsAgent.handleOperationFailure( self.hostKey, 'netstat', e )
 
         if 'repl' in root['serverStatus']:
             try:
                 root['replStatus'] = monitorConn.admin.command( 'replSetGetStatus' )
-            except pymongo.errors.OperationFailure, e:
+            except pymongo.errors.OperationFailure as e:
                 self.mmsAgent.handleOperationFailure( self.hostKey, 'replSetGetStatus', e )
 
         return root

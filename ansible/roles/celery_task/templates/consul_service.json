@@ -1,0 +1,9 @@
+{
+    "service": {
+        "name": "{{ inventory_hostname|regex_replace('\d+', '') }}",
+        "id": "{{ inventory_hostname }}",
+        "tags": [
+            "celery_task"
+        ]
+    }
+}  

@@ -1,0 +1,11 @@
+---
+platforms:
+  - name: centos-7
+    groups:
+      - consul_instances
+    image: dokken/centos-7
+    dockerfile: ../_shared/Dockerfile.j2
+    capabilities:
+      - SYS_ADMIN
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro

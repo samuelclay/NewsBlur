@@ -1,10 +1,11 @@
 """Operations for images through the PIL."""
 
+import urllib.request
 from PIL import Image
+from PIL import ImageFile
 from PIL import ImageOps as PILOps
 from PIL.ExifTags import TAGS
-from StringIO import StringIO
-from vendor import reseekfile
+from io import BytesIO
 
 PROFILE_PICTURE_SIZES = {
     'fullsize': (256, 256),
@@ -22,7 +23,7 @@ class ImageOps:
         This must happen in this function because PIL is transforming the 
         original as it works."""
         
-        image_file = StringIO(image_body)
+        image_file = BytesIO(image_body)
         try:
             image = Image.open(image_file)
         except IOError:
@@ -42,7 +43,7 @@ class ImageOps:
                                method=Image.ANTIALIAS, 
                                centering=(0.5, 0.5))
         
-        output = StringIO()
+        output = BytesIO()
         if format.lower() == 'jpg':
             format = 'jpeg'
         image.save(output, format=format, quality=95)
@@ -58,7 +59,7 @@ class ImageOps:
         if hasattr(image, '_getexif'):
             exif = image._getexif()
             if exif:
-                for tag, value in exif.items():
+                for tag, value in list(exif.items()):
                     decoded = TAGS.get(tag, tag)
                     if decoded == 'Orientation':
                         if value == 6:
@@ -71,7 +72,21 @@ class ImageOps:
         return image
     
     @classmethod
-    def image_size(cls, datastream):
-        datastream = reseekfile.ReseekFile(datastream)
-        image = Image.open(datastream)
-        return image.size
+    def image_size(cls, url, headers=None):
+        if not headers: headers = {}
+        req = urllib.request.Request(url, data=None, headers=headers)
+        file = urllib.request.urlopen(req)
+        size = file.headers.get("content-length")
+        if size: 
+            size = int(size)
+        p = ImageFile.Parser()
+        while True:
+            data = file.read(1024)
+            if not data:
+                break
+            p.feed(data)
+            if p.image:
+                return p.image.size
+                break
+        file.close()
+        return None, None

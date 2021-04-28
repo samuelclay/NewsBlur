@@ -1,0 +1,8 @@
+---
+- name: Start node-exporter container
+  become: yes
+  docker_container:
+    name: node-exporter
+    image: prom/node-exporter
+    ports:
+    - '9100:9100'

@@ -3,7 +3,7 @@ import os
 import shutil
 import time
 import redis
-from newsblur.celeryapp import app
+from newsblur_web.celeryapp import app
 from celery.exceptions import SoftTimeLimitExceeded
 from utils import log as logging
 from utils import s3_utils as s3
@@ -155,7 +155,7 @@ def UpdateFeeds(feed_pks):
             continue
         try:
             feed.update(**options)
-        except SoftTimeLimitExceeded, e:
+        except SoftTimeLimitExceeded as e:
             feed.save_feed_history(505, 'Timeout', e)
             logging.info(" ---> [%-30s] ~BR~FWTime limit hit!~SB~FR Moving on to next feed..." % feed)
         if profiler_activated: profiler.process_celery_finished()

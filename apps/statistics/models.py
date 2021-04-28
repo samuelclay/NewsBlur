@@ -1,6 +1,6 @@
 import datetime
 import mongoengine as mongo
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 import redis
 import dateutil
 from django.conf import settings
@@ -23,7 +23,7 @@ class MStatistics(mongo.Document):
         'indexes': ['key'],
     }
     
-    def __unicode__(self):
+    def __str__(self):
         return "%s: %s" % (self.key, self.value)
     
     @classmethod
@@ -51,7 +51,7 @@ class MStatistics(mongo.Document):
     def all(cls):
         stats = cls.objects.all()
         values = dict([(stat.key, stat.value) for stat in stats])
-        for key, value in values.items():
+        for key, value in list(values.items()):
             if key in ('avg_time_taken', 'sites_loaded', 'stories_shared'):
                 values[key] = json.decode(value)
             elif key in ('feeds_fetched', 'premium_users', 'standard_users', 'latest_sites_loaded',
@@ -69,17 +69,23 @@ class MStatistics(mongo.Document):
     def collect_statistics(cls):
         now = datetime.datetime.now()
         cls.collect_statistics_premium_users()
-        print "Premiums: %s" % (datetime.datetime.now() - now)
+        # if settings.DEBUG:
+        #     print("Premiums: %s" % (datetime.datetime.now() - now))
         cls.collect_statistics_standard_users()
-        print "Standard users: %s" % (datetime.datetime.now() - now)
+        # if settings.DEBUG:
+        #     print("Standard users: %s" % (datetime.datetime.now() - now))
         cls.collect_statistics_sites_loaded()
-        print "Sites loaded: %s" % (datetime.datetime.now() - now)
+        # if settings.DEBUG:
+        #     print("Sites loaded: %s" % (datetime.datetime.now() - now))
         cls.collect_statistics_stories_shared()
-        print "Stories shared: %s" % (datetime.datetime.now() - now)
+        # if settings.DEBUG:
+        #     print("Stories shared: %s" % (datetime.datetime.now() - now))
         cls.collect_statistics_for_db()
-        print "DB Stats: %s" % (datetime.datetime.now() - now)
+        # if settings.DEBUG:
+        #     print("DB Stats: %s" % (datetime.datetime.now() - now))
         cls.collect_statistics_feeds_fetched()
-        print "Feeds Fetched: %s" % (datetime.datetime.now() - now)
+        # if settings.DEBUG:
+        #     print("Feeds Fetched: %s" % (datetime.datetime.now() - now))
         
     @classmethod
     def collect_statistics_feeds_fetched(cls):
@@ -263,21 +269,21 @@ class MFeedback(mongo.Document):
         8: 'question',
     }
     
-    def __unicode__(self):
+    def __str__(self):
         return "%s: (%s) %s" % (self.style, self.date, self.subject)
         
     @classmethod
     def collect_feedback(cls):
         seen_posts = set()
         try:
-            data = urllib2.urlopen('https://forum.newsblur.com/posts.json').read()
-        except (urllib2.HTTPError), e:
+            data = urllib.request.urlopen('https://forum.newsblur.com/posts.json').read()
+        except (urllib.error.HTTPError) as e:
             logging.debug(" ***> Failed to collect feedback: %s" % e)
             return
         data = json.decode(data).get('latest_posts', "")
 
         if not len(data):
-            print "No data!"
+            print("No data!")
             return
             
         cls.objects.delete()
@@ -294,7 +300,8 @@ class MFeedback(mongo.Document):
             feedback['url'] = "https://forum.newsblur.com/t/%s/%s/%s" % (post['topic_slug'], post['topic_id'], post['post_number'])
             feedback['style'] = cls.CATEGORIES[post['category_id']]
             cls.objects.create(**feedback)
-            print "%s: %s (%s)" % (feedback['style'], feedback['subject'], feedback['date_short'])
+            # if settings.DEBUG:
+            #     print("%s: %s (%s)" % (feedback['style'], feedback['subject'], feedback['date_short']))
             if post_count >= 4: break
     
     @classmethod
@@ -323,7 +330,7 @@ class MAnalyticsFetcher(mongo.Document):
         'ordering': ['date'],
     }
     
-    def __unicode__(self):
+    def __str__(self):
         return "%s: %.4s+%.4s+%.4s+%.4s = %.4ss" % (self.feed_id, self.feed_fetch,
                                                     self.feed_process,
                                                     self.page, 
@@ -368,7 +375,7 @@ class MAnalyticsLoader(mongo.Document):
         'ordering': ['date'],
     }
     
-    def __unicode__(self):
+    def __str__(self):
         return "%s: %.4ss" % (self.server, self.page_load)
         
     @classmethod

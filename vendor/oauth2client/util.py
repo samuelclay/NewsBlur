@@ -120,7 +120,7 @@ def positional(max_positional_args):
       return wrapped(*args, **kwargs)
     return positional_wrapper
 
-  if isinstance(max_positional_args, (int, long)):
+  if isinstance(max_positional_args, int):
     return positional_decorator
   else:
     args, _, _, defaults = inspect.getargspec(max_positional_args)

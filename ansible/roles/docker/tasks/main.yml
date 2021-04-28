@@ -1,0 +1,16 @@
+---
+# tasks file for docker-ce-ansible-role
+
+- name: Install docker-ce (RedHat)
+  include: install-EL.yml
+  when: ansible_os_family == 'RedHat'
+
+- name: Install docker-ce (Ubuntu)
+  include: install-Ubuntu.yml
+  when: ansible_distribution == 'Ubuntu'
+
+- name: Enable Docker CE service on startup
+  service:
+    name: docker
+    state: started
+    enabled: yes

@@ -1,0 +1,57 @@
+---
+
+- name: Register haproxy in consul
+  tags: consul
+  become: yes
+  template:
+    src: consul_service.json
+    dest: /etc/consul.d/haproxy.json
+  notify:
+    - reload consul
+  when: disable_consul_services is not defined
+
+- name: Allow haproxy stats port
+  ufw: rule=allow port={{ item }}
+  become: yes
+  tags: ufw
+  with_items:
+    - "1936"
+
+- name: Template haproxy.cfg file
+  template:
+    src: "/srv/newsblur/docker/haproxy/haproxy.consul.cfg.j2"
+    dest: /srv/newsblur/docker/haproxy/haproxy.consul.cfg
+  notify: reload haproxy
+  when: disable_consul_services is not defined
+  register: updated_config
+
+- name: Copy staging haproxy.cfg file
+  copy:
+    src: /srv/newsblur/docker/haproxy/haproxy.staging.cfg
+    dest: /srv/newsblur/docker/haproxy/haproxy.consul.cfg
+  notify: reload haproxy
+  when: disable_consul_services is defined
+  register: updated_config
+
+- name: Start HAProxy docker container
+  become: yes
+  docker_container:
+    name: haproxy
+    image: haproxy:latest
+    pull: yes
+    env:
+      DOCKERBUILD: ""
+    state: started
+    network_mode: host # This exposes port 80
+    restart_policy: unless-stopped
+    container_default_behavior: no_defaults
+    command: "haproxy -f /srv/newsblur/docker/haproxy/haproxy.consul.cfg"
+    volumes:
+      - /srv/newsblur:/srv/newsblur:consistent
+      - /etc/letsencrypt/live/newsblur.com:/etc/letsencrypt/live/newsblur.com:consistent
+      - /etc/letsencrypt/archive/newsblur.com:/etc/letsencrypt/archive/newsblur.com:consistent
+- name: Restart HAProxy
+  debug: 
+    msg: Restarting HAProxy
+  changed_when: yes
+  notify: restart haproxy
