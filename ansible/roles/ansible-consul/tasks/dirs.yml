@@ -1,0 +1,71 @@
+---
+# File: dirs.yml - Consul directories
+
+- name: Create directories
+  block:
+  - name: Configuration and data directories
+    file:
+      dest: "{{ item }}"
+      state: directory
+      owner: "{{ consul_user }}"
+      group: "{{ consul_group }}"
+      mode: 0700
+    with_items:
+      - "{{ consul_config_path }}"
+      - "{{ consul_configd_path }}"
+      - "{{ consul_data_path }}"
+  - name: Run directory
+    file:
+      dest: "{{ consul_run_path }}"
+      state: directory
+      owner: "{{ consul_user }}"
+      group: "{{ consul_group }}"
+      mode: 0750
+
+  when: ansible_os_family != 'Windows'
+
+- name: Create log directory
+  file:
+    dest: "{{ consul_log_path }}"
+    state: directory
+    owner: "{{ consul_user }}"
+    group: "{{ consul_group }}"
+    mode: 0700
+  when:
+    - ansible_os_family != 'Windows'
+    - not consul_syslog_enable | bool
+    - not consul_configure_syslogd | bool
+
+- name: Create log directory
+  file:
+    dest: "{{ item }}"
+    state: directory
+    owner: "{{ syslog_user }}"
+    group: "{{ syslog_group }}"
+    mode: 0700
+  with_items:
+    - "{{ consul_log_path }}"
+  when:
+    - ansible_os_family != 'Windows'
+    - consul_syslog_enable | bool
+    - consul_configure_syslogd | bool
+
+- name: Verify binary path
+  file:
+    path: "{{ consul_bin_path }}"
+    state: directory
+    owner: root
+    mode: 0755
+  when: ansible_os_family != 'Windows'
+
+- name: Create directories on Windows
+  win_file:
+    dest: "{{ item }}"
+    state: directory
+  with_items:
+    - "{{ consul_config_path }}"
+    - "{{ consul_configd_path }}"
+    - "{{ consul_data_path }}"
+    - "{{ consul_log_path }}"
+    - "{{ consul_bin_path }}"
+  when: ansible_os_family == 'Windows'

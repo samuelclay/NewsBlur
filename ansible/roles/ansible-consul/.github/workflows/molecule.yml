@@ -1,0 +1,44 @@
+---
+name: Molecule
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        scenario:
+          - centos-6
+          - centos-7
+          - centos-8
+          - debian-8
+          - debian-9
+          - debian-10
+          - fedora-26
+          - fedora-27
+          - fedora-28
+          - fedora-29
+          - fedora-30
+          - fedora-31
+          - oraclelinux-6
+          - oraclelinux-7
+          - oraclelinux-8
+          - ubuntu-16.04
+          - ubuntu-18.04
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          path: "${{ github.repository }}"
+
+      - name: Molecule
+        uses: gofrolist/molecule-action@v2.0.1
+        with:
+          molecule_options: --base-config molecule/_shared/base.yml
+          molecule_args: --scenario-name ${{ matrix.scenario }}

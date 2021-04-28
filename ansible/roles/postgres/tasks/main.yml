@@ -1,0 +1,25 @@
+---
+- name: Start postgres container
+  become: yes
+  docker_container:
+    name: postgres
+    image: postgres:13.1
+    state: started
+    hostname: postgres
+    env:
+      POSTGRES_USER: newsblur
+      POSTGRES_PASSWORD: newsblur
+    restart_policy: unless-stopped
+    ports:
+    - '5432:5432'
+    volumes:
+    - /srv/newsblur/docker/volumes/postgres:/var/lib/postgresql/data
+
+- name: Register postgres in consul
+  tags: consul
+  become: yes
+  template:
+    src: consul_service.json
+    dest: /etc/consul.d/postgres.json
+  notify:
+    - reload consul

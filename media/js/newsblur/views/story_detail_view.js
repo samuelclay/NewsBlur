@@ -96,9 +96,9 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         this.generate_gradients();
         this.render_comments();
         this.attach_handlers();
-        if (!this.model.get('image_urls') || (this.model.get('image_urls') && this.model.get('image_urls').length == 0)) {
+        // if (!this.model.get('image_urls') || (this.model.get('image_urls') && this.model.get('image_urls').length == 0)) {
             this.watch_images_load();
-        }
+        // }
         
         return this;
     },
@@ -139,6 +139,11 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                 if (this.width > 60 && this.width > largest) {
                     largest = this.width;
                     $largest = $(this);
+                }
+                if (this.naturalWidth >= 320 && this.naturalHeight >= 50) {
+                    $(this).addClass('NB-large-image');
+                } else {
+                    $(this).addClass('NB-small-image');
                 }
             });
             if ($largest) {
@@ -523,6 +528,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         
         if (content_height < max_height) return;
         // console.log(["max height", max_height, content_height, content_height / max_height]);
+        clearInterval(this._fetch_interval);
         this._fetch_interval = setInterval(function() {
             NEWSBLUR.app.story_list.fetch_story_locations_in_feed_view();
         }, 250);
@@ -540,7 +546,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         });
         
         $expander.add($expander_cutoff).animate({
-            bottom: -1 * $expander.outerHeight() - 48
+            bottom: -1 * $expander.outerHeight() - 76
         }, {
             duration: options.instant ? 0 : Math.min(2 * 1000, parseInt(200 * height_ratio, 10)),
             easing: 'easeInOutQuart'

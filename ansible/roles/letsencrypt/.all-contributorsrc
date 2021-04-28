@@ -1,0 +1,32 @@
+{
+  "projectName": "ansible-letsencrypt",
+  "projectOwner": "auxilin",
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": true,
+  "contributors": [
+    {
+      "login": "ezhivitsa",
+      "name": "Evgeny Zhivitsa",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/6461311?v=4",
+      "profile": "https://github.com/ezhivitsa",
+      "contributions": [
+        "doc",
+        "ideas",
+        "code"
+      ]
+    },
+    {
+      "login": "anorsich",
+      "name": "Andrew Orsich",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/681396?v=4",
+      "profile": "https://github.com/anorsich",
+      "contributions": [
+        "ideas",
+        "review"
+      ]
+    }
+  ]
+}

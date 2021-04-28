@@ -1,0 +1,69 @@
+---
+# File: dnsmasq.yml - Dnsmasq tasks for Consul
+
+- name: Install Dnsmasq package
+  yum:
+    name: dnsmasq
+    state: present
+  when: ansible_os_family == "RedHat"
+  tags: dnsmasq, installation
+
+- name: Install Dnsmasq package
+  apt:
+    name: dnsmasq
+    state: present
+  when: ansible_os_family == "Debian"
+  tags: dnsmasq, installation
+
+- name: Install Dnsmasq package
+  pkgng:
+    name: dnsmasq
+    state: present
+  when: ansible_os_family == "FreeBSD"
+  tags: dnsmasq, installation
+
+- name: Enable dnsmasq service
+  service:
+    name: dnsmasq
+    enabled: true
+  tags: dnsmasq
+
+- name: Create Dnsmasq configuration directory
+  file:
+    path: /usr/local/etc/dnsmasq.d
+    state: directory
+    owner: root
+    group: wheel
+    mode: 0700
+  when: ansible_os_family == "FreeBSD"
+  tags: dnsmasq
+
+- name: Create Dnsmasq configuration
+  template:
+    src: dnsmasq-10-consul.j2
+    dest: /etc/dnsmasq.d/10-consul
+    owner: root
+    group: root
+    mode: 0644
+  notify: restart dnsmasq
+  when: ansible_os_family in ["Debian", "RedHat"]
+  tags: dnsmasq
+
+- name: Create FreeBSD-specific configuration
+  lineinfile:
+    dest: /usr/local/etc/dnsmasq.conf
+    line: 'conf-dir=/usr/local/etc/dnsmasq.d/,*.conf'
+  notify: restart dnsmasq
+  when: ansible_os_family == "FreeBSD"
+  tags: dnsmasq
+
+- name: Create FreeBSD-specific Dnsmasq configuration
+  template:
+    src: dnsmasq-10-consul.j2
+    dest: /usr/local/etc/dnsmasq.d/consul.conf
+    owner: root
+    group: wheel
+    mode: 0644
+  notify: restart dnsmasq
+  when: ansible_os_family == "FreeBSD"
+  tags: dnsmasq

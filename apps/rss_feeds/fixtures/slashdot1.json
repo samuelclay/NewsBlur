@@ -1,6 +1,6 @@
 [
     {
-        "pk": 5, 
+        "pk": 11, 
         "model": "rss_feeds.feed", 
         "fields": {            
             "feed_address": "%(NEWSBLUR_DIR)s/apps/rss_feeds/fixtures/slashdot1.xml", 
@@ -14,6 +14,7 @@
             "feed_title": "Slashdot", 
             "last_update": "2009-07-06 22:30:03", 
             "next_scheduled_update": "2009-07-06 22:30:03", 
+            "hash_address_and_link": "20",
             "last_story_date": "2009-07-06 22:30:03", 
             "min_to_decay": 1, 
             "etag": "", 

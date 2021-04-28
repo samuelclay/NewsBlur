@@ -507,8 +507,8 @@
             $share.addClass('NB-disabled').text('Sharing...');
             this.feed = this.feed || {};
             
-            var scheme = {% if debug %}'http'{% else %}'https'{% endif %};
-            var url = scheme + '://' + this.domain + "{% url "api-share-story" token %}";
+            var scheme = '{% if debug %}http{% else %}https{% endif %}';
+            var url = scheme + '://' + this.domain + '{% url "api-share-story" token %}';
             
             $.ajax({
                 url: url,

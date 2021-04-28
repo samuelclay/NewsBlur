@@ -14,7 +14,6 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         this.folders = new NEWSBLUR.Collections.Folders([]);
         this.favicons = {};
         this.stories = new NEWSBLUR.Collections.Stories();
-        this.dashboard_stories = new NEWSBLUR.Collections.Stories();
         this.starred_feeds = new NEWSBLUR.Collections.StarredFeeds();
         this.searches_feeds = new NEWSBLUR.Collections.SearchesFeeds();
         this.queued_read_stories = {};
@@ -26,6 +25,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         this.user_profiles = new NEWSBLUR.Collections.Users();
         this.follower_profiles = new NEWSBLUR.Collections.Users();
         this.following_profiles = new NEWSBLUR.Collections.Users();
+        this.dashboard_rivers = new NEWSBLUR.Collections.DashboardRivers();
         this.starred_stories = [];
         this.starred_count = 0;
         this.flags = {
@@ -45,7 +45,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                                                                      domCompleteTrigger: true}); 
         this.ajax['statistics']  = $.manageAjax.create('statistics', {queue: 'clear', abortOld: true}); 
         this.ajax['interactions']  = $.manageAjax.create('interactions', {queue: 'clear', abortOld: true}); 
-        this.ajax['dashboard']  = $.manageAjax.create('interactions', {queue: 'clear', abortOld: true}); 
+        this.ajax['dashboard']  = $.manageAjax.create('dashboard', {queue: false}); 
         $.ajaxSettings.traditional = true;
     },
     
@@ -482,6 +482,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             self.user_profile.set(subscriptions.social_profile);
             self.searches_feeds.reset(subscriptions.saved_searches, {parse: true});
             self.social_services = subscriptions.social_services;
+            self.dashboard_rivers.reset(subscriptions.dashboard_rivers);
             
             if (selected && self.feeds.get(selected)) {
                 self.feeds.get(selected).set('selected', true);
@@ -731,7 +732,6 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             }
             
             self.load_feed_precallback(data, feed_id, callback, first_load);
-            // console.log(['river stories fetch', self.dashboard_stories.length, self.stories.length]);
         };
         
         this.feed_id = feed_id;
@@ -753,14 +753,25 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         });
     },
     
-    fetch_dashboard_stories: function(feed_id, feeds, page, callback, error_callback) {
+    fetch_dashboard_stories: function(feed_id, feeds, page, dashboard_stories, options, callback, error_callback) {
         var self = this;
-        
-        var order = this.view_setting(feed_id, 'order');
-        this.dashboard_stories.comparator = function(a, b) {
+        options = $.extend({
+            feeds: feeds,
+            page: page,
+            order: this.view_setting(feed_id, 'order'),
+            read_filter: this.view_setting(feed_id, 'read_filter'),
+            query: NEWSBLUR.reader.flags.search,
+            limit: 5,
+            infrequent: false,
+            include_hidden: false,
+            dashboard: true,
+            on_dashboard: true
+        }, options);
+
+        dashboard_stories.comparator = function(a, b) {
             var a_time = parseInt(a.get('story_timestamp'), 10);
             var b_time = parseInt(b.get('story_timestamp'), 10);
-            if (order == "newest")
+            if (options.order == "newest")
                 return a_time < b_time ? 1 : (a_time == b_time) ? 0 : -1;
             else
                 return a_time > b_time ? 1 : (a_time == b_time) ? 0 : -1;
@@ -774,37 +785,45 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                 data.stories = data.stories.splice(0, 3);
             }
             if (page > 1) {
-                self.dashboard_stories.add(data.stories, {silent: true});
-                self.dashboard_stories.trigger('add', {added: data.stories.length});
+                dashboard_stories.add(data.stories, { silent: true });
+                // dashboard_stories.limit(NEWSBLUR.Globals.is_premium ? 5 : 3); // Don't limit as it breaks intelligence
+                dashboard_stories.trigger('add', {added: data.stories.length});
             } else {
-                self.dashboard_stories.reset(data.stories, {added: data.stories.length});
+                dashboard_stories.reset(data.stories, {added: data.stories.length, silent: true});
+                // dashboard_stories.limit(NEWSBLUR.Globals.is_premium ? 5 : 3);
+                dashboard_stories.trigger('reset', {added: data.stories.length});
             }
 
-            callback();
+            callback(data);
         };
         
-        this.make_request('/reader/river_stories', {
-            feeds: feeds,
-            limit: 4,
-            page: page,
-            order: this.view_setting(feed_id, 'order'),
-            read_filter: this.view_setting(feed_id, 'read_filter'),
-            include_hidden: false,
-            dashboard: true,
-            initial_dashboard: true
-        }, pre_callback, error_callback, {
-            'ajax_group': 'dashboard',
-            'request_type': 'GET'
-        });
+        if (_.string.startsWith(feed_id, 'river:global')) {
+            this.make_request('/social/river_stories', options, pre_callback, error_callback, {
+                'ajax_group': 'dashboard',
+                'request_type': 'GET'
+            });
+        } else if (_.string.startsWith(feed_id, 'social:')) {
+            var user_id = this.get_feed(feed_id).get('user_id');
+            this.make_request('/social/stories/'+user_id+'/', options, pre_callback, error_callback, {
+                'ajax_group': 'dashboard',
+                'request_type': 'GET'
+            });
+        } else if (_.string.startsWith(feed_id, 'river:') || _.string.startsWith(feed_id, 'feed:')) {
+            this.make_request('/reader/river_stories', options, pre_callback, error_callback, {
+                'ajax_group': 'dashboard',
+                'request_type': 'GET'
+            });
+        }
+        
     },
     
-    add_dashboard_story: function(story_hash) {
+    add_dashboard_story: function(story_hash, dashboard_stories) {
         var self = this;
         
         var pre_callback = function(data) {
-            self.dashboard_stories.add(data.stories, {silent: true});
-            self.dashboard_stories.limit(NEWSBLUR.Globals.is_premium ? 5 : 3);
-            self.dashboard_stories.trigger('reset', {added: 1});
+            dashboard_stories.add(data.stories, {silent: true});
+            // dashboard_stories.limit(NEWSBLUR.Globals.is_premium ? 5 : 3); // Don't bother limiting on dashboard
+            dashboard_stories.trigger('reset', {added: 1});
         };
         
         this.make_request('/reader/river_stories', {
@@ -955,7 +974,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         _.each(data.feeds, _.bind(function(feed, feed_id) {
             var existing_feed = this.feeds.get(feed_id);
             if (!existing_feed) {
-                console.log(["Trying to refresh unsub feed", feed_id, feed]);
+                console.log(["Trying to refresh unsub feed", feed_id, feed, this.feeds.length]);
                 return;
             }
             var feed_id = feed.id || feed_id;
@@ -1119,6 +1138,8 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
     
     get_search_feeds: function(feed_id, query) {
         var self = this;
+
+        if (!feed_id && !query) return this.searches_feeds;
         
         return this.searches_feeds.detect(function(feed) {
             if (!query) {
@@ -1706,7 +1727,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         this.make_request('/categories/subscribe', {category: categories}, _.bind(function(data) {
             callback(data);
         }, this), error_callback, {
-            request_type: 'GET'
+            request_type: 'POST'
         });
     },
     
@@ -1788,6 +1809,17 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         }, this));
     },
     
+    save_dashboard_river: function (river_id, river_side, river_order, callback, error_callback) {
+        this.make_request('/reader/save_dashboard_river', {
+            river_id: river_id,
+            river_side: river_side,
+            river_order: river_order
+        }, _.bind(function (response) {
+            this.dashboard_rivers.reset(response.dashboard_rivers);
+            callback && callback(response);
+        }, this), error_callback);
+    },
+
     follow_user: function(user_id, callback) {
         this.make_request('/social/follow', {'user_id': user_id}, _.bind(function(data) {
             NEWSBLUR.log(["follow data", data]);

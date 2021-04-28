@@ -466,7 +466,7 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
     
     open_stripe_form: function() {
         var renew = (this.options.renew ? "&renew=true" : "");
-        window.location.href = "https://" + NEWSBLUR.URLs.domain + "/profile/stripe_form?plan=" + this.plan + renew;
+        window.location.href = "/profile/stripe_form?plan=" + this.plan + renew;
     },
     
     choose_dollar_amount: function(plan) {

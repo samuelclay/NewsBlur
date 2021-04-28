@@ -1,0 +1,35 @@
+#!/bin/sh
+
+bold=`echo "\033[1m"`
+regular=`echo "\033[0m"`
+black=`echo "\033[30;40m"`
+red=`echo "\033[31;40m"`
+green=`echo "\033[32;40m"`
+yellow=`echo "\033[33;40m"`
+blue=`echo "\033[34;40m"`
+magenta=`echo "\033[35;40m"`
+cyan=`echo "\033[36;40m"`
+white=`echo "\033[37;40m"`
+
+cat <<EOMOTD
+$bold  
+
+$yellow     .=~\                                                       $yellow        /~=.
+$yellow  ,'|-~'--__.                                                   $yellow  .__--'~-|'.
+$yellow /  | ''     \                                                  $yellow /     '' |  |
+$yellow+   C         |                                                 $yellow|         )   +
+$yellow    |      --'                                                  $yellow '--      |
+$yellow    |  l----'    $green   _   _                   ____  _             $yellow  '----|  |
+$yellow    |    |       $green  | \ | |                 |  _ \| |            $yellow     |    |
+$yellow   /'----'\      $green  |  \| | _____      _____| |_) | |_   _ _ __  $yellow    /'----'|
+$yellow  /        \     $green  | . ' |/ _ \ \ /\ / / __|  _ <| | | | | '__| $yellow   /        |
+$yellow 'T~T'/|\ //\    $green  | |\  |  __/\ V  V /\__ \ |_) | | |_| | |    $yellow  /|\ //\'T~T'
+$yellow  | \// \Y/  \   $green  |_| \_|\___| \_/\_/ |___/____/|_|\__,_|_|    $yellow /  \Y/ |\/ |
+$yellow  UJJ--------'                                                  $yellow '--------UJJ
+$yellow   |       |                      $red Task Server                  $yellow   |       |
+$yellow   '---^---'                                                    $yellow   '---^---'
+$yellow    | | | |                                                     $yellow    | | | |
+$yellow    '==='===                                                    $yellow   ==='==='
+$regular$white
+EOMOTD
+

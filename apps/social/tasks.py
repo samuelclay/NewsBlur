@@ -1,5 +1,5 @@
 from bson.objectid import ObjectId
-from newsblur.celeryapp import app
+from newsblur_web.celeryapp import app
 from apps.social.models import MSharedStory, MSocialProfile, MSocialServices, MSocialSubscription
 from django.contrib.auth.models import User
 from utils import log as logging

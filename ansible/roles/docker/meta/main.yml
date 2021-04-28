@@ -1,0 +1,21 @@
+galaxy_info:
+  author: zaxos 
+  description: Ansible role to install Docker CE (Community Edition)
+
+  license: GPLv2
+
+  min_ansible_version: 1.9
+
+  platforms:
+    - name: EL
+      versions:
+      - 7
+    - name: Ubuntu
+      versions:
+      - xenial
+      - trusty
+      - yakkety
+
+  galaxy_tags: [docker,system,packaging]
+
+dependencies: []

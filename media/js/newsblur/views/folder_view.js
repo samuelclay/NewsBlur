@@ -176,7 +176,11 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
                         <span class="NB-story-title-indicator-text">show hidden stories</span>\
                     </div>\
                 <% } %>\
-                <div class="NB-folder-icon"></div>\
+                <div class="NB-folder-icon">\
+                <% if (feedbar) { %>\
+                    <img class="feed_favicon" src="<%= $.favicon("river:"+folder_title) %>">\
+                <% } %>\
+                </div>\
                 <div class="NB-feedlist-collapse-icon" title="<% if (is_collapsed) { %>Expand Folder<% } else {%>Collapse Folder<% } %>"></div>\
                 <div class="NB-feedlist-manage-icon"></div>\
                 <span class="folder_title_text">\

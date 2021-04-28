@@ -57,13 +57,13 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
         
         $('input[name=view_settings]', this.$modal).each(function() {
             if ($(this).val() == view_setting) {
-                $(this).attr('checked', true);
+                $(this).prop('checked', true);
                 return false;
             }
         });
         $('input[name=story_layout]', this.$modal).each(function() {
             if ($(this).val() == story_layout) {
-                $(this).attr('checked', true);
+                $(this).prop('checked', true);
                 return false;
             }
         });

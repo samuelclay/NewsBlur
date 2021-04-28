@@ -24,6 +24,7 @@
 .NB-theme-transitioning div,
 .NB-theme-transitioning span,
 .NB-theme-transitioning mark,
+.NB-theme-transitioning h5,
 .NB-theme-transitioning a,
 .NB-theme-transitioning ul,
 .NB-theme-transitioning li,
@@ -170,6 +171,10 @@ color: #a85b40;
     box-shadow: none;
 }
 
+.NB-dark .NB-feed-badge {
+    background-color: #303739;
+}
+
 /* Background color of
 "Premium Account", "Manage", "Past Day" & "Past Day by Hour*/
 .NB-dark .NB-module-stats-counts {
@@ -237,23 +242,6 @@ color: #a85b40;
 }
 .NB-dark .read .NB-storytitles-title {
     color: #797b7c;
-}
-.NB-dark .NB-story-title.read .NB-storytitles-author {
-    color: #696b6c;
-}
-.NB-dark .read .NB-storytitles-content-preview {
-    color: #595b5c;
-}
-.NB-dark .NB-story-title.read .story_date {
-    color: #696b6c;
-}
-/* "All Site Stories" background color */
-.NB-dark .NB-story-title {
-    color: #c0c0c0;
-    background-color: #191b1c;
-    border-top: 1px solid #232526;
-    border-bottom: 1px solid #101111;
-    border-right: 1px solid #101111;
 }
 
 .NB-dark .NB-feeds-header-user-dashboard img, 
@@ -449,7 +437,8 @@ color: #a85b40;
 }
 
 /* Unread/Oldest text color */
-.NB-dark .NB-feedbar-options-stat .NB-stat {
+.NB-dark .NB-feedbar-options-stat .NB-stat,
+.NB-dark .NB-dashboard-river-options-stat .NB-stat {
     color: #c0c0c0;
 }
 
@@ -871,15 +860,37 @@ color: #a85b40;
     text-shadow: 0 1px 0 rgba(0,0,0,.1);
     /*border: 1px solid #90928b;*/
 }
-.NB-dark ul.segmented-control,
-.NB-dark ul.segmented-control li {
+
+/* Segmented Controls */
+
+
+.NB-dark .segmented-control {
     background: none;
-    color: #c0c0c0;
-    text-shadow: 0 1px 0 rgba(0,0,0,.1);
-    background-color: #52555E;
 }
+.NB-dark .segmented-control li {
+    color: #9A9B9C;
+    text-shadow: 0 1px 0 rgba(0,0,0,.1);
+}
+.NB-dark .segmented-control li.NB-active, 
+.NB-dark .segmented-control li.NB-active:not(.NB-disabled), 
+.NB-dark .segmented-control-active li {
+    background: none;
+    background-color: #6c6c74;
+    color: #FCFDFE;
+    text-shadow: 0 1px 0 rgba(0,0,0,0.1);
+}
+.NB-dark .segmented-control:hover {
+    background-color: #494d54;
+}
+.NB-dark .segmented-control:hover li.NB-active {
+    background-color: #787881;
+}
+.NB-dark .segmented-control li:hover:not(.NB-disabled):not(.NB-active) {
+    background-color: #585b63;
+}
+
 .NB-dark #story_taskbar {
-    border-top: 1px solid #32352E;
+    border-top: 1px solid #101719;
 }
 .NB-dark .NB-feedbar .NB-taskbar .NB-task-story-previous {
     border-right: 1px solid rgba(0,0,0,0.1);
@@ -897,6 +908,7 @@ color: #a85b40;
 /* "Unread/Oldest" & "Style" border color */
 /* Story Titles Hidden Count */
 .NB-dark .NB-feedbar .NB-feedbar-options,
+.NB-dark .NB-dashboard-river .NB-dashboard-river-options,
 .NB-dark #story_taskbar .NB-taskbar-options,
 .NB-dark .NB-feedbar .NB-story-title-indicator,
 .NB-dark .NB-feedbar .NB-feedbar-mark-feed-read {
@@ -904,8 +916,12 @@ color: #a85b40;
     border: 1px solid rgba(0, 0, 0, .3);
     background-color: #303739;
 }
+.NB-dark .NB-dashboard-river .NB-dashboard-river-options {
+    background-color: #565759;
+}
 
 .NB-dark .NB-feedbar .NB-feedbar-options:hover,
+.NB-dark .NB-dashboard-river .NB-dashboard-river-options:hover,
 .NB-dark #story_taskbar .NB-taskbar-options:hover,
 .NB-dark .NB-feedbar .NB-story-title-indicator:hover,
 .NB-dark .NB-feedbar .NB-feedbar-mark-feed-read:hover,
@@ -963,39 +979,9 @@ text-shadow: none;
 
 /* Selected tabs on bottom task bar */
 
-.NB-dark ul.segmented-control {
-    box-shadow: none;
-    -webkit-box-shadow: none;
-    -moz-box-shadow: none;    
-}
-.NB-dark ul.segmented-control li {
-    box-shadow: none;
-    -webkit-box-shadow: none;
-    -moz-box-shadow: none;
-    color: #9A9B9C;
-    border: none;
-    border-radius: 4px;
-}
-
 .NB-dark #story_taskbar .NB-taskbar .NB-taskbar-button {
     padding-left: 14px;
     padding-right: 14px;
-}
-.NB-dark .segmented-control li.NB-active, 
-.NB-dark .segmented-control li.NB-active:active:not(.NB-disabled), 
-.NB-dark .segmented-control-active li {
-    background: none;
-    background-color: #868689;
-    color: #FCFDFE;
-    text-shadow: 0 1px 0 rgba(0,0,0,0.1);
-}
-
-.NB-dark .segmented-control li:active:not(.NB-disabled), 
-.NB-dark .segmented-control-active li:active {
-    background: none;
-    background-color: #868689;
-    color: #D3D4D5;
-    text-shadow: 0 1px 0 rgba(0,0,0,0.1);    
 }
 
 .NB-dark .NB-splash-blurred-logo {
@@ -1007,7 +993,8 @@ text-shadow: none;
 /* = Feed Pane = */
 /* ============= */
 
-.NB-dark #NB-feeds-list-loader {
+.NB-dark .NB-feeds-list-loader,
+.NB-dark .NB-feeds-list-error {
     color: rgba(255, 255, 255, .4);
     text-shadow: 0 1px 0 rgba(0, 0, 0, .3);
     background: transparent url("/media/embed/reader/sun_loader_dark.svg") no-repeat 0 0;
@@ -1064,7 +1051,7 @@ border-bottom-color: #303739;
 /* Feed folder text */
 .NB-dark .NB-feedlist .folder_title,
 .NB-dark .NB-feedlist .folder.NB-selected>.folder_title {
-    color: #a8a9aB;
+    color: #98999B;
     text-shadow: 0 1px 0 rgba(0,0,0,.8);
 }
 
@@ -1108,11 +1095,16 @@ border-bottom-color: #303739;
 .NB-dark .NB-layout-grid {
     background-color: #191b1c;
 }
+
+/* "All Site Stories" background color */
 .NB-dark .NB-story-title {
     color: #c0c0c0;
     background-color: #292b2c;
     border-top: 1px solid #333536;
     border-bottom: 1px solid #232526;
+}
+.NB-dark .NB-story-grid.NB-story-title {
+    border: none;
 }
 .NB-dark .NB-story-grid.NB-story-title .NB-storytitles-grid-bottom {
     background-color: #292b2c;    
@@ -1121,8 +1113,18 @@ border-bottom-color: #303739;
 .NB-dark .NB-story-title:hover:not(.NB-selected) .NB-storytitles-grid-bottom {
     background-color: #232526;
 }
-.NB-dark .NB-story-title.read:hover:not(.NB-selected) {
+.NB-dark .NB-story-title.read:hover:not(.NB-selected),
+.NB-dark .NB-story-title.read:hover:not(.NB-selected) .NB-storytitles-grid-bottom {
     background-color: #292b2c;
+}
+.NB-dark .NB-story-title.read .NB-storytitles-author {
+    color: #696b6c;
+}
+.NB-dark .read .NB-storytitles-content-preview {
+    color: #595b5c;
+}
+.NB-dark .NB-story-title.read .story_date {
+    color: #696b6c;
 }
 
 /* Feed title text */
@@ -1155,10 +1157,20 @@ border-bottom-color: #303739;
 /* Bottom banner (NB logo) */
 .NB-dark .NB-end-line,
 .NB-dark .NB-feed-story-endbar {
-    background: none;
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#242529), to(#1e1f22));
     background-color: #1B2325;
     border-top-color: #303739;
     border-bottom: 1px solid #111111;
+}
+
+
+.NB-dark .NB-end-line {
+    animation: dark-end-line-animation 1.7s ease infinite;
+}
+@keyframes dark-end-line-animation { 
+    0%{background-color:#242529}
+    38%{background-color:#273a55}
+    100%{background-color:#242529}
 }
 
 /* Search header */
@@ -1180,7 +1192,7 @@ border-bottom-color: #303739;
     background-color: #191b1c;
 }
 .NB-dark .NB-story-content-wrapper .NB-story-content-expander .NB-story-cutoff {
-    display: none;
+    background: transparent url('/media/embed/circular/module_cutoff_dark.png') repeat-x left bottom;
 }
 /*
 .NB-dark .NB-feeds-header-river-container .NB-feeds-header {

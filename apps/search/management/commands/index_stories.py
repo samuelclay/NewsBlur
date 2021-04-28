@@ -17,7 +17,7 @@ class Command(BaseCommand):
             return
         
         if not options['user']:
-            print "Missing user. Did you want to reindex everything? Use -R."
+            print("Missing user. Did you want to reindex everything? Use -R.")
             return
             
         if re.match(r"([0-9]+)", options['user']):
@@ -26,11 +26,11 @@ class Command(BaseCommand):
             user = User.objects.get(username=options['user'])
         
         subscriptions = UserSubscription.objects.filter(user=user)
-        print " ---> Indexing %s feeds..." % subscriptions.count()
+        print(" ---> Indexing %s feeds..." % subscriptions.count())
         
         for sub in subscriptions:
             try:
                 sub.feed.index_stories_for_search()
             except Feed.DoesNotExist:
-                print " ***> Couldn't find %s" % sub.feed_id
+                print(" ***> Couldn't find %s" % sub.feed_id)
         
