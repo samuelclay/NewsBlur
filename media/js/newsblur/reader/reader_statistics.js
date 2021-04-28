@@ -404,7 +404,7 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
         var self = this;
         
         $.targetIs(e, { tagSelector: '.NB-modal-feed-chooser' }, function($t, $p){
-            var feed_id = $t.val();
+            var feed_id = $t.val().replace('feed:', '');
             self.first_load = false;
             self.initialize_feed(feed_id);
             self.get_stats();
