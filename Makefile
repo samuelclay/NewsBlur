@@ -23,6 +23,8 @@ nb:
 
 shell:
 	- - CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker-compose exec newsblur_web ./manage.py shell_plus
+bash:
+	- - CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker-compose exec newsblur_web bash
 # allows user to exec into newsblur_web and use pdb.
 debug:
 	- newsblur := $(shell docker ps -qf "name=newsblur_web")
