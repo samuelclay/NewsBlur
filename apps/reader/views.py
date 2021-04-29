@@ -1541,7 +1541,7 @@ def load_river_stories__redis(request):
     diff = time.time() - start
     timediff = round(float(diff), 2)
     if requested_hashes and story_hashes:
-        logging.user(request, "~FB%sLoading ~FC%s~FB stories: (%s)" % 
+        logging.user(request, "~FB%sLoading ~FC%s~FB stories: %s" % 
                                 ("~FBAuto-" if on_dashboard else "",
                                     requested_hashes, story_hashes[:3]))
     else:
