@@ -29,7 +29,10 @@ bash:
 debug:
 	- newsblur := $(shell docker ps -qf "name=newsblur_web")
 	- CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker attach ${newsblur}
-
+log:
+	- docker-compose logs -f newsblur_web newsblur_node
+logs:
+	- docker-compose logs -f
 # brings down containers
 down:
 	- docker-compose -f docker-compose.yml down

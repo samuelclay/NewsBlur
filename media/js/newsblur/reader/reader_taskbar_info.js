@@ -88,7 +88,7 @@ NEWSBLUR.Views.ReaderTaskbarInfo = Backbone.View.extend({
             } else if (data.status == 429) {
                 message = "You're being rate limited.<br> Try again soon, but not too soon.";
             }
-            NEWSBLUR.assets.flags['no_more_stories'] = true;
+            NEWSBLUR.assets.stories.no_more_stories = true;
             NEWSBLUR.app.story_titles.end_loading();
             NEWSBLUR.app.story_list.end_loading();
         }
