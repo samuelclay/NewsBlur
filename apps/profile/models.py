@@ -333,7 +333,7 @@ class Profile(models.Model):
             i += 1
             try:
                 data = stripe.Charge.list(created={'gt': week}, count=limit, starting_after=starting_after)
-            except stripe.APIConnectionError:
+            except stripe.error.APIConnectionError:
                 time.sleep(10)
                 continue
             charges = data['data']
@@ -359,7 +359,7 @@ class Profile(models.Model):
                     continue
                 try:
                     user.profile.setup_premium_history()
-                except stripe.APIConnectionError:
+                except stripe.error.APIConnectionError:
                     logging.debug(" ***> Failed: %s" % user.username)
                     failed.append(user.username)
                     time.sleep(2)
