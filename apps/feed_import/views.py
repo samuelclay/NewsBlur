@@ -33,7 +33,7 @@ def opml_upload(request):
         if 'file' in request.FILES:
             logging.user(request, "~FR~SBOPML upload starting...")
             file = request.FILES['file']
-            xml_opml = str(file.read().decode('utf-8', 'ignore'))
+            xml_opml = file.read()
             try:
                 UploadedOPML.objects.create(user_id=request.user.pk, opml_file=xml_opml)
             except (UnicodeDecodeError, InvalidStringData):
