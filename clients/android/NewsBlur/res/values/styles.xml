@@ -17,17 +17,17 @@
 
     <style name="actionbar" parent="ThemeOverlay.MaterialComponents.Light">
         <item name="colorControlNormal">@color/gray55</item>
-        <item name="fontFamily">@font/whitney_ssm_book_bas</item>
+        <item name="fontFamily">@font/whitney</item>
     </style>
     <style name="actionbar.dark" parent="ThemeOverlay.MaterialComponents">
         <item name="android:background">@color/dark_bar_background</item>
         <item name="colorControlNormal">@color/gray55</item>
-        <item name="fontFamily">@font/whitney_ssm_book_bas</item>
+        <item name="fontFamily">@font/whitney</item>
     </style>
     <style name="actionbar.black" parent="ThemeOverlay.MaterialComponents">
         <item name="android:background">@color/black</item>
         <item name="colorControlNormal">@color/gray55</item>
-        <item name="fontFamily">@font/whitney_ssm_book_bas</item>
+        <item name="fontFamily">@font/whitney</item>
     </style>
 
     <style name="selectorFolderBackground">
@@ -160,12 +160,12 @@
     <style name="chip">
         <item name="android:textColor">@color/gray55</item>
         <item name="chipBackgroundColor">@color/tag_gray</item>
-        <item name="android:fontFamily">@font/whitney_ssm_book_bas</item>
+        <item name="android:fontFamily">@font/whitney</item>
     </style>
     <style name="chip.dark">
         <item name="android:textColor">@color/tag_gray</item>
         <item name="chipBackgroundColor">@color/tag_bg_dark</item>
-        <item name="android:fontFamily">@font/whitney_ssm_book_bas</item>
+        <item name="android:fontFamily">@font/whitney</item>
     </style>
 
     <style name="actionButtons">
