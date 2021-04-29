@@ -11,6 +11,7 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.template.loader import render_to_string
 from django.db import IntegrityError
+from django.db.utils import DatabaseError
 from django.db.models import Q
 from django.views.decorators.cache import never_cache
 from django.urls import reverse
@@ -790,7 +791,10 @@ def load_single_feed(request, feed_id):
     if usersub:
         usersub.feed_opens += 1
         usersub.needs_unread_recalc = True
-        usersub.save(update_fields=['feed_opens', 'needs_unread_recalc'])
+        try:
+            usersub.save(update_fields=['feed_opens', 'needs_unread_recalc'])
+        except DatabaseError as e:
+            logging.user(request, f"~BR~FK~SBNo changes in usersub, ignoring... {e}")
     
     diff1 = checkpoint1-start
     diff2 = checkpoint2-start
