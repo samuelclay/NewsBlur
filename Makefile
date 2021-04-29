@@ -31,7 +31,7 @@ debug:
 	- CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker attach ${newsblur}
 log:
 	- docker-compose logs -f --tail 20 newsblur_web newsblur_node
-logs:
+alllogs:
 	- docker-compose logs -f --tail 20
 # brings down containers
 down:
