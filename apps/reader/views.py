@@ -1540,13 +1540,10 @@ def load_river_stories__redis(request):
     
     diff = time.time() - start
     timediff = round(float(diff), 2)
-    if requested_hashes:
-        logging.user(request, "~FB%sLoading ~FC%s~FB stories~FB: ~SBp%s~SN (%s/%s "
-                                "stories, ~SN%s/%s/%s feeds, %s/%s)" % 
+    if requested_hashes and story_hashes:
+        logging.user(request, "~FB%sLoading ~FC%s~FB stories: (%s)" % 
                                 ("~FBAuto-" if on_dashboard else "",
-                                    requested_hashes,
-                                    page, len(stories), len(mstories), len(found_feed_ids), 
-                                    len(feed_ids), len(original_feed_ids), order, read_filter))
+                                    requested_hashes, story_hashes[:3]))
     else:
         logging.user(request, "~FY%sLoading ~FC%sriver stories~FY: ~SBp%s~SN (%s/%s "
                                 "stories, ~SN%s/%s/%s feeds, %s/%s)" % 
@@ -1555,7 +1552,8 @@ def load_river_stories__redis(request):
                                     page, len(stories), len(mstories), len(found_feed_ids), 
                                     len(feed_ids), len(original_feed_ids), order, read_filter))
 
-    MAnalyticsLoader.add(page_load=diff)
+    if not on_dashboard: 
+        MAnalyticsLoader.add(page_load=diff) # Only count full pages, not individual stories
 
     data = dict(code=code,
                 message=message,
