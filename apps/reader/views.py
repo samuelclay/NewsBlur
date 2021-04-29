@@ -1353,6 +1353,7 @@ def load_river_stories__redis(request):
         feed_ids      = [int(feed_id) for feed_id in get_post.getlist('f') if feed_id]
     story_hashes      = get_post.getlist('h') or get_post.getlist('h[]')
     story_hashes      = story_hashes[:100]
+    requested_hashes  = len(story_hashes)
     original_feed_ids = list(feed_ids)
     page              = int(get_post.get('page', 1))
     order             = get_post.get('order', 'newest')
@@ -1539,12 +1540,20 @@ def load_river_stories__redis(request):
     
     diff = time.time() - start
     timediff = round(float(diff), 2)
-    logging.user(request, "~FY%sLoading ~FC%sriver stories~FY: ~SBp%s~SN (%s/%s "
-                               "stories, ~SN%s/%s/%s feeds, %s/%s)" % 
-                               ("~FCAuto-" if on_dashboard else "",
-                                "~FB~SBinfrequent~SN~FC " if infrequent else "",
-                                page, len(stories), len(mstories), len(found_feed_ids), 
-                                len(feed_ids), len(original_feed_ids), order, read_filter))
+    if requested_hashes:
+        logging.user(request, "~FB%sLoading ~FC%s~FB stories~FB: ~SBp%s~SN (%s/%s "
+                                "stories, ~SN%s/%s/%s feeds, %s/%s)" % 
+                                ("~FBAuto-" if on_dashboard else "",
+                                    requested_hashes,
+                                    page, len(stories), len(mstories), len(found_feed_ids), 
+                                    len(feed_ids), len(original_feed_ids), order, read_filter))
+    else:
+        logging.user(request, "~FY%sLoading ~FC%sriver stories~FY: ~SBp%s~SN (%s/%s "
+                                "stories, ~SN%s/%s/%s feeds, %s/%s)" % 
+                                ("~FCAuto-" if on_dashboard else "",
+                                    "~FB~SBinfrequent~SN~FC " if infrequent else "",
+                                    page, len(stories), len(mstories), len(found_feed_ids), 
+                                    len(feed_ids), len(original_feed_ids), order, read_filter))
 
     MAnalyticsLoader.add(page_load=diff)
 
