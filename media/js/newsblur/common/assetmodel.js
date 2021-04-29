@@ -30,8 +30,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         this.starred_count = 0;
         this.flags = {
             'favicons_fetching': false,
-            'has_chosen_feeds': false,
-            'no_more_stories': false
+            'has_chosen_feeds': false
         };
 
         this.ajax = {};
@@ -616,7 +615,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             }
             
             if (data.stories && !data.stories.length) {
-                this.flags['no_more_stories'] = true;
+                this.stories.no_more_stories = true;
                 this.stories.trigger('no_more_stories');
             }
             var attrs = {};
@@ -786,11 +785,11 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             }
             if (page > 1) {
                 dashboard_stories.add(data.stories, { silent: true });
-                // dashboard_stories.limit(NEWSBLUR.Globals.is_premium ? 5 : 3); // Don't limit as it breaks intelligence
+                dashboard_stories.limit_visible_on_dashboard(NEWSBLUR.Globals.is_premium ? 5 : 3);
                 dashboard_stories.trigger('add', {added: data.stories.length});
             } else {
                 dashboard_stories.reset(data.stories, {added: data.stories.length, silent: true});
-                // dashboard_stories.limit(NEWSBLUR.Globals.is_premium ? 5 : 3);
+                dashboard_stories.limit_visible_on_dashboard(NEWSBLUR.Globals.is_premium ? 5 : 3);
                 dashboard_stories.trigger('reset', {added: data.stories.length});
             }
 
@@ -822,7 +821,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         
         var pre_callback = function(data) {
             dashboard_stories.add(data.stories, {silent: true});
-            // dashboard_stories.limit(NEWSBLUR.Globals.is_premium ? 5 : 3); // Don't bother limiting on dashboard
+            dashboard_stories.limit_visible_on_dashboard(NEWSBLUR.Globals.is_premium ? 5 : 3);
             dashboard_stories.trigger('reset', {added: 1});
         };
         
