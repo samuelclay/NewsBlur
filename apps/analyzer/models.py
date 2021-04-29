@@ -83,8 +83,128 @@ class MPopularityQuery(mongo.Document):
         self.save()
         
         logging.debug(" -> ~BB~FM~SBSent email for popularity query: %s" % self)
-        
 
+import pandas as pd
+from sklearn.preprocessing import LabelEncoder, MinMaxScaler
+from sklearn.model_selection import train_test_split
+from deepctr.models import DeepFM
+import deepctr.feature_column
+from deepctr.feature_column import SparseFeat, DenseFeat
+import ast
+from pickle import load
+import keras
+import numpy as np
+from deepctr.layers import custom_objects
+import sys
+        
+# This class is a place to store the current feeds in the model
+# We need to insure we recommend feeds based on ones already in the model,
+# so we should store the current ones and update the list when retrained
+class MCurrentModelFeeds(models.Document):
+    current_feeds = mongo.ListField(mongo.IntField())
+    
+    def init_feeds(self):
+        self.current_feeds = list(UserSubscription.objects.order_by().values_list('feed_id', flat=True).distinct())
+        
+    # our function to update our feed list
+    @classmethod
+    def update_current_feeds(self, feeds):
+        assert len(feeds) > 0
+        self.current_feeds = feeds
+        
+class MUserFeedRecommendation(models.Model):
+    user_id = mongo.IntField()
+    feed_recommendations = mongo.ListField(mongo.IntField())
+    followed_feeds = mongo.ListField(mongo.IntField())
+    # nice check for when a bunch of users have new followed feeds not in model
+    has_outside_feeds = models.BooleanField(default=False, null=True, blank=True)
+    
+    @classmethod
+    def set_followed_feeds(self):
+        self.followed_feeds = UserSubscription.objects.filter(user=self.user).feed_id
+    
+    def fill_recommendations(self):
+        
+        # First lets get our datapoints we need
+        # list of all feeds followed by a user
+        # get list of feeds we can recommend
+        total_feeds = list(MCurrentModelFeeds.objects.values_list('current_feeds', flat=True))
+        
+        # iffy on this check theres no new elements
+        if not set(followed_feeds).isdisjoint(set(total_feeds)):
+            self.has_outside_feeds = True
+       
+        possible_recommendations = set(total_feeds) - set(list(self.followed_feeds))
+        
+        active_subs = [Feed.objects.get(pk=x).active_subscribers for x in possible_recommendations]
+        premium_subs = [Feed.objects.get(pk=x).premium_subscribers for x in possible_recommendations]
+        num_subs = [Feed.objects.get(pk=x).num_subscribers for x in possible_recommendations]
+        average_stories_per_month = [Feed.objects.get(pk=x).average_stories_per_month for x in possible_recommendations]
+        user = [self.user_id]*(len(possible_recommendations)+1)
+        
+        # not sure how this comes in, will have to check it out on server
+        score_data = [Feed.get_by_id(x).well_read_score() for x in possible_recommendations]
+        
+        from constants import (
+            SPARSE_FEATURES,
+            DENSE_FEATURES,
+            TARGET
+        )
+        # create our full input dataframe
+        input_df = pd.DataFrame(columns=SPARSE_FEATURES + DENSE_FEATURES)
+        input_df['active_subs'],input_df['num_subs'],input_df['premium_subs'] = active_subs,num_subs,premium_subs
+        input_df['average_stories_per_month'],input_df['user'],input_df['feed_id'] =average_stories_per_month,user,possible_recommendations
+       
+        ### still have to add the rest of the features and merge
+        
+        assert input_df.columns == SPARSE_FEATURES + DENSE_FEATURES
+        
+        # get vocab sizes for SparseFeat, in the future the right way to do this might be
+        # using the .classes_ field on scikit models
+        # printing right now just to check
+        file1 = open("myfile.txt","r+")
+        sizes = file1.readlines()
+        file1.close()
+        updated = [x.replace('\n','') for x in sizes]
+        print(updated)
+        
+        vocabs = {name:updated[feature_names.index(name)] for name in feature_names}
+
+        print('vocab dict')
+        print(vocabs)
+        
+        # normalize data
+        # this must be done
+
+        for feat in SPARSE_FEATURES:
+            # need a labelEncoder for each feature
+            lbe = load(open( feat + '-' + 'lbe.pkl', 'rb'))
+            input_df[feat] = lbe.transform(input_df[feat])
+        
+        mms = MinMaxScaler(feature_range=(0,1))
+        # shouldn't need to save and load an ranged features model
+        #mms = load(open('minmax.pkl', 'rb'))
+        input_df[DENSE_FEATURES] = mms.transform(input_df[DENSE_FEATURES])
+        
+        fixlen_feature_columns = [SparseFeat(feat, vocabulary_size=vocabs.get(feat),embedding_dim=8)
+                       for i,feat in enumerate(SPARSE_FEATURES)] + [DenseFeat(feat, 1,)
+                      for feat in DENSE_FEATURES]
+        
+        
+        test_model_input = {name:input_df[name] for name in feature_names}
+
+        model = keras.models.load_model('model.keras', custom_objects)
+
+        pred_ans = model.predict(test_model_input, batch_size=256)
+        
+        # convert predictions to a little bit better format
+        predictions = [i[0] for i in pred_ans]
+
+        # lets sort our predictions from highest to lowest
+        results = sorted(dict(zip(feeds, predictions)).items(),  key=lambda x: x[1], reverse=True)
+        
+        self.feed_recommendations = results[:10]
+        
 class MClassifierTitle(mongo.Document):
     user_id = mongo.IntField()
     feed_id = mongo.IntField()
