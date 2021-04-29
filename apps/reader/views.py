@@ -1752,8 +1752,8 @@ def mark_story_hashes_as_read(request):
             r.publish(request.user.username, 'feed:%s' % feed_id)
     
     hash_count = len(story_hashes)
-    logging.user(request, "~FYRead %s %s in feed/socialsubs: %s/%s: %s %s" % (
-                 hash_count, 'story' if hash_count == 1 else 'stories', feed_ids, friend_ids,
+    logging.user(request, "~FYRead %s %s: %s %s" % (
+                 hash_count, 'story' if hash_count == 1 else 'stories',
                  story_hashes,
                  '(retrying failed)' if retrying_failed else ''))
 
