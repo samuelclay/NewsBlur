@@ -19,7 +19,7 @@ SESSION_COOKIE_DOMAIN = 'localhost'
 # ===================
 DOCKERBUILD = True
 DEBUG = False
-# DEBUG = True
+DEBUG = True
 DEBUG_ASSETS = True
 MEDIA_URL = '/media/'
 IMAGES_URL = '/imageproxy'
