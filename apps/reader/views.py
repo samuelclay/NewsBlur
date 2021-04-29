@@ -490,12 +490,13 @@ class ratelimit_refresh_feeds(ratelimit):
 @never_cache
 @json.json_view
 def refresh_feeds(request):
+    get_post = getattr(request, request.method)
     start = datetime.datetime.now()
     start_time = time.time()
     user = get_user(request)
-    feed_ids = request.GET.getlist('feed_id') or request.GET.getlist('feed_id[]')
-    check_fetch_status = request.GET.get('check_fetch_status')
-    favicons_fetching = request.GET.getlist('favicons_fetching') or request.GET.getlist('favicons_fetching[]')
+    feed_ids = get_post.getlist('feed_id') or get_post.getlist('feed_id[]')
+    check_fetch_status = get_post.get('check_fetch_status')
+    favicons_fetching = get_post.getlist('favicons_fetching') or get_post.getlist('favicons_fetching[]')
     social_feed_ids = [feed_id for feed_id in feed_ids if 'social:' in feed_id]
     feed_ids = list(set(feed_ids) - set(social_feed_ids))
     
