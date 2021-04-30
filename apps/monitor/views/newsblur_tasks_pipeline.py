@@ -8,7 +8,15 @@ class TasksPipeline(View):
 
     def get(self, request):
         data =self.stats
-        return render(request, 'monitor/prometheus_data.html', {"data": data})
+        chart_name = "task_pipeline"
+        chart_type = "histogram"
+
+        context = {
+            "data": data,
+            "chart_name": chart_name,
+            "chart_type": chart_type,
+        }
+        return render(request, 'monitor/prometheus_data.html', context)
     
     @property
     def stats(self):

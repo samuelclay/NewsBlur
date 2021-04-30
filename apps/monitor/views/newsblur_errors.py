@@ -10,5 +10,13 @@ class Errors(View):
         data = {
             'feed_success': statistics['feeds_fetched'],
         }
-        return render(request, 'monitor/prometheus_data.html', {"data": data})
+        chart_name = "errors"
+        chart_type = "histogram"
+
+        context = {
+            "data": data,
+            "chart_name": chart_name,
+            "chart_type": chart_type,
+        }
+        return render(request, 'monitor/prometheus_data.html', context)
 
