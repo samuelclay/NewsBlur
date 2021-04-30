@@ -119,19 +119,34 @@ class MUserFeedRecommendation(models.Model):
     # nice check for when a bunch of users have new followed feeds not in model
     has_outside_feeds = models.BooleanField(default=False, null=True, blank=True)
     
+    # quick function to set this
+    def check_outside_feeds(self):
+        # not sure if I need to wrap the MCurrentModelFeeds in a list()
+        if set(self.followed_feeds).issubset(set(MCurrentModelFeeds.objects.values_list('current_feeds', flat=True))):
+            self.has_outside_feeds = False
+        else:
+            self.has_outside_feeds = True
+    
     @classmethod
     def set_followed_feeds(self):
         self.followed_feeds = UserSubscription.objects.filter(user=self.user).feed_id
     
-    def fill_recommendations(self):
+    def fill_recommendations(self, rec_num=10):
         
         # First lets get our datapoints we need
         # list of all feeds followed by a user
         # get list of feeds we can recommend
+        # does require that we have an updated list of feeds
         total_feeds = list(MCurrentModelFeeds.objects.values_list('current_feeds', flat=True))
+        # can either raise issue and return, or just grab all the feeds from other parts of db
+        if len(total_feeds) == 0:
+            raise exception('Unable to get list of feeds the model is trained on, this could be caused by an error')
+            return
         
-        # iffy on this check theres no new elements
-        if not set(followed_feeds).isdisjoint(set(total_feeds)):
+        # should check if theres new feeds the user follows that aren't in the total_feeds,
+        # we don't need the followed feeds to run the model, but it could cause issues in the recommendations,
+        # especially if there user doesn't follow alot of feeds
+        if not set(followed_feeds).issubset(set(total_feeds)):
             self.has_outside_feeds = True
        
         possible_recommendations = set(total_feeds) - set(list(self.followed_feeds))
@@ -141,10 +156,17 @@ class MUserFeedRecommendation(models.Model):
         num_subs = [Feed.objects.get(pk=x).num_subscribers for x in possible_recommendations]
         average_stories_per_month = [Feed.objects.get(pk=x).average_stories_per_month for x in possible_recommendations]
         user = [self.user_id]*(len(possible_recommendations)+1)
-        
+        is_premium = Profile.objects.get(user_id=user).is_premium
         # not sure how this comes in, will have to check it out on server
         score_data = [Feed.get_by_id(x).well_read_score() for x in possible_recommendations]
+        # pretty sure its a dict
+        temp = pd.DataFrame(score_data)
         
+        active_premium_subscribers = [Feed.objects.get(pk=x).active_premium_subscribers for x in possible_recommendations]
+        user_shared_stories_count = MSharedStory.objects.filter(user_id=self.user).count()
+        
+        # total shares_per_feed might be the same as share_count
+        total_shares_per_feed = [MSharedStory.objects.filter(story_feed_id=x).count() for x in possible_recommendations]
         from constants import (
             SPARSE_FEATURES,
             DENSE_FEATURES,
@@ -152,49 +174,47 @@ class MUserFeedRecommendation(models.Model):
         )
         # create our full input dataframe
         input_df = pd.DataFrame(columns=SPARSE_FEATURES + DENSE_FEATURES)
+        input_df['read_pct'],input_df['reader_count'],input_df['reach_score'] = temp['read_pct'],temp['reader_count'],temp['reach_score']
+        input_df['story_count'],input_df['share_count'] = temp['story_count'],temp['share_count']
+        del temp
+        input_df['active'] = [Feed.objects.get(pk=x).active for x in possible_recommendations]
         input_df['active_subs'],input_df['num_subs'],input_df['premium_subs'] = active_subs,num_subs,premium_subs
         input_df['average_stories_per_month'],input_df['user'],input_df['feed_id'] =average_stories_per_month,user,possible_recommendations
-       
-        ### still have to add the rest of the features and merge
+        input_df['is_premium'] = [is_premium] * (len(possible_recommendations)+1)
+        input_df['active_premium_subscribers'] = active_premium_subscribers
+        input_df['user_shared_stories_count'] = [user_shared_stories_count] * len((possible_recommendations)+1)
+        input_df['total_shares_per_feed'] = total_shares_per_feed
+        ### should be all the current fields
         
         assert input_df.columns == SPARSE_FEATURES + DENSE_FEATURES
-        
-        # get vocab sizes for SparseFeat, in the future the right way to do this might be
-        # using the .classes_ field on scikit models
-        # printing right now just to check
-        file1 = open("myfile.txt","r+")
-        sizes = file1.readlines()
-        file1.close()
-        updated = [x.replace('\n','') for x in sizes]
-        print(updated)
-        
-        vocabs = {name:updated[feature_names.index(name)] for name in feature_names}
 
-        print('vocab dict')
-        print(vocabs)
-        
+
         # normalize data
         # this must be done
-
+        # no need anymore for reading/writing vocab sizes to file, figured it out
+        vocabs = {}
         for feat in SPARSE_FEATURES:
             # need a labelEncoder for each feature
             lbe = load(open( feat + '-' + 'lbe.pkl', 'rb'))
             input_df[feat] = lbe.transform(input_df[feat])
+            vocabs[feat] = len(lbe.classes_))
         
         mms = MinMaxScaler(feature_range=(0,1))
-        # shouldn't need to save and load an ranged features model
+        # shouldn't need to save and load a ranged numerical features model like minmaxscaler
         #mms = load(open('minmax.pkl', 'rb'))
         input_df[DENSE_FEATURES] = mms.transform(input_df[DENSE_FEATURES])
         
-        fixlen_feature_columns = [SparseFeat(feat, vocabulary_size=vocabs.get(feat),embedding_dim=8)
+        fixlen_feature_columns = [SparseFeat(feat, vocabulary_size=vocabs[feat],embedding_dim=16)
                        for i,feat in enumerate(SPARSE_FEATURES)] + [DenseFeat(feat, 1,)
                       for feat in DENSE_FEATURES]
         
         
         test_model_input = {name:input_df[name] for name in feature_names}
-
+        # might not use this delete, trying to reduce memory before we run model
+        del input_df
         model = keras.models.load_model('model.keras', custom_objects)
-
+        
+        # predict probability for each feed
         pred_ans = model.predict(test_model_input, batch_size=256)
         
         # convert predictions to a little bit better format
@@ -202,8 +222,8 @@ class MUserFeedRecommendation(models.Model):
 
         # lets sort our predictions from highest to lowest
         results = sorted(dict(zip(feeds, predictions)).items(),  key=lambda x: x[1], reverse=True)
-        
-        self.feed_recommendations = results[:10]
+        # lets grab the top x amount of feeds
+        self.feed_recommendations = results[:rec_num]
         
 class MClassifierTitle(mongo.Document):
     user_id = mongo.IntField()
