@@ -40,6 +40,7 @@ from apps.rss_feeds.models import MFeedIcon, MStarredStoryCounts, MSavedSearch
 from apps.notifications.models import MUserFeedNotification
 from apps.search.models import MUserSearch
 from apps.statistics.models import MStatistics, MAnalyticsLoader
+from apps.statistics.rstats import RStats
 # from apps.search.models import SearchStarredStory
 try:
     from apps.rss_feeds.models import Feed, MFeedPage, DuplicateFeed, MStory, MStarredStory
@@ -553,7 +554,7 @@ def refresh_feeds(request):
             (end-start).total_seconds(),
             ))
     
-    MAnalyticsLoader.add(page_load=time.time()-start_time)
+    # MAnalyticsLoader.add(page_load=time.time()-start_time)
     
     return {
         'feeds': feeds, 
@@ -603,7 +604,7 @@ def feed_unread_count(request):
     else:
         feed_title = "%s feeds" % (len(feeds) + len(social_feeds))
     logging.user(request, "~FBUpdating unread count on: %s" % feed_title)
-    MAnalyticsLoader.add(page_load=time.time()-start)
+    # MAnalyticsLoader.add(page_load=time.time()-start)
     
     return {'feeds': feeds, 'social_feeds': social_feeds}
     
@@ -617,7 +618,7 @@ def refresh_feed(request, feed_id):
     usersub.calculate_feed_scores(silent=False)
     
     logging.user(request, "~FBRefreshing feed: %s" % feed)
-    MAnalyticsLoader.add(page_load=time.time()-start)
+    # MAnalyticsLoader.add(page_load=time.time()-start)
     
     return load_single_feed(request, feed_id)
     
@@ -811,7 +812,11 @@ def load_single_feed(request, feed_id):
     search_log = "~SN~FG(~SB%s~SN) " % query if query else ""
     logging.user(request, "~FYLoading feed: ~SB%s%s (%s/%s) %s%s" % (
         feed.feed_title[:22], ('~SN/p%s' % page) if page > 1 else '', order, read_filter, search_log, time_breakdown))
+    
     MAnalyticsLoader.add(page_load=timediff)
+    if hasattr(request, 'start_time'):
+        seconds = time.time() - request.start_time
+        RStats.add('page_load', duration=seconds)
 
     if not include_hidden:
         hidden_stories_removed = 0
@@ -1557,8 +1562,11 @@ def load_river_stories__redis(request):
                                     page, len(stories), len(mstories), len(found_feed_ids), 
                                     len(feed_ids), len(original_feed_ids), order, read_filter))
 
-    if not on_dashboard: 
+    if not on_dashboard and not (requested_hashes and story_hashes): 
         MAnalyticsLoader.add(page_load=diff) # Only count full pages, not individual stories
+        if hasattr(request, 'start_time'):
+            seconds = time.time() - request.start_time
+            RStats.add('page_load', duration=seconds)
 
     data = dict(code=code,
                 message=message,
