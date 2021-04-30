@@ -8,7 +8,6 @@ from django.conf import settings
 from django.utils.encoding import smart_str, smart_str
 
 from .user_functions import extract_user_agent
-from apps.statistics.rstats import RStats
 
 
 class NullHandler(logging.Handler):  # exists in python 3.1
@@ -50,16 +49,6 @@ def user(u, msg, request=None, warn_color=True):
     premium = '*' if is_premium else ''
     username = cipher(str(u)) if settings.CIPHER_USERNAMES else str(u)
     info(' ---> [~FB~SN%-6s~SB] %s[%s%s] %s' % (platform, time_elapsed, username, premium, msg))
-    page_load_paths = [
-        "/reader/feed/",
-        "/social/stories/",
-        "/reader/river_stories/",
-        "/social/river_stories/"
-    ]
-    if request:
-        path = RStats.clean_path(request.path)
-        if path in page_load_paths:
-            RStats.add('page_load', duration=seconds)
 
 
 def cipher(msg):
