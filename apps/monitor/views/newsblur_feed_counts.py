@@ -45,6 +45,14 @@ class FeedCounts(View):
             'active_feeds': active_feeds,
             'push_feeds': push_feeds,
         }
-        return render(request, 'monitor/prometheus_data.html', {"data": data})
+        chart_name = "feed_counts"
+        chart_type = "histogram"
+
+        context = {
+            "data": data,
+            "chart_name": chart_name,
+            "chart_type": chart_type,
+        }
+        return render(request, 'monitor/prometheus_data.html', context)
 
 

@@ -10,8 +10,15 @@ class TasksServers(View):
         data = dict((("%s" % s['_id'].replace('-', ''), s['feeds']) for s in self.stats))
         if self.total:
             data['total'] = self.total[0]['feeds']
+        chart_name = "task_servers"
+        chart_type = "histogram"
 
-        return render(request, 'monitor/prometheus_data.html', {"data": data})
+        context = {
+            "data": data,
+            "chart_name": chart_name,
+            "chart_type": chart_type,
+        }
+        return render(request, 'monitor/prometheus_data.html', context)
 
     
     @property

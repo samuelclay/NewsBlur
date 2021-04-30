@@ -13,5 +13,13 @@ class Classifiers(View):
             'titles': MClassifierTitle.objects.count(),
         }
 
-        return render(request, 'monitor/prometheus_data.html', {"data": data})
+        chart_name = "classifiers"
+        chart_type = "histogram"
+
+        context = {
+            "data": data,
+            "chart_name": chart_name,
+            "chart_type": chart_type,
+        }
+        return render(request, 'monitor/prometheus_data.html', context)
 

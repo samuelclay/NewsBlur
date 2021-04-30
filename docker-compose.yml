@@ -110,7 +110,7 @@ services:
       - 9200:9200
       - 9300:9300
     volumes:
-      - ./docker/volumes/elasticsearch:/usr/share/elasticsearch/data
+      - ./docker/volumes/elasticsearch:/elasticsearch/dat
       - ./config/elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
 
   db_mongo:
@@ -163,13 +163,18 @@ services:
       - ./docker/volumes/prometheus_data:/prometheus
     depends_on:
       - node-exporter
+      - haproxy
+    external_links:
+      - haproxy
 
   node-exporter:
+    container_name: node-exporter
     image: prom/node-exporter
     ports:
       - 9100:9100
 
   grafana:
+    container_name: grafana
     image: grafana/grafana
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=pass

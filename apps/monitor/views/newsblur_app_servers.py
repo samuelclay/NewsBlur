@@ -9,8 +9,14 @@ class AppServers(View):
         data = dict((("%s" % s['_id'].replace('-', ''), s['feeds']) for s in self.stats))
         if self.total:
             data['total'] = self.total[0]['feeds']
-
-        return render(request, 'monitor/prometheus_data.html', {"data": data})
+        chart_name = "app_servers"
+        chart_type = "histogram"
+        context = {
+            "data": data,
+            "chart_name": chart_name,
+            "chart_type": chart_type,
+        } 
+        return render(request, 'monitor/prometheus_data.html', context)
     
     @property
     def stats(self):
