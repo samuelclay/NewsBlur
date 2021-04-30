@@ -129,7 +129,7 @@ class MUserFeedRecommendation(models.Model):
     
     @classmethod
     def set_followed_feeds(self):
-        self.followed_feeds = UserSubscription.objects.filter(user=self.user).feed_id
+        self.followed_feeds = UserSubscription.objects.values_list('feed_id', flat=True).filter(user=self.user)
     
     def fill_recommendations(self, rec_num=10):
         
