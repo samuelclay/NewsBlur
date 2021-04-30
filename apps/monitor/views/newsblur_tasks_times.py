@@ -8,8 +8,15 @@ class TasksTimes(View):
 
     def get(self, request):
         data = dict((("%s" % s['_id'], s['total']) for s in self.stats))
+        chart_name = "task_times"
+        chart_type = "histogram"
 
-        return render(request, 'monitor/prometheus_data.html', {"data": data})
+        context = {
+            "data": data,
+            "chart_name": chart_name,
+            "chart_type": chart_type,
+        }
+        return render(request, 'monitor/prometheus_data.html', context)
 
     
     @property
