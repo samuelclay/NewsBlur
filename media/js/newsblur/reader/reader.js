@@ -5945,10 +5945,8 @@
         // ====================
         
         setup_dashboard_graphs: function() {
-            if (NEWSBLUR.Globals.debug) return;
-            
-            // Reload dashboard graphs every 10 minutes.
-            var reload_interval = NEWSBLUR.Globals.is_staff ? 60*1000 : 10*60*1000;
+            // Reload dashboard graphs every 30 min in debug, 1 min for staff, 10 minutes otherwise.
+            var reload_interval = NEWSBLUR.Globals.debug ? 30*60*1000: NEWSBLUR.Globals.is_staff ? 60*1000 : 10*60*1000;
 
             clearInterval(this.locks.load_dashboard_graphs);
             this.locks.load_dashboard_graphs = setInterval(_.bind(function() {
@@ -5972,10 +5970,9 @@
         },        
         
         setup_feedback_table: function() {
-            if (NEWSBLUR.Globals.debug) return;
+            // Reload feedback every 30 min in debug, 30 sec for staff, 10 minutes otherwise.
+            var reload_interval = NEWSBLUR.Globals.debug ? 30 * 60 * 1000 : NEWSBLUR.Globals.is_staff ? 0.5 * 60 * 1000 : 10 * 60 * 1000;
             
-            // Reload feedback module every 10 minutes.
-            var reload_interval = NEWSBLUR.Globals.is_staff ? 30*1000 : 5*60*1000;
             clearInterval(this.locks.load_feedback_table);
             this.locks.load_feedback_table = setInterval(_.bind(function() {
                 this.load_feedback_table();
