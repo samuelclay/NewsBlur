@@ -21,7 +21,7 @@ import com.newsblur.util.ReadingFontChangedListener;
 
 public class ReadingFontDialogFragment extends DialogFragment {
 
-    private static String SELECTED_FONT = "selectedFont";
+    private static final String SELECTED_FONT = "selectedFont";
 
     private String currentValue;
 
@@ -54,6 +54,7 @@ public class ReadingFontDialogFragment extends DialogFragment {
         binding.radioNotoSans.setChecked(currentValue.equals(getString(R.string.noto_sans_font_prefvalue)));
         binding.radioNotoSerif.setChecked(currentValue.equals(getString(R.string.noto_serif_font_prefvalue)));
         binding.radioOpenSansCondensed.setChecked(currentValue.equals(getString(R.string.open_sans_condensed_font_prefvalue)));
+        binding.radioRoboto.setChecked(currentValue.equals(getString(R.string.roboto_font_prefvalue)));
 
         getDialog().requestWindowFeature(Window.FEATURE_NO_TITLE);
         getDialog().getWindow().getAttributes().gravity = Gravity.BOTTOM;
@@ -64,48 +65,14 @@ public class ReadingFontDialogFragment extends DialogFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        binding.radioAnonymous.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                switchFont(getString(R.string.anonymous_pro_font_prefvalue));
-            }
-        });
-        binding.radioDefault.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                switchFont(getString(R.string.default_font_prefvalue));
-            }
-        });
-        binding.radioChronicle.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                switchFont(getString(R.string.chronicle_font_prefvalue));
-            }
-        });
-        binding.radioGotham.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                switchFont(getString(R.string.gotham_narrow_font_prefvalue));
-            }
-        });
-        binding.radioNotoSans.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                switchFont(getString(R.string.noto_sans_font_prefvalue));
-            }
-        });
-        binding.radioNotoSerif.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                switchFont(getString(R.string.noto_serif_font_prefvalue));
-            }
-        });
-        binding.radioOpenSansCondensed.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                switchFont(getString(R.string.open_sans_condensed_font_prefvalue));
-            }
-        });
+        binding.radioAnonymous.setOnClickListener(v -> switchFont(getString(R.string.anonymous_pro_font_prefvalue)));
+        binding.radioDefault.setOnClickListener(v -> switchFont(getString(R.string.default_font_prefvalue)));
+        binding.radioChronicle.setOnClickListener(v -> switchFont(getString(R.string.chronicle_font_prefvalue)));
+        binding.radioGotham.setOnClickListener(v -> switchFont(getString(R.string.gotham_narrow_font_prefvalue)));
+        binding.radioNotoSans.setOnClickListener(v -> switchFont(getString(R.string.noto_sans_font_prefvalue)));
+        binding.radioNotoSerif.setOnClickListener(v -> switchFont(getString(R.string.noto_serif_font_prefvalue)));
+        binding.radioOpenSansCondensed.setOnClickListener(v -> switchFont(getString(R.string.open_sans_condensed_font_prefvalue)));
+        binding.radioRoboto.setOnClickListener(v -> switchFont(getString(R.string.roboto_font_prefvalue)));
     }
 
     private void switchFont(String newValue) {

@@ -13,11 +13,12 @@ public class Font {
     public static Font NOTO_SERIF = new Font(Type.WEB, "https://fonts.googleapis.com/css?family=Noto+Serif", "'Noto Serif', serif");
     public static Font OPEN_SANS_CONDENSED = new Font(Type.WEB, "https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300", "'Open Sans Condensed', sans-serif");
     public static Font ANONYMOUS_PRO = new Font(Type.WEB, "https://fonts.googleapis.com/css?family=Anonymous+Pro", "'Anonymous Pro', sans-serif");
+    public static Font ROBOTO = new Font(Type.ANDROID_DEFAULT, null, null);
 
     private enum Type {
         OTF,
         WEB,
-        DEFAULT
+        ANDROID_DEFAULT
     }
 
     private final Type type;
@@ -44,6 +45,8 @@ public class Font {
                 return OPEN_SANS_CONDENSED;
             case "ANONYMOUS_PRO":
                 return ANONYMOUS_PRO;
+            case "ROBOTO":
+                return ROBOTO;
             default:
                 return DEFAULT;
         }
@@ -63,7 +66,7 @@ public class Font {
             builder.append("\") }\n");
         }
         builder.append(String.format("body { font-size: %sem;", currentSize));
-        if (type != Type.DEFAULT) {
+        if (type != Type.ANDROID_DEFAULT) {
             builder.append("font-family: ");
             builder.append(fontFamily);
             builder.append(";");
