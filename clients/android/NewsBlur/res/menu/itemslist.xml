@@ -13,6 +13,22 @@
     <item android:id="@+id/menu_read_filter"
           android:title="@string/menu_read_filter"
           app:showAsAction="never" />
+    <item android:id="@+id/menu_story_content_preview_style"
+          android:title="@string/menu_story_content_preview"
+          app:showAsAction="never">
+        <menu>
+            <group android:checkableBehavior="single">
+                <item android:id="@+id/menu_story_content_preview_none"
+                      android:title="@string/story_content_preview_none" />
+                <item android:id="@+id/menu_story_content_preview_small"
+                      android:title="@string/story_content_preview_small" />
+                <item android:id="@+id/menu_story_content_preview_medium"
+                      android:title="@string/story_content_preview_medium" />
+                <item android:id="@+id/menu_story_content_preview_large"
+                      android:title="@string/story_content_preview_large" />
+            </group>
+        </menu>
+    </item>
     <item android:id="@+id/menu_story_list_style"
           android:title="@string/menu_story_list_style_choose" >
         <menu>
@@ -79,7 +95,7 @@
           android:title="@string/menu_infrequent_cutoff"
           app:showAsAction="never" />
     <item android:id="@+id/menu_save_search"
-        android:title="Save Search"
+        android:title="@string/menu_save_search"
         app:showAsAction="never"
         android:visible="false"/>
 </menu>

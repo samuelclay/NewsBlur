@@ -93,10 +93,13 @@
             android:key="pref_auto_open_first_unread"
             android:title="@string/settings_auto_open_first_unread"
             android:summary="@string/settings_auto_open_first_unread_sum" />
-        <CheckBoxPreference
-            android:defaultValue="true"
-            android:key="pref_show_content_preview"
-            android:title="@string/settings_show_content_preview" />
+        <ListPreference
+            android:key="pref_show_content_preview_style"
+            android:title="@string/settings_content_preview"
+            android:dialogTitle="@string/settings_content_preview"
+            android:entries="@array/show_content_preview_entries"
+            android:entryValues="@array/show_content_preview_values"
+            android:defaultValue="@string/show_content_preview_default_value"/>
         <ListPreference
             android:key="pref_thumbnails_style"
             android:title="@string/settings_thumbnails_style"

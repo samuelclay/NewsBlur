@@ -681,9 +681,17 @@ public class PrefsUtils {
         return DefaultFeedView.STORY;
     }
 
-    public static boolean isShowContentPreviews(Context context) {
+    public static StoryContentPreviewStyle getStoryContentPreviewStyle(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
-        return prefs.getBoolean(PrefConstants.STORIES_SHOW_PREVIEWS, true);
+        return StoryContentPreviewStyle.valueOf(
+                prefs.getString(PrefConstants.STORIES_SHOW_PREVIEWS_STYLE, StoryContentPreviewStyle.MEDIUM.toString()));
+    }
+
+    public static void setStoryContentPreviewStyle(Context context, StoryContentPreviewStyle value) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        Editor editor = prefs.edit();
+        editor.putString(PrefConstants.STORIES_SHOW_PREVIEWS_STYLE, value.name());
+        editor.commit();
     }
 
     private static boolean isShowThumbnails(Context context) {
