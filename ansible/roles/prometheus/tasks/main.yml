@@ -12,7 +12,7 @@
     state: started
     network_mode: host
     restart_policy: unless-stopped
-    command: '-config.file=/etc/prometheus/prometheus.yml'
+    command: '-config.file=/etc/prometheus/prometheus.ansible.yml'
     ports:
       - "9090:9090"
     volumes:
