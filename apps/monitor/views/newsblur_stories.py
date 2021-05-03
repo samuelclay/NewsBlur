@@ -11,12 +11,12 @@ class Stories(View):
             'starred_stories': MStarredStory.objects.count(),
         }
         chart_name = "stories"
-        chart_type = "histogram"
+        chart_type = "counter"
 
         context = {
             "data": data,
             "chart_name": chart_name,
             "chart_type": chart_type,
         }
-        return render(request, 'monitor/prometheus_data.html', context)
+        return render(request, 'monitor/prometheus_data.html', context, content_type="text/plain")
 

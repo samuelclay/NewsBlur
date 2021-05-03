@@ -9,14 +9,14 @@ class AppTimes(View):
         servers = dict((("%s" % s['_id'], s['page_load']) for s in self.stats))
         data = servers
         chart_name = "app_times"
-        chart_type = "histogram"
+        chart_type = "counter"
 
         context = {
             "data": data,
             "chart_name": chart_name,
             "chart_type": chart_type,
         }
-        return render(request, 'monitor/prometheus_data.html', context)
+        return render(request, 'monitor/prometheus_data.html', context, content_type="text/plain")
     
     @property
     def stats(self):
