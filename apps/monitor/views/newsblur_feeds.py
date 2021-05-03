@@ -27,7 +27,7 @@ class Feeds(View):
             'social_subscriptions': MSocialSubscription.objects.count(),
         }
         chart_name = "feeds"
-        chart_type = "histogram"
+        chart_type = "counter"
 
         context = {
             "data": data,
@@ -35,5 +35,5 @@ class Feeds(View):
             "chart_type": chart_type,
         }
 
-        return render(request, 'monitor/prometheus_data.html', context)
+        return render(request, 'monitor/prometheus_data.html', context, content_type="text/plain")
 

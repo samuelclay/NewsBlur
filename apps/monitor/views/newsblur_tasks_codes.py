@@ -8,14 +8,14 @@ class TasksCodes(View):
     def get(self, request):
         data = dict((("_%s" % s['_id'], s['feeds']) for s in self.stats))
         chart_name = "task_codes"
-        chart_type = "histogram"
+        chart_type = "counter"
 
         context = {
             "data": data,
             "chart_name": chart_name,
             "chart_type": chart_type,
         }
-        return render(request, 'monitor/prometheus_data.html', context)
+        return render(request, 'monitor/prometheus_data.html', context, content_type="text/plain")
     
     @property
     def stats(self):        

@@ -11,14 +11,14 @@ class TasksServers(View):
         if self.total:
             data['total'] = self.total[0]['feeds']
         chart_name = "task_servers"
-        chart_type = "histogram"
+        chart_type = "counter"
 
         context = {
             "data": data,
             "chart_name": chart_name,
             "chart_type": chart_type,
         }
-        return render(request, 'monitor/prometheus_data.html', context)
+        return render(request, 'monitor/prometheus_data.html', context, content_type="text/plain")
 
     
     @property
