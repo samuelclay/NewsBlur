@@ -38,6 +38,7 @@ import com.newsblur.util.FeedUtils;
 import com.newsblur.util.GestureAction;
 import com.newsblur.util.ImageLoader;
 import com.newsblur.util.PrefsUtils;
+import com.newsblur.util.StoryContentPreviewStyle;
 import com.newsblur.util.StoryListStyle;
 import com.newsblur.util.StoryUtils;
 import com.newsblur.util.ThumbnailStyle;
@@ -637,7 +638,15 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     }
 
     private void bindRow(StoryRowViewHolder vh, int position, Story story) {
-        if (PrefsUtils.isShowContentPreviews(context)) {
+        StoryContentPreviewStyle storyContentPreviewStyle = PrefsUtils.getStoryContentPreviewStyle(context);
+        if (storyContentPreviewStyle != StoryContentPreviewStyle.NONE) {
+            if (storyContentPreviewStyle == StoryContentPreviewStyle.LARGE) {
+                vh.storySnippet.setMaxLines(6);
+            } else if (storyContentPreviewStyle == StoryContentPreviewStyle.MEDIUM) {
+                vh.storySnippet.setMaxLines(4);
+            } else if (storyContentPreviewStyle == StoryContentPreviewStyle.SMALL){
+                vh.storySnippet.setMaxLines(2);
+            }
             vh.storySnippet.setVisibility(View.VISIBLE);
             vh.storySnippet.setText(story.shortContent);
         } else {

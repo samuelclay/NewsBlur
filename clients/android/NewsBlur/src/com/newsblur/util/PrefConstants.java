@@ -61,7 +61,7 @@ public class PrefConstants {
 
     public static final String STORIES_AUTO_OPEN_FIRST = "pref_auto_open_first_unread";
     public static final String STORIES_MARK_READ_ON_SCROLL = "pref_mark_read_on_scroll";
-    public static final String STORIES_SHOW_PREVIEWS = "pref_show_content_preview";
+    public static final String STORIES_SHOW_PREVIEWS_STYLE = "pref_show_content_preview_style";
     public static final String STORIES_SHOW_THUMBNAILS = "pref_show_thumbnails";
     public static final String STORIES_THUMBNAILS_STYLE = "pref_thumbnails_style";
 

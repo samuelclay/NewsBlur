@@ -348,6 +348,10 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
         }
     }
 
+    public void notifyContentPrefsChanged() {
+        adapter.notifyAllItemsChanged();
+    }
+
     public void updateStyle() {
         StoryListStyle listStyle = PrefsUtils.getStoryListStyle(getActivity(), getFeedSet());
         calcColumnCount(listStyle);

@@ -160,11 +160,16 @@
     <string name="menu_intel">Intelligence trainer</string>
     <string name="menu_rename_feed">Rename feed</string>
     <string name="menu_story_list_style_choose">List style…</string>
+    <string name="menu_save_search">Save Search</string>
     <string name="list_style_list">List</string>
     <string name="list_style_grid_f">Grid (fine)</string>
     <string name="list_style_grid_m">Grid (medium)</string>
     <string name="list_style_grid_c">Grid (coarse)</string>
-    
+    <string name="story_content_preview_none">Title only (none)</string>
+    <string name="story_content_preview_small">2 lines (small)</string>
+    <string name="story_content_preview_medium">4 lines (medium)</string>
+    <string name="story_content_preview_large">6 lines (large)</string>
+
     <string name="menu_sort_by">Sort By</string>
     <string name="menu_sort_by_name">Name</string>
     <string name="menu_sort_by_subs">Subscribers</string>
@@ -368,6 +373,7 @@
 
     <string name="all_stories">All Stories</string>
     <string name="unread_only">Unread Only</string>
+    <string name="menu_story_content_preview">Content Preview</string>
     <string name="menu_read_filter">Read Filter</string>
     <string-array name="default_read_filter_entries">
         <item>@string/all_stories</item>
@@ -401,10 +407,26 @@
     <string name="settings_social">Social</string>
     <string name="settings_show_public_comments">Show Public Comments</string>
     <string name="settings_reading">Reading</string>
-    <string name="settings_show_content_preview">Show Content Preview Text</string>
+    <string name="settings_content_preview">Content Preview Text</string>
     <string name="settings_thumbnails_style">Image Preview Thumbnails</string>
     <string name="settings_notifications">Notifications</string>
     <string name="settings_enable_notifications">Enable Notifications</string>
+
+    <string-array name="show_content_preview_entries">
+        <item>@string/story_content_preview_none</item>
+        <item>@string/story_content_preview_small</item>
+        <item>@string/story_content_preview_medium</item>
+        <item>@string/story_content_preview_large</item>
+    </string-array>
+
+    <string-array name="show_content_preview_values">
+        <item>NONE</item>
+        <item>SMALL</item>
+        <item>MEDIUM</item>
+        <item>LARGE</item>
+    </string-array>
+
+    <string name="show_content_preview_default_value">MEDIUM</string>
 
     <string name="large">Large</string>
     <string name="small">Small</string>

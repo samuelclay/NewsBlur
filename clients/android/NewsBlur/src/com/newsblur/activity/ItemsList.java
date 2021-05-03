@@ -29,6 +29,7 @@ import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadFilter;
 import com.newsblur.util.ReadFilterChangedListener;
 import com.newsblur.util.StateFilter;
+import com.newsblur.util.StoryContentPreviewStyle;
 import com.newsblur.util.StoryListStyle;
 import com.newsblur.util.StoryOrder;
 import com.newsblur.util.StoryOrderChangedListener;
@@ -176,6 +177,7 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
             fs.isInfrequent() || 
             fs.isAllRead() ) {
             menu.findItem(R.id.menu_read_filter).setVisible(false);
+            menu.findItem(R.id.menu_story_content_preview_style).setVisible(false);
         }
 
         if (fs.isGlobalShared() ||
@@ -231,6 +233,17 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
             menu.findItem(R.id.menu_save_search).setVisible(true);
         } else {
             menu.findItem(R.id.menu_save_search).setVisible(false);
+        }
+
+        StoryContentPreviewStyle previewStyle = PrefsUtils.getStoryContentPreviewStyle(this);
+        if (previewStyle == StoryContentPreviewStyle.NONE) {
+            menu.findItem(R.id.menu_story_content_preview_none).setChecked(true);
+        } else if (previewStyle == StoryContentPreviewStyle.SMALL) {
+            menu.findItem(R.id.menu_story_content_preview_small).setChecked(true);
+        } else if (previewStyle == StoryContentPreviewStyle.MEDIUM) {
+            menu.findItem(R.id.menu_story_content_preview_medium).setChecked(true);
+        } else if (previewStyle == StoryContentPreviewStyle.LARGE) {
+            menu.findItem(R.id.menu_story_content_preview_large).setChecked(true);
         }
 
 		return true;
@@ -290,14 +303,25 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
         } else if (item.getItemId() == R.id.menu_list_style_grid_c) {
             PrefsUtils.updateStoryListStyle(this, fs, StoryListStyle.GRID_C);
             itemSetFragment.updateStyle();
-        }
-        if (item.getItemId() == R.id.menu_save_search) {
+        } else if (item.getItemId() == R.id.menu_save_search) {
             String feedId = getSaveSearchFeedId();
             if (feedId != null) {
                 String query = binding.itemlistSearchQuery.getText().toString();
                 SaveSearchFragment frag = SaveSearchFragment.newInstance(feedId, query);
                 frag.show(getSupportFragmentManager(), SaveSearchFragment.class.getName());
             }
+        } else if (item.getItemId() == R.id.menu_story_content_preview_none) {
+		    PrefsUtils.setStoryContentPreviewStyle(this, StoryContentPreviewStyle.NONE);
+		    itemSetFragment.notifyContentPrefsChanged();
+        } else if (item.getItemId() == R.id.menu_story_content_preview_small) {
+            PrefsUtils.setStoryContentPreviewStyle(this, StoryContentPreviewStyle.SMALL);
+            itemSetFragment.notifyContentPrefsChanged();
+        } else if (item.getItemId() == R.id.menu_story_content_preview_medium) {
+            PrefsUtils.setStoryContentPreviewStyle(this, StoryContentPreviewStyle.MEDIUM);
+            itemSetFragment.notifyContentPrefsChanged();
+        } else if (item.getItemId() == R.id.menu_story_content_preview_large) {
+            PrefsUtils.setStoryContentPreviewStyle(this, StoryContentPreviewStyle.LARGE);
+            itemSetFragment.notifyContentPrefsChanged();
         }
 	
 		return false;
