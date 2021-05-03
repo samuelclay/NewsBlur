@@ -12,9 +12,12 @@ class Errors(View):
         }
         chart_name = "errors"
         chart_type = "counter"
-
+        formatted_data = {}
+        for k, v in data.items():
+            formatted_data[k] = f'feed_success {v}'
+        
         context = {
-            "data": data,
+            "data": formatted_data,
             "chart_name": chart_name,
             "chart_type": chart_type,
         }
