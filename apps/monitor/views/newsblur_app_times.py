@@ -20,7 +20,7 @@ class AppTimes(View):
             "chart_name": chart_name,
             "chart_type": chart_type,
         }
-        return render(request, 'monitor/prometheus_dynamic_data.html', context, content_type="text/plain")
+        return render(request, 'monitor/prometheus_data.html', context, content_type="text/plain")
     
     @property
     def stats(self):
