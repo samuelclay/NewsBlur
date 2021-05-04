@@ -15,7 +15,7 @@
     "editable": true,
     "gnetId": null,
     "graphTooltip": 0,
-    "id": 3,
+    "id": 2,
     "links": [],
     "panels": [
         {
@@ -23,7 +23,7 @@
             "bars": false,
             "dashLength": 10,
             "dashes": false,
-            "datasource": null,
+            "datasource": "Prometheus",
             "fieldConfig": {
                 "defaults": {},
                 "overrides": []
@@ -68,11 +68,14 @@
                     "expr": "users",
                     "interval": "",
                     "legendFormat": "{{ category }}",
+                    "queryType": "randomWalk",
                     "refId": "A"
                 }
             ],
             "thresholds": [],
+            "timeFrom": null,
             "timeRegions": [],
+            "timeShift": null,
             "title": "NewsBlur Users",
             "tooltip": {
                 "shared": true,
@@ -126,10 +129,10 @@
         },
         {
             "aliasColors": {},
-            "bars": true,
+            "bars": false,
             "dashLength": 10,
             "dashes": false,
-            "datasource": null,
+            "datasource": "Prometheus",
             "description": "Page Loads Per App Server",
             "fieldConfig": {
                 "defaults": {},
@@ -173,10 +176,9 @@
                 {
                     "exemplar": true,
                     "expr": "app_servers",
-                    "format": "time_series",
-                    "instant": false,
                     "interval": "",
-                    "legendFormat": "{{app_server}}",
+                    "legendFormat": "{{ app_server }}",
+                    "queryType": "randomWalk",
                     "refId": "A"
                 }
             ],
@@ -240,7 +242,7 @@
             "bars": false,
             "dashLength": 10,
             "dashes": false,
-            "datasource": null,
+            "datasource": "Prometheus",
             "fieldConfig": {
                 "defaults": {},
                 "overrides": []
@@ -285,6 +287,7 @@
                     "expr": "app_times",
                     "interval": "",
                     "legendFormat": "{{app_server}}",
+                    "queryType": "randomWalk",
                     "refId": "A"
                 }
             ],
@@ -348,7 +351,7 @@
             "bars": false,
             "dashLength": 10,
             "dashes": false,
-            "datasource": null,
+            "datasource": "Prometheus",
             "fieldConfig": {
                 "defaults": {},
                 "overrides": []
@@ -393,7 +396,8 @@
                     "expr": "classifiers",
                     "interval": "",
                     "legendFormat": "{{classifier}}",
-                    "refId": "Classifiers"
+                    "queryType": "randomWalk",
+                    "refId": "A"
                 }
             ],
             "thresholds": [],
@@ -442,7 +446,7 @@
             "bars": false,
             "dashLength": 10,
             "dashes": false,
-            "datasource": null,
+            "datasource": "Prometheus",
             "description": "",
             "fieldConfig": {
                 "defaults": {},
@@ -488,6 +492,7 @@
                     "expr": "db_times",
                     "interval": "",
                     "legendFormat": "{{db}}",
+                    "queryType": "randomWalk",
                     "refId": "A"
                 }
             ],
@@ -537,7 +542,7 @@
             "bars": false,
             "dashLength": 10,
             "dashes": false,
-            "datasource": null,
+            "datasource": "Prometheus",
             "fieldConfig": {
                 "defaults": {},
                 "overrides": []
@@ -581,7 +586,8 @@
                     "exemplar": true,
                     "expr": "feed_success",
                     "interval": "",
-                    "legendFormat": "feed_success",
+                    "legendFormat": "feed success",
+                    "queryType": "randomWalk",
                     "refId": "A"
                 }
             ],
@@ -631,7 +637,7 @@
             "bars": false,
             "dashLength": 10,
             "dashes": false,
-            "datasource": null,
+            "datasource": "Prometheus",
             "fieldConfig": {
                 "defaults": {},
                 "overrides": []
@@ -675,7 +681,8 @@
                     "exemplar": true,
                     "expr": "feed_counts",
                     "interval": "",
-                    "legendFormat": "{{ category }}",
+                    "legendFormat": "{{category}}",
+                    "queryType": "randomWalk",
                     "refId": "A"
                 }
             ],
@@ -725,7 +732,7 @@
             "bars": false,
             "dashLength": 10,
             "dashes": false,
-            "datasource": null,
+            "datasource": "Prometheus",
             "fieldConfig": {
                 "defaults": {},
                 "overrides": []
@@ -769,7 +776,8 @@
                     "exemplar": true,
                     "expr": "feeds",
                     "interval": "",
-                    "legendFormat": "{{ category }}",
+                    "legendFormat": "{{category}}",
+                    "queryType": "randomWalk",
                     "refId": "A"
                 }
             ],
@@ -819,7 +827,7 @@
             "bars": false,
             "dashLength": 10,
             "dashes": false,
-            "datasource": null,
+            "datasource": "Prometheus",
             "fieldConfig": {
                 "defaults": {},
                 "overrides": []
@@ -863,12 +871,15 @@
                     "exemplar": true,
                     "expr": "load_times",
                     "interval": "",
-                    "legendFormat": "{{ category }}",
+                    "legendFormat": "{{category}}",
+                    "queryType": "randomWalk",
                     "refId": "A"
                 }
             ],
             "thresholds": [],
+            "timeFrom": null,
             "timeRegions": [],
+            "timeShift": null,
             "title": "NewsBlur Load Times",
             "tooltip": {
                 "shared": true,
@@ -911,7 +922,7 @@
             "bars": false,
             "dashLength": 10,
             "dashes": false,
-            "datasource": null,
+            "datasource": "Prometheus",
             "fieldConfig": {
                 "defaults": {},
                 "overrides": []
@@ -956,11 +967,14 @@
                     "expr": "stories",
                     "interval": "",
                     "legendFormat": "{{ category }}",
+                    "queryType": "randomWalk",
                     "refId": "A"
                 }
             ],
             "thresholds": [],
+            "timeFrom": null,
             "timeRegions": [],
+            "timeShift": null,
             "title": "NewsBlur Stories",
             "tooltip": {
                 "shared": true,
@@ -1003,7 +1017,7 @@
             "bars": false,
             "dashLength": 10,
             "dashes": false,
-            "datasource": null,
+            "datasource": "Prometheus",
             "fieldConfig": {
                 "defaults": {},
                 "overrides": []
@@ -1048,11 +1062,14 @@
                     "expr": "task_codes",
                     "interval": "",
                     "legendFormat": "{{ category }}",
+                    "queryType": "randomWalk",
                     "refId": "A"
                 }
             ],
             "thresholds": [],
+            "timeFrom": null,
             "timeRegions": [],
+            "timeShift": null,
             "title": "NewsBlur Task Codes",
             "tooltip": {
                 "shared": true,
@@ -1095,7 +1112,7 @@
             "bars": false,
             "dashLength": 10,
             "dashes": false,
-            "datasource": null,
+            "datasource": "Prometheus",
             "fieldConfig": {
                 "defaults": {},
                 "overrides": []
@@ -1139,12 +1156,15 @@
                     "exemplar": true,
                     "expr": "task_pipeline",
                     "interval": "",
-                    "legendFormat": "{{ category }}",
+                    "legendFormat": "{{category}}",
+                    "queryType": "randomWalk",
                     "refId": "A"
                 }
             ],
             "thresholds": [],
+            "timeFrom": null,
             "timeRegions": [],
+            "timeShift": null,
             "title": "NewsBlur Task Pipeline",
             "tooltip": {
                 "shared": true,
@@ -1187,7 +1207,7 @@
             "bars": false,
             "dashLength": 10,
             "dashes": false,
-            "datasource": null,
+            "datasource": "Prometheus",
             "description": "task_servers",
             "fieldConfig": {
                 "defaults": {},
@@ -1232,12 +1252,15 @@
                     "exemplar": true,
                     "expr": "task_servers",
                     "interval": "",
-                    "legendFormat": "{{ server }}",
+                    "legendFormat": "{{server}}",
+                    "queryType": "randomWalk",
                     "refId": "A"
                 }
             ],
             "thresholds": [],
+            "timeFrom": null,
             "timeRegions": [],
+            "timeShift": null,
             "title": "NewsBlur Server Fetches",
             "tooltip": {
                 "shared": true,
@@ -1280,7 +1303,7 @@
             "bars": false,
             "dashLength": 10,
             "dashes": false,
-            "datasource": null,
+            "datasource": "Prometheus",
             "fieldConfig": {
                 "defaults": {},
                 "overrides": []
@@ -1324,12 +1347,15 @@
                     "exemplar": true,
                     "expr": "task_times",
                     "interval": "",
-                    "legendFormat": "{{ category }}",
+                    "legendFormat": "{{category}}",
+                    "queryType": "randomWalk",
                     "refId": "A"
                 }
             ],
             "thresholds": [],
+            "timeFrom": null,
             "timeRegions": [],
+            "timeShift": null,
             "title": "NewsBlur Task Server Times",
             "tooltip": {
                 "shared": true,
@@ -1372,7 +1398,7 @@
             "bars": false,
             "dashLength": 10,
             "dashes": false,
-            "datasource": null,
+            "datasource": "Prometheus",
             "fieldConfig": {
                 "defaults": {},
                 "overrides": []
@@ -1409,14 +1435,15 @@
             "renderer": "flot",
             "seriesOverrides": [],
             "spaceLength": 10,
-            "stack": false,
+            "stack": true,
             "steppedLine": false,
             "targets": [
                 {
                     "exemplar": true,
                     "expr": "updates",
                     "interval": "",
-                    "legendFormat": "{{ category }}",
+                    "legendFormat": "{{category}}",
+                    "queryType": "randomWalk",
                     "refId": "A"
                 }
             ],
@@ -1470,12 +1497,12 @@
         "list": []
     },
     "time": {
-        "from": "now-30m",
+        "from": "now-24h",
         "to": "now"
     },
     "timepicker": {},
     "timezone": "",
     "title": "NewsBlur",
     "uid": "T86VjXrGk",
-    "version": 42
+    "version": 3
 }
