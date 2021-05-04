@@ -6,9 +6,19 @@ from apps.rss_feeds.models import MStory, MStarredStory
 class Stories(View):
 
     def get(self, request):
+        stories_count = MStatistics.get('munin:stories_count')
+        if not stories_count:
+            stories_count = MStory.objects.all().count()
+            MStatistics.set('munin:stories_count', stories_count, 60*60*12)
+
+        starred_stories_count = MStatistics.get('munin:starred_stories_count')
+        if not starred_stories_count:
+            starred_stories_count = MStarredStory.objects.all().count()
+            MStatistics.set('munin:starred_stories_count', starred_stories_count, 60*60*12)
+
         data = {
-            'stories': MStory.objects.count(),
-            'starred_stories': MStarredStory.objects.count(),
+            'stories': stories_count,
+            'starred_stories': starred_stories_count,
         }
         chart_name = "stories"
         chart_type = "counter"
