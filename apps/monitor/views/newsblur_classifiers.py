@@ -7,10 +7,10 @@ class Classifiers(View):
 
     def get(self, request):
         data = {
-            'feeds': MClassifierFeed.objects.count(),
-            'authors': MClassifierAuthor.objects.count(),
-            'tags': MClassifierTag.objects.count(),
-            'titles': MClassifierTitle.objects.count(),
+            'feeds': MClassifierFeed.objects._collection.count(),
+            'authors': MClassifierAuthor.objects._collection.count(),
+            'tags': MClassifierTag.objects._collection.count(),
+            'titles': MClassifierTitle.objects._collection.count(),
         }
 
         chart_name = "classifiers"
