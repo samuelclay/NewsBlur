@@ -8,3 +8,7 @@
       GF_SECURITY_ADMIN_PASSWORD: "{{ grafana_password }}"
     ports:
       - "3000:3000"
+    volumes:
+      - /srv/newsblur/docker/volumes/grafana_data:/var/lib/grafana
+      - /srv/newsblur/docker/grafana/datasources:/etc/grafana/provisioning/datasources/
+      - /srv/newsblur/docker/grafana/dashboards/:/etc/grafana/provisioning/dashboards/
