@@ -1,0 +1,3 @@
+netdata_token: "{{ lookup('ini', 'netdata_token section=netdata file=/srv/secrets-newsblur/configs/netdata.ini') }}"
+netdata_room: "{{ lookup('ini', 'netdata_room section=netdata file=/srv/secrets-newsblur/configs/netdata.ini') }}"
+netdata_url: https://app.netdata.cloud
