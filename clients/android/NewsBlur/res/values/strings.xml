@@ -169,6 +169,8 @@
     <string name="story_content_preview_small">2 lines (small)</string>
     <string name="story_content_preview_medium">4 lines (medium)</string>
     <string name="story_content_preview_large">6 lines (large)</string>
+    <string name="mark_read_on_scroll_disabled">Leave unread</string>
+    <string name="mark_read_on_scroll_enabled">Read on scroll</string>
 
     <string name="menu_sort_by">Sort By</string>
     <string name="menu_sort_by_name">Name</string>
@@ -374,6 +376,7 @@
     <string name="all_stories">All Stories</string>
     <string name="unread_only">Unread Only</string>
     <string name="menu_story_content_preview">Content Preview</string>
+    <string name="menu_mark_read_on_scroll">Mark Read On Scroll</string>
     <string name="menu_read_filter">Read Filter</string>
     <string-array name="default_read_filter_entries">
         <item>@string/all_stories</item>
