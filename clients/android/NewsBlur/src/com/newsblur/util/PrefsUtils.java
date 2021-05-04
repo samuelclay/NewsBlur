@@ -716,6 +716,13 @@ public class PrefsUtils {
         return prefs.getBoolean(PrefConstants.STORIES_MARK_READ_ON_SCROLL, false);
     }
 
+    public static void setMarkReadOnScroll(Context context, boolean value) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        Editor editor = prefs.edit();
+        editor.putBoolean(PrefConstants.STORIES_MARK_READ_ON_SCROLL, value);
+        editor.commit();
+    }
+
     public static boolean isOfflineEnabled(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
         return prefs.getBoolean(PrefConstants.ENABLE_OFFLINE, false);

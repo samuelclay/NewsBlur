@@ -177,6 +177,7 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
             fs.isInfrequent() || 
             fs.isAllRead() ) {
             menu.findItem(R.id.menu_read_filter).setVisible(false);
+            menu.findItem(R.id.menu_mark_read_on_scroll).setVisible(false);
             menu.findItem(R.id.menu_story_content_preview_style).setVisible(false);
         }
 
@@ -244,6 +245,13 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
             menu.findItem(R.id.menu_story_content_preview_medium).setChecked(true);
         } else if (previewStyle == StoryContentPreviewStyle.LARGE) {
             menu.findItem(R.id.menu_story_content_preview_large).setChecked(true);
+        }
+
+        boolean isMarkReadOnScroll = PrefsUtils.isMarkReadOnScroll(this);
+        if (isMarkReadOnScroll) {
+            menu.findItem(R.id.menu_mark_read_on_scroll_enabled).setChecked(true);
+        } else {
+            menu.findItem(R.id.menu_mark_read_on_scroll_disabled).setChecked(true);
         }
 
 		return true;
@@ -322,6 +330,10 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
         } else if (item.getItemId() == R.id.menu_story_content_preview_large) {
             PrefsUtils.setStoryContentPreviewStyle(this, StoryContentPreviewStyle.LARGE);
             itemSetFragment.notifyContentPrefsChanged();
+        } else if (item.getItemId() == R.id.menu_mark_read_on_scroll_disabled) {
+		    PrefsUtils.setMarkReadOnScroll(this, false);
+        } else if (item.getItemId() == R.id.menu_mark_read_on_scroll_enabled) {
+		    PrefsUtils.setMarkReadOnScroll(this, true);
         }
 	
 		return false;
