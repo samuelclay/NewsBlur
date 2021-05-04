@@ -184,3 +184,7 @@ services:
       - 3000:3000
     volumes:
       - ./docker/volumes/grafana_data:/var/lib/grafana
+      - ./docker/grafana/datasources:/etc/grafana/provisioning/datasources/
+      - ./docker/grafana/dashboards/:/etc/grafana/provisioning/dashboards/
+    external_links:
+      - prometheus
