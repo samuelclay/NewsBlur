@@ -19,4 +19,4 @@ sys_packages: [
   'ntp', 
   'htop'
 ]
-grafana_password: "{{ lookup('file', '/srv/secrets-newsblur/keys/grafana_admin_password') }}"
+grafana_password: "{{ lookup('file', '/srv/secrets-newsblur/keys/grafana_admin_password')|default('pass') }}"
