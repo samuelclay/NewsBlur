@@ -831,6 +831,7 @@ class MSocialSubscription(mongo.Document):
         'collection': 'social_subscription',
         'indexes': [('user_id', 'subscription_user_id')],
         'allow_inheritance': False,
+        'strict': False,
     }
 
     def __str__(self):
