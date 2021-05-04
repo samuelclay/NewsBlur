@@ -2,7 +2,9 @@ from django.views import View
 from django.shortcuts import render
 from apps.rss_feeds.models import MStory, MStarredStory
 from apps.rss_feeds.models import MStory, MStarredStory
-    
+from apps.statistics.models import MStatistics
+
+
 class Stories(View):
 
     def get(self, request):
