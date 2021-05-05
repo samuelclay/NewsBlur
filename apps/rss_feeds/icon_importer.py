@@ -201,6 +201,7 @@ class IconImporter(object):
     def fetch_image_from_page_data(self):
         image = None
         image_file = None
+        content = None
         if self.page_data:
             content = self.page_data
         elif settings.BACKED_BY_AWS.get('pages_on_node'):
@@ -223,7 +224,7 @@ class IconImporter(object):
             try:
                 content = gz.read()
             except IOError:
-                content = None
+                pass
         else:
             content = MFeedPage.get_data(feed_id=self.feed.pk)
         url = self._url_from_html(content)
