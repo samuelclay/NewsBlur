@@ -310,12 +310,16 @@ class PageImporter(object):
             domain,
             self.feed.pk,
         )
+        compressed_html = zlib.compress(html.encode('utf-8'))
         response = requests.post(url, files={
-            'original_page': zlib.compress(html.encode('utf-8')),
+            'original_page': compressed_html,
             # 'original_page': html,
         })
         if response.status_code == 200:
             return True
+        else:
+            logging.debug('   ---> [%-30s] ~FRFailed to save page to node: %s (%s bytes)' % (self.feed.log_title[:30], response.status_code, len(compressed_html)))
+
     
     def save_page_s3(self, html):
         k = Key(settings.S3_CONN.get_bucket(settings.S3_PAGES_BUCKET_NAME))
