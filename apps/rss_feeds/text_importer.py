@@ -13,6 +13,7 @@ from OpenSSL.SSL import Error as OpenSSLError
 from pyasn1.error import PyAsn1Error
 from django.utils.encoding import smart_str
 from django.conf import settings
+from django.contrib.sites.models import Site
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin
  
@@ -224,11 +225,8 @@ class TextImporter:
             mercury_api_key = getattr(settings, 'MERCURY_PARSER_API_KEY', 'abc123')
             headers["content-type"] = "application/json"
             headers["x-api-key"] = mercury_api_key
-            if settings.DEBUG:
-                NEWSBLUR_URL = settings.NEWSBLUR_URL
-                url = f"http://{NEWSBLUR_URL}:8008/rss_feeds/original_text_fetcher?{url}=%s"
-            else:
-                url = f"https://www.newsblur.com/rss_feeds/original_text_fetcher?url={url}"
+            domain = Site.objects.get_current().domain
+            url = f"https://{domain}/rss_feeds/original_text_fetcher?url={url}"
             
         try:
             r = requests.get(url, headers=headers, timeout=15)
