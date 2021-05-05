@@ -880,7 +880,7 @@ def load_feed_page(request, feed_id):
                 page_response = None
             if page_response and page_response.status_code == 200:
                 response = HttpResponse(page_response.content, content_type="text/html; charset=utf-8")
-                response['Content-Encoding'] = 'gzip'
+                response['Content-Encoding'] = 'deflate'
                 response['Last-Modified'] = page_response.headers.get('Last-modified')
                 response['Etag'] = page_response.headers.get('Etag')
                 response['Content-Length'] = str(len(page_response.content))
