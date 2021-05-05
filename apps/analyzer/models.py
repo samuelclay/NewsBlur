@@ -197,7 +197,7 @@ class MUserFeedRecommendation(models.Model):
             # need a labelEncoder for each feature
             lbe = load(open( feat + '-' + 'lbe.pkl', 'rb'))
             input_df[feat] = lbe.transform(input_df[feat])
-            vocabs[feat] = len(lbe.classes_))
+            vocabs[feat] = len(lbe.classes_)
         
         mms = MinMaxScaler(feature_range=(0,1))
         # shouldn't need to save and load a ranged numerical features model like minmaxscaler
