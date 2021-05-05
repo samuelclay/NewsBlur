@@ -18,6 +18,8 @@ from socket import error as SocketError
 from boto.s3.key import Key
 from io import BytesIO
 from django.conf import settings
+from django.http import HttpResponse
+from django.contrib.sites.models import Site
 from apps.rss_feeds.models import MFeedPage, MFeedIcon
 from utils.facebook_fetcher import FacebookFetcher
 from utils import log as logging
@@ -201,6 +203,18 @@ class IconImporter(object):
         image_file = None
         if self.page_data:
             content = self.page_data
+        elif settings.BACKED_BY_AWS.get('pages_on_node'):
+            domain = Site.objects.get_current().domain
+            url = "https://%s/original_page/%s" % (
+                domain,
+                self.feed.pk,
+            )
+            try:
+                page_response = requests.get(url)
+                if page_response.status_code == 200:
+                    content = page_response.content
+            except requests.ConnectionError:
+                pass
         elif settings.BACKED_BY_AWS.get('pages_on_s3') and self.feed.s3_page:
             key = settings.S3_CONN.get_bucket(settings.S3_PAGES_BUCKET_NAME).get_key(self.feed.s3_pages_key)
             compressed_content = key.get_contents_as_string()
