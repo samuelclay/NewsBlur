@@ -16,6 +16,7 @@ certbot.conf
 .vscode/*
 .env
 task_env.py
+app_env.py
 data/
 config/certificates
 **/*.xcuserstate
