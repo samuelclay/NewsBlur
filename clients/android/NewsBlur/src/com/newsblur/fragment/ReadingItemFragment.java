@@ -200,6 +200,7 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
         binding.readingWebview.activity = activity;
 
 		setupItemMetadata();
+		updateTrainButton();
 		updateShareButton();
 	    updateSaveButton();
         setupItemCommentsAndShares();
@@ -212,24 +213,10 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        binding.storyContextMenuButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onClickMenuButton();
-            }
-        });
-        itemCommentBinding.saveStoryButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                clickSave();
-            }
-        });
-        itemCommentBinding.shareStoryButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                clickShare();
-            }
-        });
+        binding.storyContextMenuButton.setOnClickListener(v -> onClickMenuButton());
+        itemCommentBinding.trainStoryButton.setOnClickListener(v -> clickTrain());
+        itemCommentBinding.saveStoryButton.setOnClickListener(v -> clickSave());
+        itemCommentBinding.shareStoryButton.setOnClickListener(v -> clickShare());
 	}
 
     @Override
@@ -367,8 +354,7 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
             return true;
         } else if (item.getItemId() == R.id.menu_intel) {
             if (story.feedId.equals("0")) return true; // cannot train on feedless stories
-            StoryIntelTrainerFragment intelFrag = StoryIntelTrainerFragment.newInstance(story, fs);
-            intelFrag.show(getActivity().getSupportFragmentManager(), StoryIntelTrainerFragment.class.getName());
+            clickTrain();
             return true;
         } else if(item.getItemId() == R.id.menu_go_to_feed){
             FeedItemsList.startActivity(getContext(), fs,
@@ -377,6 +363,15 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
         } else {
 			return super.onOptionsItemSelected(item);
 		}
+    }
+
+    private void clickTrain() {
+	    StoryIntelTrainerFragment intelFrag = StoryIntelTrainerFragment.newInstance(story, fs);
+	    intelFrag.show(getActivity().getSupportFragmentManager(), StoryIntelTrainerFragment.class.getName());
+    }
+
+    private void updateTrainButton() {
+	    itemCommentBinding.trainStoryButton.setVisibility(story.feedId.equals("0") ? View.GONE: View.VISIBLE);
     }
 
     private void clickSave() {

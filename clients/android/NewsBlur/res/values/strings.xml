@@ -61,14 +61,15 @@
     <string name="folder_name_save">Rename folder</string>
 
 	<string name="save_this">Save</string>
-	<string name="unsave_this">Remove from saved</string>
+	<string name="unsave_this">Unsave</string>
+    <string name="train_this">Train</string>
 
-    <string name="overlay_next">NEXT</string>
-    <string name="overlay_done">DONE</string>
+    <string name="overlay_next">Next</string>
+    <string name="overlay_done">Done</string>
     <string name="overlay_count_toast_N">%d unread stories</string>
     <string name="overlay_count_toast_1">1 unread story</string>
-    <string name="overlay_text">TEXT</string>
-    <string name="overlay_story">STORY</string>
+    <string name="overlay_text">Text</string>
+    <string name="overlay_story">Story</string>
     <string name="orig_text_failed">Sorry, the story\'s text could not be extracted.</string>
 
     <string name="state_all">All</string>
