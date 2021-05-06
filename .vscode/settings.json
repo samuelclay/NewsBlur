@@ -12,5 +12,8 @@
         "clients": true,
         "media/android": true,
         "media/ios": true,
+        "ansible/playbooks/roles": true,
+        "ansible/playbooks/env_vars": true,
+        "ansible/playbooks/group_vars": true,
     },
 }

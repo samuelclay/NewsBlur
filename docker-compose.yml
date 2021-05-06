@@ -4,7 +4,7 @@ services:
   newsblur_web:
     hostname: nb.com
     container_name: newsblur_web
-    image: newsblur/newsblur_python3:latest
+    image: newsblur/newsblur_${NEWSBLUR_BASE:-python3}:latest
     environment: 
       - DOCKERBUILD=True
     stdin_open: true

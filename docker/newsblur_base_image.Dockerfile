@@ -1,4 +1,4 @@
-FROM       python:3.9-slim
+FROM      python:3.8-slim
 WORKDIR   /srv/newsblur
 ENV       PYTHONPATH=/srv/newsblur
 RUN       set -ex \

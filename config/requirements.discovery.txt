@@ -1,0 +1,5 @@
+deepctr[cpu]==0.8.5
+keras==2.4.3
+pandas==1.2.4
+sklearn==0.0
+tensorflow==2.4.0

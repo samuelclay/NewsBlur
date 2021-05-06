@@ -21,6 +21,12 @@ nb:
 	- docker-compose exec newsblur_web ./manage.py migrate
 	- docker-compose exec newsblur_web ./manage.py loaddata config/fixtures/bootstrap.json
 
+nbdiscovery:
+	- CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker-compose down
+	- CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} NEWSBLUR_BASE=discovery docker-compose up -d --build --remove-orphans
+	- docker-compose exec newsblur_web ./manage.py migrate
+	- docker-compose exec newsblur_web ./manage.py loaddata config/fixtures/bootstrap.json
+
 shell:
 	- - CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker-compose exec newsblur_web ./manage.py shell_plus
 bash:
@@ -83,14 +89,18 @@ build_node:
 	- docker image build . --file=docker/node/Dockerfile --tag=newsblur/newsblur_node
 build_monitor: 
 	- docker image build . --file=docker/monitor/Dockerfile --tag=newsblur/newsblur_monitor
-build_images: build_web build_node build_monitor
+build_discovery: 
+	- docker image build . --file=docker/discovery/Dockerfile --tag=newsblur/newsblur_discovery
+build_images: build_web build_node build_monitor build_discovery
 push_web: build_web
 	- docker push newsblur/newsblur_python3
 push_node: build_node
 	- docker push newsblur/newsblur_node
 push_monitor: build_monitor
 	- docker push newsblur/newsblur_monitor
-push_images: push_web push_node push_monitor
+push_discovery: build_discovery
+	- docker push newsblur/newsblur_discovery
+push_images: push_web push_node push_monitor push_discovery
 push: build_images push_images
 
 # Tasks
