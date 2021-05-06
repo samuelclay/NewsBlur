@@ -33,7 +33,7 @@ services:
     environment:
       - NODE_ENV=docker
       - MONGODB_PORT=29019
-    command: node newsblur.js
+    command: node node/newsblur.js
     restart: unless-stopped
     stop_signal: HUP
     depends_on: 
@@ -43,7 +43,7 @@ services:
     ports:
       - 8008:8008
     volumes: 
-      - ${PWD}/node:/srv
+      - ${PWD}/node:/srv/node
   
   imageproxy:
     image: willnorris/imageproxy:latest
