@@ -79,11 +79,11 @@ services:
     environment:
       - POSTGRES_USER=newsblur
       - POSTGRES_PASSWORD=newsblur
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U newsblur"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+    # healthcheck:
+    #   test: ["CMD-SHELL", "pg_isready -U newsblur"]
+    #   interval: 10s
+    #   timeout: 5s
+    #   retries: 5
     ports:
       - 5434:5432
     volumes:
