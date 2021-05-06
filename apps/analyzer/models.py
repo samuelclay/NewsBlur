@@ -100,7 +100,7 @@ import sys
 # This class is a place to store the current feeds in the model
 # We need to insure we recommend feeds based on ones already in the model,
 # so we should store the current ones and update the list when retrained
-class MCurrentModelFeeds(models.Document):
+class MCurrentModelFeeds(models.Model):
     current_feeds = mongo.ListField(mongo.IntField())
     
     def init_feeds(self):
