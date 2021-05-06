@@ -100,7 +100,7 @@ import sys
 # This class is a place to store the current feeds in the model
 # We need to insure we recommend feeds based on ones already in the model,
 # so we should store the current ones and update the list when retrained
-class MCurrentModelFeeds(models.Model):
+class MCurrentModelFeeds(mongo.Document):
     current_feeds = mongo.ListField(mongo.IntField())
     
     def init_feeds(self):
@@ -112,12 +112,22 @@ class MCurrentModelFeeds(models.Model):
         assert len(feeds) > 0
         self.current_feeds = feeds
         
-class MUserFeedRecommendation(models.Model):
+class MUserFeedRecommendation(mongo.Document):
     user_id = mongo.IntField()
     feed_recommendations = mongo.ListField(mongo.IntField())
     followed_feeds = mongo.ListField(mongo.IntField())
     # nice check for when a bunch of users have new followed feeds not in model
     has_outside_feeds = models.BooleanField(default=False, null=True, blank=True)
+    
+    meta = {
+        'collection': 'classifier_feedrecommendations',
+        'indexes': [('user_id'), 'user_id'],
+        'allow_inheritance': False,
+    }
+    
+    def __str__(self):
+        user = User.objects.get(pk=self.user_id)
+        return "%s - %s/%s: (%s) %s" % (user, self.feed_recommendations, self.followed_feeds, self.has_outside_feeds)
     
     # quick function to set this
     def check_outside_feeds(self):
