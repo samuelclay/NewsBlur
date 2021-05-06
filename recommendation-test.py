@@ -22,8 +22,11 @@ from constants import (
     TARGET
 
 )
-
-
+from apps.reader.models import UserSubscription
+from apps.analyzer.models import MCurrentModelFeeds
+from apps.rss_feeds.models import Feed
+from apps.social.models import MSharedStory
+from apps.profile.models import Profile
 # In[ ]:
 
 
