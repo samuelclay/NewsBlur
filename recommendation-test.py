@@ -22,6 +22,8 @@ from constants import (
     TARGET
 
 )
+import mongoengine as mongo
+from django.db import models
 from apps.reader.models import UserSubscription
 from apps.analyzer.models import MCurrentModelFeeds
 from apps.rss_feeds.models import Feed
