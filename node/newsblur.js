@@ -19,11 +19,10 @@
   if (envresult.error) {
     // throw envresult.error
     envresult = require('dotenv').config();
-    if (envresult.error) {
-      throw envresult.error;
-    }
   }
 
+  // if envresult.error
+  //   throw envresult.error
   ENV_DEV = process.env.NODE_ENV === 'development';
 
   ENV_PROD = process.env.NODE_ENV === 'production';
