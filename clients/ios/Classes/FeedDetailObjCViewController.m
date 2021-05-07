@@ -2109,6 +2109,10 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     [self.appDelegate hidePopoverAnimated:YES];
     
     void (^pop)(void) = ^{
+        if (!self.isPhoneOrCompact) {
+            [self reloadStories];
+        }
+        [self.appDelegate.feedsViewController refreshFeedList];
         [self.appDelegate showFeedsListAnimated:YES];
 //        if (!self.isPhoneOrCompact) {
 //            [self.appDelegate.feedsNavigationController popToRootViewControllerAnimated:YES];
