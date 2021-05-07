@@ -2241,6 +2241,30 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         [viewController addSegmentedControlWithTitles:titles values:values preferenceKey:preferenceKey selectionShouldDismiss:YES handler:^(NSUInteger selectedIndex) {
             [self.appDelegate.detailViewController updateLayoutWithReload:YES];
         }];
+        
+        preferenceKey = @"split_behavior";
+        titles = @[@"Auto", @"Tile", @"Displace", @"Overlay"];
+        values = @[@"auto", @"tile", @"displace", @"overlay"];
+        
+        [viewController addSegmentedControlWithTitles:titles values:values preferenceKey:preferenceKey selectionShouldDismiss:YES handler:^(NSUInteger selectedIndex) {
+            NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
+            NSString *behavior = [preferences stringForKey:@"split_behavior"];
+            [UIView animateWithDuration:0.5 animations:^{
+                if ([behavior isEqualToString:@"tile"]) {
+                    self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorTile;
+                    self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeTwoBesideSecondary;
+                } else if ([behavior isEqualToString:@"displace"]) {
+                    self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorDisplace;
+                    self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeTwoDisplaceSecondary;
+                } else if ([behavior isEqualToString:@"overlay"]) {
+                    self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorOverlay;
+                    self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeTwoOverSecondary;
+                } else {
+                    self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorAutomatic;
+                    self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeAutomatic;
+                }
+            }];
+        }];
     }
     
     [viewController addSegmentedControlWithTitles:@[@"Newest first", @"Oldest"] selectIndex:[appDelegate.storiesCollection.activeOrder isEqualToString:@"newest"] ? 0 : 1 selectionShouldDismiss:YES handler:^(NSUInteger selectedIndex) {
