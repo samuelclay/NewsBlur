@@ -541,18 +541,16 @@ list_metrics_page_limit = 500
 
 #################################### SMTP / Emailing #####################
 [smtp]
-enabled = false
-host = localhost:25
-user =
+enabled = true
+user: prometheus@alerts.newsblur.com
+
+host = {{ smtp_host }}
+user = {{ smtp_user }}
 # If the password contains # or ; you have to wrap it with triple quotes. Ex """#password;"""
-password =
-cert_file =
-key_file =
-skip_verify = false
-from_address = admin@grafana.localhost
+password = {{ smtp_password }}
+skip_verify = true
+from_address = {{ from_address }}
 from_name = Grafana
-ehlo_identity =
-startTLS_policy =
 
 [emails]
 welcome_email_on_sign_up = false
