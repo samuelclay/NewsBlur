@@ -1076,6 +1076,18 @@
         return;
     }
     
+    NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
+    NSString *behavior = [preferences stringForKey:@"split_behavior"];
+    if ([behavior isEqualToString:@"tile"]) {
+        self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorTile;
+    } else if ([behavior isEqualToString:@"displace"]) {
+        self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorDisplace;
+    } else if ([behavior isEqualToString:@"overlay"]) {
+        self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorOverlay;
+    } else {
+        self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorAutomatic;
+    }
+    
     self.splitViewController.showsSecondaryOnlyButton = YES;
     
     self.feedsNavigationController = (UINavigationController *)splitChildren[0];
