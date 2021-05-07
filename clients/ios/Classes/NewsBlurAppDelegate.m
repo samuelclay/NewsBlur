@@ -2261,7 +2261,7 @@
     if (self.splitViewController.isCollapsed) {
         [self.feedsNavigationController popToRootViewControllerAnimated:YES];
     } else {
-        [self.splitViewController showColumn:UISplitViewControllerColumnSupplementary];
+        [self.splitViewController showColumn:UISplitViewControllerColumnPrimary];
     }
 }
 
