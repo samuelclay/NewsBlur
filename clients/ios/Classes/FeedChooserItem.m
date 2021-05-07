@@ -124,7 +124,7 @@
             {
                 componentsFormatter = [NSDateComponentsFormatter new];
                 
-                componentsFormatter.unitsStyle = NSDateFormatterLongStyle;
+                componentsFormatter.unitsStyle = NSDateComponentsFormatterUnitsStyleFull;
                 componentsFormatter.maximumUnitCount = 1;
                 componentsFormatter.zeroFormattingBehavior = NSDateComponentsFormatterZeroFormattingBehaviorDropAll;
             }
