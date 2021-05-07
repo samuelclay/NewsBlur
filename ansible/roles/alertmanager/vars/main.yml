@@ -1,0 +1,6 @@
+alert_receiver_email: "{{ lookup('ini', 'alert_receiver_email section=alertmanager file=/srv/secrets-newsblur/configs/grafana.ini') }}"
+from_email: "{{ lookup('ini', 'from_email section=alertmanager file=/srv/secrets-newsblur/configs/grafana.ini') }}"
+smarthost: "{{ lookup('ini', 'smarthost section=alertmanager file=/srv/secrets-newsblur/configs/grafana.ini') }}"
+auth_username: "{{ lookup('ini', 'auth_username section=alertmanager file=/srv/secrets-newsblur/configs/grafana.ini') }}"
+auth_identity: "{{ lookup('ini', 'auth_identity section=alertmanager file=/srv/secrets-newsblur/configs/grafana.ini') }}"
+auth_password: "{{ lookup('ini', 'auth_password section=alertmanager file=/srv/secrets-newsblur/configs/grafana.ini') }}"
