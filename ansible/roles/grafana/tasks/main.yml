@@ -1,4 +1,9 @@
 ---
+- name: Template grafana config
+  template:
+    src: /srv/newsblur/docker/grafana/grafana.ini.j2
+    dest: /srv/newsblur/docker/grafana/grafana.ini
+
 - name: Start grafana container
   become: yes
   docker_container:
@@ -9,6 +14,7 @@
     ports:
       - "3000:3000"
     volumes:
+      - /srv/newsblur/docker/grafana/grafana.ini:/etc/grafana/grafana.ini
       - /srv/newsblur/docker/volumes/grafana_data:/var/lib/grafana
       - /srv/newsblur/docker/grafana/datasources:/etc/grafana/provisioning/datasources/
       - /srv/newsblur/docker/grafana/dashboards/:/etc/grafana/provisioning/dashboards/
