@@ -152,20 +152,33 @@ services:
       - ./docker/haproxy/haproxy.docker-compose.cfg:/usr/local/etc/haproxy/haproxy.cfg
       - ${PWD}:/srv/newsblur
   
-  # prometheus:
-  #   container_name: prometheus
-  #   image: prom/prometheus:0.18.0
-  #   ports:
-  #     - 9090:9090
-  #   command: '-config.file=/etc/prometheus/prometheus.yml'
-  #   volumes:
-  #     - ./docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
-  #     - ./docker/volumes/prometheus_data:/prometheus
-  #   depends_on:
-  #     - node-exporter
-  #     - haproxy
-  #   external_links:
-  #     - haproxy
+  prometheus:
+    container_name: prometheus
+    image: prom/prometheus
+    ports:
+      - 9090:9090
+    command: '--config.file=/etc/prometheus/prometheus.yml'
+    volumes:
+      - ./docker/prometheus/prometheus.docker.yml:/etc/prometheus/prometheus.yml
+      - ./docker/prometheus/prometheus_rules.yml:/etc/prometheus/prometheus_rules.yml
+      - ./docker/volumes/prometheus_data:/prometheus
+    depends_on:
+      - node-exporter
+      - haproxy
+    external_links:
+      - haproxy
+      - alertmanager
+
+  alertmanager:
+    container_name: alertmanager
+    image: prom/alertmanager
+    privileged: true
+    volumes:
+          - ./docker/alertmanager/alertmanager.docker.yml:/alertmanager.yml
+    command:
+        - '--config.file=/alertmanager.yml'
+    ports:
+        - '9093:9093'
 
   # node-exporter:
   #   container_name: node-exporter
