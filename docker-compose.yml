@@ -180,24 +180,24 @@ services:
     ports:
         - '9093:9093'
 
-  # node-exporter:
-  #   container_name: node-exporter
-  #   image: prom/node-exporter
-  #   ports:
-  #     - 9100:9100
+  node-exporter:
+    container_name: node-exporter
+    image: prom/node-exporter
+    ports:
+      - 9100:9100
 
-  # grafana:
-  #   container_name: grafana
-  #   image: grafana/grafana
-  #   environment:
-  #     - GF_SECURITY_ADMIN_PASSWORD=pass
-  #   depends_on:
-  #     - prometheus
-  #   ports:
-  #     - 3000:3000
-  #   volumes:
-  #     - ./docker/volumes/grafana_data:/var/lib/grafana
-  #     - ./docker/grafana/datasources:/etc/grafana/provisioning/datasources/
-  #     - ./docker/grafana/dashboards/:/etc/grafana/provisioning/dashboards/
-  #   external_links:
-  #     - prometheus
+  grafana:
+    container_name: grafana
+    image: grafana/grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=pass
+    depends_on:
+      - prometheus
+    ports:
+      - 3000:3000
+    volumes:
+      - ./docker/volumes/grafana_data:/var/lib/grafana
+      - ./docker/grafana/datasources:/etc/grafana/provisioning/datasources/
+      - ./docker/grafana/dashboards/:/etc/grafana/provisioning/dashboards/
+    external_links:
+      - prometheus
