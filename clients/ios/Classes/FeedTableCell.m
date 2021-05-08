@@ -58,6 +58,11 @@ static UIFont *textFont = nil;
 
 - (void)drawRect:(CGRect)rect {
     ((FeedTableCellView *)cellContent).cell = self;
+    
+    CGFloat indentationOffset = self.indentationLevel * self.indentationWidth;
+    rect.origin.x += indentationOffset;
+    rect.size.width -= indentationOffset;
+    
     cellContent.frame = rect;
     [cellContent setNeedsDisplay];
 }
