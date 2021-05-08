@@ -1315,6 +1315,11 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     cell.isInactive    = isInactive;
     cell.searchQuery   = searchQuery;
     
+    NSArray *folderComponents = [folderName componentsSeparatedByString:@" ▸ "];
+    
+    cell.indentationLevel = [folderName isEqualToString:@"everything"] ? 0 : folderComponents.count;
+    cell.indentationWidth = 28;
+    
     if (newCell) {
         [cell setupGestures];
     }
@@ -1514,6 +1519,11 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     CGRect rect = CGRectMake(0.0, 0.0, tableView.frame.size.width, height + font.pointSize*2);
     FolderTitleView *folderTitle = [[FolderTitleView alloc] initWithFrame:rect];
     folderTitle.section = (int)section;
+    
+    NSString *folderName = appDelegate.dictFoldersArray[section];
+    NSArray *folderComponents = [folderName componentsSeparatedByString:@" ▸ "];
+    
+    folderTitle.indentationLevel = folderComponents.count - 1;
     
     return folderTitle;
 }

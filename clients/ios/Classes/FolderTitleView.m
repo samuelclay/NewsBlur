@@ -37,6 +37,10 @@
         [subview removeFromSuperview];
     }
     
+    CGFloat indentationOffset = self.indentationLevel * 28;
+    rect.origin.x += indentationOffset;
+    rect.size.width -= indentationOffset;
+    
     NSString *folderName = appDelegate.dictFoldersArray[section];
     NSString *collapseKey = [NSString stringWithFormat:@"folderCollapsed:%@", folderName];
     bool isFolderCollapsed = [userPreferences boolForKey:collapseKey];
@@ -70,7 +74,7 @@
         accessibilityCount = [NSString stringWithFormat:@", %@ searches", @(count)];
     } else if (isFolderCollapsed) {
         UnreadCounts *counts = [appDelegate splitUnreadCountForFolder:folderName];
-        unreadCount = [[UnreadCountView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(rect), CGRectGetHeight(rect))];
+        unreadCount = [[UnreadCountView alloc] initWithFrame:CGRectMake(rect.origin.x, 0, CGRectGetWidth(rect), CGRectGetHeight(rect))];
         unreadCount.appDelegate = appDelegate;
         unreadCount.opaque = NO;
         unreadCount.psCount = counts.ps;
@@ -91,7 +95,7 @@
     UIView* customView = [[UIView alloc] initWithFrame:rect];
 
     // Background
-    [NewsBlurAppDelegate fillGradient:self.bounds
+    [NewsBlurAppDelegate fillGradient:rect
                            startColor:UIColorFromLightSepiaMediumDarkRGB(0xEAECE5, 0xffffc6, 0x6A6A6A, 0x444444)
                              endColor:UIColorFromLightSepiaMediumDarkRGB(0xDCDFD6, 0xffffc0, 0x666666, 0x333333)];
 //    UIColor *backgroundColor = UIColorFromRGB(0xD7DDE6);
@@ -145,13 +149,13 @@
     paragraphStyle.lineBreakMode = NSLineBreakByTruncatingTail;
     paragraphStyle.alignment = NSTextAlignmentLeft;
     [folderTitle
-     drawInRect:CGRectMake(36.0, titleOffsetY, rect.size.width - 36 - 36 - countWidth, font.pointSize + 5)
+     drawInRect:CGRectMake(rect.origin.x + 36.0, titleOffsetY, rect.size.width - 36 - 36 - countWidth, font.pointSize + 5)
      withAttributes:@{NSFontAttributeName: font,
                       NSForegroundColorAttributeName: textColor,
                       NSParagraphStyleAttributeName: paragraphStyle}];
         
     invisibleHeaderButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    invisibleHeaderButton.frame = CGRectMake(0, 0, customView.frame.size.width, customView.frame.size.height);
+    invisibleHeaderButton.frame = CGRectMake(rect.origin.x, 0, customView.frame.size.width, customView.frame.size.height);
     invisibleHeaderButton.alpha = .1;
     invisibleHeaderButton.tag = section;
     invisibleHeaderButton.accessibilityLabel = [NSString stringWithFormat:@"%@ folder%@", folderTitle, accessibilityCount];
@@ -181,7 +185,7 @@
         UIButton *disclosureButton = [UIButton buttonWithType:UIButtonTypeCustom];
         UIImage *disclosureImage = [UIImage imageNamed:@"disclosure.png"];
         [disclosureButton setImage:disclosureImage forState:UIControlStateNormal];
-        disclosureButton.frame = CGRectMake(customView.frame.size.width - 32, CGRectGetMidY(self.bounds)-disclosureHeight/2-1, disclosureHeight, disclosureHeight);
+        disclosureButton.frame = CGRectMake(customView.frame.size.width - 32, CGRectGetMidY(rect)-disclosureHeight/2-1, disclosureHeight, disclosureHeight);
 
         // Add collapse button to all folders except Everything
         if (section != 0 && section != 2 && section != 3 && ![folderName isEqual:@"read_stories"]) {
@@ -202,7 +206,7 @@
             } else if ([[[ThemeManager themeManager] theme] isEqualToString:ThemeStyleDark]) {
                 disclosureBorder = [UIImage imageNamed:@"disclosure_border_dark"];
             }
-            [disclosureBorder drawInRect:CGRectMake(customView.frame.size.width - 32, CGRectGetMidY(self.bounds)-disclosureHeight/2 - 1, disclosureHeight, disclosureHeight)];
+            [disclosureBorder drawInRect:CGRectMake(rect.origin.x + customView.frame.size.width - 32, CGRectGetMidY(rect)-disclosureHeight/2 - 1, disclosureHeight, disclosureHeight)];
         } else {
             // Everything/Saved folder doesn't get a button
             [disclosureButton setUserInteractionEnabled:NO];
@@ -279,7 +283,7 @@
         }
         allowLongPress = YES;
     }
-    [folderImage drawInRect:CGRectMake(folderImageViewX, CGRectGetMidY(self.bounds)-height/2, width, height)];
+    [folderImage drawInRect:CGRectMake(rect.origin.x + folderImageViewX, CGRectGetMidY(rect)-height/2, width, height)];
     
     [customView setAutoresizingMask:UIViewAutoresizingNone];
     
