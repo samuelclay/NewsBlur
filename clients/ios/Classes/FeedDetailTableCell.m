@@ -200,22 +200,28 @@ static UIFont *indicatorFont = nil;
         
         CGRect imageFrame = CGRectMake(r.size.width - imageSize - previewMargin, topMargin,
                                        imageSize, imageSize);
-        UIImageView *storyImageView = [[UIImageView alloc] initWithFrame:imageFrame];
         
         UIImage *cachedImage = (UIImage *)[appDelegate.cachedStoryImages objectForKey:cell.storyImageUrl];
         if (cachedImage && ![cachedImage isKindOfClass:[NSNull class]]) {
 //            NSLog(@"Found cached image: %@", cell.storyTitle);
-            storyImageView.image = cachedImage;
-            [storyImageView setContentMode:UIViewContentModeScaleAspectFill];
-            [storyImageView setClipsToBounds:YES];
+            CGContextRef context = UIGraphicsGetCurrentContext();
+            CGContextSaveGState(context);
+            
+            if (isSmall) {
+                [[UIBezierPath bezierPathWithRoundedRect:imageFrame cornerRadius:8] addClip];
+            }
+            
             CGFloat alpha = 1.0f;
             if (cell.highlighted || cell.selected) {
                 alpha = cell.isRead ? 0.5f : 0.85f;
             } else if (cell.isRead) {
                 alpha = 0.34f;
             }
-            [storyImageView.image drawInRect:imageFrame blendMode:0 alpha:alpha];
+            
+            [cachedImage drawInRect:imageFrame blendMode:0 alpha:alpha];
             rect.size.width -= imageFrame.size.width;
+            
+            CGContextRestoreGState(context);
             
             BOOL isRoomForDateBelowImage = CGRectGetMaxY(imageFrame) < r.size.height - 10;
             
