@@ -189,6 +189,7 @@
 
     if (style == NBLoadingStyle) {
         UIActivityIndicatorView *activityIndicator = [[UIActivityIndicatorView alloc]initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleMedium];
+        activityIndicator.color = UIColor.whiteColor;
         [activityIndicator startAnimating];
         self.accessoryView = activityIndicator;
     } else if (style == NBOfflineStyle) {
@@ -204,6 +205,7 @@
         self.progressBar.hidden = NO;
     } else if (style == NBSyncingStyle) {
         UIActivityIndicatorView *activityIndicator = [[UIActivityIndicatorView alloc]initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleMedium];
+        activityIndicator.color = UIColor.whiteColor;
         [activityIndicator startAnimating];
         self.accessoryView = activityIndicator;        
     } else if (style == NBDoneStyle) {
