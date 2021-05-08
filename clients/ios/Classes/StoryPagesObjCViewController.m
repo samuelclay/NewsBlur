@@ -986,7 +986,7 @@
 //            [pageController clearStory];
 //            NSLog(@"Skipping drawing %d (waiting for %d)", newIndex, self.scrollingToPage);
         }
-    } else if (outOfBounds) {
+    } else if (outOfBounds && pageController == self.currentPage) {
         [pageController clearStory];
         
         //TODO: might want to check if overlay display, or something, to avoid doing this on compact layout
