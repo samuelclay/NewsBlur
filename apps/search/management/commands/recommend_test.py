@@ -10,7 +10,7 @@ import keras
 import numpy as np
 from deepctr.layers import custom_objects
 import sys
-from constants import (
+from apps.search.constants import (
     SPARSE_FEATURES,
     DENSE_FEATURES,
     TARGET
@@ -28,7 +28,7 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument("-u", "--user", dest="user", default=None)
-  
+
     def handle(self, *args, **options):
         if options['user']:
             user_id = options['user']
@@ -49,11 +49,11 @@ class Command(BaseCommand):
         temp = pd.DataFrame(score_data)
         active_premium_subscribers = [Feed.objects.get(pk=x).active_premium_subscribers for x in possible_recommendations]
         user_shared_stories_count = MSharedStory.objects.filter(user_id=self.user).count()
-        
+
         # total shares_per_feed might be the same as share_count
         total_shares_per_feed = [MSharedStory.objects.filter(story_feed_id=x).count() for x in possible_recommendations]
-        
-        
+
+
         # create our full input dataframe
         input_df = pd.DataFrame(columns=SPARSE_FEATURES + DENSE_FEATURES)
         input_df['read_pct'],input_df['reader_count'],input_df['reach_score'] = temp['read_pct'],temp['reader_count'],temp['reach_score']
@@ -67,10 +67,10 @@ class Command(BaseCommand):
         input_df['user_shared_stories_count'] = [user_shared_stories_count] * len((possible_recommendations)+1)
         input_df['total_shares_per_feed'] = total_shares_per_feed
         ### should be all the current fields
-        
+
         assert input_df.columns == SPARSE_FEATURES + DENSE_FEATURES
-        
-        
+
+
         # normalize data
         # this must be done
         # no need anymore for reading/writing vocab sizes to file, figured it out
@@ -85,26 +85,26 @@ class Command(BaseCommand):
         # shouldn't need to save and load a ranged numerical features model like minmaxscaler
         #mms = load(open('minmax.pkl', 'rb'))
         input_df[DENSE_FEATURES] = mms.transform(input_df[DENSE_FEATURES])
-        
-        
+
+
         fixlen_feature_columns = [SparseFeat(feat, vocabulary_size=vocabs[feat],embedding_dim=16)
                        for i,feat in enumerate(SPARSE_FEATURES)] + [DenseFeat(feat, 1,)
                       for feat in DENSE_FEATURES]
-        
+
         linear_feature_columns = fixlen_feature_columns
         dnn_feature_columns = fixlen_feature_columns
-        
+
         feature_names = deepctr.feature_column.get_feature_names(linear_feature_columns + dnn_feature_columns)
 
         test_model_input = {name:input_df[name] for name in feature_names}
         del input_df
-        
+
         model = keras.models.load_model('model.keras', custom_objects)
 
         pred_ans = model.predict(test_model_input, batch_size=256)
 
         # lets sort our predictions from highest to lowest
         results = sorted(dict(zip(feeds, predictions)).items(),  key=lambda x: x[1], reverse=True)
-        
+
         # lets grab the top x amount of feeds
         self.feed_recommendations = results[:rec_num]
