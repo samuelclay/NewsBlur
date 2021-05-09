@@ -1197,7 +1197,11 @@
             [self setStoryFromScroll];
         }
     }
-    [appDelegate.splitViewController showColumn:UISplitViewControllerColumnSecondary];
+    
+    if (self.isPhoneOrCompact || animated) {
+        [appDelegate.splitViewController showColumn:UISplitViewControllerColumnSecondary];
+    }
+    
     [self becomeFirstResponder];
 }
 
