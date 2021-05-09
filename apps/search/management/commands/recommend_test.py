@@ -1,4 +1,5 @@
 import pandas as pd
+from django.core.management.base import BaseCommand, CommandError
 from sklearn.preprocessing import LabelEncoder, MinMaxScaler
 from sklearn.model_selection import train_test_split
 from deepctr.models import DeepFM
