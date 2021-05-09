@@ -53,7 +53,7 @@ class Command(BaseCommand):
 
         # total shares_per_feed might be the same as share_count
         total_shares_per_feed = [MSharedStory.objects.filter(story_feed_id=x).count() for x in possible_recommendations]
-
+        print('through getting data')
 
         # create our full input dataframe
         input_df = pd.DataFrame(columns=SPARSE_FEATURES + DENSE_FEATURES)
@@ -68,7 +68,7 @@ class Command(BaseCommand):
         input_df['user_shared_stories_count'] = [user_shared_stories_count] * len((possible_recommendations)+1)
         input_df['total_shares_per_feed'] = total_shares_per_feed
         ### should be all the current fields
-
+        print('through dataframe')
         assert input_df.columns == SPARSE_FEATURES + DENSE_FEATURES
 
 
@@ -101,7 +101,7 @@ class Command(BaseCommand):
         del input_df
 
         model = keras.models.load_model('model.keras', custom_objects)
-
+        print('time to predict for user')
         pred_ans = model.predict(test_model_input, batch_size=256)
 
         # lets sort our predictions from highest to lowest
@@ -109,3 +109,4 @@ class Command(BaseCommand):
 
         # lets grab the top x amount of feeds
         self.feed_recommendations = results[:rec_num]
+        return
