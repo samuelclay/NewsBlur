@@ -2302,8 +2302,8 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     }];
     
     preferenceKey = @"story_list_preview_images_size";
-    titles = @[@"No image", @"Small", @"Large"];
-    values = @[@"none", @"small", @"large"];
+    titles = @[@"No image", @"image_preview_small_left.png", @"image_preview_large_left.png", @"image_preview_large_right.png", @"image_preview_small_right.png"];
+    values = @[@"none", @"small_left", @"large_left", @"large_right", @"small_right"];
     
     [viewController addSegmentedControlWithTitles:titles values:values preferenceKey:preferenceKey selectionShouldDismiss:YES handler:^(NSUInteger selectedIndex) {
         [self.appDelegate resizePreviewSize];

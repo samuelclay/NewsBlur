@@ -215,6 +215,7 @@ NSString * const MenuHandler = @"handler";
         [segmentedControl setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:idx];
     }
     
+    segmentedControl.apportionsSegmentWidthsByContent = YES;
     segmentedControl.selectedSegmentIndex = [item[MenuSegmentIndex] integerValue];
     segmentedControl.tag = row;
     segmentedControl.backgroundColor = UIColorFromRGB(0xeeeeee);

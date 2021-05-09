@@ -44,7 +44,6 @@ static UIFont *indicatorFont = nil;
 @synthesize hasAlpha;
 
 
-#define leftMargin 30
 #define rightMargin 18
 
 
@@ -178,7 +177,24 @@ static UIFont *indicatorFont = nil;
 
     CGContextRef context = UIGraphicsGetCurrentContext();
     
+    NSString *preview = [[NSUserDefaults standardUserDefaults] stringForKey:@"story_list_preview_images_size"];
+    BOOL isSmall = [preview isEqualToString:@"small"] || [preview isEqualToString:@"small_left"] || [preview isEqualToString:@"small_right"];
+    BOOL isLeft = [preview isEqualToString:@"small_left"] || [preview isEqualToString:@"large_left"];
+    
     CGRect rect = CGRectInset(r, 12, 12);
+    CGFloat previewOffset = isSmall ? 60 : 0;
+    CGFloat previewMargin = isSmall ? 10 : 0;
+    CGFloat maxSize = isSmall ? 64 : 128;
+    CGFloat imageSize = MIN(r.size.height - previewOffset, maxSize);
+    CGFloat leftOffset = isLeft ? maxSize + previewMargin : 0;
+    CGFloat leftMargin = leftOffset + 30;
+    CGFloat topMargin = isSmall ? 14 + riverPadding : 0;
+    
+    if (isLeft) {
+        rect.origin.x += leftOffset;
+        rect.size.width -= leftOffset;
+    }
+    
     rect.size.width -= 18; // Scrollbar padding
     CGRect dateRect = rect;
     
@@ -190,16 +206,12 @@ static UIFont *indicatorFont = nil;
     CGContextFillRect(context, r);
     
     if (cell.storyImageUrl) {
-        NSString *preview = [[NSUserDefaults standardUserDefaults] stringForKey:@"story_list_preview_images_size"];
-        BOOL isSmall = [preview isEqualToString:@"small"];
-        CGFloat previewOffset = isSmall ? 60 : 0;
-        CGFloat previewMargin = isSmall ? 10 : 0;
-        CGFloat maxSize = isSmall ? 64 : 128;
-        CGFloat imageSize = MIN(r.size.height - previewOffset, maxSize);
-        CGFloat topMargin = isSmall ? 14 + riverPadding : 0;
-        
         CGRect imageFrame = CGRectMake(r.size.width - imageSize - previewMargin, topMargin,
                                        imageSize, imageSize);
+        
+        if (isLeft) {
+            imageFrame.origin.x = previewMargin + 5;
+        }
         
         UIImage *cachedImage = (UIImage *)[appDelegate.cachedStoryImages objectForKey:cell.storyImageUrl];
         if (cachedImage && ![cachedImage isKindOfClass:[NSNull class]]) {
@@ -219,7 +231,10 @@ static UIFont *indicatorFont = nil;
             }
             
             [cachedImage drawInRect:imageFrame blendMode:0 alpha:alpha];
-            rect.size.width -= imageFrame.size.width;
+            
+            if (!isLeft) {
+                rect.size.width -= imageFrame.size.width;
+            }
             
             CGContextRestoreGState(context);
             
@@ -231,6 +246,7 @@ static UIFont *indicatorFont = nil;
         }
     }
     
+    CGFloat feedOffset = isLeft ? 20 : 0;
     UIColor *textColor;
     UIFont *font;
     UIFontDescriptor *fontDescriptor = [cell fontDescriptorUsingPreferredSize:UIFontTextStyleCaption1];
@@ -239,7 +255,7 @@ static UIFont *indicatorFont = nil;
     paragraphStyle.lineBreakMode = NSLineBreakByWordWrapping;
     paragraphStyle.alignment = NSTextAlignmentLeft;
     paragraphStyle.lineHeightMultiple = 0.95f;
-
+    
     if (cell.isRiverOrSocial) {
         if (cell.isRead) {
             font = [UIFont fontWithName:@"WhitneySSm-Book" size:fontDescriptor.pointSize];
@@ -248,18 +264,17 @@ static UIFont *indicatorFont = nil;
             UIFontDescriptor *boldFontDescriptor = [fontDescriptor fontDescriptorWithSymbolicTraits: UIFontDescriptorTraitBold];
             font = [UIFont fontWithName:@"WhitneySSm-Medium" size:boldFontDescriptor.pointSize];
             textColor = UIColorFromLightSepiaMediumDarkRGB(0x606060, 0x606060, 0xD0D0D0, 0x909090);
-            
         }
         if (cell.highlighted || cell.selected) {
             textColor = UIColorFromLightSepiaMediumDarkRGB(0x686868, 0x686868, 0xA0A0A0, 0x808080);
         }
         
         NSInteger siteTitleY = (20 - font.pointSize/2)/2;
-        [cell.siteTitle drawInRect:CGRectMake(leftMargin + 20, siteTitleY, rect.size.width - 20, 20)
+        [cell.siteTitle drawInRect:CGRectMake(leftMargin - feedOffset + 20, siteTitleY, rect.size.width - 20, 20)
                     withAttributes:@{NSFontAttributeName: font,
                                      NSForegroundColorAttributeName: textColor,
                                      NSParagraphStyleAttributeName: paragraphStyle}];
-
+        
         // site favicon
         if (cell.isRead && !cell.hasAlpha) {
             if (cell.isRiverOrSocial) {
@@ -267,8 +282,8 @@ static UIFont *indicatorFont = nil;
             }
             cell.hasAlpha = YES;
         }
-
-        [cell.siteFavicon drawInRect:CGRectMake(leftMargin, siteTitleY, 16.0, 16.0)];
+        
+        [cell.siteFavicon drawInRect:CGRectMake(leftMargin - feedOffset, siteTitleY, 16.0, 16.0)];
     }
     
     // story title
@@ -460,7 +475,8 @@ static UIFont *indicatorFont = nil;
     }
     
     // story indicator
-    int storyIndicatorY = storyTitleFrame.origin.y + storyTitleFrame.size.height / 2;
+    CGFloat storyIndicatorX = isLeft ? rect.origin.x + 2 : 15;
+    CGFloat storyIndicatorY = storyTitleFrame.origin.y + storyTitleFrame.size.height / 2;
     
     UIImage *unreadIcon;
     if (cell.storyScore == -1) {
@@ -471,7 +487,7 @@ static UIFont *indicatorFont = nil;
         unreadIcon = [UIImage imageNamed:@"g_icn_unread"];
     }
     
-    [unreadIcon drawInRect:CGRectMake(15, storyIndicatorY - 3, 8, 8) blendMode:0 alpha:(cell.isRead ? .15 : 1)];
+    [unreadIcon drawInRect:CGRectMake(storyIndicatorX, storyIndicatorY - 3, 8, 8) blendMode:0 alpha:(cell.isRead ? .15 : 1)];
 }
 
 @end
