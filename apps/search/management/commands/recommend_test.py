@@ -34,7 +34,7 @@ class Command(BaseCommand):
         if options['user']:
             user_id = options['user']
         feeds = list(UserSubscription.objects.order_by().values_list('feed_id', flat=True).distinct())
-        assert type(feeds) == list()
+        assert isinstance(feeds, list)
         rec_num = 10
         followed_feeds = list(UserSubscription.objects.filter(user=user_id).values('feed_id'))
         possible_recommendations = set(total_feeds) - set(feeds)
