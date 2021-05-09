@@ -36,7 +36,7 @@ class Command(BaseCommand):
         feeds = list(UserSubscription.objects.order_by().values_list('feed_id', flat=True).distinct())
         assert isinstance(feeds, list)
         rec_num = 10
-        followed_feeds = list(UserSubscription.objects.filter(user=user_id).values('feed_id'))
+        followed_feeds = list(UserSubscription.objects.filter(user=user_id).values_list('feed_id', flat=True))
         possible_recommendations = set(feeds) - set(followed_feeds)
         active_subs = [Feed.objects.get(pk=x).active_subscribers for x in possible_recommendations]
         premium_subs = [Feed.objects.get(pk=x).premium_subscribers for x in possible_recommendations]
