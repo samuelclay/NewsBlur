@@ -38,35 +38,53 @@ class Command(BaseCommand):
         rec_num = 10
         followed_feeds = list(UserSubscription.objects.filter(user=user_id).values_list('feed_id', flat=True))
         possible_recommendations = set(feeds) - set(followed_feeds)
-        active_subs = [Feed.objects.get(pk=x).active_subscribers for x in possible_recommendations]
-        premium_subs = [Feed.objects.get(pk=x).premium_subscribers for x in possible_recommendations]
-        num_subs = [Feed.objects.get(pk=x).num_subscribers for x in possible_recommendations]
-        average_stories_per_month = [Feed.objects.get(pk=x).average_stories_per_month for x in possible_recommendations]
+
+        feed_ = []
+        for x in possible_recommendations:
+            feed_items = {}
+            feed_object = Feed.objects.get(pk=x)
+            feed_items['active_subs'] = feed_object.active_subscribers
+            feed_items['premium_subs'] = feed_object.premium_subscribers
+            feed_items['num_subs'] = feed_object.num_subscribers
+            feed_items['average_stories_per_month'] = feed_object.average_stories_per_month
+            feed_items['active_premium_subscribers'] = feed_object.active_premium_subscribers
+            feed_items['active'] = feed_object.active
+            temp = Feed.get_by_id(x).well_read_score()
+            feed_items['read_pct'] = temp['read_pct']
+            feed_items['reader_count'] = temp['reader_count']
+            feed_items['reach_score'] = temp['reach_score']
+            feed_items['story_count'] = temp['story_count']
+            feed_items['share_count'] = temp['share_count']
+            del temp
+            # might be the same as share_count, leaving it in for now
+            feed_items['total_shares_per_feed'] = MSharedStory.objects.filter(story_feed_id=x).count()
+            feed_.append(feed_items)
+
+
+        #active_subs = [Feed.objects.get(pk=x).active_subscribers for x in possible_recommendations]
+        # premium_subs = [Feed.objects.get(pk=x).premium_subscribers for x in possible_recommendations]
+        #num_subs = [Feed.objects.get(pk=x).num_subscribers for x in possible_recommendations]
+        #average_stories_per_month = [Feed.objects.get(pk=x).average_stories_per_month for x in possible_recommendations]
+
         user = [user_id]*(len(possible_recommendations)+1)
         is_premium = Profile.objects.get(user_id=user_id).is_premium
         # not sure how this comes in, will have to check it out on server
-        score_data = [Feed.get_by_id(x).well_read_score() for x in possible_recommendations]
+        #score_data = [Feed.get_by_id(x).well_read_score() for x in possible_recommendations]
         # pretty sure its a dict
-        temp = pd.DataFrame(score_data)
-        active_premium_subscribers = [Feed.objects.get(pk=x).active_premium_subscribers for x in possible_recommendations]
+        #temp = pd.DataFrame(score_data)
+        #active_premium_subscribers = [Feed.objects.get(pk=x).active_premium_subscribers for x in possible_recommendations]
         user_shared_stories_count = MSharedStory.objects.filter(user_id=self.user).count()
 
         # total shares_per_feed might be the same as share_count
-        total_shares_per_feed = [MSharedStory.objects.filter(story_feed_id=x).count() for x in possible_recommendations]
+        #total_shares_per_feed = [MSharedStory.objects.filter(story_feed_id=x).count() for x in possible_recommendations]
         print('through getting data')
 
         # create our full input dataframe
-        input_df = pd.DataFrame(columns=SPARSE_FEATURES + DENSE_FEATURES)
-        input_df['read_pct'],input_df['reader_count'],input_df['reach_score'] = temp['read_pct'],temp['reader_count'],temp['reach_score']
-        input_df['story_count'],input_df['share_count'] = temp['story_count'],temp['share_count']
-        del temp
-        input_df['active'] = [Feed.objects.get(pk=x).active for x in possible_recommendations]
-        input_df['active_subs'],input_df['num_subs'],input_df['premium_subs'] = active_subs,num_subs,premium_subs
-        input_df['average_stories_per_month'],input_df['user'],input_df['feed_id'] =average_stories_per_month,user,possible_recommendations
-        input_df['is_premium'] = [is_premium] * (len(possible_recommendations)+1)
-        input_df['active_premium_subscribers'] = active_premium_subscribers
+        input_df = pd.DataFrame(feed_,columns=SPARSE_FEATURES + DENSE_FEATURES)
+        #input_df['active'] = [Feed.objects.get(pk=x).active for x in possible_recommendations]
+        input_df['user'],input_df['feed_id'] =user,possible_recommendations
         input_df['user_shared_stories_count'] = [user_shared_stories_count] * len((possible_recommendations)+1)
-        input_df['total_shares_per_feed'] = total_shares_per_feed
+
         ### should be all the current fields
         print('through dataframe')
         assert input_df.columns == SPARSE_FEATURES + DENSE_FEATURES
