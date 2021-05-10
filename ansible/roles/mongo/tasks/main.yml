@@ -6,9 +6,9 @@
     image: mongo:3.6
     state: started
     container_default_behavior: no_defaults
-    ports:
-      - 27017:27017
     restart_policy: unless-stopped
+    network_mode: host
+    command: mongod --config /etc/mongod.conf
     volumes:
       - /mnt/{{ inventory_hostname | regex_replace('db-|-', '') }}:/data/db
       - /srv/newsblur/ansible/roles/mongo/templates/mongo.conf:/etc/mongod.conf
