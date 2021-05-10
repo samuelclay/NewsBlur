@@ -17,7 +17,7 @@
   template:
     src: consul_service.json
     dest: /etc/consul.d/mongo.json
-  when: (inventory_hostname | regex_replace('[0-9]+', '')) == 'db-mongo' or inventory_hostname.startswith('db2')
+  when: (inventory_hostname | regex_replace('[0-9]+', '')) in ['db-mongo', 'db-mongo-secondary'] or inventory_hostname.startswith('db2')
   notify:
     - reload consul
 

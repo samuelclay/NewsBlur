@@ -116,7 +116,7 @@ def db_check_redis():
         abort(505)
 
 @app.route("/db_check/redis_user")
-def db_check_redis():
+def db_check_redis_user():
     try:
         r = redis.Redis(LOCAL_HOST, db=0)
     except:

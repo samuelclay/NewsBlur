@@ -356,7 +356,7 @@ resource "digitalocean_droplet" "db-postgres" {
 }
 
 resource "digitalocean_volume" "mongo_volume" {
-  count                   = 3
+  count                   = 1
   region                  = "nyc1"
   name                    = "mongo${count.index+1}"
   size                    = 400
@@ -365,7 +365,7 @@ resource "digitalocean_volume" "mongo_volume" {
 }
 
 resource "digitalocean_droplet" "db-mongo-primary" {
-  count    = 3
+  count    = 1
   image    = var.droplet_os
   name     = "db-mongo${count.index+1}"
   region   = var.droplet_region
@@ -384,7 +384,7 @@ resource "digitalocean_droplet" "db-mongo-primary" {
 }
 
 resource "digitalocean_volume" "mongo_secondary_volume" {
-  count                   = 3
+  count                   = 2
   region                  = "nyc1"
   name                    = "mongosecondary${count.index+1}"
   size                    = 400
@@ -393,7 +393,7 @@ resource "digitalocean_volume" "mongo_secondary_volume" {
 }
 
 resource "digitalocean_droplet" "db-mongo-secondary" {
-  count    = 3
+  count    = 2
   image    = var.droplet_os
   name     = "db-mongo-secondary${count.index+1}"
   region   = var.droplet_region
