@@ -9,7 +9,8 @@
       - 27017:27017
     restart_policy: unless-stopped
     volumes:
-      - /srv/newsblur/docker/volumes/db_mongo:/data/db
+      - /mnt/"{{ inventory_hostname | regex_replace('db-|-', '') }}":/etc/mongodb.conf
+      - /srv/newsblur/ansible/roles/mongo/templates/mongo.conf:/etc/mongodb.conf
 
 - name: Register mongo in consul
   tags: consul
