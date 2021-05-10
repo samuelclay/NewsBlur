@@ -73,7 +73,11 @@ def db_check_mongo():
     except:
         abort(503)
     
-    stories = db.stories.count()
+    try:
+        stories = db.stories.count()
+    except pymongo.errors.NotMasterError:
+        abort(508)
+        
     if not stories:
         abort(504)
     
