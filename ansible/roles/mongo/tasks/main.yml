@@ -5,12 +5,13 @@
     name: mongo
     image: mongo:3.6
     state: started
+    container_default_behavior: no_defaults
     ports:
       - 27017:27017
     restart_policy: unless-stopped
     volumes:
-      - /mnt/"{{ inventory_hostname | regex_replace('db-|-', '') }}":/etc/mongodb.conf
-      - /srv/newsblur/ansible/roles/mongo/templates/mongo.conf:/etc/mongodb.conf
+      - /mnt/{{ inventory_hostname | regex_replace('db-|-', '') }}:/data/db
+      - /srv/newsblur/ansible/roles/mongo/templates/mongo.conf:/etc/mongod.conf
 
 - name: Register mongo in consul
   tags: consul
