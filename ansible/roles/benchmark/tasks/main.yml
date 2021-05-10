@@ -1,0 +1,49 @@
+---
+- name: Download sysbench and prepare .deb
+  become: yes
+  get_url:
+    url: https://packagecloud.io/install/repositories/akopytov/sysbench/script.deb.sh
+    dest: ~/sysbench.deb.sh
+
+- name: Prepare .deb
+  become: yes
+  shell: cmd=bash /home/nb/sysbench.db.sh
+
+- name: Apt install sysbench
+  become: yes
+  apt:
+    package: sysbench
+    state: latest
+
+- name: Run sysbench CPU
+  shell:
+    chdir: "/mnt/{{ inventory_hostname|regex_replace('db-', '')|regex_replace('-', '') }}"
+    cmd: sysbench cpu --cpu-max-prime=20000 run
+  register: cpu
+
+- name: Benchmark cpu results
+  debug: msg="{{ item }}"
+  with_items: cpu.stdout_lines
+
+- name: Prepare sysbench disk i/o 
+  become: yes
+  shell:
+    chdir: "/mnt/{{ inventory_hostname|regex_replace('db-', '')|regex_replace('-', '') }}"
+    cmd: sysbench fileio --file-total-size=150G prepare
+  
+- name: Run sysbench disk i/o
+  become: yes
+  shell:
+    chdir: "/mnt/{{ inventory_hostname|regex_replace('db-', '')|regex_replace('-', '') }}"
+    cmd: sysbench fileio --file-total-size=150G --file-test-mode=rndrw --time=300 --max-requests=0 run
+  register: io
+  
+- name: Cleanup sysbench
+  become: yes
+  shell:
+    chdir: "/mnt/{{ inventory_hostname|regex_replace('db-', '')|regex_replace('-', '') }}"
+    cmd: sysbench fileio --file-total-size=150G cleanup
+
+- name: Benchmark io results
+  debug: msg="{{ item }}"
+  with_items: io.stdout_lines

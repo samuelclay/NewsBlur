@@ -355,13 +355,51 @@ resource "digitalocean_droplet" "db-postgres" {
   }
 }
 
-resource "digitalocean_droplet" "db-mongo" {
+resource "digitalocean_volume" "mongo_volume" {
+  count                   = 3
+  region                  = "nyc1"
+  name                    = "mongo${count.index+1}"
+  size                    = 400
+  initial_filesystem_type = "xfs"
+  description             = "Storage for NewsBlur MongoDB"
+}
+
+resource "digitalocean_droplet" "db-mongo-primary" {
   count    = 3
   image    = var.droplet_os
   name     = "db-mongo${count.index+1}"
   region   = var.droplet_region
-  size     = var.droplet_size
+  size     = var.mongo_droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
+  volume_ids = [element(digitalocean_volume.mongo_volume.*.id, count.index)]
+  provisioner "local-exec" {
+    command = "/srv/newsblur/ansible/utils/generate.py; sleep 120"
+  }
+  provisioner "local-exec" {
+    command = "cd ..; ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
+  }
+  provisioner "local-exec" {
+    command = "cd ..; ansible-playbook -l ${self.name} ansible/setup.yml"
+  }
+}
+
+resource "digitalocean_volume" "mongo_secondary_volume" {
+  count                   = 3
+  region                  = "nyc1"
+  name                    = "mongosecondary${count.index+1}"
+  size                    = 400
+  initial_filesystem_type = "xfs"
+  description             = "Storage for NewsBlur MongoDB"
+}
+
+resource "digitalocean_droplet" "db-mongo-secondary" {
+  count    = 3
+  image    = var.droplet_os
+  name     = "db-mongo-secondary${count.index+1}"
+  region   = var.droplet_region
+  size     = var.mongo_secondary_droplet_size
+  ssh_keys = [digitalocean_ssh_key.default.fingerprint]
+  volume_ids = [element(digitalocean_volume.mongo_secondary_volume.*.id, count.index)]
   provisioner "local-exec" {
     command = "/srv/newsblur/ansible/utils/generate.py; sleep 120"
   }
