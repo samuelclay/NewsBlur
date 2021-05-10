@@ -75,7 +75,7 @@ def db_check_mongo():
     
     try:
         stories = db.stories.count()
-    except pymongo.errors.NotMasterError:
+    except (pymongo.errors.NotMasterError, pymongo.errors.ServerSelectionTimeoutError):
         abort(504)
 
     if not stories:
