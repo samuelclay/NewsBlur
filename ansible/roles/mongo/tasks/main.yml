@@ -12,6 +12,7 @@
     volumes:
       - /mnt/{{ inventory_hostname | regex_replace('db-|-', '') }}:/data/db
       - /srv/newsblur/ansible/roles/mongo/templates/mongo.conf:/etc/mongod.conf
+      - /var/log/mongodb/:/var/log/mongodb/
 
 - name: Register mongo in consul
   tags: consul
