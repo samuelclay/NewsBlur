@@ -1,13 +1,18 @@
 ---
+# - name: Remove old .deb
+#   become: yes
+#   file:
+#     path: /home/nb/sysbench.deb.sh
+#     state: absent
+
 - name: Download sysbench and prepare .deb
-  become: yes
   get_url:
     url: https://packagecloud.io/install/repositories/akopytov/sysbench/script.deb.sh
-    dest: ~/sysbench.deb.sh
+    dest: /home/nb/sysbench.deb.sh
 
 - name: Prepare .deb
   become: yes
-  shell: cmd=bash /home/nb/sysbench.db.sh
+  command: bash /home/nb/sysbench.deb.sh
 
 - name: Apt install sysbench
   become: yes
@@ -22,8 +27,7 @@
   register: cpu
 
 - name: Benchmark cpu results
-  debug: msg="{{ item }}"
-  with_items: cpu.stdout_lines
+  debug: msg="{{ cpu.stdout.split('\n') }}"
 
 - name: Prepare sysbench disk i/o 
   become: yes
@@ -46,4 +50,4 @@
 
 - name: Benchmark io results
   debug: msg="{{ item }}"
-  with_items: io.stdout_lines
+  debug: msg="{{ io.stdout.split('\n') }}"
