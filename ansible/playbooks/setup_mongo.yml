@@ -16,3 +16,4 @@
     - {role: 'consul-client', tags: 'consul'}
     - {role: 'mongo', tags: 'mongo'}
     - {role: 'monitor', tags: 'monitor'}
+    - {role: 'benchmark', tags: 'benchmark'}
