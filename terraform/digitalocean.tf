@@ -411,22 +411,22 @@ resource "digitalocean_droplet" "db-mongo-secondary" {
   }
 }
 
-resource "digitalocean_droplet" "db-mongo-analytics" {
-  image    = var.droplet_os
-  name     = "db-mongo-analytics"
-  region   = var.droplet_region
-  size     = var.droplet_size
-  ssh_keys = [digitalocean_ssh_key.default.fingerprint]
-  provisioner "local-exec" {
-    command = "/srv/newsblur/ansible/utils/generate.py; sleep 120"
-  }
-  provisioner "local-exec" {
-    command = "cd ..; ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
-  }
-  provisioner "local-exec" {
-    command = "cd ..; ansible-playbook -l ${self.name} ansible/setup.yml"
-  }
-}
+# resource "digitalocean_droplet" "db-mongo-analytics" {
+#   image    = var.droplet_os
+#   name     = "db-mongo-analytics"
+#   region   = var.droplet_region
+#   size     = var.droplet_size
+#   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
+#   provisioner "local-exec" {
+#     command = "/srv/newsblur/ansible/utils/generate.py; sleep 120"
+#   }
+#   provisioner "local-exec" {
+#     command = "cd ..; ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
+#   }
+#   provisioner "local-exec" {
+#     command = "cd ..; ansible-playbook -l ${self.name} ansible/setup.yml"
+#   }
+# }
 
 resource "digitalocean_droplet" "task-celery" {
   count    = 79
