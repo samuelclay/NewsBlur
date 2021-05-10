@@ -41,6 +41,24 @@
             </group>
         </menu>
     </item>
+    <item android:id="@+id/menu_story_thumbnail_style"
+        android:title="@string/menu_story_thumbnail_preview"
+        app:showAsAction="never">
+        <menu>
+            <group android:checkableBehavior="single">
+                <item android:id="@+id/menu_story_thumbnail_left_small"
+                    android:title="@string/story_thumbnail_left_hand_small" />
+                <item android:id="@+id/menu_story_thumbnail_left_large"
+                    android:title="@string/story_thumbnail_left_hand_large" />
+                <item android:id="@+id/menu_story_thumbnail_right_small"
+                    android:title="@string/story_thumbnail_right_hand_small" />
+                <item android:id="@+id/menu_story_thumbnail_right_large"
+                    android:title="@string/story_thumbnail_right_hand_large" />
+                <item android:id="@+id/menu_story_thumbnail_no_preview"
+                    android:title="@string/story_thumbnail_no_image_preview" />
+            </group>
+        </menu>
+    </item>
     <item android:id="@+id/menu_story_list_style"
           android:title="@string/menu_story_list_style_choose" >
         <menu>

@@ -33,6 +33,7 @@ import com.newsblur.util.StoryContentPreviewStyle;
 import com.newsblur.util.StoryListStyle;
 import com.newsblur.util.StoryOrder;
 import com.newsblur.util.StoryOrderChangedListener;
+import com.newsblur.util.ThumbnailStyle;
 import com.newsblur.util.UIUtils;
 
 public abstract class ItemsList extends NbActivity implements StoryOrderChangedListener, ReadFilterChangedListener, OnSeekBarChangeListener {
@@ -179,6 +180,7 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
             menu.findItem(R.id.menu_read_filter).setVisible(false);
             menu.findItem(R.id.menu_mark_read_on_scroll).setVisible(false);
             menu.findItem(R.id.menu_story_content_preview_style).setVisible(false);
+            menu.findItem(R.id.menu_story_thumbnail_style).setVisible(false);
         }
 
         if (fs.isGlobalShared() ||
@@ -245,6 +247,19 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
             menu.findItem(R.id.menu_story_content_preview_medium).setChecked(true);
         } else if (previewStyle == StoryContentPreviewStyle.LARGE) {
             menu.findItem(R.id.menu_story_content_preview_large).setChecked(true);
+        }
+
+        ThumbnailStyle thumbnailStyle = PrefsUtils.getThumbnailStyle(this);
+        if (thumbnailStyle == ThumbnailStyle.LEFT_SMALL) {
+            menu.findItem(R.id.menu_story_thumbnail_left_small).setChecked(true);
+        } else if (thumbnailStyle == ThumbnailStyle.LEFT_LARGE) {
+            menu.findItem(R.id.menu_story_thumbnail_left_large).setChecked(true);
+        } else if (thumbnailStyle == ThumbnailStyle.RIGHT_SMALL) {
+            menu.findItem(R.id.menu_story_thumbnail_right_small).setChecked(true);
+        } else if (thumbnailStyle == ThumbnailStyle.RIGHT_LARGE) {
+            menu.findItem(R.id.menu_story_thumbnail_right_large).setChecked(true);
+        } else if (thumbnailStyle == ThumbnailStyle.OFF) {
+            menu.findItem(R.id.menu_story_thumbnail_no_preview).setChecked(true);
         }
 
         boolean isMarkReadOnScroll = PrefsUtils.isMarkReadOnScroll(this);
@@ -334,6 +349,21 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
 		    PrefsUtils.setMarkReadOnScroll(this, false);
         } else if (item.getItemId() == R.id.menu_mark_read_on_scroll_enabled) {
 		    PrefsUtils.setMarkReadOnScroll(this, true);
+        } else if (item.getItemId() == R.id.menu_story_thumbnail_left_small) {
+		    PrefsUtils.setThumbnailStyle(this, ThumbnailStyle.LEFT_SMALL);
+            itemSetFragment.updateThumbnailStyle();
+        } else if (item.getItemId() == R.id.menu_story_thumbnail_left_large) {
+            PrefsUtils.setThumbnailStyle(this, ThumbnailStyle.LEFT_LARGE);
+            itemSetFragment.updateThumbnailStyle();
+        } else if (item.getItemId() == R.id.menu_story_thumbnail_right_small) {
+            PrefsUtils.setThumbnailStyle(this, ThumbnailStyle.RIGHT_SMALL);
+            itemSetFragment.updateThumbnailStyle();
+        } else if (item.getItemId() == R.id.menu_story_thumbnail_right_large) {
+            PrefsUtils.setThumbnailStyle(this, ThumbnailStyle.RIGHT_LARGE);
+            itemSetFragment.updateThumbnailStyle();
+        } else if (item.getItemId() == R.id.menu_story_thumbnail_no_preview) {
+            PrefsUtils.setThumbnailStyle(this, ThumbnailStyle.OFF);
+            itemSetFragment.updateThumbnailStyle();
         }
 	
 		return false;

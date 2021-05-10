@@ -377,6 +377,7 @@
     <string name="all_stories">All Stories</string>
     <string name="unread_only">Unread Only</string>
     <string name="menu_story_content_preview">Content Preview</string>
+    <string name="menu_story_thumbnail_preview">Thumbnail Preview</string>
     <string name="menu_mark_read_on_scroll">Mark Read On Scroll</string>
     <string name="menu_read_filter">Read Filter</string>
     <string-array name="default_read_filter_entries">
@@ -432,21 +433,28 @@
 
     <string name="show_content_preview_default_value">MEDIUM</string>
 
-    <string name="large">Large</string>
-    <string name="small">Small</string>
-    <string-array name="thumbnails_style_entries">
-        <item>@string/large</item>
-        <item>@string/small</item>
-        <item>@string/off</item>
+    <string name="story_thumbnail_left_hand_small">Left-hand small</string>
+    <string name="story_thumbnail_left_hand_large">Left-hand large</string>
+    <string name="story_thumbnail_right_hand_small">Right-hand small</string>
+    <string name="story_thumbnail_right_hand_large">Right-hand large</string>
+    <string name="story_thumbnail_no_image_preview">No image preview</string>
+    <string-array name="thumbnail_style_entries">
+        <item>@string/story_thumbnail_left_hand_small</item>
+        <item>@string/story_thumbnail_left_hand_large</item>
+        <item>@string/story_thumbnail_right_hand_small</item>
+        <item>@string/story_thumbnail_right_hand_large</item>
+        <item>@string/story_thumbnail_no_image_preview</item>
     </string-array>
 
-    <string-array name="thumbnails_style_values">
-        <item>LARGE</item>
-        <item>SMALL</item>
+    <string-array name="thumbnail_style_values">
+        <item>LEFT_SMALL</item>
+        <item>LEFT_LARGE</item>
+        <item>RIGHT_SMALL</item>
+        <item>RIGHT_LARGE</item>
         <item>OFF</item>
     </string-array>
 
-    <string name="thumbnails_style_value">LARGE</string>
+    <string name="thumbnail_style_default_value">RIGHT_LARGE</string>
 
     <string name="infrequent_choice_title">Stories from sites with</string>
     <string name="infrequent_5">&lt; 5 STORIES/MONTH</string>

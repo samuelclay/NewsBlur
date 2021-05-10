@@ -695,15 +695,21 @@ public class PrefsUtils {
     }
 
     private static boolean isShowThumbnails(Context context) {
-        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
-        return prefs.getBoolean(PrefConstants.STORIES_SHOW_THUMBNAILS,  true);
+        return getThumbnailStyle(context) != ThumbnailStyle.OFF;
     }
+
+    public static void setThumbnailStyle(Context context, ThumbnailStyle value) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        Editor editor = prefs.edit();
+        editor.putString(PrefConstants.STORIES_THUMBNAIL_STYLE, value.name());
+        editor.commit();
+    }
+
 
     public static ThumbnailStyle getThumbnailStyle(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
-        boolean isShowThumbnails = isShowThumbnails(context);
-        ThumbnailStyle defValue = isShowThumbnails ? ThumbnailStyle.LARGE : ThumbnailStyle.OFF;
-        return ThumbnailStyle.valueOf(prefs.getString(PrefConstants.STORIES_THUMBNAILS_STYLE, defValue.toString()));
+        String defaultValue = context.getString(R.string.thumbnail_style_default_value);
+        return ThumbnailStyle.valueOf(prefs.getString(PrefConstants.STORIES_THUMBNAIL_STYLE, defaultValue));
     }
 
     public static boolean isAutoOpenFirstUnread(Context context) {

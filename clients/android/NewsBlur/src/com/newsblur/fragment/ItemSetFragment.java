@@ -30,6 +30,7 @@ import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadFilter;
 import com.newsblur.util.StoryListStyle;
+import com.newsblur.util.ThumbnailStyle;
 import com.newsblur.util.UIUtils;
 import com.newsblur.util.ViewUtils;
 import com.newsblur.view.ProgressThrobber;
@@ -349,6 +350,12 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
     }
 
     public void notifyContentPrefsChanged() {
+        adapter.notifyAllItemsChanged();
+    }
+
+    public void updateThumbnailStyle() {
+        ThumbnailStyle thumbnailStyle = PrefsUtils.getThumbnailStyle(requireContext());
+        adapter.setThumbnailStyle(thumbnailStyle);
         adapter.notifyAllItemsChanged();
     }
 
