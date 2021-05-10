@@ -1,4 +1,11 @@
 ---
+- name: Permissions for mongo
+  become: yes
+  file:
+    state: directory
+    mode: 0777
+    path: /var/log/mongodb
+
 - name: Start db-mongo docker container
   become: yes
   docker_container:
@@ -8,7 +15,7 @@
     container_default_behavior: no_defaults
     restart_policy: unless-stopped
     network_mode: host
-    command: mongod --config /etc/mongod.conf
+    command: --config /etc/mongod.conf
     volumes:
       - /mnt/{{ inventory_hostname | regex_replace('db-|-', '') }}:/data/db
       - /srv/newsblur/ansible/roles/mongo/templates/mongo.conf:/etc/mongod.conf
