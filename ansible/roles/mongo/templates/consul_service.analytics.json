@@ -1,6 +1,6 @@
 {
     "service": {
-        "name": "{% if inventory_hostname.startswith('db-mongo') %}{{ inventory_hostname|regex_replace('\d+', '') }}{% else %}db-mongo-analytics{% endif %}",
+        "name": "db-mongo-analytics",
         "id": "{{ inventory_hostname }}",
         "tags": [
             "db"
