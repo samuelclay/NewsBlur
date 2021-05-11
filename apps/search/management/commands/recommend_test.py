@@ -89,7 +89,7 @@ class Command(BaseCommand):
 
         ### should be all the current fields
         print('through dataframe')
-        print(input_df.columns)
+        print(len(input_df.columns))
         print(SPARSE_FEATURES + DENSE_FEATURES)
         # taking this out for now its a silly error, takes too long to test
         #assert input_df.columns == SPARSE_FEATURES + DENSE_FEATURES
