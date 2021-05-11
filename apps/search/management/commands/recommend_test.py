@@ -60,6 +60,7 @@ class Command(BaseCommand):
             # might be the same as share_count, leaving it in for now
             feed_items['total_shares_per_feed'] = MSharedStory.objects.filter(story_feed_id=x).count()
             feed_.append(feed_items)
+        print('through the loop')
 
 
         #active_subs = [Feed.objects.get(pk=x).active_subscribers for x in possible_recommendations]
