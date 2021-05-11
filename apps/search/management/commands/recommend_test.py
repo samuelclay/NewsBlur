@@ -75,7 +75,7 @@ class Command(BaseCommand):
         # pretty sure its a dict
         #temp = pd.DataFrame(score_data)
         #active_premium_subscribers = [Feed.objects.get(pk=x).active_premium_subscribers for x in possible_recommendations]
-        user_shared_stories_count = MSharedStory.objects.filter(user_id=self.user).count()
+        user_shared_stories_count = MSharedStory.objects.filter(user_id=user_id).count()
 
         # total shares_per_feed might be the same as share_count
         #total_shares_per_feed = [MSharedStory.objects.filter(story_feed_id=x).count() for x in possible_recommendations]
