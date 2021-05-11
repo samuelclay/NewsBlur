@@ -47,14 +47,14 @@
   tags:
     - start
 
-- name: Restart docker to force docker container settings to hold
-  become: yes
-  service:
-    name: docker
-    state: restarted
-  tags:
-    - never
-    - restart
+# - name: Restart docker to force docker container settings to hold
+#   become: yes
+#   service:
+#     name: docker
+#     state: restarted
+#   tags:
+#     - never
+#     - restart
 
 - name: "Start autoheal container"
   become: yes
