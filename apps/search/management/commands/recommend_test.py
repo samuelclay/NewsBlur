@@ -89,6 +89,8 @@ class Command(BaseCommand):
 
         ### should be all the current fields
         print('through dataframe')
+        print(input_df.columns)
+        print(SPARSE_FEATURES + DENSE_FEATURES)
         assert input_df.columns == SPARSE_FEATURES + DENSE_FEATURES
 
 
