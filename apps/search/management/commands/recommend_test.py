@@ -68,7 +68,7 @@ class Command(BaseCommand):
         #num_subs = [Feed.objects.get(pk=x).num_subscribers for x in possible_recommendations]
         #average_stories_per_month = [Feed.objects.get(pk=x).average_stories_per_month for x in possible_recommendations]
 
-        user = [user_id]*(len(possible_recommendations)+1)
+        user = [user_id]*(len(possible_recommendations))
         is_premium = Profile.objects.get(user_id=user_id).is_premium
         # not sure how this comes in, will have to check it out on server
         #score_data = [Feed.get_by_id(x).well_read_score() for x in possible_recommendations]
