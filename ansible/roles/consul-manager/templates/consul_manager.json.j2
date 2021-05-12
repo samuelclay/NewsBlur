@@ -4,10 +4,11 @@
   "enable_debug": true,
   "log_level": "INFO",
   "enable_syslog": false,
-  "advertise_addr": "{{ consul_manager_ip.stdout|trim }}",
+  "retry_join": [{{ consul_manager_ip.stdout|trim }}],
+  {# "advertise_addr": "{{ consul_manager_ip.stdout|trim }}", #}
   "bind_addr": "{% raw %}{{ GetAllInterfaces | include \"name\" \"^eth\" | include \"flags\" \"forwardable|up\" | attr \"address\" }}{% endraw %}",
   "client_addr": "0.0.0.0",
   "server": true,
-  "bootstrap": true,
+  {# "bootstrap": true, #}
   "ui_config": {"enabled": true}
 }

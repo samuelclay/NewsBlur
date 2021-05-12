@@ -14,11 +14,11 @@ with open(TOKEN_FILE) as f:
 
 manager = digitalocean.Manager(token=token)
 my_droplets = manager.get_all_droplets()
-consul_manager_droplet = [d for d in my_droplets if d.name.startswith("db-consul")][0]
+consul_manager_droplets = [d for d in my_droplets if d.name.startswith("db-consul")]
 if OLD:
-    consul_manager_ip_address = consul_manager_droplet.ip_address
+    consul_manager_ip_address = ','.join([f"\"{droplet.ip_address}\"" for droplet in consul_manager_droplets])
 else:
-    consul_manager_ip_address = consul_manager_droplet.private_ip_address
+    consul_manager_ip_address = ','.join([f"\"{droplet.private_ip_address}\"" for droplet in consul_manager_droplets])
 
 print(consul_manager_ip_address)
 

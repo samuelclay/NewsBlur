@@ -1,6 +1,6 @@
 ---
 - name: SETUP -> consul manager containers
-  hosts: db-consul
+  hosts: consul
   vars:
     - update_apt_cache: yes
     - motd_role: db
