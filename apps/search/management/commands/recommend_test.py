@@ -33,6 +33,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         if options['user']:
             user_id = int(options['user'])
+            print(type(user_id))
         #feeds = list(UserSubscription.objects.order_by().values_list('feed_id', flat=True).distinct())
         #feeds = feeds[:2000]
         #doing this so the functions dont fail below, models will fail if you pass feeds in that don't exist
