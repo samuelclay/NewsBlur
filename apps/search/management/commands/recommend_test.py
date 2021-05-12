@@ -38,6 +38,7 @@ class Command(BaseCommand):
         #doing this so the functions dont fail below, models will fail if you pass feeds in that don't exist
         lbe = load(open( 'feed_id' + '-' + 'lbe.pkl', 'rb'))
         feeds = list(lbe.classes_)
+        print(len(lbe.classes_))
         assert isinstance(feeds, list)
         rec_num = 10
         followed_feeds = list(UserSubscription.objects.filter(user=user_id).values_list('feed_id', flat=True))
