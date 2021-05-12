@@ -99,7 +99,7 @@ public class ProfileDetailsFragment extends Fragment implements OnClickListener 
 		followingCount.setText("" + user.followingCount);
 		
 		if (!viewingSelf) {
-			FeedUtils.iconLoader.displayImage(user.photoUrl, imageView, 5, false);
+			FeedUtils.iconLoader.displayImage(user.photoUrl, imageView, true, false);
 			if (user.followedByYou) {
 				unfollowButton.setVisibility(View.VISIBLE);
 				followButton.setVisibility(View.GONE);
@@ -113,7 +113,7 @@ public class ProfileDetailsFragment extends Fragment implements OnClickListener 
 			// seems to sometimes be an error loading the picture so prevent
 			// force close if null returned
 			if (userPicture != null) {
-		        userPicture = UIUtils.clipAndRound(userPicture, 5, false);
+		        userPicture = UIUtils.clipAndRound(userPicture, true, false);
 			    imageView.setImageBitmap(userPicture);
 			}
 		}
