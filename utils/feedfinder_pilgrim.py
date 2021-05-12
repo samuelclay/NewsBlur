@@ -105,7 +105,7 @@ class URLGatekeeper:
     def get(self, url, check=False):
         if check and not self.can_fetch(url): return ''
         try:
-            return requests.get(url, headers=dict(self.urlopener.addheaders)).content
+            return requests.get(url, headers=dict(self.urlopener.addheaders)).text
         except:
             return ''
 
