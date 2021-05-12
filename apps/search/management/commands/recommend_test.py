@@ -109,6 +109,7 @@ class Command(BaseCommand):
                 # need a labelEncoder for each feature
                 lbe = load(open( feat + '-' + 'lbe.pkl', 'rb'))
                 print(lbe.classes_)
+                print(feat)
                 input_df[feat] = lbe.transform(input_df[feat])
                 vocabs[feat] = len(lbe.classes_)
 
