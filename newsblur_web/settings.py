@@ -212,7 +212,7 @@ LOGGING = {
         },
         'readability': {
             'handlers': ['console', 'log_file'],
-            'level': 'INFO',
+            'level': 'WARNING',
             'propagate': False,
         },
         'apps': {
