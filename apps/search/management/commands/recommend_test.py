@@ -137,8 +137,9 @@ class Command(BaseCommand):
         pred_ans = model.predict(test_model_input, batch_size=256)
 
         # lets sort our predictions from highest to lowest
-        results = sorted(dict(zip(feeds, predictions)).items(),  key=lambda x: x[1], reverse=True)
+        results = sorted(dict(zip(feeds,pred_ans)).items(),  key=lambda x: x[1], reverse=True)
 
         # lets grab the top x amount of feeds
-        self.feed_recommendations = results[:rec_num]
+        #self.feed_recommendations = results[:rec_num]
+        print(results[:rec_num])
         return
