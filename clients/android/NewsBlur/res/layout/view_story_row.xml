@@ -41,7 +41,6 @@
         android:layout_marginTop="1dp"
         android:layout_marginBottom="1dp"
         android:layout_alignParentRight="true"
-        android:layout_centerVertical="true"
         android:visibility="gone" />
 
     <ImageView
@@ -51,7 +50,6 @@
         android:layout_marginTop="1dp"
         android:layout_marginBottom="1dp"
         android:layout_toRightOf="@id/story_item_favicon_borderbar_2"
-        android:layout_centerVertical="true"
         android:visibility="gone" />
 
     <ImageView

@@ -557,14 +557,16 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 // the view will display a stale, recycled thumb before the new one loads if the old is not cleared
                 if (thumbnailStyle == ThumbnailStyle.LEFT_LARGE || thumbnailStyle == ThumbnailStyle.LEFT_SMALL) {
                     int thumbSizeGuess = vh.thumbViewLeft.getMeasuredHeight();
+                    boolean roundCorners = thumbnailStyle == ThumbnailStyle.LEFT_SMALL;
                     vh.thumbViewLeft.setImageDrawable(null);
-                    vh.thumbLoader = FeedUtils.thumbnailLoader.displayImage(story.thumbnailUrl, vh.thumbViewLeft, 0, true, thumbSizeGuess, true);
+                    vh.thumbLoader = FeedUtils.thumbnailLoader.displayImage(story.thumbnailUrl, vh.thumbViewLeft, roundCorners, true, thumbSizeGuess, true);
                     vh.thumbViewRight.setVisibility(View.GONE);
                     vh.thumbViewLeft.setVisibility(View.VISIBLE);
                 } else if (thumbnailStyle == ThumbnailStyle.RIGHT_LARGE || thumbnailStyle == ThumbnailStyle.RIGHT_SMALL) {
                     int thumbSizeGuess = vh.thumbViewRight.getMeasuredHeight();
+                    boolean roundCorners = thumbnailStyle == ThumbnailStyle.RIGHT_SMALL;
                     vh.thumbViewRight.setImageDrawable(null);
-                    vh.thumbLoader = FeedUtils.thumbnailLoader.displayImage(story.thumbnailUrl, vh.thumbViewRight, 0, true, thumbSizeGuess, true);
+                    vh.thumbLoader = FeedUtils.thumbnailLoader.displayImage(story.thumbnailUrl, vh.thumbViewRight, roundCorners, true, thumbSizeGuess, true);
                     vh.thumbViewLeft.setVisibility(View.GONE);
                     vh.thumbViewRight.setVisibility(View.VISIBLE);
                 }
@@ -598,7 +600,7 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
         // lists with mixed feeds get added info, but single feeds do not
         if (!singleFeed) {
-            FeedUtils.iconLoader.displayImage(story.extern_faviconUrl, vh.feedIconView, 0, false);
+            FeedUtils.iconLoader.displayImage(story.extern_faviconUrl, vh.feedIconView, false, false);
             vh.feedTitleView.setText(story.extern_feedTitle);
             vh.feedIconView.setVisibility(View.VISIBLE);
             vh.feedTitleView.setVisibility(View.VISIBLE);
@@ -698,6 +700,10 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         if (params != null && params.height != sizeDp) {
             params.height = sizeDp;
             params.width = sizeDp;
+        }
+        if (params != null && (thumbnailStyle == ThumbnailStyle.RIGHT_SMALL || thumbnailStyle == ThumbnailStyle.LEFT_SMALL)) {
+            params.addRule(RelativeLayout.CENTER_VERTICAL);
+            params.setMarginStart(UIUtils.dp2px(context, 8));
         }
 
         if (this.ignoreReadStatus || (! story.read)) {
