@@ -91,6 +91,7 @@ class Command(BaseCommand):
         input_df = pd.DataFrame(feed_,columns=SPARSE_FEATURES + DENSE_FEATURES)
         #input_df['active'] = [Feed.objects.get(pk=x).active for x in possible_recommendations]
         input_df['user'],input_df['feed_id'] =user,possible_recommendations
+        input_df['is_premium'] = [is_premium] * len(possible_recommendations)
         input_df['user_shared_stories_count'] = [user_shared_stories_count] * len(possible_recommendations)
 
         ### should be all the current fields
