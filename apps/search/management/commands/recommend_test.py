@@ -108,8 +108,8 @@ class Command(BaseCommand):
         for feat in SPARSE_FEATURES:
                 # need a labelEncoder for each feature
                 lbe = load(open( feat + '-' + 'lbe.pkl', 'rb'))
-                print(lbe.classes_)
                 print(feat)
+                print(lbe.classes_)
                 input_df[feat] = lbe.transform(input_df[feat])
                 vocabs[feat] = len(lbe.classes_)
 
