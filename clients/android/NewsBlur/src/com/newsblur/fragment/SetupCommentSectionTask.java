@@ -118,7 +118,7 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 					ImageView favouriteImage = new ImageView(context);
 					UserProfile user = FeedUtils.dbHelper.getUserProfile(id);
                     if (user != null) {
-                        FeedUtils.iconLoader.displayImage(user.photoUrl, favouriteImage, 10f, false);
+                        FeedUtils.iconLoader.displayImage(user.photoUrl, favouriteImage, true, false);
                         favouriteContainer.addView(favouriteImage);
                     }
 				}
@@ -166,7 +166,7 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 
                 final UserProfile replyUser = FeedUtils.dbHelper.getUserProfile(reply.userId);
 				if (replyUser != null) {
-					FeedUtils.iconLoader.displayImage(replyUser.photoUrl, replyImage, 5, false);
+					FeedUtils.iconLoader.displayImage(replyUser.photoUrl, replyImage, true, false);
 					replyImage.setOnClickListener(new OnClickListener() {
 						@Override
 						public void onClick(View view) {
@@ -229,11 +229,11 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 
                 UserProfile sourceUser = FeedUtils.dbHelper.getUserProfile(comment.sourceUserId);
 				if (sourceUser != null) {
-					FeedUtils.iconLoader.displayImage(sourceUser.photoUrl, sourceUserImage, 10f, false);
-					FeedUtils.iconLoader.displayImage(userPhoto, usershareImage, 10f, false);
+					FeedUtils.iconLoader.displayImage(sourceUser.photoUrl, sourceUserImage, true, false);
+					FeedUtils.iconLoader.displayImage(userPhoto, usershareImage, true, false);
 				}
 			} else {
-				FeedUtils.iconLoader.displayImage(userPhoto, commentImage, 10f, false);
+				FeedUtils.iconLoader.displayImage(userPhoto, commentImage, true, false);
 			}
 
 			commentImage.setOnClickListener(new OnClickListener() {
