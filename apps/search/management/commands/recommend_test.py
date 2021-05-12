@@ -117,7 +117,7 @@ class Command(BaseCommand):
         mms = MinMaxScaler(feature_range=(0,1))
         # shouldn't need to save and load a ranged numerical features model like minmaxscaler
         #mms = load(open('minmax.pkl', 'rb'))
-        input_df[DENSE_FEATURES] = mms.transform(input_df[DENSE_FEATURES])
+        input_df[DENSE_FEATURES] = mms.fit_transform(input_df[DENSE_FEATURES])
 
 
         fixlen_feature_columns = [SparseFeat(feat, vocabulary_size=vocabs[feat],embedding_dim=16)
