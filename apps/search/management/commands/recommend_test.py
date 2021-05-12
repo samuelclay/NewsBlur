@@ -40,7 +40,7 @@ class Command(BaseCommand):
         lbe = load(open( 'feed_id' + '-' + 'lbe.pkl', 'rb'))
         feeds = list(lbe.classes_)
         print(len(lbe.classes_))
-        feeds = feeds[:2000]
+        feeds = feeds[:25000]
         assert isinstance(feeds, list)
         rec_num = 10
         followed_feeds = list(UserSubscription.objects.filter(user=user_id).values_list('feed_id', flat=True))
