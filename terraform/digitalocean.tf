@@ -28,8 +28,9 @@ resource "digitalocean_ssh_key" "default" {
 # #################
 
 resource "digitalocean_droplet" "db-consul" {
+  count    = 3
   image    = var.droplet_os
-  name     = "db-consul"
+  name     = "db-consul${count.index+1}"
   region   = var.droplet_region
   size     = var.droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]

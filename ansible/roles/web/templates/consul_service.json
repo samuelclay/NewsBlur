@@ -9,7 +9,8 @@
         "checks": [{
             "id": "{{inventory_hostname}}-web-ping",
             "http": "http://{{ ansible_ssh_host }}:8000/_haproxychk",
-            "interval": "15s"
+            "interval": "15s",
+            "failures_before_critical": 10
         }]
     }
 }  
