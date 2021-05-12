@@ -189,10 +189,6 @@ LOGGING = {
             # 'filters': ['require_debug_false'],
             'include_html': True,
         },
-        # 'sentry': {
-        #     'level': 'ERROR',
-        #     'class': 'raven.contrib.django.raven_compat.handlers.SentryHandler'
-        # },
     },
     'loggers': {
         'django': {
@@ -216,7 +212,7 @@ LOGGING = {
         },
         'readability': {
             'handlers': ['console', 'log_file'],
-            'level': 'DEBUG',
+            'level': 'INFO',
             'propagate': False,
         },
         'apps': {
@@ -224,16 +220,6 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': True,
         },
-        # 'raven': {
-        #     'level': 'DEBUG',
-        #     'handlers': ['console'],
-        #     'propagate': False,
-        # },
-        # 'sentry.errors': {
-        #     'level': 'DEBUG',
-        #     'handlers': ['console'],
-        #     'propagate': False,
-        # },
     },
     'filters': {
         'require_debug_false': {

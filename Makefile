@@ -36,7 +36,7 @@ alllogs:
 # brings down containers
 down:
 	- docker-compose -f docker-compose.yml down
-nb-down: down
+nbdown: down
 
 # runs tests
 test:
