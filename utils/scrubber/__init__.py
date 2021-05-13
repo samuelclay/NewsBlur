@@ -39,7 +39,7 @@ def urlize(text, trim_url_limit=None, nofollow=False, autoescape=False):
         ('|'.join([re.escape(x) for x in LEADING_PUNCTUATION]),
         '|'.join([re.escape(x) for x in TRAILING_PUNCTUATION])))
     simple_email_re = re.compile(r'^\S+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+$')
-    del x # Temporary variable
+    # del x # Temporary variable
 
     def escape(html):
         return html.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;').replace('"', '&quot;').replace("'", '&#39;')
