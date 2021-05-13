@@ -2943,10 +2943,10 @@ class MStarredStory(mongo.DynamicDocument):
     
     def save(self, *args, **kwargs):
         if self.story_content:
-            self.story_content_z = zlib.compress(self.story_content)
+            self.story_content_z = zlib.compress(smart_bytes(self.story_content))
             self.story_content = None
         if self.story_original_content:
-            self.story_original_content_z = zlib.compress(self.story_original_content)
+            self.story_original_content_z = zlib.compress(smart_bytes(self.story_original_content))
             self.story_original_content = None
         self.story_hash = self.feed_guid_hash
         self.starred_updated = datetime.datetime.now()

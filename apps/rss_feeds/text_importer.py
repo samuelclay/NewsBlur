@@ -153,7 +153,7 @@ class TextImporter:
 
         if content and len(content) > len(original_story_content):
             if self.story and not skip_save:
-                self.story.original_text_z = zlib.compress(smart_str(content).encode())
+                self.story.original_text_z = zlib.compress(smart_bytes(content))
                 try:
                     self.story.save()
                 except NotUniqueError as e:
