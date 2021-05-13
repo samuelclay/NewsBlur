@@ -123,6 +123,10 @@ deploy_staging:
 staging: deploy_staging
 celery_stop:
 	- ansible-playbook ansible/deploy.yml -l task --tags stop
+maintenance_on:
+	- ansible-playbook ansible/deploy.yml -l web --tags maintenance_on
+maintenance_off:
+	- ansible-playbook ansible/deploy.yml -l web --tags maintenance_off
 
 # Provision
 firewall:
