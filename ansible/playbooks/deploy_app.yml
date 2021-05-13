@@ -91,10 +91,26 @@
       # when: pulled.changed
       tags:
         - static
-
+    
     - name: Start Consul
       become: yes
       service:
         name: consul
         state: started
         enabled: true
+
+    - name: Entering maintenance mode
+      template:
+        src: /srv/newsblur/templates/maintenance_off.html
+        dest: /srv/newsblur/templates/maintenance_on.html
+      tags:
+        - never
+        - maintenance_on
+
+    - name: Leaving maintenance mode
+      file:
+        path: /srv/newsblur/templates/maintenance_on.html
+        state: absent
+      tags:
+        - never
+        - maintenance_off
