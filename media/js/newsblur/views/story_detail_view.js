@@ -244,7 +244,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                         <%= story.story_content() %>\
                     <% } %>\
                 </div>\
-                <div class="NB-story-content-expander">\
+                <div class="NB-story-content-expander" role="button">\
                     <div class="NB-story-content-expander-inner">\
                         <div class="NB-story-cutoff"></div>\
                         <div class="NB-story-content-expander-text">Read the whole story</div>\
@@ -254,20 +254,20 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             </div>\
             <div class="NB-feed-story-comments-container"></div>\
             <div class="NB-feed-story-sideoptions-container">\
-                <div class="NB-sideoption NB-feed-story-email">\
+                <div class="NB-sideoption NB-feed-story-email" role="button">\
                     <div class="NB-sideoption-icon">&nbsp;</div>\
                     <div class="NB-sideoption-title">Email <span>this story</span></div>\
                 </div>\
-                <div class="NB-sideoption NB-feed-story-train">\
+                <div class="NB-sideoption NB-feed-story-train" role="button">\
                     <div class="NB-sideoption-icon">&nbsp;</div>\
                     <div class="NB-sideoption-title">Train <span>this story</span></div>\
                 </div>\
-                <div class="NB-sideoption NB-feed-story-save">\
+                <div class="NB-sideoption NB-feed-story-save" role="button">\
                     <div class="NB-sideoption-icon">&nbsp;</div>\
                     <div class="NB-sideoption-title"><%= story.get("starred") ? "Saved" : "Save <span>this story</span>" %></div>\
                 </div>\
                 <%= story_save_view %>\
-                <div class="NB-sideoption NB-feed-story-share">\
+                <div class="NB-sideoption NB-feed-story-share" role="button">\
                     <div class="NB-sideoption-icon">&nbsp;</div>\
                     <div class="NB-sideoption-title"><%= story.get("shared") ? "Shared" : "Share <span>this story</span>" %></div>\
                 </div>\
