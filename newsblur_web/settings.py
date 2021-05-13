@@ -449,11 +449,11 @@ CELERY_BEAT_SCHEDULE = {
         'schedule': datetime.timedelta(hours=6),
         'options': {'queue': 'cron_queue'},
     },
-    'clean-spam': {
-        'task': 'clean-spam',
-        'schedule': datetime.timedelta(hours=1),
-        'options': {'queue': 'cron_queue'},
-    },
+    # 'clean-spam': {
+    #     'task': 'clean-spam',
+    #     'schedule': datetime.timedelta(hours=1),
+    #     'options': {'queue': 'cron_queue'},
+    # },
     'clean-social-spam': {
         'task': 'clean-social-spam',
         'schedule': datetime.timedelta(hours=6),
