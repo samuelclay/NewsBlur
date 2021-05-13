@@ -13,6 +13,7 @@ from OpenSSL.SSL import Error as OpenSSLError
 from pyasn1.error import PyAsn1Error
 from django.utils.encoding import smart_str
 from django.conf import settings
+from django.utils.encoding import smart_bytes
 from django.contrib.sites.models import Site
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin
