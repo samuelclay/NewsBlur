@@ -57,6 +57,7 @@
     src: /srv/secrets-newsblur/configs/hosts
     dest: /etc/hosts
   tags: hosts
+  notify: reload dnsmasq
 
 - name: "Add inventory_hostname to /etc/hosts"
   become: yes
