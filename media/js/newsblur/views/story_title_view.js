@@ -7,6 +7,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
         "click .NB-story-title"         : "select_story",
         "contextmenu .NB-story-title"   : "show_manage_menu_rightclick",
         "click .NB-story-manage-icon"   : "show_manage_menu",
+        "click .NB-storytitles-sentiment": "show_manage_menu",
         "click .NB-storytitles-shares"  : "select_story_shared",
         "mouseenter .NB-story-title"    : "mouseenter_manage_icon",
         "mouseleave .NB-story-title"    : "mouseleave_manage_icon"
@@ -54,7 +55,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
         <div class="NB-story-title <% if (!show_content_preview) { %>NB-story-title-hide-preview<% } %> <% if (show_image_preview) { %>NB-has-image<% } %> ">\
             <div class="NB-storytitles-feed-border-inner"></div>\
             <div class="NB-storytitles-feed-border-outer"></div>\
-            <div class="NB-storytitles-sentiment"></div>\
+            <div class="NB-storytitles-sentiment" role="button"></div>\
             <% if (show_image_preview) { %>\
                 <div class="NB-storytitles-story-image-container">\
                     <div class="NB-storytitles-story-image" <% if (story.image_url()) { %>style="background-image: none, url(\'<%= story.image_url() %>\');"<% } %>></div>\
@@ -85,7 +86,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
                     <% }) %>\
                 </div>\
             <% } %>\
-            <div class="NB-story-manage-icon"></div>\
+            <div class="NB-story-manage-icon" role="button"></div>\
         </div>\
         <div class="NB-story-detail"></div>\
     '),
@@ -110,7 +111,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
                     <div class="NB-storytitles-star"></div>\
                     <div class="NB-storytitles-share"></div>\
                     <div class="NB-storytitles-sentiment"></div>\
-                    <div class="NB-story-manage-icon"></div>\
+                    <div class="NB-story-manage-icon" role="button"></div>\
                     <span class="NB-storytitles-title"><%= story.get("story_title") %></span>\
                     <% if (show_content_preview) { %>\
                         <div class="NB-storytitles-content-preview"><%= show_content_preview %></div>\
