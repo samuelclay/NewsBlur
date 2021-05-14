@@ -9,6 +9,7 @@
     - motd_role: app
   roles:
     - {role: 'base', tags: 'base'}
+    - {role: 'ufw', tags: 'ufw'}
     - {role: 'docker', tags: 'docker'}
     - {role: 'repo', tags: 'repo'}
     - {role: 'dnsmasq', tags: 'dnsmasq'}

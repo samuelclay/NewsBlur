@@ -1,9 +1,11 @@
 ---
 - name: Stop ufw and delete all rules
+  become: yes
   ufw: state=reset
   tags: ufw
 
 - name: Set firewall default policy
+  become: yes
   ufw: state=disabled policy=reject
   tags: ufw
 #
@@ -16,18 +18,22 @@
 #   tags: ufw
   
 - name: Allow ssh
+  become: yes
   ufw: rule=allow port=22
   tags: ufw
 
 - name: Allow nginx
+  become: yes
   ufw: rule=allow port=80
   tags: ufw
 
 - name: Allow nginx SSL
+  become: yes
   ufw: rule=allow port=443
   tags: ufw
 
 - name: Allow all access from RFC1918 networks to this host
+  become: yes
   ufw:
     rule: allow
     src: '{{ item }}'
@@ -35,6 +41,7 @@
     - 10.0.0.0/8
   
 - name: Allow all access from inventory hosts old + new
+  become: yes
   ufw:
     rule: allow
     src: '{{ item }}'
@@ -45,6 +52,7 @@
     - ufw
 
 - name: Allow all access from inventory hosts with docker
+  become: yes
   ufw:
     rule: allow
     src: '{{ item }}'
@@ -55,5 +63,6 @@
     - ufw
 
 - name: Start ufw
+  become: yes
   ufw: state=enabled
   tags: ufw

@@ -5,7 +5,6 @@
   # serial: "50%"
   vars_files:
     - ../env_vars/base.yml
-    - ../env_vars/dev.yml
 
   tasks:
     # - name: Leave consul
