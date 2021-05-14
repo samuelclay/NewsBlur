@@ -1831,7 +1831,7 @@ hr {
 .NB-story-title .NB-storytitles-story-image {
     position: absolute;
     right: 0;
-    width: 86px;
+    width: 78px;
     height: 100%;
     background-size: 40%, cover;
     background-position: 50% 50%, 50% 30%;
@@ -2792,7 +2792,7 @@ body {
 .NB-image-preview-small-left:not(.NB-story-layout-grid) .NB-storytitles-story-image {
     width: 62px;
     height: 70%;
-    left: 24px;
+    left: 22px;
     top: 7px;
     border-radius: 6px;
 }
