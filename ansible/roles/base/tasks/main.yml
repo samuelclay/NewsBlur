@@ -65,3 +65,10 @@
     path: /etc/hosts
     line: "127.0.0.1 {{ inventory_hostname }}"
   tags: hosts
+
+- name: Set hostname
+  become: yes
+  hostname:
+    name: "{{ inventory_hostname }}"
+  tags: hosts
+  
