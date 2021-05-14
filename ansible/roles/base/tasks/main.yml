@@ -39,9 +39,6 @@
   become: yes
   copy: "src=motd.{{ motd_role }}.txt dest=/etc/update-motd.d/52-nb-motd mode=0755"
 
-- include: ufw.yml
-  become: yes
-
 - name: Ensure repo directory
   become: yes
   file:
@@ -50,6 +47,13 @@
     owner: "{{ ansible_effective_user_id|int }}"
     group: "{{ ansible_effective_group_id|int }}"
     recurse: yes
+
+- name: "Add {{ ansible_ssh_user }} to docker group"
+  become: yes
+  user:
+    name: "{{ ansible_ssh_user }}"
+    groups: docker
+    append: yes
 
 - name: Copy /etc/hosts from old installation (remove when upgraded)
   become: yes

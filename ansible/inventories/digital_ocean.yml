@@ -3,10 +3,10 @@ strict: False
 
 groups:
   
-  haproxy: inventory_hostname.startswith('www')
+  haproxy: inventory_hostname.startswith('www') or inventory_hostname.startswith('staging')
 
   web: inventory_hostname.startswith('app')
-  app: inventory_hostname.startswith('app')
+  app: inventory_hostname.startswith('app') or inventory_hostname.startswith('staging')
   django: inventory_hostname.startswith('app-django')
   refresh: inventory_hostname.startswith('app-refresh')
   counts: inventory_hostname.startswith('app-counts')
@@ -14,7 +14,7 @@ groups:
 
   work: inventory_hostname.startswith('task-work')
 
-  node: inventory_hostname.startswith('node')
+  node: inventory_hostname.startswith('node') or inventory_hostname.startswith('staging')
   node_socket: inventory_hostname.startswith('node-socket')
 
   # debugs: inventory_hostname.startswith('debug')
