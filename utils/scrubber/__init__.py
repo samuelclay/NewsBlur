@@ -54,6 +54,7 @@ def urlize(text, trim_url_limit=None, nofollow=False, autoescape=False):
         if match:
             lead, middle, trail = match.groups()
             middle = middle.encode('utf-8')
+            middle = middle.decode('utf-8') # Bytes to str
             # Make URL we want to point to.
             url = None
             if middle.startswith('http://') or middle.startswith('https://'):
