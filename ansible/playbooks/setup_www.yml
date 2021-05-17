@@ -15,6 +15,7 @@
     - {role: 'dnsmasq', tags: 'dnsmasq'}
     - {role: 'consul', tags: 'consul'}
     - {role: 'consul-client', tags: 'consul'}
+    - {role: 'node-exporter', tags: 'node-exporter'}
     - {role: 'monitor', tags: 'monitor'}
     - {role: 'letsencrypt', tags: 'letsencrypt'}
     - {role: 'haproxy', tags: 'haproxy'}
