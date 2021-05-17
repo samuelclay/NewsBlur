@@ -15,5 +15,6 @@
     - {role: 'dnsmasq', tags: 'dnsmasq'}
     - {role: 'consul', tags: 'consul'}
     - {role: 'consul-client', tags: 'consul'}
+    - {role: 'node-exporter', tags: 'node-exporter'}
     - {role: 'postgres', tags: 'postgres'}
     - {role: 'monitor', tags: 'monitor'}
