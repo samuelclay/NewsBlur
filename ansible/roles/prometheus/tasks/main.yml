@@ -1,4 +1,10 @@
 ---
+- name: Register Manager IP
+  run_once: yes
+  become: no
+  register: consul_manager_ip
+  local_action: command /srv/newsblur/ansible/roles/consul/tasks/get_consul_manager_ip.py
+
 - name: Template file for prometheus
   template:
     src: /srv/newsblur/docker/prometheus/prometheus.consul.yml.j2
