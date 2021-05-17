@@ -35,7 +35,7 @@ resource "digitalocean_droplet" "db-consul" {
   size     = var.droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
-    command = "/srv/newsblur/ansible/utils/generate.py; sleep 120"
+    command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
   }
   provisioner "local-exec" {
     command = "cd ..; ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
@@ -52,7 +52,7 @@ resource "digitalocean_droplet" "www" {
   size     = var.droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
-    command = "/srv/newsblur/ansible/utils/generate.py; sleep 120"
+    command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
   }
   provisioner "local-exec" {
     command = "cd ..; ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
@@ -70,7 +70,7 @@ resource "digitalocean_droplet" "app-django" {
   size     = var.droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
-    command = "/srv/newsblur/ansible/utils/generate.py; sleep 120"
+    command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
   }
   provisioner "local-exec" {
     command = "cd ..; ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
@@ -88,7 +88,7 @@ resource "digitalocean_droplet" "app-counts" {
   size     = var.droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
-    command = "/srv/newsblur/ansible/utils/generate.py; sleep 120"
+    command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
   }
   provisioner "local-exec" {
     command = "cd ..; ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
@@ -106,7 +106,7 @@ resource "digitalocean_droplet" "app-push" {
   size     = var.droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
-    command = "/srv/newsblur/ansible/utils/generate.py; sleep 120"
+    command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
   }
   provisioner "local-exec" {
     command = "cd ..; ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
@@ -124,7 +124,7 @@ resource "digitalocean_droplet" "app-refresh" {
   size     = var.droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
-    command = "/srv/newsblur/ansible/utils/generate.py; sleep 120"
+    command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
   }
   provisioner "local-exec" {
     command = "cd ..; ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
@@ -141,7 +141,7 @@ resource "digitalocean_droplet" "staging-web" {
   size     = var.droplet_size_20
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
-    command = "/srv/newsblur/ansible/utils/generate.py; sleep 120"
+    command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
   }
   provisioner "local-exec" {
     command = "cd ..; ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
@@ -158,7 +158,7 @@ resource "digitalocean_droplet" "discovery" {
   size     = var.droplet_size_120
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
-    command = "/srv/newsblur/ansible/utils/generate.py; sleep 120"
+    command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
   }
   provisioner "local-exec" {
     command = "cd ..; ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
@@ -175,7 +175,7 @@ resource "digitalocean_droplet" "node-text" {
   size     = var.droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
-    command = "/srv/newsblur/ansible/utils/generate.py; sleep 120"
+    command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
   }
   provisioner "local-exec" {
     command = "cd ..; ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
@@ -193,7 +193,7 @@ resource "digitalocean_droplet" "node-socket" {
   size     = var.droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
-    command = "/srv/newsblur/ansible/utils/generate.py; sleep 120"
+    command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
   }
   provisioner "local-exec" {
     command = "cd ..; ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
@@ -210,7 +210,7 @@ resource "digitalocean_droplet" "node-favicons" {
   size     = var.droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
-    command = "/srv/newsblur/ansible/utils/generate.py; sleep 120"
+    command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
   }
   provisioner "local-exec" {
     command = "cd ..; ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
@@ -227,7 +227,7 @@ resource "digitalocean_droplet" "node-images" {
   size     = var.droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
-    command = "/srv/newsblur/ansible/utils/generate.py; sleep 120"
+    command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
   }
   provisioner "local-exec" {
     command = "cd ..; ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
@@ -244,7 +244,7 @@ resource "digitalocean_droplet" "node-page" {
   size     = var.droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
-    command = "/srv/newsblur/ansible/utils/generate.py; sleep 120"
+    command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
   }
   provisioner "local-exec" {
     command = "cd ..; ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
@@ -261,7 +261,7 @@ resource "digitalocean_droplet" "db-elasticsearch" {
   size     = var.droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
-    command = "/srv/newsblur/ansible/utils/generate.py; sleep 120"
+    command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
   }
   provisioner "local-exec" {
     command = "cd ..; ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
@@ -278,7 +278,7 @@ resource "digitalocean_droplet" "db-redis-user" {
   size     = var.droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
-    command = "/srv/newsblur/ansible/utils/generate.py; sleep 120"
+    command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
   }
   provisioner "local-exec" {
     command = "cd ..; ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
@@ -295,7 +295,7 @@ resource "digitalocean_droplet" "db-redis-sessions" {
   size     = var.droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
-    command = "/srv/newsblur/ansible/utils/generate.py; sleep 120"
+    command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
   }
   provisioner "local-exec" {
     command = "cd ..; ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
@@ -312,7 +312,7 @@ resource "digitalocean_droplet" "db-redis-story" {
   size     = var.droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
-    command = "/srv/newsblur/ansible/utils/generate.py; sleep 120"
+    command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
   }
   provisioner "local-exec" {
     command = "cd ..; ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
@@ -329,7 +329,7 @@ resource "digitalocean_droplet" "db-redis-pubsub" {
   size     = var.droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
-    command = "/srv/newsblur/ansible/utils/generate.py; sleep 120"
+    command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
   }
   provisioner "local-exec" {
     command = "cd ..; ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
@@ -346,7 +346,7 @@ resource "digitalocean_droplet" "db-postgres" {
   size     = var.droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
-    command = "/srv/newsblur/ansible/utils/generate.py; sleep 120"
+    command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
   }
   provisioner "local-exec" {
     command = "cd ..; ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
@@ -374,7 +374,7 @@ resource "digitalocean_droplet" "db-mongo-primary" {
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   volume_ids = [element(digitalocean_volume.mongo_volume.*.id, count.index)]
   provisioner "local-exec" {
-    command = "/srv/newsblur/ansible/utils/generate.py; sleep 120"
+    command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
   }
   provisioner "local-exec" {
     command = "cd ..; ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
@@ -402,7 +402,7 @@ resource "digitalocean_droplet" "db-mongo-secondary" {
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   volume_ids = [element(digitalocean_volume.mongo_secondary_volume.*.id, count.index)]
   provisioner "local-exec" {
-    command = "/srv/newsblur/ansible/utils/generate.py; sleep 120"
+    command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
   }
   provisioner "local-exec" {
     command = "cd ..; ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
@@ -419,7 +419,7 @@ resource "digitalocean_droplet" "db-mongo-secondary" {
 #   size     = var.droplet_size
 #   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
 #   provisioner "local-exec" {
-#     command = "/srv/newsblur/ansible/utils/generate.py; sleep 120"
+#     command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
 #   }
 #   provisioner "local-exec" {
 #     command = "cd ..; ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
@@ -436,7 +436,7 @@ resource "digitalocean_droplet" "db-metrics" {
   size     = var.droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
-    command = "/srv/newsblur/ansible/utils/generate.py; sleep 120"
+    command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
   }
   provisioner "local-exec" {
     command = "cd ..; ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
@@ -454,7 +454,7 @@ resource "digitalocean_droplet" "task-celery" {
   size     = var.droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
-    command = "/srv/newsblur/ansible/utils/generate.py; sleep 120"
+    command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
   }
   provisioner "local-exec" {
     command = "cd ..; ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
@@ -472,7 +472,7 @@ resource "digitalocean_droplet" "task-work" {
   size     = var.droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
-    command = "/srv/newsblur/ansible/utils/generate.py; sleep 120"
+    command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
   }
   provisioner "local-exec" {
     command = "cd ..; ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
