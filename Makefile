@@ -67,15 +67,14 @@ list:
 	- doctl -t `cat /srv/secrets-newsblur/keys/digital_ocean.token` compute droplet list
 ansible-deps:
 	ansible-galaxy install -p roles -r ansible/roles/requirements.yml --roles-path ansible/roles
-refresh:
+tfrefresh:
 	terraform -chdir=terraform refresh
 plan:
 	terraform -chdir=terraform plan -refresh=false
 apply:
 	terraform -chdir=terraform apply -refresh=false
-generate:
+inventory:
 	- ./ansible/utils/generate.py
-gen: generate
 
 # Docker
 build_web:
