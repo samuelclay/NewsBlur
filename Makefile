@@ -75,7 +75,7 @@ plan:
 apply:
 	terraform -chdir=terraform apply -refresh=false
 inventory:
-	- ./ansible/utils/generate.py
+	- ./ansible/utils/generate_inventory.py
 
 # Docker
 pull:
@@ -89,7 +89,7 @@ build_node:
 	- docker image build . --file=docker/node/Dockerfile --tag=newsblur/newsblur_node
 build_monitor: 
 	- docker image build . --file=docker/monitor/Dockerfile --tag=newsblur/newsblur_monitor
-build_images: build_web build_node build_monitor
+build: build_web build_node build_monitor
 push_web: build_web
 	- docker push newsblur/newsblur_python3
 push_node: build_node
@@ -97,7 +97,7 @@ push_node: build_node
 push_monitor: build_monitor
 	- docker push newsblur/newsblur_monitor
 push_images: push_web push_node push_monitor
-push: build_images push_images
+push: build push_images
 
 # Tasks
 deploy_web:
