@@ -14,6 +14,7 @@ rebuild:
 
 #creates newsblur, builds new images, and creates/refreshes SSL keys
 nb:
+	- make pull
 	- CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker-compose down
 	- [[ -d config/certificates ]] && echo "keys exist" || make keys
 	- cd node && npm install & cd ..
@@ -77,6 +78,11 @@ inventory:
 	- ./ansible/utils/generate.py
 
 # Docker
+pull:
+	- docker pull newsblur/newsblur_python3
+	- docker pull newsblur/newsblur_node
+	- newsblur/newsblur_monitor
+
 build_web:
 	- docker image build . --file=docker/newsblur_base_image.Dockerfile --tag=newsblur/newsblur_python3
 build_node: 
