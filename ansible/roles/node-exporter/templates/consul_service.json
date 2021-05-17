@@ -1,0 +1,19 @@
+{
+    "service": {
+        "name": "{{ inventory_hostname|regex_replace('\d+', '') }}-node-exporter",
+        "id": "{{ inventory_hostname }}-node-exporter",
+        "tags": [
+            "node-exporter"
+        ],
+        "port": 9100,
+        "checks": [
+            {
+                "id": "{{inventory_hostname}}-node-exporter-ping",
+                "http": "http://{{ ansible_ssh_host }}:9100",
+                "interval": "15s",
+                "failures_before_critical": 4
+            }
+        ]
+    }
+}
+}
