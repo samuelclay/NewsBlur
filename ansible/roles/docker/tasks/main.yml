@@ -14,3 +14,10 @@
     name: docker
     state: started
     enabled: yes
+
+- name: "Add {{ ansible_ssh_user }} to docker group"
+  become: yes
+  user:
+    name: "{{ ansible_ssh_user }}"
+    groups: docker
+    append: yes

@@ -23,3 +23,5 @@
   when: "'staging' in group_names"
 - import_playbook: playbooks/setup_discovery.yml
   when: "'discovery' in inventory_hostname"
+- import_playbook: playbooks/setup_metrics.yml
+  when: "'metrics' in inventory_hostname"
