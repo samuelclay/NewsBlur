@@ -32,11 +32,14 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         if options['user']:
-            users = list(options['user'])
+            users = options['user'].split(',')
+            users = list(users)
+            users = [int(x) for x in users]
             print('num of users for run: ' + str(len(users)))
 
             lbe = load(open( 'feed_id' + '-' + 'lbe.pkl', 'rb'))
             feeds = list(lbe.classes_)
+            feeds = feeds[:2000]
             print(len(lbe.classes_))
             assert isinstance(feeds, list)
             rec_num = 10
@@ -67,11 +70,11 @@ class Command(BaseCommand):
             print('through the loop')
             # this is all data for data points that are feed data specific
             # add this key so we can run model on correct feeds after they've been transformed
-            feed_info = pd.DataFrame(feed_,columns=[feed_[0].keys() + 'feed_id-key'])
+            feed_info = pd.DataFrame(feed_,columns=list(feed_[0].keys()) + ['feed_id-key'])
             feed_info['feed_id-key'] = feeds
 
             vocabs = {}
-            for feat in list(set(feed_info.columns()) & set(SPARSE_FEATURES)):
+            for feat in list(set(feed_info.columns) & set(SPARSE_FEATURES)):
                 # need a labelEncoder for each feature
                 lbe = load(open( feat + '-' + 'lbe.pkl', 'rb'))
                 print(feat)
@@ -119,7 +122,7 @@ class Command(BaseCommand):
                 #mms = load(open('minmax.pkl', 'rb'))
                 input_df[DENSE_FEATURES] = mms.fit_transform(input_df[DENSE_FEATURES])
 
-                remaining = set(SPARSE_FEATURES) - set(vocab.keys())
+                remaining = set(SPARSE_FEATURES) - set(vocabs.keys())
                 print(remaining)
                 items = {}
                 for feat in remaining:
