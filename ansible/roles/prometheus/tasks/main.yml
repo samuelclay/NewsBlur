@@ -1,10 +1,4 @@
 ---
-- name: Register Manager IP
-  run_once: yes
-  become: no
-  register: consul_manager_ip
-  local_action: command /srv/newsblur/ansible/roles/consul/tasks/get_consul_manager_ip.py
-
 - name: Template file for prometheus
   template:
     src: /srv/newsblur/docker/prometheus/prometheus.consul.yml.j2
@@ -14,12 +8,12 @@
   become: yes
   docker_container:
     name: prometheus
-    image: prom/prometheus:0.18.0
+    image: prom/prometheus
+    user: root
     state: started
     network_mode: host
     restart_policy: unless-stopped
-    command: '-config.file=/etc/prometheus/prometheus.yml'
-    ports:
+    expose:
       - "9090:9090"
     volumes:
       - /srv/newsblur/docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml

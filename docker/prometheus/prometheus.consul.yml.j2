@@ -2,83 +2,82 @@ global:
     scrape_interval: 5s
 scrape_configs:
     - job_name: 'consul-services'
-        - targets: ['localhost:]
       consul_sd_configs:
-      - server: '{{ consul_manager_ip }}:8500'
-      services: [node-exporter]
+      - server: 'db-consul.service.nyc1.consul:8500'
+        services: [node-exporter]
   
     - job_name: 'app_servers'
-      target_groups:
+      static_configs:
         - targets: ['haproxy.service.nyc1.consul']
       metrics_path: /monitor/app-servers
       scheme: https
     - job_name: 'app_times'
-      target_groups:
+      static_configs:
         - targets: ['haproxy.service.nyc1.consul']
       metrics_path: /monitor/app-times
       scheme: https
     - job_name: 'classifiers'
-      target_groups:
+      static_configs:
         - targets: ['haproxy.service.nyc1.consul']
       metrics_path: /monitor/classifiers
       scheme: https
     - job_name: 'db_times'
-      target_groups:
+      static_configs:
         - targets: ['haproxy.service.nyc1.consul']
       metrics_path: /monitor/db-times
       scheme: https
     - job_name: 'errors'
-      target_groups:
+      static_configs:
         - targets: ['haproxy.service.nyc1.consul']
       metrics_path: /monitor/errors
       scheme: https
     - job_name: 'feed_counts'
-      target_groups:
+      static_configs:
         - targets: ['haproxy.service.nyc1.consul']
       metrics_path: /monitor/feed-counts
       scheme: https
     - job_name: 'feeds'
-      target_groups:
+      static_configs:
         - targets: ['haproxy.service.nyc1.consul']
       metrics_path: /monitor/feeds
       scheme: https
     - job_name: 'load_times'
-      target_groups:
+      static_configs:
         - targets: ['haproxy.service.nyc1.consul']
       metrics_path: /monitor/load-times
       scheme: https
     - job_name: 'stories'
-      target_groups:
+      static_configs:
         - targets: ['haproxy.service.nyc1.consul']
       metrics_path: /monitor/stories
       scheme: https
     - job_name: 'task_codes'
-      target_groups:
+      static_configs:
         - targets: ['haproxy.service.nyc1.consul']
       metrics_path: /monitor/task-codes
       scheme: https
     - job_name: 'task_pipeline'
-      target_groups:
+      static_configs:
         - targets: ['haproxy.service.nyc1.consul']
       metrics_path: /monitor/task-pipeline
       scheme: https
     - job_name: 'task_servers'
-      target_groups:
+      static_configs:
         - targets: ['haproxy.service.nyc1.consul']
       metrics_path: /monitor/task-servers
       scheme: https
     - job_name: 'task_times'
-      target_groups:
+      static_configs:
         - targets: ['haproxy.service.nyc1.consul']
       metrics_path: /monitor/task-times
       scheme: https
     - job_name: 'updates'
-      target_groups:
+      static_configs:
         - targets: ['haproxy.service.nyc1.consul']
       metrics_path: /monitor/updates
       scheme: https
     - job_name: 'users'
-      target_groups:
+      static_configs:
         - targets: ['haproxy.service.nyc1.consul']
       metrics_path: /monitor/users
       scheme: https
