@@ -151,7 +151,10 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
         if (isRowGlobalSharedStories(groupPosition)) {
             if (v == null) v = inflater.inflate(R.layout.row_global_shared_stories, null, false);
         } else if (isRowAllSharedStories(groupPosition)) {
-			if (v == null) v =  inflater.inflate(R.layout.row_all_shared_stories, null, false);
+            if (socialFeedsOrdered.isEmpty()) {
+                return inflater.inflate(R.layout.row_hidden_folder, null, false);
+            }
+			v =  inflater.inflate(R.layout.row_all_shared_stories, null, false);
             if (currentState == StateFilter.BEST || (totalSocialNeutCount == 0)) {
                 v.findViewById(R.id.row_foldersumneu).setVisibility(View.GONE);
             } else {
@@ -172,7 +175,10 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
         } else if (isRowReadStories(groupPosition)) {
             if (v == null) v = inflater.inflate(R.layout.row_read_stories, null, false);
         } else if (isRowSavedSearches(groupPosition)) {
-            if (v == null) v = inflater.inflate(R.layout.row_saved_searches, null, false);
+            if (savedSearches.isEmpty()) {
+                return inflater.inflate(R.layout.row_hidden_folder, null, false);
+            }
+            v = inflater.inflate(R.layout.row_saved_searches, null, false);
         } else if (isRowSavedStories(groupPosition)) {
             if (v == null) v = inflater.inflate(R.layout.row_saved_stories, null, false);
             TextView savedSum = ((TextView) v.findViewById(R.id.row_foldersum));
