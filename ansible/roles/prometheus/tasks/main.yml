@@ -4,6 +4,15 @@
     src: /srv/newsblur/docker/prometheus/prometheus.consul.yml.j2
     dest: /srv/newsblur/docker/prometheus/prometheus.yml
 
+- name: Register prometheus in consul
+  tags: consul
+  become: yes
+  template:
+    src: /srv/newsblur/ansible/roles/prometheus/templates/consul_service.json
+    dest: /etc/consul.d/prometheus.json
+  notify:
+    - reload consul
+
 - name: Start prometheus docker container
   become: yes
   docker_container:
@@ -11,9 +20,8 @@
     image: prom/prometheus
     user: root
     state: started
-    network_mode: host
     restart_policy: unless-stopped
-    expose:
+    ports:
       - "9090:9090"
     volumes:
       - /srv/newsblur/docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
