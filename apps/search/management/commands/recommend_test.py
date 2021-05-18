@@ -39,7 +39,7 @@ class Command(BaseCommand):
 
             lbe = load(open( 'feed_id' + '-' + 'lbe.pkl', 'rb'))
             feeds = list(lbe.classes_)
-            feeds = feeds[:2000]
+            #feeds = feeds[:2000]
             print(len(lbe.classes_))
             assert isinstance(feeds, list)
             rec_num = 10
