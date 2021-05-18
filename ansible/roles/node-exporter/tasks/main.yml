@@ -15,6 +15,5 @@
     dest: /etc/consul.d/node-exporter.json
   notify:
     - reload consul
-  when: "item.service_name in inventory_hostname"
   with_items:
     - service_name: node-exporter
