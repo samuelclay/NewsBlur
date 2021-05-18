@@ -4,8 +4,10 @@
   docker_container:
     name: node-exporter
     image: prom/node-exporter
+    container_default_behavior: no_defaults
     ports:
     - '9100:9100'
+  notify: restart node-exporter
 
 - name: Register node-exporter in consul
   tags: consul
@@ -15,5 +17,3 @@
     dest: /etc/consul.d/node-exporter.json
   notify:
     - reload consul
-  with_items:
-    - service_name: node-exporter

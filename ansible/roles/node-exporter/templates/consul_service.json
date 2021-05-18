@@ -1,6 +1,6 @@
 {
     "service": {
-        "name": "{{ inventory_hostname|regex_replace('\d+', '') }}-node-exporter",
+        "name": "node-exporter",
         "id": "{{ inventory_hostname }}-node-exporter",
         "tags": [
             "node-exporter"
@@ -15,5 +15,4 @@
             }
         ]
     }
-}
 }
