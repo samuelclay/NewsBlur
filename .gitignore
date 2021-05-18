@@ -87,4 +87,4 @@ clients/android/NewsBlur/settings.gradle
 **/node_modules
 *.tfstate*
 .terraform*
-
+grafana.ini
