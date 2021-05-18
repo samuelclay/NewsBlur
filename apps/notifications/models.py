@@ -197,8 +197,8 @@ class MUserFeedNotification(mongo.Document):
         soup = BeautifulSoup(story['story_content'].strip(), features="lxml")
         if notification_title_only:
             subtitle = None
-            body_title = html.unescape(story['story_title'])
-            body_content = replace_with_newlines(soup)
+            body_title = html.unescape(story['story_title']).strip()
+            body_content = replace_with_newlines(soup).strip()
             body = f"{body_title}\n{body_content}"
         else:
             subtitle = html.unescape(story['story_title'])
