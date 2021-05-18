@@ -3,7 +3,7 @@ global:
 scrape_configs:
     - job_name: 'consul-services'
       consul_sd_configs:
-      - server: 'db-consul.service.nyc1.consul:8500'
+      - server: 'consul.service.nyc1.consul:8500'
         services: [node-exporter]
   
     - job_name: 'app_servers'
