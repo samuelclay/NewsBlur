@@ -1,6 +1,0 @@
-molecule===2.22
-docker
-netaddr
-testinfra
-flake8
-yamllint

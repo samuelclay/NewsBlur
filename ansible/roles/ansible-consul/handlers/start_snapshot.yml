@@ -1,8 +1,0 @@
----
-- name: start consul snapshot on linux
-  service:
-    name: consul_snapshot
-    state: started
-    enabled: true
-  when: ansible_os_family != "Windows"
-  listen: 'start snapshot'
