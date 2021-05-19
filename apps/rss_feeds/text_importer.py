@@ -13,6 +13,7 @@ from OpenSSL.SSL import Error as OpenSSLError
 from pyasn1.error import PyAsn1Error
 from django.utils.encoding import smart_str
 from django.conf import settings
+from django.utils.encoding import smart_bytes
 from django.contrib.sites.models import Site
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin
@@ -153,7 +154,7 @@ class TextImporter:
 
         if content and len(content) > len(original_story_content):
             if self.story and not skip_save:
-                self.story.original_text_z = zlib.compress(smart_str(content).encode())
+                self.story.original_text_z = zlib.compress(smart_bytes(content))
                 try:
                     self.story.save()
                 except NotUniqueError as e:

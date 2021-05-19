@@ -48,6 +48,7 @@ venv*
 docker/haproxy/haproxy.consul.cfg
 # docker/haproxy/haproxy.staging.cfg # Staging doesn't use jinja templates, so no need to ignore
 docker/nginx/nginx.consul.conf
+docker/prometheus/prometheus.yml
 
 # ----------------------
 # Android
@@ -86,4 +87,4 @@ clients/android/NewsBlur/settings.gradle
 **/node_modules
 *.tfstate*
 .terraform*
-
+grafana.ini

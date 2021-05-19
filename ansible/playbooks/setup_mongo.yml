@@ -9,10 +9,13 @@
   
   roles:
     - {role: 'base', tags: 'base'}
+    - {role: 'ufw', tags: 'ufw'}
     - {role: 'docker', tags: 'docker'}
     - {role: 'repo', tags: 'repo'}
     - {role: 'dnsmasq', tags: 'dnsmasq'}
     - {role: 'consul', tags: 'consul'}
     - {role: 'consul-client', tags: 'consul'}
+    - {role: 'node-exporter', tags: 'node-exporter'}
     - {role: 'mongo', tags: 'mongo'}
     - {role: 'monitor', tags: 'monitor'}
+    - {role: 'benchmark', tags: 'benchmark'}

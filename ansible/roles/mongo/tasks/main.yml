@@ -1,15 +1,25 @@
 ---
+- name: Permissions for mongo
+  become: yes
+  file:
+    state: directory
+    mode: 0777
+    path: /var/log/mongodb
+
 - name: Start db-mongo docker container
   become: yes
   docker_container:
     name: mongo
     image: mongo:3.6
     state: started
-    ports:
-      - 27017:27017
+    container_default_behavior: no_defaults
     restart_policy: unless-stopped
+    network_mode: host
+    command: --config /etc/mongod.conf
     volumes:
-      - /srv/newsblur/docker/volumes/db_mongo:/data/db
+      - /mnt/{{ inventory_hostname | regex_replace('db-|-', '') }}:/data/db
+      - /srv/newsblur/ansible/roles/mongo/templates/mongo.conf:/etc/mongod.conf
+      - /var/log/mongodb/:/var/log/mongodb/
 
 - name: Register mongo in consul
   tags: consul
@@ -17,7 +27,7 @@
   template:
     src: consul_service.json
     dest: /etc/consul.d/mongo.json
-  when: (inventory_hostname | regex_replace('[0-9]+', '')) == 'db-mongo' or inventory_hostname.startswith('db2')
+  when: (inventory_hostname | regex_replace('[0-9]+', '')) in ['db-mongo', 'db-mongo-secondary'] or inventory_hostname.startswith('db2')
   notify:
     - reload consul
 

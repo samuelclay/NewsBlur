@@ -73,7 +73,11 @@ def db_check_mongo():
     except:
         abort(503)
     
-    stories = db.stories.count()
+    try:
+        stories = db.stories.count()
+    except (pymongo.errors.NotMasterError, pymongo.errors.ServerSelectionTimeoutError):
+        abort(504)
+
     if not stories:
         abort(504)
     
@@ -116,7 +120,7 @@ def db_check_redis():
         abort(505)
 
 @app.route("/db_check/redis_user")
-def db_check_redis():
+def db_check_redis_user():
     try:
         r = redis.Redis(LOCAL_HOST, db=0)
     except:

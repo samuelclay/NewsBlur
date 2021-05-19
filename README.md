@@ -107,7 +107,7 @@ reader, and feed importer. To run the test suite:
 ### Running a performance test
 
 Performance tests use the locust performance testing tool. To run performance tests via CLI, use
-`make perf-cli users=1 rate=1 host=https://nb.local.com`. Feel free to change the users, rate, and host
+`make perf-cli users=1 rate=1 host=https://localhost`. Feel free to change the users, rate, and host
 variables in the command to meet you needs.
 
 You can also run locust performance tests using a UI by running `make perf-ui` and then navigating to 
