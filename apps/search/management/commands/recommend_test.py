@@ -160,7 +160,7 @@ class Command(BaseCommand):
 
                 # lets grab the top x amount of feeds
                 #self.feed_recommendations = results[:rec_num]
-                print('results for user: ' + User.objects.get(pk=user_id))
+                print(f'results for user: {User.objects.get(pk=user_id)}')
                 recommended_feeds = []
                 for feed in results[:rec_num]:
                     score = feed[1][0]
