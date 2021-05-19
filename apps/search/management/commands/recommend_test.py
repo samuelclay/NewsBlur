@@ -9,6 +9,7 @@ import ast
 from pickle import load
 import keras
 import numpy as np
+from pprint import pprint
 from deepctr.layers import custom_objects
 import sys
 from apps.search.constants import (
@@ -19,6 +20,7 @@ from apps.search.constants import (
 )
 import mongoengine as mongo
 from django.db import models
+from django.contrib.auth.models import User
 from apps.reader.models import UserSubscription
 from apps.analyzer.models import MCurrentModelFeeds
 from apps.rss_feeds.models import Feed
@@ -158,5 +160,10 @@ class Command(BaseCommand):
 
                 # lets grab the top x amount of feeds
                 #self.feed_recommendations = results[:rec_num]
-                print('results for user: ' + str(user_id))
-                print(results[:rec_num])
+                print('results for user: ' + User.objects.get(pk=user_id))
+                recommended_feeds = []
+                for feed in results[:rec_num]:
+                    score = feed[1][0]
+                    recommended_feed = (Feed.get_by_id(feed[0]), score)
+                    recommended_feeds.append(recommended_feed)
+                pprint(recommended_feeds)
