@@ -1,5 +1,15 @@
 ---
 
+- name: Allow haproxy port 80
+  become: yes
+  ufw: rule=allow port=80
+  tags: ufw
+
+- name: Allow haproxy SSL
+  become: yes
+  ufw: rule=allow port=443
+  tags: ufw
+
 - name: Register haproxy in consul
   tags: consul
   become: yes
