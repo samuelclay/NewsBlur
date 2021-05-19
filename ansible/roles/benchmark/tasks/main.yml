@@ -49,5 +49,4 @@
     cmd: sysbench fileio --file-total-size=150G cleanup
 
 - name: Benchmark io results
-  debug: msg="{{ item }}"
   debug: msg="{{ io.stdout.split('\n') }}"

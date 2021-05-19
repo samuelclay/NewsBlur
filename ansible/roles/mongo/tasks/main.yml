@@ -14,7 +14,11 @@
     state: started
     container_default_behavior: no_defaults
     restart_policy: unless-stopped
-    network_mode: host
+    networks_cli_compatible: yes
+    networks:
+      - name: newsblurnet
+    ports:
+      - "27017:27017"
     command: --config /etc/mongod.conf
     volumes:
       - /mnt/{{ inventory_hostname | regex_replace('db-|-', '') }}:/data/db
