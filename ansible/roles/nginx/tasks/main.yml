@@ -11,6 +11,12 @@
   notify: restart nginx
   register: updated_config
 
+- name: Make docker network for newsblurnet
+  become: yes
+  docker_network:
+    name: newsblurnet
+  notify: restart docker
+  
 - name: Start nginx docker container
   become: yes
   docker_container:
@@ -19,7 +25,11 @@
     env:
       DOCKERBUILD: "True"
     state: started
-    network_mode: host # This exposes port 80
+    networks_cli_compatible: yes
+    networks:
+      - name: newsblurnet
+    ports:
+      - "80:80"
     restart_policy: unless-stopped
     container_default_behavior: no_defaults
     volumes:
