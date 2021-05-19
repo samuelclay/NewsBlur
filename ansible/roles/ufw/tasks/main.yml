@@ -22,16 +22,6 @@
   ufw: rule=allow port=22
   tags: ufw
 
-- name: Allow nginx
-  become: yes
-  ufw: rule=allow port=80
-  tags: ufw
-
-- name: Allow nginx SSL
-  become: yes
-  ufw: rule=allow port=443
-  tags: ufw
-
 - name: Allow all access from RFC1918 networks to this host
   become: yes
   ufw:
