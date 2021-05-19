@@ -2,6 +2,7 @@ import datetime
 import enum
 import html
 import redis
+import re
 import mongoengine as mongo
 from boto.ses.connection import BotoServerError
 from django.conf import settings
@@ -189,6 +190,7 @@ class MUserFeedNotification(mongo.Document):
                     text += '\n'
                 elif elem.name == 'p':
                     text += '\n\n'
+            text = re.sub(r' +', ' ', text).strip()
             return text
         
         feed_title = usersub.user_title or usersub.feed.feed_title
@@ -198,7 +200,7 @@ class MUserFeedNotification(mongo.Document):
         if notification_title_only:
             subtitle = None
             body_title = html.unescape(story['story_title']).strip()
-            body_content = replace_with_newlines(soup).strip()
+            body_content = replace_with_newlines(soup)
             body = f"{body_title}\n{body_content}"
         else:
             subtitle = html.unescape(story['story_title'])
