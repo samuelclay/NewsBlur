@@ -78,6 +78,7 @@
       DOCKERBUILD: ""
     state: started
     networks_cli_compatible: yes
+    network_mode: default
     networks:
       - name: newsblurnet
     ports:

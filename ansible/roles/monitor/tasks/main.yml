@@ -35,6 +35,7 @@
     volumes:
       - /srv/newsblur:/srv/newsblur
     networks_cli_compatible: yes
+    network_mode: default
     networks:
       - name: newsblurnet
     ports:
