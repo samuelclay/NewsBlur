@@ -15,6 +15,7 @@
     container_default_behavior: no_defaults
     restart_policy: unless-stopped
     networks_cli_compatible: yes
+    network_mode: default
     networks:
       - name: newsblurnet
     ports:

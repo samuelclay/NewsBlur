@@ -23,7 +23,7 @@
   docker_network:
     name: newsblurnet
   notify: restart docker
-  
+
 - name: Start node docker containers
   become: yes
   docker_container:
@@ -34,6 +34,7 @@
     container_default_behavior: no_defaults
     pull: true
     networks_cli_compatible: yes
+    network_mode: default
     networks:
       - name: newsblurnet
     ports:

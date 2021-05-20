@@ -33,6 +33,7 @@
       DOCKERBUILD: ""
     restart_policy: always
     networks_cli_compatible: yes
+    network_mode: default
     networks:
       - name: newsblurnet
     command: "{{ item.command }}"
