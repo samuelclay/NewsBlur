@@ -1316,8 +1316,9 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     cell.searchQuery   = searchQuery;
     
     NSArray *folderComponents = [folderName componentsSeparatedByString:@" ▸ "];
+    BOOL isTopLevel = [folderName isEqualToString:@"everything"] || [folderName isEqualToString:@"saved_searches"] || [folderName isEqualToString:@"saved_stories"];
     
-    cell.indentationLevel = [folderName isEqualToString:@"everything"] ? 0 : folderComponents.count;
+    cell.indentationLevel = isTopLevel ? 0 : folderComponents.count;
     cell.indentationWidth = 28;
     
     if (newCell) {
