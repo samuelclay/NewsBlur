@@ -2301,6 +2301,15 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         [self.appDelegate resizePreviewSize];
     }];
     
+    // Upgrade the prefs; can remove these lines eventually, once most existing users are likely on version 11 or later.
+    NSString *preview = [[NSUserDefaults standardUserDefaults] stringForKey:@"story_list_preview_images_size"];
+    
+    if ([preview isEqualToString:@"small"]) {
+        [[NSUserDefaults standardUserDefaults] setObject:@"small_right" forKey:@"story_list_preview_images_size"];
+    } else if ([preview isEqualToString:@"large"]) {
+        [[NSUserDefaults standardUserDefaults] setObject:@"large_right" forKey:@"story_list_preview_images_size"];
+    }
+    
     preferenceKey = @"story_list_preview_images_size";
     titles = @[@"No image", @"image_preview_small_left.png", @"image_preview_large_left.png", @"image_preview_large_right.png", @"image_preview_small_right.png"];
     values = @[@"none", @"small_left", @"large_left", @"large_right", @"small_right"];
