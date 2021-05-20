@@ -77,12 +77,13 @@
     env:
       DOCKERBUILD: ""
     state: started
-    networks_cli_compatible: yes
-    network_mode: default
-    networks:
-      - name: newsblurnet
-    ports:
-      - "80:80"
+    network_mode: host
+    # networks:
+    #   - name: newsblurnet
+    # ports:
+    #   - "80:80"
+    #   - "443:443"
+    #   - "1936:1936"
     restart_policy: unless-stopped
     container_default_behavior: no_defaults
     command: "haproxy -f /srv/newsblur/docker/haproxy/haproxy.consul.cfg"

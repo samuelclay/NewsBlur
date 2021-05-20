@@ -4,7 +4,7 @@ import psycopg2
 import pymysql
 import pymongo
 import redis
-from elasticsearch import Elasticsearch
+import elasticsearch
 
 from newsblur_web import settings
 
@@ -190,7 +190,7 @@ def db_check_redis_pubsub():
 @app.route("/db_check/elasticsearch")
 def db_check_elasticsearch():
     try:
-        conn = pyes.ES(LOCAL_HOST)
+        conn = elasticsearch.Elasticsearch(LOCAL_HOST)
     except:
         abort(503)
     
