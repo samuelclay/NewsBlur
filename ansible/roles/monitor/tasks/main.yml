@@ -29,11 +29,14 @@
     image: newsblur/newsblur_monitor:latest
     pull: yes
     state: started
+    environment:
+      - HOSTNAME: "$(cat /etc/hostname)"
     command: bash -c "python /srv/newsblur/flask_monitor/db_monitor.py"
     restart_policy: unless-stopped
     container_default_behavior: no_defaults
     volumes:
       - /srv/newsblur:/srv/newsblur
+      - /etc/hostname:/etc/hostname
     networks_cli_compatible: yes
     network_mode: default
     networks:
