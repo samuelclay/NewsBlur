@@ -170,9 +170,12 @@ static UIFont *indicatorFont = nil;
         return;
     }
     
-    int riverPadding = 0;
+    CGFloat riverPadding = 0;
+    CGFloat riverPreview = 14;
+    
     if (cell.isRiverOrSocial) {
         riverPadding = 20;
+        riverPreview = 6;
     }
 
     CGContextRef context = UIGraphicsGetCurrentContext();
@@ -182,17 +185,20 @@ static UIFont *indicatorFont = nil;
     BOOL isLeft = [preview isEqualToString:@"small_left"] || [preview isEqualToString:@"large_left"];
     
     CGRect rect = CGRectInset(r, 12, 12);
-    CGFloat previewOffset = isSmall ? 60 : 0;
-    CGFloat previewMargin = isSmall ? 10 : 0;
-    CGFloat maxSize = isSmall ? 64 : 128;
-    CGFloat imageSize = MIN(r.size.height - previewOffset, maxSize);
-    CGFloat leftOffset = isLeft ? maxSize + previewMargin : 0;
+    CGFloat previewHorizMargin = isSmall ? 14 : 0;
+    CGFloat previewVertMargin = isSmall ? 36 : 0;
+    CGFloat imageWidth = isSmall ? 60 : 80;
+    CGFloat imageHeight = r.size.height - previewVertMargin;
+    CGFloat leftOffset = isLeft ? imageWidth : 0;
     CGFloat leftMargin = leftOffset + 30;
-    CGFloat topMargin = isSmall ? 14 + riverPadding : 0;
+    CGFloat topMargin = isSmall ? riverPreview : 0;
     
     if (isLeft) {
-        rect.origin.x += leftOffset;
-        rect.size.width -= leftOffset;
+        leftMargin += previewHorizMargin;
+        rect.origin.x += (leftOffset + previewHorizMargin);
+        rect.size.width -= (leftOffset + previewHorizMargin);
+    } else {
+        rect.size.width -= previewHorizMargin;
     }
     
     rect.size.width -= 18; // Scrollbar padding
@@ -206,11 +212,11 @@ static UIFont *indicatorFont = nil;
     CGContextFillRect(context, r);
     
     if (cell.storyImageUrl) {
-        CGRect imageFrame = CGRectMake(r.size.width - imageSize - previewMargin, topMargin,
-                                       imageSize, imageSize);
+        CGRect imageFrame = CGRectMake(r.size.width - imageWidth - previewHorizMargin, topMargin,
+                                       imageWidth, imageHeight);
         
         if (isLeft) {
-            imageFrame.origin.x = previewMargin + 5;
+            imageFrame.origin.x = previewHorizMargin + 5;
         }
         
         UIImage *cachedImage = (UIImage *)[appDelegate.cachedStoryImages objectForKey:cell.storyImageUrl];
@@ -230,7 +236,22 @@ static UIFont *indicatorFont = nil;
                 alpha = 0.34f;
             }
             
-            [cachedImage drawInRect:imageFrame blendMode:0 alpha:alpha];
+            CGFloat aspect = cachedImage.size.width / cachedImage.size.height;
+            CGRect drawingFrame;
+            
+            if (imageFrame.size.width / aspect > imageFrame.size.height) {
+                CGFloat height = imageFrame.size.width / aspect;
+                
+                drawingFrame = CGRectMake(imageFrame.origin.x, imageFrame.origin.y + ((imageFrame.size.height - height) / 2), imageFrame.size.width, height);
+            } else {
+                CGFloat width = imageFrame.size.height * aspect;
+                
+                drawingFrame = CGRectMake(imageFrame.origin.x + ((imageFrame.size.width - width) / 2), imageFrame.origin.y, width, imageFrame.size.height);
+            }
+            
+            CGContextClipToRect(context, imageFrame);
+            
+            [cachedImage drawInRect:drawingFrame blendMode:0 alpha:alpha];
             
             if (!isLeft) {
                 rect.size.width -= imageFrame.size.width;
