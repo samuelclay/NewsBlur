@@ -2,11 +2,14 @@ apiVersion: 1
 
 providers:
   - name: NewsBlur Dashboard
+    orgId: 1
+    folder: ''
+    allowUiUpdates: true
+    type: file
     allowUiUpdates: true
     options:
       path: /etc/grafana/provisioning/dashboards/newsblur_dashboard.json
       foldersFromFilesStructure: true
-
   #- name: Node Exporter
   #  allowUiUpdates: true
   #  options:

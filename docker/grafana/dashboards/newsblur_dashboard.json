@@ -15,7 +15,7 @@
     "editable": true,
     "gnetId": null,
     "graphTooltip": 0,
-    "id": 2,
+    "id": 3,
     "links": [],
     "panels": [
         {
@@ -54,7 +54,7 @@
                 "alertThreshold": true
             },
             "percentage": false,
-            "pluginVersion": "7.5.4",
+            "pluginVersion": "7.5.6",
             "pointradius": 2,
             "points": false,
             "renderer": "flot",
@@ -164,7 +164,7 @@
                 "alertThreshold": true
             },
             "percentage": false,
-            "pluginVersion": "7.5.4",
+            "pluginVersion": "7.5.6",
             "pointradius": 2,
             "points": false,
             "renderer": "flot",
@@ -273,7 +273,7 @@
                 "alertThreshold": true
             },
             "percentage": false,
-            "pluginVersion": "7.5.4",
+            "pluginVersion": "7.5.6",
             "pointradius": 2,
             "points": false,
             "renderer": "flot",
@@ -382,7 +382,7 @@
                 "alertThreshold": true
             },
             "percentage": false,
-            "pluginVersion": "7.5.4",
+            "pluginVersion": "7.5.6",
             "pointradius": 2,
             "points": false,
             "renderer": "flot",
@@ -478,7 +478,7 @@
                 "alertThreshold": true
             },
             "percentage": false,
-            "pluginVersion": "7.5.4",
+            "pluginVersion": "7.5.6",
             "pointradius": 2,
             "points": false,
             "renderer": "flot",
@@ -573,7 +573,7 @@
                 "alertThreshold": true
             },
             "percentage": false,
-            "pluginVersion": "7.5.4",
+            "pluginVersion": "7.5.6",
             "pointradius": 2,
             "points": false,
             "renderer": "flot",
@@ -668,7 +668,7 @@
                 "alertThreshold": true
             },
             "percentage": false,
-            "pluginVersion": "7.5.4",
+            "pluginVersion": "7.5.6",
             "pointradius": 2,
             "points": false,
             "renderer": "flot",
@@ -763,7 +763,7 @@
                 "alertThreshold": true
             },
             "percentage": false,
-            "pluginVersion": "7.5.4",
+            "pluginVersion": "7.5.6",
             "pointradius": 2,
             "points": false,
             "renderer": "flot",
@@ -858,7 +858,7 @@
                 "alertThreshold": true
             },
             "percentage": false,
-            "pluginVersion": "7.5.4",
+            "pluginVersion": "7.5.6",
             "pointradius": 2,
             "points": false,
             "renderer": "flot",
@@ -953,7 +953,7 @@
                 "alertThreshold": true
             },
             "percentage": false,
-            "pluginVersion": "7.5.4",
+            "pluginVersion": "7.5.6",
             "pointradius": 2,
             "points": false,
             "renderer": "flot",
@@ -1048,7 +1048,7 @@
                 "alertThreshold": true
             },
             "percentage": false,
-            "pluginVersion": "7.5.4",
+            "pluginVersion": "7.5.6",
             "pointradius": 2,
             "points": false,
             "renderer": "flot",
@@ -1143,7 +1143,7 @@
                 "alertThreshold": true
             },
             "percentage": false,
-            "pluginVersion": "7.5.4",
+            "pluginVersion": "7.5.6",
             "pointradius": 2,
             "points": false,
             "renderer": "flot",
@@ -1239,7 +1239,7 @@
                 "alertThreshold": true
             },
             "percentage": false,
-            "pluginVersion": "7.5.4",
+            "pluginVersion": "7.5.6",
             "pointradius": 2,
             "points": false,
             "renderer": "flot",
@@ -1334,7 +1334,7 @@
                 "alertThreshold": true
             },
             "percentage": false,
-            "pluginVersion": "7.5.4",
+            "pluginVersion": "7.5.6",
             "pointradius": 2,
             "points": false,
             "renderer": "flot",
@@ -1429,7 +1429,7 @@
                 "alertThreshold": true
             },
             "percentage": false,
-            "pluginVersion": "7.5.4",
+            "pluginVersion": "7.5.6",
             "pointradius": 2,
             "points": false,
             "renderer": "flot",
@@ -1503,6 +1503,6 @@
     "timepicker": {},
     "timezone": "",
     "title": "NewsBlur",
-    "uid": "T86VjXrGk",
-    "version": 3
+    "uid": "T86VjXrG2",
+    "version": 1
 }
