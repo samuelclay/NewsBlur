@@ -7,8 +7,8 @@ providers:
       path: /etc/grafana/provisioning/dashboards/newsblur_dashboard.json
       foldersFromFilesStructure: true
 
-  - name: Node Exporter
-    allowUiUpdates: true
-    options:
-      path: /etc/grafana/provisioning/dashboards/node_exporter_dashboard.json
-      foldersFromFilesStructure: true
+  #- name: Node Exporter
+  #  allowUiUpdates: true
+  #  options:
+  #    path: /etc/grafana/provisioning/dashboards/node_exporter_dashboard.json
+  #    foldersFromFilesStructure: true
