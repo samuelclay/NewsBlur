@@ -18,7 +18,7 @@
     "gnetId": 1860,
     "graphTooltip": 0,
     "id": 3,
-    "iteration": 1621609859069,
+    "iteration": 1621616172761,
     "links": [],
     "panels": [
         {
@@ -101,8 +101,10 @@
             "pluginVersion": "7.5.6",
             "targets": [
                 {
+                    "exemplar": true,
                     "expr": "(((count(count(node_cpu_seconds_total{instance=\"$node\",job=\"$job\"}) by (cpu))) - avg(sum by (mode)(irate(node_cpu_seconds_total{mode='idle',instance=\"$node\",job=\"$job\"}[5m])))) * 100) / count(count(node_cpu_seconds_total{instance=\"$node\",job=\"$job\"}) by (cpu))",
                     "hide": false,
+                    "interval": "",
                     "intervalFactor": 1,
                     "legendFormat": "",
                     "refId": "A",
@@ -13599,7 +13601,7 @@
         "list": [
             {
                 "current": {
-                    "selected": true,
+                    "selected": false,
                     "text": "Prometheus",
                     "value": "Prometheus"
                 },
@@ -13621,7 +13623,7 @@
             {
                 "allValue": null,
                 "current": {
-                    "selected": true,
+                    "selected": false,
                     "text": "node_exporter",
                     "value": "node_exporter"
                 },
@@ -13652,9 +13654,9 @@
             {
                 "allValue": null,
                 "current": {
-                    "selected": true,
-                    "text": "64.227.26.183:9100",
-                    "value": "64.227.26.183:9100"
+                    "selected": false,
+                    "text": "db-metrics",
+                    "value": "db-metrics"
                 },
                 "datasource": "Prometheus",
                 "definition": "label_values(node_uname_info{job=\"$job\"}, instance)",
@@ -13668,7 +13670,7 @@
                 "options": [],
                 "query": {
                     "query": "label_values(node_uname_info{job=\"$job\"}, instance)",
-                    "refId": "Prometheus-node-Variable-Query"
+                    "refId": "StandardVariableQuery"
                 },
                 "refresh": 1,
                 "regex": "",
@@ -13739,5 +13741,5 @@
     "timezone": "browser",
     "title": "Node Exporter",
     "uid": "rYdddlPWk",
-    "version": 1
+    "version": 5
 }
