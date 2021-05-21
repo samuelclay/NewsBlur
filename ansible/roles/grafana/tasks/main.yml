@@ -14,8 +14,6 @@
     network_mode: default
     networks:
       - name: newsblurnet
-    env:
-      GF_SECURITY_ADMIN_PASSWORD: "{{ grafana_password }}"
     ports:
       - "3000:3000"
     volumes:
