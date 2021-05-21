@@ -73,7 +73,9 @@
                 }
             ],
             "thresholds": [],
+            "timeFrom": null,
             "timeRegions": [],
+            "timeShift": null,
             "title": "Scrape Duration",
             "tooltip": {
                 "shared": true,
@@ -250,7 +252,7 @@
                 "total": false,
                 "values": false
             },
-            "lines": false,
+            "lines": true,
             "linewidth": 1,
             "nullPointMode": "null",
             "options": {
@@ -1597,5 +1599,5 @@
     "timezone": "",
     "title": "NewsBlur",
     "uid": "T86VjXrG2",
-    "version": 2
+    "version": 3
 }
