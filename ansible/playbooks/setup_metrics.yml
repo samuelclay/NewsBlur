@@ -16,6 +16,6 @@
     - {role: 'consul', tags: 'consul'}
     - {role: 'consul-client', tags: 'consul'}
 
-    - {role: 'node-exporter', tags: 'node-exporter'}
-    - {role: 'prometheus', tags: 'prometheus'}
-    - {role: 'grafana', tags: 'grafana'}
+    - {role: 'node-exporter', tags: ['node-exporter', 'metrics']}
+    - {role: 'prometheus', tags: ['prometheus', 'metrics']}
+    - {role: 'grafana', tags: ['grafana', 'metrics']}
