@@ -5,7 +5,9 @@ scrape_configs:
       consul_sd_configs:
       - server: 'consul.newsblur.com:8500'
         services: ['node-exporter']
-  
+    - job_name: 'prometheus'
+      static_configs:
+        - targets: ['localhost:9090']
     - job_name: 'app_servers'
       static_configs:
         - targets: ['{{ monitor_server }}'] 

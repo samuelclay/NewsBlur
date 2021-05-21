@@ -15,7 +15,7 @@
     "editable": true,
     "gnetId": null,
     "graphTooltip": 0,
-    "id": 3,
+    "id": 2,
     "links": [],
     "panels": [
         {
@@ -35,6 +35,99 @@
                 "w": 12,
                 "x": 0,
                 "y": 0
+            },
+            "hiddenSeries": false,
+            "id": 37,
+            "legend": {
+                "avg": false,
+                "current": false,
+                "max": false,
+                "min": false,
+                "show": true,
+                "total": false,
+                "values": false
+            },
+            "lines": true,
+            "linewidth": 1,
+            "nullPointMode": "null",
+            "options": {
+                "alertThreshold": true
+            },
+            "percentage": false,
+            "pluginVersion": "7.5.6",
+            "pointradius": 2,
+            "points": false,
+            "renderer": "flot",
+            "seriesOverrides": [],
+            "spaceLength": 10,
+            "stack": false,
+            "steppedLine": false,
+            "targets": [
+                {
+                    "exemplar": true,
+                    "expr": "topk(5, max(scrape_duration_seconds) by (job))",
+                    "interval": "",
+                    "legendFormat": "{{ job }}",
+                    "queryType": "randomWalk",
+                    "refId": "A"
+                }
+            ],
+            "thresholds": [],
+            "timeRegions": [],
+            "title": "Scrape Duration",
+            "tooltip": {
+                "shared": true,
+                "sort": 0,
+                "value_type": "individual"
+            },
+            "type": "graph",
+            "xaxis": {
+                "buckets": null,
+                "mode": "time",
+                "name": null,
+                "show": true,
+                "values": []
+            },
+            "yaxes": [
+                {
+                    "format": "short",
+                    "label": null,
+                    "logBase": 1,
+                    "max": null,
+                    "min": null,
+                    "show": true
+                },
+                {
+                    "format": "short",
+                    "label": null,
+                    "logBase": 1,
+                    "max": null,
+                    "min": null,
+                    "show": true
+                }
+            ],
+            "yaxis": {
+                "align": false,
+                "alignLevel": null
+            }
+        },
+        {
+            "aliasColors": {},
+            "bars": false,
+            "dashLength": 10,
+            "dashes": false,
+            "datasource": "Prometheus",
+            "fieldConfig": {
+                "defaults": {},
+                "overrides": []
+            },
+            "fill": 1,
+            "fillGradient": 0,
+            "gridPos": {
+                "h": 8,
+                "w": 12,
+                "x": 0,
+                "y": 8
             },
             "hiddenSeries": false,
             "id": 35,
@@ -120,7 +213,7 @@
                 "h": 1,
                 "w": 24,
                 "x": 0,
-                "y": 8
+                "y": 16
             },
             "id": 20,
             "panels": [],
@@ -144,7 +237,7 @@
                 "h": 9,
                 "w": 12,
                 "x": 0,
-                "y": 9
+                "y": 17
             },
             "hiddenSeries": false,
             "id": 2,
@@ -230,7 +323,7 @@
                 "h": 1,
                 "w": 24,
                 "x": 0,
-                "y": 18
+                "y": 26
             },
             "id": 16,
             "panels": [],
@@ -253,7 +346,7 @@
                 "h": 8,
                 "w": 12,
                 "x": 0,
-                "y": 19
+                "y": 27
             },
             "hiddenSeries": false,
             "id": 6,
@@ -339,7 +432,7 @@
                 "h": 1,
                 "w": 24,
                 "x": 0,
-                "y": 27
+                "y": 35
             },
             "id": 4,
             "panels": [],
@@ -362,7 +455,7 @@
                 "h": 8,
                 "w": 12,
                 "x": 0,
-                "y": 28
+                "y": 36
             },
             "hiddenSeries": false,
             "id": 8,
@@ -458,7 +551,7 @@
                 "h": 8,
                 "w": 12,
                 "x": 0,
-                "y": 36
+                "y": 44
             },
             "hiddenSeries": false,
             "id": 10,
@@ -553,7 +646,7 @@
                 "h": 8,
                 "w": 12,
                 "x": 0,
-                "y": 44
+                "y": 52
             },
             "hiddenSeries": false,
             "id": 12,
@@ -648,7 +741,7 @@
                 "h": 8,
                 "w": 12,
                 "x": 0,
-                "y": 52
+                "y": 60
             },
             "hiddenSeries": false,
             "id": 14,
@@ -743,7 +836,7 @@
                 "h": 8,
                 "w": 12,
                 "x": 0,
-                "y": 60
+                "y": 68
             },
             "hiddenSeries": false,
             "id": 18,
@@ -838,7 +931,7 @@
                 "h": 8,
                 "w": 12,
                 "x": 0,
-                "y": 68
+                "y": 76
             },
             "hiddenSeries": false,
             "id": 22,
@@ -933,7 +1026,7 @@
                 "h": 8,
                 "w": 12,
                 "x": 0,
-                "y": 76
+                "y": 84
             },
             "hiddenSeries": false,
             "id": 24,
@@ -1028,7 +1121,7 @@
                 "h": 8,
                 "w": 12,
                 "x": 0,
-                "y": 84
+                "y": 92
             },
             "hiddenSeries": false,
             "id": 26,
@@ -1123,7 +1216,7 @@
                 "h": 8,
                 "w": 12,
                 "x": 0,
-                "y": 92
+                "y": 100
             },
             "hiddenSeries": false,
             "id": 28,
@@ -1219,7 +1312,7 @@
                 "h": 8,
                 "w": 12,
                 "x": 0,
-                "y": 100
+                "y": 108
             },
             "hiddenSeries": false,
             "id": 30,
@@ -1314,7 +1407,7 @@
                 "h": 8,
                 "w": 12,
                 "x": 0,
-                "y": 108
+                "y": 116
             },
             "hiddenSeries": false,
             "id": 32,
@@ -1409,7 +1502,7 @@
                 "h": 8,
                 "w": 12,
                 "x": 0,
-                "y": 116
+                "y": 124
             },
             "hiddenSeries": false,
             "id": 33,
@@ -1504,5 +1597,5 @@
     "timezone": "",
     "title": "NewsBlur",
     "uid": "T86VjXrG2",
-    "version": 1
+    "version": 2
 }
