@@ -1199,7 +1199,11 @@
     }
     
     if (self.isPhoneOrCompact || animated) {
+        NSLog(@"⚠️ showing story pages: split view controller: %@ split nav: %@; split controllers: %@; detail controller: %@; detail nav: %@; detail nav controllers: %@", appDelegate.splitViewController, appDelegate.splitViewController.navigationController, appDelegate.splitViewController.viewControllers, appDelegate.detailViewController, appDelegate.detailViewController.navigationController, appDelegate.detailViewController.navigationController.viewControllers);  // log
+        
         [appDelegate.splitViewController showColumn:UISplitViewControllerColumnSecondary];
+        
+        NSLog(@"...shown");  // log
     }
     
     [self becomeFirstResponder];

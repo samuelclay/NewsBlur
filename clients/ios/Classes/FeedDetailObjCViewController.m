@@ -1307,7 +1307,7 @@
     [self.storyTitlesTable reloadData];
     
     
-    if (self.finishedAnimatingIn) {
+    if (self.view.window && self.finishedAnimatingIn) {
         [self testForTryFeed];
     }
     
