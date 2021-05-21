@@ -8,8 +8,6 @@ class TasksServers(View):
 
     def get(self, request):
         data = dict((("%s" % s['_id'].replace('-', ''), s['feeds']) for s in self.stats))
-        if self.total:
-            data['total'] = self.total[0]['feeds']
         chart_name = "task_servers"
         chart_type = "counter"
 
