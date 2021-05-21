@@ -10,6 +10,10 @@
     name: grafana
     image: grafana/grafana
     user: root
+    networks_cli_compatible: yes
+    network_mode: default
+    networks:
+      - name: newsblurnet
     env:
       GF_SECURITY_ADMIN_PASSWORD: "{{ grafana_password }}"
     ports:
@@ -17,5 +21,5 @@
     volumes:
       - /srv/newsblur/docker/grafana/grafana.ini:/etc/grafana/grafana.ini
       - /srv/newsblur/docker/volumes/grafana_data:/var/lib/grafana
-      - /srv/newsblur/docker/grafana/datasources:/etc/grafana/provisioning/datasources/
+      - /srv/newsblur/docker/grafana/datasources/datasource.yaml:/etc/grafana/provisioning/datasources/datasource.yaml
       - /srv/newsblur/docker/grafana/dashboards/:/etc/grafana/provisioning/dashboards/
