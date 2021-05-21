@@ -18,7 +18,7 @@
     "gnetId": 1860,
     "graphTooltip": 0,
     "id": 3,
-    "iteration": 1621616172761,
+    "iteration": 1621617100181,
     "links": [],
     "panels": [
         {
@@ -101,10 +101,8 @@
             "pluginVersion": "7.5.6",
             "targets": [
                 {
-                    "exemplar": true,
                     "expr": "(((count(count(node_cpu_seconds_total{instance=\"$node\",job=\"$job\"}) by (cpu))) - avg(sum by (mode)(irate(node_cpu_seconds_total{mode='idle',instance=\"$node\",job=\"$job\"}[5m])))) * 100) / count(count(node_cpu_seconds_total{instance=\"$node\",job=\"$job\"}) by (cpu))",
                     "hide": false,
-                    "interval": "",
                     "intervalFactor": 1,
                     "legendFormat": "",
                     "refId": "A",
@@ -13655,8 +13653,8 @@
                 "allValue": null,
                 "current": {
                     "selected": false,
-                    "text": "db-metrics",
-                    "value": "db-metrics"
+                    "text": "app-push2",
+                    "value": "app-push2"
                 },
                 "datasource": "Prometheus",
                 "definition": "label_values(node_uname_info{job=\"$job\"}, instance)",
@@ -13670,7 +13668,7 @@
                 "options": [],
                 "query": {
                     "query": "label_values(node_uname_info{job=\"$job\"}, instance)",
-                    "refId": "StandardVariableQuery"
+                    "refId": "Prometheus-node-Variable-Query"
                 },
                 "refresh": 1,
                 "regex": "",
@@ -13741,5 +13739,5 @@
     "timezone": "browser",
     "title": "Node Exporter",
     "uid": "rYdddlPWk",
-    "version": 5
+    "version": 2
 }
