@@ -377,6 +377,12 @@
 }
 
 - (void)viewDidLayoutSubviews {
+    CGRect frame = self.scrollView.frame;
+    
+    if (frame.size.width != floor(frame.size.width)) {
+        self.scrollView.frame = CGRectMake(frame.origin.x, frame.origin.y, floor(frame.size.width), floor(frame.size.height));
+    }
+    
     [super viewDidLayoutSubviews];
 //    [self reorientPages];
 }
