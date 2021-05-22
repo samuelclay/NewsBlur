@@ -190,7 +190,7 @@ const NSInteger kHeaderHeight = 24;
                 reuseIdentifier:cellIdentifier];
         cell.appDelegate = appDelegate;
     }
-
+    
     NSString *title;
     int count = 0;
     if (indexPath.section == 0) {
@@ -231,6 +231,7 @@ const NSInteger kHeaderHeight = 24;
     cell.neutralCount  = 0;
     cell.negativeCount = 0;
     cell.isSaved       = YES;
+    cell.indentationLevel = 0;
     
     [cell setNeedsDisplay];
     
