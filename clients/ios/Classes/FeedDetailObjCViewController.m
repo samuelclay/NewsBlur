@@ -980,9 +980,9 @@
     if (self.pageFetching || self.pageFinished) return;
 //    NSLog(@"Fetching River in storiesCollection (pg. %ld): %@", (long)page, storiesCollection);
     
-    if (appDelegate.detailViewController.storyTitlesOnLeft && [[UIDevice currentDevice] userInterfaceIdiom] != UIUserInterfaceIdiomPhone) {
-        [self.splitViewController showColumn:UISplitViewControllerColumnSupplementary];
-    }
+//    if (appDelegate.detailViewController.storyTitlesOnLeft && [[UIDevice currentDevice] userInterfaceIdiom] != UIUserInterfaceIdiomPhone) {
+//        [self.splitViewController showColumn:UISplitViewControllerColumnSupplementary];
+//    }
     
     storiesCollection.feedPage = page;
     self.pageFetching = YES;
