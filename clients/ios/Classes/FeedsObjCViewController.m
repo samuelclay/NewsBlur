@@ -48,6 +48,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 @property (nonatomic, strong) NSMutableDictionary *updatedDictFeeds_;
 @property (readwrite) BOOL inPullToRefresh_;
 @property (nonatomic, strong) NSMutableDictionary<NSIndexPath *, NSNumber *> *rowHeights;
+@property (nonatomic, strong) NSMutableDictionary<NSNumber *, FolderTitleView *> *folderTitleViews;
 
 @end
 
@@ -110,6 +111,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     self.appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
     
     self.rowHeights = [NSMutableDictionary dictionary];
+    self.folderTitleViews = [NSMutableDictionary dictionary];
     
     self.refreshControl = [UIRefreshControl new];
     self.refreshControl.tintColor = UIColorFromLightDarkRGB(0x0, 0xffffff);
@@ -190,6 +192,9 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     self.feedTitlesTable.separatorColor = [UIColor clearColor];
     self.feedTitlesTable.translatesAutoresizingMaskIntoConstraints = NO;
     self.feedTitlesTable.estimatedRowHeight = 0;
+    
+    self.currentRowAtIndexPath = nil;
+    self.currentSection = NewsBlurTopSectionAllStories;
     
     userAvatarButton.hidden = YES;
     self.noFocusMessage.hidden = YES;
@@ -274,11 +279,17 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 //                                scrollPosition:UITableViewScrollPositionNone];
     
     [super viewDidAppear:animated];
-    [self performSelector:@selector(fadeSelectedCell) withObject:self afterDelay:0.2];
 //    self.navigationController.navigationBar.backItem.title = @"All Sites";
     [self layoutHeaderCounts:0];
     [self refreshHeaderCounts];
-
+    
+    if (self.appDelegate.isCompactWidth) {
+        [self performSelector:@selector(fadeSelectedCell) withObject:self afterDelay:0.2];
+        [self performSelector:@selector(clearSelectedHeader) withObject:nil afterDelay:0.2];
+        self.currentRowAtIndexPath = nil;
+        self.currentSection = -1;
+    }
+    
     self.interactiveFeedDetailTransition = NO;
 
     [self becomeFirstResponder];
@@ -1373,13 +1384,15 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     
     [appDelegate.storiesCollection reset];
     
+    [self clearSelectedHeader];
+    
     if (self.currentRowAtIndexPath != nil && self.currentRowAtIndexPath != indexPath) {
         [self fadeCellWithIndexPath:self.currentRowAtIndexPath];
     }
     
     // set the current row pointer
     self.currentRowAtIndexPath = indexPath;
-    self.currentSection = 0;
+    self.currentSection = -1;
     
     NSString *folderName = appDelegate.dictFoldersArray[indexPath.section];
     id feedId = [[appDelegate.dictFolders objectForKey:folderName] objectAtIndex:indexPath.row];
@@ -1521,27 +1534,40 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     FolderTitleView *folderTitle = [[FolderTitleView alloc] initWithFrame:rect];
     folderTitle.section = (int)section;
     
-    NSString *folderName = appDelegate.dictFoldersArray[section];
-    NSArray *folderComponents = [folderName componentsSeparatedByString:@" ▸ "];
-    
-    folderTitle.indentationLevel = folderComponents.count - 1;
+    self.folderTitleViews[@(section)] = folderTitle;
     
     return folderTitle;
 }
 
 - (IBAction)sectionTapped:(UIButton *)button {
+    [self clearSelectedHeader];
+    
     button.backgroundColor = UIColorFromRGB(0x214607);
 }
 
 - (IBAction)sectionUntapped:(UIButton *)button {
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1.15 * NSEC_PER_SEC), 
-                   dispatch_get_main_queue(), ^{
-        button.backgroundColor = [UIColor clearColor];
-   });
 }
 
 - (IBAction)sectionUntappedOutside:(UIButton *)button {
     button.backgroundColor = [UIColor clearColor];
+    
+    [self highlightSelectedHeader];
+}
+
+- (void)clearSelectedHeader {
+    if (self.currentSection >= 0) {
+        FolderTitleView *title = self.folderTitleViews[@(self.currentSection)];
+        
+        title.invisibleHeaderButton.backgroundColor = UIColor.clearColor;
+    }
+}
+
+- (void)highlightSelectedHeader {
+    if (self.currentSection >= 0) {
+        FolderTitleView *title = self.folderTitleViews[@(self.currentSection)];
+        
+        title.invisibleHeaderButton.backgroundColor = UIColorFromRGB(0x214607);
+    }
 }
 
 - (CGFloat)tableView:(UITableView *)tableView
@@ -1586,9 +1612,13 @@ heightForHeaderInSection:(NSInteger)section {
         [self fadeCellWithIndexPath:self.currentRowAtIndexPath];
     }
     
+    [self clearSelectedHeader];
+    
     // reset pointer to the cells
     self.currentRowAtIndexPath = nil;
     self.currentSection = tag;
+    
+    [self highlightSelectedHeader];
     
     NSString *folder;
     if (tag >= 0 && tag < [NewsBlurTopSectionNames count]) {

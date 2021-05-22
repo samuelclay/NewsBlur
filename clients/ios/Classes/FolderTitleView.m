@@ -37,15 +37,16 @@
         [subview removeFromSuperview];
     }
     
-    CGFloat indentationOffset = self.indentationLevel * 28;
-    rect.origin.x += indentationOffset;
-    rect.size.width -= indentationOffset;
-    
     NSString *folderName = appDelegate.dictFoldersArray[section];
     NSString *collapseKey = [NSString stringWithFormat:@"folderCollapsed:%@", folderName];
     bool isFolderCollapsed = [userPreferences boolForKey:collapseKey];
     NSInteger countWidth = 0;
     NSString *accessibilityCount = @"";
+    NSArray *folderComponents = [folderName componentsSeparatedByString:@" ▸ "];
+    
+    CGFloat indentationOffset = (folderComponents.count - 1) * 28;
+    rect.origin.x += indentationOffset;
+    rect.size.width -= indentationOffset;
     
     if ([folderName isEqual:@"saved_stories"]) {
         unreadCount = [[UnreadCountView alloc] initWithFrame:CGRectInset(rect, 0, 2)];
