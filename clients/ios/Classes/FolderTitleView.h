@@ -23,7 +23,6 @@
 @property (nonatomic) NewsBlurAppDelegate *appDelegate;
 @property (nonatomic) UnreadCountView *unreadCount;
 @property (nonatomic) UIButton *invisibleHeaderButton;
-@property (nonatomic) NSUInteger indentationLevel;
 
 - (void)handleLongPress:(UILongPressGestureRecognizer *)gestureRecognizer;
 
