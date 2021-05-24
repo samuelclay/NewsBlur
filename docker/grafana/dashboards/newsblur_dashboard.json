@@ -19,203 +19,13 @@
     "links": [],
     "panels": [
         {
-            "aliasColors": {},
-            "bars": false,
-            "dashLength": 10,
-            "dashes": false,
-            "datasource": "Prometheus",
-            "fieldConfig": {
-                "defaults": {},
-                "overrides": []
-            },
-            "fill": 1,
-            "fillGradient": 0,
-            "gridPos": {
-                "h": 8,
-                "w": 12,
-                "x": 0,
-                "y": 0
-            },
-            "hiddenSeries": false,
-            "id": 37,
-            "legend": {
-                "avg": false,
-                "current": false,
-                "max": false,
-                "min": false,
-                "show": true,
-                "total": false,
-                "values": false
-            },
-            "lines": true,
-            "linewidth": 1,
-            "nullPointMode": "null",
-            "options": {
-                "alertThreshold": true
-            },
-            "percentage": false,
-            "pluginVersion": "7.5.6",
-            "pointradius": 2,
-            "points": false,
-            "renderer": "flot",
-            "seriesOverrides": [],
-            "spaceLength": 10,
-            "stack": false,
-            "steppedLine": false,
-            "targets": [
-                {
-                    "exemplar": true,
-                    "expr": "scrape_duration_seconds",
-                    "interval": "",
-                    "legendFormat": "{{ instance}}  {{ job }}",
-                    "queryType": "randomWalk",
-                    "refId": "A"
-                }
-            ],
-            "thresholds": [],
-            "timeFrom": null,
-            "timeRegions": [],
-            "timeShift": null,
-            "title": "Scrape Duration (seconds)",
-            "tooltip": {
-                "shared": true,
-                "sort": 0,
-                "value_type": "individual"
-            },
-            "type": "graph",
-            "xaxis": {
-                "buckets": null,
-                "mode": "time",
-                "name": null,
-                "show": true,
-                "values": []
-            },
-            "yaxes": [
-                {
-                    "format": "short",
-                    "label": null,
-                    "logBase": 1,
-                    "max": null,
-                    "min": null,
-                    "show": true
-                },
-                {
-                    "format": "short",
-                    "label": null,
-                    "logBase": 1,
-                    "max": null,
-                    "min": null,
-                    "show": true
-                }
-            ],
-            "yaxis": {
-                "align": false,
-                "alignLevel": null
-            }
-        },
-        {
-            "aliasColors": {},
-            "bars": false,
-            "dashLength": 10,
-            "dashes": false,
-            "datasource": "Prometheus",
-            "fieldConfig": {
-                "defaults": {},
-                "overrides": []
-            },
-            "fill": 1,
-            "fillGradient": 0,
-            "gridPos": {
-                "h": 8,
-                "w": 12,
-                "x": 0,
-                "y": 8
-            },
-            "hiddenSeries": false,
-            "id": 35,
-            "legend": {
-                "avg": false,
-                "current": false,
-                "max": false,
-                "min": false,
-                "show": true,
-                "total": false,
-                "values": false
-            },
-            "lines": true,
-            "linewidth": 1,
-            "nullPointMode": "null",
-            "options": {
-                "alertThreshold": true
-            },
-            "percentage": false,
-            "pluginVersion": "7.5.6",
-            "pointradius": 2,
-            "points": false,
-            "renderer": "flot",
-            "seriesOverrides": [],
-            "spaceLength": 10,
-            "stack": false,
-            "steppedLine": false,
-            "targets": [
-                {
-                    "exemplar": true,
-                    "expr": "users",
-                    "interval": "",
-                    "legendFormat": "{{ category }}",
-                    "queryType": "randomWalk",
-                    "refId": "A"
-                }
-            ],
-            "thresholds": [],
-            "timeFrom": null,
-            "timeRegions": [],
-            "timeShift": null,
-            "title": "NewsBlur Users",
-            "tooltip": {
-                "shared": true,
-                "sort": 0,
-                "value_type": "individual"
-            },
-            "type": "graph",
-            "xaxis": {
-                "buckets": null,
-                "mode": "time",
-                "name": null,
-                "show": true,
-                "values": []
-            },
-            "yaxes": [
-                {
-                    "format": "short",
-                    "label": null,
-                    "logBase": 1,
-                    "max": null,
-                    "min": null,
-                    "show": true
-                },
-                {
-                    "format": "short",
-                    "label": null,
-                    "logBase": 1,
-                    "max": null,
-                    "min": null,
-                    "show": true
-                }
-            ],
-            "yaxis": {
-                "align": false,
-                "alignLevel": null
-            }
-        },
-        {
             "collapsed": false,
             "datasource": null,
             "gridPos": {
                 "h": 1,
                 "w": 24,
                 "x": 0,
-                "y": 16
+                "y": 0
             },
             "id": 20,
             "panels": [],
@@ -233,24 +43,26 @@
                 "defaults": {},
                 "overrides": []
             },
-            "fill": 1,
+            "fill": 10,
             "fillGradient": 0,
             "gridPos": {
                 "h": 9,
-                "w": 12,
+                "w": 24,
                 "x": 0,
-                "y": 17
+                "y": 1
             },
             "hiddenSeries": false,
             "id": 2,
             "legend": {
+                "alignAsTable": true,
                 "avg": false,
-                "current": false,
+                "current": true,
                 "max": false,
                 "min": false,
+                "rightSide": true,
                 "show": true,
-                "total": false,
-                "values": false
+                "total": true,
+                "values": true
             },
             "lines": true,
             "linewidth": 1,
@@ -283,7 +95,7 @@
             "timeShift": null,
             "title": "NewsBlur App Server Page Loads",
             "tooltip": {
-                "shared": true,
+                "shared": false,
                 "sort": 0,
                 "value_type": "individual"
             },
@@ -297,6 +109,7 @@
             },
             "yaxes": [
                 {
+                    "$$hashKey": "object:1845",
                     "format": "short",
                     "label": null,
                     "logBase": 1,
@@ -305,6 +118,7 @@
                     "show": true
                 },
                 {
+                    "$$hashKey": "object:1846",
                     "format": "short",
                     "label": null,
                     "logBase": 1,
@@ -319,47 +133,39 @@
             }
         },
         {
-            "collapsed": false,
-            "datasource": null,
-            "gridPos": {
-                "h": 1,
-                "w": 24,
-                "x": 0,
-                "y": 26
-            },
-            "id": 16,
-            "panels": [],
-            "title": "App Times",
-            "type": "row"
-        },
-        {
             "aliasColors": {},
             "bars": false,
             "dashLength": 10,
             "dashes": false,
             "datasource": "Prometheus",
             "fieldConfig": {
-                "defaults": {},
+                "defaults": {
+                    "unit": "s"
+                },
                 "overrides": []
             },
-            "fill": 1,
+            "fill": 0,
             "fillGradient": 0,
             "gridPos": {
-                "h": 8,
-                "w": 12,
+                "h": 9,
+                "w": 24,
                 "x": 0,
-                "y": 27
+                "y": 10
             },
             "hiddenSeries": false,
             "id": 6,
             "legend": {
-                "avg": false,
-                "current": false,
+                "alignAsTable": true,
+                "avg": true,
+                "current": true,
+                "hideEmpty": false,
+                "hideZero": false,
                 "max": false,
                 "min": false,
+                "rightSide": true,
                 "show": true,
                 "total": false,
-                "values": false
+                "values": true
             },
             "lines": true,
             "linewidth": 1,
@@ -374,7 +180,7 @@
             "renderer": "flot",
             "seriesOverrides": [],
             "spaceLength": 10,
-            "stack": true,
+            "stack": false,
             "steppedLine": false,
             "targets": [
                 {
@@ -392,7 +198,7 @@
             "timeShift": null,
             "title": "NewsBlur App Server Times",
             "tooltip": {
-                "shared": true,
+                "shared": false,
                 "sort": 0,
                 "value_type": "individual"
             },
@@ -406,14 +212,16 @@
             },
             "yaxes": [
                 {
-                    "format": "short",
+                    "$$hashKey": "object:799",
+                    "format": "s",
                     "label": null,
-                    "logBase": 1,
+                    "logBase": 2,
                     "max": null,
                     "min": null,
                     "show": true
                 },
                 {
+                    "$$hashKey": "object:800",
                     "format": "short",
                     "label": null,
                     "logBase": 1,
@@ -434,11 +242,11 @@
                 "h": 1,
                 "w": 24,
                 "x": 0,
-                "y": 35
+                "y": 19
             },
-            "id": 4,
+            "id": 16,
             "panels": [],
-            "title": "Classifiers",
+            "title": "App Times",
             "type": "row"
         },
         {
@@ -448,19 +256,21 @@
             "dashes": false,
             "datasource": "Prometheus",
             "fieldConfig": {
-                "defaults": {},
+                "defaults": {
+                    "unit": "short"
+                },
                 "overrides": []
             },
             "fill": 1,
             "fillGradient": 0,
             "gridPos": {
-                "h": 8,
-                "w": 12,
+                "h": 7,
+                "w": 24,
                 "x": 0,
-                "y": 36
+                "y": 20
             },
             "hiddenSeries": false,
-            "id": 8,
+            "id": 22,
             "legend": {
                 "avg": false,
                 "current": false,
@@ -488,9 +298,9 @@
             "targets": [
                 {
                     "exemplar": true,
-                    "expr": "classifiers",
+                    "expr": "load_times",
                     "interval": "",
-                    "legendFormat": "{{classifier}}",
+                    "legendFormat": "{{category}}",
                     "queryType": "randomWalk",
                     "refId": "A"
                 }
@@ -499,12 +309,25 @@
             "timeFrom": null,
             "timeRegions": [],
             "timeShift": null,
-            "title": "NewsBlur Classifiers",
+            "title": "NewsBlur Load Times",
             "tooltip": {
                 "shared": true,
                 "sort": 0,
                 "value_type": "individual"
             },
+            "transformations": [
+                {
+                    "id": "filterFieldsByName",
+                    "options": {
+                        "include": {
+                            "names": [
+                                "Time",
+                                "feeds_loaded_hour"
+                            ]
+                        }
+                    }
+                }
+            ],
             "type": "graph",
             "xaxis": {
                 "buckets": null,
@@ -515,6 +338,7 @@
             },
             "yaxes": [
                 {
+                    "$$hashKey": "object:336",
                     "format": "short",
                     "label": null,
                     "logBase": 1,
@@ -523,6 +347,7 @@
                     "show": true
                 },
                 {
+                    "$$hashKey": "object:337",
                     "format": "short",
                     "label": null,
                     "logBase": 1,
@@ -537,50 +362,161 @@
             }
         },
         {
-            "aliasColors": {},
-            "bars": false,
-            "dashLength": 10,
-            "dashes": false,
+            "datasource": "Prometheus",
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "palette-classic"
+                    },
+                    "custom": {
+                        "axisLabel": "",
+                        "axisPlacement": "auto",
+                        "barAlignment": 0,
+                        "drawStyle": "line",
+                        "fillOpacity": 10,
+                        "gradientMode": "none",
+                        "hideFrom": {
+                            "graph": false,
+                            "legend": false,
+                            "tooltip": false
+                        },
+                        "lineInterpolation": "linear",
+                        "lineWidth": 1,
+                        "pointSize": 5,
+                        "scaleDistribution": {
+                            "type": "linear"
+                        },
+                        "showPoints": "never",
+                        "spanNulls": true
+                    },
+                    "mappings": [],
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "green",
+                                "value": null
+                            },
+                            {
+                                "color": "red",
+                                "value": 80
+                            }
+                        ]
+                    },
+                    "unit": "s"
+                },
+                "overrides": []
+            },
+            "gridPos": {
+                "h": 7,
+                "w": 24,
+                "x": 0,
+                "y": 27
+            },
+            "id": 38,
+            "options": {
+                "graph": {},
+                "legend": {
+                    "calcs": [],
+                    "displayMode": "list",
+                    "placement": "bottom"
+                },
+                "tooltipOptions": {
+                    "mode": "single"
+                }
+            },
+            "pluginVersion": "7.5.6",
+            "targets": [
+                {
+                    "exemplar": true,
+                    "expr": "load_times",
+                    "interval": "",
+                    "legendFormat": "{{category}}",
+                    "queryType": "randomWalk",
+                    "refId": "A"
+                }
+            ],
+            "timeFrom": null,
+            "timeShift": null,
+            "title": "NewsBlur Load Times",
+            "transformations": [
+                {
+                    "id": "filterFieldsByName",
+                    "options": {
+                        "include": {
+                            "names": [
+                                "Time",
+                                "feed_loadtimes_avg_hour"
+                            ]
+                        }
+                    }
+                }
+            ],
+            "type": "timeseries"
+        },
+        {
+            "collapsed": false,
+            "datasource": null,
+            "gridPos": {
+                "h": 1,
+                "w": 24,
+                "x": 0,
+                "y": 34
+            },
+            "id": 4,
+            "panels": [],
+            "title": "Classifiers",
+            "type": "row"
+        },
+        {
             "datasource": "Prometheus",
             "description": "",
             "fieldConfig": {
-                "defaults": {},
+                "defaults": {
+                    "color": {
+                        "mode": "thresholds"
+                    },
+                    "mappings": [],
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "green",
+                                "value": null
+                            },
+                            {
+                                "color": "red",
+                                "value": 80
+                            }
+                        ]
+                    },
+                    "unit": "s"
+                },
                 "overrides": []
             },
-            "fill": 1,
-            "fillGradient": 0,
             "gridPos": {
-                "h": 8,
-                "w": 12,
+                "h": 11,
+                "w": 24,
                 "x": 0,
-                "y": 44
+                "y": 35
             },
-            "hiddenSeries": false,
             "id": 10,
-            "legend": {
-                "avg": false,
-                "current": false,
-                "max": false,
-                "min": false,
-                "show": true,
-                "total": false,
-                "values": false
-            },
-            "lines": true,
-            "linewidth": 1,
-            "nullPointMode": "null",
             "options": {
-                "alertThreshold": true
+                "colorMode": "value",
+                "graphMode": "area",
+                "justifyMode": "auto",
+                "orientation": "horizontal",
+                "reduceOptions": {
+                    "calcs": [
+                        "lastNotNull"
+                    ],
+                    "fields": "",
+                    "values": false
+                },
+                "text": {},
+                "textMode": "auto"
             },
-            "percentage": false,
             "pluginVersion": "7.5.6",
-            "pointradius": 2,
-            "points": false,
-            "renderer": "flot",
-            "seriesOverrides": [],
-            "spaceLength": 10,
-            "stack": false,
-            "steppedLine": false,
             "targets": [
                 {
                     "exemplar": true,
@@ -591,13 +527,267 @@
                     "refId": "A"
                 }
             ],
+            "timeFrom": null,
+            "timeShift": null,
+            "title": "NewsBlur DB Times",
+            "type": "stat"
+        },
+        {
+            "aliasColors": {},
+            "bars": false,
+            "dashLength": 10,
+            "dashes": false,
+            "datasource": "Prometheus",
+            "description": "task_servers",
+            "fieldConfig": {
+                "defaults": {},
+                "overrides": []
+            },
+            "fill": 10,
+            "fillGradient": 0,
+            "gridPos": {
+                "h": 8,
+                "w": 24,
+                "x": 0,
+                "y": 46
+            },
+            "hiddenSeries": false,
+            "id": 30,
+            "legend": {
+                "alignAsTable": true,
+                "avg": false,
+                "current": true,
+                "max": false,
+                "min": false,
+                "rightSide": true,
+                "show": true,
+                "total": true,
+                "values": true
+            },
+            "lines": true,
+            "linewidth": 1,
+            "nullPointMode": "connected",
+            "options": {
+                "alertThreshold": true
+            },
+            "percentage": false,
+            "pluginVersion": "7.5.6",
+            "pointradius": 2,
+            "points": false,
+            "renderer": "flot",
+            "seriesOverrides": [],
+            "spaceLength": 10,
+            "stack": true,
+            "steppedLine": false,
+            "targets": [
+                {
+                    "exemplar": false,
+                    "expr": "task_servers",
+                    "interval": "",
+                    "legendFormat": "{{server}}",
+                    "queryType": "randomWalk",
+                    "refId": "A"
+                }
+            ],
             "thresholds": [],
             "timeFrom": null,
             "timeRegions": [],
             "timeShift": null,
-            "title": "NewsBlur DB Times",
+            "title": "NewsBlur Server Fetches",
             "tooltip": {
-                "shared": true,
+                "shared": false,
+                "sort": 0,
+                "value_type": "individual"
+            },
+            "transformations": [
+                {
+                    "id": "filterFieldsByName",
+                    "options": {
+                        "include": {
+                            "names": [
+                                "Time",
+                                "taskcelery01",
+                                "taskcelery02",
+                                "taskcelery03",
+                                "taskcelery04",
+                                "taskcelery05",
+                                "taskcelery06",
+                                "taskcelery07",
+                                "taskcelery08",
+                                "taskcelery09",
+                                "taskcelery10",
+                                "taskcelery11",
+                                "taskcelery12",
+                                "taskcelery13",
+                                "taskcelery14",
+                                "taskcelery15",
+                                "taskcelery16",
+                                "taskcelery17",
+                                "taskcelery18",
+                                "taskcelery19",
+                                "taskcelery20",
+                                "taskcelery21",
+                                "taskcelery22",
+                                "taskcelery23",
+                                "taskcelery24",
+                                "taskcelery25",
+                                "taskcelery26",
+                                "taskcelery27",
+                                "taskcelery28",
+                                "taskcelery29",
+                                "taskcelery30",
+                                "taskcelery31",
+                                "taskcelery32",
+                                "taskcelery33",
+                                "taskcelery34",
+                                "taskcelery35",
+                                "taskcelery36",
+                                "taskcelery37",
+                                "taskcelery38",
+                                "taskcelery39",
+                                "taskcelery40",
+                                "taskcelery41",
+                                "taskcelery42",
+                                "taskcelery43",
+                                "taskcelery44",
+                                "taskcelery45",
+                                "taskcelery46",
+                                "taskcelery47",
+                                "taskcelery48",
+                                "taskcelery49",
+                                "taskcelery50",
+                                "taskcelery51",
+                                "taskcelery52",
+                                "taskcelery53",
+                                "taskcelery54",
+                                "taskcelery55",
+                                "taskcelery56",
+                                "taskcelery57",
+                                "taskcelery58",
+                                "taskcelery59",
+                                "taskcelery60",
+                                "taskcelery61",
+                                "taskcelery62",
+                                "taskcelery63",
+                                "taskcelery64",
+                                "taskcelery65",
+                                "taskcelery66",
+                                "taskcelery67",
+                                "taskcelery68",
+                                "taskcelery69",
+                                "taskcelery70",
+                                "taskcelery71",
+                                "taskcelery72",
+                                "taskcelery73",
+                                "taskcelery74",
+                                "taskcelery75",
+                                "taskcelery76",
+                                "taskcelery77",
+                                "taskcelery78",
+                                "taskcelery79"
+                            ]
+                        }
+                    }
+                }
+            ],
+            "type": "graph",
+            "xaxis": {
+                "buckets": null,
+                "mode": "time",
+                "name": null,
+                "show": true,
+                "values": []
+            },
+            "yaxes": [
+                {
+                    "$$hashKey": "object:908",
+                    "format": "short",
+                    "label": null,
+                    "logBase": 1,
+                    "max": null,
+                    "min": null,
+                    "show": true
+                },
+                {
+                    "$$hashKey": "object:909",
+                    "format": "short",
+                    "label": null,
+                    "logBase": 1,
+                    "max": null,
+                    "min": null,
+                    "show": true
+                }
+            ],
+            "yaxis": {
+                "align": false,
+                "alignLevel": null
+            }
+        },
+        {
+            "aliasColors": {},
+            "bars": false,
+            "dashLength": 10,
+            "dashes": false,
+            "datasource": "Prometheus",
+            "fieldConfig": {
+                "defaults": {
+                    "unit": "s"
+                },
+                "overrides": []
+            },
+            "fill": 0,
+            "fillGradient": 0,
+            "gridPos": {
+                "h": 8,
+                "w": 24,
+                "x": 0,
+                "y": 54
+            },
+            "hiddenSeries": false,
+            "id": 32,
+            "legend": {
+                "alignAsTable": true,
+                "avg": true,
+                "current": true,
+                "max": false,
+                "min": false,
+                "rightSide": true,
+                "show": true,
+                "total": false,
+                "values": true
+            },
+            "lines": true,
+            "linewidth": 1,
+            "nullPointMode": "null",
+            "options": {
+                "alertThreshold": true
+            },
+            "percentage": false,
+            "pluginVersion": "7.5.6",
+            "pointradius": 2,
+            "points": false,
+            "renderer": "flot",
+            "seriesOverrides": [],
+            "spaceLength": 10,
+            "stack": false,
+            "steppedLine": false,
+            "targets": [
+                {
+                    "exemplar": true,
+                    "expr": "task_times",
+                    "interval": "",
+                    "legendFormat": "{{category}}",
+                    "queryType": "randomWalk",
+                    "refId": "A"
+                }
+            ],
+            "thresholds": [],
+            "timeFrom": null,
+            "timeRegions": [],
+            "timeShift": null,
+            "title": "NewsBlur Task Server Times",
+            "tooltip": {
+                "shared": false,
                 "sort": 0,
                 "value_type": "individual"
             },
@@ -611,14 +801,16 @@
             },
             "yaxes": [
                 {
-                    "format": "short",
+                    "$$hashKey": "object:2178",
+                    "format": "s",
                     "label": null,
-                    "logBase": 1,
+                    "logBase": 2,
                     "max": null,
                     "min": null,
                     "show": true
                 },
                 {
+                    "$$hashKey": "object:2179",
                     "format": "short",
                     "label": null,
                     "logBase": 1,
@@ -648,10 +840,10 @@
                 "h": 8,
                 "w": 12,
                 "x": 0,
-                "y": 52
+                "y": 62
             },
             "hiddenSeries": false,
-            "id": 12,
+            "id": 26,
             "legend": {
                 "avg": false,
                 "current": false,
@@ -679,9 +871,9 @@
             "targets": [
                 {
                     "exemplar": true,
-                    "expr": "feed_success",
+                    "expr": "task_codes",
                     "interval": "",
-                    "legendFormat": "feed success",
+                    "legendFormat": "{{ category }}",
                     "queryType": "randomWalk",
                     "refId": "A"
                 }
@@ -690,7 +882,102 @@
             "timeFrom": null,
             "timeRegions": [],
             "timeShift": null,
-            "title": "NewsBlur Fetching History",
+            "title": "NewsBlur Task Codes",
+            "tooltip": {
+                "shared": true,
+                "sort": 0,
+                "value_type": "individual"
+            },
+            "type": "graph",
+            "xaxis": {
+                "buckets": null,
+                "mode": "time",
+                "name": null,
+                "show": true,
+                "values": []
+            },
+            "yaxes": [
+                {
+                    "format": "short",
+                    "label": null,
+                    "logBase": 1,
+                    "max": null,
+                    "min": null,
+                    "show": true
+                },
+                {
+                    "format": "short",
+                    "label": null,
+                    "logBase": 1,
+                    "max": null,
+                    "min": null,
+                    "show": true
+                }
+            ],
+            "yaxis": {
+                "align": false,
+                "alignLevel": null
+            }
+        },
+        {
+            "aliasColors": {},
+            "bars": false,
+            "dashLength": 10,
+            "dashes": false,
+            "datasource": "Prometheus",
+            "fieldConfig": {
+                "defaults": {},
+                "overrides": []
+            },
+            "fill": 1,
+            "fillGradient": 0,
+            "gridPos": {
+                "h": 8,
+                "w": 12,
+                "x": 12,
+                "y": 62
+            },
+            "hiddenSeries": false,
+            "id": 28,
+            "legend": {
+                "avg": false,
+                "current": false,
+                "max": false,
+                "min": false,
+                "show": true,
+                "total": false,
+                "values": false
+            },
+            "lines": true,
+            "linewidth": 1,
+            "nullPointMode": "null",
+            "options": {
+                "alertThreshold": true
+            },
+            "percentage": false,
+            "pluginVersion": "7.5.6",
+            "pointradius": 2,
+            "points": false,
+            "renderer": "flot",
+            "seriesOverrides": [],
+            "spaceLength": 10,
+            "stack": false,
+            "steppedLine": false,
+            "targets": [
+                {
+                    "exemplar": true,
+                    "expr": "task_pipeline",
+                    "interval": "",
+                    "legendFormat": "{{category}}",
+                    "queryType": "randomWalk",
+                    "refId": "A"
+                }
+            ],
+            "thresholds": [],
+            "timeFrom": null,
+            "timeRegions": [],
+            "timeShift": null,
+            "title": "NewsBlur Task Pipeline",
             "tooltip": {
                 "shared": true,
                 "sort": 0,
@@ -743,7 +1030,7 @@
                 "h": 8,
                 "w": 12,
                 "x": 0,
-                "y": 60
+                "y": 70
             },
             "hiddenSeries": false,
             "id": 14,
@@ -837,8 +1124,200 @@
             "gridPos": {
                 "h": 8,
                 "w": 12,
+                "x": 12,
+                "y": 70
+            },
+            "hiddenSeries": false,
+            "id": 12,
+            "legend": {
+                "avg": false,
+                "current": false,
+                "max": false,
+                "min": false,
+                "show": true,
+                "total": false,
+                "values": false
+            },
+            "lines": true,
+            "linewidth": 1,
+            "nullPointMode": "null",
+            "options": {
+                "alertThreshold": true
+            },
+            "percentage": false,
+            "pluginVersion": "7.5.6",
+            "pointradius": 2,
+            "points": false,
+            "renderer": "flot",
+            "seriesOverrides": [],
+            "spaceLength": 10,
+            "stack": false,
+            "steppedLine": false,
+            "targets": [
+                {
+                    "exemplar": true,
+                    "expr": "feed_success",
+                    "interval": "",
+                    "legendFormat": "feed success",
+                    "queryType": "randomWalk",
+                    "refId": "A"
+                }
+            ],
+            "thresholds": [],
+            "timeFrom": null,
+            "timeRegions": [],
+            "timeShift": null,
+            "title": "NewsBlur Fetching History",
+            "tooltip": {
+                "shared": true,
+                "sort": 0,
+                "value_type": "individual"
+            },
+            "type": "graph",
+            "xaxis": {
+                "buckets": null,
+                "mode": "time",
+                "name": null,
+                "show": true,
+                "values": []
+            },
+            "yaxes": [
+                {
+                    "$$hashKey": "object:86",
+                    "format": "short",
+                    "label": null,
+                    "logBase": 1,
+                    "max": null,
+                    "min": "0",
+                    "show": true
+                },
+                {
+                    "$$hashKey": "object:87",
+                    "format": "short",
+                    "label": null,
+                    "logBase": 1,
+                    "max": null,
+                    "min": null,
+                    "show": true
+                }
+            ],
+            "yaxis": {
+                "align": false,
+                "alignLevel": null
+            }
+        },
+        {
+            "aliasColors": {},
+            "bars": false,
+            "dashLength": 10,
+            "dashes": false,
+            "datasource": "Prometheus",
+            "fieldConfig": {
+                "defaults": {},
+                "overrides": []
+            },
+            "fill": 1,
+            "fillGradient": 0,
+            "gridPos": {
+                "h": 8,
+                "w": 24,
                 "x": 0,
-                "y": 68
+                "y": 78
+            },
+            "hiddenSeries": false,
+            "id": 33,
+            "legend": {
+                "avg": false,
+                "current": false,
+                "max": false,
+                "min": false,
+                "show": true,
+                "total": false,
+                "values": false
+            },
+            "lines": true,
+            "linewidth": 1,
+            "nullPointMode": "null",
+            "options": {
+                "alertThreshold": true
+            },
+            "percentage": false,
+            "pluginVersion": "7.5.6",
+            "pointradius": 2,
+            "points": false,
+            "renderer": "flot",
+            "seriesOverrides": [],
+            "spaceLength": 10,
+            "stack": true,
+            "steppedLine": false,
+            "targets": [
+                {
+                    "exemplar": true,
+                    "expr": "updates",
+                    "interval": "",
+                    "legendFormat": "{{category}}",
+                    "queryType": "randomWalk",
+                    "refId": "A"
+                }
+            ],
+            "thresholds": [],
+            "timeFrom": null,
+            "timeRegions": [],
+            "timeShift": null,
+            "title": "NewsBlur Updates",
+            "tooltip": {
+                "shared": true,
+                "sort": 0,
+                "value_type": "individual"
+            },
+            "type": "graph",
+            "xaxis": {
+                "buckets": null,
+                "mode": "time",
+                "name": null,
+                "show": true,
+                "values": []
+            },
+            "yaxes": [
+                {
+                    "format": "short",
+                    "label": null,
+                    "logBase": 1,
+                    "max": null,
+                    "min": null,
+                    "show": true
+                },
+                {
+                    "format": "short",
+                    "label": null,
+                    "logBase": 1,
+                    "max": null,
+                    "min": null,
+                    "show": true
+                }
+            ],
+            "yaxis": {
+                "align": false,
+                "alignLevel": null
+            }
+        },
+        {
+            "aliasColors": {},
+            "bars": false,
+            "dashLength": 10,
+            "dashes": false,
+            "datasource": "Prometheus",
+            "fieldConfig": {
+                "defaults": {},
+                "overrides": []
+            },
+            "fill": 1,
+            "fillGradient": 0,
+            "gridPos": {
+                "h": 8,
+                "w": 12,
+                "x": 0,
+                "y": 86
             },
             "hiddenSeries": false,
             "id": 18,
@@ -932,103 +1411,8 @@
             "gridPos": {
                 "h": 8,
                 "w": 12,
-                "x": 0,
-                "y": 76
-            },
-            "hiddenSeries": false,
-            "id": 22,
-            "legend": {
-                "avg": false,
-                "current": false,
-                "max": false,
-                "min": false,
-                "show": true,
-                "total": false,
-                "values": false
-            },
-            "lines": true,
-            "linewidth": 1,
-            "nullPointMode": "null",
-            "options": {
-                "alertThreshold": true
-            },
-            "percentage": false,
-            "pluginVersion": "7.5.6",
-            "pointradius": 2,
-            "points": false,
-            "renderer": "flot",
-            "seriesOverrides": [],
-            "spaceLength": 10,
-            "stack": false,
-            "steppedLine": false,
-            "targets": [
-                {
-                    "exemplar": true,
-                    "expr": "load_times",
-                    "interval": "",
-                    "legendFormat": "{{category}}",
-                    "queryType": "randomWalk",
-                    "refId": "A"
-                }
-            ],
-            "thresholds": [],
-            "timeFrom": null,
-            "timeRegions": [],
-            "timeShift": null,
-            "title": "NewsBlur Load Times",
-            "tooltip": {
-                "shared": true,
-                "sort": 0,
-                "value_type": "individual"
-            },
-            "type": "graph",
-            "xaxis": {
-                "buckets": null,
-                "mode": "time",
-                "name": null,
-                "show": true,
-                "values": []
-            },
-            "yaxes": [
-                {
-                    "format": "short",
-                    "label": null,
-                    "logBase": 1,
-                    "max": null,
-                    "min": null,
-                    "show": true
-                },
-                {
-                    "format": "short",
-                    "label": null,
-                    "logBase": 1,
-                    "max": null,
-                    "min": null,
-                    "show": true
-                }
-            ],
-            "yaxis": {
-                "align": false,
-                "alignLevel": null
-            }
-        },
-        {
-            "aliasColors": {},
-            "bars": false,
-            "dashLength": 10,
-            "dashes": false,
-            "datasource": "Prometheus",
-            "fieldConfig": {
-                "defaults": {},
-                "overrides": []
-            },
-            "fill": 1,
-            "fillGradient": 0,
-            "gridPos": {
-                "h": 8,
-                "w": 12,
-                "x": 0,
-                "y": 84
+                "x": 12,
+                "y": 86
             },
             "hiddenSeries": false,
             "id": 24,
@@ -1123,10 +1507,10 @@
                 "h": 8,
                 "w": 12,
                 "x": 0,
-                "y": 92
+                "y": 94
             },
             "hiddenSeries": false,
-            "id": 26,
+            "id": 35,
             "legend": {
                 "avg": false,
                 "current": false,
@@ -1154,7 +1538,7 @@
             "targets": [
                 {
                     "exemplar": true,
-                    "expr": "task_codes",
+                    "expr": "users",
                     "interval": "",
                     "legendFormat": "{{ category }}",
                     "queryType": "randomWalk",
@@ -1165,7 +1549,7 @@
             "timeFrom": null,
             "timeRegions": [],
             "timeShift": null,
-            "title": "NewsBlur Task Codes",
+            "title": "NewsBlur Users",
             "tooltip": {
                 "shared": true,
                 "sort": 0,
@@ -1217,11 +1601,11 @@
             "gridPos": {
                 "h": 8,
                 "w": 12,
-                "x": 0,
-                "y": 100
+                "x": 12,
+                "y": 94
             },
             "hiddenSeries": false,
-            "id": 28,
+            "id": 8,
             "legend": {
                 "avg": false,
                 "current": false,
@@ -1249,9 +1633,9 @@
             "targets": [
                 {
                     "exemplar": true,
-                    "expr": "task_pipeline",
+                    "expr": "classifiers",
                     "interval": "",
-                    "legendFormat": "{{category}}",
+                    "legendFormat": "{{classifier}}",
                     "queryType": "randomWalk",
                     "refId": "A"
                 }
@@ -1260,7 +1644,7 @@
             "timeFrom": null,
             "timeRegions": [],
             "timeShift": null,
-            "title": "NewsBlur Task Pipeline",
+            "title": "NewsBlur Classifiers",
             "tooltip": {
                 "shared": true,
                 "sort": 0,
@@ -1298,293 +1682,70 @@
             }
         },
         {
-            "aliasColors": {},
-            "bars": false,
-            "dashLength": 10,
-            "dashes": false,
             "datasource": "Prometheus",
-            "description": "task_servers",
             "fieldConfig": {
-                "defaults": {},
+                "defaults": {
+                    "color": {
+                        "mode": "thresholds"
+                    },
+                    "mappings": [],
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "green",
+                                "value": null
+                            },
+                            {
+                                "color": "red",
+                                "value": 80
+                            }
+                        ]
+                    },
+                    "unit": "s"
+                },
                 "overrides": []
             },
-            "fill": 1,
-            "fillGradient": 0,
             "gridPos": {
-                "h": 8,
-                "w": 12,
+                "h": 10,
+                "w": 24,
                 "x": 0,
-                "y": 108
+                "y": 102
             },
-            "hiddenSeries": false,
-            "id": 30,
-            "legend": {
-                "avg": false,
-                "current": false,
-                "max": false,
-                "min": false,
-                "show": true,
-                "total": false,
-                "values": false
-            },
-            "lines": true,
-            "linewidth": 1,
-            "nullPointMode": "null",
+            "id": 37,
             "options": {
-                "alertThreshold": true
+                "colorMode": "value",
+                "graphMode": "area",
+                "justifyMode": "auto",
+                "orientation": "auto",
+                "reduceOptions": {
+                    "calcs": [
+                        "lastNotNull"
+                    ],
+                    "fields": "",
+                    "values": false
+                },
+                "text": {},
+                "textMode": "auto"
             },
-            "percentage": false,
             "pluginVersion": "7.5.6",
-            "pointradius": 2,
-            "points": false,
-            "renderer": "flot",
-            "seriesOverrides": [],
-            "spaceLength": 10,
-            "stack": false,
-            "steppedLine": false,
             "targets": [
                 {
                     "exemplar": true,
-                    "expr": "task_servers",
+                    "expr": "scrape_duration_seconds",
                     "interval": "",
-                    "legendFormat": "{{server}}",
+                    "legendFormat": "{{ instance}}  {{ job }}",
                     "queryType": "randomWalk",
                     "refId": "A"
                 }
             ],
-            "thresholds": [],
             "timeFrom": null,
-            "timeRegions": [],
             "timeShift": null,
-            "title": "NewsBlur Server Fetches",
-            "tooltip": {
-                "shared": true,
-                "sort": 0,
-                "value_type": "individual"
-            },
-            "type": "graph",
-            "xaxis": {
-                "buckets": null,
-                "mode": "time",
-                "name": null,
-                "show": true,
-                "values": []
-            },
-            "yaxes": [
-                {
-                    "format": "short",
-                    "label": null,
-                    "logBase": 1,
-                    "max": null,
-                    "min": null,
-                    "show": true
-                },
-                {
-                    "format": "short",
-                    "label": null,
-                    "logBase": 1,
-                    "max": null,
-                    "min": null,
-                    "show": true
-                }
-            ],
-            "yaxis": {
-                "align": false,
-                "alignLevel": null
-            }
-        },
-        {
-            "aliasColors": {},
-            "bars": false,
-            "dashLength": 10,
-            "dashes": false,
-            "datasource": "Prometheus",
-            "fieldConfig": {
-                "defaults": {},
-                "overrides": []
-            },
-            "fill": 1,
-            "fillGradient": 0,
-            "gridPos": {
-                "h": 8,
-                "w": 12,
-                "x": 0,
-                "y": 116
-            },
-            "hiddenSeries": false,
-            "id": 32,
-            "legend": {
-                "avg": false,
-                "current": false,
-                "max": false,
-                "min": false,
-                "show": true,
-                "total": false,
-                "values": false
-            },
-            "lines": true,
-            "linewidth": 1,
-            "nullPointMode": "null",
-            "options": {
-                "alertThreshold": true
-            },
-            "percentage": false,
-            "pluginVersion": "7.5.6",
-            "pointradius": 2,
-            "points": false,
-            "renderer": "flot",
-            "seriesOverrides": [],
-            "spaceLength": 10,
-            "stack": false,
-            "steppedLine": false,
-            "targets": [
-                {
-                    "exemplar": true,
-                    "expr": "task_times",
-                    "interval": "",
-                    "legendFormat": "{{category}}",
-                    "queryType": "randomWalk",
-                    "refId": "A"
-                }
-            ],
-            "thresholds": [],
-            "timeFrom": null,
-            "timeRegions": [],
-            "timeShift": null,
-            "title": "NewsBlur Task Server Times",
-            "tooltip": {
-                "shared": true,
-                "sort": 0,
-                "value_type": "individual"
-            },
-            "type": "graph",
-            "xaxis": {
-                "buckets": null,
-                "mode": "time",
-                "name": null,
-                "show": true,
-                "values": []
-            },
-            "yaxes": [
-                {
-                    "format": "short",
-                    "label": null,
-                    "logBase": 1,
-                    "max": null,
-                    "min": null,
-                    "show": true
-                },
-                {
-                    "format": "short",
-                    "label": null,
-                    "logBase": 1,
-                    "max": null,
-                    "min": null,
-                    "show": true
-                }
-            ],
-            "yaxis": {
-                "align": false,
-                "alignLevel": null
-            }
-        },
-        {
-            "aliasColors": {},
-            "bars": false,
-            "dashLength": 10,
-            "dashes": false,
-            "datasource": "Prometheus",
-            "fieldConfig": {
-                "defaults": {},
-                "overrides": []
-            },
-            "fill": 1,
-            "fillGradient": 0,
-            "gridPos": {
-                "h": 8,
-                "w": 12,
-                "x": 0,
-                "y": 124
-            },
-            "hiddenSeries": false,
-            "id": 33,
-            "legend": {
-                "avg": false,
-                "current": false,
-                "max": false,
-                "min": false,
-                "show": true,
-                "total": false,
-                "values": false
-            },
-            "lines": true,
-            "linewidth": 1,
-            "nullPointMode": "null",
-            "options": {
-                "alertThreshold": true
-            },
-            "percentage": false,
-            "pluginVersion": "7.5.6",
-            "pointradius": 2,
-            "points": false,
-            "renderer": "flot",
-            "seriesOverrides": [],
-            "spaceLength": 10,
-            "stack": true,
-            "steppedLine": false,
-            "targets": [
-                {
-                    "exemplar": true,
-                    "expr": "updates",
-                    "interval": "",
-                    "legendFormat": "{{category}}",
-                    "queryType": "randomWalk",
-                    "refId": "A"
-                }
-            ],
-            "thresholds": [],
-            "timeFrom": null,
-            "timeRegions": [],
-            "timeShift": null,
-            "title": "NewsBlur Updates",
-            "tooltip": {
-                "shared": true,
-                "sort": 0,
-                "value_type": "individual"
-            },
-            "type": "graph",
-            "xaxis": {
-                "buckets": null,
-                "mode": "time",
-                "name": null,
-                "show": true,
-                "values": []
-            },
-            "yaxes": [
-                {
-                    "format": "short",
-                    "label": null,
-                    "logBase": 1,
-                    "max": null,
-                    "min": null,
-                    "show": true
-                },
-                {
-                    "format": "short",
-                    "label": null,
-                    "logBase": 1,
-                    "max": null,
-                    "min": null,
-                    "show": true
-                }
-            ],
-            "yaxis": {
-                "align": false,
-                "alignLevel": null
-            }
+            "title": "Scrape Duration (seconds)",
+            "type": "stat"
         }
     ],
-    "refresh": false,
+    "refresh": "1m",
     "schemaVersion": 27,
     "style": "dark",
     "tags": [],
@@ -1592,12 +1753,12 @@
         "list": []
     },
     "time": {
-        "from": "now-24h",
+        "from": "now-7d",
         "to": "now"
     },
     "timepicker": {},
     "timezone": "",
     "title": "NewsBlur",
     "uid": "T86VjXrG2",
-    "version": 4
+    "version": 7
 }
