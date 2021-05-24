@@ -2243,7 +2243,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         }];
         
         preferenceKey = @"split_behavior";
-        titles = @[@"Auto", @"Tile", @"Displace", @"Overlay"];
+        titles = @[@"Auto", @"columns_triple.png", @"columns_double.png", @"Full screen"];
         values = @[@"auto", @"tile", @"displace", @"overlay"];
         
         [viewController addSegmentedControlWithTitles:titles values:values preferenceKey:preferenceKey selectionShouldDismiss:YES handler:^(NSUInteger selectedIndex) {
