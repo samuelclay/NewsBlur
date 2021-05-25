@@ -201,7 +201,7 @@ class MUserFeedNotification(mongo.Document):
             subtitle = None
             body_title = html.unescape(story['story_title']).strip()
             body_content = replace_with_newlines(soup)
-            body = f"{body_title}\n{body_content}"
+            body = f"{body_title}\n» {body_content}"
         else:
             subtitle = html.unescape(story['story_title'])
             body = replace_with_newlines(soup)
