@@ -46,7 +46,7 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
                         </span>\
                     </div>\
                     <img class="feed_favicon" src="<%= $.favicon("starred") %>">\
-                    <div class="NB-feedlist-manage-icon"></div>\
+                    <div class="NB-feedlist-manage-icon" role="button"></div>\
                     <span class="folder_title_text"><%= folder_title %></span>\
                 </div>\
             ', {
@@ -67,7 +67,7 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
                         </span>\
                     </div>\
                     <img class="feed_favicon" src="<%= $.favicon("read") %>">\
-                    <div class="NB-feedlist-manage-icon"></div>\
+                    <div class="NB-feedlist-manage-icon" role="button"></div>\
                     <div class="folder_title_text"><%= folder_title %></div>\
                 </div>\
             ', {
@@ -104,7 +104,7 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
                         <span class="NB-story-title-indicator-text">show hidden stories</span>\
                     </div>\
                     <div class="NB-folder-icon"><img class="feed_favicon" src="<%= $.favicon(folder_id) %>">\</div>\
-                    <div class="NB-feedlist-manage-icon"></div>\
+                    <div class="NB-feedlist-manage-icon" role="button"></div>\
                     <span class="folder_title_text"><%= folder_title %></span>\
                 </div>\
             ', {

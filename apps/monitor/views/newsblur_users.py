@@ -19,5 +19,16 @@ class Users(View):
             'premium': Profile.objects.filter(is_premium=True).count(),
             'queued': RNewUserQueue.user_count(),
         }
-        return render(request, 'monitor/prometheus_data.html', {"data": data})
+        chart_name = "users"
+        chart_type = "counter"
+
+        formatted_data = {}
+        for k, v in data.items():
+            formatted_data[k] = f'{chart_name}{{category="{k}"}} {v}'
+        context = {
+            "data": formatted_data,
+            "chart_name": chart_name,
+            "chart_type": chart_type,
+        }
+        return render(request, 'monitor/prometheus_data.html', context, content_type="text/plain")
 

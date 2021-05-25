@@ -1,3 +1,4 @@
+# TYPE {{chart_name}} {{chart_type}}
 {% for k, v in data.items %}
-{{ k }} {{ v }}<br>
+{{ v |safe }}
 {% endfor %}

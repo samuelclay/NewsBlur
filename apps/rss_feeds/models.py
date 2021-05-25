@@ -2024,7 +2024,6 @@ class Feed(models.Model):
         for existing_story in list(existing_stories.values()):
             content_ratio = 0
             # existing_story_pub_date = existing_story.story_date
-            # print 'Story pub date: %s %s' % (story_published_now, story_pub_date)
 
             if isinstance(existing_story.id, str):
                 # Correcting a MongoDB bug
@@ -2062,7 +2061,8 @@ class Feed(models.Model):
             if title_ratio < .75: continue
             
             story_timedelta = existing_story.story_date - story_pub_date
-            if abs(story_timedelta.days) >= 1: continue
+            # logging.debug('Story pub date: %s %s (%s, %s)' % (existing_story.story_date, story_pub_date, title_ratio, story_timedelta))
+            if abs(story_timedelta.days) >= 2: continue
             
             seq = difflib.SequenceMatcher(None, story_content, existing_story_content)
             
@@ -2081,7 +2081,7 @@ class Feed(models.Model):
                 and seq.real_quick_ratio() > .9 
                 and seq.quick_ratio() > .95):
                 content_ratio = seq.ratio()
-                
+
             if story_title_difference > 0 and content_ratio > .98:
                 story_in_system = existing_story
                 if story_title_difference > 0 or content_ratio < 1.0:
@@ -2943,10 +2943,10 @@ class MStarredStory(mongo.DynamicDocument):
     
     def save(self, *args, **kwargs):
         if self.story_content:
-            self.story_content_z = zlib.compress(self.story_content)
+            self.story_content_z = zlib.compress(smart_bytes(self.story_content))
             self.story_content = None
         if self.story_original_content:
-            self.story_original_content_z = zlib.compress(self.story_original_content)
+            self.story_original_content_z = zlib.compress(smart_bytes(self.story_original_content))
             self.story_original_content = None
         self.story_hash = self.feed_guid_hash
         self.starred_updated = datetime.datetime.now()

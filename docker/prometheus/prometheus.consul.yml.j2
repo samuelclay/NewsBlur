@@ -1,0 +1,89 @@
+global:
+    scrape_interval: 5s
+scrape_configs:
+    - job_name: 'node_exporter'
+      consul_sd_configs:
+      - server: 'consul.newsblur.com:8500'
+        services: ['node-exporter']
+      relabel_configs:
+      - source_labels: ['__meta_consul_node']
+        target_label: instance
+    
+    - job_name: 'prometheus'
+      static_configs:
+        - targets: ['localhost:9090']
+    - job_name: 'app_servers'
+      static_configs:
+        - targets: ['{{ monitor_server }}'] 
+      metrics_path: /monitor/app-servers
+      scheme: https
+    - job_name: 'app_times'
+      static_configs:
+        - targets: ['{{ monitor_server }}']
+      metrics_path: /monitor/app-times
+      scheme: https
+    - job_name: 'classifiers'
+      static_configs:
+        - targets: ['{{ monitor_server }}']
+      metrics_path: /monitor/classifiers
+      scheme: https
+    - job_name: 'db_times'
+      static_configs:
+        - targets: ['{{ monitor_server }}']
+      metrics_path: /monitor/db-times
+      scheme: https
+    - job_name: 'errors'
+      static_configs:
+        - targets: ['{{ monitor_server }}']
+      metrics_path: /monitor/errors
+      scheme: https
+    - job_name: 'feed_counts'
+      static_configs:
+        - targets: ['{{ monitor_server }}']
+      metrics_path: /monitor/feed-counts
+      scheme: https
+    - job_name: 'feeds'
+      static_configs:
+        - targets: ['{{ monitor_server }}']
+      metrics_path: /monitor/feeds
+      scheme: https
+    - job_name: 'load_times'
+      static_configs:
+        - targets: ['{{ monitor_server }}']
+      metrics_path: /monitor/load-times
+      scheme: https
+    - job_name: 'stories'
+      static_configs:
+        - targets: ['{{ monitor_server }}']
+      metrics_path: /monitor/stories
+      scheme: https
+    - job_name: 'task_codes'
+      static_configs:
+        - targets: ['{{ monitor_server }}']
+      metrics_path: /monitor/task-codes
+      scheme: https
+    - job_name: 'task_pipeline'
+      static_configs:
+        - targets: ['{{ monitor_server }}']
+      metrics_path: /monitor/task-pipeline
+      scheme: https
+    - job_name: 'task_servers'
+      static_configs:
+        - targets: ['{{ monitor_server }}']
+      metrics_path: /monitor/task-servers
+      scheme: https
+    - job_name: 'task_times'
+      static_configs:
+        - targets: ['{{ monitor_server }}']
+      metrics_path: /monitor/task-times
+      scheme: https
+    - job_name: 'updates'
+      static_configs:
+        - targets: ['{{ monitor_server }}']
+      metrics_path: /monitor/updates
+      scheme: https
+    - job_name: 'users'
+      static_configs:
+        - targets: ['{{ monitor_server }}']
+      metrics_path: /monitor/users
+      scheme: https

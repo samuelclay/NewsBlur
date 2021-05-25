@@ -22,3 +22,14 @@ variable "droplet_os" {
   type = string
   default = "ubuntu-20-04-x64"
 }
+
+
+variable "mongo_droplet_size" {
+  type = string
+  default = "m-4vcpu-32gb"
+}
+
+variable "mongo_secondary_droplet_size" {
+  type = string
+  default = "m-2vcpu-16gb"
+}

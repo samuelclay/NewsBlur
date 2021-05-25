@@ -11,6 +11,7 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.template.loader import render_to_string
 from django.db import IntegrityError
+from django.db.utils import DatabaseError
 from django.db.models import Q
 from django.views.decorators.cache import never_cache
 from django.urls import reverse
@@ -39,6 +40,7 @@ from apps.rss_feeds.models import MFeedIcon, MStarredStoryCounts, MSavedSearch
 from apps.notifications.models import MUserFeedNotification
 from apps.search.models import MUserSearch
 from apps.statistics.models import MStatistics, MAnalyticsLoader
+from apps.statistics.rstats import RStats
 # from apps.search.models import SearchStarredStory
 try:
     from apps.rss_feeds.models import Feed, MFeedPage, DuplicateFeed, MStory, MStarredStory
@@ -489,12 +491,13 @@ class ratelimit_refresh_feeds(ratelimit):
 @never_cache
 @json.json_view
 def refresh_feeds(request):
+    get_post = getattr(request, request.method)
     start = datetime.datetime.now()
     start_time = time.time()
     user = get_user(request)
-    feed_ids = request.GET.getlist('feed_id') or request.GET.getlist('feed_id[]')
-    check_fetch_status = request.GET.get('check_fetch_status')
-    favicons_fetching = request.GET.getlist('favicons_fetching') or request.GET.getlist('favicons_fetching[]')
+    feed_ids = get_post.getlist('feed_id') or get_post.getlist('feed_id[]')
+    check_fetch_status = get_post.get('check_fetch_status')
+    favicons_fetching = get_post.getlist('favicons_fetching') or get_post.getlist('favicons_fetching[]')
     social_feed_ids = [feed_id for feed_id in feed_ids if 'social:' in feed_id]
     feed_ids = list(set(feed_ids) - set(social_feed_ids))
     
@@ -551,7 +554,7 @@ def refresh_feeds(request):
             (end-start).total_seconds(),
             ))
     
-    MAnalyticsLoader.add(page_load=time.time()-start_time)
+    # MAnalyticsLoader.add(page_load=time.time()-start_time)
     
     return {
         'feeds': feeds, 
@@ -601,7 +604,7 @@ def feed_unread_count(request):
     else:
         feed_title = "%s feeds" % (len(feeds) + len(social_feeds))
     logging.user(request, "~FBUpdating unread count on: %s" % feed_title)
-    MAnalyticsLoader.add(page_load=time.time()-start)
+    # MAnalyticsLoader.add(page_load=time.time()-start)
     
     return {'feeds': feeds, 'social_feeds': social_feeds}
     
@@ -615,7 +618,7 @@ def refresh_feed(request, feed_id):
     usersub.calculate_feed_scores(silent=False)
     
     logging.user(request, "~FBRefreshing feed: %s" % feed)
-    MAnalyticsLoader.add(page_load=time.time()-start)
+    # MAnalyticsLoader.add(page_load=time.time()-start)
     
     return load_single_feed(request, feed_id)
     
@@ -790,7 +793,10 @@ def load_single_feed(request, feed_id):
     if usersub:
         usersub.feed_opens += 1
         usersub.needs_unread_recalc = True
-        usersub.save(update_fields=['feed_opens', 'needs_unread_recalc'])
+        try:
+            usersub.save(update_fields=['feed_opens', 'needs_unread_recalc'])
+        except DatabaseError as e:
+            logging.user(request, f"~BR~FK~SBNo changes in usersub, ignoring... {e}")
     
     diff1 = checkpoint1-start
     diff2 = checkpoint2-start
@@ -806,7 +812,11 @@ def load_single_feed(request, feed_id):
     search_log = "~SN~FG(~SB%s~SN) " % query if query else ""
     logging.user(request, "~FYLoading feed: ~SB%s%s (%s/%s) %s%s" % (
         feed.feed_title[:22], ('~SN/p%s' % page) if page > 1 else '', order, read_filter, search_log, time_breakdown))
+    
     MAnalyticsLoader.add(page_load=timediff)
+    if hasattr(request, 'start_time'):
+        seconds = time.time() - request.start_time
+        RStats.add('page_load', duration=seconds)
 
     if not include_hidden:
         hidden_stories_removed = 0
@@ -870,7 +880,7 @@ def load_feed_page(request, feed_id):
                 page_response = None
             if page_response and page_response.status_code == 200:
                 response = HttpResponse(page_response.content, content_type="text/html; charset=utf-8")
-                response['Content-Encoding'] = 'gzip'
+                response['Content-Encoding'] = 'deflate'
                 response['Last-Modified'] = page_response.headers.get('Last-modified')
                 response['Etag'] = page_response.headers.get('Etag')
                 response['Content-Length'] = str(len(page_response.content))
@@ -1353,6 +1363,7 @@ def load_river_stories__redis(request):
         feed_ids      = [int(feed_id) for feed_id in get_post.getlist('f') if feed_id]
     story_hashes      = get_post.getlist('h') or get_post.getlist('h[]')
     story_hashes      = story_hashes[:100]
+    requested_hashes  = len(story_hashes)
     original_feed_ids = list(feed_ids)
     page              = int(get_post.get('page', 1))
     order             = get_post.get('order', 'newest')
@@ -1539,14 +1550,23 @@ def load_river_stories__redis(request):
     
     diff = time.time() - start
     timediff = round(float(diff), 2)
-    logging.user(request, "~FY%sLoading ~FC%sriver stories~FY: ~SBp%s~SN (%s/%s "
-                               "stories, ~SN%s/%s/%s feeds, %s/%s)" % 
-                               ("~FCAuto-" if on_dashboard else "",
-                                "~FB~SBinfrequent~SN~FC " if infrequent else "",
-                                page, len(stories), len(mstories), len(found_feed_ids), 
-                                len(feed_ids), len(original_feed_ids), order, read_filter))
+    if requested_hashes and story_hashes:
+        logging.user(request, "~FB%sLoading ~FC%s~FB stories: %s%s" % 
+                                ("~FBAuto-" if on_dashboard else "",
+                                    requested_hashes, story_hashes[:3], f"...(+{len(story_hashes)-3})" if len(story_hashes) > 3 else ""))
+    else:
+        logging.user(request, "~FY%sLoading ~FC%sriver stories~FY: ~SBp%s~SN (%s/%s "
+                                "stories, ~SN%s/%s/%s feeds, %s/%s)" % 
+                                ("~FCAuto-" if on_dashboard else "",
+                                    "~FB~SBinfrequent~SN~FC " if infrequent else "",
+                                    page, len(stories), len(mstories), len(found_feed_ids), 
+                                    len(feed_ids), len(original_feed_ids), order, read_filter))
 
-    MAnalyticsLoader.add(page_load=diff)
+    if not on_dashboard and not (requested_hashes and story_hashes): 
+        MAnalyticsLoader.add(page_load=diff) # Only count full pages, not individual stories
+        if hasattr(request, 'start_time'):
+            seconds = time.time() - request.start_time
+            RStats.add('page_load', duration=seconds)
 
     data = dict(code=code,
                 message=message,
@@ -1745,8 +1765,8 @@ def mark_story_hashes_as_read(request):
             r.publish(request.user.username, 'feed:%s' % feed_id)
     
     hash_count = len(story_hashes)
-    logging.user(request, "~FYRead %s %s in feed/socialsubs: %s/%s: %s %s" % (
-                 hash_count, 'story' if hash_count == 1 else 'stories', feed_ids, friend_ids,
+    logging.user(request, "~FYRead %s %s: %s %s" % (
+                 hash_count, 'story' if hash_count == 1 else 'stories',
                  story_hashes,
                  '(retrying failed)' if retrying_failed else ''))
 

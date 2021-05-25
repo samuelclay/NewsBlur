@@ -20,5 +20,16 @@ class Updates(View):
             'celery_work_queue': r.llen("work_queue"),
             'celery_search_queue': r.llen("search_indexer"),
         }
-        return render(request, 'monitor/prometheus_data.html', {"data": data})
+        chart_name = "updates"
+        chart_type = "counter"
+        formatted_data = {}
+        
+        for k, v in data.items():
+            formatted_data[k] = f'{chart_name}{{category="{k}"}} {v}'
+        context = {
+            "data": formatted_data,
+            "chart_name": chart_name,
+            "chart_type": chart_type,
+        }
+        return render(request, 'monitor/prometheus_data.html', context, content_type="text/plain")
 
