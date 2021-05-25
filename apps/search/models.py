@@ -299,10 +299,13 @@ class SearchStory:
     
     @classmethod
     def remove(cls, story_hash):
+        if not cls.ES().exists(index=cls.index_name(), id=story_hash, doc_type=cls.doc_type()):
+            return
+        
         try:
             cls.ES().delete(index=cls.index_name(), id=story_hash, doc_type=cls.doc_type())
-        except elasticsearch.exceptions.NotFoundError as e:
-            cls.ES().delete(index=cls.index_name(), id=story_hash)
+        except elasticsearch.exceptions.NotFoundError:
+            cls.ES().delete(index=cls.index_name(), id=story_hash, doc_type='story-type')
         except elasticsearch.exceptions.NotFoundError as e:
             logging.debug(f" ***> ~FRNo search server available for story deletion: {e}")
         

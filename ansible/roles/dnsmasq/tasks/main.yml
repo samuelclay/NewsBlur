@@ -5,6 +5,12 @@
     name: dnsmasq
     state: present
 
+- name: Install resolvconf package
+  become: yes
+  apt:
+    name: resolvconf
+    state: present
+
 - name: Enable dnsmasq service
   become: yes
   service:

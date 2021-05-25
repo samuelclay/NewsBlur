@@ -1,10 +1,23 @@
 ---
+- name: Template grafana config
+  template:
+    src: /srv/newsblur/docker/grafana/grafana.ini.j2
+    dest: /srv/newsblur/docker/grafana/grafana.ini
+
 - name: Start grafana container
   become: yes
   docker_container:
     name: grafana
     image: grafana/grafana
-    env:
-      GF_SECURITY_ADMIN_PASSWORD: "{{ grafana_password }}"
+    user: root
+    networks_cli_compatible: yes
+    network_mode: default
+    networks:
+      - name: newsblurnet
     ports:
       - "3000:3000"
+    volumes:
+      - /srv/newsblur/docker/grafana/grafana.ini:/etc/grafana/grafana.ini
+      - /srv/newsblur/docker/volumes/grafana_data:/var/lib/grafana
+      - /srv/newsblur/docker/grafana/datasources/datasource.yaml:/etc/grafana/provisioning/datasources/datasource.yaml
+      - /srv/newsblur/docker/grafana/dashboards/:/etc/grafana/provisioning/dashboards/

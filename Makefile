@@ -8,12 +8,18 @@ CURRENT_GID := $(shell id -g)
 start:
 	- CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker-compose up -d
 
+metrics:
+	- CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker-compose -f docker-compose.yml -f docker-compose.metrics.yml up -d
+
+metrics-ps:
+	- docker-compose -f docker-compose.yml -f docker-compose.metrics.yml ps
+
 rebuild:
 	- CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker-compose down
 	- CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker-compose up -d
 
 #creates newsblur, builds new images, and creates/refreshes SSL keys
-nb:
+nb: pull
 	- CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker-compose down
 	- [[ -d config/certificates ]] && echo "keys exist" || make keys
 	- cd node && npm install & cd ..
@@ -29,11 +35,14 @@ bash:
 debug:
 	- newsblur := $(shell docker ps -qf "name=newsblur_web")
 	- CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker attach ${newsblur}
-
+log:
+	- docker-compose logs -f --tail 20 newsblur_web newsblur_node
+alllogs:
+	- docker-compose logs -f --tail 20
 # brings down containers
 down:
 	- docker-compose -f docker-compose.yml down
-nb-down: down
+nbdown: down
 
 # runs tests
 test:
@@ -57,30 +66,35 @@ keys:
 	- openssl req -new -nodes -newkey rsa:2048 -keyout config/certificates/localhost.key -out config/certificates/localhost.csr -subj "/C=US/ST=YourState/L=YourCity/O=Example-Certificates/CN=localhost.local"
 	- openssl x509 -req -sha256 -days 1024 -in config/certificates/localhost.csr -CA config/certificates/RootCA.pem -CAkey config/certificates/RootCA.key -CAcreateserial -out config/certificates/localhost.crt
 	- cat config/certificates/localhost.crt config/certificates/localhost.key > config/certificates/localhost.pem
+	- /usr/bin/security add-trusted-cert -d -r trustAsRoot -k /Library/Keychains/System.keychain ./config/certificates/RootCA.crt
 
 # Digital Ocean / Terraform
 list:
 	- doctl -t `cat /srv/secrets-newsblur/keys/digital_ocean.token` compute droplet list
 ansible-deps:
 	ansible-galaxy install -p roles -r ansible/roles/requirements.yml --roles-path ansible/roles
-refresh:
+tfrefresh:
 	terraform -chdir=terraform refresh
 plan:
 	terraform -chdir=terraform plan -refresh=false
 apply:
 	terraform -chdir=terraform apply -refresh=false
-generate:
-	- ./ansible/utils/generate.py
-gen: generate
+inventory:
+	- ./ansible/utils/generate_inventory.py
 
 # Docker
+pull:
+	- docker pull newsblur/newsblur_python3
+	- docker pull newsblur/newsblur_node
+	- docker pull newsblur/newsblur_monitor
+
 build_web:
 	- docker image build . --file=docker/newsblur_base_image.Dockerfile --tag=newsblur/newsblur_python3
 build_node: 
 	- docker image build . --file=docker/node/Dockerfile --tag=newsblur/newsblur_node
 build_monitor: 
 	- docker image build . --file=docker/monitor/Dockerfile --tag=newsblur/newsblur_monitor
-build_images: build_web build_node build_monitor
+build: build_web build_node build_monitor
 push_web: build_web
 	- docker push newsblur/newsblur_python3
 push_node: build_node
@@ -88,7 +102,7 @@ push_node: build_node
 push_monitor: build_monitor
 	- docker push newsblur/newsblur_monitor
 push_images: push_web push_node push_monitor
-push: build_images push_images
+push: build push_images
 
 # Tasks
 deploy_web:
@@ -119,6 +133,10 @@ deploy_staging:
 staging: deploy_staging
 celery_stop:
 	- ansible-playbook ansible/deploy.yml -l task --tags stop
+maintenance_on:
+	- ansible-playbook ansible/deploy.yml -l web --tags maintenance_on
+maintenance_off:
+	- ansible-playbook ansible/deploy.yml -l web --tags maintenance_off
 
 # Provision
 firewall:

@@ -1,20 +1,44 @@
 ---
+
 - name: Template file for prometheus
+  vars:
+    monitor_server: "{{ 'staging.newsblur.com' if disable_consul_services is defined else 'beta.newsblur.com' }}"
   template:
-    src: /srv/newsblur/docker/prometheus/prometheus.yml.j2
+    src: /srv/newsblur/docker/prometheus/prometheus.consul.yml.j2
     dest: /srv/newsblur/docker/prometheus/prometheus.yml
+  notify:
+    - restart prometheus
+
+- name: Register prometheus in consul
+  tags: consul
+  become: yes
+  template:
+    src: /srv/newsblur/ansible/roles/prometheus/templates/consul_service.json
+    dest: /etc/consul.d/prometheus.json
+  notify:
+    - reload consul
+
+- name: Make docker network for newsblurnet
+  become: yes
+  docker_network:
+    name: newsblurnet
+  notify: restart docker
 
 - name: Start prometheus docker container
   become: yes
   docker_container:
     name: prometheus
-    image: prom/prometheus:0.18.0
+    image: prom/prometheus
+    user: root
+    networks_cli_compatible: yes
+    network_mode: default
+    networks:
+      - name: newsblurnet
     state: started
-    network_mode: host
-    restart_policy: unless-stopped
-    command: '-config.file=/etc/prometheus/prometheus.yml'
     ports:
-      - "9090:9090"
+    - 9090:9090
+    restart_policy: unless-stopped
+    container_default_behavior: no_defaults
     volumes:
       - /srv/newsblur/docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
       - /srv/newsblur/docker/volumes/prometheus_data:/prometheus

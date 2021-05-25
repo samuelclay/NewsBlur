@@ -33,7 +33,7 @@ def opml_upload(request):
         if 'file' in request.FILES:
             logging.user(request, "~FR~SBOPML upload starting...")
             file = request.FILES['file']
-            xml_opml = str(file.read().decode('utf-8', 'ignore'))
+            xml_opml = file.read()
             try:
                 UploadedOPML.objects.create(user_id=request.user.pk, opml_file=xml_opml)
             except (UnicodeDecodeError, InvalidStringData):
@@ -79,8 +79,8 @@ def opml_export(request):
     exporter = OPMLExporter(user)
     opml     = exporter.process()
     
-    response = HttpResponse(opml, content_type='text/xml')
-    response['Content-Disposition'] = 'attachment; filename=NewsBlur-%s-%s' % (
+    response = HttpResponse(opml, content_type='text/xml; charset=utf-8')
+    response['Content-Disposition'] = 'attachment; filename=NewsBlur-%s-%s.opml' % (
         user.username,
         now.strftime('%Y-%m-%d')
     )

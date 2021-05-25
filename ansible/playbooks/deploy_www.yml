@@ -1,10 +1,9 @@
 ---
 - name: DEPLOY -> www
-  hosts: www
+  hosts: www,staging
   gather_facts: false
   vars_files:
     - ../env_vars/base.yml
-    - ../env_vars/dev.yml
     - roles/letsencrypt/defaults/main.yml
   handlers:
     - include: roles/haproxy/handlers/main.yml
@@ -14,9 +13,34 @@
       template:
         src: /srv/newsblur/docker/haproxy/haproxy.consul.cfg.j2
         dest: /srv/newsblur/docker/haproxy/haproxy.consul.cfg
-    
+      when: disable_consul_services is not defined
+      register: updated_config_consul
+
+    - name: Copy staging haproxy.cfg file
+      copy:
+        src: /srv/newsblur/docker/haproxy/haproxy.staging.cfg
+        dest: /srv/newsblur/docker/haproxy/haproxy.consul.cfg
+      when: disable_consul_services is defined
+      register: updated_config_staging
+
+    - name: Merge facts
+      set_fact:
+        updated_config: "{{ updated_config_consul.changed or updated_config_staging.changed }}"
+
+    - name: Verify HAProxy config
+      become: yes
+      shell: docker exec haproxy haproxy -c -f /srv/newsblur/docker/haproxy/haproxy.consul.cfg
+      register: haproxy_verified
+      changed_when: haproxy_verified.rc != 0
+      failed_when: haproxy_verified.rc != 0
+
+    - name: Error in HAProxy config
+      debug: var=haproxy_verified
+      when: haproxy_verified.rc != 0
+
     - name: Reload haproxy
       debug: 
         msg: Gracefully reloading HAProxy
+      when: updated_config and haproxy_verified.rc == 0
       changed_when: yes
       notify: reload haproxy

@@ -16,6 +16,7 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
         "click .NB-feedbar-train-feed"              : "open_trainer",
         "click .NB-feedbar-statistics"              : "open_statistics",
         "click .NB-feedlist-manage-icon"            : "show_manage_menu",
+        "click .feed_favicon"                       : "show_manage_menu",
         "click .NB-feedbar-options"                 : "open_options_popover",
         "click"                                     : "open",
         "mousedown"                                 : "highlight_event",
@@ -90,16 +91,16 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
           </div>\
           <% if (type == "story") { %>\
               <div class="NB-feedbar-mark-feed-read-container">\
-                   <div class="NB-feedbar-mark-feed-read"><div class="NB-icon"></div></div>\
-                   <div class="NB-feedbar-mark-feed-read-time" data-days="1">1d</div>\
-                   <div class="NB-feedbar-mark-feed-read-time" data-days="3">3d</div>\
-                   <div class="NB-feedbar-mark-feed-read-time" data-days="7">7d</div>\
-                   <div class="NB-feedbar-mark-feed-read-time" data-days="14">14d</div>\
-                   <div class="NB-feedbar-mark-feed-read-expand"></div>\
+                   <div class="NB-feedbar-mark-feed-read" role="button"><div class="NB-icon"></div></div>\
+                   <div class="NB-feedbar-mark-feed-read-time" data-days="1" role="button">1d</div>\
+                   <div class="NB-feedbar-mark-feed-read-time" data-days="3" role="button">3d</div>\
+                   <div class="NB-feedbar-mark-feed-read-time" data-days="7" role="button">7d</div>\
+                   <div class="NB-feedbar-mark-feed-read-time" data-days="14" role="button">14d</div>\
+                   <div class="NB-feedbar-mark-feed-read-expand" role="button"></div>\
               </div>\
               <div class="NB-search-container"></div>\
               <div class="NB-feedbar-options-container">\
-                  <span class="NB-feedbar-options">\
+                  <span class="NB-feedbar-options" role="button">\
                       <div class="NB-icon"></div>\
                       <%= NEWSBLUR.assets.view_setting(feed.id, "read_filter") %>\
                       &middot;\
@@ -115,13 +116,13 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
                   <span class="NB-story-title-indicator-text">show hidden stories</span>\
               </div>\
           <% } %>\
-          <img class="feed_favicon" src="<%= $.favicon(feed) %>">\
+          <img class="feed_favicon" src="<%= $.favicon(feed) %>" <% if (type == "story") { %>role="button"<% } %>>\
           <span class="feed_title">\
             <%= feed.get("feed_title") %>\
           </span>\
           <div class="NB-feed-exception-icon"></div>\
           <div class="NB-feed-unfetched-icon"></div>\
-          <div class="NB-feedlist-manage-icon"></div>\
+          <div class="NB-feedlist-manage-icon" role="button"></div>\
           <div class="NB-feed-highlight"></div>\
           <% if (organizer) { %>\
               <div class="NB-feed-organizer-sort NB-feed-organizer-subscribers">\

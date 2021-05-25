@@ -1,10 +1,10 @@
-version: '3'
+version: '2'
 services:
 
   newsblur_web:
     hostname: nb.com
     container_name: newsblur_web
-    image: newsblur/newsblur_python3:latest
+    image: newsblur/newsblur_${NEWSBLUR_BASE:-python3}:latest
     environment: 
       - DOCKERBUILD=True
     stdin_open: true
@@ -79,11 +79,11 @@ services:
     environment:
       - POSTGRES_USER=newsblur
       - POSTGRES_PASSWORD=newsblur
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U newsblur"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+    # healthcheck:
+    #   test: ["CMD-SHELL", "pg_isready -U newsblur"]
+    #   interval: 10s
+    #   timeout: 5s
+    #   retries: 5
     ports:
       - 5434:5432
     volumes:
@@ -110,7 +110,7 @@ services:
       - 9200:9200
       - 9300:9300
     volumes:
-      - ./docker/volumes/elasticsearch:/usr/share/elasticsearch/data
+      - ./docker/volumes/elasticsearch:/elasticsearch/dat
       - ./config/elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
 
   db_mongo:
@@ -151,31 +151,3 @@ services:
     volumes:
       - ./docker/haproxy/haproxy.docker-compose.cfg:/usr/local/etc/haproxy/haproxy.cfg
       - ${PWD}:/srv/newsblur
-  
-  prometheus:
-    container_name: prometheus
-    image: prom/prometheus:0.18.0
-    ports:
-      - 9090:9090
-    command: '-config.file=/etc/prometheus/prometheus.yml'
-    volumes:
-      - ./docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
-      - ./docker/volumes/prometheus_data:/prometheus
-    depends_on:
-      - node-exporter
-
-  node-exporter:
-    image: prom/node-exporter
-    ports:
-      - 9100:9100
-
-  grafana:
-    image: grafana/grafana
-    environment:
-      - GF_SECURITY_ADMIN_PASSWORD=pass
-    depends_on:
-      - prometheus
-    ports:
-      - 3000:3000
-    volumes:
-      - ./docker/volumes/grafana_data:/var/lib/grafana

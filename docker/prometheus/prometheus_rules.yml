@@ -1,0 +1,9 @@
+groups:
+- name: high request latency
+  rules:
+  - alert: HighRequestLatency
+    expr: job:request_latency_seconds > 5
+    labels:
+      severity: warning
+    annotations:
+      summary: Request latency greater than 5 seconds

@@ -10,6 +10,9 @@ from django.utils.html import linebreaks
 from apps.rss_feeds.models import Feed, MStory, MFetchHistory
 from apps.reader.models import UserSubscription, UserSubscriptionFolders
 from apps.profile.models import Profile, MSentEmail
+from apps.notifications.tasks import QueueNotifications
+from apps.notifications.models import MUserFeedNotification
+
 from utils import log as logging
 from utils.story_functions import linkify
 from utils.scrubber import Scrubber
@@ -208,4 +211,6 @@ class EmailNewsletter:
         except redis.ConnectionError:
             logging.debug("   ***> [%-30s] ~BMRedis is unavailable for real-time." % (feed.log_title[:30],))
         
+        if MUserFeedNotification.feed_has_users(feed.pk) > 0:
+            QueueNotifications.delay(feed.pk, 1)
     
