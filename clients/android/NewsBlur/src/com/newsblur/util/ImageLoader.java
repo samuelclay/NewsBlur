@@ -55,7 +55,7 @@ public class ImageLoader {
     public static ImageLoader asThumbnailLoader(Context context, FileCache chainCache) {
         FileCache cache = FileCache.asThumbnailCache(context);
         cache.addChain(chainCache);
-        return new ImageLoader(cache, android.R.color.transparent, 32, true, (Runtime.getRuntime().maxMemory()/6));
+        return new ImageLoader(cache, android.R.color.transparent, 32, false, (Runtime.getRuntime().maxMemory()/6));
     }
 	
     public PhotoToLoad displayImage(String url, ImageView imageView, boolean roundCorners, boolean cropSquare) {
@@ -155,7 +155,8 @@ public class ImageLoader {
             if (photoToLoad.cancel) return;
 
             // try from memory
-            Bitmap bitmap = memoryCache.get(photoToLoad.url);
+            //TODO: revisit memory cache
+            Bitmap bitmap = null;
 
             if (bitmap != null) {
                 setViewImage(bitmap, photoToLoad);
