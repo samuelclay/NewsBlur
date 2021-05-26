@@ -9,6 +9,7 @@
   docker_container:
     name: grafana
     image: grafana/grafana
+    restart_policy: unless-stopped
     user: root
     networks_cli_compatible: yes
     network_mode: default
