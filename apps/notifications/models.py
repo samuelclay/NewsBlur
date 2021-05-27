@@ -205,7 +205,7 @@ class MUserFeedNotification(mongo.Document):
                 if body_title == body_content[:len(body_title)] or body_content[:100] == body_title[:100]:
                     body_content = ""
                 else:
-                    body_content = f"\n⁙ {body_content}" 
+                    body_content = f"\n※ {body_content}" 
             body = f"{body_title}{body_content}"
         else:
             subtitle = html.unescape(story['story_title'])
