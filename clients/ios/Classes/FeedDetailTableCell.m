@@ -216,7 +216,7 @@ static UIFont *indicatorFont = nil;
                                        imageWidth, imageHeight);
         
         if (isLeft) {
-            imageFrame.origin.x = previewHorizMargin + 5;
+            imageFrame.origin.x = previewHorizMargin + 2;
         }
         
         UIImage *cachedImage = (UIImage *)[appDelegate.cachedStoryImages objectForKey:cell.storyImageUrl];
