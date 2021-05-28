@@ -505,31 +505,39 @@
 }
 
 - (void)processNotification:(NSDictionary *)content action:(NSString *)action withCompletionHandler:(void(^)(void))completionHandler {
-    NSLog(@"User Info : %@ / %@", content, action);
-    NSString *storyHash = [content objectForKey:@"story_hash"];
-    NSNumber *storyFeedId = [content objectForKey:@"story_feed_id"];
-    NSString *feedIdStr = [NSString stringWithFormat:@"%@", storyFeedId];
+    void (^handler)(void) = ^{
+        NSLog(@"User Info : %@ / %@", content, action);
+        NSString *storyHash = [content objectForKey:@"story_hash"];
+        NSNumber *storyFeedId = [content objectForKey:@"story_feed_id"];
+        NSString *feedIdStr = [NSString stringWithFormat:@"%@", storyFeedId];
+        
+        if (!self.activeUsername) {
+            return;
+        } else if ([action isEqualToString:@"MARK_READ_IDENTIFIER"]) {
+            [self markStoryAsRead:storyHash inFeed:feedIdStr withCallback:^{
+                if (completionHandler) completionHandler();
+            }];
+        } else if ([action isEqualToString:@"STAR_IDENTIFIER"]) {
+            [self markStoryAsStarred:storyHash withCallback:^{
+                if (completionHandler) completionHandler();
+            }];
+        } else if ([action isEqualToString:@"VIEW_STORY_IDENTIFIER"] ||
+                   [action isEqualToString:@"com.apple.UNNotificationDefaultActionIdentifier"]) {
+            [self popToRootWithCompletion:^{
+                [self loadFeed:feedIdStr withStory:storyHash animated:NO];
+                if (completionHandler) completionHandler();
+            }];
+        } else if ([action isEqualToString:@"DISMISS_IDENTIFIER"]) {
+            if (completionHandler) completionHandler();
+        }
+    };
     
+    // If the app is still launching, perform this after a moment, otherwise do it now.
     if (!self.activeUsername) {
-        return;
-    } else if ([action isEqualToString:@"MARK_READ_IDENTIFIER"]) {
-        [self markStoryAsRead:storyHash inFeed:feedIdStr withCallback:^{
-            if (completionHandler) completionHandler();
-        }];
-    } else if ([action isEqualToString:@"STAR_IDENTIFIER"]) {
-        [self markStoryAsStarred:storyHash withCallback:^{
-            if (completionHandler) completionHandler();
-        }];
-    } else if ([action isEqualToString:@"VIEW_STORY_IDENTIFIER"] ||
-               [action isEqualToString:@"com.apple.UNNotificationDefaultActionIdentifier"]) {
-        [self popToRootWithCompletion:^{
-            [self loadFeed:feedIdStr withStory:storyHash animated:NO];
-        }];
-        if (completionHandler) completionHandler();
-    } else if ([action isEqualToString:@"DISMISS_IDENTIFIER"]) {
-        if (completionHandler) completionHandler();
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 3 * NSEC_PER_SEC), dispatch_get_main_queue(), handler);
+    } else {
+        handler();
     }
-    
 }
 
 -(void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
