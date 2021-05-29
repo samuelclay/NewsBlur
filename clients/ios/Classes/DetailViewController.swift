@@ -186,6 +186,10 @@ class DetailViewController: BaseViewController {
         dividerImageView.image = manager.themedImage(UIImage(named: "drag_icon.png"))
         view.backgroundColor = navigationController?.navigationBar.barTintColor
         navigationController?.navigationBar.barStyle = manager.isDarkTheme ? .black : .default
+        
+//        DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+//            self.findSplitBackButton()
+//        }
     }
     
     /// Adjusts the container when autoscrolling. Only applies to iPhone.
@@ -198,6 +202,46 @@ class DetailViewController: BaseViewController {
         
         updateTheme()
     }
+    
+//    @objc func findSplitBackButton() {
+//        guard let navBar = navigationController?.navigationBar else {
+//            return
+//        }
+//
+//        let imageViews = recursiveImageSubviews(of: navBar)
+//
+//        for view in imageViews {
+//            if let imageView = view as? UIImageView, let image = imageView.image, image.description.contains("BackIndicator"), let button = recursiveButtonSuperview(of: imageView) {
+//                print("image view: \(imageView), image: \(String(describing: imageView.image)), button: \(button)")
+//            }
+//        }
+//    }
+//
+//    func recursiveImageSubviews(of view: UIView) -> [UIView] {
+//        var subviews = [UIView]()
+//
+//        for subview in view.subviews {
+//            if subview is UIImageView {
+//                subviews.append(subview)
+//            } else {
+//                subviews.append(contentsOf: recursiveImageSubviews(of: subview))
+//            }
+//        }
+//
+//        return subviews
+//    }
+//
+//    func recursiveButtonSuperview(of view: UIView) -> UIButton? {
+//        guard let superview = view.superview else {
+//            return nil
+//        }
+//
+//        if let button = superview as? UIButton {
+//            return button
+//        }
+//
+//        return recursiveButtonSuperview(of: superview)
+//    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
