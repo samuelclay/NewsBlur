@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.iPad.XIB" version="3.0" toolsVersion="17701" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.iPad.XIB" version="3.0" toolsVersion="18122" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES">
     <device id="ipad9_7" orientation="portrait" layout="fullscreen" appearance="light"/>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17703"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="18093"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -17,7 +17,6 @@
                 <outlet property="addSiteViewController" destination="121" id="127"/>
                 <outlet property="dashboardViewController" destination="238" id="239"/>
                 <outlet property="feedDetailViewController" destination="51" id="91"/>
-                <outlet property="feedsMenuViewController" destination="162" id="163"/>
                 <outlet property="feedsNavigationController" destination="173" id="185"/>
                 <outlet property="feedsViewController" destination="10" id="15"/>
                 <outlet property="firstTimeUserAddFriendsViewController" destination="252" id="275"/>
@@ -94,13 +93,6 @@
             <simulatedStatusBarMetrics key="simulatedStatusBarMetrics" statusBarStyle="blackOpaque"/>
             <connections>
                 <outlet property="appDelegate" destination="3" id="257"/>
-            </connections>
-        </viewController>
-        <viewController id="162" customClass="FeedsMenuViewController">
-            <extendedEdge key="edgesForExtendedLayout"/>
-            <simulatedStatusBarMetrics key="simulatedStatusBarMetrics" statusBarStyle="blackOpaque"/>
-            <connections>
-                <outlet property="appDelegate" destination="3" id="281"/>
             </connections>
         </viewController>
         <viewController restorationIdentifier="FeedDetailView" nibName="FeedDetailViewController" id="51" customClass="FeedDetailViewController">

@@ -25,5 +25,6 @@ typedef void (^MenuItemSegmentedHandler)(NSUInteger selectedIndex);
 - (void)addThemeSegmentedControl;
 
 - (void)showFromNavigationController:(UINavigationController *)navigationController barButtonItem:(UIBarButtonItem *)barButtonItem;
+- (void)showFromNavigationController:(UINavigationController *)navigationController barButtonItem:(UIBarButtonItem *)barButtonItem permittedArrowDirections:(UIPopoverArrowDirection)permittedArrowDirections;
 
 @end

@@ -199,8 +199,6 @@
 		43821AD415D8703F0034A4EF /* 258-checkmark@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 43821AD215D8703F0034A4EF /* 258-checkmark@2x.png */; };
 		4383DCD615BB8B88007E6611 /* SmallActivityCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4383DCD515BB8B88007E6611 /* SmallActivityCell.m */; };
 		438FEDE815D5B15F00E3B3C9 /* FollowGrid.m in Sources */ = {isa = PBXBuildFile; fileRef = 438FEDE715D5B15F00E3B3C9 /* FollowGrid.m */; };
-		439DAB201590DA350019B0EB /* FeedsMenuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 439DAB1E1590DA350019B0EB /* FeedsMenuViewController.m */; };
-		439DAB211590DA350019B0EB /* FeedsMenuViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 439DAB1F1590DA350019B0EB /* FeedsMenuViewController.xib */; };
 		43A4BADB15C866FA00F3B8D4 /* popoverArrowDown.png in Resources */ = {isa = PBXBuildFile; fileRef = 43A4BACC15C866FA00F3B8D4 /* popoverArrowDown.png */; };
 		43A4BADC15C866FA00F3B8D4 /* popoverArrowDown@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 43A4BACD15C866FA00F3B8D4 /* popoverArrowDown@2x.png */; };
 		43A4BADD15C866FA00F3B8D4 /* popoverArrowDownSimple.png in Resources */ = {isa = PBXBuildFile; fileRef = 43A4BACE15C866FA00F3B8D4 /* popoverArrowDownSimple.png */; };
@@ -910,9 +908,6 @@
 		4383DCD515BB8B88007E6611 /* SmallActivityCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SmallActivityCell.m; sourceTree = "<group>"; };
 		438FEDE615D5B15F00E3B3C9 /* FollowGrid.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FollowGrid.h; sourceTree = "<group>"; };
 		438FEDE715D5B15F00E3B3C9 /* FollowGrid.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FollowGrid.m; sourceTree = "<group>"; };
-		439DAB1D1590DA350019B0EB /* FeedsMenuViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FeedsMenuViewController.h; sourceTree = "<group>"; };
-		439DAB1E1590DA350019B0EB /* FeedsMenuViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FeedsMenuViewController.m; sourceTree = "<group>"; };
-		439DAB1F1590DA350019B0EB /* FeedsMenuViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = FeedsMenuViewController.xib; path = ../Classes/FeedsMenuViewController.xib; sourceTree = "<group>"; };
 		43A4BACC15C866FA00F3B8D4 /* popoverArrowDown.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = popoverArrowDown.png; sourceTree = "<group>"; };
 		43A4BACD15C866FA00F3B8D4 /* popoverArrowDown@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "popoverArrowDown@2x.png"; sourceTree = "<group>"; };
 		43A4BACE15C866FA00F3B8D4 /* popoverArrowDownSimple.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = popoverArrowDownSimple.png; sourceTree = "<group>"; };
@@ -1909,8 +1904,6 @@
 				170E3CCC24F8A3A2009CE819 /* FeedsViewController.swift */,
 				28D7ACF60DDB3853001CB0EB /* FeedsObjCViewController.h */,
 				28D7ACF70DDB3853001CB0EB /* FeedsObjCViewController.m */,
-				439DAB1D1590DA350019B0EB /* FeedsMenuViewController.h */,
-				439DAB1E1590DA350019B0EB /* FeedsMenuViewController.m */,
 				FFD887ED1445F1E800385399 /* AddSiteAutocompleteCell.h */,
 				FFD887EE1445F1E800385399 /* AddSiteAutocompleteCell.m */,
 				FF5EA47C143B691000B7563D /* AddSiteViewController.h */,
@@ -2347,7 +2340,6 @@
 				43B8F018156603170008733D /* AddSiteAutocompleteCell.xib */,
 				43B8F019156603170008733D /* AddSiteViewController.xib */,
 				43B8F01B156603170008733D /* FeedDetailViewController.xib */,
-				439DAB1F1590DA350019B0EB /* FeedsMenuViewController.xib */,
 				17432C7B1C533E89003F8FD6 /* MenuViewController.xib */,
 				17432C791C533DCC003F8FD6 /* FeedChooserViewController.xib */,
 				17CBD3BB1BF66B07003FCCAE /* MarkReadMenuViewController.xib */,
@@ -3054,7 +3046,6 @@
 				433323CE158968ED0025064D /* FirstTimeUserViewController.xib in Resources */,
 				FFB7050D1925921F0052101C /* line_spacing_xl.png in Resources */,
 				43763AD2158F90B100B3DBE2 /* FontSettingsViewController.xib in Resources */,
-				439DAB211590DA350019B0EB /* FeedsMenuViewController.xib in Resources */,
 				17F39EAD264754CD004B46D1 /* image_preview_small_left.png in Resources */,
 				010EDEFC1B238722003B79DE /* 1Password.xcassets in Resources */,
 				FF6DD31F1AEDF9F300F1F53A /* menu_icn_rename@2x.png in Resources */,
@@ -3513,7 +3504,6 @@
 				FF8D1ED01BAA311000725D8A /* SBJson4StreamWriter.m in Sources */,
 				43763AD1158F90B100B3DBE2 /* FontSettingsViewController.m in Sources */,
 				FF34FD601E9D93CB0062F8ED /* IASKAppSettingsViewController.m in Sources */,
-				439DAB201590DA350019B0EB /* FeedsMenuViewController.m in Sources */,
 				17CBD3BF1BF66B6C003FCCAE /* MarkReadMenuViewController.m in Sources */,
 				FFA045B519CA49D700618DC4 /* SSWAnimator.m in Sources */,
 				437AA8CA159394E2005463F5 /* ShareViewController.m in Sources */,

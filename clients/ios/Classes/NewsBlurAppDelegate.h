@@ -24,7 +24,6 @@
 @class SplitViewController;
 @class FeedsViewController;
 @class DashboardViewController;
-@class FeedsMenuViewController;
 @class FeedDetailViewController;
 @class MarkReadMenuViewController;
 @class FirstTimeUserViewController;
@@ -76,7 +75,6 @@ SFSafariViewControllerDelegate>  {
     
     DashboardViewController *dashboardViewController;
     FeedsViewController *feedsViewController;
-    FeedsMenuViewController *feedsMenuViewController;
     FeedDetailViewController *feedDetailViewController;
     FriendsListViewController *friendsListViewController;
     FontSettingsViewController *fontSettingsViewController;
@@ -176,7 +174,6 @@ SFSafariViewControllerDelegate>  {
 @property (nonatomic) IBOutlet DetailViewController *detailViewController;
 @property (nonatomic) IBOutlet DashboardViewController *dashboardViewController;
 @property (nonatomic) IBOutlet FeedsViewController *feedsViewController;
-@property (nonatomic) IBOutlet FeedsMenuViewController *feedsMenuViewController;
 @property (nonatomic) IBOutlet FeedDetailViewController *feedDetailViewController;
 @property (nonatomic, strong) UINavigationController *feedDetailMenuNavigationController;
 @property (nonatomic) IBOutlet FriendsListViewController *friendsListViewController;
@@ -318,6 +315,7 @@ SFSafariViewControllerDelegate>  {
 - (void)showOrganizeSites;
 - (void)showWidgetSites;
 - (void)showPremiumDialog;
+- (void)addSplitControlToMenuController:(MenuViewController *)menuViewController;
 - (void)showPreferences;
 - (void)setHiddenPreferencesAnimated:(BOOL)animated;
 - (void)resizePreviewSize;
