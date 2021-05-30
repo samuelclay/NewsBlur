@@ -104,7 +104,6 @@
 - (void)updateStatusBarState;
 - (void)setNavigationBarHidden:(BOOL)hide;
 - (void)setNavigationBarHidden:(BOOL)hide alsoTraverse:(BOOL)alsoTraverse;
-- (void)adjustDragBar:(UIInterfaceOrientation)orientation;
 
 //- (void)transitionFromFeedDetail;
 - (void)resetPages;
