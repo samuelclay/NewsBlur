@@ -351,7 +351,6 @@
     
     UIInterfaceOrientation orientation = self.view.window.windowScene.interfaceOrientation;
     [self layoutForInterfaceOrientation:orientation];
-    [self adjustDragBar:orientation];
     [self reorientPages];
 }
 
@@ -433,7 +432,6 @@
         UIInterfaceOrientation orientation = self.view.window.windowScene.interfaceOrientation;
         self->_orientation = orientation;
         [self layoutForInterfaceOrientation:orientation];
-        [self adjustDragBar:orientation];
         [self reorientPages];
     } completion:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
 //        NSLog(@"---> Story page control did re-orient: %@ / %@", NSStringFromCGSize(self.scrollView.bounds.size), NSStringFromCGSize(size));
@@ -474,7 +472,6 @@
     
     UIInterfaceOrientation orientation = self.view.window.windowScene.interfaceOrientation;
     [self layoutForInterfaceOrientation:orientation];
-    [self adjustDragBar:orientation];
 }
 
 - (BOOL)shouldHideStatusBar {
@@ -605,31 +602,6 @@
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldBeRequiredToFailByGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
     return ![otherGestureRecognizer isKindOfClass:[UIScreenEdgePanGestureRecognizer class]];
-}
-
-- (void)adjustDragBar:(UIInterfaceOrientation)orientation {
-//    CGRect scrollViewFrame = self.scrollView.frame;
-//    CGRect traverseViewFrame = self.traverseView.frame;
-
-    if (self.isPhoneOrCompact ||
-        UIInterfaceOrientationIsLandscape(orientation)) {
-//        scrollViewFrame.size.height = self.scrollView.bounds.size.height;
-//        self.bottomSize.hidden = YES;
-        [self.bottomSizeHeightConstraint setConstant:0];
-        [self.scrollBottomConstraint setConstant:0];
-        [bottomSize setHidden:YES];
-    } else {
-//        scrollViewFrame.size.height = self.scrollView.bounds.size.height - 12;
-//        self.bottomSize.hidden = NO;
-        [self.bottomSizeHeightConstraint setConstant:12];
-        [self.scrollBottomConstraint setConstant:-12];
-        [bottomSize setHidden:NO];
-    }
-    
-    [self.view layoutIfNeeded];
-//    self.scrollView.frame = scrollViewFrame;
-//    traverseViewFrame.origin.y = scrollViewFrame.size.height - traverseViewFrame.size.height;
-//    self.traverseView.frame = traverseViewFrame;
 }
 
 - (void)highlightButton:(UIButton *)b {
