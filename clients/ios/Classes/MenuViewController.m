@@ -248,6 +248,10 @@ NSString * const MenuHandler = @"handler";
 }
 
 - (void)showFromNavigationController:(UINavigationController *)navigationController barButtonItem:(UIBarButtonItem *)barButtonItem {
+    [self showFromNavigationController:navigationController barButtonItem:barButtonItem permittedArrowDirections:UIPopoverArrowDirectionUp];
+}
+
+- (void)showFromNavigationController:(UINavigationController *)navigationController barButtonItem:(UIBarButtonItem *)barButtonItem permittedArrowDirections:(UIPopoverArrowDirection)permittedArrowDirections {
     UIViewController *presentedViewController = navigationController.presentedViewController;
     if (presentedViewController && presentedViewController.presentationController.presentationStyle == UIModalPresentationPopover) {
         [presentedViewController dismissViewControllerAnimated:YES completion:nil];
@@ -262,7 +266,7 @@ NSString * const MenuHandler = @"handler";
     UIPopoverPresentationController *popoverPresentationController = embeddedNavController.popoverPresentationController;
     popoverPresentationController.delegate = self;
     popoverPresentationController.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
-    popoverPresentationController.permittedArrowDirections = UIPopoverArrowDirectionUp;
+    popoverPresentationController.permittedArrowDirections = permittedArrowDirections;
     popoverPresentationController.barButtonItem = barButtonItem;
     
     [navigationController presentViewController:embeddedNavController animated:YES completion:nil];

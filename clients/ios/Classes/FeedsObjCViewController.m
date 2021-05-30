@@ -13,7 +13,6 @@
 #import "ActivityModule.h"
 #import "FeedTableCell.h"
 #import "DashboardViewController.h"
-#import "FeedsMenuViewController.h"
 #import "UserProfileViewController.h"
 #import "MBProgressHUD.h"
 #import "SBJson4.h"
@@ -31,6 +30,7 @@
 #import "UISearchBar+Field.h"
 #import "StoriesCollection.h"
 #import "PremiumManager.h"
+#import "MenuViewController.h"
 #import "NewsBlur-Swift.h"
 
 static const CGFloat kPhoneTableViewRowHeight = 8.0f;
@@ -981,12 +981,101 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 }
 
 - (IBAction)showSettingsPopover:(id)sender {
-    [self.appDelegate.feedsMenuViewController rebuildOptions];
-
-    [self.appDelegate.feedsMenuViewController view];
-    NSInteger menuCount = [self.appDelegate.feedsMenuViewController.menuOptions count];
+    if (self.presentedViewController) {
+        [self.presentedViewController dismissViewControllerAnimated:YES completion:nil];
+        return;
+    }
     
-    [self.appDelegate showPopoverWithViewController:self.appDelegate.feedsMenuViewController contentSize:CGSizeMake(250, 38 * (menuCount + 2)) barButtonItem:self.settingsBarButton];
+    MenuViewController *viewController = [MenuViewController new];
+    
+    [viewController addTitle:@"Preferences" iconName:@"menu_icn_preferences.png" selectionShouldDismiss:YES handler:^{
+        [self.appDelegate showPreferences];
+    }];
+    
+    [viewController addTitle:@"Mute Sites" iconName:@"menu_icn_mute.png" selectionShouldDismiss:YES handler:^{
+        [self.appDelegate showMuteSites];
+    }];
+    
+    [viewController addTitle:@"Organize Sites" iconName:@"menu_icn_organize.png" selectionShouldDismiss:YES handler:^{
+        [self.appDelegate showOrganizeSites];
+    }];
+    
+    [viewController addTitle:@"Widget Sites" iconName:@"menu_icn_widget.png" selectionShouldDismiss:YES handler:^{
+        [self.appDelegate showWidgetSites];
+    }];
+    
+    [viewController addTitle:@"Notifications" iconName:@"menu_icn_notifications.png" selectionShouldDismiss:YES handler:^{
+        [self.appDelegate openNotificationsWithFeed:nil];
+    }];
+    
+    [viewController addTitle:@"Find Friends" iconName:@"menu_icn_followers.png" selectionShouldDismiss:YES handler:^{
+        [self.appDelegate showFindFriends];
+    }];
+    
+    if (appDelegate.isPremium) {
+        [viewController addTitle:@"Premium Account" iconName:@"g_icn_greensun.png" selectionShouldDismiss:YES handler:^{
+            [self.appDelegate showPremiumDialog];
+        }];
+    } else {
+        [viewController addTitle:@"Upgrade to Premium" iconName:@"g_icn_greensun.png" selectionShouldDismiss:YES handler:^{
+            [self.appDelegate showPremiumDialog];
+        }];
+    }
+    
+    [viewController addTitle:@"Logout" iconName:@"menu_icn_fetch_subscribers.png" selectionShouldDismiss:YES handler:^{
+        [self.appDelegate confirmLogout];
+    }];
+    
+    if ([appDelegate.activeUsername isEqualToString:@"samuel"] || [appDelegate.activeUsername isEqualToString:@"Dejal"]) {
+        [viewController addTitle:@"Login as…" iconName:@"barbutton_sendto.png" selectionShouldDismiss:YES handler:^{
+            [self showLoginAsDialog];
+        }];
+    }
+    
+    if ([[UIDevice currentDevice] userInterfaceIdiom] != UIUserInterfaceIdiomPhone) {
+        [appDelegate addSplitControlToMenuController:viewController];
+    }
+    
+    NSString *preferenceKey = @"feed_list_font_size";
+    NSArray *titles = @[@"XS", @"S", @"M", @"L", @"XL"];
+    NSArray *values = @[@"xs", @"small", @"medium", @"large", @"xl"];
+    
+    [viewController addSegmentedControlWithTitles:titles values:values preferenceKey:preferenceKey selectionShouldDismiss:YES handler:^(NSUInteger selectedIndex) {
+        [self.appDelegate resizeFontSize];
+    }];
+    
+    [viewController addThemeSegmentedControl];
+    
+    UINavigationController *navController = self.navigationController;
+    
+    [viewController showFromNavigationController:navController barButtonItem:self.settingsBarButton permittedArrowDirections:UIPopoverArrowDirectionDown];
+}
+
+- (void)showLoginAsDialog {
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"Login as..." message:nil preferredStyle:UIAlertControllerStyleAlert];
+    [alertController addTextFieldWithConfigurationHandler:nil];
+    [alertController addAction:[UIAlertAction actionWithTitle: @"Login" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
+        [alertController dismissViewControllerAnimated:YES completion:nil];
+        NSString *username = alertController.textFields[0].text;
+        NSString *urlString = [NSString stringWithFormat:@"%@/reader/login_as?user=%@",
+                               self.appDelegate.url, username];
+        
+        [self.appDelegate GET:urlString parameters:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+            NSLog(@"Login as %@ successful", username);
+            [MBProgressHUD hideHUDForView:self.appDelegate.feedsViewController.view animated:YES];
+            [self.appDelegate reloadFeedsView:YES];
+        } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+            [MBProgressHUD hideHUDForView:self.appDelegate.feedsViewController.view animated:YES];
+            [self informError:error];
+        }];
+        
+        [MBProgressHUD hideHUDForView:self.view animated:YES];
+        MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.appDelegate.feedsViewController.view animated:YES];
+        HUD.labelText = [NSString stringWithFormat:@"Login: %@", username];
+    }]];
+    [alertController addAction:[UIAlertAction actionWithTitle:@"Cancel"
+                                                        style:UIAlertActionStyleCancel handler:nil]];
+    [appDelegate.feedsViewController presentViewController:alertController animated:YES completion:nil];
 }
 
 - (IBAction)showInteractionsPopover:(id)sender {

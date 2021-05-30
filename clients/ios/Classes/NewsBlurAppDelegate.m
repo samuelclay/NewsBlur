@@ -8,7 +8,6 @@
 #import "NewsBlurAppDelegate.h"
 #import "DashboardViewController.h"
 #import "MarkReadMenuViewController.h"
-#import "FeedsMenuViewController.h"
 #import "FirstTimeUserViewController.h"
 #import "FriendsListViewController.h"
 #import "LoginViewController.h"
@@ -58,6 +57,7 @@
 #import "NSNull+JSON.h"
 #import "UISearchBar+Field.h"
 #import "UIViewController+HidePopover.h"
+#import "MenuViewController.h"
 #import "PINCache.h"
 #import "NewsBlur-Swift.h"
 #import <float.h>
@@ -95,7 +95,6 @@
 @synthesize detailViewController;
 @synthesize dashboardViewController;
 @synthesize feedsViewController;
-@synthesize feedsMenuViewController;
 @synthesize feedDetailViewController;
 @synthesize friendsListViewController;
 @synthesize fontSettingsViewController;
@@ -798,6 +797,32 @@
     [self.premiumViewController.view setNeedsLayout];
 }
 
+- (void)addSplitControlToMenuController:(MenuViewController *)menuViewController {
+    NSString *preferenceKey = @"split_behavior";
+    NSArray *titles = @[@"Auto", @"columns_triple.png", @"columns_double.png", @"Full screen"];
+    NSArray *values = @[@"auto", @"tile", @"displace", @"overlay"];
+    
+    [menuViewController addSegmentedControlWithTitles:titles values:values preferenceKey:preferenceKey selectionShouldDismiss:YES handler:^(NSUInteger selectedIndex) {
+        NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
+        NSString *behavior = [preferences stringForKey:@"split_behavior"];
+        [UIView animateWithDuration:0.5 animations:^{
+            if ([behavior isEqualToString:@"tile"]) {
+                self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorTile;
+                self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeTwoBesideSecondary;
+            } else if ([behavior isEqualToString:@"displace"]) {
+                self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorDisplace;
+                self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeTwoDisplaceSecondary;
+            } else if ([behavior isEqualToString:@"overlay"]) {
+                self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorOverlay;
+                self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeTwoOverSecondary;
+            } else {
+                self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorAutomatic;
+                self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeAutomatic;
+            }
+        }];
+    }];
+}
+
 - (void)showPreferences {
     if (!preferencesViewController) {
         preferencesViewController = [[IASKAppSettingsViewController alloc] init];
@@ -1106,7 +1131,6 @@
     self.detailViewController = self.detailNavigationController.viewControllers.firstObject;
     
     self.dashboardViewController = [DashboardViewController new];
-    self.feedsMenuViewController = [FeedsMenuViewController new];
     self.friendsListViewController = [FriendsListViewController new];
     self.storyPagesViewController = [StoryPagesViewController new];
     self.storyDetailViewController = [StoryDetailViewController new];
@@ -1151,7 +1175,6 @@
     
     loginViewController.modalPresentationStyle = UIModalPresentationFullScreen;
     
-    [feedsMenuViewController dismissViewControllerAnimated:NO completion:nil];
     if (feedsNavigationController.isViewLoaded && feedsNavigationController.view.window) {
         if ([self.feedsNavigationController visibleViewController] == loginViewController) {
             NSLog(@"Already showing login!");
