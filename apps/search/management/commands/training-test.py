@@ -110,7 +110,7 @@ class Command(BaseCommand):
         but they can now be passed in without errors thrown
         '''
 
-        for feat in sparse_features:
+        for feat in SPARSE_FEATURES:
             lbe = LabelEncoder()
             lbe.fit(set_lbe(df[feat]))
             df[feat] = lbe.transform(df[feat])
@@ -119,13 +119,13 @@ class Command(BaseCommand):
 
 
         mms = MinMaxScaler(feature_range=(0,1))
-        df[dense_features] = mms.fit_transform(df[dense_features])
+        df[DENSE_FEATURES] = mms.fit_transform(df[DENSE_FEATURES])
 
         # For sparse features, we transform them into dense vectors by embedding techniques. For dense numerical features,
         # we concatenate them to the input tensors of fully connected layer.
         fixlen_feature_columns = [SparseFeat(feat, vocabulary_size=df[feat].max() + 1,embedding_dim=16)
-                       for i,feat in enumerate(sparse_features)] + [DenseFeat(feat, 1,)
-                      for feat in dense_features]
+                       for i,feat in enumerate(SPARSE_FEATURES)] + [DenseFeat(feat, 1,)
+                      for feat in DENSE_FEATURES]
 
         print(type(fixlen_feature_columns))
         print(fixlen_feature_columns[2])
@@ -169,4 +169,4 @@ class Command(BaseCommand):
         Assuming its still in memory, as well as a test dataset
         '''
 
-        evaluation(test, model, data, sparse_features + dense_features)
+        evaluation(test, model, data, SPARSE_FEATURES + DENSE_FEATURES)
