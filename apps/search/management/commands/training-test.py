@@ -55,6 +55,18 @@ class Command(BaseCommand):
         return df
 
     '''
+    Fixes issue where LBE complains about never seeing item
+
+    Creates LBE based on largest value
+
+    that final one might need to be adjusted,
+    length of the actual element, which should be 1 for all our data
+    '''
+    def set_lbe(col):
+        max = col.max() + 1
+        return np.arange(0,max,1)
+
+    '''
     Functionality to add negative samples to training model
     Dataframe is only positive interactions before this Functionality
 
@@ -247,12 +259,17 @@ class Command(BaseCommand):
         create our LabelEncoders and MMS
         These might be slighly adjusted as I work through how to get any feed number < max num + 1
 
-        I could simply transform an array of all nums less than largest feed, then .fit on just the column
+        includes new function to include any possible input under largest input
+        ex. Largest user id is 608092, so any user id under that can now be passed in, no matter seen in training or not
+        Users/feeds not seen in do not perform as well, as any relationship has not been learned for that user/feed,
+        but they can now be passed in without errors thrown
         '''
 
         for feat in sparse_features:
             lbe = LabelEncoder()
-            df[feat] = lbe.fit_transform(df[feat])
+            lbe.fit(set_lbe(df[feat]))
+            df[feat] = lbe.transform(df[feat])
+            #df[feat] = lbe.fit_transform(df[feat])
             dump(lbe, open(feat + '-' + 'lbe.pkl', 'wb'))
 
 
