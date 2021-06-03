@@ -28,3 +28,5 @@
     dest: /etc/consul.d/mongo-exporter.json
   notify:
     - reload consul
+- name: Command to register mongo-exporter
+  command: "consul services register /etc/consul.d/mongo-exporter.json"
