@@ -15,11 +15,5 @@
   when: "'elasticsearch' in group_names"
 - import_playbook: playbooks/deploy_task.yml
   when: "'task' in group_names"
-# - import_playbook: playbooks/deploy_debug.yml
-#   when: "'debugs' in group_names"
-# - import_playbook: playbooks/deploy_consul_manager.yml
-#   when: "'consul' in group_names"
 - import_playbook: playbooks/deploy_staging.yml
   when: "'staging' in group_names"
-# - import_playbook: playbooks/deploy_discovery.yml
-#   when: "'discovery' in inventory_hostname"
