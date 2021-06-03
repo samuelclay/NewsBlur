@@ -5,6 +5,7 @@
     name: node-exporter
     image: prom/node-exporter
     container_default_behavior: no_defaults
+    restart_policy: unless-stopped
     ports:
     - '9100:9100'
   notify: restart node-exporter

@@ -1,7 +1,0 @@
-apiVersion: 1
-
-datasources:
-  - name: Prometheus
-    type: prometheus
-    access: proxy
-    url: http://db-metrics.service.nyc1.consul:9090
