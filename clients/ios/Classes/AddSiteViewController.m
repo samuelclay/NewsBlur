@@ -36,11 +36,13 @@
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(doCancelButton)];
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Add Site" style:UIBarButtonItemStyleDone target:self action:@selector(addSite)];
     
+    UIView *folderPadding = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 24, 16)];
     UIImageView *folderImage = [[UIImageView alloc]
                                 initWithImage:[UIImage imageNamed:@"g_icn_folder_sm.png"]];
     folderImage.frame = CGRectMake(0, 0, 24, 16);
     [folderImage setContentMode:UIViewContentModeRight];
-    [self.inFolderInput setLeftView:folderImage];
+    [folderPadding addSubview:folderImage];
+    [self.inFolderInput setLeftView:folderPadding];
     [self.inFolderInput setLeftViewMode:UITextFieldViewModeAlways];
     
     // If you want to show a disclosure arrow; don't really need it, though.
@@ -51,18 +53,22 @@
     //    [inFolderInput setRightView:disclosureImage];
     //    [inFolderInput setRightViewMode:UITextFieldViewModeAlways];
     
+    UIView *folderPadding2 = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 24, 16)];
     UIImageView *folderImage2 = [[UIImageView alloc]
                                  initWithImage:[UIImage imageNamed:@"g_icn_folder_rss_sm.png"]];
     folderImage2.frame = CGRectMake(0, 0, 24, 16);
     [folderImage2 setContentMode:UIViewContentModeRight];
-    [self.addFolderInput setLeftView:folderImage2];
+    [folderPadding2 addSubview:folderImage2];
+    [self.addFolderInput setLeftView:folderPadding2];
     [self.addFolderInput setLeftViewMode:UITextFieldViewModeAlways];
     
+    UIView *urlPadding = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 24, 16)];
     UIImageView *urlImage = [[UIImageView alloc]
                              initWithImage:[UIImage imageNamed:@"world.png"]];
     urlImage.frame = CGRectMake(0, 0, 24, 16);
     [urlImage setContentMode:UIViewContentModeRight];
-    [self.siteAddressInput setLeftView:urlImage];
+    [urlPadding addSubview:urlImage];
+    [self.siteAddressInput setLeftView:urlPadding];
     [self.siteAddressInput setLeftViewMode:UITextFieldViewModeAlways];
     
     self.siteTable.hidden = YES;
@@ -210,6 +216,8 @@
         if ([phrase isEqualToString:query]) {
             self.autocompleteResults = [responseObject objectForKey:@"feeds"];
             [self reloadSearchResults];
+        } else {
+            [self.siteActivityIndicator stopAnimating];
         }
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         [self.siteActivityIndicator stopAnimating];
@@ -422,7 +430,7 @@
     cell.feedTitle.text = [result objectForKey:@"label"];
     cell.feedTitle.textColor = UIColorFromRGB(NEWSBLUR_BLACK_COLOR);
     cell.feedUrl.text = [result objectForKey:@"value"];
-    cell.feedUrl.textColor = UIColorFromFixedRGB(NEWSBLUR_LINK_COLOR);
+    cell.feedUrl.textColor = UIColorFromLightDarkRGB(NEWSBLUR_LINK_COLOR, 0x3B7CC5);
     cell.feedSubs.text = [NSString stringWithFormat:@"%@ subscriber%@",
                            [NSString stringWithFormat:@"%@", [numberFormatter stringFromNumber:theScore]], subs == 1 ? @"" : @"s"];
     cell.feedSubs.textColor = UIColorFromRGB(0x808080);
