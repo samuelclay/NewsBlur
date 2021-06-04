@@ -37,6 +37,13 @@
 #define kTableViewRiverRowHeight 72;
 #define kTableViewShortRowDifference 16;
 
+typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
+{
+    MarkReadShowMenuNever = 0,
+    MarkReadShowMenuBasedOnPref,
+    MarkReadShowMenuAlways
+};
+
 @interface FeedDetailObjCViewController ()
 
 @property (nonatomic) NSUInteger scrollingMarkReadRow;
@@ -172,6 +179,8 @@
     [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.notifier attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:NOTIFIER_HEIGHT]];
     self.notifier.topOffsetConstraint = [NSLayoutConstraint constraintWithItem:self.notifier attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0];
     [self.view addConstraint:self.notifier.topOffsetConstraint];
+    
+    [self addKeyCommandWithInput:@"a" modifierFlags:UIKeyModifierShift action:@selector(doMarkAllRead:) discoverabilityTitle:@"Mark All as Read"];
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch {
@@ -2031,7 +2040,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 - (void)handleMarkReadLongPress:(UILongPressGestureRecognizer *)gestureRecognizer {
     if (gestureRecognizer.state != UIGestureRecognizerStateBegan) return;
     
-    [self doOpenMarkReadMenu:nil];
+    [self markReadShowMenu:MarkReadShowMenuAlways sender:nil];
 }
 
 - (void)showMarkOlderNewerOptionsForStory:(NSDictionary *)story indexPath:(NSIndexPath *)indexPath cell:(FeedDetailTableCell *)cell {
@@ -2105,7 +2114,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     }];
 }
 
-- (IBAction)doOpenMarkReadMenu:(id)sender {
+- (void)markReadShowMenu:(MarkReadShowMenu)showMenu sender:(id)sender {
     [self.appDelegate hidePopoverAnimated:YES];
     
     void (^pop)(void) = ^{
@@ -2128,7 +2137,11 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     NSArray *feedIds = storiesCollection.isRiverView ? [self.appDelegate feedIdsForFolderTitle:storiesCollection.activeFolder] : @[storiesCollection.activeFeed[@"id"]];
     NSString *confirmPref = [[NSUserDefaults standardUserDefaults] stringForKey:@"default_confirm_read_filter"];
     
-    if (sender && ([confirmPref isEqualToString:@"never"] || ([confirmPref isEqualToString:@"folders"] && !storiesCollection.isRiverView))) {
+    if (showMenu == MarkReadShowMenuNever) {
+        [self.appDelegate.feedsViewController markFeedsRead:feedIds cutoffDays:0];
+        pop();
+        return;
+    } else if (showMenu == MarkReadShowMenuBasedOnPref && ([confirmPref isEqualToString:@"never"] || ([confirmPref isEqualToString:@"folders"] && !storiesCollection.isRiverView))) {
         [self.appDelegate.feedsViewController markFeedsRead:feedIds cutoffDays:0];
         pop();
         return;
@@ -2154,6 +2167,14 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
             pop();
         }
     }];
+}
+
+- (IBAction)doOpenMarkReadMenu:(id)sender {
+    [self markReadShowMenu:MarkReadShowMenuBasedOnPref sender:sender];
+}
+
+- (IBAction)doMarkAllRead:(id)sender {
+    [self markReadShowMenu:MarkReadShowMenuNever sender:nil];
 }
 
 - (BOOL)isRiver {
