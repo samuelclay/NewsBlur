@@ -4,7 +4,7 @@ import psycopg2
 import pymysql
 import pymongo
 import redis
-from elasticsearch import Elasticsearch
+import elasticsearch
 
 from newsblur_web import settings
 
@@ -13,14 +13,13 @@ app = Flask(__name__)
 PRIMARY_STATE = 1
 SECONDARY_STATE = 2
 
-LOCAL_HOST = "127.0.0.1"
 @app.route("/db_check/postgres")
 def db_check_postgres():
     connect_params = "dbname='%s' user='%s' password='%s' host='%s' port='%s'" % (
         settings.DATABASES['default']['NAME'],
         settings.DATABASES['default']['USER'],
         settings.DATABASES['default']['PASSWORD'],
-        LOCAL_HOST,
+        'postgres',
         settings.DATABASES['default']['PORT'],
     )
     try:
@@ -48,7 +47,7 @@ def db_check_mysql():
     )
     try:
 
-        conn = pymysql.connect(host=LOCAL_HOST,
+        conn = pymysql.connect(host='mysql',
                                port=settings.DATABASES['default']['PORT'],
                                user=settings.DATABASES['default']['USER'],
                                passwd=settings.DATABASES['default']['PASSWORD'],
@@ -68,7 +67,7 @@ def db_check_mysql():
 @app.route("/db_check/mongo")
 def db_check_mongo():
     try:
-        client = pymongo.MongoClient('mongodb://%s' % LOCAL_HOST)
+        client = pymongo.MongoClient('mongodb://mongo')
         db = client.newsblur
     except:
         abort(503)
@@ -105,7 +104,7 @@ def db_check_mongo():
 @app.route("/db_check/redis")
 def db_check_redis():
     try:
-        r = redis.Redis(LOCAL_HOST, db=0)
+        r = redis.Redis('redis', db=0)
     except:
         abort(503)
     
@@ -122,7 +121,7 @@ def db_check_redis():
 @app.route("/db_check/redis_user")
 def db_check_redis_user():
     try:
-        r = redis.Redis(LOCAL_HOST, db=0)
+        r = redis.Redis('redis', db=0)
     except:
         abort(503)
     
@@ -139,7 +138,7 @@ def db_check_redis_user():
 @app.route("/db_check/redis_story")
 def db_check_redis_story():
     try:
-        r = redis.Redis(LOCAL_HOST, db=1)
+        r = redis.Redis('redis', db=1)
     except:
         abort(503)
     
@@ -156,7 +155,7 @@ def db_check_redis_story():
 @app.route("/db_check/redis_sessions")
 def db_check_redis_sessions():
     try:
-        r = redis.Redis(LOCAL_HOST, db=5)
+        r = redis.Redis('redis', db=5)
     except:
         abort(503)
     
@@ -173,7 +172,7 @@ def db_check_redis_sessions():
 @app.route("/db_check/redis_pubsub")
 def db_check_redis_pubsub():
     try:
-        r = redis.Redis(LOCAL_HOST, db=1)
+        r = redis.Redis('redis', db=1)
     except:
         abort(503)
     
@@ -190,7 +189,7 @@ def db_check_redis_pubsub():
 @app.route("/db_check/elasticsearch")
 def db_check_elasticsearch():
     try:
-        conn = pyes.ES(LOCAL_HOST)
+        conn = elasticsearch.Elasticsearch('elasticsearch')
     except:
         abort(503)
     

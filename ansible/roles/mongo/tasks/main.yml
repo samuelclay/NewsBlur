@@ -6,6 +6,12 @@
     mode: 0777
     path: /var/log/mongodb
 
+- name: Make docker network for newsblurnet
+  become: yes
+  docker_network:
+    name: newsblurnet
+  notify: restart docker
+
 - name: Start db-mongo docker container
   become: yes
   docker_container:
@@ -14,7 +20,12 @@
     state: started
     container_default_behavior: no_defaults
     restart_policy: unless-stopped
-    network_mode: host
+    networks_cli_compatible: yes
+    network_mode: default
+    networks:
+      - name: newsblurnet
+    ports:
+      - "27017:27017"
     command: --config /etc/mongod.conf
     volumes:
       - /mnt/{{ inventory_hostname | regex_replace('db-|-', '') }}:/data/db
