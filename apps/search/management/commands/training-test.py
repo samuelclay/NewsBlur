@@ -137,7 +137,7 @@ class Command(BaseCommand):
         feature_names = deepctr.feature_column.get_feature_names(linear_feature_columns + dnn_feature_columns)
 
 
-        train, test = train_test_split(data, test_size=0.2, random_state=2020)
+        train, test = train_test_split(df, test_size=0.2, random_state=2020)
         train_model_input = {name:train[name] for name in feature_names}
         test_model_input = {name:test[name] for name in feature_names}
 
