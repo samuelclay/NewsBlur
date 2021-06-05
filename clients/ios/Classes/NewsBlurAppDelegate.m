@@ -777,11 +777,19 @@
     }
     
     [self.splitViewController dismissViewControllerAnimated:NO completion:nil];
-    [self.splitViewController showColumn:UISplitViewControllerColumnPrimary];
+    [self showColumn:UISplitViewControllerColumnPrimary debugInfo:@"popToRootWithCompletion"];
     
     if (completion) {
         [CATransaction commit];
     }
+}
+
+- (void)showColumn:(UISplitViewControllerColumn)column debugInfo:(NSString *)debugInfo {
+    NSLog(@"⚠️ show column for %@: split view controller: %@ split nav: %@; split controllers: %@; detail controller: %@; detail nav: %@; detail nav controllers: %@", debugInfo, self.splitViewController, self.splitViewController.navigationController, self.splitViewController.viewControllers, self.detailViewController, self.detailViewController.navigationController, self.detailViewController.navigationController.viewControllers);  // log
+    
+    [self.splitViewController showColumn:column];
+    
+    NSLog(@"...shown");  // log
 }
 
 - (void)showPremiumDialog {
@@ -1580,7 +1588,7 @@
         [self.feedDetailViewController.storyTitlesTable reloadData];
         
         if (detailViewController.storyTitlesOnLeft && [[UIDevice currentDevice] userInterfaceIdiom] != UIUserInterfaceIdiomPhone) {
-            [self.splitViewController showColumn:UISplitViewControllerColumnSupplementary];
+            [self showColumn:UISplitViewControllerColumnSupplementary debugInfo:@"loadFeedDetailView"];
         }
         
         if (feedDetailViewController.view.window == nil) {
@@ -1943,7 +1951,7 @@
         }
         
         [navController showViewController:feedDetailViewController sender:self];
-        [self.splitViewController showColumn:UISplitViewControllerColumnSupplementary];
+        [self showColumn:UISplitViewControllerColumnSupplementary debugInfo:@"loadRiverFeedDetailView"];
     }
     
     [self flushQueuedReadStories:NO withCallback:^{
@@ -2304,7 +2312,7 @@
     if (self.splitViewController.isCollapsed) {
         [self.feedsNavigationController popToRootViewControllerAnimated:YES];
     } else {
-        [self.splitViewController showColumn:UISplitViewControllerColumnPrimary];
+        [self showColumn:UISplitViewControllerColumnPrimary debugInfo:@"showFeedsListAnimated"];
     }
 }
 

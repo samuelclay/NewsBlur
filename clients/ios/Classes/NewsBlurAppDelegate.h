@@ -321,6 +321,7 @@ SFSafariViewControllerDelegate>  {
 - (void)resizePreviewSize;
 - (void)resizeFontSize;
 - (void)popToRootWithCompletion:(void (^)(void))completion;
+- (void)showColumn:(UISplitViewControllerColumn)column debugInfo:(NSString *)debugInfo;
 
 - (void)showMoveSite;
 - (void)openTrainSite;

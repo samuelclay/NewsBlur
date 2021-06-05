@@ -968,7 +968,7 @@
         [pageController clearStory];
         
         //TODO: might want to check if overlay display, or something, to avoid doing this on compact layout
-        [self.splitViewController showColumn:UISplitViewControllerColumnSupplementary];
+        [self.appDelegate showColumn:UISplitViewControllerColumnSupplementary debugInfo:@"applyNewIndex"];
     }
     
     if (!suppressRedraw) {
@@ -1177,11 +1177,7 @@
     }
     
     if (self.isPhoneOrCompact || animated) {
-        NSLog(@"⚠️ showing story pages: split view controller: %@ split nav: %@; split controllers: %@; detail controller: %@; detail nav: %@; detail nav controllers: %@", appDelegate.splitViewController, appDelegate.splitViewController.navigationController, appDelegate.splitViewController.viewControllers, appDelegate.detailViewController, appDelegate.detailViewController.navigationController, appDelegate.detailViewController.navigationController.viewControllers);  // log
-        
-        [appDelegate.splitViewController showColumn:UISplitViewControllerColumnSecondary];
-        
-        NSLog(@"...shown");  // log
+        [appDelegate showColumn:UISplitViewControllerColumnSecondary debugInfo:@"changePage"];
     }
     
     [self becomeFirstResponder];
@@ -1848,7 +1844,7 @@
 //         popToViewController:[appDelegate.feedsNavigationController.viewControllers
 //                              objectAtIndex:0]
 //         animated:YES];
-        [self.splitViewController showColumn:UISplitViewControllerColumnSupplementary];
+        [self.appDelegate showColumn:UISplitViewControllerColumnSupplementary debugInfo:@"doPreviousStory"];
         [appDelegate hideStoryDetailView];
     } else {
         NSInteger previousLocation = [appDelegate.storiesCollection locationOfStoryId:previousStoryId];

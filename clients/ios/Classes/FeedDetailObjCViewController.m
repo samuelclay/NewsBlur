@@ -2512,7 +2512,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 //         popToViewController:[self.appDelegate.feedsNavigationController.viewControllers
 //                              objectAtIndex:0]
 //         animated:YES];
-        [self.splitViewController showColumn:UISplitViewControllerColumnPrimary];
+        [self.appDelegate showColumn:UISplitViewControllerColumnPrimary debugInfo:@"deleteSite"];
         [MBProgressHUD hideHUDForView:self.view animated:YES];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         [self requestFailed:error];
@@ -2539,7 +2539,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 //         popToViewController:[self.appDelegate.feedsNavigationController.viewControllers
 //                              objectAtIndex:0]
 //         animated:YES];
-         [self.splitViewController showColumn:UISplitViewControllerColumnPrimary];
+        [self.appDelegate showColumn:UISplitViewControllerColumnPrimary debugInfo:@"deleteFolder"];
         [MBProgressHUD hideHUDForView:self.view animated:YES];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         [self requestFailed:error];
@@ -2567,7 +2567,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         [self.appDelegate reloadFeedsView:YES];
 //        [self.appDelegate.feedsNavigationController popToViewController:[self.appDelegate.feedsNavigationController.viewControllers objectAtIndex:0]
 //                                                          animated:YES];
-        [self.splitViewController showColumn:UISplitViewControllerColumnPrimary];
+        [self.appDelegate showColumn:UISplitViewControllerColumnPrimary debugInfo:@"muteSite"];
         [MBProgressHUD hideHUDForView:self.view animated:YES];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         [self requestFailed:error];
