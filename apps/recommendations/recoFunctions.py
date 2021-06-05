@@ -1,7 +1,7 @@
 import keras
 import numpy as np
 from deepctr.layers import custom_objects
-
+from apps.reader.models import UserSubscription
 import pandas as pd
 from pandas import DataFrame
 from sklearn.preprocessing import LabelEncoder, MinMaxScaler

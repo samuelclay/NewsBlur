@@ -72,12 +72,12 @@ class Command(BaseCommand):
                 feed_items['total_shares_per_feed'] = MSharedStory.objects.filter(story_feed_id=x).count()
                 feed_.append(feed_items)
         print('through the loop')
-        feed_df = pd.DataFrame([feed_],columns=list(feed_[0].keys()))
+        feed_df = pd.DataFrame(feed_,columns=list(feed_[0].keys()))
         feed_df['feed_id'] = feeds
 
         users = df['user'].unique()
 
-        user_df = pd.DataFrame(users,['user'])
+        user_df = pd.DataFrame(users,columns=['user'])
         user_df['is_premium'] = [Profile.objects.get(user_id=x).is_premium for x in users]
         user_df['user_shared_stories_count'] = [MSharedStory.objects.filter(user_id=x).count() for x in users]
 
