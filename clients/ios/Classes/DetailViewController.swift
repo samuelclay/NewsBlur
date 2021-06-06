@@ -289,8 +289,6 @@ class DetailViewController: BaseViewController {
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         isDraggingDivider = false
-        
-        //TODO: see if I need anything from adjustFeedDetailScreenForStoryTitles
     }
 }
 

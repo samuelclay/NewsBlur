@@ -185,7 +185,6 @@
 		433323CD158968ED0025064D /* FirstTimeUserViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 433323CB158968ED0025064D /* FirstTimeUserViewController.m */; };
 		433323CE158968ED0025064D /* FirstTimeUserViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 433323CC158968ED0025064D /* FirstTimeUserViewController.xib */; };
 		433D24821582EEC000AE9E72 /* LoginViewController~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43D045241565BC150085F811 /* LoginViewController~ipad.xib */; };
-		433D24831582EEC300AE9E72 /* MainWindow~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43D0451F1565BC150085F811 /* MainWindow~ipad.xib */; };
 		433D24841582EEC500AE9E72 /* MoveSiteViewController~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43D045281565BC150085F811 /* MoveSiteViewController~ipad.xib */; };
 		433D24871582EECD00AE9E72 /* StoryDetailViewController~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43D045221565BC150085F811 /* StoryDetailViewController~ipad.xib */; };
 		43763AD1158F90B100B3DBE2 /* FontSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 43763ACF158F90B100B3DBE2 /* FontSettingsViewController.m */; };
@@ -244,11 +243,8 @@
 		43B6A27615B6952F00CEA2E6 /* group@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 43B6A27015B6952F00CEA2E6 /* group@2x.png */; };
 		43B8F022156603180008733D /* AddSiteAutocompleteCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43B8F018156603170008733D /* AddSiteAutocompleteCell.xib */; };
 		43B8F023156603180008733D /* AddSiteViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43B8F019156603170008733D /* AddSiteViewController.xib */; };
-		43B8F025156603180008733D /* FeedDetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43B8F01B156603170008733D /* FeedDetailViewController.xib */; };
 		43B8F026156603180008733D /* LoginViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43B8F01C156603170008733D /* LoginViewController.xib */; };
-		43B8F027156603180008733D /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43B8F01D156603170008733D /* MainWindow.xib */; };
 		43B8F028156603180008733D /* MoveSiteViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43B8F01E156603170008733D /* MoveSiteViewController.xib */; };
-		43B8F029156603180008733D /* NewsBlurViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43B8F01F156603170008733D /* NewsBlurViewController.xib */; };
 		43B8F02B156603180008733D /* StoryDetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43B8F021156603170008733D /* StoryDetailViewController.xib */; };
 		43BC458915D9F75700205B69 /* twitter_button_on.png in Resources */ = {isa = PBXBuildFile; fileRef = 43BC458515D9F75700205B69 /* twitter_button_on.png */; };
 		43BC458A15D9F75700205B69 /* twitter_button_on@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 43BC458615D9F75700205B69 /* twitter_button_on@2x.png */; };
@@ -507,7 +503,6 @@
 		FFA045B419CA49D700618DC4 /* SloppySwiper.m in Sources */ = {isa = PBXBuildFile; fileRef = FFA045AF19CA49D700618DC4 /* SloppySwiper.m */; };
 		FFA045B519CA49D700618DC4 /* SSWAnimator.m in Sources */ = {isa = PBXBuildFile; fileRef = FFA045B119CA49D700618DC4 /* SSWAnimator.m */; };
 		FFA045B619CA49D700618DC4 /* SSWDirectionalPanGestureRecognizer.m in Sources */ = {isa = PBXBuildFile; fileRef = FFA045B319CA49D700618DC4 /* SSWDirectionalPanGestureRecognizer.m */; };
-		FFA0483E19CA5B8400618DC4 /* EventWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = FFA0483D19CA5B8400618DC4 /* EventWindow.m */; };
 		FFA0484419CA73B700618DC4 /* UIView+ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FFA0484319CA73B700618DC4 /* UIView+ViewController.m */; };
 		FFAD4971144A386100BA6919 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FFAD4970144A386100BA6919 /* libz.dylib */; };
 		FFAD89C218AC45A100D68567 /* StoriesCollection.m in Sources */ = {isa = PBXBuildFile; fileRef = FFAD89C118AC45A100D68567 /* StoriesCollection.m */; };
@@ -964,11 +959,8 @@
 		43B6A27015B6952F00CEA2E6 /* group@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "group@2x.png"; sourceTree = "<group>"; };
 		43B8F018156603170008733D /* AddSiteAutocompleteCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AddSiteAutocompleteCell.xib; sourceTree = "<group>"; };
 		43B8F019156603170008733D /* AddSiteViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AddSiteViewController.xib; sourceTree = "<group>"; };
-		43B8F01B156603170008733D /* FeedDetailViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FeedDetailViewController.xib; sourceTree = "<group>"; };
 		43B8F01C156603170008733D /* LoginViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LoginViewController.xib; sourceTree = "<group>"; };
-		43B8F01D156603170008733D /* MainWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MainWindow.xib; sourceTree = "<group>"; };
 		43B8F01E156603170008733D /* MoveSiteViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MoveSiteViewController.xib; sourceTree = "<group>"; };
-		43B8F01F156603170008733D /* NewsBlurViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NewsBlurViewController.xib; sourceTree = "<group>"; };
 		43B8F021156603170008733D /* StoryDetailViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = StoryDetailViewController.xib; sourceTree = "<group>"; };
 		43BC458515D9F75700205B69 /* twitter_button_on.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = twitter_button_on.png; sourceTree = "<group>"; };
 		43BC458615D9F75700205B69 /* twitter_button_on@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "twitter_button_on@2x.png"; sourceTree = "<group>"; };
@@ -986,7 +978,6 @@
 		43C3D41115D46D330066D36D /* all@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "all@2x.png"; sourceTree = "<group>"; };
 		43CE0F5D15DADB7E00608ED8 /* SiteCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SiteCell.h; sourceTree = "<group>"; };
 		43CE0F5E15DADB7F00608ED8 /* SiteCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SiteCell.m; sourceTree = "<group>"; };
-		43D0451F1565BC150085F811 /* MainWindow~ipad.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "MainWindow~ipad.xib"; path = "Resources-iPad/MainWindow~ipad.xib"; sourceTree = "<group>"; };
 		43D045221565BC150085F811 /* StoryDetailViewController~ipad.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "StoryDetailViewController~ipad.xib"; path = "Resources-iPad/Classes/StoryDetailViewController~ipad.xib"; sourceTree = "<group>"; };
 		43D045241565BC150085F811 /* LoginViewController~ipad.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "LoginViewController~ipad.xib"; path = "Resources-iPad/Classes/LoginViewController~ipad.xib"; sourceTree = "<group>"; };
 		43D045281565BC150085F811 /* MoveSiteViewController~ipad.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "MoveSiteViewController~ipad.xib"; path = "Resources-iPad/Classes/MoveSiteViewController~ipad.xib"; sourceTree = "<group>"; };
@@ -1353,8 +1344,6 @@
 		FFA045B119CA49D700618DC4 /* SSWAnimator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SSWAnimator.m; sourceTree = "<group>"; };
 		FFA045B219CA49D700618DC4 /* SSWDirectionalPanGestureRecognizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SSWDirectionalPanGestureRecognizer.h; sourceTree = "<group>"; };
 		FFA045B319CA49D700618DC4 /* SSWDirectionalPanGestureRecognizer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SSWDirectionalPanGestureRecognizer.m; sourceTree = "<group>"; };
-		FFA0483C19CA5B8400618DC4 /* EventWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EventWindow.h; sourceTree = "<group>"; };
-		FFA0483D19CA5B8400618DC4 /* EventWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EventWindow.m; sourceTree = "<group>"; };
 		FFA0484219CA73B700618DC4 /* UIView+ViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIView+ViewController.h"; path = "Other Sources/UIView+ViewController.h"; sourceTree = "<group>"; };
 		FFA0484319CA73B700618DC4 /* UIView+ViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UIView+ViewController.m"; path = "Other Sources/UIView+ViewController.m"; sourceTree = "<group>"; };
 		FFAD4970144A386100BA6919 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
@@ -2339,16 +2328,13 @@
 				FF1660C716D6E9A700AF8541 /* DashboardViewController.xib */,
 				43B8F018156603170008733D /* AddSiteAutocompleteCell.xib */,
 				43B8F019156603170008733D /* AddSiteViewController.xib */,
-				43B8F01B156603170008733D /* FeedDetailViewController.xib */,
 				17432C7B1C533E89003F8FD6 /* MenuViewController.xib */,
 				17432C791C533DCC003F8FD6 /* FeedChooserViewController.xib */,
 				17CBD3BB1BF66B07003FCCAE /* MarkReadMenuViewController.xib */,
 				43763AD0158F90B100B3DBE2 /* FontSettingsViewController.xib */,
 				17EB50611BE46BB00021358B /* FontListViewController.xib */,
 				43B8F01C156603170008733D /* LoginViewController.xib */,
-				43B8F01D156603170008733D /* MainWindow.xib */,
 				43B8F01E156603170008733D /* MoveSiteViewController.xib */,
-				43B8F01F156603170008733D /* NewsBlurViewController.xib */,
 				43081E2115AFE84200B24D7A /* ShareViewController.xib */,
 				43B8F021156603170008733D /* StoryDetailViewController.xib */,
 				FF6A23361644903900E15989 /* StoryPagesViewController.xib */,
@@ -2363,7 +2349,6 @@
 			children = (
 				433323B5158901A40025064D /* Images */,
 				43D045241565BC150085F811 /* LoginViewController~ipad.xib */,
-				43D0451F1565BC150085F811 /* MainWindow~ipad.xib */,
 				43D045281565BC150085F811 /* MoveSiteViewController~ipad.xib */,
 				43D045221565BC150085F811 /* StoryDetailViewController~ipad.xib */,
 				437AA8C9159394E2005463F5 /* ShareViewController~ipad.xib */,
@@ -2444,8 +2429,6 @@
 				FFCDD90017F65A71000C6483 /* NBSwipeableCell.m */,
 				FFAD89C018AC45A100D68567 /* StoriesCollection.h */,
 				FFAD89C118AC45A100D68567 /* StoriesCollection.m */,
-				FFA0483C19CA5B8400618DC4 /* EventWindow.h */,
-				FFA0483D19CA5B8400618DC4 /* EventWindow.m */,
 				FF1C4E151A3FB1F4000995E3 /* NBActivityItemSource.h */,
 				FF1C4E161A3FB1F4000995E3 /* NBActivityItemSource.m */,
 			);
@@ -3013,22 +2996,18 @@
 				FF67D3CF168A73380057A7DA /* fastTouch.js in Resources */,
 				43B8F022156603180008733D /* AddSiteAutocompleteCell.xib in Resources */,
 				43B8F023156603180008733D /* AddSiteViewController.xib in Resources */,
-				43B8F025156603180008733D /* FeedDetailViewController.xib in Resources */,
 				1749516E260ED640003E900B /* content_preview_medium.png in Resources */,
 				17432C7C1C533E89003F8FD6 /* MenuViewController.xib in Resources */,
 				17C5BA741CA39EE400F5961C /* unread_blue_icn@2x.png in Resources */,
 				43B8F026156603180008733D /* LoginViewController.xib in Resources */,
-				43B8F027156603180008733D /* MainWindow.xib in Resources */,
 				43B8F028156603180008733D /* MoveSiteViewController.xib in Resources */,
 				FF21B1141C821E1A0053938A /* disclosure_border@2x.png in Resources */,
-				43B8F029156603180008733D /* NewsBlurViewController.xib in Resources */,
 				FF03AFF219F87F2E0063002A /* safari~iPad@2x.png in Resources */,
 				FF62820E1A1160DD00271FDB /* add_tag.png in Resources */,
 				43B8F02B156603180008733D /* StoryDetailViewController.xib in Resources */,
 				FF9DC9E91C85FC3E006097E1 /* bar_separator_dark@2x.png in Resources */,
 				433D24821582EEC000AE9E72 /* LoginViewController~ipad.xib in Resources */,
 				17CBD3BC1BF66B07003FCCAE /* MarkReadMenuViewController.xib in Resources */,
-				433D24831582EEC300AE9E72 /* MainWindow~ipad.xib in Resources */,
 				433D24841582EEC500AE9E72 /* MoveSiteViewController~ipad.xib in Resources */,
 				433D24871582EECD00AE9E72 /* StoryDetailViewController~ipad.xib in Resources */,
 				FFEA5AE819D33FB400ED87A0 /* LaunchScreen.xib in Resources */,
@@ -3552,7 +3531,6 @@
 				FF34FD661E9D93CB0062F8ED /* IASKSettingsStoreFile.m in Sources */,
 				43E8382015BC73EB000553BE /* FirstTimeUserAddNewsBlurViewController.m in Sources */,
 				43E8382215BC73EB000553BE /* FirstTimeUserAddSitesViewController.m in Sources */,
-				FFA0483E19CA5B8400618DC4 /* EventWindow.m in Sources */,
 				432EBD2315D1D4070000729D /* AddSiteTableCell.m in Sources */,
 				438FEDE815D5B15F00E3B3C9 /* FollowGrid.m in Sources */,
 				FF8D1ED21BAA311000725D8A /* SBJson4Writer.m in Sources */,
