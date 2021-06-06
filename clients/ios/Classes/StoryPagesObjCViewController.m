@@ -204,14 +204,6 @@
     
     self.subscribeButton = subscribeBtn;
     
-    // back button
-//    UIBarButtonItem *backButton = [[UIBarButtonItem alloc]
-//                                   initWithTitle:@"All Sites"
-//                                   style:UIBarButtonItemStylePlain
-//                                   target:self
-//                                   action:@selector(transitionFromFeedDetail)];
-//    self.buttonBack = backButton;
-    
     self.notifier = [[NBNotifier alloc] initWithTitle:@"Fetching text..."
                                            withOffset:CGPointMake(0.0, 0.0 /*self.bottomSize.frame.size.height*/)];
     [self.view addSubview:self.notifier];
@@ -364,13 +356,10 @@
         self.subscribeButton.title = [NSString stringWithFormat:@"Follow %@",
                                       [appDelegate.storiesCollection.activeFeed objectForKey:@"username"]];
         appDelegate.detailViewController.navigationItem.leftBarButtonItem = self.subscribeButton;
-        //        self.subscribeButton.tintColor = UIColorFromRGB(0x0a6720);
     }
     appDelegate.isTryFeedView = NO;
     [self reorientPages];
-//    [self applyNewIndex:previousPage.pageIndex pageController:previousPage];
     previousPage.view.hidden = NO;
-//    [self showAutoscrollBriefly:YES];
     
     [self becomeFirstResponder];
 }
@@ -383,22 +372,18 @@
     }
     
     [super viewDidLayoutSubviews];
-//    [self reorientPages];
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
     
     appDelegate.detailViewController.navigationItem.leftBarButtonItem = nil;
-    
-//    [self.navigationController.barHideOnSwipeGestureRecognizer removeTarget:self action:@selector(barHideSwipe:)];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     
     previousPage.view.hidden = YES;
-//    self.navigationController.hidesBarsOnSwipe = NO;
     appDelegate.detailViewController.parentNavigationController.interactivePopGestureRecognizer.enabled = YES;
     [appDelegate.detailViewController.parentNavigationController setNavigationBarHidden:NO animated:YES];
     
@@ -409,19 +394,6 @@
     // delegate to current page
     return [currentPage becomeFirstResponder];
 }
-
-//- (void)transitionFromFeedDetail {
-//    if (appDelegate.masterContainerViewController.storyTitlesOnLeft) {
-//        [appDelegate.feedsNavigationController
-//         popToViewController:[appDelegate.feedsNavigationController.viewControllers
-//                              objectAtIndex:0]
-//         animated:YES];
-//        [appDelegate hideStoryDetailView];
-//        [self.splitViewController showColumn:UISplitViewControllerColumnSupplementary];
-//    } else {
-//        [appDelegate.masterContainerViewController transitionFromFeedDetail];
-//    }
-//}
 
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
     [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
@@ -441,17 +413,10 @@
 
         [self.view setNeedsLayout];
         [self.view layoutIfNeeded];
-        
-        // This causes the story to reload on rotation (or when going to the background), but doesn't seem necessary?
-//        [self refreshPages];
     }];
 }
 
 - (void)layoutForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-//    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad &&
-//        appDelegate.masterContainerViewController.originalViewIsVisible) {
-//        return;
-//    }
 //    NSLog(@"layout for stories: %@", NSStringFromCGRect(self.view.frame));
     if (interfaceOrientation != _orientation) {
         _orientation = interfaceOrientation;
@@ -631,22 +596,6 @@
     return [[[NSUserDefaults standardUserDefaults] objectForKey:@"scroll_stories_horizontally"] boolValue];
 }
 
-//- (void)barHideSwipe:(UIPanGestureRecognizer *)recognizer {
-//    BOOL isBarHidden = self.isNavigationBarHidden;
-//
-//    if (recognizer.state == UIGestureRecognizerStateEnded && isBarHidden != self.wasNavigationBarHidden) {
-//        self.wasNavigationBarHidden = isBarHidden;
-//
-//        if (!self.shouldHideStatusBar) {
-//            [currentPage drawFeedGradient];
-//        }
-//
-//        if (!self.isHorizontal) {
-//            [self reorientPages];
-//        }
-//    }
-//}
-
 - (void)resetPages {
     appDelegate.detailViewController.navigationItem.titleView = nil;
 
@@ -705,10 +654,6 @@
     if (self.isHorizontal) {
         frame.origin.x = frame.size.width * currentIndex;
         frame.origin.y = 0;
-        
-//        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-//                frame.origin.y -= self.view.safeAreaInsets.bottom;
-//        }
     } else {
         frame.origin.x = 0;
         frame.origin.y = (frame.size.height * currentIndex) - self.view.safeAreaInsets.bottom;
@@ -754,38 +699,6 @@
     }
 }
 
-//- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
-//    UIInterfaceOrientation orientation = self.view.window.windowScene.interfaceOrientation;
-//
-//    if (!self.isPhoneOrCompact &&
-//        UIInterfaceOrientationIsPortrait(orientation)) {
-//        UITouch *theTouch = [touches anyObject];
-//        CGPoint tappedPt = [theTouch locationInView:self.view];
-//        NSInteger fudge = appDelegate.detailViewController.storyTitlesOnLeft ? -30 : -20;
-//        BOOL inside = CGRectContainsPoint(CGRectInset(self.bottomSize.frame, 0, fudge), tappedPt);
-//        BOOL attached = self.inTouchMove;
-//
-//        if (theTouch.view == self.bottomSize || inside || attached) {
-//            self.inTouchMove = YES;
-//            CGPoint touchLocation = [theTouch locationInView:self.view];
-//            CGFloat y = touchLocation.y;
-//            [appDelegate.masterContainerViewController dragStoryToolbar:y];
-//        }
-//    }
-//}
-//
-//- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
-//    UIInterfaceOrientation orientation = self.view.window.windowScene.interfaceOrientation;
-//
-//    if (!self.isPhoneOrCompact &&
-//        UIInterfaceOrientationIsPortrait(orientation)) {
-//        if (self.inTouchMove) {
-//            self.inTouchMove = NO;
-//            [appDelegate.masterContainerViewController adjustFeedDetailScreenForStoryTitles];
-//        }
-//    }
-//}
-
 - (BOOL)isPhoneOrCompact {
     return [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone || appDelegate.isCompactWidth;
 }
@@ -827,7 +740,7 @@
     [self updateStatusBarTheme];
 }
 
-// allow keyboard comands
+// allow keyboard commands
 - (BOOL)canBecomeFirstResponder {
     return YES;
 }
@@ -961,13 +874,11 @@
                 });
             });
         } else {
-//            [pageController clearStory];
 //            NSLog(@"Skipping drawing %d (waiting for %d)", newIndex, self.scrollingToPage);
         }
     } else if (outOfBounds && pageController == self.currentPage) {
         [pageController clearStory];
         
-        //TODO: might want to check if overlay display, or something, to avoid doing this on compact layout
         [self.appDelegate showColumn:UISplitViewControllerColumnSupplementary debugInfo:@"applyNewIndex"];
     }
     
@@ -980,7 +891,6 @@
 }
 
 - (void)scrollViewDidScroll:(UIScrollView *)sender {
-//    [sender setContentOffset:CGPointMake(sender.contentOffset.x, 0)];
     if (inRotation) return;
     NSInteger currentPageIndex = currentPage.pageIndex;
     CGSize size = self.scrollView.frame.size;
@@ -1051,9 +961,6 @@
                         options:UIViewAnimationOptionCurveEaseInOut
                      animations:^{
                          [self.traverseView setNeedsLayout];
-//                         self.traverseView.frame = CGRectMake(tvf.origin.x,
-//                                                              self.scrollView.bounds.size.height - tvf.size.height - bottomSizeHeightConstraint.constant - (self.view.safeAreaInsets.bottom - 20),
-//                                                              tvf.size.width, tvf.size.height);
                          self.traverseView.alpha = 1;
                          self.traversePinned = YES;
                          [self.view layoutIfNeeded];
@@ -1294,8 +1201,6 @@
 - (void)updatePageWithActiveStory:(NSInteger)location {
     [appDelegate.storiesCollection pushReadStory:[appDelegate.activeStory objectForKey:@"story_hash"]];
     
-//    [self.view setNeedsLayout];
-    
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         if (appDelegate.detailViewController.storyTitlesOnLeft) {
             appDelegate.detailViewController.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects:
@@ -1313,9 +1218,7 @@
     }
     
     [self setNextPreviousButtons];
-#warning not using EventWindow currently, so this crashes; evaluate
-//    EventWindow *tapDetectingWindow = (EventWindow*)self.view.window;
-//    tapDetectingWindow.tapDetectingView = self.currentPage.view;
+    
     [appDelegate changeActiveFeedDetailRow];
     
     if (self.currentPage.pageIndex != location) {
@@ -1602,26 +1505,9 @@
 
 - (void)updateStatusBarTheme {
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
-//        [self.statusBarBackgroundView removeFromSuperview];
-//
-//        CGRect statusRect = CGRectMake(0, 0, self.view.bounds.size.width, self.statusBarHeight);
-//
-//        self.statusBarBackgroundView = [[UIView alloc] initWithFrame:statusRect];
-//        self.statusBarBackgroundView.backgroundColor = self.navigationController.navigationBar.barTintColor;
-//
-//        [self.navigationController.view addSubview:self.statusBarBackgroundView];
-//        self.statusBarBackgroundView.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin;
-        
         [self updateStatusBarState];
     }
 }
-
-//- (void)backToDashboard:(id)sender {
-//    UINavigationController *feedDetailNavigationController = appDelegate.feedDetailViewController.navigationController;
-//    if (feedDetailNavigationController != nil)
-//        [feedDetailNavigationController popViewControllerAnimated: YES];
-//    [self transitionFromFeedDetail];
-//}
 
 #pragma mark -
 #pragma mark HUDs
@@ -1824,10 +1710,6 @@
         self.waitingForNextUnreadFromServer = YES;
         [fdvc fetchNextPage:nil];
     } else if (nextLocation == -1) {
-//        [appDelegate.feedsNavigationController
-//         popToViewController:[appDelegate.feedsNavigationController.viewControllers
-//                              objectAtIndex:0]
-//         animated:YES];
         [appDelegate hideStoryDetailView];
     } else {
         [self changePage:nextLocation];
@@ -1840,10 +1722,6 @@
     self.circularProgressView.hidden = NO;
     id previousStoryId = [appDelegate.storiesCollection popReadStory];
     if (!previousStoryId || previousStoryId == [appDelegate.activeStory objectForKey:@"story_hash"]) {
-//        [appDelegate.feedsNavigationController
-//         popToViewController:[appDelegate.feedsNavigationController.viewControllers
-//                              objectAtIndex:0]
-//         animated:YES];
         [self.appDelegate showColumn:UISplitViewControllerColumnSupplementary debugInfo:@"doPreviousStory"];
         [appDelegate hideStoryDetailView];
     } else {
@@ -1851,10 +1729,6 @@
         if (previousLocation == -1) {
             return [self doPreviousStory:sender];
         }
-//        [appDelegate setActiveStory:[[appDelegate activeFeedStories]
-//                                     objectAtIndex:previousIndex]];
-//        [appDelegate changeActiveFeedDetailRow];
-//        
         [self changePage:previousLocation];
     }
 }

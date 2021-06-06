@@ -91,9 +91,7 @@
     
     self.webView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     self.webView.navigationDelegate = self;
-//    self.webView.scalesPageToFit = YES;
     self.webView.allowsLinkPreview = YES;
-//    self.webView.multipleTouchEnabled = NO;
     
     [self.webView.scrollView setAlwaysBounceVertical:appDelegate.storyPagesViewController.isHorizontal];
     [self.webView.scrollView setDelaysContentTouches:NO];
@@ -113,10 +111,6 @@
     
     [self clearWebView];
 
-//    UIPinchGestureRecognizer *pinchGesture = [[UIPinchGestureRecognizer alloc]
-//                                              initWithTarget:self action:@selector(showOriginalStory:)];
-//    [self.webView addGestureRecognizer:pinchGesture];
-    
     UITapGestureRecognizer *doubleTapGesture = [[UITapGestureRecognizer alloc]
                                                 initWithTarget:self action:@selector(doubleTap:)];
     doubleTapGesture.numberOfTapsRequired = 2;
@@ -153,18 +147,9 @@
     
     [[ThemeManager themeManager] addThemeGestureRecognizerToView:self.webView];
     
-    // This makes the theme gesture work reliably, but makes scrolling more "sticky", so isn't acceptable:
-//    UIGestureRecognizer *themeGesture = [[ThemeManager themeManager] addThemeGestureRecognizerToView:self.webView];
-//    [self.webView.scrollView.panGestureRecognizer requireGestureRecognizerToFail:themeGesture];
-    
     self.pageIndex = -2;
     self.inTextView = NO;
     
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(tapAndHold:)
-                                                 name:@"TapAndHoldNotification"
-                                               object:nil];
-
     _orientation = self.view.window.windowScene.interfaceOrientation;
 }
 
@@ -296,10 +281,6 @@
     BOOL swipeEnabled = [[userPreferences stringForKey:@"story_detail_swipe_left_edge"]
                          isEqualToString:@"pop_to_story_list"];
     
-//    if (swipeEnabled && gestureRecognizer.state == UIGestureRecognizerStateBegan) {
-//        [appDelegate.storyPagesViewController setNavigationBarHidden:NO];
-//    }
-    
     if (swipeEnabled && gestureRecognizer.state == UIGestureRecognizerStateEnded) {
         [appDelegate hideStoryDetailView];
     }
@@ -400,7 +381,7 @@
     return [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone || self.appDelegate.isCompactWidth;
 }
 
-// allow keyboard comands
+// allow keyboard commands
 - (BOOL)canBecomeFirstResponder {
     return YES;
 }
@@ -522,22 +503,6 @@
     contentWidthClass = [NSString stringWithFormat:@"%@ NB-width-%d",
                          contentWidthClass, (int)floorf(CGRectGetWidth(self.view.frame))];
 #endif
-    
-    // Replace image urls that are locally cached, even when online
-//    NSString *storyHash = [self.activeStory objectForKey:@"story_hash"];
-//    NSArray *imageUrls = [appDelegate.activeCachedImages objectForKey:storyHash];
-//    if (imageUrls) {
-//        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
-//        NSString *storyImagesDirectory = [[paths objectAtIndex:0]
-//                                          stringByAppendingPathComponent:@"story_images"];
-//        for (NSString *imageUrl in imageUrls) {
-//            NSString *cachedImage = [storyImagesDirectory
-//                                     stringByAppendingPathComponent:[Utilities md5:imageUrl]];
-//            storyContent = [storyContent
-//                            stringByReplacingOccurrencesOfString:imageUrl
-//                            withString:cachedImage];
-//        }
-//    }
     
     NSString *feedIdStr = [NSString stringWithFormat:@"%@",
                            [self.activeStory
@@ -1011,13 +976,7 @@
     NSString *comments = @"<div id=\"NB-share-bar-wrapper\">";
     NSString *commentLabel = @"";
     NSString *shareLabel = @"";
-//    NSString *replyStr = @"";
     
-//    if ([[self.activeStory objectForKey:@"reply_count"] intValue] == 1) {
-//        replyStr = [NSString stringWithFormat:@" and <b>1 reply</b>"];        
-//    } else if ([[self.activeStory objectForKey:@"reply_count"] intValue] == 1) {
-//        replyStr = [NSString stringWithFormat:@" and <b>%@ replies</b>", [self.activeStory objectForKey:@"reply_count"]];
-//    }
     if (![[self.activeStory objectForKey:@"comment_count"] isKindOfClass:[NSNull class]] &&
         [[self.activeStory objectForKey:@"comment_count"] intValue]) {
         commentLabel = [commentLabel stringByAppendingString:[NSString stringWithFormat:@
@@ -1416,7 +1375,6 @@
         }
         
         if (!isNavBarHidden && self.canHideNavigationBar && !nearTop) {
-//            if (appDelegate.storyPagesViewController.autoscrollActive) {
             [appDelegate.storyPagesViewController setNavigationBarHidden:YES];
         }
         
@@ -2102,21 +2060,6 @@
     }];
 }
 
-- (void)tapAndHold:(NSNotification*)notification {
-    CGPoint pt = [self pointForEvent:notification];
-    if (pt.x == CGPointZero.x && pt.y == CGPointZero.y) return;
-    
-    [webView evaluateJavaScript:[NSString stringWithFormat:@"linkAt(%li, %li, 'tagName');", (long)pt.x,(long)pt.y] completionHandler:^(NSString *tagName, NSError *error) {
-        if ([tagName isEqualToString:@"IMG"]) {
-            [self showImageMenu:pt];
-        }
-        
-        if ([tagName isEqualToString:@"A"]) {
-    //        [self showLinkContextMenu:pt];
-        }
-    }];
-}
-
 - (void)showImageMenu:(CGPoint)pt {
     [self.webView evaluateJavaScript:[NSString stringWithFormat:@"linkAt(%li, %li, 'title');", (long)pt.x,(long)pt.y] completionHandler:^(NSString *title, NSError *error) {
         [self.webView evaluateJavaScript:[NSString stringWithFormat:@"linkAt(%li, %li, 'alt');", (long)pt.x,(long)pt.y] completionHandler:^(NSString *alt, NSError *error) {
@@ -2183,17 +2126,6 @@
     // convert point from window to view coordinate system
     pt = [webView convertPoint:pt fromView:nil];
     
-    // convert point from view to HTML coordinate system
-    //    CGPoint offset  = [self.webView scrollOffset];
-    
-    // The viewSize seems to always match the windowSize, so don't need this. If there is some case where it is needed, will need to cache it, as the old windowSize method would be async with WKWebView
-//    CGSize viewSize = [self.webView frame].size;
-//    CGSize windowSize = [self.webView windowSize];
-//
-//    CGFloat f = windowSize.width / viewSize.width;
-//    pt.x = pt.x * f;// + offset.x;
-//    pt.y = pt.y * f;// + offset.y;
-    
     return pt;
 }
 
@@ -2202,16 +2134,6 @@
     if (!self.view.window) return CGPointZero;
     
     CGPoint pt = [gestureRecognizer locationInView:appDelegate.storyPagesViewController.currentPage.webView];
-    
-    // convert point from view to HTML coordinate system
-//    CGPoint offset  = [self.webView scrollOffset];
-    // The viewSize seems to always match the windowSize, so don't need this. If there is some case where it is needed, will need to cache it, as the old windowSize method would be async with WKWebView
-//    CGSize viewSize = [self.webView frame].size;
-//    CGSize windowSize = [self.webView windowSize];
-//
-//    CGFloat f = windowSize.width / viewSize.width;
-//    pt.x = pt.x * f;// + offset.x;
-//    pt.y = pt.y * f;// + offset.y;
     
     return pt;
 }
@@ -2409,9 +2331,6 @@
         return;
     }
     
-//    [webView setNeedsLayout];
-//    [webView layoutIfNeeded];
-    
 //    NSLog(@"changeWebViewWidth: %@ / %@ / %@", NSStringFromCGSize(self.view.bounds.size), NSStringFromCGSize(webView.scrollView.bounds.size), NSStringFromCGSize(webView.scrollView.contentSize));
 
     NSInteger contentWidth = CGRectGetWidth(webView.scrollView.bounds);
@@ -2472,8 +2391,6 @@
                           riverClass,
                           (long)contentWidth];
     [self.webView evaluateJavaScript:jsString completionHandler:nil];
-    
-//    self.webView.hidden = NO;
 }
 
 - (void)refreshHeader {

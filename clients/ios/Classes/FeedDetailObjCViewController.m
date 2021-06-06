@@ -25,7 +25,6 @@
 #import "NBBarButtonItem.h"
 #import "UIImage+Resize.h"
 #import "PINCache.h"
-#import "DashboardViewController.h"
 #import "StoriesCollection.h"
 #import "NSNull+JSON.h"
 #import "UISearchBar+Field.h"
@@ -431,14 +430,6 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
     [self.notifier setNeedsLayout];
     [appDelegate hideShareView:YES];
     
-//    if (!self.isPhoneOrCompact &&
-//        (appDelegate.detailViewController.storyTitlesOnLeft ||
-//         !UIInterfaceOrientationIsPortrait(orientation)) &&
-//        !self.isMovingFromParentViewController &&
-//        !appDelegate.masterContainerViewController.interactiveOriginalTransition) {
-//        [appDelegate.masterContainerViewController transitionToFeedDetail:NO];
-//    }
-    
     if (!!storiesCollection.inSearch && storiesCollection.feedPage == 1) {
         [self.storyTitlesTable setContentOffset:CGPointMake(0, CGRectGetHeight(self.searchBar.frame))];
     }
@@ -518,20 +509,12 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
     
     [self.searchBar resignFirstResponder];
     [self.appDelegate hidePopoverAnimated:YES];
-//    UIInterfaceOrientation orientation = self.view.window.windowScene.interfaceOrientation;
     
     if (self.isMovingToParentViewController) {
         appDelegate.inFindingStoryMode = NO;
         appDelegate.tryFeedStoryId = nil;
         [MBProgressHUD hideHUDForView:self.view animated:YES];
     }
-    
-//    if (!self.isPhoneOrCompact &&
-//        self.isMovingToParentViewController &&
-//        (appDelegate.detailViewController.storyTitlesOnLeft ||
-//         !UIInterfaceOrientationIsPortrait(orientation))) {
-//        [appDelegate.masterContainerViewController transitionFromFeedDetail:NO];
-//    }
 }
 
 - (void)fadeSelectedCell {
@@ -648,7 +631,6 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
     self.pageFinished = NO;
     self.isOnline = YES;
     self.isShowingFetching = NO;
-//    self.feedPage = 1;
     appDelegate.activeStory = nil;
     [storiesCollection setStories:nil];
     [storiesCollection setFeedUserProfiles:nil];
@@ -661,7 +643,6 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
     storiesCollection.savedSearchQuery = nil;
     [self.searchBar setText:@""];
     [self.notifier hideIn:0];
-//    [self cancelRequests];
     [self beginOfflineTimer];
     [appDelegate.cacheImagesOperationQueue cancelAllOperations];
 }
@@ -752,10 +733,8 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
                     continue;
                 }
                 
-//                [self.storyTitlesTable beginUpdates];
                 [self.storyTitlesTable reloadRowsAtIndexPaths:@[indexPath]
                                              withRowAnimation:UITableViewRowAnimationNone];
-//                [self.storyTitlesTable endUpdates];
                 break;
             }
         }
@@ -856,7 +835,7 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
                             theFeedDetailURL,
                             [storiesCollection.searchQuery stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLHostAllowedCharacterSet]]];
     }
-//    [self cancelRequests];
+    
     NSString *feedId = [NSString stringWithFormat:@"%@", [[storiesCollection activeFeed] objectForKey:@"id"]];
     NSInteger feedPage = storiesCollection.feedPage;
     NSLog(@" ---> Loading feed url: %@", theFeedDetailURL);
@@ -989,18 +968,12 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
     if (self.pageFetching || self.pageFinished) return;
 //    NSLog(@"Fetching River in storiesCollection (pg. %ld): %@", (long)page, storiesCollection);
     
-//    if (appDelegate.detailViewController.storyTitlesOnLeft && [[UIDevice currentDevice] userInterfaceIdiom] != UIUserInterfaceIdiomPhone) {
-//        [self.splitViewController showColumn:UISplitViewControllerColumnSupplementary];
-//    }
-    
     storiesCollection.feedPage = page;
     self.pageFetching = YES;
     NSInteger storyCount = storiesCollection.storyCount;
     if (storyCount == 0) {
         [self.storyTitlesTable reloadData];
        [storyTitlesTable scrollRectToVisible:CGRectMake(0, 0, CGRectGetHeight(self.searchBar.frame), 1) animated:YES];
-//            [self.notifier initWithTitle:@"Loading more..." inView:self.view];
-
     }
     
     if (!!storiesCollection.inSearch && storiesCollection.feedPage == 1) {
@@ -1079,9 +1052,6 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
                             theFeedDetailURL,
                             [storiesCollection.searchQuery stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLHostAllowedCharacterSet]]];
     }
-
-//    [self cancelRequests];
-    
     
     [appDelegate GET:theFeedDetailURL parameters:nil success:^(NSURLSessionTask *task, id responseObject) {
         [self finishedLoadingFeed:responseObject feedPage:self.storiesCollection.feedPage feedId:nil];
@@ -1111,14 +1081,6 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
     appDelegate.hasLoadedFeedDetail = YES;
     self.isOnline = YES;
     self.isShowingFetching = NO;
-    // storiesCollection.feedPage = [[request.userInfo objectForKey:@"feedPage"] intValue];
-    
-//    if (storiesCollection.isSavedView &&
-//        ![[results objectForKey:@"stories"] count] &&
-//        storiesCollection.feedPage == 1 &&
-//        [results objectForKey:@"message"]) {
-//        [self informError:nil details:[results objectForKey:@"message"]];
-//    }
     NSString *receivedFeedId = [NSString stringWithFormat:@"%@", [results objectForKey:@"feed_id"]];
     
     if (!(storiesCollection.isRiverView ||
@@ -1320,10 +1282,6 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
         [self testForTryFeed];
     }
     
-//    if (!self.isPhoneOrCompact) {
-//        [appDelegate.masterContainerViewController syncNextPreviousButtons];
-//    }
-    
     NSMutableArray *storyImageUrls = [NSMutableArray array];
     for (NSDictionary *story in newStories) {
         if ([story objectForKey:@"image_urls"] && [[story objectForKey:@"image_urls"] count]) {
@@ -1499,7 +1457,7 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
         }
         
         return cell;
-    } else {//if ([appDelegate.storyLocationsCount]) {
+    } else {
         NBLoadingCell *loadingCell = [[NBLoadingCell alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, height)];
         return loadingCell;
     }
@@ -2123,14 +2081,6 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         }
         [self.appDelegate.feedsViewController refreshFeedList];
         [self.appDelegate showFeedsListAnimated:YES];
-//        if (!self.isPhoneOrCompact) {
-//            [self.appDelegate.feedsNavigationController popToRootViewControllerAnimated:YES];
-//            [self.splitViewController showColumn:UISplitViewControllerColumnPrimary];
-//            [self.appDelegate.masterContainerViewController transitionFromFeedDetail];
-//        } else {
-//            [self.appDelegate.feedsNavigationController popToViewController:[self.appDelegate.feedsNavigationController.viewControllers objectAtIndex:0] animated:YES];
-//            [self.splitViewController showColumn:UISplitViewControllerColumnPrimary];
-//        }
     };
     
     [storiesCollection calculateStoryLocations];
@@ -2508,10 +2458,6 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 
     [self.appDelegate POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self.appDelegate reloadFeedsView:YES];
-//        [self.appDelegate.feedsNavigationController
-//         popToViewController:[self.appDelegate.feedsNavigationController.viewControllers
-//                              objectAtIndex:0]
-//         animated:YES];
         [self.appDelegate showColumn:UISplitViewControllerColumnPrimary debugInfo:@"deleteSite"];
         [MBProgressHUD hideHUDForView:self.view animated:YES];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
@@ -2535,10 +2481,6 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     
     [appDelegate POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self.appDelegate reloadFeedsView:YES];
-//        [self.appDelegate.feedsNavigationController
-//         popToViewController:[self.appDelegate.feedsNavigationController.viewControllers
-//                              objectAtIndex:0]
-//         animated:YES];
         [self.appDelegate showColumn:UISplitViewControllerColumnPrimary debugInfo:@"deleteFolder"];
         [MBProgressHUD hideHUDForView:self.view animated:YES];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
@@ -2565,8 +2507,6 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     [params setObject:activeIdentifiers forKey:@"approved_feeds"];
     [appDelegate POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self.appDelegate reloadFeedsView:YES];
-//        [self.appDelegate.feedsNavigationController popToViewController:[self.appDelegate.feedsNavigationController.viewControllers objectAtIndex:0]
-//                                                          animated:YES];
         [self.appDelegate showColumn:UISplitViewControllerColumnPrimary debugInfo:@"muteSite"];
         [MBProgressHUD hideHUDForView:self.view animated:YES];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
@@ -2701,10 +2641,6 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     [menuNavigationController showViewController:viewController sender:self];
 }
 
-//- (void)openMoveView {
-//    [appDelegate showMoveSite];
-//}
-
 - (void)openTrainSite {
     [appDelegate openTrainSite];
 }
@@ -2794,7 +2730,6 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     [super updateTheme];
     
     self.navigationController.navigationBar.tintColor = [UINavigationBar appearance].tintColor;
-//    self.navigationController.navigationBar.backItem.backBarButtonItem.tintColor = UIColorFromRGB(0x8F918B);
     self.navigationController.navigationBar.barTintColor = [UINavigationBar appearance].barTintColor;
     self.navigationController.navigationBar.barStyle = ThemeManager.shared.isDarkTheme ? UIBarStyleBlack : UIBarStyleDefault;
     self.navigationController.toolbar.barTintColor = [UINavigationBar appearance].barTintColor;
@@ -2862,7 +2797,6 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
                            stringWithFormat:@"%@/reader/refresh_feed/%@", 
                            self.appDelegate.url,
                            [storiesCollection.activeFeed objectForKey:@"id"]];
-//    [self cancelRequests];
     [appDelegate GET:urlString parameters:nil success:^(NSURLSessionTask *task, id responseObject) {
         [self renderStories:[responseObject objectForKey:@"stories"]];
         [self finishRefresh];

@@ -10,7 +10,6 @@
 #import <SafariServices/SafariServices.h>
 #import "BaseViewController.h"
 #import "FMDatabaseQueue.h"
-#import "EventWindow.h"
 #import "AFNetworking.h"
 
 #define FEED_DETAIL_VIEW_TAG 1000001
@@ -57,7 +56,6 @@
 @interface NewsBlurAppDelegate : BaseViewController
 <UIApplicationDelegate, UINavigationControllerDelegate, UIPopoverPresentationControllerDelegate,
 SFSafariViewControllerDelegate>  {
-    EventWindow *window;
     UINavigationController *ftuxNavigationController;
     UINavigationController *feedsNavigationController;
     UINavigationController *modalNavigationController;
@@ -158,7 +156,6 @@ SFSafariViewControllerDelegate>  {
     PINCache *cachedStoryImages;
 }
 
-@property (nonatomic) IBOutlet EventWindow *window;
 @property (nonatomic) SplitViewController *splitViewController;
 @property (nonatomic) IBOutlet UINavigationController *ftuxNavigationController;
 @property (nonatomic) IBOutlet UINavigationController *feedsNavigationController;
