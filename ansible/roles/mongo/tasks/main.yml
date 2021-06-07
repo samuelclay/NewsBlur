@@ -51,3 +51,7 @@
   when: (inventory_hostname | regex_replace('[0-9]+', '')) == 'db-mongo-analytics' or inventory_hostname.startswith('db3')
   notify:
     - reload consul
+
+- name: Link disk usage sanity checker
+  become: yes
+  command: "ln -fs /srv/newsblur/utils/monitor_disk_usage.py /etc/cron.daily/monitor_disk_usage /etc/cron.daily/monitor_disk_usage"

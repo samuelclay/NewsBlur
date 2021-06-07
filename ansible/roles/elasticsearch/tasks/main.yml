@@ -19,3 +19,7 @@
     dest: /etc/consul.d/elasticsearch.json
   notify:
     - reload consul
+
+- name: Link disk usage sanity checker
+  become: yes
+  command: "ln -fs /srv/newsblur/utils/monitor_disk_usage.py /etc/cron.daily/monitor_disk_usage /etc/cron.daily/monitor_disk_usage"
