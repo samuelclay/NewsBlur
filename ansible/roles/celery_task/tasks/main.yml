@@ -96,3 +96,24 @@
     - container_name: task-celery
     - container_name: task-work
   changed_when: app_changed.changed
+
+- name: Create docker container for sanity checkers
+  become: yes
+  docker_container:
+    name: "sanity_checkers"
+    image: newsblur/newsblur_python3
+    state: started
+    pull: yes
+    container_default_behavior: no_defaults
+    restart_policy: always
+    networks_cli_compatible: yes
+    network_mode: default
+    networks:
+      - name: newsblurnet
+    volumes:
+    # feeds fetched monitor
+      - /srv/newsblur/utils/monitor_task_fetches.py:/etc/cron.hourly/monitor_task_fetches
+    # newsletter monitor
+      - /srv/newsblur/utils/monitor_newsletter_delivery.py:/etc/cron.hourly/monitor_newsletter_delivery
+    # work queue monitor
+      - /srv/newsblur/utils/monitor_work_queue.py:/etc/cron.hourly/monitor_work_queue
