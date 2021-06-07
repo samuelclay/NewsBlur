@@ -26,4 +26,7 @@
 
 - name: Link disk usage sanity checker
   become: yes
-  command: "ln -fs /srv/newsblur/utils/monitor_disk_usage.py /etc/cron.daily/monitor_disk_usage /etc/cron.daily/monitor_disk_usage"
+  file:
+   src: "/srv/newsblur/utils/monitor_disk_usage.py"
+   dest: "/etc/cron.daily/monitor_disk_usage"
+   state: link
