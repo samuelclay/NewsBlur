@@ -94,3 +94,8 @@
   notify:
     - reload consul
   when: item.target_host in inventory_hostname and disable_consul_services is not defined
+
+- name: Link disk usage sanity checker
+  become: yes
+  command: "ln -fs /srv/newsblur/utils/monitor_disk_usage.py /etc/cron.daily/monitor_disk_usage /etc/cron.daily/monitor_disk_usage"
+  when: "node-page" in inventory_hostname
