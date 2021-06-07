@@ -25,7 +25,10 @@
 
 - name: Link disk usage sanity checker
   become: yes
-  command: "ln -fs /srv/newsblur/utils/monitor_disk_usage.py /etc/cron.daily/monitor_disk_usage /etc/cron.daily/monitor_disk_usage"
+  file:
+   src: "/srv/newsblur/utils/monitor_disk_usage.py"
+   dest: "/etc/cron.daily/monitor_disk_usage"
+   state: link
 
 - name: Make docker network for newsblurnet
   become: yes
@@ -42,9 +45,10 @@
     pull: yes
     container_default_behavior: no_defaults
     restart_policy: always
+    command: /bin/bash -c "while true; do sleep 15 ; done"
     networks_cli_compatible: yes
     network_mode: default
     networks:
       - name: newsblurnet
     volumes:
-      - /srv/newsblur/utils/monitor_redis_bgsave.py:/etc/cron.daily/monitor_redis_bgsave
+      - /srv/newsblur/utils/monitor_redis_bgsave.py:/etc/cron.daily/monitor_redis_bgsave.py
