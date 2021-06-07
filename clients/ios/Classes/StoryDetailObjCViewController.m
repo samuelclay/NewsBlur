@@ -1894,7 +1894,7 @@
 
 - (BOOL)canHideNavigationBar {
     if (!appDelegate.storyPagesViewController.allowFullscreen) {
-        NSLog(@"canHideNavigationBar: no, toggle is off");  // log
+//        NSLog(@"canHideNavigationBar: no, toggle is off");  // log
         return NO;
     }
     
