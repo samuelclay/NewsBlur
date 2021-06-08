@@ -103,6 +103,21 @@ NewsBlur comes complete with a test suite that tests the functionality of the rs
 reader, and feed importer. To run the test suite:
 
     `make test`
+    
+### Running Feed Recommendation Model Train File
+To create a new Keras model file for feed recommendations, as well as create the required feature files, run this command:
+
+` sudo docker exec -it newsblur_web ./manage.py training-test `
+
+This command will generate a model.keras file as well as feature files in the format: "feature name" - "feature normalizer model" .pkl
+List of users and feeds to use for training is defined in recoFunctions.py. This is where all normalization and standardization for training is located.
+
+### Running Feed Recommendation Testing File
+Allows you to produce feed recommendations for a list of users. Run this command:
+
+` sudo docker exec -it newsblur_web ./manage.py recommend_test -u `
+
+Add a list of users to the end to pass them into the test file and produce recommendations (example: 23,31,2). This test file assumes you've produced a model.keras file for feed recommendations as well as feature files. Testing file will print 10 recommended feed IDs.
 
 ### Running a performance test
 
