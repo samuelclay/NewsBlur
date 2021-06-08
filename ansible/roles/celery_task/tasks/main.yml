@@ -5,10 +5,14 @@
     dest: /srv/newsblur/newsblur_web/local_settings.py
   register: app_changed
 
-- name: Copy task env
-  copy:
-    src: /srv/secrets-newsblur/settings/task_env.py
-    dest: /srv/newsblur/newsblur_web/task_env.py
+- block:
+    - name: Copy task env
+      copy:
+        src: /srv/secrets-newsblur/settings/task_env.py
+        dest: /srv/newsblur/newsblur_web/task_env.py
+  rescue:
+    - debug: 
+        msg: Missing task_env.py, ignoring...
 
 - name: Add SERVER_NAME to task env
   lineinfile:
