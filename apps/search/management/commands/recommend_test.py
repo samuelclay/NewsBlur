@@ -50,25 +50,28 @@ class Command(BaseCommand):
 
             feed_ = []
             for x in feeds:
-                feed_items = {}
-                feed_object = Feed.objects.get(pk=x)
-                feed_items['active_subs'] = feed_object.active_subscribers
-                feed_items['premium_subs'] = feed_object.premium_subscribers
-                feed_items['num_subs'] = feed_object.num_subscribers
-                feed_items['average_stories_per_month'] = feed_object.average_stories_per_month
-                feed_items['active_premium_subscribers'] = feed_object.active_premium_subscribers
-                feed_items['active'] = feed_object.active
-                temp = Feed.get_by_id(x).well_read_score()
-                feed_items['read_pct'] = temp['read_pct']
-                feed_items['reader_count'] = temp['reader_count']
-                feed_items['reach_score'] = temp['reach_score']
-                feed_items['story_count'] = temp['story_count']
-                feed_items['share_count'] = temp['share_count']
-                feed_items['feed_id'] = x
-                del temp
-                # might be the same as share_count, leaving it in for now
-                feed_items['total_shares_per_feed'] = MSharedStory.objects.filter(story_feed_id=x).count()
-                feed_.append(feed_items)
+                try:
+                    feed_items = {}
+                    feed_object = Feed.objects.get(pk=x)
+                    feed_items['active_subs'] = feed_object.active_subscribers
+                    feed_items['premium_subs'] = feed_object.premium_subscribers
+                    feed_items['num_subs'] = feed_object.num_subscribers
+                    feed_items['average_stories_per_month'] = feed_object.average_stories_per_month
+                    feed_items['active_premium_subscribers'] = feed_object.active_premium_subscribers
+                    feed_items['active'] = feed_object.active
+                    temp = Feed.get_by_id(x).well_read_score()
+                    feed_items['read_pct'] = temp['read_pct']
+                    feed_items['reader_count'] = temp['reader_count']
+                    feed_items['reach_score'] = temp['reach_score']
+                    feed_items['story_count'] = temp['story_count']
+                    feed_items['share_count'] = temp['share_count']
+                    feed_items['feed_id'] = x
+                    del temp
+                    # might be the same as share_count, leaving it in for now
+                    feed_items['total_shares_per_feed'] = MSharedStory.objects.filter(story_feed_id=x).count()
+                    feed_.append(feed_items)
+                except Exception as e:
+                    print('feed_id: ' + str(x) + ' does not exist')
             print('through the loop')
             # this is all data for data points that are feed data specific
             # add this key so we can run model on correct feeds after they've been transformed
