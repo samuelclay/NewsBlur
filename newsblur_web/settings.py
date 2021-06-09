@@ -213,8 +213,8 @@ LOGGING = {
         },
         'elasticsearch.trace': {
             'handlers': ['console', 'log_file'],
-            # 'level': 'ERROR',
-            'level': 'DEBUG',
+            'level': 'ERROR',
+            # 'level': 'DEBUG',
             'propagate': False,
         },
         'newsblur': {
