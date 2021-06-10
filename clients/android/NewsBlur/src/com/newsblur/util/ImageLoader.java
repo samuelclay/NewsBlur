@@ -85,7 +85,7 @@ public class ImageLoader {
         url = buildUrlIfNeeded(url);
 
         // try from memory
-        Bitmap bitmap = memoryCache.get(url);
+        Bitmap bitmap = memoryCache.get(url, false);
         if (bitmap != null) {
             remoteViews.setImageViewBitmap(imageViewId, bitmap);
             remoteViews.setViewVisibility(imageViewId, View.VISIBLE);
@@ -100,7 +100,7 @@ public class ImageLoader {
         }
 
         if (bitmap != null) {
-            memoryCache.put(url, bitmap);
+            memoryCache.put(url, bitmap, false);
             remoteViews.setImageViewBitmap(imageViewId, bitmap);
             remoteViews.setViewVisibility(imageViewId, View.VISIBLE);
         } else {
@@ -155,8 +155,7 @@ public class ImageLoader {
             if (photoToLoad.cancel) return;
 
             // try from memory
-            //TODO: revisit memory cache
-            Bitmap bitmap = null;
+            Bitmap bitmap = memoryCache.get(photoToLoad.url, photoToLoad.roundCorners);
 
             if (bitmap != null) {
                 setViewImage(bitmap, photoToLoad);
@@ -194,7 +193,7 @@ public class ImageLoader {
             }
 
             if (bitmap != null) {
-                memoryCache.put(photoToLoad.url, bitmap);			
+                memoryCache.put(photoToLoad.url, bitmap, photoToLoad.roundCorners);
             }
             if (photoToLoad.cancel) return;
             setViewImage(bitmap, photoToLoad);
