@@ -18,8 +18,9 @@ public class MemoryCache {
         this.limit = limitBytes;
 	}
 
-	public Bitmap get(String id){
+	public Bitmap get(String url, boolean hasRoundCorners){
 		try {
+			String id = getPhotoCacheId(url, hasRoundCorners);
 			if (cache == null || !cache.containsKey(id)) {
 				return null;
 			} else {
@@ -30,15 +31,20 @@ public class MemoryCache {
 		}
 	}
 
-	public void put(String id, Bitmap bitmap) {
+	public void put(String url, Bitmap bitmap, boolean hasRoundCorners) {
         synchronized (this) {
-            if (cache.containsKey(id)) {
+			String id = getPhotoCacheId(url, hasRoundCorners);
+			if (cache.containsKey(id)) {
                 size -= getSizeInBytes(cache.get(id));
             }
             cache.put(id, bitmap);
             size += getSizeInBytes(bitmap);
             checkSize();
         }
+	}
+
+	public String getPhotoCacheId(String url, boolean hasRoundCorners) {
+		return hasRoundCorners ? url + "-rounded" : url;
 	}
 
 	private void checkSize() {
