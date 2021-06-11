@@ -2889,6 +2889,8 @@
             [storyPagesViewController refreshHeaders];
         }
     }
+    
+    [self.feedsViewController updateFeedTitlesTable];
 }
 
 - (void)finishMarkAsUnread:(NSDictionary *)story {
@@ -2904,6 +2906,8 @@
     }
     [storyPagesViewController setNextPreviousButtons];
     originalStoryCount += 1;
+    
+    [self.feedsViewController updateFeedTitlesTable];
 }
 
 - (void)failedMarkAsUnread:(NSDictionary *)params {
