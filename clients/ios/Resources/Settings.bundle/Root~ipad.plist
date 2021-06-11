@@ -166,6 +166,30 @@
 			<key>Type</key>
 			<string>PSMultiValueSpecifier</string>
 			<key>Title</key>
+			<string>Column layout</string>
+			<key>Titles</key>
+			<array>
+				<string>Automatic</string>
+				<string>Three columns</string>
+				<string>Two columns</string>
+				<string>Full screen</string>
+			</array>
+			<key>DefaultValue</key>
+			<string>displace</string>
+			<key>Values</key>
+			<array>
+				<string>auto</string>
+				<string>tile</string>
+				<string>displace</string>
+				<string>overlay</string>
+			</array>
+			<key>Key</key>
+			<string>split_behavior</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
 			<string>Story titles layout</string>
 			<key>Titles</key>
 			<array>

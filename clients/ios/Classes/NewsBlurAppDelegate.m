@@ -805,28 +805,33 @@
     [self.premiumViewController.view setNeedsLayout];
 }
 
+- (void)updateSplitBehavior {
+    NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
+    NSString *behavior = [preferences stringForKey:@"split_behavior"];
+    
+    if ([behavior isEqualToString:@"tile"]) {
+        self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorTile;
+        self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeTwoBesideSecondary;
+    } else if ([behavior isEqualToString:@"displace"]) {
+        self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorDisplace;
+        self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeTwoDisplaceSecondary;
+    } else if ([behavior isEqualToString:@"overlay"]) {
+        self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorOverlay;
+        self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeTwoOverSecondary;
+    } else {
+        self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorAutomatic;
+        self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeAutomatic;
+    }
+}
+
 - (void)addSplitControlToMenuController:(MenuViewController *)menuViewController {
     NSString *preferenceKey = @"split_behavior";
     NSArray *titles = @[@"Auto", @"columns_triple.png", @"columns_double.png", @"Full screen"];
     NSArray *values = @[@"auto", @"tile", @"displace", @"overlay"];
     
     [menuViewController addSegmentedControlWithTitles:titles values:values preferenceKey:preferenceKey selectionShouldDismiss:YES handler:^(NSUInteger selectedIndex) {
-        NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
-        NSString *behavior = [preferences stringForKey:@"split_behavior"];
         [UIView animateWithDuration:0.5 animations:^{
-            if ([behavior isEqualToString:@"tile"]) {
-                self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorTile;
-                self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeTwoBesideSecondary;
-            } else if ([behavior isEqualToString:@"displace"]) {
-                self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorDisplace;
-                self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeTwoDisplaceSecondary;
-            } else if ([behavior isEqualToString:@"overlay"]) {
-                self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorOverlay;
-                self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeTwoOverSecondary;
-            } else {
-                self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorAutomatic;
-                self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeAutomatic;
-            }
+            [self updateSplitBehavior];
         }];
     }];
 }
@@ -1117,19 +1122,8 @@
         return;
     }
     
-    NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
-    NSString *behavior = [preferences stringForKey:@"split_behavior"];
-    if ([behavior isEqualToString:@"tile"]) {
-        self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorTile;
-    } else if ([behavior isEqualToString:@"displace"]) {
-        self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorDisplace;
-    } else if ([behavior isEqualToString:@"overlay"]) {
-        self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorOverlay;
-    } else {
-        self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorAutomatic;
-    }
-    
     self.splitViewController.showsSecondaryOnlyButton = YES;
+    [self updateSplitBehavior];
     
     self.feedsNavigationController = (UINavigationController *)splitChildren[0];
     self.feedsViewController = self.feedsNavigationController.viewControllers.firstObject;

@@ -312,6 +312,7 @@ SFSafariViewControllerDelegate>  {
 - (void)showOrganizeSites;
 - (void)showWidgetSites;
 - (void)showPremiumDialog;
+- (void)updateSplitBehavior;
 - (void)addSplitControlToMenuController:(MenuViewController *)menuViewController;
 - (void)showPreferences;
 - (void)setHiddenPreferencesAnimated:(BOOL)animated;
