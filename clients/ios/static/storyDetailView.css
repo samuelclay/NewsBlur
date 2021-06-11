@@ -96,32 +96,32 @@
 }
 
 .NB-ipad-wide .NB-header .NB-header-inner {
-    margin: 0px 90px;
+    margin: 0px 60px;
 }
 
 .NB-ipad-wide .NB-story {
-    padding: 30px 90px;
+    padding: 30px 60px;
 }
 
 .NB-ipad-wide .NB-share-inner-wrapper {
-    margin: 0 90px;
+    margin: 0 60px;
 }
 
 .NB-ipad-wide#story_pane .NB-story-comments-public-teaser,
 .NB-ipad-wide#story_pane .NB-story-comments-public-header,
 .NB-ipad-wide#story_pane .NB-story-comments-friends-header,
 .NB-ipad-wide#story_pane .NB-story-comments-shares-teaser {
-    padding-left: 90px;
-    padding-right: 90px;
+    padding-left: 60px;
+    padding-right: 60px;
 }
 
 .NB-ipad-wide#story_pane .NB-story-comment {
-    padding: 0 90px 2px 150px;
+    padding: 0 60px 2px 110px;
 }
 
 .NB-ipad-wide#story_pane .NB-story-comment .NB-user-avatar,
 .NB-ipad-wide#story_pane .NB-story-comment .NB-user-avatar.NB-story-comment-reshare {
-    left: 88px;
+    left: 58px;
 }
 .NB-ipad-wide#story_pane .NB-story-comment .NB-story-comment-reshares .NB-user-avatar {
     left: 108px;
@@ -617,8 +617,8 @@ div + p {
 }
 
 .NB-ipad-wide .NB-story .NB-large-image {
-    margin-left: -90px !important;
-    width: calc(100% + 180px) !important;
+    margin-left: -60px !important;
+    width: calc(100% + 120px) !important;
 }
 
 .NB-ipad-pro-12-wide .NB-story .NB-large-image {
