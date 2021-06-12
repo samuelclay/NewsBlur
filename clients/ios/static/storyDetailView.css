@@ -92,39 +92,39 @@
  */
 
 .NB-ipad-wide .NB-header {
-    padding: 1.2em 0;
+    padding: 1em 30px;
 }
 
 .NB-ipad-wide .NB-header .NB-header-inner {
-    margin: 0px 60px;
+    margin: 0px 0px;
 }
 
 .NB-ipad-wide .NB-story {
-    padding: 30px 60px;
+    padding: 20px 30px;
 }
 
 .NB-ipad-wide .NB-share-inner-wrapper {
-    margin: 0 60px;
+    margin: 0 30px;
 }
 
 .NB-ipad-wide#story_pane .NB-story-comments-public-teaser,
 .NB-ipad-wide#story_pane .NB-story-comments-public-header,
 .NB-ipad-wide#story_pane .NB-story-comments-friends-header,
 .NB-ipad-wide#story_pane .NB-story-comments-shares-teaser {
-    padding-left: 60px;
-    padding-right: 60px;
+    padding-left: 30px;
+    padding-right: 30px;
 }
 
 .NB-ipad-wide#story_pane .NB-story-comment {
-    padding: 0 60px 2px 110px;
+    padding: 0 30px 2px 110px;
 }
 
 .NB-ipad-wide#story_pane .NB-story-comment .NB-user-avatar,
 .NB-ipad-wide#story_pane .NB-story-comment .NB-user-avatar.NB-story-comment-reshare {
-    left: 58px;
+    left: 26px;
 }
 .NB-ipad-wide#story_pane .NB-story-comment .NB-story-comment-reshares .NB-user-avatar {
-    left: 108px;
+    left: 45px;
 }
 
 .NB-ipad-wide#story_pane .NB-story-comment .NB-button-wrapper {
@@ -617,18 +617,18 @@ div + p {
 }
 
 .NB-ipad-wide .NB-story .NB-large-image {
-    margin-left: -60px !important;
-    width: calc(100% + 120px) !important;
+    margin-left: -30px !important;
+    width: calc(100% + 60px) !important;
 }
 
 .NB-ipad-pro-12-wide .NB-story .NB-large-image {
-    margin-left: -90px !important;
-    width: calc(100% + 180px) !important;
+    margin-left: -30px !important;
+    width: calc(100% + 60px) !important;
 }
 
 .NB-ipad-pro-10-wide .NB-story .NB-large-image {
-    margin-left: -90px !important;
-    width: calc(100% + 180px) !important;
+    margin-left: -60px !important;
+    width: calc(100% + 60px) !important;
 }
 
 .NB-iphone-wide .NB-story .NB-large-image {
