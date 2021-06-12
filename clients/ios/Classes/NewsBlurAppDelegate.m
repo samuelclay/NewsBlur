@@ -218,6 +218,7 @@
     
     [self createDatabaseConnection];
     [self.cachedStoryImages removeAllObjects:nil];
+    [feedsViewController view];
     [feedsViewController loadOfflineFeeds:NO];
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
                                              (unsigned long)NULL), ^(void) {
@@ -1165,25 +1166,27 @@
     self.dictUnreadCounts = nil;
     self.dictTextFeeds = nil;
     
-    [self.feedsViewController.feedTitlesTable reloadData];
-    [self.feedsViewController resetToolbar];
-    
-    [self.dashboardViewController.interactionsModule.interactionsTable reloadData];
-    [self.dashboardViewController.activitiesModule.activitiesTable reloadData];
-    
-    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];    
-    [userPreferences setInteger:-1 forKey:@"selectedIntelligence"];
-    [userPreferences synchronize];
-    
-    loginViewController.modalPresentationStyle = UIModalPresentationFullScreen;
-    
-    if (feedsNavigationController.isViewLoaded && feedsNavigationController.view.window) {
-        if ([self.feedsNavigationController visibleViewController] == loginViewController) {
-            NSLog(@"Already showing login!");
-            return;
+    [self popToRootWithCompletion:^{
+        [self.feedsViewController.feedTitlesTable reloadData];
+        [self.feedsViewController resetToolbar];
+        
+        [self.dashboardViewController.interactionsModule.interactionsTable reloadData];
+        [self.dashboardViewController.activitiesModule.activitiesTable reloadData];
+        
+        NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+        [userPreferences setInteger:-1 forKey:@"selectedIntelligence"];
+        [userPreferences synchronize];
+        
+        self.loginViewController.modalPresentationStyle = UIModalPresentationFullScreen;
+        
+        if (self.feedsNavigationController.isViewLoaded && self.feedsNavigationController.view.window) {
+            if ([self.feedsNavigationController visibleViewController] == self.loginViewController) {
+                NSLog(@"Already showing login!");
+                return;
+            }
+            [self.feedsNavigationController presentViewController:self.loginViewController animated:NO completion:nil];
         }
-        [self.feedsNavigationController presentViewController:loginViewController animated:NO completion:nil];
-    }
+    }];
 }
 
 - (void)showFirstTimeUser {
