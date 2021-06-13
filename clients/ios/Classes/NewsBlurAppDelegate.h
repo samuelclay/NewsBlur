@@ -221,6 +221,7 @@ SFSafariViewControllerDelegate>  {
 @property (nonatomic, readwrite) BOOL inFeedDetail;
 @property (nonatomic, readwrite) BOOL inStoryDetail;
 @property (nonatomic, readwrite) BOOL isPresentingActivities;
+@property (nonatomic, readwrite) BOOL suppressMarkAsRead;
 @property (readwrite) NSDictionary * activeStory;
 @property (readwrite) NSURL * activeOriginalStoryURL;
 @property (readwrite) NSDictionary * activeComment;

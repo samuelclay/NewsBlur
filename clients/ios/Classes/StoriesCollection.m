@@ -523,13 +523,14 @@
     NSString *newStoryIdStr = [NSString stringWithFormat:@"%@", [newStory valueForKey:@"story_hash"]];
     [self replaceStory:newStory withId:newStoryIdStr];
     
+    id storyFeedId = [newStory objectForKey:@"story_feed_id"];
     
     // If not a feed, then don't bother updating local feed
-    if (!feed) return;
+    if (!feed || !storyFeedId) return;
     
     self.visibleUnreadCount -= 1;
-    if (![appDelegate.recentlyReadFeeds containsObject:[newStory objectForKey:@"story_feed_id"]]) {
-        [appDelegate.recentlyReadFeeds addObject:[newStory objectForKey:@"story_feed_id"]];
+    if (![appDelegate.recentlyReadFeeds containsObject:storyFeedId]) {
+        [appDelegate.recentlyReadFeeds addObject:storyFeedId];
     }
     
     NSDictionary *unreadCounts = [appDelegate.dictUnreadCounts objectForKey:feedIdStr];

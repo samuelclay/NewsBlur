@@ -989,6 +989,7 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
     }
     
     if (!self.isOnline) {
+        [self.notifier hide];
         [self loadOfflineStories];
         return;
     } else {
@@ -1296,7 +1297,16 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
 
 - (void)testForTryFeed {
     if (!appDelegate.inFindingStoryMode ||
-        !appDelegate.tryFeedStoryId) return;
+        !appDelegate.tryFeedStoryId) {
+        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad && appDelegate.splitViewController.splitBehavior != UISplitViewControllerSplitBehaviorOverlay) {
+            NSInteger storyIndex = [storiesCollection indexFromLocation:0];
+            appDelegate.activeStory = [[storiesCollection activeFeedStories] objectAtIndex:storyIndex];
+            appDelegate.suppressMarkAsRead = YES;
+            [appDelegate loadStoryDetailView];
+            appDelegate.suppressMarkAsRead = NO;
+        }
+        return;
+    }
     
     if (!self.view.window) {
         NSLog(@"No longer looking for try feed.");
