@@ -1374,6 +1374,11 @@
             hasScrolled = YES;
         }
         
+//        if (hasScrolled && !appDelegate.suppressMarkAsRead && [appDelegate.storiesCollection isStoryUnread:activeStory]) {
+//            [appDelegate.storiesCollection markStoryRead:activeStory];
+//            [appDelegate.storiesCollection syncStoryAsRead:activeStory];
+//        }
+        
         if (!isNavBarHidden && self.canHideNavigationBar && !nearTop) {
             [appDelegate.storyPagesViewController setNavigationBarHidden:YES];
         }

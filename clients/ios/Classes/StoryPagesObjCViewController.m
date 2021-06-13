@@ -1172,7 +1172,7 @@
         
         appDelegate.activeStory = [appDelegate.storiesCollection.activeFeedStories objectAtIndex:storyIndex];
         [self updatePageWithActiveStory:currentPage.pageIndex];
-        if ([appDelegate.storiesCollection isStoryUnread:appDelegate.activeStory]) {
+        if (!appDelegate.suppressMarkAsRead && [appDelegate.storiesCollection isStoryUnread:appDelegate.activeStory]) {
             [appDelegate.storiesCollection markStoryRead:appDelegate.activeStory];
             [appDelegate.storiesCollection syncStoryAsRead:appDelegate.activeStory];
         }
