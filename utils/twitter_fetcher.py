@@ -130,7 +130,7 @@ class TwitterFetcher:
             return twitter_api, social_services
         return twitter_api
     
-    def disconnect_twitter():
+    def disconnect_twitter(self):
         _, social_services = self.twitter_api(include_social_services=True)
         social_services.disconnect_twitter()
 
