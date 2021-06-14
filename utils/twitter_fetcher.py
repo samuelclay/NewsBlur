@@ -90,7 +90,7 @@ class TwitterFetcher:
         
         return list_id
     
-    def twitter_api(self):
+    def twitter_api(self, include_social_services=False):
         twitter_api = None
         social_services = None
         if self.options.get('requesting_user_id', None):
@@ -126,8 +126,14 @@ class TwitterFetcher:
                           (self.feed.log_title[:30], self.address, usersubs[0].user.username))
             return
         
+        if include_social_services:
+            return twitter_api, social_services
         return twitter_api
     
+    def disconnect_twitter():
+        _, social_services = self.twitter_api(include_social_services=True)
+        social_services.disconnect_twitter()
+
     def fetch_user(self, username):
         twitter_api = self.twitter_api()
         if not twitter_api:
@@ -147,17 +153,20 @@ class TwitterFetcher:
                 # Suspended
                 logging.debug('   ***> [%-30s] ~FRTwitter failed, user locked, disconnecting twitter: %s: %s' % 
                               (self.feed.log_title[:30], self.address, e))
+                self.disconnect_twitter()
                 self.feed.save_feed_history(561, "Twitter Error: User locked")
                 return
             elif 'suspended' in message:
                 logging.debug('   ***> [%-30s] ~FRTwitter user suspended, disconnecting twitter: %s: %s' % 
                               (self.feed.log_title[:30], self.address, e))
                 self.feed.save_feed_history(562, "Twitter Error: User suspended")
+                self.disconnect_twitter()
                 return
             elif 'expired token' in message:
                 logging.debug('   ***> [%-30s] ~FRTwitter user expired, disconnecting twitter: %s: %s' % 
                               (self.feed.log_title[:30], self.address, e))
                 self.feed.save_feed_history(563, "Twitter Error: Expired token")
+                self.disconnect_twitter()
                 return
             elif 'not found' in message:
                 logging.debug('   ***> [%-30s] ~FRTwitter user not found, disconnecting twitter: %s: %s' % 
@@ -230,17 +239,20 @@ class TwitterFetcher:
                 # Suspended
                 logging.debug('   ***> [%-30s] ~FRTwitter failed, user suspended, disconnecting twitter: %s: %s' % 
                               (self.feed.log_title[:30], self.address, e))
+                self.disconnect_twitter()
                 self.feed.save_feed_history(571, "Twitter Error: User suspended")
                 return None, None
             elif 'suspended' in message:
                 logging.debug('   ***> [%-30s] ~FRTwitter user suspended, disconnecting twitter: %s: %s' % 
                               (self.feed.log_title[:30], self.address, e))
                 self.feed.save_feed_history(572, "Twitter Error: User suspended")
+                self.disconnect_twitter()
                 return None, None
             elif 'expired token' in message:
                 logging.debug('   ***> [%-30s] ~FRTwitter user expired, disconnecting twitter: %s: %s' % 
                               (self.feed.log_title[:30], self.address, e))
                 self.feed.save_feed_history(573, "Twitter Error: Expired token")
+                self.disconnect_twitter()
                 return None, None
             elif 'not found' in message:
                 logging.debug('   ***> [%-30s] ~FRTwitter user not found, disconnecting twitter: %s: %s' % 
