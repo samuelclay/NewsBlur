@@ -145,24 +145,24 @@ class TwitterFetcher:
             if ((len(e.args) >= 2 and e.args[2] == 63) or
                 ('temporarily locked' in message)):
                 # Suspended
-                logging.debug('   ***> [%-30s] ~FRTwitter failed, user suspended, disconnecting twitter: %s: %s' % 
+                logging.debug('   ***> [%-30s] ~FRTwitter failed, user locked, disconnecting twitter: %s: %s' % 
                               (self.feed.log_title[:30], self.address, e))
-                self.feed.save_feed_history(560, "Twitter Error: User suspended")
+                self.feed.save_feed_history(561, "Twitter Error: User locked")
                 return
             elif 'suspended' in message:
                 logging.debug('   ***> [%-30s] ~FRTwitter user suspended, disconnecting twitter: %s: %s' % 
                               (self.feed.log_title[:30], self.address, e))
-                self.feed.save_feed_history(560, "Twitter Error: User suspended")
+                self.feed.save_feed_history(562, "Twitter Error: User suspended")
                 return
             elif 'expired token' in message:
                 logging.debug('   ***> [%-30s] ~FRTwitter user expired, disconnecting twitter: %s: %s' % 
                               (self.feed.log_title[:30], self.address, e))
-                self.feed.save_feed_history(560, "Twitter Error: Expired token")
+                self.feed.save_feed_history(563, "Twitter Error: Expired token")
                 return
             elif 'not found' in message:
                 logging.debug('   ***> [%-30s] ~FRTwitter user not found, disconnecting twitter: %s: %s' % 
                               (self.feed.log_title[:30], self.address, e))
-                self.feed.save_feed_history(560, "Twitter Error: User not found")
+                self.feed.save_feed_history(564, "Twitter Error: User not found")
                 return
             elif 'over capacity' in message or 'Max retries' in message:
                 logging.debug('   ***> [%-30s] ~FRTwitter over capacity, ignoring... %s: %s' % 
@@ -182,27 +182,27 @@ class TwitterFetcher:
             if 'not authorized' in message:
                 logging.debug('   ***> [%-30s] ~FRTwitter timeline failed, disconnecting twitter: %s: %s' % 
                               (self.feed.log_title[:30], self.address, e))
-                self.feed.save_feed_history(560, "Twitter Error: Not authorized")
+                self.feed.save_feed_history(565, "Twitter Error: Not authorized")
                 return []
             elif 'user not found' in message:
                 logging.debug('   ***> [%-30s] ~FRTwitter user not found, disconnecting twitter: %s: %s' % 
                               (self.feed.log_title[:30], self.address, e))
-                self.feed.save_feed_history(560, "Twitter Error: User not found")
+                self.feed.save_feed_history(566, "Twitter Error: User not found")
                 return []
             elif '429' in message:
                 logging.debug('   ***> [%-30s] ~FRTwitter rate limited: %s: %s' % 
                               (self.feed.log_title[:30], self.address, e))
-                self.feed.save_feed_history(560, "Twitter Error: Rate limited")
+                self.feed.save_feed_history(567, "Twitter Error: Rate limited")
                 return []
             elif 'blocked from viewing' in message:
                 logging.debug('   ***> [%-30s] ~FRTwitter user blocked, ignoring: %s' % 
                               (self.feed.log_title[:30], e))
-                self.feed.save_feed_history(560, "Twitter Error: Blocked from viewing")
+                self.feed.save_feed_history(568, "Twitter Error: Blocked from viewing")
                 return []
             elif 'over capacity' in message:
                 logging.debug(u'   ***> [%-30s] ~FRTwitter over capacity, ignoring: %s' % 
                               (self.feed.log_title[:30], e))
-                self.feed.save_feed_history(560, "Twitter Error: Over capacity")
+                self.feed.save_feed_history(569, "Twitter Error: Over capacity")
                 return []
             else:
                 raise e
@@ -221,7 +221,7 @@ class TwitterFetcher:
         except TypeError as e:
             logging.debug('   ***> [%-30s] ~FRTwitter list fetch failed, disconnecting twitter: %s: %s' % 
                           (self.feed.log_title[:30], self.address, e))
-            self.feed.save_feed_history(560, "Twitter Error: %s" % (e))
+            self.feed.save_feed_history(570, "Twitter Error: %s" % (e))
             return None, None
         except tweepy.error.TweepError as e:
             message = str(e).lower()
@@ -230,27 +230,27 @@ class TwitterFetcher:
                 # Suspended
                 logging.debug('   ***> [%-30s] ~FRTwitter failed, user suspended, disconnecting twitter: %s: %s' % 
                               (self.feed.log_title[:30], self.address, e))
-                self.feed.save_feed_history(560, "Twitter Error: User suspended")
+                self.feed.save_feed_history(571, "Twitter Error: User suspended")
                 return None, None
             elif 'suspended' in message:
                 logging.debug('   ***> [%-30s] ~FRTwitter user suspended, disconnecting twitter: %s: %s' % 
                               (self.feed.log_title[:30], self.address, e))
-                self.feed.save_feed_history(560, "Twitter Error: User suspended")
+                self.feed.save_feed_history(572, "Twitter Error: User suspended")
                 return None, None
             elif 'expired token' in message:
                 logging.debug('   ***> [%-30s] ~FRTwitter user expired, disconnecting twitter: %s: %s' % 
                               (self.feed.log_title[:30], self.address, e))
-                self.feed.save_feed_history(560, "Twitter Error: Expired token")
+                self.feed.save_feed_history(573, "Twitter Error: Expired token")
                 return None, None
             elif 'not found' in message:
                 logging.debug('   ***> [%-30s] ~FRTwitter user not found, disconnecting twitter: %s: %s' % 
                               (self.feed.log_title[:30], self.address, e))
-                self.feed.save_feed_history(560, "Twitter Error: User not found")
+                self.feed.save_feed_history(574, "Twitter Error: User not found")
                 return None, None
             elif 'over capacity' in message or 'Max retries' in message:
                 logging.debug('   ***> [%-30s] ~FRTwitter over capacity, ignoring... %s: %s' % 
                               (self.feed.log_title[:30], self.address, e))
-                self.feed.save_feed_history(460, "Twitter Error: Over capacity")
+                self.feed.save_feed_history(470, "Twitter Error: Over capacity")
                 return None, None
             else:
                 raise e
