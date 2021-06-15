@@ -22,3 +22,11 @@
     state: started
     enabled: true
         
+- name: Register consul-manager in consul
+  tags: consul
+  become: yes
+  template:
+    src: /srv/newsblur/ansible/roles/consul-manager/templates/consul_service.json
+    dest: /etc/consul.d/consul-manager.json
+  notify:
+    - reload consul
