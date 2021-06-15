@@ -191,7 +191,7 @@ backend db_metrics
     balance roundrobin
     # option httpchk GET /_haproxychk
     default-server check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
-    server grafana grafana.node.nyc1.consul:3000
+    server grafana grafana.service.nyc1.consul:3000
 
 backend consul
     balance roundrobin
