@@ -93,7 +93,7 @@
       port: 8088
   notify:
     - reload consul
-  when: item.target_host in inventory_hostname and disable_consul_services is not defined
+  when: item.target_host in inventory_hostname and disable_consul_services_ie_staging is not defined
 
 - name: Link disk usage sanity checker
   become: yes

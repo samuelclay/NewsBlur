@@ -13,14 +13,14 @@
       template:
         src: /srv/newsblur/docker/haproxy/haproxy.consul.cfg.j2
         dest: /srv/newsblur/docker/haproxy/haproxy.consul.cfg
-      when: disable_consul_services is not defined
+      when: disable_consul_services_ie_staging is not defined
       register: updated_config_consul
 
     - name: Copy staging haproxy.cfg file
       copy:
         src: /srv/newsblur/docker/haproxy/haproxy.staging.cfg
         dest: /srv/newsblur/docker/haproxy/haproxy.consul.cfg
-      when: disable_consul_services is defined
+      when: disable_consul_services_ie_staging is defined
       register: updated_config_staging
 
     - name: Merge facts
