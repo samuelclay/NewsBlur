@@ -4,12 +4,21 @@
     src: /srv/newsblur/docker/grafana/grafana.ini.j2
     dest: /srv/newsblur/docker/grafana/grafana.ini
 
+- name: Register grafana in consul
+  tags: consul
+  become: yes
+  template:
+    src: /srv/newsblur/ansible/roles/grafana/templates/consul_service.json
+    dest: /etc/consul.d/grafana.json
+  notify:
+    - reload consul
+
 - name: Start grafana container
   become: yes
   docker_container:
     pull: true
     name: grafana
-    image: grafana/grafana
+    image: grafana/grafana:7.5.7
     restart_policy: unless-stopped
     user: root
     networks_cli_compatible: yes
