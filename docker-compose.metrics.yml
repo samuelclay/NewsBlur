@@ -25,7 +25,7 @@ services:
 
   grafana:
     container_name: grafana
-    image: grafana/grafana
+    image: grafana/grafana:7.5.7
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=pass
     depends_on:
