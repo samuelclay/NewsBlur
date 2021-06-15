@@ -2,7 +2,7 @@
 
 - name: Template file for prometheus
   vars:
-    monitor_server: "{{ 'staging.newsblur.com' if disable_consul_services is defined else 'beta.newsblur.com' }}"
+    monitor_server: "{{ 'staging.newsblur.com' if disable_consul_services_ie_staging is defined else 'beta.newsblur.com' }}"
   template:
     src: /srv/newsblur/docker/prometheus/prometheus.consul.yml.j2
     dest: /srv/newsblur/docker/prometheus/prometheus.yml
