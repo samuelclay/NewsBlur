@@ -4,6 +4,12 @@
         "tags": [
             "db"
         ],
+        "checks": [{
+            "id": "grafana-ping",
+            "http": "http://{{ ansible_ssh_host }}:3000/api/health",
+            "interval": "15s",
+            "failures_before_critical": 4
+          }],
         "port": 3000
     }
 }  
