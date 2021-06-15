@@ -17,6 +17,7 @@
     dest: /etc/consul.d/prometheus.json
   notify:
     - reload consul
+  when: disable_consul_services_ie_staging is not defined
 
 - name: Make docker network for newsblurnet
   become: yes
