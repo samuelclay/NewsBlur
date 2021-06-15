@@ -193,7 +193,7 @@ backend db_metrics
     default-server check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
     server grafana grafana.service.nyc1.consul:3000
 
-backend consul
+backend consul_manager
     balance roundrobin
     # option httpchk GET /_haproxychk
     default-server check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
