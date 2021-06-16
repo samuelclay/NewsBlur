@@ -38,7 +38,7 @@
     job: docker pull newsblur/newsblur_python3:latest;
       docker run --rm
       -v /srv/newsblur:/srv/newsblur
-      --network=newsblurnet /srv/newsblur/utils/monitor_disk_usage.py
+      --network=newsblurnet newsblur/newsblur_python3 /srv/newsblur/utils/monitor_disk_usage.py
   tags:
     - sanity-checker
 
@@ -56,7 +56,7 @@
     job: docker pull newsblur/newsblur_python3:latest;
       docker run --rm
       -v /srv/newsblur:/srv/newsblur
-      --network=newsblurnet /srv/newsblur/utils/monitor_redis_bgsave.py
+      --network=newsblurnet newsblur/newsblur_python3 /srv/newsblur/utils/monitor_redis_bgsave.py
   when: "'redis' in inventory_hostname"
   tags:
     - sanity-checker
