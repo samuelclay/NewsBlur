@@ -17,8 +17,8 @@ def main():
     hostname = socket.gethostname()
     modified_minutes = datetime.datetime.now() - modified
     log_tail = os.popen('tail -n 100 /var/log/redis.log').read()
-    
-    if modified < ten_min_ago:
+    if True:
+    #if modified < ten_min_ago:
         requests.post(
                 "https://api.mailgun.net/v2/%s/messages" % settings.MAILGUN_SERVER_NAME,
                 auth=("api", settings.MAILGUN_ACCESS_KEY),

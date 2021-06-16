@@ -36,8 +36,8 @@ def main():
             failed = True
         elif redis_task_fetches <= 0:
             failed = True
-
-    if failed:
+    if True:
+    #if failed:
         requests.post(
                 "https://api.mailgun.net/v2/%s/messages" % settings.MAILGUN_SERVER_NAME,
                 auth=("api", settings.MAILGUN_ACCESS_KEY),
