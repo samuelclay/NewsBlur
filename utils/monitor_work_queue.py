@@ -34,7 +34,8 @@ def main():
     if work_queue_size > 100 and work_queue_size > (redis_work_queue + QUEUE_DROP_AMOUNT):
         failed = True
 
-    if failed:
+    if True:
+    #if failed:
         requests.post(
                 "https://api.mailgun.net/v2/%s/messages" % settings.MAILGUN_SERVER_NAME,
                 auth=("api", settings.MAILGUN_ACCESS_KEY),
