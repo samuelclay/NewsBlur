@@ -1,4 +1,4 @@
-#!/srv/newsblur/venv/newsblur3/bin/python
+#!/usr/local/bin/python3
 
 import sys
 sys.path.append('/srv/newsblur')
