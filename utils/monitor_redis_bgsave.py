@@ -16,7 +16,7 @@ def main():
     ten_min_ago = datetime.datetime.now() - datetime.timedelta(minutes=10)
     hostname = socket.gethostname()
     modified_minutes = datetime.datetime.now() - modified
-    log_tail = os.popen("sudo tail -n 100 $(sudo docker inspect --format='{{.LogPath}}' redis)").read()
+    log_tail = os.popen("tail -n 100 $(docker inspect --format='{{.LogPath}}' redis)").read()
     if True:
     #if modified < ten_min_ago:
         requests.post(
