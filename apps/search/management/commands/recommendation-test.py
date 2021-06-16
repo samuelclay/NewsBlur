@@ -131,7 +131,7 @@ del input_df
 # In[ ]:
 
 
-model = keras.models.load_model('model.keras', custom_objects)
+model = keras.models.load_model('discovery/model.keras', custom_objects)
 
 
 # In[ ]:

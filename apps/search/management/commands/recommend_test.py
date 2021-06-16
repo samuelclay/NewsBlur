@@ -154,7 +154,7 @@ class Command(BaseCommand):
 
                 del input_df
 
-                model = keras.models.load_model('model.keras', custom_objects)
+                model = keras.models.load_model('discovery/model.keras', custom_objects)
                 print('time to predict for user')
                 pred_ans = model.predict(test_model_input, batch_size=256)
 

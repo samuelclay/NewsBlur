@@ -159,7 +159,7 @@ class Command(BaseCommand):
         '''
         model = DeepFM(linear_feature_columns, dnn_feature_columns, task='binary', dnn_hidden_units=(128,128,128,128)) # dnn_hidden_units=(128,128,128,128)
         optimizer = tf.keras.optimizers.Adam(learning_rate=0.001)
-        checkpointer = ModelCheckpoint(monitor='val_binary_crossentropy',filepath='model.keras', verbose=1, save_best_only=True)
+        checkpointer = ModelCheckpoint(monitor='val_binary_crossentropy',filepath='discovery/model.keras', verbose=1, save_best_only=True)
         model.compile(optimizer, "binary_crossentropy", metrics=['binary_crossentropy'], )
 
         history = model.fit(train_model_input, train[TARGET].values,

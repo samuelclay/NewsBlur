@@ -222,7 +222,7 @@ class MUserFeedRecommendation(mongo.Document):
         test_model_input = {name:input_df[name] for name in feature_names}
         # might not use this delete, trying to reduce memory before we run model
         del input_df
-        model = keras.models.load_model('model.keras', custom_objects)
+        model = keras.models.load_model('discovery/model.keras', custom_objects)
         
         # predict probability for each feed
         pred_ans = model.predict(test_model_input, batch_size=256)
