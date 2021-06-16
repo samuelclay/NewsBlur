@@ -30,6 +30,18 @@
    dest: "/etc/cron.daily/monitor_disk_usage"
    state: link
 
+- name: Add sanity checkers cronjob for disk usage
+  become: yes
+  cron:
+    name: disk_usage_sanity_checker
+    special_time: daily
+    job: docker pull newsblur/newsblur_python3:latest;
+      docker run --rm
+      -v /srv/newsblur:/srv/newsblur
+      --network=newsblurnet /srv/newsblur/utils/monitor_disk_usage.py
+  tags:
+    - sanity-checker
+
 - name: Make docker network for newsblurnet
   become: yes
   docker_network:
@@ -43,6 +55,7 @@
     special_time: daily
     job: docker pull newsblur/newsblur_python3:latest;
       docker run --rm
+      -v /srv/newsblur:/srv/newsblur
       --network=newsblurnet /srv/newsblur/utils/monitor_redis_bgsave.py
   when: "'redis' in inventory_hostname"
   tags:
