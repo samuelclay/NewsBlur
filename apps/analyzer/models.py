@@ -205,13 +205,13 @@ class MUserFeedRecommendation(mongo.Document):
         vocabs = {}
         for feat in SPARSE_FEATURES:
             # need a labelEncoder for each feature
-            lbe = load(open( feat + '-' + 'lbe.pkl', 'rb'))
+            lbe = load(open('discovery/' + feat + '-' + 'lbe.pkl', 'rb'))
             input_df[feat] = lbe.transform(input_df[feat])
             vocabs[feat] = len(lbe.classes_)
         
         mms = MinMaxScaler(feature_range=(0,1))
         # shouldn't need to save and load a ranged numerical features model like minmaxscaler
-        #mms = load(open('minmax.pkl', 'rb'))
+        #mms = load(open('discovery/minmax.pkl', 'rb'))
         input_df[DENSE_FEATURES] = mms.transform(input_df[DENSE_FEATURES])
         
         fixlen_feature_columns = [SparseFeat(feat, vocabulary_size=vocabs[feat],embedding_dim=16)

@@ -39,7 +39,7 @@ class Command(BaseCommand):
             users = [int(x) for x in users]
             print('num of users for run: ' + str(len(users)))
 
-            lbe = load(open( 'feed_id' + '-' + 'lbe.pkl', 'rb'))
+            lbe = load(open('discovery/' + 'feed_id' + '-' + 'lbe.pkl', 'rb'))
             feeds = list(lbe.classes_)
             #feeds = feeds[:2000]
             print(len(lbe.classes_))
@@ -81,7 +81,7 @@ class Command(BaseCommand):
             vocabs = {}
             for feat in list(set(feed_info.columns) & set(SPARSE_FEATURES)):
                 # need a labelEncoder for each feature
-                lbe = load(open( feat + '-' + 'lbe.pkl', 'rb'))
+                lbe = load(open('discovery/' + feat + '-' + 'lbe.pkl', 'rb'))
                 print(feat)
                 print(lbe.classes_)
                 feed_info[feat] = lbe.transform(feed_info[feat])
@@ -124,7 +124,7 @@ class Command(BaseCommand):
 
                 mms = MinMaxScaler(feature_range=(0,1))
                 # shouldn't need to save and load a ranged numerical features model like minmaxscaler
-                #mms = load(open('minmax.pkl', 'rb'))
+                #mms = load(open('discovery/minmax.pkl', 'rb'))
                 input_df[DENSE_FEATURES] = mms.fit_transform(input_df[DENSE_FEATURES])
 
                 remaining = set(SPARSE_FEATURES) - set(vocabs.keys())
@@ -132,7 +132,7 @@ class Command(BaseCommand):
                 items = {}
                 for feat in remaining:
                     # need a labelEncoder for each feature
-                    lbe = load(open( feat + '-' + 'lbe.pkl', 'rb'))
+                    lbe = load(open('discovery/' + feat + '-' + 'lbe.pkl', 'rb'))
                     print(feat)
                     print(lbe.classes_)
                     input_df[feat] = lbe.transform(input_df[feat])

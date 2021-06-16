@@ -116,7 +116,7 @@ class Command(BaseCommand):
             lbe.fit(set_lbe(df[feat]))
             df[feat] = lbe.transform(df[feat])
             #df[feat] = lbe.fit_transform(df[feat])
-            dump(lbe, open(feat + '-' + 'lbe.pkl', 'wb'))
+            dump(lbe, open('discovery/' + feat + '-' + 'lbe.pkl', 'wb'))
 
 
         mms = MinMaxScaler(feature_range=(0,1))
