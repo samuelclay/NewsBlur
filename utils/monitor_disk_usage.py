@@ -1,4 +1,4 @@
-#!/usr/lib/python3.8
+#!/usr/bin/python3
 
 import sys
 sys.path.append('/srv/newsblur')
