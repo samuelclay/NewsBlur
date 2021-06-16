@@ -3,6 +3,7 @@ import keras
 import numpy as np
 from deepctr.layers import custom_objects
 import sys
+import tensorflow as tf
 from apps.search.constants import (
     SPARSE_FEATURES,
     DENSE_FEATURES,
@@ -161,7 +162,7 @@ class Command(BaseCommand):
         checkpointer = ModelCheckpoint(monitor='val_binary_crossentropy',filepath='model.keras', verbose=1, save_best_only=True)
         model.compile(optimizer, "binary_crossentropy", metrics=['binary_crossentropy'], )
 
-        history = model.fit(train_model_input, train[target].values,
+        history = model.fit(train_model_input, train[TARGET].values,
                         batch_size=256, epochs=35, verbose=2, validation_split=0.2, callbacks = [checkpointer, lr_scheduler])
 
         '''
@@ -169,4 +170,4 @@ class Command(BaseCommand):
         Assuming its still in memory, as well as a test dataset
         '''
 
-        evaluation(test, model, data, SPARSE_FEATURES + DENSE_FEATURES)
+        evaluation(test, model, df, SPARSE_FEATURES + DENSE_FEATURES)
