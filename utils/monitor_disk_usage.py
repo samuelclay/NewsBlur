@@ -9,7 +9,7 @@ import socket
 
 def main():
     df = subprocess.Popen(["df", "/"], stdout=subprocess.PIPE)
-    output = df.communicate()[0]
+    output = df.communicate()[0].decode('utf-8')
     device, size, used, available, percent, mountpoint = output.split("\n")[1].split()
     hostname = socket.gethostname()
     percent = int(percent.strip('%'))
