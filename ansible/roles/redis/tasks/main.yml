@@ -44,6 +44,6 @@
     job: docker pull newsblur/newsblur_python3:latest;
       docker run --rm
       --network=newsblurnet /srv/newsblur/utils/monitor_redis_bgsave.py
-  when: "'task-work' in inventory_hostname"
+  when: "'redis' in inventory_hostname"
   tags:
     - sanity-checker
