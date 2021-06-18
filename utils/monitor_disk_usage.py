@@ -8,9 +8,8 @@ from newsblur_web import settings
 import socket
 
 def main():
-    df = subprocess.Popen(["df", "/"], stdout=subprocess.PIPE)
-    output = df.communicate()[0].decode('utf-8')
-    device, size, used, available, percent, mountpoint = output.split("\n")[1].split()
+    disk_usage_output = sys.argv[1]
+    device, size, used, available, percent = disk_usage_output.split()
     hostname = socket.gethostname()
     percent = int(percent.strip('%'))
     admin_email = settings.ADMINS[0][1]
@@ -22,7 +21,7 @@ def main():
                 data={"from": "NewsBlur Disk Monitor: %s <admin@%s.newsblur.com>" % (hostname, hostname),
                       "to": [admin_email],
                       "subject": "%s hit %s%% disk usage!" % (hostname, percent),
-                      "text": "Usage on %s: %s" % (hostname, output)})
+                      "text": "Usage on %s: %s" % (hostname, disk_usage_output)})
         print(" ---> Disk usage is NOT fine: %s / %s%% used" % (hostname, percent))
     else:
         print(" ---> Disk usage is fine: %s / %s%% used" % (hostname, percent))
