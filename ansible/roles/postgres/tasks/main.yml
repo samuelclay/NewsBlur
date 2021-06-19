@@ -14,6 +14,7 @@
     - '5432:5432'
     volumes:
     - /srv/newsblur/docker/volumes/postgres:/var/lib/postgresql/data
+    - /backup/:/backup/
 
 - name: Register postgres in consul
   tags: consul
@@ -35,3 +36,10 @@
       -v /srv/newsblur:/srv/newsblur
       --network=newsblurnet --hostname {{ ansible_hostname }} 
       newsblur/newsblur_python3 /srv/newsblur/utils/monitor_disk_usage.py $output
+
+- name: Add postgres backup
+  cron:
+    name: postgres backup
+    minute: "0"
+    hour: "4"
+    job: /srv/newsblur/utils/backups/backup_psql.py

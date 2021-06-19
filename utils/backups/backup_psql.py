@@ -14,9 +14,8 @@ from django.conf import settings
 
 db_name = 'newsblur'
 db_pass = settings.DATABASES['default']['PASSWORD']
-os.environ['PGPASSWORD'] = db_pass
-filename = 'backup_postgresql_%s.sql.gz' % time.strftime('%Y-%m-%d-%H-%M')
-cmd      = 'docker exec -it postgres /usr/lib/postgresql/13/bin/pg_dump -U newsblur -h 127.0.0.1 -Fc %s > %s' % (db_name, filename)
+filename = '/backup/backup_postgresql_%s.sql.gz' % time.strftime('%Y-%m-%d-%H-%M')
+cmd      = f'docker exec -it postgres export PGPASSWORD="{db_pass}"; /usr/lib/postgresql/13/bin/pg_dump -U newsblur -h 127.0.0.1 -Fc {db_name} > {filename}'
 print('Backing up PostgreSQL: %s' % cmd)
 os.system(cmd)
 
