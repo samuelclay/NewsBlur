@@ -42,4 +42,9 @@
     name: postgres backup
     minute: "0"
     hour: "4"
-    job: /srv/newsblur/utils/backups/backup_psql.py
+    job: 
+      docker run --rm
+      -v /srv/newsblur:/srv/newsblur
+      -v /backup/:/backup/
+      --network=newsblurnet
+      /srv/newsblur/utils/backups/backup_psql.py
