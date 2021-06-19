@@ -31,6 +31,7 @@
       - /mnt/{{ inventory_hostname | regex_replace('db-|-', '') }}:/data/db
       - /srv/newsblur/ansible/roles/mongo/templates/mongo.conf:/etc/mongod.conf
       - /var/log/mongodb/:/var/log/mongodb/
+      - /opt/mongo/newsblur/backup:/backup/'
 
 - name: Register mongo in consul
   tags: consul
@@ -65,3 +66,44 @@
       newsblur/newsblur_python3 /srv/newsblur/utils/monitor_disk_usage.py $output
   tags:
     - sanity-checker
+
+- name: Add mongo backup
+  cron:
+    name: mongo backup
+    minute: "0"
+    hour: "4"
+    job:
+      collections=(
+        classifier_tag
+        classifier_author
+        classifier_feed
+        classifier_title
+        userstories
+        shared_stories
+        category
+        category_site
+        sent_emails
+        social_profile
+        social_subscription
+        social_services
+        statistics
+        user_search
+        feedback
+      )
+      for collection in collections; do
+        echo Dumping $collection
+        now=$(date '+%Y-%m-%d-%H-%M')
+
+        docker exec -it mongo mongodump --db newsblur --collection $collection -o /backup/backup_mongo_${now}
+        
+        echo Compressing /opt/mongo/newsblur/backup/backup_mongo_${now}.tgz
+        tar -zcf /opt/mongo/newsblur/backup/backup_mongo_${now}.tgz /opt/mongo/newsblur/backup/backup_mongo_${now})
+        
+      done;
+
+      echo Uploading backups to S3      
+      docker run --rm
+      -v /srv/newsblur:/srv/newsblur
+      -v /opt/mongo/newsblur/backup/:/opt/mongo/newsblur/backup/
+      --network=newsblurnet
+      /srv/newsblur/utils/backups/backup_mongo.py
