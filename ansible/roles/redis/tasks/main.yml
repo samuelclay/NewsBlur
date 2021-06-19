@@ -66,4 +66,9 @@
     name: "{{ ansible_hostname }} backup"
     minute: "0"
     hour: "4"
-    job: "/srv/newsblur/utils/backups/backup_redis.py {{ ansible_hostname}}"
+    job:    
+      docker run --rm
+      -v /srv/newsblur:/srv/newsblur
+      -v /srv/newsblur/docker/volumes/redis.var.lib/dump.rdb:/var/lib/redis/dump.rdb
+      --network=newsblurnet
+      /srv/newsblur/utils/backups/backup_redis.py {{ ansible_hostname}}"
