@@ -45,6 +45,7 @@
   become: yes
   shell: docker inspect --format="{{ '{{' }}.LogPath {{ '}}' }}" redis
   register: redis_log_path
+
 - name: show redis_log_path
   debug:
     msg: "{{ redis_log_path.stdout }}"
@@ -55,7 +56,7 @@
     name: redis_bg_save_sanity_checker
     special_time: daily
     job: docker pull newsblur/newsblur_python3:latest;
-      docker run --rm -e redis_log_path={{redis_log_path.stdout}} -v {{redis_log_path.stdout}}:{{redis_log_path.stdout}} -v /srv/newsblur:/srv/newsblur --network=newsblurnet newsblur/newsblur_python3 /srv/newsblur/utils/monitor_redis_bgsave.py
+      docker run --rm -v {{redis_log_path.stdout}}:{{redis_log_path.stdout}} -v /srv/newsblur:/srv/newsblur --network=newsblurnet newsblur/newsblur_python3 /srv/newsblur/utils/monitor_redis_bgsave.py {{redis_log_path.stdout}}
   when: "'redis' in inventory_hostname"
   tags:
     - sanity-checker

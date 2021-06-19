@@ -10,13 +10,14 @@ from newsblur_web import settings
 import socket
 
 def main():
+    redis_log_path = sys.argv[1]
     t = os.popen('stat -c%Y /srv/newsblur/docker/volumes/redis/')
     timestamp = t.read().split('\n')[0]
     modified = datetime.datetime.fromtimestamp(int(timestamp))
     ten_min_ago = datetime.datetime.now() - datetime.timedelta(minutes=10)
     hostname = socket.gethostname()
     modified_minutes = datetime.datetime.now() - modified
-    log_tail = os.popen("tail -n 100 $(docker inspect --format='\{\{.LogPath}}' redis)").read()
+    log_tail = os.popen(f"tail -n 100 {redis_log_path} redis)").read()
     if True:
     #if modified < ten_min_ago:
         requests.post(
