@@ -60,3 +60,10 @@
   when: "'redis' in inventory_hostname"
   tags:
     - sanity-checker
+
+- name: Add redis backup
+  cron:
+    name: "{{ ansible_hostname }} backup"
+    minute: "0"
+    hour: "4"
+    job: "/srv/newsblur/utils/backups/backup_redis.py {{ ansible_hostname}}"
