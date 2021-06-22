@@ -43,9 +43,9 @@ alllogs:
 down:
 	- docker-compose -f docker-compose.yml down
 nbdown: down
-blog:
-	- bundle exec jekyll serve
-	
+jekyll:
+	- cd blog && bundle exec jekyll serve
+
 # runs tests
 test:
 	- python manage.py test --settings=newsblur_web.test_settings apps/analyzer
