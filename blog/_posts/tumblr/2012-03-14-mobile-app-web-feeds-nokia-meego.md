@@ -5,7 +5,7 @@ date: '2012-03-14T13:14:00-04:00'
 tags:
 - mobile
 tumblr_url: https://blog.newsblur.com/post/19302812544/mobile-app-web-feeds-nokia-meego
-redirect_from: /post/19302812544/mobile-app-web-feeds-nokia-meego
+redirect_from: /post/19302812544/mobile-app-web-feeds-nokia-meego/
 ---
 And what a gorgeous mobile app it is. App developer Róbert Márki just released [Web Feeds](http://store.ovi.com/content/261063), the first NewsBlur app for Nokia MeeGo. Take a look at these screenshots:
 

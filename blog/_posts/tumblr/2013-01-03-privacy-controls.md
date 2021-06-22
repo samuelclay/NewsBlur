@@ -5,7 +5,7 @@ date: '2013-01-03T00:00:00-05:00'
 tags:
 - blurblogs
 tumblr_url: https://blog.newsblur.com/post/39552384708/privacy-controls
-redirect_from: /post/39552384708/privacy-controls
+redirect_from: /post/39552384708/privacy-controls/
 ---
 Here at NewsBlur HQ, we love greeting each new day by seeing what everyone posts on their blurblogs, but we understand that not everyone might want to have their reading preferences broadcast to the public (or have the public broadcast its opinions on said preferences). So we’re introducing a special new service for premium account holders that allows you to protect your posts from prying eyes.
 

@@ -5,7 +5,7 @@ date: '2017-12-11T07:00:14-05:00'
 tags:
 - iOS
 tumblr_url: https://blog.newsblur.com/post/168430391885/newsblur-for-iphone-x
-redirect_from: /post/168430391885/newsblur-for-iphone-x
+redirect_from: /post/168430391885/newsblur-for-iphone-x/
 ---
 I’m proud to announce the launch of version 7.0 of the NewsBlur iOS app, complete with iPhone X support. There’s a lot that’s new and improved in this release.
 

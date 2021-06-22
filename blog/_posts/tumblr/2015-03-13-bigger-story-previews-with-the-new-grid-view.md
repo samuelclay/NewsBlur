@@ -5,7 +5,7 @@ date: '2015-03-13T11:03:38-04:00'
 tags:
 - web
 tumblr_url: https://blog.newsblur.com/post/113525539506/bigger-story-previews-with-the-new-grid-view
-redirect_from: /post/113525539506/bigger-story-previews-with-the-new-grid-view
+redirect_from: /post/113525539506/bigger-story-previews-with-the-new-grid-view/
 ---
 There are currently three ways to read stories on NewsBlur:
 

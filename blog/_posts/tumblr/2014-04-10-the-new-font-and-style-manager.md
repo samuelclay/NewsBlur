@@ -5,7 +5,7 @@ date: '2014-04-10T11:53:11-04:00'
 tags:
 - web
 tumblr_url: https://blog.newsblur.com/post/82310530327/the-new-font-and-style-manager
-redirect_from: /post/82310530327/the-new-font-and-style-manager
+redirect_from: /post/82310530327/the-new-font-and-style-manager/
 ---
 This is not just any font and style manager. You now have control over font size, line spacing, story layout, and type faces directly in the reading view. This nifty popover gives you quick access to all of these customizable features.
 

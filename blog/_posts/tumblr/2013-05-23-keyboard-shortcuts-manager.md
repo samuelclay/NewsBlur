@@ -5,7 +5,7 @@ date: '2013-05-23T09:01:00-04:00'
 tags:
 - web
 tumblr_url: https://blog.newsblur.com/post/51153471296/keyboard-shortcuts-manager
-redirect_from: /post/51153471296/keyboard-shortcuts-manager
+redirect_from: /post/51153471296/keyboard-shortcuts-manager/
 ---
 Hot on the heels of the redesign launch, I’m already putting out new features. There are a number of post-redesign priorities on my list, but one of the most requested features is to customize the keyboard shortcuts.
 

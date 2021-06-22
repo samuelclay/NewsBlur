@@ -5,7 +5,7 @@ date: '2015-01-07T06:00:33-05:00'
 tags:
 - web
 tumblr_url: https://blog.newsblur.com/post/107407692738/organize-your-subscriptions-with-the-new-organizer
-redirect_from: /post/107407692738/organize-your-subscriptions-with-the-new-organizer
+redirect_from: /post/107407692738/organize-your-subscriptions-with-the-new-organizer/
 ---
 The beauty of NewsBlur is that you can start off with only a handful of subscriptions and naturally work your way up. This is actually the reason that free accounts cut off at 64 sites. When I started building NewsBlur in 2009 I only subscribed to 42 sites. Nowadays it’s closer to 200 sites.
 

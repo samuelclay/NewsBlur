@@ -4,7 +4,7 @@ title: A Downtime Irony
 date: '2014-08-21T21:08:24-04:00'
 tags: []
 tumblr_url: https://blog.newsblur.com/post/95431965676/a-downtime-irony
-redirect_from: /post/95431965676/a-downtime-irony
+redirect_from: /post/95431965676/a-downtime-irony/
 ---
 So many things can go wrong and often do, but I spend a good third of my time working on infrastructure, monitoring, and analytics so that they don’t.
 

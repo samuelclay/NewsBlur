@@ -5,7 +5,7 @@ date: '2016-04-09T12:56:12-04:00'
 tags:
 - android
 tumblr_url: https://blog.newsblur.com/post/142529442501/a-heavier-lifting-android-app
-redirect_from: /post/142529442501/a-heavier-lifting-android-app
+redirect_from: /post/142529442501/a-heavier-lifting-android-app/
 ---
 As performance updates go, this month’s upgrade to v4.8.0 of the NewsBlur Android app is a doozy. This one’s specifically made for those users with a heavier load of feeds.
 

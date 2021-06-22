@@ -5,7 +5,7 @@ date: '2014-03-10T10:48:08-04:00'
 tags:
 - ios
 tumblr_url: https://blog.newsblur.com/post/79178171658/newsblur-ios-40-features-a-new-dashboard
-redirect_from: /post/79178171658/newsblur-ios-40-features-a-new-dashboard
+redirect_from: /post/79178171658/newsblur-ios-40-features-a-new-dashboard/
 ---
 Today marks [the release of version 4.0 of the NewsBlur iOS app](http://www.newsblur.com/ios). To illustrate the significance of this release I’d like to talk about where the app has been.
 

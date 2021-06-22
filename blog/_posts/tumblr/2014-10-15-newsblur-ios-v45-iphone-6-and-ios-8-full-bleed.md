@@ -5,7 +5,7 @@ date: '2014-10-15T15:25:12-04:00'
 tags:
 - ios
 tumblr_url: https://blog.newsblur.com/post/100109971956/newsblur-ios-v45-iphone-6-and-ios-8-full-bleed
-redirect_from: /post/100109971956/newsblur-ios-v45-iphone-6-and-ios-8-full-bleed
+redirect_from: /post/100109971956/newsblur-ios-v45-iphone-6-and-ios-8-full-bleed/
 ---
 This week’s update to the [official NewsBlur iOS app](http://www.newsblur.com/ios) brings a whole lot of oft-requested features and improvements. Here’s what’s new this month:
 

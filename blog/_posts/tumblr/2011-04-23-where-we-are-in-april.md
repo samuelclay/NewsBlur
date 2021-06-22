@@ -4,7 +4,7 @@ title: Where We Are in April
 date: '2011-04-23T14:57:02-04:00'
 tags: []
 tumblr_url: https://blog.newsblur.com/post/4876823380/where-we-are-in-april
-redirect_from: /post/4876823380/where-we-are-in-april
+redirect_from: /post/4876823380/where-we-are-in-april/
 ---
 Hi readers, I want to take a moment to share what I’m working on for the month of April:
 

@@ -5,7 +5,7 @@ date: '2017-12-11T08:00:13-05:00'
 tags:
 - android
 tumblr_url: https://blog.newsblur.com/post/168431864825/intelligence-training-comes-to-newsblurs-android
-redirect_from: /post/168431864825/intelligence-training-comes-to-newsblurs-android
+redirect_from: /post/168431864825/intelligence-training-comes-to-newsblurs-android/
 ---
 This is a big deal for Android users. The NewsBlur Android app now fully supports intelligence training and filtering, letting you filter out the stories you don’t want to read while highlighting the stories you do want by letting you filter titles, authors, tags, and the publisher.
 

@@ -5,7 +5,7 @@ date: '2016-02-19T06:30:10-05:00'
 tags:
 - web
 tumblr_url: https://blog.newsblur.com/post/139601219905/story-thumbnails-for-story-titles
-redirect_from: /post/139601219905/story-thumbnails-for-story-titles
+redirect_from: /post/139601219905/story-thumbnails-for-story-titles/
 ---
 The iOS app has enjoyed a feature that gives you a tiny preview of a story’s main image right in the story title. Today this feature launches on the web.
 

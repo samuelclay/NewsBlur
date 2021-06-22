@@ -5,7 +5,7 @@ date: '2016-07-14T07:00:39-04:00'
 tags:
 - "tv"
 tumblr_url: https://blog.newsblur.com/post/147394684284/newsreel-is-a-newsblur-app-for-tv
-redirect_from: /post/147394684284/newsreel-is-a-newsblur-app-for-tv
+redirect_from: /post/147394684284/newsreel-is-a-newsblur-app-for-tv/
 ---
 Check it out, David Berlin built [Newsreel](http://itunes.apple.com/us/app/apple-store/id1080200978?mt=8), a NewsBlur client for Apple TV. And from my first impression, it rocks. Just take a look at these screenshots.
 

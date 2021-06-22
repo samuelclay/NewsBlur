@@ -5,7 +5,7 @@ date: '2016-01-15T06:00:33-05:00'
 tags:
 - web
 tumblr_url: https://blog.newsblur.com/post/137346205455/improved-statistics
-redirect_from: /post/137346205455/improved-statistics
+redirect_from: /post/137346205455/improved-statistics/
 ---
 That’s why I’m pleased to introduce more advanced statistics for every single feed. The Statistics dialog now shows a heat graph of the times of day that stories are published as well as the days of the weeks.
 

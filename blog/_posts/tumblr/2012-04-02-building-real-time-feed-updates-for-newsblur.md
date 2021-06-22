@@ -5,7 +5,7 @@ date: '2012-04-02T17:52:00-04:00'
 tags:
 - code
 tumblr_url: https://blog.newsblur.com/post/20371256202/building-real-time-feed-updates-for-newsblur
-redirect_from: /post/20371256202/building-real-time-feed-updates-for-newsblur
+redirect_from: /post/20371256202/building-real-time-feed-updates-for-newsblur/
 ---
 Today, NewsBlur is going real-time. Blogs using the PubSubHubbub protocol (PuSH), which includes all Blogger, Tumblr, and many Wordpress blogs, will instantaneously show new updates to subscribers on NewsBlur. Making this happen, while not for the faint of heart, was straight-forward enough that I’m sharing the recipe I used to get everything hooked up and running smoothly.
 

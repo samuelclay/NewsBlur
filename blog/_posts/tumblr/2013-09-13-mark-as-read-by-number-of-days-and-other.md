@@ -5,7 +5,7 @@ date: '2013-09-13T17:05:55-04:00'
 tags:
 - web
 tumblr_url: https://blog.newsblur.com/post/61154381229/mark-as-read-by-number-of-days-and-other
-redirect_from: /post/61154381229/mark-as-read-by-number-of-days-and-other
+redirect_from: /post/61154381229/mark-as-read-by-number-of-days-and-other/
 ---
 Here’s a few big improvements for the NewsBlur website.
 

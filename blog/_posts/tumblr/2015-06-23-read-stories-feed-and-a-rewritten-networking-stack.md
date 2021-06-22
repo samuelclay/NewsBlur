@@ -6,7 +6,7 @@ date: '2015-06-23T06:00:29-04:00'
 tags:
 - android
 tumblr_url: https://blog.newsblur.com/post/122248961894/read-stories-feed-and-a-rewritten-networking-stack
-redirect_from: /post/122248961894/read-stories-feed-and-a-rewritten-networking-stack
+redirect_from: /post/122248961894/read-stories-feed-and-a-rewritten-networking-stack/
 ---
 Today I’d like to announce the release of version 4.3.0 of the official NewsBlur Android app. Lots of goodies, bug fixes, speed ups, and more.
 

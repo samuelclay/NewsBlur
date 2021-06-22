@@ -5,7 +5,7 @@ date: '2014-10-31T07:00:36-04:00'
 tags:
 - web
 tumblr_url: https://blog.newsblur.com/post/101418566769/a-new-way-to-use-the-story-view-while-on-https
-redirect_from: /post/101418566769/a-new-way-to-use-the-story-view-while-on-https
+redirect_from: /post/101418566769/a-new-way-to-use-the-story-view-while-on-https/
 ---
 Modern browsers are taking your privacy and security seriously with new restrictions for sites that use https. You can choose to use NewsBlur over https, which will encrypt your communications with NewsBlur and prevent eavesdroppers—hackers, the government, other people on the same wireless network as you—from seeing what you see. While that’s not necessary for everybody, SSL/https is a priority for some and NewsBlur supports this beautifully.
 

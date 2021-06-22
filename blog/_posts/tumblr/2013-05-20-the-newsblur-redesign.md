@@ -4,7 +4,7 @@ title: The NewsBlur Redesign
 date: '2013-05-20T22:47:00-04:00'
 tags: []
 tumblr_url: https://blog.newsblur.com/post/50689286246/the-newsblur-redesign
-redirect_from: /post/50689286246/the-newsblur-redesign
+redirect_from: /post/50689286246/the-newsblur-redesign/
 ---
 Not to say that NewsBlur was _ugly_ before today, but it certainly didn’t have the loving embrace of a talented designer. So without waiting another moment (or month) I proudly present the NewsBlur redesign.
 

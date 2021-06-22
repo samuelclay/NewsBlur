@@ -5,7 +5,7 @@ date: '2012-09-05T08:21:00-04:00'
 tags:
 - mobile
 tumblr_url: https://blog.newsblur.com/post/30619496363/newsblur-ipad-app
-redirect_from: /post/30619496363/newsblur-ipad-app
+redirect_from: /post/30619496363/newsblur-ipad-app/
 ---
 There’s no wrong way to hold an iPad loaded with [the brand new NewsBlur iPad app](http://www.newsblur.com/ipad), provided it’s facing you and turned on.
 

@@ -5,7 +5,7 @@ date: '2015-04-30T05:30:48-04:00'
 tags:
 - web
 tumblr_url: https://blog.newsblur.com/post/117767869761/a-real-solution-to-the-deprecated-youtube-api
-redirect_from: /post/117767869761/a-real-solution-to-the-deprecated-youtube-api
+redirect_from: /post/117767869761/a-real-solution-to-the-deprecated-youtube-api/
 ---
 YouTube, owned by Google, deprecated their v2 APIs on April 20th, 2015, which means that RSS news readers can no longer watch for new videos. What a bummer!
 

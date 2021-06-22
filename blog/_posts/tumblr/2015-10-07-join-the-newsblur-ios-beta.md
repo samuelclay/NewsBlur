@@ -5,7 +5,7 @@ date: '2015-10-07T12:52:34-04:00'
 tags:
 - iOS
 tumblr_url: https://blog.newsblur.com/post/130700598621/join-the-newsblur-ios-beta
-redirect_from: /post/130700598621/join-the-newsblur-ios-beta
+redirect_from: /post/130700598621/join-the-newsblur-ios-beta/
 ---
 If you like living on the bleeding edge, you should join the NewsBlur iOS beta program. You’ll get access to the latest releases a few weeks before they go out publicly.
 

@@ -6,7 +6,7 @@ date: '2015-11-18T12:21:44-05:00'
 tags:
 - iOS
 tumblr_url: https://blog.newsblur.com/post/133482276781/premium-fonts-comment-less-shares-in-app-safari
-redirect_from: /post/133482276781/premium-fonts-comment-less-shares-in-app-safari
+redirect_from: /post/133482276781/premium-fonts-comment-less-shares-in-app-safari/
 ---
 Holy geez, this is a whopper of a release. Version 5.0 of the NewsBlur iOS app has lots and lots of new features, fixes for some long standing issues, and major performance improvements for reading stories.
 

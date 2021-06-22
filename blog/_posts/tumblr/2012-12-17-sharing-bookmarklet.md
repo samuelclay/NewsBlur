@@ -5,7 +5,7 @@ date: '2012-12-17T12:04:00-05:00'
 tags:
 - blurblogs
 tumblr_url: https://blog.newsblur.com/post/38164413369/sharing-bookmarklet
-redirect_from: /post/38164413369/sharing-bookmarklet
+redirect_from: /post/38164413369/sharing-bookmarklet/
 ---
 There are lots of reasons not to post a cool article you’ve seen to your blurblog. Maybe you already follow too many blogs, and don’t have room to add any more to your feed (in which case, may we humbly recommend a Premium account?) Maybe you don’t want everyone to know just how crazy you’ve gotten about jai-alai or aerotrekking or My Little Pony: Friendship Is Magic. Or maybe you found a cool article on Facebook or Twitter or through an e-mail from a friend, and don’t want to go through the hassle of adding the site’s whole feed to your NewsBlur dashboard just to post one piece.
 

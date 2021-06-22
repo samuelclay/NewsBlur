@@ -5,7 +5,7 @@ date: '2014-07-22T06:30:26-04:00'
 tags:
 - web
 tumblr_url: https://blog.newsblur.com/post/92530987612/adjust-the-font-size-of-feed-and-story-titles
-redirect_from: /post/92530987612/adjust-the-font-size-of-feed-and-story-titles
+redirect_from: /post/92530987612/adjust-the-font-size-of-feed-and-story-titles/
 ---
 It was only a few months ago back in April that I launched [the new font and style manager](http://blog.newsblur.com/2021/06/21/2014-04-10-the-new-font-and-style-manager.html). Today I’m coming back to finish the job.
 

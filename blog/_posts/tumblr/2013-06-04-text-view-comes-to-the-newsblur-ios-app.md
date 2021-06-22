@@ -5,7 +5,7 @@ date: '2013-06-04T08:31:18-04:00'
 tags:
 - ios
 tumblr_url: https://blog.newsblur.com/post/52143504033/text-view-comes-to-the-newsblur-ios-app
-redirect_from: /post/52143504033/text-view-comes-to-the-newsblur-ios-app
+redirect_from: /post/52143504033/text-view-comes-to-the-newsblur-ios-app/
 ---
 The iOS apps are finding themselves host to a whole slew of additions and enhancements. Today I get to tell you about the iOS app’s newest feature: the Text view.
 

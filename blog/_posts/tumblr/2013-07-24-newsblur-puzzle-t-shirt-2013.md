@@ -4,7 +4,7 @@ title: NewsBlur Puzzle T-shirt 2013
 date: '2013-07-24T15:49:00-04:00'
 tags: []
 tumblr_url: https://blog.newsblur.com/post/56370336836/newsblur-puzzle-t-shirt-2013
-redirect_from: /post/56370336836/newsblur-puzzle-t-shirt-2013
+redirect_from: /post/56370336836/newsblur-puzzle-t-shirt-2013/
 ---
 Last year I was proud to be able to send a free t-shirt and handwritten note to every single user who requested one. It took a few days of writing, stuffing, and mailing to send out a couple hundred t-shirts.
 

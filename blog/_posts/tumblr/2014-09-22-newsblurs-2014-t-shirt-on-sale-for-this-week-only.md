@@ -5,7 +5,7 @@ date: '2014-09-22T12:20:20-04:00'
 tags:
 - t-shirt
 tumblr_url: https://blog.newsblur.com/post/98163169831/newsblurs-2014-t-shirt-on-sale-for-this-week-only
-redirect_from: /post/98163169831/newsblurs-2014-t-shirt-on-sale-for-this-week-only
+redirect_from: /post/98163169831/newsblurs-2014-t-shirt-on-sale-for-this-week-only/
 ---
 [![](http://static.newsblur.com.s3.amazonaws.com/blog/tshirt%202014.png)](http://teespring.com/newsblur2014)
 

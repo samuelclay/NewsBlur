@@ -5,7 +5,7 @@ date: '2015-06-02T05:30:28-04:00'
 tags:
 - web
 tumblr_url: https://blog.newsblur.com/post/120522553385/reply-to-shared-stories-that-have-no-comment
-redirect_from: /post/120522553385/reply-to-shared-stories-that-have-no-comment
+redirect_from: /post/120522553385/reply-to-shared-stories-that-have-no-comment/
 ---
 Used to be that a friend shares a story without commenting on it and you’d be out of luck in trying to reply or thank them for sharing it.
 

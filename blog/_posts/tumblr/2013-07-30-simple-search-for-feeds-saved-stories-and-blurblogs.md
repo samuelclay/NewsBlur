@@ -5,7 +5,7 @@ date: '2013-07-30T12:38:23-04:00'
 tags:
 - web
 tumblr_url: https://blog.newsblur.com/post/56899019169/simple-search-for-feeds-saved-stories-and-blurblogs
-redirect_from: /post/56899019169/simple-search-for-feeds-saved-stories-and-blurblogs
+redirect_from: /post/56899019169/simple-search-for-feeds-saved-stories-and-blurblogs/
 ---
 Search, which can easily be considered one of the most important features of a world-class news reader, is also one of the most difficult features to build.
 

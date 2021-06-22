@@ -5,7 +5,7 @@ date: '2014-04-24T11:56:00-04:00'
 tags:
 - ios
 tumblr_url: https://blog.newsblur.com/post/83737741948/unread-is-a-new-ios-app-with-newsblur-support
-redirect_from: /post/83737741948/unread-is-a-new-ios-app-with-newsblur-support
+redirect_from: /post/83737741948/unread-is-a-new-ios-app-with-newsblur-support/
 ---
 NewsBlur has a [free and open API](http://www.newsblur.com/api) that all of the native mobile apps and website are built on. But the API is not just for official apps. Numerous third-party developers have built apps on the API and today I’m proud to announce a new native iOS app has launched with NewsBlur support.
 

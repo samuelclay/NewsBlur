@@ -7,7 +7,7 @@ tags:
 - ios
 - android
 tumblr_url: https://blog.newsblur.com/post/146752875548/newsletters-in-your-newsblur
-redirect_from: /post/146752875548/newsletters-in-your-newsblur
+redirect_from: /post/146752875548/newsletters-in-your-newsblur/
 ---
 It’s been three years to the day that Google Reader shut down. And here’s a feature they could never build. Introducing email newsletters in your RSS reader.
 

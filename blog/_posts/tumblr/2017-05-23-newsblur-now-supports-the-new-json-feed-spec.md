@@ -5,7 +5,7 @@ date: '2017-05-23T05:00:11-04:00'
 tags:
 - web
 tumblr_url: https://blog.newsblur.com/post/160982162270/newsblur-now-supports-the-new-json-feed-spec
-redirect_from: /post/160982162270/newsblur-now-supports-the-new-json-feed-spec
+redirect_from: /post/160982162270/newsblur-now-supports-the-new-json-feed-spec/
 ---
 Introduced and announced only last week by open web pioneers Manton Reece and Brent Simmons, JSON Feed is a new RSS-like spec that lets websites publish their stories in a much easier and human readable format.
 

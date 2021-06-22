@@ -6,7 +6,7 @@ date: '2014-01-06T12:46:00-05:00'
 tags:
 - web
 tumblr_url: https://blog.newsblur.com/post/72471675355/three-new-features-for-the-web-syntax
-redirect_from: /post/72471675355/three-new-features-for-the-web-syntax
+redirect_from: /post/72471675355/three-new-features-for-the-web-syntax/
 ---
 A few small new features to get your first full week of the new year started off right.
 
