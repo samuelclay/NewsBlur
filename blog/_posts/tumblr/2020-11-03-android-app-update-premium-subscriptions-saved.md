@@ -6,7 +6,7 @@ date: 2020-11-03 07:41:03 -0500
 tags:
 - android
 tumblr_url: https://blog.newsblur.com/post/633778276180033536/android-app-update-premium-subscriptions-saved
-redirect_from: /post/633778276180033536/android-app-update-premium-subscriptions-saved
+redirect_from: /post/633778276180033536/android-app-update-premium-subscriptions-saved/
 ---
 For a point release this one sure is big. The Android app has been upgraded to include a bunch of features found on the web.
 
