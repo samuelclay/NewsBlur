@@ -9,7 +9,7 @@ redirect_from: /post/100109971956/newsblur-ios-v45-iphone-6-and-ios-8-full-bleed
 ---
 This week’s update to the [official NewsBlur iOS app](http://www.newsblur.com/ios) brings a whole lot of oft-requested features and improvements. Here’s what’s new this month:
 
-<table cellspacing="0" cellpadding="0" border="0"\><tr\><td\> ![](http://static.newsblur.com.s3.amazonaws.com/blog/ios%204.5%20-%20full%20bleed.png)</td\> <td\> ![](http://static.newsblur.com.s3.amazonaws.com/blog/ios%204.5%20-%20alt%20text.png)</td\> </tr\></table\>
+<table cellspacing="0" cellpadding="0" border="0"\><tr\><td\> ![](https://s3.amazonaws.com/static.newsblur.com/blog/ios%204.5%20-%20full%20bleed.png)</td\> <td\> ![](https://s3.amazonaws.com/static.newsblur.com/blog/ios%204.5%20-%20alt%20text.png)</td\> </tr\></table\>
 - iPhone 6 and 6 Plus are now fully supported
 - iOS 8 is also now fully supported (as well as iOS 7)
 - Moving between the feed list, story list, and story detail is now much faster

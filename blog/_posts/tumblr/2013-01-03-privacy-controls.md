@@ -9,7 +9,7 @@ redirect_from: /post/39552384708/privacy-controls/
 ---
 Here at NewsBlur HQ, we love greeting each new day by seeing what everyone posts on their blurblogs, but we understand that not everyone might want to have their reading preferences broadcast to the public (or have the public broadcast its opinions on said preferences). So we’re introducing a special new service for premium account holders that allows you to protect your posts from prying eyes.
 
-![image](http://static.newsblur.com.s3.amazonaws.com/blog/Screen%20Shot%202012-12-17%20at%20Dec%2017%2012.17.51%20PM.png)
+![image](https://s3.amazonaws.com/static.newsblur.com/blog/Screen%20Shot%202012-12-17%20at%20Dec%2017%2012.17.51%20PM.png)
 
 Just click the little sprocket in the bottom left of your dashboard and select “Profile & Blurblog,” where you’ll be given one of three options:
 

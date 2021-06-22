@@ -14,11 +14,11 @@ It’s a full scale redesign, too. And not just one of those redesigns where the
 
 Dashboard before & after:
 
-![image](http://static.newsblur.com.s3.amazonaws.com/blog/before_dashboard.png) ![image](http://static.newsblur.com.s3.amazonaws.com/blog/after_dashboard.png)
+![image](https://s3.amazonaws.com/static.newsblur.com/blog/before_dashboard.png) ![image](https://s3.amazonaws.com/static.newsblur.com/blog/after_dashboard.png)
 
 Reading before & after:
 
-![image](http://static.newsblur.com.s3.amazonaws.com/blog/before_feed.png) ![image](http://static.newsblur.com.s3.amazonaws.com/blog/after_feed.png)
+![image](https://s3.amazonaws.com/static.newsblur.com/blog/before_feed.png) ![image](https://s3.amazonaws.com/static.newsblur.com/blog/after_feed.png)
 
 In no particular order, here’s what’s new:
 

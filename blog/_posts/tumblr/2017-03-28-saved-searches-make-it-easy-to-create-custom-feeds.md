@@ -9,11 +9,11 @@ redirect_from: /post/158925569072/saved-searches-make-it-easy-to-create-custom-f
 ---
 You can now save a search as a saved search feed. This works for individual sites, folders, All Site Stories, saved stories, and blurblogs.
 
-![](http://static.newsblur.com.s3.amazonaws.com/blog/saved-search-list.png)
+![](https://s3.amazonaws.com/static.newsblur.com/blog/saved-search-list.png)
 
 Saved searches are great for creating custom feeds with just the stories you want. Think of these new feeds as spotlights on parts of a folder or feed, ways to keep track of stories that share a theme across different sites.
 
-![](http://static.newsblur.com.s3.amazonaws.com/blog/saved-search-grid.png)
+![](https://s3.amazonaws.com/static.newsblur.com/blog/saved-search-grid.png)
 
 Or use saved searches to keep a single tag together for handy reference.
 

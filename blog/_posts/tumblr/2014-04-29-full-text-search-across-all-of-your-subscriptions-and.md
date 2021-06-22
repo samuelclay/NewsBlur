@@ -11,7 +11,7 @@ Last Summer [Simple Search was launched](http://blog.newsblur.com/2021/06/21/201
 
 Full text search works just like the old simple search did. Open a folder or site and search at the top of the screen. Results come back instantly as you type. And this will automatically search in story titles, full text content, authors, and tags.
 
-![](http://static.newsblur.com.s3.amazonaws.com/blog/search%20screenshot.jpg)
+![](https://s3.amazonaws.com/static.newsblur.com/blog/search%20screenshot.jpg)
 
 Because you’re searching for a story, hidden stories are also shown in the results, albeit with a red unread mark (as shown above). Also, in order to handle the demands of full text search, the first time you perform a search the system will index all of your feeds, which can take a couple minutes. It’s a one time process and you will see a progress bar that will update automatically when finished.
 

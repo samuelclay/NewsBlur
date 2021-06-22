@@ -8,7 +8,7 @@ redirect_from: /post/56370336836/newsblur-puzzle-t-shirt-2013/
 ---
 Last year I was proud to be able to send a free t-shirt and handwritten note to every single user who requested one. It took a few days of writing, stuffing, and mailing to send out a couple hundred t-shirts.
 
-![](http://static.newsblur.com.s3.amazonaws.com/blog/tshirt%202012.JPG)
+![](https://s3.amazonaws.com/static.newsblur.com/blog/tshirt%202012.JPG)
 
 I’m pleased to announce that [this year’s t-shirt](http://teespring.com/newsblur) is a puzzle with every single letter being part of a 4+ letter word. I’m using Teespring for fulfillment and order processing. While it’s not free, I am making absolutely zilch profit, so I can keep the t-shirt price to the absolute minimum.
 

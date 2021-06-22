@@ -17,9 +17,9 @@ But similarly to the web, I wasn’t particularly proud of the app until I hit a
 
 Fast forward to today where I am finally releasing an iOS app that I’m proud of. This one comes with a ton of great features, both for iPhone and iPad.
 
-![](http://static.newsblur.com.s3.amazonaws.com/blog/ios%20v4.jpg)
+![](https://s3.amazonaws.com/static.newsblur.com/blog/ios%20v4.jpg)
 
-<table style="margin: 0 auto; padding: 0; width: 600px"\><tr\><td\> ![](http://static.newsblur.com.s3.amazonaws.com/blog/ios%20v4%20-%202.jpg)</td\> <td\> ![](http://static.newsblur.com.s3.amazonaws.com/blog/ios%20v4%20-%203.jpg)</td\> </tr\></table\>
+<table style="margin: 0 auto; padding: 0; width: 600px"\><tr\><td\> ![](https://s3.amazonaws.com/static.newsblur.com/blog/ios%20v4%20-%202.jpg)</td\> <td\> ![](https://s3.amazonaws.com/static.newsblur.com/blog/ios%20v4%20-%203.jpg)</td\> </tr\></table\>
 - New dashboard for the iPad app: All Site Stories are now on the dashboard for easy access to stories. More to come with this new dashboard.
 - Tons of new gestures: double tap, 2 finger double tap, long press.
 - New gestures for the iPad app: swipe to dismiss the original story view.

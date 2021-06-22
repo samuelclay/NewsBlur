@@ -17,27 +17,27 @@ Each of these views has its own benefits and drawbacks, and each of these views 
 
 Today I’m launching a new view: the Grid view.
 
-![](http://static.newsblur.com.s3.amazonaws.com/blog/grid%201.png)
+![](https://s3.amazonaws.com/static.newsblur.com/blog/grid%201.png)
 
 The Grid view is half-way between the Full view and the List view. It provides big previews of the images from a story as well as several lines of content. It’s not as overwhelming as the Full view and it doesn’t force every story on a single line.
 
 You can also customize the Grid view to only show as many stories per line as you like.
 
-![](http://static.newsblur.com.s3.amazonaws.com/blog/grid%202.png)
+![](https://s3.amazonaws.com/static.newsblur.com/blog/grid%202.png)
 
 Choose between 1, 2, 3, or 4 stories per line, or stick with automatically scaling the number of stories based on how wide your browser is.
 
-![](http://static.newsblur.com.s3.amazonaws.com/blog/grid%203.png)
+![](https://s3.amazonaws.com/static.newsblur.com/blog/grid%203.png)
 
 The Grid view is perfect for sites and folders that contain a lot of images. And because you can now preview a larger part of the story, it makes sense to add a new preference that allows you to mark stories as read as you scroll without having to open up the story.
 
-![](http://static.newsblur.com.s3.amazonaws.com/blog/grid%204.png)
+![](https://s3.amazonaws.com/static.newsblur.com/blog/grid%204.png)
 
 However, the Grid view is not perfect for all feeds. That’s why I’m introducing another big change today. The four views are now saved on a per-feed and per-folder basis. You can choose a default layout in Preferences, but each feed/folder overrides that preference.
 
 This can become a bit complicated if you have a lot of overrides and want to instead just reset all of your layouts. So you can now reset both layouts and views for all feeds and folders right from the Preferences dialog.
 
-![](http://static.newsblur.com.s3.amazonaws.com/blog/grid%205.png)
+![](https://s3.amazonaws.com/static.newsblur.com/blog/grid%205.png)
 
 I hope you enjoy this new story layout. And as always, tell your friends about NewsBlur. World of mouth is killer and it’s how NewsBlur is able to be a success.
 

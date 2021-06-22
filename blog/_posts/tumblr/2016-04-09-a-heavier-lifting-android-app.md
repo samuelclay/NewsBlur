@@ -11,5 +11,5 @@ As performance updates go, this month’s upgrade to v4.8.0 of the NewsBlur Andr
 
 If you have over a hundred feeds, everything will suddenly feel smooth, just like it already does for those with only a few dozen subscriptions. And if you find yourself climbing up to several hundred feeds from only a dozen, you’ll be in good company.
 
-![](http://static.newsblur.com.s3.amazonaws.com/blog/android_heavy_lifting.png)
+![](https://s3.amazonaws.com/static.newsblur.com/blog/android_heavy_lifting.png)
 

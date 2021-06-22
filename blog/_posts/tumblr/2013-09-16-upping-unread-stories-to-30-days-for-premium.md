@@ -12,7 +12,7 @@ But after scaling out to tens of thousands of users, a new pattern emerged. Some
 
 Starting today, all premium users are automatically upgraded to 30 days of unread stories. Free standard users will remain at 14 days. I wish I could have offered the full 30 days to everybody, but after testing that out, my server and performance graphs all made a very scary movement up.
 
-![](http://static.newsblur.com.s3.amazonaws.com/blog/30d_mongodb_page_faults-day.png)
+![](https://s3.amazonaws.com/static.newsblur.com/blog/30d_mongodb_page_faults-day.png)
 
 With the new 30 day unread interval in place, NewsBlur has a great track record in listening to user feedback and working out a solution, however large the task may be.
 

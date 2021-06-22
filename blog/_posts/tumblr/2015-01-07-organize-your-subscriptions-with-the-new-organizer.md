@@ -13,7 +13,7 @@ Because NewsBlur makes it so easy to pare down individual stories with the intel
 
 Launching today is the Organizer. This organizer helps you identify sites that may be posting too much or too little and then gives you the power to move and delete them all at once. Sure, you can do this one-by-one, but that takes time, and only in the new Organizer is everything right in front of you.
 
-![](http://static.newsblur.com.s3.amazonaws.com/blog/organizer.png)
+![](https://s3.amazonaws.com/static.newsblur.com/blog/organizer.png)
 
 You can sort sites, both in and out of your folders, with the following orders:
 

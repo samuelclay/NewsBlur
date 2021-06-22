@@ -13,19 +13,19 @@ The biggest addition are the new themes. We have a total of four themes now: whi
 
 The dark theme is for when the lights are low (or off) and you want to read without disturbing anybody around you.
 
-![](http://static.newsblur.com.s3.amazonaws.com/blog/ios-v6-dark.png)
+![](https://s3.amazonaws.com/static.newsblur.com/blog/ios-v6-dark.png)
 
 The grey theme gives you the best of both worlds. It’s a dark theme that gives you low light, but still bright enough to easily see.
 
-![](http://static.newsblur.com.s3.amazonaws.com/blog/ios-v6-grey.png)
+![](https://s3.amazonaws.com/static.newsblur.com/blog/ios-v6-grey.png)
 
 Sepia is the paperback you carry around everywhere so you always have something to read. Preparation pays.
 
-![](http://static.newsblur.com.s3.amazonaws.com/blog/ios-v6-sepia.png)
+![](https://s3.amazonaws.com/static.newsblur.com/blog/ios-v6-sepia.png)
 
 The iPad Pro gets full support and that means that keyboard shortcuts have been instrumented all over the app.
 
-![](http://static.newsblur.com.s3.amazonaws.com/blog/ios-v6-keyboard.png)
+![](https://s3.amazonaws.com/static.newsblur.com/blog/ios-v6-keyboard.png)
 
 Maybe you’re thinking about how much the app just advanced. Maybe you’ve been waiting a long, long time for a dark theme ever since Android got it a year ago. Who knows, maybe you’re 100% on your iphone and that there’s just one or two tasks that you still need the website for.
 
@@ -33,11 +33,11 @@ Get ready for this. The Organizer is now on the iOS app. And this isn’t just a
 
 Use these lists to find feeds that no longer publish or the feeds that publish too much. Move and delete whole groups of feeds at once. This organizer is the real deal. Try finding this feature anywhere else.
 
-![](http://static.newsblur.com.s3.amazonaws.com/blog/ios-v6-organizer.png)
+![](https://s3.amazonaws.com/static.newsblur.com/blog/ios-v6-organizer.png)
 
 And if there’s an organizer, that means there’s a way to mute and unmute sites directly from your iPhone.
 
-![](http://static.newsblur.com.s3.amazonaws.com/blog/ios-v6-mute.png)
+![](https://s3.amazonaws.com/static.newsblur.com/blog/ios-v6-mute.png)
 
 There’s plenty of other new features too:
 

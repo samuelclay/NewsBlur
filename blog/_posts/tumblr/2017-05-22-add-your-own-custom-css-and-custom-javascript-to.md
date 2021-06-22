@@ -19,7 +19,7 @@ Over on Stylish, a community for custom CSS, there are [a bunch of stylesheets t
 
 **Hide that module or link that you don’t want to see on NewsBlur**
 
-<figure class="tmblr-full" data-orig-height="1033" data-orig-width="1300" data-orig-src="http://static.newsblur.com.s3.amazonaws.com/blog/custom-css.png"><img style="width: 650px;" data-orig-height="1033" data-orig-width="1300" src="http://static.newsblur.com.s3.amazonaws.com/blog/custom-css.png"></figure>
+<figure class="tmblr-full" data-orig-height="1033" data-orig-width="1300" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/custom-css.png"><img style="width: 650px;" data-orig-height="1033" data-orig-width="1300" src="https://s3.amazonaws.com/static.newsblur.com/blog/custom-css.png"></figure>
 
 Don’t like seeing Global Shared Stories or the River of News on the Dashboard? You can hide them with this little bit of CSS:
 

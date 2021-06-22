@@ -7,7 +7,7 @@ tags:
 tumblr_url: https://blog.newsblur.com/post/98163169831/newsblurs-2014-t-shirt-on-sale-for-this-week-only
 redirect_from: /post/98163169831/newsblurs-2014-t-shirt-on-sale-for-this-week-only/
 ---
-[![](http://static.newsblur.com.s3.amazonaws.com/blog/tshirt%202014.png)](http://teespring.com/newsblur2014)
+[![](https://s3.amazonaws.com/static.newsblur.com/blog/tshirt%202014.png)](http://teespring.com/newsblur2014)
 
 NewsBlur is more than just a website. It’s a daily link to the far away world. This t-shirt captures the essence of NewsBlur’s appeal. For those days when you’re planing adventures and reading about what’s happening where you’re not, NewsBlur is your guide.
 

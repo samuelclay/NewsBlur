@@ -12,11 +12,11 @@ Holy geez, this is a whopper of a release. Version 5.0 of the NewsBlur iOS app h
 
 The biggest new feature to hit the iOS app is the introduction of premium fonts from type foundry Hoefler & Co. Whitney, Gotham Narrow, and Chronicle have been added to give NewsBlur a more pleasurable reading experience. Take a look for yourself.
 
-![](http://static.newsblur.com.s3.amazonaws.com/blog/ios9_fonts.png)
+![](https://s3.amazonaws.com/static.newsblur.com/blog/ios9_fonts.png)
 
 Comment-less shares have also been added to the iOS app. You can now share a story and your friends can now reply without you having to write anything first, just like on the web and on the Android app.
 
-![](http://static.newsblur.com.s3.amazonaws.com/blog/ios9_share.png)
+![](https://s3.amazonaws.com/static.newsblur.com/blog/ios9_share.png)
 
 Here’s the full list of new features and improvements. Make a cup of tea first because this list is a doozy.
 

@@ -8,7 +8,7 @@ redirect_from: /post/156713298365/preview-newsblurs-upcoming-hardware-device-tur
 ---
 I have something very exciting to share with you today. I’ve been working on a secret project called Turn Touch and I’m just about ready to show it to you. [Signup on turntouch.com](https://www.turntouch.com) to find out.
 
-[![](http://static.newsblur.com.s3.amazonaws.com/turntouch/blog-preview-blur.jpg)](https://www.turntouch.com)
+[![](https://s3.amazonaws.com/static.newsblur.com/turntouch/blog-preview-blur.jpg)](https://www.turntouch.com)
 
 It’s a new kind of device and it’s machined out of solid wood. I built it to last, much like my other projects (for instance the news reader you’re likely reading this in). Turn Touch is built for NewsBlur, among many other things.
 

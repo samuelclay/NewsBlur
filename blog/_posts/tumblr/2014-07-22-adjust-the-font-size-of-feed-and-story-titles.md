@@ -11,11 +11,11 @@ It was only a few months ago back in April that I launched [the new font and sty
 
 The style manager now has a new control for choosing the font size of feed titles and story titles.
 
-![](http://static.newsblur.com.s3.amazonaws.com/blog/feed_size_style.png)
+![](https://s3.amazonaws.com/static.newsblur.com/blog/feed_size_style.png)
 
 Choose from extra small to extra large. These new font sizes not only give you extra customization, but they allow you to have bigger touch sizes for folks using touch screen monitors.
 
-![](http://static.newsblur.com.s3.amazonaws.com/blog/feed_size_xl.png) ![](http://static.newsblur.com.s3.amazonaws.com/blog/feed_size_xs.png)
+![](https://s3.amazonaws.com/static.newsblur.com/blog/feed_size_xl.png) ![](https://s3.amazonaws.com/static.newsblur.com/blog/feed_size_xs.png)
 
 If you spot anywhere else that you’d like to see additional customization, please shout out to the [@newsblur account on Twitter](http://twitter.com/newsblur) or post an idea on [NewsBlur’s Get Satisfaction support site](http://getsatisfaction.com/newsblur).
 
