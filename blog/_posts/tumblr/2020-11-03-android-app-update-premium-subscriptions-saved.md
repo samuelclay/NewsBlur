@@ -2,7 +2,7 @@
 layout: post
 title: 'Android app update: premium subscriptions, saved searches, in-app browser,
   auto-dark mode'
-date: '2020-11-03T07:41:03-05:00'
+date: 2020-11-03 07:41:03 -0500
 tags:
 - android
 tumblr_url: https://blog.newsblur.com/post/633778276180033536/android-app-update-premium-subscriptions-saved
