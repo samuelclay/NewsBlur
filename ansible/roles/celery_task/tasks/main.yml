@@ -120,7 +120,8 @@
     special_time: hourly
     job: docker pull newsblur/newsblur_python3:latest;
       docker run --rm -it
-      --network=newsblurnet /srv/newsblur/utils/monitor_newsletter_delivery.py
+      -v /srv/newsblur/:/srv/newsblur
+      --network=newsblurnet newsblur/newsblur_python3 /srv/newsblur/utils/monitor_newsletter_delivery.py
   when: "'task-work' in inventory_hostname"
   tags:
     - sanity-checker
@@ -132,7 +133,8 @@
     special_time: hourly
     job: docker pull newsblur/newsblur_python3:latest;
       docker run --rm
-      --network=newsblurnet /srv/newsblur/utils/monitor_work_queue.py
+      -v /srv/newsblur/:/srv/newsblur
+      --network=newsblurnet newsblur/newsblur_python3 /srv/newsblur/utils/monitor_work_queue.py
   when: "'task-work' in inventory_hostname"
   tags:
     - sanity-checker
