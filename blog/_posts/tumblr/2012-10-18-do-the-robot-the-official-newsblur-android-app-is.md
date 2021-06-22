@@ -4,7 +4,7 @@ title: 'Do the robot: the official NewsBlur Android app is here'
 date: '2012-10-18T11:47:00-04:00'
 tags: []
 tumblr_url: https://blog.newsblur.com/post/33845808817/do-the-robot-the-official-newsblur-android-app-is
-redirect_from: /post/33845808817/do-the-robot-the-official-newsblur-android-app-is
+redirect_from: /post/33845808817/do-the-robot-the-official-newsblur-android-app-is/
 ---
 You’ve been bugging us for two years about it, and now it’s finally here: NewsBlur’s expansion to mobile is complete, with our first-ever [official Android app](http://www.newsblur.com/android) ready and waiting for your device. Thanks to the gifts of money and time from Y Combinator and the programming prowess of Papermill creator Ryan Bateman (otherwise known as [@secretsquirrel](http://twitter.com/secretsquirrel)), you can now join your iOS brethren on the couch with your daily dose of RSS goodness. Level of accompanying smugness is up to you.
 

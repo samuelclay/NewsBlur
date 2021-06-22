@@ -5,7 +5,7 @@ date: '2015-08-25T07:00:14-04:00'
 tags:
 - web
 tumblr_url: https://blog.newsblur.com/post/127557390006/even-the-folders-have-rss-feeds
-redirect_from: /post/127557390006/even-the-folders-have-rss-feeds
+redirect_from: /post/127557390006/even-the-folders-have-rss-feeds/
 ---
 What would an RSS news reader be without its own RSS feeds? It’s be a pretty lonely reader is what.
 

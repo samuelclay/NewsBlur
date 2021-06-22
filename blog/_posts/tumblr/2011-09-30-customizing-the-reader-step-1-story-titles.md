@@ -4,7 +4,7 @@ title: 'Customizing the reader, step 1: story titles'
 date: '2011-09-30T09:40:30-04:00'
 tags: []
 tumblr_url: https://blog.newsblur.com/post/10850960896/customizing-the-reader-step-1-story-titles
-redirect_from: /post/10850960896/customizing-the-reader-step-1-story-titles
+redirect_from: /post/10850960896/customizing-the-reader-step-1-story-titles/
 ---
 The iPhone app is now only a few days away from launching. But it took 3 weeks of sitting around in the App Store approval queue before getting here. During that time, I started working on the new customizations that folks have been asking for.
 

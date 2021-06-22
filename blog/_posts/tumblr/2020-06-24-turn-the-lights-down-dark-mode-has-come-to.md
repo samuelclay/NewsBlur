@@ -5,7 +5,7 @@ date: '2020-06-24T11:29:59-04:00'
 tags:
 - web
 tumblr_url: https://blog.newsblur.com/post/621830104527650816/turn-the-lights-down-dark-mode-has-come-to
-redirect_from: /post/621830104527650816/turn-the-lights-down-dark-mode-has-come-to
+redirect_from: /post/621830104527650816/turn-the-lights-down-dark-mode-has-come-to/
 ---
 We’ve had dark mode on iOS and Android for years but I’m now pleased to announce a worthy dark theme has come to the NewsBlur web app.
 

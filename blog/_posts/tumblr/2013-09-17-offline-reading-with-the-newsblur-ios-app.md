@@ -5,7 +5,7 @@ date: '2013-09-17T12:46:00-04:00'
 tags:
 - ios
 tumblr_url: https://blog.newsblur.com/post/61520013611/offline-reading-with-the-newsblur-ios-app
-redirect_from: /post/61520013611/offline-reading-with-the-newsblur-ios-app
+redirect_from: /post/61520013611/offline-reading-with-the-newsblur-ios-app/
 ---
 Today I’m launching [version 3.0 of the iPhone and iPad app for NewsBlur](http://www.newsblur.com/ios). This major update brings loads of big features that combine to make the world’s best iOS news reader with the fastest sync in town.
 

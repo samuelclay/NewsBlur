@@ -4,7 +4,7 @@ title: A Social Feed Reader
 date: '2011-10-26T11:41:23-04:00'
 tags: []
 tumblr_url: https://blog.newsblur.com/post/11956240785/a-social-feed-reader
-redirect_from: /post/11956240785/a-social-feed-reader
+redirect_from: /post/11956240785/a-social-feed-reader/
 ---
 NewsBlur was released exactly one year ago. You can read the initial reaction on Hacker News: [http://news.ycombinator.com/item?id=1834305.](http://news.ycombinator.com/item?id=1834305.) Since then, so much has changed and all for the better. Usage is up—way, way up. Premium users are helping the site run. Load times are approaching the goal of less than 100 ms (0.10 sec) per page. In short, things couldn’t be better.
 

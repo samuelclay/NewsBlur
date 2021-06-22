@@ -5,7 +5,7 @@ date: '2020-06-18T16:06:04-04:00'
 tags:
 - android
 tumblr_url: https://blog.newsblur.com/post/621303892556300288/see-the-news-on-your-android-dashboard-with-the
-redirect_from: /post/621303892556300288/see-the-news-on-your-android-dashboard-with-the
+redirect_from: /post/621303892556300288/see-the-news-on-your-android-dashboard-with-the/
 ---
 Hot on the heels of the [iOS widget release](https://blog.newsblur.com/2021/06/21/2020-02-26-catch-the-news-in-a-glimpse-with-the-new-newsblur.html) a few months ago, the Android widget is now ready to go!
 

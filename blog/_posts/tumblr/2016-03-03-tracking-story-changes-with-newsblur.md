@@ -5,7 +5,7 @@ date: '2016-03-03T12:55:11-05:00'
 tags:
 - web
 tumblr_url: https://blog.newsblur.com/post/140405973906/tracking-story-changes-with-newsblur
-redirect_from: /post/140405973906/tracking-story-changes-with-newsblur
+redirect_from: /post/140405973906/tracking-story-changes-with-newsblur/
 ---
 NewsBlur has been tracking story changes for a long, long time now (first mentioned [on the blog five years ago in April 2011](http://blog.newsblur.com/2021/06/21/2012-01-16-2011-year-in-review.html)). But I felt it was time for an upgrade and today I’m pleased to launch some changes to the story tracker.
 

@@ -5,7 +5,7 @@ date: '2013-10-28T09:53:00-04:00'
 tags:
 - ios
 tumblr_url: https://blog.newsblur.com/post/65346067024/the-newsblur-iphone-and-ipad-app-meets-ios-7
-redirect_from: /post/65346067024/the-newsblur-iphone-and-ipad-app-meets-ios-7
+redirect_from: /post/65346067024/the-newsblur-iphone-and-ipad-app-meets-ios-7/
 ---
 Apple’s latest operating system for iOS is a departure from their old aesthetic. So I’ve decided to give [the NewsBlur iOS app](http://www.newsblur.com/ios) a slightly new look. But even more than how the app looks is how the app works. Tons of new features made it into this mega-release.
 

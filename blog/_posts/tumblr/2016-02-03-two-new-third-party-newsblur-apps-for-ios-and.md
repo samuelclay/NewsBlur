@@ -6,7 +6,7 @@ tags:
 - ios
 - windows
 tumblr_url: https://blog.newsblur.com/post/138627374341/two-new-third-party-newsblur-apps-for-ios-and
-redirect_from: /post/138627374341/two-new-third-party-newsblur-apps-for-ios-and
+redirect_from: /post/138627374341/two-new-third-party-newsblur-apps-for-ios-and/
 ---
 NewsBlur has an amazingly active third-party app community, thanks to the [well documented NewsBlur API](http://www.newsblur.com/api). Today I’d like to introduce you to two new apps built by developers on the NewsBlur API.
 

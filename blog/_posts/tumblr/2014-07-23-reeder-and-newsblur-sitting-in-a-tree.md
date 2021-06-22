@@ -6,7 +6,7 @@ tags:
 - mac
 - ios
 tumblr_url: https://blog.newsblur.com/post/92656879521/reeder-and-newsblur-sitting-in-a-tree
-redirect_from: /post/92656879521/reeder-and-newsblur-sitting-in-a-tree
+redirect_from: /post/92656879521/reeder-and-newsblur-sitting-in-a-tree/
 ---
 …S-Y-N-C-I-N-G.
 

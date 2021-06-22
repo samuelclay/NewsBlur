@@ -5,7 +5,7 @@ date: '2017-05-09T05:30:03-04:00'
 tags:
 - web
 tumblr_url: https://blog.newsblur.com/post/160476886217/newsblurs-twitter-support-just-got-a-whole-lot
-redirect_from: /post/160476886217/newsblurs-twitter-support-just-got-a-whole-lot
+redirect_from: /post/160476886217/newsblurs-twitter-support-just-got-a-whole-lot/
 ---
 It was a little under a year ago that I declared [Twitter back, baby](http://blog.newsblur.com/2021/06/21/2016-06-01-twitters-back-baby.html) on this blog. In that time, NewsBlur users have created over 80,000 Twitter feeds in NewsBlur. Since it’s such a popular feature, I decided to dive back into the code and make tweets look a whole lot better.
 

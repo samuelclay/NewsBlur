@@ -7,7 +7,7 @@ tags:
 - ios
 - android
 tumblr_url: https://blog.newsblur.com/post/145256277160/twitters-back-baby
-redirect_from: /post/145256277160/twitters-back-baby
+redirect_from: /post/145256277160/twitters-back-baby/
 ---
 It’s been too long. Twitter [unceremoniously knee-capped their API](https://blog.twitter.com/2013/api-v1-retirement-final-dates) a few years ago and a number of solutions popped up to fix the loss. However, those stopgaps also closed and left us with no good ways to read Twitter while in NewsBlur. Until now, that is.
 

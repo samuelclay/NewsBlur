@@ -5,7 +5,7 @@ date: '2014-04-29T04:45:28-04:00'
 tags:
 - web
 tumblr_url: https://blog.newsblur.com/post/84216757845/full-text-search-across-all-of-your-subscriptions-and
-redirect_from: /post/84216757845/full-text-search-across-all-of-your-subscriptions-and
+redirect_from: /post/84216757845/full-text-search-across-all-of-your-subscriptions-and/
 ---
 Last Summer [Simple Search was launched](http://blog.newsblur.com/2021/06/21/2013-07-30-simple-search-for-feeds-saved-stories-and-blurblogs.html), giving you the ability to search a single feed at a time. Obviously not ideal, but it was far less effort than the big enchilada: full text search across every site you subscribe to. It took a few months to come back to attack the full problem, but that means I could also take the time to do it right.
 

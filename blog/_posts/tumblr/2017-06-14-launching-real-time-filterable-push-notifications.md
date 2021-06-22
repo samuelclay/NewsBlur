@@ -8,7 +8,7 @@ tags:
 - android
 - iOS
 tumblr_url: https://blog.newsblur.com/post/161811208435/launching-real-time-filterable-push-notifications
-redirect_from: /post/161811208435/launching-real-time-filterable-push-notifications
+redirect_from: /post/161811208435/launching-real-time-filterable-push-notifications/
 ---
 For some sites, you want to know when they publish as soon as they publish. Maybe you want to immediately be notified of everything a site publishes, like a monthly meetup that posts an event only once a month. Or perhaps you want to be immediately notified of everything the NYTimes publishes about the companies in your stock portfolio. Or you just really enjoy reading your daily comics and want them emailed to you so you never miss a beat.
 

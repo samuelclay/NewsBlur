@@ -5,7 +5,7 @@ date: '2019-06-01T08:51:21-04:00'
 tags:
 - android
 tumblr_url: https://blog.newsblur.com/post/185294660096/updates-to-the-android-app-and-a-new-addition-to
-redirect_from: /post/185294660096/updates-to-the-android-app-and-a-new-addition-to
+redirect_from: /post/185294660096/updates-to-the-android-app-and-a-new-addition-to/
 ---
 Today we have a nice update, version 9.0, of the Android app that includes a rewrite of the story management backend as well as fixes for some critical display issues.
 

@@ -4,7 +4,7 @@ title: Read NewsBlur on your Mac with the new ReadKit
 date: '2013-05-30T12:12:16-04:00'
 tags: []
 tumblr_url: https://blog.newsblur.com/post/51740798196/read-newsblur-on-your-mac-with-the-new-readkit
-redirect_from: /post/51740798196/read-newsblur-on-your-mac-with-the-new-readkit
+redirect_from: /post/51740798196/read-newsblur-on-your-mac-with-the-new-readkit/
 ---
 [ReadKit](http://readkitapp.com), a native Mac app for reading Instapaper, Pocket, and NewsBlur on your desktop, completes the RSS reading trifecta. NewsBlur has a web app, native iOS app, and now a native Mac app.
 

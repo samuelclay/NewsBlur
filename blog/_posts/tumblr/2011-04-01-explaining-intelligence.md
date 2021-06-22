@@ -4,7 +4,7 @@ title: Explaining Intelligence
 date: '2011-04-01T11:11:33-04:00'
 tags: []
 tumblr_url: https://blog.newsblur.com/post/4262089560/explaining-intelligence
-redirect_from: /post/4262089560/explaining-intelligence
+redirect_from: /post/4262089560/explaining-intelligence/
 ---
 If you’re not using intelligence classifiers, you’re only getting half the value out of NewsBlur.&nbsp;
 

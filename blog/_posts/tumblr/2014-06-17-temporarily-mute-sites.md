@@ -5,7 +5,7 @@ date: '2014-06-17T12:09:59-04:00'
 tags:
 - web
 tumblr_url: https://blog.newsblur.com/post/89081130216/temporarily-mute-sites
-redirect_from: /post/89081130216/temporarily-mute-sites
+redirect_from: /post/89081130216/temporarily-mute-sites/
 ---
 You can now temporarily turn off sites by going to Manage \> Mute Sites. This is for those feeds you want to keep but ignore for a while.
 

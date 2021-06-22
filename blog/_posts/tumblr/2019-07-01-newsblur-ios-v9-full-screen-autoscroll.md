@@ -6,7 +6,7 @@ date: '2019-07-01T09:29:07-04:00'
 tags:
 - iOS
 tumblr_url: https://blog.newsblur.com/post/185980347231/newsblur-ios-v9-full-screen-autoscroll
-redirect_from: /post/185980347231/newsblur-ios-v9-full-screen-autoscroll
+redirect_from: /post/185980347231/newsblur-ios-v9-full-screen-autoscroll/
 ---
 A whopper of a release with many, many new features!
 

@@ -5,7 +5,7 @@ date: '2016-04-12T06:00:18-04:00'
 tags:
 - iOS
 tumblr_url: https://blog.newsblur.com/post/142683199563/newsblur-goes-dark-on-ios
-redirect_from: /post/142683199563/newsblur-goes-dark-on-ios
+redirect_from: /post/142683199563/newsblur-goes-dark-on-ios/
 ---
 It’s like a whole new app. There’s so much to tell you about in the latest release of the NewsBlur iOS app. This is the release of all releases.
 

@@ -4,7 +4,7 @@ title: 'Knight News Challenge: NewsBlur'
 date: '2012-03-16T11:29:00-04:00'
 tags: []
 tumblr_url: https://blog.newsblur.com/post/19405157834/knight-news-challenge
-redirect_from: /post/19405157834/knight-news-challenge
+redirect_from: /post/19405157834/knight-news-challenge/
 ---
 [Knight News Challenge: NewsBlur](http://newschallenge.tumblr.com/post/19397311604/newsblur)  
 

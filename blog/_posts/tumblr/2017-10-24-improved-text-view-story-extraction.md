@@ -7,7 +7,7 @@ tags:
 - ios
 - android
 tumblr_url: https://blog.newsblur.com/post/166760769571/improved-text-view-story-extraction
-redirect_from: /post/166760769571/improved-text-view-story-extraction
+redirect_from: /post/166760769571/improved-text-view-story-extraction/
 ---
 The Text view is one of the most popular NewsBlur features. It’s available on all three platforms and gives you the full text of the original story, even in truncated RSS feeds. Up until today, NewsBlur’s implementation of the Text view used Readability’s open source text extractor.
 

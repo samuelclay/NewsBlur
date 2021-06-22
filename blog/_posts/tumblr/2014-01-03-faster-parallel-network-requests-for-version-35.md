@@ -5,7 +5,7 @@ date: '2014-01-03T11:35:00-05:00'
 tags:
 - android
 tumblr_url: https://blog.newsblur.com/post/72112436519/faster-parallel-network-requests-for-version-35
-redirect_from: /post/72112436519/faster-parallel-network-requests-for-version-35
+redirect_from: /post/72112436519/faster-parallel-network-requests-for-version-35/
 ---
 The single biggest criticism I’ve heard of the Android app is that it can be slow when loading feeds and then loading stories. That changes today with the release of version 3.5 of the [NewsBlur Android app](http://www.newsblur.com/android).
 

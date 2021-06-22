@@ -5,7 +5,7 @@ date: '2014-06-27T07:00:36-04:00'
 tags:
 - web
 tumblr_url: https://blog.newsblur.com/post/90060336492/read-what-youve-read-recently-with-the-new
-redirect_from: /post/90060336492/read-what-youve-read-recently-with-the-new
+redirect_from: /post/90060336492/read-what-youve-read-recently-with-the-new/
 ---
 Like it says on the tin, you can now go back and see what you’ve read with the Recently Read Stories feed. It’s on the bottom of your feed list, just above the saved stories.
 

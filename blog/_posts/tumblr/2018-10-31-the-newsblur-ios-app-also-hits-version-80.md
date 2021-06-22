@@ -5,7 +5,7 @@ date: '2018-10-31T09:16:24-04:00'
 tags:
 - iOS
 tumblr_url: https://blog.newsblur.com/post/179624147551/the-newsblur-ios-app-also-hits-version-80
-redirect_from: /post/179624147551/the-newsblur-ios-app-also-hits-version-80
+redirect_from: /post/179624147551/the-newsblur-ios-app-also-hits-version-80/
 ---
 Fresh off the heels of the Android app hitting version 8.0, today I’d like to announce the latest update to the iOS app. This is a huge release and it’s got a lot of new features packed in it. I also want to welcome David Sinclair back to the team. He’s the builder behind all the incredible features in this release. Really wonderful having you back, David, and thanks for making v8.0 of the best news reader on a phone.
 

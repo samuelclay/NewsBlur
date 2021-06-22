@@ -4,7 +4,7 @@ title: Upping unread stories to 30 days for premium accounts
 date: '2013-09-16T17:09:14-04:00'
 tags: []
 tumblr_url: https://blog.newsblur.com/post/61451693579/upping-unread-stories-to-30-days-for-premium
-redirect_from: /post/61451693579/upping-unread-stories-to-30-days-for-premium
+redirect_from: /post/61451693579/upping-unread-stories-to-30-days-for-premium/
 ---
 While I love shipping new features and fixing bugs, the single largest user request was neither a feature nor a bug. NewsBlur allows for two weeks of unread stories. Once a story is more than 14 days old, it would no longer show up as unread. The justification for this was simple: you have a week to read a story, and have a second week as a grace period.
 

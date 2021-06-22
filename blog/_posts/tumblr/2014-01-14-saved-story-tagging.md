@@ -5,7 +5,7 @@ date: '2014-01-14T10:39:00-05:00'
 tags:
 - web
 tumblr_url: https://blog.newsblur.com/post/73323646275/saved-story-tagging
-redirect_from: /post/73323646275/saved-story-tagging
+redirect_from: /post/73323646275/saved-story-tagging/
 ---
 It’s one thing to follow a handful of sites and use NewsBlur’s training to only read the stories you want to read. But sometimes you want to come back to stories long after you’ve read them. You could save the story, but then you would have to either scroll down your saved story list to find the story, or use the [new search feature](http://blog.newsblur.com/2021/06/21/2013-07-30-simple-search-for-feeds-saved-stories-and-blurblogs.html) to find it by title or author.
 

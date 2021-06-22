@@ -4,7 +4,7 @@ title: Google Reader announced its shutdown exactly a year ago
 date: '2014-03-13T14:27:00-04:00'
 tags: []
 tumblr_url: https://blog.newsblur.com/post/79491002325/google-reader-announced-its-shutdown-exactly-a-year-ago
-redirect_from: /post/79491002325/google-reader-announced-its-shutdown-exactly-a-year-ago
+redirect_from: /post/79491002325/google-reader-announced-its-shutdown-exactly-a-year-ago/
 ---
 In this industry, you gotta be tough.
 

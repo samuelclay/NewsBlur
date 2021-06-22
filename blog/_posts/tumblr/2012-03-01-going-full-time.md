@@ -5,7 +5,7 @@ date: '2012-03-01T11:48:00-05:00'
 tags:
 - meta
 tumblr_url: https://blog.newsblur.com/post/18561597889/going-full-time
-redirect_from: /post/18561597889/going-full-time
+redirect_from: /post/18561597889/going-full-time/
 ---
 Exactly four months ago, Jason Kottke found my project, [NewsBlur](http://www.newsblur.com), and tweeted:
 

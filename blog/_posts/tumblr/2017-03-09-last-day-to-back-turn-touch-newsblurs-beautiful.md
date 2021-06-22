@@ -5,7 +5,7 @@ date: '2017-03-09T05:00:33-05:00'
 tags:
 - turntouch
 tumblr_url: https://blog.newsblur.com/post/158188931874/last-day-to-back-turn-touch-newsblurs-beautiful
-redirect_from: /post/158188931874/last-day-to-back-turn-touch-newsblurs-beautiful
+redirect_from: /post/158188931874/last-day-to-back-turn-touch-newsblurs-beautiful/
 ---
  **This is it, the final countdown!**
 

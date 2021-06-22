@@ -4,7 +4,7 @@ title: Preview NewsBlur's upcoming hardware device, Turn Touch
 date: '2017-02-02T05:00:24-05:00'
 tags: []
 tumblr_url: https://blog.newsblur.com/post/156713298365/preview-newsblurs-upcoming-hardware-device-turn
-redirect_from: /post/156713298365/preview-newsblurs-upcoming-hardware-device-turn
+redirect_from: /post/156713298365/preview-newsblurs-upcoming-hardware-device-turn/
 ---
 I have something very exciting to share with you today. I’ve been working on a secret project called Turn Touch and I’m just about ready to show it to you. [Signup on turntouch.com](https://www.turntouch.com) to find out.
 

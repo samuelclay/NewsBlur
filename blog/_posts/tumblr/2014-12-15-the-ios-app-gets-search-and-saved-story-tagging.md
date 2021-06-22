@@ -5,7 +5,7 @@ date: '2014-12-15T12:01:23-05:00'
 tags:
 - ios
 tumblr_url: https://blog.newsblur.com/post/105287842606/the-ios-app-gets-search-and-saved-story-tagging
-redirect_from: /post/105287842606/the-ios-app-gets-search-and-saved-story-tagging
+redirect_from: /post/105287842606/the-ios-app-gets-search-and-saved-story-tagging/
 ---
 This month’s new iOS features are big, big features. Search made it on the web only a few months ago and is now available on the iOS app. You can also now easily add tags to saved stories, making it easier to organize and save stories you read for re-reading later.
 

@@ -7,7 +7,7 @@ tags:
 - ios
 - android
 tumblr_url: https://blog.newsblur.com/post/134937976476/better-embeds-for-twitter-instagram-and-imgur
-redirect_from: /post/134937976476/better-embeds-for-twitter-instagram-and-imgur
+redirect_from: /post/134937976476/better-embeds-for-twitter-instagram-and-imgur/
 ---
 Every NewsBlur client, from the three official clients (web, iOS, and Android) to all third-party clients, should now be showing better embeds for Twitter, Instagram, and Imgur. Just take a look at these screenshots.
 

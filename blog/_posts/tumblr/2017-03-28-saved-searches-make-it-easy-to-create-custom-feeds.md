@@ -5,7 +5,7 @@ date: '2017-03-28T05:00:28-04:00'
 tags:
 - web
 tumblr_url: https://blog.newsblur.com/post/158925569072/saved-searches-make-it-easy-to-create-custom-feeds
-redirect_from: /post/158925569072/saved-searches-make-it-easy-to-create-custom-feeds
+redirect_from: /post/158925569072/saved-searches-make-it-easy-to-create-custom-feeds/
 ---
 You can now save a search as a saved search feed. This works for individual sites, folders, All Site Stories, saved stories, and blurblogs.
 

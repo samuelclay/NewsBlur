@@ -5,7 +5,7 @@ date: '2011-03-15T08:39:00-04:00'
 tags:
 - design
 tumblr_url: https://blog.newsblur.com/post/3877923741/a-new-logo-for-a-new-blog
-redirect_from: /post/3877923741/a-new-logo-for-a-new-blog
+redirect_from: /post/3877923741/a-new-logo-for-a-new-blog/
 ---
 We’ve come a long way, readers. What started as a fun project to scratch an itch has become a fun project that pays for its ever-increasing self. This week I’m going to show how motivated I am about turning NewsBlur into a serious blog reader. And it starts with a collection of a circles:
 

@@ -5,7 +5,7 @@ date: '2018-04-17T17:22:11-04:00'
 tags:
 - web
 tumblr_url: https://blog.newsblur.com/post/173045737231/moving-to-a-better-support-forum-at
-redirect_from: /post/173045737231/moving-to-a-better-support-forum-at
+redirect_from: /post/173045737231/moving-to-a-better-support-forum-at/
 ---
 It’s about time NewsBlur had more control of its own support forums. For the past 7 years (to the week!), NewsBlur has been using Get Satisfaction for support, ideas, questions, and praise.
 

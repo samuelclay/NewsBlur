@@ -4,7 +4,7 @@ title: Connect NewsBlur to dozens of web services with IFTTT
 date: '2014-02-20T09:11:28-05:00'
 tags: []
 tumblr_url: https://blog.newsblur.com/post/77288045682/connect-newsblur-to-dozens-of-web-services-with
-redirect_from: /post/77288045682/connect-newsblur-to-dozens-of-web-services-with
+redirect_from: /post/77288045682/connect-newsblur-to-dozens-of-web-services-with/
 ---
 Wouldn’t it be nice if there was a way to automatically copy your saved stories over to Evernote or Twitter or Pinboard? What about an automatic way to keep track of your unread focus (trained) stories in Buffer or Delicious or Dropbox?
 

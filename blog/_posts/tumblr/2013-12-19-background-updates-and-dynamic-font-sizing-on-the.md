@@ -5,7 +5,7 @@ date: '2013-12-19T10:38:00-05:00'
 tags:
 - ios
 tumblr_url: https://blog.newsblur.com/post/70505345720/background-updates-and-dynamic-font-sizing-on-the
-redirect_from: /post/70505345720/background-updates-and-dynamic-font-sizing-on-the
+redirect_from: /post/70505345720/background-updates-and-dynamic-font-sizing-on-the/
 ---
 This week brings us a minor, but major, update for [the NewsBlur iOS app](http://www.newsblur.com/ios). Several new features, some due to new APIs in iOS 7, have made it into the app.
 

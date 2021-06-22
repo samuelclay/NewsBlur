@@ -4,7 +4,7 @@ title: Giving Life to "The People Have Spoken"
 date: '2012-10-01T17:52:00-04:00'
 tags: []
 tumblr_url: https://blog.newsblur.com/post/32704916860/giving-life-to-popular
-redirect_from: /post/32704916860/giving-life-to-popular
+redirect_from: /post/32704916860/giving-life-to-popular/
 ---
 For a long time, we’ve maintained [The People Have Spoken](http://popular.newsblur.com), the blog of what’s popular on NewsBlur, with a simple algorithm that measured how often something was shared. While that’s a great way to see the stuff our users really like ([Randall Munroe](http://xkcd.com/) would probably win the NewsBlur equivalent of the Oscar), it makes it harder for everyone to find new stuff that they might not have seen or heard of before. So we’ve decided to throw a human into the mix. I’ll let Allie introduce herself in her own words:
 
