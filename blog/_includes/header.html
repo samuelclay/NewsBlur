@@ -5,7 +5,7 @@
     {%- assign page_paths = site.header_pages | default: default_paths -%}
     <a class="site-title" rel="author" href="{{ "/" | relative_url }}">
       <div class="site-title-image">
-        <img src="/assets/newsblur_logo_512.png" width="78" height="78">
+        <img src="/assets/newsblur_logo_512.png">
       </div>
       <div class="site-title-text">{{ site.title | escape }}</div>
     </a>
@@ -25,7 +25,7 @@
           {%- for path in page_paths -%}
             {%- assign my_page = site.pages | where: "path", path | first -%}
             {%- if my_page.title -%}
-            <a class="page-link" href="{{ my_page.url | relative_url }}">{{ my_page.title | escape }}</a>
+            <a class="page-link" href="{% if my_page.full_url %}{{my_page.full_url}}{% else %}{{ my_page.url | relative_url }}{% endif %}">{{ my_page.title | escape }}</a>
             {%- endif -%}
           {%- endfor -%}
         </div>

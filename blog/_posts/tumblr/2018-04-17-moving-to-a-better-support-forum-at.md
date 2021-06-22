@@ -11,7 +11,7 @@ It’s about time NewsBlur had more control of its own support forums. For the p
 
 In that time the forums have hosted 6,959 conversations with 6,432 members. And all of that has been imported into the new support forum at [https://forum.newsblur.com](https://forum.newsblur.com).
 
-<figure class="tmblr-full" data-orig-height="2590" data-orig-width="2074" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/forum.png"><img src="https://64.media.tumblr.com/0fa35563604cb45027fc12f797a4ac27/tumblr_inline_p7g7duAnwx1qg4k90_540.png" width="650" data-orig-height="2590" data-orig-width="2074" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/forum.png"></figure>
+<figure class="tmblr-full" data-orig-height="2590" data-orig-width="2074" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/forum.png"><img width="650" data-orig-height="2590" data-orig-width="2074" src="https://s3.amazonaws.com/static.newsblur.com/blog/forum.png"></figure>
 
 Every topic, every post, every like, and every user is still there. The URLs have changed but the search function is alive and well.
 

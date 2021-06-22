@@ -10,7 +10,7 @@ If you’re not using intelligence classifiers, you’re only getting half the v
 
 Intelligence classifiers are the phrases, tags, and authors that you like and dislike. Training your sites by choosing classifiers for each feed will automatically highlight the stories you want to read and hide the stories you don’t want to see.
 
-<figure class="tmblr-full" data-orig-height="298" data-orig-width="600" data-orig-src="http://f.cl.ly/items/1J1N2e2Q0E133N3R0r3m/slider_states.png"><img src="https://64.media.tumblr.com/6f765c2891c6e2aea2511a3471140ae0/1a17e4479e9a96eb-aa/s540x810/d24d428873e3e73481150cb1ecafeef529bf7dee.png" data-orig-height="298" data-orig-width="600" data-orig-src="http://f.cl.ly/items/1J1N2e2Q0E133N3R0r3m/slider_states.png"></figure>
+<figure class="tmblr-full" data-orig-height="298" data-orig-width="600" data-orig-src="http://f.cl.ly/items/1J1N2e2Q0E133N3R0r3m/slider_states.png"><img data-orig-height="298" data-orig-width="600" src="http://f.cl.ly/items/1J1N2e2Q0E133N3R0r3m/slider_states.png"></figure>
 
 ## How to train intelligence
 

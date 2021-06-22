@@ -9,7 +9,7 @@ redirect_from: /post/621830104527650816/turn-the-lights-down-dark-mode-has-come-
 ---
 We’ve had dark mode on iOS and Android for years but I’m now pleased to announce a worthy dark theme has come to the NewsBlur web app.
 
-<figure class="tmblr-full" data-orig-height="1441" data-orig-width="1300" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/dark-mode.png"><img src="https://64.media.tumblr.com/ea8ebb72fb402a0ded69bd286fc316b7/56defb7de2e7e4b5-d1/s540x810/ee4bdd23a34477b44c8825cdce04137fc7142c2b.png" data-orig-height="1441" data-orig-width="1300" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/dark-mode.png"></figure>
+<figure class="tmblr-full" data-orig-height="1441" data-orig-width="1300" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/dark-mode.png"><img data-orig-height="1441" data-orig-width="1300" src="https://s3.amazonaws.com/static.newsblur.com/blog/dark-mode.png"></figure>
 
 The origins for this theme came from the community. Originally started by [Kemwer in 2013](https://userstyles.org/styles/86275/newsblur-kemwer-black), it has been maintained and updated by [Splike since 2014](https://userstyles.org/styles/124890/newsblur-dark-theme-by-splike). In fact, you can still use Splike’s theme as an alternate dark mode.
 

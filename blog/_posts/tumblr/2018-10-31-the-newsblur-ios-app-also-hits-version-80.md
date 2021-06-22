@@ -27,7 +27,7 @@ Here’s a preview of what a 3D touch on a link looks like:
 
 And sharing stories from other apps directly to your blurblog is now easy to do from the share menu.
 
-<figure class="tmblr-full" data-orig-height="1334" data-orig-width="750" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/ios8-share.png"><img src="https://64.media.tumblr.com/e5c1500a2fd9fdd5cf49ca017c4870de/tumblr_inline_phh1cflmG01qg4k90_540.png" width="350" style="margin: 0 auto;border: 1px solid #606060" data-orig-height="1334" data-orig-width="750" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/ios8-share.png"></figure>
+<figure class="tmblr-full" data-orig-height="1334" data-orig-width="750" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/ios8-share.png"><img width="350" style="margin: 0 auto;border: 1px solid #606060" data-orig-height="1334" data-orig-width="750" src="https://s3.amazonaws.com/static.newsblur.com/blog/ios8-share.png"></figure>
 
 Now that David’s back there’s a lot to look forward to.
 

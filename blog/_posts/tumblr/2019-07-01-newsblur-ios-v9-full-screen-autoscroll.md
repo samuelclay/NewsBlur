@@ -20,7 +20,7 @@ A whopper of a release with many, many new features!
 
 Take a look at some of the image and story title customizations you can now make:
 
-<figure class="tmblr-full" data-orig-height="968" data-orig-width="1068" data-orig-src="http://static.newsblur.com.s3.amazonaws.com/blog/ios-v9.png"><img src="https://64.media.tumblr.com/44fcf1e55f729ae0c7969664c7905ef6/tumblr_inline_ptzepcqMaC1qg4k90_540.png" style="width:650px;margin: 24px auto;" data-orig-height="968" data-orig-width="1068" data-orig-src="http://static.newsblur.com.s3.amazonaws.com/blog/ios-v9.png"></figure>
+<figure class="tmblr-full" data-orig-height="968" data-orig-width="1068" data-orig-src="http://static.newsblur.com.s3.amazonaws.com/blog/ios-v9.png"><img style="width:650px;margin: 24px auto;" data-orig-height="968" data-orig-width="1068" src="http://static.newsblur.com.s3.amazonaws.com/blog/ios-v9.png"></figure>
 
 There’s also many smaller fixes that improve the polish of the app:
 

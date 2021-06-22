@@ -9,11 +9,11 @@ redirect_from: /post/168430391885/newsblur-for-iphone-x
 ---
 I’m proud to announce the launch of version 7.0 of the NewsBlur iOS app, complete with iPhone X support. There’s a lot that’s new and improved in this release.
 
-<figure class="tmblr-full" data-orig-height="1928" data-orig-width="1090" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/ios-v7-iphonex-feeds.png"><img src="https://64.media.tumblr.com/6d5ba315f57b9d3144dc57ce06f46090/tumblr_inline_p9vdcnmZmu1qg4k90_540.png" width="450" style="margin: 0 auto;" data-orig-height="1928" data-orig-width="1090" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/ios-v7-iphonex-feeds.png"></figure>
+<figure class="tmblr-full" data-orig-height="1928" data-orig-width="1090" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/ios-v7-iphonex-feeds.png"><img width="450" style="margin: 0 auto;" data-orig-height="1928" data-orig-width="1090" src="https://s3.amazonaws.com/static.newsblur.com/blog/ios-v7-iphonex-feeds.png"></figure>
 
 Also new to the release is that addition of in-app payments for a NewsBlur premium subscription. This was a long time coming. This upgrades the iOS app to match the experience on the web. And because in-app subscriptions are now live, the iOS app will now match the free account restrictions you’ll find on the web. As a reminder, NewsBlur is a paid service with free accounts that act as indefinite trials.
 
-<figure class="tmblr-full" data-orig-height="1131" data-orig-width="1200" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/iphone-x-stories.png"><img src="https://64.media.tumblr.com/f47390500e3ec9a6024f2bf77193389d/tumblr_inline_p9vdcoz7P01qg4k90_540.png" width="650" style="margin: 24px auto;" data-orig-height="1131" data-orig-width="1200" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/iphone-x-stories.png"></figure>
+<figure class="tmblr-full" data-orig-height="1131" data-orig-width="1200" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/iphone-x-stories.png"><img width="650" style="margin: 24px auto;" data-orig-height="1131" data-orig-width="1200" src="https://s3.amazonaws.com/static.newsblur.com/blog/iphone-x-stories.png"></figure>
 
 Here’s a complete list of what’s new:
 

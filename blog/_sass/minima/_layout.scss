@@ -5,9 +5,14 @@
   border-top: 5px solid $grey-color-dark;
   border-bottom: 1px solid $grey-color-light;
   min-height: $spacing-unit * 1.865;
+  position: sticky;
+  top: 0;
+  background-color: $background-color;
 
-  // Positioning context for the mobile navigation icon
-  position: relative;
+  .wrapper {
+    display: flex;
+    align-items: center;
+  }
 }
 
 .site-subheader {
@@ -15,10 +20,10 @@
   border-bottom: 1px solid $grey-color-light;
   background-color: rgb(245, 243, 220);
   .top {
-    color: #213b57;
+    color: #574621;
   }
   .bottom {
-    color: #416388;
+    color: #887541;
   }
 }
 
@@ -34,12 +39,27 @@
 
   &,
   &:visited {
-    color: #1b3e63;
+    color: $title-color;
   }
 
   .site-title-image {
     float: left;
     margin: 8px 18px 8px 0;
+
+    @include media-query($on-palm) {
+      margin-top: 4px;
+    }
+
+    img {
+      width: 72px;
+      height: 72px;
+
+      @include media-query($on-palm) {
+        width: 54px;
+        height: 54px;
+      }
+    }
+
   }
   .site-title-text {
     white-space: nowrap;
@@ -47,7 +67,7 @@
 }
 
 .site-nav {
-  float: right;
+  margin-left: auto;
   line-height: $base-line-height * $base-font-size * 2.25;
 
   .nav-trigger {
@@ -59,7 +79,7 @@
   }
 
   .page-link {
-    color: $text-color;
+    color: $title-color;
     line-height: $base-line-height;
 
     // Gaps between nav items, but not on the last one
