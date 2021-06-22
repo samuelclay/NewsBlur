@@ -134,6 +134,23 @@ resource "digitalocean_droplet" "app-refresh" {
   }
 }
 
+resource "digitalocean_droplet" "blog" {
+  image    = var.droplet_os
+  name     = "blog"
+  region   = var.droplet_region
+  size     = var.droplet_size
+  ssh_keys = [digitalocean_ssh_key.default.fingerprint]
+  provisioner "local-exec" {
+    command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
+  }
+  provisioner "local-exec" {
+    command = "cd ..; ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
+  }
+  provisioner "local-exec" {
+    command = "cd ..; ansible-playbook -l ${self.name} ansible/setup.yml"
+  }
+}
+
 resource "digitalocean_droplet" "staging-web" {
   image    = var.droplet_os
   name     = "staging-web"
