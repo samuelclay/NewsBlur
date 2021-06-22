@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="shortcut icon" href="https://newsblur.com/media/img/favicon.ico" type="image/png" />
+  <link rel="icon" href="https://newsblur.com/media/img/favicon_32.png" sizes="32x32"/>
+  <link rel="icon" href="https://newsblur.com/media/img/favicon_64.png" sizes="64x64"/><!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>A Downtime Irony | The NewsBlur Blog</title>
+<meta name="generator" content="Jekyll v4.2.0" />
+<meta property="og:title" content="A Downtime Irony" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="So many things can go wrong and often do, but I spend a good third of my time working on infrastructure, monitoring, and analytics so that they don’t." />
+<meta property="og:description" content="So many things can go wrong and often do, but I spend a good third of my time working on infrastructure, monitoring, and analytics so that they don’t." />
+<link rel="canonical" href="https://blog.newsblur.com/2014/08/21/a-downtime-irony/" />
+<meta property="og:url" content="https://blog.newsblur.com/2014/08/21/a-downtime-irony/" />
+<meta property="og:site_name" content="The NewsBlur Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2014-08-21T21:08:24-04:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="A Downtime Irony" />
+<script type="application/ld+json">
+{"url":"https://blog.newsblur.com/2014/08/21/a-downtime-irony/","publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"https://blog.newsblur.com/assets/newsblur_logo_512.png"}},"headline":"A Downtime Irony","dateModified":"2014-08-21T21:08:24-04:00","datePublished":"2014-08-21T21:08:24-04:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://blog.newsblur.com/2014/08/21/a-downtime-irony/"},"description":"So many things can go wrong and often do, but I spend a good third of my time working on infrastructure, monitoring, and analytics so that they don’t.","@type":"BlogPosting","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css">
+  <link rel="stylesheet" type="text/css" href="https://cloud.typography.com/6565292/711824/css/fonts.css" />
+   <link rel="stylesheet" type="text/css" href="https://cloud.typography.com/6565292/731824/css/fonts.css" /><link type="application/atom+xml" rel="alternate" href="https://blog.newsblur.com/feed.xml" title="The NewsBlur Blog" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">
+      <div class="site-title-image">
+        <img src="/assets/newsblur_logo_512.png">
+      </div>
+      <div class="site-title-text">The NewsBlur Blog</div>
+    </a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="https://www.newsblur.com">Visit NewsBlur ➤</a></div>
+      </nav></div>
+</header>
+
+<header class="site-subheader" role="banner">
+
+  <div class="wrapper">
+    <div class="top">
+      NewsBlur is a personal news reader that brings people together to talk about the world.
+    </div>
+    <div class="bottom">
+      A new sound of an old instrument.
+    </div>
+  </div>
+
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">A Downtime Irony</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2014-08-21T21:08:24-04:00" itemprop="datePublished">Aug 21, 2014
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <p>So many things can go wrong and often do, but I spend a good third of my time working on infrastructure, monitoring, and analytics so that they don’t.</p>
+
+<p>Here’s what happened: At approximately 4:30pm PT feed fetching ceased. The feed fetchers were still working, which is why my monitors didn’t fire and alert anybody. But I have a second large Mongo database server used exclusively for collecting data about feeds being fetched. There are approximately 75 servers dedicated to feed fetching. These analytics look at average fetch times on a per task server basis. I use these analytics to ensure that my task servers are humming along, as they each use a ton of network, cpu, and memory.</p>
+
+<p>This Mongo analytics servers works in a curious way. If you right-click on a feed and go to Statistics you’ll see the feed fetch history for a feed, stretching back a hundred fetches if the feed has had any issues in fetching. I keep these statistics on an analytics server separate from the regular Mongo server. I do this so that if the mongo analytics server goes down, everything will operate normally.</p>
+
+<p>But the mongo server didn’t go down. It merely gave this error:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>OperationError: Could not save document (Can't take a write lock while out of disk space)
+</code></pre></div></div>
+
+<p>Mongo continues serving read queries while not allowing write queries. I didn’t plan for that! And it gets worse. The way MongoDB stores data is that is just keeps growing, even as you delete data. NewsBlur only saves the last few fetches, but deleting old fetches doesn’t give you back any disk space. Every other database server I use has an autovacuum process that takes care of this maintenance work (PostgreSQL, Redis, Elasticsearch, but not MongoDB). It’s unfortunate that this is yet another instance of MongoDB being the cause of downtime, even though the fault lies with me.</p>
+
+<p>The server that is meant to only be used to ensure things are working correctly was itself the culprit for feeds no longer being fetched. This is the ironic part.</p>
+
+<p><img src="http://static.newsblur.com.s3.amazonaws.com/blog/Big%20Sur.jpg" alt="" /></p>
+
+<h6 id="newsblurs-developer-during-happier-times-wearing-the-2013-newsblur-t-shirt-in-big-sur">NewsBlur’s developer during happier times wearing the 2013 NewsBlur t-shirt in Big Sur</h6>
+
+<p>Now comes the painful part. On Wednesday morning (yesterday) I packed my car and headed down to Big Sur to go backpack camping for the first time. I’ve car camped plenty of times, but I felt confident enough to pack my sleeping bag and tent into a big bag and head ten miles into the woods of coastal California.</p>
+
+<p>I headed out, away from cellular service, at 4pm PT, half an hour before the analytics server ran out of disk space. And then returned nearly 24 hours later to a bevy of alarmed tweets, emails, direct messages, and a voicemail letting me know that things were haywire.</p>
+
+<p>But the real problem is that I set a vacation reply on both my personal and work email accounts to say that I’d be out until September 3rd. Now, I hired a firm to watch the servers while I’m at Burning Man starting this Saturday. But I figured I could get away with leaving the servers for twenty four hours. And I neglected to tweet out that I’d be gone for a day, so theories cropped up that I was injured, dead, or worse, ignoring the service.</p>
+
+<p><img src="http://static.newsblur.com.s3.amazonaws.com/blog/Brittany%20in%20Big%20Sur.jpg" alt="" /></p>
+
+<h6 id="brittany-newsblurs-developers-girlfriend-can-handle-any-situation-including-driving-a-hysterical-developer-three-hours-back-to-san-francisco-without-breaking-a-sweat">Brittany, NewsBlur’s developer’s girlfriend, can handle any situation, including driving a hysterical developer three hours back to San Francisco without breaking a sweat.</h6>
+
+<p>If you’re wondering, I think about NewsBlur first thing in the morning and last thing at night when I check Twitter for mentions. It’s my life and I would never just give up on it. I just got cocky after a year and a half of nearly uninterrupted service. NewsBlur requires next to no maintenance, apart from handling support requests and building new features (and occasionally fixing old ones). So I figured what harm could 24 hours of away time be? Boy was I wrong.</p>
+
+<p>If you made it this far then you probably care about NewsBlur’s future. I want to not only assure you that I will be building better monitoring to ensure this never happens again, but to also offer anybody who feels that they are not getting their money’s worth a refund. Even if you are months away from payment, if you aren’t completely satisfied and think NewsBlur’s just about the best thing to happen to RSS since Brent Simmons released NetNewsWire back in 2004, then I want to give you your money back and let you keep your premium account until it expires.</p>
+
+<p>I would like to also mention how much I appreciate the more light-hearted tweets that I read while on the frenetic three hour drive back to San Francisco from Big Sur. I do this for all of your happiness. If I did it for the money I’d probably find a way to juice the data so that I could at least afford to hire an employee. This is a labor of love and your payment goes directly into supporting it.</p>
+
+<p><img src="http://static.newsblur.com.s3.amazonaws.com/blog/Tent%20in%20Big%20Sur.jpg" alt="" /></p>
+
+<h6 id="big-sur-is-where-a-good-many-new-ideas-are-thought">Big Sur is where a good many new ideas are thought.</h6>
+
+  </div><a class="u-url" href="/2014/08/21/a-downtime-irony/" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">The NewsBlur Blog</h2>
+
+    <div class="footer-col-wrapper">
+      
+
+      <div class="footer-col footer-col-1"><ul class="social-media-list"><li><a href="https://github.com/samuelclay"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">samuelclay</span></a></li><li><a href="https://www.twitter.com/newsblur"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">newsblur</span></a></li><li><a href="mailto:blog@newsblur.com?subject=Hello from the NewsBlur blog"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#email"></use></svg> <span class="username">blog@newsblur.com</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>NewsBlur is a personal news reader that brings people together to talk about the world.<br />
+A new sound of an old instrument.<br />
+</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>
