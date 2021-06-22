@@ -9,7 +9,13 @@ import socket
 
 def main():
     disk_usage_output = sys.argv[1]
-    device, size, used, available, percent = disk_usage_output.split()
+    disk_usage_output = disk_usage_output.split()
+    if len(disk_usage_output) == 5:
+        device, size, used, available, percent = disk_usage_output
+    elif len(disk_usage_output) == 6:
+        device, size, used, available, percent, extra = disk_usage_output
+        print(disk_usage_output)
+
     hostname = socket.gethostname()
     percent = int(percent.strip('%'))
     admin_email = settings.ADMINS[0][1]
