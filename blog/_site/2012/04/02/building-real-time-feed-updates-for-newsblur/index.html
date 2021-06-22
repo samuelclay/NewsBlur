@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="shortcut icon" href="https://newsblur.com/media/img/favicon.ico" type="image/png" />
+  <link rel="icon" href="https://newsblur.com/media/img/favicon_32.png" sizes="32x32"/>
+  <link rel="icon" href="https://newsblur.com/media/img/favicon_64.png" sizes="64x64"/><!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>Building real-time feed updates for NewsBlur with Redis and WebSockets | The NewsBlur Blog</title>
+<meta name="generator" content="Jekyll v4.2.0" />
+<meta property="og:title" content="Building real-time feed updates for NewsBlur with Redis and WebSockets" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Today, NewsBlur is going real-time. Blogs using the PubSubHubbub protocol (PuSH), which includes all Blogger, Tumblr, and many Wordpress blogs, will instantaneously show new updates to subscribers on NewsBlur. Making this happen, while not for the faint of heart, was straight-forward enough that I’m sharing the recipe I used to get everything hooked up and running smoothly." />
+<meta property="og:description" content="Today, NewsBlur is going real-time. Blogs using the PubSubHubbub protocol (PuSH), which includes all Blogger, Tumblr, and many Wordpress blogs, will instantaneously show new updates to subscribers on NewsBlur. Making this happen, while not for the faint of heart, was straight-forward enough that I’m sharing the recipe I used to get everything hooked up and running smoothly." />
+<link rel="canonical" href="https://blog.newsblur.com/2012/04/02/building-real-time-feed-updates-for-newsblur/" />
+<meta property="og:url" content="https://blog.newsblur.com/2012/04/02/building-real-time-feed-updates-for-newsblur/" />
+<meta property="og:site_name" content="The NewsBlur Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2012-04-02T17:52:00-04:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Building real-time feed updates for NewsBlur with Redis and WebSockets" />
+<script type="application/ld+json">
+{"url":"https://blog.newsblur.com/2012/04/02/building-real-time-feed-updates-for-newsblur/","publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"https://blog.newsblur.com/assets/newsblur_logo_512.png"}},"headline":"Building real-time feed updates for NewsBlur with Redis and WebSockets","dateModified":"2012-04-02T17:52:00-04:00","datePublished":"2012-04-02T17:52:00-04:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://blog.newsblur.com/2012/04/02/building-real-time-feed-updates-for-newsblur/"},"description":"Today, NewsBlur is going real-time. Blogs using the PubSubHubbub protocol (PuSH), which includes all Blogger, Tumblr, and many Wordpress blogs, will instantaneously show new updates to subscribers on NewsBlur. Making this happen, while not for the faint of heart, was straight-forward enough that I’m sharing the recipe I used to get everything hooked up and running smoothly.","@type":"BlogPosting","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css">
+  <link rel="stylesheet" type="text/css" href="https://cloud.typography.com/6565292/711824/css/fonts.css" />
+   <link rel="stylesheet" type="text/css" href="https://cloud.typography.com/6565292/731824/css/fonts.css" /><link type="application/atom+xml" rel="alternate" href="https://blog.newsblur.com/feed.xml" title="The NewsBlur Blog" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">
+      <div class="site-title-image">
+        <img src="/assets/newsblur_logo_512.png">
+      </div>
+      <div class="site-title-text">The NewsBlur Blog</div>
+    </a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="https://www.newsblur.com">Visit NewsBlur ➤</a></div>
+      </nav></div>
+</header>
+
+<header class="site-subheader" role="banner">
+
+  <div class="wrapper">
+    <div class="top">
+      NewsBlur is a personal news reader that brings people together to talk about the world.
+    </div>
+    <div class="bottom">
+      A new sound of an old instrument.
+    </div>
+  </div>
+
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Building real-time feed updates for NewsBlur with Redis and WebSockets</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2012-04-02T17:52:00-04:00" itemprop="datePublished">Apr 2, 2012
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <p>Today, NewsBlur is going real-time. Blogs using the PubSubHubbub protocol (PuSH), which includes all Blogger, Tumblr, and many Wordpress blogs, will instantaneously show new updates to subscribers on NewsBlur. Making this happen, while not for the faint of heart, was straight-forward enough that I’m sharing the recipe I used to get everything hooked up and running smoothly.</p>
+
+<p>Every user, both premium and standard, will now receive instantaneous updates. I’ve been beta-testing this feature for the past few weeks, and I’ve been quite pleased in knowing that I’m now reading on the bleeding-edge.</p>
+
+<p>If you are a developer, you may be interested in how this was done. There are two components in a real-time feed: detecting updates and then informing users of those updates.</p>
+
+<h2 id="get-blog-updates-in-real-time">Get blog updates in real-time</h2>
+
+<p>If you are building a system that consumes an RSS feed and you want it to push to you, you’ll have to subscribe to a special PubSubHubbub hub url that the RSS feed gives you in the original RSS feed.</p>
+
+<p>Take a look at the <code class="language-plaintext highlighter-rouge">&lt;feed&gt;</code> section in the NewsBlur Blog’s RSS feed:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&gt;&gt;&gt; # Python
+&gt;&gt;&gt; from utils import feedparser
+&gt;&gt;&gt; from pprint import pprint
+&gt;&gt;&gt; fp = feedparser.parse('http://blog.newsblur.com/rss')
+&gt;&gt;&gt; pprint(fp.feed)
+{'generator': u'Tumblr (3.0; @newsblur)',
+ 'generator_detail': {'name': u'Tumblr (3.0; @newsblur)'},
+ 'link': u'http://blog.newsblur.com/',
+ 'links': [{'href': u'http://tumblr.superfeedr.com/',
+            'rel': u'hub',
+            'type': u'text/html'},
+           {'href': u'http://blog.newsblur.com/',
+            'rel': u'alternate',
+            'type': u'text/html'}],
+ 'subtitle': u'Visual feed reading with intelligence.',
+ 'subtitle_detail': {'base': u'http://blog.newsblur.com/rss',
+                     'language': None,
+                     'type': u'text/html',
+                     'value': u'Visual feed reading with intelligence.'},
+ 'title': u'The NewsBlur Blog',
+ 'title_detail': {'base': u'http://blog.newsblur.com/rss',
+                  'language': None,
+                  'type': u'text/plain',
+                  'value': u'The NewsBlur Blog'}}
+</code></pre></div></div>
+
+<p>If there’s a <code class="language-plaintext highlighter-rouge">rel="hub"</code> node under <code class="language-plaintext highlighter-rouge">links</code>, then the RSS feed is advertising its PubSubHubbub abilities. If you make a subscription request to that address, then the feed will push out updates to your callback URL.</p>
+
+<p>The code for sending the subscription requests, along with generating the verification token, can be found on GitHub: <a href="http://github.com/samuelclay/NewsBlur/tree/master/apps/push/views.py">the PuSH views for handling updates and the initial callback</a> and <a href="http://github.com/samuelclay/NewsBlur/tree/master/apps/push/models.py">the PuSH models used to store subscriptions in the DB</a>. Here’s the main request that your server has to send:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># Python
+response = self._send_request(hub, {
+    'hub.mode' : 'subscribe',
+    'hub.callback' : callback,
+    'hub.topic' : topic,
+    'hub.verify' : ['async', 'sync'],
+    'hub.verify_token' : subscription.generate_token('subscribe'),
+    'hub.lease_seconds' : lease_seconds,
+})
+</code></pre></div></div>
+
+<p>The publisher will then ping your server back to confirm the subscription. Once the publisher is configured to send blog updates to your server, you just have to let users know when there’s a new story, and that’s takes some COMET/push technology with the help of WebSockets.</p>
+
+<h2 id="serving-updates-to-visitors-in-real-time">Serving updates to visitors in real-time</h2>
+
+<p>When a publisher pushes a new story to your server, apart from dupe detection and storing it in your database, you need to alert users who are currently on the site.</p>
+
+<p><a href="http://redis.io">Redis</a> is your new best friend. One of its primary data structures, apart from hashes, sets, sorted sets, and key-value, is a pubsub type that is perfect for this kind of update. Users subscribe to the updates of all of the feeds to which they subscribe. When these sites have a new story, they publish a simple notification to each of the feed’s subscribers.</p>
+
+<p>Here the feed fetcher is publishing to any listening subscribers.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># Python
+def publish_to_subscribers(self, feed):
+    try:
+        r = redis.Redis(connection_pool=settings.REDIS_POOL)
+        listeners_count = r.publish(str(feed.pk), 'story:new')
+        if listeners_count:
+            logging.debug(" ---&gt; [%-30s] Published to %s subscribers" % (
+                          feed.title[:30], listeners_count))
+    except redis.ConnectionError:
+        logging.debug(" ***&gt; [%-30s] Redis is unavailable for real-time." % (
+                      feed.title[:30],))
+</code></pre></div></div>
+
+<p>These subscribers have subscribed via Redis. To know that a user is currently connected and wants to be notified of updates, <a href="http://socket.io">Socket.io</a> is used to connect the browser to a Node.js server that will subscribe to updates via Redis.</p>
+
+<p>The browser opens up a WebSocket and listens for updates for the feeds that they care about:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// JavaScript
+setup_socket_realtime_unread_counts: function() {
+    if (!this.socket) {
+        var server = window.location.protocol + '//' +
+                     window.location.hostname + ':8888';
+        this.socket = this.socket || io.connect(server);
+
+        this.socket.on('connect', _.bind(function() {
+            var active_feeds = this.send_socket_active_feeds();
+            console.log(["Connected to real-time pubsub with " + 
+                         active_feeds.length + " feeds."]);
+
+            this.socket.on('feed:update', _.bind(function(feed_id, message) {
+                console.log(['Real-time feed update', feed_id, message]);
+                this.force_feeds_refresh(false, false, parseInt(feed_id, 10));
+            }, this));
+
+            this.flags.feed_refreshing_in_realtime = true;
+            this.setup_feed_refresh();
+        }, this));
+
+        this.socket.on('disconnect', _.bind(function() {
+            console.log(["Lost connection to real-time pubsub. Falling back to polling."]);
+            this.setup_feed_refresh();
+        }, this));
+    }
+},
+</code></pre></div></div>
+
+<p>The app server is ready to handle thousands of concurrent subscription requests, being Node.js and asynchronous:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># CoffeeScript
+fs = require 'fs'
+io = require('socket.io').listen 8888
+redis = require 'redis'
+
+REDIS_SERVER = if process.env.NODE_ENV == 'dev' then 'localhost' else 'db01'
+client = redis.createClient 6379, REDIS_SERVER
+
+io.sockets.on 'connection', (socket) -&gt;
+    console.log " ---&gt; New connection brings total to" +
+                " #{io.sockets.clients().length} consumers."
+    socket.on 'subscribe:feeds', (feeds, username) -&gt;
+        socket.subscribe?.end()
+        socket.subscribe = redis.createClient 6379, REDIS_SERVER
+
+        console.log " ---&gt; [#{username}] Subscribing to #{feeds.length} feeds"
+        socket.subscribe.subscribe feeds
+
+        socket.subscribe.on 'message', (channel, message) -&gt;
+            console.log " ---&gt; [#{username}] Update on #{channel}: #{message}"
+            socket.emit 'feed:update', channel
+
+    socket.on 'disconnect', () -&gt;
+        socket.subscribe?.end()
+        console.log " ---&gt; [] Disconnect, there are now" +
+                    " #{io.sockets.clients().length-1} consumers."
+</code></pre></div></div>
+
+<p>That’s all there is to it. There a lot going on, but it’s effectively a small circle composed of subscribers and publishers, using Redis to maintain pubsub connections between the many clients and their many feeds.</p>
+
+<script src="http://yandex.st/highlightjs/6.1/highlight.min.js"></script>
+<link rel="stylesheet" type="text/css" href="http://yandex.st/highlightjs/6.1/styles/github.min.css" />
+
+<script type="text/javascript">
+  hljs.initHighlightingOnLoad();
+</script>
+
+
+  </div><a class="u-url" href="/2012/04/02/building-real-time-feed-updates-for-newsblur/" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">The NewsBlur Blog</h2>
+
+    <div class="footer-col-wrapper">
+      
+
+      <div class="footer-col footer-col-1"><ul class="social-media-list"><li><a href="https://github.com/samuelclay"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">samuelclay</span></a></li><li><a href="https://www.twitter.com/newsblur"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">newsblur</span></a></li><li><a href="mailto:blog@newsblur.com?subject=Hello from the NewsBlur blog"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#email"></use></svg> <span class="username">blog@newsblur.com</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>NewsBlur is a personal news reader that brings people together to talk about the world.<br />
+A new sound of an old instrument.<br />
+</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

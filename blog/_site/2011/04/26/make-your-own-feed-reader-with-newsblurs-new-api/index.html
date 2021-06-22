@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="shortcut icon" href="https://newsblur.com/media/img/favicon.ico" type="image/png" />
+  <link rel="icon" href="https://newsblur.com/media/img/favicon_32.png" sizes="32x32"/>
+  <link rel="icon" href="https://newsblur.com/media/img/favicon_64.png" sizes="64x64"/><!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>Make your own feed reader with NewsBlur’s new API | The NewsBlur Blog</title>
+<meta name="generator" content="Jekyll v4.2.0" />
+<meta property="og:title" content="Make your own feed reader with NewsBlur’s new API" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Please vote for this blog post on Hacker News: http://news.ycombinator.com/item?id=2485377." />
+<meta property="og:description" content="Please vote for this blog post on Hacker News: http://news.ycombinator.com/item?id=2485377." />
+<link rel="canonical" href="https://blog.newsblur.com/2011/04/26/make-your-own-feed-reader-with-newsblurs-new-api/" />
+<meta property="og:url" content="https://blog.newsblur.com/2011/04/26/make-your-own-feed-reader-with-newsblurs-new-api/" />
+<meta property="og:site_name" content="The NewsBlur Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2011-04-26T06:41:00-04:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Make your own feed reader with NewsBlur’s new API" />
+<script type="application/ld+json">
+{"url":"https://blog.newsblur.com/2011/04/26/make-your-own-feed-reader-with-newsblurs-new-api/","publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"https://blog.newsblur.com/assets/newsblur_logo_512.png"}},"headline":"Make your own feed reader with NewsBlur’s new API","dateModified":"2011-04-26T06:41:00-04:00","datePublished":"2011-04-26T06:41:00-04:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://blog.newsblur.com/2011/04/26/make-your-own-feed-reader-with-newsblurs-new-api/"},"description":"Please vote for this blog post on Hacker News: http://news.ycombinator.com/item?id=2485377.","@type":"BlogPosting","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css">
+  <link rel="stylesheet" type="text/css" href="https://cloud.typography.com/6565292/711824/css/fonts.css" />
+   <link rel="stylesheet" type="text/css" href="https://cloud.typography.com/6565292/731824/css/fonts.css" /><link type="application/atom+xml" rel="alternate" href="https://blog.newsblur.com/feed.xml" title="The NewsBlur Blog" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">
+      <div class="site-title-image">
+        <img src="/assets/newsblur_logo_512.png">
+      </div>
+      <div class="site-title-text">The NewsBlur Blog</div>
+    </a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="https://www.newsblur.com">Visit NewsBlur ➤</a></div>
+      </nav></div>
+</header>
+
+<header class="site-subheader" role="banner">
+
+  <div class="wrapper">
+    <div class="top">
+      NewsBlur is a personal news reader that brings people together to talk about the world.
+    </div>
+    <div class="bottom">
+      A new sound of an old instrument.
+    </div>
+  </div>
+
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Make your own feed reader with NewsBlur&#39;s new API</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2011-04-26T06:41:00-04:00" itemprop="datePublished">Apr 26, 2011
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <p><em>Please vote for this blog post on Hacker News: <a href="http://news.ycombinator.com/item?id=2485377">http://news.ycombinator.com/item?id=2485377</a>.</em></p>
+
+<p>It’s a big news day here at NewsBlur HQ. For those of you who don’t know, NewsBlur HQ is a comfy seat on the A train, part of the NYC subway system, since that’s where most of the code gets written anyhow.</p>
+
+<p>I’m happy to announce <a href="http://www.newsblur.com/api">NewsBlur’s brand-spanking-new API</a>. It’s free, it comes with tons of juicy data, and it can be used to create your own feed reader. Let’s look at what this all means.</p>
+
+<p><a href="http://www.newsblur.com">NewsBlur</a> is a visual feed reader with intelligence. This API gives you access to all the moving parts that make up the flagship newsblur.com site. This includes the original site, stories, intelligence classifiers, statistics, and a really neat River of News view that aggregates multiple feeds into a single view.</p>
+
+<h2 id="juicy-data-from-the-api">Juicy Data from the API</h2>
+
+<p>Let’s take a quick look at a visualization of the data you can get out of the API. This is a screenshot from the Statistics dialog from a single feed:</p>
+
+<p><img src="http://cl.ly/6FN3/statistics.png" alt="" /></p>
+
+<p>To get this data, you would need to make two calls:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ curl http://www.newsblur.com/rss_feeds/search_feed?address=techcrunch
+
+{
+    "feed_address": "http://feeds.feedburner.com/TechCrunch",
+    "updated": "4 minutes",
+    "subs": 2514,
+    "feed_link": "http://techcrunch.com",
+    "favicon_fetching": false,
+    "feed_title": "TechCrunch",
+    "favicon": "[BASE64 FAVICON GOODNESS DATA]",
+    "favicon_color": "90b490",
+    "id": 12,
+    "result": "ok"
+}
+
+$ curl http://www.newsblur.com/rss_feeds/statistics/12
+
+{
+    "premium_subscribers": 66,
+    "average_stories_per_month": 490.33333333333331,
+    "subscriber_count": 2514,
+    "last_load_time": 40,
+    "update_interval_minutes": 4,
+    "last_update": "5 minutes",
+    "feed_fetch_history": [...],
+    "result": "ok",
+    "stories_last_month": 501,
+    "active_subscribers": 43,
+    "story_count_history": [["2010-11", 455.0], ["2010-12", 500.0], 
+                            ["2011-1", 500.0], ["2011-2", 500.0], 
+                            ["2011-3", 487.0], ["2011-4", 500.0]],
+    "next_update": "3 minutes",
+    "classifier_counts": {
+        "feed": [{
+            "neg": 5,
+            "feed_id": 12,
+            "pos": 40
+        }],
+        "title": [
+        {
+            "neg": 4,
+            "tag": "techcrunch tv",
+            "pos": 14
+        },
+        {
+            "neg": 3,
+            "tag": "iphone 4",
+            "pos": 11
+        }
+        ...
+        ],
+        "author": [{
+            "neg": 2,
+            "pos": 24,
+            "author": "MG Siegler"
+        },
+        {
+            "neg": 3,
+            "pos": 25,
+            "author": "Michael Arrington"
+        },
+        {
+            "neg": 4,
+            "pos": 13,
+            "author": "Paul Carr"
+        }
+        ...
+        ]
+    }
+}
+</code></pre></div></div>
+
+<p>How about the intelligence classifiers for a site?</p>
+
+<p><img src="http://f.cl.ly/items/1o3V3D2K1u1Q1P2N2B42/Screen%20shot%202011-04-26%20at%2010.09.33%20AM.png" alt="" /></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ curl http://www.newsblur.com/rss_feeds/search_feed?address=louisgray
+
+{
+    "feed_address": "http://blog.louisgray.com/feeds/posts/default?alt=rss",
+    "updated": "2 minutes",
+    "subs": 130,
+    "feed_link": "http://blog.louisgray.com/",
+    "favicon_fetching": false,
+    "feed_title": "louisgray.com",
+    "favicon": "[FAVICON GOES HERE]",
+    "favicon_color": "f96402",
+    "id": 172,
+    "result": "ok"
+}
+
+$ curl http://www.newsblur.com/reader/feeds_trainer?feed_id=172
+
+[{
+    "stories_last_month": 24,
+    "feed_id": 172,
+    "feed_tags": [["android", 13.0], ["google", 12.0], ["apple", 12.0], 
+                  ["iphone", 9.0], ["twitter", 7.0], ["facebook", 5.0], 
+                  ["sxsw", 5.0], ["media", 5.0], ["spotify", 4.0], 
+                  ["itunes", 4.0], ["ipad", 4.0], ["silicon valley", 4.0], 
+                  ["personal", 3.0], ["apple tv", 3.0], ["quora", 3.0], 
+                  ["social networking", 3.0], ["yobongo", 3.0], 
+                  ["entertainment", 3.0], ["seesmic", 3.0], ["search", 3.0], 
+                  ["music", 3.0], ["beluga", 3.0], ["work", 3.0], 
+                  ["chat", 3.0], ["samsung", 3.0]],
+    "classifiers": {
+        "authors": {},
+        "feeds": {},
+        "titles": {},
+        "tags": {
+            "personal": 1,
+            "android": -1,
+            "facebook": -1,
+            "twitter": 1,
+            "rss": 1
+        }
+    },
+    "feed_authors": [["louisgray@gmail.com (Louis Gray)", 62]]
+}]
+</code></pre></div></div>
+
+<p>Without going too deep into explaining various parts of the API, you can dive right into it by viewing the various API endpoints at <a href="http://www.newsblur.com/api">http://www.newsblur.com/api</a>. The API is meant to be used with an authenticated account, which can be created directly from the API. I spent a lot of time polishing the look and readability of the API, so I hope you like it, since if you’re going to be developing on top of it, you will probably spend a looong time working with the 30 endpoints.</p>
+
+<p>I’d like to briefly note that I work on NewsBlur in my free time, and it’s entirely open-source on GitHub: <a href="http://github.com/samuelclay">http://github.com/samuelclay</a>. This API is the result of 22 months of work and thought. But it’s not corporate, not funded, and certainly not battle-tested. Go easy on it for the time being. And <a href="http://twitter.com/samuelclay">offer feedback on Twitter</a>.</p>
+
+<h2 id="is-making-a-newsblur-client-cannibalism">Is making a NewsBlur client cannibalism?</h2>
+
+<p>Woah! How does that even work? There’s no endpoint for <em>cannibalism</em>. (OK, there is, it’s <code class="language-plaintext highlighter-rouge">/reader/delete_feed</code>.) But what does this API mean for you?</p>
+
+<p>Twitter has a web client, but the real iceberg is the ecosystem built on their API. Google Reader has a website, but more than a handful of enormous venture-engorged companies make their living by using the Reader API.</p>
+
+<p>If you choose to use the NewsBlur API, you are building complements to the website. You can mix-and-mash data as you please. But more importantly, you can use NewsBlur data in ways that are not even possible on the website today.</p>
+
+<p>Want to mix up a social layer with the subscriptions in your NewsBlur account? Just use <code class="language-plaintext highlighter-rouge">/reader/feeds</code>, <code class="language-plaintext highlighter-rouge">/reader/feed/:id</code>, and <code class="language-plaintext highlighter-rouge">/rss_feeds/statistics</code>. Got an Android device and want to make a mobile client that you can <em>charge money</em> for and make a profit? The NewsBlur API supports that.</p>
+
+<p>What you can’t do is wrap advertisements around NewsBlur data. Why? Because NewsBlur preserves the original site, so there are already ads on the page if the publisher chooses to have them. Additionally, ads degrade the NewsBlur experience. NewsBlur is not some fly-by-night air-ride-equipped service out to make a buck. NewsBlur is built to make life better, a small net-enabled reading experience at a time. Profit is great, but not at the cost of ads.</p>
+
+<h2 id="if-you-build-it-they-will-come-and-theres-no-hard-scaling-part">If you build it, they will come, and there’s no hard scaling part</h2>
+
+<p>You’re building on an API, not a service end-to-end. If you want to handle the scaling part, use the raw NewsBlur code on GitHub: <a href="http://github.com/samuelclay">http://github.com/samuelclay</a>. NewsBlur.com will take care of the scaling and infrastructure, and you can take care of building a new layer that might make you famous/well-off/existentially-happy.</p>
+
+<p>The API is ready for you at <a href="http://www.newsblur.com/api">http://www.newsblur.com/api</a>.</p>
+
+<p>Questions? Feedback? Want to stay up to date when I drive cross country and take photos of the beautiful countryside between New York and California? Follow <a href="http://twitter.com/samuelclay">@samuelclay on Twitter</a>.</p>
+
+<ul>
+  <li>Samuel Clay, innocent Founder of NewsBlur</li>
+</ul>
+
+
+  </div><a class="u-url" href="/2011/04/26/make-your-own-feed-reader-with-newsblurs-new-api/" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">The NewsBlur Blog</h2>
+
+    <div class="footer-col-wrapper">
+      
+
+      <div class="footer-col footer-col-1"><ul class="social-media-list"><li><a href="https://github.com/samuelclay"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">samuelclay</span></a></li><li><a href="https://www.twitter.com/newsblur"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">newsblur</span></a></li><li><a href="mailto:blog@newsblur.com?subject=Hello from the NewsBlur blog"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#email"></use></svg> <span class="username">blog@newsblur.com</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>NewsBlur is a personal news reader that brings people together to talk about the world.<br />
+A new sound of an old instrument.<br />
+</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>
