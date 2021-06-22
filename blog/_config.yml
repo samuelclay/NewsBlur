@@ -21,8 +21,9 @@
 title: The NewsBlur Blog
 email: blog@newsblur.com
 tagline: A new sound of an old instrument
-description: >- # this means to ignore newlines until "baseurl:"
+description: > # this means to ignore newlines until "baseurl:"
   NewsBlur is a personal news reader that brings people together to talk about the world.
+  
   A new sound of an old instrument.
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "https://blog.newsblur.com" # the base hostname & protocol for your site, e.g. http://example.com
