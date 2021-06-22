@@ -42,6 +42,10 @@
     color: $title-color;
   }
 
+  @include media-query($on-palm) {
+    @include relative-font-size(1.625);
+  }
+
   .site-title-image {
     float: left;
     margin: 8px 18px 8px 0;
@@ -90,7 +94,7 @@
 
   @include media-query($on-palm) {
     position: absolute;
-    top: 9px;
+    top: $spacing-unit / 2;
     right: $spacing-unit / 2;
     background-color: $background-color;
     border: 1px solid $grey-color-light;
