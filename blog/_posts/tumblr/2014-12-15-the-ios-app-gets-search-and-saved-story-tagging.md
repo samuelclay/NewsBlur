@@ -9,7 +9,7 @@ redirect_from: /post/105287842606/the-ios-app-gets-search-and-saved-story-taggin
 ---
 This month’s new iOS features are big, big features. Search made it on the web only a few months ago and is now available on the iOS app. You can also now easily add tags to saved stories, making it easier to organize and save stories you read for re-reading later.
 
-![](http://static.newsblur.com.s3.amazonaws.com/blog/ios%204.6%20tagging.png) ![](http://static.newsblur.com.s3.amazonaws.com/blog/ios%204.6%20search.png)
+![](https://s3.amazonaws.com/static.newsblur.com/blog/ios%204.6%20tagging.png) ![](https://s3.amazonaws.com/static.newsblur.com/blog/ios%204.6%20search.png)
 
 Here’s the full list of new features:
 

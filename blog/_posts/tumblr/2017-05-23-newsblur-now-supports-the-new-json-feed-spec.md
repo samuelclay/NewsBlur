@@ -15,7 +15,7 @@ We — Manton Reece and Brent Simmons — have noticed that JSON has become the 
 
 **Starting today, NewsBlur now officially supports the new JSON Feed spec**. And there’s nothing extra you have to do. This means if a website syndicates their stories with the easy-to-write and easy-to-read JSON format, you can read it on NewsBlur. It should make no difference to you, since you’re reading the end product. But to website developers everywhere, supporting JSON Feeds is so much easier than supporting XML-based RSS/Atom.
 
-![](http://static.newsblur.com.s3.amazonaws.com/blog/json-feeds.png)
+![](https://s3.amazonaws.com/static.newsblur.com/blog/json-feeds.png)
 
 Daring Fireball, as pictured above, supports the new JSON Feed. To you, the reader, it should look no different than any other RSS feed. But to the developer, publishing this as a JSON Feed instead of XML is an order of magnitude easier and quicker.
 

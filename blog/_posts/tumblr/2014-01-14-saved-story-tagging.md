@@ -11,11 +11,11 @@ It’s one thing to follow a handful of sites and use NewsBlur’s training to o
 
 Today I would like to introduce a big new feature: saved story tagging. It works like this. When you save a story, it is automatically tagged with all of the folders that the site is part of.
 
-![](http://static.newsblur.com.s3.amazonaws.com/blog/saved%20story%20tags.png)
+![](https://s3.amazonaws.com/static.newsblur.com/blog/saved%20story%20tags.png)
 
 After the story is auto-tagged by folder, you can then add your own tags, which are autocompleted by previously used tags. You can also click a button to auto-tag the story with its own tags, easily clicking on the tags you want to remove.
 
-![](http://static.newsblur.com.s3.amazonaws.com/blog/story_tags.jpg)
+![](https://s3.amazonaws.com/static.newsblur.com/blog/story_tags.jpg)
 
 You can also search per-tag and soon you will be able to rename and delete tags. There are more plans to integrate tagging into both iOS and Android apps.
 

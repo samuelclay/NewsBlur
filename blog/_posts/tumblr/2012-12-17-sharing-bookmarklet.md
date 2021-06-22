@@ -11,11 +11,11 @@ There are lots of reasons not to post a cool article you’ve seen to your blurb
 
 That’s what the [NewsBlur bookmarklet tool](http://www.newsblur.com/?next=goodies) is for. Whether it’s a great article from a site that you don’t like enough to follow regularly, or a first glimpse at an intriguing new site, the bookmarklet makes it easy to post anything you find around the Web to your blurblog.
 
-![image](http://static.newsblur.com.s3.amazonaws.com/blog/Screen%20Shot%202012-12-17%20at%20Dec%2017%2011.58.26%20AM.png)
+![image](https://s3.amazonaws.com/static.newsblur.com/blog/Screen%20Shot%202012-12-17%20at%20Dec%2017%2011.58.26%20AM.png)
 
 Setting up the bookmarklet tool is easy: Click on the little sprocket in the bottom left of your dashboard, and choose “Goodies & Extras” from the menu. You’ll see “Add Site & Share Story Bookmarklet,” and next to that, a button that says “Share on NewsBlur.” Drag the button to the Bookmarks Bar in your browser, and you’re in business.
 
-[![image](http://static.newsblur.com.s3.amazonaws.com/blog/Screen%20Shot%202012-12-17%20at%20Dec%2017%2011.56.14%20AM.png)](http://www.newsblur.com/?next=goodies)
+[![image](https://s3.amazonaws.com/static.newsblur.com/blog/Screen%20Shot%202012-12-17%20at%20Dec%2017%2011.56.14%20AM.png)](http://www.newsblur.com/?next=goodies)
 
 The next time you see an article that strikes your fancy, just click the bookmarklet and the NewsBlur window will open. (If you click it by accident or decide you don’t want to share, just click anywhere outside of the box, and you’ll be back where you started.) The bookmarklet automatically selects all text on a page by default, but if you only want to blog a certain chunk of a story, just highlight it beforehand, and it’ll appear solo in the box.
 

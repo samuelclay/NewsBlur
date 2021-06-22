@@ -15,7 +15,7 @@ Starting today, all stories will be run through [Postlight Labs’ Mercury Parse
 
 Take a look:
 
-![](http://static.newsblur.com.s3.amazonaws.com/blog/text_view_images.png)
+![](https://s3.amazonaws.com/static.newsblur.com/blog/text_view_images.png)
 
 A welcome improvement. This new text extractor and parser also does a better job of handling Unicode and Chinese characters. And when it doesn’t extract text as well as the old text extractor, NewsBlur will automatically fallback on the old method.
 

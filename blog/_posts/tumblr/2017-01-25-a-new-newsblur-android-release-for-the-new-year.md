@@ -11,7 +11,7 @@ Version 5.0 has a bunch of new features. It’s got new gestures, better looking
 
 Take a look:
 
-![](http://static.newsblur.com.s3.amazonaws.com/blog/android-v5.png)
+![](https://s3.amazonaws.com/static.newsblur.com/blog/android-v5.png)
 
 The full feature list:
 

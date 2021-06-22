@@ -13,15 +13,15 @@ Except it’s not at all a big deal because here at NewsBlur we’re making sure
 
 But there’s good news today because NewsBlur now has a custom-built solution for YouTube videos. All of your existing YouTube RSS feeds are automatically ported over to the new YouTube video fetcher.
 
-![](http://static.newsblur.com.s3.amazonaws.com/blog/youtube%20fetcher.png)
+![](https://s3.amazonaws.com/static.newsblur.com/blog/youtube%20fetcher.png)
 
 And that’s not all. The improved YouTube video fetcher now displays a big embedded video so you can watch the video right in NewsBlur.
 
-![](http://static.newsblur.com.s3.amazonaws.com/blog/youtube%20detail.png)
+![](https://s3.amazonaws.com/static.newsblur.com/blog/youtube%20detail.png)
 
 To subscribe to new YouTube channels, just enter in the URL of the channel in the Add Site popover.
 
-![](http://static.newsblur.com.s3.amazonaws.com/blog/youtube%20subscribe.png)
+![](https://s3.amazonaws.com/static.newsblur.com/blog/youtube%20subscribe.png)
 
 When Google takes away your tools, NewsBlur builds them better than before.
 

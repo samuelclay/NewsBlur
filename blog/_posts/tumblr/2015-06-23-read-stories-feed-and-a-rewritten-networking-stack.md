@@ -12,7 +12,7 @@ Today I’d like to announce the release of version 4.3.0 of the official NewsBl
 
 The best new feature on the app is the new Read Stories feed. Take a look.
 
-![](http://static.newsblur.com.s3.amazonaws.com/blog/android%20read%20stories.png)
+![](https://s3.amazonaws.com/static.newsblur.com/blog/android%20read%20stories.png)
 
 Here’s what’s new in version 4.3.0:
 
