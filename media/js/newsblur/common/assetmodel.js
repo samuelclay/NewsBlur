@@ -838,7 +838,6 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             }, pre_callback, null, {
                 'ajax_group': 'dashboard',
                 'request_type': 'GET',
-                'ajax_group': 'queue_clear',
                 'beforeSend': function () {
                     // NEWSBLUR.log(['Clearing realtime stories', self.queued_realtime_stories['hashes']])
                     self.queued_realtime_stories = {};

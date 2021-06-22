@@ -43,6 +43,8 @@ alllogs:
 down:
 	- docker-compose -f docker-compose.yml down
 nbdown: down
+jekyll:
+	- cd blog && bundle exec jekyll serve
 
 # runs tests
 test:

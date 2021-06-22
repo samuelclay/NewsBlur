@@ -63,7 +63,7 @@ resource "digitalocean_droplet" "www" {
 }
 
 resource "digitalocean_droplet" "app-django" {
-  count    = 3
+  count    = 9
   image    = var.droplet_os
   name     = "app-django${count.index+1}"
   region   = var.droplet_region

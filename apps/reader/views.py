@@ -1233,6 +1233,7 @@ def folder_rss_feed(request, user_id, secret_token, unread_filter, folder_slug):
             story['story_feed_id'],
             feed.feed_title if feed else ""
         )
+        story_content = re.sub(r'[\x00-\x08\x0B-\x0C\x0E-\x1F]', '', story_content)
         story_data = {
             'title': "%s%s" % (("%s: " % feed.feed_title) if feed else "", story['story_title']),
             'link': story['story_permalink'],
