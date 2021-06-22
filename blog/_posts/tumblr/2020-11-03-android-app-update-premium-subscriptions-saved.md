@@ -14,7 +14,7 @@ For one, premium subscriptions can now be purchased in the Android app itself. R
 
 Also, saved searches are now at the bottom of your feed list. Take a look:
 
-<figure class="tmblr-full" data-orig-height="960" data-orig-width="1081" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/android-saved-searches.png"><img src="https://64.media.tumblr.com/d9b8afdf9bcaf3fd7c46af606f4ff0a9/876b01213ddc4e4a-7c/s540x810/c40711d948099db8f6a62bc1c2d0ed95491f2711.png" width="650" style="width: 650px; height: auto;" data-orig-height="960" data-orig-width="1081" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/android-saved-searches.png"></figure>
+<figure class="tmblr-full" data-orig-height="960" data-orig-width="1081" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/android-saved-searches.png"><img width="650" style="width: 650px; height: auto;" data-orig-height="960" data-orig-width="1081" src="https://s3.amazonaws.com/static.newsblur.com/blog/android-saved-searches.png"></figure>
 
 Heres’ the full list of version 10.1’s many new features:
 

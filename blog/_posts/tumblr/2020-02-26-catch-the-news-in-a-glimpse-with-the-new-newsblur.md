@@ -11,7 +11,7 @@ Most of the time when we release a new feature, it finds immediate use. But ever
 
 Today, I’m pleased to announce the launch of our new Today View widget on iOS.
 
-<figure class="tmblr-full" data-orig-height="889" data-orig-width="500" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/ios-widget.png"><img src="https://64.media.tumblr.com/fabf25d2e7f2fda9e00b8ab72e9682ec/c6376ebfd208ddd1-55/s540x810/6329a821e319c84eac9f5a169caa039d2df81a3e.png" data-orig-height="889" data-orig-width="500" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/ios-widget.png" style="margin: 0 auto; border: 1px solid #606060"></figure>
+<figure class="tmblr-full" data-orig-height="889" data-orig-width="500" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/ios-widget.png"><img data-orig-height="889" data-orig-width="500" src="https://s3.amazonaws.com/static.newsblur.com/blog/ios-widget.png"></figure>
 
 Instead of having to open up the app to see what’s new, the stories come to you in the Today View, adjacent to the notification center. Personally I find myself checking this Today View widget a dozen times more than I open the NewsBlur app. It’s so incredibly useful to have NewsBlur come to me.
 

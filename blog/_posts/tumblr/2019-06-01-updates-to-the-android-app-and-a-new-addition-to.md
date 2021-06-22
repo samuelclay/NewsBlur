@@ -9,7 +9,7 @@ redirect_from: /post/185294660096/updates-to-the-android-app-and-a-new-addition-
 ---
 Today we have a nice update, version 9.0, of the Android app that includes a rewrite of the story management backend as well as fixes for some critical display issues.
 
-<figure class="tmblr-full" data-orig-height="1920" data-orig-width="1080" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/android-9.png"><img src="https://64.media.tumblr.com/357db7a4708c6d6f1f2aac9552e02d3d/tumblr_inline_psfg1ltPMP1qg4k90_540.png" width="600" style="width: 600px; margin: 0 auto;border:1px solid #606060" data-orig-height="1920" data-orig-width="1080" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/android-9.png"></figure>
+<figure class="tmblr-full" data-orig-height="1920" data-orig-width="1080" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/android-9.png"><img width="600" style="width: 600px; margin: 0 auto;border:1px solid #606060" data-orig-height="1920" data-orig-width="1080" src="https://s3.amazonaws.com/static.newsblur.com/blog/android-9.png"></figure>
 
 Here’s the full list of changes for version 9.0:
 

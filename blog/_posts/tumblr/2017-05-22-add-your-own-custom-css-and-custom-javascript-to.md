@@ -13,13 +13,13 @@ Head to _Manage \> Account \> Custom CSS/JS_. And here’s what you can do with 
 
 **Install an unofficial dark theme for NewsBlur**
 
-<figure class="tmblr-full" data-orig-height="960" data-orig-width="1098" data-orig-src="https://userstyles.org/style_screenshots/124890_after.png"><img src="https://64.media.tumblr.com/2c5ca8c700fa7efa80b71806ed504d34/tumblr_inline_pa8u8dgDx81qg4k90_540.png" style="width: 650px;" data-orig-height="960" data-orig-width="1098" data-orig-src="https://userstyles.org/style_screenshots/124890_after.png"></figure>
+<figure class="tmblr-full" data-orig-height="960" data-orig-width="1098" data-orig-src="https://userstyles.org/style_screenshots/124890_after.png"><img style="width: 650px;" data-orig-height="960" data-orig-width="1098" src="https://userstyles.org/style_screenshots/124890_after.png"></figure>
 
 Over on Stylish, a community for custom CSS, there are [a bunch of stylesheets that change how NewsBlur looks](https://userstyles.org/styles/browse?search_terms=newsblur). Have you ever wanted a dark theme? There’s a few and [the most popular is made by NewsBlur user Splike](https://userstyles.org/styles/124890/newsblur-dark-theme-by-splike). (Note: you will have to remove the @moz delcaraction along with the surrounding {}’s at the top and bottom lines.)
 
 **Hide that module or link that you don’t want to see on NewsBlur**
 
-<figure class="tmblr-full" data-orig-height="1033" data-orig-width="1300" data-orig-src="http://static.newsblur.com.s3.amazonaws.com/blog/custom-css.png"><img src="https://64.media.tumblr.com/147642fe0aa47b2e28a821ea2e58472f/tumblr_inline_pa8u8d3Sal1qg4k90_540.png" style="width: 650px;" data-orig-height="1033" data-orig-width="1300" data-orig-src="http://static.newsblur.com.s3.amazonaws.com/blog/custom-css.png"></figure>
+<figure class="tmblr-full" data-orig-height="1033" data-orig-width="1300" data-orig-src="http://static.newsblur.com.s3.amazonaws.com/blog/custom-css.png"><img style="width: 650px;" data-orig-height="1033" data-orig-width="1300" src="http://static.newsblur.com.s3.amazonaws.com/blog/custom-css.png"></figure>
 
 Don’t like seeing Global Shared Stories or the River of News on the Dashboard? You can hide them with this little bit of CSS:
 

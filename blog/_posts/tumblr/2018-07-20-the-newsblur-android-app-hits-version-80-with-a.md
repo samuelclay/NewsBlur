@@ -9,11 +9,11 @@ redirect_from: /post/176089041176/the-newsblur-android-app-hits-version-80-with-
 ---
 Long popular on the NewsBlur web app, the Grid view has now come to the Android app. Have a look for yourself…
 
-<figure class="tmblr-full" data-orig-height="1270" data-orig-width="800" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/android-grid-black.png"><img src="https://64.media.tumblr.com/93b731ce4db4cdd14a26311b3cf5228c/tumblr_inline_pc69jpn8UX1qg4k90_540.png" style="width: 350px; margin: 0 auto;" data-orig-height="1270" data-orig-width="800" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/android-grid-black.png"></figure>
+<figure class="tmblr-full" data-orig-height="1270" data-orig-width="800" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/android-grid-black.png"><img style="width: 350px; margin: 0 auto;" data-orig-height="1270" data-orig-width="800" src="https://s3.amazonaws.com/static.newsblur.com/blog/android-grid-black.png"></figure>
 
 There’s even a wide and narrow grid view for ultimate customization. And the grid view is saved per-folder/feed, so you can change some folders to use the grid view while leaving others in a list view. And gestures work on individual grid tiles, so you can swipe to mark stories as read/unread while in the Grid view.
 
-<figure class="tmblr-full" data-orig-height="670" data-orig-width="800" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/android-grid-white.png"><img src="https://64.media.tumblr.com/10aa564259ed68ec86077cace399b350/tumblr_inline_pc69jrEcLl1qg4k90_540.png" style="width: 650px;margin: 0 auto;" data-orig-height="670" data-orig-width="800" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/android-grid-white.png"></figure>
+<figure class="tmblr-full" data-orig-height="670" data-orig-width="800" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/android-grid-white.png"><img style="width: 650px;margin: 0 auto;" data-orig-height="670" data-orig-width="800" src="https://s3.amazonaws.com/static.newsblur.com/blog/android-grid-white.png"></figure>
 
 Here’s a full list of the changes:
 

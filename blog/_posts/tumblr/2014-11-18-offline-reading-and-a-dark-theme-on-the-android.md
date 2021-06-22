@@ -11,7 +11,7 @@ This is a huge release for the NewsBlur Android app. So much has happened in the
 
 Better yet, not only can you read while offline, but you can better read at night with the new dark theme. Take a look.
 
-<figure class="tmblr-full" data-orig-height="1920" data-orig-width="1200" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/android%20v4.png"><img src="https://64.media.tumblr.com/10de3bcf7c5bfa3b0bfb9ee1748c2df1/2a155b2326c7d2ed-c2/s540x810/6e02e6d138b774073e0a3c211384f83cca96d054.png" data-orig-height="1920" data-orig-width="1200" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/android%20v4.png"></figure>
+<figure class="tmblr-full" data-orig-height="1920" data-orig-width="1200" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/android%20v4.png"><img data-orig-height="1920" data-orig-width="1200" src="https://s3.amazonaws.com/static.newsblur.com/blog/android%20v4.png"></figure>
 
 Here’s what’s new in version 4.0:
 

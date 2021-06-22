@@ -15,17 +15,17 @@ Most of what you see in your day-to-day feed is news that’s up to the minute a
 
 Today I’m happy to introduce a new feature that you won’t find anywhere else. It’s called Infrequent Site Stories and you can find it at the top of your feed list on the web, on iOS, and on Android.
 
-<figure class="tmblr-full" data-orig-height="1131" data-orig-width="1200" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/infrequent-ios-android.png"><img src="https://64.media.tumblr.com/9eab7a1691581e54b03817c96da2d569/tumblr_inline_pa8u8d69er1qg4k90_540.png" width="600" style="margin: 24px auto;" data-orig-height="1131" data-orig-width="1200" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/infrequent-ios-android.png"></figure>
+<figure class="tmblr-full" data-orig-height="1131" data-orig-width="1200" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/infrequent-ios-android.png"><img width="600" style="margin: 24px auto;" data-orig-height="1131" data-orig-width="1200" src="https://s3.amazonaws.com/static.newsblur.com/blog/infrequent-ios-android.png"></figure>
 
 Infrequent Site Stories is the river that captures stories from those authors who aren’t pulling from the firehose. These are the stories that are more thoughtful and more relevant days, weeks, months, or even years down the line. These stories are not to be missed. And the best thing about these stories is that there are far fewer of them than there are of your normal full river from All Site Stories.
 
 You can also configure the Infrequent river to be more or less inclusive of content that is more or less frequently published by changing the filter anywhere from 5 to 90 stories per month.
 
-<figure class="tmblr-full" data-orig-height="570" data-orig-width="1100" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/infrequent-options.png"><img src="https://64.media.tumblr.com/f926493e0a676be01d48ec77be34e9fa/tumblr_inline_pa8u8dXnkT1qg4k90_540.png" width="650" style="margin: 24px auto; border: 1px solid #606060;" data-orig-height="570" data-orig-width="1100" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/infrequent-options.png"></figure>
+<figure class="tmblr-full" data-orig-height="570" data-orig-width="1100" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/infrequent-options.png"><img width="650" style="margin: 24px auto; border: 1px solid #606060;" data-orig-height="570" data-orig-width="1100" src="https://s3.amazonaws.com/static.newsblur.com/blog/infrequent-options.png"></figure>
 
 These options are also available on all three official NewsBlur platforms and will let you perform a filter similar to how Focus mode reduces your number of unreads. It’s great to dip into Infrequent Site Stories and get stories you would ordinarily miss out on.
 
-<figure class="tmblr-full" data-orig-height="866" data-orig-width="1400" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/infrequent-web.png"><img src="https://64.media.tumblr.com/da3a0175015bcbf36d72206ee8dd2d57/tumblr_inline_pa8u8e1Pwf1qg4k90_540.png" width="650" style="margin: 24px auto;" data-orig-height="866" data-orig-width="1400" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/infrequent-web.png"></figure>
+<figure class="tmblr-full" data-orig-height="866" data-orig-width="1400" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/infrequent-web.png"><img width="650" style="margin: 24px auto;" data-orig-height="866" data-orig-width="1400" src="https://s3.amazonaws.com/static.newsblur.com/blog/infrequent-web.png"></figure>
 
 Try out the new Infrequent Site Stories feed, available only to premium subscribers. If your experience is anything like mine, it’ll be one of the new must read feeds in your reader.
 

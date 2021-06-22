@@ -17,11 +17,11 @@ But the second reason is that your privacy is also protected from more benign, a
 
 The feature that is launching this week (it actually launched Monday in order for me to ensure that it works well) is a secure image proxy for all images served on NewsBlur. That means that NewsBlur will take any images that isn’t behind an encrypted https connection and proxies it behind NewsBlur’s own secure, encrypted connection.
 
-<figure class="tmblr-full" data-orig-height="1021" data-orig-width="1110" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/https-proxy.png"><img src="https://64.media.tumblr.com/710edf2e4f0268f006033955e454b483/57da7eeb90a41b68-c7/s540x810/4718b2e0997414e176520d2c41346cb842517f5d.png" width="650" style="margin: 0 auto; width: 650px;" data-orig-height="1021" data-orig-width="1110" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/https-proxy.png"></figure>
+<figure class="tmblr-full" data-orig-height="1021" data-orig-width="1110" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/https-proxy.png"><img width="650" style="margin: 0 auto; width: 650px;" data-orig-height="1021" data-orig-width="1110" src="https://s3.amazonaws.com/static.newsblur.com/blog/https-proxy.png"></figure>
 
 You should notice next to no difference. The only difference you may notice is that some images may load _faster_, since NewsBlur has a thicker pipe to the Internet and can download data faster than your client browser can, which means that your persistent connection to NewsBlur’s servers takes over instead of having to make new connections with the associated overhead to various servers around the net.
 
-<figure class="tmblr-full" data-orig-height="488" data-orig-width="1392" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/https-preference.png"><img src="https://64.media.tumblr.com/4d02deaa3b5c3037b9027afc0c32d7c8/57da7eeb90a41b68-c7/s540x810/d60c13e7d2fcd2c8c820030c37c300fecd6e4061.png" style="margin: 0 auto; border: 1px solid #A0A0A0;" data-orig-height="488" data-orig-width="1392" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/https-preference.png"></figure>
+<figure class="tmblr-full" data-orig-height="488" data-orig-width="1392" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/https-preference.png"><img style="margin: 0 auto; border: 1px solid #A0A0A0;" data-orig-height="488" data-orig-width="1392" src="https://s3.amazonaws.com/static.newsblur.com/blog/https-preference.png"></figure>
 
 Now you can turn on the SSL setting on the NewsBlur Web and ensure your data stays private.
 
