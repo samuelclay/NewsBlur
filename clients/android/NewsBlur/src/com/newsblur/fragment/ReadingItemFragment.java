@@ -829,6 +829,7 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
             }
             builder.append("</head><body><div class=\"NB-story\">");
             builder.append(storyText);
+            builder.append("<script type=\"text/javascript\" src=\"storyDetailView.js\"></script>");
             builder.append("</div></body></html>");
             binding.readingWebview.loadDataWithBaseURL("file:///android_asset/", builder.toString(), "text/html", "UTF-8", null);
         }
@@ -938,6 +939,7 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
                 }
             }, 75L);
         }
+        binding.readingWebview.evaluateJavascript("loadImages();", null);
     }
 
     public void flagWebviewError() {
