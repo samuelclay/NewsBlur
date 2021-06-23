@@ -16,6 +16,17 @@ body {
     margin: 0;
 }
 
+.NB-story .NB-large-image {
+    margin-left: -12px !important;
+    max-width: calc(100% + 24px) !important;
+    height: auto !important;
+}
+
+.NB-story .NB-small-image {
+    display: inline-block;
+    margin: 2px;
+}
+
 p, div, table {
     clear: both;
 	line-height: 1.5em;
