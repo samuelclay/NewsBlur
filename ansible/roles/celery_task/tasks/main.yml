@@ -107,7 +107,8 @@
     name: feeds_fetched_sanity_checker
     user: root
     cron_file: /etc/cron.hourly/feeds_fetched_sanity_checker
-    job: docker pull newsblur/newsblur_python3:latest;
+    job: >-
+      docker pull newsblur/newsblur_python3:latest;
       docker run --rm -it
       -v /srv/newsblur/:/srv/newsblur
       -h `cat /etc/hostname`
@@ -122,7 +123,8 @@
     name: newsletter_sanity_checker
     user: root
     cron_file: /etc/cron.hourly/newsletter_sanity_checker
-    job: docker pull newsblur/newsblur_python3:latest;
+    job: >-
+      docker pull newsblur/newsblur_python3:latest;
       docker run --rm -it
       -v /srv/newsblur/:/srv/newsblur
       -h `cat /etc/hostname`
@@ -137,11 +139,12 @@
     name: work_queue_sanity_checker
     user: root
     cron_file: /etc/cron.hourly/work_queue_sanity_checker
-    job: docker pull newsblur/newsblur_python3:latest;
-      docker run --rm
+    job: >-
+      docker pull newsblur/newsblur_python3:latest;
+      docker run --rm -it
       -v /srv/newsblur/:/srv/newsblur
-       -h `cat /etc/hostname`
-     --network=newsblurnet newsblur/newsblur_python3 /srv/newsblur/utils/monitor_work_queue.py
+      -h `cat /etc/hostname`
+      --network=newsblurnet newsblur/newsblur_python3 /srv/newsblur/utils/monitor_work_queue.py
   when: "'task-work' in inventory_hostname"
   tags:
     - sanity-checker
