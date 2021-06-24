@@ -29,13 +29,14 @@
     name: disk_usage_sanity_checker
     user: root
     cron_file: /etc/cron.hourly/disk_usage_sanity_checker
-    job: docker pull newsblur/newsblur_python3:latest;
+    job: >-
+      docker pull newsblur/newsblur_python3:latest;
+      OUTPUT=$(eval sudo df / | head -n 2 |  tail -1);
       docker run --rm -it
-      output=$(eval sudo df / | head -n 2 |  tail -1);
       -v /srv/newsblur:/srv/newsblur
       -h `cat /etc/hostname`
       --network=newsblurnet --hostname {{ ansible_hostname }} 
-      newsblur/newsblur_python3 /srv/newsblur/utils/monitor_disk_usage.py $output
+      newsblur/newsblur_python3 /srv/newsblur/utils/monitor_disk_usage.py $OUTPUT
   tags:
     - sanity-checker
 
@@ -49,10 +50,14 @@
   become: yes
   shell: docker inspect --format="{{ '{{' }}.LogPath {{ '}}' }}" redis
   register: redis_log_path
+  tags:
+    - sanity-checker
 
 - name: show redis_log_path
   debug:
     msg: "{{ redis_log_path.stdout }}"
+  tags:
+    - sanity-checker
 
 - name: Add sanity checkers cronjob for redis bg_save
   become: yes
@@ -77,9 +82,9 @@
     name: "{{ ansible_hostname }} backup"
     minute: "0"
     hour: "4"
-    job:    
+    job: >
       docker run --rm
       -v /srv/newsblur:/srv/newsblur
       -v /srv/newsblur/docker/volumes/redis.var.lib/dump.rdb:/var/lib/redis/dump.rdb
       --network=newsblurnet
-      /srv/newsblur/utils/backups/backup_redis.py {{ ansible_hostname}}"
+      /srv/newsblur/utils/backups/backup_redis.py {{ ansible_hostname }}"
