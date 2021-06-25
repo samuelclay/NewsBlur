@@ -46,19 +46,6 @@
     name: newsblurnet
   notify: restart docker
 
-- name: Get log file location for redis
-  become: yes
-  shell: docker inspect --format="{{ '{{' }}.LogPath {{ '}}' }}" redis
-  register: redis_log_path
-  tags:
-    - sanity-checker
-
-- name: show redis_log_path
-  debug:
-    msg: "{{ redis_log_path.stdout }}"
-  tags:
-    - sanity-checker
-
 - name: Add sanity checkers cronjob for redis bg_save
   become: yes
   cron:
@@ -67,12 +54,13 @@
     cron_file: /etc/cron.hourly/redis_bg_save_sanity_checker
     job: >-
       docker pull newsblur/newsblur_python3:latest;
+      REDIS_LOG_PATH=$(eval docker inspect --format="{{ '{{' }}.LogPath {{ '}}' }}" redis)
       docker run --rm -it
-      -v {{redis_log_path.stdout}}:{{redis_log_path.stdout}} 
+      -v ${REDIS_LOG_PATH}:${REDIS_LOG_PATH}
       -v /srv/newsblur:/srv/newsblur 
       -h `cat /etc/hostname`
       --network=newsblurnet 
-      newsblur/newsblur_python3 /srv/newsblur/utils/monitor_redis_bgsave.py {{redis_log_path.stdout}}
+      newsblur/newsblur_python3 /srv/newsblur/utils/monitor_redis_bgsave.py $REDIS_LOG_PATH
   when: "'redis' in inventory_hostname"
   tags:
     - sanity-checker
