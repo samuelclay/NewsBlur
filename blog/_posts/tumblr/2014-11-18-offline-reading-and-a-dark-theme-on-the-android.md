@@ -5,7 +5,7 @@ date: '2014-11-18T05:00:50-05:00'
 tags:
 - android
 tumblr_url: https://blog.newsblur.com/post/102954904310/offline-reading-and-a-dark-theme-on-the-android
-redirect_from: /post/102954904310/offline-reading-and-a-dark-theme-on-the-android
+redirect_from: /post/102954904310/offline-reading-and-a-dark-theme-on-the-android/
 ---
 This is a huge release for the NewsBlur Android app. So much has happened in the last six months. We’ve had a big backend rewrite that makes the app feel like new. It’s faster, which is necessary to make the new offline reading feature really shine. Now you can read on your Android phone or tablet while on the train, underground, or just in airplane mode to save battery.
 

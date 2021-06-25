@@ -7,7 +7,7 @@ tags:
 - ios
 - android
 tumblr_url: https://blog.newsblur.com/post/168429041705/infrequent-site-stories-is-the-blog-reader-we-need
-redirect_from: /post/168429041705/infrequent-site-stories-is-the-blog-reader-we-need
+redirect_from: /post/168429041705/infrequent-site-stories-is-the-blog-reader-we-need/
 ---
 Launching today on all three platforms—web, iOS, and Android—is the new Infrequent Site Stories view. This configurable river of news offers a view of stories only from the blogs that publish less often than 1 story per day.
 

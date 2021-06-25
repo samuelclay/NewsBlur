@@ -4,7 +4,7 @@ title: A Downtime Irony
 date: '2014-08-21T21:08:24-04:00'
 tags: []
 tumblr_url: https://blog.newsblur.com/post/95431965676/a-downtime-irony
-redirect_from: /post/95431965676/a-downtime-irony
+redirect_from: /post/95431965676/a-downtime-irony/
 ---
 So many things can go wrong and often do, but I spend a good third of my time working on infrastructure, monitoring, and analytics so that they don’t.
 
@@ -20,7 +20,7 @@ Mongo continues serving read queries while not allowing write queries. I didn’
 
 The server that is meant to only be used to ensure things are working correctly was itself the culprit for feeds no longer being fetched. This is the ironic part.
 
-![](http://static.newsblur.com.s3.amazonaws.com/blog/Big%20Sur.jpg)
+![](https://s3.amazonaws.com/static.newsblur.com/blog/Big%20Sur.jpg)
 
 ###### NewsBlur’s developer during happier times wearing the 2013 NewsBlur t-shirt in Big Sur
 
@@ -30,7 +30,7 @@ I headed out, away from cellular service, at 4pm PT, half an hour before the ana
 
 But the real problem is that I set a vacation reply on both my personal and work email accounts to say that I’d be out until September 3rd. Now, I hired a firm to watch the servers while I’m at Burning Man starting this Saturday. But I figured I could get away with leaving the servers for twenty four hours. And I neglected to tweet out that I’d be gone for a day, so theories cropped up that I was injured, dead, or worse, ignoring the service.
 
-![](http://static.newsblur.com.s3.amazonaws.com/blog/Brittany%20in%20Big%20Sur.jpg)
+![](https://s3.amazonaws.com/static.newsblur.com/blog/Brittany%20in%20Big%20Sur.jpg)
 
 ###### Brittany, NewsBlur’s developer’s girlfriend, can handle any situation, including driving a hysterical developer three hours back to San Francisco without breaking a sweat.
 
@@ -40,6 +40,6 @@ If you made it this far then you probably care about NewsBlur’s future. I want
 
 I would like to also mention how much I appreciate the more light-hearted tweets that I read while on the frenetic three hour drive back to San Francisco from Big Sur. I do this for all of your happiness. If I did it for the money I’d probably find a way to juice the data so that I could at least afford to hire an employee. This is a labor of love and your payment goes directly into supporting it.
 
-![](http://static.newsblur.com.s3.amazonaws.com/blog/Tent%20in%20Big%20Sur.jpg)
+![](https://s3.amazonaws.com/static.newsblur.com/blog/Tent%20in%20Big%20Sur.jpg)
 
 ###### Big Sur is where a good many new ideas are thought.

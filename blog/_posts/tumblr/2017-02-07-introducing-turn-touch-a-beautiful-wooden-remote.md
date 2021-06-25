@@ -6,7 +6,7 @@ date: '2017-02-07T09:32:32-05:00'
 tags:
 - turntouch
 tumblr_url: https://blog.newsblur.com/post/156939277121/introducing-turn-touch-a-beautiful-wooden-remote
-redirect_from: /post/156939277121/introducing-turn-touch-a-beautiful-wooden-remote
+redirect_from: /post/156939277121/introducing-turn-touch-a-beautiful-wooden-remote/
 ---
 <figure class="tmblr-full" data-orig-height="1333" data-orig-width="2000" data-orig-src="https://turntouch.com/static/images/media-kit/photos/Turn%20Touch-3259c.jpg"><img style="width: 650px;border: 1px solid #909090;" data-orig-height="1333" data-orig-width="2000" src="https://turntouch.com/static/images/media-kit/photos/Turn%20Touch-3259c.jpg"></figure>
 

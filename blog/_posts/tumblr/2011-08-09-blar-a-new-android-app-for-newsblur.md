@@ -4,7 +4,7 @@ title: 'Blar: A new Android app for NewsBlur'
 date: '2011-08-09T09:44:00-04:00'
 tags: []
 tumblr_url: https://blog.newsblur.com/post/8693301787/blar-a-new-android-app-for-newsblur
-redirect_from: /post/8693301787/blar-a-new-android-app-for-newsblur
+redirect_from: /post/8693301787/blar-a-new-android-app-for-newsblur/
 ---
 This Summer is shaping up to be the season for mobile apps. Blar, a new Android client for NewsBlur, has just been released. It’s available on the Android Market here: [https://market.android.com/details?id=bitwrit.Blar](https://market.android.com/details?id=bitwrit.Blar). It is created by Harris Munir, who you can contact [through his site](http://harrism.com/).
 

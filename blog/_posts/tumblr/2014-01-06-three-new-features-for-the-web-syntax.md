@@ -6,13 +6,13 @@ date: '2014-01-06T12:46:00-05:00'
 tags:
 - web
 tumblr_url: https://blog.newsblur.com/post/72471675355/three-new-features-for-the-web-syntax
-redirect_from: /post/72471675355/three-new-features-for-the-web-syntax
+redirect_from: /post/72471675355/three-new-features-for-the-web-syntax/
 ---
 A few small new features to get your first full week of the new year started off right.
 
 ### Syntax highlight for source code
 
-![](http://static.newsblur.com.s3.amazonaws.com/blog/syntax%20highlighting.png)
+![](https://s3.amazonaws.com/static.newsblur.com/blog/syntax%20highlighting.png)
 
 A common feature request has been automatic syntax highlighting in blog posts. This feature uses auto-detection to highlight code. For short snippets of code, this means that they could have inaccurate highlighting, although in testing it’s not so bad to have a few words in various colors. But for any substantial amount of code, you’ll have an easier time following along with syntax highlighting.
 

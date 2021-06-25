@@ -4,7 +4,7 @@ title: Three Months to Scale NewsBlur
 date: '2013-03-17T17:24:00-04:00'
 tags: []
 tumblr_url: https://blog.newsblur.com/post/45632737156/three-months-to-scale-newsblur
-redirect_from: /post/45632737156/three-months-to-scale-newsblur
+redirect_from: /post/45632737156/three-months-to-scale-newsblur/
 ---
 At 4:16pm last Wednesday I got a short and to-the-point email from Nilay Patel at The Verge with only a link that started with the host “googlereader.blogspot.com”. The sudden spike in NewsBlur’s visitors immediately confirmed — Google was shutting down Reader.
 

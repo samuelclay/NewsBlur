@@ -5,7 +5,7 @@ date: '2018-07-20T06:14:29-04:00'
 tags:
 - android
 tumblr_url: https://blog.newsblur.com/post/176089041176/the-newsblur-android-app-hits-version-80-with-a
-redirect_from: /post/176089041176/the-newsblur-android-app-hits-version-80-with-a
+redirect_from: /post/176089041176/the-newsblur-android-app-hits-version-80-with-a/
 ---
 Long popular on the NewsBlur web app, the Grid view has now come to the Android app. Have a look for yourself…
 

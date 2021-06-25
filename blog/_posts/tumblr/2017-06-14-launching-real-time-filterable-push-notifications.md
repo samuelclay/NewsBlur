@@ -8,7 +8,7 @@ tags:
 - android
 - iOS
 tumblr_url: https://blog.newsblur.com/post/161811208435/launching-real-time-filterable-push-notifications
-redirect_from: /post/161811208435/launching-real-time-filterable-push-notifications
+redirect_from: /post/161811208435/launching-real-time-filterable-push-notifications/
 ---
 For some sites, you want to know when they publish as soon as they publish. Maybe you want to immediately be notified of everything a site publishes, like a monthly meetup that posts an event only once a month. Or perhaps you want to be immediately notified of everything the NYTimes publishes about the companies in your stock portfolio. Or you just really enjoy reading your daily comics and want them emailed to you so you never miss a beat.
 
@@ -24,7 +24,7 @@ To start with notifications on iOS, you can use the new swipe-to-the right gestu
 
 This way you can overprovision notifications for yourself and easily dial them back to where you get just the right number of notifications.
 
-![](http://static.newsblur.com.s3.amazonaws.com/blog/notifications-ios.png)
+![](https://s3.amazonaws.com/static.newsblur.com/blog/notifications-ios.png)
 
 Today version 7.0 of the NewsBlur iOS app is being released and here’s a list of what’s new and fixed on iOS:
 
@@ -45,7 +45,7 @@ Today version 7.0 of the NewsBlur iOS app is being released and here’s a list 
 
 Android also gets a new version today. Version 6.0 gets notifications and new custom reading fonts as well as the mark read on scroll behavior that iOS and web have enjoyed.
 
-![](http://static.newsblur.com.s3.amazonaws.com/blog/notifications-android.png)
+![](https://s3.amazonaws.com/static.newsblur.com/blog/notifications-android.png)
 
 Here’s a list of what’s new and fixed on Android:
 
@@ -57,11 +57,11 @@ Here’s a list of what’s new and fixed on Android:
 
 # Notifications on Web
 
-![](http://static.newsblur.com.s3.amazonaws.com/blog/notifications-options.png)
+![](https://s3.amazonaws.com/static.newsblur.com/blog/notifications-options.png)
 
 Browser notifications are handy for those sites that you only want to read on your desktop. For example, you could setup web notifications for an RSS feed for a status feed, letting you know when migrations and downtime will have some effect on you.
 
-![](http://static.newsblur.com.s3.amazonaws.com/blog/notifications-sites.png)
+![](https://s3.amazonaws.com/static.newsblur.com/blog/notifications-sites.png)
 
 Setting up and tuning notifications is also just as easy to do on the web. You’ll find it under Manage \> Notifications as well as in the Read Filter Popover (top right of the app) when reading an individual feed.
 
@@ -69,7 +69,7 @@ Setting up and tuning notifications is also just as easy to do on the web. You�
 
 Finally, for those use cases not covered under web or mobile, you can now have websites automatically email you when they publish new stories.
 
-![](http://static.newsblur.com.s3.amazonaws.com/blog/notifications-email.png)
+![](https://s3.amazonaws.com/static.newsblur.com/blog/notifications-email.png)
 
 This is for those stories that you don’t want to miss and want to ensure that you read. For instance, I use email notifications for [worrydream’s quote blog that serves me a single paragraph of insight once a week](http://www.newsblur.com/site/5586842/quotes-worrydream.com) because I loved having quotes emailed to me.
 

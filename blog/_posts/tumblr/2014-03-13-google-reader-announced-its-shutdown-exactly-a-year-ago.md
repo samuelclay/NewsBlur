@@ -4,7 +4,7 @@ title: Google Reader announced its shutdown exactly a year ago
 date: '2014-03-13T14:27:00-04:00'
 tags: []
 tumblr_url: https://blog.newsblur.com/post/79491002325/google-reader-announced-its-shutdown-exactly-a-year-ago
-redirect_from: /post/79491002325/google-reader-announced-its-shutdown-exactly-a-year-ago
+redirect_from: /post/79491002325/google-reader-announced-its-shutdown-exactly-a-year-ago/
 ---
 In this industry, you gotta be tough.
 
@@ -14,13 +14,13 @@ I’m just kidding. We’re a bunch of literates who enjoy reading so much that 
 
 Take a look at this graph. It shows NewsBlur’s income versus its expenses for the past 16 months. Just look at those few months before the Google Reader shutdown announcement in March 2013.
 
-![](http://static.newsblur.com.s3.amazonaws.com/blog/2013%20revenue.png)
+![](https://s3.amazonaws.com/static.newsblur.com/blog/2013%20revenue.png)
 
 It was never hard to justify to others why I worked on a news reader for three-some years, partially because I’d been justifying it to myself for so long. I had the delusion that it would all work itself out in the end, so long as I kept pushing my hardest and shipping features users wanted. And, at the time, with 1,000 paying subscribers, it certainly felt like I was getting somewhere.
 
 If you’re curious about why expenses are so high, think about what it takes to run a modern and popular news reader. This graph breaks down expenses for an average month from the past year.
 
-![](http://static.newsblur.com.s3.amazonaws.com/blog/2013%20expenses.png)
+![](https://s3.amazonaws.com/static.newsblur.com/blog/2013%20expenses.png)
 
 ###### Why spend all that money on subcontractors and new tools? Because I’m investing in building an even better news reader.
 
@@ -36,7 +36,7 @@ Many competing news readers are visual and offer a similar experience. When you 
 
 If the past is any indication, NewsBlur is going to continue to see many more improvements. This graph of contributions from the past 365 days shows my level of unwavering dedication.
 
-[![](http://static.newsblur.com.s3.amazonaws.com/blog/2013%20contributions.png)](http://github.com/samuelclay)
+[![](https://s3.amazonaws.com/static.newsblur.com/blog/2013%20contributions.png)](http://github.com/samuelclay)
 
 ###### One way people speak is by committing code to [NewsBlur’s GitHub repo](http://github.com/samuelclay/NewsBlur). Try developing your own pet feature. I’ll even do some of the hard work for you, so long as you give it a good try and submit a pull request.
 
