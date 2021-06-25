@@ -5,7 +5,7 @@ date: '2019-08-15T10:59:11-04:00'
 tags:
 - web
 tumblr_url: https://blog.newsblur.com/post/187031418021/secure-images-for-everybody
-redirect_from: /post/187031418021/secure-images-for-everybody
+redirect_from: /post/187031418021/secure-images-for-everybody/
 ---
 There are two ways to connect to the NewsBlur website. The first is _http_://www.newsblur.com. The second is _https_://www.newsblur.com. The first is plain text and the second is encrypted. You get to choose which one you want to use.
 

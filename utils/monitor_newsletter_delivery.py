@@ -27,7 +27,7 @@ def main():
                 auth=("api", settings.MAILGUN_ACCESS_KEY),
                 data={"from": "NewsBlur Newsletter Monitor: %s <admin@%s.newsblur.com>" % (hostname, hostname),
                       "to": [admin_email],
-                      "subject": "%s newsletters bounced: %s > %s > %s" % (hostname, accepted, delivered, bounced),
+                      "subject": "%s newsletters bounced: %s/%s accepted/delivered -> %s bounced" % (hostname, accepted, delivered, bounced),
                       "text": "Newsletters are not being delivered! %s delivered, %s bounced" % (delivered, bounced)})
         print(" ---> %s newsletters bounced: %s > %s > %s" % (hostname, accepted, delivered, bounced))
     else:

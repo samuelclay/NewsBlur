@@ -4,7 +4,7 @@ title: Make your own feed reader with NewsBlur's new API
 date: '2011-04-26T06:41:00-04:00'
 tags: []
 tumblr_url: https://blog.newsblur.com/post/4955915076/make-your-own-feed-reader-with-newsblurs-new-api
-redirect_from: /post/4955915076/make-your-own-feed-reader-with-newsblurs-new-api
+redirect_from: /post/4955915076/make-your-own-feed-reader-with-newsblurs-new-api/
 ---
 _Please vote for this blog post on Hacker News: [http://news.ycombinator.com/item?id=2485377](http://news.ycombinator.com/item?id=2485377)._
 

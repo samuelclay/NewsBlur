@@ -4,11 +4,11 @@ title: Connect NewsBlur to dozens of web services with IFTTT
 date: '2014-02-20T09:11:28-05:00'
 tags: []
 tumblr_url: https://blog.newsblur.com/post/77288045682/connect-newsblur-to-dozens-of-web-services-with
-redirect_from: /post/77288045682/connect-newsblur-to-dozens-of-web-services-with
+redirect_from: /post/77288045682/connect-newsblur-to-dozens-of-web-services-with/
 ---
 Wouldn’t it be nice if there was a way to automatically copy your saved stories over to Evernote or Twitter or Pinboard? What about an automatic way to keep track of your unread focus (trained) stories in Buffer or Delicious or Dropbox?
 
-[![](http://static.newsblur.com.s3.amazonaws.com/blog/ifttt-logo-large.png)](https://ifttt.com/newsblur)
+[![](https://s3.amazonaws.com/static.newsblur.com/blog/ifttt-logo-large.png)](https://ifttt.com/newsblur)
 
 [IFTTT](https://ifttt.com/newsblur) (if this then that) is a free web service that automates the movement of data from NewsBlur to dozens of other web services. It also handles movement of data from dozens of other web services back into NewsBlur. [Today IFTTT is launching a NewsBlur channel](http://blog.ifttt.com/post/77287507657/introducing-the-newsblur-fiverr-and-boxcar-2-channels) where you can take advantage of their incredible glue that binds dozens of web service like NewsBlur in unique and customizable ways.
 
@@ -16,11 +16,11 @@ Wouldn’t it be nice if there was a way to automatically copy your saved storie
 
 The best part about these IFTTT recipes is that the triggers can be customized to fit a specific saved story tag or blurblog or folder or feed. When you create a recipe using NewsBlur, you can choose which of your own feeds or tags you want to use.
 
-![](http://static.newsblur.com.s3.amazonaws.com/blog/ifttt-blurblogs.png) ![](http://static.newsblur.com.s3.amazonaws.com/blog/ifttt-tags.png)
+![](https://s3.amazonaws.com/static.newsblur.com/blog/ifttt-blurblogs.png) ![](https://s3.amazonaws.com/static.newsblur.com/blog/ifttt-tags.png)
 
 You can also choose to only use unread focus (trained) stories. So you can filter out stories you don’t want to read and highlight the stories you do want to read using the Intelligence Trainer.
 
-![](http://static.newsblur.com.s3.amazonaws.com/blog/ifttt-training.png)
+![](https://s3.amazonaws.com/static.newsblur.com/blog/ifttt-training.png)
 
 ## Create tasks and recipes with IFTTT
 

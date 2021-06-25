@@ -5,7 +5,7 @@ date: '2015-01-07T06:00:33-05:00'
 tags:
 - web
 tumblr_url: https://blog.newsblur.com/post/107407692738/organize-your-subscriptions-with-the-new-organizer
-redirect_from: /post/107407692738/organize-your-subscriptions-with-the-new-organizer
+redirect_from: /post/107407692738/organize-your-subscriptions-with-the-new-organizer/
 ---
 The beauty of NewsBlur is that you can start off with only a handful of subscriptions and naturally work your way up. This is actually the reason that free accounts cut off at 64 sites. When I started building NewsBlur in 2009 I only subscribed to 42 sites. Nowadays it’s closer to 200 sites.
 
@@ -13,7 +13,7 @@ Because NewsBlur makes it so easy to pare down individual stories with the intel
 
 Launching today is the Organizer. This organizer helps you identify sites that may be posting too much or too little and then gives you the power to move and delete them all at once. Sure, you can do this one-by-one, but that takes time, and only in the new Organizer is everything right in front of you.
 
-![](http://static.newsblur.com.s3.amazonaws.com/blog/organizer.png)
+![](https://s3.amazonaws.com/static.newsblur.com/blog/organizer.png)
 
 You can sort sites, both in and out of your folders, with the following orders:
 

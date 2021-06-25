@@ -6,7 +6,7 @@ date: '2019-07-01T09:29:07-04:00'
 tags:
 - iOS
 tumblr_url: https://blog.newsblur.com/post/185980347231/newsblur-ios-v9-full-screen-autoscroll
-redirect_from: /post/185980347231/newsblur-ios-v9-full-screen-autoscroll
+redirect_from: /post/185980347231/newsblur-ios-v9-full-screen-autoscroll/
 ---
 A whopper of a release with many, many new features!
 
@@ -20,7 +20,7 @@ A whopper of a release with many, many new features!
 
 Take a look at some of the image and story title customizations you can now make:
 
-<figure class="tmblr-full" data-orig-height="968" data-orig-width="1068" data-orig-src="http://static.newsblur.com.s3.amazonaws.com/blog/ios-v9.png"><img style="width:650px;margin: 24px auto;" data-orig-height="968" data-orig-width="1068" src="http://static.newsblur.com.s3.amazonaws.com/blog/ios-v9.png"></figure>
+<figure class="tmblr-full" data-orig-height="968" data-orig-width="1068" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/ios-v9.png"><img style="width:650px;margin: 24px auto;" data-orig-height="968" data-orig-width="1068" src="https://s3.amazonaws.com/static.newsblur.com/blog/ios-v9.png"></figure>
 
 There’s also many smaller fixes that improve the polish of the app:
 

@@ -5,11 +5,11 @@ date: '2017-01-11T06:00:21-05:00'
 tags:
 - web
 tumblr_url: https://blog.newsblur.com/post/155717876825/the-dashboard-river-will-keep-you-up-to-date-in
-redirect_from: /post/155717876825/the-dashboard-river-will-keep-you-up-to-date-in
+redirect_from: /post/155717876825/the-dashboard-river-will-keep-you-up-to-date-in/
 ---
 This is a seriously cool feature and I’m glad it’s ready to launch. The dashboard river, the real-time stream of the top five stories of All Site Stories, is now on the dashboard of the web app.
 
-![](http://static.newsblur.com.s3.amazonaws.com/blog/dashboard-river.png)
+![](https://s3.amazonaws.com/static.newsblur.com/blog/dashboard-river.png)
 
 After testing this feature for the past few weeks I now realize that I could not live without it. By having the latest stories always loaded and instantly ready to go, I leave NewsBlur open and just take a quick glance to see if the top of my list is interesting.
 

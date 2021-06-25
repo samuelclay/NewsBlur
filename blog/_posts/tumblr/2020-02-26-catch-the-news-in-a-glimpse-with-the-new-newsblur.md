@@ -5,7 +5,7 @@ date: '2020-02-26T08:53:22-05:00'
 tags:
 - iOS
 tumblr_url: https://blog.newsblur.com/post/611042986950885376/catch-the-news-in-a-glimpse-with-the-new-newsblur
-redirect_from: /post/611042986950885376/catch-the-news-in-a-glimpse-with-the-new-newsblur
+redirect_from: /post/611042986950885376/catch-the-news-in-a-glimpse-with-the-new-newsblur/
 ---
 Most of the time when we release a new feature, it finds immediate use. But every so often a new feature comes along that changes how NewsBlur gets used. I consider offline stories part of this exclusive club. Same with the Text view, which shows you the full text of a story. And push notifications are right up there.
 

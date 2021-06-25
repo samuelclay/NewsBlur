@@ -5,7 +5,7 @@ date: '2015-10-01T18:54:51-04:00'
 tags:
 - android
 tumblr_url: https://blog.newsblur.com/post/130307275266/lets-all-upgrade-to-version-450-of-the-newsblur
-redirect_from: /post/130307275266/lets-all-upgrade-to-version-450-of-the-newsblur
+redirect_from: /post/130307275266/lets-all-upgrade-to-version-450-of-the-newsblur/
 ---
 Here we are today with version 4.5.0 of the NewsBlur Android App. This is a great release because we took our time to update and improve a number of things about the app.
 

@@ -1,0 +1,10 @@
+---
+- name: Register blog in consul
+  tags: consul
+  become: yes
+  template:
+    src: consul_service.json
+    dest: /etc/consul.d/blog.json
+  when: disable_consul_services_ie_staging is not defined
+  notify:
+    - reload consul

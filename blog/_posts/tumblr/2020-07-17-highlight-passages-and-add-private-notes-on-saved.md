@@ -5,7 +5,7 @@ date: '2020-07-17T08:30:05-04:00'
 tags:
 - web
 tumblr_url: https://blog.newsblur.com/post/623902516244021248/highlight-passages-and-add-private-notes-on-saved
-redirect_from: /post/623902516244021248/highlight-passages-and-add-private-notes-on-saved
+redirect_from: /post/623902516244021248/highlight-passages-and-add-private-notes-on-saved/
 ---
 When you’re reading a story and want to save a portion of it for personal use, you now have a couple new options. Highlighting is now available for all stories. Simply select the text you want to highlight and NewsBlur helpfully shows a tooltip that allows you to select a part of the text and save it.
 

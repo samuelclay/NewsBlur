@@ -5,13 +5,13 @@ date: '2017-01-25T14:01:15-05:00'
 tags:
 - android
 tumblr_url: https://blog.newsblur.com/post/156370499831/a-new-newsblur-android-release-for-the-new-year
-redirect_from: /post/156370499831/a-new-newsblur-android-release-for-the-new-year
+redirect_from: /post/156370499831/a-new-newsblur-android-release-for-the-new-year/
 ---
 Version 5.0 has a bunch of new features. It’s got new gestures, better looking icons and thumbnail previews, and little UI design details to better match the rest of NewsBlur.
 
 Take a look:
 
-![](http://static.newsblur.com.s3.amazonaws.com/blog/android-v5.png)
+![](https://s3.amazonaws.com/static.newsblur.com/blog/android-v5.png)
 
 The full feature list:
 

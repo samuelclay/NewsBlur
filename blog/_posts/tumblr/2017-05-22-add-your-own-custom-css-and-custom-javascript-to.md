@@ -5,7 +5,7 @@ date: '2017-05-22T05:00:41-04:00'
 tags:
 - web
 tumblr_url: https://blog.newsblur.com/post/160944994686/add-your-own-custom-css-and-custom-javascript-to
-redirect_from: /post/160944994686/add-your-own-custom-css-and-custom-javascript-to
+redirect_from: /post/160944994686/add-your-own-custom-css-and-custom-javascript-to/
 ---
 Ever wanted to customize NewsBlur on the web but didn’t want to install custom browser extensions so you could shoe-horn in monkey-patched code? And if you did use a browser extension, didn’t you just hate having to keep it synchronized between your computers? Just for you, NewsBlur now has two new fields: Custom CSS and Custom Javascript.
 
@@ -19,7 +19,7 @@ Over on Stylish, a community for custom CSS, there are [a bunch of stylesheets t
 
 **Hide that module or link that you don’t want to see on NewsBlur**
 
-<figure class="tmblr-full" data-orig-height="1033" data-orig-width="1300" data-orig-src="http://static.newsblur.com.s3.amazonaws.com/blog/custom-css.png"><img style="width: 650px;" data-orig-height="1033" data-orig-width="1300" src="http://static.newsblur.com.s3.amazonaws.com/blog/custom-css.png"></figure>
+<figure class="tmblr-full" data-orig-height="1033" data-orig-width="1300" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/custom-css.png"><img style="width: 650px;" data-orig-height="1033" data-orig-width="1300" src="https://s3.amazonaws.com/static.newsblur.com/blog/custom-css.png"></figure>
 
 Don’t like seeing Global Shared Stories or the River of News on the Dashboard? You can hide them with this little bit of CSS:
 

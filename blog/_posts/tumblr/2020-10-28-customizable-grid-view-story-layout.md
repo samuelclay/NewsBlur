@@ -5,7 +5,7 @@ date: '2020-10-28T09:01:38-04:00'
 tags:
 - web
 tumblr_url: https://blog.newsblur.com/post/633235993127010305/customizable-grid-view-story-layout
-redirect_from: /post/633235993127010305/customizable-grid-view-story-layout
+redirect_from: /post/633235993127010305/customizable-grid-view-story-layout/
 ---
 The grid view has quickly become one of my go-to story title views. It provides generous, clickable boxes with enlarged images and plenty of preview text. But until now, they were limited to a preset height.
 

@@ -4,7 +4,7 @@ title: SSL & Stripe.js
 date: '2012-02-29T15:45:00-05:00'
 tags: []
 tumblr_url: https://blog.newsblur.com/post/18518935773/ssl-stripejs
-redirect_from: /post/18518935773/ssl-stripejs
+redirect_from: /post/18518935773/ssl-stripejs/
 ---
 Two big announcements today:
 

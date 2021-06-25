@@ -26,7 +26,8 @@ description: > # this means to ignore newlines until "baseurl:"
   
   A new sound of an old instrument.
 baseurl: "" # the subpath of your site, e.g. /blog
-url: "https://blog.newsblur.com" # the base hostname & protocol for your site, e.g. http://example.com
+url: "https://blog2.newsblur.com" # the base hostname & protocol for your site, e.g. http://example.com
+permalink: pretty
 twitter_username: newsblur
 github_username:  samuelclay
 logo: /assets/newsblur_logo_512.png

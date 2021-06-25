@@ -5,7 +5,7 @@ date: '2019-06-01T08:51:21-04:00'
 tags:
 - android
 tumblr_url: https://blog.newsblur.com/post/185294660096/updates-to-the-android-app-and-a-new-addition-to
-redirect_from: /post/185294660096/updates-to-the-android-app-and-a-new-addition-to
+redirect_from: /post/185294660096/updates-to-the-android-app-and-a-new-addition-to/
 ---
 Today we have a nice update, version 9.0, of the Android app that includes a rewrite of the story management backend as well as fixes for some critical display issues.
 
@@ -22,7 +22,7 @@ Here’s the full list of changes for version 9.0:
 
 I’d also like to introduce our newest developer, [Caleb Allen](https://github.com/caleb-allen).
 
-![](http://static.newsblur.com.s3.amazonaws.com/blog/caleb-allen.jpeg)
+![](https://s3.amazonaws.com/static.newsblur.com/blog/caleb-allen.jpeg)
 
 Caleb will be working on the Android app. Our Android developer Daniel spent the last 5 years with us working many, many versions of the NewsBlur app. I want to thank Daniel for his years of service and we wish him well on his next adventure. And here’s hoping for many fruitful years with Caleb!
 
