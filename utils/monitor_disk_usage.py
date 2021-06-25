@@ -2,7 +2,6 @@
 import sys
 sys.path.append('/srv/newsblur')
 
-import subprocess
 import requests
 from newsblur_web import settings
 import socket
