@@ -1,6 +1,94 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.0">Jekyll</generator><link href="https://blog2.newsblur.com/feed.xml" rel="self" type="application/atom+xml" /><link href="https://blog2.newsblur.com/" rel="alternate" type="text/html" /><updated>2021-06-22T14:42:27-04:00</updated><id>https://blog2.newsblur.com/feed.xml</id><title type="html">The NewsBlur Blog</title><subtitle>NewsBlur is a personal news reader that brings people together to talk about the world.
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.0">Jekyll</generator><link href="https://blog2.newsblur.com/feed.xml" rel="self" type="application/atom+xml" /><link href="https://blog2.newsblur.com/" rel="alternate" type="text/html" /><updated>2021-06-25T18:27:17-04:00</updated><id>https://blog2.newsblur.com/feed.xml</id><title type="html">The NewsBlur Blog</title><subtitle>NewsBlur is a personal news reader that brings people together to talk about the world.
 A new sound of an old instrument.
-</subtitle><entry><title type="html">Android app update: premium subscriptions, saved searches, in-app browser, auto-dark mode</title><link href="https://blog2.newsblur.com/2020/11/03/android-app-update-premium-subscriptions-saved/" rel="alternate" type="text/html" title="Android app update: premium subscriptions, saved searches, in-app browser, auto-dark mode" /><published>2020-11-03T07:41:03-05:00</published><updated>2020-11-03T07:41:03-05:00</updated><id>https://blog2.newsblur.com/2020/11/03/android-app-update-premium-subscriptions-saved</id><content type="html" xml:base="https://blog2.newsblur.com/2020/11/03/android-app-update-premium-subscriptions-saved/">&lt;p&gt;For a point release this one sure is big. The Android app has been upgraded to include a bunch of features found on the web.&lt;/p&gt;
+</subtitle><entry><title type="html">Story of a Hacking</title><link href="https://blog2.newsblur.com/2021/06/25/story-of-a-hacking/" rel="alternate" type="text/html" title="Story of a Hacking" /><published>2021-06-25T00:00:00-04:00</published><updated>2021-06-25T00:00:00-04:00</updated><id>https://blog2.newsblur.com/2021/06/25/story-of-a-hacking</id><content type="html" xml:base="https://blog2.newsblur.com/2021/06/25/story-of-a-hacking/">&lt;p&gt;I’d like to answer a few questions about what happened here.&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Was any data leaked during the hack? How do you know?&lt;/li&gt;
+  &lt;li&gt;How did NewsBlur’s MongoDB server get hacked?&lt;/li&gt;
+  &lt;li&gt;What will happen to ensure this doesn’t happen again?&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;Let’s start by talking about the importance of your data. As you may know, NewsBlur is open source and enjoys the added protection of having thousands of people looking at the codebase and dozens contributing back to it.&lt;/p&gt;
+
+&lt;h3 id=&quot;1-was-any-data-leaked-during-the-hack-how-do-you-know&quot;&gt;1. Was any data leaked during the hack? How do you know?&lt;/h3&gt;
+
+&lt;p&gt;I can definitively write that no data was leaked during the hack. I know this because of two different sets of logs showing that the automated attacker only issued deletion commands and did not transfer any data off of the MongoDB server.&lt;/p&gt;
+
+&lt;p&gt;This is what the day looks like. This 24 graph of bandwidth shows:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/hack-timeline.png&quot; style=&quot;border: 1px solid rgba(0,0,0,0.1);&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;You can imagine the stress I experienced in the forty minutes between 9:35p, when the hack began, and 10:15p, when the fresh backup snapshot was identified and put into gear.&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;&lt;strong&gt;6:10p&lt;/strong&gt;:&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;9:35p&lt;/strong&gt;:&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;10:15p&lt;/strong&gt;:&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;3:00a&lt;/strong&gt;:&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;4:30a&lt;/strong&gt;:&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h3 id=&quot;2-how-did-newsblurs-mongodb-server-get-hacked&quot;&gt;2. How did NewsBlur’s MongoDB server get hacked?&lt;/h3&gt;
+
+&lt;p&gt;It would make for a much more dramatic read if I was hit through a vulnerability in Docker instead of a footgun.&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;nbset:PRIMARY&amp;gt; show dbs
+READ__ME_TO_RECOVER_YOUR_DATA   0.000GB
+admin                           0.000GB
+local                          16.471GB
+newsblur                        0.718GB
+
+nbset:PRIMARY&amp;gt; use READ__ME_TO_RECOVER_YOUR_DATA
+switched to db READ__ME_TO_RECOVER_YOUR_DATA
+
+nbset:PRIMARY&amp;gt; show collections
+README
+system.profile
+
+nbset:PRIMARY&amp;gt; db.README.find()
+{ &quot;_id&quot; : ObjectId(&quot;60d3e112ac48d82047aab95d&quot;), &quot;content&quot; : &quot;All your data is a backed up. You must pay 0.03 BTC to XXXXXXFTHISGUYXXXXXXX 48 hours for recover it. After 48 hours expiration we will leaked and exposed all your data. In case of refusal to pay, we will contact the General Data Protection Regulation, GDPR and notify them that you store user data in an open form and is not safe. Under the rules of the law, you face a heavy fine or arrest and your base dump will be dropped from our server! You can buy bitcoin here, does not take much time to buy https://localbitcoins.com or https://buy.moonpay.io/ After paying write to me in the mail with your DB IP: FTHISGUY@recoverme.one and you will receive a link to download your database dump.&quot; }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Looking at the MongoDB access logs, we can invoke a pretty neat command to find everybody who is not one of the 100 known NewsBlur machines that has accessed MongoDB.&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ cat /var/log/mongodb/mongod.log | egrep -v &quot;159.65.XX.XX|161.89.XX.XX|&amp;lt;&amp;lt; SNIP: A hundred more servers &amp;gt;&amp;gt;&quot;
+
+2021-06-24T01:33:45.531+0000 I NETWORK  [listener] connection accepted from 171.25.193.78:26003 #63455699 (1189 connections now open)
+2021-06-24T01:33:45.635+0000 I NETWORK  [conn63455699] received client metadata from 171.25.193.78:26003 conn63455699: { driver: { name: &quot;PyMongo&quot;, version: &quot;3.11.4&quot; }, os: { type: &quot;Linux&quot;, name: &quot;Linux&quot;, architecture: &quot;x86_64&quot;, version: &quot;5.4.0-74-generic&quot; }, platform: &quot;CPython 3.8.5.final.0&quot; }
+2021-06-24T01:33:46.010+0000 I NETWORK  [listener] connection accepted from 171.25.193.78:26557 #63455724 (1189 connections now open)
+2021-06-24T01:33:46.092+0000 I NETWORK  [conn63455724] received client metadata from 171.25.193.78:26557 conn63455724: { driver: { name: &quot;PyMongo&quot;, version: &quot;3.11.4&quot; }, os: { type: &quot;Linux&quot;, name: &quot;Linux&quot;, architecture: &quot;x86_64&quot;, version: &quot;5.4.0-74-generic&quot; }, platform: &quot;CPython 3.8.5.final.0&quot; }
+2021-06-24T01:33:46.500+0000 I NETWORK  [conn63455724] end connection 171.25.193.78:26557 (1198 connections now open)
+2021-06-24T01:33:46.533+0000 I NETWORK  [conn63455699] end connection 171.25.193.78:26003 (1200 connections now open)
+2021-06-24T01:34:06.533+0000 I NETWORK  [listener] connection accepted from 185.220.101.6:10056 #63456621 (1266 connections now open)
+2021-06-24T01:34:06.627+0000 I NETWORK  [conn63456621] received client metadata from 185.220.101.6:10056 conn63456621: { driver: { name: &quot;PyMongo&quot;, version: &quot;3.11.4&quot; }, os: { type: &quot;Linux&quot;, name: &quot;Linux&quot;, architecture: &quot;x86_64&quot;, version: &quot;5.4.0-74-generic&quot; }, platform: &quot;CPython 3.8.5.final.0&quot; }
+2021-06-24T01:34:06.890+0000 I NETWORK  [listener] connection accepted from 185.220.101.6:21642 #63456637 (1264 connections now open)
+2021-06-24T01:34:06.962+0000 I NETWORK  [conn63456637] received client metadata from 185.220.101.6:21642 conn63456637: { driver: { name: &quot;PyMongo&quot;, version: &quot;3.11.4&quot; }, os: { type: &quot;Linux&quot;, name: &quot;Linux&quot;, architecture: &quot;x86_64&quot;, version: &quot;5.4.0-74-generic&quot; }, platform: &quot;CPython 3.8.5.final.0&quot; }
+2021-06-24T01:34:08.018+0000 I COMMAND  [conn63456637] dropDatabase config - starting
+2021-06-24T01:34:08.018+0000 I COMMAND  [conn63456637] dropDatabase config - dropping 1 collections
+2021-06-24T01:34:08.018+0000 I COMMAND  [conn63456637] dropDatabase config - dropping collection: config.transactions
+2021-06-24T01:34:08.020+0000 I STORAGE  [conn63456637] dropCollection: config.transactions (no UUID) - renaming to drop-pending collection: config.system.drop.1624498448i1t-1.transactions with drop optime { ts: Timestamp(1624498448, 1), t: -1 }
+2021-06-24T01:34:08.029+0000 I REPL     [replication-14545] Completing collection drop for config.system.drop.1624498448i1t-1.transactions with drop optime { ts: Timestamp(1624498448, 1), t: -1 } (notification optime: { ts: Timestamp(1624498448, 1), t: -1 })
+2021-06-24T01:34:08.030+0000 I STORAGE  [replication-14545] Finishing collection drop for config.system.drop.1624498448i1t-1.transactions (no UUID).
+2021-06-24T01:34:08.030+0000 I COMMAND  [conn63456637] dropDatabase config - successfully dropped 1 collections (most recent drop optime: { ts: Timestamp(1624498448, 1), t: -1 }) after 7ms. dropping database
+2021-06-24T01:34:08.032+0000 I REPL     [replication-14546] Completing collection drop for config.system.drop.1624498448i1t-1.transactions with drop optime { ts: Timestamp(1624498448, 1), t: -1 } (notification optime: { ts: Timestamp(1624498448, 5), t: -1 })
+2021-06-24T01:34:08.041+0000 I COMMAND  [conn63456637] dropDatabase config - finished
+2021-06-24T01:34:08.398+0000 I COMMAND  [conn63456637] dropDatabase newsblur - starting
+2021-06-24T01:34:08.398+0000 I COMMAND  [conn63456637] dropDatabase newsblur - dropping 37 collections
+
+&amp;lt;&amp;lt; SNIP: It goes on for a while... &amp;gt;&amp;gt;
+
+2021-06-24T01:35:18.840+0000 I COMMAND  [conn63456637] dropDatabase newsblur - finished
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;What you see above…&lt;/p&gt;
+
+&lt;p&gt;When I visited the IP address of the &lt;a href=&quot;http://185.220.101.6/&quot;&gt;two&lt;/a&gt; &lt;a href=&quot;http://171.25.193.78/&quot;&gt;connections&lt;/a&gt; above, I found a Tor exit router:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/hack-tor.png&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;3-what-will-happen-to-ensure-this-doesnt-happen-again&quot;&gt;3. What will happen to ensure this doesn’t happen again?&lt;/h3&gt;
+
+&lt;p&gt;VPC all the way.&lt;/p&gt;</content><author><name></name></author><category term="backend" /><summary type="html">I’d like to answer a few questions about what happened here.</summary></entry><entry><title type="html">Android app update: premium subscriptions, saved searches, in-app browser, auto-dark mode</title><link href="https://blog2.newsblur.com/2020/11/03/android-app-update-premium-subscriptions-saved/" rel="alternate" type="text/html" title="Android app update: premium subscriptions, saved searches, in-app browser, auto-dark mode" /><published>2020-11-03T07:41:03-05:00</published><updated>2020-11-03T07:41:03-05:00</updated><id>https://blog2.newsblur.com/2020/11/03/android-app-update-premium-subscriptions-saved</id><content type="html" xml:base="https://blog2.newsblur.com/2020/11/03/android-app-update-premium-subscriptions-saved/">&lt;p&gt;For a point release this one sure is big. The Android app has been upgraded to include a bunch of features found on the web.&lt;/p&gt;
 
 &lt;p&gt;For one, premium subscriptions can now be purchased in the Android app itself. Reading by folder, saved story tags, searching and saved searches are all premium features that you can unlock directly in the app.&lt;/p&gt;
 
@@ -206,28 +294,4 @@ A new sound of an old instrument.
 
 &lt;p&gt;&lt;img src=&quot;https://s3.amazonaws.com/static.newsblur.com/blog/caleb-allen.jpeg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;Caleb will be working on the Android app. Our Android developer Daniel spent the last 5 years with us working many, many versions of the NewsBlur app. I want to thank Daniel for his years of service and we wish him well on his next adventure. And here’s hoping for many fruitful years with Caleb!&lt;/p&gt;</content><author><name></name></author><category term="android" /><summary type="html">Today we have a nice update, version 9.0, of the Android app that includes a rewrite of the story management backend as well as fixes for some critical display issues.</summary></entry><entry><title type="html">The NewsBlur iOS app also hits version 8.0</title><link href="https://blog2.newsblur.com/2018/10/31/the-newsblur-ios-app-also-hits-version-80/" rel="alternate" type="text/html" title="The NewsBlur iOS app also hits version 8.0" /><published>2018-10-31T09:16:24-04:00</published><updated>2018-10-31T09:16:24-04:00</updated><id>https://blog2.newsblur.com/2018/10/31/the-newsblur-ios-app-also-hits-version-80</id><content type="html" xml:base="https://blog2.newsblur.com/2018/10/31/the-newsblur-ios-app-also-hits-version-80/">&lt;p&gt;Fresh off the heels of the Android app hitting version 8.0, today I’d like to announce the latest update to the iOS app. This is a huge release and it’s got a lot of new features packed in it. I also want to welcome David Sinclair back to the team. He’s the builder behind all the incredible features in this release. Really wonderful having you back, David, and thanks for making v8.0 of the best news reader on a phone.&lt;/p&gt;
-
-&lt;p&gt;Here’s what’s new:&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;NEW: Save stories offline&lt;/li&gt;
-  &lt;li&gt;NEW: Share stories from other apps into NewsBlur with the new share extension&lt;/li&gt;
-  &lt;li&gt;NEW: Scroll vertically between stories (can be turned on while reading a story)&lt;/li&gt;
-  &lt;li&gt;NEW: 3D Touch links in stories to preview them&lt;/li&gt;
-  &lt;li&gt;NEW: search for sites directly from the feed list&lt;/li&gt;
-  &lt;li&gt;Switching themes no longer reloads the story&lt;/li&gt;
-  &lt;li&gt;iOS 12 compatibility fixes&lt;/li&gt;
-  &lt;li&gt;Upgrading to a premium subscription now handles App Store payment updates&lt;/li&gt;
-  &lt;li&gt;Fixed issue where locking the device while playing a video over Airplay would stop the video&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;Here’s a preview of what a 3D touch on a link looks like:&lt;/p&gt;
-
-&lt;video src=&quot;https://s3.amazonaws.com/static.newsblur.com/blog/ios8-preview.mov&quot; width=&quot;350&quot; style=&quot;margin: 0 auto;border: 1px solid #606060&quot; autoplay=&quot;&quot; muted=&quot;&quot; loop=&quot;&quot;&gt;&lt;/video&gt;
-
-&lt;p&gt;And sharing stories from other apps directly to your blurblog is now easy to do from the share menu.&lt;/p&gt;
-
-&lt;figure class=&quot;tmblr-full&quot; data-orig-height=&quot;1334&quot; data-orig-width=&quot;750&quot; data-orig-src=&quot;https://s3.amazonaws.com/static.newsblur.com/blog/ios8-share.png&quot;&gt;&lt;img width=&quot;350&quot; style=&quot;margin: 0 auto;border: 1px solid #606060&quot; data-orig-height=&quot;1334&quot; data-orig-width=&quot;750&quot; src=&quot;https://s3.amazonaws.com/static.newsblur.com/blog/ios8-share.png&quot; /&gt;&lt;/figure&gt;
-
-&lt;p&gt;Now that David’s back there’s a lot to look forward to.&lt;/p&gt;</content><author><name></name></author><category term="iOS" /><summary type="html">Fresh off the heels of the Android app hitting version 8.0, today I’d like to announce the latest update to the iOS app. This is a huge release and it’s got a lot of new features packed in it. I also want to welcome David Sinclair back to the team. He’s the builder behind all the incredible features in this release. Really wonderful having you back, David, and thanks for making v8.0 of the best news reader on a phone.</summary></entry></feed>
+&lt;p&gt;Caleb will be working on the Android app. Our Android developer Daniel spent the last 5 years with us working many, many versions of the NewsBlur app. I want to thank Daniel for his years of service and we wish him well on his next adventure. And here’s hoping for many fruitful years with Caleb!&lt;/p&gt;</content><author><name></name></author><category term="android" /><summary type="html">Today we have a nice update, version 9.0, of the Android app that includes a rewrite of the story management backend as well as fixes for some critical display issues.</summary></entry></feed>
