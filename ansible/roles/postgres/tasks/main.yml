@@ -31,7 +31,8 @@
     name: disk_usage_sanity_checker
     user: root
     cron_file: /etc/cron.hourly/disk_usage_sanity_checker
-    job: docker pull newsblur/newsblur_python3:latest;
+    job: >-
+      docker pull newsblur/newsblur_python3:latest;
       docker run --rm -it
       OUTPUT=$(eval sudo df / | head -n 2 |  tail -1);
       -v /srv/newsblur:/srv/newsblur
