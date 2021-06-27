@@ -76,7 +76,7 @@ table th { background-color: #edefed; border: 1px solid #dadeda; border-bottom-c
 table td { border: 1px solid #e5e8e4; }
 
 /** Site header */
-.site-header { border-top: 5px solid #3d443c; border-bottom: 1px solid #e5e8e4; min-height: 55.95px; position: sticky; top: 0; background-color: #FDFCF3; }
+.site-header { border-top: 5px solid #1b3e63; border-bottom: 1px solid #e5e8e4; min-height: 55.95px; position: sticky; top: 0; background-color: #FDFCF3; }
 
 .site-header .wrapper { display: flex; align-items: center; }
 
