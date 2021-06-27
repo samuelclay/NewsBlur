@@ -62,4 +62,4 @@
       -v /backup/:/backup/
       --network=newsblurnet
       newsblur/newsblur_python3
-      /srv/newsblur/utils/backups/backup_psql.py /backup/$BACKUP_FILE $BUCKET
+      /srv/newsblur/utils/backups/backup_psql.py $BUCKET

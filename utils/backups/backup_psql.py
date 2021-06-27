@@ -8,11 +8,11 @@ sys.path.insert(0, NEWSBLUR_DIR)
 
 import boto3
 
-filename = sys.argv[1]
+filename = os.listdir('/backup')[0]
 
 print('Uploading %s to S3...' % filename)
 
 s3 = boto3.resource('s3') 
 bucket = sys.argv[2]
-bucket.upload_file(filename, name="postgres/%s" % filename.split("/")[1])
+bucket.upload_file(f'/backup/{filename}', name="postgres/%s" % filename)
 os.remove(filename)
