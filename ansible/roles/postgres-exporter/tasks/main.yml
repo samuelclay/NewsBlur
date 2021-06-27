@@ -8,7 +8,7 @@
   become: no
   run_once: yes
   register: postgres_credentials
-  local_action: command /srv/newsblur/ansible/roles/postgres-exporter/tasks/get_postgres_credentials.py
+  local_action: command /srv/newsblur/ansible/roles/postgres-exporter/tasks/get_credentials.py postgres_credentials
 - name: Start postgres-exporter container
   become: yes
   docker_container:
