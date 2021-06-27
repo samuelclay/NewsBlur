@@ -7,7 +7,7 @@ import boto3
 
 filenames = [f for f in os.listdir('/opt/mongo/newsblur/backup/') if '.tgz' in f]
 
-for filename i filenames:
+for filename in filenames:
     print('Uploading %s to S3...' % filename)
     try:
         s3 = boto3.resource('s3') 

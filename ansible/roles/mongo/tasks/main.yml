@@ -109,4 +109,4 @@
       -v /srv/newsblur:/srv/newsblur
       -v /opt/mongo/newsblur/backup/:/opt/mongo/newsblur/backup/
       --network=newsblurnet
-      /srv/newsblur/utils/backups/backup_mongo.py
+      newsblur/newsblur_python3:latest /srv/newsblur/utils/backups/backup_mongo.py
