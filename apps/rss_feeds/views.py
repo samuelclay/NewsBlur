@@ -523,6 +523,9 @@ def original_text(request):
     force = GET_POST.get('force', False)
     debug = GET_POST.get('debug', False)
 
+    if not story_hash and not story_id:
+        return {'code': -1, 'message': 'Missing story_hash.', 'original_text': None, 'failed': True}
+    
     if story_hash:
         story, _ = MStory.find_story(story_hash=story_hash)
     else:

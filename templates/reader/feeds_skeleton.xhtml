@@ -17,14 +17,14 @@
                     {% endif %}
                 </div>
                 <div class="NB-feeds-header-user-name">{{ social_profile.username }}</div>
-                <div class="NB-feeds-header-collapse-sidebar">
+                <div class="NB-feeds-header-collapse-sidebar" role="button">
                     <img src="{{ MEDIA_URL }}/img/reader/chevron_sq_left.png">
                 </div>
-                <div class="NB-feeds-header-user-interactions">
+                <div class="NB-feeds-header-user-interactions" role="button">
                     <div class="NB-feeds-header-user-interactions-badge NB-hidden"></div>
                     <img src="{{ MEDIA_URL }}/img/icons/circular/nav_icn_activity_active.png">
                 </div>
-                <div class="NB-feeds-header-user-dashboard">
+                <div class="NB-feeds-header-user-dashboard" role="button">
                     <img src="{{ MEDIA_URL }}/img/icons/circular/nav_icn_dashboard_active.png">
                 </div>
                 <div class="NB-feeds-header-dashboard"></div>
@@ -52,7 +52,7 @@
                 </div>
 
                 <div class="NB-feeds-header-container NB-feeds-header-river-container NB-feeds-header-river-global-container">
-                    <div class="NB-feeds-header NB-feeds-header-river-global NB-empty">
+                    <div class="NB-feeds-header NB-feeds-header-river-global NB-empty" role="link">
                         <div class="NB-feeds-header-count unread_count"></div>
                         <img class="NB-feeds-header-icon" src="" />
                         <div class="NB-feeds-header-title">
@@ -62,7 +62,7 @@
                 </div>
                 
                 <div class="NB-feeds-header-container NB-feeds-header-river-container NB-feeds-header-river-blurblogs-container">
-                    <div class="NB-feeds-header NB-feeds-header-river-blurblogs NB-empty">
+                    <div class="NB-feeds-header NB-feeds-header-river-blurblogs NB-empty" role="link">
                         <div class="NB-feeds-header-count unread_count"></div>
                         <img class="NB-feeds-header-icon" src="" />
                         <div class="NB-feedlist-collapse-icon"></div>
@@ -77,7 +77,7 @@
                 </div>
 
                 <div class="NB-feeds-header-container NB-feeds-header-river-container NB-feeds-header-river-infrequent-container">
-                    <div class="NB-feeds-header NB-feeds-header-river-infrequent NB-empty">
+                    <div class="NB-feeds-header NB-feeds-header-river-infrequent NB-empty" role="link">
                         <div class="NB-feeds-header-count unread_count"></div>
                         <img class="NB-feeds-header-icon" src="" />
                         <div class="NB-feeds-header-title">
@@ -87,7 +87,7 @@
                 </div>
                 
                 <div class="NB-feeds-header-container NB-feeds-header-river-container NB-feeds-header-river-sites-container">
-                    <div class="NB-feeds-header NB-feeds-header-river-sites NB-empty">
+                    <div class="NB-feeds-header NB-feeds-header-river-sites NB-empty" role="link">
                         <div class="NB-feeds-header-count unread_count"></div>
                         <img class="NB-feeds-header-icon" src="" />
                         <div class="NB-feeds-header-title">
@@ -99,7 +99,7 @@
                 <ul class="folder NB-feedlist" id="feed_list"></ul>
                 
                 <div class="NB-feeds-header-container NB-feeds-header-read-container NB-hidden">
-                    <div class="NB-feeds-header NB-feeds-header-read">
+                    <div class="NB-feeds-header NB-feeds-header-read" role="link">
                         <img class="NB-feeds-header-icon" src="" />
                         <div class="NB-feeds-header-title">
                             Read Stories
@@ -122,7 +122,7 @@
                 </div>
                 
                 <div class="NB-feeds-header-container NB-feeds-header-starred-container">
-                    <div class="NB-feeds-header NB-feeds-header-starred NB-empty">
+                    <div class="NB-feeds-header NB-feeds-header-starred NB-empty" role="link">
                         <div class="NB-feeds-header-count feed_counts_floater unread_count"></div>
                         <img class="NB-feeds-header-icon" src="" />
                         <div class="NB-feedlist-collapse-icon"></div>
@@ -166,27 +166,27 @@
                             <div class="NB-callout-arrow"></div>
                         </div>
                     </div>
-                    <div class="NB-task-button NB-task-add">
+                    <div class="NB-task-button NB-task-add" role="button">
                         <div class="NB-task-image"></div>
                     </div>
-                    <div class="NB-task-button NB-task-manage NB-disabled">
+                    <div class="NB-task-button NB-task-manage NB-disabled" role="button">
                         <div class="NB-task-image"></div>
                     </div>
                     <div class="NB-taskbar-intelligence">
                         <div class="NB-intelligence-slider">
                             <ul class="segmented-control">
-                                <li class="NB-intelligence-slider-control NB-intelligence-slider-red">
+                                <li class="NB-intelligence-slider-control NB-intelligence-slider-red" role="button">
                                     All
                                 </li>
-                                <li class="NB-intelligence-slider-control NB-intelligence-slider-yellow">
+                                <li class="NB-intelligence-slider-control NB-intelligence-slider-yellow" role="button">
                                     <img src="{{ MEDIA_URL }}embed/icons/circular/g_icn_unread.png">
                                     <span class="NB-intelligence-label">Unread</span>
                                 </li>
-                                <li class="NB-intelligence-slider-control NB-intelligence-slider-green">
+                                <li class="NB-intelligence-slider-control NB-intelligence-slider-green" role="button">
                                     <img src="{{ MEDIA_URL }}embed/icons/circular/g_icn_focus.png">
                                     <span class="NB-intelligence-label">Focus</span>
                                 </li>
-                                <li class="NB-intelligence-slider-control NB-intelligence-slider-blue">
+                                <li class="NB-intelligence-slider-control NB-intelligence-slider-blue" role="button">
                                     <img src="{{ MEDIA_URL }}embed/icons/circular/clock.png">
                                     <span class="NB-intelligence-label">Saved</span>
                                 </li>
@@ -208,14 +208,14 @@
         <div class="NB-feedbar content-north">
             
             <ul class="segmented-control NB-taskbar NB-taskbar-nav">
-                <li class="NB-taskbar-button NB-task-story-previous">
+                <li class="NB-taskbar-button NB-task-story-previous" role="button">
                     <div class="NB-task-image"></div>
                 </li>
-                <li class="NB-taskbar-button NB-task-story-next-unread NB-task-story-next-positive">
+                <li class="NB-taskbar-button NB-task-story-next-unread NB-task-story-next-positive" role="button">
                     <div class="NB-task-image"></div>
                     <span class="NB-task-title">Next unread</span>
                 </li>
-                <li class="NB-taskbar-button NB-task-story-next">
+                <li class="NB-taskbar-button NB-task-story-next" role="button">
                     <div class="NB-task-image"></div>
                 </li>
             </ul>
@@ -273,7 +273,7 @@
             </ul>
             
             <div class="NB-taskbar-options-container">
-                <span class="NB-taskbar-options">
+                <span class="NB-taskbar-options" role="button">
                     <div class="NB-icon"></div>
                     Style
                 </span>

@@ -1,13 +1,25 @@
 import datetime
 
 from django.conf import settings
-from django.http import JsonResponse
+from django.shortcuts import render
 from django.views import View
 
 class TasksPipeline(View):
 
     def get(self, request):
-        return JsonResponse(self.stats)
+        data =self.stats
+        chart_name = "task_pipeline"
+        chart_type = "counter"
+
+        formatted_data = {}
+        for k, v in data.items():
+            formatted_data[k] = f'{chart_name}{{category="{k}"}} {v}'
+        context = {
+            "data": formatted_data,
+            "chart_name": chart_name,
+            "chart_type": chart_type,
+        }
+        return render(request, 'monitor/prometheus_data.html', context, content_type="text/plain")
     
     @property
     def stats(self):

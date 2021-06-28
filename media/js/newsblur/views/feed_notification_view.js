@@ -17,20 +17,20 @@ NEWSBLUR.Views.FeedNotificationView = Backbone.View.extend({
         var $feed = $(_.template('<div class="NB-feed-notification <% if (selected) { %>selected<% } %>">\
             <div class="NB-feed-notification-controls">\
                 <ul class="segmented-control NB-feed-notification-filter">\
-                    <li class="NB-feed-notification-filter-unread <% if (!is_focus) { %>NB-active<% } %>">\
+                    <li class="NB-feed-notification-filter-unread <% if (!is_focus) { %>NB-active<% } %>" role="button">\
                         <div class="NB-unread-icon"></div>\
                         Unread stories\
                     </li>\
-                    <li class="NB-feed-notification-filter-focus  <% if (is_focus) { %>NB-active<% } %>">\
+                    <li class="NB-feed-notification-filter-focus  <% if (is_focus) { %>NB-active<% } %>" role="button">\
                         <div class="NB-focus-icon"></div>\
                         Focus\
                     </li>\
                 </ul>\
                 <ul class="segmented-control NB-feed-notification-types">\
-                    <li class="NB-feed-notification-option NB-feed-notification-email <% if (is_email) { %>NB-active<% } %>">Email</li>\
-                    <li class="NB-feed-notification-option NB-feed-notification-web <% if (is_web) { %>NB-active<% } %>">Web</li>\
-                    <li class="NB-feed-notification-option NB-feed-notification-ios <% if (is_ios) { %>NB-active<% } %>">iOS</li>\
-                    <li class="NB-feed-notification-option NB-feed-notification-android <% if (is_android) { %>NB-active<% } %>">Android</li>\
+                    <li class="NB-feed-notification-option NB-feed-notification-email <% if (is_email) { %>NB-active<% } %>" role="button">Email</li>\
+                    <li class="NB-feed-notification-option NB-feed-notification-web <% if (is_web) { %>NB-active<% } %>" role="button">Web</li>\
+                    <li class="NB-feed-notification-option NB-feed-notification-ios <% if (is_ios) { %>NB-active<% } %>" role="button">iOS</li>\
+                    <li class="NB-feed-notification-option NB-feed-notification-android <% if (is_android) { %>NB-active<% } %>" role="button">Android</li>\
                 </ul>\
             </div>\
             <% if (!popover) { %>\

@@ -5,3 +5,10 @@
   service:
     name: docker
     state: started
+
+- name: Restart Docker
+  become: yes
+  service:
+    name: docker
+    state: restarted
+  listen: restart docker

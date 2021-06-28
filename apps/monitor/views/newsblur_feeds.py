@@ -1,5 +1,5 @@
 from django.views import View
-from django.http import JsonResponse
+from django.shortcuts import render
 
 from apps.rss_feeds.models import Feed
 from apps.reader.models import UserSubscription
@@ -20,10 +20,23 @@ class Feeds(View):
             subscriptions_count = UserSubscription.objects.all().count()
             MStatistics.set('munin:subscriptions_count', subscriptions_count, 60*60*12)
 
-        return JsonResponse({
+        data = {
             'feeds': feeds_count,
             'subscriptions': subscriptions_count,
-            'profiles': MSocialProfile.objects.count(),
-            'social_subscriptions': MSocialSubscription.objects.count(),
-        })
+            'profiles': MSocialProfile.objects._collection.count(),
+            'social_subscriptions': MSocialSubscription.objects._collection.count(),
+        }
+        chart_name = "feeds"
+        chart_type = "counter"
+        formatted_data = {}
+        for k, v in data.items():
+            formatted_data[k] = f'{chart_name}{{category="{k}"}} {v}'
+        
+        context = {
+            "data": formatted_data,
+            "chart_name": chart_name,
+            "chart_type": chart_type,
+        }
+
+        return render(request, 'monitor/prometheus_data.html', context, content_type="text/plain")
 

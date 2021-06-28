@@ -42,6 +42,7 @@
       --dns-{{ dns_plugin }}-credentials {{ dnsimple_credentials_path }}
       --server https://acme-v02.api.letsencrypt.org/directory
   when: use_dns_plugin|bool
+  notify: reload haproxy
   tags:
     - certbot-dns
 
@@ -120,12 +121,12 @@
 - name: Download new certificates to local
   become: yes
   fetch:
-    src: '{{ item.dest }}'
-    dest: '{{ item.src }}'
+    src: '{{ item.src }}'
+    dest: '{{ item.dest }}'
     flat: yes
   when: linked
   with_items:
-    - src: /srv/secrets-newsblur/certificates/newsblur.com.crt
-      dest: /etc/letsencrypt/live/{{ domains_list[0] }}/fullchain.pem
-    - src: /srv/secrets-newsblur/certificates/newsblur.com.key
-      dest: /etc/letsencrypt/live/{{ domains_list[0] }}/privkey.pem
+    - dest: /srv/secrets-newsblur/certificates/newsblur.com.crt
+      src: /etc/letsencrypt/live/{{ domains_list[0] }}/fullchain.pem
+    - dest: /srv/secrets-newsblur/certificates/newsblur.com.key
+      src: /etc/letsencrypt/live/{{ domains_list[0] }}/privkey.pem

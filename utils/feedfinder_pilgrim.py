@@ -105,7 +105,7 @@ class URLGatekeeper:
     def get(self, url, check=False):
         if check and not self.can_fetch(url): return ''
         try:
-            return requests.get(url, headers=dict(self.urlopener.addheaders)).content
+            return requests.get(url, headers=dict(self.urlopener.addheaders)).text
         except:
             return ''
 
@@ -207,14 +207,14 @@ def isXMLRelatedLink(link):
 
 r_brokenRedirect = re.compile('<newLocation[^>]*>(.*?)</newLocation>', re.S)
 def tryBrokenRedirect(data):
-    if b'<newLocation' in data:
+    if '<newLocation' in data:
         newuris = r_brokenRedirect.findall(data)
         if newuris and newuris[0]: return newuris[0].strip()
 
 def couldBeFeedData(data):
     data = data.lower()
-    if data.count(b'<html'): return 0
-    return data.count(b'<rss') + data.count(b'<rdf') + data.count(b'<feed')
+    if data.count('<html'): return 0
+    return data.count('<rss') + data.count('<rdf') + data.count('<feed')
 
 def isFeed(uri):
     _debuglog('seeing if %s is a feed' % uri)
