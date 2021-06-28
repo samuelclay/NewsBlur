@@ -31,6 +31,7 @@ permalink: pretty
 twitter_username: newsblur
 github_username:  samuelclay
 logo: /assets/newsblur_logo_512.png
+future: true
 
 # Build settings
 theme: minima
