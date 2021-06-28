@@ -1,21 +1,16 @@
-#!/srv/newsblur/venv/newsblur/bin/python
+#!/usr/local/bin/python3
 
 import sys
 sys.path.append('/srv/newsblur')
 
-import subprocess
 import requests
-from newsblur import settings
+from newsblur_web import settings
 import socket
 import redis
 import pymongo
 
 def main():
-    df = subprocess.Popen(["df", "/"], stdout=subprocess.PIPE)
-    output = df.communicate()[0]
-    device, size, used, available, percent, mountpoint = output.split("\n")[1].split()
     hostname = socket.gethostname()
-    percent = int(percent.strip('%'))
     admin_email = settings.ADMINS[0][1]
     failed = False
     work_queue_size = 0

@@ -69,17 +69,23 @@ class MStatistics(mongo.Document):
     def collect_statistics(cls):
         now = datetime.datetime.now()
         cls.collect_statistics_premium_users()
-        print("Premiums: %s" % (datetime.datetime.now() - now))
+        # if settings.DEBUG:
+        #     print("Premiums: %s" % (datetime.datetime.now() - now))
         cls.collect_statistics_standard_users()
-        print("Standard users: %s" % (datetime.datetime.now() - now))
+        # if settings.DEBUG:
+        #     print("Standard users: %s" % (datetime.datetime.now() - now))
         cls.collect_statistics_sites_loaded()
-        print("Sites loaded: %s" % (datetime.datetime.now() - now))
+        # if settings.DEBUG:
+        #     print("Sites loaded: %s" % (datetime.datetime.now() - now))
         cls.collect_statistics_stories_shared()
-        print("Stories shared: %s" % (datetime.datetime.now() - now))
+        # if settings.DEBUG:
+        #     print("Stories shared: %s" % (datetime.datetime.now() - now))
         cls.collect_statistics_for_db()
-        print("DB Stats: %s" % (datetime.datetime.now() - now))
+        # if settings.DEBUG:
+        #     print("DB Stats: %s" % (datetime.datetime.now() - now))
         cls.collect_statistics_feeds_fetched()
-        print("Feeds Fetched: %s" % (datetime.datetime.now() - now))
+        # if settings.DEBUG:
+        #     print("Feeds Fetched: %s" % (datetime.datetime.now() - now))
         
     @classmethod
     def collect_statistics_feeds_fetched(cls):
@@ -294,7 +300,8 @@ class MFeedback(mongo.Document):
             feedback['url'] = "https://forum.newsblur.com/t/%s/%s/%s" % (post['topic_slug'], post['topic_id'], post['post_number'])
             feedback['style'] = cls.CATEGORIES[post['category_id']]
             cls.objects.create(**feedback)
-            print("%s: %s (%s)" % (feedback['style'], feedback['subject'], feedback['date_short']))
+            # if settings.DEBUG:
+            #     print("%s: %s (%s)" % (feedback['style'], feedback['subject'], feedback['date_short']))
             if post_count >= 4: break
     
     @classmethod

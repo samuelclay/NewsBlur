@@ -39,9 +39,6 @@
   become: yes
   copy: "src=motd.{{ motd_role }}.txt dest=/etc/update-motd.d/52-nb-motd mode=0755"
 
-- include: ufw.yml
-  become: yes
-
 - name: Ensure repo directory
   become: yes
   file:
@@ -57,6 +54,7 @@
     src: /srv/secrets-newsblur/configs/hosts
     dest: /etc/hosts
   tags: hosts
+  notify: reload dnsmasq
 
 - name: "Add inventory_hostname to /etc/hosts"
   become: yes
@@ -64,3 +62,10 @@
     path: /etc/hosts
     line: "127.0.0.1 {{ inventory_hostname }}"
   tags: hosts
+
+- name: Set hostname
+  become: yes
+  hostname:
+    name: "{{ inventory_hostname }}"
+  tags: hosts
+  

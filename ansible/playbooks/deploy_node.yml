@@ -4,7 +4,6 @@
   gather_facts: false
   vars_files:
     - ../env_vars/base.yml
-    - ../env_vars/dev.yml
 
   tasks:
     - name: Pull newsblur_web github

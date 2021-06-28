@@ -367,7 +367,7 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
     
     update_dashboard_count: function() {
         var feed_count = _.unique(NEWSBLUR.assets.folders.feed_ids_in_folder()).length;
-        $(".NB-module-stats-count-number-sites").html(feed_count);
+        $(".NB-module-stats-count-number-sites").html(Inflector.commas(feed_count));
     },
     
     // ===========

@@ -1756,6 +1756,10 @@ hr {
 }
 .NB-image-preview-small-right:not(.NB-story-layout-grid) .NB-story-title.NB-has-image,
 .NB-image-preview-large-right:not(.NB-story-layout-grid) .NB-story-title.NB-has-image {
+    padding-right: 242px;
+}
+.NB-image-preview-small-right:not(.NB-story-layout-grid) .NB-story-pane-west .NB-story-title.NB-has-image,
+.NB-image-preview-large-right:not(.NB-story-layout-grid) .NB-story-pane-west .NB-story-title.NB-has-image {
     padding-right: 90px;
 }
 /* Ragged right but not ragged left
@@ -1831,7 +1835,7 @@ hr {
 .NB-story-title .NB-storytitles-story-image {
     position: absolute;
     right: 0;
-    width: 86px;
+    width: 78px;
     height: 100%;
     background-size: 40%, cover;
     background-position: 50% 50%, 50% 30%;
@@ -1894,10 +1898,16 @@ hr {
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
+    overflow-wrap: break-word;
+    word-break: break-word;
 }
 
 .NB-story-title.read a.story_title {
     color: #969696;
+}
+.NB-storytitles-title {
+    overflow-wrap: break-word;
+    word-break: break-word;
 }
 .NB-view-river .NB-story-title a.story_title {
 
@@ -2342,6 +2352,10 @@ hr {
 .NB-content-preview-title .NB-story-grid {
     height: 296px;
 }
+.NB-image-preview-small-right .NB-layout-grid .NB-story-title.NB-selected.NB-has-image,
+.NB-image-preview-large-right .NB-layout-grid .NB-story-title.NB-selected.NB-has-image {
+    padding-right: 242px;
+}
 
 .NB-layout-grid .NB-story-titles,
 .NB-layout-grid.NB-grid-columns-3 .NB-story-titles,
@@ -2396,6 +2410,7 @@ hr {
     line-height: 1.3em;
     padding: 0;
     word-break: break-word;
+    word-break: anywhere;
 }
 .NB-theme-feed-size-xs .NB-story-grid .NB-storytitles-title {
     font-size: 14px;
@@ -2792,7 +2807,7 @@ body {
 .NB-image-preview-small-left:not(.NB-story-layout-grid) .NB-storytitles-story-image {
     width: 62px;
     height: 70%;
-    left: 24px;
+    left: 22px;
     top: 7px;
     border-radius: 6px;
 }
@@ -6062,7 +6077,7 @@ form.opml_import_form input {
     text-shadow: none;
 }
 
-.ui-autocomplete.ui-widget-content {
+.ui-menu.ui-autocomplete.ui-widget-content {
   width: 344px;
   padding: 0;
   margin: 0;
@@ -6082,31 +6097,32 @@ form.opml_import_form input {
   border-bottom-left-radius: 0;
 
 }
-.ui-autocomplete li {
+.ui-menu.ui-autocomplete li {
   padding: 0;
   list-style: none;
   margin: 0;
-  border-bottom: 1px solid #B0B0B0;
+  border-bottom: 1px solid #eaeaf7;
 }
-.ui-autocomplete li:last-child {
+.ui-menu.ui-autocomplete li:last-child {
   border-bottom: none;
 }
-.ui-autocomplete li a {
-  padding: 2px;
+.ui-menu.ui-autocomplete li a {
+  padding: 4px 8px;
   display: block;
   cursor: pointer;
 }
-.ui-autocomplete li a.ui-state-hover,
-.ui-autocomplete li a.ui-state-focus {
+.ui-menu.ui-autocomplete li a.ui-state-hover,
+.ui-menu.ui-autocomplete li a.ui-state-active,
+.ui-menu.ui-autocomplete li a.ui-state-focus {
     font-weight: normal;
-    background-color: #FDED8D;
-    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#FFFFD2), to(#FDED8D));
-    background: -moz-linear-gradient(center top , #FFFFD2 0%, #FDED8D 100%);
-    border: 1px solid #B0B0B0;
+    background: none;
+    background-color: #FFFFD2;
+    border: none;
     border-radius: none;
+    margin: 0;
 }
 
-.ui-autocomplete li a .NB-add-autocomplete-subscribers {
+.ui-menu.ui-autocomplete li a .NB-add-autocomplete-subscribers {
   float: right;
   font-size: 10px;
   color: #909090;
@@ -6115,7 +6131,7 @@ form.opml_import_form input {
   line-height: 16px;
   padding: 2px 4px 0 0;
 }
-.ui-autocomplete li a .NB-add-autocomplete-title {
+.ui-menu.ui-autocomplete li a .NB-add-autocomplete-title {
   line-height: 16px;
   color: #202020;
   font-weight: bold;
@@ -6124,7 +6140,7 @@ form.opml_import_form input {
   overflow: hidden;
   padding: 2px 0 0 4px;
 }
-.ui-autocomplete li a .NB-add-autocomplete-favicon {
+.ui-menu.ui-autocomplete li a .NB-add-autocomplete-favicon {
     float: left;
     margin: 2px 4px 0 2px;
     width: 16px;

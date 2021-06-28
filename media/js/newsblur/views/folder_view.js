@@ -182,7 +182,7 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
                 <% } %>\
                 </div>\
                 <div class="NB-feedlist-collapse-icon" title="<% if (is_collapsed) { %>Expand Folder<% } else {%>Collapse Folder<% } %>"></div>\
-                <div class="NB-feedlist-manage-icon"></div>\
+                <div class="NB-feedlist-manage-icon" role="button"></div>\
                 <span class="folder_title_text">\
                     <span><%= folder_title %></span>\
                 </span>\

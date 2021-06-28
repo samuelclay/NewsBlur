@@ -5,11 +5,6 @@
         "tags": [
             "web"
         ],
-        "port": 8000,
-        "checks": [{
-            "id": "{{inventory_hostname}}-web-ping",
-            "http": "http://{{ ansible_ssh_host }}:8000/_haproxychk",
-            "interval": "15s"
-        }]
+        "port": 8000
     }
 }  
