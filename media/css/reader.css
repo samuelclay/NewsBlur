@@ -1894,11 +1894,16 @@ hr {
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
-    overflow-wrap: anywhere;
+    overflow-wrap: break-word;
+    word-break: break-all;
 }
 
 .NB-story-title.read a.story_title {
     color: #969696;
+}
+.NB-storytitles-title {
+    overflow-wrap: break-word;
+    word-break: break-all;
 }
 .NB-view-river .NB-story-title a.story_title {
 
@@ -2397,6 +2402,7 @@ hr {
     line-height: 1.3em;
     padding: 0;
     word-break: break-word;
+    word-break: anywhere;
 }
 .NB-theme-feed-size-xs .NB-story-grid .NB-storytitles-title {
     font-size: 14px;
