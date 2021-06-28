@@ -52,7 +52,7 @@ Below is a snapshot of the bandwidth of the db-mongo1 machine over 24 hours:
 
 You can imagine the stress I experienced in the forty minutes between 9:35p, when the hack began, and 10:15p, when the fresh backup snapshot was identified and put into gear. Let's breakdown each moment:
 
- 1. **6:10p**: The new db-mongo1 server was put into rotation as the new MongoDB primary server. This machine was the first of the new, soon-to-be private cloud.
+ 1. **6:10p**: The new db-mongo1 server was put into rotation as the MongoDB primary server. This machine was the first of the new, soon-to-be private cloud.
  2. **9:35p**: Three hours later an automated hacking attempt opened a connection to the db-mongo1 server and immediately dropped the database. Downtime ensued.
  3. **10:15p**: Before the former primary server could be placed into rotation, a snapshot of the server was made to ensure the backup would not delete itself upon reconnection. This cost a few hours of downtime, but saved nearly 18 hours of a day's data by not forcing me to go into the daily backup archive.
  4. **3:00a**: Snapshot completes, replication from original primary server to new db-mongo1 begins. What you see in the next hour and a half is what the transfer of the DB looks like in terms of bandwidth.
@@ -106,13 +106,13 @@ $ cat /var/log/mongodb/mongod.log | egrep -v "159.65.XX.XX|161.89.XX.XX|<< SNIP:
 2021-06-24T01:35:18.840+0000 I COMMAND  [conn63456637] dropDatabase newsblur - finished
 </code></pre></div></div>
 
-The above is a lot, but the important bit of information to take from it is that by using a reductive filter, capturing everything that doesn't match a known IP, I was able to find the two connections that were made a few seconds apart. Both connections from these unknown IPs occured only moments before the database-wide deletion. By following the connection ID, it became easy to see the hacker come into the server only to delete it seconds later. 
+The above is a lot, but the important bit of information to take from it is that by using a subtractive filter, capturing everything that doesn't match a known IP, I was able to find the two connections that were made a few seconds apart. Both connections from these unknown IPs occured only moments before the database-wide deletion. By following the connection ID, it became easy to see the hacker come into the server only to delete it seconds later. 
 
 Interestingly, when I visited the IP address of the [two](http://185.220.101.6/) [connections](http://171.25.193.78/) above, I found a Tor exit router:
 
 <img src="/assets/hack-tor.png">
 
-This means that it is virtually impossible to track down who is responsible due to the anonymity preserving quality of Tor exit routers. [Tor exit nodes have poor reputations](https://blog.cloudflare.com/the-trouble-with-tor/) due to the havoc they wreak. Site owners are split on whether to block Tor entirely, but some see the value of allowing anonymous traffic to hit their servers. In NewsBlur's case, because NewsBlur is a home of free speech, allowing users in countries with censored news outlets to bypass restrictions and get access to the world at wide, the continuing risk of supporting anonymous Internet traffic is worth the cost. 
+This means that it is virtually impossible to track down who is responsible due to the anonymity-preserving quality of Tor exit routers. [Tor exit nodes have poor reputations](https://blog.cloudflare.com/the-trouble-with-tor/) due to the havoc they wreak. Site owners are split on whether to block Tor entirely, but some see the value of allowing anonymous traffic to hit their servers. In NewsBlur's case, because NewsBlur is a home of free speech, allowing users in countries with censored news outlets to bypass restrictions and get access to the world at large, the continuing risk of supporting anonymous Internet traffic is worth the cost. 
 
 ### 3. What will happen to ensure this doesn't happen again?
 
@@ -124,6 +124,6 @@ The second change is to use database user authentication on all of the databases
 
 Lastly, a change needs to be made as to which database users have permission to drop the database. Most database users only need read and write privileges. The ideal would be a localhost-only user being allowed to perform potentially destructive actions. If a rogue database user starts deleting stories, it would get noticed a whole lot faster than a database being dropped all at once.
 
-But each of these is only one piece of a defense strategy. [As this well-attended Hacker News thread from the day of the hack made clear](https://news.ycombinator.com/item?id=27613217), a proper defense strategy can never rely on only one move. And for NewsBlur that move was a allowlist-only firewall that worked perfectly up until it didn't. 
+But each of these is only one piece of a defense strategy. [As this well-attended Hacker News thread from the day of the hack made clear](https://news.ycombinator.com/item?id=27613217), a proper defense strategy can never rely on only one well-setup layer. And for NewsBlur that layer was a allowlist-only firewall that worked perfectly up until it didn't. 
 
-As usually, the real heros are backups. Regularly well tested backups are a necessary component to any web service. And with that, I'll prepare to [launch the big NewsBlur redesign later this week](https://beta.newsblur.com).
+As usually, the real heros are backups. Regular, well-tested backups are a necessary component to any web service. And with that, I'll prepare to [launch the big NewsBlur redesign later this week](https://beta.newsblur.com).
