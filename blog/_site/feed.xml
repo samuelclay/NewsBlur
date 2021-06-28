@@ -1,6 +1,37 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.0">Jekyll</generator><link href="https://blog2.newsblur.com/feed.xml" rel="self" type="application/atom+xml" /><link href="https://blog2.newsblur.com/" rel="alternate" type="text/html" /><updated>2021-06-25T18:27:17-04:00</updated><id>https://blog2.newsblur.com/feed.xml</id><title type="html">The NewsBlur Blog</title><subtitle>NewsBlur is a personal news reader that brings people together to talk about the world.
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.0">Jekyll</generator><link href="https://blog2.newsblur.com/feed.xml" rel="self" type="application/atom+xml" /><link href="https://blog2.newsblur.com/" rel="alternate" type="text/html" /><updated>2021-06-27T21:03:53-04:00</updated><id>https://blog2.newsblur.com/feed.xml</id><title type="html">The NewsBlur Blog</title><subtitle>NewsBlur is a personal news reader that brings people together to talk about the world.
 A new sound of an old instrument.
-</subtitle><entry><title type="html">Story of a Hacking</title><link href="https://blog2.newsblur.com/2021/06/25/story-of-a-hacking/" rel="alternate" type="text/html" title="Story of a Hacking" /><published>2021-06-25T00:00:00-04:00</published><updated>2021-06-25T00:00:00-04:00</updated><id>https://blog2.newsblur.com/2021/06/25/story-of-a-hacking</id><content type="html" xml:base="https://blog2.newsblur.com/2021/06/25/story-of-a-hacking/">&lt;p&gt;I’d like to answer a few questions about what happened here.&lt;/p&gt;
+</subtitle><entry><title type="html">How a Docker footgun led to a vandal deleting NewsBlur’s MongoDB database</title><link href="https://blog2.newsblur.com/2021/06/25/story-of-a-hacking/" rel="alternate" type="text/html" title="How a Docker footgun led to a vandal deleting NewsBlur’s MongoDB database" /><published>2021-06-25T00:00:00-04:00</published><updated>2021-06-25T00:00:00-04:00</updated><id>https://blog2.newsblur.com/2021/06/25/story-of-a-hacking</id><content type="html" xml:base="https://blog2.newsblur.com/2021/06/25/story-of-a-hacking/">&lt;p&gt;I’m in the process of moving everything on NewsBlur over to Docker containers in prep for a &lt;a href=&quot;https://beta.newsblur.com&quot;&gt;big redesign launching next week&lt;/a&gt;. It’s been a great year of maintenance and I’ve enjoyed the fruits of Ansible + Docker for NewsBlur’s 5 database servers (PostgreSQL, MongoDB, Redis, Elasticsearch, and soon ML models). The day was wrapping up and I settled into &lt;a href=&quot;https://en.wikipedia.org/wiki/Human_Compatible&quot;&gt;a new book on how to tame the machines once they’re smarter than us&lt;/a&gt; when I received a strange NewsBlur error on my phone.&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&quot;query killed during yield: renamed collection &apos;newsblur.feed_icons&apos; to &apos;newsblur.system.drop.1624498448i220t-1.feed_icons&apos;&quot;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;There are honestly no sets of words in that error message that I ever want to see again. What is the word &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;drop&lt;/code&gt; doing in that error message? Better go find out.&lt;/p&gt;
+
+&lt;p&gt;Logging into the MongoDB machine to check out what state the DB is in and I come across the following…&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot; data-lang=&quot;javascript&quot;&gt;&lt;span class=&quot;nx&quot;&gt;nbset&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;PRIMARY&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;show&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;dbs&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;READ__ME_TO_RECOVER_YOUR_DATA&lt;/span&gt;   &lt;span class=&quot;mf&quot;&gt;0.000&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;GB&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;newsblur&lt;/span&gt;                        &lt;span class=&quot;mf&quot;&gt;0.718&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;GB&lt;/span&gt;
+
+&lt;span class=&quot;nx&quot;&gt;nbset&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;PRIMARY&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;use&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;READ__ME_TO_RECOVER_YOUR_DATA&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;switched&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;to&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;db&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;READ__ME_TO_RECOVER_YOUR_DATA&lt;/span&gt;
+    
+&lt;span class=&quot;nx&quot;&gt;nbset&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;PRIMARY&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;db&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;README&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;find&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; 
+    &lt;span class=&quot;dl&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;_id&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;&quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;ObjectId&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;60d3e112ac48d82047aab95d&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; 
+    &lt;span class=&quot;dl&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;content&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;&quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;dl&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;All your data is a backed up. You must pay 0.03 BTC to XXXXXXFTHISGUYXXXXXXX 48 hours for recover it. After 48 hours expiration we will leaked and exposed all your data. In case of refusal to pay, we will contact the General Data Protection Regulation, GDPR and notify them that you store user data in an open form and is not safe. Under the rules of the law, you face a heavy fine or arrest and your base dump will be dropped from our server! You can buy bitcoin here, does not take much time to buy https://localbitcoins.com or https://buy.moonpay.io/ After paying write to me in the mail with your DB IP: FTHISGUY@recoverme.one and you will receive a link to download your database dump.&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;&quot;&lt;/span&gt; 
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Two thoughts immediately occured:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Thank goodness I have some recently checked backups on hand&lt;/li&gt;
+  &lt;li&gt;No way they have that data without me noticing&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;Three and a half hours before this happened, I switched the MongoDB cluster over to the new servers. When I did that, I shut down the original primary in order to delete it in a few days when all was well. And thank goodness I did that as it came in handy a few hours later. Knowing this, I realized that the hacker could not have taken all that data in so little time.&lt;/p&gt;
+
+&lt;p&gt;With that in mind, I’d like to answer a few questions about what happened here.&lt;/p&gt;
 
 &lt;ol&gt;
   &lt;li&gt;Was any data leaked during the hack? How do you know?&lt;/li&gt;
@@ -8,50 +39,46 @@ A new sound of an old instrument.
   &lt;li&gt;What will happen to ensure this doesn’t happen again?&lt;/li&gt;
 &lt;/ol&gt;
 
-&lt;p&gt;Let’s start by talking about the importance of your data. As you may know, NewsBlur is open source and enjoys the added protection of having thousands of people looking at the codebase and dozens contributing back to it.&lt;/p&gt;
+&lt;p&gt;Let’s start by talking about the most important question of all which is what happened to your data.&lt;/p&gt;
 
 &lt;h3 id=&quot;1-was-any-data-leaked-during-the-hack-how-do-you-know&quot;&gt;1. Was any data leaked during the hack? How do you know?&lt;/h3&gt;
 
 &lt;p&gt;I can definitively write that no data was leaked during the hack. I know this because of two different sets of logs showing that the automated attacker only issued deletion commands and did not transfer any data off of the MongoDB server.&lt;/p&gt;
 
-&lt;p&gt;This is what the day looks like. This 24 graph of bandwidth shows:&lt;/p&gt;
+&lt;p&gt;Below is a snapshot of the bandwidth of the db-mongo1 machine over 24 hours:&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;/assets/hack-timeline.png&quot; style=&quot;border: 1px solid rgba(0,0,0,0.1);&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;You can imagine the stress I experienced in the forty minutes between 9:35p, when the hack began, and 10:15p, when the fresh backup snapshot was identified and put into gear.&lt;/p&gt;
+&lt;p&gt;You can imagine the stress I experienced in the forty minutes between 9:35p, when the hack began, and 10:15p, when the fresh backup snapshot was identified and put into gear. Let’s breakdown each moment:&lt;/p&gt;
 
 &lt;ol&gt;
-  &lt;li&gt;&lt;strong&gt;6:10p&lt;/strong&gt;:&lt;/li&gt;
-  &lt;li&gt;&lt;strong&gt;9:35p&lt;/strong&gt;:&lt;/li&gt;
-  &lt;li&gt;&lt;strong&gt;10:15p&lt;/strong&gt;:&lt;/li&gt;
-  &lt;li&gt;&lt;strong&gt;3:00a&lt;/strong&gt;:&lt;/li&gt;
-  &lt;li&gt;&lt;strong&gt;4:30a&lt;/strong&gt;:&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;6:10p&lt;/strong&gt;: The new db-mongo1 server was put into rotation as the new MongoDB primary server. This machine was the first of the new, soon-to-be private cloud.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;9:35p&lt;/strong&gt;: Three hours later an automated hacking attempt opened a connection to the db-mongo1 server and immediately dropped the database. Downtime ensued.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;10:15p&lt;/strong&gt;: Before the former primary server could be placed into rotation, a snapshot of the server was made to ensure the backup would not delete itself upon reconnection. This cost a few hours of downtime, but saved nearly 18 hours of a day’s data by not forcing me to go into the daily backup archive.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;3:00a&lt;/strong&gt;: Snapshot completes, replication from original primary server to new db-mongo1 begins. What you see in the next hour and a half is what the transfer of the DB looks like in terms of bandwidth.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;4:30a&lt;/strong&gt;: Replication, which is inbound from the old primary server, completes, and now replication begins outbound on the new secondaries. NewsBlur is now back up.&lt;/li&gt;
 &lt;/ol&gt;
+
+&lt;p&gt;The most important bit of information the above chart shows us is what a full database transfer looks like in terms of bandwidth. From 6p to 9:30p, the amount of data was the expected amount from a working primary server with multiple secondaries syncing to it. At 3a, you’ll see an enormous amount of data transfered.&lt;/p&gt;
+
+&lt;p&gt;This tells us that the hacker was an automated digital vandal rather than a concerted hacking attempt. And if we were to pay the ransom, it wouldn’t do anything because the vandals don’t have the data and have nothing to release.&lt;/p&gt;
+
+&lt;p&gt;While the server was being snapshot, I used that time to figure out how the hacker got in.&lt;/p&gt;
 
 &lt;h3 id=&quot;2-how-did-newsblurs-mongodb-server-get-hacked&quot;&gt;2. How did NewsBlur’s MongoDB server get hacked?&lt;/h3&gt;
 
-&lt;p&gt;It would make for a much more dramatic read if I was hit through a vulnerability in Docker instead of a footgun.&lt;/p&gt;
+&lt;p&gt;Turns out the ufw firewall I enabled and diligently kept on a strict allowlist with only my internal servers didn’t work on a new server because of Docker. When I containerized MongoDB, Docker helpfully inserted an allow rule into iptables, opening up MongoDB to the world. So while my firewall was “active”, doing a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;sudo iptables -L | grep 27017&lt;/code&gt; showed that MongoDB was open the world.&lt;/p&gt;
 
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;nbset:PRIMARY&amp;gt; show dbs
-READ__ME_TO_RECOVER_YOUR_DATA   0.000GB
-admin                           0.000GB
-local                          16.471GB
-newsblur                        0.718GB
+&lt;p&gt;To be honest, I’m a bit surprised it took over 3 hours from when I flipped the switch to when a hacker/vandal dropped NewsBlur’s MongoDB collections and pretended to ransom about 250GB of data. This is the work of an automated hack and one that I was prepared for. NewsBlur was back online a few hours later once the backups were restored. And the Docker-made hole was immediately patched.&lt;/p&gt;
 
-nbset:PRIMARY&amp;gt; use READ__ME_TO_RECOVER_YOUR_DATA
-switched to db READ__ME_TO_RECOVER_YOUR_DATA
+&lt;p&gt;It would make for a much more dramatic read if I was hit through a vulnerability in Docker instead of a footgun. By having Docker silently override the firewall, Docker has made it easier for developers who want to open up ports on their containers at the expense of security. Better would be for Docker to issue a warning when it detects that the most popular firewall on Linux is active and filtering traffic to a port that Docker is about to open.&lt;/p&gt;
 
-nbset:PRIMARY&amp;gt; show collections
-README
-system.profile
+&lt;p&gt;&lt;img src=&quot;/assets/ornament-pill.png&quot; style=&quot;display: block; margin: 0 auto;width: 100px;&quot; /&gt;&lt;/p&gt;
 
-nbset:PRIMARY&amp;gt; db.README.find()
-{ &quot;_id&quot; : ObjectId(&quot;60d3e112ac48d82047aab95d&quot;), &quot;content&quot; : &quot;All your data is a backed up. You must pay 0.03 BTC to XXXXXXFTHISGUYXXXXXXX 48 hours for recover it. After 48 hours expiration we will leaked and exposed all your data. In case of refusal to pay, we will contact the General Data Protection Regulation, GDPR and notify them that you store user data in an open form and is not safe. Under the rules of the law, you face a heavy fine or arrest and your base dump will be dropped from our server! You can buy bitcoin here, does not take much time to buy https://localbitcoins.com or https://buy.moonpay.io/ After paying write to me in the mail with your DB IP: FTHISGUY@recoverme.one and you will receive a link to download your database dump.&quot; }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;The second reason we know that no data was taken comes from looking through the MongoDB access logs. With these rich and verbose logging sources we can invoke a pretty neat command to find everybody who is not one of the 100 known NewsBlur machines that has accessed MongoDB.&lt;/p&gt;
 
-&lt;p&gt;Looking at the MongoDB access logs, we can invoke a pretty neat command to find everybody who is not one of the 100 known NewsBlur machines that has accessed MongoDB.&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ cat /var/log/mongodb/mongod.log | egrep -v &quot;159.65.XX.XX|161.89.XX.XX|&amp;lt;&amp;lt; SNIP: A hundred more servers &amp;gt;&amp;gt;&quot;
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot; style=&quot;max-height: 200px;&quot;&gt;&lt;code&gt;
+$ cat /var/log/mongodb/mongod.log | egrep -v &quot;159.65.XX.XX|161.89.XX.XX|&amp;lt;&amp;lt; SNIP: A hundred more servers &amp;gt;&amp;gt;&quot;
 
 2021-06-24T01:33:45.531+0000 I NETWORK  [listener] connection accepted from 171.25.193.78:26003 #63455699 (1189 connections now open)
 2021-06-24T01:33:45.635+0000 I NETWORK  [conn63455699] received client metadata from 171.25.193.78:26003 conn63455699: { driver: { name: &quot;PyMongo&quot;, version: &quot;3.11.4&quot; }, os: { type: &quot;Linux&quot;, name: &quot;Linux&quot;, architecture: &quot;x86_64&quot;, version: &quot;5.4.0-74-generic&quot; }, platform: &quot;CPython 3.8.5.final.0&quot; }
@@ -80,15 +107,27 @@ nbset:PRIMARY&amp;gt; db.README.find()
 2021-06-24T01:35:18.840+0000 I COMMAND  [conn63456637] dropDatabase newsblur - finished
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;What you see above…&lt;/p&gt;
+&lt;p&gt;The above is a lot, but the important bit of information to take from it is that by using a reductive filter, capturing everything that doesn’t match a known IP, I was able to find the two connections that were made a few seconds apart. Both connections from these unknown IPs occured only moments before the database-wide deletion. By following the connection ID, it became easy to see the hacker come into the server only to delete it seconds later.&lt;/p&gt;
 
-&lt;p&gt;When I visited the IP address of the &lt;a href=&quot;http://185.220.101.6/&quot;&gt;two&lt;/a&gt; &lt;a href=&quot;http://171.25.193.78/&quot;&gt;connections&lt;/a&gt; above, I found a Tor exit router:&lt;/p&gt;
+&lt;p&gt;Interestingly, when I visited the IP address of the &lt;a href=&quot;http://185.220.101.6/&quot;&gt;two&lt;/a&gt; &lt;a href=&quot;http://171.25.193.78/&quot;&gt;connections&lt;/a&gt; above, I found a Tor exit router:&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;/assets/hack-tor.png&quot; /&gt;&lt;/p&gt;
 
+&lt;p&gt;This means that it is virtually impossible to track down who is responsible due to the anonymity preserving quality of Tor exit routers. &lt;a href=&quot;https://blog.cloudflare.com/the-trouble-with-tor/&quot;&gt;Tor exit nodes have poor reputations&lt;/a&gt; due to the havoc they wreak. Site owners are split on whether to block Tor entirely, but some see the value of allowing anonymous traffic to hit their servers. In NewsBlur’s case, because NewsBlur is a home of free speech, allowing users in countries with censored news outlets to bypass restrictions and get access to the world at wide, the continuing risk of supporting anonymous Internet traffic is worth the cost.&lt;/p&gt;
+
 &lt;h3 id=&quot;3-what-will-happen-to-ensure-this-doesnt-happen-again&quot;&gt;3. What will happen to ensure this doesn’t happen again?&lt;/h3&gt;
 
-&lt;p&gt;VPC all the way.&lt;/p&gt;</content><author><name></name></author><category term="backend" /><summary type="html">I’d like to answer a few questions about what happened here.</summary></entry><entry><title type="html">Android app update: premium subscriptions, saved searches, in-app browser, auto-dark mode</title><link href="https://blog2.newsblur.com/2020/11/03/android-app-update-premium-subscriptions-saved/" rel="alternate" type="text/html" title="Android app update: premium subscriptions, saved searches, in-app browser, auto-dark mode" /><published>2020-11-03T07:41:03-05:00</published><updated>2020-11-03T07:41:03-05:00</updated><id>https://blog2.newsblur.com/2020/11/03/android-app-update-premium-subscriptions-saved</id><content type="html" xml:base="https://blog2.newsblur.com/2020/11/03/android-app-update-premium-subscriptions-saved/">&lt;p&gt;For a point release this one sure is big. The Android app has been upgraded to include a bunch of features found on the web.&lt;/p&gt;
+&lt;p&gt;Of course, being in support of free speech and providing enhanced ways to access speech comes at a cost. So for NewsBlur to continue serving traffic to all of its worldwide readers, several changes have to be made.&lt;/p&gt;
+
+&lt;p&gt;The first change is the one that, ironically, we were in the process of moving to. A VPC, a virtual private cloud, keeps critical servers only accessible from others servers in a private network. But in moving to a private network, I need to migrate all of the data off of the publicly accessible machines. And this was the first step in that process.&lt;/p&gt;
+
+&lt;p&gt;The second change is to use database user authentication on all of the databases. We had been relying on the firewall to provide protection against threats, but when the firewall silently failed, we were left exposed. Now who’s to say that this would have been caught if the firewall failed but authentication was in place. I suspect the password needs to be long enough to not be brute-forced, because eventually, knowing that an open but password protected DB is there, it could very possibly end up on a list.&lt;/p&gt;
+
+&lt;p&gt;Lastly, a change needs to be made as to which database users have permission to drop the database. Most database users only need read and write privileges. The ideal would be a localhost-only user being allowed to perform potentially destructive actions. If a rogue database user starts deleting stories, it would get noticed a whole lot faster than a database being dropped all at once.&lt;/p&gt;
+
+&lt;p&gt;But each of these is only one piece of a defense strategy. &lt;a href=&quot;https://news.ycombinator.com/item?id=27613217&quot;&gt;As this well-attended Hacker News thread from the day of the hack made clear&lt;/a&gt;, a proper defense strategy can never rely on only one move. And for NewsBlur that move was a allowlist-only firewall that worked perfectly up until it didn’t.&lt;/p&gt;
+
+&lt;p&gt;As usually, the real heros are backups. Regularly well tested backups are a necessary component to any web service. And with that, I’ll prepare to &lt;a href=&quot;https://beta.newsblur.com&quot;&gt;launch the big NewsBlur redesign later this week&lt;/a&gt;.&lt;/p&gt;</content><author><name></name></author><category term="backend" /><summary type="html">I’m in the process of moving everything on NewsBlur over to Docker containers in prep for a big redesign launching next week. It’s been a great year of maintenance and I’ve enjoyed the fruits of Ansible + Docker for NewsBlur’s 5 database servers (PostgreSQL, MongoDB, Redis, Elasticsearch, and soon ML models). The day was wrapping up and I settled into a new book on how to tame the machines once they’re smarter than us when I received a strange NewsBlur error on my phone.</summary></entry><entry><title type="html">Android app update: premium subscriptions, saved searches, in-app browser, auto-dark mode</title><link href="https://blog2.newsblur.com/2020/11/03/android-app-update-premium-subscriptions-saved/" rel="alternate" type="text/html" title="Android app update: premium subscriptions, saved searches, in-app browser, auto-dark mode" /><published>2020-11-03T07:41:03-05:00</published><updated>2020-11-03T07:41:03-05:00</updated><id>https://blog2.newsblur.com/2020/11/03/android-app-update-premium-subscriptions-saved</id><content type="html" xml:base="https://blog2.newsblur.com/2020/11/03/android-app-update-premium-subscriptions-saved/">&lt;p&gt;For a point release this one sure is big. The Android app has been upgraded to include a bunch of features found on the web.&lt;/p&gt;
 
 &lt;p&gt;For one, premium subscriptions can now be purchased in the Android app itself. Reading by folder, saved story tags, searching and saved searches are all premium features that you can unlock directly in the app.&lt;/p&gt;
 
