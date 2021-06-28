@@ -4,13 +4,13 @@ title: How a Docker footgun led to a vandal deleting NewsBlur's MongoDB database
 tags: ['backend']
 ---
 
-*tl;dr: A vandal deleted NewsBlur's MongoDB during a migration. No data was stolen or lost.*
+*tl;dr: A vandal deleted NewsBlur's MongoDB database during a migration. No data was stolen or lost.*
 
 I'm in the process of moving everything on NewsBlur over to Docker containers in prep for a [big redesign launching next week](https://beta.newsblur.com). It's been a great year of maintenance and I've enjoyed the fruits of Ansible + Docker for NewsBlur's 5 database servers (PostgreSQL, MongoDB, Redis, Elasticsearch, and soon ML models). The day was wrapping up and I settled into [a new book on how to tame the machines once they're smarter than us](https://en.wikipedia.org/wiki/Human_Compatible) when I received a strange NewsBlur error on my phone.
 
     "query killed during yield: renamed collection 'newsblur.feed_icons' to 'newsblur.system.drop.1624498448i220t-1.feed_icons'"
 
-There are honestly no sets of words in that error message that I ever want to see again. What is the word `drop` doing in that error message? Better go find out.
+There is honestly no set of words in that error message that I ever want to see again. What is `drop` doing in that error message? Better go find out.
 
 Logging into the MongoDB machine to check out what state the DB is in and I come across the following...
 
@@ -64,13 +64,15 @@ The most important bit of information the above chart shows us is what a full da
 
 This tells us that the hacker was an automated digital vandal rather than a concerted hacking attempt. And if we were to pay the ransom, it wouldn't do anything because the vandals don't have the data and have nothing to release. 
 
+We can also reason that the vandal was not able to access any files that were on the server outside of MongoDB due to using a recent version of MongoDB. Unless the attacker had access to a 0-day, it is highly unlikely they were able to break out of MongoDB's server connection. 
+
 While the server was being snapshot, I used that time to figure out how the hacker got in. 
 
 ### 2. How did NewsBlur's MongoDB server get hacked?
 
 Turns out the ufw firewall I enabled and diligently kept on a strict allowlist with only my internal servers didn't work on a new server because of Docker. When I containerized MongoDB, Docker helpfully inserted an allow rule into iptables, opening up MongoDB to the world. So while my firewall was "active", doing a `sudo iptables -L | grep 27017` showed that MongoDB was open the world.
 
-To be honest, I'm a bit surprised it took over 3 hours from when I flipped the switch to when a hacker/vandal dropped NewsBlur's MongoDB collections and pretended to ransom about 250GB of data. This is the work of an automated hack and one that I was prepared for. NewsBlur was back online a few hours later once the backups were restored. And the Docker-made hole was immediately patched.
+To be honest, I'm a bit surprised it took over 3 hours from when I flipped the switch to when a hacker/vandal dropped NewsBlur's MongoDB collections and pretended to ransom about 250GB of data. This is the work of an automated hack and one that I was prepared for. NewsBlur was back online a few hours later once the backups were restored and the Docker-made hole was patched.
 
 It would make for a much more dramatic read if I was hit through a vulnerability in Docker instead of a footgun. By having Docker silently override the firewall, Docker has made it easier for developers who want to open up ports on their containers at the expense of security. Better would be for Docker to issue a warning when it detects that the most popular firewall on Linux is active and filtering traffic to a port that Docker is about to open.
 
