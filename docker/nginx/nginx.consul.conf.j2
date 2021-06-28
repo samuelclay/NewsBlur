@@ -124,5 +124,7 @@ server {
     real_ip_header    X-Forwarded-For;
     real_ip_recursive on;
 
+    rewrite  ^/rss$  https://blog2.newsblur.com/feed.xml  permanent;
+
     root /srv/newsblur/blog/_site;
 }
