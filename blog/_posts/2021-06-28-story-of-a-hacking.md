@@ -130,4 +130,4 @@ Lastly, a change needs to be made as to which database users have permission to 
 
 But each of these is only one piece of a defense strategy. [As this well-attended Hacker News thread from the day of the hack made clear](https://news.ycombinator.com/item?id=27613217), a proper defense strategy can never rely on only one well-setup layer. And for NewsBlur that layer was a allowlist-only firewall that worked perfectly up until it didn't. 
 
-As usually, the real heros are backups. Regular, well-tested backups are a necessary component to any web service. And with that, I'll prepare to [launch the big NewsBlur redesign later this week](https://beta.newsblur.com).
+As usual the real heros are backups. Regular, well-tested backups are a necessary component to any web service. And with that, I'll prepare to [launch the big NewsBlur redesign later this week](https://beta.newsblur.com).
