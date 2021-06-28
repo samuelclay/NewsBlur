@@ -1894,6 +1894,7 @@ hr {
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
+    overflow-wrap: anywhere;
 }
 
 .NB-story-title.read a.story_title {
