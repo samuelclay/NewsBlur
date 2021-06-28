@@ -4,6 +4,8 @@ title: How a Docker footgun led to a vandal deleting NewsBlur's MongoDB database
 tags: ['backend']
 ---
 
+*tl;dr: A vandal deleted NewsBlur's MongoDB during a migration. No data was stolen or lost.*
+
 I'm in the process of moving everything on NewsBlur over to Docker containers in prep for a [big redesign launching next week](https://beta.newsblur.com). It's been a great year of maintenance and I've enjoyed the fruits of Ansible + Docker for NewsBlur's 5 database servers (PostgreSQL, MongoDB, Redis, Elasticsearch, and soon ML models). The day was wrapping up and I settled into [a new book on how to tame the machines once they're smarter than us](https://en.wikipedia.org/wiki/Human_Compatible) when I received a strange NewsBlur error on my phone.
 
     "query killed during yield: renamed collection 'newsblur.feed_icons' to 'newsblur.system.drop.1624498448i220t-1.feed_icons'"

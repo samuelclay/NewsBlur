@@ -19,7 +19,7 @@
 <meta name="twitter:card" content="summary" />
 <meta property="twitter:title" content="The NewsBlur Blog" />
 <script type="application/ld+json">
-{"description":"NewsBlur is a personal news reader that brings people together to talk about the world. A new sound of an old instrument.","publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"https://blog2.newsblur.com/assets/newsblur_logo_512.png"}},"url":"https://blog2.newsblur.com/","headline":"The NewsBlur Blog","@type":"WebSite","name":"The NewsBlur Blog","@context":"https://schema.org"}</script>
+{"@type":"WebSite","publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"https://blog2.newsblur.com/assets/newsblur_logo_512.png"}},"name":"The NewsBlur Blog","headline":"The NewsBlur Blog","description":"NewsBlur is a personal news reader that brings people together to talk about the world. A new sound of an old instrument.","url":"https://blog2.newsblur.com/","@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/assets/main.css">
   <link rel="stylesheet" type="text/css" href="https://cloud.typography.com/6565292/711824/css/fonts.css" />
@@ -67,7 +67,9 @@
           </a>
         </h3>
         <div class="post-content e-content" itemprop="articleBody">
-          <p>I’m in the process of moving everything on NewsBlur over to Docker containers in prep for a <a href="https://beta.newsblur.com">big redesign launching next week</a>. It’s been a great year of maintenance and I’ve enjoyed the fruits of Ansible + Docker for NewsBlur’s 5 database servers (PostgreSQL, MongoDB, Redis, Elasticsearch, and soon ML models). The day was wrapping up and I settled into <a href="https://en.wikipedia.org/wiki/Human_Compatible">a new book on how to tame the machines once they’re smarter than us</a> when I received a strange NewsBlur error on my phone.</p>
+          <p><em>tl;dr: A vandal deleted NewsBlur’s MongoDB during a migration. No data was stolen or lost.</em></p>
+
+<p>I’m in the process of moving everything on NewsBlur over to Docker containers in prep for a <a href="https://beta.newsblur.com">big redesign launching next week</a>. It’s been a great year of maintenance and I’ve enjoyed the fruits of Ansible + Docker for NewsBlur’s 5 database servers (PostgreSQL, MongoDB, Redis, Elasticsearch, and soon ML models). The day was wrapping up and I settled into <a href="https://en.wikipedia.org/wiki/Human_Compatible">a new book on how to tame the machines once they’re smarter than us</a> when I received a strange NewsBlur error on my phone.</p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>"query killed during yield: renamed collection 'newsblur.feed_icons' to 'newsblur.system.drop.1624498448i220t-1.feed_icons'"
 </code></pre></div></div>
