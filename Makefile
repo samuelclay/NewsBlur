@@ -45,6 +45,8 @@ down:
 nbdown: down
 jekyll:
 	- cd blog && bundle exec jekyll serve
+jekyll_drafts:
+	- cd blog && bundle exec jekyll serve --drafts
 
 # runs tests
 test:
