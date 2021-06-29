@@ -1,8 +1,6 @@
-import sys
-from newsblur_web.settings import *
-
+import os
 DOCKERBUILD = os.getenv("DOCKERBUILD")
-
+from newsblur_web.settings import *
 DATABASES['default']['ENGINE'] = 'django.db.backends.sqlite3'
 DATABASES['default']['OPTIONS'] = {}
 DATABASES['default']['NAME'] = 'nb.db'
@@ -52,7 +50,6 @@ INSTALLED_APPS = (
     'apps.oauth',
     'apps.search',
     'apps.categories',
-    'django_celery_beat',
     'utils', # missing models so no migrations
     'typogrify',
     'oauth2_provider',
@@ -63,7 +60,7 @@ if DOCKERBUILD:
     MONGO_PORT = 29019
     MONGO_DB = {
         'name': 'newsblur_test',
-        'host': '127.0.0.1:29019',
+        'host': 'db_mongo:29019',
     }
 
 else:
