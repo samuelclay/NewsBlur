@@ -161,6 +161,8 @@ code {
 pre {
   padding: 8px 12px;
   overflow-x: auto;
+  white-space: pre-wrap;
+  word-wrap: break-word;
 
   > code {
     border: 0;
