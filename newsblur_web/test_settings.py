@@ -26,36 +26,6 @@ LOGGING_CONFIG = None
 # }
 
 
-INSTALLED_APPS = (
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.sites',
-    'django.contrib.admin',
-    'django.contrib.messages',
-    'django_extensions',
-    'paypal.standard.ipn',
-    'apps.rss_feeds',
-    'apps.reader',
-    'apps.analyzer',
-    'apps.feed_import',
-    'apps.profile',
-    'apps.recommendations',
-    'apps.statistics',
-    'apps.notifications',
-    'apps.static',
-    'apps.mobile',
-    'apps.push',
-    'apps.social',
-    'apps.oauth',
-    'apps.search',
-    'apps.categories',
-    'utils', # missing models so no migrations
-    'typogrify',
-    'oauth2_provider',
-    'corsheaders',
-)
-
 if DOCKERBUILD:
     MONGO_PORT = 29019
     MONGO_DB = {
@@ -72,7 +42,7 @@ else:
     SERVER_NAME
 
 MONGO_DATABASE_NAME = 'test_newsblur'
-# TEST_DATABASE_NAME = ":memory:"
+
 SOUTH_TESTS_MIGRATE = False
 DAYS_OF_UNREAD = 9999
 DAYS_OF_UNREAD_FREE = 9999
@@ -82,7 +52,3 @@ SITE_ID = 2
 SENTRY_DSN = None
 HOMEPAGE_USERNAME = 'conesus'
 SERVER_NAME = 'test_newsblur'
-# from django.db import connection
-# cursor = connection.cursor()
-# cursor.execute('PRAGMA temp_store = MEMORY;')
-# cursor.execute('PRAGMA synchronous=OFF')
