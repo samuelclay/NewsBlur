@@ -109,6 +109,7 @@
     
             var refresh_page = this.check_and_load_ssl();
             if (refresh_page) return;
+            this.check_if_forced_upgrade_to_beta_site();
             this.load_javascript_elements_on_page();
             this.apply_resizable_layout();
             this.add_body_classes();
@@ -164,6 +165,17 @@
         check_and_load_ssl: function() {
             if (window.location.protocol == 'http:' && this.model.preference('ssl')) {
                 window.location.href = window.location.href.replace('http:', 'https:');
+                return true;
+            }
+        },
+
+        check_if_forced_upgrade_to_beta_site: function () {
+            if (
+                NEWSBLUR.Globals.user_id % 100 <= 20
+            ) {
+                // See ya
+                window.location.href = "https://beta.newsblur.com";
+
                 return true;
             }
         },
