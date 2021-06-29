@@ -135,13 +135,13 @@
 
 <p>This tells us that the hacker was an automated digital vandal rather than a concerted hacking attempt. And if we were to pay the ransom, it wouldn’t do anything because the vandals don’t have the data and have nothing to release.</p>
 
-<p>We can also reason that the vandal was not able to access any files that were on the server outside of MongoDB due to using a recent version of MongoDB. Unless the attacker had access to a 0-day, it is highly unlikely they were able to break out of MongoDB’s server connection.</p>
+<p>We can also reason that the vandal was not able to access any files that were on the server outside of MongoDB due to using a recent version of MongoDB in a Docker container. Unless the attacker had access to a 0-day to both MongoDB and Docker, it is highly unlikely they were able to break out of the MongoDB server connection.</p>
 
 <p>While the server was being snapshot, I used that time to figure out how the hacker got in.</p>
 
 <h3 id="2-how-did-newsblurs-mongodb-server-get-hacked">2. How did NewsBlur’s MongoDB server get hacked?</h3>
 
-<p>Turns out the ufw firewall I enabled and diligently kept on a strict allowlist with only my internal servers didn’t work on a new server because of Docker. When I containerized MongoDB, Docker helpfully inserted an allow rule into iptables, opening up MongoDB to the world. So while my firewall was “active”, doing a <code class="language-plaintext highlighter-rouge">sudo iptables -L | grep 27017</code> showed that MongoDB was open the world.</p>
+<p>Turns out the ufw firewall I enabled and diligently kept on a strict allowlist with only my internal servers didn’t work on a new server because of Docker. When I containerized MongoDB, Docker helpfully inserted an allow rule into iptables, opening up MongoDB to the world. So while my firewall was “active”, doing a <code class="language-plaintext highlighter-rouge">sudo iptables -L | grep 27017</code> showed that MongoDB was open the world. This has been <a href="https://github.com/moby/moby/issues/4737">a Docker footgun since 2014</a>.</p>
 
 <p>To be honest, I’m a bit surprised it took over 3 hours from when I flipped the switch to when a hacker/vandal dropped NewsBlur’s MongoDB collections and pretended to ransom about 250GB of data. This is the work of an automated hack and one that I was prepared for. NewsBlur was back online a few hours later once the backups were restored and the Docker-made hole was patched.</p>
 
