@@ -70,6 +70,7 @@ GEM
     webrick (1.7.0)
 
 PLATFORMS
+  ruby
   universal-darwin-20
 
 DEPENDENCIES

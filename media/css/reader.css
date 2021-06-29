@@ -1756,6 +1756,10 @@ hr {
 }
 .NB-image-preview-small-right:not(.NB-story-layout-grid) .NB-story-title.NB-has-image,
 .NB-image-preview-large-right:not(.NB-story-layout-grid) .NB-story-title.NB-has-image {
+    padding-right: 242px;
+}
+.NB-image-preview-small-right:not(.NB-story-layout-grid) .NB-story-pane-west .NB-story-title.NB-has-image,
+.NB-image-preview-large-right:not(.NB-story-layout-grid) .NB-story-pane-west .NB-story-title.NB-has-image {
     padding-right: 90px;
 }
 /* Ragged right but not ragged left
@@ -1894,10 +1898,16 @@ hr {
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
+    overflow-wrap: break-word;
+    word-break: break-word;
 }
 
 .NB-story-title.read a.story_title {
     color: #969696;
+}
+.NB-storytitles-title {
+    overflow-wrap: break-word;
+    word-break: break-word;
 }
 .NB-view-river .NB-story-title a.story_title {
 
@@ -2342,6 +2352,10 @@ hr {
 .NB-content-preview-title .NB-story-grid {
     height: 296px;
 }
+.NB-image-preview-small-right .NB-layout-grid .NB-story-title.NB-selected.NB-has-image,
+.NB-image-preview-large-right .NB-layout-grid .NB-story-title.NB-selected.NB-has-image {
+    padding-right: 242px;
+}
 
 .NB-layout-grid .NB-story-titles,
 .NB-layout-grid.NB-grid-columns-3 .NB-story-titles,
@@ -2396,6 +2410,7 @@ hr {
     line-height: 1.3em;
     padding: 0;
     word-break: break-word;
+    word-break: anywhere;
 }
 .NB-theme-feed-size-xs .NB-story-grid .NB-storytitles-title {
     font-size: 14px;
