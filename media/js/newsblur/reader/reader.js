@@ -171,17 +171,6 @@
                 return true;
             }
         },
-
-        check_if_forced_upgrade_to_beta_site: function () {
-            if (
-                NEWSBLUR.Globals.user_id % 100 <= 1
-            ) {
-                // See ya
-                window.location.href = "https://beta.newsblur.com";
-
-                return true;
-            }
-        },
         
         load_javascript_elements_on_page: function() {
           $('.NB-javascript').removeClass('NB-javascript');
