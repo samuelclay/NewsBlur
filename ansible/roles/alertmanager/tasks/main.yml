@@ -1,0 +1,19 @@
+---
+- name: Template file for alertmanager
+  template:
+    src: /srv/newsblur/docker/alertmanager/alertmanager.yml.j2
+    dest: /srv/newsblur/docker/prometheus/prometheus.yml
+
+- name: Start alertmanager container
+  become: yes
+  docker_container:
+  alertmanager:
+    name: alertmanager
+    image: prom/alertmanager
+    privileged: true
+    volumes:
+      - /srv/newsblur/docker/alertmanager/alertmanager.docker.yml:/alertmanager.yml
+    command:
+      - '--config.file=/alertmanager.yml'
+    ports:
+      - '9093:9093'

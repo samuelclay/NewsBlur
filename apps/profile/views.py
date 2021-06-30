@@ -389,7 +389,7 @@ def stripe_form(request):
                 customer = stripe.Customer.retrieve(user.profile.stripe_id)
                 try:
                     card = customer.sources.create(source=zebra_form.cleaned_data['stripe_token'])
-                except stripe.CardError:
+                except stripe.error.CardError:
                     error = "This card was declined."
                 else:
                     customer.default_card = card.id
@@ -406,7 +406,7 @@ def stripe_form(request):
                         'email': user.email,
                         'description': user.username,
                     })
-                except stripe.CardError:
+                except stripe.error.CardError:
                     error = "This card was declined."
                 else:
                     user.profile.strip_4_digits = zebra_form.cleaned_data['last_4_digits']

@@ -1,0 +1,15 @@
+{
+    "service": {
+        "name": "consul-manager",
+        "tags": [
+            "consul_manager"
+        ],
+        "checks": [{
+            "id": "consul-manager",
+            "http": "http://{{ ansible_ssh_host }}:8500",
+            "interval": "15s",
+            "failures_before_critical": 4
+          }],
+        "port": 8500
+    }
+}  

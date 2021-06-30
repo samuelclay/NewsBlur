@@ -4,7 +4,6 @@
   gather_facts: false
   vars_files:
     - ../env_vars/base.yml
-    - ../env_vars/dev.yml
 
   tasks:
     - name: Pull newsblur_web github
@@ -14,13 +13,18 @@
         version: dashboard3
       register: pulled
     
-    - name: Reload celery
-      become: yes
-      command: "docker kill --signal=HUP {{ item.service_name }}"
-      when: item.service_name in inventory_hostname
-      with_items:
-        - service_name: task-celery
-        - service_name: task-work
+    - block:
+        - name: Reload celery
+          become: yes
+          command: "docker kill --signal=HUP {{ item.service_name }}"
+          when: item.service_name in inventory_hostname
+          with_items:
+            - service_name: task-celery
+            - service_name: task-work
+      rescue:
+        - name: Restart celery
+          become: yes
+          command: "docker start task-work"
 
     - name: Stop celery
       become: yes

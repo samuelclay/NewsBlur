@@ -19,3 +19,4 @@ sys_packages: [
   'ntp', 
   'htop'
 ]
+grafana_password: "{{ lookup('ini', 'grafana_password section=grafana file=/srv/secrets-newsblur/configs/grafana.ini') }}"

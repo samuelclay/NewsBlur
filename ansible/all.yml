@@ -9,6 +9,7 @@
     - update_apt_cache: yes
   roles:
     - {role: 'base', tags: 'base'}
+    - {role: 'ufw', tags: 'ufw'}
     - {role: 'docker', tags: 'docker'}
     - {role: 'repo', tags: 'repo'}
     - {role: 'dnsmasq', tags: 'dnsmasq'}

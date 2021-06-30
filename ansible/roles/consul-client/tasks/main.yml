@@ -2,7 +2,7 @@
 - name: Create config file
   become: yes
   template:
-    src: consul.json.j2
+    src: consul_client.json.j2
     dest: /etc/consul.d/newsblur.json
   notify:
     - restart consul

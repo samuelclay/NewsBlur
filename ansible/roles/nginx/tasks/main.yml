@@ -1,4 +1,9 @@
 ---
+- name: Allow nginx
+  become: yes
+  ufw: rule=allow port=80
+  tags: ufw
+
 - name: Template nginx.conf file
   template:
     src: /srv/newsblur/docker/nginx/nginx.consul.conf.j2
@@ -6,21 +11,36 @@
   notify: restart nginx
   register: updated_config
 
+- name: Make docker network for newsblurnet
+  become: yes
+  docker_network:
+    name: newsblurnet
+  notify: restart docker
 
 - name: Start nginx docker container
   become: yes
   docker_container:
     name: nginx
     image: nginx:1.19
-    env:
-      DOCKERBUILD: "True"
     state: started
-    network_mode: host # This exposes port 80
+    networks_cli_compatible: yes
+    network_mode: default
+    networks:
+      - name: newsblurnet
+    ports:
+      - "{{ item.port }}:{{ item.port }}"
     restart_policy: unless-stopped
     container_default_behavior: no_defaults
     volumes:
       - /srv/newsblur/docker/nginx/nginx.consul.conf:/etc/nginx/conf.d/default.conf
       - /srv/newsblur/:/srv/newsblur
+  with_items:
+    - disable_consul_services_ie_staging: no
+      port: 80
+    - disable_consul_services_ie_staging: yes
+      port: 81
+  when: 
+    - disable_consul_services_ie_staging | default(false) | bool == item.disable_consul_services_ie_staging|bool
 
 - name: Register nginx in consul
   tags: consul
@@ -30,4 +50,4 @@
     dest: /etc/consul.d/nginx.json
   notify:
     - reload consul
-  when: disable_consul_services is not defined
+  when: disable_consul_services_ie_staging is not defined

@@ -162,7 +162,8 @@ NEWSBLUR.utils = {
         var $saved_searches_optgroup = $.make('optgroup', { label: "Saved Searches" });
         var $starred_feeds_optgroup = $.make('optgroup', { label: "Saved Tags" });
         var current_feed_id = options.feed_id;
-        
+        var selected_feed_prefix = '';
+
         var make_feed_option = function(feed) {
             if (!feed.get('feed_title')) return;
             if (!feed.get('active')) return;
@@ -177,7 +178,10 @@ NEWSBLUR.utils = {
                              $feeds_optgroup);
             
             if (feed.id == current_feed_id) {
+                // console.log('Selecting feed id in feed chooser', feed, current_feed_id);
                 $option.attr('selected', true);
+                $chooser.val(prefix + feed.id);
+                selected_feed_prefix = prefix;
             }
         };
         
@@ -227,7 +231,7 @@ NEWSBLUR.utils = {
         }
 
         if (options.feed_id) {
-            $chooser.val(options.feed_id);
+            $chooser.val(selected_feed_prefix + options.feed_id);
         }
 
         return $chooser;

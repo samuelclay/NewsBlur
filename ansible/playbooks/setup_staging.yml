@@ -6,10 +6,11 @@
   vars:
     - update_apt_cache: yes
     - motd_role: app
-    - disable_consul_services: yes
-    
+    # - disable_consul_services_ie_staging: yes # Defined in group vars
+
   roles:
     - {role: 'base', tags: 'base'}
+    - {role: 'ufw', tags: 'ufw'}
     - {role: 'docker', tags: 'docker'}
     - {role: 'repo', tags: 'repo'}
     - {role: 'dnsmasq', tags: 'dnsmasq'}
@@ -21,4 +22,6 @@
     - {role: 'web', tags: 'web'}
     - {role: 'nginx', tags: 'nginx'}
     - {role: 'node', tags: 'node'}
-    - {role: 'netdata', tags: 'netdata'}
+    - {role: 'node-exporter', tags: ['node-exporter', 'metrics']}
+    - {role: 'prometheus', tags: ['prometheus', 'metrics']}
+    - {role: 'grafana', tags: ['grafana', 'metrics']}

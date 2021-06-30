@@ -190,7 +190,7 @@ def ec2():
 
 def all():
     assign_digitalocean_roledefs()
-    env.roles = ['app', 'db', 'task', 'debug', 'node', 'push', 'work', 'www', 'search']
+    env.roles = ['app', 'db', 'debug', 'node', 'push', 'work', 'www', 'search']
 
 # =============
 # = Bootstrap =

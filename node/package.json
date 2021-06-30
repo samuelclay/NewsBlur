@@ -5,7 +5,7 @@
   "main": "favicons.js",
   "dependencies": {
     "@postlight/mercury-parser": "^2.2.0",
-    "@sentry/node": "^6.2.2",
+    "@sentry/node": "^6.3.5",
     "@sentry/tracing": "^6.2.2",
     "bufferutil": "^4.0.3",
     "cjs": "0.0.11",

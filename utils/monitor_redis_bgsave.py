@@ -1,4 +1,4 @@
-#!/srv/newsblur/venv/newsblur3/bin/python
+#!/usr/local/bin/python3
 
 import sys
 sys.path.append('/srv/newsblur')
@@ -6,19 +6,19 @@ sys.path.append('/srv/newsblur')
 import os
 import datetime
 import requests
-from newsblur import settings
+from newsblur_web import settings
 import socket
 
 def main():
-    t = os.popen('stat -c%Y /var/lib/redis/dump.rdb')
+    redis_log_path = sys.argv[1]
+    t = os.popen('stat -c%Y /srv/newsblur/docker/volumes/redis/')
     timestamp = t.read().split('\n')[0]
     modified = datetime.datetime.fromtimestamp(int(timestamp))
-    ten_min_ago = datetime.datetime.now() - datetime.timedelta(minutes=10)
     hostname = socket.gethostname()
     modified_minutes = datetime.datetime.now() - modified
-    log_tail = os.popen('tail -n 100 /var/log/redis.log').read()
-    
-    if modified < ten_min_ago:
+    log_tail = os.popen(f"tail -n 100 {redis_log_path}").read()
+    if True:
+    #if modified < ten_min_ago:
         requests.post(
                 "https://api.mailgun.net/v2/%s/messages" % settings.MAILGUN_SERVER_NAME,
                 auth=("api", settings.MAILGUN_ACCESS_KEY),

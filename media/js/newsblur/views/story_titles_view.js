@@ -93,6 +93,8 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         // console.log(['clear story titles', this.stories.length, this.$el]);
         _.invoke(this.stories, 'destroy');
         this.cache = {};
+        this.collection.page_fill_outs = 0;
+        this.collection.no_more_stories = false;
     },
     
     override_grid: function() {
@@ -167,8 +169,8 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
     
     fill_out: function (options) {
         this.snap_back_scroll_position();
-        if (NEWSBLUR.assets.flags['no_more_stories'] || 
-            !NEWSBLUR.assets.stories.length ||
+        if (this.collection.no_more_stories || 
+            !this.collection.length ||
             NEWSBLUR.reader.flags.story_titles_closed) {
             return;
         }
@@ -176,12 +178,12 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         options = options || {};
         // console.log(['fill out story titles', this.options.on_dashboard ? "dashboard" : "stories", options, NEWSBLUR.assets.flags['no_more_stories'], NEWSBLUR.assets.stories.length, NEWSBLUR.reader.flags.story_titles_closed]);
         
-        if (NEWSBLUR.reader.counts['page_fill_outs'] < NEWSBLUR.reader.constants.FILL_OUT_PAGES && 
-            !NEWSBLUR.assets.flags['no_more_stories']) {
+        if (this.collection.page_fill_outs < NEWSBLUR.reader.constants.FILL_OUT_PAGES && 
+            !this.collection.no_more_stories) {
             var $last = this.$('.NB-story-title:visible:last');
             var container_height = this.$story_titles.height();
             // NEWSBLUR.log(["fill out", $last.length && $last.position().top, container_height, $last.length, this.$story_titles.scrollTop()]);
-            NEWSBLUR.reader.counts['page_fill_outs'] += 1;
+            this.collection.page_fill_outs += 1;
             _.delay(_.bind(function() {
                 this.scroll();
             }, this), 10);
@@ -192,7 +194,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
     
     show_loading: function(options) {
         options = options || {};
-        if (NEWSBLUR.assets.flags['no_more_stories']) return;
+        if (this.collection.no_more_stories) return;
 
         var $story_titles = this.$story_titles;
         this.$('.NB-end-line').remove();
@@ -225,7 +227,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
             (this.options.on_dashboard || NEWSBLUR.reader.flags['river_view'])) {
             this.show_no_more_stories();
             this.append_river_premium_only_notification();
-        } else if (NEWSBLUR.assets.flags['no_more_stories']) {
+        } else if (this.collection.no_more_stories) {
             this.show_no_more_stories();
         }
     },
@@ -242,7 +244,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         var $endbar = this.$story_titles.find('.NB-end-line');
         $endbar.remove();
 
-        if (NEWSBLUR.assets.flags['no_more_stories']) {
+        if (this.collection.no_more_stories) {
             this.show_no_more_stories();
         }
     },
@@ -330,7 +332,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
             });
         }    
     },
-    
+
     // ==========
     // = Events =
     // ==========
@@ -344,7 +346,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
             if (NEWSBLUR.assets.preference('mark_read_on_scroll_titles')) {
                 this.mark_read_stories_above_scroll(scroll_y);
             }
-            if (NEWSBLUR.assets.flags['no_more_stories']) return;
+            if (this.collection.no_more_stories) return;
         }
         
         var position = $story_titles.position();
@@ -372,7 +374,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         var $story_title = $(document.elementFromPoint(point.left + offset.left, 
                                                        point.top + offset.top
                            )).closest('.'+NEWSBLUR.Views.StoryTitleView.prototype.className);
-        var reached_bottom = NEWSBLUR.assets.flags['no_more_stories'] && 
+        var reached_bottom = this.collection.no_more_stories && 
                              this.$el.height() - $story_titles.height() - scroll_y <= 0;
         var topstory = _.detect(this.stories, function(view) {
             if (!reached_bottom && view.el == $story_title[0]) return true;
