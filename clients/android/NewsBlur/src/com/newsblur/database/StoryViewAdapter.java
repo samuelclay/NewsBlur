@@ -700,6 +700,7 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             params.addRule(RelativeLayout.ALIGN_BOTTOM, vh.storySnippet.getId());
         } else if (params != null) {
             params.setMargins(0, 0, 0, 0);
+            params.removeRule(RelativeLayout.ALIGN_BOTTOM);
             params.height = sizeDp;
         }
 
