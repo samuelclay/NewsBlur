@@ -2,33 +2,17 @@ package com.newsblur.view
 
 import android.content.Context
 import android.util.AttributeSet
-import android.widget.FrameLayout
-import android.widget.ImageView
+import androidx.appcompat.widget.AppCompatImageView
 import com.newsblur.R
 import com.newsblur.util.ThumbnailStyle
 
-class StoryThumbnailView : FrameLayout {
+class StoryThumbnailView
+@JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0)
+    : AppCompatImageView(context, attrs, defStyleAttr) {
 
-    lateinit var imageView: ImageView
-
-    constructor(context: Context) : super(context) {
-        init(context)
-    }
-
-    constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
-        init(context)
-    }
-
-    constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int) : super(context, attrs, defStyleAttr) {
-        init(context)
-    }
-
-    private fun init(context: Context) {
+    init {
         clipToOutline = true
-        imageView = ImageView(context)
-        imageView.layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
-        imageView.scaleType = ImageView.ScaleType.CENTER_CROP
-        addView(imageView)
+        scaleType = ScaleType.CENTER_CROP
     }
 
     fun setThumbnailStyle(thumbnailStyle: ThumbnailStyle) {
