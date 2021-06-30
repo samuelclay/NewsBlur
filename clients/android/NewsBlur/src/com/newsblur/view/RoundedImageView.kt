@@ -5,21 +5,11 @@ import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatImageView
 import com.newsblur.R
 
-class RoundedImageView : AppCompatImageView {
+class RoundedImageView
+@JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0)
+    : AppCompatImageView(context, attrs, defStyleAttr) {
 
-    constructor(context: Context) : super(context) {
-        init()
-    }
-
-    constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
-        init()
-    }
-
-    constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int) : super(context, attrs, defStyleAttr) {
-        init()
-    }
-
-    private fun init() {
+    init {
         setBackgroundResource(R.drawable.shape_rounded_corners)
         clipToOutline = true
     }
