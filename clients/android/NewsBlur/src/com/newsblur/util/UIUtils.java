@@ -96,7 +96,7 @@ public class UIUtils {
     }
 
     @SuppressWarnings("deprecation")
-    public static Bitmap decodeImage(File f, int maxDim, boolean cropSquare, boolean roundCorners) {
+    public static Bitmap decodeImage(File f, int maxDim, boolean cropSquare) {
         try {
             // not only can cache misses occur, users can delete files, the system can clean up
             // files, storage can be unmounted, etc.  fail fast.
@@ -139,23 +139,6 @@ public class UIUtils {
                 int offsetY = (bitmap.getHeight() - targetSize) / 2;
                 // crop the bitmap. the returned object will likely be the same
                 bitmap = Bitmap.createBitmap(bitmap, offsetX, offsetY, targetSize, targetSize);
-            }
-
-            // round the corners of the image if the caller would like
-            if (roundCorners) {
-                // rounded corners is applied at the bitmap decoding level
-                // bitmaps vary in size and to keep round corners consistent
-                // round corners are applied as a percentage based on bitmap size
-                int minBitmapSize = Math.min(bitmap.getWidth(), bitmap.getHeight());
-                float cornerRadiusPx = (minBitmapSize / 10f); // round corners at 10% of bitmap min size
-                Bitmap canvasMap = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), ARGB_8888);
-                Canvas canvas = new Canvas(canvasMap);
-                BitmapShader shader = new BitmapShader(bitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
-                Paint paint = new Paint();
-                paint.setAntiAlias(true);
-                paint.setShader(shader);
-                canvas.drawRoundRect(0, 0, bitmap.getWidth(), bitmap.getHeight(), cornerRadiusPx, cornerRadiusPx, paint);
-                bitmap = canvasMap;
             }
 
             return bitmap;
@@ -210,7 +193,7 @@ public class UIUtils {
      */
     public static void setupToolbar(AppCompatActivity activity, String imageUrl, String title, boolean showHomeEnabled) {
         ImageView iconView = setupCustomToolbar(activity, title, showHomeEnabled);
-        FeedUtils.iconLoader.displayImage(imageUrl, iconView, false, false);
+        FeedUtils.iconLoader.displayImage(imageUrl, iconView, false);
     }
 
     public static void setupToolbar(AppCompatActivity activity, int imageId, String title, boolean showHomeEnabled) {

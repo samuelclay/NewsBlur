@@ -33,7 +33,7 @@ class StoryThumbnailView : FrameLayout {
 
     fun setThumbnailStyle(thumbnailStyle: ThumbnailStyle) {
         if (thumbnailStyle == ThumbnailStyle.LEFT_SMALL || thumbnailStyle == ThumbnailStyle.RIGHT_SMALL) {
-            setBackgroundResource(R.drawable.shape_story_thumbnail_small)
+            setBackgroundResource(R.drawable.shape_rounded_corners)
         } else {
             setBackgroundResource(0)
         }
