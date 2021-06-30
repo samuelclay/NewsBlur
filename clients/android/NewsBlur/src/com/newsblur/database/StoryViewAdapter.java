@@ -554,12 +554,14 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             // the view will display a stale, recycled thumb before the new one loads if the old is not cleared
             if (thumbnailStyle == ThumbnailStyle.LEFT_LARGE || thumbnailStyle == ThumbnailStyle.LEFT_SMALL) {
                 int thumbSizeGuess = vh.thumbViewLeft.getMeasuredHeight();
-                vh.thumbLoader = FeedUtils.thumbnailLoader.displayImage(story.thumbnailUrl, vh.thumbViewLeft.imageView, false, true, thumbSizeGuess, true);
+                vh.thumbViewLeft.setImageBitmap(null);
+                vh.thumbLoader = FeedUtils.thumbnailLoader.displayImage(story.thumbnailUrl, vh.thumbViewLeft, true, thumbSizeGuess, true);
                 vh.thumbViewRight.setVisibility(View.GONE);
                 vh.thumbViewLeft.setVisibility(View.VISIBLE);
             } else if (thumbnailStyle == ThumbnailStyle.RIGHT_LARGE || thumbnailStyle == ThumbnailStyle.RIGHT_SMALL) {
                 int thumbSizeGuess = vh.thumbViewRight.getMeasuredHeight();
-                vh.thumbLoader = FeedUtils.thumbnailLoader.displayImage(story.thumbnailUrl, vh.thumbViewRight.imageView, false, true, thumbSizeGuess, true);
+                vh.thumbViewRight.setImageBitmap(null);
+                vh.thumbLoader = FeedUtils.thumbnailLoader.displayImage(story.thumbnailUrl, vh.thumbViewRight, true, thumbSizeGuess, true);
                 vh.thumbViewLeft.setVisibility(View.GONE);
                 vh.thumbViewRight.setVisibility(View.VISIBLE);
             }
@@ -592,7 +594,7 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
         // lists with mixed feeds get added info, but single feeds do not
         if (!singleFeed) {
-            FeedUtils.iconLoader.displayImage(story.extern_faviconUrl, vh.feedIconView, false, false);
+            FeedUtils.iconLoader.displayImage(story.extern_faviconUrl, vh.feedIconView, false);
             vh.feedTitleView.setText(story.extern_feedTitle);
             vh.feedIconView.setVisibility(View.VISIBLE);
             vh.feedTitleView.setVisibility(View.VISIBLE);
@@ -630,8 +632,8 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             vh.leftBarOne.getBackground().setAlpha(255);
             vh.leftBarTwo.getBackground().setAlpha(255);
             vh.intelDot.setImageAlpha(255);
-            vh.thumbViewLeft.imageView.setImageAlpha(255);
-            vh.thumbViewRight.imageView.setImageAlpha(255);
+            vh.thumbViewLeft.setImageAlpha(255);
+            vh.thumbViewRight.setImageAlpha(255);
             vh.feedIconView.setImageAlpha(255);
             vh.feedTitleView.setAlpha(1.0f);
             vh.storyTitleView.setAlpha(1.0f);
@@ -640,8 +642,8 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             vh.leftBarOne.getBackground().setAlpha(READ_STORY_ALPHA_B255);
             vh.leftBarTwo.getBackground().setAlpha(READ_STORY_ALPHA_B255);
             vh.intelDot.setImageAlpha(READ_STORY_ALPHA_B255);
-            vh.thumbViewLeft.imageView.setImageAlpha(READ_STORY_ALPHA_B255);
-            vh.thumbViewRight.imageView.setImageAlpha(READ_STORY_ALPHA_B255);
+            vh.thumbViewLeft.setImageAlpha(READ_STORY_ALPHA_B255);
+            vh.thumbViewRight.setImageAlpha(READ_STORY_ALPHA_B255);
             vh.feedIconView.setImageAlpha(READ_STORY_ALPHA_B255);
             vh.feedTitleView.setAlpha(READ_STORY_ALPHA);
             vh.storyTitleView.setAlpha(READ_STORY_ALPHA);

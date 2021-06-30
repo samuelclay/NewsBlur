@@ -141,7 +141,7 @@ public class FeedChooserAdapter extends BaseExpandableListAdapter {
             }
         }
 
-        FeedUtils.iconLoader.displayImage(feed.faviconUrl, img, false, false, img.getHeight(), true);
+        FeedUtils.iconLoader.displayImage(feed.faviconUrl, img, false, img.getHeight(), true);
         return convertView;
     }
 

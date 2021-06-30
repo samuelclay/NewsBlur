@@ -437,7 +437,7 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
 			binding.readingFeedTitle.setVisibility(View.GONE);
 			binding.readingFeedIcon.setVisibility(View.GONE);
 		} else {
-			FeedUtils.iconLoader.displayImage(feedIconUrl, binding.readingFeedIcon, false, false);
+			FeedUtils.iconLoader.displayImage(feedIconUrl, binding.readingFeedIcon, false);
 			binding.readingFeedTitle.setText(feedTitle);
 		}
 
