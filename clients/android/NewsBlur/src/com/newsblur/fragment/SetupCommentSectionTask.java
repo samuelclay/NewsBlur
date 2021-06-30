@@ -33,6 +33,7 @@ import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.UIUtils;
 import com.newsblur.util.ViewUtils;
 import com.newsblur.view.FlowLayout;
+import com.newsblur.view.RoundedImageView;
 
 public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 
@@ -97,7 +98,7 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 			View commentView = inflater.inflate(R.layout.include_comment, null);
 			TextView commentText = (TextView) commentView.findViewById(R.id.comment_text);
 			commentText.setText(UIUtils.fromHtml(comment.commentText));
-			ImageView commentImage = (ImageView) commentView.findViewById(R.id.comment_user_image);
+            RoundedImageView commentImage = (RoundedImageView) commentView.findViewById(R.id.comment_user_image);
 
 			TextView commentSharedDate = (TextView) commentView.findViewById(R.id.comment_shareddate);
             // TODO: this uses hard-coded "ago" values, which will be wrong when reading prefetched stories
@@ -115,10 +116,10 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 				}
 
 				for (String id : comment.likingUsers) {
-					ImageView favouriteImage = new ImageView(context);
+					RoundedImageView favouriteImage = new RoundedImageView(context);
 					UserProfile user = FeedUtils.dbHelper.getUserProfile(id);
                     if (user != null) {
-                        FeedUtils.iconLoader.displayImage(user.photoUrl, favouriteImage, true, false);
+                        FeedUtils.iconLoader.displayImage(user.photoUrl, favouriteImage, false);
                         favouriteContainer.addView(favouriteImage);
                     }
 				}
@@ -162,11 +163,11 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 				View replyView = inflater.inflate(R.layout.include_reply, null);
 				TextView replyText = (TextView) replyView.findViewById(R.id.reply_text);
 				replyText.setText(UIUtils.fromHtml(reply.text));
-				ImageView replyImage = (ImageView) replyView.findViewById(R.id.reply_user_image);
+				RoundedImageView replyImage = (RoundedImageView) replyView.findViewById(R.id.reply_user_image);
 
                 final UserProfile replyUser = FeedUtils.dbHelper.getUserProfile(reply.userId);
 				if (replyUser != null) {
-					FeedUtils.iconLoader.displayImage(replyUser.photoUrl, replyImage, true, false);
+					FeedUtils.iconLoader.displayImage(replyUser.photoUrl, replyImage, false);
 					replyImage.setOnClickListener(new OnClickListener() {
 						@Override
 						public void onClick(View view) {
@@ -220,8 +221,8 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 
             if (!TextUtils.isEmpty(comment.sourceUserId)) {
 				commentImage.setVisibility(View.INVISIBLE);
-				ImageView usershareImage = (ImageView) commentView.findViewById(R.id.comment_user_reshare_image);
-				ImageView sourceUserImage = (ImageView) commentView.findViewById(R.id.comment_sharesource_image);
+                RoundedImageView usershareImage = (RoundedImageView) commentView.findViewById(R.id.comment_user_reshare_image);
+                RoundedImageView sourceUserImage = (RoundedImageView) commentView.findViewById(R.id.comment_sharesource_image);
 				sourceUserImage.setVisibility(View.VISIBLE);
 				usershareImage.setVisibility(View.VISIBLE);
 				commentImage.setVisibility(View.INVISIBLE);
@@ -229,11 +230,11 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 
                 UserProfile sourceUser = FeedUtils.dbHelper.getUserProfile(comment.sourceUserId);
 				if (sourceUser != null) {
-					FeedUtils.iconLoader.displayImage(sourceUser.photoUrl, sourceUserImage, true, false);
-					FeedUtils.iconLoader.displayImage(userPhoto, usershareImage, true, false);
+					FeedUtils.iconLoader.displayImage(sourceUser.photoUrl, sourceUserImage, false);
+					FeedUtils.iconLoader.displayImage(userPhoto, usershareImage, false);
 				}
 			} else {
-				FeedUtils.iconLoader.displayImage(userPhoto, commentImage, true, false);
+				FeedUtils.iconLoader.displayImage(userPhoto, commentImage, false);
 			}
 
 			commentImage.setOnClickListener(new OnClickListener() {

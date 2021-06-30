@@ -251,7 +251,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
             nameView.setText(f.feedTitle);
             nameView.setTextSize(textSize * defaultTextSize_childName);
             ImageView iconView = (ImageView) v.findViewById(R.id.row_socialfeed_icon);
-            FeedUtils.iconLoader.displayImage(f.photoUrl, iconView, false, false);
+            FeedUtils.iconLoader.displayImage(f.photoUrl, iconView, false);
             TextView neutCounter = ((TextView) v.findViewById(R.id.row_socialsumneu));
             if (f.neutralCount > 0 && currentState != StateFilter.BEST) {
                 neutCounter.setVisibility(View.VISIBLE);
@@ -292,7 +292,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
             nameView.setText(UIUtils.fromHtml(ss.feedTitle));
             ImageView iconView = v.findViewById(R.id.row_saved_search_icon);
             FeedUtils.iconLoader.preCheck(ss.faviconUrl, iconView);
-            FeedUtils.iconLoader.displayImage(ss.faviconUrl, iconView, false , false);
+            FeedUtils.iconLoader.displayImage(ss.faviconUrl, iconView, false);
         } else {
             if (v == null) v = inflater.inflate(R.layout.row_feed, parent, false);
             Feed f = activeFolderChildren.get(groupPosition).get(childPosition);
@@ -306,7 +306,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
             nameView.setTextSize(textSize * defaultTextSize_childName);
             ImageView iconView = (ImageView) v.findViewById(R.id.row_feedfavicon);
             FeedUtils.iconLoader.preCheck(f.faviconUrl, iconView);
-            FeedUtils.iconLoader.displayImage(f.faviconUrl, iconView, false, false);
+            FeedUtils.iconLoader.displayImage(f.faviconUrl, iconView, false);
             TextView neutCounter = ((TextView) v.findViewById(R.id.row_feedneutral));
             TextView posCounter = ((TextView) v.findViewById(R.id.row_feedpositive));
             TextView savedCounter = ((TextView) v.findViewById(R.id.row_feedsaved));
