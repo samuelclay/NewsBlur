@@ -554,12 +554,12 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             // the view will display a stale, recycled thumb before the new one loads if the old is not cleared
             if (thumbnailStyle == ThumbnailStyle.LEFT_LARGE || thumbnailStyle == ThumbnailStyle.LEFT_SMALL) {
                 int thumbSizeGuess = vh.thumbViewLeft.getMeasuredHeight();
-                vh.thumbLoader = FeedUtils.thumbnailLoader.displayImage(story.thumbnailUrl, vh.thumbViewLeft.imageView, false, true, thumbSizeGuess, true);
+                vh.thumbLoader = FeedUtils.thumbnailLoader.displayImage(story.thumbnailUrl, vh.thumbViewLeft.imageView, true, thumbSizeGuess, true);
                 vh.thumbViewRight.setVisibility(View.GONE);
                 vh.thumbViewLeft.setVisibility(View.VISIBLE);
             } else if (thumbnailStyle == ThumbnailStyle.RIGHT_LARGE || thumbnailStyle == ThumbnailStyle.RIGHT_SMALL) {
                 int thumbSizeGuess = vh.thumbViewRight.getMeasuredHeight();
-                vh.thumbLoader = FeedUtils.thumbnailLoader.displayImage(story.thumbnailUrl, vh.thumbViewRight.imageView, false, true, thumbSizeGuess, true);
+                vh.thumbLoader = FeedUtils.thumbnailLoader.displayImage(story.thumbnailUrl, vh.thumbViewRight.imageView, true, thumbSizeGuess, true);
                 vh.thumbViewLeft.setVisibility(View.GONE);
                 vh.thumbViewRight.setVisibility(View.VISIBLE);
             }
@@ -592,7 +592,7 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
         // lists with mixed feeds get added info, but single feeds do not
         if (!singleFeed) {
-            FeedUtils.iconLoader.displayImage(story.extern_faviconUrl, vh.feedIconView, false, false);
+            FeedUtils.iconLoader.displayImage(story.extern_faviconUrl, vh.feedIconView, false);
             vh.feedTitleView.setText(story.extern_feedTitle);
             vh.feedIconView.setVisibility(View.VISIBLE);
             vh.feedTitleView.setVisibility(View.VISIBLE);
