@@ -34,22 +34,24 @@
         right to the left.
     -->
 
-    <ImageView
+    <com.newsblur.view.StoryThumbnailView
         android:id="@+id/story_item_thumbnail_right"
         android:layout_width="90dp"
         android:layout_height="90dp"
         android:layout_marginTop="1dp"
         android:layout_marginBottom="1dp"
+        android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
         android:visibility="gone" />
 
-    <ImageView
+    <com.newsblur.view.StoryThumbnailView
         android:id="@+id/story_item_thumbnail_left"
         android:layout_width="90dp"
         android:layout_height="90dp"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@id/story_item_favicon_borderbar_2"
         android:layout_marginTop="1dp"
         android:layout_marginBottom="1dp"
-        android:layout_toRightOf="@id/story_item_favicon_borderbar_2"
         android:visibility="gone" />
 
     <ImageView
