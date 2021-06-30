@@ -41,7 +41,6 @@ class TasksServers(View):
         
     @property
     def total(self):
-        
         stats = settings.MONGOANALYTICSDB.nbanalytics.feed_fetches.aggregate([{
             "$match": {
                 "date": {
