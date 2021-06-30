@@ -1,7 +1,0 @@
----
-- name: restart netdata
-  become: yes
-  docker_container:
-    name: netdata
-    restart: yes
-    container_default_behavior: no_defaults

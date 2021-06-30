@@ -1,12 +1,13 @@
-version: '3'
+version: '2'
 services:
 
   newsblur_web:
     hostname: nb.com
     container_name: newsblur_web
-    image: newsblur/newsblur_python3:latest
+    image: newsblur/newsblur_${NEWSBLUR_BASE:-python3}:latest
     environment: 
       - DOCKERBUILD=True
+      - RUNWITHMAKEBUILD=${RUNWITHMAKEBUILD?use the `make` command instead of docker CLI}
     stdin_open: true
     tty: true
     restart: unless-stopped
@@ -58,6 +59,7 @@ services:
   nginx:
     container_name: nginx
     image: nginx:1.19.6
+    restart: unless-stopped
     ports:
       - 81:81
     depends_on:
@@ -76,14 +78,15 @@ services:
   db_postgres:
     container_name: db_postgres
     image: postgres:13.1
+    restart: unless-stopped
     environment:
       - POSTGRES_USER=newsblur
       - POSTGRES_PASSWORD=newsblur
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+    # healthcheck:
+    #   test: ["CMD-SHELL", "pg_isready -U newsblur"]
+    #   interval: 10s
+    #   timeout: 5s
+    #   retries: 5
     ports:
       - 5434:5432
     volumes:
@@ -94,6 +97,7 @@ services:
     ports:
       - 6579:6579
     container_name: db_redis
+    restart: unless-stopped
     volumes:
       - ./config/redis.conf:/etc/redis/redis.conf
       - ./config/redis_docker.conf:/etc/redis/redis_server.conf
@@ -104,18 +108,20 @@ services:
     container_name: db_elasticsearch
     image: docker.elastic.co/elasticsearch/elasticsearch:7.11.1
     mem_limit: 512mb
+    restart: unless-stopped
     environment:
       - discovery.type=single-node
     ports:
       - 9200:9200
       - 9300:9300
     volumes:
-      - ./docker/volumes/elasticsearch:/usr/share/elasticsearch/data
+      - ./docker/volumes/elasticsearch:/elasticsearch/dat
       - ./config/elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
 
   db_mongo:
     container_name: db_mongo
     image: mongo:3.6
+    restart: unless-stopped
     ports:
       - 29019:29019
     command: mongod --smallfiles --port 29019
@@ -126,6 +132,7 @@ services:
     container_name: task_celery
     image: newsblur/newsblur_python3
     command: "celery worker -A newsblur_web -B --loglevel=INFO"
+    restart: unless-stopped
     volumes:
       - ${PWD}:/srv/newsblur
     environment: 
@@ -135,6 +142,7 @@ services:
   haproxy:
     container_name: haproxy
     image: haproxy:latest
+    restart: unless-stopped
     depends_on: 
       - nginx
       - newsblur_web
@@ -151,18 +159,3 @@ services:
     volumes:
       - ./docker/haproxy/haproxy.docker-compose.cfg:/usr/local/etc/haproxy/haproxy.cfg
       - ${PWD}:/srv/newsblur
-  
-  netdata:
-    container_name: netdata
-    image: netdata/netdata
-    ports: 
-    - 19999:19999
-    environment:
-    - MONITOR_URL=https://haproxy/monitor
-    volumes:
-    - ./docker/netdata/netdatalib:/var/lib/netdata
-    - ./docker/netdata/netdatacache:/var/cache/netdata
-    - ./docker/netdata/netdataconfig/netdata.conf.j2:/etc/netdata/netdata.conf
-    - ./docker/netdata/netdataconfig/python.d.conf:/usr/lib/netdata/conf.d/python.d.conf 
-    - ./docker/netdata/netdataconfig/conf/:/usr/lib/netdata/conf.d/python.d/
-    - ./docker/netdata/netdataconfig/charts/newsblur.chart.py:/usr/libexec/netdata/python.d/newsblur.chart.py

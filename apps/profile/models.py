@@ -333,7 +333,7 @@ class Profile(models.Model):
             i += 1
             try:
                 data = stripe.Charge.list(created={'gt': week}, count=limit, starting_after=starting_after)
-            except stripe.APIConnectionError:
+            except stripe.error.APIConnectionError:
                 time.sleep(10)
                 continue
             charges = data['data']
@@ -359,7 +359,7 @@ class Profile(models.Model):
                     continue
                 try:
                     user.profile.setup_premium_history()
-                except stripe.APIConnectionError:
+                except stripe.error.APIConnectionError:
                     logging.debug(" ***> Failed: %s" % user.username)
                     failed.append(user.username)
                     time.sleep(2)
@@ -437,8 +437,11 @@ class Profile(models.Model):
         paypal = PayPalInterface(**paypal_opts)
         if second_most_recent_only:
             # Check if user has an active subscription. If so, cancel it because a new one came in.
-            if len(transactions) > 1:
-                transaction = transactions[1]
+            active_subscr_id = transactions[0].subscr_id
+            for t in transactions:
+                if t.subscr_id != active_subscr_id:
+                    transaction = t
+                    break
             else:
                 return False
         else:
@@ -1138,7 +1141,7 @@ def paypal_signup(sender, **kwargs):
         pass
     user.profile.activate_premium()
     user.profile.cancel_premium_stripe()
-    # user.profile.cancel_premium_paypal(second_most_recent_only=True)
+    user.profile.cancel_premium_paypal(second_most_recent_only=True)
 valid_ipn_received.connect(paypal_signup)
 
 def paypal_payment_history_sync(sender, **kwargs):

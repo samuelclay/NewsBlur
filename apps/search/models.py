@@ -2,7 +2,6 @@ import re
 import time
 import datetime
 import pymongo
-import pyelasticsearch
 import elasticsearch
 import redis
 import urllib3
@@ -198,26 +197,42 @@ class SearchStory:
     @classmethod
     def ES(cls):
         if cls._es_client is None:
-            cls._es_client = pyelasticsearch.ElasticSearch(settings.ELASTICSEARCH_STORY_HOST)
+            cls._es_client = elasticsearch.Elasticsearch(settings.ELASTICSEARCH_STORY_HOST)
             cls.create_elasticsearch_mapping()
         return cls._es_client
     
     @classmethod
     def index_name(cls):
         return "%s-index" % cls.name
+    
+    @classmethod
+    def doc_type(cls):
+        if settings.DOCKERBUILD:
+            return None
+        return "%s-type" % cls.name
         
     @classmethod
     def create_elasticsearch_mapping(cls, delete=False):
         if delete:
-            cls.ES().delete_index(cls.index_name())
+            logging.debug(" ---> ~FRDeleting search index for ~FM%s" % cls.index_name())
+            try:
+                cls.ES().indices.delete(cls.index_name())
+            except elasticsearch.exceptions.NotFoundError:
+                logging.debug(f" ---> ~FBCan't delete {cls.index_name()} index, doesn't exist...")
 
-        try:
-            cls.ES().create_index(cls.index_name())
-            logging.debug(" ---> ~FCCreating search index for ~FM%s" % cls.index_name())
-        except pyelasticsearch.IndexAlreadyExistsError:
+        if cls.ES().indices.exists(cls.index_name()):
             return
-        except (pyelasticsearch.ElasticHttpError, elasticsearch.exceptions.ConnectionError, urllib3.exceptions.NewConnectionError, urllib3.exceptions.ConnectTimeoutError) as e:
-            logging.debug(" ***> ~FRNo search server available for creating story mapping.")
+        
+        try:
+            cls.ES().indices.create(cls.index_name())
+            logging.debug(" ---> ~FCCreating search index for ~FM%s" % cls.index_name())
+        except elasticsearch.exceptions.RequestError as e:
+            logging.debug(" ***> ~FRCould not create search index for ~FM%s: %s" % (cls.index_name(), e))
+            return
+        except (elasticsearch.exceptions.ConnectionError, 
+                urllib3.exceptions.NewConnectionError, 
+                urllib3.exceptions.ConnectTimeoutError) as e:
+            logging.debug(f" ***> ~FRNo search server available for creating story mapping: {e}")
             return
         
         mapping = { 
@@ -253,10 +268,10 @@ class SearchStory:
                 'type': 'date',
             }
         }
-        cls.ES().put_mapping(index=cls.index_name(), doc_type='story-type', mapping={
+        cls.ES().indices.put_mapping(body={
             'properties': mapping,
-        })
-        cls.ES().flush(cls.index_name())
+        }, index=cls.index_name())
+        cls.ES().indices.flush(cls.index_name())
 
     @classmethod
     def index(cls, story_hash, story_title, story_content, story_tags, story_author, story_feed_id, 
@@ -272,33 +287,42 @@ class SearchStory:
             "date"      : story_date,
         }
         try:
-            cls.ES().index(index=cls.index_name(), doc_type='story-type', doc=doc, id=story_hash)
-        except (pyelasticsearch.ElasticHttpError, elasticsearch.exceptions.ConnectionError, urllib3.exceptions.NewConnectionError) as e:
-            logging.debug(" ***> ~FRNo search server available for story indexing.")
-            # if settings.DEBUG:
-            #     raise e
+            cls.ES().create(index=cls.index_name(), id=story_hash, body=doc, doc_type=cls.doc_type())
+        except (elasticsearch.exceptions.ConnectionError, 
+                urllib3.exceptions.NewConnectionError) as e:
+            logging.debug(f" ***> ~FRNo search server available for story indexing: {e}")
+        except elasticsearch.exceptions.ConflictError as e:
+            logging.debug(f" ***> ~FBAlready indexed story: {e}")
+        if settings.DEBUG:
+            logging.debug(f" ***> ~FBIndexed {story_hash}")
+
     
     @classmethod
     def remove(cls, story_hash):
+        if not cls.ES().exists(index=cls.index_name(), id=story_hash, doc_type=cls.doc_type()):
+            return
+        
         try:
-            cls.ES().delete(index=cls.index_name(), id=story_hash)
-        except pyelasticsearch.ElasticHttpError:
-            logging.debug(" ***> ~FRNo search server available for story deletion.")
+            cls.ES().delete(index=cls.index_name(), id=story_hash, doc_type=cls.doc_type())
+        except elasticsearch.exceptions.NotFoundError:
+            cls.ES().delete(index=cls.index_name(), id=story_hash, doc_type='story-type')
+        except elasticsearch.exceptions.NotFoundError as e:
+            logging.debug(f" ***> ~FRNo search server available for story deletion: {e}")
         
     @classmethod
     def drop(cls):
         try:
-            cls.ES().delete_index(cls.index_name())
-        except pyelasticsearch.ElasticHttpNotFoundError:
+            cls.ES().indices.delete(cls.index_name())
+        except elasticsearch.exceptions.NotFoundError:
             logging.debug(" ***> ~FBNo index found, nothing to drop.")
 
         
     @classmethod
     def query(cls, feed_ids, query, order, offset, limit, strip=False):
         try:
-            cls.ES().flush(index=cls.index_name())
-        except pyelasticsearch.ElasticHttpError:
-            logging.debug(" ***> ~FRNo search server available.")
+            cls.ES().indices.flush(cls.index_name())
+        except elasticsearch.exceptions.NotFoundError as e:
+            logging.debug(f" ***> ~FRNo search server available: {e}")
             return []
         
         if strip:
@@ -319,8 +343,8 @@ class SearchStory:
             'size': limit
         }
         try:
-            results  = cls.ES().search(body, index=cls.index_name())
-        except pyelasticsearch.ElasticHttpError as e:
+            results  = cls.ES().search(body=body, index=cls.index_name(), doc_type=cls.doc_type())
+        except elasticsearch.exceptions.RequestError as e:
             logging.debug(" ***> ~FRNo search server available for querying: %s" % e)
             return []
 
@@ -356,7 +380,7 @@ class SearchStory:
     @classmethod
     def global_query(cls, query, order, offset, limit, strip=False):
         cls.create_elasticsearch_mapping()
-        cls.ES().refresh()
+        cls.ES().indices.flush()
         
         if strip:
             query = re.sub(r'([^\s\w_\-])+', ' ', query) # Strip non-alphanumeric
@@ -375,8 +399,8 @@ class SearchStory:
             'size': limit
         }
         try:
-            results  = cls.ES().search(body, index=cls.index_name())
-        except pyelasticsearch.ElasticHttpError as e:
+            results  = cls.ES().search(body=body, index=cls.index_name(), doc_type=cls.doc_type())
+        except elasticsearch.exceptions.RequestError as e:
             logging.debug(" ***> ~FRNo search server available for querying: %s" % e)
             return []
         
@@ -409,7 +433,7 @@ class SearchFeed:
     @classmethod
     def ES(cls):
         if cls._es_client is None:
-            cls._es_client = pyelasticsearch.ElasticSearch(settings.ELASTICSEARCH_FEED_HOST)
+            cls._es_client = elasticsearch.Elasticsearch(settings.ELASTICSEARCH_FEED_HOST)
             cls.create_elasticsearch_mapping()
         return cls._es_client
     
@@ -418,37 +442,56 @@ class SearchFeed:
         return "%s-index" % cls.name
         
     @classmethod
+    def doc_type(cls):
+        if settings.DOCKERBUILD:
+            return None
+        return "%s-type" % cls.name
+        
+    @classmethod
     def create_elasticsearch_mapping(cls, delete=False):
         if delete:
             logging.debug(" ---> ~FRDeleting search index for ~FM%s" % cls.index_name())
-            cls.ES().delete_index(cls.index_name())
+            try:
+                cls.ES().indices.delete(cls.index_name())
+            except elasticsearch.exceptions.NotFoundError:
+                logging.debug(f" ---> ~FBCan't delete {cls.index_name()} index, doesn't exist...")
 
-        try:
-            index_settings = {
-                "index" : {
-                    "analysis": {
-                        "analyzer": {
-                            "edgengram_analyzer": {
-                                "filter": ["edgengram_analyzer"],
-                                "tokenizer": "lowercase",
-                                "type": "custom"
-                            },
+        if cls.ES().indices.exists(cls.index_name()):
+            return
+
+        index_settings = {
+            "index" : {
+                "analysis": {
+                    "analyzer": {
+                        "edgengram_analyzer": {
+                            "filter": ["edgengram_analyzer"],
+                            "tokenizer": "lowercase",
+                            "type": "custom"
                         },
-                        "filter": {
-                            "edgengram_analyzer": {
-                                "max_gram": "15",
-                                "min_gram": "1",
-                                "type": "edge_ngram"
-                            },
-                        }
+                    },
+                    "filter": {
+                        "edgengram_analyzer": {
+                            "max_gram": "15",
+                            "min_gram": "1",
+                            "type": "edge_ngram"
+                        },
                     }
                 }
             }
-            cls.ES().create_index(cls.index_name(), settings=index_settings)
+        }
+
+        try:
+            cls.ES().indices.create(cls.index_name(), body={"settings": index_settings})
             logging.debug(" ---> ~FCCreating search index for ~FM%s" % cls.index_name())
-        except pyelasticsearch.IndexAlreadyExistsError:
+        except elasticsearch.exceptions.RequestError as e:
+            logging.debug(" ***> ~FRCould not create search index for ~FM%s: %s" % (cls.index_name(), e))
             return
-        
+        except (elasticsearch.exceptions.ConnectionError, 
+                urllib3.exceptions.NewConnectionError, 
+                urllib3.exceptions.ConnectTimeoutError) as e:
+            logging.debug(f" ***> ~FRNo search server available for creating feed mapping: {e}")
+            return
+       
         mapping = {
             "feed_address": {
                 'analyzer': 'snowball',
@@ -477,10 +520,10 @@ class SearchFeed:
                 "type": "text"
             }
         }
-        cls.ES().put_mapping(index=cls.index_name(), doc_type='feeds-type', mapping={
+        cls.ES().indices.put_mapping(body={
             'properties': mapping,
-        })
-        cls.ES().flush(cls.index_name())
+        }, index=cls.index_name())
+        cls.ES().indices.flush(cls.index_name())
 
     @classmethod
     def index(cls, feed_id, title, address, link, num_subscribers):
@@ -492,16 +535,24 @@ class SearchFeed:
             "num_subscribers": num_subscribers,
         }
         try:
-            cls.ES().index(index=cls.index_name(), doc_type='feeds-type', doc=doc, id=feed_id)
-        except pyelasticsearch.ElasticHttpError:
-            logging.debug(" ***> ~FRNo search server available for feed indexing.")
+            cls.ES().create(index=cls.index_name(), id=feed_id, body=doc, doc_type=cls.doc_type())
+        except (elasticsearch.exceptions.ConnectionError, 
+                urllib3.exceptions.NewConnectionError) as e:
+            logging.debug(f" ***> ~FRNo search server available for feed indexing: {e}")
+
+    @classmethod
+    def drop(cls):
+        try:
+            cls.ES().indices.delete(cls.index_name())
+        except elasticsearch.exceptions.NotFoundError:
+            logging.debug(" ***> ~FBNo index found, nothing to drop.")
 
     @classmethod
     def query(cls, text, max_subscribers=5):
         try:
-            cls.ES().flush(index=cls.index_name())
-        except pyelasticsearch.ElasticHttpError:
-            logging.debug(" ***> ~FRNo search server available for feed querying.")
+            cls.ES().indices.flush(index=cls.index_name())
+        except elasticsearch.exceptions.NotFoundError as e:
+            logging.debug(f" ***> ~FRNo search server available: {e}")
             return []
 
         if settings.DEBUG:
@@ -520,9 +571,9 @@ class SearchFeed:
             'sort': [{'num_subscribers': {'order': 'desc'}}],
         }
         try:
-            results  = cls.ES().search(body, doc_type='feeds-type', index=cls.index_name())
-        except pyelasticsearch.ElasticHttpError as e:
-            logging.debug(" ***> ~FRNo search server available for feed querying: %s" % e)
+            results  = cls.ES().search(body=body, index=cls.index_name(), doc_type=cls.doc_type())
+        except elasticsearch.exceptions.RequestError as e:
+            logging.debug(" ***> ~FRNo search server available for querying: %s" % e)
             return []
 
         # s = elasticsearch_dsl.Search(using=cls.ES(), index=cls.index_name())

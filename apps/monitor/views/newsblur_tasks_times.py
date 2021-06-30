@@ -1,15 +1,26 @@
 import datetime
 
 from django.conf import settings
-from django.http import JsonResponse
+from django.shortcuts import render
 from django.views import View
 
 class TasksTimes(View):
 
     def get(self, request):
-        servers = dict((("%s" % s['_id'], s['total']) for s in self.stats))
+        data = dict((("%s" % s['_id'], s['total']) for s in self.stats))
+        chart_name = "task_times"
+        chart_type = "counter"
 
-        return JsonResponse(servers)
+        formatted_data = {}
+        for k, v in data.items():
+            formatted_data[k] = f'{chart_name}{{category="{k}"}} {v}'
+        context = {
+            "data": formatted_data,
+            "chart_name": chart_name,
+            "chart_type": chart_type,
+        }
+        return render(request, 'monitor/prometheus_data.html', context, content_type="text/plain")
+
     
     @property
     def stats(self):

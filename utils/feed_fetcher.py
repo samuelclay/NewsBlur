@@ -24,7 +24,8 @@ from apps.reader.models import UserSubscription
 from apps.rss_feeds.models import Feed, MStory
 from apps.rss_feeds.page_importer import PageImporter
 from apps.rss_feeds.icon_importer import IconImporter
-from apps.notifications.tasks import QueueNotifications, MUserFeedNotification
+from apps.notifications.tasks import QueueNotifications
+from apps.notifications.models import MUserFeedNotification
 from apps.push.models import PushSubscription
 from apps.statistics.models import MAnalyticsFetcher, MStatistics
 import feedparser
