@@ -17,7 +17,7 @@ class StoryThumbnailView
 
     fun setThumbnailStyle(thumbnailStyle: ThumbnailStyle) {
         if (thumbnailStyle == ThumbnailStyle.LEFT_SMALL || thumbnailStyle == ThumbnailStyle.RIGHT_SMALL) {
-            setBackgroundResource(R.drawable.shape_rounded_corners)
+            setBackgroundResource(R.drawable.shape_rounded_corners_6dp)
         } else {
             setBackgroundResource(0)
         }

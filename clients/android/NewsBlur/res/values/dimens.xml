@@ -2,6 +2,7 @@
 <resources>
     <dimen name="thumbnails_small_size">54dp</dimen>
     <dimen name="thumbnails_size">120dp</dimen>
-    <dimen name="rounded_corner_radius">4dp</dimen>
+    <dimen name="rounded_corner_radius_4dp">4dp</dimen>
+    <dimen name="rounded_corner_radius_6dp">6dp</dimen>
     <dimen name="extra_line_spacing">4dp</dimen>
 </resources>
