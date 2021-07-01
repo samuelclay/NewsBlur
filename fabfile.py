@@ -1746,6 +1746,9 @@ def kill_gunicorn():
 @parallel
 def deploy_code(copy_assets=False, rebuild=False, fast=False, reload=False):
     with virtualenv():
+        run('git fetch origin')
+        with settings(warn_only=True):
+            run('git checkout -b python2 origin/python2')
         run('git pull')
         run('mkdir -p static')
         if rebuild:
