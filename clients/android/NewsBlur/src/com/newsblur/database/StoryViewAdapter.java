@@ -697,7 +697,7 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             params.width = sizeDp;
         }
         if (params != null && (thumbnailStyle == ThumbnailStyle.RIGHT_SMALL || thumbnailStyle == ThumbnailStyle.LEFT_SMALL)) {
-            int verticalMargin = UIUtils.dp2px(context, 10);
+            int verticalMargin = singleFeed ? UIUtils.dp2px(context, 10) : UIUtils.dp2px(context, 5);
             params.setMargins(UIUtils.dp2px(context, 8), verticalMargin, 0, verticalMargin);
             params.addRule(RelativeLayout.ALIGN_BOTTOM, vh.storySnippet.getId());
         } else if (params != null) {

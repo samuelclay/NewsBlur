@@ -10,7 +10,7 @@ class RoundedImageView
     : AppCompatImageView(context, attrs, defStyleAttr) {
 
     init {
-        setBackgroundResource(R.drawable.shape_rounded_corners)
+        setBackgroundResource(R.drawable.shape_rounded_corners_4dp)
         clipToOutline = true
     }
 }
