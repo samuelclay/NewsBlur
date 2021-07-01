@@ -1609,9 +1609,9 @@ class MSharedStory(mongo.DynamicDocument):
         try:
             r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
             r.publish("social:%s:story" % (self.user_id), '%s,%s' % (self.story_hash, self.shared_date.strftime('%s')))
-            logging.debug("   ***> [%-30s] ~BMPublishing to Redis for real-time." % (feed.title[:30] if feed else "NO FEED",))
+            logging.debug("   ***> [%-30s] ~BMPublishing to Redis for real-time." % (feed.title[:30] if feed else "NO FEED"))
         except redis.ConnectionError:
-            logging.debug("   ***> [%-30s] ~BMRedis is unavailable for real-time." % (feed.title[:30] if feed else "NO FEED",))
+            logging.debug("   ***> [%-30s] ~BMRedis is unavailable for real-time." % (feed.title[:30] if feed else "NO FEED"))
     
     @classmethod
     def feed_quota(cls, user_id, story_hash, feed_id=None, days=1, quota=1):
