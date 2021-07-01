@@ -10,6 +10,8 @@ NEWSBLUR.StoryOptionsPopover = NEWSBLUR.ReaderPopover.extend({
             top: 12,
             left: -64
         },
+        'show_contentpreview': true,
+        'show_imagepreview': true,
         'overlay_bottom': true,
         'popover_class': 'NB-style-popover-container'
     },
@@ -18,6 +20,7 @@ NEWSBLUR.StoryOptionsPopover = NEWSBLUR.ReaderPopover.extend({
         "click .NB-font-family-option": "change_font_family",
         "click .NB-story-font-size-option": "change_story_font_size",
         "click .NB-feed-font-size-option": "change_feed_font_size",
+        "click .NB-view-setting-option": "change_view_setting",
         "click .NB-line-spacing-option": "change_line_spacing",
         "click .NB-story-titles-pane-option": "change_story_titles_pane",
         "click .NB-single-story-option": "change_single_story",
@@ -49,25 +52,25 @@ NEWSBLUR.StoryOptionsPopover = NEWSBLUR.ReaderPopover.extend({
             $.make('div', { className: 'NB-popover-section' }, [
                 $.make('div', { className: 'NB-popover-section-title' }, 'Story Layout - Split'),
                 $.make('ul', { className: 'segmented-control NB-options-story-titles-pane' }, [
-                    $.make('li', { className: 'NB-story-titles-pane-option NB-options-story-titles-pane-north' }, [
+                    $.make('li', { className: 'NB-story-titles-pane-option NB-options-story-titles-pane-north', role: "button" }, [
                         $.make('div', { className: 'NB-icon' }),
                         'Top'
                     ]),
-                    $.make('li', { className: 'NB-story-titles-pane-option NB-options-story-titles-pane-west' }, [
+                    $.make('li', { className: 'NB-story-titles-pane-option NB-options-story-titles-pane-west', role: "button" }, [
                         $.make('div', { className: 'NB-icon' }),
                         'Left'
                     ]),
-                    $.make('li', { className: 'NB-story-titles-pane-option NB-options-story-titles-pane-south NB-active' }, [
+                    $.make('li', { className: 'NB-story-titles-pane-option NB-options-story-titles-pane-south NB-active', role: "button" }, [
                         $.make('div', { className: 'NB-icon' }),
                         'Bottom'
                     ])
                 ]),
                 $.make('ul', { className: 'segmented-control NB-options-single-story' }, [
-                    $.make('li', { className: 'NB-single-story-option NB-options-single-story-off NB-active' }, [
+                    $.make('li', { className: 'NB-single-story-option NB-options-single-story-off NB-active', role: "button" }, [
                         $.make('div', { className: 'NB-icon' }),
                         'All Stories'
                     ]),
-                    $.make('li', { className: 'NB-single-story-option NB-options-single-story-on' }, [
+                    $.make('li', { className: 'NB-single-story-option NB-options-single-story-on', role: "button" }, [
                         $.make('div', { className: 'NB-icon' }),
                         'Single Story'
                     ])
@@ -77,37 +80,37 @@ NEWSBLUR.StoryOptionsPopover = NEWSBLUR.ReaderPopover.extend({
             $.make('div', { className: 'NB-popover-section' }, [
                 $.make('div', { className: 'NB-popover-section-title' }, 'Story Layout - Grid Columns'),
                 $.make('ul', { className: 'segmented-control NB-options-grid-columns' }, [
-                    $.make('li', { className: 'NB-grid-columns-option NB-options-grid-columns-0' }, [
+                    $.make('li', { className: 'NB-grid-columns-option NB-options-grid-columns-0', role: "button" }, [
                         $.make('div', { className: 'NB-icon' }),
                         'Auto'
                     ]),
-                    $.make('li', { className: 'NB-grid-columns-option NB-options-grid-columns-1' }, [
+                    $.make('li', { className: 'NB-grid-columns-option NB-options-grid-columns-1', role: "button" }, [
                         '1'
                     ]),
-                    $.make('li', { className: 'NB-grid-columns-option NB-options-grid-columns-2' }, [
+                    $.make('li', { className: 'NB-grid-columns-option NB-options-grid-columns-2', role: "button" }, [
                         '2'
                     ]),
-                    $.make('li', { className: 'NB-grid-columns-option NB-options-grid-columns-3' }, [
+                    $.make('li', { className: 'NB-grid-columns-option NB-options-grid-columns-3', role: "button" }, [
                         '3'
                     ]),
-                    $.make('li', { className: 'NB-grid-columns-option NB-options-grid-columns-4' }, [
+                    $.make('li', { className: 'NB-grid-columns-option NB-options-grid-columns-4', role: "button" }, [
                         '4'
                     ])
                 ]),
                 $.make('ul', { className: 'segmented-control NB-options-grid-height' }, [
-                    $.make('li', { className: 'NB-grid-height-option NB-options-grid-height-xs' }, [
+                    $.make('li', { className: 'NB-grid-height-option NB-options-grid-height-xs', role: "button" }, [
                         'XS'
                     ]),
-                    $.make('li', { className: 'NB-grid-height-option NB-options-grid-height-s' }, [
+                    $.make('li', { className: 'NB-grid-height-option NB-options-grid-height-s', role: "button" }, [
                         'Short'
                     ]),
-                    $.make('li', { className: 'NB-grid-height-option NB-options-grid-height-m' }, [
+                    $.make('li', { className: 'NB-grid-height-option NB-options-grid-height-m', role: "button" }, [
                         'Medium'
                     ]),
-                    $.make('li', { className: 'NB-grid-height-option NB-options-grid-height-l' }, [
+                    $.make('li', { className: 'NB-grid-height-option NB-options-grid-height-l', role: "button" }, [
                         'Tall'
                     ]),
-                    $.make('li', { className: 'NB-grid-height-option NB-options-grid-height-xl' }, [
+                    $.make('li', { className: 'NB-grid-height-option NB-options-grid-height-xl', role: "button" }, [
                         'XL'
                     ])
                 ])
@@ -115,21 +118,21 @@ NEWSBLUR.StoryOptionsPopover = NEWSBLUR.ReaderPopover.extend({
             $.make('div', { className: 'NB-popover-section' }, [
                 $.make('div', { className: 'NB-popover-section-title' }, 'Font Family'),
                 $.make('ul', { className: 'segmented-control segmented-control-vertical NB-options-font-family' }, [
-                    $.make('li', { className: 'NB-font-family-option NB-options-font-family-sans-serif NB-active' }, 'Helvetica'),
-                    $.make('li', { className: 'NB-font-family-option NB-options-font-family-serif' }, 'Palatino / Georgia'),
-                    $.make('li', { className: 'NB-font-family-option NB-premium-only NB-options-font-family-gotham' }, [
+                    $.make('li', { className: 'NB-font-family-option NB-options-font-family-sans-serif NB-active', role: "button" }, 'Helvetica'),
+                    $.make('li', { className: 'NB-font-family-option NB-options-font-family-serif', role: "button" }, 'Palatino / Georgia'),
+                    $.make('li', { className: 'NB-font-family-option NB-premium-only NB-options-font-family-gotham', role: "button" }, [
                         (!NEWSBLUR.Globals.is_premium && $.make('div', { className: 'NB-tag' }, 'Premium')),
                         'Gotham Narrow'
                     ]),
-                    $.make('li', { className: 'NB-font-family-option NB-premium-only NB-options-font-family-sentinel' }, [
+                    $.make('li', { className: 'NB-font-family-option NB-premium-only NB-options-font-family-sentinel', role: "button" }, [
                         (!NEWSBLUR.Globals.is_premium && $.make('div', { className: 'NB-tag' }, 'Premium')),
                         'Sentinel'
                     ]),
-                    $.make('li', { className: 'NB-font-family-option NB-premium-only NB-options-font-family-whitney' }, [
+                    $.make('li', { className: 'NB-font-family-option NB-premium-only NB-options-font-family-whitney', role: "button" }, [
                         (!NEWSBLUR.Globals.is_premium && $.make('div', { className: 'NB-tag' }, 'Premium')),
                         'Whitney'
                     ]),
-                    $.make('li', { className: 'NB-font-family-option NB-premium-only NB-options-font-family-chronicle' }, [
+                    $.make('li', { className: 'NB-font-family-option NB-premium-only NB-options-font-family-chronicle', role: "button" }, [
                         (!NEWSBLUR.Globals.is_premium && $.make('div', { className: 'NB-tag' }, 'Premium')),
                         'Chronicle'
                     ])
@@ -140,29 +143,50 @@ NEWSBLUR.StoryOptionsPopover = NEWSBLUR.ReaderPopover.extend({
                 ]))
             ]),
             $.make('div', { className: 'NB-popover-section' }, [
-                $.make('div', { className: 'NB-popover-section-title' }, 'Font Size - Stories'),
+                $.make('div', { className: 'NB-popover-section-title' }, 'Story styling'),
                 $.make('ul', { className: 'segmented-control NB-options-story-font-size' }, [
-                    $.make('li', { className: 'NB-story-font-size-option NB-options-font-size-xs' }, 'XS'),
-                    $.make('li', { className: 'NB-story-font-size-option NB-options-font-size-s' }, 'S'),
-                    $.make('li', { className: 'NB-story-font-size-option NB-options-font-size-m NB-active' }, 'M'),
-                    $.make('li', { className: 'NB-story-font-size-option NB-options-font-size-l' }, 'L'),
-                    $.make('li', { className: 'NB-story-font-size-option NB-options-font-size-xl' }, 'XL')
+                    $.make('li', { className: 'NB-story-font-size-option NB-options-font-size-xs', role: "button" }, 'XS'),
+                    $.make('li', { className: 'NB-story-font-size-option NB-options-font-size-s', role: "button" }, 'S'),
+                    $.make('li', { className: 'NB-story-font-size-option NB-options-font-size-m NB-active', role: "button" }, 'M'),
+                    $.make('li', { className: 'NB-story-font-size-option NB-options-font-size-l', role: "button" }, 'L'),
+                    $.make('li', { className: 'NB-story-font-size-option NB-options-font-size-xl', role: "button" }, 'XL')
                 ]),
                 $.make('ul', { className: 'segmented-control NB-options-line-spacing' }, [
-                    $.make('li', { className: 'NB-line-spacing-option NB-options-line-spacing-xs' }, $.make('div', { className: 'NB-icon' })),
-                    $.make('li', { className: 'NB-line-spacing-option NB-options-line-spacing-s' }, $.make('div', { className: 'NB-icon' })),
-                    $.make('li', { className: 'NB-line-spacing-option NB-options-line-spacing-m NB-active' }, $.make('div', { className: 'NB-icon' })),
-                    $.make('li', { className: 'NB-line-spacing-option NB-options-line-spacing-l' }, $.make('div', { className: 'NB-icon' })),
-                    $.make('li', { className: 'NB-line-spacing-option NB-options-line-spacing-xl' }, $.make('div', { className: 'NB-icon' }))
+                    $.make('li', { className: 'NB-line-spacing-option NB-options-line-spacing-xs', role: "button" }, $.make('div', { className: 'NB-icon' })),
+                    $.make('li', { className: 'NB-line-spacing-option NB-options-line-spacing-s', role: "button" }, $.make('div', { className: 'NB-icon' })),
+                    $.make('li', { className: 'NB-line-spacing-option NB-options-line-spacing-m NB-active', role: "button" }, $.make('div', { className: 'NB-icon' })),
+                    $.make('li', { className: 'NB-line-spacing-option NB-options-line-spacing-l', role: "button" }, $.make('div', { className: 'NB-icon' })),
+                    $.make('li', { className: 'NB-line-spacing-option NB-options-line-spacing-xl', role: "button" }, $.make('div', { className: 'NB-icon' }))
                 ]),
-                $.make('div', { className: 'NB-popover-section-title' }, 'Font Size - Feeds'),
+                $.make('div', { className: 'NB-popover-section-title' }, 'Feed title styling'),
                 $.make('ul', { className: 'segmented-control NB-options-feed-font-size' }, [
-                    $.make('li', { className: 'NB-feed-font-size-option NB-options-font-size-xs' }, 'XS'),
-                    $.make('li', { className: 'NB-feed-font-size-option NB-options-font-size-s' }, 'S'),
-                    $.make('li', { className: 'NB-feed-font-size-option NB-options-font-size-m NB-active' }, 'M'),
-                    $.make('li', { className: 'NB-feed-font-size-option NB-options-font-size-l' }, 'L'),
-                    $.make('li', { className: 'NB-feed-font-size-option NB-options-font-size-xl' }, 'XL')
-                ])
+                    $.make('li', { className: 'NB-feed-font-size-option NB-options-font-size-xs', role: "button" }, 'XS'),
+                    $.make('li', { className: 'NB-feed-font-size-option NB-options-font-size-s', role: "button" }, 'S'),
+                    $.make('li', { className: 'NB-feed-font-size-option NB-options-font-size-m NB-active', role: "button" }, 'M'),
+                    $.make('li', { className: 'NB-feed-font-size-option NB-options-font-size-l', role: "button" }, 'L'),
+                    $.make('li', { className: 'NB-feed-font-size-option NB-options-font-size-xl', role: "button" }, 'XL')
+                ]),
+                (this.options.show_contentpreview && $.make('ul', { className: 'segmented-control NB-menu-manage-view-setting-contentpreview' }, [
+                    $.make('li', { className: 'NB-view-setting-option NB-view-setting-contentpreview-title', role: "button" }, 'Title only'),
+                    $.make('li', { className: 'NB-view-setting-option NB-view-setting-contentpreview-small', role: "button" }, $.make('div', { className: 'NB-icon' })),
+                    $.make('li', { className: 'NB-view-setting-option NB-view-setting-contentpreview-medium', role: "button" }, $.make('div', { className: 'NB-icon' })),
+                    $.make('li', { className: 'NB-view-setting-option NB-view-setting-contentpreview-large', role: "button" }, $.make('div', { className: 'NB-icon' })),
+                ])),
+                (this.options.show_imagepreview && $.make('ul', { className: 'segmented-control NB-menu-manage-view-setting-imagepreview' }, [
+                    $.make('li', { className: 'NB-view-setting-option NB-view-setting-imagepreview-none', role: "button" }, 'No image'),
+                    $.make('li', { className: 'NB-view-setting-option NB-view-setting-imagepreview-small-left', role: "button" }, [
+                        $.make('img', { className: 'NB-icon', src: NEWSBLUR.Globals['MEDIA_URL']+'img/reader/image_preview_small_left.png' })
+                    ]),
+                    $.make('li', { className: 'NB-view-setting-option NB-view-setting-imagepreview-large-left', role: "button" }, [
+                        $.make('img', { className: 'NB-icon', src: NEWSBLUR.Globals['MEDIA_URL']+'img/reader/image_preview_large_left.png' })
+                    ]),
+                    $.make('li', { className: 'NB-view-setting-option NB-view-setting-imagepreview-large-right', role: "button" }, [
+                        $.make('img', { className: 'NB-icon', src: NEWSBLUR.Globals['MEDIA_URL']+'img/reader/image_preview_large_right.png' })
+                    ]),
+                    $.make('li', { className: 'NB-view-setting-option NB-view-setting-imagepreview-small-right', role: "button" }, [
+                        $.make('img', { className: 'NB-icon', src: NEWSBLUR.Globals['MEDIA_URL']+'img/reader/image_preview_small_right.png' })
+                    ])
+                ]))
             ])
         ]));
         
@@ -178,10 +202,13 @@ NEWSBLUR.StoryOptionsPopover = NEWSBLUR.ReaderPopover.extend({
         var single_story = NEWSBLUR.assets.preference('feed_view_single_story');
         var grid_columns = NEWSBLUR.assets.preference('grid_columns');
         var grid_height = NEWSBLUR.assets.preference('grid_height');
+        var image_preview = NEWSBLUR.assets.preference('image_preview');
+        var content_preview = NEWSBLUR.assets.preference('show_content_preview');
         
         this.$('.NB-font-family-option').removeClass('NB-active');
         this.$('.NB-options-font-family-'+font_family).addClass('NB-active');
 
+        this.$('.NB-view-setting-option').removeClass('NB-active');
         this.$('.NB-feed-font-size-option').removeClass('NB-active');
         this.$('.NB-story-font-size-option').removeClass('NB-active');
         this.$('.NB-options-story-font-size .NB-options-font-size-'+story_font_size).addClass('NB-active');
@@ -198,6 +225,16 @@ NEWSBLUR.StoryOptionsPopover = NEWSBLUR.ReaderPopover.extend({
         this.$('.NB-options-grid-columns-'+grid_columns).addClass('NB-active');
         this.$('.NB-grid-height-option').removeClass('NB-active');
         this.$('.NB-options-grid-height-'+grid_height).addClass('NB-active');
+
+        this.$('.NB-view-setting-contentpreview-title').toggleClass('NB-active', content_preview == '0' || content_preview == "title");
+        this.$('.NB-view-setting-contentpreview-small').toggleClass('NB-active', content_preview == "small");
+        this.$('.NB-view-setting-contentpreview-medium').toggleClass('NB-active', content_preview == "1" || content_preview == "medium");
+        this.$('.NB-view-setting-contentpreview-large').toggleClass('NB-active', content_preview == "large");
+        this.$('.NB-view-setting-imagepreview-none').toggleClass('NB-active', image_preview == "0" || image_preview == "none");
+        this.$('.NB-view-setting-imagepreview-small-left').toggleClass('NB-active', image_preview == "small-left");
+        this.$('.NB-view-setting-imagepreview-small-right').toggleClass('NB-active', image_preview == "small-right");
+        this.$('.NB-view-setting-imagepreview-large-left').toggleClass('NB-active', image_preview == "large-left");
+        this.$('.NB-view-setting-imagepreview-large-right').toggleClass('NB-active', image_preview == "1" || image_preview == "large-right");
 
         NEWSBLUR.reader.$s.$taskbar_options.addClass('NB-active');
         
@@ -412,6 +449,42 @@ NEWSBLUR.StoryOptionsPopover = NEWSBLUR.ReaderPopover.extend({
             NEWSBLUR.app.story_titles.override_grid();
             NEWSBLUR.reader.resize_window();
         });
+    },
+
+    change_view_setting: function(e) {
+        var $target = $(e.currentTarget);
+        var options = {};
+        
+        if ($target.hasClass("NB-view-setting-contentpreview-title")) {
+            NEWSBLUR.assets.preference('show_content_preview', "title");
+            NEWSBLUR.reader.apply_story_styling(true);
+        } else if ($target.hasClass("NB-view-setting-contentpreview-small")) {
+            NEWSBLUR.assets.preference('show_content_preview', "small");
+            NEWSBLUR.reader.apply_story_styling(true);
+        } else if ($target.hasClass("NB-view-setting-contentpreview-medium")) {
+            NEWSBLUR.assets.preference('show_content_preview', "medium");
+            NEWSBLUR.reader.apply_story_styling(true);
+        } else if ($target.hasClass("NB-view-setting-contentpreview-large")) {
+            NEWSBLUR.assets.preference('show_content_preview', "large");
+            NEWSBLUR.reader.apply_story_styling(true);
+        } else if ($target.hasClass("NB-view-setting-imagepreview-none")) {
+            NEWSBLUR.assets.preference('image_preview', "none");
+            NEWSBLUR.reader.apply_story_styling(true);
+        } else if ($target.hasClass("NB-view-setting-imagepreview-small-left")) {
+            NEWSBLUR.assets.preference('image_preview', "small-left");
+            NEWSBLUR.reader.apply_story_styling(true);
+        } else if ($target.hasClass("NB-view-setting-imagepreview-small-right")) {
+            NEWSBLUR.assets.preference('image_preview', "small-right");
+            NEWSBLUR.reader.apply_story_styling(true);
+        } else if ($target.hasClass("NB-view-setting-imagepreview-large-left")) {
+            NEWSBLUR.assets.preference('image_preview', "large-left");
+            NEWSBLUR.reader.apply_story_styling(true);
+        } else if ($target.hasClass("NB-view-setting-imagepreview-large-right")) {
+            NEWSBLUR.assets.preference('image_preview', "large-right");
+            NEWSBLUR.reader.apply_story_styling(true);
+        }
+        
+        this.show_correct_options();
     },
     
     open_premium_modal: function(e) {

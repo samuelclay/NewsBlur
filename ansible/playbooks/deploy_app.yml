@@ -1,0 +1,115 @@
+---
+- name: DEPLOY -> app
+  hosts: app,staging
+  gather_facts: false
+  # serial: "50%"
+  vars_files:
+    - ../env_vars/base.yml
+
+  tasks:
+    # - name: Leave consul
+    #   command: consul leave
+    #   ignore_errors: yes
+
+    - name: Compressing JS/CSS assets 
+      run_once: yes
+      connection: local
+      command: chdir=/srv/newsblur jammit -c /srv/newsblur/newsblur_web/assets.yml --base-url https://www.newsblur.com --output /srv/newsblur/static
+      tags:
+        - never
+        - static
+        - jammit
+    
+    - name: Archive JS/CSS assets for uploading
+      run_once: yes
+      connection: local
+      archive: 
+        path: /srv/newsblur/static/
+        dest: /srv/newsblur/static.tgz
+      tags:
+        - never
+        - static
+      
+    - name: Uploading JS/CSS assets to S3
+      run_once: yes
+      connection: local
+      amazon.aws.aws_s3:
+        bucket: newsblur_backups
+        object: /static_py3.tgz
+        src: /srv/newsblur/static.tgz
+        mode: put
+        overwrite: different
+        aws_access_key: "{{ lookup('ini', 'aws_access_key_id section=default file=/srv/secrets-newsblur/keys/aws.s3.token') }}"
+        aws_secret_key: "{{ lookup('ini', 'aws_secret_access_key section=default file=/srv/secrets-newsblur/keys/aws.s3.token') }}"
+      tags:
+        - never
+        - static
+
+    - name: Pull newsblur_web github
+      git:
+        repo: https://github.com/samuelclay/NewsBlur.git
+        dest: /srv/newsblur/
+        version: dashboard3
+      register: pulled
+      tags:
+        - static
+    
+    - name: Downloading JS/CSS assets from S3
+      vars:
+        ansible_python_interpreter: /usr/bin/python3  
+      amazon.aws.aws_s3:
+        bucket: newsblur_backups
+        object: /static_py3.tgz
+        dest: /srv/newsblur/static/static.tgz
+        mode: get
+        overwrite: different
+        aws_access_key: "{{ lookup('ini', 'aws_access_key_id section=default file=/srv/secrets-newsblur/keys/aws.s3.token') }}"
+        aws_secret_key: "{{ lookup('ini', 'aws_secret_access_key section=default file=/srv/secrets-newsblur/keys/aws.s3.token') }}"
+      tags:
+        - never
+        - static
+      register: jscss_updated
+
+    - name: Decompress downloaded JS/CSS
+      unarchive:
+        src: /srv/newsblur/static.tgz
+        dest: /srv/newsblur/static
+      when: jscss_updated is succeeded
+      tags:
+        - never
+        - static
+    
+    - name: Reload gunicorn
+      become: yes
+      block:
+        - name: Find gunicorn master process
+          shell: "ps -C gunicorn fch -o pid | head -n 1"
+          register: psaux
+        - name: Reload gunicorn
+          command: "kill -HUP {{ psaux.stdout }}"
+      # when: pulled.changed
+      tags:
+        - static
+    
+    - name: Start Consul
+      become: yes
+      service:
+        name: consul
+        state: started
+        enabled: true
+
+    - name: Entering maintenance mode
+      template:
+        src: /srv/newsblur/templates/maintenance_off.html
+        dest: /srv/newsblur/templates/maintenance_on.html
+      tags:
+        - never
+        - maintenance_on
+
+    - name: Leaving maintenance mode
+      file:
+        path: /srv/newsblur/templates/maintenance_on.html
+        state: absent
+      tags:
+        - never
+        - maintenance_off

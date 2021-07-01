@@ -1,0 +1,93 @@
+---
+- name: Allow haproxy stats port
+  ufw: rule=allow port={{ item }}
+  become: yes
+  tags: ufw
+  with_items:
+    - "8000"
+
+- name: Copy common secrets
+  copy:
+    src: /srv/secrets-newsblur/settings/common_settings.py
+    dest: /srv/newsblur/newsblur_web/local_settings.py
+  register: app_changed
+
+- name: Copy app env
+  copy:
+    src: /srv/secrets-newsblur/settings/app_env.py
+    dest: /srv/newsblur/newsblur_web/app_env.py
+
+- name: Add SERVER_NAME to app env
+  lineinfile:
+    path: /srv/newsblur/newsblur_web/app_env.py
+    line: 'SERVER_NAME = "{{ inventory_hostname }}"'
+
+- name: Ensure static dir exists
+  file:
+    path: /srv/newsblur/static
+    state: directory
+  tags:
+    - static
+
+- name: Install pip
+  become: yes
+  apt: name=python3-pip state=latest
+  tags:
+    - static
+
+- name: Install boto3 and botocore with pip3 module
+  pip:
+    name: 
+    - boto3
+    - botocore
+  tags:
+    - static
+
+- name: Make docker network for newsblurnet
+  become: yes
+  docker_network:
+    name: newsblurnet
+  notify: restart docker
+
+- name: Start NewsBlur Web Docker container
+  become: yes
+  docker_container:
+    name: newsblur_web
+    image: newsblur/newsblur_python3
+    container_default_behavior: no_defaults
+    pull: yes
+    env:
+      DOCKERBUILD: ""
+    state: started
+    command: gunicorn --config /srv/newsblur/config/gunicorn_conf.py newsblur_web.wsgi:application
+    networks_cli_compatible: yes
+    network_mode: default
+    networks:
+      - name: newsblurnet
+    ports:
+      - "8000:8000"
+    restart_policy: unless-stopped
+    volumes:
+      - /srv/newsblur:/srv/newsblur
+      - /etc/hosts:/etc/hosts
+
+- name: Register web app in consul
+  tags: consul
+  become: yes
+  template:
+    src: consul_service.json
+    dest: /etc/consul.d/newsblur_web.json
+  when: disable_consul_services_ie_staging is not defined
+  notify:
+    - reload consul
+
+- name: Setup logrotate
+  become: yes
+  copy: src=logrotate.conf dest=/etc/logrotate.d/newsblur mode=0755
+
+- name: Reload gunicorn
+  debug: 
+    msg: Reloading gunicorn
+  notify: reload gunicorn
+  when: app_changed.changed
+  changed_when: app_changed.changed

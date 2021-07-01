@@ -1,8 +1,8 @@
-#!/srv/newsblur/venv/newsblur/bin/python
+#!/srv/newsblur/venv/newsblur3/bin/python
 import redis
 from utils.munin.base import MuninGraph
 import os
-os.environ["DJANGO_SETTINGS_MODULE"] = "newsblur.settings"
+os.environ["DJANGO_SETTINGS_MODULE"] = "newsblur_web.settings"
 import django
 django.setup()
 
@@ -41,7 +41,7 @@ class NBMuninGraph(MuninGraph):
             'celery_new_feeds': r.llen("new_feeds"),
             'celery_push_feeds': r.llen("push_feeds"),
             'celery_work_queue': r.llen("work_queue"),
-            'celery_search_queue': r.llen("search_indexer") + r.llen("search_indexer_tasker"),
+            'celery_search_queue': r.llen("search_indexer"),
         }
 
 if __name__ == '__main__':

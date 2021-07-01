@@ -1,5 +1,5 @@
 import datetime
-from newsblur.celeryapp import app
+from newsblur_web.celeryapp import app
 from apps.profile.models import Profile, RNewUserQueue
 from utils import log as logging
 from apps.reader.models import UserSubscription, UserSubscriptionFolders

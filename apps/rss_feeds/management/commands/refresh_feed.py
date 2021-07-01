@@ -18,4 +18,4 @@ class Command(BaseCommand):
             feed = Feed.objects.get(feed_title__icontains=options['title'])
         else:
             feed = Feed.get_by_id(options['feed'])
-        feed.update(force=options['force'], single_threaded=True, verbose=2)
+        feed.update(force=options['force'], single_threaded=True, verbose=True)

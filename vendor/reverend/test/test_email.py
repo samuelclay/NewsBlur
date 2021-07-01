@@ -18,7 +18,7 @@ class EmailClassifierTests(TestCase):
         Create a L{Message} and an L{EmailClassifier}.
         """
         self.classifier = EmailClassifier()
-        self.message = email.Message.Message()
+        self.message = email.message.EmailMessage()
 
 
     def test_training(self):

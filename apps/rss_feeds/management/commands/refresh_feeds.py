@@ -3,6 +3,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from apps.statistics.models import MStatistics
 from apps.rss_feeds.models import Feed
+from apps.reader.models import UserSubscription
 from optparse import make_option
 from utils import feed_fetcher
 from utils.management_functions import daemonize
@@ -39,17 +40,18 @@ class Command(BaseCommand):
             feeds = Feed.objects.filter(next_scheduled_update__lte=now,
                                         average_stories_per_month__lt=options['skip'],
                                         active=True)
-            print " ---> Skipping %s feeds" % feeds.count()
+            print(" ---> Skipping %s feeds" % feeds.count())
             for feed in feeds:
                 feed.set_next_scheduled_update()
-                print '.',
+                print('.', end=' ')
             return
             
         socket.setdefaulttimeout(options['timeout'])
         if options['force']:
             feeds = Feed.objects.all()
         elif options['username']:
-            feeds = Feed.objects.filter(subscribers__user=User.objects.get(username=options['username']))
+            usersubs = UserSubscription.objects.filter(user=User.objects.get(username=options['username']), active=True)
+            feeds = Feed.objects.filter(pk__in=usersubs.values('feed_id'))
         elif options['feed']:
             feeds = Feed.objects.filter(pk=options['feed'])
         else:
@@ -82,5 +84,5 @@ class Command(BaseCommand):
         
         django.db.connection.close()
         
-        print " ---> Fetching %s feeds..." % feeds.count()
+        print(" ---> Fetching %s feeds..." % feeds.count())
         disp.run_jobs()

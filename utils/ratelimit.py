@@ -27,7 +27,7 @@ class ratelimit(object):
         if not self.should_ratelimit(request):
             return fn(request, *args, **kwargs)
         
-        counts = self.get_counters(request).values()
+        counts = list(self.get_counters(request).values())
         
         # Increment rate limiting counter
         self.cache_incr(self.current_key(request))
@@ -102,6 +102,6 @@ class ratelimit_post(ratelimit):
         # IP address and key_field (if it is set)
         extra = super(ratelimit_post, self).key_extra(request)
         if self.key_field:
-            value = hashlib.sha1(request.POST.get(self.key_field, '')).hexdigest()
+            value = hashlib.sha1((request.POST.get(self.key_field, '')).encode('utf-8')).hexdigest()
             extra += '-' + value
         return extra

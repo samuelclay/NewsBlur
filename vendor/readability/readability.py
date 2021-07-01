@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-from __future__ import print_function
 import logging
 import re
 import sys
@@ -73,7 +72,7 @@ def compile_pattern(elements):
     else:
         # assume string or string like object
         elements = elements.split(',')
-        return re.compile(u'|'.join([re.escape(x.lower()) for x in elements]), re.U)
+        return re.compile('|'.join([re.escape(x.lower()) for x in elements]), re.U)
 
 class Document:
     """Class to build a etree document out of html."""
@@ -277,7 +276,7 @@ class Document:
             return None
 
         sorted_candidates = sorted(
-            candidates.values(), 
+            list(candidates.values()), 
             key=lambda x: x['content_score'],
             reverse=True
         )
@@ -623,13 +622,13 @@ def main():
     if options.url:
         headers = {'User-Agent': 'Mozilla/5.0'}
         if sys.version_info[0] == 3:
-            import urllib.request, urllib.parse, urllib.error
+            import urllib.request
             request = urllib.request.Request(options.url, None, headers)
             file = urllib.request.urlopen(request)
         else:
-            import urllib2
-            request = urllib2.Request(options.url, None, headers)
-            file = urllib2.urlopen(request)
+            import urllib.request
+            request = urllib.request.Request(options.url, None, headers)
+            file = urllib.request.urlopen(request)
     else:
         file = open(args[0], 'rt')
     try:

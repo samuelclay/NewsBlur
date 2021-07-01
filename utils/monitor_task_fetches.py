@@ -1,21 +1,16 @@
-#!/srv/newsblur/venv/newsblur/bin/python
+#!/usr/local/bin/python3
 
 import sys
 sys.path.append('/srv/newsblur')
 
-import subprocess
 import requests
-from newsblur import settings
+from newsblur_web import settings
 import socket
 import redis
 import pymongo
 
 def main():
-    df = subprocess.Popen(["df", "/"], stdout=subprocess.PIPE)
-    output = df.communicate()[0]
-    device, size, used, available, percent, mountpoint = output.split("\n")[1].split()
     hostname = socket.gethostname()
-    percent = int(percent.strip('%'))
     admin_email = settings.ADMINS[0][1]
     failed = False
     feeds_fetched = 0
@@ -28,15 +23,14 @@ def main():
         client = pymongo.MongoClient('mongodb://%s' % settings.MONGO_DB['host'])
         feeds_fetched = client.newsblur.statistics.find_one({"key": "feeds_fetched"})['value']
         redis_task_fetches = int(r.get(monitor_key) or 0)
-    except Exception, e:
+    except Exception as e:
         failed = e
     
     if feeds_fetched < 5000000:
-        if redis_task_fetches > 0 and feeds_fetched <= (redis_task_fetches - FETCHES_DROP_AMOUNT):
+        if redis_task_fetches > 0 and feeds_fetched < (redis_task_fetches - FETCHES_DROP_AMOUNT):
             failed = True
         elif redis_task_fetches <= 0:
             failed = True
-
     if failed:
         requests.post(
                 "https://api.mailgun.net/v2/%s/messages" % settings.MAILGUN_SERVER_NAME,

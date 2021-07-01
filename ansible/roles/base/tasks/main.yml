@@ -1,0 +1,71 @@
+---
+
+- name: Ensure git, zsh, ssl are the latest versions
+  apt: name={{ sys_packages }} update_cache={{ update_apt_cache }} state=latest
+  become: yes
+  tags: packages
+  # ignore_errors: yes
+
+- name: Copy zshrc
+  template: 
+    src: zshrc.txt.j2
+    dest: /home/nb/.zshrc
+  tags: zsh
+
+- name: Installing Zsh and git
+  apt: pkg=zsh,git state=latest
+
+- name: Set zsh as default shell
+  user: name=nb shell=/usr/bin/zsh
+  become: yes
+  
+- name: Cloning oh-my-zsh
+  git:
+    repo: https://github.com/robbyrussell/oh-my-zsh
+    dest: /home/nb/.oh-my-zsh
+    force: yes
+  
+- name: Copy toprc
+  copy: src=toprc.txt dest=~/.toprc
+  tags: zsh
+
+- name: Copy gitconfig
+  copy: src=gitconfig.txt dest=~/.gitconfig
+
+- name: Copy ssh config
+  copy: src=sshconf.txt dest=~/.ssh/config
+ 
+- name: "Copy motd for {{ motd_role }}"
+  become: yes
+  copy: "src=motd.{{ motd_role }}.txt dest=/etc/update-motd.d/52-nb-motd mode=0755"
+
+- name: Ensure repo directory
+  become: yes
+  file:
+    path: /srv/newsblur
+    state: directory
+    owner: "{{ ansible_effective_user_id|int }}"
+    group: "{{ ansible_effective_group_id|int }}"
+    recurse: yes
+
+- name: Copy /etc/hosts from old installation (remove when upgraded)
+  become: yes
+  copy:
+    src: /srv/secrets-newsblur/configs/hosts
+    dest: /etc/hosts
+  tags: hosts
+  notify: reload dnsmasq
+
+- name: "Add inventory_hostname to /etc/hosts"
+  become: yes
+  lineinfile:
+    path: /etc/hosts
+    line: "127.0.0.1 {{ inventory_hostname }}"
+  tags: hosts
+
+- name: Set hostname
+  become: yes
+  hostname:
+    name: "{{ inventory_hostname }}"
+  tags: hosts
+  

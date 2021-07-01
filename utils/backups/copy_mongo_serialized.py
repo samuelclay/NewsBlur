@@ -35,9 +35,9 @@ for collection in collections:
     for item in items:
         if item.get('_id') != latest_item_id:
             latest_item_id = item['_id']
-            print " ---> Inserted %s items in %s (at: %s) (%2s%%)" % (
+            print(" ---> Inserted %s items in %s (at: %s) (%2s%%)" % (
                 i, collection, item['_id'], (round(i/float(total), 4)*100)
-            )
+            ))
             sys.stdout.flush()
         db02.newsblur[collection].insert(item)
         i += 1
@@ -57,7 +57,7 @@ for f, feed in enumerate(feeds):
         total_inserted += 1
         feed_inserted += 1
     if feed_inserted:
-        print " ---> Inserted %s items (total: %s) in stories (at: %s -- %s/month) (%2s%%)" % (
+        print(" ---> Inserted %s items (total: %s) in stories (at: %s -- %s/month) (%2s%%)" % (
             feed_inserted, total_inserted, latest_feed_id, feed.average_stories_per_month, (round(f/float(feed_count), 4)*100)
-        )
+        ))
         sys.stdout.flush()

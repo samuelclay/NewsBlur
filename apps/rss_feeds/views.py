@@ -1,5 +1,6 @@
 import datetime
-from urlparse import urlparse
+import base64
+from urllib.parse import urlparse
 from utils import log as logging
 from django.shortcuts import get_object_or_404, render
 from django.views.decorators.http import condition
@@ -81,7 +82,7 @@ def load_feed_favicon(request, feed_id):
     if not_found or not feed_icon.data:
         return HttpResponseRedirect(settings.MEDIA_URL + 'img/icons/circular/world.png')
         
-    icon_data = feed_icon.data.decode('base64')
+    icon_data = base64.b64decode(feed_icon.data)
     return HttpResponse(icon_data, content_type='image/png')
 
 @json.json_view
@@ -235,7 +236,7 @@ def assemble_statistics(user, feed_id):
     localoffset = user_timezone.utcoffset(datetime.datetime.utcnow())
     hours_offset = int(localoffset.total_seconds() / 3600)
     rotated_hours = {}
-    for hour, value in stats['story_hours_history'].items():
+    for hour, value in list(stats['story_hours_history'].items()):
         rotated_hours[str(int(hour)+hours_offset)] = value
     stats['story_hours_history'] = rotated_hours
     
@@ -522,6 +523,9 @@ def original_text(request):
     force = GET_POST.get('force', False)
     debug = GET_POST.get('debug', False)
 
+    if not story_hash and not story_id:
+        return {'code': -1, 'message': 'Missing story_hash.', 'original_text': None, 'failed': True}
+    
     if story_hash:
         story, _ = MStory.find_story(story_hash=story_hash)
     else:

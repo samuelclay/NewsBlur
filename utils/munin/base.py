@@ -14,9 +14,9 @@ class MuninGraph(object):
             
     def print_config(self):
         for key,value in self.graph_config.items():
-            print '%s %s' % (key, value)
+            print('%s %s' % (key, value))
 
     def print_metrics(self, metrics):
         for key, value in metrics.items():
-            print '%s.value %s' % (key, value)
+            print('%s.value %s' % (key, value))
             

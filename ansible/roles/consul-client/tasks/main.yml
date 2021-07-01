@@ -1,0 +1,15 @@
+---
+- name: Create config file
+  become: yes
+  template:
+    src: consul_client.json.j2
+    dest: /etc/consul.d/newsblur.json
+  notify:
+    - restart consul
+
+- name: Start Consul
+  become: yes
+  service:
+    name: consul
+    state: started
+    enabled: true
