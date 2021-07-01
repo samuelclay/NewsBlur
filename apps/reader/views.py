@@ -77,6 +77,7 @@ ALLOWED_SUBDOMAINS = [
     'debug', 
     'debug3', 
     'nb',
+    'old',
 ]
 
 def get_subdomain(request):
