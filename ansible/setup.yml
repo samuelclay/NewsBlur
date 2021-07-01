@@ -1,0 +1,27 @@
+---
+- import_playbook: playbooks/setup_app.yml
+  when: "'app' in group_names"
+- import_playbook: playbooks/setup_blog.yml
+  when: "'blogs' in group_names"
+- import_playbook: playbooks/setup_www.yml
+  when: "'haproxy' in group_names"
+- import_playbook: playbooks/setup_node.yml
+  when: "'node' in group_names"
+- import_playbook: playbooks/setup_postgres.yml
+  when: "'postgres' in group_names"
+- import_playbook: playbooks/setup_mongo.yml
+  when: "'mongo' in group_names"
+- import_playbook: playbooks/setup_redis.yml
+  when: "'redis' in group_names"
+- import_playbook: playbooks/setup_elasticsearch.yml
+  when: "'elasticsearch' in group_names"
+- import_playbook: playbooks/setup_task.yml
+  when: "'task' in group_names"
+- import_playbook: playbooks/setup_consul_manager.yml
+  when: "'consul' in group_names"
+- import_playbook: playbooks/setup_staging.yml
+  when: "'staging' in group_names"
+- import_playbook: playbooks/setup_discovery.yml
+  when: "'discovery' in inventory_hostname"
+- import_playbook: playbooks/setup_metrics.yml
+  when: "'metrics' in inventory_hostname"

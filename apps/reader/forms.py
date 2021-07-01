@@ -1,6 +1,6 @@
 import datetime
 from django import forms
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from django.db.models import Q
@@ -11,6 +11,8 @@ from apps.social.models import MActivity
 from apps.profile.models import blank_authenticate, RNewUserQueue
 from utils import log as logging
 from dns.resolver import query, NXDOMAIN, NoNameservers, NoAnswer
+from dns.resolver import NoResolverConfiguration
+
 
 class LoginForm(forms.Form):
     username = forms.CharField(label=_("Username or Email"), max_length=30,
@@ -82,18 +84,18 @@ class SignupForm(forms.Form):
     username = forms.RegexField(regex=r'^\w+$',
                                 max_length=30,
                                 widget=forms.TextInput(attrs={'class': 'NB-input'}),
-                                label=_(u'Username'),
+                                label=_('Username'),
                                 error_messages={
                                     'required': 'Please enter a username.', 
                                     'invalid': "Your username may only contain letters and numbers."
                                 })
     email = forms.EmailField(widget=forms.TextInput(attrs={'maxlength': 75, 'class': 'NB-input'}),
-                             label=_(u'Email'),
+                             label=_('Email'),
                              required=True,
                              error_messages={'required': 'Please enter an email.'})
     password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'NB-input'}, 
                                                           render_value=True,),
-                               label=_(u'Password'),
+                               label=_('Password'),
                                required=False)
                                # error_messages={'required': 'Please enter a password.'})
     
@@ -111,7 +113,7 @@ class SignupForm(forms.Form):
         if email:
             email_exists = User.objects.filter(email__iexact=email).count()
             if email_exists:
-                raise forms.ValidationError(_(u'Someone is already using that email address.'))
+                raise forms.ValidationError(_('Someone is already using that email address.'))
             if any([banned in email for banned in ['mailwire24', 'mailbox9', 'scintillamail', 'bluemailboxes', 'devmailing']]):
                 logging.info(" ***> [%s] Spammer signup banned: %s/%s" % (self.cleaned_data.get('username', None), self.cleaned_data.get('password', None), email))
                 raise forms.ValidationError('Seriously, fuck off spammer.')
@@ -121,6 +123,9 @@ class SignupForm(forms.Form):
                     raise forms.ValidationError('Sorry, that email is invalid.')
             except (NXDOMAIN, NoNameservers, NoAnswer):
                 raise forms.ValidationError('Sorry, that email is invalid.')
+            except NoResolverConfiguration as e:
+                logging.info(f" ***> ~FRFailed to check spamminess of domain: ~FY{domain} ~FR{e}")
+                pass
         return self.cleaned_data['email']
     
     def clean(self):
@@ -132,7 +137,7 @@ class SignupForm(forms.Form):
         if exists:
             user_auth = authenticate(username=username, password=password)
             if not user_auth:
-                raise forms.ValidationError(_(u'Someone is already using that username.'))
+                raise forms.ValidationError(_('Someone is already using that username.'))
                 
         return self.cleaned_data
         
@@ -145,7 +150,7 @@ class SignupForm(forms.Form):
         if exists:
             user_auth = authenticate(username=username, password=password)
             if not user_auth:
-                raise forms.ValidationError(_(u'Someone is already using that username.'))
+                raise forms.ValidationError(_('Someone is already using that username.'))
             else:
                 return user_auth
         
@@ -157,10 +162,11 @@ class SignupForm(forms.Form):
         if not getattr(settings, 'AUTO_ENABLE_NEW_USERS', True):
             new_user.is_active = False
         new_user.email = email
+        new_user.last_login = datetime.datetime.now()
         new_user.save()
         new_user = authenticate(username=username,
                                 password=password)
-        
+        new_user = User.objects.get(username=username)
         MActivity.new_signup(user_id=new_user.pk)
         
         RNewUserQueue.add_user(new_user.pk)

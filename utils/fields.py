@@ -1,13 +1,12 @@
 import django
-from django.db.models import OneToOneField
 from django.db.transaction import atomic
+from django.db.models import OneToOneField
 try:
     from django.db.models.fields.related_descriptors import (
         ReverseOneToOneDescriptor,
     )
 except ImportError:
     from django.db.models.fields.related import SingleRelatedObjectDescriptor as ReverseOneToOneDescriptor
-
 
 
 class AutoSingleRelatedObjectDescriptor(ReverseOneToOneDescriptor):
@@ -37,7 +36,6 @@ class AutoSingleRelatedObjectDescriptor(ReverseOneToOneDescriptor):
                 setattr(instance, self.cache_name, obj)
                 setattr(obj, self.related.field.get_cache_name(), instance)
             return obj
-
 
 class AutoOneToOneField(OneToOneField):
     '''

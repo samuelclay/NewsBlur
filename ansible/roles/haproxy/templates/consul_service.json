@@ -1,0 +1,9 @@
+{
+    "service": {
+        "name": "haproxy",
+        "tags": [
+            "haproxy"
+        ],
+        "port": 80
+    }
+}  

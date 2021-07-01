@@ -1,6 +1,8 @@
 import datetime
 import enum
+import html
 import redis
+import re
 import mongoengine as mongo
 from boto.ses.connection import BotoServerError
 from django.conf import settings
@@ -17,11 +19,11 @@ from utils.view_functions import is_true
 from utils.story_functions import truncate_chars
 from utils import log as logging
 from utils import mongoengine_fields
-from HTMLParser import HTMLParser
-from vendor.apns import APNs, Payload
-from BeautifulSoup import BeautifulSoup, Tag
-import types
-import urlparse
+from apns2.errors import BadDeviceToken, Unregistered
+from apns2.client import APNsClient
+from apns2.payload import Payload
+from bs4 import BeautifulSoup, Tag
+import urllib.parse
 
 class NotificationFrequency(enum.Enum):
     immediately = 1
@@ -34,6 +36,7 @@ class MUserNotificationTokens(mongo.Document):
     '''A user's push notification tokens'''
     user_id                  = mongo.IntField()
     ios_tokens               = mongo.ListField(mongo.StringField(max_length=1024))
+    use_sandbox              = mongo.BooleanField(default=False)
     
     meta = {
         'collection': 'notification_tokens',
@@ -75,7 +78,7 @@ class MUserFeedNotification(mongo.Document):
         'allow_inheritance': False,
     }
     
-    def __unicode__(self):
+    def __str__(self):
         notification_types = []
         if self.is_email: notification_types.append('email')
         if self.is_web: notification_types.append('web')
@@ -140,22 +143,25 @@ class MUserFeedNotification(mongo.Document):
             classifiers = user_feed_notification.classifiers(usersub)
 
             if classifiers == None:
-                logging.debug("Has no usersubs")
+                if settings.DEBUG:
+                    logging.debug("Has no usersubs")
                 continue
 
             for story in stories:
                 if sent_count >= 3:
-                    logging.debug("Sent too many, ignoring...")
+                    if settings.DEBUG:
+                        logging.debug("Sent too many, ignoring...")
                     continue                    
                 if story['story_date'] <= last_notification_date and not force:
-                    logging.debug("Story date older than last notification date: %s <= %s" % (story['story_date'], last_notification_date))
+                    if settings.DEBUG:
+                        logging.debug("Story date older than last notification date: %s <= %s" % (story['story_date'], last_notification_date))
                     continue
                 
                 if story['story_date'] > user_feed_notification.last_notification_date:
                     user_feed_notification.last_notification_date = story['story_date']
                     user_feed_notification.save()
                 
-                story['story_content'] = HTMLParser().unescape(story['story_content'])
+                story['story_content'] = html.unescape(story['story_content'])
                 
                 sent = user_feed_notification.push_story_notification(story, classifiers, usersub)
                 if sent: 
@@ -178,28 +184,31 @@ class MUserFeedNotification(mongo.Document):
         def replace_with_newlines(element):
             text = ''
             for elem in element.recursiveChildGenerator():
-                if isinstance(elem, types.StringTypes):
+                if isinstance(elem, (str,)):
                     text += elem
                 elif elem.name == 'br':
                     text += '\n'
                 elif elem.name == 'p':
                     text += '\n\n'
+            text = re.sub(r' +', ' ', text).strip()
             return text
         
         feed_title = usersub.user_title or usersub.feed.feed_title
         # title = "%s: %s" % (feed_title, story['story_title'])
         title = feed_title
+        soup = BeautifulSoup(story['story_content'].strip(), features="lxml")
         if notification_title_only:
             subtitle = None
-            body_title = HTMLParser().unescape(story['story_title'])
-            soup = BeautifulSoup(story['story_content'].strip())
+            body_title = html.unescape(story['story_title']).strip()
             body_content = replace_with_newlines(soup)
-            body = "%s\n%s" % (body_title, body_content)
+            if body_content:
+                if body_title == body_content[:len(body_title)] or body_content[:100] == body_title[:100]:
+                    body_content = ""
+                else:
+                    body_content = f"\n※ {body_content}" 
+            body = f"{body_title}{body_content}"
         else:
-            subtitle = HTMLParser().unescape(story['story_title'])
-            # body = HTMLParser().unescape(strip_tags(story['story_content']))
-            soup = BeautifulSoup(story['story_content'].strip())
-            # print story['story_content']
+            subtitle = html.unescape(story['story_title'])
             body = replace_with_newlines(soup)
         body = truncate_chars(body.strip(), 600)
         if not body:
@@ -213,10 +222,12 @@ class MUserFeedNotification(mongo.Document):
     def push_story_notification(self, story, classifiers, usersub):
         story_score = self.story_score(story, classifiers)
         if self.is_focus and story_score <= 0:
-            logging.debug("Is focus, but story is hidden")
+            if settings.DEBUG:
+                logging.debug("Is focus, but story is hidden")
             return False
         elif story_score < 0:
-            logging.debug("Is unread, but story is hidden")
+            if settings.DEBUG:
+                logging.debug("Is unread, but story is hidden")
             return False
         
         user = User.objects.get(pk=self.user_id)
@@ -238,12 +249,9 @@ class MUserFeedNotification(mongo.Document):
     def send_ios(self, story, user, usersub):
         if not self.is_ios: return
 
-        apns = APNs(use_sandbox=False, 
-                    cert_file='/srv/newsblur/config/certificates/aps.pem',
-                    key_file='/srv/newsblur/config/certificates/aps.p12.pem',
-                    enhanced=True)
-        
         tokens = MUserNotificationTokens.get_tokens_for_user(self.user_id)
+        apns = APNsClient('/srv/newsblur/config/certificates/aps.p12.pem', use_sandbox=tokens.use_sandbox)
+        
         notification_title_only = is_true(user.profile.preference_value('notification_title_only'))
         title, subtitle, body = self.title_and_body(story, usersub, notification_title_only)
         image_url = None
@@ -251,11 +259,7 @@ class MUserFeedNotification(mongo.Document):
             image_url = story['image_urls'][0]
             # print image_url
         
-        def response_listener(error_response):
-            logging.user(user, "~FRAPNS client get error-response: " + str(error_response))
-
-        apns.gateway_server.register_response_listener(response_listener)
-        
+        confirmed_ios_tokens = []
         for token in tokens.ios_tokens:
             logging.user(user, '~BMStory notification by iOS: ~FY~SB%s~SN~BM~FY/~SB%s' % 
                                        (story['story_title'][:50], usersub.feed.feed_title[:50]))
@@ -268,7 +272,18 @@ class MUserFeedNotification(mongo.Document):
                                       'story_feed_id': story['story_feed_id'],
                                       'image_url': image_url,
                                      })
-            apns.gateway_server.send_notification(token, payload)
+            try:
+                apns.send_notification(token, payload, topic="com.newsblur.NewsBlur")
+            except (BadDeviceToken, Unregistered):
+                logging.user(user, '~BMiOS token expired: ~FR~SB%s' % (token[:50]))
+            else:
+                confirmed_ios_tokens.append(token)
+                if settings.DEBUG:
+                    logging.user(user, '~BMiOS token good: ~FB~SB%s / %s' % (token[:50], len(confirmed_ios_tokens)))
+
+        if len(confirmed_ios_tokens) < len(tokens.ios_tokens):
+            tokens.ios_tokens = confirmed_ios_tokens
+            tokens.save()
         
     def send_android(self, story):
         if not self.is_android: return
@@ -298,34 +313,35 @@ class MUserFeedNotification(mongo.Document):
         msg.attach_alternative(html, "text/html")
         try:
             msg.send()
-        except BotoServerError, e:
+        except BotoServerError as e:
             logging.user(usersub.user, '~BMStory notification by email error: ~FR%s' % e)
             return
         logging.user(usersub.user, '~BMStory notification by email: ~FY~SB%s~SN~BM~FY/~SB%s' % 
                                    (story['story_title'][:50], usersub.feed.feed_title[:50]))
     
     def sanitize_story(self, story_content):
-        soup = BeautifulSoup(story_content.strip())
+        soup = BeautifulSoup(story_content.strip(), features="lxml")
         fqdn = Site.objects.get_current().domain
         
+        # Convert videos in newsletters to images
         for iframe in soup("iframe"):
             url = dict(iframe.attrs).get('src', "")
             youtube_id = self.extract_youtube_id(url)
             if youtube_id:
-                a = Tag(soup, 'a', [('href', url)])
-                img = Tag(soup, 'img', [('style', "display: block; 'background-image': \"url(https://%s/img/reader/youtube_play.png), url(http://img.youtube.com/vi/%s/0.jpg)\"" % (fqdn, youtube_id)), ('src', 'http://img.youtube.com/vi/%s/0.jpg' % youtube_id)])
+                a = soup.new_tag('a', href=url)
+                img = soup.new_tag('img', style="display: block; 'background-image': \"url(https://%s/img/reader/youtube_play.png), url(http://img.youtube.com/vi/%s/0.jpg)\"" % (fqdn, youtube_id), src='http://img.youtube.com/vi/%s/0.jpg' % youtube_id)
                 a.insert(0, img)
                 iframe.replaceWith(a)
             else:
                 iframe.extract()
         
-        return unicode(soup)
+        return str(soup)
     
     def extract_youtube_id(self, url):
         youtube_id = None
 
         if 'youtube.com' in url:
-            youtube_parts = urlparse.urlparse(url)
+            youtube_parts = urllib.parse.urlparse(url)
             if '/embed/' in youtube_parts.path:
                 youtube_id = youtube_parts.path.replace('/embed/', '')
                 

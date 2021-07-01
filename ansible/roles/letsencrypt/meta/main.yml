@@ -1,0 +1,14 @@
+---
+galaxy_info:
+  role_name: letsencrypt
+  author: Auxilin
+  description: The ansible role for generating letsencrypt certificates
+  company: auxilin
+  license: MIT
+  min_ansible_version: 2.4
+  platforms:
+  - name: Ubuntu
+    versions:
+    - trusty
+  galaxy_tags:
+    - letsencrypt

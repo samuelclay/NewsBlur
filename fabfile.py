@@ -8,7 +8,7 @@ from fabric.state import connections
 from boto.s3.connection import S3Connection
 from boto.s3.key import Key
 from boto.ec2.connection import EC2Connection
-from vendor import yaml
+import yaml
 from pprint import pprint
 from collections import defaultdict
 from contextlib import contextmanager as _contextmanager
@@ -22,14 +22,14 @@ import re
 try:
     import digitalocean
 except ImportError:
-    print "Digital Ocean's API not loaded. Install python-digitalocean."
+    print("Digital Ocean's API not loaded. Install python-digitalocean.")
 
 
-django.settings_module('newsblur.settings')
+django.settings_module('newsblur_web.settings')
 try:
     from django.conf import settings as django_settings
 except ImportError:
-    print " ---> Django not installed yet."
+    print(" ---> Django not installed yet.")
     django_settings = None
 
 # ============
@@ -52,12 +52,12 @@ env.colorize_errors = True
 try:
     hosts_path = os.path.expanduser(os.path.join(env.SECRETS_PATH, 'configs/hosts.yml'))
     roles = yaml.load(open(hosts_path))
-    for role_name, hosts in roles.items():
+    for role_name, hosts in list(roles.items()):
         if isinstance(hosts, dict):
-            roles[role_name] = [host for host in hosts.keys()]
+            roles[role_name] = [host for host in list(hosts.keys())]
     env.roledefs = roles
 except:
-    print " ***> No role definitions found in %s. Using default roles." % hosts_path
+    print(" ***> No role definitions found in %s. Using default roles." % hosts_path)
     env.roledefs = {
         'app'   : ['app01.newsblur.com'],
         'db'    : ['db01.newsblur.com'],
@@ -107,19 +107,19 @@ def list_do():
         role_costs[roledef] += cost
         total_cost += cost
     
-    print "\n\n Costs:"
+    print("\n\n Costs:")
     pprint(dict(role_costs))
-    print " ---> Total cost: $%s/month" % total_cost
+    print(" ---> Total cost: $%s/month" % total_cost)
     
 def host(*names):
     env.hosts = []
     env.doname = ','.join(names)
     hostnames = assign_digitalocean_roledefs(split=True)
-    for role, hosts in hostnames.items():
+    for role, hosts in list(hostnames.items()):
         for host in hosts:
             if isinstance(host, dict) and host['name'] in names:
                 env.hosts.append(host['address'])
-    print " ---> Using %s as hosts" % env.hosts
+    print(" ---> Using %s as hosts" % env.hosts)
     
 # ================
 # = Environments =
@@ -133,7 +133,7 @@ def assign_digitalocean_roledefs(split=False):
     server()
     droplets = do_roledefs(split=split)
     if split:
-        for roledef, hosts in env.roledefs.items():
+        for roledef, hosts in list(env.roledefs.items()):
             if roledef not in droplets:
                 droplets[roledef] = hosts
     
@@ -230,6 +230,26 @@ def setup_all():
     setup_db(skip_common=True)
     setup_task(skip_common=True)
 
+def setup_app_docker(skip_common=False):
+    if not skip_common:
+        setup_common()
+    setup_app_firewall()
+    setup_motd('app')
+
+    change_shell()
+    setup_user()
+    setup_sudoers()
+    setup_ulimit()
+    setup_do_monitoring()
+    setup_repo()
+    setup_local_files()
+    # setup_time_calibration()
+
+    setup_docker()
+
+    done()
+    sudo('reboot')
+
 def setup_app(skip_common=False, node=False):
     if not skip_common:
         setup_common()
@@ -321,13 +341,29 @@ def setup_task_image():
     sudo('reboot')
 
 # ==================
+# = Setup - Docker =
+# ==================
+
+def setup_docker():
+    packages = [
+        'build-essential',
+    ]
+    sudo('DEBIAN_FRONTEND=noninteractive apt-get -y --force-yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install %s' % ' '.join(packages))
+
+    sudo('apt install -fy docker docker-compose')
+    sudo('usermod -aG docker ${USER}')
+    sudo('su - ${USER}')
+
+    copy_certificates()
+    
+# ==================
 # = Setup - Common =
 # ==================
 
 def done():
-    print "\n\n\n\n-----------------------------------------------------"
-    print "\n\n    %s / %s IS SUCCESSFULLY BOOTSTRAPPED" % (env.get('doname') or env.host_string, env.host_string)
-    print "\n\n-----------------------------------------------------\n\n\n\n"
+    print("\n\n\n\n-----------------------------------------------------")
+    print("\n\n    %s / %s IS SUCCESSFULLY BOOTSTRAPPED" % (env.get('doname') or env.host_string, env.host_string))
+    print("\n\n-----------------------------------------------------\n\n\n\n")
 
 def setup_installs():
     packages = [
@@ -389,9 +425,10 @@ def setup_installs():
         sudo('chown %s.%s %s' % (env.user, env.user, env.VENDOR_PATH))
 
 def change_shell():
-    sudo('apt-get -y install zsh')
+    sudo('apt-get -fy install zsh')
     with settings(warn_only=True):
         run('git clone git://github.com/robbyrussell/oh-my-zsh.git ~/.oh-my-zsh')
+        run('git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting')
     sudo('chsh %s -s /bin/zsh' % env.user)
 
 def setup_user():
@@ -479,8 +516,8 @@ def setup_virtualenv():
                 # sudo('rm -fr venv')
                 with settings(warn_only=True):
                     run('mkvirtualenv newsblur')
-                run('echo "import sys; sys.setdefaultencoding(\'utf-8\')" | sudo tee venv/newsblur/lib/python2.7/sitecustomize.py')
-                run('echo "/srv/newsblur" | sudo tee venv/newsblur/lib/python2.7/site-packages/newsblur.pth')
+                # run('echo "import sys; sys.setdefaultencoding(\'utf-8\')" | sudo tee venv/newsblur/lib/python2.7/sitecustomize.py')
+                # run('echo "/srv/newsblur" | sudo tee venv/newsblur/lib/python2.7/site-packages/newsblur.pth')
     
 @_contextmanager
 def virtualenv():
@@ -896,16 +933,16 @@ def maintenance_off():
             run('git checkout templates/maintenance_off.html')
 
 def setup_haproxy(debug=False):
-    version = "1.5.14"
+    version = "2.3.3"
     sudo('ufw allow 81')    # nginx moved
     sudo('ufw allow 1936')  # haproxy stats
     # sudo('apt-get install -y haproxy')
     # sudo('apt-get remove -y haproxy')
     with cd(env.VENDOR_PATH):
-        run('wget http://www.haproxy.org/download/1.5/src/haproxy-%s.tar.gz' % version)
+        run('wget http://www.haproxy.org/download/2.3/src/haproxy-%s.tar.gz' % version)
         run('tar -xf haproxy-%s.tar.gz' % version)
         with cd('haproxy-%s' % version):
-            run('make TARGET=linux2628 USE_PCRE=1 USE_OPENSSL=1 USE_ZLIB=1')
+            run('make TARGET=linux-glibc USE_PCRE=1 USE_OPENSSL=1 USE_ZLIB=1')
             sudo('make install')
     put('config/haproxy-init', '/etc/init.d/haproxy', use_sudo=True)
     sudo('chmod u+x /etc/init.d/haproxy')
@@ -920,6 +957,7 @@ def setup_haproxy(debug=False):
     cert_path = "%s/config/certificates" % env.NEWSBLUR_PATH
     run('cat %s/newsblur.com.crt > %s/newsblur.pem' % (cert_path, cert_path))
     run('cat %s/newsblur.com.key >> %s/newsblur.pem' % (cert_path, cert_path))
+    run('ln -s %s/newsblur.com.key %s/newsblur.pem.key' % (cert_path, cert_path))
     put('config/haproxy_rsyslog.conf', '/etc/rsyslog.d/49-haproxy.conf', use_sudo=True)
     # sudo('restart rsyslog')
     sudo('update-rc.d -f haproxy defaults')
@@ -940,7 +978,7 @@ def config_haproxy(debug=False):
     if haproxy_check.return_code == 0:
         sudo('/etc/init.d/haproxy reload')
     else:
-        print " !!!> Uh-oh, HAProxy config doesn't check out: %s" % haproxy_check.return_code
+        print(" !!!> Uh-oh, HAProxy config doesn't check out: %s" % haproxy_check.return_code)
 
 def build_haproxy():
     droplets = assign_digitalocean_roledefs(split=True)
@@ -963,7 +1001,7 @@ def build_haproxy():
             check_inter = 3000
             
             if server['name'] in ignore_servers:
-                print " ---> Ignoring %s" % server['name']
+                print(" ---> Ignoring %s" % server['name'])
                 continue
             if server['name'] in node_socket3_servers and group_type != 'node_socket3':
                 continue
@@ -1000,7 +1038,7 @@ def build_haproxy():
     
     h = open(os.path.join(env.NEWSBLUR_PATH, 'config/haproxy.conf.template'), 'r')
     haproxy_template = h.read()
-    for sub, server_list in servers.items():
+    for sub, server_list in list(servers.items()):
         sorted_servers = '\n'.join(sorted(server_list))
         haproxy_template = haproxy_template.replace("{{ %s }}" % sub, sorted_servers)
     f = open(os.path.join(env.SECRETS_PATH, 'configs/haproxy.conf'), 'w')
@@ -1591,11 +1629,11 @@ def setup_do(name, size=1, image=None):
             image = images["app-2018-02"]
         else:
             images = dict((s.name, s.id) for s in doapi.get_all_images())
-            print images
+            print(images)
             
     name = do_name(name)
     env.doname = name
-    print "Creating droplet: %s" % name
+    print("Creating droplet: %s" % name)
     instance = digitalocean.Droplet(token=django_settings.DO_TOKEN_FABRIC,
                                     name=name,
                                     size_slug=instance_size,
@@ -1607,22 +1645,22 @@ def setup_do(name, size=1, image=None):
     instance.create()
     time.sleep(2)
     instance = digitalocean.Droplet.get_object(django_settings.DO_TOKEN_FABRIC, instance.id)
-    print "Booting droplet: %s / %s (size: %s)" % (instance.name, instance.ip_address, instance_size)
+    print("Booting droplet: %s / %s (size: %s)" % (instance.name, instance.ip_address, instance_size))
 
     i = 0
     while True:
         if instance.status == 'active':
-            print "...booted: %s" % instance.ip_address
+            print("...booted: %s" % instance.ip_address)
             time.sleep(5)
             break
         elif instance.status == 'new':
-            print ".",
+            print(".", end=' ')
             sys.stdout.flush()
             instance = digitalocean.Droplet.get_object(django_settings.DO_TOKEN_FABRIC, instance.id)
             i += 1
             time.sleep(i)
         else:
-            print "!!! Error: %s" % instance.status
+            print("!!! Error: %s" % instance.status)
             return
 
     host = instance.ip_address
@@ -1633,7 +1671,7 @@ def setup_do(name, size=1, image=None):
 
 def do_name(name):
     if re.search(r"[0-9]", name):
-        print " ---> Using %s as hostname" % name
+        print(" ---> Using %s as hostname" % name)
         return name
     else:
         hosts = do_roledefs(split=False)
@@ -1642,8 +1680,8 @@ def do_name(name):
         for i in range(1, 100):
             try_host = "%s%02d" % (name, i)
             if try_host not in existing_hosts:
-                print " ---> %s hosts in %s (%s). %s is unused." % (len(existing_hosts), name, 
-                                                                    ', '.join(existing_hosts), try_host)
+                print(" ---> %s hosts in %s (%s). %s is unused." % (len(existing_hosts), name, 
+                                                                    ', '.join(existing_hosts), try_host))
                 return try_host
         
     
@@ -1674,21 +1712,21 @@ def setup_ec2():
                                      key_name=env.user,
                                      security_groups=['db-mongo'])
     instance = reservation.instances[0]
-    print "Booting reservation: %s/%s (size: %s)" % (reservation, instance, INSTANCE_TYPE)
+    print("Booting reservation: %s/%s (size: %s)" % (reservation, instance, INSTANCE_TYPE))
     i = 0
     while True:
         if instance.state == 'pending':
-            print ".",
+            print(".", end=' ')
             sys.stdout.flush()
             instance.update()
             i += 1
             time.sleep(i)
         elif instance.state == 'running':
-            print "...booted: %s" % instance.public_dns_name
+            print("...booted: %s" % instance.public_dns_name)
             time.sleep(5)
             break
         else:
-            print "!!! Error: %s" % instance.state
+            print("!!! Error: %s" % instance.state)
             return
 
     host = instance.public_dns_name
@@ -1714,7 +1752,7 @@ def post_deploy():
     cleanup_assets()
 
 def role_for_host():
-    for role, hosts in env.roledefs.items():
+    for role, hosts in list(env.roledefs.items()):
         if env.host in hosts:
             return role
 
@@ -1866,8 +1904,8 @@ def compress_assets(bundle=False):
             if not success:
                 raise Exception("Ack!")
             break
-        except Exception, e:
-            print " ***> %s. Trying %s more time%s..." % (e, tries_left, '' if tries_left == 1 else 's')
+        except Exception as e:
+            print(" ***> %s. Trying %s more time%s..." % (e, tries_left, '' if tries_left == 1 else 's'))
             tries_left -= 1
             if tries_left <= 0: break
 
@@ -1890,21 +1928,21 @@ def cleanup_assets():
 
 def setup_redis_backups(name=None):
     # crontab for redis backups, name is either none, story, sessions, pubsub
-    crontab = ("0 4 * * * /srv/newsblur/venv/newsblur/bin/python /srv/newsblur/utils/backups/backup_redis%s.py" % 
+    crontab = ("0 4 * * * /srv/newsblur/venv/newsblur3/bin/python /srv/newsblur/utils/backups/backup_redis%s.py" % 
                 (("_%s"%name) if name else ""))
     run('(crontab -l ; echo "%s") | sort - | uniq - | crontab -' % crontab)
     run('crontab -l')
 
 def setup_mongo_backups():
     # crontab for mongo backups
-    crontab = "0 4 * * * /srv/newsblur/venv/newsblur/bin/python /srv/newsblur/utils/backups/backup_mongo.py"
+    crontab = "0 4 * * * /srv/newsblur/venv/newsblur3/bin/python /srv/newsblur/utils/backups/backup_mongo.py"
     run('(crontab -l ; echo "%s") | sort - | uniq - | crontab -' % crontab)
     run('crontab -l')
     
 def setup_postgres_backups():
     # crontab for postgres backups
     crontab = """
-0 4 * * * /srv/newsblur/venv/newsblur/bin/python /srv/newsblur/utils/backups/backup_psql.py
+0 4 * * * /srv/newsblur/venv/newsblur3/bin/python /srv/newsblur/utils/backups/backup_psql.py
 0 * * * * sudo find /var/lib/postgresql/13/archive -mtime +1 -exec rm {} \;
 0 * * * * sudo find /var/lib/postgresql/13/archive -type f -mmin +180 -delete"""
 
@@ -1912,13 +1950,13 @@ def setup_postgres_backups():
     run('crontab -l')
     
 def backup_redis(name=None):
-    run('/srv/newsblur/venv/newsblur/bin/python /srv/newsblur/utils/backups/backup_redis%s.py' % (("_%s"%name) if name else ""))
+    run('/srv/newsblur/venv/newsblur3/bin/python /srv/newsblur/utils/backups/backup_redis%s.py' % (("_%s"%name) if name else ""))
     
 def backup_mongo():
-    run('/srv/newsblur/venv/newsblur/bin/python /srv/newsblur/utils/backups/backup_mongo.py')
+    run('/srv/newsblur/venv/newsblur3/bin/python /srv/newsblur/utils/backups/backup_mongo.py')
 
 def backup_postgresql():
-    run('/srv/newsblur/venv/newsblur/bin/python /srv/newsblur/utils/backups/backup_psql.py')
+    run('/srv/newsblur/venv/newsblur3/bin/python /srv/newsblur/utils/backups/backup_psql.py')
 
 # ===============
 # = Calibration =
@@ -1978,7 +2016,7 @@ if django_settings:
         SECRET      = django_settings.S3_SECRET
         BUCKET_NAME = django_settings.S3_BACKUP_BUCKET  # Note that you need to create this bucket first
     except:
-        print " ---> You need to fix django's settings. Enter python and type `import settings`."
+        print(" ---> You need to fix django's settings. Enter python and type `import settings`.")
 
 def save_file_in_s3(filename):
     conn   = S3Connection(ACCESS_KEY, SECRET)
@@ -2001,7 +2039,7 @@ def list_backup_in_s3():
     bucket = conn.get_bucket(BUCKET_NAME)
 
     for i, key in enumerate(bucket.get_all_keys()):
-        print "[%s] %s" % (i, key.name)
+        print("[%s] %s" % (i, key.name))
 
 def delete_all_backups():
     #FIXME: validate filename exists
@@ -2009,7 +2047,7 @@ def delete_all_backups():
     bucket = conn.get_bucket(BUCKET_NAME)
 
     for i, key in enumerate(bucket.get_all_keys()):
-        print "deleting %s" % (key.name)
+        print("deleting %s" % (key.name))
         key.delete()
 
 def add_revsys_keys():
@@ -2019,7 +2057,7 @@ def add_revsys_keys():
 
 def upgrade_to_virtualenv(role=None):
     if not role:
-        print " ---> You must specify a role!"
+        print(" ---> You must specify a role!")
         return
     setup_virtualenv()
     if role == "task" or role == "search":

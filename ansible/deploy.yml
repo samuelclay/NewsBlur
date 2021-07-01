@@ -1,0 +1,19 @@
+---
+- import_playbook: playbooks/deploy_app.yml
+  when: "'app' in group_names"
+- import_playbook: playbooks/deploy_www.yml
+  when: "'haproxy' in group_names"
+- import_playbook: playbooks/deploy_node.yml
+  when: "'node' in group_names"
+- import_playbook: playbooks/deploy_monitor.yml
+  when: "'postgres' in group_names"
+- import_playbook: playbooks/deploy_monitor.yml
+  when: "'mongo' in group_names"
+- import_playbook: playbooks/deploy_monitor.yml
+  when: "'redis' in group_names"
+- import_playbook: playbooks/deploy_monitor.yml
+  when: "'elasticsearch' in group_names"
+- import_playbook: playbooks/deploy_task.yml
+  when: "'task' in group_names"
+- import_playbook: playbooks/deploy_staging.yml
+  when: "'staging' in group_names"

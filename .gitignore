@@ -1,7 +1,9 @@
 logs/*.log
 logs/*.log.*
 logs/*.pid
+logs/celerybeat-schedule.db
 *.pyc
+__pycache__/
 static/*
 local_settings.py
 celerybeat-schedule
@@ -13,6 +15,9 @@ certbot.conf
 .DS_Store
 **/*.perspectivev*
 .vscode/*
+.env
+task_env.py
+app_env.py
 data/
 config/certificates
 **/*.xcuserstate
@@ -37,7 +42,14 @@ config/secrets
 templates/maintenance_on.html
 vendor/mms-agent/settings.py
 apps/social/spam.py
-venv
+venv*
+/backups
+
+# Docker Jinja templates
+docker/haproxy/haproxy.consul.cfg
+# docker/haproxy/haproxy.staging.cfg # Staging doesn't use jinja templates, so no need to ignore
+docker/nginx/nginx.consul.conf
+docker/prometheus/prometheus.yml
 
 # ----------------------
 # Android
@@ -74,8 +86,6 @@ clients/android/NewsBlur/settings.gradle
 /docker/volumes/*
 
 **/node_modules
-
-# Remove in dashboard3
-ansible 
-terraform
-node/.env
+*.tfstate*
+.terraform*
+grafana.ini

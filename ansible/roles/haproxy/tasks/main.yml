@@ -1,0 +1,100 @@
+---
+
+- name: Allow haproxy port 80
+  become: yes
+  ufw: rule=allow port=80
+  tags: ufw
+
+- name: Allow haproxy SSL
+  become: yes
+  ufw: rule=allow port=443
+  tags: ufw
+
+- name: Register haproxy in consul
+  tags: consul
+  become: yes
+  template:
+    src: consul_service.json
+    dest: /etc/consul.d/haproxy.json
+  notify:
+    - reload consul
+  when: disable_consul_services_ie_staging is not defined
+
+- name: Allow haproxy stats port
+  ufw: rule=allow port={{ item }}
+  become: yes
+  tags: ufw
+  with_items:
+    - "1936"
+
+- name: Template haproxy.cfg file
+  template:
+    src: /srv/newsblur/docker/haproxy/haproxy.consul.cfg.j2
+    dest: /srv/newsblur/docker/haproxy/haproxy.consul.cfg
+  when: disable_consul_services_ie_staging is not defined
+  register: updated_config_consul
+
+- name: Copy staging haproxy.cfg file
+  copy:
+    src: /srv/newsblur/docker/haproxy/haproxy.staging.cfg
+    dest: /srv/newsblur/docker/haproxy/haproxy.consul.cfg
+  when: disable_consul_services_ie_staging is defined
+  register: updated_config_staging
+
+- name: Merge facts
+  set_fact:
+    updated_config: "{{ updated_config_consul.changed or updated_config_staging.changed }}"
+    
+- name: Verify HAProxy config
+  become: yes
+  shell: docker exec haproxy haproxy -c -f /srv/newsblur/docker/haproxy/haproxy.consul.cfg
+  register: haproxy_verified
+  changed_when: haproxy_verified.rc != 0
+  failed_when:
+    - haproxy_verified.rc != 0
+    - '"wait until the container is running" not in haproxy_verified.stderr'
+    - '"is not running" not in haproxy_verified.stderr'
+    - '"No such container" not in haproxy_verified.stderr'
+
+- name: Error in HAProxy config
+  debug: var=haproxy_verified
+  when: haproxy_verified.rc != 0
+
+- name: Make docker network for newsblurnet
+  become: yes
+  docker_network:
+    name: newsblurnet
+  notify: restart docker
+
+- name: Start HAProxy docker container
+  become: yes
+  register: docker_container
+  docker_container:
+    name: haproxy
+    image: haproxy:latest
+    user: root
+    pull: yes
+    env:
+      DOCKERBUILD: ""
+    state: started
+    network_mode: host
+    # networks:
+    #   - name: newsblurnet
+    # ports:
+    #   - "80:80"
+    #   - "443:443"
+    #   - "1936:1936"
+    restart_policy: unless-stopped
+    container_default_behavior: no_defaults
+    command: "haproxy -f /srv/newsblur/docker/haproxy/haproxy.consul.cfg"
+    volumes:
+      - /srv/newsblur:/srv/newsblur:consistent
+      - /etc/letsencrypt/live/newsblur.com:/etc/letsencrypt/live/newsblur.com:consistent
+      - /etc/letsencrypt/archive/newsblur.com:/etc/letsencrypt/archive/newsblur.com:consistent
+
+- name: Reload haproxy
+  debug: 
+    msg: Gracefully reloading HAProxy
+  when: updated_config and haproxy_verified.rc == 0 and not docker_container.changed
+  changed_when: yes
+  notify: reload haproxy

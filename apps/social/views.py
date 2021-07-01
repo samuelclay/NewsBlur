@@ -6,7 +6,7 @@ import re
 from bson.objectid import ObjectId
 from mongoengine.queryset import NotUniqueError
 from django.shortcuts import get_object_or_404, render
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
 from django.template.loader import render_to_string
@@ -43,7 +43,7 @@ def load_social_stories(request, user_id, username=None):
     social_user    = get_object_or_404(User, pk=social_user_id)
     offset         = int(request.GET.get('offset', 0))
     limit          = int(request.GET.get('limit', 6))
-    page           = request.GET.get('page')
+    page           = int(request.GET.get('page', 1))
     order          = request.GET.get('order', 'newest')
     read_filter    = request.GET.get('read_filter', 'all')
     query          = request.GET.get('query', '').strip()
@@ -187,7 +187,7 @@ def load_social_stories(request, user_id, username=None):
     
 @json.json_view
 def load_river_blurblog(request):
-    limit             = 10
+    limit             = int(request.GET.get('limit', 10))
     start             = time.time()
     user              = get_user(request)
     social_user_ids   = request.GET.getlist('social_user_ids') or request.GET.getlist('social_user_ids[]')
@@ -198,6 +198,7 @@ def load_river_blurblog(request):
     read_filter       = request.GET.get('read_filter', 'unread')
     relative_user_id  = request.GET.get('relative_user_id', None)
     global_feed       = request.GET.get('global_feed', None)
+    on_dashboard      = is_true(request.GET.get('dashboard', False))
     now               = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
 
     if global_feed:
@@ -225,11 +226,8 @@ def load_river_blurblog(request):
                                                     socialsubs=socialsubs,
                                                     cutoff_date=user.profile.unread_cutoff)
     mstories = MStory.find_by_story_hashes(story_hashes)
-    story_hashes_to_dates = dict(zip(story_hashes, story_dates))
-    def sort_stories_by_hash(a, b):
-        return (int(story_hashes_to_dates[str(b.story_hash)]) -
-                int(story_hashes_to_dates[str(a.story_hash)]))
-    sorted_mstories = sorted(mstories, cmp=sort_stories_by_hash)
+    story_hashes_to_dates = dict(list(zip(story_hashes, story_dates)))
+    sorted_mstories = reversed(sorted(mstories, key=lambda x: int(story_hashes_to_dates[str(x.story_hash)])))
     stories = Feed.format_stories(sorted_mstories)
     for s, story in enumerate(stories):
         timestamp = story_hashes_to_dates[story['story_hash']]
@@ -325,10 +323,11 @@ def load_river_blurblog(request):
 
     diff = time.time() - start
     timediff = round(float(diff), 2)
-    logging.user(request, "~FYLoading ~FCriver ~FMblurblogs~FC stories~FY: ~SBp%s~SN (%s/%s "
+    logging.user(request, "~FY%sLoading ~FCriver ~FMblurblogs~FC stories~FY: ~SBp%s~SN (%s/%s "
                                "stories, ~SN%s/%s/%s feeds)" % 
-                               (page, len(stories), len(mstories), len(story_feed_ids), 
-                               len(social_user_ids), len(original_user_ids)))
+                               ("~FCAuto-" if on_dashboard else "",
+                                page, len(stories), len(mstories), len(story_feed_ids), 
+                                len(social_user_ids), len(original_user_ids)))
     
     
     return {
@@ -365,7 +364,7 @@ def load_social_page(request, user_id, username=None, **kwargs):
         user_following_social_profile = user_social_profile.is_following_user(social_user_id)
     social_profile = MSocialProfile.get_user(social_user_id)
     
-    if '.dev' in username:
+    if username and '.dev' in username:
         username = username.replace('.dev', '')
     current_tab = "blurblogs"
     global_feed = False
@@ -391,10 +390,10 @@ def load_social_page(request, user_id, username=None, **kwargs):
             has_next_page = True
             story_ids = story_ids[:-1]
         mstories = MStory.find_by_story_hashes(story_ids)
-        story_id_to_dates = dict(zip(story_ids, story_dates))
+        story_id_to_dates = dict(list(zip(story_ids, story_dates)))
         def sort_stories_by_id(a, b):
             return int(story_id_to_dates[str(b.story_hash)]) - int(story_id_to_dates[str(a.story_hash)])
-        sorted_mstories = sorted(mstories, cmp=sort_stories_by_id)
+        sorted_mstories = sorted(mstories, key=sort_stories_by_id)
         stories = Feed.format_stories(sorted_mstories)
         for story in stories:
             story['shared_date'] = story['story_date']
@@ -402,7 +401,7 @@ def load_social_page(request, user_id, username=None, **kwargs):
         params = dict(user_id=social_user.pk)
         if feed_id:
             params['story_feed_id'] = feed_id
-        if params.has_key('story_db_id'):
+        if 'story_db_id' in params:
             params.pop('story_db_id')
         mstories = MSharedStory.objects(**params).order_by('-shared_date')[offset:offset+limit+1]
         stories = Feed.format_stories(mstories, include_permalinks=True)
@@ -744,7 +743,7 @@ def save_comment_reply(request):
     if commenter_profile.protected and not commenter_profile.is_followed_by_user(request.user.pk):
         return json.json_response(request, {
             'code': -1, 
-            'message': 'You must be following %s to reply to them.' % commenter_profile.username,
+            'message': 'You must be following %s to reply to them.' % (commenter_profile.user.username if commenter_profile.user else "[deleted]"),
         })
     
     try:
@@ -1103,10 +1102,11 @@ def follow(request):
     }
     follow_subscription = MSocialSubscription.feeds(calculate_all_scores=True, **social_params)
     
-    if follow_profile.protected:
-        logging.user(request, "~BB~FR~SBRequested~SN follow from: ~SB%s" % follow_profile.username)
-    else:
-        logging.user(request, "~BB~FRFollowing: ~SB%s" % follow_profile.username)
+    if follow_profile.user:
+        if follow_profile.protected:
+            logging.user(request, "~BB~FR~SBRequested~SN follow from: ~SB%s" % follow_profile.user.username)
+        else:
+            logging.user(request, "~BB~FRFollowing: ~SB%s" % follow_profile.user.username)
     
     return {
         "user_profile": profile.canonical(include_follows=True), 
@@ -1289,13 +1289,19 @@ def remove_like_comment(request):
             'comment': comment, 
             'user_profiles': profiles,
         })
-        
+def get_subdomain(request):
+    host = request.META.get('HTTP_HOST')
+    if host.count(".") == 2:
+        return host.split(".")[0]
+    else:
+        return None
+
 def shared_stories_rss_feed_noid(request):
     index = HttpResponseRedirect('http://%s%s' % (
                                  Site.objects.get_current().domain,
                                  reverse('index')))
-    if request.subdomain:
-        username = request.subdomain
+    if get_subdomain(request):
+        username = get_subdomain(request)
         try:
             if '.' in username:
                 username = username.split('.')[0]

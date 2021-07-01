@@ -1,0 +1,15 @@
+{
+    "service": {
+        "name": "app-nginx",
+        "id": "{{ inventory_hostname }}-nginx",
+        "tags": [
+            "web"
+        ],
+        "port": 80,
+        "checks": [{
+            "id": "{{inventory_hostname}}-nginx-ping",
+            "http": "http://localhost:80/_nginxchk",
+            "interval": "15s"
+          }]
+    }
+}

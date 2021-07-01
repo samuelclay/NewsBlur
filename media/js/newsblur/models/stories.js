@@ -49,9 +49,11 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
         var content = this.get(attribute);
         if (!attribute || !content) content = this.story_content(); 
         // First do a naive strip, which is faster than rendering which makes network calls
-        content = content && content.replace(/<(?:.|\n)*?>/gm, '');
+        content = content && content.replace(/<(?:.|\n)*?>/gm, ' ');
         content = content && Inflector.stripTags(content);
-        
+        content = content && content.replaceAll(' ‌', ' '); // Invisible space, boo
+        content = content && content.replace(/\s+/gm, ' ');
+
         return _.string.prune(_.string.trim(content), length || 150, "...");
     },
     
@@ -350,6 +352,10 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
     previous_stories_stack: [],
     
     active_story: null,
+
+    page_fill_outs: 0,
+
+    no_more_stories: false,
     
     initialize: function() {
         // this.bind('change:selected', this.detect_selected_story, this); // Handled in the Story model so it fires first
@@ -551,8 +557,10 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
     
     last_visible: function(score) {
         score = _.isUndefined(score) ? NEWSBLUR.reader.get_unread_view_score() : score;
-        
-        for (var i=this.size(); i >= 0; i--) {
+        var size = this.size();
+        if (!size || size <= 0) return;
+
+        for (var i=size-1; i >= 0; i--) {
             var story = this.at(i);
             if (story.score() >= score || story.get('visible')) {
                 return story;
@@ -583,6 +591,18 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
     
     limit: function(count) {
         this.models = this.models.slice(0, count);
+    },
+
+    limit_visible_on_dashboard: function (count, score) {
+        score = _.isUndefined(score) ? NEWSBLUR.reader.get_unread_view_score() : score;
+
+        while (this.models.length) {
+            if (this.models.length <= count) return;
+            var visible = this.visible();
+            if (visible.length <= count) return;
+
+            this.models.pop();
+        }
     },
     
     // ===========

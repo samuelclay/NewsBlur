@@ -1,0 +1,132 @@
+- name: Ensure config/certificates exists
+  file:
+    path: "{{ dnsimple_credentials_path|dirname }}"
+    state: directory
+
+- name: Copy DNSimple API token for certbot
+  copy:
+    src: /srv/secrets-newsblur/configs/certbot.conf
+    dest: "{{ dnsimple_credentials_path }}"
+  when: use_dns_plugin|bool
+  tags:
+    - certbot-dns
+
+- name: pull certbot dns plugin docker image
+  become: yes
+  docker_image:
+    state: present
+    source: pull
+    force_source: yes
+    name: "certbot/dns-{{ dns_plugin }}:{{ certbot_version }}"
+    tag: "{{ certbot_version }}"
+  when: use_dns_plugin|bool
+  tags:
+    - certbot-dns
+
+- name: run certbot dns plugin image
+  become: yes
+  docker_container:
+    name: "certbot-dns-{{ dns_plugin }}"
+    image: "certbot/dns-{{ dns_plugin }}:{{ certbot_version }}"
+    state: started
+    restart_policy: no
+    container_default_behavior: no_defaults
+    volumes:
+      - "/etc/letsencrypt:/etc/letsencrypt"
+      - "/var/lib/letsencrypt:/var/lib/letsencrypt"
+      - "/var/log/letsencrypt:/var/log/letsencrypt"
+      - "/srv/newsblur/config/certificates:/srv/newsblur/config/certificates"
+    command: >-
+      certonly --agree-tos -m {{ email }} -d {{ domains_list | join(' -d ') }}
+      --dns-{{ dns_plugin }} --dns-{{ dns_plugin }}-propagation-seconds 60
+      --dns-{{ dns_plugin }}-credentials {{ dnsimple_credentials_path }}
+      --server https://acme-v02.api.letsencrypt.org/directory
+  when: use_dns_plugin|bool
+  notify: reload haproxy
+  tags:
+    - certbot-dns
+
+- name: Add letsencrypt cronjob for cert renewal
+  become: yes
+  cron:
+    name: letsencrypt_renewal
+    minute: "0"
+    hour: "0"
+    day: "*"
+    month: "*"
+    weekday: "0"
+    job: >-
+      [ $(date +\%d) -le 07 ] &&
+      docker pull certbot/dns-{{ dns_plugin }}:{{ certbot_version }};
+      docker run --rm -it
+      -v /etc/letsencrypt:/etc/letsencrypt
+      -v /var/lib/letsencrypt:/var/lib/letsencrypt
+      -v /var/log/letsencrypt:/var/log/letsencrypt
+      -v /srv/newsblur/config/certificates:/srv/newsblur/config/certificates
+      certbot/dns-{{ dns_plugin }}:{{ certbot_version }} renew
+  when: use_dns_plugin|bool
+  tags:
+    - certbot-dns
+  
+- name: Create directory for ssl_certificate and ssl_certificate_key
+  file:
+    path: '{{ item }}'
+    state: directory
+    recurse: yes
+  when: ssl_certificate is defined and ssl_certificate_key is defined and use_dns_plugin|bool
+  with_items:
+    - "{{ ssl_certificate|dirname }}"
+    - "{{ ssl_certificate_key|dirname }}"
+  tags:
+    - certbot-dns
+
+- name: Ensure permissions on certificates
+  become: yes
+  file: 
+    path: /etc/letsencrypt/
+    owner: nb
+    group: nb
+    recurse: yes
+
+- block:
+  - name: Symlink certificates to ssl_certificate and ssl_certificate_key
+    become: yes
+    file:
+      src: '{{ item.src }}'
+      dest: '{{ item.dest }}'
+      owner: nb
+      group: nb
+      state: link
+    when: ssl_certificate is defined and ssl_certificate_key is defined and use_dns_plugin|bool
+    with_items:
+      - src: /etc/letsencrypt/live/{{ domains_list[0] }}/fullchain.pem
+        dest: "{{ssl_certificate}}"
+      - src: /etc/letsencrypt/live/{{ domains_list[0] }}/privkey.pem
+        dest: "{{ssl_certificate_key}}"
+    register: linked
+    tags:
+      - certbot-dns
+  rescue:
+    - name: Copy working certificates because letsencrypt failed
+      become: yes
+      copy:
+        src: '{{ item.src }}'
+        dest: '{{ item.dest }}'
+      with_items:
+        - src: /srv/secrets-newsblur/certificates/newsblur.com.crt
+          dest: /etc/letsencrypt/live/{{ domains_list[0] }}/fullchain.pem
+        - src: /srv/secrets-newsblur/certificates/newsblur.com.key
+          dest: /etc/letsencrypt/live/{{ domains_list[0] }}/privkey.pem
+
+- name: Download new certificates to local
+  become: yes
+  fetch:
+    src: '{{ item.src }}'
+    dest: '{{ item.dest }}'
+    flat: yes
+  when: linked
+  with_items:
+    - dest: /srv/secrets-newsblur/certificates/newsblur.com.crt
+      src: /etc/letsencrypt/live/{{ domains_list[0] }}/fullchain.pem
+    - dest: /srv/secrets-newsblur/certificates/newsblur.com.key
+      src: /etc/letsencrypt/live/{{ domains_list[0] }}/privkey.pem

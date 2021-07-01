@@ -1,4 +1,4 @@
-from newsblur.celeryapp import app
+from newsblur_web.celeryapp import app
 from utils import log as logging
 
 @app.task()

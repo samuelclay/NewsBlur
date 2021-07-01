@@ -1,0 +1,33 @@
+---
+# tasks file for docker-ce-ansible-role
+
+- name: Install docker-ce (RedHat)
+  include: install-EL.yml
+  when: ansible_os_family == 'RedHat'
+
+- name: Install docker-ce (Ubuntu)
+  include: install-Ubuntu.yml
+  when: ansible_distribution == 'Ubuntu'
+
+- name: Enable Docker CE service on startup
+  service:
+    name: docker
+    state: started
+    enabled: yes
+
+- name: "Add {{ ansible_ssh_user }} to docker group"
+  become: yes
+  user:
+    name: "{{ ansible_ssh_user }}"
+    groups: docker
+    append: yes
+
+- name: Turn off Docker iptables firewall exclusion
+  become: yes
+  copy:
+    dest: /etc/docker/daemon.json
+    content: |
+      {
+        "iptables": false
+      }
+  notify: restart docker

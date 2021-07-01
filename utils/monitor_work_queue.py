@@ -1,21 +1,16 @@
-#!/srv/newsblur/venv/newsblur/bin/python
+#!/usr/local/bin/python3
 
 import sys
 sys.path.append('/srv/newsblur')
 
-import subprocess
 import requests
-from newsblur import settings
+from newsblur_web import settings
 import socket
 import redis
 import pymongo
 
 def main():
-    df = subprocess.Popen(["df", "/"], stdout=subprocess.PIPE)
-    output = df.communicate()[0]
-    device, size, used, available, percent, mountpoint = output.split("\n")[1].split()
     hostname = socket.gethostname()
-    percent = int(percent.strip('%'))
     admin_email = settings.ADMINS[0][1]
     failed = False
     work_queue_size = 0
@@ -28,7 +23,7 @@ def main():
     try:
         work_queue_size = int(r.llen("work_queue"))
         redis_work_queue = int(r_monitor.get(monitor_key) or 0)
-    except Exception, e:
+    except Exception as e:
         failed = e
     
     if work_queue_size > 100 and work_queue_size > (redis_work_queue + QUEUE_DROP_AMOUNT):
