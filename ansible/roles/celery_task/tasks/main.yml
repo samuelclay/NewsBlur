@@ -36,6 +36,8 @@
     env:
       DOCKERBUILD: ""
     restart_policy: always
+    labels:
+      autoheal: "true"
     networks_cli_compatible: yes
     network_mode: default
     networks:
