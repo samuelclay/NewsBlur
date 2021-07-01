@@ -21,6 +21,8 @@ Loads of new features:
  * Upgraded backend: Python 2 to Python 3, latest Django and libraries, containerized infrastructure
  * Both Android and iOS apps have been updated with the new design
 
+Those multiple rivers come in handy when you want to follow different interests at a glance. You can of course change which individual feeds or folders is loaded, letting you focus on saved searches, infrequent stories, a single feed, or everything you're subscribed to.
+
 Below you can see the design in action. Notice how easy it is to change where the image preview is located as well as adjust the number of lines of story text to show.
 
 <p>
