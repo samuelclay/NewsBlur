@@ -8,7 +8,7 @@ This past year we've focused on maintenance and improving quality behind the sce
 
 To start, let's take a look below at the redesigned NewsBlur.
 
-<img src="/assets/redesign-web.jpg" style="width: 750px;">
+<img src="/assets/redesign-web.png" style="width: 750px;">
 
 Loads of new features:
 
@@ -24,17 +24,21 @@ Loads of new features:
 Below you can see the design in action. Notice how easy it is to change where the image preview is located as well as adjust the number of lines of story text to show.
 
 <p>
-    <video autoplay loop playsinline width="500" style="width: 500px;margin: 0 auto;display: block; border: 2px solid rgba(0,0,0,0.1)">
+    <video autoplay loop playsinline width="500" style="width: 500px;border: 2px solid rgba(0,0,0,0.1)">
         <source src="/assets/redesign-content-preview.mp4" type="video/mp4">
     </video>
 </p>
 
 The reading experience itself has also seen improvement. Full bleed images have been ported over from iOS to both Android and the web. This means that images will now run edge-to-edge. And the controls at the top and bottom of the web app have been restyled to be easier to understand at a quick glance.
 
-<img src="/assets/redesign-full-bleed.jpg" style="margin: 0 auto; border: 2px solid rgba(0,0,0,0.1);">
+<img src="/assets/redesign-full-bleed.jpg" style="border: 2px solid rgba(0,0,0,0.1);">
 
-And on mobile:
+There's many ways to adjust story titles to fit. Pack them in dense or offer titles room to breathe.
 
-<img src="/assets/redesign-ios-android.jpg" style="width: 750px;">
+<img src="/assets/redesign-bottom.jpg" style="border: 2px solid rgba(0,0,0,0.1);">
 
-This whole redesign weighs in at a whopping 1,316 commits, which [you can view on GitHub](https://github.com/samuelclay/NewsBlur/compare/dashboard3).
+The redesign has also come to both of the official Android and iOS apps. Right now both are in beta testing, but you can join the [iOS TestFlight](https://testflight.apple.com/join/hYk9WU3f) or the [Android beta](https://play.google.com/store/apps/details?id=com.newsblur&hl=en_US&gl=US).
+
+<img src="/assets/redesign-ios-android.png" style="">
+
+This whole redesign weighs in at a whopping 1,316 commits, which [you can view on GitHub](https://github.com/samuelclay/NewsBlur/compare/dashboard3). If you've enjoyed using NewsBlur and are a fan of this grand redesign, please take a moment to share on social media that you read your news with the help of NewsBlur. 
