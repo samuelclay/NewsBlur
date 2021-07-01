@@ -3,7 +3,7 @@ layout: post
 title: Redesigning NewsBlur on the web, iOS, and Android
 tags: ['backend', 'web', 'ios', 'android']
 ---
-This past year we've focused on maintenance and improving quality behind the scenes. It just so happens that the urge to clean is so strong that this work extended to the front-end. After months of work, today we're launching a redesigned NewsBlur for all three platforms: on the web, on iOS, and on Android. There's a lot that's new. And what better day to launch a redesign than on [the ninth anniversary of the sunset of Google Reader]({% post_url 2013-03-17-three-months-to-scale-newsblur %}).
+This past year we've focused on maintenance and improving quality behind the scenes. It just so happens that the urge to clean is so strong that this work extended to the front-end. After months of work, today we're launching a redesigned NewsBlur for all three platforms: on the web, on iOS, and on Android. There's a lot that's new. And what better day to launch a redesign than on [the ninth anniversary of the sunset of Google Reader]({% post_url tumblr/2013-03-17-three-months-to-scale-newsblur %}).
 
 To start, let's take a look below at the redesigned NewsBlur.
 
@@ -42,6 +42,6 @@ The redesign has also come to both of the official Android and iOS apps. Right n
 
 <img src="/assets/redesign-ios-android.png" style="">
 
-This whole redesign weighs in at a whopping 1,316 commits, which [you can view on GitHub](https://github.com/samuelclay/NewsBlur/compare/dashboard3). Much of the work that took place here involves upgrading from Python 2 to Python 3 and containerizing everything with Docker. In a few weeks, we'll post a technical writeup of what those backend changes are and how you can now run a local version of NewsBlur on your own computer with a single line of code. For those that want to run their own private instance of NewsBlur, that line of code is `make nb` and [instructions are found on the repo](https://github.com/samuelclay/NewsBlur).
+This whole redesign weighs in at a whopping 1,316 commits, which [you can view on GitHub](https://github.com/samuelclay/NewsBlur/compare/python2...master). Much of the work that took place here involves upgrading from Python 2 to Python 3 and containerizing everything with Docker. In a few weeks, we'll post a technical writeup of what those backend changes are and how you can now run a local version of NewsBlur on your own computer with a single line of code. For those that want to run their own private instance of NewsBlur, that line of code is `make nb` and [instructions are found on the repo](https://github.com/samuelclay/NewsBlur).
 
 If you've enjoyed using NewsBlur and are a fan of this grand redesign, please take a moment to share on social media that you read your news with the help of NewsBlur. 
