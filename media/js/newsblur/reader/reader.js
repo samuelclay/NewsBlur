@@ -109,7 +109,6 @@
     
             var refresh_page = this.check_and_load_ssl();
             if (refresh_page) return;
-            this.check_if_forced_upgrade_to_beta_site();
             this.load_javascript_elements_on_page();
             this.apply_resizable_layout();
             this.add_body_classes();
