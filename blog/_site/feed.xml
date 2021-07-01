@@ -1,6 +1,49 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.0">Jekyll</generator><link href="https://blog.newsblur.com/feed.xml" rel="self" type="application/atom+xml" /><link href="https://blog.newsblur.com/" rel="alternate" type="text/html" /><updated>2021-07-01T16:38:25-04:00</updated><id>https://blog.newsblur.com/feed.xml</id><title type="html">The NewsBlur Blog</title><subtitle>NewsBlur is a personal news reader that brings people together to talk about the world.
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.0">Jekyll</generator><link href="https://blog.newsblur.com/feed.xml" rel="self" type="application/atom+xml" /><link href="https://blog.newsblur.com/" rel="alternate" type="text/html" /><updated>2021-07-01T16:48:46-04:00</updated><id>https://blog.newsblur.com/feed.xml</id><title type="html">The NewsBlur Blog</title><subtitle>NewsBlur is a personal news reader that brings people together to talk about the world.
 A new sound of an old instrument.
-</subtitle><entry><title type="html">How a Docker footgun led to a vandal deleting NewsBlur’s MongoDB database</title><link href="https://blog.newsblur.com/2021/06/28/story-of-a-hacking/" rel="alternate" type="text/html" title="How a Docker footgun led to a vandal deleting NewsBlur’s MongoDB database" /><published>2021-06-28T00:00:00-04:00</published><updated>2021-06-28T00:00:00-04:00</updated><id>https://blog.newsblur.com/2021/06/28/story-of-a-hacking</id><content type="html" xml:base="https://blog.newsblur.com/2021/06/28/story-of-a-hacking/">&lt;p&gt;&lt;em&gt;tl;dr: A vandal deleted NewsBlur’s MongoDB database during a migration. No data was stolen or lost.&lt;/em&gt;&lt;/p&gt;
+</subtitle><entry><title type="html">Redesigning NewsBlur on the web, iOS, and Android</title><link href="https://blog.newsblur.com/2021/07/01/refreshing-newsblur-design/" rel="alternate" type="text/html" title="Redesigning NewsBlur on the web, iOS, and Android" /><published>2021-07-01T00:00:00-04:00</published><updated>2021-07-01T00:00:00-04:00</updated><id>https://blog.newsblur.com/2021/07/01/refreshing-newsblur-design</id><content type="html" xml:base="https://blog.newsblur.com/2021/07/01/refreshing-newsblur-design/">&lt;p&gt;This past year we’ve focused on maintenance and improving quality behind the scenes. It just so happens that the urge to clean is so strong that this work extended to the front-end. After months of work, today we’re launching a redesigned NewsBlur for all three platforms: on the web, on iOS, and on Android. There’s a lot that’s new. And what better day to launch a redesign than on &lt;a href=&quot;/2013/03/17/three-months-to-scale-newsblur/&quot;&gt;the ninth anniversary of the sunset of Google Reader&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;To start, let’s take a look below at the redesigned NewsBlur.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/redesign-web.png&quot; style=&quot;width: 750px;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Loads of new features:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;The dashboard now has multiple, customizable rivers of news&lt;/li&gt;
+  &lt;li&gt;Image previews are now customizable by size and layout&lt;/li&gt;
+  &lt;li&gt;Story previews are also customizable by length&lt;/li&gt;
+  &lt;li&gt;Images are now full bleed on the web (edge-to-edge)&lt;/li&gt;
+  &lt;li&gt;Controls have been re-styled and made more accessible&lt;/li&gt;
+  &lt;li&gt;Sizes, spaces, and text have all been tweaked for a more legible read&lt;/li&gt;
+  &lt;li&gt;Upgraded backend: Python 2 to Python 3, latest Django and libraries, containerized infrastructure&lt;/li&gt;
+  &lt;li&gt;Both Android and iOS apps have been updated with the new design&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Those multiple rivers come in handy when you want to follow different interests at a glance. You can of course change which individual feeds or folders is loaded, letting you focus on saved searches, infrequent stories, a single feed, or everything you’re subscribed to.&lt;/p&gt;
+
+&lt;p&gt;Below you can see the design in action. Notice how easy it is to change where the image preview is located as well as adjust the number of lines of story text to show.&lt;/p&gt;
+
+&lt;p&gt;
+    &lt;video autoplay=&quot;&quot; loop=&quot;&quot; playsinline=&quot;&quot; width=&quot;500&quot; style=&quot;width: 500px;border: 2px solid rgba(0,0,0,0.1)&quot;&gt;
+        &lt;source src=&quot;/assets/redesign-content-preview.mp4&quot; type=&quot;video/mp4&quot; /&gt;
+    &lt;/video&gt;
+&lt;/p&gt;
+
+&lt;p&gt;The reading experience itself has also seen improvement. Full bleed images have been ported over from iOS to both Android and the web. This means that images will now run edge-to-edge. And the controls at the top and bottom of the web app have been restyled to be easier to understand at a quick glance.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/redesign-full-bleed.jpg&quot; style=&quot;border: 2px solid rgba(0,0,0,0.1);&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;There’s many ways to adjust story titles to fit. Pack them in dense or offer titles room to breathe.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/redesign-bottom.jpg&quot; style=&quot;border: 2px solid rgba(0,0,0,0.1);&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;The redesign has also come to both of the official Android and iOS apps. Right now both are in beta testing, but you can join the &lt;a href=&quot;https://testflight.apple.com/join/hYk9WU3f&quot;&gt;iOS TestFlight&lt;/a&gt; or the &lt;a href=&quot;https://play.google.com/store/apps/details?id=com.newsblur&amp;amp;hl=en_US&amp;amp;gl=US&quot;&gt;Android beta&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/redesign-ios-android.png&quot; style=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;This whole redesign weighs in at a whopping 1,316 commits, which &lt;a href=&quot;https://github.com/samuelclay/NewsBlur/compare/dashboard3&quot;&gt;you can view on GitHub&lt;/a&gt;. Much of the work that took place here involves upgrading from Python 2 to Python 3 and containerizing everything with Docker. In a few weeks, we’ll post a technical writeup of what those backend changes are and how you can now run a local version of NewsBlur on your own computer with a single line of code. For those that want to run their own private instance of NewsBlur, that line of code is &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;make nb&lt;/code&gt; and &lt;a href=&quot;https://github.com/samuelclay/NewsBlur&quot;&gt;instructions are found on the repo&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;If you’ve enjoyed using NewsBlur and are a fan of this grand redesign, please take a moment to share on social media that you read your news with the help of NewsBlur.&lt;/p&gt;</content><author><name></name></author><category term="backend" /><category term="web" /><category term="ios" /><category term="android" /><summary type="html">This past year we’ve focused on maintenance and improving quality behind the scenes. It just so happens that the urge to clean is so strong that this work extended to the front-end. After months of work, today we’re launching a redesigned NewsBlur for all three platforms: on the web, on iOS, and on Android. There’s a lot that’s new. And what better day to launch a redesign than on the ninth anniversary of the sunset of Google Reader.</summary></entry><entry><title type="html">How a Docker footgun led to a vandal deleting NewsBlur’s MongoDB database</title><link href="https://blog.newsblur.com/2021/06/28/story-of-a-hacking/" rel="alternate" type="text/html" title="How a Docker footgun led to a vandal deleting NewsBlur’s MongoDB database" /><published>2021-06-28T00:00:00-04:00</published><updated>2021-06-28T00:00:00-04:00</updated><id>https://blog.newsblur.com/2021/06/28/story-of-a-hacking</id><content type="html" xml:base="https://blog.newsblur.com/2021/06/28/story-of-a-hacking/">&lt;p&gt;&lt;em&gt;tl;dr: A vandal deleted NewsBlur’s MongoDB database during a migration. No data was stolen or lost.&lt;/em&gt;&lt;/p&gt;
 
 &lt;p&gt;I’m in the process of moving everything on NewsBlur over to Docker containers in prep for a &lt;a href=&quot;https://beta.newsblur.com&quot;&gt;big redesign launching next week&lt;/a&gt;. It’s been a great year of maintenance and I’ve enjoyed the fruits of Ansible + Docker for NewsBlur’s 5 database servers (PostgreSQL, MongoDB, Redis, Elasticsearch, and soon ML models). The day was wrapping up and I settled into &lt;a href=&quot;https://en.wikipedia.org/wiki/Human_Compatible&quot;&gt;a new book on how to tame the machines once they’re smarter than us&lt;/a&gt; when I received a strange NewsBlur error on my phone.&lt;/p&gt;
 
@@ -318,23 +361,4 @@ $ cat /var/log/mongodb/mongod.log | egrep -v &quot;159.65.XX.XX|161.89.XX.XX|&am
   &lt;li&gt;Fixes for sharing stories accidentally having double titles in emails and messages&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;p&gt;Thanks to &lt;a href=&quot;https://github.com/dejal&quot;&gt;David Sinclair&lt;/a&gt; for putting together this release. Keep up the great work! And if you have ideas for what you’d like to see in the next NewsBlur iOS release, please, please, please &lt;a href=&quot;https://forum.newsblur.com/c/idea&quot;&gt;submit them to the forum&lt;/a&gt;.&lt;/p&gt;</content><author><name></name></author><category term="iOS" /><summary type="html">A whopper of a release with many, many new features!</summary></entry><entry><title type="html">Updates to the Android app and a new addition to the team</title><link href="https://blog.newsblur.com/2019/06/01/updates-to-the-android-app-and-a-new-addition-to/" rel="alternate" type="text/html" title="Updates to the Android app and a new addition to the team" /><published>2019-06-01T08:51:21-04:00</published><updated>2019-06-01T08:51:21-04:00</updated><id>https://blog.newsblur.com/2019/06/01/updates-to-the-android-app-and-a-new-addition-to</id><content type="html" xml:base="https://blog.newsblur.com/2019/06/01/updates-to-the-android-app-and-a-new-addition-to/">&lt;p&gt;Today we have a nice update, version 9.0, of the Android app that includes a rewrite of the story management backend as well as fixes for some critical display issues.&lt;/p&gt;
-
-&lt;figure class=&quot;tmblr-full&quot; data-orig-height=&quot;1920&quot; data-orig-width=&quot;1080&quot; data-orig-src=&quot;https://s3.amazonaws.com/static.newsblur.com/blog/android-9.png&quot;&gt;&lt;img width=&quot;600&quot; style=&quot;width: 600px; margin: 0 auto;border:1px solid #606060&quot; data-orig-height=&quot;1920&quot; data-orig-width=&quot;1080&quot; src=&quot;https://s3.amazonaws.com/static.newsblur.com/blog/android-9.png&quot; /&gt;&lt;/figure&gt;
-
-&lt;p&gt;Here’s the full list of changes for version 9.0:&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;Fixes black background for stories while reading with the Light theme.&lt;/li&gt;
-  &lt;li&gt;Total rewrite of the backend story management platform. This fixes the oldest issues known in story paging and scroll state. The story rivers should now act like dynamic views instead of static lists.&lt;/li&gt;
-  &lt;li&gt;New feature: renaming feeds directly in the app.&lt;/li&gt;
-  &lt;li&gt;Improved messaging and display behavior for the original text view.&lt;/li&gt;
-  &lt;li&gt;Fixes for the dark theme’s menu color.&lt;/li&gt;
-  &lt;li&gt;Many other bug fixes and performance tweaks.&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;I’d also like to introduce our newest developer, &lt;a href=&quot;https://github.com/caleb-allen&quot;&gt;Caleb Allen&lt;/a&gt;.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://s3.amazonaws.com/static.newsblur.com/blog/caleb-allen.jpeg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Caleb will be working on the Android app. Our Android developer Daniel spent the last 5 years with us working many, many versions of the NewsBlur app. I want to thank Daniel for his years of service and we wish him well on his next adventure. And here’s hoping for many fruitful years with Caleb!&lt;/p&gt;</content><author><name></name></author><category term="android" /><summary type="html">Today we have a nice update, version 9.0, of the Android app that includes a rewrite of the story management backend as well as fixes for some critical display issues.</summary></entry></feed>
+&lt;p&gt;Thanks to &lt;a href=&quot;https://github.com/dejal&quot;&gt;David Sinclair&lt;/a&gt; for putting together this release. Keep up the great work! And if you have ideas for what you’d like to see in the next NewsBlur iOS release, please, please, please &lt;a href=&quot;https://forum.newsblur.com/c/idea&quot;&gt;submit them to the forum&lt;/a&gt;.&lt;/p&gt;</content><author><name></name></author><category term="iOS" /><summary type="html">A whopper of a release with many, many new features!</summary></entry></feed>
