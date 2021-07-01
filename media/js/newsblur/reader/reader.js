@@ -171,7 +171,9 @@
 
         check_if_forced_upgrade_to_beta_site: function () {
             if (
-                NEWSBLUR.Globals.user_id % 100 <= 50 && !NEWSBLUR.Globals.is_admin
+                NEWSBLUR.Globals.user_id % 100 <= 50 && 
+                !NEWSBLUR.Globals.is_admin &&
+                !window.location.href.includes('old.newsblur.com')
             ) {
                 // See ya
                 window.location.href = "https://beta.newsblur.com";
