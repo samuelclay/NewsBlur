@@ -51,7 +51,7 @@ class RedisDumpMiddleware(object):
                 connection.queriesx = []
             connection.queriesx.append({
                 'redis': message,
-                'time': '%.3f' % duration,
+                'time': '%.6f' % duration,
             })
             return result
         return instrumented_method

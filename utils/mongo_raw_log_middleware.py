@@ -35,9 +35,7 @@ class MongoDumpMiddleware(object):
     def process_celery(self, profiler):
         if not self.activated(profiler): return
         self._used_msg_ids = []
-        if (not getattr(MongoClient, '_logging', False) and 
-            hasattr(MongoClient, '_send_message_with_response') and
-            hasattr(MongoReplicaSetClient, '_send_message_with_response')):
+        if not getattr(MongoClient, '_logging', False):
             # save old methods
             setattr(MongoClient, '_logging', True)
             if hasattr(MongoClient, '_send_message_with_response'):
