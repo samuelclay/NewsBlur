@@ -35,12 +35,12 @@
       - /srv/newsblur/docker/nginx/nginx.consul.conf:/etc/nginx/conf.d/default.conf
       - /srv/newsblur/:/srv/newsblur
   with_items:
-    - disable_consul_services: no
+    - disable_consul_services_ie_staging: no
       port: 80
-    - disable_consul_services: yes
+    - disable_consul_services_ie_staging: yes
       port: 81
   when: 
-    - disable_consul_services | default(false) | bool == item.disable_consul_services|bool
+    - disable_consul_services_ie_staging | default(false) | bool == item.disable_consul_services_ie_staging|bool
 
 - name: Register nginx in consul
   tags: consul
@@ -50,4 +50,4 @@
     dest: /etc/consul.d/nginx.json
   notify:
     - reload consul
-  when: disable_consul_services is not defined
+  when: disable_consul_services_ie_staging is not defined

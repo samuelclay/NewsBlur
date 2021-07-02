@@ -246,7 +246,7 @@ def get_classifiers_for_user(user, feed_id=None, social_user_id=None, classifier
     elif feed_id:
         params['feed_id'] = feed_id
     if social_user_id:
-        if isinstance(social_user_id, basestring):
+        if isinstance(social_user_id, str):
             social_user_id = int(social_user_id.replace('social:', ''))
         params['social_user_id'] = social_user_id
 

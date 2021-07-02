@@ -39,7 +39,7 @@ NEWSBLUR.Collections.DashboardRivers = Backbone.Collection.extend({
         return this.side('left');
     },
 
-    left_side_rivers: function () {
+    right_side_rivers: function () {
         return this.side('right');
     },
 
