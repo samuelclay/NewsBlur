@@ -722,17 +722,32 @@ hr {
     width: 16px;
     height: 16px;
 }
+.NB-density-compact .NB-feedlist img.feed_favicon {
+    top: 1px;
+}
 .NB-theme-feed-size-s .NB-feedlist img.feed_favicon {
     top: 3px;
+}
+.NB-density-compact.NB-theme-feed-size-s .NB-feedlist img.feed_favicon {
+    top: 1px;
 }
 .NB-theme-feed-size-m .NB-feedlist img.feed_favicon {
     top: 4px;
 }
+.NB-density-compact.NB-theme-feed-size-m .NB-feedlist img.feed_favicon {
+    top: 2px;
+}
 .NB-theme-feed-size-l .NB-feedlist img.feed_favicon {
     top: 4px;
 }
+.NB-density-compact.NB-theme-feed-size-l .NB-feedlist img.feed_favicon {
+    top: 2px;
+}
 .NB-theme-feed-size-xl .NB-feedlist img.feed_favicon {
     top: 5px;
+}
+.NB-density-compact.NB-theme-feed-size-xl .NB-feedlist img.feed_favicon {
+    top: 3px;
 }
 .NB-feedlist .feed_title {
     display: block;
@@ -742,7 +757,7 @@ hr {
     line-height: 1.3em;
     overflow: hidden;
     text-shadow: 0 1px 0 rgba(250, 250, 250, .4);
-
+    
     text-overflow: ellipsis;
     display: -webkit-box;
     -webkit-line-clamp: 1;
@@ -751,6 +766,9 @@ hr {
     word-break: break-all;
 }
 
+.NB-density-compact .NB-feedlist .feed_title {
+    padding-top: 2px;
+}
 .NB-feedlist .feed .NB-feedlist-manage-icon,
 .NB-feedlist .folder_title .NB-feedlist-manage-icon {
     opacity: 0;
@@ -887,6 +905,9 @@ hr {
     position: absolute;
     right: 2px;
     top: 1px;
+}
+.NB-density-compact .NB-feedlist .feed_counts {
+    top: -1px;
 }
 .NB-feedlist .NB-feedbar-mark-feed-read {
     display: none;
@@ -1756,6 +1777,10 @@ hr {
 }
 .NB-image-preview-small-right:not(.NB-story-layout-grid) .NB-story-title.NB-has-image,
 .NB-image-preview-large-right:not(.NB-story-layout-grid) .NB-story-title.NB-has-image {
+    padding-right: 242px;
+}
+.NB-image-preview-small-right:not(.NB-story-layout-grid) .NB-story-pane-west .NB-story-title.NB-has-image,
+.NB-image-preview-large-right:not(.NB-story-layout-grid) .NB-story-pane-west .NB-story-title.NB-has-image {
     padding-right: 90px;
 }
 /* Ragged right but not ragged left
@@ -1894,10 +1919,16 @@ hr {
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
+    overflow-wrap: break-word;
+    word-break: break-word;
 }
 
 .NB-story-title.read a.story_title {
-    color: #969696;
+    color: #a2a2a2;
+}
+.NB-storytitles-title {
+    overflow-wrap: break-word;
+    word-break: break-word;
 }
 .NB-view-river .NB-story-title a.story_title {
 
@@ -1922,7 +1953,7 @@ hr {
 }
 
 .NB-story-title.read .NB-storytitles-author {
-    color: #B6B6B6;
+    color: #cac9c5;
 }
 
 .NB-story-title.NB-selected .NB-storytitles-author {
@@ -1931,7 +1962,7 @@ hr {
 
 .NB-storytitles-content-preview {
     margin: 5px 0;
-    color: #B6B6B6;
+    color: #888785;
     font-size: 11px;
     line-height: 1.3em;
     overflow: hidden;
@@ -1948,6 +1979,9 @@ hr {
     display: -webkit-box;
 
 }
+.NB-density-compact .NB-storytitles-content-preview {
+    margin-bottom: 0;
+}
 .NB-story-pane-west .NB-storytitles-content-preview {
     display: -webkit-box;
     -webkit-line-clamp: 4;
@@ -1957,7 +1991,9 @@ hr {
     height: auto;
     padding: 6px 0 0;
 }
-
+.NB-density-compact .NB-story-pane-west .NB-storytitles-content-preview {
+    padding-top: 0;
+}
 .NB-content-preview-small .NB-story-pane-west .NB-storytitles-content-preview {
     -webkit-line-clamp: 2;
 }
@@ -1993,10 +2029,16 @@ hr {
     line-height: 17px;
     padding-top: 10px;
 }
+.NB-density-compact.NB-theme-feed-size-l .NB-storytitles-content-preview {
+    padding-top: 0;
+}
 .NB-theme-feed-size-xl .NB-storytitles-content-preview {
     font-size: 14px;
     line-height: 18px;
     padding-top: 12px;
+}
+.NB-density-compact.NB-theme-feed-size-xl .NB-storytitles-content-preview {
+    padding-top: 0;
 }
 .NB-content-preview-title .NB-storytitles-content-preview {
     display: none;
@@ -2005,7 +2047,7 @@ hr {
     display: none;
 }
 .read .NB-storytitles-content-preview {
-    color: #B6B6B6;
+    color: #b3b3b1;
 }
 .NB-storytitles-shares {
     position: absolute;
@@ -2195,11 +2237,15 @@ hr {
     font-weight: normal;
     clear: both;
 }
+.NB-density-compact .NB-story-pane-west .NB-story-title .story_date {
+    margin-top: 0;
+    margin-bottom: 0;
+}
 .NB-story-title.NB-selected .story_date {
 /*    text-shadow: 1px 1px 0 rgba(255, 255, 255, .5);*/
 }
 .NB-story-title.read .story_date {
-    color: #B6B6B6;
+    color: #cac9c5;
 }
 
 .NB-story-title.NB-selected,
@@ -2342,6 +2388,10 @@ hr {
 .NB-content-preview-title .NB-story-grid {
     height: 296px;
 }
+.NB-image-preview-small-right .NB-layout-grid .NB-story-title.NB-selected.NB-has-image,
+.NB-image-preview-large-right .NB-layout-grid .NB-story-title.NB-selected.NB-has-image {
+    padding-right: 242px;
+}
 
 .NB-layout-grid .NB-story-titles,
 .NB-layout-grid.NB-grid-columns-3 .NB-story-titles,
@@ -2396,6 +2446,7 @@ hr {
     line-height: 1.3em;
     padding: 0;
     word-break: break-word;
+    word-break: anywhere;
 }
 .NB-theme-feed-size-xs .NB-story-grid .NB-storytitles-title {
     font-size: 14px;
@@ -2702,6 +2753,10 @@ hr {
 
 body {
     font-family: 'Whitney SSm A', 'Whitney SSm B', "Lucida Grande", Verdana, "Helvetica Neue", Helvetica, sans-serif;
+}
+
+.NB-theme-sans-serif #story_pane {
+    font-family: "Helvetica Neue", "Helvetica", sans-serif;
 }
 
 .NB-theme-sans-serif-alt1 #story_pane {
@@ -3037,19 +3092,27 @@ body {
     max-width: 100%;
 }
 .NB-feed-story .NB-feed-story-content img {
-    max-width: calc(100% - 56px * -1) !important;
+    max-width: max-content !important;    
     margin-left: -28px;
     width: calc(100% - 56px * -1) !important;
     height: auto;
     
     /* See http://www.newsblur.com/site/1031643/le-21me for width: auto, height: auto */
 }
+.NB-feed-story .NB-feed-story-content img.NB-medium-image {
+    max-width: max-content !important;    
+    margin: 0;
+    width: auto !important;
+}
 .NB-feed-story .NB-feed-story-content img.NB-small-image {
-    max-width: 100% !important;    
-    margin-left: 0;
+    max-width: max-content !important;    
+    margin: 0;
     width: auto !important;
 }
 .NB-feed-story .NB-feed-story-content img.NB-large-image {
+}
+.NB-feed-story .NB-feed-story-content figure {
+    margin: 0;
 }
 
 .NB-feed-story .NB-feed-story-content video {
@@ -6062,7 +6125,7 @@ form.opml_import_form input {
     text-shadow: none;
 }
 
-.ui-autocomplete.ui-widget-content {
+.ui-menu.ui-autocomplete.ui-widget-content {
   width: 344px;
   padding: 0;
   margin: 0;
@@ -6082,31 +6145,32 @@ form.opml_import_form input {
   border-bottom-left-radius: 0;
 
 }
-.ui-autocomplete li {
+.ui-menu.ui-autocomplete li {
   padding: 0;
   list-style: none;
   margin: 0;
-  border-bottom: 1px solid #B0B0B0;
+  border-bottom: 1px solid #eaeaf7;
 }
-.ui-autocomplete li:last-child {
+.ui-menu.ui-autocomplete li:last-child {
   border-bottom: none;
 }
-.ui-autocomplete li a {
-  padding: 2px;
+.ui-menu.ui-autocomplete li a {
+  padding: 4px 8px;
   display: block;
   cursor: pointer;
 }
-.ui-autocomplete li a.ui-state-hover,
-.ui-autocomplete li a.ui-state-focus {
+.ui-menu.ui-autocomplete li a.ui-state-hover,
+.ui-menu.ui-autocomplete li a.ui-state-active,
+.ui-menu.ui-autocomplete li a.ui-state-focus {
     font-weight: normal;
-    background-color: #FDED8D;
-    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#FFFFD2), to(#FDED8D));
-    background: -moz-linear-gradient(center top , #FFFFD2 0%, #FDED8D 100%);
-    border: 1px solid #B0B0B0;
+    background: none;
+    background-color: #FFFFD2;
+    border: none;
     border-radius: none;
+    margin: 0;
 }
 
-.ui-autocomplete li a .NB-add-autocomplete-subscribers {
+.ui-menu.ui-autocomplete li a .NB-add-autocomplete-subscribers {
   float: right;
   font-size: 10px;
   color: #909090;
@@ -6115,7 +6179,7 @@ form.opml_import_form input {
   line-height: 16px;
   padding: 2px 4px 0 0;
 }
-.ui-autocomplete li a .NB-add-autocomplete-title {
+.ui-menu.ui-autocomplete li a .NB-add-autocomplete-title {
   line-height: 16px;
   color: #202020;
   font-weight: bold;
@@ -6124,7 +6188,7 @@ form.opml_import_form input {
   overflow: hidden;
   padding: 2px 0 0 4px;
 }
-.ui-autocomplete li a .NB-add-autocomplete-favicon {
+.ui-menu.ui-autocomplete li a .NB-add-autocomplete-favicon {
     float: left;
     margin: 2px 4px 0 2px;
     width: 16px;

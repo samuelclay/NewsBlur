@@ -205,6 +205,18 @@ LOGGING = {
             'handlers': ['null'],
             'propagate': False,
         },
+        'elasticsearch': {
+            'handlers': ['console', 'log_file'],
+            'level': 'ERROR',
+            # 'level': 'DEBUG',
+            'propagate': False,
+        },
+        'elasticsearch.trace': {
+            'handlers': ['console', 'log_file'],
+            'level': 'ERROR',
+            # 'level': 'DEBUG',
+            'propagate': False,
+        },
         'newsblur': {
             'handlers': ['console', 'log_file'],
             'level': 'DEBUG',

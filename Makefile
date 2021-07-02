@@ -6,57 +6,55 @@ CURRENT_GID := $(shell id -g)
 
 #creates newsblur, but does not rebuild images or create keys
 start:
-	- CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker-compose up -d
+	- RUNWITHMAKEBUILD=True CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker-compose up -d
 
 metrics:
-	- CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker-compose -f docker-compose.yml -f docker-compose.metrics.yml up -d
+	- RUNWITHMAKEBUILD=True CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker-compose -f docker-compose.yml -f docker-compose.metrics.yml up -d
 
 metrics-ps:
-	- docker-compose -f docker-compose.yml -f docker-compose.metrics.yml ps
+	- RUNWITHMAKEBUILD=True docker-compose -f docker-compose.yml -f docker-compose.metrics.yml ps
 
 rebuild:
-	- CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker-compose down
-	- CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker-compose up -d
+	- RUNWITHMAKEBUILD=True CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker-compose down
+	- RUNWITHMAKEBUILD=True CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker-compose up -d
 
 #creates newsblur, builds new images, and creates/refreshes SSL keys
 nb: pull
 	- CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker-compose down
 	- [[ -d config/certificates ]] && echo "keys exist" || make keys
 	- cd node && npm install & cd ..
-	- CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker-compose up -d --build --remove-orphans
-	- docker-compose exec newsblur_web ./manage.py migrate
-	- docker-compose exec newsblur_web ./manage.py loaddata config/fixtures/bootstrap.json
+	- RUNWITHMAKEBUILD=True CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker-compose up -d --build --remove-orphans
+	- RUNWITHMAKEBUILD=True docker-compose exec newsblur_web ./manage.py migrate
+	- RUNWITHMAKEBUILD=True docker-compose exec newsblur_web ./manage.py loaddata config/fixtures/bootstrap.json
 
 shell:
-	- - CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker-compose exec newsblur_web ./manage.py shell_plus
+	- RUNWITHMAKEBUILD=True CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker-compose exec newsblur_web ./manage.py shell_plus
 bash:
-	- - CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker-compose exec newsblur_web bash
+	- RUNWITHMAKEBUILD=True CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker-compose exec newsblur_web bash
 # allows user to exec into newsblur_web and use pdb.
 debug:
 	- newsblur := $(shell docker ps -qf "name=newsblur_web")
 	- CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker attach ${newsblur}
 log:
-	- docker-compose logs -f --tail 20 newsblur_web newsblur_node
+	- RUNWITHMAKEBUILD=True docker-compose logs -f --tail 20 newsblur_web newsblur_node
+
+logmongo:
+	- RUNWITHMAKEBUILD=True docker-compose logs -f db_mongo
 alllogs:
-	- docker-compose logs -f --tail 20
+	- RUNWITHMAKEBUILD=True docker-compose logs -f --tail 20
 # brings down containers
 down:
-	- docker-compose -f docker-compose.yml down
+	- RUNWITHMAKEBUILD=True docker-compose -f docker-compose.yml down
 nbdown: down
+jekyll:
+	- cd blog && bundle exec jekyll serve
+jekyll_drafts:
+	- cd blog && bundle exec jekyll serve --drafts
 
 # runs tests
 test:
-	- python manage.py test --settings=newsblur_web.test_settings apps/analyzer
-	- python manage.py test --settings=newsblur_web.test_settings apps/api
-	- python manage.py test --settings=newsblur_web.test_settings apps/categories
-	- python manage.py test --settings=newsblur_web.test_settings apps/feed_import
-	- python manage.py test --settings=newsblur_web.test_settings apps/profile
-	- python manage.py test --settings=newsblur_web.test_settings apps/push
-	- python manage.py test --settings=newsblur_web.test_settings apps/reader
-	- python manage.py test --settings=newsblur_web.test_settings apps/rss_feeds
-
-	#- CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} TEST=True docker-compose -f docker-compose.yml up -d newsblur_web
-	#- CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} DJANGO_SETTINGS_MODULE=newsblur_web.test_settings docker-compose exec newsblur_web pytest --ignore ./vendor --verbosity 3
+	- RUNWITHMAKEBUILD=True CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} TEST=True docker-compose -f docker-compose.yml up -d newsblur_web
+	- RUNWITHMAKEBUILD=True CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker-compose exec newsblur_web bash -c "NOSE_EXCLUDE_DIRS=./vendor DJANGO_SETTINGS_MODULE=newsblur_web.test_settings python3 manage.py test -v 3 --failfast"
 
 keys:
 	- mkdir config/certificates
@@ -78,7 +76,7 @@ tfrefresh:
 plan:
 	terraform -chdir=terraform plan -refresh=false
 apply:
-	terraform -chdir=terraform apply -refresh=false
+	terraform -chdir=terraform apply -refresh=false -parallelism=15
 inventory:
 	- ./ansible/utils/generate_inventory.py
 

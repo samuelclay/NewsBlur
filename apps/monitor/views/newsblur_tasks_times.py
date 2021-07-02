@@ -24,7 +24,6 @@ class TasksTimes(View):
     
     @property
     def stats(self):
-        
         stats = settings.MONGOANALYTICSDB.nbanalytics.feed_fetches.aggregate([{
             "$match": {
                 "date": {

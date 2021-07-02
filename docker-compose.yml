@@ -7,6 +7,7 @@ services:
     image: newsblur/newsblur_${NEWSBLUR_BASE:-python3}:latest
     environment: 
       - DOCKERBUILD=True
+      - RUNWITHMAKEBUILD=${RUNWITHMAKEBUILD?use the `make` command instead of docker CLI}
     stdin_open: true
     tty: true
     restart: unless-stopped
@@ -58,6 +59,7 @@ services:
   nginx:
     container_name: nginx
     image: nginx:1.19.6
+    restart: unless-stopped
     ports:
       - 81:81
     depends_on:
@@ -76,6 +78,7 @@ services:
   db_postgres:
     container_name: db_postgres
     image: postgres:13.1
+    restart: unless-stopped
     environment:
       - POSTGRES_USER=newsblur
       - POSTGRES_PASSWORD=newsblur
@@ -94,6 +97,7 @@ services:
     ports:
       - 6579:6579
     container_name: db_redis
+    restart: unless-stopped
     volumes:
       - ./config/redis.conf:/etc/redis/redis.conf
       - ./config/redis_docker.conf:/etc/redis/redis_server.conf
@@ -104,6 +108,7 @@ services:
     container_name: db_elasticsearch
     image: docker.elastic.co/elasticsearch/elasticsearch:7.11.1
     mem_limit: 512mb
+    restart: unless-stopped
     environment:
       - discovery.type=single-node
     ports:
@@ -116,6 +121,7 @@ services:
   db_mongo:
     container_name: db_mongo
     image: mongo:3.6
+    restart: unless-stopped
     ports:
       - 29019:29019
     command: mongod --smallfiles --port 29019
@@ -126,6 +132,7 @@ services:
     container_name: task_celery
     image: newsblur/newsblur_python3
     command: "celery worker -A newsblur_web -B --loglevel=INFO"
+    restart: unless-stopped
     volumes:
       - ${PWD}:/srv/newsblur
     environment: 
@@ -135,6 +142,7 @@ services:
   haproxy:
     container_name: haproxy
     image: haproxy:latest
+    restart: unless-stopped
     depends_on: 
       - nginx
       - newsblur_web

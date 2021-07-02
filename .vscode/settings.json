@@ -19,5 +19,7 @@
         "media/fonts": true,
         "static/*.css": true,
         "static/*.js": true,
+        "blog/.jekyll-cache": true,
+        "blog/_site": true,
     },
 }

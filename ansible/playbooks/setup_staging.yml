@@ -6,7 +6,7 @@
   vars:
     - update_apt_cache: yes
     - motd_role: app
-    # - disable_consul_services: yes # Defined in group vars
+    # - disable_consul_services_ie_staging: yes # Defined in group vars
 
   roles:
     - {role: 'base', tags: 'base'}

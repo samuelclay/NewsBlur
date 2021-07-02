@@ -390,6 +390,10 @@ color: #a85b40;
     border: solid 1px #505050;
 }
 
+.NB-dark .ui-menu.ui-autocomplete li {
+    border-bottom: 1px solid #292931;
+}
+
 /* Input field suggestions window (1 of 6) */
 .NB-dark .NB-add-form .ui-autocomplete.ui-widget-content {
     /*  position: static; */
