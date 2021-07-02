@@ -53,6 +53,12 @@
   notify:
     - reload consul
 
+- name: Setup logrotate for mongo
+  become: yes
+  copy: src=logrotate.conf dest=/etc/logrotate.d/mongodb mode=0755
+  tags: 
+    - logrotate
+  
 - name: Add sanity checkers cronjob for disk usage
   become: yes
   cron:

@@ -58,7 +58,14 @@ img {
   max-width: 100%;
   vertical-align: middle;
 }
-
+.post {
+  img, video {
+    max-width: 650px;
+    vertical-align: middle;
+    display: block;
+    margin: 24px auto;
+  }
+}
 
 
 /**

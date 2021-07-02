@@ -471,7 +471,8 @@ resource "digitalocean_droplet" "task-celery" {
   size     = var.droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
-    command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
+    # command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
+    command = "sleep 120"
   }
   provisioner "local-exec" {
     command = "cd ..; ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"

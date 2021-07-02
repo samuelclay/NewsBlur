@@ -13,6 +13,8 @@ main { display: block; /* Default value of `display` of `main` element is 'inlin
 /** Images */
 img { max-width: 100%; vertical-align: middle; }
 
+.post img, .post video { max-width: 650px; vertical-align: middle; display: block; margin: 24px auto; }
+
 /** Figures */
 figure > img { display: block; }
 
