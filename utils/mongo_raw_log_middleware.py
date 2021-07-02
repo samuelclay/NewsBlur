@@ -4,6 +4,7 @@ from django.db import connection
 from pymongo.mongo_client import MongoClient
 from pymongo.mongo_replica_set_client import MongoReplicaSetClient
 from time import time
+from utils import log as logging
 import struct
 import bson
 import pymongo
@@ -35,9 +36,7 @@ class MongoDumpMiddleware(object):
     def process_celery(self, profiler):
         if not self.activated(profiler): return
         self._used_msg_ids = []
-        if (not getattr(MongoClient, '_logging', False) and 
-            hasattr(MongoClient, '_send_message_with_response') and
-            hasattr(MongoReplicaSetClient, '_send_message_with_response')):
+        if not getattr(MongoClient, '_logging', False):
             # save old methods
             setattr(MongoClient, '_logging', True)
             if hasattr(MongoClient, '_send_message_with_response'):
@@ -67,7 +66,7 @@ class MongoDumpMiddleware(object):
                 connection.queriesx = []
             connection.queriesx.append({
                 'mongo': message,
-                'time': '%.3f' % duration,
+                'time': '%.6f' % duration,
             })
             return result
         return instrumented_method

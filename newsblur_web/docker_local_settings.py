@@ -21,6 +21,7 @@ DOCKERBUILD = True
 DEBUG = False
 DEBUG = True
 DEBUG_ASSETS = True
+# DEBUG_QUERIES = True
 MEDIA_URL = '/media/'
 IMAGES_URL = '/imageproxy'
 SECRET_KEY = 'YOUR SECRET KEY'
