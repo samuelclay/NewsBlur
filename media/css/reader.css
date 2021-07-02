@@ -1924,7 +1924,7 @@ hr {
 }
 
 .NB-story-title.read a.story_title {
-    color: #969696;
+    color: #a2a2a2;
 }
 .NB-storytitles-title {
     overflow-wrap: break-word;
@@ -1953,7 +1953,7 @@ hr {
 }
 
 .NB-story-title.read .NB-storytitles-author {
-    color: #B6B6B6;
+    color: #cac9c5;
 }
 
 .NB-story-title.NB-selected .NB-storytitles-author {
@@ -1962,7 +1962,7 @@ hr {
 
 .NB-storytitles-content-preview {
     margin: 5px 0;
-    color: #B6B6B6;
+    color: #888785;
     font-size: 11px;
     line-height: 1.3em;
     overflow: hidden;
@@ -2047,7 +2047,7 @@ hr {
     display: none;
 }
 .read .NB-storytitles-content-preview {
-    color: #B6B6B6;
+    color: #cac9c5;
 }
 .NB-storytitles-shares {
     position: absolute;
@@ -2245,7 +2245,7 @@ hr {
 /*    text-shadow: 1px 1px 0 rgba(255, 255, 255, .5);*/
 }
 .NB-story-title.read .story_date {
-    color: #B6B6B6;
+    color: #cac9c5;
 }
 
 .NB-story-title.NB-selected,
